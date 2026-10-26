@@ -11,6 +11,7 @@ const ORDERS_SCRIPT := preload("res://scenes/orders/orders.gd")
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0005
+const Maps := preload("res://debug/look/flora_test_maps.gd")
 const AI_DIR := "res://scenes/ai"
 
 
@@ -351,10 +352,8 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
-	var terrain := Terrain.new()
+	var terrain: TerrainMesh = Maps.land_from(MapCatalog.active().terrain, MapCatalog.active().tiles)
 	terrain.name = "Terrain"
-	terrain.shape = GroundSurface.with_data(MapCatalog.active().terrain)
-	terrain.add_child(terrain.shape)
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
 	var structures := Node3D.new()
@@ -362,12 +361,12 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.add_child(structures)
 	var service := NavService.new()
 	service.name = "Nav"
-	service.ground = terrain.shape
+	service.terrain = terrain.shape
 	service.structures = structures
 	service.build_on_ready = false
 	root.add_child(service)
 	host.add_child(root)
-	terrain.add_child(terrain.make_collision_body())  # a Terrain from the script alone has no body
+	terrain.add_child(Maps.collision_of(terrain))
 	if not terrain.shape.is_loaded():
 		root.free()
 		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}

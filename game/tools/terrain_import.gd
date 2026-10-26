@@ -8,8 +8,8 @@ extends EditorScenePostImport
 ##  4. returns the mesh instance as the scene root, its mesh rebuilt by Terrain from the data, with a trimesh Collision child (faces in index order).
 ## The static helpers are shared with tools/bake/terrain_glb_export.gd and debug/suite/terrain_bake_cases.gd.
 
-const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
-const SHAPE_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
+const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain_mesh.gd"
+const SHAPE_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const GLB_MAGIC := 0x46546C67
 const CHUNK_JSON := 0x4E4F534A
 const CHUNK_BIN := 0x004E4942
@@ -69,16 +69,17 @@ func _write_data(data: MapTerrainData, out: String) -> void:
 		push_error("terrain import: could not write %s (error %d)." % [out, error])
 
 
-## Terrain's own arrays (tile COLOR, smooth normals) through terrain.gd, so there is a single code path.
+## TerrainMesh's own arrays (tile COLOR, smooth normals) through terrain_mesh.gd, so there is a single code path.
 func _runtime_mesh(data: MapTerrainData, tiles_path: String) -> ArrayMesh:
 	var builder := MeshInstance3D.new()
 	builder.set_script(load(TERRAIN_SCRIPT))
-	var shape := Node.new()
-	shape.set_script(load(SHAPE_SCRIPT))  # dynamic: as the Terrain above, a post-import script names no class_name
-	shape.set("tiles_path", tiles_path)
+	var shape := Node3D.new()
+	shape.set_script(load(SHAPE_SCRIPT))  # dynamic: as the TerrainMesh above, a post-import script names no class_name
+	shape.set("tiles", load(tiles_path) if not tiles_path.is_empty() else null)
 	shape.set("data", data)
 	builder.add_child(shape)
 	builder.set("shape", shape)
+	shape.set("mesh", builder)
 	var arrays: Array = []
 	if not tiles_path.is_empty() and load(tiles_path) != null:
 		arrays = builder.call("bake_arrays")  # dynamic: a post-import script; it names no class_name it may run before (load + set_script)

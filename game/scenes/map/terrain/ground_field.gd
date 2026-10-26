@@ -3,7 +3,7 @@ extends RefCounted
 
 ## How far the ground has moved from the map file, vertex by vertex of a regular lattice: what stays (a mound, a crater),
 ## what moves right now (playing stamps) and which vertices were taken away (holes). It only keeps numbers and adds them up;
-## who may write is TerrainDeformer, who asks the height is GroundSurface. A live stamp is stored whole and the sum made
+## who writes and who answers the height is Terrain. A live stamp is stored whole and the sum made
 ## again from it, never added to, so dropping it leaves the ground as it was.
 
 ## Vertices per side (x, z) and metres between two of them: the ground covers `size * cell_m` from the origin.
@@ -67,6 +67,11 @@ func drop_live(key: Variant) -> Rect2i:
 
 func live_count() -> int:
 	return _live.size()
+
+
+## The keys of the stamps playing now.
+func live_keys() -> PackedStringArray:
+	return PackedStringArray(_live.keys())
 
 
 ## A copy of `texels` as they are now, for a task on another thread (packed arrays are shared by reference). Made once per change.

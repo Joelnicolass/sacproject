@@ -11,7 +11,7 @@ const INDEX_PARAM := &"scar_index"
 const TILES_PARAM := &"scar_tiles"
 
 ## The map's ground (to know how high it is under a mark).
-@export var shape: GroundSurface
+@export var terrain: Terrain
 ## The player's graphics options: «Cantidad de marcas». Empty: `max_tiles`.
 @export var prefs: GraphicsPrefs
 @export_range(32, 256) var max_tiles := 256
@@ -37,13 +37,13 @@ static func of(node: Node) -> GroundScars:
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	if DisplayServer.get_name() == "headless" or tiles == null or shape == null:
+	if DisplayServer.get_name() == "headless" or tiles == null or terrain == null:
 		return
 	var count := GroundScarRules.clamp_capacity(prefs.scar_tiles() if prefs != null else max_tiles)
 	_pool = GroundScarRules.Pool.new(count)
 	for i in count:
 		_layers.append(Image.create_empty(GroundScarRules.TILE_TEXELS, GroundScarRules.TILE_TEXELS, false, Image.FORMAT_RGBA8))
-	var grid := GroundScarRules.grid_for(shape.bounds())  # one index texel per 10 m tile of the map
+	var grid := GroundScarRules.grid_for(terrain.bounds())  # one index texel per 10 m tile of the map
 	_index = Image.create_empty(grid.x, grid.y, false, Image.FORMAT_RGBA8)
 	tiles.create_from_images(_layers)
 	_index_texture = ImageTexture.create_from_image(_index)
@@ -63,8 +63,8 @@ func _exit_tree() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if shape == null:
-		warnings.append("Asigná `shape` (el GroundSurface del mapa).")
+	if terrain == null:
+		warnings.append("Asigná `terrain` (el Terrain del mapa).")
 	if prefs == null:
 		warnings.append(GraphicsPrefs.socket_warning(prefs))
 	if tiles == null:
@@ -98,22 +98,22 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 		return false
 	var mark := _image_of(texture)
 	var origin := GroundScarRules.texel_origin(Vector2(local.x, local.z), mark.get_size())
-	var touched := GroundScarRules.tiles_touched(origin, mark.get_size(), GroundScarRules.grid_for(shape.bounds()))
+	var touched := GroundScarRules.tiles_touched(origin, mark.get_size(), GroundScarRules.grid_for(terrain.bounds()))
 	for tile in touched:
 		_paint_tile(mark, origin, tile)
 	_index_texture.update(_index)
 	_publish()
-	note("painted %s at map %s, %.1f m over the ground, %d tiles" % [texture.resource_path.get_file(), local, local.y - shape.height_at(local.x, local.z), touched.size()])
+	note("painted %s at map %s, %.1f m over the ground, %d tiles" % [texture.resource_path.get_file(), local, local.y - terrain.height_at(local.x, local.z), touched.size()])
 	return not touched.is_empty()
 
 
 ## Why a mark at `local` is not painted, or "". The height is from the ground's own height there.
 func _refusal(local: Vector3, max_height_m: float) -> String:
-	if shape == null:
-		return "no shape"
-	if not shape.is_on_ground(local.x, local.z):
+	if terrain == null:
+		return "no terrain"
+	if not terrain.is_on_ground(local.x, local.z):
 		return "not over land"
-	var ground_y := shape.height_at(local.x, local.z)
+	var ground_y := terrain.height_at(local.x, local.z)
 	if not GroundScarRules.allows_height(ground_y, local.y, max_height_m):
 		return "too far from the ground: %.1f m" % (local.y - ground_y)
 	return ""

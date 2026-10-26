@@ -4,7 +4,7 @@ extends RefCounted
 ## The sums of Teleport (RFC-021c), with no world: where the group lands and where each body goes.
 ## Positions are compared on the plane (x, z); the height is the body's business (see warp_to), because the
 ## spot is on the land, never on a pillar or inside a building. `on_ground` is a Callable(x: float, z: float) -> bool
-## (GroundSurface.is_on_ground); an empty one means «everything is land».
+## (Terrain.is_on_ground); an empty one means «everything is land».
 
 
 ## getTeleportPosition (sacengine state.d:10215-10228): `radius` from the building toward where the wizard

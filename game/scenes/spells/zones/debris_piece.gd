@@ -21,14 +21,14 @@ var _axis := Vector3.UP
 var _turn := 0.0
 var _age := 0.0
 var _puff := 0.0
-var _land: GroundSurface
+var _land: Terrain
 
 
 func _ready() -> void:
 	if DisplayServer.get_name() == "headless":
 		queue_free()
 		return
-	_land = GroundSurface.of(self)
+	_land = Terrain.of(self)
 
 
 ## Throws it: velocity in m/s, spinning `turn` rad/s around `axis`.

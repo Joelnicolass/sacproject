@@ -2,22 +2,23 @@
 class_name MinimapTerrainBake
 extends Node
 
-## RFC-037 037a: draws the map's ground seen from straight above, once, into a texture. Own 3D world (no plants,
+## Draws the map's ground seen from straight above, once, into a texture. Own 3D world (no plants,
 ## buildings, sky or fog), an orthographic camera over the mesh's bounding box, ambient light only. It draws nothing
 ## else and knows nothing of the minimap: `Minimap` reads `texture`, `origin_xz` and `side_m`.
 ##
 ## Image axes: x = world x, y = world z (top = smallest z), a view from above with +y toward the viewer.
 ## `world_to_uv` gives the texture coordinate of a world point.
 ## Run alone (F6) it shows the texture. On the dedicated server (headless) it does nothing.
+## Ref: RFC-037 037a.
 
 ## The texture is ready (or was drawn again).
 signal baked
 
-## Optional: the map's ground surface; the mesh it lists is drawn instead of the one in `ground` (the map points at its Shape).
-@export var surface: GroundSurface
+## Optional: the map's ground; its mesh is drawn instead of the one in `ground`.
+@export var terrain: Terrain
 @export_group("Parts")
 @export var viewport: SubViewport
-## The mesh drawn: the map's terrain mesh (`terrain`) with the classic ground material (the minimap never shows a biome's PBR ground).
+## The mesh drawn: the map's terrain mesh (`terrain.mesh`) with the classic ground material (the minimap never shows a biome's PBR ground).
 @export var ground: MeshInstance3D
 @export var camera: Camera3D
 ## Shown only when this scene runs alone.
@@ -88,7 +89,7 @@ func _rebake_in_editor() -> void:
 func bake() -> void:
 	if viewport == null or ground == null or camera == null:
 		return
-	var drawn := surface.main_mesh() if surface != null else null
+	var drawn := terrain.mesh if terrain != null else null
 	if drawn != null and drawn.mesh != null:
 		ground.mesh = drawn.mesh
 		ground.transform = drawn.global_transform

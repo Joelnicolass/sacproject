@@ -133,7 +133,7 @@ func _refresh() -> void:
 	var layers: Array[Dictionary] = []
 	if is_visible_in_tree() and not presentationless():
 		layers = active_layers()
-	var surface := rig.ground if rig else null
+	var surface := rig.terrain if rig else null
 	if surface == null or not surface.is_loaded():
 		layers.clear()
 	_ground.follow(surface if surface != null and not Engine.is_editor_hint() else null)
@@ -168,7 +168,7 @@ func _on_vegetation_toggled(_enabled: bool) -> void:
 
 
 ## What the planters depend on: a change of it rebuilds them.
-func _signature_of(layers: Array[Dictionary], surface: GroundSurface) -> String:
+func _signature_of(layers: Array[Dictionary], surface: Terrain) -> String:
 	var parts := PackedStringArray()
 	parts.append(str(_density_version))
 	parts.append(str(surface.get_instance_id() if surface else 0))

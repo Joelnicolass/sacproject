@@ -147,7 +147,7 @@ func _put_pillar(at: Vector3, radius: float) -> void:
 		visual_mesh = round_mesh
 	pillar.add_child(shape)
 	_world.add_child(pillar)
-	var terrain := GroundSurface.of(_world)
+	var terrain := Terrain.of(_world)
 	var ground := float(terrain.height_at(at.x, at.z))
 	pillar.global_position = Vector3(at.x, (0.0 if is_nan(ground) else ground) + 15.0, at.z)
 	var mesh := MeshInstance3D.new()

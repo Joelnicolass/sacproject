@@ -47,7 +47,7 @@ func play(params: Dictionary) -> void:
 	lifetime_s = float(params.get("life", lifetime_s))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(params.get("seed", 0))
-	var shape := GroundSurface.of(self)
+	var shape := Terrain.of(self)
 	var center := global_position
 	for i in count:
 		var angle := rng.randf() * TAU

@@ -1,9 +1,11 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
-[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="shape_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="deformer_script"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_mesh.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="shape_script"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_status.gd" id="s2_status"]
+[ext_resource type="Image" path="res://assets/original/maps/roads/tiles.png" id="s2_tiles"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_net.gd" id="net_script"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
@@ -61,10 +63,9 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/roads/ground_roles.png" id="62_roles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/roads/light.png" id="62_light"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "ground", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
-terrain = NodePath("Terrain")
-ground = NodePath("Terrain/Shape")
+terrain = NodePath("Terrain/Shape")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
@@ -73,9 +74,9 @@ buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
 props = NodePath("Props")
 
-[node name="Look" parent="." node_paths=PackedStringArray("ground") instance=ExtResource("8_look")]
+[node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
-ground = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain/Shape")
 tile_map = ExtResource("9_tiles")
 
 [node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
@@ -87,32 +88,37 @@ missing = NodePath("Missing")
 ground_roles = ExtResource("62_roles")
 light_map = ExtResource("62_light")
 
-[node name="Shape" type="Node" parent="Terrain"]
+[node name="Shape" type="Node3D" parent="Terrain" node_paths=PackedStringArray("mesh", "net")]
 script = ExtResource("shape_script")
 data = ExtResource("10_data")
+tiles = ExtResource("s2_tiles")
+mesh = NodePath("..")
+net = NodePath("../Net")
+
+[node name="Status" type="Node" parent="Terrain/Shape" node_paths=PackedStringArray("terrain")]
+script = ExtResource("s2_status")
+terrain = NodePath("..")
 
 [node name="Missing" type="Label3D" parent="Terrain"]
 visible = false
 text = "UI_MAP_MISSING"
 font_size = 48
 
-[node name="Deformer" type="Node" parent="Terrain" node_paths=PackedStringArray("shape")]
-script = ExtResource("deformer_script")
-shape = NodePath("../Shape")
+[node name="Net" type="Node" parent="Terrain"]
+script = ExtResource("net_script")
 
-[node name="Collision" parent="Terrain" index="0" node_paths=PackedStringArray("shape")]
+[node name="Collision" parent="Terrain" index="0" node_paths=PackedStringArray("terrain")]
 script = ExtResource("collision_script")
-shape = NodePath("../Shape")
+terrain = NodePath("../Shape")
 
 [node name="Shape" parent="Terrain/Collision" index="0"]
 disabled = true
 
-[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
-shape = NodePath("../Shape")
+[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("terrain") instance=ExtResource("ground_scars")]
+terrain = NodePath("../Shape")
 
-[node name="HoleWalls" parent="Terrain" node_paths=PackedStringArray("shape", "terrain") instance=ExtResource("hole_walls")]
-shape = NodePath("../Shape")
-terrain = NodePath("..")
+[node name="HoleWalls" parent="Terrain" node_paths=PackedStringArray("terrain") instance=ExtResource("hole_walls")]
+terrain = NodePath("../Shape")
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")
@@ -567,9 +573,9 @@ navigation_mesh = ExtResource("15_navmesh")
 script = ExtResource("16_nav_region")
 bake_settings = ExtResource("14_bake")
 
-[node name="MinimapBake" parent="." node_paths=PackedStringArray("surface") instance=ExtResource("17_minimap")]
+[node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
-surface = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain/Shape")
 
 [node name="Vegetation" type="Node3D" parent="."]
 

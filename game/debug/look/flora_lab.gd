@@ -12,7 +12,7 @@ extends Node
 
 var _map: Node3D
 var _field: FloraField
-var _terrain: Terrain
+var _terrain: TerrainMesh
 var _pose := 0
 
 
@@ -26,7 +26,7 @@ func _ready() -> void:
 	_map = setup.map_scene.instantiate() as Node3D
 	add_child(_map)
 	var rig := _map.get_node_or_null("Look") as LookRig
-	_terrain = _map.get_node_or_null("Terrain") as Terrain
+	_terrain = _map.get_node_or_null("Terrain") as TerrainMesh
 	if rig:
 		_field = rig.get_node_or_null("Layers/Flora") as FloraField
 		if setup.quality:

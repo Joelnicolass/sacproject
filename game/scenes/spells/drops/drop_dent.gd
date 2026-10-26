@@ -2,9 +2,9 @@
 class_name DropDent
 extends Node
 
-## When its drop ends (a meteorite hits the ground) it leaves the dent of its `manual` TerrainStamp under the drop for good: the server
-## works the numbers out and commits them, and every client applies the same bytes. It does not fly the drop (ZoneDrop) nor shape the
-## dent (the stamp's StampProfile and Reach cylinder). Server (or solo) only.
+## When its drop ends (a meteorite hits the ground) it leaves the dent of its `manual` TerrainStamp under the drop for good
+## (`leave_now`): the server works the numbers out and keeps them, and every client applies the same bytes. It does not fly
+## the drop (ZoneDrop) nor shape the dent (the stamp's StampProfile and Reach cylinder). Server (or solo) only.
 ## Ref: sacengine bombardmentDent, dentDisplacement (state.d:4077-4083, 7303-7315).
 
 @export var drop: ZoneDrop
@@ -17,11 +17,7 @@ func _ready() -> void:
 
 
 func _leave_dent(_body: Node3D, _at: Vector3) -> void:
-	var deformer := TerrainDeformer.of(self)
-	if deformer == null or not stamp.is_ready():
-		return
-	var rect := stamp.vertex_rect()
-	deformer.commit(rect, stamp.values_at(stamp.profile.duration_s() - 1e-4, rect), String(stamp.get_path()))
+	stamp.leave_now()
 
 
 func _get_configuration_warnings() -> PackedStringArray:

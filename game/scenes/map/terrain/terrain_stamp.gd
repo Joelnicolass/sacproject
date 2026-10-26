@@ -5,8 +5,8 @@ extends Node3D
 ## A shape pressed on the ground under this node: it raises (or digs) the land around it following its StampProfile
 ## while it plays, and goes back to nothing when it is over, or leaves what it reached for good (`keep`). Its size is the
 ## `Reach` cylinder you see in the editor (radius = how far it reaches, height = the peak); move it with the gizmo. It
-## plays on every peer from its own count of ticks and asks the map's TerrainDeformer to show it; the server alone
-## decides what stays. It does not know the spell it belongs to.
+## plays on every peer from its own count of ticks and asks the map's Terrain to show it; the server alone decides what
+## stays. A `manual` stamp does not play: `leave_now()` leaves its mark at once. It does not know the spell it belongs to.
 
 ## The shape. Shared by the stamps that point to it.
 @export var profile: StampProfile
@@ -27,12 +27,12 @@ extends Node3D
 var ticks := 0
 ## The server's count of ticks, sent to the clients so one that joins late (or lags) plays the same moment.
 var synced_ticks := 0
-## Only for a picture stamp (StampProfile.has_pattern): its shift at full size over `vertex_rect()`. The server works it out once,
+## Only for a picture stamp (StampProfile.has_pattern): its shift at full size around `center()`. The server works it out once,
 ## from the land under it, and sends it with the zone; a client plays it when it arrives (empty until then).
 var pattern := PackedFloat32Array()
 
-var _key := ""
-var _deformer: TerrainDeformer
+var _key := &""
+var _terrain: Terrain
 var _over := false
 var _shown_share := INF
 
@@ -42,9 +42,9 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		set_physics_process(false)
 		return
-	_deformer = TerrainDeformer.of(self)
-	_key = String(get_path())
-	set_physics_process(_deformer != null and is_ready() and not manual)
+	_terrain = Terrain.of(self)
+	_key = StringName(String(get_path()))
+	set_physics_process(_terrain != null and is_ready() and not manual)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -73,65 +73,60 @@ func local_s() -> float:
 	return float(ticks - MatchClock.ticks_for(start_s)) / MatchClock.TICKS_PER_SECOND_F
 
 
-## The lattice vertices it can touch.
-func vertex_rect() -> Rect2i:
-	return TerrainGrid.vertex_rect(center(), (reach.shape as CylinderShape3D).radius)
-
-
-## The shift it makes at `at_s` seconds over `rect`.
-func values_at(at_s: float, rect: Rect2i) -> PackedFloat32Array:
-	if profile.has_pattern():
-		return StampRules.scaled(profile, pattern, at_s)
-	var cylinder := reach.shape as CylinderShape3D
-	return StampRules.values(profile, center(), cylinder.radius, cylinder.height, at_s, rect)
-
-
-## Server (or solo): works the pattern out from the land under the stamp, once. The flattening goes to the height of the center.
-func _make_pattern(rect: Rect2i) -> void:
-	var ground := StampRules.ground_under(_deformer.shape, rect)
-	var middle := center()
-	var at := Vector2i(middle / TerrainGrid.CELL_M) - rect.position
-	var target := ground[at.y * rect.size.x + at.x] if Rect2i(Vector2i.ZERO, rect.size).has_point(at) else NAN
-	var cylinder := reach.shape as CylinderShape3D
-	pattern = StampRules.pattern(profile, middle, cylinder.radius, cylinder.height, rect, ground, 0.0 if is_nan(target) else target)
+## Server (or solo): leaves its mark for good right now, as it is at its end (a `manual` stamp: a meteorite's dent).
+func leave_now() -> void:
+	if _terrain != null and is_ready():
+		_terrain.keep_stamp(_key, profile, center(), _reach_m(), _peak_m(), pattern)
 
 
 func _physics_process(_delta: float) -> void:
 	ticks += 1
-	if _deformer.is_authority():
+	if _terrain.is_authority():
 		synced_ticks = ticks
 	elif absi(synced_ticks - ticks) > resync_ticks:
 		ticks = synced_ticks
 	if _over or ticks <= MatchClock.ticks_for(start_s):
 		return
-	var rect := vertex_rect()
-	if profile.has_pattern() and pattern.size() != rect.size.x * rect.size.y:
-		if not _deformer.is_authority():
+	if profile.has_pattern() and pattern.size() != _vertex_count():
+		if not _terrain.is_authority():
 			return
-		_make_pattern(rect)
+		pattern = _terrain.stamp_pattern(profile, center(), _reach_m(), _peak_m())
 	var at := local_s()
 	if at < profile.duration_s():
 		var share := profile.timeline.sample(at)
-		if absf(share - _shown_share) * (reach.shape as CylinderShape3D).height < min_step_m:
+		if absf(share - _shown_share) * _peak_m() < min_step_m:
 			return
 		_shown_share = share
-		_deformer.set_live(_key, rect, values_at(at, rect))
+		_terrain.stamp(_key, profile, center(), _reach_m(), _peak_m(), at, pattern)
 		return
 	_over = true
-	if keep and _deformer.is_authority():
-		_deformer.commit(rect, values_at(profile.duration_s() - 1e-4, rect), _key)
+	if keep and _terrain.is_authority():
+		_terrain.keep_stamp(_key, profile, center(), _reach_m(), _peak_m(), pattern)
 	elif not keep:
-		_deformer.drop_live(_key)
+		_terrain.unstamp(_key)
 
 
 ## Takes back at once what it shows and never plays again (whoever owns it was cut short). What it already kept stays.
 func stop() -> void:
-	if _deformer != null and not _over:
-		_deformer.drop_live(_key)
+	if _terrain != null and not _over:
+		_terrain.unstamp(_key)
 	_over = true
 
 
 func _exit_tree() -> void:
-	# A stamp that keeps its mark waits for the server's commit to take its live shift away.
-	if _deformer != null and is_instance_valid(_deformer) and not (keep and _over):
-		_deformer.drop_live(_key)
+	# A stamp that keeps its mark waits for the server's keep to take its live shift away.
+	if _terrain != null and is_instance_valid(_terrain) and not (keep and _over):
+		_terrain.unstamp(_key)
+
+
+func _reach_m() -> float:
+	return (reach.shape as CylinderShape3D).radius
+
+
+func _peak_m() -> float:
+	return (reach.shape as CylinderShape3D).height
+
+
+## How many lattice vertices it touches (the size of its `pattern`).
+func _vertex_count() -> int:
+	return TerrainGrid.vertex_rect(center(), _reach_m()).get_area()

@@ -3,7 +3,7 @@ extends RefCounted
 
 ## Which vertices of the ground's lattice were taken away, by id (a set), and how many times that changed. Whoever draws the pits
 ## compares `version`. It keeps the list only: the numbers the ground answers with are GroundField's, and who may take a vertex
-## away is TerrainDeformer.
+## away is Terrain.
 
 ## Count of times a vertex came or went.
 var version := 0

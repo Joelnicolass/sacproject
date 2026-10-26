@@ -83,7 +83,7 @@ func _run() -> void:
 	await _wait(settle_s)
 	var rig := world.get_node_or_null("Map/Look")
 	_field = get_tree().get_first_node_in_group("grass_field")
-	_terrain = get_tree().get_first_node_in_group("terrain")
+	_terrain = get_tree().get_first_node_in_group(TerrainMesh.GROUP)
 	_wizard = get_tree().get_first_node_in_group("local_wizard") as Node3D
 	if rig == null or _field == null or _terrain == null or _wizard == null:
 		print("GRASSBENCH missing nodes ", rig, _field, _terrain, _wizard)
@@ -168,7 +168,7 @@ func _stop_time(stopped: bool) -> void:
 
 
 func _ground_y(x: float, z: float) -> float:
-	var y: float = _terrain.height_at(x, z)
+	var y: float = (_terrain as TerrainMesh).shape.height_at(x, z)
 	return 0.0 if is_nan(y) else y
 
 

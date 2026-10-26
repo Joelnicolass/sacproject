@@ -8,6 +8,7 @@ extends RefCounted
 ## corner needs); `nav_rebake_ms` is the cost of baking the whole navmesh again (gate REBAKE_MS).
 
 const EDGE_CASES := preload("res://debug/suite/edge_cases.gd")  # 036h
+const Maps := preload("res://debug/look/flora_test_maps.gd")
 const FOUNT_AT := Vector3(1270.0, 10.0, 1270.0)
 const FOUNT_RADIUS := 3.6
 const START1 := Vector3(1504.9, 17.0, 1540.5)
@@ -20,16 +21,14 @@ const REBAKE_MS := 3000.0
 
 var _root: Node3D
 var _service: NavService
-var _terrain: Terrain
+var _terrain: TerrainMesh
 
 
 func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frames
 	_root = Node3D.new()
 	_root.name = "NavCases"
-	_terrain = Terrain.new()
+	_terrain = Maps.land_from(MapCatalog.active().terrain, MapCatalog.active().tiles)
 	_terrain.name = "Terrain"
-	_terrain.shape = GroundSurface.with_data(MapCatalog.active().terrain)
-	_terrain.add_child(_terrain.shape)
 	_terrain.add_to_group(NavFingerprint.GROUP)
 	_root.add_child(_terrain)
 	var fount := StaticBody3D.new()
@@ -49,11 +48,11 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	_root.add_child(fount)
 	_service = NavService.new()
 	_service.name = "Nav"
-	_service.ground = _terrain.shape
+	_service.terrain = _terrain.shape
 	_service.build_on_ready = false
 	_root.add_child(_service)
 	host.add_child(_root)
-	_terrain.add_child(_terrain.make_collision_body())  # a Terrain from the script alone has no body
+	_terrain.add_child(Maps.collision_of(_terrain))
 	var out := {}
 	if not _terrain.shape.is_loaded():
 		var missing := {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}

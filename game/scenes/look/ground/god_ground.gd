@@ -3,8 +3,8 @@ class_name GodGround
 extends Resource
 
 ## The ground of one god: its four kinds of ground (`GroundRole`, embedded) and how they meet, and how the map's baked light
-## reads on them. Which kind lies where is each map's `ground_roles.png` (Terrain.ground_roles); the baked light is the
-## map's own (Terrain.light_map). `TerrainLayer` shows it; editing a role refreshes the editor preview.
+## reads on them. Which kind lies where is each map's `ground_roles.png` (TerrainMesh.ground_roles); the baked light is the
+## map's own (TerrainMesh.light_map). `TerrainLayer` shows it; editing a role refreshes the editor preview.
 
 ## Open ground (grass): the red channel of ground_roles.png.
 @export var open: GroundRole:

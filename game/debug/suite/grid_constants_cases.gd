@@ -17,7 +17,7 @@ func _grid_constants() -> Dictionary:
 	checks["shader_cell"] = _shader_const(text, "DEFORM_CELL") == TerrainGrid.CELL_M
 	checks["shader_last"] = _shader_const(text, "DEFORM_LAST") == float(TerrainGrid.SIDE - 1)
 	checks["size_is_side_cells"] = TerrainGrid.SIZE_M == float(TerrainGrid.SIDE) * TerrainGrid.CELL_M and TerrainGrid.COUNT == TerrainGrid.SIDE * TerrainGrid.SIDE
-	var surface := GroundSurface.new()
+	var surface := Terrain.new()
 	checks["bounds"] = surface.bounds() == Rect2(0.0, 0.0, TerrainGrid.SIZE_M, TerrainGrid.SIZE_M)
 	checks["field"] = surface.field().size == Vector2i(TerrainGrid.SIDE, TerrainGrid.SIDE) and surface.field().cell_m == TerrainGrid.CELL_M
 	surface.free()

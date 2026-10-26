@@ -5,13 +5,13 @@ extends RefCounted
 ## plant it again at the new height (a mound lifts its bushes, a crater leaves none hanging). It remembers the moved areas
 ## in between and joins the ones that overlap. It plants nothing itself (MeshPlanter) and never touches the ground.
 
-var _shape: GroundSurface
+var _shape: Terrain
 var _moved: Array[Rect2] = []
 var _left := 0.0
 
 
 ## Follows this ground from now on (null: none). The same ground again changes nothing.
-func follow(shape: GroundSurface) -> void:
+func follow(shape: Terrain) -> void:
 	if shape == _shape:
 		return
 	if _shape != null and is_instance_valid(_shape) and _shape.changed.is_connected(_on_moved):

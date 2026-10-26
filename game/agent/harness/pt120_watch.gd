@@ -33,10 +33,10 @@ func _ready() -> void:
 	process_physics_priority = 1000
 
 
-func _terrain() -> GroundSurface:
+func _terrain() -> Terrain:
 	if get_tree().current_scene == null:
 		return null
-	return GroundSurface.of(self)
+	return Terrain.of(self)
 
 
 func _name(node: Node) -> String:

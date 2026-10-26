@@ -13,7 +13,7 @@ const ALTAR_RETURN_DISTANCE := 15.0
 
 ## True once the body is over a hole and FALL_DEPTH below the lowest land.
 static func has_fallen(body: Node3D) -> bool:
-	var shape := GroundSurface.of(body)
+	var shape := Terrain.of(body)
 	if shape == null:
 		return false
 	var at := body.global_position
@@ -29,7 +29,7 @@ static func altar_return_spot(body: Node3D, altar: Vector3) -> Vector3:
 	var spot := altar
 	if flat.length_squared() > 0.000001:
 		spot = altar + flat.normalized() * ALTAR_RETURN_DISTANCE
-	var shape := GroundSurface.of(body)
+	var shape := Terrain.of(body)
 	if shape == null:
 		return spot
 	if not shape.is_on_ground(spot.x, spot.z):

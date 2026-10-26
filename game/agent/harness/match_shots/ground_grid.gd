@@ -2,7 +2,7 @@ extends RefCounted
 
 ## The "ground" view of match_shots: where the 10 m cell borders of the map fall in a fixed camera's picture, written next to the PNG
 ## as JSON so tools/import/measure_seams.py can compare the brightness step across a border with the step across a line inside
-## the cells. It reads the land height from GroundSurface and projects with the camera; it draws nothing.
+## the cells. It reads the land height from Terrain and projects with the camera; it draws nothing.
 ## JSON: {"size": [w, h], "border": [[x, y, nx, ny], ...], "inside": [...]}: pixel and the unit screen normal of the line there.
 
 ## Lines inside the cells used as the control: at a quarter, half and three quarters of a cell.
@@ -12,7 +12,7 @@ const NORMAL_M := 0.2
 
 
 ## Writes `file` (.json) for the camera's current picture: lines within `reach_m` of `center` (world x, z).
-static func write(camera: Camera3D, shape: GroundSurface, center: Vector2, reach_m: float, file: String) -> void:
+static func write(camera: Camera3D, shape: Terrain, center: Vector2, reach_m: float, file: String) -> void:
 	var size := camera.get_viewport().get_visible_rect().size
 	var border: Array = []
 	var inside: Array = []
@@ -34,7 +34,7 @@ static func write(camera: Camera3D, shape: GroundSurface, center: Vector2, reach
 
 
 ## One line of constant x (`along_z`) or constant z, sampled every STEP_M; keeps the samples the camera sees on screen.
-static func _line(camera: Camera3D, shape: GroundSurface, size: Vector2, along_z: bool, fixed: float, middle: float, reach_m: float, into: Array) -> void:
+static func _line(camera: Camera3D, shape: Terrain, size: Vector2, along_z: bool, fixed: float, middle: float, reach_m: float, into: Array) -> void:
 	var steps := int(2.0 * reach_m / STEP_M)
 	for i in steps + 1:
 		var free := middle - reach_m + i * STEP_M
@@ -50,5 +50,5 @@ static func _line(camera: Camera3D, shape: GroundSurface, size: Vector2, along_z
 		into.append([snappedf(pixel.x, 0.01), snappedf(pixel.y, 0.01), snappedf(normal.x, 0.001), snappedf(normal.y, 0.001)])
 
 
-static func _ground(shape: GroundSurface, xz: Vector2) -> Vector3:
+static func _ground(shape: Terrain, xz: Vector2) -> Vector3:
 	return Vector3(xz.x, shape.height_at(xz.x, xz.y), xz.y)

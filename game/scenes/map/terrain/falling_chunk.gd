@@ -2,8 +2,8 @@ class_name FallingChunk
 extends FxScene
 
 ## The piece of ground that drops when a vertex is taken away: the triangles that touched it, in the ground's own look, fall
-## straight down faster and faster and go out of sight. Played on every peer by FxBus.broadcast_scene (params `vertex`: the lattice
-## id). It is only what you see: the hole is already in the ground's numbers and in the collision. Presentation only: a headless
+## straight down faster and faster and go out of sight. Played on every peer by FxBus.broadcast_scene (params `at`: where the
+## ground went, Terrain.cut_hole). It is only what you see: the hole is already in the ground's numbers and in the collision. Presentation only: a headless
 ## process shows none. The shape of the piece is FallingChunkRules.
 ## Ref: sacengine updateFallingLandChunk (state.d:26094-26101).
 
@@ -22,21 +22,21 @@ func _ready() -> void:
 	set_process(false)
 
 
-## `params["vertex"]`: the lattice id of the vertex that was taken away.
+## `params["at"]`: where the ground was taken away (a point of Terrain.cut_hole).
 func play(params: Dictionary) -> void:
-	var shape := GroundSurface.of(self)
-	var terrain := get_tree().get_first_node_in_group(Terrain.GROUP) as Terrain
-	if shape == null or terrain == null or DisplayServer.get_name() == "headless":
+	var terrain := Terrain.of(self)
+	if terrain == null or terrain.mesh == null or DisplayServer.get_name() == "headless":
 		queue_free()
 		return
-	var built := FallingChunkRules.arrays(shape.index, shape.field().texels, shape.tile_ids(), int(params["vertex"]))
+	var at: Vector3 = params["at"]
+	var built := FallingChunkRules.arrays(terrain.index, terrain.field().texels, terrain.tile_ids(), TerrainGrid.vertex_id(at.x, at.z))
 	if built.is_empty():
 		queue_free()
 		return
 	var piece := ArrayMesh.new()
 	piece.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, built)
 	_mesh.mesh = piece
-	_mesh.material_override = terrain.material_override
+	_mesh.material_override = terrain.mesh.material_override
 	# The piece carries its own heights and the ground shader reads the light and the marks from map coordinates: the mesh is in
 	# them, and this node stays at the origin and only goes down.
 	_mesh.set_instance_shader_parameter(&"deform_follow", 0.0)

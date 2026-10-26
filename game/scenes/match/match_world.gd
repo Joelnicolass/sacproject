@@ -55,9 +55,10 @@ func _attach_map() -> void:
 
 ## The sockets of the map into the exports of the systems that need its parts.
 func _bind_map() -> void:
-	%Camera.set("ground", map.terrain)
-	%Selection.set("ground", map.terrain)
-	%Nav.set("ground", map.ground)
+	var drawn := map.terrain.mesh if map.terrain != null else null
+	%Camera.set("ground", drawn)
+	%Selection.set("ground", drawn)
+	%Nav.set("terrain", map.terrain)
 	%Nav.set("region", map.nav_region)
 	var spawner := $WizardSpawner as MultiplayerSpawner
 	spawner.set("spawn_points", spawner.get_path_to(map.starts))

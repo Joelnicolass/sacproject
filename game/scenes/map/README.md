@@ -2,10 +2,10 @@
 What: one playable map: terrain, navmesh, buildings, NPC spawns, altars/manafounts, player starts. Maps are edited in Godot.
 Not: the match rules (`scenes/match/`), the look and sky (`scenes/look/`), the creatures that live there (`scenes/units/`).
 Talks to: `MapRoot` exposes sockets (`terrain`, `nav_region`, `starts`, `look`, `buildings`, `npcs`, `props`); the match plugs into them.
-Talks to: `Terrain/Deformer` and `Terrain/Collision` (see `terrain/README.md`) move and collide the ground after it loaded; `MapBuilding.destroyed` goes up to `NavService` (it updates the navmesh); `MapPopulation` asks `UnitSpawner` for creatures and emits `populated`.
+Talks to: `Terrain/Shape` (the `Terrain`, which `MapRoot.terrain` points at) moves the ground and `Terrain/Collision` collides it after it loaded (see `terrain/README.md`); `MapBuilding.destroyed` goes up to `NavService` (it updates the navmesh); `MapPopulation` asks `UnitSpawner` for creatures and emits `populated`.
 Edit: `maps/<tag>/map.tscn` + `<tag>.tres` (`MapDefinition`); drag building scenes under `Buildings`, decoration scenes (`scenes/props/`) under `Props`, `NpcSpawn` under `Npcs`, move `WizardSpot` under each start; the `GroundFootprint` box of `props/altar.tscn` and `props/manafount.tscn` is the base that must lie level (`FootprintRules` measures it); bake the navmesh with the «Hornear navmesh» button of `NavRegion`.
 Check: `debug/map/*.tscn` (F6; e.g. `village.tscn`, `nav_cross.tscn`, `ground_probe.gd`) · `debug/spells/cast_terrain.tscn` (F6, the ground that moves) · rules_suite `terrain_cases` · `tools/audit/check_map.tscn -- [--map=<tag>]` (headless, `CHECK MAP <tag> PASS`).
-Known debt: 5 representations of the ground with no single owner (055d-t `GroundSurface`).
+Known debt: 5 representations of the ground with no single owner (055d-t `Terrain`).
 
 ---
 El mapa: edificios, spawns de NPC, terreno, navegacion (`nav/`), props (`props/`) y los mapas mismos (`maps/`). El mapa se edita en Godot; la navegacion se hornea con el boton «Hornear navmesh» de `NavRegion` (corre `tools/bake/bake_nav.tscn`).

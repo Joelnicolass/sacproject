@@ -41,12 +41,12 @@ func _physics_process(_delta: float) -> void:
 
 
 func _on_ground(at: Vector3) -> bool:
-	var shape := GroundSurface.of(self)
+	var shape := Terrain.of(self)
 	return shape == null or shape.is_on_ground(at.x, at.z)
 
 
 func _height(at: Vector3) -> float:
-	var shape := GroundSurface.of(self)
+	var shape := Terrain.of(self)
 	var land := shape.height_at(at.x, at.z) if shape != null else NAN
 	return at.y if is_nan(land) else land
 

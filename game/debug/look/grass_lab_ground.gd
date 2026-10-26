@@ -3,14 +3,14 @@ extends MeshInstance3D
 
 ## Lab ground (debug only): a flat-ish square patch cut from the real map's heights (so the grass has the same
 ## heights as in the map), at map coordinates, with the ground look given by the rig's `TerrainLayer` like the real
-## terrain. It offers the small part of Terrain the look layers use: a `shape` (heights and tile ids, every cell the
+## terrain. It offers the small part of TerrainMesh the look layers use: a `shape` (heights and tile ids, every cell the
 ## same tile so the first layer paints it) and `set_ground_override`.
 
 @export var center := Vector2(1500.0, 1500.0)
 @export var half_size_m := 65.0
 @export var step_m := 2.5
-## The ground numbers of High Noon (a GroundSurface child of this node).
-@export var shape: GroundSurface
+## The ground numbers of High Noon (a Terrain child of this node).
+@export var shape: Terrain
 ## The map's zone ids -> ground layers; every cell gets a tile that paints the first layer.
 @export var tiles: TileLayerMap:
 	set(value):
@@ -18,11 +18,6 @@ extends MeshInstance3D
 		_paint_tiles()
 
 var _material_classic := StandardMaterial3D.new()
-
-
-func _enter_tree() -> void:
-	if shape != null:
-		shape.meshes.assign([self])
 
 
 func _ready() -> void:
@@ -47,16 +42,15 @@ func clear_ground_override() -> void:
 func _paint_tiles() -> void:
 	if shape == null:
 		return
-	var ids := PackedByteArray()
-	ids.resize(TerrainGrid.COUNT)
 	var pick := 0
 	if tiles:
 		for id in tiles.slots.size():
 			if tiles.slot_of(id) == 0:
 				pick = id
 				break
-	ids.fill(pick)
-	shape.use_tiles(ids)
+	var index := Image.create_empty(TerrainGrid.SIDE, TerrainGrid.SIDE, false, Image.FORMAT_R8)
+	index.fill(Color8(pick, 0, 0))
+	shape.tiles = index
 
 
 func _height(x: float, z: float) -> float:

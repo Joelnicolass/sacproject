@@ -6,11 +6,11 @@ extends RefCounted
 ## (an internal child of the host, never saved).
 ## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives the instances; they are
 ##   ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even sample of its 16 data cells; the height is
-##   GroundSurface.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
+##   Terrain.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
 ##   them by a hash). Final transform: T·R·S (the plant's mesh stands upright already). The meshes and materials are the species',
 ##   shared by every cell.
 ## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
-##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a GroundSurface.sampler
+##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a Terrain.sampler
 ##   snapshot) and touches no node. The main thread only makes the MultiMeshInstance3D from the finished buffers
 ##   (`multimesh.buffer`, no per-instance call), while the frame's deadline (FloraField.build_budget_ms) lasts; the rest
 ##   wait for the next frame. A result is applied in any order but its bytes depend only on the cell, so the order of
@@ -40,7 +40,7 @@ var config: VegetationLayerConfig
 var quality: VegetationQuality
 var flora: FloraDensity
 ## The land numbers (heights, lowest land, a thread-safe sampler) and where the map sits.
-var shape: GroundSurface
+var shape: Terrain
 var host: Node3D
 
 ## Per species drawn: {tag, tag_index, variation, cast_shadow, visibility_end_m, end_m, mesh, material, per_cell, texel_m}.
@@ -98,13 +98,19 @@ class PlanJob:
 			task_id = -1
 
 
-func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: GroundSurface, owner_node: Node3D) -> void:
+## Where the map is placed in the world: the transform of the mesh that draws `land` (identity without one).
+static func map_transform_of(land: Terrain) -> Transform3D:
+	var drawn := land.mesh
+	return Transform3D.IDENTITY if not is_instance_valid(drawn) else (drawn.global_transform if drawn.is_inside_tree() else drawn.transform)
+
+
+func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: Terrain, owner_node: Node3D) -> void:
 	config = layer
 	quality = preset
 	flora = map
 	shape = land
 	host = owner_node
-	map_xform = land.map_transform()
+	map_xform = map_transform_of(land)
 	_map_inverse = map_xform.affine_inverse()
 	var scale := quality.radius_scale
 	var starts := PackedFloat32Array()

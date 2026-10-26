@@ -21,7 +21,7 @@ func aim_ground(x: float, z: float) -> String:
 	if root == null:
 		return "sin escena"
 	var cam := root.get_node_or_null("HighNoon/Camera") as Camera3D
-	var terrain = GroundSurface.of(root)
+	var terrain = Terrain.of(root)
 	if cam == null or terrain == null:
 		return "sin camara o terreno"
 	var y: float = float(terrain.height_at(x, z))

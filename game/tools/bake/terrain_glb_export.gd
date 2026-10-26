@@ -45,8 +45,11 @@ func _initialize() -> void:
 ##  - _FLAT_NORMAL = data.normals, which the post-import reads back into MapTerrainData.
 ## Also used by debug/suite/terrain_bake_cases.gd for its edited copies.
 static func export_data(data: MapTerrainData, out: String) -> Error:
-	var terrain := Terrain.new()
-	terrain.shape = GroundSurface.with_data(data)
+	var terrain := TerrainMesh.new()
+	terrain.shape = Terrain.new()
+	terrain.shape.tiles = MapCatalog.active().tiles  # the tile colors the game shows (the map being imported is the active one)
+	terrain.shape.data = data
+	terrain.shape.mesh = terrain
 	terrain.add_child(terrain.shape)
 	var arrays := terrain.bake_arrays()
 	terrain.free()

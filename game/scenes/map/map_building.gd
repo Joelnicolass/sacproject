@@ -5,7 +5,8 @@ extends StaticBody3D
 ## A building of the map (house, fence, tree, gravestone): the scene you drag into a map and move with the gizmo. Its parts
 ## are saved children of `Visuals` (open them with «Hijos editables»), the box of `Collision` holds them (drag its handles),
 ## and its BuildingType says how much it takes to destroy it and whether peasants hide in it. At play the body is that box
-## smaller by `inset_m` on x and z; the box itself is the melee reach and the splash.
+## smaller by `inset_m` on x and z; the box itself is the melee reach and the splash. One that flattens the ground has no box
+## body; its `trunk`, if it has one (a tree), still stops the bodies (the server too: a shape, no mesh) and enters the navmesh.
 ## A destroyed building gives no souls and shows its ruin on every peer. owner_slot 0 is the neutral side 31.
 ## Joins `map_building`, `structure` (unless it flattens the ground) and, while it shelters, `shelter`.
 ## Does not draw the parts nor measure them: their MeshInstance3D and BuildingFit do.
@@ -27,6 +28,8 @@ const SHELTER_GROUP := &"shelter"
 @export var visuals: Node3D
 @export var health: Health
 @export var collision: CollisionShape3D
+## What stops the bodies when the building flattens the ground: a CylinderShape3D child sized to the trunk with the gizmo.
+@export var trunk: CollisionShape3D
 @export var sync: MultiplayerSynchronizer
 @export var health_bar: UnitHealthBar
 @export_tool_button("Ajustar a las partes", "Reload") var fit := _fit_to_parts
@@ -102,12 +105,11 @@ func melee_profile() -> Dictionary:
 	return {"evasion": 0.0, "resistance": 1.0, "reach": reach, "height": _box.position.y + _box.size.y}
 
 
-## The box of `Collision` is the box of the parts; the body is that box smaller by the inset. A building that flattens the
-## ground has no body: the box stays the default one.
+## The box of `Collision` is the box of the parts; the body is that box smaller by the inset. Flattening the ground: no box.
 func _read_body(flat: bool) -> void:
 	if flat:
 		collision.disabled = true
-		collision_layer = 0
+		collision_layer = 1 if trunk != null else 0
 		return
 	var parts := collision.shape as BoxShape3D
 	if parts == null:
@@ -139,6 +141,8 @@ func _on_health_changed(_current: float, _maximum: float) -> void:
 	remove_from_group(&"structure")
 	collision_layer = 0
 	collision.set_deferred("disabled", true)
+	if trunk != null:
+		trunk.set_deferred("disabled", true)
 	visuals.visible = false
 	if type != null and type.ruin_scene != null:
 		add_child(type.ruin_scene.instantiate(), false, Node.INTERNAL_MODE_BACK)

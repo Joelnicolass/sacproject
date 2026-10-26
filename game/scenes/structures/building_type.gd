@@ -19,7 +19,7 @@ enum Role { SCENERY, MANALITH, SHRINE }
 @export_range(0.0, 20000.0, 1.0, "or_greater") var max_health := 0.0
 ## Peasants run to it when they are scared.
 @export var shelters_peasants := false
-## The land is changed under it and it has no body of its own (no collision, not a target).
+## The land is changed under it and it has no box body (not a target); a tree's `trunk` (MapBuilding) still stops bodies.
 @export var flattens_ground := false
 ## What stays when it falls: the destroyed models, placed like the parts. Empty: nothing.
 @export var ruin_scene: PackedScene

@@ -26,6 +26,8 @@
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
 [ext_resource type="Resource" path="res://data/fx/needle.tres" id="17_needle"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/sac_doctor.tres" id="typed_dcas"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_doctor"]
 radius = 0.4
@@ -104,6 +106,15 @@ collision = NodePath("../Collision")
 
 [node name="Health" type="Node" parent="."]
 script = ExtResource("3_health")
+
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Pivot/Mesh")
 
 [node name="HealthBar" parent="." instance=ExtResource("4_bar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 0)

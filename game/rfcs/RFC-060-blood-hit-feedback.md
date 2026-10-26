@@ -30,4 +30,4 @@ Solo presentación: ningún nodo escribe la simulación, no hay RPC ni RNG globa
 
 ## Fuera
 
-Clip de dolor direccional (`damageFront…`, sin importar), sangre de otro color, desvanecer manchas, hit-stop, sangre en edificios y en el Sac Doctor.
+Clip de dolor direccional (`damageFront…`, sin importar), sangre de otro color, desvanecer manchas, hit-stop y sangre en edificios. El Sac Doctor sangra como cualquier criatura (BloodFx y HitFlash en `doctor.tscn`).

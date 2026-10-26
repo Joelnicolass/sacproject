@@ -10,11 +10,14 @@ extends RefCounted
 signal written(canvas: BrushCanvas, rect: Rect2i)
 
 const RefreshBudget := preload("res://addons/terrain_tools/brush/refresh_budget.gd")
+const CanvasFiles := preload("res://addons/terrain_tools/brush/canvas_files.gd")
 
 var budget := RefreshBudget.new()
 var _undo: EditorUndoRedoManager
 var _canvases: Array[BrushCanvas] = []
 var _lattices := {}  ## TerrainHeights (or the Terrain while it has none) -> LatticeCanvas
+var _densities := {}  ## FloraLayer -> DensityCanvas
+var _waiting := {}  ## FloraLayer -> the path of its new picture the editor has not imported yet
 
 
 func _init(undo: EditorUndoRedoManager) -> void:
@@ -29,6 +32,20 @@ func lattice(terrain: Terrain) -> LatticeCanvas:
 	var canvas: LatticeCanvas = _lattices[key]
 	canvas.use(terrain)
 	return canvas
+
+
+## The canvas of `layer`'s density picture. A layer without one first gets a blank picture (written, imported and assigned
+## as its own undo step «Flora: imagen nueva»); null when that could not be done (the Output says why).
+func density(layer: FloraLayer) -> DensityCanvas:
+	if layer.density == null and not _give_picture(layer):
+		return null
+	if not _densities.has(layer):
+		var made := DensityCanvas.of(layer)
+		if made == null:
+			push_error("Flora: no se puede leer la imagen de densidad de %s." % layer.name)
+			return null
+		_densities[layer] = _kept(made)
+	return _densities[layer]
 
 
 ## One undoable step named `label` on the node of `canvas`: `after` is written now and on redo, `before` on undo.
@@ -97,3 +114,29 @@ func forget(terrain: Terrain) -> void:
 func _kept(canvas: BrushCanvas) -> BrushCanvas:
 	_canvases.append(canvas)
 	return canvas
+
+
+## Makes `layer`'s new picture and assigns it as an undo step; false when the editor could not import it yet.
+## WORKAROUND: EditorFileSystem is not known to import a file in a folder it has never seen (plan 066 risk 2); then the
+## project is scanned and the next click uses that same file.
+func _give_picture(layer: FloraLayer) -> bool:
+	var path: String = _waiting.get(layer, "")
+	if path.is_empty():
+		path = DensityCanvas.new_picture_path(layer)
+		var error := DensityCanvas.create_picture(layer, path) if not path.is_empty() else "la capa no está en un mapa guardado"
+		if not error.is_empty():
+			push_error("Flora: no se pudo crear la imagen de densidad (%s)." % error)
+			return false
+	if not ResourceLoader.exists(path):
+		_waiting[layer] = path
+		var files: Object = CanvasFiles.filesystem()
+		if files != null:
+			files.scan()
+		push_warning("Flora: %s se está importando; volvé a hacer clic en un momento." % path)
+		return false
+	_waiting.erase(layer)
+	_undo.create_action(DensityCanvas.NEW_PICTURE, UndoRedo.MERGE_DISABLE, layer)
+	_undo.add_do_property(layer, &"density", load(path) as Texture2D)
+	_undo.add_undo_property(layer, &"density", null)
+	_undo.commit_action()
+	return true

@@ -289,6 +289,12 @@ func update(camera_global: Vector3, deadline_us: int) -> void:
 	_start_plans(deadline_us)
 
 
+## The FloraLayers were painted: `map` has the same layers in the same order (FloraDensity.with_layer_bytes), only some
+## bytes differ. Cells planned from now on read it; which cells plan again is the caller's (`replan`).
+func set_flora(map: FloraDensity) -> void:
+	flora = map
+
+
 ## The clears changed (map coordinates): the cells they touched (before or after) are built again.
 func set_clears(clears: PackedVector4Array) -> void:
 	if clears == _clears:

@@ -15,6 +15,7 @@ const QUAKE_GROUND_CASES := preload("res://debug/suite/quake_ground_cases.gd")
 const CARRY_CASES := preload("res://debug/suite/carry_cases.gd")
 const BASE_CASES := preload("res://debug/suite/base_cases.gd")
 const DEFORM_EDGE_CASES := preload("res://debug/suite/deform_edge_cases.gd")
+const DEFORM_NET_CASES := preload("res://debug/suite/deform_net_cases.gd")
 ## A vertex of the lattice of High Noon on land, with land 40 m to its east.
 const CENTER := Vector2(1260.0, 1270.0)
 const BURST_TICKS := 252
@@ -38,6 +39,7 @@ var _quake_ground
 var _carry
 var _base
 var _deform_edge
+var _deform_net
 ## A picture stamp that keeps exactly the pattern it is given (its timeline is 1): how a case puts any numbers on the ground.
 var _raw: StampProfile
 
@@ -51,17 +53,7 @@ func _init() -> void:
 
 func run(host: Node3D) -> Dictionary:
 	begin(host, "TerrainCases")
-	var started := Time.get_ticks_usec()
-	_bed = BED.instantiate() as Node3D
-	_root.add_child(_bed)
-	_note("collision chunks built ms", [snappedf((Time.get_ticks_usec() - started) / 1000.0, 0.1)])
-	_shape = _bed.get_node("Terrain") as Terrain
-	_collision = _bed.get_node("Terrain/Collision") as TerrainCollision
-	await _frames(2)
-	var only := ""
-	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--case="):
-			only = arg.trim_prefix("--case=")
+	await _load_bed()
 	var cases := {
 		"rules": _rules, "displacement": _displacement, "hole": _hole, "erupt_ground": _erupt_ground,
 		"erupt_bodies": _erupt_bodies, "erupt_buried": _erupt_buried, "flora": _flora, "net": _net,
@@ -79,21 +71,47 @@ func run(host: Node3D) -> Dictionary:
 	cases.merge(_base.cases())
 	_deform_edge = DEFORM_EDGE_CASES.new(self)
 	cases.merge(_deform_edge.cases())
+	_deform_net = DEFORM_NET_CASES.new(self)
+	cases.merge(_deform_net.cases())
+	var out := await _play(cases)
+	finish()
+	return out
+
+
+## Runs only the network cases (debug/net/terrain_late_join.tscn): `net` and those of deform_net_cases.
+func run_net(host: Node3D) -> Dictionary:
+	begin(host, "TerrainNet")
+	await _load_bed()
+	var cases := {"net": _net}
+	_deform_net = DEFORM_NET_CASES.new(self)
+	cases.merge(_deform_net.cases())
+	var out := await _play(cases)
+	finish()
+	return out
+
+
+## The suite's ground (High Noon) in the world: `_bed`, `_shape`, `_collision`.
+func _load_bed() -> void:
+	var started := Time.get_ticks_usec()
+	_bed = BED.instantiate() as Node3D
+	_root.add_child(_bed)
+	_note("collision chunks built ms", [snappedf((Time.get_ticks_usec() - started) / 1000.0, 0.1)])
+	_shape = _bed.get_node("Terrain") as Terrain
+	_collision = _bed.get_node("Terrain/Collision") as TerrainCollision
+	await _frames(2)
+
+
+## Plays every case of `cases` (name -> Callable), or only the one `--case=<name>` asks; results under "terrain_<name>".
+func _play(cases: Dictionary) -> Dictionary:
+	var only := ""
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--case="):
+			only = arg.trim_prefix("--case=")
 	var out := {}
 	for name: String in cases:
 		if only.is_empty() or only == name:
 			_case_started = Time.get_ticks_msec()
 			out["terrain_" + name] = await (cases[name] as Callable).call()
-	finish()
-	return out
-
-
-## Runs only the network case (debug/net/terrain_late_join.tscn).
-func run_net(host: Node3D) -> Dictionary:
-	begin(host, "TerrainNet")
-	_case_started = Time.get_ticks_msec()
-	var out := {"terrain_net": await _net()}
-	finish()
 	return out
 
 

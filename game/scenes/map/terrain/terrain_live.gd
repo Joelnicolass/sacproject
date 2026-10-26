@@ -103,7 +103,7 @@ func _shift_of(key: String, request: Request) -> Shift:
 	var profile := request.profile
 	var share := profile.timeline.sample(request.at_s)
 	var ring := profile.ring_travel.sample(request.at_s) if profile.is_ring() else 0.0
-	if absf(share - request.shown_share) * request.peak_m < min_step_m and absf(ring - request.shown_ring) < min_step_m \
+	if absf((share - request.shown_share) * request.peak_m) < min_step_m and absf(ring - request.shown_ring) < min_step_m \
 			and request.center == request.shown_center:
 		return null
 	var shift := Shift.new()

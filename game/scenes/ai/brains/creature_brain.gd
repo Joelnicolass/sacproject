@@ -12,10 +12,9 @@ extends Node
 
 @export var port: AiCommandPort
 @export var perception: AiPerception
-@export var profile: AiProfile
 
-## RFC-053: the common sense of the difficulty (AiSide.setup sets it). Null: the original autoCapture, no refill band.
-var tactics: AiTactics
+## What the side plays with (AiSide.setup sets it once): its crowd tactics give the guard, capture and refill distances.
+var play: AiPlay
 
 
 ## t4oBrain (shiny.d:2557-2570). Returns 1 when it handled the case.
@@ -29,11 +28,11 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 			return 1
 		AiTask.Kind.GUARD:
 			if record.target != null:
-				port.orders.order_target_radius(t, AiCommandPort.AiOrder.REFILL, record.target, profile.retreat_hold_m if profile != null else 10.0)
+				port.orders.order_target_radius(t, AiCommandPort.AiOrder.REFILL, record.target, play.tactics.crowd.retreat_hold_m)
 			return 1
 		AiTask.Kind.CAPTURE:
 			## thaum: (1 - value6c) * 160, with value6c the wizard's threat (a creature's is 0).
-			var reach := AiField.f32((1.0 - t.value_6c()) * (profile.interact_reach_m if profile != null else 160.0))
+			var reach := AiField.f32((1.0 - t.value_6c()) * play.tactics.crowd.interact_reach_m)
 			port.orders.order_interact(t, record.anchor, record.target, reach)
 			return 1
 		AiTask.Kind.FOCUS:
@@ -58,7 +57,7 @@ func auto_capture(t: AiTrack) -> int:
 	elif not t.refilling or pair.x >= refill_until(t, pair.y):
 		t.refilling = false
 		return 0
-	var found := find_best_capture_target(t.cur_pos, profile.mana_seek_m if profile != null else 3620.0)
+	var found := find_best_capture_target(t.cur_pos, play.tactics.crowd.mana_seek_m)
 	if found.is_empty():
 		return 0
 	var source: AiTrack = found["node"]
@@ -86,10 +85,10 @@ func _min_mana(t: AiTrack) -> int:
 	return AiRater.ftol(t.min_mana_cost)
 
 
-## The mana a body that went to refill holds before it leaves the source: AiTactics.mana_refill_ratio of its pool, never under its
-## minimum + 1 (with no tactics or a ratio of 0: the minimum + 1, the original's «above the minimum»).
+## The mana a body that went to refill holds before it leaves the source: AiCrowdTactics.mana_refill_ratio of its pool, never under
+## its minimum + 1 (with a ratio of 0: the minimum + 1, the original's «above the minimum»).
 func refill_until(t: AiTrack, max_mana: int) -> int:
-	var ratio := tactics.mana_refill_ratio if tactics != null else 0.0
+	var ratio := play.tactics.crowd.mana_refill_ratio
 	return maxi(_min_mana(t) + 1, AiRater.ftol(float(max_mana) * ratio))
 
 

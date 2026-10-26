@@ -11,7 +11,7 @@ signal forced(bits: int)
 signal tracked(track: AiTrack)
 signal untracked(track: AiTrack)
 
-@export var profile: AiProfile
+var play: AiPlay  # what the side plays with (AiSide.setup)
 ## The passive that makes a creature a Manahoar for the AI (data/catalog/abilities/hmba.tres, the one UnitManaSupport.source uses).
 @export var mana_source: AbilityType
 @export var intake: AiSightIntake

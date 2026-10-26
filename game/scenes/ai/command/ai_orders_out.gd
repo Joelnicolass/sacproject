@@ -8,6 +8,8 @@ extends Node
 ## body. Child `Orders` of the port, which binds it and gives it its clock. Ref: shiny.d:2393-2478.
 
 @export var perception: AiPerception
+## What the side plays with (AiSide.setup): the wizard's stop distance on guard.
+var play: AiPlay
 
 ## Set by the port: the side, its wizard and the world's Orders (bind), the audit, the delay and the tick (flush).
 var audit: AiAudit

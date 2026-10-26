@@ -51,14 +51,14 @@ func is_valid_pick(meta: Dictionary) -> bool:
 
 
 ## RFC-049 049f: a bot seat's `meta`: a god (empty = drawn when the match starts, else one the game has). 049h: and a `difficulty`
-## (AiSeat.DIFFICULTY_TAGS; empty or missing = Normal).
+## (AiSeat.difficulty_ids(); empty or missing = Normal).
 func is_valid_bot(meta: Dictionary) -> bool:
 	for key in meta.keys():
 		if not BOT_KEYS.has(str(key)):
 			return false
 	var god: Variant = meta.get("god", "")
 	var difficulty: Variant = meta.get("difficulty", "")
-	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.DIFFICULTY_TAGS.has(String(difficulty)))):
+	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.difficulty_ids().has(String(difficulty)))):
 		return false
 	return god is String and (String(god).is_empty() or MatchWire.decode_god(String(god), true) != null)
 

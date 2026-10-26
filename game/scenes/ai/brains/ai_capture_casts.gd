@@ -8,14 +8,14 @@ extends RefCounted
 
 var perception: AiPerception
 var port: AiCommandPort
-var profile: AiProfile
+var play: AiPlay
 var casting: AiWizardCasting
 
 
-func _init(p_perception: AiPerception, p_port: AiCommandPort, p_profile: AiProfile, p_casting: AiWizardCasting) -> void:
+func _init(p_perception: AiPerception, p_port: AiCommandPort, p_play: AiPlay, p_casting: AiWizardCasting) -> void:
 	perception = p_perception
 	port = p_port
-	profile = p_profile
+	play = p_play
 	casting = p_casting
 
 
@@ -24,7 +24,8 @@ func run(wizard: AiTrack, record: AiRecord) -> int:
 	var tn := record.target
 	if tn == null or wizard.age < wizard.next_reissue:
 		return 0
-	wizard.next_reissue = wizard.age + profile.wizard_reissue_age
+	var reissue := play.ages_for(play.tactics.wizard_reissue_s)
+	wizard.next_reissue = wizard.age + reissue
 	if tn.is_altar():
 		## The desecrate path: an enemy altar not under ritual, the creature with most souls brought next to the wizard, and
 		## the altar being the closest enemy one in range (the game's closestEnemyAltar).
@@ -32,10 +33,10 @@ func run(wizard: AiTrack, record: AiRecord) -> int:
 			var guard := pick_guard_creature(tn)
 			if guard != null and perception.closest_enemy_altar_in_range() == tn.node:
 				var spell: SpellType = wizard.desecrate_spell
-				var radius := AiField.f32(spell.cast_range_m * profile.desecrate_range_factor)
+				var radius := AiField.f32(spell.cast_range_m * play.tactics.desecrate_range_factor)
 				if port.orders.order_target_radius(guard, AiCommandPort.AiOrder.GUARD, wizard, radius) != 0:
 					if casting.enqueue_forced_execute(wizard, guard, spell, spell.cast_range_m, null) != 0:
-						wizard.next_reissue += 7 * profile.wizard_reissue_age
+						wizard.next_reissue += 7 * reissue
 						return 2
 	elif tn.capturable() and tn.free_fount:
 		if cast_cached_in_range(wizard, tn) != 0:
@@ -43,7 +44,8 @@ func run(wizard: AiTrack, record: AiRecord) -> int:
 	return 0
 
 
-## Of the own creatures (not the wizard) the one that weighs most (1 within 10 m of the target, falling linearly to 0 at 3620 m)
+## Of the own creatures (not the wizard) the one that weighs most (1 within guard_pick_near_m of the target, falling linearly to 0 at
+## guard_pick_far_m; the scale is 1/(far - near) rounded to float32, as the original's constant 0.00027700831)
 ## times its souls; a strict argmax from 0, so a creature of 0 souls is never picked. Deviation: the game's own test
 ## `sacrifice_status` (alive, free, not held, a Captive) filters the candidates first, so the AI never asks Desecrate for a creature
 ## that would answer «Blanco inválido» (sacengine tests the mode after picking). A creature bound by the Guardian spell is skipped.
@@ -52,6 +54,9 @@ func pick_guard_creature(target: AiTrack) -> AiTrack:
 	var best := 0.0
 	var best_track: AiTrack
 	var system := perception.sacrifice()
+	var near := play.tactics.crowd.guard_pick_near_m
+	var far := play.tactics.crowd.guard_pick_far_m
+	var scale := AiField.f32(1.0 / (far - near))
 	for c: AiTrack in perception.bodies(0):
 		if c.kind == AiTrack.Kind.WIZARD or not c.is_valid():
 			continue
@@ -63,10 +68,10 @@ func pick_guard_creature(target: AiTrack) -> AiTrack:
 		var worth := AiGroups.souls_pair(c).x
 		var d := c.extrap_pos.distance_to(target.cur_pos)
 		var w := 0.0
-		if d <= 10.0:
+		if d <= near:
 			w = 1.0
-		elif d < 3620.0:
-			w = (3620.0 - d) * 0.0002770083083305508
+		elif d < far:
+			w = (far - d) * scale
 		var v := w * float(worth)
 		if best < v:
 			best = v
@@ -77,16 +82,17 @@ func pick_guard_creature(target: AiTrack) -> AiTrack:
 	return best_track
 
 
-## The Manalith spell, forced, when the wizard is within range * sqrt(1.4) * 5 of the fount and the threat is under 0.9 (retail;
-## the beta 0.6). The fount must still be free (canCastSpellOn's onlyManafounts reads it live). Ref: shiny.d:3285-3301 (0x48dce0).
+## The Manalith spell, forced, when the wizard is within range * sqrt(build_range_slack) * build_reach_factor of the fount and the
+## threat is under build_threat_cap. The fount must still be free (canCastSpellOn's onlyManafounts reads it live). Ref: shiny.d:3285-3301 (0x48dce0).
 func cast_cached_in_range(wizard: AiTrack, fount: AiTrack) -> int:
 	var shrine: SpellType = wizard.shrine_spell
-	if shrine == null or wizard.threat >= profile.build_threat_cap:
+	var tactics := play.tactics
+	if shrine == null or wizard.threat >= tactics.build_threat_cap:
 		return 0
 	if not fount.is_valid() or not (fount.node as ManafountBody).is_free():
 		return 0
 	var r := float(shrine.cast_range_m)
-	r = r * r * 1.399999976158142 * 25.0
+	r = r * r * tactics.build_range_slack * (tactics.build_reach_factor * tactics.build_reach_factor)
 	if wizard.cur_pos.distance_squared_to(fount.cur_pos) > r:
 		return 0
 	return casting.enqueue_forced_execute(wizard, fount, shrine, shrine.cast_range_m, null)

@@ -24,7 +24,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ai_field_weights"] = _field_weights()
 	out["ai_field_groups"] = _field_groups()
 	out["ai_cast_queue"] = _cast_queue()
-	out["ai_profile_original"] = _profile()
+	out["ai_tactics_original"] = _original_numbers()
 	out["ai_port_only_exit"] = _only_exit()
 	out["ai_apply_for_owner"] = await _apply_for(host)
 	out["ai_guard_no_nan"] = _no_nan()
@@ -34,7 +34,6 @@ func run(host: Node3D) -> Dictionary:
 	out["doctor_carrier_follows_path"] = _doctor_wiring()
 	out["nav_box_blockers"] = _box_blockers()
 	out["ai_difficulty_files"] = _difficulties()
-	out["ai_profiles_by_god"] = _profiles_by_god()
 	out["ai_limited_information"] = await _limited_information(host)
 	out["ai_convert_reserved_soul"] = _reserved_soul()
 	out["ai_forget_checked"] = await _forget_checked(host)
@@ -253,18 +252,18 @@ func _cast_queue() -> Dictionary:
 	}, {"order": order, "again": again})
 
 
-## The numbers of profile_original.tres are the ones of the commercial version (every beta* off): slots 12/60/6/6/60/12, aggression 1,
-## attack coefficient 280, summon cap 0.6, group radius 30.
-func _profile() -> Dictionary:
-	var profile: AiProfile = load("res://data/ai/profile_original.tres")
+## The numbers of tactics_normal.tres that came from the original (every beta* off): attack coefficient 280, summon cap 0.6,
+## Manahoar divisor 2 (retail), emergency ratio 1400; aggression 1 in Normal. Every field: ai_tactics_cases.
+func _original_numbers() -> Dictionary:
+	var normal := AiSeat.difficulty_of("normal")
+	var tactics := normal.tactics_or_normal() if normal != null else null
 	return _verdict({
-		"loaded": profile != null,
-		"periods": profile != null and profile.slot_periods == PackedInt32Array([12, 60, 6, 6, 60, 12]),
-		"aggression": profile != null and profile.aggression == 1.0,
-		"attack": profile != null and profile.attack_coefficient == 280.0,
-		"summon_cap": profile != null and profile.summon_threat_cap == 0.6,
-		"ready_divisor_retail": profile != null and profile.ready_divisor == 2,
-		"emergency_ratio": profile != null and profile.emergency_mana_ratio == 1400.0,
+		"loaded": tactics != null,
+		"aggression": normal != null and normal.aggression == 1.0,
+		"attack": tactics != null and tactics.attack_coefficient == 280.0,
+		"summon_cap": tactics != null and tactics.summon_threat_cap == 0.6,
+		"ready_divisor_retail": tactics != null and tactics.ready_divisor == 2,
+		"emergency_ratio": tactics != null and tactics.emergency_mana_ratio == 1400.0,
 	})
 
 
@@ -417,7 +416,7 @@ func _nav_settle(service: NavService, host: Node3D) -> void:
 ## score NaN and left the wizard with no escort).
 func _no_nan() -> Dictionary:
 	var board := AiTaskBoard.new()
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	var groups := AiGroups.new()
 	board.perception = perception
 	board.groups = groups
@@ -454,7 +453,7 @@ func _spell_eval() -> Dictionary:
 func _territory() -> Dictionary:
 	var task := CaptureTask.new()
 	var board := AiTaskBoard.new()
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	board.perception = perception
 	task.board = board
 	var checks := {}
@@ -509,25 +508,19 @@ func _box_blockers() -> Dictionary:
 	return _verdict(checks, {})
 
 
-## 024e: the three difficulties (RFC-024 §6 024e). Normal = the original (periods 12/60/6/6/60/12, aggression 1, no delay); Easy x2,
-## 0.6, 0.5 s; Hard x0.75 (rounded down), 1.0, perfect information. No difficulty has a bonus: resource_bonus is locked at 0 (setting
-## another value leaves 0). Normal applied to the original profile gives that same profile (nothing is copied).
+## 024e: the three difficulties (RFC-024 §6 024e). Normal = the original (aggression 1, no delay); Easy 0.6, 0.5 s; Hard 1.0, perfect
+## information (their clock periods: ai_tactics_cases). No difficulty has a bonus: resource_bonus is locked at 0 (setting another
+## value leaves 0).
 func _difficulties() -> Dictionary:
-	var original: AiProfile = load("res://data/ai/profile_original.tres")
 	var easy: AiDifficulty = load("res://data/ai/difficulty_easy.tres")
 	var normal: AiDifficulty = load("res://data/ai/difficulty_normal.tres")
 	var hard: AiDifficulty = load("res://data/ai/difficulty_hard.tres")
-	var checks := {"loaded": original != null and easy != null and normal != null and hard != null}
+	var checks := {"loaded": easy != null and normal != null and hard != null}
 	if not checks["loaded"]:
 		return _verdict(checks)
-	var easy_profile := easy.apply_to(original)
-	var hard_profile := hard.apply_to(original)
-	checks["normal_is_original"] = normal.apply_to(original) == original and not normal.perfect_information and normal.delay_ticks(60) == 0
-	checks["easy_periods"] = easy_profile.slot_periods == PackedInt32Array([24, 120, 12, 12, 120, 24])
-	checks["easy_aggression"] = easy_profile.aggression == 0.6 and easy.delay_ticks(60) == 30 and not easy.perfect_information
-	checks["hard_periods"] = hard_profile.slot_periods == PackedInt32Array([9, 45, 4, 4, 45, 9])
-	checks["hard_aggression"] = hard_profile.aggression == 1.0 and hard.delay_ticks(60) == 0 and hard.perfect_information
-	checks["original_untouched"] = original.slot_periods == PackedInt32Array([12, 60, 6, 6, 60, 12]) and original.aggression == 1.0
+	checks["normal_is_original"] = normal.aggression == 1.0 and normal.period_scale == 1.0 and not normal.perfect_information and normal.delay_ticks(60) == 0
+	checks["easy_aggression"] = easy.aggression == 0.6 and easy.period_scale == 2.0 and easy.delay_ticks(60) == 30 and not easy.perfect_information
+	checks["hard_aggression"] = hard.aggression == 1.0 and hard.period_scale == 0.75 and hard.delay_ticks(60) == 0 and hard.perfect_information
 	## Adenda 1.3: only Easy paces its summons and keeps a reserve; Normal and Hard are the original (0 and 0).
 	checks["summon_pace"] = easy.summon_interval_s > 0.0 and easy.mana_reserve > 0.0 and normal.summon_interval_s == 0.0 \
 			and normal.mana_reserve == 0.0 and hard.summon_interval_s == 0.0 and hard.mana_reserve == 0.0 and normal.summon_interval_ticks(60) == 0
@@ -535,27 +528,7 @@ func _difficulties() -> Dictionary:
 	var probe := AiDifficulty.new()
 	probe.resource_bonus = 0.5
 	checks["bonus_locked"] = probe.resource_bonus == 0.0
-	return _verdict(checks, {"easy": easy_profile.slot_periods, "hard": hard_profile.slot_periods})
-
-
-## 024e: one profile per god with the numbers of the original (the original has no personality; the god changes only the book).
-func _profiles_by_god() -> Dictionary:
-	var original: AiProfile = load("res://data/ai/profile_original.tres")
-	var checks := {}
-	var differ := {}
-	for god in GameData.gods():
-		var profile := AiProfile.for_type(GameData.god(god))
-		checks[god] = profile != null and profile != original and profile.god == StringName(god)
-		if profile == null:
-			continue
-		for prop in profile.get_property_list():
-			if not (int(prop["usage"]) & PROPERTY_USAGE_SCRIPT_VARIABLE) or str(prop["name"]) == "god":
-				continue
-			if profile.get(prop["name"]) != original.get(prop["name"]):
-				differ["%s.%s" % [god, prop["name"]]] = [profile.get(prop["name"]), original.get(prop["name"])]
-	checks["same_numbers"] = differ.is_empty()
-	checks["five_gods"] = GameData.gods().size() == 5
-	return _verdict(checks, {"differ": differ})
+	return _verdict(checks)
 
 
 ## 024e (N1/N2 of REVIEW-RFC-024c): without perfect information the AI keeps, of an enemy body its side does not see, the position,
@@ -564,7 +537,7 @@ func _profiles_by_god() -> Dictionary:
 func _limited_information(host: Node3D) -> Dictionary:
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var port := AiCommandPort.new()
@@ -635,7 +608,7 @@ func _reserved_soul() -> Dictionary:
 func _forget_checked(host: Node3D) -> Dictionary:
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception2"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var foe := _unit(host, 1, Vector3(900.0, 0.0, 900.0))
@@ -677,7 +650,7 @@ func _own_splash(host: Node3D) -> Dictionary:
 	state.ally_damage_factor = 0.5
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception3"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var type := GameData.creature("amuh")
@@ -691,7 +664,7 @@ func _own_splash(host: Node3D) -> Dictionary:
 	ranger.set("idle_aggro", false)
 	host.add_child(ranger)
 	await host.get_tree().process_frame
-	var eval := AiSpellEval.new(perception, null, null, perception.profile)
+	var eval := AiSpellEval.new(perception, null, null, perception.play.tactics)
 	var wrath := GameData.spell("oalf")
 	var checks := {"tracked": perception.add_node(ranger, &"event") != null}
 	var at := ranger.global_position
@@ -714,10 +687,12 @@ func _own_splash(host: Node3D) -> Dictionary:
 func _tactics() -> Dictionary:
 	var checks := {}
 	var expected := {
-		"easy": {"heal_below_ratio": 0.45, "healer_weight": 1.0, "commit_hold_s": 3.0, "focus_max_members": 3},
-		"normal": {"heal_below_ratio": 0.6, "healer_weight": 2.0, "commit_hold_s": 6.0, "focus_max_members": 6},
-		"hard": {"heal_below_ratio": 0.7, "healer_weight": 3.0, "commit_hold_s": 8.0, "focus_max_members": 8},
+		"easy": {"heal_below_ratio": 0.45, "healer_weight": 1.0, "commit_hold_s": 3.0},
+		"normal": {"heal_below_ratio": 0.6, "healer_weight": 2.0, "commit_hold_s": 6.0},
+		"hard": {"heal_below_ratio": 0.7, "healer_weight": 3.0, "commit_hold_s": 8.0},
 	}
+	## the focus of the creatures lives in the embedded crowd tactics
+	var members := {"easy": 3, "normal": 6, "hard": 8}
 	var seen := {}
 	for tag: String in expected:
 		var difficulty: AiDifficulty = load("res://data/ai/difficulty_%s.tres" % tag)
@@ -728,9 +703,9 @@ func _tactics() -> Dictionary:
 				ok = ok and _near(float(tactics.get(key)), float(expected[tag][key]))
 			ok = ok and tactics.los_check and _near(tactics.los_retry_factor, 0.5) and _near(tactics.own_splash_max_ratio, 0.1) \
 				and tactics.own_splash_counts_wizard and tactics.npc_passive_weight == 0.0 and tactics.heal_min_missing == 100.0 \
-				and _near(tactics.commit_weight, 1.5) and tactics.focus_kill_window_s == 20.0 and _near(tactics.focus_power_ratio, 1.2) \
-				and tactics.focus_radius_m == 60.0
-			seen[tag] = {"heal": tactics.heal_below_ratio, "healer": tactics.healer_weight, "hold": tactics.commit_hold_s, "members": tactics.focus_max_members}
+				and _near(tactics.commit_weight, 1.5) and tactics.crowd.focus_kill_window_s == 20.0 and _near(tactics.crowd.focus_power_ratio, 1.2) \
+				and tactics.crowd.focus_radius_m == 60.0 and tactics.crowd.focus_max_members == int(members[tag])
+			seen[tag] = {"heal": tactics.heal_below_ratio, "healer": tactics.healer_weight, "hold": tactics.commit_hold_s, "members": tactics.crowd.focus_max_members}
 		checks[tag] = ok
 	checks["null_is_normal"] = AiDifficulty.new().tactics_or_normal().resource_path == AiTactics.NORMAL
 	return _verdict(checks, seen)
@@ -741,7 +716,7 @@ func _tactics() -> Dictionary:
 func _heal_threshold(host: Node3D) -> Dictionary:
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception4"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var trogg: UnitBody = UNIT_SCENE.instantiate()
@@ -753,7 +728,7 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 	trogg.idle_aggro = false
 	host.add_child(trogg)
 	await host.get_tree().process_frame
-	var eval := AiSpellEval.new(perception, null, null, perception.profile)
+	var eval := AiSpellEval.new(perception, null, null, perception.play.tactics)
 	var heal := GameData.spell("laeh") as SpellType
 	var track := perception.add_node(trogg, &"event")
 	var checks := {"tracked": track != null}

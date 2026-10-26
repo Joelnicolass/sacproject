@@ -3,9 +3,9 @@ extends RefCounted
 ## 055u cases of rules_suite: every time knob a human edits is written in seconds and still lasts exactly the ticks it lasted
 ## when it was written in ticks. For each converted field (the script's default, an override in a scene or a .tres) the
 ## seconds at 60 Hz give the old ticks; run again at 30 Hz they give a real duration within one tick of the old one.
-## The AI's ages (runs of slot k2) are checked the same way, also in a difficulty's copy.
+## The AI's ages (runs of the clock's perception job) are checked the same way, also at a slower difficulty.
 
-const PROFILE := preload("res://data/ai/profile_original.tres")
+const SIDE := preload("res://scenes/ai/ai_side.tscn")
 const EASY := preload("res://data/ai/difficulty_easy.tres")
 const RULES := preload("res://data/match_rules.tres")
 
@@ -108,12 +108,18 @@ const FIELDS := [
 	["res://scenes/map/nav/nav_service.gd", "rebake_swap_s", 180],
 	["res://scenes/map/nav/nav_service.gd", "holes_rebake_s", 120],
 	["res://scenes/ai/ai_roster.gd", "settle_s", 20],
+	["res://scenes/ai/ai_clock.gd", "status_every_s", 12],
+	["res://scenes/ai/ai_clock.gd", "stance_every_s", 60],
+	["res://scenes/ai/ai_clock.gd", "perception_every_s", 6],
+	["res://scenes/ai/ai_clock.gd", "groups_every_s", 6],
+	["res://scenes/ai/ai_clock.gd", "replan_every_s", 60],
+	["res://scenes/ai/ai_clock.gd", "think_every_s", 12],
 	["res://data/match_rules.tres", "teleport_effect_s", 32],
 	["res://data/match_rules.tres", "teleport_ring_s", 48],
 ]
-## The AI's ages: [property in seconds, ages it had]. One age = 6 ticks (slot k2 of Normal).
-const AGES := [["rerate_s", 16], ["status_s", 8], ["souls_snapshot_s", 32], ["threat_s", 8], ["wizard_replan_s", 16],
-	["wizard_reissue_s", 8]]
+## The AI's ages: [property in seconds, where it lives in the tactics, ages it had]. One age = 6 ticks (the perception job at Normal).
+const AGES := [["rerate_s", "senses", 16], ["status_s", "senses", 8], ["souls_snapshot_s", "senses", 32], ["threat_s", "senses", 8],
+	["wizard_replan_s", "wizard", 16], ["wizard_reissue_s", "wizard", 8]]
 
 
 func run(_host: Node) -> Dictionary:
@@ -151,22 +157,32 @@ func _at_30() -> Dictionary:
 	return {"ok": wrong.is_empty() and MatchClock.TICKS_PER_SECOND == tps, "wrong": wrong}
 
 
-## The profile's seconds give its old ages, the Easy copy keeps them (its slower slots stretch them), and at 30 Hz they last as long.
+## The tactics' seconds give their old ages, Easy keeps them (its slower clock stretches them), and at 30 Hz they last as long.
 func _ages() -> Dictionary:
 	var wrong := []
-	var easy: AiProfile = EASY.apply_to(PROFILE)
-	for row in AGES:
-		var seconds: float = PROFILE.get(row[0])
-		if PROFILE.ages_for(seconds) != row[1] or easy.ages_for(seconds) != row[1]:
-			wrong.append("%s → %d / Fácil %d (era %d)" % [row[0], PROFILE.ages_for(seconds), easy.ages_for(seconds), row[1]])
+	var side: Node = SIDE.instantiate()
+	var clock := side.get_node("Clock") as AiClock
+	var normal := AiPlay.make(AiSeat.difficulty_of("normal"), null, clock.base_ticks(AiClock.Job.PERCEPTION))
+	var easy := AiPlay.make(EASY, null, clock.base_ticks(AiClock.Job.PERCEPTION))
+	for row: Array in AGES:
+		var seconds := _seconds(normal.tactics, row)
+		if normal.ages_for(seconds) != row[2] or easy.ages_for(seconds) != row[2]:
+			wrong.append("%s → %d / Fácil %d (era %d)" % [row[0], normal.ages_for(seconds), easy.ages_for(seconds), row[2]])
 	var tps := MatchClock.TICKS_PER_SECOND
 	MatchClock.TICKS_PER_SECOND = 30
-	for row in AGES:
-		var ages := PROFILE.ages_for(PROFILE.get(row[0]))
-		if absf(float(ages * 6) / 30.0 - float(row[1] * 6) / 60.0) > 6.0 / 30.0 + 1e-9:
-			wrong.append("%s a 30 Hz: %d edades" % [row[0], ages])
+	var slow := AiPlay.make(normal.difficulty, null, clock.base_ticks(AiClock.Job.PERCEPTION))
+	for row: Array in AGES:
+		var ages := slow.ages_for(_seconds(normal.tactics, row))
+		if absf(float(ages * slow.age_ticks) / 30.0 - float(int(row[2]) * 6) / 60.0) > float(slow.age_ticks) / 30.0 + 1e-9:
+			wrong.append("%s a 30 Hz: %d edades de %d ticks" % [row[0], ages, slow.age_ticks])
 	MatchClock.TICKS_PER_SECOND = tps
-	return {"ok": wrong.is_empty() and PROFILE.rerate_age == 16 and easy.age_period_ticks == 6, "wrong": wrong}
+	side.free()
+	return {"ok": wrong.is_empty() and normal.ages_for(normal.tactics.senses.rerate_s) == 16 and easy.age_ticks == 6, "wrong": wrong}
+
+
+func _seconds(tactics: AiTactics, row: Array) -> float:
+	var holder: Resource = tactics.senses if row[1] == "senses" else tactics
+	return float(holder.get(row[0]))
 
 
 func _ticks(value: Variant) -> Variant:

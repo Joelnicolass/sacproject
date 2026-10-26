@@ -22,11 +22,11 @@ extends AiPhase
 
 
 func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
-	var profile := brain.profile
+	var tactics := brain.play.tactics
 	var best := 0.0
 	var total := 0.0
 	var best_track: AiTrack
-	var thr := AiField.attack_reach(wizard.threat, profile.attack_coefficient)
+	var thr := AiField.attack_reach(wizard.threat, tactics.attack_coefficient)
 	var committed := focus.committed() if focus != null else null
 	var committed_at := brain.perception.pos_of(committed) if committed != null else Vector3.ZERO
 	for foe: AiTrack in brain.perception.bodies(3):
@@ -35,13 +35,13 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 		var distance := wizard.extrap_pos.distance_to(foe.extrap_pos)
 		var w := AiField.attack_weight(distance, thr, foe)
 		if TargetRules.is_passive_npc(foe.node):
-			w *= brain.tactics.npc_passive_weight
+			w *= tactics.npc_passive_weight
 		if committed != null:
 			if foe == committed:
-				w *= brain.tactics.commit_weight
+				w *= tactics.commit_weight
 			## a healer by the committed target (the target itself when it heals) keeps it standing
 			if AiKillEstimate.healer_near(brain.perception, foe, committed_at):
-				w *= brain.tactics.healer_weight
+				w *= tactics.healer_weight
 		w = AiField.f32(w)
 		if w == 0.0:
 			continue

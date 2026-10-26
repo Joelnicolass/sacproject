@@ -5,7 +5,6 @@
 [ext_resource type="Script" uid="uid://t8d2xnuluikt" path="res://scenes/gods/book_unlock.gd" id="3_unl"]
 [ext_resource type="Script" uid="uid://c1ofxm0qeyvup" path="res://scenes/units/creature_type.gd" id="4_cre"]
 [ext_resource type="Script" uid="uid://cambxdcyiebpa" path="res://scenes/spells/spell_type.gd" id="5_spe"]
-[ext_resource type="Resource" path="res://data/ai/profile_stratos.tres" id="6_ai"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/manahoar.tres" id="7_c_oham"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/frostwolf.tres" id="8_c_lbog"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/sylph.tres" id="9_c_ahcr"]
@@ -194,6 +193,5 @@ tag = "stratos"
 display_name = "Stratos"
 sort_order = 3
 look = ExtResource("99_look")
-ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")
 structures = Array[ExtResource("gs_script")]([SubResource("Structure_0"), SubResource("Structure_1")])

@@ -32,23 +32,24 @@ static func watch(t: AiTrack, on_died: Callable, on_state: Callable) -> void:
 
 ## What falls due on `t` at its age: a new rating, the Manahoar's readiness, the own wizard's souls, a structure's state.
 static func upkeep(t: AiTrack, perception: AiPerception) -> void:
-	var profile := perception.profile
+	var play := perception.play
+	var senses := play.tactics.senses
 	match t.kind:
 		AiTrack.Kind.CREATURE, AiTrack.Kind.MANAHOAR, AiTrack.Kind.WIZARD:
 			if t.age >= t.rerate_tick:
-				t.rerate_tick = t.age + profile.rerate_age
+				t.rerate_tick = t.age + play.ages_for(senses.rerate_s)
 				AiTrackFacts.rate(t, perception)
 			if t.kind == AiTrack.Kind.MANAHOAR and t.age >= t.status_tick:
-				t.status_tick = t.age + profile.status_age
+				t.status_tick = t.age + play.ages_for(senses.status_s)
 				t.ready = maho_ready(t.node)
 			if t.kind == AiTrack.Kind.WIZARD and t.relation == AiTrack.Relation.OWN and t.age >= t.souls_snap_tick:
-				t.souls_snap_tick = t.age + profile.souls_snapshot_age
+				t.souls_snap_tick = t.age + play.ages_for(senses.souls_snapshot_s)
 				var purse := t.node.get_node_or_null("SoulPurse")
 				if purse != null:
 					t.souls_snap = int(purse.get("count"))
 		AiTrack.Kind.STRUCTURE:
 			if t.age >= t.status_tick:
-				t.status_tick = t.age + profile.status_age
+				t.status_tick = t.age + play.ages_for(senses.status_s)
 				AiTrackFacts.refresh_structure(t)
 
 

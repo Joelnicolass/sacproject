@@ -12,7 +12,6 @@ extends RefCounted
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const RIG := preload("res://debug/suite/ai_perception_rig.tscn")
 const RULES := preload("res://data/match_rules.tres")
-const PROFILE := preload("res://data/ai/profile_original.tres")
 const HOME := Vector3(1700.0, 0.0, 1700.0)
 const FAR := Vector3(2300.0, 0.0, 1700.0)
 const FORGET_TICKS := 3
@@ -80,7 +79,7 @@ func run(host: Node3D) -> Dictionary:
 func _perception(host: Node3D, title: String, listens: bool) -> AiPerception:
 	var p: AiPerception = RIG.instantiate()
 	p.name = title
-	p.profile = PROFILE
+	p.play = AiPlay.normal()
 	p.slot = 2
 	if not listens:
 		var intake := p.intake

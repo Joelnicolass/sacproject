@@ -305,8 +305,8 @@ func _finish(winner: int, reason: String) -> void:
 	audit.stop()
 	for slot in _sides:
 		var side: AiSide = _sides[slot]
-		audit.set_extra(int(slot), "ai_ms", side.ms_stats())
-		audit.set_extra(int(slot), "ai_slot_ms", side.slot_stats())
+		audit.set_extra(int(slot), "ai_ms", AiSideReport.ms_stats(side))
+		audit.set_extra(int(slot), "ai_slot_ms", AiSideReport.slot_stats(side))
 		audit.set_extra(int(slot), "ai_orders", side.port.orders_issued)
 		audit.set_extra(int(slot), "ai_order_stats", side.port.order_stats)
 		audit.set_extra(int(slot), "ai_casts_started", side.brain.casting.casts_started)
@@ -320,17 +320,17 @@ func _finish(winner: int, reason: String) -> void:
 			audit.set_extra(int(slot), "ai_focus", {"commits": focus.commits, "last": focus.last_commit})
 		## 024e: the difficulty and what the side read of bodies it did not see (0 without perfect information).
 		audit.set_extra(int(slot), "difficulty", {
-			"name": side.difficulty.display_name, "file": side.difficulty.resource_path,
-			"periods": Array(side.profile.slot_periods), "aggression": side.profile.aggression,
+			"name": side.play.difficulty.display_name, "file": side.play.difficulty.resource_path,
+			"periods": _periods(side.clock), "aggression": side.play.aggression,
 			"delay_ticks": side.port.delay_ticks, "perfect_information": side.perception.perfect_information,
-			"resource_bonus": side.difficulty.resource_bonus})
+			"resource_bonus": side.play.difficulty.resource_bonus})
 		audit.set_extra(int(slot), "unseen_target_reads", side.port.unseen_target_reads)
 		audit.set_extra(int(slot), "unseen_state_reads", side.perception.unseen_reads)
 		audit.set_extra(int(slot), "forgotten", side.perception.forgotten)
 		audit.set_extra(int(slot), "delayed_requests", side.port.delayed)
 		audit.set_extra(int(slot), "lapsed_requests", side.port.lapsed)
 		audit.set_extra(int(slot), "lapse_reasons", side.port.lapse_reasons)
-		var state := side.summary()
+		var state := AiSideReport.summary(side)
 		state["wizard"] = _wizard_info(side.perception.find(side.wizard))
 		audit.set_extra(int(slot), "ai_state", state)
 	var wall_s := float(Time.get_ticks_usec() - _started_usec) / 1e6
@@ -573,6 +573,14 @@ func _closest_unit_of(slot: int, from: Vector3, farthest := false) -> Node3D:
 	return best
 
 
+## The ticks between two runs of each job of a side's clock (12/60/6/6/60/12 at Normal).
+static func _periods(clock: AiClock) -> Array:
+	var out := []
+	for job in 6:
+		out.append(clock.ticks(job))
+	return out
+
+
 ## A side of the AI for each seat, started with the match (audit.start follows).
 func _start_ais() -> void:
 	for seat in _rules.ai_seats:
@@ -592,7 +600,7 @@ func _start_ais() -> void:
 		if seat.side_scene != null:
 			_seats_text += " · %d Bot trivial" % seat.slot
 		else:
-			_seats_text += " · IA %d %s" % [seat.slot, side.difficulty.display_name]
+			_seats_text += " · IA %d %s" % [seat.slot, side.play.difficulty.display_name]
 
 
 func _on_unit_entered(node: Node) -> void:

@@ -446,7 +446,7 @@ func _ai() -> Dictionary:
 	var checks := {}
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "CloudCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 1
 	_root.add_child(perception)
 	var wizard := _wizard(1, Vector3(-400.0, 0.0, -400.0), "pyro", 8)
@@ -456,9 +456,8 @@ func _ai() -> Dictionary:
 	stance.recs[0].manaliths = 1
 	var groups := AiGroups.new()
 	groups.perception = perception
-	groups.profile = perception.profile
 	_root.add_child(groups)
-	var eval := AiSpellEval.new(perception, stance, groups, perception.profile)
+	var eval := AiSpellEval.new(perception, stance, groups, perception.play.tactics)
 	var track := perception.add_node(wizard, &"event")
 	var foe_track := perception.add_node(foe, &"event")
 	groups.rebuild()

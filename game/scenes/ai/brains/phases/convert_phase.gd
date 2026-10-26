@@ -17,12 +17,12 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 	var home := perception.sacrifice().closest_own_site(perception.slot, wizard.node.global_position)
 	if home != null and perception.sacrifice().desecration_against(home.owner_slot()):
 		return
-	var profile := brain.profile
-	var v := AiField.f32((1.0 - brain.stance.enemy_ratio()) * (1.0 - wizard.threat) * profile.aggression * profile.convert_reach_m)
+	var tactics := brain.play.tactics
+	var v := AiField.f32((1.0 - brain.stance.enemy_ratio()) * (1.0 - wizard.threat) * brain.play.aggression * tactics.convert_reach_m)
 	if v <= 10.0:
 		return
 	var soul := perception.find_best_near(wizard.cur_pos, v, false)
 	if soul == null:
 		return
 	var spell: SpellType = wizard.convert_spell
-	AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(0, AiField.f32((1.0 - wizard.threat) * w3[2] * profile.convert_score_factor), soul, spell, spell.cast_range_m, soul))
+	AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(0, AiField.f32((1.0 - wizard.threat) * w3[2] * tactics.convert_score_factor), soul, spell, spell.cast_range_m, soul))

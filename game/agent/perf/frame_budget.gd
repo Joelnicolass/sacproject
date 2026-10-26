@@ -11,7 +11,7 @@ extends Node
 ##   physics_frame to the next inside the same frame, and the TIME_PHYSICS_PROCESS monitor, the
 ##   longest step of a second), the script process (from SceneTree.process_frame to this node's _process,
 ##   last too: highest process_priority), the CPU side of the render (RenderingServer frame_pre_draw to
-##   frame_post_draw), the counters the game already has (TargetPicker.total_us, AiSide.tick_ms, Orders.last_apply_us), draws,
+##   frame_post_draw), the counters the game already has (TargetPicker.total_us, AiClock.tick_ms, Orders.last_apply_us), draws,
 ##   primitives, objects, VRAM and RSS.
 ## Then the render by subtraction (Metal reports no GPU time): the base with the tree paused, and the
 ## frame running live without grass, without health bars, without sun shadows and without the bodies'
@@ -362,7 +362,7 @@ func _counters_delta(before: Dictionary, rec: Recorder) -> Dictionary:
 
 
 func _find_ai_sides() -> Array[Node]:
-	return _find_class(get_tree().root, "AiSide")
+	return _find_class(get_tree().root, "AiClock")  # each AI side's clock keeps its tick_ms
 
 
 func _find_class(from: Node, class_label: String) -> Array[Node]:

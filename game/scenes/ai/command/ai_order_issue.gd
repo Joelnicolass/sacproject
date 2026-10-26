@@ -10,8 +10,6 @@ extends RefCounted
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 ## orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/orders/orders.gd")
-## sacengine retreat/guard of a wizard stops this far from the body it goes to (shiny.d:2376, `ntt+0x2e4 + 10.0`).
-const WIZARD_STOP_M := 10.0
 ## Two positions are «the same order» within this squared distance. sacengine compares them exactly (shiny.d:2398); in the port a
 ## body rests with a jitter of centimeters (BodyAvoidance, the ground), so the exact test would re-issue the order of every
 ## follower every 12 ticks. 1 m² = 1 m («aprox.»).
@@ -60,8 +58,10 @@ static func issue(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, po
 		if pos == null and target != null and (ostate == AiCommandPort.AiOrder.GUARD or ostate == AiCommandPort.AiOrder.REFILL):
 			var back := t.cur_pos - target.cur_pos
 			back.y = 0.0
-			if back.length() > WIZARD_STOP_M:
-				goal = target.cur_pos + back.normalized() * WIZARD_STOP_M
+			## the wizard on guard stops this far from the body (AiTactics.wizard_stop_m; shiny.d:2376 `ntt+0x2e4 + 10.0`)
+			var stop_m := out.play.tactics.wizard_stop_m
+			if back.length() > stop_m:
+				goal = target.cur_pos + back.normalized() * stop_m
 			else:
 				goal = t.cur_pos
 		if out.audit != null:

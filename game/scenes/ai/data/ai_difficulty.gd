@@ -10,10 +10,11 @@ extends Resource
 @export var display_name := "Normal"
 
 @export_group("Reacción")
-## Times the six slot periods of the profile (12/60/6/6/60/12 ticks). 2 = thinks half as often; 0.75 = faster. Each period is
-## rounded down and never under 1 tick. The ages of the tracks count runs of k2, so the replans of the wizard scale with it.
+## Times the six periods of the side's clock (AiClock: 12/60/6/6/60/12 ticks at Normal). 2 = thinks half as often; 0.75 = faster.
+## Each period is rounded down and never under 1 tick. The ages of the tracks count runs of the perception job, so the replans of
+## the wizard scale with it.
 @export_range(0.25, 4.0, 0.05) var period_scale := 1.0
-## Takes the place of the profile's aggression (shiny.d:380, fixed 1.0 in the original). It scales the reach of Convert, the
+## How bold the side plays (AiPlay.aggression; fixed 1.0 in the original, shiny.d:380). It scales the reach of Convert, the
 ## weights of attacking and the claims of the capture task.
 @export_range(0.0, 1.0, 0.05) var aggression := 1.0
 ## Seconds between the decision and the request that leaves the port (a cast, a summon, an order, a walk): a human's reaction.
@@ -38,7 +39,7 @@ extends Resource
 @export var perfect_information := false
 
 @export_group("Sensatez (RFC-053)")
-## The thresholds and weights of the AI's common sense (clear line, own splash, heal discipline, focus). Empty: tactics_normal.tres.
+## How the wizard and his creatures play this difficulty (data/ai/tactics_*.tres, with crowd and senses). Empty: tactics_normal.tres.
 @export var tactics: AiTactics
 
 @export_group("Recursos")
@@ -49,27 +50,6 @@ extends Resource
 		if value != 0.0:
 			push_warning("AiDifficulty: resource_bonus está bloqueado en 0 (RULES.md «IA»: sin bonificación de recursos)")
 		resource_bonus = 0.0
-
-
-## The profile this difficulty plays with: `base` itself when nothing changes (Normal), else a copy with the periods scaled and its
-## aggression. The `.tres` of the profile is never changed.
-func apply_to(base: AiProfile) -> AiProfile:
-	if base == null:
-		return null
-	if period_scale == 1.0 and aggression == base.aggression:
-		return base
-	var out := base.duplicate() as AiProfile
-	out.age_period_ticks = base.age_period_ticks if base.age_period_ticks > 0 else base.slot_periods[2]
-	out.slot_periods = scaled_periods(base.slot_periods)
-	out.aggression = aggression
-	return out
-
-
-func scaled_periods(periods: PackedInt32Array) -> PackedInt32Array:
-	var out := PackedInt32Array()
-	for period in periods:
-		out.append(maxi(1, int(floor(float(period) * period_scale + 0.0001))))
-	return out
 
 
 ## The tactics this difficulty plays with (Normal's when it names none).

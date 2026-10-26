@@ -30,7 +30,7 @@ func replan() -> void:
 	records.clear()
 	var stance := board.stance
 	var perception := board.perception
-	var aggression := board.profile.aggression
+	var aggression := board.play.aggression
 	## Own+ally Manaliths (retail), enemy ones, free founts.
 	var a := stance.recs[0].manaliths + stance.recs[1].manaliths
 	var b := stance.recs[3].manaliths
@@ -107,7 +107,7 @@ func claim(free: Array[AiTrack]) -> float:
 	if perception.own_desecration():
 		return 0.0
 	var stance := board.stance
-	var threshold := AiField.f32(AiField.f32(float(stance.recs[0].souls_a) * stance.enemy_ratio() * 0.8999999761581421) * board.profile.aggression)
+	var threshold := AiField.f32(AiField.f32(float(stance.recs[0].souls_a) * stance.enemy_ratio() * 0.8999999761581421) * board.play.aggression)
 	var acc := AiRater.new_acc()
 	var any_fighter := false
 	var any_wizard := false

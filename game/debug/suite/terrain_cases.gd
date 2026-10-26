@@ -16,6 +16,7 @@ const CARRY_CASES := preload("res://debug/suite/carry_cases.gd")
 const BASE_CASES := preload("res://debug/suite/base_cases.gd")
 const DEFORM_EDGE_CASES := preload("res://debug/suite/deform_edge_cases.gd")
 const DEFORM_NET_CASES := preload("res://debug/suite/deform_net_cases.gd")
+const FLORA_LIVE_CASES := preload("res://debug/suite/flora_live_cases.gd")
 ## A vertex of the lattice of High Noon on land, with land 40 m to its east.
 const CENTER := Vector2(1260.0, 1270.0)
 const BURST_TICKS := 252
@@ -40,6 +41,7 @@ var _carry
 var _base
 var _deform_edge
 var _deform_net
+var _flora_live
 ## A picture stamp that keeps exactly the pattern it is given (its timeline is 1): how a case puts any numbers on the ground.
 var _raw: StampProfile
 
@@ -73,6 +75,8 @@ func run(host: Node3D) -> Dictionary:
 	cases.merge(_deform_edge.cases())
 	_deform_net = DEFORM_NET_CASES.new(self)
 	cases.merge(_deform_net.cases())
+	_flora_live = FLORA_LIVE_CASES.new(self)
+	cases.merge(_flora_live.cases())
 	var out := await _play(cases)
 	finish()
 	return out

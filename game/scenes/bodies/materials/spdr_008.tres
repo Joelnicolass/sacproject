@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/spdr/008.png" id="1_1ygem"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/spdr/008_normal.png" id="2_vfxdc"]
 
 [resource]
 resource_name = "spdr_008"
 albedo_texture = ExtResource("1_1ygem")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_vfxdc")

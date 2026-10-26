@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/bugl/004.png" id="1_jxt73"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/bugl/004_normal.png" id="2_4l5h4"]
 
 [resource]
 resource_name = "bugl_004"
 albedo_texture = ExtResource("1_jxt73")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_4l5h4")

@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/gund/001.png" id="1_r3hab"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/gund/001_normal.png" id="2_vq4ca"]
 
 [resource]
 resource_name = "gund_001"
 albedo_texture = ExtResource("1_r3hab")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_vq4ca")

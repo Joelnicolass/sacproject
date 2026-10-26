@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/baby/005.png" id="1_38t85"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/baby/005_normal.png" id="2_w8uwc"]
 
 [resource]
 resource_name = "baby_005"
 albedo_texture = ExtResource("1_38t85")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_w8uwc")

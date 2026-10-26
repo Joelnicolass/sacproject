@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/car2/M000.png" id="1_upf83"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/car2/M000_normal.png" id="2_cxfbn"]
 
 [resource]
 resource_name = "car2_M000"
 albedo_texture = ExtResource("1_upf83")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_cxfbn")

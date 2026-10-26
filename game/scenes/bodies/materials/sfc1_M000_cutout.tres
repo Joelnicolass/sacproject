@@ -1,6 +1,7 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/sfc1/M000.png" id="1_rjmvy"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/sfc1/M000_normal.png" id="2_kvok0"]
 
 [resource]
 resource_name = "sfc1_M000_cutout"
@@ -9,3 +10,5 @@ alpha_scissor_threshold = 0.4
 alpha_antialiasing_mode = 0
 albedo_texture = ExtResource("1_rjmvy")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_kvok0")

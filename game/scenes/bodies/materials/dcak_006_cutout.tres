@@ -1,6 +1,7 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/dcak/006.png" id="1_alw7n"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/dcak/006_normal.png" id="2_yw1el"]
 
 [resource]
 resource_name = "dcak_006_cutout"
@@ -9,3 +10,5 @@ alpha_scissor_threshold = 0.4
 alpha_antialiasing_mode = 0
 albedo_texture = ExtResource("1_alw7n")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_yw1el")

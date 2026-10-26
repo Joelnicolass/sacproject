@@ -69,15 +69,6 @@ static func convert_rounds(max_health: float, per_round := 550.0) -> int:
 	return int(max_health / per_round) + 1
 
 
-## Strength of the push (m/s) at `distance` from the site (pushAll, state.d:8614-8628): `speed` at
-## `inner`, falling linearly to `edge_speed` at `radius`; 0 outside. sacengine's edge is 0, which a Druid
-## (11 m/s) walks through; the port's rules raise it (ritual_push_edge_speed). Under `inner` it keeps growing.
-static func push_speed(distance: float, inner := 5.0, radius := 20.0, speed := 20.0, edge_speed := 0.0) -> float:
-	if distance <= 0.0 or distance >= radius:
-		return 0.0
-	return lerpf(speed, edge_speed, (distance - inner) / (radius - inner))
-
-
 ## Where in the schedule `time_s` seconds after the ritual started falls: {"phase": &"setup"|&"walk"|
 ## &"shoot"|&"wait", "round": int, "t": seconds into that phase}. Pure, for the suite.
 static func schedule(time_s: float, setup_s := 5.0, walk_s := 4.5, shoot_s := 4.5, wait_s := 4.5) -> Dictionary:

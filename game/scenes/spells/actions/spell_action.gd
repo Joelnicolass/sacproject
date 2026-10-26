@@ -26,6 +26,8 @@ class Aim extends RefCounted:
 	var status := ""
 	var point := Vector3.ZERO
 	var target: Node3D
+	## Where the cast builds or lands when it is not `target` (a fount); previews draw there. Null = none.
+	var site: Node3D
 	## What `begin` needs from `check` (an action keeps its own keys).
 	var data := {}
 
@@ -42,6 +44,9 @@ var tag: String:
 @export var prompt := ""
 ## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god (GodType.cast_fx).
 @export var cast_fx: ParticleType
+## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the end of the cast.
+## Ref: sacspell.d:201 (a structure always casts standing), state.d:62-63, 14672 (no step while stationaryCasting).
+@export var stationary := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:

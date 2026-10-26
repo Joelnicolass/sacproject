@@ -25,6 +25,8 @@ const GROUP := &"manafount"
 @export var visual: MeshInstance3D
 ## Drawn when `building` is empty or has no parts: the Persephone fountain.
 @export var fallback_mesh: Mesh
+## The ground a tower cast here clears (and the ring of the armed preview). Empty: no push, no ring, no building check.
+@export var build_area: BuildArea
 
 var _occupied_by := NodePath()
 var _source_rate := 0.0
@@ -67,9 +69,12 @@ func _show_mesh() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
 	if visual == null:
-		return PackedStringArray(["Asigná `visual` (el MeshInstance3D de la fuente)."])
-	return PackedStringArray()
+		warnings.append("Asigná `visual` (el MeshInstance3D de la fuente).")
+	if build_area == null:
+		warnings.append("Asigná `build_area` (el BuildArea que despeja la torre al lanzarla).")
+	return warnings
 
 
 func is_free() -> bool:

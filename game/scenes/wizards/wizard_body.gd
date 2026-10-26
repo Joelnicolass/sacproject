@@ -386,8 +386,8 @@ func _physics_process(delta: float) -> void:
 		yaw = _net_yaw
 	elif is_local():
 		forward = _read_forward()
-	## Held (F138): it neither walks nor turns, and a walk order waits for it (state.d:93-145, 1140-1142).
-	var held := _afflictions.holds()
+	## Held (F138) or casting a structure (Caster.holds_wizard): it neither walks nor turns, and a walk order waits for it (state.d:93-145, 1140-1142).
+	var held := _afflictions.holds() or _caster.holds_wizard()
 	if held or not ghost.can_move():
 		forward = 0.0
 		_walking = _walking and held

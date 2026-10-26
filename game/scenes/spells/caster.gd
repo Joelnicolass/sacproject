@@ -172,19 +172,22 @@ func action_for(tag: String) -> SpellAction:
 	return made
 
 
-## Read only: what a cast of the spell `tag` that has an action (Manalith, Convert, Desecrate, Guardian, Teleport) would answer now at
-## `point` / `picked`, without casting: "" = it would start. The same steps as `_try_action` up to the start. RFC-024 024e: the AI
-## asks it before a request that waited its delay (Easy), so the delay never turns into a refusal.
-func action_status(tag: String, point: Vector3, picked: Node3D) -> String:
+## Read only: where a cast of the spell `tag` would land at `point` / `picked`, or why it would not start (`status`). The one answer
+## `_try_action`, the AI (RFC-024 024e) and the armed preview share: a preview and the server never disagree on the same state.
+func aim_for(tag: String, point: Vector3, picked: Node3D) -> SpellAction.Aim:
 	var action := action_for(tag)
 	var spell := _spell_of(tag)
-	if action == null or spell == null:
-		return BAD_TARGET
-	var wizard := _wizard as WizardBody
-	var status := action.arm_status(wizard, spell)
-	if not status.is_empty():
-		return status
-	return action.check(wizard, spell, point, picked, _funds(spell)).status
+	var aim := SpellAction.Aim.new()
+	aim.status = BAD_TARGET if action == null or spell == null else action.arm_status(_wizard as WizardBody, spell)
+	return aim if not aim.status.is_empty() else action.check(_wizard as WizardBody, spell, point, picked, _funds(spell))
+
+
+## Read only: aim_for(...).status ("" = it would start).
+func action_status(tag: String, point: Vector3, picked: Node3D) -> String: return aim_for(tag, point, picked).status
+
+
+## The cast in progress keeps the wizard standing (a structure): WizardBody neither walks nor turns while it is true. Server or solo.
+func holds_wizard() -> bool: return _active != null and _active.stationary
 
 
 ## The action of an entry of the structures tab, or null.
@@ -326,18 +329,14 @@ func _try_structure(index: int, point: Vector3) -> String:
 ## Server or solo. Runs the shared steps of a spell that has a SpellAction: it can be armed, it
 ## aims (the action's own checks), the cast starts. Returns the spell name or the reason.
 func _try_action(action: SpellAction, spell: SpellType, point: Vector3, path: NodePath) -> String:
-	var wizard := _wizard as WizardBody
-	var status := action.arm_status(wizard, spell)
-	if not status.is_empty():
-		return status
 	var picked := get_node_or_null(path) as Node3D if not path.is_empty() else null
-	var aim := action.check(wizard, spell, point, picked, _funds(spell))
+	var aim := aim_for(spell.tag, point, picked)
 	if not aim.status.is_empty():
 		return aim.status
-	action.begin(wizard, spell, aim)
+	action.begin(_wizard as WizardBody, spell, aim)
 	_active = action
 	var frames := _start(spell, aim.target)
-	action.started(wizard, spell, aim, frames)
+	action.started(_wizard as WizardBody, spell, aim, frames)
 	return spell.display_name
 
 

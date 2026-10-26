@@ -191,8 +191,9 @@ func _guard_teleport() -> Dictionary:
 	return _verdict("tower_guard_teleport", checks)
 
 
-## pcas is no longer «not implemented»: it raises the god's Shrine over a free fount (Persephone pcsh, James jsac); an occupied fount is
-## NO_FOUNT; when the tower falls the fount is free on its own.
+## pcas is no longer «not implemented»: it raises the god's Shrine over a free fount (Persephone pcsh, James jsac), born rising (no body
+## stops on it, no mana) and standing at the finish, with the dead and the living moved out of its box; an occupied fount is
+## FOUNT_TAKEN; when the tower falls the fount is free on its own.
 func _cast() -> Dictionary:
 	var checks := {}
 	var towers := Node3D.new()
@@ -223,21 +224,28 @@ func _cast() -> Dictionary:
 		var soul := SOUL_SCENE.instantiate() as Soul
 		soul.position = fount.global_position + Vector3(-0.5, 0.0, 1.0)
 		_root.add_child(soul)
+		var unit := _unit(fount.global_position + Vector3(0.0, 0.0, -2.0), 2)
+		await _frames(2)
 		var aim := action.check(wizard, spell, fount.global_position, null, "")
 		checks[god + "_aim_ok"] = aim.status.is_empty()
 		action.begin(wizard, spell, aim)
+		var rising := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
+		checks[god + "_born_rising"] = rising != null and rising.is_rising() and rising.collision_layer == 0
+		checks[god + "_rising_no_mana"] = rising != null and rising.mana_source.process_mode == Node.PROCESS_MODE_DISABLED
 		checks[god + "_finish_quiet"] = action.finish(wizard, spell, wizard).is_empty()
 		var tower := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
+		checks[god + "_stands"] = tower != null and not tower.is_rising() and tower.collision_layer != 0
 		results[god] = tower.type.tag if tower != null else ""
 		checks[god + "_fount_taken"] = tower != null and not fount.is_free()
 		## The dead on the fount go out of the footprint (a doctor could never reach them inside the box), onto the ground.
 		var ring := (tower.footprint_m() + TowerRules.MARGIN_M - 0.01) if tower != null else INF
-		for body: Node3D in [dead, soul]:
+		for body: Node3D in [dead, soul, unit]:
 			var flat := Vector2(body.global_position.x - fount.global_position.x, body.global_position.z - fount.global_position.z)
 			checks[god + "_%s_pushed_out" % body.name] = flat.length() >= ring and absf(body.global_position.y) < 0.05
 		dead.queue_free()
 		soul.queue_free()
-		checks[god + "_busy_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.NO_FOUNT
+		unit.queue_free()
+		checks[god + "_busy_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.FOUNT_TAKEN
 		if tower != null:
 			tower.health.damage(99999.0, 2)
 		await _frames(3)

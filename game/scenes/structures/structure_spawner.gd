@@ -18,8 +18,9 @@ func _ready() -> void:
 	super._ready()
 
 
-## Raises `scene` (one of `scenes`) over `fount` for `slot`. Returns the tower, or null on a client or an unknown scene.
-func spawn_tower(scene: PackedScene, fount: ManafountBody, slot: int, yaw: float) -> CastTower:
+## Raises `scene` (one of `scenes`) over `fount` for `slot`. `rising`: it is born at build_progress 0 (a cast that starts; the cast
+## raises it), else standing. Returns the tower, or null on a client or an unknown scene.
+func spawn_tower(scene: PackedScene, fount: ManafountBody, slot: int, yaw: float, rising := false) -> CastTower:
 	var index := scenes.find(scene)
 	if index < 0 or fount == null:
 		return null
@@ -27,7 +28,7 @@ func spawn_tower(scene: PackedScene, fount: ManafountBody, slot: int, yaw: float
 	var at := fount.anchor()
 	var data := {
 		"name": "Tower%d" % _serial, "scene": index, "slot": slot, "yaw": yaw,
-		"x": at.x, "y": at.y, "z": at.z, "fount": str(fount.get_path()),
+		"x": at.x, "y": at.y, "z": at.z, "fount": str(fount.get_path()), "rising": rising,
 	}
 	var tower: CastTower
 	if MpKit.is_networked():
@@ -37,7 +38,7 @@ func spawn_tower(scene: PackedScene, fount: ManafountBody, slot: int, yaw: float
 	else:
 		tower = _make(data) as CastTower
 		get_node(spawn_path).add_child(tower)
-	if tower != null:
+	if tower != null and not tower.is_rising():
 		tower.clear_footprint()
 	return tower
 
@@ -50,4 +51,5 @@ func _make(data: Variant) -> Node:
 	tower.rotation.y = float(info["yaw"])
 	tower.owner_slot = int(info["slot"])
 	tower.fount = get_node_or_null(NodePath(str(info["fount"]))) as ManafountBody
+	tower.build_progress = 0.0 if bool(info.get("rising", false)) else 1.0
 	return tower

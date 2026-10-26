@@ -9,9 +9,9 @@ extends ShotStrike
 
 ## Tick it lands on (1 = the tick after the shot).
 @export_range(0, 120) var land_tick := 1
-## FxBus beam type (res://data/fx/beams/) from the shot origin to where it lands; its end follows the target while it
+## The bolt (a BeamType of data/fx/beams) from the shot origin to where it lands; its end follows the target while it
 ## lives (updateStyxBolt, state.d:24183-24195). Empty: none.
-@export var beam := ""
+@export var beam: BeamType
 
 
 func _strike_tick(age: int) -> void:
@@ -19,7 +19,7 @@ func _strike_tick(age: int) -> void:
 		return
 	var target := intended()
 	var point := center_of(target) if target != null else aim
-	if not beam.is_empty():
+	if beam != null:
 		FxBus.broadcast_beam(beam, origin, point, target)
 	_log("golpe %s %s → %s en (%.1f, %.1f, %.1f) a %.1f m (tick %d)" % [tag, shooter_name(), str(target.name) if target != null else "punto apuntado",
 			point.x, point.y, point.z, origin.distance_to(point), MatchClock.now()])

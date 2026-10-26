@@ -1,9 +1,11 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
 [ext_resource type="PackedScene" path="res://scenes/units/strikes/gnome_ray.tscn" id="2_strike"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="pt_script"]
+[ext_resource type="Resource" path="res://data/fx/gnome_hit.tres" id="fx_gnome_hit"]
 
 [node name="Plfa" type="Node"]
 script = ExtResource("1_look")
-impact_fx = PackedStringArray("gnome_hit")
+impact_fx = Array[ExtResource("pt_script")]([ExtResource("fx_gnome_hit")])
 strike = ExtResource("2_strike")

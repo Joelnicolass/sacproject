@@ -1,11 +1,12 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/timed_state_ability.gd" id="1_timed"]
+[ext_resource type="Resource" path="res://data/fx/spit_trail.tres" id="fx_spit_trail"]
 
 [node name="Stealth" type="Node"]
 editor_description = "F133 (RFC-030 030v-b): efecto propio del Stealth del Sylph (ivni). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). SpecialForms.set_form(STEALTH) por la duración del SPEL (mínimo 5 s), contada en ticks."
 script = ExtResource("1_timed")
 form = 1
 min_duration_s = 5.0
-fx = &"spit_trail"
-fx_height = 1.0
+fx = ExtResource("fx_spit_trail")
+fx_socket = 1

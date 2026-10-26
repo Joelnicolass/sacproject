@@ -25,8 +25,9 @@ var attacker_path := NodePath()
 var ignore_friendly := true
 ## sacengine DamageMod.peirceShield (F123, the Pyromaniac's fire): Health skips the body's shields and states.
 var pierce_shield := false
-## FxBus type puffed on the body every `fx_every_ticks` updates, if the dose took health since the last puff.
-var fx_name := ""
+## The burst puffed on the body (at `fx_socket`) every `fx_every_ticks` updates, if the dose took health since the last puff. Null = none.
+var fx: ParticleType
+var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 var fx_every_ticks := 30
 ## Health this dose took so far, and the updates it did (for the log).
 var taken := 0.0
@@ -47,8 +48,8 @@ func step(health: Health) -> bool:
 	if fx_every_ticks > 0 and frame % fx_every_ticks == 0:
 		## Puff only if Health took it: a body it spares (own side with friendly fire off) must not look poisoned.
 		var on := health.get_parent() as Node3D
-		if _dealt_since_fx > 0.0 and not fx_name.is_empty() and on:
-			FxBus.broadcast(fx_name, on.global_position + Vector3.UP)
+		if _dealt_since_fx > 0.0 and fx != null and on:
+			FxBus.broadcast(fx, BodyFacts.point(on, fx_socket))
 		_dealt_since_fx = 0.0
 	if frame >= lifetime:
 		return false

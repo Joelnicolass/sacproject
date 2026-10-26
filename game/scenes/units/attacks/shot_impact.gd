@@ -67,7 +67,7 @@ static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3,
 		taken = (hit.get_node("Health") as Health).damage_typed(float(holder.get("damage")), direct_ranged, int(holder.get("from_slot")), false, false, mods_of(holder))
 		preload("res://scenes/spells/rock_projectile.gd").report(hit, taken, direct_ranged)  ## F155: the bench reads this line
 		LifeDrain.feed(shooter_of(holder), hit, taken)  ## F164
-	for fx in look.impact_fx:
+	for fx: ParticleType in look.impact_fx:
 		FxBus.broadcast(fx, point)
 	ScarMark.broadcast(look.ground_mark, point)
 	return taken

@@ -8,6 +8,9 @@ const _SPEEDUP_SCENE := preload("res://scenes/spells/speedup_effect.tscn")
 
 ## The shortest Speedup, in seconds (the SPEL's duration when it is longer).
 @export var min_duration_s := 1.0
+## The burst every peer sees when it runs, and the socket of the body it leaves from (empty = none).
+@export var fx: ParticleType = preload("res://data/fx/speedup.tres")
+@export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 
 func status(_target_pos: Vector3, _target: Node3D) -> String:
@@ -26,5 +29,6 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	speed.start(maxf(ability.duration_s, min_duration_s))
 	user.add_child(speed)
 	user.halt()
-	FxBus.broadcast("speedup", user.global_position + Vector3.UP)
+	if fx != null:
+		FxBus.broadcast(fx, BodyFacts.point(user, fx_socket))
 	return true

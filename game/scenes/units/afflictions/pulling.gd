@@ -190,8 +190,8 @@ func _finish(reason: String, box := NAN, thread_y := 0.0) -> void:
 	var center := BodyNudge.center(target) if live else Vector3.ZERO
 	if is_nan(box):
 		box = box_distance(BodyNudge.box(target), BodyNudge.center(body)) if live and body != null else NAN
-	if live and effect != null and not effect.break_fx.is_empty():
-		FxBus.broadcast(effect.break_fx, center)
+	if live and effect != null and effect.break_fx != null:
+		FxBus.broadcast(effect.break_fx, BodyFacts.point(target, effect.break_socket))
 	if is_on():
 		_afflictions().mark(self, false)
 	set_physics_process(false)
@@ -206,9 +206,9 @@ func _finish(reason: String, box := NAN, thread_y := 0.0) -> void:
 ## Presentation: the thread, once, on every peer. It follows the bodies and ends with this state's bit.
 func _throw_thread(body: Node3D) -> void:
 	var scene := _effect.thread_scene
-	if scene == null or scene.resource_path.is_empty() or not body.is_inside_tree() or not _target.is_inside_tree():
+	if scene == null or not body.is_inside_tree() or not _target.is_inside_tree():
 		return
-	FxBus.broadcast_scene(scene.resource_path, body.global_position, {
+	FxBus.broadcast_scene(scene, body.global_position, {
 		"user": str(body.get_path()), "target": str(_target.get_path()),
 		"seed": MatchSeed.derive(["pull_thread", str(body.name), _fired]), "grow_ticks": SHOOT_FRAMES,
 	})

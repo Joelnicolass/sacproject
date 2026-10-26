@@ -39,9 +39,9 @@ extends Node3D
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")
-## The ring of earth (QuakeRing, FxBus.broadcast_scene) and the dust of the explosion (FxBus type; empty: none).
-@export_file("*.tscn") var ring_scene := "res://scenes/fx/quake_ring.tscn"
-@export var dust_fx := "dirt"
+## The ring of earth (quake_ring.tscn, an FxScene played on every peer) and the dust of the explosion. Empty: none.
+@export var ring_scene: PackedScene
+@export var dust_fx: ParticleType
 
 ## For the log: the user's name and the SPEL tag (kauq).
 var label := ""
@@ -141,9 +141,9 @@ func _stun(body: Node3D) -> String:
 
 ## quakeExplosion (frame 1): the look. Presentation, every peer.
 func _explode() -> void:
-	if not dust_fx.is_empty():
+	if dust_fx != null:
 		FxBus.broadcast(dust_fx, global_position)
-	if not ring_scene.is_empty():
+	if ring_scene != null:
 		FxBus.broadcast_scene(ring_scene, global_position, {"range": wave_range, "seconds": wave_s})
 
 

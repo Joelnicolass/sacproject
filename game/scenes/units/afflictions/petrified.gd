@@ -14,10 +14,9 @@ extends Affliction
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var knock_cooldown_s := 4.0
 ## Knocked down when it ends. Optional: empty = it just stands up.
 @export var stunned: Stunned
-## Its body_height() puts the rocks at the middle of the body.
-@export var visual: Node3D
-## FxBus type of the rocks broadcast when it ends.
-@export var rocks_fx := "petrify_rocks"
+## The rocks broadcast when it ends, and the socket of the body they leave from.
+@export var rocks_fx: ParticleType = preload("res://data/fx/petrify_rocks.tres")
+@export var rocks_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 ## Simulation ticks it has lived (counted in _physics_process, so a paused tree does not count).
 var _elapsed := 0
@@ -85,8 +84,8 @@ func _end() -> void:
 ## removePetrification (state.d:23740-23753): the rocks fly at every end, the stun only when it can still be stunned.
 func _burst_rocks() -> void:
 	var body := _body()
-	var height := (visual as BodyVisual).body_height() if visual is BodyVisual else 1.0
-	FxBus.broadcast(rocks_fx, body.global_position + Vector3.UP * height * 0.5)
+	if rocks_fx != null:
+		FxBus.broadcast(rocks_fx, BodyFacts.point(body, rocks_socket))
 
 
 func _shown(on: bool) -> void:

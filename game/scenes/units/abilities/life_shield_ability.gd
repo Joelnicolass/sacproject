@@ -5,6 +5,10 @@ extends AbilityEffect
 ## sacengine lifeShield (state.d:13092-13100): refused (nothing spent) while the body already has a shield; else the body's
 ## LifeShield starts for the SPEL's duration (1200 ticks). Not the Ent's Protector (HSba), which also shields its allies.
 
+## The burst every peer sees when the shield starts, and the socket of the body it leaves from (empty = none).
+@export var fx: ParticleType = preload("res://data/fx/heal.tres")
+@export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
+
 
 func status(_target_pos: Vector3, _target: Node3D) -> String:
 	var shield := LifeShield.of(user)
@@ -20,5 +24,6 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if shield == null:
 		return false
 	shield.start_for_ability(ability)
-	FxBus.broadcast("heal", user.global_position + Vector3.UP)
+	if fx != null:
+		FxBus.broadcast(fx, BodyFacts.point(user, fx_socket))
 	return true

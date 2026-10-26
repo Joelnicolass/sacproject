@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="1_rock"]
+
+[node name="RockShell" type="MeshInstance3D"]
+editor_description = "055x x4: la cascara de roca del Rockform del Earthfling. Rockform la instancia bajo el cuerpo (solo donde se dibujan mallas, nunca en el dedicado), en el socket CENTER del BodyFrame, y la crece y achica con un Tween. Cambiar la malla o el material aca."
+visible = false
+mesh = ExtResource("1_rock")

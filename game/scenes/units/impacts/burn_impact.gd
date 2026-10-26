@@ -32,11 +32,11 @@ enum RadiusSource { NONE, DAMAGE_RANGE, EFFECT_RANGE }
 @export var radius_source := RadiusSource.NONE
 @export var splash_groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")
-## FxBus type puffed on a burning creature (sacengine spawnFireParticles: 3 particles a frame).
-@export var fire_fx := "fire"
+## The fire puffed on a burning creature (sacengine spawnFireParticles: 3 particles a frame). Empty = none.
+@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.1666
-## Height over the body's origin the fire puffs from: low enough that the flames stay under the health bar.
-@export var fire_height_m := 0.8
+## The socket of the body the fire puffs from (inside its box, under the health bar).
+@export var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 
 func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType) -> void:
@@ -62,7 +62,7 @@ func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: 
 	if fire == null:
 		return
 	fire.fire_every_ticks = MatchClock.ticks_for(fire_every_s)
-	fire.fire_height_m = fire_height_m
+	fire.fire_socket = fire_socket
 	var health := body.get_node("Health") as Health
 	print("fuego %s a %s: %.1f en %d cuadros%s%s (vida %d%s)" % [ability.tag if ability else "?", who(body), damage, frames,
 			", maná %.2f" % drain if drain > 0.0 else "", ", atraviesa escudos" if pierce_shield else "",

@@ -4,7 +4,7 @@ extends SpellAction
 
 ## Guardian (ndrg): the wizard ties one of his own creatures to a building (RFC-021b). The click is
 ## the creature (OWN_UNIT). To arm it he needs a standing building of his own (altar, shrine, Manalith)
-## within rules.guardian_arm_radius on the plane (mustBeNearBuilding, sacengine state.d:29561, 28082); the
+## within ReachFacts guardian_arm_m on the plane (mustBeNearBuilding, sacengine state.d:29561, 28082); the
 ## creature has to be free, alive, his and within the cast range. When the casting ends it is tied to
 ## the open post closest to the CREATURE, whatever the distance (guardian / findClosestBuilding,
 ## state.d:10398-10414); who sets the bond is GuardianBond. Not the wizard, a hero, a familiar, a Sac
@@ -27,7 +27,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 func arm_status(wizard: WizardBody, _spell: SpellType) -> String:
 	if Engine.is_editor_hint() or not is_inside_tree():
 		return NOT_IMPLEMENTED
-	var radius := rules.guardian_arm_radius if rules != null else 50.0
+	var radius := ReachFacts.of_rules(rules).guardian_arm_m
 	if GuardPost.closest(get_tree(), wizard.owner_slot, wizard.global_position, radius) == null:
 		return FAR_FROM_BUILDING
 	return ""

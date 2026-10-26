@@ -37,8 +37,6 @@ enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE
 @export var withdraw_s := 1.0
 ## Pulse period (Guardian.pulseFrames = updateFPS / 2).
 @export var pulse_s := 0.5
-## Height of the creature's center over its feet.
-@export var center_height := 0.9
 @export var color := Color(0.35, 1.0, 0.55, 1.0)
 ## Draws the ribbon. Its material is the look; a missing one warns in the inspector.
 @export var beam: MeshInstance3D
@@ -159,7 +157,7 @@ func _post() -> GuardPost:
 ## Remembers where the ends are while they exist: a body that is gone leaves its last place.
 func _sample() -> void:
 	if _creature != null and is_instance_valid(_creature):
-		_creature_at = _creature.global_position + Vector3.UP * center_height
+		_creature_at = _creature.global_transform * BodyFacts.of_body(_creature).center
 	var post := _post()
 	if post != null:
 		_building_at = post.attach_position()

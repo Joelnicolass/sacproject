@@ -143,6 +143,7 @@ func _run_suite() -> void:
 	_results.merge(await preload("res://debug/suite/ai_spell_use_cases.gd").new().run(self))  # 055f f5
 	_results.merge(await SPELL_LINK_CASES.new().run(self))  # 055e e3
 	_results.merge(FX_WIRE_CASES.new().run(self))  # 055x x1
+	_results.merge(await preload("res://debug/suite/tree_block_cases.gd").new().run(self))  # playtest 2026-10-26: trees block
 	_print_suite()
 
 

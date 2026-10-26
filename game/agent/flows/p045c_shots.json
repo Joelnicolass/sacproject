@@ -111,7 +111,7 @@
    "shot": "spellbook.png"
   },
   {
-   "scene": "res://scenes/match/high_noon.tscn"
+   "scene": "res://debug/match/high_noon.tscn"
   },
   {
    "wait": 4.0

@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://debug/look/look_gallery.gd" id="1_gallery"]
-[ext_resource type="PackedScene" path="res://scenes/match/high_noon.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://debug/match/high_noon.tscn" id="2_world"]
 [ext_resource type="PackedScene" path="res://debug/bodies/gallery_body.tscn" id="3_body"]
 [ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="4_emitter"]
 [ext_resource type="Resource" path="res://data/fx/manafount.tres" id="5_fx"]

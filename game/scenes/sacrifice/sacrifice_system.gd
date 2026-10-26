@@ -34,7 +34,7 @@ class Cast extends RefCounted:
 	var landing := Vector3.ZERO
 
 
-## Holds `rules: MatchRules` (HighNoon).
+## Holds `rules: MatchRules` (MatchWorld).
 @export var world: Node
 ## Without it the system takes the world's rules.
 @export var rules: MatchRules
@@ -62,7 +62,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if spawns == null or targets == null or casts == null or starter == null:
 		warnings.append("Asigná `spawns`, `targets`, `casts` y `starter` (los hijos del sistema).")
 	if world == null and rules == null:
-		warnings.append("Asigná `world` (HighNoon) o `rules` (MatchRules).")
+		warnings.append("Asigná `world` (MatchWorld) o `rules` (MatchRules).")
 	return warnings
 
 

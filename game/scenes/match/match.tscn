@@ -102,7 +102,7 @@
 bg_color = Color(1, 1, 1, 0)
 
 
-[node name="HighNoon" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap")]
+[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap")]
 script = ExtResource("1_world")
 rules = ExtResource("12_rules")
 minimap = NodePath("Hud/Minimap")

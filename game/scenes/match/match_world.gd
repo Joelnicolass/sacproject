@@ -4,7 +4,7 @@ extends Node3D
 signal local_wizard_changed(wizard: Node3D)
 
 ## RFC-044: the match is map-agnostic. The map is the child `Map` (a MapRoot): the one the scene already holds
-## (scenes/match/high_noon.tscn) or, when there is none or `--map=<tag>` asks for another, the scene of the active
+## (debug/match/high_noon.tscn) or, when there is none or `--map=<tag>` asks for another, the scene of the active
 ## MapDefinition. The systems below are bound to its sockets before any of them is ready.
 const MAP_NODE := "Map"
 

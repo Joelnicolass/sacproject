@@ -7,7 +7,7 @@
     },
     {
       "print": {
-        "node": "/root/HighNoon/Map",
+        "node": "/root/Match/Map",
         "prop": "scene_file_path"
       }
     },

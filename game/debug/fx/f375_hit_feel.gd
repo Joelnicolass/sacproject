@@ -10,7 +10,7 @@ extends Node3D
 ## `-- --feel-match` puts a real match (high_noon.tscn) in this headless process: its CameraShake and DamageNumbers exist and
 ## none is active. Prints `FEEL <check>: PASS|FAIL` and `FEEL PASS|FAIL`; quits 0 / 1. Watchdog: `timeout_s` real seconds.
 
-const MATCH_SCENE := "res://scenes/match/high_noon.tscn"
+const MATCH_SCENE := "res://debug/match/high_noon.tscn"
 const EXPLOSION: ParticleType = preload("res://data/fx/wrath_explosion1.tres")
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).

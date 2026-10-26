@@ -2,7 +2,7 @@ class_name MatchSeed
 extends RefCounted
 
 ## The seed of the match in this process (RFC-024 §5.1) and the one owner of chance in the simulation (RFC-032 §3.3).
-## HighNoon calls begin() from _enter_tree, before any child is ready. Every source of chance then asks for a stream
+## MatchWorld (the root of match.tscn) calls begin() from _enter_tree, before any child is ready. Every source of chance then asks for a stream
 ## of its own by name: rng([system, stable id]) or seed_rng(rng, [system, stable id]); derive([...]) =
 ## hash([seed, ...parts]) for the few that need a bare number. The stable id is a node name or a slot, never an
 ## instance_id (it differs between a window and headless). The global RNG (randf, randi, shuffle, pick_random) is for

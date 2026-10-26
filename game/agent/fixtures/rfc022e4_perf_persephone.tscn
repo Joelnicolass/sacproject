@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://debug/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://agent/fixtures/rfc022c_rules_persephone.tres" id="2_rules"]
 [ext_resource type="Script" path="res://agent/fixtures/rfc022e4_perf.gd" id="3_perf"]
 

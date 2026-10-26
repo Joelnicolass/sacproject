@@ -1,5 +1,5 @@
 {
-  "scene": "res://scenes/match/high_noon.tscn",
+  "scene": "res://debug/match/high_noon.tscn",
   "wait_first": 1.4,
   "steps": [
     { "wait_until": { "node": "%Stats", "text_contains": "Vida", "timeout": 10 } },

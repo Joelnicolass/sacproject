@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3]
 
-[ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://scenes/match/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" uid="uid://cvgikgwb1sifg" path="res://debug/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/nav_cross.tres" id="2_rules"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="3_unit"]
 [ext_resource type="Script" path="res://debug/units/target_pick.gd" id="4_runner"]

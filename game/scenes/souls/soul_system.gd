@@ -25,7 +25,7 @@ const ORIGIN_NPC := &"npc"
 const ORIGIN_CREATURE := &"creature"
 const ORIGIN_WIZARD := &"wizard"
 
-## Holds `rules: MatchRules` and `local_wizard()` (HighNoon). Convert (RFC-020e) lives in SacrificeSystem.
+## Holds `rules: MatchRules` and `local_wizard()` (MatchWorld). Convert (RFC-020e) lives in SacrificeSystem.
 @export var world: Node
 @export var souls_root: Node3D
 @export var spawner: MultiplayerSpawner

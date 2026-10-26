@@ -3,9 +3,9 @@ extends RefCounted
 
 ## The ticks of the match in this process (RFC-032 §3.1). The one owner of simulation time: whatever falls due
 ## (cooldowns, deadlines, lifetimes) is measured against now(), never against the render delta.
-## HighNoon calls begin() from _enter_tree on every peer, before MatchSeed.begin. SceneTree.physics_frame is emitted
+## MatchWorld (the root of match.tscn) calls begin() from _enter_tree on every peer, before MatchSeed.begin. SceneTree.physics_frame is emitted
 ## once per physics step before any _physics_process (and also while the tree is paused), so the count does not depend
-## on the order of the nodes; it only advances when the tree is not paused. Without HighNoon (debug scenes) now()
+## on the order of the nodes; it only advances when the tree is not paused. Without MatchWorld (debug scenes) now()
 ## hooks itself lazily on the first read.
 
 ## Ticks per second of the simulation: the project's physics/common/physics_ticks_per_second (read once at class load).

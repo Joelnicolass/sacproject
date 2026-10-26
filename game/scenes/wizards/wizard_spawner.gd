@@ -59,7 +59,7 @@ func _place(pawn: Node, slot: int) -> void:
 
 
 ## RFC-030 030d (F115): the level of this match. The level chosen in the boot or with --level is already in the world's
-## rules (MatchSetup.apply_to in HighNoon, RFC-031 031a2).
+## rules (MatchSetup.apply_to in MatchWorld, RFC-031 031a2).
 func _level(match_rules: MatchRules) -> int:
 	return match_rules.wizard_level
 

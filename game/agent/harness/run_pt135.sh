@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # F135 playtest runner. Call it through agent/harness/godot_run.sh (one Godot run at a time).
 #   run_pt135.sh flows FLOW...   windowed flows one after another (60 fps cap, 1280x720, --fail-on-error)
-#   run_pt135.sh net PORT        headless dedicated (--max-fps 60 --level=9) + client A (pt135_net_a);
-#                                client B (pt135_net_b) starts only once A's log shows Ikarus FLYING (late join).
+#   run_pt135.sh net PORT        headless dedicated (--max-fps 60 --level=9 --start-seats=2) + clients A (pt135_net_a) and
+#                                B (pt135_net_b), both seated before the start (RFC-068 gate: nobody joins a started match).
+#                                B watches A's Ikarus take off, leaves by the pause menu and comes back to its seat while it
+#                                flies (the old late join, now a rejoin within rejoin_grace_s).
 # RSS watchdog 2.5 GB on every Godot. Out: agent/out/pt135/.
 set -u
 . "$(dirname "$0")/../harness/env.sh"
@@ -32,16 +34,15 @@ if [ "$mode" = flows ]; then
   done
 elif [ "$mode" = net ]; then
   PORT="$1"
-  $BIN --headless --max-fps 60 --path "$ROOT" -- --dedicated --mp-port="$PORT" --level=9 > "$OUT/net_server.log" 2>&1 &
+  $BIN --headless --max-fps 60 --path "$ROOT" -- --dedicated --start-seats=2 --mp-port="$PORT" --level=9 > "$OUT/net_server.log" 2>&1 &
   S=$!
   for _ in $(seq 1 160); do grep -q "listo puerto" "$OUT/net_server.log" && break; sleep 0.25; done
   flow pt135_net_a --mp-port="$PORT"; A=$LAST
-  watch_rss net "$S" "$A"
-  for _ in $(seq 1 240); do grep -q "Ikarus1 FLYING" "$OUT/pt135_net_a.log" && break; kill -0 "$A" 2>/dev/null || break; sleep 0.25; done
-  echo "B launch at $(date +%s) after: $(grep -m1 'Ikarus1 FLYING' "$OUT/pt135_net_a.log")"
+  sleep 1
   flow pt135_net_b --mp-port="$PORT"; B=$LAST
-  watch_rss net "$B"
+  watch_rss net "$S" "$A" "$B"
   wait "$B"; echo "b exit $?"
   wait "$A"; echo "a exit $?"
+  echo "A: $(grep -m1 'Ikarus1 FLYING' "$OUT/pt135_net_a.log")"
   sleep 1; kill "$S" 2>/dev/null; wait "$S" 2>/dev/null; echo "server stopped"
 fi

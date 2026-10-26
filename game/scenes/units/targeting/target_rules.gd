@@ -34,13 +34,13 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 	return health != null and health.maximum > 0.0 and not health.is_dead()
 
 
-## Whether `node` is a creature that never picks a fight: CRE8 aggressiveness 0 (isPacifist, sacobject.d:84) or a peasant, whose
-## PeasantBehavior child never attacks whatever its data says. One owner (F372): TargetPicker weighs these `passive_weight`.
+## Whether `node` is a creature that never picks a fight: CRE8 aggressiveness 0 (isPacifist, sacobject.d:84) or a villager, whose
+## Brain never attacks whatever its data says. One owner (F372): TargetPicker weighs these `passive_weight`.
 static func is_passive(node: Node) -> bool:
 	if not node is UnitBody:
 		return false
 	var type := (node as UnitBody).type
-	return (type != null and type.aggressiveness <= 0) or node.get_node_or_null("PeasantBehavior") is PeasantBehavior
+	return (type != null and type.aggressiveness <= 0) or node.get_node_or_null("Brain") is VillagerBrain
 
 
 ## A passive body (is_passive) of an NPC slot (SideRelations.is_npc_slot): a Farmer of the map. AttackPhase weighs these
@@ -57,7 +57,7 @@ static func closest_in_sight(body: UnitBody, center: Vector3) -> Node3D:
 	var best_d := body.vision.range_m()
 	for group in body.target_groups:
 		for node in body.get_tree().get_nodes_in_group(group):
-			if not body.accepts_target(node):
+			if not body.engagement.accepts_target(node):
 				continue
 			var at: Vector3 = node.global_position
 			var d := Vector2(at.x - center.x, at.z - center.z).length()

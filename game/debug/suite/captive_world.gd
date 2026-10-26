@@ -65,7 +65,7 @@ func dispose(bodies: Array, ragdoll: RagdollDriver) -> void:
 
 ## "pose=1 running=true mode=8": what a failing case prints next to the key.
 func state(ragdoll: RagdollDriver, body: UnitBody) -> String:
-	return "pose=%d running=%s mode=%d role='%s'" % [ragdoll.pose(), ragdoll.is_running(), body.mode, body.captive_role]
+	return "pose=%d running=%s mode=%d role='%s'" % [ragdoll.pose(), ragdoll.is_running(), body.mode, body.clips.captive_role]
 
 
 func make_unit(at: Vector3) -> UnitBody:

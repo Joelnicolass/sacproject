@@ -107,7 +107,7 @@ var _clip_flat_speed := 0.0
 @onready var _caster: Caster = $Caster
 ## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
-@onready var _avoidance: BodyAvoidance = $Avoidance
+@onready var _locomotion: Locomotion = $Locomotion
 
 
 func _ready() -> void:
@@ -374,11 +374,7 @@ func _physics_process(delta: float) -> void:
 	if _seat_left > 0:
 		_seat()
 		return
-	var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-	if is_on_floor():
-		velocity.y = 0.0
-	else:
-		velocity.y -= gravity * delta
+	_locomotion.begin(delta)
 	var pace := move_speed
 	if pace <= 0.0 and step:
 		pace = step.speed()
@@ -418,26 +414,12 @@ func _physics_process(delta: float) -> void:
 		velocity.z = 0.0
 	_since_damage += delta
 	_regenerate(delta)
-	velocity = _afflictions.steer(velocity, delta)  ## F121: a thrown wizard (Tumbling) flies its own ballistic path.
-	## RFC-036 036f: the engine's avoidance steers the body around the others (a wizard is above his creatures); the step
-	## ends in _on_avoided, this same physics step.
-	if is_obstacle() and _avoidance.steer(velocity, _afflictions.fixed()):
-		return
-	_finish_step()
+	## Locomotion: the afflictions steer (a thrown wizard flies its own path), the engine's avoidance moves him around the others (a wizard is
+	## above his creatures) and the step ends in its `resume`, this same physics step; then `moved` (the pose) or `fell` (back to the altar).
+	_locomotion.finish(delta, false, is_obstacle)
 
 
-## The velocity (x, z) the avoidance gave back: the second half of the physics step of the body.
-func _on_avoided(flat_velocity: Vector3) -> void:
-	velocity.x = flat_velocity.x
-	velocity.z = flat_velocity.z
-	_finish_step()
-
-
-func _finish_step() -> void:
-	velocity = EdgeClamp.clamp_velocity(self, velocity, get_physics_process_delta_time())
-	move_and_slide()
-	if FallCheck.has_fallen(self):
-		_return_to_altar()
+func _on_moved() -> void:
 	_update_clip_state(Vector2(velocity.x, velocity.z).length())
 
 

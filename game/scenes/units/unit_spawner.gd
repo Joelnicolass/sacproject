@@ -5,8 +5,8 @@ extends MpSpawner
 ## Names are the creature name plus a count per name: Trogg1, Trogg2, Manahoar1…
 
 @export var unit_scene: PackedScene
-## The scene of the map's peasants (RFC-024 addendum 1, 024b2): unit.tscn plus PeasantBehavior.
-@export var peasant_scene: PackedScene
+## The scene of the map's villagers: unit.tscn plus a Brain (flee, cower, work) and the grudges.
+@export var villager_scene: PackedScene
 @export var rules: MatchRules
 
 var _serials: Dictionary = {}
@@ -33,7 +33,7 @@ func spawn_unit(data: Dictionary) -> Node3D:
 	return unit
 
 
-## A creature the map puts on the field (MapPopulation): a type with `peasant` gets peasant_scene, and every one
+## A creature the map puts on the field (MapPopulation): a type with `peasant` gets villager_scene, and every one
 ## joins the group `npc` (SoulSystem and the ledger read it). `slot` is the side of the map plus one.
 func spawn_map_creature(type: CreatureType, slot: int, at: Vector3, yaw: float) -> Node3D:
 	return spawn_unit({
@@ -45,7 +45,7 @@ func spawn_map_creature(type: CreatureType, slot: int, at: Vector3, yaw: float) 
 
 func _make(data: Variant) -> Node3D:
 	var info: Dictionary = data
-	var scene := peasant_scene if bool(info.get("peasant", false)) and peasant_scene != null else unit_scene
+	var scene := villager_scene if bool(info.get("peasant", false)) and villager_scene != null else unit_scene
 	var unit: Node3D = scene.instantiate()
 	if bool(info.get("npc", false)):
 		unit.add_to_group(&"npc")

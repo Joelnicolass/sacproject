@@ -7,7 +7,7 @@ extends AiPhase
 ## with the best score against it is queued with the score `best * w3[0] / total`.
 ## It uses what the AI KNOWS: an enemy it has not seen stays where it was when taken in.
 ## RFC-053 053b (F371): a passive NPC (a body of an NPC slot that never picks a fight: CRE8 aggressiveness 0, or a peasant, whose
-## PeasantBehavior never attacks) weighs AiTactics.npc_passive_weight more (0 in every difficulty: «la IA no los caza a propósito»,
+## VillagerBrain never attacks) weighs AiTactics.npc_passive_weight more (0 in every difficulty: «la IA no los caza a propósito»,
 ## PRD). Measured in f371_npc before the change: the first replan took a Farmer at 20 m (threat 0.000, enemy_ratio 0.167) with the
 ## Druid at 40 m in range, and Wrath went to it. Hostile NPC (Taurocks) still count as any foe.
 ## RFC-053 053d (F373): the target the side committed to (FocusTask.committed) weighs AiTactics.commit_weight more, so the wizard's

@@ -227,9 +227,9 @@ func _rage() -> Dictionary:
 	checks["no_order_is_taken"] = int(orders.get("command")) == 0
 	var picker := near_ally.get_node("TargetPicker") as TargetPicker
 	checks["picks_by_the_rage_rule"] = picker.active() == picker.rage_policy and picker.rage_policy != null
-	var chosen := near_ally.closest_foe(near_ally.global_position)
+	var chosen := near_ally.engagement.closest_foe(near_ally.global_position)
 	checks["fights_the_closest_creature"] = chosen != null and chosen != near_ally
-	checks["own_side_is_a_foe"] = near_ally.accepts_target(aim) and picker.accepts(near_foe, true)
+	checks["own_side_is_a_foe"] = near_ally.engagement.accepts_target(aim) and picker.accepts(near_foe, true)
 	var calm := await _w.until(func() -> bool: return not _raging(aim), 31 * _fps)
 	checks["fury_lasts_thirty_seconds"] = calm >= 0 and absi((Engine.get_physics_frames() - started) - 30 * _fps) <= SLACK
 	orders.call("give", 1, near_foe, near_foe.global_position, Vector2.ZERO, 0.0)

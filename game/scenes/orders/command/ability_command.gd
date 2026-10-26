@@ -75,7 +75,7 @@ func _apply(ability: AbilityType, point: Variant, body: Node3D) -> bool:
 		if _ability_of(unit) != ability:
 			continue
 		var at: Vector3 = point if point != null else unit.global_position
-		var reason := unit.request_ability(at, body)
+		var reason := unit.abilities.port.request(at, body)
 		if reason.is_empty():
 			used += 1
 		elif refusal.is_empty():

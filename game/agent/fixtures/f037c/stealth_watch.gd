@@ -1,7 +1,7 @@
 extends Node
 
-## RFC-037 037c / risk R2: the unit's `_stealth` replicates to the clients.
-## Server: a few seconds after the foe (the creature of another slot) exists, it puts it in stealth (`set_stealth`).
+## RFC-037 037c / risk R2: the unit's `SpecialForms.stealth` replicates to the clients.
+## Server: a few seconds after the foe (the creature of another slot) exists, it puts it in stealth (`SpecialForms.stealth`).
 ## Client: reads the replicated foe. `foe_was_visible` = it was first seen targetable; `foe_hidden` = later it is not targetable
 ## (what the minimap asks); `foe_fade` = the 3D transparency the setter applied on this peer.
 ## The flow `f037c_stealth_net.json` asserts these on the client.
@@ -27,13 +27,13 @@ func _process(_delta: float) -> void:
 	if MpKit.is_server():
 		if not _stealthed and Time.get_ticks_msec() / 1000.0 - _seen_at >= delay_s:
 			_stealthed = true
-			foe.call("set_stealth", true)
+			(foe as UnitBody).special_forms.stealth = true
 			print("STEALTH_NET server set stealth on ", foe.name)
 		return
 	var targetable := bool(foe.call("is_targetable"))
 	if targetable and not foe_stealth:
 		foe_was_visible = true
-	foe_stealth = bool(foe.get("_stealth"))
+	foe_stealth = (foe as UnitBody).special_forms.stealth
 	foe_hidden = foe_was_visible and not targetable
 	var visual := foe.get_node_or_null("Tilt/Mesh") as GeometryInstance3D
 	foe_fade = visual.transparency if visual else 0.0

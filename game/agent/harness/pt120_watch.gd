@@ -244,7 +244,7 @@ func dead_report() -> String:
 	var aff: Variant = _dead.get_node_or_null("Afflictions")
 	var dv: Variant = _dead
 	var r := "PT120 DEAD %s playing=%s frames=%d drift=%.4f targetable=%s holds=%s shown=%d" % [_name(_dead),
-		_dead.get("_playing_dead"), dead_frames, dead_drift, bool(dv.is_targetable()),
+		(_dead as UnitBody).special_forms.playing_dead, dead_frames, dead_drift, bool(dv.is_targetable()),
 		bool(aff.holds()) if aff != null else false, int(aff.get("shown")) if aff != null else -1]
 	print(r)
 	return r
@@ -254,7 +254,7 @@ func _track_dead() -> void:
 	if _dead == null or not is_instance_valid(_dead):
 		return
 	var o := _dead.global_transform.origin
-	if bool(_dead.get("_playing_dead")):
+	if (_dead as UnitBody).special_forms.playing_dead:
 		if dead_frames == 0:
 			_dead_at = o
 		dead_frames += 1

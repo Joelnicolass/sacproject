@@ -7,8 +7,10 @@ extends RefCounted
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
-const PEASANT_SCENE := preload("res://scenes/units/peasant.tscn")
+const PEASANT_SCENE := preload("res://scenes/units/villager/villager.tscn")
 const RULES := preload("res://data/match_rules.tres")
+const FSM_SCENE := preload("res://debug/units/villager_fsm.tscn")
+const FsmBed := preload("res://debug/units/villager_fsm.gd")
 const GROUP := "village_cases"
 
 var _root: Node3D
@@ -26,6 +28,7 @@ func run(host: Node3D) -> Dictionary:
 	out["village_cower_flee"] = _cower_flee()
 	out["village_grudge_herd"] = _grudge()
 	out["village_hit_flees"] = _hit_flees()
+	out["village_fsm"] = _fsm()
 	out["village_separation_grid"] = _separation()
 	_root.free()
 	return out
@@ -81,8 +84,8 @@ func _foe_rules() -> Dictionary:
 		"house_not_by_stance": not TargetRules.is_valid_foe_of(1, house, trogg),
 		"house_by_order": TargetRules.is_valid_foe_of(1, house, trogg, false),
 		"not_own_side": not TargetRules.is_valid_foe_of(3, farmer, farmer),
-		"picks_farmer": trogg.closest_foe(Vector3.ZERO) == farmer or trogg.closest_foe(Vector3.ZERO) == null,
-		"farmer_picks_none": farmer.closest_foe(farmer.global_position) == null,
+		"picks_farmer": trogg.engagement.closest_foe(Vector3.ZERO) == farmer or trogg.engagement.closest_foe(Vector3.ZERO) == null,
+		"farmer_picks_none": farmer.engagement.closest_foe(farmer.global_position) == null,
 	}
 	trogg.free()
 	farmer.free()
@@ -119,27 +122,28 @@ func _building() -> Dictionary:
 ## away from it; the foe at 51 m does not scare it; a foe of a grudge side does, even a friend of the stance.
 func _cower_flee() -> Dictionary:
 	var farmer := _unit(PEASANT_SCENE, 3, Vector3.ZERO, "zepe")
-	var behavior := farmer.get_node("PeasantBehavior") as PeasantBehavior
+	var behavior := farmer.get_node("Brain") as VillagerBrain
+	var senses := farmer.get_node("Senses") as VillagerSenses
 	var checks := {}
 	behavior.think()
-	checks["cowers_alone"] = farmer.is_cowering() and behavior.state == &"cower"
+	checks["cowers_alone"] = farmer.is_cowering() and behavior.state_name() == &"Cower"
 	var hut := _house("jhut", Vector3(0.0, 0.0, 49.0))
 	behavior.think()
-	checks["stands_with_shelter"] = not farmer.is_cowering() and behavior.state == &"stand"
-	var far_hut_ok := not (behavior.closest_shelter() == null)
+	checks["stands_with_shelter"] = not farmer.is_cowering() and behavior.state_name() == &"Work"
+	var far_hut_ok := not (senses.closest_shelter() == null)
 	hut.position = Vector3(0.0, 0.0, 51.0)
-	checks["shelter_at_51_is_none"] = behavior.closest_shelter() == null and far_hut_ok
+	checks["shelter_at_51_is_none"] = senses.closest_shelter() == null and far_hut_ok
 	hut.position = Vector3(0.0, 0.0, 30.0)
 	var hunter := _unit(UNIT_SCENE, 1, Vector3(-30.0, 0.0, 0.0), "nmuh")
 	behavior.think()
-	var goal: Vector3 = farmer.get("_goal")
-	checks["flees_from_30"] = behavior.state == &"flee" and farmer.mode == UnitBody.Mode.MOVE and goal.x > 20.0 and absf(goal.z) < 1.0
+	var goal: Vector3 = farmer.locomotion.goal
+	checks["flees_from_30"] = behavior.state_name() == &"Flee" and farmer.mode == UnitBody.Mode.MOVE and goal.x > 20.0 and absf(goal.z) < 1.0
 	hunter.position = Vector3(-51.0, 0.0, 0.0)
 	farmer.halt()
 	behavior.think()
-	checks["no_flee_from_51"] = behavior.state == &"stand" and farmer.mode == UnitBody.Mode.IDLE
+	checks["no_flee_from_51"] = behavior.state_name() == &"Work" and farmer.mode == UnitBody.Mode.IDLE
 	var altar_like := _house("jwg1", Vector3(500.0, 0.0, 0.0))
-	checks["far_shelter_ignored"] = behavior.closest_shelter() == hut
+	checks["far_shelter_ignored"] = senses.closest_shelter() == hut
 	altar_like.free()
 	hunter.free()
 	hut.free()
@@ -187,25 +191,25 @@ func _hit_flees() -> Dictionary:
 	var hunter := _unit(UNIT_SCENE, 1, Vector3(-5.0, 0.0, 0.0), "nmuh")
 	var hut := _house("jhut", Vector3(0.0, 0.0, 30.0))
 	(runner.get_node("Health") as Health).damage(10.0, 1)
-	var behavior := runner.get_node("PeasantBehavior") as PeasantBehavior
+	var behavior := runner.get_node("Brain") as VillagerBrain
 	for tick in TICKS:
 		behavior._physics_process(delta)
 		runner._physics_process(delta)
 	var away := (runner.global_position - hunter.global_position)
 	away.y = 0.0
 	var flat := Vector3(runner.velocity.x, 0.0, runner.velocity.z)
-	var info := {"state": behavior.state, "velocity": runner.velocity}
-	checks["hit_peasant_flees"] = behavior.state == &"flee" and runner.mode == UnitBody.Mode.MOVE
+	var info := {"state": behavior.state_name(), "velocity": runner.velocity}
+	checks["hit_peasant_flees"] = behavior.state_name() == &"Flee" and runner.mode == UnitBody.Mode.MOVE
 	checks["runs_away_at_speed"] = flat.length() > 0.9 * runner.move_speed and flat.normalized().dot(away.normalized()) > 0.9
 	hut.free()
 	var cower := _unit(PEASANT_SCENE, 3, Vector3(300.0, 0.0, 0.0), "zepe")
 	(cower.get_node("Health") as Health).damage(10.0, 1)
-	var cower_behavior := cower.get_node("PeasantBehavior") as PeasantBehavior
+	var cower_behavior := cower.get_node("Brain") as VillagerBrain
 	for tick in TICKS:
 		cower_behavior._physics_process(delta)
 		cower._physics_process(delta)
-	checks["no_shelter_panics_first"] = cower_behavior.state == &"flee" and cower.mode == UnitBody.Mode.MOVE
-	cower_behavior._panic_left = 0.0
+	checks["no_shelter_panics_first"] = cower_behavior.state_name() == &"Flee" and cower.mode == UnitBody.Mode.MOVE
+	(cower.get_node("Senses") as VillagerSenses).panic_left = 0.0
 	for tick in TICKS:
 		cower_behavior._physics_process(delta)
 		cower._physics_process(delta)
@@ -214,6 +218,15 @@ func _hit_flees() -> Dictionary:
 	hunter.free()
 	cower.free()
 	return _verdict(checks, info)
+
+
+## The live bed `debug/units/villager_fsm.tscn` (055c4): one state node per thing a villager does, work, flee, panic and cower.
+func _fsm() -> Dictionary:
+	var bed := FSM_SCENE.instantiate() as FsmBed
+	_root.add_child(bed)
+	var report := bed.run_checks()
+	bed.free()
+	return report
 
 
 ## The avoidance agent of a body is its box: a ycro and an nmuh (different radii) each give the agent their BodyBox half
@@ -266,7 +279,7 @@ func _unit(scene: PackedScene, slot: int, at: Vector3, tag: String) -> UnitBody:
 	unit.add_to_group(GROUP)
 	unit.set_physics_process(false)
 	for child in unit.get_children():
-		if child is PeasantBehavior or child is GrudgeMemory:
+		if child is VillagerBrain or child is GrudgeMemory:
 			child.set_physics_process(false)
 	return unit
 

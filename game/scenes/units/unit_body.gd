@@ -1,693 +1,135 @@
 class_name UnitBody
 extends CharacterBody3D
 
-## A creature with the stats of its CreatureType. The server (or solo) runs movement, aggro and
-## melee; clients get position, rotation, mode and Health through the MultiplayerSynchronizer
-## of units/unit.tscn and only present them.
-##
-## Modes follow sacengine CreatureMode loosely. RFC-036 036j: each mode is a UnitState child of the States
-## machine (units/states/): Idle, Move, Chase, Attack, Shoot, Cower, RockForm, Summoning, Dead, Held, Reviving.
-## The body stays the actor: it holds the physics body, the avoidance, the replication and the public API; the
-## states hold what a mode does each physics step and the look it leaves. `mode` is the one writer of the machine.
-## Aggro is sacengine `patrol` (state.d:13029): with no order, a creature whose CRE8 aggressiveness is not 0
-## (`isPacifist`, sacobject.d:84) attacks the closest enemy within sightRange*0.1 (sacobject.d:88).
+## A creature on the map: the physics body, the ids that travel on the network (`creature_tag`, `model`, `mode`), the commands other
+## systems give it and the explicit order of its physics step. What it is and does lives in its children: Creature, Locomotion, Engagement,
+## Weapons, Abilities, SpecialForms, Regeneration, Clips and States (one per mode). Clients only present what the synchronizer brings.
+## Ref: sacengine CreatureMode (state.d), patrol (state.d:13029).
 
 signal died(tag: String, owner_slot: int, at: Vector3)
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
-## The summon cast ended; it now acts and joins its owner's selection.
-signal summoned
-## F135: `model` changed (data, not order). FireShield reads the box again; the capsule follows BodyMount.worn.
-signal model_changed
-## Held by a Sac Doctor (true) or let go (false). The Captive child draws its ring.
-signal held_changed(held: bool)
-## Held or being revived by a Sac Doctor (true) or neither (false). The Captive child keeps the group
-## and the collision.
-signal taken_changed(taken: bool)
-## Presentation (RFC-052 052c): emitted on every peer from the setters of the replicated `swings`, `shots` and `mode`, after
-## what the setter already did, so a listener (UnitSounds) never changes the order of the simulation.
-signal swung
-signal shot_started
+signal summoned  ## The summon cast ended; it acts now and joins its owner's selection.
+signal model_changed  ## `model` changed (data, not order): FireShield reads the box again.
+signal held_changed(held: bool)  ## A Sac Doctor holds it (true) or lets go (false).
+signal taken_changed(taken: bool)  ## Held or being revived by a Sac Doctor (true) or neither (false).
 signal mode_changed(was: Mode, now: Mode)
 
-## HELD: taken by a Sac Doctor (RFC-020c). REVIVING: a Convert doctor is pumping its corpse back to life
-## (RFC-020e, sacengine convertReviving). COWER: a peasant far from any shelter crouches (sacengine cower, RFC-024
-## addendum 1). Last in the enum: `mode` is replicated as an integer. The `mode` of each UnitState node says which it is.
+## Each mode is a UnitState child of States with the same `mode`. Replicated as an integer: a new mode goes last.
 enum Mode { IDLE, MOVE, CHASE, ATTACK, DEAD, SUMMONING, SHOOT, ROCK_FORM, HELD, REVIVING, COWER }
 
-const REST_FACING := Vector3(0.0, 0.0, 1.0)
-## unit_orders.gd has no class_name (other scripts preload it as UnitOrders).
-const UnitOrders := preload("res://scenes/units/unit_orders.gd")
-
-## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it enters the tree: the spawner on
-## every peer, the .tscn of a bench. It never looks the type up by text.
+## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it enters the tree: the spawner on every peer,
+## the .tscn of a bench. It never looks the type up by text.
 @export var type: CreatureType:
 	set(value):
 		type = value
 		creature_tag = value.id() if value != null else ""
-		_apply_type()
+		if creature != null: creature.adopt()
 ## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the type, not this.
 var creature_tag := ""
-## Wears the body scene of `type` (BodyFrame): its size and sockets. It is the one place that says which body this is.
-@export var mount: BodyMount
-## What it sees (Vision): its range comes from `type.vision_m`; the side's sight is the union of these (VisionSides).
-@export var vision: Vision
-## What it hurts with (Weapons) and what it does on command (Abilities): their children are the weapons and the ability.
-@export var weapons: Weapons
-@export var abilities: Abilities
 ## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived from `type`: set the type, not this.
 @export var model := "":
 	set(value):
 		model = value
-		_apply_model()
+		if creature != null: creature.adopt_model()
 		model_changed.emit()
 ## Player slot that summoned it (0 = nobody).
 @export var owner_slot := 0:
 	set(value):
 		owner_slot = value
-		var bar := get_node_or_null("HealthBar") as UnitHealthBar
-		if bar:
-			bar.set_owner_slot(owner_slot)
+		if health_bar != null: health_bar.set_owner_slot(owner_slot)
 @export var mode: Mode = Mode.IDLE:
 	set(value):
 		var was := mode
 		mode = value
 		if is_node_ready():
-			var next: UnitState = _by_mode.get(mode)
-			if next != null:
-				_states.transition_to(next)
+			states.follow(mode)
 		if _is_taken(mode) != _is_taken(was):
 			taken_changed.emit(_is_taken(mode))
 		if (mode == Mode.HELD) != (was == Mode.HELD):
 			held_changed.emit(mode == Mode.HELD)
 		if is_node_ready():
-			_update_clip_state()
+			clips.update()
 		if mode != was:
 			mode_changed.emit(was, mode)
 
-## Bumped on every swing so clients play the lunge too.
-@export var swings := 0:
-	set(value):
-		swings = value
-		if is_node_ready():
-			_clips.lunge()
-			swung.emit()
-## Bumped when a shot starts (shoot0), for the same cue on clients.
-@export var shots := 0:
-	set(value):
-		shots = value
-		if is_node_ready():
-			_clips.lunge()
-			shot_started.emit()
-
+@export var mount: BodyMount
+@export var vision: Vision
+@export var weapons: Weapons
+@export var abilities: Abilities
+@export var health: Health
+@export var creature: CreatureLink
+@export var locomotion: Locomotion
+@export var engagement: Engagement
+@export var special_forms: SpecialForms
+@export var regeneration: Regeneration
+@export var clips: UnitClips
+@export var states: UnitStates
+@export var health_bar: UnitHealthBar
 @export_flags_3d_physics var unit_layer := 2
 @export_flags_3d_physics var ground_mask := 1
-@export var seat_attempts := 12
-## sacengine stats.d:104: ground creatures turn at π rad/s.
-@export var turn_rate := PI
-## Minimum planar speed (m/s) of a walking ground body for it to face its final velocity (after avoidance).
-@export var face_min_speed := 0.1
-## sacengine regenerates only in idle and not during a damage animation (state.d:1429).
-@export var regen_pause_s := 0.5
 @export var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor"])
-## sacengine CreatureStats.flyingHeight.
-@export var flying_height := 4.5
-## sacengine upwardHoverSpeed / downwardHoverSpeed.
-@export var flying_hover_speed := 3.0
 ## 0 = random. Fixed seeds make a duel repeatable.
 @export var rng_seed := 0
 ## Off: an idle creature without an order never picks a fight (debug scenes hold still).
 @export var idle_aggro := true
 @export var rules: MatchRules
 
-@export_group("Swing")
-@export var lunge_back_deg := 6.0
-@export var lunge_forward_deg := 10.0
-@export var lunge_back_s := 0.3
-@export var lunge_forward_s := 0.08
-@export var lunge_recover_s := 0.25
-
-## Speedup sets it on the server (or solo); the pace is multiplied by it.
+## Speedup sets it on the server (or solo); the pace is multiplied by it. GuardianBond writes `attack_factor`.
 var speed_factor := 1.0
-## Multiplies the damage of its melee and ranged attacks (attackDamageFactor, state.d:8884). A guardian
-## has 1.5; GuardianBond writes it.
 var attack_factor := 1.0
 var move_speed := 0.0
-var target: Node3D
-## Gib sets it (server or solo) right before the body dies: it bursts, so it leaves no corpse and its soul stays free (SoulSystem).
+## Gib sets it right before the body dies: it bursts, so it leaves no corpse and its soul stays free (SoulSystem).
 var gibbed := false
-## Set by the Orders child while an RTS order steers the body: no idle aggro, and a chase
-## does not give up at sight range.
+## Set by the Orders child while an RTS order steers the body: no idle aggro, and a chase does not give up at sight range.
 var ordered := false
+## Owned by Engagement; every state reads and writes it here.
+var target: Node3D:
+	get: return engagement.target
+	set(value): engagement.target = value
 
-var _goal := Vector3.ZERO
-var _since_damage := INF
-## Whether the body flew when this physics step began (the avoidance ends the step later in it).
-var _airborne_step := false
-## The state asked for a planar walk this tick (ground, not held): only then the body faces its final velocity.
-var _walk_intent := false
-var _stats_ready := false
-var _last_health := 0.0
-var _rng := RandomNumberGenerator.new()
-## Clip role played in IDLE (RFC-028c): a calm peasant digs ("work", PeasantBehavior sets it). Presentation only.
-var _idle_role := "idle"
-var _playing_dead := false
-## Replicated (unit.tscn, ON_CHANGE) so a client hides an enemy in stealth on the minimap (RFC-037). The server stays the
-## only writer (`set_stealth`); the setter applies the 3D fade on every peer.
-var _stealth := false:
-	set(value):
-		if _stealth == value:
-			return
-		_stealth = value
-		if is_node_ready():
-			_apply_stealth_look()
-			_update_clip_state()
-## RFC-023 023e: the clip role of a creature a Sac Doctor holds or revives (rise, held, thrash). Captive picks it on every
-## peer from the mode; "" = none. A model with no such clip rests on the role it would play anyway.
-var captive_role := "":
-	set(value):
-		captive_role = value
-		if is_node_ready():
-			_update_clip_state()
-
-@onready var clip_pose: ClipPlayback = $ClipPose
-## RFC-036 036j: the machine of the modes; `_by_mode` finds the state of a `mode` value.
-@onready var _states: FsmMachine = $States
-var _by_mode := {}
-## Optional children (RFC-024 024b): without them the body walks and picks as it did before.
-@onready var path_follower: PathFollower = get_node_or_null("PathFollower")
-@onready var _target_picker: TargetPicker = get_node_or_null("TargetPicker")
-## F370: the order the body is under (is_attack_order_on). Without it the body is never under an explicit ATTACK.
-@onready var _orders: UnitOrders = get_node_or_null("Orders")
-## F116 (RFC-030e): takes off, flies and lands a hybrid flier. Without it every hybrid walks.
-@onready var flight: Flight = get_node_or_null("Flight")
-## F120 (RFC-030i): the one owner of «can it act?» (stunned, petrified). Held, the body neither thinks nor turns.
 @onready var afflictions: Afflictions = $Afflictions
-@onready var _avoidance: BodyAvoidance = $Avoidance
-## RFC-036 036j follow-ups: the vertical motion and the clips, each its own child.
 @onready var air: UnitAir = $Air
-@onready var _clips: UnitClips = $Clips
-
-
-## Before it enters the tree: the summon cast has just started.
-func begin_summon() -> void:
-	mode = Mode.SUMMONING
-
-
-## Server or solo, when the summon cast ends and the souls are paid.
-func finish_summon() -> void:
-	if mode == Mode.SUMMONING:
-		mode = Mode.IDLE
-
-
-func is_summoning() -> bool:
-	return mode == Mode.SUMMONING
-
-
-func is_held() -> bool:
-	return mode == Mode.HELD
-
-
-## A Sac Doctor has it: held, or being pumped back to life. Not a creature of the match meanwhile.
-func is_taken() -> bool:
-	return _is_taken(mode)
-
-
-func is_reviving() -> bool:
-	return mode == Mode.REVIVING
-
-
-static func _is_taken(value: Mode) -> bool:
-	return value == Mode.HELD or value == Mode.REVIVING
+@onready var flight: Flight = get_node_or_null("Flight")
+@onready var path_follower: PathFollower = get_node_or_null("PathFollower")
+@onready var clip_pose: ClipPlayback = $ClipPose
 
 
 func _ready() -> void:
 	add_to_group("unit")
-	for state: UnitState in _states.get_children():
-		_by_mode[state.mode] = state
-	_states.set_physics_process(false)  ## The body calls the state in its own physics step (order of the old `match`).
-	_states.set_process(false)
-	_states.set_process_unhandled_input(false)
 	floor_snap_length = 0.5
 	collision_layer = unit_layer
 	collision_mask = ground_mask
-	_apply_type()
-	_apply_model()
-	if rules != null:
-		vision.rules = rules
-	mode_changed.connect(_sync_vision.unbind(2))
-	_sync_vision()
-	if clip_pose and clip_pose.has_signal("clip_looped"):
-		clip_pose.connect("clip_looped", _on_clip_looped)
-	if flight:
-		flight.state_changed.connect(_on_flight_changed)
-	var health := _health()
-	health.changed.connect(_on_health_changed)
-	($HealthBar as UnitHealthBar).bind(health, owner_slot, self)
-	weapons.struck.connect(_on_struck)
-	afflictions.held_changed.connect(cancel_attacks.unbind(1))
-	weapons.setup(self, type, _rng)
-	abilities.setup(self, type)
-	var mana_support := get_node_or_null("ManaSupport") as UnitManaSupport
-	if mana_support:
-		mana_support.setup(self, type, owner_slot, rules)
-	## The machine began in Idle; a body born in another mode (a late join, a summon) takes its state without the enter.
-	if _by_mode.has(mode):
-		_states.current = _by_mode[mode]
-		current_state().present(false)
-	if _stealth:
-		_apply_stealth_look()
-	_update_clip_state()
-	if MpKit.is_networked() and not MpKit.is_server():
-		return
-	health.died.connect(_on_died)
-	_init_stats()
-	MatchSeed.seed_rng(_rng, ["body", String(name)], rng_seed)
-	if type and not is_flying():
-		air.seat_left = seat_attempts
-	weapons.setup(self, type, _rng)
-
-
-func display_name() -> String:
-	return type.display_name if type else creature_tag
-
-
-func is_dead() -> bool:
-	return mode == Mode.DEAD
-
-
-## sacengine isObstacle / isReactingToObstacles (state.d:112-126): not dead, not preSpawning.
-func is_obstacle() -> bool:
-	return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not afflictions.hides()
-
-
-func facing_flat() -> Vector3:
-	var ahead := REST_FACING.rotated(Vector3.UP, rotation.y)
-	ahead.y = 0.0
-	if ahead.length_squared() < 0.000001:
-		return REST_FACING
-	return ahead.normalized()
-
-
-func melee_profile() -> Dictionary:
-	return {
-		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
-		"resistance": type.melee_resistance if type else 1.0,
-		"reach": mount.facts.reach_m,
-		"height": mount.facts.height_m,
-	}
-
-
-func begin_walk(goal: Vector3) -> void:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken():
-		return
-	_goal = goal
-	target = null
-	cancel_attacks()
-	mode = Mode.MOVE
-
-
-## An order-level walk (RFC-024 024b): to `point` by the waypoints of the PathFollower child, or straight
-## (begin_walk) when the body has none. UnitOrders and the AI call this; begin_walk stays the one leg.
-func walk_to(point: Vector3) -> void:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken():
-		return
-	if air.flies_to(point):
-		begin_walk(point)
-		return
-	if is_instance_valid(path_follower):
-		path_follower.go_to(point)
-	else:
-		begin_walk(point)
-
-
-func is_walking() -> bool:
-	return mode == Mode.MOVE
-
-
-## In the air: a creature that must fly, or a hybrid the Flight child has up (F116).
-func is_flying() -> bool:
-	if type and type.is_flying():
-		return true
-	return flight != null and flight.is_airborne()
-
-
-## Teleport (RFC-021c). The server puts the body at `point` (a spot on the land) in one step: it keeps the
-## height it had over the ground (a flier), has no goal, target or velocity, and keeps its order only if it is
-## guard or retreat (sacengine teleport, state.d:10260-10261, 10269). The clients are told not to glide.
-func warp_to(point: Vector3) -> void:
-	var above := maxf(0.0, global_position.y - air.ground_height(global_position)) if is_flying() else 0.0
-	global_position = Vector3(point.x, point.y + above, point.z)
-	velocity = Vector3.ZERO
-	halt()
-	var orders := get_node_or_null("Orders") as UnitOrders
-	if orders != null:
-		orders.warped()
-	var snap := get_node_or_null("WarpSnap") as WarpSnap
-	if snap != null:
-		snap.announce()
-
-
-func engage(foe: Node3D) -> void:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or not accepts_target(foe):
-		return
-	if target != foe:
-		cancel_attacks()
-		target = foe
-	if mode != Mode.ATTACK and mode != Mode.SHOOT:
-		mode = Mode.CHASE
-
-
-## Charm: the creature forgets its orders and its target and is told to follow `leader` (its new wizard).
-func follow(leader: Node3D) -> void:
-	_orders.clear()
-	halt()
-	_orders.give(UnitOrders.Command.RETREAT, leader, leader.global_position, Vector2.ZERO, 0.0)
-
-
-func halt() -> void:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken():
-		return
-	target = null
-	cancel_attacks()
-	mode = Mode.IDLE
-
-
-## sacengine startCowering (state.d:13760): stops where it is and crouches until something else moves it.
-func start_cower() -> void:
-	if mode == Mode.DEAD or mode == Mode.SUMMONING or is_taken() or mode == Mode.COWER:
-		return
-	target = null
-	cancel_attacks()
-	mode = Mode.COWER
-
-
-func is_cowering() -> bool:
-	return mode == Mode.COWER
-
-
-## F27 calls this for Ctrl+Q / Shift+B on the owner's peer. Returns the local refusal (mana,
-## no ability, «No implementado»), or "" once sent. The server checks the cooldown again. The Abilities port does the work.
-func request_ability(target_pos: Vector3, foe: Node3D = null) -> String:
-	return abilities.port.request(target_pos, foe)
-
-
-func ability_status(target_pos: Vector3, foe: Node3D = null) -> String:
-	return abilities.port.status(target_pos, foe)
-
-
-## Server or solo: sacengine useAbility. "" = used.
-func use_ability(target_pos: Vector3, foe: Node3D = null) -> String:
-	return abilities.port.use(target_pos, foe)
-
-
-## sacengine rockForm (state.d:13052): drops its order and target and stands as a rock.
-func enter_rock_form() -> void:
-	var orders := get_node_or_null("Orders") as UnitOrders
-	if orders:
-		orders.clear()
-	target = null
-	cancel_attacks()
-	mode = Mode.ROCK_FORM
-
-
-func is_rock_form() -> bool:
-	return mode == Mode.ROCK_FORM
-
-
-func is_targetable() -> bool:
-	return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not _playing_dead and not _stealth and not afflictions.hides()
-
-
-func set_playing_dead(on: bool) -> void:
-	if _playing_dead == on:
-		return
-	_playing_dead = on
-	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
-	if visual:
-		visual.set_fade(0.5 if on else 0.0)
-	if on:
-		halt()
-	_update_clip_state()
-
-
-func set_stealth(on: bool) -> void:
-	if _stealth == on:
-		return
-	_stealth = on
-
-
-func _apply_stealth_look() -> void:
-	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
-	if visual:
-		visual.set_fade(0.75 if _stealth else 0.0)
-
-
-func clear_special_states() -> void:
-	set_playing_dead(false)
-	set_stealth(false)
-
-
-## sacengine canRegenerateMana (state.d:168): not while dead or still being summoned.
-func can_take_mana() -> bool:
-	return mode != Mode.DEAD and mode != Mode.SUMMONING
-
-
-## A foe by the rules of orders (Orders retarget, UnitOrders); not the target this body keeps (accepts_target, its TargetPolicy).
-## F370: by stance, except the target of an explicit ATTACK order.
-func is_foe(node: Variant) -> bool:
-	return TargetRules.is_valid_foe_of(owner_slot, node, self, not is_attack_order_on(node))
-
-
-## F370: `node` is the target of this body's explicit ATTACK order (a click, the AI's port): the one body it fights without
-## asking the stance (a neutral house attacked on purpose).
-func is_attack_order_on(node: Variant) -> bool:
-	if not ordered or node == null or not is_instance_valid(node):
-		return false
-	if not is_instance_valid(_orders) or _orders.command != UnitOrders.Command.ATTACK or not is_instance_valid(_orders.target):
-		return false
-	return _orders.target == node
-
-
-func _health() -> Health:
-	return $Health
-
-
-func _apply_type() -> void:
-	if type:
-		move_speed = type.fly_speed_m_s if is_flying() else type.run_speed_m_s
-	else:
-		move_speed = 0.0
-	if vision != null:
-		vision.adopt_range(type.vision_m if type else 0.0)
-	if type and mount != null:
-		mount.wear(type.body)
-		if model.is_empty():
-			model = mount.facts.model_id
-
-
-## A body looks only while it simulates and is alive, summoned and free: not as a corpse, a summon in the making or a held creature.
-func _sync_vision() -> void:
-	vision.watching = simulates() and mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken()
-
-
-func _init_stats() -> void:
-	if type == null or _stats_ready:
-		return
-	_stats_ready = true
-	_health().setup(float(type.health))
-	_last_health = float(type.health)
-	($ManaPool as ManaPool).setup(float(type.mana))
-
-
-func _apply_model() -> void:
-	if model.is_empty():
-		return
-	var bar := get_node_or_null("HealthBar") as UnitHealthBar
-	if bar:
-		bar.place_above(mount.facts.height_m)
-	if is_node_ready():
-		weapons.setup(self, type, _rng)
-
-
+	creature.adopt()
+	creature.adopt_model()
+	creature.equip()
+	states.start(mode)
+	if special_forms.stealth:
+		special_forms.present()
+	clips.update()
+	if simulates():
+		health.died.connect(_on_died)
+		creature.start_simulation()
+
+
+## One simulated step, in this order and no other (no child processes by itself): vertical motion, time since the last hit, the state of
+## the mode (unless playing dead or held), regeneration, then Locomotion steers, avoids and slides.
 func _physics_process(delta: float) -> void:
-	if not simulates():
-		_update_clip_state()
-		return
-	if is_taken():
-		## The Captive child moves it (a Sac Doctor carries it): no AI, no gravity, no collision.
-		_update_clip_state()
+	if not simulates() or is_taken():  ## A client presents; a held creature is carried by Captive.
+		clips.update()
 		return
 	if air.seat():
 		return
-	var must_fly := type != null and type.is_flying()
-	var airborne := is_flying()
-	var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-	if must_fly and not (flight != null and flight.is_dropped()):
-		air.hold_height(delta)
-	elif flight != null and (must_fly or flight.is_capable()):
-		var above := global_position.y - air.ground_height(global_position) if airborne else 0.0
-		var lift := flight.advance(delta, mode == Mode.MOVE, above, is_on_floor())
-		if airborne:
-			velocity.y = lift
-		elif is_on_floor():
-			velocity.y = 0.0
-		else:
-			velocity.y -= gravity * delta
-	elif is_on_floor():
-		velocity.y = 0.0
-	else:
-		velocity.y -= gravity * delta
-	_since_damage += delta
-	velocity.x = 0.0
-	velocity.z = 0.0
-	## The gate: playing dead (regenerating) or held by Afflictions, the body only falls and is pushed; its mode (and its
-	## order) waits for it. Declared (F120): Play Dead now also gibs over a hole (has_fallen) and, in the air, shows idle, not fly.
-	var resting := _playing_dead
-	if not (_playing_dead or afflictions.holds()):
+	locomotion.begin(delta, mode == Mode.MOVE)
+	regeneration.age(delta)
+	var resting := special_forms.playing_dead
+	if not (resting or afflictions.holds()):
 		var state := current_state()
-		if state.rests_on_floor() and (is_dead() or (not airborne and is_on_floor())):
+		if state.rests_on_floor() and (is_dead() or (not locomotion.airborne_step and is_on_floor())):
 			return
 		resting = state.regenerates()  ## asked before the update: a mode it leaves this tick does not regenerate in it
 		state.physics_update(delta)
-	_regenerate_step(delta, resting)
-	if flight != null and flight.holds_still():
-		velocity.x = 0.0
-		velocity.z = 0.0
-	velocity = afflictions.steer(velocity, delta)  ## F121: a thrown body (Tumbling) flies its own ballistic path.
-	_airborne_step = airborne
-	_walk_intent = not airborne and not _playing_dead and not afflictions.holds() and Vector2(velocity.x, velocity.z).length() > face_min_speed
-	## RFC-036 036f: the engine's avoidance steers the body around the others; the step ends in _on_avoided, this same
-	## physics step, with the velocity it gives back.
-	if is_obstacle() and _avoidance.steer(velocity, afflictions.fixed()):
-		return
-	_finish_step()
-
-
-## The velocity (x, z) the avoidance gave back: the second half of the physics step of the body.
-func _on_avoided(flat_velocity: Vector3) -> void:
-	velocity.x = flat_velocity.x
-	velocity.z = flat_velocity.z
-	_finish_step()
-
-
-func _finish_step() -> void:
-	var airborne := _airborne_step
-	## A ground creature faces where it really goes (avoidance may bend the wanted velocity); pushes never reach here.
-	if _walk_intent and Vector2(velocity.x, velocity.z).length() > face_min_speed:
-		turn_toward(Vector3(velocity.x, 0.0, velocity.z), get_physics_process_delta_time())
-	if flight != null and flight.is_airborne():
-		air.cap_pace()
-	if not airborne:
-		velocity = EdgeClamp.clamp_velocity(self, velocity, get_physics_process_delta_time())
-	move_and_slide()
-	if not airborne and FallCheck.has_fallen(self):
-		_gib_fallen()
-	_update_clip_state()
-
-
-func simulates() -> bool:
-	if not MpKit.is_networked():
-		return true
-	return MpKit.is_server()
-
-
-## sacengine (state.d:14800-14821): a creature gibDepth below the land over a hole is gibbed
-## with no soul (gib(state, -2), state.d:8341-8365): blood burst, out of the selection, removed.
-func _gib_fallen() -> void:
-	set_physics_process(false)
-	var center := soul_anchor()
-	FxBus.broadcast("hover_blood", center)
-	FxBus.broadcast("blood", center)
-	print("%s cae al vacio" % display_name())
-	queue_free()
-
-
-## The one place a creature regenerates (sacengine isRegenerating, state.d:1428-1434): at rest (its state says so, or it plays dead) and
-## not held, once the pause after a hit is over; or, for a creature that regenerates always (the Troll), in any mode that can heal and
-## with no pause. A blocked body (Afflictions) heals nothing in either case.
-func _regenerate_step(delta: float, resting: bool) -> void:
-	if resting:
-		regenerate(delta, true)
-	elif type != null and type.regenerates_always and mode != Mode.DEAD and mode != Mode.REVIVING and not _health().is_dead():
-		regenerate(delta, false)
-
-
-## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana (1 without mana). `paused`: not for `regen_pause_s`
-## after a hit.
-func regenerate(delta: float, paused := true) -> void:
-	var health := _health()
-	if type == null or (paused and _since_damage < regen_pause_s) or health.is_full():
-		return
-	var mana := $ManaPool as ManaPool
-	var full := mana.maximum
-	var factor := 1.0 if full <= 0.0 else mana.current / full
-	health.regenerate((type.regeneration_per_s + DevourGrowth.extra_regeneration_of(self)) * factor * delta)
-	_last_health = health.current
-
-
-## The goal of begin_walk, which the Move state steers to.
-func walk_goal() -> Vector3:
-	return _goal
-
-
-func set_walk_goal(goal: Vector3) -> void:
-	_goal = goal
-
-
-func cancel_attacks() -> void:
-	if mode == Mode.ROCK_FORM and simulates() and afflictions.breaks_special_modes():
-		mode = Mode.IDLE  ## F137: petrified ends Rockform (state.d:11631-11640); Afflictions.held_changed calls here.
-	weapons.cancel_all()
-	_clips.cancel_lunge()
-
-
-func turn_toward(direction: Vector3, delta: float) -> void:
-	var wanted := atan2(direction.x, direction.z)
-	rotation.y = rotate_toward(rotation.y, wanted, turn_rate * delta)
-
-
-func flat_distance(node: Node3D) -> float:
-	var d := node.global_position - global_position
-	return Vector2(d.x, d.z).length()
-
-
-## sacengine updateTarget around `center` (state.d:12924): with a TargetPicker child, the visible foe of the
-## best score above `threshold` (patrol 0.25; patrolAround min(100, d)*0.01, advance 0.25 with ref 150);
-## without it, the closest foe within sight range of `center`. Null for a pacifist (aggressiveness 0).
-func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF) -> Node3D:
-	if type == null or (type.aggressiveness <= 0 and not afflictions.raging()):
-		return null
-	if is_instance_valid(_target_picker):
-		return _target_picker.pick(center, threshold, ref_range, within)
-	return TargetRules.closest_in_sight(self, center)
-
-
-## The target this body keeps, by its TargetPolicy (F136); without one, a foe: the target of an explicit ATTACK order is any body
-## not of the own side (isValidAttackTarget), anything else a stance enemy (isValidEnemyAttackTarget, state.d:12442). F370: before,
-## every order dropped the stance, so a guard kept any body of another slot (a gravestone of the map, a neutral house).
-func accepts_target(node: Variant) -> bool:
-	var explicit := is_attack_order_on(node)
-	return _target_picker.accepts(node, explicit) if is_instance_valid(_target_picker) else TargetRules.is_valid_foe_of(owner_slot, node, self, not explicit)
-
-
-## F370: the picker's TargetFutility banned `node` (it would not lose health). False without them.
-func is_futile(node: Variant) -> bool:
-	return is_instance_valid(_target_picker) and _target_picker.is_banned(node)
-
-
-func _on_health_changed(current: float, _maximum: float) -> void:
-	if current < _last_health:
-		_since_damage = 0.0
-	_last_health = current
-
-
-func _on_struck(foe: Node3D, amount: float, hit_chance: float, roll: float) -> void:
-	struck.emit(foe, amount, hit_chance, roll)
-
-
-## The Corpse child: the fall of this body once it is dead.
-func corpse() -> Corpse:
-	return $Corpse as Corpse
+	regeneration.step(delta, resting)
+	locomotion.finish(delta, not special_forms.playing_dead, is_obstacle)
 
 
 func _on_died(_from_slot: int) -> void:
@@ -695,66 +137,61 @@ func _on_died(_from_slot: int) -> void:
 	died.emit.call_deferred(creature_tag, owner_slot, global_position)
 
 
-## sacengine soulPosition: the body center (of the laid corpse once it has fallen).
+## Commands (Engagement does them) and the abilities (the Port of Abilities). The summon cast begins before the body enters the tree.
+func engage(foe: Node3D) -> void: engagement.engage(foe)
+func halt() -> void: engagement.halt()
+func begin_walk(goal: Vector3) -> void: engagement.walk(goal)
+func walk_to(point: Vector3) -> void: engagement.walk_to(point)
+func warp_to(point: Vector3) -> void: engagement.warp(point)
+func use_ability(target_pos: Vector3, foe: Node3D = null) -> String: return abilities.port.use(target_pos, foe)
+func begin_summon() -> void: mode = Mode.SUMMONING
+func finish_summon() -> void:
+	if mode == Mode.SUMMONING: mode = Mode.IDLE
+
+
+## Questions. A body held or revived by a Sac Doctor is not a creature of the match meanwhile; an obstacle is not dead, not summoning, not
+## taken and not hidden by an affliction; flying is a creature that must fly or a hybrid with its Flight up.
+## Ref: sacengine isObstacle (state.d:112-126), canRegenerateMana (state.d:168): not while dead or still being summoned.
+func is_dead() -> bool: return mode == Mode.DEAD
+func is_summoning() -> bool: return mode == Mode.SUMMONING
+func is_held() -> bool: return mode == Mode.HELD
+func is_reviving() -> bool: return mode == Mode.REVIVING
+func is_walking() -> bool: return mode == Mode.MOVE
+func is_cowering() -> bool: return mode == Mode.COWER
+func is_rock_form() -> bool: return mode == Mode.ROCK_FORM
+func is_taken() -> bool: return _is_taken(mode)
+static func _is_taken(value: Mode) -> bool: return value == Mode.HELD or value == Mode.REVIVING
+func is_obstacle() -> bool: return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not afflictions.hides()
+func is_targetable() -> bool: return is_obstacle() and not special_forms.playing_dead and not special_forms.stealth
+func is_flying() -> bool: return (type != null and type.is_flying()) or (flight != null and flight.is_airborne())
+func can_take_mana() -> bool: return mode != Mode.DEAD and mode != Mode.SUMMONING
+func simulates() -> bool: return not MpKit.is_networked() or MpKit.is_server()
+
+
+func facing_flat() -> Vector3:
+	var ahead := Vector3.BACK.rotated(Vector3.UP, rotation.y)
+	ahead.y = 0.0
+	return Vector3.BACK if ahead.length_squared() < 0.000001 else ahead.normalized()
+
+
+## Small doors to the children, for the callers that hold a body and nothing else.
+func display_name() -> String: return type.display_name if type else creature_tag
+func has_clip(role: String) -> bool: return clips.has_clip(role)
+func current_state() -> UnitState: return states.current as UnitState if states != null else null
+func corpse() -> Corpse: return $Corpse as Corpse
+func debug_set_clip_state(role: String) -> void: clips.show_role(role)
+func debug_clear_clip_state() -> void: clips.set_debug_role("")
+func debug_clip_info() -> Dictionary: return clips.info()
+
+
+func melee_profile() -> Dictionary:
+	return {"evasion": float(type.melee_evasion_milli()) if type else 0.0, "resistance": type.melee_resistance if type else 1.0, "reach": mount.facts.reach_m, "height": mount.facts.height_m}
+
+
+## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright). Ref: sacengine soulPosition.
 func soul_anchor() -> Vector3:
 	var pivot := get_node_or_null("Tilt") as Node3D
 	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual
 	if pivot == null or visual == null:
 		return global_position
-	# A clip lays the body down (the pivot stays upright): the soul sits where the Tween would have left the center.
-	var lie := corpse().lying_pose(mount.facts.radius_m)
-	return pivot.global_transform * lie * mount.facts.center
-
-
-func _update_clip_state() -> void:
-	if _clips != null:
-		_clips.update()
-
-
-func current_state() -> UnitState:
-	return _states.current as UnitState if _states != null else null
-
-
-func is_playing_dead() -> bool:
-	return _playing_dead
-
-
-## F116: on every peer (Flight:state is replicated): the pace of the air or the ground, and the clip.
-func _on_flight_changed(_state: Flight.State) -> void:
-	if type:
-		move_speed = type.fly_speed_m_s if is_flying() else type.run_speed_m_s
-	_update_clip_state()
-
-
-## RFC-028c: the clip role this body plays when it stands in IDLE ("idle" = the CRE8 idle0). A role this model
-## has no clip for falls back to idle.
-func set_idle_role(role: String) -> void:
-	_idle_role = role if not role.is_empty() else "idle"
-	if is_node_ready():
-		_update_clip_state()
-
-
-func idle_role() -> String:
-	return _idle_role
-
-
-func has_clip(role: String) -> bool:
-	return clip_pose != null and clip_pose.has_role(role)
-
-
-## A clip looped: the state of the mode decides what plays next (the idle gesture, the talk-cower).
-func _on_clip_looped(role: String) -> void:
-	_clips.looped(role)
-
-
-func debug_set_clip_state(role: String) -> void:
-	_clips.set_debug_role(role)
-	_update_clip_state()
-
-
-func debug_clear_clip_state() -> void:
-	_clips.set_debug_role("")
-
-
-func debug_clip_info() -> Dictionary:
-	return _clips.info()
+	return pivot.global_transform * corpse().lying_pose(mount.facts.radius_m) * mount.facts.center

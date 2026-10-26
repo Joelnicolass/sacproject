@@ -294,7 +294,7 @@ func _closest_enemy_creature(unit: Node3D, spot: Vector3) -> Node3D:
 	var best: Node3D = null
 	var best_d := retarget_range
 	for node in get_tree().get_nodes_in_group("unit"):
-		if not (unit as UnitBody).is_foe(node):
+		if not (unit as UnitBody).engagement.is_foe(node):
 			continue
 		var d := spot.distance_to((node as Node3D).global_position)
 		if d <= best_d:

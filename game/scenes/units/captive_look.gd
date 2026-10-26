@@ -44,23 +44,23 @@ func _apply(was: UnitBody.Mode, now: UnitBody.Mode) -> void:
 	var look := CaptiveRules.on_change(was, now, _can_hang(), _lies_as_ragdoll())
 	match look:
 		CaptiveRules.Look.HANG, CaptiveRules.Look.HANG_APPEAR:
-			body.captive_role = ""
+			body.clips.captive_role = ""
 			ragdoll.set_pose(RagdollDriver.Pose.HANG)
 			if look == CaptiveRules.Look.HANG_APPEAR:
 				_appear()
 		CaptiveRules.Look.CLIPS:
 			_drop_ragdoll()
-			body.captive_role = _first_clip(0)
+			body.clips.captive_role = _first_clip(0)
 		CaptiveRules.Look.STAND_APPEAR:
 			_stand_up(now)
 		CaptiveRules.Look.LET_GO:
 			_drop_ragdoll()
-			body.captive_role = ""
+			body.clips.captive_role = ""
 		CaptiveRules.Look.KEEP_LYING:
-			body.captive_role = ""
+			body.clips.captive_role = ""
 		CaptiveRules.Look.NONE:
 			if now != UnitBody.Mode.HELD and now != UnitBody.Mode.REVIVING:
-				body.captive_role = ""
+				body.clips.captive_role = ""
 
 
 func _can_hang() -> bool:
@@ -88,7 +88,7 @@ func _stand_up(now: UnitBody.Mode) -> void:
 	_appear()
 	if light != null:
 		light.set_lit(true, appear_s)
-	body.captive_role = _first_clip(0) if now == UnitBody.Mode.REVIVING else ""
+	body.clips.captive_role = _first_clip(0) if now == UnitBody.Mode.REVIVING else ""
 
 
 func _appear() -> void:
@@ -99,12 +99,12 @@ func _appear() -> void:
 ## A clip of the sequence ended: the next one that the model has (rise -> held -> thrash). The last loops; a revived corpse
 ## stands after its rise.
 func _on_clip_looped(role: String) -> void:
-	if role != body.captive_role or role == SEQUENCE[SEQUENCE.size() - 1]:
+	if role != body.clips.captive_role or role == SEQUENCE[SEQUENCE.size() - 1]:
 		return
 	if body.is_held():
-		body.captive_role = _first_clip(SEQUENCE.find(role) + 1)
+		body.clips.captive_role = _first_clip(SEQUENCE.find(role) + 1)
 	else:
-		body.captive_role = ""
+		body.clips.captive_role = ""
 
 
 ## The first role of the sequence from `from` on that the model has a clip for ("" when none). A revived corpse only rises.

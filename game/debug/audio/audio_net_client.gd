@@ -124,7 +124,7 @@ func _trace() -> void:
 	for node in get_tree().get_nodes_in_group(&"unit"):
 		var unit := node as UnitBody
 		if unit != null:
-			state += "|%s %d %d %d %s" % [unit.name, unit.mode, unit.swings, unit.shots, unit.global_position.round()]
+			state += "|%s %d %d %d %s" % [unit.name, unit.mode, unit.weapons.swings, unit.weapons.shots, unit.global_position.round()]
 	var g := get_tree().root.find_child("CombatGauge", true, false) as CombatGauge
 	if g != null:
 		state += "|g %.2f" % g.intensity
@@ -143,4 +143,4 @@ func _trace() -> void:
 	for node in get_tree().get_nodes_in_group(&"unit"):
 		var unit := node as UnitBody
 		if unit != null:
-			print("AUDIO_NET trace   %s slot=%d at=%s mode=%d swings=%d shots=%d" % [unit.name, unit.owner_slot, unit.global_position.round(), unit.mode, unit.swings, unit.shots])
+			print("AUDIO_NET trace   %s slot=%d at=%s mode=%d swings=%d shots=%d" % [unit.name, unit.owner_slot, unit.global_position.round(), unit.mode, unit.weapons.swings, unit.weapons.shots])

@@ -80,7 +80,7 @@ func aim_direction(target: Node3D) -> Vector3:
 
 
 func announce() -> void:
-	body.shots += 1
+	weapons.shots += 1
 
 
 func busy_state() -> StringName:

@@ -484,7 +484,10 @@ func _sweep(bodies: Array[CharacterBody3D], part: String) -> float:
 		for b in bodies:
 			match part:
 				"clip":
-					b.call("_update_clip_state")
+					if b is UnitBody:
+						(b as UnitBody).clips.update()
+					else:
+						b.call("_update_clip_state")
 					var clip := b.get_node_or_null("ClipPose")
 					if clip:
 						clip.call("advance", delta)

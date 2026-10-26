@@ -25,7 +25,7 @@ func enter() -> void:
 
 func physics_update(delta: float) -> void:
 	var foe := body.target
-	if not body.accepts_target(foe) or (not body.ordered and body.flat_distance(foe) > body.vision.range_m()):
+	if not body.engagement.accepts_target(foe) or (not body.ordered and body.locomotion.flat_distance(foe) > body.vision.range_m()):
 		body.target = null
 		transition(&"Idle")
 		return
@@ -39,7 +39,7 @@ func physics_update(delta: float) -> void:
 			break
 		var facing := weapon.aim_direction(foe)
 		if facing != Vector3.ZERO:
-			body.turn_toward(facing, delta)
+			body.locomotion.turn_toward(facing, delta)
 		if step == Weapon.Step.FIRE:
 			weapon.announce()
 			transition(weapon.busy_state())
@@ -52,7 +52,7 @@ func physics_update(delta: float) -> void:
 	if to_foe.length_squared() < 0.000001:
 		return
 	var direction := to_foe.normalized()
-	body.turn_toward(direction, delta)
+	body.locomotion.turn_toward(direction, delta)
 	var pace := body.move_speed * body.speed_factor * maxf(0.0, body.facing_flat().dot(direction))
 	body.velocity.x = direction.x * pace
 	body.velocity.z = direction.z * pace

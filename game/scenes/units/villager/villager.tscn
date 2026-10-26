@@ -1,0 +1,44 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="1_unit"]
+[ext_resource type="Script" path="res://scenes/units/villager/grudge_memory.gd" id="2_grudge"]
+[ext_resource type="Script" path="res://scenes/units/villager/villager_senses.gd" id="3_senses"]
+[ext_resource type="Script" path="res://scenes/units/villager/villager_brain.gd" id="4_brain"]
+[ext_resource type="Script" path="res://scenes/units/villager/villager_state.gd" id="5_idle"]
+[ext_resource type="Script" path="res://scenes/units/villager/villager_work_state.gd" id="6_work"]
+[ext_resource type="Script" path="res://scenes/units/villager/villager_flee_state.gd" id="7_flee"]
+[ext_resource type="Script" path="res://scenes/units/villager/villager_cower_state.gd" id="8_cower"]
+
+[node name="Villager" instance=ExtResource("1_unit")]
+idle_aggro = false
+
+[node name="GrudgeMemory" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("2_grudge")
+body = NodePath("..")
+health = NodePath("../Health")
+
+[node name="Senses" type="Node" parent="." node_paths=PackedStringArray("body", "grudge", "health")]
+script = ExtResource("3_senses")
+body = NodePath("..")
+grudge = NodePath("../GrudgeMemory")
+health = NodePath("../Health")
+
+[node name="Brain" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor", "senses")]
+script = ExtResource("4_brain")
+initial_state = NodePath("Idle")
+actor = NodePath("..")
+run_process = false
+run_unhandled_input = false
+senses = NodePath("../Senses")
+
+[node name="Idle" type="Node" parent="Brain"]
+script = ExtResource("5_idle")
+
+[node name="Work" type="Node" parent="Brain"]
+script = ExtResource("6_work")
+
+[node name="Flee" type="Node" parent="Brain"]
+script = ExtResource("7_flee")
+
+[node name="Cower" type="Node" parent="Brain"]
+script = ExtResource("8_cower")

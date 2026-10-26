@@ -147,7 +147,7 @@ func measure() -> float:
 		if unit == null or not unit.is_inside_tree():
 			continue
 		var id := unit.get_instance_id()
-		strokes[id] = unit.swings + unit.shots
+		strokes[id] = unit.weapons.swings + unit.weapons.shots
 		var struck := _strokes.has(id) and int(_strokes[id]) != int(strokes[id])
 		if (struck or fighting_modes.has(int(unit.mode))) and unit.global_position.distance_squared_to(at) <= reach:
 			fighting += 1

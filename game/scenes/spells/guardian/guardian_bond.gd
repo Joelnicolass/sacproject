@@ -171,7 +171,7 @@ func _apply_effects(on: bool) -> void:
 	if ability != null:
 		ability.locked = on
 	if on:
-		body.clear_special_states()
+		body.special_forms.clear()
 		if orders != null:
 			(orders as _ORDERS).clear()
 		body.halt()

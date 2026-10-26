@@ -10,12 +10,30 @@ extends Node
 
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 signal fired(target: Node3D, damage: float, mana_before: float, mana_after: float)
+## Presentation, on every peer, from the setters of `swings` and `shots` after what they did: a listener (UnitSounds) never changes the sim.
+signal swung
+signal shot_started
 
 ## What a ranged weapon spends on each shot.
 @export var mana: ManaPool
 ## The creature's health and its damage passive: the Firefist's passive scales a blow by the health it has left.
 @export var health: Health
 @export var passive: DamagePassive
+## The lunge of the body that each swing or shot makes.
+@export var clips: UnitClips
+## Bumped on every swing (by a melee weapon) and every shot start (shoot0, by a ranged one), so the clients play the lunge and the sound too.
+@export var swings := 0:
+	set(value):
+		swings = value
+		if _presents():
+			clips.lunge()
+			swung.emit()
+@export var shots := 0:
+	set(value):
+		shots = value
+		if _presents():
+			clips.lunge()
+			shot_started.emit()
 
 ## The first armed melee and ranged weapon (a ranged weapon with no attack still answers, for the origin of a shot). Null = none.
 var melee: MeleeWeapon
@@ -80,6 +98,10 @@ func _children() -> Array[Weapon]:
 		if weapon != null:
 			found.append(weapon)
 	return found
+
+
+func _presents() -> bool:
+	return is_node_ready() and clips != null and not Engine.is_editor_hint()
 
 
 func _on_struck(target: Node3D, amount: float, hit_chance: float, roll: float) -> void:

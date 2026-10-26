@@ -182,7 +182,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	melee.start(_shooter)
 	_target.set("target", _shooter)
-	_target.set("swings", int(_target.get("swings")) + 1)
+	(_target as UnitBody).weapons.swings += 1
 	_target.set("mode", UnitBody.Mode.ATTACK)
 
 

@@ -41,7 +41,7 @@
 [ext_resource type="PackedScene" path="res://scenes/sacrifice/sacrifice_system.tscn" id="f59_sacrifice"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud/ritual_notice.tscn" id="f60_notice"]
 [ext_resource type="Script" uid="uid://bdlkj5tbi1wvh" path="res://scenes/map/nav/nav_service.gd" id="f72_nav"]
-[ext_resource type="PackedScene" path="res://scenes/units/peasant.tscn" id="f73_peasant"]
+[ext_resource type="PackedScene" path="res://scenes/units/villager/villager.tscn" id="f73_villager"]
 [ext_resource type="Script" uid="uid://qtxfsr581l1s" path="res://scenes/map/map_population.gd" id="f73_population"]
 [ext_resource type="Script" uid="uid://uifgkgnynkf6" path="res://scenes/ai/ai_roster.gd" id="f77_roster"]
 [ext_resource type="PackedScene" path="res://scenes/ai/ai_side.tscn" id="f77_side"]
@@ -146,7 +146,7 @@ unique_name_in_owner = true
 spawn_path = NodePath("../Units")
 script = ExtResource("f25_unit_spawner")
 unit_scene = ExtResource("f25_unit")
-peasant_scene = ExtResource("f73_peasant")
+villager_scene = ExtResource("f73_villager")
 rules = ExtResource("12_rules")
 
 

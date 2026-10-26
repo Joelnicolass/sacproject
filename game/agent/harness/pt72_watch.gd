@@ -82,7 +82,7 @@ func _physics_process(_delta: float) -> void:
 			var tgt = body.get("target")
 			print("PT72_TRACE t=%d %s x=%.1f z=%.1f mode=%d cmd=%s tgt=%s walk=%s" % [_ticks / 60, body.name, at.x, at.z, int(body.get("mode")), str(ord.command) if ord else "-", str(tgt.name) if tgt else "-", str(ord.point) if ord else "-"])
 			var wz = get_tree().get_first_node_in_group("local_wizard") as Node3D
-			print("PT72_AUX %s _goal=%s speed_factor=%s move_speed=%s wizard_z=%.1f wiz_mode=%s" % [body.name, str(body.get("_goal")), str(body.get("speed_factor")), str(body.get("move_speed")), wz.global_transform.origin.z if wz else 0.0, str(wz.get("mode")) if wz else "-"])
+			print("PT72_AUX %s _goal=%s speed_factor=%s move_speed=%s wizard_z=%.1f wiz_mode=%s" % [body.name, str(body.locomotion.goal), str(body.get("speed_factor")), str(body.get("move_speed")), wz.global_transform.origin.z if wz else 0.0, str(wz.get("mode")) if wz else "-"])
 			var pf = body.get_node_or_null("PathFollower")
 			var tp = body.get_node_or_null("TargetPicker")
 			if tp:
@@ -265,7 +265,7 @@ func stuck_report() -> String:
 			continue
 		count += 1
 		var at: Vector3 = (node as Node3D).global_transform.origin
-		var goal: Vector3 = node.get("_goal")
+		var goal: Vector3 = (node as UnitBody).locomotion.goal
 		var d := Vector2(at.x - goal.x, at.z - goal.z).length()
 		worst_goal = maxf(worst_goal, d)
 		best_goal = minf(best_goal, d)

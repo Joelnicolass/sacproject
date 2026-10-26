@@ -62,3 +62,6 @@ Renombre `ycro.tres` → `trogg.tres` (72 archivos; Faestus ×2 → `faestus.tre
 | luego | c5 | pasivas por tag (FireShield, LightningCharge, DamagePassive, DeathCloud, ManaSupport…) como nodos |
 
 Lint esperado al cerrar c4: C1a 113→~107, C1b 25→23, C5 223→~195, C8 27→16, C9 372→~355.
+
+## c4: hecho (2026-10-25, sin correr Godot; falta la pasada de pruebas del orquestador)
+`unit_body.gd` 760 -> 197 líneas. `Creature` (`creature_link.gd`), `Locomotion` (`components/locomotion/`, unidad y mago), `Engagement` (`targeting/engagement.gd`), `SpecialForms`, `Regeneration`, `UnitClips` ampliado y `UnitStates` (FsmMachine de la unidad). Aldeano: `units/villager/` (`villager.tscn`, `VillagerBrain` + 4 estados, `VillagerSenses`, `GrudgeMemory` movido). Desvíos del árbol: `Picker/Futility/Refresh` siguen como hermanos de `Engagement` (reubicarlos cambiaría el orden de los nodos físicos); `swings`/`shots` pasan a `Weapons` (replicados como `Weapons:swings`/`Weapons:shots`) y `_stealth` a `SpecialForms:stealth`, así que el hash de `WIRE CONFIG` cambia; `VillagerSenses` recorre grupos con el mismo código que `PeasantBehavior` (usar `Vision` cambiaría quién ve a quién y los digests). El paso físico es `Locomotion.begin` -> `Regeneration.age` -> estado del modo -> `Regeneration.step` -> `Locomotion.finish` (`UnitBody._physics_process`, 17 líneas).

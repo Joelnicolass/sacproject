@@ -4,7 +4,7 @@ extends BodySounds
 
 ## Child of units/unit.tscn. A creature's sounds from what every peer already has (replicated state):
 ## - `summon` when its mode becomes SUMMONING, or when it is born in it (a summon spawned on a client);
-## - `swing` and `shoot` on UnitBody.swung / shot_started (the setters of the replicated `swings` and `shots`);
+## - `swing` and `shoot` on Weapons.swung / shot_started (the setters of the replicated `swings` and `shots`);
 ## - `damaged` when Health.current goes down and the body is alive (BodySounds limits it per body);
 ## - `death` when its mode becomes DEAD.
 ## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of its body scene). No set: silence, except `summon`: the
@@ -30,8 +30,9 @@ func _ready() -> void:
 	if Engine.is_editor_hint() or not _open or body == null or health == null:
 		return
 	_last_health = health.current
-	body.swung.connect(_on_swung)
-	body.shot_started.connect(_on_shot_started)
+	if body.weapons != null:  ## A body built in code (a bench) has no Weapons: it never swings.
+		body.weapons.swung.connect(_on_swung)
+		body.weapons.shot_started.connect(_on_shot_started)
 	body.mode_changed.connect(_on_mode_changed)
 	health.changed.connect(_on_health_changed)
 	if body.mode == UnitBody.Mode.SUMMONING:

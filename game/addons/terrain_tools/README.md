@@ -1,0 +1,15 @@
+# addons/terrain_tools
+What: the editor's tools for a map's ground, whose only source is `heights.png` (16 bits, x 0.1 m) + `void.png` beside it: the importer (`TerrainHeights`), the buttons in a `Terrain`'s inspector and the ground brush of the 3D viewport. Dev only (the export excludes it).
+Not: what the ground is or does in a match (scenes/map/terrain), the Blender scripts themselves (tools/blender), checking a map (tools/audit/map_checks.gd).
+Talks to: `plugin.gd` wires it. Inspector: `TerrainPanel` -> `TerrainActions` -> `BlenderBridge`, `TerrainEdits`, `MapChecks`. Brush: `BrushPainter` (mouse) -> `BrushStroke`/`BrushRules` on a working copy, `EditorPreview` (global `terrain_deform_map`, no mesh rebuild per move), `BrushCursor` (RenderingServer); release -> `TerrainHistory` (one undo step, patches into the `TerrainHeights`; a heavy rebuild, per `RefreshBudget`, stays a draft until save or «Rearmar»). Ctrl+S -> `TerrainHistory.save` writes the PNGs and reimports.
+Edit: the brush preset `brush/default_brush.tres` (another preset = another `.tres`); `RefreshBudget.LIMIT_MS` (300 ms); `MapGroundChecks.MAX_SPREAD_M` for «base a nivel».
+Check: `debug/terrain/edit_bed.tscn` (open it, select `Terrain`) · `debug/terrain/roundtrip_cases.tscn` (headless, ROUNDTRIP CASES PASS) · `debug/terrain/brush_cases.gd` · `bash agent/harness/godot_run.sh bash agent/scripts/terrain_brush_probe.sh` (editor window: strokes, undo, save, refresh times) · `agent/runs/run_terrain_blender.sh`.
+
+---
+
+How a human uses it (open the map scene, select its `Terrain` node):
+- **Paint the relief:** the bar «Terreno:» appears over the 3D view. Pick «Subir/Bajar» and drag the mouse up (raise) or down (lower) where you pressed; «Suavizar» drag (Shift: flatten to the height where the stroke began); «Hueco» paints void (Shift: fills it back with the old height). «Tamaño», «Caída», «Forma» and «Fuerza» are the shared brush. The ring on the ground is the brush. Ctrl+Z / Ctrl+Shift+Z undo and redo a stroke. Ctrl+S writes heights.png and void.png. On a map whose rebuild takes more than 300 ms (the bar says «al guardar»), strokes show through the preview and the mesh is built on save or with «Rearmar».
+- **Blender:** «Abrir en Blender» saves what is pending, makes `terrain_work/terrain.blend` and opens Blender (Blender from `BLENDER` or the PATH; without one it says how). Move vertices only in Z, paint the group «void», save in Blender, then «Traer de Blender»: it writes the pictures and reimports, or says why it refused (and offers to skip the «pictures changed» guard). Not undoable.
+- **New ground:** set the height and press «Suelo plano nuevo» (asks first; not undoable).
+- **Bases:** «Aplanar bases» levels the land under every `GroundFootprint` (altars, founts) to the median height under it; Ctrl+Z undoes it.
+- **Check:** «Validar mapa» runs the check_map logic on the open map and shows PASS or every problem with the node's path. Bake the navmesh (NavRegion) after changing the shape.

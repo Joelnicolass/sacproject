@@ -21,5 +21,6 @@ agent/out/*
 !agent/out/.gdignore
 __pycache__/
 
-# Plan 063D S4: the Blender working folder of each map (terrain.blend, manifest.json). The truth is heights.png + void.png.
-scenes/map/maps/*/terrain_work/
+# Plan 063D S4: the Blender working folder beside each map's heights.png (terrain.blend, manifest.json; also the edit bed's).
+# The truth is heights.png + void.png.
+terrain_work/

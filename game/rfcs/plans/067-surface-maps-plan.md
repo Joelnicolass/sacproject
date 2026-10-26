@@ -1,4 +1,4 @@
-Estado: **propuesto**, espera el OK del usuario.
+Estado: **aprobado 2026-10-26** con las 5 recomendaciones de §17: pilotos primero y lote después de verlos en surface_lab; la receta no se guarda (el PNG es la fuente); por defecto solo normal, ORM opcional; mapas en `assets/surfaces/<owner>/` (contenido propio junto a su albedo); el addon nace genérico y va al kit después de los pilotos. El addon es de editor: no forma parte del juego ni del export.
 
 
 # RFC propuesto: superficies PBR opcionales en todos los modelos (RFC-067)

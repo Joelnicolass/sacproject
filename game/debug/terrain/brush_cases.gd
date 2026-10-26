@@ -3,7 +3,8 @@ extends SceneTree
 ## Checks the ground brushes without a window: raise follows the drag and ends at 0 on the brush's edge, smoothing calms
 ## a noisy patch, Shift + smooth flattens to the height where the stroke began, void paint matches the brush's shape and
 ## Shift fills it back with the old height, and a stroke's before and after patches undo and redo it exactly, all on a
-## lattice of brush_bed.gd (flat ground). Not: the editor plugin, the mesh refresh, the 300 ms rebuild.
+## lattice of brush_bed.gd (flat ground), each stroke on a LatticeCanvas over those arrays. Not: the editor plugin, the
+## mesh refresh, the 300 ms rebuild.
 ## "$GODOT" --headless --path game --script res://debug/terrain/brush_cases.gd
 
 const Bed := preload("res://debug/terrain/brush_bed.gd")
@@ -100,16 +101,16 @@ func _patches() -> void:
 			stroke.drag(start + Vector2(13.0 * step, 7.0 * step), 30.0)
 		var new_sum := Bed.checksum(heights, mask)
 		var result := stroke.finish()
-		(result["before"] as BrushStroke.Patch).write(heights, mask)
+		((result["before"] as Array)[0] as BrushStroke.Patch).write(heights, mask)
 		var undone := Bed.checksum(heights, mask) == old_sum
-		(result["after"] as BrushStroke.Patch).write(heights, mask)
+		((result["after"] as Array)[0] as BrushStroke.Patch).write(heights, mask)
 		var redone := Bed.checksum(heights, mask) == new_sum and new_sum != old_sum
 		_check(undone and redone, "patches: undo and redo %s exactly" % BrushStroke.Mode.keys()[mode])
 
 
 func _stroke(heights: PackedFloat32Array, mask: PackedByteArray, mode: BrushStroke.Mode, brush: TerrainBrush, at: Vector2) -> BrushStroke:
 	var stroke := BrushStroke.new()
-	stroke.begin(heights, mask, mode, brush, at)
+	stroke.begin(LatticeCanvas.over(heights, mask), mode, brush, at)
 	return stroke
 
 

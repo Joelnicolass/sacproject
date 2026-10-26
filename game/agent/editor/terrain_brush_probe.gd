@@ -7,7 +7,8 @@ extends Node
 ## events under a camera framed above the island, undo and redo, flatten, void and fill, «Aplanar bases», «Validar mapa» and a
 ## save (the bed's pictures are put back after). Then a stroke on winter_wonder, whose rebuild is heavy: it must stay a draft.
 ## It prints TERRAIN_PROBE lines (the refresh times: how long after the release the mesh was rebuilt and the longest editor
-## frame meanwhile), writes agent/out/063d/probe_*.png and quits. Not the plugin itself (that one is wired in plugin.gd).
+## frame meanwhile), writes agent/out/063d/probe_*.png and quits. Since plan 066a the strokes go through the shared canvas
+## path (BrushTargets -> LatticeCanvas -> TerrainHistory) with the same lines. Not the plugin itself (plugin.gd wires it).
 
 const TerrainHistory := preload("res://addons/terrain_tools/terrain_history.gd")
 const TerrainActions := preload("res://addons/terrain_tools/terrain_actions.gd")
@@ -44,6 +45,7 @@ func _run() -> void:
 	_toolbar = ToolbarScene.instantiate()
 	EditorInterface.get_base_control().add_child(_toolbar)
 	_toolbar.visible = false
+	_toolbar.show_for(Toolbar.Kind.TERRAIN)  # what the plugin does when a Terrain is selected
 	_painter = BrushPainter.new(_history, _toolbar)
 	var terrain := await _open(BED)
 	var at := await _aim(terrain, Vector2(1280, 1280))

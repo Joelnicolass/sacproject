@@ -20,14 +20,18 @@ const CROSS_ARM := 1.0 / 3.0
 static func weights(brush: TerrainBrush, center: Vector2, rect: Rect2i) -> PackedFloat32Array:
 	var out := PackedFloat32Array()
 	out.resize(rect.size.x * rect.size.y)
-	var core_m := brush.size_m * (1.0 - brush.falloff)
 	var i := 0
 	for z in range(rect.position.y, rect.end.y):
 		for x in range(rect.position.x, rect.end.x):
-			var distance_m := _distance(brush.shape, TerrainGrid.point_of(Vector2i(x, z)) - center)
-			out[i] = _weight(distance_m, core_m, brush.size_m)
+			out[i] = weight_at(brush, TerrainGrid.point_of(Vector2i(x, z)) - center)
 			i += 1
 	return out
+
+
+## How strongly the brush touches a point `offset_m` metres from its centre: 1 inside the hard core
+## (`size_m * (1 - falloff)`), easing to 0 at `size_m` (0 exactly there and beyond). Pictures share it (PaintRules).
+static func weight_at(brush: TerrainBrush, offset_m: Vector2) -> float:
+	return _weight(_distance(brush.shape, offset_m), brush.size_m * (1.0 - brush.falloff), brush.size_m)
 
 
 ## Moves every vertex of `rect` up by `delta_m` times its weight (down when `delta_m` is negative).

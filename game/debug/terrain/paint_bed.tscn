@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
+[ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="2_props"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="3_start"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="4_fount"]
+[ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="5_look"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="6_terrain"]
+[ext_resource type="Resource" path="res://debug/terrain/edit_bed/heights.png" id="7_heights"]
+[ext_resource type="Texture2D" path="res://debug/terrain/paint_bed/ground_roles.png" id="8_roles"]
+[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="9_god"]
+[ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="10_quality"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="11_flora"]
+[ext_resource type="Resource" path="res://data/vegetation/species/persephone_fern_1.tres" id="12_fern"]
+
+[node name="PaintBed" type="Node3D" node_paths=PackedStringArray("terrain", "starts", "look")]
+editor_description = "Banco de los pinceles de roles y de flora (plan 066): la isla plana de 600 x 600 m a 50 m de edit_bed (sus heights.png + void.png, que acá no se pintan), con roles propios en paint_bed/ground_roles.png (todo pasto, (255,0,0,0)), Look con Persephone (el único dios con GodGround: sin él los roles no se ven) y calidad media, un PlayerStart, un Manafount y Vegetation/Ferns (FloraLayer de helechos de Persephone, todavía sin imagen de densidad: el inspector avisa). Seleccioná Terrain para Relieve y Roles, o Ferns para Flora; clic izquierdo y arrastrá en el 3D, Shift borra la flora, Ctrl+Z deshace, Ctrl+S guarda. Lo que todavía no está: roca ni camino en el suelo y ningún helecho."
+script = ExtResource("1_root")
+terrain = NodePath("Terrain")
+starts = NodePath("MapProps/Starts")
+look = NodePath("Look")
+
+[node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("5_look")]
+terrain = NodePath("../Terrain")
+preview_god = ExtResource("9_god")
+preview_quality = ExtResource("10_quality")
+
+[node name="Terrain" parent="." instance=ExtResource("6_terrain")]
+heights = ExtResource("7_heights")
+ground_roles = ExtResource("8_roles")
+
+[node name="MapProps" type="Node3D" parent="."]
+script = ExtResource("2_props")
+
+[node name="Starts" type="Node3D" parent="MapProps"]
+
+[node name="Start1" parent="MapProps/Starts" instance=ExtResource("3_start")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1180, 50, 1280)
+
+[node name="Founts" type="Node3D" parent="MapProps"]
+
+[node name="Fount1" parent="MapProps/Founts" instance=ExtResource("4_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1380, 50, 1280)
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="Ferns" type="Node3D" parent="Vegetation"]
+script = ExtResource("11_flora")
+species = ExtResource("12_fern")

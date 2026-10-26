@@ -19,6 +19,9 @@
 [ext_resource type="Script" path="res://scenes/ai/tasks/focus_task.gd" id="17_focus"]
 [ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="99_profile"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="98_mana_source"]
+[ext_resource type="Script" path="res://scenes/ai/perception/ai_sight_intake.gd" id="f2_intake"]
+[ext_resource type="Script" path="res://scenes/ai/perception/ai_belief.gd" id="f2_belief"]
+[ext_resource type="Script" path="res://scenes/ai/perception/ai_souls.gd" id="f2_souls"]
 
 [node name="AiSide" type="Node" node_paths=PackedStringArray("perception", "stance", "groups", "board", "brain", "creature_brain", "port")]
 script = ExtResource("1_ai_side")
@@ -30,10 +33,13 @@ brain = NodePath("Brain")
 creature_brain = NodePath("CreatureBrain")
 port = NodePath("Port")
 
-[node name="Perception" type="Node" parent="."]
+[node name="Perception" type="Node" parent="." node_paths=PackedStringArray("intake", "belief", "souls")]
 script = ExtResource("2_perception")
 profile = ExtResource("99_profile")
 mana_source = ExtResource("98_mana_source")
+intake = NodePath("SightIntake")
+belief = NodePath("Belief")
+souls = NodePath("Souls")
 
 [node name="Groups" type="Node" parent="." node_paths=PackedStringArray("perception")]
 script = ExtResource("3_groups")
@@ -108,3 +114,11 @@ script = ExtResource("11_guard")
 [node name="IdleTask" type="Node" parent="Tasks"]
 script = ExtResource("12_idle")
 
+[node name="SightIntake" type="Node" parent="Perception"]
+script = ExtResource("f2_intake")
+
+[node name="Belief" type="Node" parent="Perception"]
+script = ExtResource("f2_belief")
+
+[node name="Souls" type="Node" parent="Perception"]
+script = ExtResource("f2_souls")

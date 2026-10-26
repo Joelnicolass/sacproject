@@ -47,6 +47,38 @@ static func ability_count(type: CreatureType) -> int:
 	return type.abilities().size()
 
 
+## What summoning a creature of `type` is worth, worked out once per type (it depends on the type only). ## Ref: shiny.d:392-405 tagAcc.
+static var _tag_accs: Dictionary = {}
+
+## What side `other` is to side `side`: own, ally, enemy or neutral. ## Ref: shiny.d:739-745 relation.
+static func relation(side: int, other: int) -> AiTrack.Relation:
+	if other == side:
+		return AiTrack.Relation.OWN
+	if SideRelations.stance(side, other) == SideRelations.Stance.ALLY or SideRelations.stance(other, side) == SideRelations.Stance.ALLY:
+		return AiTrack.Relation.ALLY
+	if SideRelations.stance(side, other) == SideRelations.Stance.ENEMY or SideRelations.stance(other, side) == SideRelations.Stance.ENEMY:
+		return AiTrack.Relation.ENEMY
+	return AiTrack.Relation.NEUTRAL
+
+
+static func tag_acc(type: CreatureType) -> PackedFloat32Array:
+	if not _tag_accs.has(type):
+		var abilities: Array = []
+		abilities.assign(type.abilities())
+		_tag_accs[type] = AiRater.fill_by_tag(type, abilities)
+	return _tag_accs[type]
+
+
+static func make(node: Node3D, kind: AiTrack.Kind, origin: StringName, perception: AiPerception) -> AiTrack:
+	var t := AiTrack.new()
+	t.kind = kind
+	t.node = node
+	t.id = node.get_instance_id()
+	t.origin = origin
+	setup(t, perception)
+	return t
+
+
 ## A new track of `perception`: its side, where it is, what it is and, for a body, what it is worth.
 static func setup(t: AiTrack, perception: AiPerception) -> void:
 	t.relation = perception.relation_of(t.node)
@@ -57,7 +89,7 @@ static func setup(t: AiTrack, perception: AiPerception) -> void:
 	t.prev_pos = here
 	t.extrap_pos = here
 	if t.is_body():
-		perception.snapshot(t)
+		AiBelief.snapshot(t)
 	match t.kind:
 		AiTrack.Kind.WIZARD:
 			t.fights = true

@@ -562,7 +562,7 @@ func _profiles_by_god() -> Dictionary:
 ## health and mana it saw last, and cannot aim a cast at it; once the side sees it, the real ones. With perfect information it reads the
 ## real state, and each such read of an unseen body is counted.
 func _limited_information(host: Node3D) -> Dictionary:
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 2
@@ -633,7 +633,7 @@ func _reserved_soul() -> Dictionary:
 ## 024e, without perfect information: the side looks where it last knew a foe (an own body has the place in its sight) and the foe is
 ## not seen: the AI forgets it; once its side sees it again it knows it again. With perfect information nothing is forgotten.
 func _forget_checked(host: Node3D) -> Dictionary:
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception2"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 2
@@ -675,7 +675,7 @@ func _own_splash(host: Node3D) -> Dictionary:
 	host.add_child(state)
 	state.friendly_fire = true
 	state.ally_damage_factor = 0.5
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception3"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 2
@@ -739,7 +739,7 @@ func _tactics() -> Dictionary:
 ## RFC-053 053c (F372): Heal rates 0 on a body at or over heal_below_ratio (Normal 0.6) of its health, on one that misses less than
 ## heal_min_missing (100), on one being summoned and on one with a heal running; a Trogg (960) at 30 % rates over 0.
 func _heal_threshold(host: Node3D) -> Dictionary:
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception4"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 2

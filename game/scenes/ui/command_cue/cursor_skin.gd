@@ -4,7 +4,7 @@ extends Node
 
 ## The mouse cursor of the original game (RFC-025c): `C*` of curs.FLDR while nothing is armed and
 ## `T*` while an icon waits for its target, chosen by what lies under the pointer (TargetProbe) like
-## sacengine `cursor()` (state.d:30830). The pictures are the ones of `cues` (data/ui/command_cues.tres); without
+## sacengine `cursor()` (state.d:30830), and `blocked_cursor` while the armed icon would be refused there (%Battle.aim_status). The pictures are the ones of `cues` (data/ui/command_cues.tres); without
 ## one the system cursor stays. The hardware cursor is drawn by the OS in window pixels, so Godot's stretch does not scale it: its
 ## side is `cursor_px` canvas pixels times window height over canvas height, hot spot at the top center. It does nothing in a
 ## headless process or in the dedicated server (no player, no window), and nothing over the HUD beyond picking the plain arrow.
@@ -58,6 +58,7 @@ func _ready() -> void:
 		probe.local_slot_changed.connect(_refresh.unbind(1))
 	if command_log:
 		command_log.armed_changed.connect(_refresh.unbind(2))
+		command_log.aim_changed.connect(_refresh.unbind(2))
 	get_viewport().size_changed.connect(_refresh)
 	if ui_scale:
 		ui_scale.changed.connect(_refresh.call_deferred)
@@ -80,7 +81,7 @@ func _refresh() -> void:
 		return
 	var armed := command_log != null and not command_log.armed.is_empty()
 	var kind: StringName = probe.kind if probe else &"none"
-	var next := cues.cursor_for(kind, armed)
+	var next := cues.cursor_for(kind, armed, armed and not command_log.aim_status.is_empty())
 	var px := physical_px()
 	if next == _source and px == applied_px:
 		return

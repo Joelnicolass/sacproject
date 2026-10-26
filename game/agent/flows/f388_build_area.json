@@ -1,0 +1,267 @@
+{
+ "scene": "res://debug/spells/manalith_build_area.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "fount_cam",
+    "method": "frame",
+    "args": [
+     1520,
+     16.1,
+     1450,
+     20,
+     45,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "assert": {
+    "node": "/root/ManalithBuildArea/HighNoon/Map/MapProps/Founts/FountEast/BuildArea/Ring",
+    "prop": "state",
+    "equals": 0
+   }
+  },
+  {
+   "shot": "f388_01_ring_off.png"
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1520,
+     16.1,
+     1450
+    ]
+   }
+  },
+  {
+   "click": "%SpellBook/Tabs/StructureTab"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%SpellBook/Slots/Structure1"
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1520,
+     16.1,
+     1450
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "aim_status",
+    "equals": "out_of_range"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "visible": true
+   }
+  },
+  {
+   "assert": {
+    "node": "%CursorSkin",
+    "prop": "current",
+    "equals": "Tnon"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Reason",
+    "text_equals": "Muy lejos"
+   }
+  },
+  {
+   "assert": {
+    "node": "/root/ManalithBuildArea/HighNoon/Map/MapProps/Founts/FountEast/BuildArea/Ring",
+    "prop": "visible",
+    "equals": true
+   }
+  },
+  {
+   "assert": {
+    "node": "/root/ManalithBuildArea/HighNoon/Map/MapProps/Founts/FountEast/BuildArea/Ring",
+    "prop": "state",
+    "equals": 2
+   }
+  },
+  {
+   "print": {
+    "node": "%Battle",
+    "prop": "aim_site"
+   }
+  },
+  {
+   "shot": "f388_02_ring_blocked.png"
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "walk_to",
+    "args": [
+     1520,
+     1462
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Battle",
+    "prop": "aim_status",
+    "equals": "",
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "set_pointer_world",
+    "args": [
+     1520,
+     16.1,
+     1450
+    ]
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "assert": {
+    "node": "%Battle",
+    "prop": "aim_status",
+    "equals": ""
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Invalid",
+    "visible": false
+   }
+  },
+  {
+   "assert": {
+    "node": "%CursorSkin",
+    "prop": "current",
+    "equals": "Tntr"
+   }
+  },
+  {
+   "assert": {
+    "node": "%CommandCue/Reason",
+    "visible": false
+   }
+  },
+  {
+   "assert": {
+    "node": "/root/ManalithBuildArea/HighNoon/Map/MapProps/Founts/FountEast/BuildArea/Ring",
+    "prop": "state",
+    "equals": 1
+   }
+  },
+  {
+   "call": {
+    "harness": "wizard_travel",
+    "method": "local_wizard_position"
+   }
+  },
+  {
+   "shot": "f388_03_ring_ok.png"
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "assert": {
+    "node": "/root/ManalithBuildArea/HighNoon/Map/MapProps/Founts/FountEast/BuildArea/Ring",
+    "prop": "state",
+    "equals": 0
+   }
+  },
+  {
+   "shot": "f388_04_rise_start.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "f388_05_rise_third.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "f388_06_rise_half.png"
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "f388_07_rise_late.png"
+  },
+  {
+   "wait_until": {
+    "node": "%Structures/Structure1",
+    "timeout": 25
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "print": {
+    "node": "/root/ManalithBuildArea/Loiterer",
+    "prop": "global_position"
+   }
+  },
+  {
+   "print": {
+    "node": "/root/ManalithBuildArea/Sieger",
+    "prop": "global_position"
+   }
+  },
+  {
+   "shot": "f388_08_tower_done.png"
+  },
+  {
+   "call": {
+    "harness": "fount_cam",
+    "method": "release"
+   }
+  }
+ ]
+}

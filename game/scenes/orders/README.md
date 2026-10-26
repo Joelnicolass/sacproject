@@ -17,5 +17,6 @@ Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `
 | `PointerRay` | píxel a suelo, cuerpo, alma, cadáver o edificio |
 | `GroupKeys` | las teclas de grupos 1..0 |
 | `CommandFeedback` | ping de la orden, línea en `%Battle`, criaturas invocadas a la selección |
+| `ArmedPreview` | con una estructura armada, la respuesta en vivo del clic en el puntero (`%Battle.aim_status`/`aim_site`, 15 Hz) y el anillo del manantial; prueba: `debug/spells/manalith_build_area.tscn` (F6) y el flujo `agent/flows/f388_build_area.json` |
 
 Los sockets entre hijos son `@export` en `match.tscn`; los nodos únicos del mundo (`%Battle`, `%Selection`, `%Orders`...) se leen con `%`.

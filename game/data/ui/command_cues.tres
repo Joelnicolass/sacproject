@@ -39,6 +39,7 @@ refusals = {
 &"casting": &"refused",
 &"no_souls": &"refused",
 &"no_fount": &"refused",
+&"fount_taken": &"refused",
 &"far_from_building": &"refused",
 &"no_altar": &"refused",
 &"far_from_altar": &"refused",
@@ -76,4 +77,5 @@ target_cursors = Dictionary[StringName, Texture2D]({
 &"own_soul": ExtResource("cur_Tnon"),
 &"soul": ExtResource("cur_Tnon")
 })
+blocked_cursor = ExtResource("cur_Tnon")
 hud_cursor = ExtResource("cur_Cnor")

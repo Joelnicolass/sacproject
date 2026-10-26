@@ -11,6 +11,9 @@ extends Node
 ## (Manalith over a free fount, castCachedInRange; Desecrate of the enemy altar with the creature of most souls,
 ## pickGuardCreature) and the ghost (waits for his Manahoars or goes to the nearest mana building).
 
+## After a replan of the wizard: the cast queue the phases left (diagnostic: the bench's decision log listens; nothing in the game does).
+signal replanned(wizard: AiTrack, queue: Array)
+
 @export var perception: AiPerception
 @export var stance: AiStance
 @export var groups: AiGroups
@@ -82,6 +85,7 @@ func think(wizard: AiTrack, cmd: int, record: AiRecord) -> int:
 		wizard.cast_queue.clear()
 		for phase in phases:
 			phase.run(wizard, w3, record if cmd == 2 else null)
+		replanned.emit(wizard, wizard.cast_queue)
 	## Souls he can take by touching (retail: 100 + 80 m scaled by the threat; the beta 80 + 60): first what he can cast in passing
 	## (checkOnly), else he walks onto the soul.
 	var reach := AiField.f32((1.0 - wizard.threat) * profile.soul_reach_scale + profile.soul_reach_base)

@@ -1,13 +1,19 @@
 class_name StampCarry
 extends RefCounted
 
-## Lifts the creatures and wizards the ground just came up through back onto it: a body whose feet are under the new surface, but
-## not deeper than `reach_m`, is put on the surface. For a stamp that climbs faster than a body can follow (a volcano's mound).
-## It moves nothing that flies or that is far under the land, and it does not decide when the ground moves (TerrainStamp).
+## Keeps the creatures and wizards on top of a ground that comes up through them: before the ground over a rect moves, `standing`
+## notes the bodies there that are not under it; after, `lift` puts back on the surface every one the new ground now covers. A
+## body under the land before the change (a buried one, one in a pit) is left alone, and so is one that flies. Any stamp, any speed:
+## a mound, the ring of Erupt's wave, a volcano. TerrainDeformer, the one writer of the ground, calls it on the server (or solo);
+## the clients get the positions. It does not decide how or when the ground moves.
+
+## A body whose feet are this far under the land still counts as standing on it (a physics step can sink it a little).
+const SINK_M := 0.5
 
 
-## Bodies over `rect` (lattice vertices of the stamp) that the land of `shape` buried by at most `reach_m` stand on it again.
-static func lift(tree: SceneTree, shape: GroundSurface, rect: Rect2i, reach_m: float) -> void:
+## The bodies over `rect` (lattice vertices) of `shape` standing on or above the land right now.
+static func standing(tree: SceneTree, shape: GroundSurface, rect: Rect2i) -> Array[Node3D]:
+	var found: Array[Node3D] = []
 	var area := Rect2(Vector2(rect.position) * TerrainRules.CELL, Vector2(rect.size) * TerrainRules.CELL)
 	for group in [&"unit", &"wizard"]:
 		for node in tree.get_nodes_in_group(group):
@@ -15,5 +21,16 @@ static func lift(tree: SceneTree, shape: GroundSurface, rect: Rect2i, reach_m: f
 			if body == null or BodyNudge.airborne(body) or not area.has_point(Vector2(body.global_position.x, body.global_position.z)):
 				continue
 			var ground := shape.height_at(body.global_position.x, body.global_position.z)
-			if not is_nan(ground) and body.global_position.y < ground and body.global_position.y > ground - reach_m:
-				body.global_position.y = ground
+			if not is_nan(ground) and body.global_position.y >= ground - SINK_M:
+				found.append(body)
+	return found
+
+
+## Every body of `bodies` (from `standing`, before the change) that the land of `shape` now covers stands on it again.
+static func lift(bodies: Array[Node3D], shape: GroundSurface) -> void:
+	for body in bodies:
+		if not is_instance_valid(body):
+			continue
+		var ground := shape.height_at(body.global_position.x, body.global_position.z)
+		if not is_nan(ground) and body.global_position.y < ground:
+			body.global_position.y = ground

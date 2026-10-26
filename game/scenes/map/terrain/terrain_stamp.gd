@@ -16,10 +16,6 @@ extends Node3D
 @export_range(0.0, 60.0, 0.01, "suffix:s") var start_s := 0.0
 ## When it is over, what it reached stays on the ground for good (a crater); off, the ground goes back.
 @export var keep := false
-## Creatures and wizards standing on the land it lifts rise with it (it can climb faster than a body can follow). Server (or solo) only.
-@export var carries := false
-## A body buried by the lift is carried up only if it is no deeper than this under the new surface.
-@export_range(0.5, 20.0, 0.5, "suffix:m") var carry_reach_m := 6.0
 ## It shows a new shift only when it differs from the last one shown by this many metres of its peak (a slow decline is not redrawn each tick).
 @export_range(0.0, 2.0, 0.01, "suffix:m") var min_step_m := 0.0
 ## It does not play by itself: something else leaves its mark at once (DropDent, a meteorite's dent).
@@ -120,8 +116,6 @@ func _physics_process(_delta: float) -> void:
 			return
 		_shown_share = share
 		_deformer.set_live(_key, rect, values_at(at, rect))
-		if carries and _deformer.is_authority():
-			StampCarry.lift(get_tree(), _deformer.shape, rect, carry_reach_m)
 		return
 	_over = true
 	if keep and _deformer.is_authority():

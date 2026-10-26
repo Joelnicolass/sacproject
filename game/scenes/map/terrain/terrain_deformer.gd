@@ -4,7 +4,8 @@ extends Node
 ## The one writer of the ground's displacement (GroundSurface.field). A stamp that is playing registers its shift
 ## with `set_live` on every peer (each one plays it from its own clock); what must stay (a mound, a crater, a hole) is
 ## decided by the server only: it calls `commit`, and every client applies the same bytes, so none of them recomputes
-## it. A peer that joins later gets the whole ground in one snapshot. After each change the shape tells its listeners.
+## it. A peer that joins later gets the whole ground in one snapshot. After each change the shape tells its listeners,
+## and on the server the bodies the ground came up through stand on it again (StampCarry).
 ## It does not know what a spell is: stamps and cutters ask it.
 
 const GROUP := &"terrain_deformer"
@@ -40,7 +41,9 @@ func is_authority() -> bool:
 
 ## A stamp that is playing: its shift over `rect` right now (replaces its previous one). Every peer, from its own clock.
 func set_live(key: String, rect: Rect2i, values: PackedFloat32Array) -> void:
+	var standing := _standing(rect)
 	shape.notify_changed(shape.field().set_live(key, rect, values))
+	StampCarry.lift(standing, shape)
 
 
 ## The stamp under `key` is over.
@@ -55,7 +58,9 @@ func commit(rect: Rect2i, delta: PackedFloat32Array, key := "") -> void:
 		push_warning("TerrainDeformer.commit: only the server decides what stays.")
 		return
 	var ground := shape.field()
+	var standing := _standing(rect)
 	shape.notify_changed(ground.commit(rect, delta, key if not key.is_empty() else null))
+	StampCarry.lift(standing, shape)
 	if MpKit.is_server():
 		rpc_commit.rpc(ground.rev, key, rect, delta)
 
@@ -90,6 +95,14 @@ func rpc_removed(rev: int, id: int, removed: bool) -> void:
 	ground.set_removed(id, removed)
 	ground.rev = rev
 	_tell_holes(id)
+
+
+## Server (or solo): the bodies on the land of `rect` before it moves, so the ground that comes up through them carries them
+## (StampCarry). Bodies are the server's: a client moves none.
+func _standing(rect: Rect2i) -> Array[Node3D]:
+	if not is_authority() or not is_inside_tree():
+		return []
+	return StampCarry.standing(get_tree(), shape, rect)
 
 
 ## The vertex `id` came or went: the shape says it moved, and that it was a hole (the collision flushes, the navmesh is baked again).

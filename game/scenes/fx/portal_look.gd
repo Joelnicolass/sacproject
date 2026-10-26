@@ -3,13 +3,12 @@ extends Resource
 
 ## Look of a flat ring + glowing center that faces the camera (sacengine SacVortex, sacobject.d:4045-4108,
 ## renderer.d:222-239). One .tres per colour: data/fx/portal_blue.tres (the carried creature's ring),
-## data/fx/portal_red.tres (the Sac Doctor's vortex). The atlases are the 4x4 TXTRs of MAIN.WAD
-## imported to res://assets/original/fx/<tag>.png (tools/import/import_ui.py).
+## data/fx/portal_red.tres (the Sac Doctor's vortex). The two 4x4 atlases are dragged in here.
 
-## Atlas tag of the ring (rim): `ltn2` blue, `vtx1` red.
-@export var rim_tag := "ltn2"
-## Atlas tag of the center sprite: `vtx3` blue, `vtx2` red.
-@export var center_tag := "vtx3"
+## The 4x4 atlas of the ring (rim): ltn2.png blue, vtx1.png red. Empty (or no `center`) = a flat `fallback_color` fill.
+@export var rim: Texture2D
+## The 4x4 atlas of the center sprite: vtx3.png blue, vtx2.png red.
+@export var center: Texture2D
 ## Color multiplier of the shadeless material (HDR). sacengine: rim 10, center 1 (renderer.d:222-239).
 @export_range(0.0, 40.0, 0.1) var rim_energy := 10.0
 @export_range(0.0, 40.0, 0.1) var center_energy := 1.0

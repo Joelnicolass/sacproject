@@ -9,6 +9,8 @@ extends ErrandStep
 
 ## The burst over the corpse when it stands up (data/fx/heal.tres).
 @export var heal_fx: ParticleType
+## Where on the corpse it bursts (a socket of its BodyFrame: move the marker there with the gizmo).
+@export var heal_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _left := 0.0
 ## The corpse really stood up: only then there is something to undo if the doctor dies.
@@ -37,7 +39,7 @@ func enter() -> void:
 	_left = SacrificeMath.pump_seconds(soul.number, rules.convert_pump_s_per_soul if rules else 5.0)
 	body.begin_work(DoctorBody.Work.PUMP)
 	if heal_fx != null:
-		FxBus.broadcast(heal_fx, corpse.global_position + Vector3.UP)
+		FxBus.broadcast(heal_fx, BodyFacts.point(corpse, heal_socket))
 
 
 func physics_update(delta: float) -> void:

@@ -4,19 +4,26 @@ extends Node3D
 
 ## The weather's part of the atmosphere: which weather there is at a match second (the plan and the sky's seed,
 ## through AtmosphereRules, so every peer agrees) and how far a change has blended. It tells `Precipitation` what
-## falls and how much, and says when the ruling weather changes. It writes no light: Atmosphere mixes its sample.
+## falls and how much and `Storm` the weather that rules (its lightning and the sky's flash), and says when the ruling
+## weather changes and when a strike lands. It writes no light: Atmosphere mixes its sample.
 ## A rules node that needs the weather derives it the same way (AtmosphereRules.state_at) without this node.
 
 ## The ruling weather changed (at the middle of a blend).
 signal weather_changed(from: WeatherState, to: WeatherState)
-## A lightning strike hit the ground at `at` (058-3: the `Storm` child draws it). Presentation only.
-@warning_ignore("unused_signal")
+## A lightning strike hit the ground at `at` (the `Storm` child drew it). Presentation only.
 signal strike(at: Vector3)
 
 @export var precipitation: PrecipitationFall
+## The lightning. Empty = a storm with no strikes and no flash.
+@export var storm: StormStrikes
 
 ## The ruling weather now (null before a plan).
 var state_now: WeatherState
+
+
+func _ready() -> void:
+	if storm:
+		storm.struck.connect(func(at: Vector3) -> void: strike.emit(at))
 
 
 ## The weather at `t_s` with `plan` and `sky_seed`; `preview` (editor) shows that state alone, fully.
@@ -29,6 +36,8 @@ func advance(plan: WeatherPlan, sky_seed: int, t_s: float, preview: WeatherState
 	var look: PrecipitationLook = to.precipitation if to and to.precipitation else (from.precipitation if from else null)
 	if precipitation:
 		precipitation.show_fall(look, sample.rain)
+	if storm:
+		sample.flash = storm.follow(null if preview else sample.weather, sky_seed, t_s)
 	return sample
 
 
@@ -37,6 +46,8 @@ func quiet() -> void:
 	_rule(null)
 	if precipitation:
 		precipitation.show_fall(null, 0.0)
+	if storm:
+		storm.quiet()
 
 
 ## The quality preset's density of the drops.

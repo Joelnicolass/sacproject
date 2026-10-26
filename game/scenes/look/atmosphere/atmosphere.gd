@@ -8,7 +8,7 @@ extends LookLayer
 ## approved look, exactly). Its events (`hour_changed`, `night_changed`, Weather's `weather_changed` / `strike`) are
 ## presentation; a rules node derives the same state with AtmosphereRules on any peer. Freed with the rig on a server.
 
-## The atmosphere moved (at most `update_hz` times a second, and only when something changed).
+## The atmosphere moved (at most `update_hz` times a second, every frame during a storm flash; only on a change).
 signal changed(sample: AtmosphereSample)
 ## A new whole hour began (0..23).
 signal hour_changed(hour: int)
@@ -81,7 +81,7 @@ func _process(delta: float) -> void:
 	_own_s += delta
 	_since_update += delta
 	_since_log += delta
-	if _since_update >= 1.0 / update_hz:
+	if _since_update >= 1.0 / update_hz or _current.flash > 0.0:  # every frame while a storm flash lasts
 		_since_update = 0.0
 		publish()
 	if _since_log >= 10.0:

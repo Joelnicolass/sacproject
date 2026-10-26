@@ -1,9 +1,9 @@
 class_name AtmosphereRules
 extends RefCounted
 
-## The atmosphere's arithmetic, with no tree and no state: the hour at a match second and the light of an hour. The
-## same (cycle, seed, seconds) give the same answer on every peer, the dedicated server included, so a rules node can
-## follow the hour or the weather from here without asking the look (which a server never builds).
+## The atmosphere's arithmetic, with no tree and no state: the hour, its light, the weather and the lightning at a
+## match second. The same (cycle, seed, seconds) give the same answer on every peer, the dedicated server included, so
+## a rules node can follow them from here without asking the look (which a server never builds).
 ## Uses no random generator: chance comes from `hash_int`, an integer hash of its own (the same on every machine).
 
 ## Under this sun elevation the one light is the moon (shadows of a lower sun are too long to read).
@@ -118,6 +118,26 @@ static func segment_state(plan: WeatherPlan, sky_seed: int, k: int) -> WeatherSt
 ## A state's numbers as a sample (neutral for none).
 static func state_sample(state: WeatherState) -> AtmosphereSample:
 	return state.to_sample() if state else AtmosphereSample.neutral()
+
+
+## The lightning strikes in (t0_s, t1_s] as (match second, heading_deg, distance_m): the same on every peer and for any
+## split of the span. Time is cut in slots of 2 × `min_gap_s`; `per_min` picks evenly which slots strike (a minute gets
+## its share, never a burst or a long silence) and the strike falls in the middle half of its slot, so two are never
+## closer than `min_gap_s` (photosensitivity; `per_min` tops out at 30 / `min_gap_s`).
+static func strikes_between(sky_seed: int, t0_s: float, t1_s: float, per_min: float, min_gap_s := 4.0, near_m := 150.0,
+		far_m := 600.0) -> PackedVector3Array:
+	var out := PackedVector3Array()
+	var slot := 2.0 * maxf(min_gap_s, 0.1)
+	var chance := clampf(per_min * slot / 60.0, 0.0, 1.0)
+	var salt := hash_int(sky_seed, 7919)  # the storm's own draw from the sky seed
+	var phase := unit_hash(salt, -1)
+	for k in range(int(floor(maxf(t0_s, 0.0) / slot)), int(floor(maxf(t1_s, 0.0) / slot)) + 1):
+		if chance <= 0.0 or fposmod(float(k) * chance + phase, 1.0) >= chance:
+			continue
+		var t := (float(k) + 0.25 + 0.5 * unit_hash(salt, 4 * k + 1)) * slot
+		if t > t0_s and t <= t1_s:
+			out.append(Vector3(t, 360.0 * unit_hash(salt, 4 * k + 2), lerpf(near_m, far_m, unit_hash(salt, 4 * k + 3))))
+	return out
 
 
 ## How much of the land at `d_m` shows through the depth fog (1 = all). Godot's depth fog: amount =

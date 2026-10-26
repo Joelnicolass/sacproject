@@ -3,7 +3,8 @@ extends RefCounted
 
 ## What sky material the Environment's Sky wears for an atmosphere sample: the SkyLook's own material while the sample
 ## is neutral, else a private copy with the atmosphere's uniforms (SkyLook.write_atmosphere). It rewrites the copy at
-## most `sky_hz` times a second, because every change re-bakes the reflection cubemap. EnvironmentLayer owns it and
+## most `sky_hz` times a second, because every change re-bakes the reflection cubemap (a storm flash, at most 150 ms,
+## follows every frame; the shader brightens only the visible pass with it). EnvironmentLayer owns it and
 ## calls it; it writes nothing else. The shared `.tres` material is never touched.
 
 var _copy: ShaderMaterial
@@ -22,7 +23,7 @@ func reset() -> void:
 ## Puts the right material on `sky`. `force` skips the rate limit (a new look, a preset). `moon_dir_deg` = azimuth and
 ## elevation of the moon light.
 func dress(sky: Sky, look: SkyLook, sample: AtmosphereSample, moon_dir_deg: Vector2, sky_hz: float, force: bool) -> void:
-	var due := Time.get_ticks_msec() - _written_ms >= int(1000.0 / maxf(sky_hz, 0.1))
+	var due := Time.get_ticks_msec() - _written_ms >= int(1000.0 / maxf(sky_hz, 0.1)) or sample.flash != _written.flash
 	if not force and (not due or sample.is_close(_written, 1e-3)):
 		return
 	_cloud_phase = _next_cloud_phase(look, sample)

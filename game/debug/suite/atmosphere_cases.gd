@@ -4,6 +4,8 @@ extends RefCounted
 ##   - (a) day_neutral_start: every god's DayCycle is neutral at its start hour (±1e-3) and its light is ~0 (≤ 0.05)
 ##     where the sun goes under the moon line (DayCycle.problems);
 ##   - (b) weather_repeatable: weather_at gives the same in 1000 queries in any order, and the first segment is plan.first;
+##   - (c) strikes_split: strikes_between(0, 60) == (0, 30) + (30, 60), two strikes ≥ min_gap_s apart, each 150-600 m
+##     away, and storm.tres gives 3-8 in every minute of an hour (any start);
 ##   - (d) fog_lets_see: the depth fog lets ≥ 0.75 of the land at 150 m through, for every god × weather state;
 ##   - (e) sky_neutral_start: at the start hour the sky's new uniforms are neutral, so the dresser keeps the SkyLook's
 ##     own material (the approved sky, exactly);
@@ -20,6 +22,7 @@ func run(_host: Node) -> Dictionary:
 	var results: Dictionary[String, Dictionary] = {
 		"day_neutral_start": _day_neutral_start(),
 		"weather_repeatable": _weather_repeatable(),
+		"strikes_split": _strikes_split(),
 		"fog_lets_see": _fog_lets_see(),
 		"sky_neutral_start": _sky_neutral_start(),
 		"sky_clock_adopt": _sky_clock_adopt(),
@@ -83,6 +86,33 @@ func _weather_repeatable() -> Dictionary:
 	if not passed:
 		print("ATMOSPHERE   weather: mismatches=%d starts_first=%s kinds=%d" % [mismatches, starts_first, seen.size()])
 	return {"ok": passed, "mismatches": mismatches, "kinds": seen.size()}
+
+
+func _strikes_split() -> Dictionary:
+	var storm := load("res://data/look/weather/storm.tres") as WeatherState
+	var per_min := storm.strikes_per_min
+	var bad := PackedStringArray()
+	for sky_seed: int in [58, 1, 7, 4242]:
+		var whole := AtmosphereRules.strikes_between(sky_seed, 0.0, 60.0, per_min)
+		var parts := AtmosphereRules.strikes_between(sky_seed, 0.0, 30.0, per_min)
+		parts.append_array(AtmosphereRules.strikes_between(sky_seed, 30.0, 60.0, per_min))
+		if whole != parts:
+			bad.append("%d: split %s != %s" % [sky_seed, parts, whole])
+		var hour := AtmosphereRules.strikes_between(sky_seed, 0.0, 3600.0, per_min)
+		for i in hour.size():
+			var strike := hour[i]
+			if strike.z < 150.0 or strike.z > 600.0 or strike.y < 0.0 or strike.y >= 360.0:
+				bad.append("%d: rayo %s fuera de rango" % [sky_seed, strike])
+			if i > 0 and strike.x - hour[i - 1].x < 4.0:
+				bad.append("%d: %.2f s entre rayos" % [sky_seed, strike.x - hour[i - 1].x])
+		for start in range(0, 3540, 7):
+			var count := AtmosphereRules.strikes_between(sky_seed, float(start), float(start) + 60.0, per_min).size()
+			if count < 3 or count > 8:
+				bad.append("%d: %d rayos en (%d, %d]" % [sky_seed, count, start, start + 60])
+				break
+	if not bad.is_empty():
+		print("ATMOSPHERE   strikes: %s" % bad)
+	return {"ok": bad.is_empty(), "bad": bad}
 
 
 func _fog_lets_see() -> Dictionary:

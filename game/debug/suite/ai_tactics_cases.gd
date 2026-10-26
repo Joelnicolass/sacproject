@@ -35,7 +35,9 @@ const AGES := [
 	["rerate_s", "senses", 16], ["status_s", "senses", 8], ["souls_snapshot_s", "senses", 32], ["threat_s", "senses", 8],
 	["wizard_replan_s", "wizard", 16], ["wizard_reissue_s", "wizard", 8],
 ]
-const GUARD_SCALE := 0.0002770083083305508
+## The float32 of 1/3610, as its float64 bytes (little endian). Not a decimal literal: Godot's parser reads
+## 0.0002770083083305508 one ulp low (0x3f32276d9ffffff1), the value the pre-055f code used by accident.
+const GUARD_SCALE_BYTES := "000000a06d27323f"
 
 var _checked := 0
 var _lines := PackedStringArray()
@@ -94,7 +96,7 @@ static func _is_embedded(resource: Resource) -> bool:
 ## The weight of the guard pick falls by 1/(far - near) per meter; in float32 that is the constant the code had.
 func _guard_scale(id: String, crowd: AiCrowdTactics) -> void:
 	var scale: float = AiField.f32(1.0 / (crowd.guard_pick_far_m - crowd.guard_pick_near_m))
-	_compare(id + ".guard_pick_scale", scale, GUARD_SCALE)
+	_compare(id + ".guard_pick_scale", PackedFloat64Array([scale]).to_byte_array().hex_encode(), GUARD_SCALE_BYTES)
 
 
 func _ticks(id: String, clock: AiClock) -> void:

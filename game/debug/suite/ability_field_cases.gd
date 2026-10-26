@@ -47,7 +47,8 @@ func run(_host: Node) -> Dictionary:
 	print("ABILITY FIELDS compared=%d differ=%d abilities=%d entries=%d" % [_compared, _lines.size(), abilities.size(), orders.size()])
 	for line: String in _lines:
 		print("ABILITY FIELDS   " + line)
-	return {"ability_fields": {"ok": abilities.size() == 63 and orders.size() == 122 and _lines.is_empty(), "compared": _compared,
+	## 123 entries: 69 creatures, 53 spells and the template.
+	return {"ability_fields": {"ok": abilities.size() == 63 and orders.size() == 123 and _lines.is_empty(), "compared": _compared,
 		"differ": _lines.size(), "notes": _lines}}
 
 

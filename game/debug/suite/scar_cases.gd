@@ -156,6 +156,9 @@ func _maps() -> Dictionary:
 	var missing := PackedStringArray()
 	var dir := DirAccess.open("res://scenes/map/maps")
 	for map_dir in dir.get_directories():
+		## 063-2a: a mesh-ground map (ground.glb) gets its scars in 063-2b.
+		if FileAccess.file_exists("res://scenes/map/maps/%s/ground.glb" % map_dir):
+			continue
 		var text := FileAccess.get_file_as_string("res://scenes/map/maps/%s/map.tscn" % map_dir)
 		if not text.contains('[node name="GroundScars" parent="Terrain"') or not text.contains('shape = NodePath("../Shape")'):
 			missing.append(map_dir)

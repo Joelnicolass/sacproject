@@ -23,6 +23,9 @@ static func rate(spell: SpellType, target: AiTrack, point: Vector3, groups: AiGr
 			var d2 := group.center.distance_squared_to(point) if category == 3 else _nearest_member_d2(group, point)
 			if d2 > r2:
 				continue
+			## 055f f6: a group whose health the side does not know (never seen) weighs nothing, instead of hit / 0 = INF.
+			if group.health_sum2 <= 0:
+				continue
 			var group_rate := AiRater.rate(group.acc)
 			var area := (r2 - d2) * float(amount) * inv
 			var count := float(group.count)

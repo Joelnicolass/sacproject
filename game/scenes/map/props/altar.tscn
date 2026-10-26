@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
@@ -12,6 +12,10 @@
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alba.res" id="mesh_alba"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alpi.res" id="mesh_alpi"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alto.res" id="mesh_alto"]
+[ext_resource type="Script" path="res://scenes/map/props/ground_footprint.gd" id="10_footprint"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_footprint"]
+size = Vector3(52, 1, 52)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]
 height = 3.2
@@ -82,6 +86,12 @@ shape = SubResource("CylinderShape3D_pillar")
 [node name="Pillar4Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 11, -20)
 shape = SubResource("CylinderShape3D_pillar")
+
+[node name="GroundFootprint" type="CollisionShape3D" parent="."]
+editor_description = "La base que tiene que quedar a nivel: la caja vista desde arriba (52 x 52 m: el anillo y los 4 pilares a +-20 m con su malla de +-5,6 m). Se ajusta con el gizmo; nunca choca."
+shape = SubResource("BoxShape3D_footprint")
+disabled = true
+script = ExtResource("10_footprint")
 
 [node name="ManaSource" type="Node3D" parent="."]
 script = ExtResource("2_source")

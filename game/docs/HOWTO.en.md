@@ -105,7 +105,7 @@ bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake
 bash agent/harness/godot_run.sh $G --headless --path . --import                  # once more: terrain.glb
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # twice
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map_starts.tscn -- --map=<tag>  # the starts land on ground and in one region
+bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # seats, objects on land, level bases, altar->fount paths (no --map: every map)
 bash agent/runs/run_050_maps.sh <tag>                                            # smoke: AI vs AI for 0.5 min
 ```
 

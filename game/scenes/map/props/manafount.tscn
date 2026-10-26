@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
@@ -13,10 +13,14 @@
 [ext_resource type="Resource" path="res://data/audio/cues/fountain_loop.tres" id="cue_fountain_loop"]
 [ext_resource type="Resource" path="res://data/audio/cues/manalith_loop.tres" id="cue_manalith_loop"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcfn.res" id="mesh_pcfn"]
+[ext_resource type="Script" path="res://scenes/map/props/ground_footprint.gd" id="11_footprint"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_pool"]
 height = 4.0
 radius = 3.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_footprint"]
+size = Vector3(8, 1, 8)
 
 [node name="Manafount" type="StaticBody3D" groups=["nav_source"] node_paths=PackedStringArray("visual")]
 collision_layer = 1
@@ -32,6 +36,12 @@ mesh = ExtResource("mesh_pcfn")
 [node name="Collision" type="CollisionShape3D" parent="."]
 position = Vector3(0, 1, 0)
 shape = SubResource("CylinderShape3D_pool")
+
+[node name="GroundFootprint" type="CollisionShape3D" parent="."]
+editor_description = "La base que tiene que quedar a nivel: la caja vista desde arriba (8 x 8 m: la pileta de la malla mide 7,4 m). Se ajusta con el gizmo; nunca choca."
+shape = SubResource("BoxShape3D_footprint")
+disabled = true
+script = ExtResource("11_footprint")
 
 [node name="ManaSource" type="Node3D" parent="."]
 script = ExtResource("2_source")

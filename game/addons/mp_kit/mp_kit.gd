@@ -247,6 +247,8 @@ func leave() -> void:
 func request_world_ready() -> void:
 	if not is_networked() or multiplayer.is_server():
 		return
+	if gate:
+		gate.hold_local_world()
 	rpc_world_ready.rpc_id(1)
 
 
@@ -516,6 +518,7 @@ func _admit_at_gate(sender: int, credential: String) -> void:
 	_awaiting_ticket.erase(sender)
 	if not seat.credential.is_empty():
 		rpc_seat_credential.rpc_id(sender, seat.credential)
+	gate.tell_state(sender)
 	rpc_assign_slot.rpc_id(sender, seat.slot)
 	peer_joined.emit(sender, seat.slot)
 

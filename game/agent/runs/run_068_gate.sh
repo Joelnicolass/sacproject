@@ -2,7 +2,7 @@
 # RFC-068 (F392): the start gate of a LAN match. A listen host waits, paused, until its seats load; then only a seat that dropped
 # comes back, within the grace. The host is the game itself (boot -> SacrificeFlow -> match.tscn), no debug world:
 #   host `--listen-host --mode=ffa3 --map=test_flat4 --rejoin-grace-s=6` (slot 1) and three headless debug/net/dedicated_client:
-#   A (slot 2) leaves 2 s after the start and comes back 2 s later; B (slot 3) leaves 6 s after the start and comes back 10 s later,
+#   A (slot 2) leaves 2 s after the start, comes back 2 s later and stays 16 s more (in while B runs out of grace); B (slot 3) leaves 6 s after the start and comes back 10 s later,
 #   past the grace; C joins once the match runs and is turned away.
 # Criteria (rfcs/RFC-068-start-gate.md §1), read from the `partida lan: …` lines of the host and the clients' PASS/FAIL lines:
 #   1. `slot 2 cargó el mundo (1/2)` and `slot 3 cargó el mundo (2/2)` come BEFORE `la simulación arranca (todos cargaron) en el tick 0`;
@@ -48,7 +48,7 @@ client() { # client <name> <flags…>
 READY=0
 wait_line "$OUT/host.log" "^mapa test_flat4" "$HOST" 60 && READY=1
 if [ "$READY" = 1 ]; then
-  client A --e2e-expect-slot=2 --e2e-rejoin-after-s=2 --e2e-away-s=2
+  client A --e2e-expect-slot=2 --e2e-rejoin-after-s=2 --e2e-away-s=2 --e2e-linger-s=16
   A=$LAST_PID
   wait_line "$OUT/A.log" "PASS A gets a slot" "$A" 60
   client B --e2e-expect-slot=3 --e2e-rejoin-after-s=6 --e2e-away-s=10 --e2e-expect-reason=grace_over --e2e-reject-wait-s=15
@@ -109,7 +109,10 @@ check(not any("slot 4" in l for l in lan), "no fourth seat was ever given")
 # 4. A drops and comes back to the same seat, the same wizard where it stood
 check(any(l == "E2E CLIENT A PASS" for l in a), "A passed all its checks (slot 2, same slot again, sees Wizards/Wizard2)")
 check(any(l == "E2E_BACK A slot=2" for l in a), "A came back to slot 2")
-check(lan.count(pre + "slot 2 se fue") == 1 and lan.count(pre + "slot 2 volvió") == 1, "the host logged slot 2 leaving once and coming back once")
+# A quits for good after its linger (E2E CLIENT A PASS): that last leave is the end of the run, so only the leaves before the
+# return count.
+back_at = lan.index(pre + "slot 2 volvió") if pre + "slot 2 volvió" in lan else len(lan)
+check(lan[:back_at].count(pre + "slot 2 se fue") == 1 and lan.count(pre + "slot 2 volvió") == 1, "the host logged slot 2 leaving once and coming back once")
 def state(slot, when):
     for l in lan:
         m = re.match(r"^" + re.escape(pre) + r"slot %d (.*) \(%s\)$" % (slot, when), l)

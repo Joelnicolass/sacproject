@@ -13,7 +13,8 @@ extends Node
 ## waits for the refusal, 15 by default).
 ## Rejoin: --e2e-rejoin-after-s=N (N seconds after the start it leaves the way the pause menu does, SacrificeFlow.return_to_boot)
 ## --e2e-away-s=N (and joins again N seconds later). It must sit in the same slot and see its own WizardN; with
-## --e2e-expect-reason=grace_over the return must be turned away with that reason instead. No result is awaited then.
+## --e2e-expect-reason=grace_over the return must be turned away with that reason instead. No result is awaited then;
+## --e2e-linger-s keeps it connected after the return (the seat stays in while another one runs out of grace).
 ## Every wait is in real seconds (F350: the process may run with `--fixed-fps`, where a SceneTree timer is simulated time).
 ## Prints `PASS …` / `FAIL …` per check, `E2E_CLOCK <name> at_start=<tick>` (the MatchClock tick when this client saw the gate
 ## open: about 0 if it waited paused), `E2E_STATUS`, `E2E_LEFT`, `E2E_BACK` and `E2E CLIENT <name> PASS|FAIL`; exit 0 / 1.
@@ -111,6 +112,7 @@ func _run() -> void:
 		_check(String(GameModeCatalog.current_tag()) == mode_tag, "%s plays the mode %s (got %s)" % [_name, mode_tag, GameModeCatalog.current_tag()])
 	if not MpBoot.user_value("e2e-rejoin-after-s", "").is_empty():
 		await _rejoin()
+		await _wait_wall(float(MpBoot.user_value("e2e-linger-s", "0")))
 		MpKit.leave()
 		_finish()
 		return

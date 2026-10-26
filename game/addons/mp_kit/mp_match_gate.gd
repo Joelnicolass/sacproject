@@ -20,7 +20,8 @@ signal started(why: String)
 signal seat_away(slot: int)
 ## Server: a seat is out for good ("grace_over" | "not_loaded" | what give_up says). is_abandoned(slot) is already true here.
 signal seat_abandoned(slot: int, why: String)
-## Server: every expected seat is past the grace (nobody is left to play).
+## Server: every expected seat is past the grace (nobody is left to play). Never on a listen host: the host still plays, so each
+## seat past the grace is abandoned.
 signal all_gone
 ## Server: a peer was turned away with `reason`.
 signal turned_away(peer_id: int, reason: String)
@@ -64,6 +65,10 @@ var _waiting: bool = false
 var _paused_by_me: bool = false
 var _first_admit_ms: int = -1
 var _all_gone_sent: bool = false
+## Client: this peer's world reported ready (MpKit.request_world_ready); the pause the server asks for applies from then on.
+var _local_world_ready: bool = false
+## Client: what the last state RPC asked for.
+var _server_pause: bool = false
 ## slot -> credential (open mode)
 var _credentials: Dictionary = {}
 ## slot -> peer id while connected
@@ -223,10 +228,24 @@ func reset() -> void:
 	_given_up.clear()
 	_abandoned.clear()
 	_waiting = false
+	_local_world_ready = false
+	_server_pause = false
 	if _paused_by_me:
 		_paused_by_me = false
 		if is_inside_tree():
 			get_tree().paused = false
+
+
+## MpKit only (server): tells `peer_id` whether the match waits, right when it is admitted, so its world holds from the moment it
+## loads instead of running until the next count arrives.
+func tell_state(peer_id: int) -> void:
+	_send_state_to(peer_id)
+
+
+## MpKit only (client): this peer's world is loaded. If the match waits, the world holds here (MatchClock stays at its start).
+func hold_local_world() -> void:
+	_local_world_ready = true
+	_apply_client_pause()
 
 
 ## The timers (load timeout, grace). Every frame; tests call it after moving the clock.
@@ -248,7 +267,7 @@ func poll() -> void:
 			_free_seat(slot)
 		_set_waiting(true, true)
 		return
-	if _present_slots().is_empty():
+	if _present_slots().is_empty() and not host_present:
 		_check_all_gone(gone)
 		return
 	for slot in gone:
@@ -366,13 +385,22 @@ func _send_state_to(peer_id: int) -> void:
 func rpc_state(waiting: bool, loaded_count: int, expected_count: int, pause: bool) -> void:
 	phase = Phase.FILLING if waiting else Phase.RUNNING
 	_waiting = waiting
-	if waiting and pause and not _paused_by_me and not get_tree().paused:
+	_server_pause = pause
+	_apply_client_pause()
+	waiting_changed.emit(waiting, loaded_count, expected_count)
+
+
+## Client: paused while the match waits and this peer's world is loaded (a world still loading is not held: it must finish).
+func _apply_client_pause() -> void:
+	if not is_inside_tree():
+		return
+	var hold := _waiting and _server_pause and _local_world_ready
+	if hold and not _paused_by_me and not get_tree().paused:
 		_paused_by_me = true
 		get_tree().paused = true
-	elif not waiting and _paused_by_me:
+	elif not hold and _paused_by_me:
 		_paused_by_me = false
 		get_tree().paused = false
-	waiting_changed.emit(waiting, loaded_count, expected_count)
 
 
 ## The seats the match still waits for (not given up, not abandoned).

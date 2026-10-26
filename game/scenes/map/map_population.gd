@@ -12,7 +12,7 @@ extends Node3D
 
 signal populated(report: Dictionary)
 
-## Off in scenes that want an empty field; high_noon.tscn turns it on.
+## Off in scenes that want an empty field; match.tscn turns it on.
 @export var spawn_creatures := false
 @export var buildings: Node3D
 @export var npcs: Node3D

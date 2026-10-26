@@ -33,6 +33,7 @@ func _form(bodies: Array) -> Array:
 		pending.append(t)
 		at.append(perception.pos_of(t) if perception != null else t.node.global_position)
 	var out: Array = []
+	var crowd := perception.play.tactics.crowd
 	while not pending.is_empty():
 		var first: AiTrack = pending.pop_front()
 		at.pop_front()
@@ -50,7 +51,7 @@ func _form(bodies: Array) -> Array:
 		while taken:
 			taken = false
 			for i in pending.size():
-				if AiField.can_accept(group.count, center.distance_squared_to(at[i])):
+				if AiField.can_accept(group.count, center.distance_squared_to(at[i]), crowd):
 					var candidate: AiTrack = pending[i]
 					pending.remove_at(i)
 					at.remove_at(i)

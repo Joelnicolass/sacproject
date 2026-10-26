@@ -46,6 +46,8 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 @export_range(0.0, 120.0, 1.0) var spell_futile_forget_s := 30.0
 ## A control spell (Freeze, Vines, Rings of Fire, Slime) is worth the target's rating times min(1, seconds it lasts / this).
 @export_range(1.0, 60.0, 1.0) var disable_ref_s := 10.0
+## A burst around himself (Halo) is worth casting with at least this many known enemies inside its reach (055f f5).
+@export_range(1, 20) var self_area_min_foes := 2
 
 @export_group("Tiro limpio y daño propio (053b)")
 ## A projectile or area spell is cast only with a clear line; without it he walks this fraction of the way, then tries again.
@@ -63,6 +65,10 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 ## He wards himself when at least guard_min_foes known enemies stand within guard_threat_m (061b).
 @export_range(0.0, 100.0, 1.0) var guard_threat_m := 25.0
 @export_range(1, 10) var guard_min_foes := 2
+## A heal on an area (Rainbow, Healing Aura) goes where the own bodies inside it miss at least this much health in all (055f f5).
+@export_range(0.0, 5000.0, 10.0) var heal_area_min_missing := 300.0
+## He jumps to an own building far away (Teleport) when his threat is at least this (0: calm, 1: overrun) (055f f5).
+@export_range(0.0, 1.0, 0.05) var escape_threat := 0.7
 
 @export_group("Convocar")
 ## The emergency Manahoar is considered when a random draw is at least threat * this.

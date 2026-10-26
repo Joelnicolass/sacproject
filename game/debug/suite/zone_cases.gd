@@ -281,7 +281,7 @@ func _frozen_shatter() -> Dictionary:
 	return _verdict("zone_frozen_shatter", checks)
 
 
-## The AI rates the four with the evaluators their `ai_use` gives them (the three ground spells as area spells, Healing Aura as a heal), the
+## The AI rates the four with the evaluators their `ai_use` gives them (the three ground spells as area spells, Healing Aura as a heal on an area), the
 ## numbers are finite and nothing breaks.
 func _ai() -> Dictionary:
 	var checks := {}
@@ -306,7 +306,7 @@ func _ai() -> Dictionary:
 	var hurt_track := perception.add_node(hurt, &"event")
 	groups.rebuild()
 	checks["tracked"] = track != null and foe_track != null and hurt_track != null
-	var wanted := {"pxef": AiSpellEval.FN_AREA, "zorf": AiSpellEval.FN_AREA, "tfir": AiSpellEval.FN_AREA, "ruah": AiSpellEval.FN_HEAL}
+	var wanted := {"pxef": AiSpellEval.FN_AREA, "zorf": AiSpellEval.FN_AREA, "tfir": AiSpellEval.FN_AREA, "ruah": AiSpellEval.FN_HEAL_AREA}
 	for tag in SPELLS:
 		var spell := GameData.spell(tag)
 		checks[tag + "_evaluator"] = AiSpellEval.rating_fn(spell) == wanted[tag]

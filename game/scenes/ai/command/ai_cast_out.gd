@@ -55,6 +55,18 @@ func request(spell: Resource, target: AiTrack, point: Vector3, audit: AiAudit, p
 	return answer
 
 
+## What the Caster would answer now to the click `request` makes for this cast (Caster.action_status), without casting: "" when it
+## would start. A summon has no click to ask about. 055f f5: Casting asks it before every cast.
+func status(spell: Resource, target: AiTrack, point: Vector3) -> String:
+	if not (spell is SpellType):
+		return ""
+	var tag := (spell as SpellType).tag
+	var node: Node3D = target.node if target != null and target.is_valid() else null
+	if (spell as SpellType).is_structure and node == null:
+		return caster.action_status(tag, point, null)
+	return caster.action_status(tag, node.global_position if node != null else point, node)
+
+
 ## The creature the Summoner just put in front of the wizard (translucent until the cast ends).
 func _new_summoned_unit(tag: String) -> Node:
 	if _units_root == null or _units_root.get_child_count() == 0:

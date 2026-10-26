@@ -22,5 +22,6 @@ duration_s = 5.0
 action = ExtResource("2_action")
 targets_creatures = true
 never_allies = true
+ai_use = 10
 ai_phase = 1
 structures = PackedStringArray()

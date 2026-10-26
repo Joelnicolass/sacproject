@@ -138,6 +138,8 @@ func rebuild_spells(wizard: AiTrack) -> void:
 		var spell := book.structure_at(i)
 		if spell == null:
 			continue
+		if AiSpellEval.wants_acc(spell):  # 055f f5: a structure-tab spell with a phase (Teleport, Guardian) is rated like any other
+			wizard.spell_accs.append({"spell": spell, "fn": AiSpellEval.rating_fn(spell)})
 		if wizard.shrine_spell == null and spell.only_free_manafounts:
 			wizard.shrine_spell = spell
 		if spell.ai_use == SpellType.AiUse.CONVERT:

@@ -16,6 +16,8 @@ extends Node
 signal cast_noted(slot: int, tag: String, target: Node)
 ## Every request of the port the Caster started, summons included (diagnostic, for the bench probes).
 signal request_noted(slot: int, tag: String, target: Node, is_summon: bool)
+## 055f f5: a request the Caster refused (the `reject` line), for the bench's criteria.
+signal refused_noted(slot: int, tag: String, reason: String)
 
 ## Physics ticks since start(); the clock of every line.
 var tick: int:
@@ -279,6 +281,7 @@ func note_request(slot: int, tag: String, display: String, started: bool, answer
 		var table: Dictionary = side["rejections"]
 		table[reason] = int(table.get(reason, 0)) + 1
 		record("reject", "slot %d %s %s" % [slot, tag, reason])
+		refused_noted.emit(slot, tag, reason)
 		return
 	request_noted.emit(slot, tag, target, is_summon)
 	if is_summon:

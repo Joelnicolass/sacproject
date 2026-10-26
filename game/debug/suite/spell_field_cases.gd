@@ -13,6 +13,9 @@ const SPELL_BITS := preload("res://tools/bake/spell_bits.gd")
 const SPELLS_DIR := "res://data/catalog/spells/"
 const GODS := ["james", "stratos", "persephone", "charnel", "pyro"]
 const KIND_BITS := {AiTrack.Kind.WIZARD: 1, AiTrack.Kind.CREATURE: 4, AiTrack.Kind.MANAHOAR: 4, AiTrack.Kind.STRUCTURE: 0x10, AiTrack.Kind.NONE: 0}
+## 055f f5 gave these an AI use on purpose (plan 055f §12): their use and phase no longer follow the bits (ai_spell_use_cases checks them).
+const F5_USES := ["olah", "mrhc", "taed", "rter", "wobr", "ruah", "deda", "dnws", "pmcd", "elet", "ndrg"]
+const F5_DECISIONS := ["wants_acc", "rating_fn", "attack_phase", "support_phase", "baked_ai_use", "baked_ai_phase"]
 const BOOLS := ["targets_wizards", "targets_souls", "targets_creatures", "targets_corpses", "targets_structures", "only_free_manafounts",
 	"only_allies", "never_allies", "targets_ground"]
 
@@ -126,6 +129,8 @@ func _tower(god: String, rows: Dictionary) -> void:
 
 
 func _same(tag: String, decision: String, bits_value: Variant, field_value: Variant) -> void:
+	if F5_USES.has(tag) and F5_DECISIONS.has(decision):
+		return
 	_compared += 1
 	if typeof(bits_value) == typeof(field_value) and bits_value == field_value:
 		return

@@ -52,3 +52,17 @@ static func souls(node: Node) -> int:
 
 static func caster(node: Node) -> Caster:
 	return node.get_node_or_null("Caster") as Caster
+
+
+## Whether the body of `t` has something it can do now with `mana` (the mana the side believes it has): a wizard with at least the
+## quarter of his pool he keeps for a spell, a creature with an ability it can pay, a Manahoar that can channel. 055f f5.
+static func ability_ready(t: AiTrack, mana: int) -> bool:
+	match t.kind:
+		AiTrack.Kind.WIZARD:
+			return float(mana) >= t.min_mana_cost
+		AiTrack.Kind.MANAHOAR:
+			return t.ready
+		AiTrack.Kind.CREATURE:
+			var type: CreatureType = t.node.get("type") as CreatureType if t.is_valid() else null
+			return type != null and AiTrackFacts.ability_count(type) > 0 and float(mana) >= t.min_mana_cost
+	return false

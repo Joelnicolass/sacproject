@@ -139,6 +139,7 @@ func _run_suite() -> void:
 	_results.merge(preload("res://debug/suite/ai_names_cases.gd").new().run(self))  # 055f f1
 	_results.merge(await preload("res://debug/suite/ai_sight_cases.gd").new().run(self))  # 055f f2
 	_results.merge(preload("res://debug/suite/ai_tactics_cases.gd").new().run(self))  # 055f f4
+	_results.merge(await preload("res://debug/suite/ai_spell_use_cases.gd").new().run(self))  # 055f f5
 	_results.merge(await SPELL_LINK_CASES.new().run(self))  # 055e e3
 	_results.merge(FX_WIRE_CASES.new().run(self))  # 055x x1
 	_print_suite()

@@ -87,7 +87,7 @@ func _scenes() -> Dictionary:
 	var book := GameData.book("persephone", 9)["spells"] as Array
 	checks["in_persephones_book"] = book.any(func(type: SpellType) -> bool: return type.tag == TAG)
 	checks["not_before_level_8"] = not (GameData.book("persephone", 7)["spells"] as Array).any(func(type: SpellType) -> bool: return type.tag == TAG)
-	checks["ai_heal"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_HEAL
+	checks["ai_area"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_AREA  # 055f f5: an attack on an area, no longer a heal
 	return _verdict("stalk_scenes", checks)
 
 

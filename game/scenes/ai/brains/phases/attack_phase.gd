@@ -2,9 +2,10 @@ class_name AttackPhase
 extends AiPhase
 
 ## wizAttack (shiny.d:3052-3071, 0x48d640 CheckAttack): among the enemy bodies the side knows (creatures, wizards,
-## the NPC of the villages) within (1 - threat) * 280 m, the one of most weight (1 within 10 m, falling linearly to 0;
-## x0.5 if it is not aggressive, x1/3 if it has no ready ability, x10 a Sac Doctor) is the target, and the book's attack
-## with the best score against it is queued with the score `best * w3[0] / total`.
+## the NPC of the villages) within (1 - threat) * 280 m, the one of most weight (1 within 10 m, falling linearly to 0; the
+## tactics' weight_passive if it does not fight, weight_no_ability if it has no ability it can pay, weight_sac_doctor a Sac Doctor)
+## is the target, and the book's attack with the best score against it is queued with the score `best * w3[0] / total` (on the
+## body the spell aims at: himself for a burst around him, AiSpellEval.find_best).
 ## It uses what the AI KNOWS: an enemy it has not seen stays where it was when taken in.
 ## RFC-053 053b (F371): a passive NPC (a body of an NPC slot that never picks a fight: CRE8 aggressiveness 0, or a peasant, whose
 ## VillagerBrain never attacks) weighs AiTactics.npc_passive_weight more (0 in every difficulty: «la IA no los caza a propósito»,
@@ -33,7 +34,8 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 		if not AiWizardBrain.target_alive(foe) or brain.casting.futile.is_futile(foe):
 			continue
 		var distance := wizard.extrap_pos.distance_to(foe.extrap_pos)
-		var w := AiField.attack_weight(distance, thr, foe)
+		var able := AiBody.ability_ready(foe, brain.perception.mana_of(foe).x)
+		var w := AiField.attack_weight(distance, thr, foe, able, tactics, foe.node is DoctorBody)
 		if TargetRules.is_passive_npc(foe.node):
 			w *= tactics.npc_passive_weight
 		if committed != null:
@@ -57,5 +59,5 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 	var found := brain.eval.find_best(wizard, best_track, SpellType.AiPhase.ATTACK)
 	if float(found["score"]) <= 0.0:
 		return
-	var entry := AiCastQueue.make(0, AiField.f32(AiField.safediv(best * w3[0], total)), best_track, found["spell"], float(found["range"]), found["obj"])
+	var entry := AiCastQueue.make(0, AiField.f32(AiField.safediv(best * w3[0], total)), found["target"], found["spell"], float(found["range"]), found["obj"])
 	AiCastQueue.enqueue(wizard.cast_queue, entry)

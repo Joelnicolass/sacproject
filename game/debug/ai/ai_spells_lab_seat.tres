@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AiSeat" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="1_seat"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="2_wizard"]
+[ext_resource type="Resource" uid="uid://b2h7s83blbac8" path="res://data/gods/persephone.tres" id="3_god"]
+[ext_resource type="Resource" path="res://debug/ai/ai_mixed_book.tres" id="4_book"]
+
+; 055f f5: el asiento IA del laboratorio de hechizos (slot 2): Persephone con el libro mezclado (ai_mixed_book.tres), Normal.
+
+[resource]
+script = ExtResource("1_seat")
+slot = 2
+wizard = ExtResource("2_wizard")
+god = ExtResource("3_god")
+book = ExtResource("4_book")

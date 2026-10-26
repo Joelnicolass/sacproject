@@ -2,9 +2,9 @@
 class_name AiWizardCasting
 extends Node
 
-## How the AI's wizard casts what his phases queued: the best entry of the queue he can pay and the game would accept; out of
-## reach he walks toward it, and an entry he cannot afford is skipped (a forced one waits). It also keeps the difficulty's summon
-## pace (`pace`). It does not rate spells (AiSpellEval) nor fill the queue (the phases).
+## How the AI's wizard casts what his phases queued: the best entry he can pay that the Caster would accept (its answer to that click,
+## for every spell); out of reach he walks toward it, else the entry is skipped (a forced one he cannot afford waits). It also keeps
+## the difficulty's summon pace (`pace`). It does not rate spells (AiSpellEval) nor fill the queue (the phases).
 ## Ref: shiny.d:3201-3280 executeBestCast, 3174-3199 lightCanCast.
 
 @export var perception: AiPerception
@@ -26,8 +26,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func prepare(p_eval: AiSpellEval, p_tactics: AiTactics) -> void:
 	eval = p_eval
-	shots = AiShotCheck.new(eval, port, tactics)
-	futile = AiFutileTargets.new(perception, port, tactics)
+	shots = AiShotCheck.new(eval, port, p_tactics)
+	futile = AiFutileTargets.new(perception, port, p_tactics)
 
 
 ## lightCanCast: mana, souls, cooldown and a free wizard, with the Caster's own mana test (never «Sin maná»).
@@ -60,15 +60,12 @@ func light_can_cast(wizard: AiTrack, spell: Resource) -> bool:
 	return cost <= AiBody.mana_now(node) + CASTER.MANA_EPSILON
 
 
-## 024e: what a cast that waited its delay (Easy) checks again when it leaves the port: lightCanCast and, for a structure spell, the
-## game's own Caster.action_status at `point`, so the half second never turns into a refusal. Returns "" when it can go, else why not.
+## 024e: what a cast that waited its delay (Easy) checks again when it leaves the port: lightCanCast and the Caster's own answer
+## (AiCastOut.status), so the half second never turns into a refusal. Returns "" when it can go, else why not.
 func cast_refusal(wizard: AiTrack, spell: Resource, target: AiTrack, point: Vector3) -> String:
 	if not light_can_cast(wizard, spell):
 		return "lightCanCast"
-	if not (spell is SpellType and bool((spell as SpellType).is_structure)):
-		return ""
-	var picked: Node3D = target.node if target != null and target.is_valid() else null
-	return AiBody.caster(wizard.node).action_status((spell as SpellType).tag, point, picked)
+	return port.casts.status(spell, target, point)
 
 
 ## enqueueForcedExecute: score 0, forced, and straight to the execution. Ref: shiny.d:3290 (0x48d080).
@@ -140,6 +137,9 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 			i += 1
 			continue
 		var point := obj.cur_pos if obj != null else wizard.cur_pos
+		if not port.casts.status(spell, target, point).is_empty():
+			i += 1
+			continue
 		port.start_casting(spell, target, point)
 		casts_started += 1
 		futile.note_cast(spell, target)

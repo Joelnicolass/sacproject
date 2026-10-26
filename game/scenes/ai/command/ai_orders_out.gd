@@ -80,8 +80,7 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 	if reason.is_empty():
 		return
 	var key := "%s %d %s" % [AiTrack.Kind.keys()[t.kind], ostate, reason]
-	if DebugLog.on(&"ai_order"):
-		print("ai_order tick %d slot %d %s ost %d->%d %s goal %s" % [tick, slot, t.node.name, t.ord_state, ostate, reason,
+	if DebugLog.on(&"ai_order"): print("ai_order tick %d slot %d %s ost %d->%d %s goal %s" % [tick, slot, t.node.name, t.ord_state, ostate, reason,
 			AiAudit.fmt((pos as Vector3) if pos != null else (target.cur_pos if target != null else t.cur_pos))])
 	var goal: Vector3
 	if delay_ticks > 0:

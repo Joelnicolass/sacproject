@@ -1,10 +1,11 @@
 class_name AiCastQueue
 extends RefCounted
 
-## The queue of casts of a wizard (shiny.d:2638-2662 `enqueueCast`, 0x48ced0 + 0x48ce40): forced entries first, then
+## The queue of casts of a wizard: forced entries first, then
 ## by score, best first; a new entry goes before the ones with its score; an entry with the same spell tag replaces the old
 ## one. Entries are Dictionaries {flag, score, target (AiTrack|null), obj (AiTrack|null), range, spell (Resource)}.
 ## The queue is emptied at every replan of the wizard (shiny.d:3333).
+## Ref: shiny.d:2638-2662 `enqueueCast`, 0x48ced0 + 0x48ce40.
 
 const FORCED := 1
 

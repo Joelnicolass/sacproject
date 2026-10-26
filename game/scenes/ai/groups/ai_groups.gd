@@ -1,12 +1,12 @@
 class_name AiGroups
 extends Node
 
-## Groups of nearby bodies per category (RFC-024 §3.1 `AiGroups`; shiny.d:1479-1580 slot-4 groups, 1563-1621
-## `groupRefresh4`, 1702-1760 `canAccept`/`formGroups4`). Every replan (k4) the groups are thrown away and made again:
+## Groups of nearby bodies per category. Every replan (k4) the groups are thrown away and made again:
 ## the bodies of a category sorted by worth (best first), the first starts a group and takes in each next one that lies
 ## within 30*min(1+0.1n, 1.8) m of the center, until none does (shiny.d:1711-1735, 1740-1778). Every 6 ticks (k3) each
 ## group refreshes its center, its aggregates and drops its dead. Wizards and creatures go in; souls (slot-5 groups)
 ## are not tracked in 024c («aprox.»).
+## Ref: RFC-024 §3.1 `AiGroups`; shiny.d:1479-1580 slot-4 groups, 1563-1621 `groupRefresh4`, 1702-1760 `canAccept`/`formGroups4`.
 
 @export var perception: AiPerception
 

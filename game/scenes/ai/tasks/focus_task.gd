@@ -1,7 +1,7 @@
 class_name FocusTask
 extends AiTask
 
-## RFC-053 053d (F373), «kill X» (not in the original: its AI only escorts the wizard or follows him, so every creature fought what it
+## «Kill X» (not in the original: its AI only escorts the wizard or follows him, so every creature fought what it
 ## met, each from where it stood). On every replan it looks at the enemy bodies the side sees within AiCrowdTactics.focus_radius_m of an
 ## own group; for each it takes the free own creatures that can fight within that radius of it (the nearest first, at most
 ## focus_max_members) and estimates how long they need to kill it (AiKillEstimate: known health over their DPS less the healing the
@@ -12,6 +12,7 @@ extends AiTask
 ## (the first child of the board) and each gets the same order a human's right click gives: attack it (AiOrder.ATTACK, CreatureBrain).
 ## AttackPhase reads `committed()`: the wizard's spells go to the same target. Uses only what the side knows (AiPerception).
 ## Take this node out and the side never commits.
+## Ref: RFC-053 053d (F373).
 
 ## Diagnostic for the report: commitments made and the last one («name kill_s score»).
 var commits := 0
@@ -98,8 +99,7 @@ func _pick() -> AiTrack:
 		if members.is_empty():
 			continue
 		var kill_s := AiKillEstimate.kill_seconds(perception, foe, members)
-		if DebugLog.on(&"ai_focus"):
-			print("ai_focus slot %d candidato %s miembros %d muere en %.2f s" % [perception.slot, foe.node.name, members.size(), kill_s])
+		if DebugLog.on(&"ai_focus"): print("ai_focus slot %d candidato %s miembros %d muere en %.2f s" % [perception.slot, foe.node.name, members.size(), kill_s])
 		if kill_s > tactics.crowd.focus_kill_window_s:
 			continue
 		var score := worth / maxf(kill_s, 0.1)
@@ -110,8 +110,7 @@ func _pick() -> AiTrack:
 		best_score = score
 		best = foe
 		last_commit = "%s %.2f %.3f" % [foe.node.name, kill_s, score]
-	if DebugLog.on(&"ai_focus") and best != null:
-		print("ai_focus slot %d compromiso %s" % [perception.slot, last_commit])
+	if DebugLog.on(&"ai_focus") and best != null: print("ai_focus slot %d compromiso %s" % [perception.slot, last_commit])
 	return best
 
 
@@ -171,8 +170,7 @@ func _near_own_group(at: Vector3) -> bool:
 ## bodies within focus_radius_m, each by the health the side knows it has).
 func _strong_enough(at: Vector3, tactics: AiTactics) -> bool:
 	var ratio := power_ratio(board.stance, at, tactics.crowd.focus_radius_m)
-	if DebugLog.on(&"ai_focus"):
-		print("ai_focus slot %d fuerza local %.2f (minimo %.2f)" % [board.perception.slot, ratio, tactics.crowd.focus_power_ratio])
+	if DebugLog.on(&"ai_focus"): print("ai_focus slot %d fuerza local %.2f (minimo %.2f)" % [board.perception.slot, ratio, tactics.crowd.focus_power_ratio])
 	return ratio >= tactics.crowd.focus_power_ratio
 
 

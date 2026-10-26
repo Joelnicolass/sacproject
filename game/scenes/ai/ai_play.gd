@@ -28,7 +28,7 @@ static func normal() -> AiPlay:
 	var clock := AiClock.new()
 	var ticks := clock.base_ticks(AiClock.Job.PERCEPTION)
 	clock.free()
-	return make(AiSeat.difficulty_of("normal"), null, ticks)
+	return make(AiSeat.NORMAL, null, ticks)
 
 
 ## Whole ages that `seconds` last at Normal pace (1.6 s at 60 Hz, ages of 6 ticks: 16).

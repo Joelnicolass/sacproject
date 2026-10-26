@@ -1,8 +1,9 @@
 class_name AiGroup
 extends RefCounted
 
-## A group of nearby bodies of one category (shiny.d:105-124 `AIGroup`, slot-4 groups): center, who is in it, and the
+## A group of nearby bodies of one category: center, who is in it, and the
 ## aggregates the stance and the threat read. Made by AiGroups every 60 ticks and refreshed every 6.
+## Ref: shiny.d:105-124 `AIGroup`, slot-4 groups.
 
 var prio := 0
 var members: Array[AiTrack] = []

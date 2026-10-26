@@ -43,7 +43,7 @@ func soul_track(soul: Node3D) -> AiTrack:
 func find_best_near(pos: Vector3, radius: float, pickup: bool, side: int, system: SacrificeSystem, service: NavService) -> AiTrack:
 	var best := 0.0
 	var best_soul: Node3D
-	for node in get_tree().get_nodes_in_group(&"soul"):
+	for node in get_tree().get_nodes_in_group(Soul.GROUP):
 		var soul := node as Soul
 		if soul == null or not is_instance_valid(soul) or soul.is_queued_for_deletion():
 			continue

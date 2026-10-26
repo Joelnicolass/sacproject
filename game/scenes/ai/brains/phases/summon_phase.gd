@@ -1,7 +1,7 @@
 class_name SummonPhase
 extends AiPhase
 
-## wizSacrifice (shiny.d:3115-3172, 0x48d8b0): what the wizard summons. With no souls it does nothing, the Manahoar
+## What the wizard summons. With no souls it does nothing, the Manahoar
 ## included (a creature costs its souls when the cast ends). Otherwise:
 ## BLOCK1 (shiny.d:3123-3137): when rand >= threat * 1.3, a Manahoar is forced if there is a Manalith (own or ally, retail), a
 ## Manahoar spell, and fewer ready Manahoars than souls/2; and either none is ready or the mana deficit per Manalith and ready
@@ -15,6 +15,7 @@ extends AiPhase
 ## 0.64-0.86 for minutes, so he never summoned again while his souls piled up («se queda quieta con muchas almas»). And the pool
 ## counts at least AiTactics.summon_min_manaliths Manaliths (1): in the same match the Taurocks broke both Manaliths and neither side
 ## could summon again (BLOCK1, the Manahoar, still needs a Manalith to channel: unchanged).
+## Ref: wizSacrifice, shiny.d:3115-3172, 0x48d8b0.
 
 
 func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
@@ -85,5 +86,4 @@ func _summon_threat(wizard: AiTrack) -> float:
 
 
 func _note(wizard: AiTrack, why: String) -> void:
-	if DebugLog.on(&"ai_summon"):
-		print("ai_summon slot %d tick %d %s" % [brain.perception.slot, brain.port.now_tick(), why])
+	if DebugLog.on(&"ai_summon"): print("ai_summon slot %d tick %d %s" % [brain.perception.slot, brain.port.now_tick(), why])

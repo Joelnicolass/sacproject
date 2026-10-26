@@ -22,6 +22,10 @@ const SELF_GUARD_TAGS := ["niks", "dlhs", "mrfe", "mrff", "rwsp"]
 const DISABLE_FOE_TAGS := ["zerf", "eniv", "rapf", "htel"]
 ## Spells the old chain left without evaluator whatever their bits said.
 const NO_EVALUATOR_TAGS := ["omna", "ndrg", "elet", "taed"]
+## Spells whose AI use and phase are set by hand in their .tres (055f f5, plan 055f §12): apply() leaves `ai_use` and `ai_phase`
+## as the type has them, so a re-bake never writes the bits' answer over the authored one (a fresh type keeps the defaults; set
+## them in the inspector). spell_field_cases reads this list (F5_USES) to skip those two decisions.
+const HAND_SET_TAGS := ["olah", "mrhc", "taed", "rter", "wobr", "ruah", "deda", "dnws", "pmcd", "elet", "ndrg"]
 
 
 static func apply(type: Resource, row: Dictionary) -> void:
@@ -29,10 +33,13 @@ static func apply(type: Resource, row: Dictionary) -> void:
 	var flags1 := int(row.get("flags1", 0))
 	for field: String in FLAG_BITS:
 		type.set(field, (flags & (1 << int(FLAG_BITS[field]))) != 0)
-	type.ai_phase = _phase(flags1)
+	var hand_set := HAND_SET_TAGS.has(str(row.get("tag", "")))
+	if not hand_set:
+		type.ai_phase = _phase(flags1)
 	type.ai_only_on_self = (flags1 & ONLY_ON_SELF_BIT) != 0
 	type.ai_worth = int(row.get("amount2", 0))
-	type.ai_use = _use(str(row.get("tag", "")), flags1, float(row.get("effect_range", 0.0)))
+	if not hand_set:
+		type.ai_use = _use(str(row.get("tag", "")), flags1, float(row.get("effect_range", 0.0)))
 
 
 static func _phase(flags1: int) -> int:

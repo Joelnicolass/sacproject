@@ -1,9 +1,10 @@
 class_name AiField
 extends RefCounted
 
-## The scalar fields of the original AI as pure functions (RFC-024 §3.1 `AiField`): how much a distance
+## The scalar fields of the AI as pure functions: how much a distance
 ## weighs, how groups influence a point, how the three casting weights split. Each line names the
 ## `shiny.d` line it was ported from. Floats the engine stores as `float` go through f32().
+## Ref: RFC-024 §3.1 `AiField`.
 
 ## A float32 round trip (the engine keeps most of these in float).
 static func f32(x: float) -> float:

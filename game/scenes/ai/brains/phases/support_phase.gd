@@ -1,11 +1,12 @@
 class_name SupportPhase
 extends AiPhase
 
-## wizSupport (shiny.d:3073-3087, 0x48d7c0): among the own bodies (creatures, Manahoars, the wizard himself, but not a ghost) the one
+## What the wizard helps: among the own bodies (creatures, Manahoars, the wizard himself, but not a ghost) the one
 ## the book's support spell (Heal, Speedup, a heal on an area, Guardian) rates highest; the entry is queued with the score
 ## `best * w3[1] / total`, where `total` is the sum of what every body rates (so with many bodies that need it, none stands out).
 ## Looking at the wizard himself also weighs what he does for his side from where he stands: raise a corpse, fetch a soul, escape;
 ## the entry then aims at that soul or building (AiSpellEval.find_best). The ratings are in AiSpellEval and ratings/.
+## Ref: wizSupport, shiny.d:3073-3087, 0x48d7c0.
 
 
 func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:

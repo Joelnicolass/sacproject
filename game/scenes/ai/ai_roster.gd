@@ -2,11 +2,12 @@
 class_name AiRoster
 extends Node
 
-## RFC-024 §4 (024f): seats the AI of this match. For each seat: the pick goes to SacrificeFlow.slot_picks (published to the
+## Seats the AI of this match. For each seat: the pick goes to SacrificeFlow.slot_picks (published to the
 ## clients on the channel that already exists), the WizardSpawner makes the wizard of its slot (replicated like any wizard),
 ## and an AiSide (a child of this node) plays it. Only where the game is simulated: solo or the server; a client never has a
 ## side. The seats are MatchRules.ai_seats; when the rules have none, SacrificeFlow.solo_ai_seats («Contra la IA», or the
 ## dedicated with --ai-slots). No seats = nothing happens (a match of humans, as before).
+## Ref: RFC-024 §4 (024f).
 
 signal seated(slot: int, side: AiSide)
 
@@ -75,7 +76,7 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 		side.setup(world, wizard, seat)
 		side.active = seat.start_active
 		sides[seat.slot] = side
-		print("ia slot %d lista (%s, %s)" % [seat.slot, seat.god.id(), side.play.difficulty.display_name])
+		if DebugLog.on(&"ai_seat"): print("ia slot %d lista (%s, %s)" % [seat.slot, seat.god.id(), side.play.difficulty.display_name])
 		seated.emit(seat.slot, side)
 
 

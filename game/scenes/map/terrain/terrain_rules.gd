@@ -25,41 +25,30 @@ class Index:
 	var lowest := 0.0
 
 
-## Splits the land from the cliff walls of `data` and files each land triangle under the 10 m cell of its lowest corner.
+## Files the land triangles of `data` (its first `land_triangles`, each under its `land_cells` cell) two per cell at most;
+## the ground and corner arrays are its land vertices and their lattice ids, copied at once.
 static func index(data: MapTerrainData) -> Index:
 	var result := Index.new()
 	result.cells.resize(TerrainGrid.COUNT * 2)
 	result.cells.fill(-1)
 	result.land.resize(TerrainGrid.COUNT)
-	result.lowest = INF
-	if data == null:
-		result.lowest = 0.0
+	if data == null or data.land_triangles == 0 or data.land_cells.size() != data.land_triangles:
 		return result
-	var vertices := data.vertices
-	var indices := data.indices
-	var triangle := 0
-	while triangle < indices.size():
-		var a := vertices[indices[triangle]]
-		var b := vertices[indices[triangle + 1]]
-		var c := vertices[indices[triangle + 2]]
-		triangle += 3
-		if is_wall(a, b, c):
-			continue
-		var cell_x := clampi(int(round(minf(minf(a.x, b.x), c.x) / TerrainGrid.CELL_M)), 0, TerrainGrid.SIDE - 1)
-		var cell_z := clampi(int(round(minf(minf(a.z, b.z), c.z) / TerrainGrid.CELL_M)), 0, TerrainGrid.SIDE - 1)
-		var slot := TerrainGrid.id_of(Vector2i(cell_x, cell_z)) * 2
-		if result.cells[slot] >= 0:
-			slot += 1
-		if result.cells[slot] >= 0:
-			continue
-		result.cells[slot] = result.ground.size() / 3
-		result.ground.append_array([a, b, c])
-		result.corners.append_array([TerrainGrid.vertex_id(a.x, a.z), TerrainGrid.vertex_id(b.x, b.z), TerrainGrid.vertex_id(c.x, c.z)])
-		for corner in 3:
-			result.land[result.corners[result.corners.size() - 1 - corner]] = 1
-		result.lowest = minf(result.lowest, minf(minf(a.y, b.y), c.y))
-	if result.ground.is_empty():
-		result.lowest = 0.0
+	result.ground = data.vertices.slice(0, data.land_triangles * 3)
+	result.corners = data.lattice.slice(0, data.land_triangles * 3)
+	var cells := result.cells
+	for triangle in data.land_triangles:
+		var slot := data.land_cells[triangle] * 2
+		slot += 1 if cells[slot] >= 0 else 0
+		if cells[slot] < 0:
+			cells[slot] = triangle
+	var land := result.land
+	var ground := result.ground
+	var lowest := INF
+	for at in ground.size():
+		land[result.corners[at]] = 1
+		lowest = minf(lowest, ground[at].y)
+	result.lowest = lowest
 	return result
 
 

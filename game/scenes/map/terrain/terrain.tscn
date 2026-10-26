@@ -8,12 +8,13 @@
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="6_walls"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="7_scars"]
 [ext_resource type="Material" uid="uid://b6pd04js5lq4t" path="res://assets/original/themes/james/ground_classic.tres" id="8_ground"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_live.gd" id="9_live"]
 
-[node name="Terrain" type="Node3D" node_paths=PackedStringArray("mesh", "net") groups=["nav_source"]]
+[node name="Terrain" type="Node3D" node_paths=PackedStringArray("mesh", "live") groups=["nav_source"]]
 editor_description = "El suelo de un mapa. Un mapa instancia esta escena y solo pone sus datos: `heights` (su heights.png, con void.png al lado), `tiles` (tiles.png), `ground_roles` (ground_roles.png) y `light_map` (light.png). La malla, la colisión y el índice salen de las alturas al cargar; no se guardan. Remote → Status muestra rev, version, live_stamps y holes."
 script = ExtResource("1_terrain")
 mesh = NodePath("Mesh")
-net = NodePath("Net")
+live = NodePath("Live")
 
 [node name="Mesh" type="MeshInstance3D" parent="." node_paths=PackedStringArray("terrain", "missing")]
 material_override = ExtResource("8_ground")
@@ -25,8 +26,14 @@ missing = NodePath("../Missing")
 script = ExtResource("3_collision")
 terrain = NodePath("..")
 
-[node name="Net" type="Node" parent="."]
+[node name="Live" type="Node" parent="."]
+editor_description = "Los sellos que se están mostrando, juntados una vez por tick de física. `min_step_m`: un sello se vuelve a dibujar solo cuando su altura se movió eso (o su anillo viajó eso)."
+process_physics_priority = -1
+script = ExtResource("9_live")
+
+[node name="Net" type="Node" parent="." node_paths=PackedStringArray("terrain")]
 script = ExtResource("4_net")
+terrain = NodePath("..")
 
 [node name="Status" type="Node" parent="." node_paths=PackedStringArray("terrain")]
 script = ExtResource("5_status")

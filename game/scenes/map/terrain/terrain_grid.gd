@@ -54,3 +54,8 @@ static func vertex_rect(center: Vector2, radius_m: float) -> Rect2i:
 ## The ground area (x, z in metres) that a rect of vertices spans.
 static func area_of(rect: Rect2i) -> Rect2:
 	return Rect2(Vector2(rect.position) * CELL_M, Vector2(rect.size) * CELL_M)
+
+
+## The smallest rect of vertices holding both; an empty one adds nothing.
+static func union(a: Rect2i, b: Rect2i) -> Rect2i:
+	return b if not a.has_area() else (a if not b.has_area() else a.merge(b))

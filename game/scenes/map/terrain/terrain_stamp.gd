@@ -16,8 +16,6 @@ extends Node3D
 @export_range(0.0, 60.0, 0.01, "suffix:s") var start_s := 0.0
 ## When it is over, what it reached stays on the ground for good (a crater); off, the ground goes back.
 @export var keep := false
-## It shows a new shift only when it differs from the last one shown by this many metres of its peak (a slow decline is not redrawn each tick).
-@export_range(0.0, 2.0, 0.01, "suffix:m") var min_step_m := 0.0
 ## It does not play by itself: something else leaves its mark at once (DropDent, a meteorite's dent).
 @export var manual := false
 ## Ticks a peer may be off the server's count before it takes the server's.
@@ -34,11 +32,10 @@ var pattern := PackedFloat32Array()
 var _key := &""
 var _terrain: Terrain
 var _over := false
-var _shown_share := INF
 
 
 func _ready() -> void:
-	process_physics_priority = -1
+	process_physics_priority = -2  # before the Terrain's Live (-1), which shows every stamp of the tick at once
 	if Engine.is_editor_hint():
 		set_physics_process(false)
 		return
@@ -90,13 +87,9 @@ func _physics_process(_delta: float) -> void:
 	if profile.has_pattern() and pattern.size() != _vertex_count():
 		if not _terrain.is_authority():
 			return
-		pattern = _terrain.stamp_pattern(profile, center(), _reach_m(), _peak_m())
+		pattern = StampRules.pattern_under(_terrain, profile, center(), _reach_m(), _peak_m())
 	var at := local_s()
 	if at < profile.duration_s():
-		var share := profile.timeline.sample(at)
-		if absf(share - _shown_share) * _peak_m() < min_step_m:
-			return
-		_shown_share = share
 		_terrain.stamp(_key, profile, center(), _reach_m(), _peak_m(), at, pattern)
 		return
 	_over = true

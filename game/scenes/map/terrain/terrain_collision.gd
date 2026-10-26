@@ -1,30 +1,32 @@
 class_name TerrainCollision
 extends StaticBody3D
 
-## The ground to stand on: the map's triangles (land and cliff walls, Terrain.data) cut in chunks of `chunk_cells` x
-## `chunk_cells` cells, one collision shape each, all on this one body. When the ground moves (Terrain.changed) only the chunks it touched
-## are made again, at most every `refresh_s` (a hole at once), with the corners moved as the Terrain says; a triangle
-## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground Terrain.height_at answers, a
-## few ticks late. It does not decide how the ground moves (Terrain) and draws nothing.
+## The ground to stand on: the map's triangles (land and cliff walls, Terrain.data) in chunks of `chunk_cells` x `chunk_cells`
+## cells, one shape each on this one body. A chunk keeps its triangles as loaded and the lattice vertex under each corner:
+## remaking it adds how far those vertices moved (no triangle with a taken away corner), and is skipped when none moved.
+## Under playing stamps (Terrain.changed) a share of the touched chunks is remade each tick, each within `refresh_s`; when
+## the ground settles (Terrain.settled) all at once. So GroundRay finds what Terrain.height_at answers. It moves no ground.
 
 ## An empty shape every chunk copies, so no shape is built in code.
 const CHUNK_SHAPE := preload("res://scenes/map/terrain/terrain_chunk.tres")
 
 @export var terrain: Terrain
 @export_range(1, 32) var chunk_cells := 8
-## Time between two remakes of the chunks that moved.
-@export_range(0.0166, 0.5, 0.0001, "suffix:s") var refresh_s := 0.05
+## How long a chunk under a playing stamp may wait to be remade (what settles is remade at once).
+@export_range(0.0166, 0.5, 0.0001, "suffix:s") var refresh_s := 0.1
 
-var _vertices := PackedVector3Array()
-var _indices := PackedInt32Array()
-## The lattice vertex under each entry of `_vertices`.
-var _lattice := PackedInt32Array()
-## Chunk -> Array of the first index (into `_indices`) of each of its triangles.
-var _triangles := {}
-## Chunk -> {owner, shape}. Only chunks with triangles.
-var _chunks := {}
-var _dirty := {}
-var _tick := 0
+
+## One chunk: its triangles as loaded, the lattice vertex under each corner, the vertices it uses and their last shift.
+class Chunk:
+	var base := PackedVector3Array()
+	var lattice := PackedInt32Array()
+	var vertices := Rect2i()
+	var shown := PackedFloat32Array()
+	var shape: ConcavePolygonShape3D
+
+
+var _chunks := {}  ## Vector2i -> Chunk, only chunks with triangles
+var _dirty := {}  ## Vector2i -> true, in the order they were marked (the oldest is remade first)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -35,14 +37,11 @@ func _ready() -> void:
 	set_physics_process(false)
 	if Engine.is_editor_hint() or terrain == null or not terrain.data.is_valid():
 		return
-	_vertices = terrain.data.vertices
-	_indices = terrain.data.indices
-	_lattice = terrain.data.lattice
-	_split_in_chunks()
-	for chunk: Vector2i in _triangles:
-		_remake(chunk)
+	_split_in_chunks(terrain.data)
+	for key: Vector2i in _chunks:
+		_remake(_chunks[key])
 	terrain.changed.connect(_on_terrain_changed)
-	terrain.holes_changed.connect(_on_holes_changed)
+	terrain.settled.connect(flush.unbind(1))
 	set_physics_process(true)
 
 
@@ -55,64 +54,97 @@ func pending_count() -> int:
 	return _dirty.size()
 
 
-## Remakes the chunks that moved now, without waiting for the next refresh.
+## Remakes the chunks that moved now, without waiting.
 func flush() -> void:
-	for chunk: Vector2i in _dirty:
-		_remake(chunk)
+	for key: Vector2i in _dirty:
+		_remake(_chunks[key])
 	_dirty.clear()
 
 
-func _split_in_chunks() -> void:
-	for first in range(0, _indices.size(), 3):
-		var a := _vertices[_indices[first]]
-		var b := _vertices[_indices[first + 1]]
-		var c := _vertices[_indices[first + 2]]
-		var cell := Vector2i(floori(minf(a.x, minf(b.x, c.x)) / TerrainGrid.CELL_M), floori(minf(a.z, minf(b.z, c.z)) / TerrainGrid.CELL_M))
-		var chunk := cell / chunk_cells
-		if not _triangles.has(chunk):
-			_triangles[chunk] = []
-		(_triangles[chunk] as Array).append(first)
+## Files each triangle of `data` (corners in index order, so a wall keeps its face) under the chunk of its lowest cell.
+func _split_in_chunks(data: MapTerrainData) -> void:
+	var vertices := data.vertices
+	var indices := data.indices
+	var lattice := data.lattice
+	for first in range(0, indices.size(), 3):
+		var a := indices[first]
+		var b := indices[first + 1]
+		var c := indices[first + 2]
+		var column := mini(lattice[a] % TerrainGrid.SIDE, mini(lattice[b] % TerrainGrid.SIDE, lattice[c] % TerrainGrid.SIDE))
+		var row := mini(lattice[a] / TerrainGrid.SIDE, mini(lattice[b] / TerrainGrid.SIDE, lattice[c] / TerrainGrid.SIDE))
+		var key := Vector2i(column / chunk_cells, row / chunk_cells)
+		var chunk: Chunk = _chunks.get(key)
+		if chunk == null:
+			chunk = Chunk.new()
+			chunk.vertices = Rect2i(key * chunk_cells, Vector2i.ONE * (chunk_cells + 1)).intersection(Rect2i(0, 0, TerrainGrid.SIDE, TerrainGrid.SIDE))
+			chunk.shape = CHUNK_SHAPE.duplicate() as ConcavePolygonShape3D
+			shape_owner_add_shape(create_shape_owner(self), chunk.shape)
+			_chunks[key] = chunk
+		chunk.base.append(vertices[a])
+		chunk.base.append(vertices[b])
+		chunk.base.append(vertices[c])
+		chunk.lattice.append(lattice[a])
+		chunk.lattice.append(lattice[b])
+		chunk.lattice.append(lattice[c])
 
 
-## The triangles of `chunk` with their corners where the ground is now.
-func _faces_of(chunk: Vector2i) -> PackedVector3Array:
+## Makes the chunk's shape where the ground is now, unless none of its vertices moved since the last time.
+func _remake(chunk: Chunk) -> void:
 	var texels := terrain.field().texels
-	var faces := PackedVector3Array()
-	for first: int in _triangles[chunk]:
-		var ids := [_indices[first], _indices[first + 1], _indices[first + 2]]
-		if texels[_lattice[ids[0]] * 2 + 1] > 0.5 or texels[_lattice[ids[1]] * 2 + 1] > 0.5 or texels[_lattice[ids[2]] * 2 + 1] > 0.5:
+	var shown := PackedFloat32Array()
+	for row in chunk.vertices.size.y:
+		var first := TerrainGrid.id_of(chunk.vertices.position + Vector2i(0, row)) * 2
+		shown.append_array(texels.slice(first, first + chunk.vertices.size.x * 2))
+	if shown == chunk.shown:
+		return
+	chunk.shown = shown
+	var still := PackedFloat32Array()
+	still.resize(shown.size())
+	chunk.shape.set_faces(chunk.base if shown == still else _faces_of(chunk, texels, _has_hole(shown)))
+
+
+## The chunk's triangles with each corner raised by its vertex's shift; with `holed`, none that has a taken away corner.
+static func _faces_of(chunk: Chunk, texels: PackedFloat32Array, holed: bool) -> PackedVector3Array:
+	var lattice := chunk.lattice
+	var faces := chunk.base.duplicate()
+	if not holed:
+		for i in faces.size():
+			var corner := faces[i]
+			corner.y += texels[lattice[i] * 2]
+			faces[i] = corner
+		return faces
+	faces.clear()
+	for first in range(0, lattice.size(), 3):
+		if texels[lattice[first] * 2 + 1] > 0.5 or texels[lattice[first + 1] * 2 + 1] > 0.5 or texels[lattice[first + 2] * 2 + 1] > 0.5:
 			continue
-		for id: int in ids:
-			faces.append(_vertices[id] + Vector3(0.0, texels[_lattice[id] * 2], 0.0))
+		for i in range(first, first + 3):
+			faces.append(chunk.base[i] + Vector3(0.0, texels[lattice[i] * 2], 0.0))
 	return faces
 
 
-func _remake(chunk: Vector2i) -> void:
-	var faces := _faces_of(chunk)
-	if not _chunks.has(chunk):
-		var made := CHUNK_SHAPE.duplicate() as ConcavePolygonShape3D
-		var owner_id := create_shape_owner(self)
-		shape_owner_add_shape(owner_id, made)
-		_chunks[chunk] = {"owner": owner_id, "shape": made}
-	(_chunks[chunk]["shape"] as ConcavePolygonShape3D).set_faces(faces)
+## True when a vertex of `shown` (two floats each: shift, taken away) was taken away.
+static func _has_hole(shown: PackedFloat32Array) -> bool:
+	for i in range(1, shown.size(), 2):
+		if shown[i] > 0.5:
+			return true
+	return false
 
 
 func _on_terrain_changed(area: Rect2) -> void:
-	# A moved vertex is a corner of the four cells around it.
+	# A moved vertex is a corner of the cells around it: the chunks of those cells.
 	var low := Vector2i((area.position / TerrainGrid.CELL_M).floor()) - Vector2i.ONE
 	var high := Vector2i(((area.position + area.size) / TerrainGrid.CELL_M).ceil())
 	for z in range(maxi(low.y, 0) / chunk_cells, high.y / chunk_cells + 1):
 		for x in range(maxi(low.x, 0) / chunk_cells, high.x / chunk_cells + 1):
-			if _triangles.has(Vector2i(x, z)):
+			if _chunks.has(Vector2i(x, z)):
 				_dirty[Vector2i(x, z)] = true
 
 
-## A hole is there in the same tick, not a few later: whoever stands on it must not be held up by a ground that is gone.
-func _on_holes_changed(_area: Rect2) -> void:
-	flush()
-
-
+## A share of the waiting chunks, the oldest first, so each waits at most `refresh_s` and no tick remakes them all.
 func _physics_process(_delta: float) -> void:
-	_tick += 1
-	if _tick % maxi(1, MatchClock.ticks_for(refresh_s)) == 0 and not _dirty.is_empty():
-		flush()
+	if _dirty.is_empty():
+		return
+	var share := ceili(float(_dirty.size()) / maxi(1, MatchClock.ticks_for(refresh_s)))
+	for key: Vector2i in _dirty.keys().slice(0, share):
+		_remake(_chunks[key])
+		_dirty.erase(key)

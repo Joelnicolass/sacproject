@@ -2,12 +2,11 @@
 class_name VegetationPatch
 extends Node3D
 
-## A cluster of one species in one place: drop it on the map, set the species, radius and count (`radius_m` shows as a
-## circle in the editor). It plants its own MultiMesh (internal, never saved): spots from the hash of (seed, tag, i),
-## heights from the terrain, none inside a VegetationClear (a house brings its own), the preset's density and the
-## player's «Vegetación» switch as the map's FloraField has them (it finds that field by its group). It plants again by
-## itself when it moves, is edited, a clear moves or the preset changes. Presentation only: never built in a headless or
-## dedicated process. For a whole map's worth of plants paint a FloraLayer instead.
+## A cluster of one species in one place: drop it on the map, set the species, radius and count (`radius_m` is a circle in
+## the editor). It plants its own MultiMesh (internal, never saved): spots from the hash of (seed, tag, i), heights from the
+## terrain, none inside a VegetationClear, the density and «Vegetación» switch of the map's FloraField (found by its group);
+## again when it moves, is edited, a clear moves, the preset changes or the ground under it settles. Presentation only (never
+## headless or dedicated). For a whole map's worth of plants paint a FloraLayer instead.
 
 const GROUP := &"vegetation_patch"
 
@@ -69,6 +68,12 @@ func field_changed() -> void:
 	_queue()
 
 
+## FloraGroundWatch calls this when the ground under its circle settled: it plants again at the new heights.
+func ground_moved() -> void:
+	_signature = ""
+	_queue()
+
+
 func _on_toggled(_enabled: bool) -> void:
 	_queue()
 
@@ -95,7 +100,7 @@ func _plant() -> void:
 		_bound_rig = rig
 		rig.vegetation_toggled.connect(_on_toggled)
 	var clears := VegetationClear.world_rows(get_tree())
-	var signature := "%s|%s|%s|%s|%s|%s|%s|%s|%s" % [[species.tag, species.mesh, species.variation(), species.visibility_end_m, species.cast_shadow], radius_m, count, seed, quality.density_scale, global_transform, clears, quality.shadows, surface.field().version]
+	var signature := "%s|%s|%s|%s|%s|%s|%s|%s" % [[species.tag, species.mesh, species.variation(), species.visibility_end_m, species.cast_shadow], radius_m, count, seed, quality.density_scale, global_transform, clears, quality.shadows]
 	if signature == _signature and _multimesh:
 		return
 	_clear_multimesh()
@@ -132,7 +137,6 @@ func _clear_multimesh() -> void:
 		_multimesh = null
 
 
-## Editor only: a ring of `radius_m` on the patch.
 func _show_circle() -> void:
 	if not Engine.is_editor_hint():
 		return
@@ -143,7 +147,4 @@ func _show_circle() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if species == null:
-		warnings.append("Falta la especie (VegetationSpecies).")
-	return warnings
+	return PackedStringArray() if species != null else PackedStringArray(["Falta la especie (VegetationSpecies)."])

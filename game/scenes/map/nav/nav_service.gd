@@ -83,7 +83,8 @@ func _ready() -> void:
 		return
 	if terrain != null:
 		terrain.holes_changed.connect(_on_ground_settled.unbind(1))
-		terrain.settled.connect(_on_ground_settled.unbind(1))
+		# What stays (a dent, a crater), not `settled`: a live stamp that ends (Erupt, a Quake) changes nothing for good.
+		terrain.kept.connect(_on_ground_settled.unbind(4))
 	if structures != null:
 		structures.child_entered_tree.connect(_on_structure_changed.unbind(1))
 		structures.child_exiting_tree.connect(_on_structure_changed.unbind(1))

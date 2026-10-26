@@ -1,24 +1,27 @@
 class_name QuakeWave
 extends Node3D
 
-## F132 (RFC-030 030u-a): the Jabberocky's Quake (mtse, SPEL kauq): sacengine Quake (state.d:5187-5225) updated by
-## updateQuake (25737-25759). QuakeAbility puts it in the shot container at the user's feet on the tick the shot fires
-## (quake, 13204-13207), server (or solo) only: a client never gets this node. Priority −1: effects update before
-## creatures (29331 against 29345).
+## The Jabberocky's Quake (and the burst of Bovine Intervention's cow): a wave of earth that goes out 50 m from the user's feet
+## in half a second, stuns the bodies it crosses near the center and bends the land while it lasts. QuakeAbility puts it in the
+## shot container at the user's feet on the tick the shot fires, server (or solo) only: a client never gets this node. It does
+## not hurt, and it does not draw the ring (QuakeRing) nor shape the ground (its child Ground, quake_ground.tscn).
 ##
 ## Its frame is MatchClock.now() − the tick it was born; the birth tick is discarded (the first update is the next one,
 ## frame 1). On every frame:
-## - frame 1: quakeExplosion (64 dirt particles and the shake: the look, FxBus);
-## - the wave is at waveLoc = wave_range · (frame / 60) / wave_s (1,667 m per frame, float32 as sacengine);
-## - while stun_min < waveLoc < stun_max (frames 1 to 5), every moving body of `groups`, any side (wizards too, the user
-##   if it stood there), whose hit box is within waveLoc + 0,1 and whose feet are, seen from above, farther than stun_min
+## - frame 1: the explosion (64 dirt particles and the shake: the look, FxBus);
+## - the wave is at wave_range · (frame / 60) / wave_s (1,667 m per frame, float32 as the original);
+## - while stun_min < wave < stun_max (frames 1 to 5), every moving body of `groups`, any side (wizards too, the user
+##   if it stood there), whose hit box is within wave + 0,1 and whose feet are, seen from above, farther than stun_min
 ##   and within `band`·wave_range / (wave_s · 60) (2,5 m) of the wave takes Stunned.stun_with_cooldown(cooldown_s).
 ##   No damage;
-## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31.
+## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31 (and Ground with it).
 ## The stun is each body's Afflictions/Stunned (canStun, its own cooldown): a stunned one is skipped by it.
+## The land: Ground's two TerrainStamps (the sinking and the wave) play here on the server, so the bodies follow the ground;
+## a client sees the copy in quake_ring.tscn (on_clients_only). Priority −1: effects update before creatures.
 ##
-## Deviations (declared): the land does not bend (sacengine Quake.displacement is a render effect); the look is
-## quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
+## Deviations (declared): the look is quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
+## Ref: sacengine Quake (state.d:5187-5225, displacement 5204-5222, part of Displacement 28929-28931), updateQuake
+## (25737-25759), quake (13204-13207); effects before creatures (29331 against 29345). F132 (RFC-030 030u-a), RFC-057 057a.
 
 
 ## sacengine Quake.waveRange (m) and waveDur (s).

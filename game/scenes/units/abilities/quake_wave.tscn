@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/quake_wave.gd" id="1_wave"]
 [ext_resource type="PackedScene" path="res://scenes/fx/quake_ring.tscn" id="2_ring"]
 [ext_resource type="Resource" path="res://data/fx/dirt.tres" id="fx_dirt"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_ground.tscn" id="3_ground"]
 
 [node name="QuakeWave" type="Node3D"]
 process_physics_priority = -1
@@ -10,3 +11,6 @@ editor_description = "F132 (RFC-030 030u-a): coordinador del Quake del Jabberock
 script = ExtResource("1_wave")
 ring_scene = ExtResource("2_ring")
 dust_fx = ExtResource("fx_dirt")
+
+[node name="Ground" parent="." instance=ExtResource("3_ground")]
+editor_description = "La tierra que se hunde y la onda (dos TerrainStamp). La juega el servidor (o solo); los cuerpos la siguen. En un cliente la ve con la copia de QuakeRing."

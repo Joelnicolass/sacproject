@@ -36,22 +36,8 @@ extends Node3D
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
 	var shapes: Dictionary[String, CollisionShape3D] = {
 		"ring": ring, "ring_end": ring_end, "push": push, "push_core": push_core,
 		"carrier_stop": carrier_stop, "pickup": pickup, "pump_reach": pump_reach}
-	for prop: String in shapes:
-		var node := shapes[prop]
-		if node == null or node.shape == null:
-			warnings.append("Falta `%s` (CollisionShape3D con su forma)." % prop)
-			continue
-		if not (node.shape is SphereShape3D or node.shape is CylinderShape3D):
-			warnings.append("`%s` tiene que llevar una esfera o un cilindro." % prop)
-		var area := node.get_parent() as Area3D
-		if area != null and (area.monitoring or area.collision_layer != 0 or area.collision_mask != 0):
-			warnings.append("El Area3D de `%s` tiene que estar apagada (monitoring off, capa y máscara 0)." % prop)
 	var marks: Dictionary[String, Marker3D] = {"ritual_hang": ritual_hang, "carry_hang": carry_hang, "vortex": vortex, "exit": exit}
-	for prop: String in marks:
-		if marks[prop] == null:
-			warnings.append("Falta `%s` (Marker3D)." % prop)
-	return warnings
+	return PlaceWarnings.check(shapes, marks)

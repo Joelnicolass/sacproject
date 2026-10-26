@@ -53,13 +53,13 @@ func walk_shrink_m() -> float:
 func _read(state: SceneState) -> void:
 	var nodes := SceneStateReader.nodes_of(state)
 	var root: Dictionary = nodes.get(".", {})
-	ring_m = _radius(nodes, root, "ring", ring_m)
-	ring_end_m = _radius(nodes, root, "ring_end", ring_end_m)
-	push_m = _radius(nodes, root, "push", push_m)
-	push_core_m = _radius(nodes, root, "push_core", push_core_m)
-	carrier_stop_m = _radius(nodes, root, "carrier_stop", carrier_stop_m)
-	pickup_m = _radius(nodes, root, "pickup", pickup_m)
-	pump_reach_m = _radius(nodes, root, "pump_reach", pump_reach_m)
+	ring_m = SceneStateReader.radius(nodes, root, "ring", ring_m)
+	ring_end_m = SceneStateReader.radius(nodes, root, "ring_end", ring_end_m)
+	push_m = SceneStateReader.radius(nodes, root, "push", push_m)
+	push_core_m = SceneStateReader.radius(nodes, root, "push_core", push_core_m)
+	carrier_stop_m = SceneStateReader.radius(nodes, root, "carrier_stop", carrier_stop_m)
+	pickup_m = SceneStateReader.radius(nodes, root, "pickup", pickup_m)
+	pump_reach_m = SceneStateReader.radius(nodes, root, "pump_reach", pump_reach_m)
 	if root.has("ritual_hang"):
 		hang_up_m = SceneStateReader.mm(SceneStateReader.marker(nodes, root, "ritual_hang").y)
 	if root.has("carry_hang"):
@@ -73,12 +73,3 @@ func _read(state: SceneState) -> void:
 	if root.has("exit"):
 		exit_down_m = SceneStateReader.mm(-SceneStateReader.marker(nodes, root, "exit").y)
 
-
-## The radius of the sphere or cylinder the root's `prop` points at, in mm; `fallback` when the scene does not save it.
-static func _radius(nodes: Dictionary, root: Dictionary, prop: String, fallback: float) -> float:
-	var found := SceneStateReader.shape(nodes, root, prop)
-	if found is SphereShape3D:
-		return SceneStateReader.mm((found as SphereShape3D).radius)
-	if found is CylinderShape3D:
-		return SceneStateReader.mm((found as CylinderShape3D).radius)
-	return fallback

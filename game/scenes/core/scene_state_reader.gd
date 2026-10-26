@@ -41,6 +41,25 @@ static func marker(nodes: Dictionary, root: Dictionary, prop: String) -> Vector3
 	return (xform as Transform3D).origin if xform is Transform3D else Vector3.ZERO
 
 
+## The radius of the sphere or cylinder the root's `prop` points at, in mm; `fallback` when the scene does not save it.
+static func radius(nodes: Dictionary, root: Dictionary, prop: String, fallback: float) -> float:
+	var found := shape(nodes, root, prop)
+	if found is SphereShape3D:
+		return mm((found as SphereShape3D).radius)
+	if found is CylinderShape3D:
+		return mm((found as CylinderShape3D).radius)
+	return fallback
+
+
+## Half the height of the cylinder the root's `prop` points at (how far it reaches up and down from its centre), in mm; `fallback`
+## when the scene does not save a cylinder.
+static func half_height(nodes: Dictionary, root: Dictionary, prop: String, fallback: float) -> float:
+	var found := shape(nodes, root, prop)
+	if found is CylinderShape3D:
+		return mm((found as CylinderShape3D).height * 0.5)
+	return fallback
+
+
 ## The double a measure of at most 3 decimals had before the scene stored it in 32 bits.
 static func mm(value: float) -> float:
 	return roundi(value * 1000.0) / 1000.0

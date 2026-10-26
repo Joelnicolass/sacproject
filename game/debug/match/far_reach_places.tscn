@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/match/reach_places.tscn" id="1_places"]
+
+[sub_resource type="SphereShape3D" id="Sphere_fount"]
+radius = 80.0
+
+[node name="FarReachPlaces" instance=ExtResource("1_places")]
+
+[node name="Fount" parent="Mana/Bounds" index="0"]
+shape = SubResource("Sphere_fount")

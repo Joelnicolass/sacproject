@@ -104,7 +104,8 @@ const FIELDS := [
 	["res://scenes/spells/zones/rift_spirit.gd", "launch_s", 20],
 	["res://scenes/spells/wards/aura_impact.gd", "every_s", 20],
 	["res://scenes/spells/drops/frog_hop.gd", "burst_after_s", 20],
-	["res://scenes/map/terrain/terrain_collision.gd", "refresh_s", 3],
+	# 063D redefined it (each touched chunk waits at most refresh_s, a share per tick) and set 0.1 s on purpose: 6 ticks.
+	["res://scenes/map/terrain/terrain_collision.gd", "refresh_s", 6],
 	["res://scenes/map/nav/nav_service.gd", "rebake_swap_s", 180],
 	["res://scenes/map/nav/nav_service.gd", "holes_rebake_s", 120],
 	["res://scenes/ai/ai_roster.gd", "settle_s", 20],

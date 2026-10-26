@@ -159,7 +159,11 @@ find scenes/units scenes/ai scenes/wizards scenes/sacrifice -name '*.gd' 2>/dev/
 
 # C19: data/*.tres that store positions/offsets/transforms (counted by FILE). debug/ is reported, not ratcheted.
 TRES_POS='^([a-z_0-9]*_(offset|position|origin|transform|pos)|position[a-z_0-9]*|offsets|origin|transform) = |Transform3D\('
-find data -name '*.tres' 2>/dev/null | sort | xargs grep -lE "$TRES_POS" 2>/dev/null | grep -v 'roughness_offset' > "$OUT/C19.txt" || true
+# Not positions: a material's roughness_offset and a Gradient's color stops (offsets = PackedFloat32Array).
+TRES_NOT_POS='^(roughness_offset|offsets = PackedFloat32Array)'
+for f in $(find data -name '*.tres' 2>/dev/null | sort); do
+	grep -E "$TRES_POS" "$f" 2>/dev/null | grep -qvE "$TRES_NOT_POS" && echo "$f"
+done > "$OUT/C19.txt" || true
 find debug -name '*.tres' 2>/dev/null | sort | xargs grep -lE "$TRES_POS" 2>/dev/null > "$OUT/C19debug.txt" || true
 
 # C20: place/effect radii exported from MatchRules (they belong in a CollisionShape3D).

@@ -45,9 +45,13 @@ static func shader_for(particle: ParticleType) -> Shader:
 	return SHADER_MIX_LIT if particle.lit else SHADER_MIX
 
 
+## One quad per (size, flat): a flat type gets a quad lying on the ground (FACE_Y), the rest face the camera (FACE_Z).
 static func quad_for(particle: ParticleType) -> QuadMesh:
-	if not _meshes.has(particle.size):
+	var key := Vector3(particle.size.x, particle.size.y, 1.0 if particle.flat else 0.0)
+	if not _meshes.has(key):
 		var quad := QuadMesh.new()
 		quad.size = particle.size
-		_meshes[particle.size] = quad
-	return _meshes[particle.size]
+		if particle.flat:
+			quad.orientation = PlaneMesh.FACE_Y
+		_meshes[key] = quad
+	return _meshes[key]

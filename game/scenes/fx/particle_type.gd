@@ -27,6 +27,8 @@ const RAMP_POINTS := 25
 @export var scale_min: float = 1.0
 @export var scale_max: float = 1.0
 @export var emission_radius: float = 0.0
+## Height of the band the particles are born in, centred on the emitter (SpriteEmitter): rings along a rising edge.
+@export_range(0.0, 20.0, 0.1, "suffix:m") var emission_height_m := 0.0
 ## Play direction (the cone of `spread` is around it). UP by default; the Sac Doctor's vortex drops drops down.
 @export var direction: Vector3 = Vector3.UP
 ## Start each particle on a random frame of the cycle.
@@ -41,6 +43,8 @@ const RAMP_POINTS := 25
 ## Scale follows min(1, time_left / scale_fade_s) like sacengine getScale. 0 = constant.
 @export var scale_fade_s: float = 0.0
 @export var billboard: bool = true
+## Lies flat facing up instead of facing the camera (rings around a tower, seen as ellipses from above). Turn `billboard` off with it.
+@export var flat := false
 @export var additive: bool = true
 
 @export_group("Modern look (029a)")

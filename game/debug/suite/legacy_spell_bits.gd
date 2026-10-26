@@ -1,7 +1,7 @@
 extends RefCounted
 
 ## What the AI decided from the flag words of a spell before 055e, copied literally so spell_field_cases can prove the named fields give
-## the same decisions. A row is one line of spell_bits_055e.csv (tag, flags, flags1, flags2, amount2, count, effect_range_m,
+## the same decisions. A row is one line of spell_bits_055e.txt (tag, flags, flags1, flags2, amount2, count, effect_range_m,
 ## ai_use_before) as ints and floats. It dies with debug/ when the refactor ends. Preloaded by path (no class_name).
 ## Ref: ai_spell_eval.gd and wizard_brain.gd at 20f109a0, shiny.d:322-345, 2656-2661, 2756-2797.
 

@@ -1,13 +1,13 @@
 extends RefCounted
 
 ## 055e e1 case of rules_suite: the named fields of the 53 SpellType give the same AI decisions the flag words gave. For every spell it
-## compares, decision by decision, LegacySpellBits (the old logic over the frozen bits of spell_bits_055e.csv) with AiSpellEval and the
+## compares, decision by decision, LegacySpellBits (the old logic over the frozen bits of spell_bits_055e.txt) with AiSpellEval and the
 ## fields: rating_fn, wants_acc, the attack and support phases, only-on-self, the kind it lands on (wizard, creature, Manahoar,
 ## structure, nothing), the side rule of can_cast_on over every (free fount, relation, fount structure), and what the AI rater adds for
 ## it. Plus: the .tres equal what SpellBits bakes from the CSV, and the first Shrine, Convert and Desecrate of the five books are the ones
 ## the bits chose. Prints SPELL FIELDS compared=<n> differ=<n> and, for each difference, the old and the new value.
 
-const CSV_PATH := "res://debug/suite/spell_bits_055e.csv"
+const CSV_PATH := "res://debug/suite/spell_bits_055e.txt"
 const LEGACY := preload("res://debug/suite/legacy_spell_bits.gd")
 const SPELL_BITS := preload("res://tools/bake/spell_bits.gd")
 const SPELLS_DIR := "res://data/catalog/spells/"

@@ -10,7 +10,7 @@ Before:  flags = 8213, flags1 = 16449, amount2 = 650, count = 8, ai_use = 2
 After:   targets_wizards = true, ..., ai_phase = 1, ai_worth = 650, max_targets = 8
 
 The inputs are read from the .tres (flags, flags1, flags2, amount2, count, effect_range_m, ai_use) the first time, and frozen in
-debug/suite/spell_bits_055e.csv. Later runs read the CSV, so the script is idempotent. The bits are translated like the
+debug/suite/spell_bits_055e.txt. Later runs read the CSV, so the script is idempotent. The bits are translated like the
 SpellBits tool does when it bakes (tools/bake/spell_bits.gd): the same table, written twice on purpose, because spell_field_cases
 proves the two agree. Bits nobody reads (flags 16-20, flags1 0, 1, 5, all of flags2) are lost on purpose; the CSV keeps them.
 """
@@ -22,7 +22,7 @@ import sys
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 SPELLS = os.path.join(ROOT, "data", "catalog", "spells")
-CSV_PATH = os.path.join(ROOT, "debug", "suite", "spell_bits_055e.csv")
+CSV_PATH = os.path.join(ROOT, "debug", "suite", "spell_bits_055e.txt")
 COLUMNS = ["tag", "flags", "flags1", "flags2", "amount2", "count", "effect_range_m", "ai_use_before"]
 
 # SpellType.AiUse / AiPhase are saved as integers; only append.

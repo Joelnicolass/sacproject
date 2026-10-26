@@ -55,7 +55,7 @@ scenes/ai/ brains/ai_spell_eval.gd, wizard_brain.gd (e1) · brains/ai_line_of_fi
 tools/ bake/[+] spell_bits.gd (e1) · bake/[~] catalog_builder.gd (e1, solo make_spell) · migrate/[+] spell_fields_055e.py (e1)
 data/catalog/spells/*.tres ×53 (e1 campos; e3 action en los 13)
 debug/ spells/[+] book_override.tscn, mixed_book.tres (e4) · units/[~] rock_hit.gd (e4)
-       suite/[+] spell_bits_055e.csv, legacy_spell_bits.gd, spell_field_cases.gd (e1), book_cases.gd (e4), spell_link_cases.gd (e3+e5)
+       suite/[+] spell_bits_055e.txt, legacy_spell_bits.gd, spell_field_cases.gd (e1), book_cases.gd (e4), spell_link_cases.gd (e3+e5)
        suite/[~] rules_suite.gd (COMPARTIDO), ai_cases, ward_cases, control_cases (e1), zone/cloud/tornado/stalk/level8_cases (e1), chain_cases (e2)
        ai/[~] expect_judge.gd (e1)
 ```
@@ -158,7 +158,7 @@ func current_book() -> GodBook  # wizard.book, si no wizard.god_type.book, si no
 | **e3** una sola forma de enchufar | `action` en los 13 `.tres`, 6 escenas nuevas, `Caster/Actions` vacío, `tag` → `spell`, README | e1, e2, e4 | — |
 | **e6** habilidades y orden del libro | `AbilityType.flags*/amount2/args` → campos; `spell_order` → nivel + posición. Plan corto propio | 055c3 cerrado | — |
 
-e1: (1) `spell_fields_055e.py` congela `debug/suite/spell_bits_055e.csv` y reescribe los 53 `.tres`; (2) `spell_type.gd`; (3) `legacy_spell_bits.gd` (copia literal de la lógica de bits de hoy); (4) `spell_field_cases.gd`; (5) `ai_spell_eval`, `wizard_brain`, fases, `ai_rater`; (6) `carrier_hunt`, `level8_cases`; (7) casos de debug; (8) `SpellBits` + `make_spell`; (9) lint.
+e1: (1) `spell_fields_055e.py` congela `debug/suite/spell_bits_055e.txt` y reescribe los 53 `.tres`; (2) `spell_type.gd`; (3) `legacy_spell_bits.gd` (copia literal de la lógica de bits de hoy); (4) `spell_field_cases.gd`; (5) `ai_spell_eval`, `wizard_brain`, fases, `ai_rater`; (6) `carrier_hunt`, `level8_cases`; (7) casos de debug; (8) `SpellBits` + `make_spell`; (9) lint.
 e2: (1) `SpellTarget`; (2) `aim_at_body` + `LaunchPoint`; (3) las 5 acciones y sus `.tscn`; (4) `AfflictAction`, carrier, `AiLineOfFire`, `chain_cases`; (5) borrar `aimed_action.gd`; (6) lint.
 e4: (1) `WizardBody.book` y señal; (2) `Spellbook.wizard`, `current_book`, rebuild; (3) socket en `wizard_body.tscn`; (4) `GodBook.level_of(type)` y `GameData.creature_level`; (5) `rock_hit.wizard_book`, `mixed_book.tres`, `book_override.tscn`; (6) `book_cases`.
 e5: (1) hijo `Mesh` con los mismos números de hoy y `%Mesh`; (2) fuera `_add_visual`; (3) Rock: `rock_mesh` → `Mesh.mesh`, esfera de respaldo como sub-recurso.

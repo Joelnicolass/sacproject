@@ -1,0 +1,75 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/surface_maps/surface_panel.gd" id="1_panel"]
+[ext_resource type="Script" path="res://addons/surface_maps/recipe_form.gd" id="2_form"]
+
+[node name="SurfacePanel" type="VBoxContainer"]
+editor_description = "La sección «Relieve desde albedo» del inspector de un material o de un rol del suelo (addon surface_maps)."
+script = ExtResource("1_panel")
+
+[node name="Header" type="Button" parent="."]
+unique_name_in_owner = true
+toggle_mode = true
+text = "Relieve desde albedo"
+alignment = 0
+tooltip_text = "Adivina un normal map (y un ORM si la receta lo pide) desde la textura de albedo, lo guarda como PNG retocable y lo asigna."
+
+[node name="Body" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+
+[node name="Previews" type="HBoxContainer" parent="Body"]
+alignment = 1
+
+[node name="Albedo" type="TextureRect" parent="Body/Previews"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+tooltip_text = "El albedo (la fuente)."
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Normal" type="TextureRect" parent="Body/Previews"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+tooltip_text = "El normal map: el asignado, o la vista previa con la receta de abajo."
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Form" type="VBoxContainer" parent="Body"]
+unique_name_in_owner = true
+script = ExtResource("2_form")
+
+[node name="Overwrite" type="CheckBox" parent="Body"]
+unique_name_in_owner = true
+tooltip_text = "Reemplaza los PNG que ya existen (se pierde lo retocado a mano). Apagado: se usan los que están."
+text = "Sobrescribir"
+
+[node name="Buttons" type="HBoxContainer" parent="Body"]
+
+[node name="Preview" type="Button" parent="Body/Buttons"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Muestra el relieve con la receta actual sin escribir nada (también se actualiza solo al mover la receta)."
+text = "Vista previa"
+
+[node name="Generate" type="Button" parent="Body/Buttons"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Escribe los PNG que faltan, los importa y los asigna al material (un paso de Ctrl+Z)."
+text = "Generar"
+
+[node name="Clear" type="Button" parent="Body/Buttons"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Saca los mapas del material (un paso de Ctrl+Z). Los PNG quedan en disco."
+text = "Quitar"
+
+[node name="Status" type="Label" parent="Body"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+autowrap_mode = 3
+
+[node name="PreviewDelay" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.4
+one_shot = true

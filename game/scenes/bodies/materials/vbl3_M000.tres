@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/vbl3/M000.png" id="1_oj5ux"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/vbl3/M000_normal.png" id="2_jgc6a"]
 
 [resource]
 resource_name = "vbl3_M000"
 albedo_texture = ExtResource("1_oj5ux")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_jgc6a")

@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/ecak/003.png" id="1_3j4vq"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/ecak/003_normal.png" id="2_wluo6"]
 
 [resource]
 resource_name = "ecak_003"
 albedo_texture = ExtResource("1_3j4vq")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_wluo6")

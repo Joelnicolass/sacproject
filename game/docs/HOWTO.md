@@ -150,6 +150,30 @@ Hace falta un mapa de 4 asientos: `winter_wonder`, o `test_flat4` para probar.
 - **Calidad gráfica:** `data/look/quality_*.tres`.
 - No se muta un `.tres` en runtime. Después de tocar números, el banco de determinismo va a cambiar de huella a propósito: `agent/det_baseline.txt` es la línea base: regrabala solo si el cambio de balance es lo que querías (`agent/README.md`).
 
+## Relieve (mapas PBR) de un modelo
+
+Cada textura de un modelo es un material en `scenes/bodies/materials/<owner>_<label>.tres` (un `StandardMaterial3D`, compartido por todos los modelos que la usan). Su relieve es un normal map en `assets/surfaces/<owner>/<file>_normal.png` (Git LFS), asignado en el slot **Normal Map** del material. Es opcional: un material sin normal map se ve como antes. Desde la RFC-067 todos los materiales lo tienen, salvo `pct6_M000_cutout`. La copia de piedra (StoneLook) y la de construcción (BuildReveal) conservan el relieve.
+
+- **Ver o ajustar uno.** Abrí el material en el inspector (o el override de superficie de la malla en `scenes/bodies/models/<modelo>.tscn`). `normal_scale` lo suaviza o lo invierte (valor negativo). Para sacarlo, limpiá el slot Normal Map, o usá el botón Quitar.
+- **Generar uno.** Arriba del inspector, en la sección «Relieve desde albedo», mové los knobs (la vista previa muestra el resultado), pulsá Generar y guardá con Ctrl+S. Escribe el PNG que falte, lo importa y lo asigna en un solo Ctrl+Z. Un PNG que ya existe se usa tal cual; «Sobrescribir» lo rehace y pierde lo que hayas retocado.
+- **Muchos a la vez.** Usá **Project > Tools > «Generar relieve…»** (carpeta o selección, con «Saltear existentes»). Por consola son dos pasos, porque un PNG nuevo se asigna recién después de importarlo:
+  ```bash
+  bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
+  bash agent/harness/godot_run.sh $G --headless --path . --import
+  bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
+  ```
+- **Recetas.** Hay dos en `addons/surface_maps/recipes/`. `default.tres` usa los valores de NormalMap-Online (strength 2,5, level 7, smoothing 0, sin paso alto, solo normal). `foliage.tres` agrega smoothing 1 para hojas finas, que con la receta por defecto se ven moteadas. Se usa en las plantas `<TAG>_plant*` y en los props de árboles y hojas (la lista está en `agent/harness/relief_batch_lists.py`). Para comparar recetas con números: `agent/harness/relief_recipe_probe.gd` y `python3 -I agent/harness/measure_mottle.py --albedo=<albedo.png> <normal.png>…`.
+- **Retocar.** El PNG es la fuente: editalo en Krita o en cualquier editor de imágenes y Godot lo reimporta. La receta con que se generó no se guarda.
+- **Verificar.** El `rules_suite` corre `surface_refs_cases` (ninguna referencia colgada y las mallas con normal map tienen tangentes) y `surface_maps_cases` (el generador). Con F6 en `debug/look/surface_lab.tscn` la luz orbita alrededor de los modelos (O pausa).
+
+## PBR desde Blender
+
+Un modelo propio no necesita el generador: el `.glb` trae sus mapas.
+
+1. En Blender conectá los mapas al **Principled BSDF**: Base Color, Normal (con un nodo *Normal Map*, espacio tangente), Roughness y Metallic (un ORM: R oclusión, G rugosidad, B metal), y Emission si hace falta. No pases el umbral de glow 1,0 (VISUAL: nada de brillo plástico).
+2. Exportá a `assets/custom/models/<tag>.glb` (glTF 2.0). Si el `.glb` no trae tangentes, Godot las genera al importar (`meshes/ensure_tangents=true`, lo revisa `surface_refs_cases`). Godot convierte cada material en un `StandardMaterial3D` con sus mapas, y `tools/bake/new_creature.gd` no los pisa.
+3. Si exportaste solo el color, generá el relieve sobre la textura extraída con la sección «Relieve desde albedo» del inspector. El mapa queda al lado del albedo, no en `assets/surfaces/`.
+
 ## Correr las pruebas y el validador
 
 Todo se corre desde `game/` y de a un Godot por vez (la cola es `agent/harness/godot_run.sh`).

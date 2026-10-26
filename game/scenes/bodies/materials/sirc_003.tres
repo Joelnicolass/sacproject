@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/sirc/003.png" id="1_3ncvj"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/sirc/003_normal.png" id="2_2y0p2"]
 
 [resource]
 resource_name = "sirc_003"
 albedo_texture = ExtResource("1_3ncvj")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_2y0p2")

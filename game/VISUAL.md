@@ -60,7 +60,7 @@ Antes había pedido: «god rays, hacer el cielo un poco más llamativo, efectos 
 ## Assets
 
 - **Suelo, pasto, rocas y cielo:** bibliotecas libres CC0 (ambientCG, Poly Haven u otras con la misma licencia). Se commitean por Git LFS, a 2K–4K, con su procedencia anotada.
-- **Normales y AO de personajes y edificios:** generados desde las texturas del original. Van al caché, no a git.
+- **Normales y AO de personajes y edificios:** opcionales, por material. Se generan desde las texturas del original con `addons/surface_maps` (RFC-067) y van a `assets/surfaces/<owner>/` por Git LFS. El PNG es la fuente y se puede retocar. Un material sin mapa se ve como el original.
 - **Escalable:** el sistema de materiales tiene que aceptar texturas nuevas que el usuario quiera sumar más adelante, por bioma o por pieza, sin tocar código.
 - Nada del juego original se commitea.
 

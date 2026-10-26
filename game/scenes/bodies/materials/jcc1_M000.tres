@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/jcc1/M000.png" id="1_vvr5m"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/jcc1/M000_normal.png" id="2_ym8p2"]
 
 [resource]
 resource_name = "jcc1_M000"
 albedo_texture = ExtResource("1_vvr5m")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_ym8p2")

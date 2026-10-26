@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/quil/007.png" id="1_ndn3m"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/quil/007_normal.png" id="2_jq1if"]
 
 [resource]
 resource_name = "quil_007"
 albedo_texture = ExtResource("1_ndn3m")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_jq1if")

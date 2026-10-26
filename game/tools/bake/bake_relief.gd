@@ -6,7 +6,7 @@ extends SceneTree
 ##
 ##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/eorc_001.tres
 ##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --force
-##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- <folder|material> --recipe=res://my_recipe.tres
+##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- <folder|material> --recipe=res://addons/surface_maps/recipes/foliage.tres   (plants, leaves)
 ##
 ## A folder takes every .tres in it (not its subfolders) that is a BaseMaterial3D (or has an `albedo`) with an albedo.
 ## It never replaces a map PNG that exists (`--force` does, and throws away what you retouched) and then assigns the maps

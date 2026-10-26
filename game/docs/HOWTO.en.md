@@ -154,6 +154,31 @@ You need a 4-seat map: `winter_wonder`, or `test_flat4` for testing.
 - **Graphics quality:** `data/look/quality_*.tres`.
 - A `.tres` is not mutated at runtime. After touching numbers, the determinism bench will change its fingerprint on purpose: `agent/det_baseline.txt` is the baseline: re-record it only if the balance change is what you wanted (`agent/README.md`).
 
+## Relief (PBR maps) of a model
+
+Each texture of a model is a material in `scenes/bodies/materials/<owner>_<label>.tres`: a `StandardMaterial3D` shared by every model that uses that texture. Its relief is a normal map in `assets/surfaces/<owner>/<file>_normal.png` (Git LFS), assigned to the material's **Normal Map** slot. The map is optional: a material without one looks as before. Since RFC-067 every material has one, except `pct6_M000_cutout`. The stone copy (StoneLook) and the build copy (BuildReveal) keep the relief.
+
+- **To look at one or tune it,** open the material in the inspector, or the mesh's surface override in `scenes/bodies/models/<model>.tscn`. `normal_scale` softens the relief, and a negative value flips it. To take it off, clear the slot or press Quitar.
+- **To make one,** go to the inspector section «Relieve desde albedo», set the knobs (the preview shows the result), press Generar and save with Ctrl+S.
+- **To make many,** use Project > Tools > «Generar relieve…». From the console it is `tools/bake/bake_relief.gd -- <folder> --recipe=…`, run once, then `--import`, then the same command again.
+- **Recipes** live in `addons/surface_maps/recipes/`:
+  - `default.tres` uses NormalMap-Online's settings: strength 2.5, level 7, smoothing 0, normal map only.
+  - `foliage.tres` adds smoothing 1, for thin leaves that speckle with the default. It is used for the `<TAG>_plant*` flora and for the leafy props listed in `agent/harness/relief_batch_lists.py`.
+  - To compare recipes, run `agent/harness/relief_recipe_probe.gd`, then `agent/harness/measure_mottle.py`.
+- **The PNG is the source:** retouch it in any image editor. The recipe that made it is not kept.
+- **Check:**
+  - rules_suite `surface_refs_cases`: no dangling references, and meshes with a normal map have tangents.
+  - rules_suite `surface_maps_cases`: the generator.
+  - F6 on `debug/look/surface_lab.tscn`.
+
+## PBR from Blender
+
+Your own model does not need the generator.
+
+1. Wire the maps into the **Principled BSDF**: Base Color, Normal (through a tangent-space *Normal Map* node), Roughness / Metallic, and Emission if you need it. Keep emission under the glow threshold of 1.0.
+2. Export to `assets/custom/models/<tag>.glb`. Godot turns each material into a `StandardMaterial3D` with its maps, and `new_creature.gd` does not overwrite them. Missing tangents are generated at import (`meshes/ensure_tangents=true`).
+3. If you exported only the colour, generate the relief on the extracted texture from the inspector. The map lands beside that texture.
+
 ## Run the tests and the validator
 
 Everything runs from `game/` and one Godot at a time (the queue is `agent/harness/godot_run.sh`).

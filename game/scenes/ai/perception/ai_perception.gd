@@ -56,7 +56,7 @@ func scan_global() -> void:
 		for node in get_tree().get_nodes_in_group(group):
 			if group == &"unit" and relation_of(node) > AiTrack.Relation.ALLY and not belief.within_map(node as Node3D): continue
 			add_node(node as Node3D, &"scan")
-	print("ia slot %d: escaneo inicial %d propios, %d aliados, %d neutrales, %d enemigos" % [slot, tracks_of(0).size(), tracks_of(1).size(), tracks_of(2).size(), tracks_of(3).size()])
+	if DebugLog.on(&"ai_seat"): print("ia slot %d: escaneo inicial %d propios, %d aliados, %d neutrales, %d enemigos" % [slot, tracks_of(0).size(), tracks_of(1).size(), tracks_of(2).size(), tracks_of(3).size()])
 	forced.emit(1)
 
 ## One of its own bodies appeared, or a foe was seen. A body of the side appearing also asks for the stats.

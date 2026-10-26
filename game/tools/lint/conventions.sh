@@ -138,12 +138,12 @@ xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|MapC
 	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18.txt" || true
 
-# C18b: lookups by id that C18 does not see (catalog god/building by tag, TypeRef, AI profile by god, biome look by god, wire decode).
+# C18b: lookups by id that C18 does not see (catalog god/building by tag, TypeRef, AI difficulty by id, biome look by god, wire decode).
 # Same allowlist as C18. Screens and gameplay receive the Resource; only the catalogs and the wire turn text back into one.
 # `MatchWire.decode_*` is also allowed in the flow and in the room/local-server screens: they hold the raw text the network gives
 # them (the seat metas of a room, the channels of the flow) and the wire is the one place that turns it into a Resource (RFC-055 055i-a Q3).
 {
-	xargs grep -nE 'GameCatalog\.shared\(\)\.(god|building)\(|TypeRef\.|AiProfile\.for_god\(|BiomeRules\.has_look\(' < "$OUT/all.txt" 2>/dev/null
+	xargs grep -nE 'GameCatalog\.shared\(\)\.(god|building)\(|TypeRef\.|AiSeat\.difficulty_of\(|BiomeRules\.has_look\(' < "$OUT/all.txt" 2>/dev/null
 	xargs grep -nE 'MatchWire\.decode_' < "$OUT/all.txt" 2>/dev/null | grep -vE '^scenes/core/flow/|^scenes/ui/(lobby|local_server)/'
 } | grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18b.txt" || true

@@ -1,12 +1,13 @@
 class_name ManahoarBrain
 extends Node
 
-## The brain of a Manahoar (RFC-024 §3.1 `ManahoarBrain`; shiny.d:2572-2608 `mahoBrain`, 0x487ae0): it goes to the group of its
+## The brain of a Manahoar: it goes to the group of its
 ## side that lacks the most mana. Each own group is worth (2 * max mana - mana) (twice that if a wizard is in it),
 ## weighed by the distance from the Manahoar to where the group is going (1 within 10 m, falling linearly to 0 at 3620 m, retail;
 ## the beta 256 m), and divided by the number of Manahoars that are ready in it when there is more than one. In the best group the
 ## member that lacks most (2 * max - current) is guarded (AiOrder.GUARD: stay near it and feed it). If there is no group worth going
 ## to, it thinks like any creature (t4oBrain).
+## Ref: RFC-024 §3.1 `ManahoarBrain`; shiny.d:2572-2608 `mahoBrain`, 0x487ae0.
 
 @export var perception: AiPerception
 @export var groups: AiGroups

@@ -40,14 +40,12 @@ func note_cast(spell: Resource, target: AiTrack) -> void:
 		return
 	var health := perception.health_of(target)
 	var mark: Array = _attack_marks.get(target.id, [])
-	if DebugLog.on(&"ai_attack"):
-		print("ai_attack slot %d hechizo %s sobre %s: vida conocida %d de %d, antes %s, ve %s" % [perception.slot, (spell as SpellType).tag,
+	if DebugLog.on(&"ai_attack"): print("ai_attack slot %d hechizo %s sobre %s: vida conocida %d de %d, antes %s, ve %s" % [perception.slot, (spell as SpellType).tag,
 			target.node.name, health.x, health.y, str(mark[0]) if not mark.is_empty() else "-", str(perception.knows_live(target))])
 	if not mark.is_empty() and health.y > 0 and (int(mark[0]) - health.x) * tactics.spell_kill_max_casts < health.x:
 		mark[1] = port.now_tick() + MatchClock.ticks_for(tactics.spell_futile_forget_s)
 		futile_bans += 1
-		if DebugLog.on(&"ai_attack"):
-			print("ai_attack slot %d hechizo inutil sobre %s: vida %d antes %d de %d" % [perception.slot, target.node.name, health.x,
+		if DebugLog.on(&"ai_attack"): print("ai_attack slot %d hechizo inutil sobre %s: vida %d antes %d de %d" % [perception.slot, target.node.name, health.x,
 				int(mark[0]), health.y])
 	else:
 		mark = [health.x, 0]

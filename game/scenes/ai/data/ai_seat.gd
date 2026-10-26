@@ -4,6 +4,9 @@ extends Resource
 ## A seat the AI takes: which slot, which wizard and god, how well it plays. Drag the wizard and the god from the FileSystem
 ## (data/catalog/wizards, data/gods). It does not play: AiRoster (or the bench) seats it and AiSide plays it.
 
+## Normal: the difficulty of a seat that names none (drag another file here to change the default).
+const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
+
 @export var slot := 2
 ## Empty = the wizard of the menu's default pick (`SacrificeFlow.default_pick`).
 @export var wizard: WizardType
@@ -35,7 +38,7 @@ static func difficulty_ids() -> PackedStringArray:
 
 ## The difficulty of the seat, Normal when it has none.
 func difficulty_or_normal() -> AiDifficulty:
-	return difficulty if difficulty != null else difficulty_of("normal")
+	return difficulty if difficulty != null else NORMAL
 
 
 ## A copy of this seat for `p_slot`, with `p_god` when given (null keeps the seat's own god; none = drawn when the match starts).

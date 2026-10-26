@@ -1,13 +1,13 @@
 class_name AiTaskBoard
 extends Node
 
-## The board of tasks (RFC-024 §3.1 `AiTaskBoard`; shiny.d:2096-2346 replan and claim, 2350-2440 the order bridge, 3380-3427
-## `recordUpdate`): every 60 ticks each task makes its records (`replan`), then in the order capture, guard, idle (the
+## The board of tasks: every 60 ticks each task makes its records (`replan`), then in the order capture, guard, idle (the
 ## order of its children) the free creatures are handed to them; every 12 ticks each record updates: the brains of its
 ## members think (a clustered record) or, with a wizard as leader, the rest follow the wizard. Each brain gets the kind of the
 ## task (AiTask.Kind) whose record it is in.
 ## 024c has IdleTask and GuardTask; 024d adds CaptureTask (first: the order of its children is the order of the claim) and the
 ## Manahoar's own brain. Without a child task that kind of work does not happen. How a record moves is AiRecordRunner.
+## Ref: RFC-024 §3.1 `AiTaskBoard`; shiny.d:2096-2346 replan and claim, 2350-2440 the order bridge, 3380-3427 `recordUpdate`.
 
 ## After the claim of a replan: every task with its records and members (diagnostic: the bench's decision log listens).
 signal replanned(tasks: Array[AiTask])

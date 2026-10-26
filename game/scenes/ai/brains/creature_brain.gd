@@ -1,7 +1,7 @@
 class_name CreatureBrain
 extends Node
 
-## The brain of a creature of the AI (RFC-024 §3.1 `CreatureBrain`; shiny.d:2557-2570 `t4oBrain`, 2546-2555 `autoCapture`). What a
+## The brain of a creature of the AI. What a
 ## creature does when its record asks it to think. First, `autoCapture`: a body with mana that dropped to its minimum goes to
 ## the best source it knows (a ready Manahoar of its side, weighed x1000, or an own mana building) and stays by it. Then, by the
 ## kind of the record's task: guard stays by the target and fights what comes (REFILL, radius `retreat_hold_m`), capture
@@ -9,6 +9,7 @@ extends Node
 ## idle nothing,
 ## since the record's leader or the creature's own aggression decide. The wizard calls it when he has nothing to cast, as
 ## the original does.
+## Ref: RFC-024 §3.1 `CreatureBrain`; shiny.d:2557-2570 `t4oBrain`, 2546-2555 `autoCapture`.
 
 @export var port: AiCommandPort
 @export var perception: AiPerception
@@ -62,8 +63,7 @@ func auto_capture(t: AiTrack) -> int:
 		return 0
 	var source: AiTrack = found["node"]
 	var radius := float(found["radius"])
-	if DebugLog.on(&"ai_order") and t.kind == AiTrack.Kind.WIZARD:
-		print("ai_order slot %d %s auto_capture mana %d/%d min %d hasta %d fuente %s a %.1f m" % [perception.slot, t.node.name, pair.x, pair.y,
+	if DebugLog.on(&"ai_order") and t.kind == AiTrack.Kind.WIZARD: print("ai_order slot %d %s auto_capture mana %d/%d min %d hasta %d fuente %s a %.1f m" % [perception.slot, t.node.name, pair.x, pair.y,
 			_min_mana(t), refill_until(t, pair.y),
 			source.node.name, t.cur_pos.distance_to(source.cur_pos)])
 	if radius * radius < t.cur_pos.distance_squared_to(source.cur_pos):

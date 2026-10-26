@@ -1,13 +1,13 @@
 class_name AiStance
 extends Node
 
-## The numbers that sum up the field (RFC-024 §3.1 `AiStance`; shiny.d:1220-1288 `updateStance`, 1061-1085 the
-## threat of the wizard, 2064-2082 `influenceGroups`). For each category (0 own, 1 ally, 2 neutral, 3 enemy) it keeps
+## The numbers that sum up the field. For each category (0 own, 1 ally, 2 neutral, 3 enemy) it keeps
 ## a record: mana and max mana of its groups, the soul worth of its creatures, its Manaliths, the sum of group
 ## ratings and, against the enemy, the share of souls. Every 60 ticks (k1).
 ## Quirks of the original that matter and are kept: u[2], u[3], u[4] start at 1; the `u[6]` the divisor of acc1 and acc2 is
 ## the integer read of the float bits of the ratios (shiny.d:1284-1287, «thaum quirk»), so acc1 and acc2 are
 ## tiny numbers: summoning compares each creature with almost nothing.
+## Ref: RFC-024 §3.1 `AiStance`; shiny.d:1220-1288 `updateStance`, 1061-1085 the threat of the wizard, 2064-2082 `influenceGroups`.
 
 class Rec extends RefCounted:
 	var mana := 0

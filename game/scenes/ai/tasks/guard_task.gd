@@ -1,12 +1,13 @@
 class_name GuardTask
 extends AiTask
 
-## GUARD (shiny.d:2195-2229 `replanGuard`, 2288-2336 `claimGuard`): the own wizard gets a record (his creatures escort him)
+## What the side guards: the own wizard gets a record (his creatures escort him)
 ## and so does every own mana structure that is ready (its altar only while a ritual runs against it, with score 1.0). The score of a structure mixes the
 ## support of the other altars (probOr), the enemy's (probOr) and the influence of the enemy groups; the creatures
 ## that fit best (rateWithBase against the target) are claimed up to `score * souls` of worth. A guard creature gets an
 ## order to stay by the structure and fight what comes (t4oBrain with the guard task, shiny.d:2557-2570).
 ## Not ported: the guardian-bound creatures of the first pass (shiny.d:2292-2300).
+## Ref: shiny.d:2195-2229 `replanGuard`, 2288-2336 `claimGuard`.
 
 func kind() -> Kind:
 	return Kind.GUARD

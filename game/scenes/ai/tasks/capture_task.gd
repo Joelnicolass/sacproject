@@ -1,7 +1,7 @@
 class_name CaptureTask
 extends AiTask
 
-## CAPTURE (shiny.d:2118-2194 `replanCapture`, 2262-2286 `claimCapture`, retail 0x48dc04..0x48e21b): what the side wants to take.
+## What the side wants to take.
 ## Three kinds of record, each with a score `lerp(s1, s2, s3)` (s1 the worth of the target, s2 the weight of the side's
 ## aggression, s3 = 1 - the influence of the enemy groups within 140 m):
 ##   - a free manafount (`free_fount`): the wizard builds a Manalith over it (his capture block: castCachedInRange). The free
@@ -16,6 +16,7 @@ extends AiTask
 ## creatures (guardian excluded here too, shiny.d:2272). The claim hands every free body that fights to the best record that
 ## the army can beat (rateWithBase >= 0), until the souls they hold pass `own souls * share * 0.9 * aggression`; with a Desecrate of the
 ## side underway it claims nothing, so the army stays where it is.
+## Ref: shiny.d:2118-2194 `replanCapture`, 2262-2286 `claimCapture`, retail 0x48dc04..0x48e21b.
 
 const TERRITORY_NEAR_M := 10.0
 const TERRITORY_MANALITH_M := 1000.0

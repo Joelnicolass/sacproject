@@ -1,10 +1,11 @@
 class_name AiRand
 extends RefCounted
 
-## The `rand()` of MSVC the original AI calls (shiny.d:31-38 `ShinyRand`): a 32-bit linear congruential
+## The random numbers of an AI side: a 32-bit linear congruential
 ## generator, state = state * 214013 + 2531011, and the answer is bits 16..30 of the new state (0..32767).
 ## One per AI side, seeded from the match seed (MatchSeed.derive) so a match repeats. Only wizSacrifice uses
 ## it (shiny.d:3123), to decide whether this replan may think of the emergency Manahoar.
+## Ref: the `rand()` of MSVC, shiny.d:31-38 `ShinyRand`.
 
 const MULTIPLIER := 214013
 const INCREMENT := 2531011

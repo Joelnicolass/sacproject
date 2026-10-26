@@ -30,11 +30,11 @@ trap 'kill_all; net_stop' EXIT
 net_guard
 
 # --- 2 (started first, it runs next to step 1). «Contra la IA» with a mode ------------------------------------------------
-gd "$OUT/solo.log" "${FPS_FLAGS[@]}" res://debug/net/vs_ai_mode.tscn -- --mode=2v2 --map=test_flat4 --e2e-seats=4
+gd "$OUT/solo.log" "${FPS_FLAGS[@]}" res://debug/net/vs_ai_mode.tscn -- --log=ai_seat --mode=2v2 --map=test_flat4 --e2e-seats=4
 SOLO=$LAST_PID
 
 # --- 1. the dedicated with three AI ----------------------------------------------------------------------------------
-gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --mp-port="$PORT" --map=test_flat4 --mode=2v2 --ai-slots=2,3,4 \
+gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --log=ai_seat --mp-port="$PORT" --map=test_flat4 --mode=2v2 --ai-slots=2,3,4 \
   --world="$WORLD" --force-defeat-slot=3,4 --force-defeat-after-ticks="$FORCE_TICKS" ${E2E_AI_GOD:+--ai-god="$E2E_AI_GOD"}
 SERVER=$LAST_PID
 READY=0

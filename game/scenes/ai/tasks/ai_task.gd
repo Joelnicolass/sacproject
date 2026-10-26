@@ -1,10 +1,11 @@
 class_name AiTask
 extends Node
 
-## Contract of a task of the board (RFC-024 §3.1 `AiTask`; shiny.d:98-104 `AITask`, 2096-2238 replan, 2240-2346 claim).
+## Contract of a task of the board.
 ## The board calls `replan()` (record the targets worth working on, every 60 ticks), then `claim()` (hand the free
 ## creatures to them, in the order capture, guard, idle) and, every 12 ticks, each member's brain thinks with the `kind()` of the
 ## task. A task is a child of AiTaskBoard: take it out and that kind of work is no longer done.
+## Ref: RFC-024 §3.1 `AiTask`; shiny.d:98-104 `AITask`, 2096-2238 replan, 2240-2346 claim.
 
 ## shiny.d:98 TaskKind. FOCUS (RFC-053 053d) is not in the original. A brain reads the kind of its record's task (the original's
 ## taskCmd: capture 2, guard 1, and for idle a number no brain reads; here IDLE is 0 and no brain acts on it).

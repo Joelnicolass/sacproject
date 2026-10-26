@@ -1,7 +1,7 @@
 class_name AttackPhase
 extends AiPhase
 
-## wizAttack (shiny.d:3052-3071, 0x48d640 CheckAttack): among the enemy bodies the side knows (creatures, wizards,
+## What the wizard attacks: among the enemy bodies the side knows (creatures, wizards,
 ## the NPC of the villages) within (1 - threat) * 280 m, the one of most weight (1 within 10 m, falling linearly to 0; the
 ## tactics' weight_passive if it does not fight, weight_no_ability if it has no ability it can pay, weight_sac_doctor a Sac Doctor)
 ## is the target, and the book's attack with the best score against it is queued with the score `best * w3[0] / total` (on the
@@ -17,6 +17,7 @@ extends AiPhase
 ## RFC-053 (deviation, wizAttack has no such test): a body the side's attack spells do not bring down (AiFutileTargets.is_futile:
 ## it regenerated between two casts) is passed over for AiTactics.spell_futile_forget_s. Measured in ai_easy_vs_normal seed 7: the
 ## Easy wizard threw a Rock at the same Taurock every ~19 s for five minutes (310 of 1500 each, back to full in between).
+## Ref: wizAttack, shiny.d:3052-3071, 0x48d640 CheckAttack.
 
 ## The focus of the side (optional: without it nothing is committed).
 @export var focus: FocusTask
@@ -51,8 +52,7 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 			best = w
 			best_track = foe
 		total = AiField.f32(total + w)
-	if DebugLog.on(&"ai_attack"):
-		print("ai_attack slot %d threat %.3f enemy_ratio %.3f best %s w %.3f total %.3f" % [brain.perception.slot, wizard.threat,
+	if DebugLog.on(&"ai_attack"): print("ai_attack slot %d threat %.3f enemy_ratio %.3f best %s w %.3f total %.3f" % [brain.perception.slot, wizard.threat,
 			brain.stance.enemy_ratio(), best_track.node.name if best_track != null and best_track.is_valid() else "-", best, total])
 	if total == 0.0 or best_track == null:
 		return

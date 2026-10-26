@@ -1,10 +1,11 @@
 class_name AiDifficulty
 extends Resource
 
-## How well the AI plays (RFC-024 §3.3 `AiDifficulty`, 024e). The original has no difficulty (shiny.d:380, 662: aggression fixed
+## How well the AI plays. The original has no difficulty (aggression fixed
 ## at 1.0); Normal is its numbers. Easy and Hard change only HOW FAST it thinks, how bold it is and what it knows: never what it has.
 ## RULES.md «IA»: no bonus of mana or souls and no cheat in any difficulty. A difficulty is another `.tres`
 ## (data/ai/difficulty_*.tres); it never changes while playing.
+## Ref: RFC-024 §3.3 `AiDifficulty`, 024e; shiny.d:380, 662.
 
 ## The name of the difficulty in the UI (debug HUD now, the «Contra la IA» menu in 024f).
 @export var display_name := "Normal"

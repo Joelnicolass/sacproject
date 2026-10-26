@@ -89,7 +89,7 @@ kill_tree "$SERVER"; wait "$SERVER" 2>/dev/null; kill_stray
 
 # --- phase B: two humans + two bots (no ordering to keep: the dedicated runs with --fixed-fps) -----------------------
 PHASE_PIDS=""
-start_server B --match-engine-args="--fixed-fps,$NET_FPS" --match-args=--force-defeat-slot=3+4,--force-defeat-after-ticks=300
+start_server B --match-engine-args="--fixed-fps,$NET_FPS" --match-args=--log=ai_seat,--force-defeat-slot=3+4,--force-defeat-after-ticks=300
 wait_ready B
 READY_B=$READY
 if [ "$READY_B" = 1 ]; then

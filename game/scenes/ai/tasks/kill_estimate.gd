@@ -1,13 +1,14 @@
 class_name AiKillEstimate
 extends RefCounted
 
-## RFC-053 053d (F373): how many seconds the side needs to kill a body, from what it knows (no cheat):
+## How many seconds the side needs to kill a body, from what it knows (no cheat):
 ##   seconds = known health / (sum of the members' DPS - the healing it sees on the target).
 ## A member's DPS comes from its CreatureType (its ranged attack's damage over its cadence, or its melee blow over its swing), times the
 ## catalog resistance of the target's type (a shot's cadence: shot_period). The healing seen is the target's own regeneration (catalog) plus the most of: the enemy
 ## healers the side sees within HEAL_SEEN_M of the target (a creature that shoots its wounded, WoundedAllyPolicy) and the heal effect that
 ## shows on the target (HealEffect, the glow a human sees). The health is AiPerception.health_of: the last seen of a body the
 ## side does not see now. Static: FocusTask and AttackPhase call it, the suite tests the pure parts.
+## Ref: RFC-053 053d (F373).
 
 ## Only healers this close to the target count (RFC-053 §9 053d).
 const HEAL_SEEN_M := 30.0

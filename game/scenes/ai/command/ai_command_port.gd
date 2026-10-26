@@ -61,7 +61,7 @@ func bind(side_slot: int, wizard_body: Node3D, orders_node: Node) -> void:
 	slot = side_slot
 	wizard = wizard_body
 	orders.bind(side_slot, wizard, orders_node)
-	var spawner := get_tree().get_first_node_in_group("unit_spawner")
+	var spawner := get_tree().get_first_node_in_group(UnitSpawner.GROUP) as UnitSpawner
 	casts.bind(side_slot, wizard, spawner.get_node(spawner.spawn_path) if spawner != null else null)
 
 

@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="WeatherState" format=3]
+
+[ext_resource type="Script" path="res://scenes/look/atmosphere/weather_state.gd" id="1_state"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/precipitation_look.gd" id="2_fall"]
+[ext_resource type="Resource" path="res://data/audio/cues/rain_loop.tres" id="3_sound"]
+
+[sub_resource type="ParticleProcessMaterial" id="Fall_move"]
+emission_shape = 3
+emission_box_extents = Vector3(40, 12, 40)
+direction = Vector3(0.05, -1, 0)
+spread = 2.0
+initial_velocity_min = 24.0
+initial_velocity_max = 30.0
+gravity = Vector3(0, -9.8, 0)
+
+[sub_resource type="StandardMaterial3D" id="Fall_material"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.75, 0.82, 0.92, 0.35)
+billboard_mode = 2
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="Fall_mesh"]
+material = SubResource("Fall_material")
+size = Vector2(0.025, 0.7)
+
+[sub_resource type="Resource" id="Fall"]
+script = ExtResource("2_fall")
+process_material = SubResource("Fall_move")
+mesh = SubResource("Fall_mesh")
+amount = 4000
+lifetime_s = 1.6
+sound = ExtResource("3_sound")
+
+[resource]
+script = ExtResource("1_state")
+display_name = "Lluvia"
+sun_energy_mul = 0.55
+ambient_mul = 0.85
+sky_tint = Color(0.78, 0.8, 0.85, 1)
+sky_grey = 0.35
+cloud_cover = 0.55
+cloud_darken = 0.25
+cloud_speed_mul = 1.6
+fog_density_mul = 1.15
+fog_end_mul = 0.85
+rain = 1.0
+precipitation = SubResource("Fall")

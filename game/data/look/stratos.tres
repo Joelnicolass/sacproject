@@ -9,6 +9,7 @@
 [ext_resource type="Resource" path="res://data/audio/music/stratos.tres" id="gm_music"]
 [ext_resource type="Resource" path="res://data/audio/ambience/stratos.tres" id="gm_ambience"]
 [ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
+[ext_resource type="Resource" path="res://data/look/weather/plan.tres" id="58_weather"]
 
 [sub_resource type="Curve" id="Day_stratos_elevation_change_deg"]
 _limits = [-120, 60, 0.0, 24.0]
@@ -68,3 +69,4 @@ grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")
 day = SubResource("Day_stratos")
+weather = ExtResource("58_weather")

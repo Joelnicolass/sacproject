@@ -23,6 +23,8 @@ extends Resource
 @export_group("Ambience (058)")
 ## How the day goes by over the approved light (night, moon, stars). Empty = no cycle: always the approved light.
 @export var day: DayCycle
+## How the weather goes (the five gods share `data/look/weather/plan.tres`). Empty = always clear.
+@export var weather: WeatherPlan
 
 @export_group("Ground and plants")
 ## The original's flat ground (atlas, edge and light map): what the terrain wears when `ground` is empty.

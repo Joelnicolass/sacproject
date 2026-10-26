@@ -39,7 +39,7 @@ var cloud_cover := 0.0
 var cloud_darken := 0.0
 var cloud_speed_mul := 1.0
 ## The weather state this sample comes from (null in the day's sample).
-var weather: Resource  # a WeatherState (058-2)
+var weather: WeatherState
 
 
 static func neutral() -> AtmosphereSample:
@@ -72,6 +72,19 @@ static func mix(a: AtmosphereSample, b: AtmosphereSample) -> AtmosphereSample:
 	return out
 
 
+## `a` turned into `b` by `w` (0..1): each number eased linearly; the weather is the one past half.
+static func blend(a: AtmosphereSample, b: AtmosphereSample, w: float) -> AtmosphereSample:
+	var out := AtmosphereSample.new()
+	var x := a.numbers()
+	var y := b.numbers()
+	for i in x.size():
+		x[i] = lerpf(x[i], y[i], w)
+	out._take(x)
+	out.moon = b.moon if w >= 0.5 else a.moon
+	out.weather = b.weather if w >= 0.5 else a.weather
+	return out
+
+
 ## True when every number is within `eps` of `other`'s (and the light is the same body).
 func is_close(other: AtmosphereSample, eps: float) -> bool:
 	if other == null or moon != other.moon or weather != other.weather:
@@ -101,7 +114,17 @@ func numbers() -> PackedFloat32Array:
 	])
 
 
-## The same moment with the look left as it is (hour and weather kept): what a snap to neutral shows.
+func _take(n: PackedFloat32Array) -> void:
+	hour = n[0]; night = n[1]; elevation_change_deg = n[2]
+	light_tint = Color(n[3], n[4], n[5]); light_energy = n[6]
+	ambient_tint = Color(n[7], n[8], n[9]); ambient_energy = n[10]
+	sky_tint = Color(n[11], n[12], n[13]); sky_grey = n[14]
+	fog_density = n[15]; fog_end = n[16]; rain = n[17]; flash = n[18]
+	stars = n[19]; moon_intensity = n[20]; cloud_cover = n[21]; cloud_darken = n[22]; cloud_speed_mul = n[23]
+
+
+## The same moment with the look left as it is (hour and weather kept): Atmosphere snaps a sample within a hair of
+## neutral to this, so the start of a match shows the approved look byte for byte.
 func as_neutral() -> AtmosphereSample:
 	var plain := neutral()
 	plain.hour = hour

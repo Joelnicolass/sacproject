@@ -67,6 +67,69 @@ static func tint(dusk_color: Color, night_color: Color, dusk: float, night: floa
 	return Color.WHITE.lerp(dusk_color, dusk).lerp(night_color, night)
 
 
+## The weather's part of the atmosphere at match second `t_s` (blending at the start of a segment). No plan: neutral.
+static func weather_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> AtmosphereSample:
+	var now := states_at(plan, sky_seed, t_s)
+	if now[0] == null:
+		return AtmosphereSample.neutral()
+	var to := state_sample(now[1])
+	return to if now[2] >= 1.0 or now[0] == now[1] else AtmosphereSample.blend(state_sample(now[0]), to, now[2])
+
+
+## The weather that rules at `t_s` (the one past half of a blend).
+static func state_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> WeatherState:
+	var now := states_at(plan, sky_seed, t_s)
+	return now[1] if now[2] >= 0.5 else now[0]
+
+
+## [from: WeatherState, to: WeatherState, w: float]: the previous segment's weather, this one's and how far the blend
+## between them is (1 = done). [null, null, 1] without a plan.
+static func states_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> Array:
+	if plan == null:
+		return [null, null, 1.0]
+	var seg := maxf(plan.segment_s, 1.0)
+	var t := maxf(t_s, 0.0)
+	var k := int(floor(t / seg))
+	var to := segment_state(plan, sky_seed, k)
+	if k == 0 or plan.blend_s <= 0.0:
+		return [to, to, 1.0]
+	var w := smoothstep(0.0, plan.blend_s, t - float(k) * seg)
+	return [segment_state(plan, sky_seed, k - 1), to, w]
+
+
+## The weather of segment `k`: the plan's first for k = 0, then a weighted draw by the sky's seed (or the list in order).
+static func segment_state(plan: WeatherPlan, sky_seed: int, k: int) -> WeatherState:
+	var usable := plan.chances.filter(func(c: WeatherChance) -> bool: return c != null and c.state != null and c.weight > 0.0)
+	if k <= 0 or usable.is_empty():
+		return plan.first
+	if plan.in_order:
+		return usable[k % usable.size()].state
+	var total := 0.0
+	for chance: WeatherChance in usable:
+		total += chance.weight
+	var pick := unit_hash(sky_seed, k) * total
+	for chance: WeatherChance in usable:
+		pick -= chance.weight
+		if pick < 0.0:
+			return chance.state
+	return usable.back().state
+
+
+## A state's numbers as a sample (neutral for none).
+static func state_sample(state: WeatherState) -> AtmosphereSample:
+	return state.to_sample() if state else AtmosphereSample.neutral()
+
+
+## How much of the land at `d_m` shows through the depth fog (1 = all). Godot's depth fog: amount =
+## smoothstep(begin, end, d) ^ curve * density (curve 1, as EnvironmentLayer leaves it), with the sample's multipliers.
+static func fog_transmittance(sky: SkyLook, sample: AtmosphereSample, d_m: float) -> float:
+	if sky == null or not sky.fog_enabled:
+		return 1.0
+	var end_m := maxf(sky.fog_end_m * sample.fog_end, sky.fog_begin_m + 0.01)
+	var amount := smoothstep(sky.fog_begin_m, end_m, d_m) * sky.fog_density * sample.fog_density
+	return 1.0 - clampf(amount, 0.0, 1.0)
+
+
 ## Integer hash of two numbers (splitmix64's finalizer): the same on every architecture, unlike `hash()`.
 static func hash_int(a: int, b: int) -> int:
 	var z := a * -7046029254386353131 + b  # a * 0x9E3779B97F4A7C15 + b (wraps at 64 bits)

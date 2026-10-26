@@ -3,6 +3,8 @@ extends RefCounted
 ## RFC-058 cases of rules_suite: the atmosphere's arithmetic, without a scene.
 ##   - (a) day_neutral_start: every god's DayCycle is neutral at its start hour (±1e-3) and its light is ~0 (≤ 0.05)
 ##     where the sun goes under the moon line (DayCycle.problems);
+##   - (b) weather_repeatable: weather_at gives the same in 1000 queries in any order, and the first segment is plan.first;
+##   - (d) fog_lets_see: the depth fog lets ≥ 0.75 of the land at 150 m through, for every god × weather state;
 ##   - (e) sky_neutral_start: at the start hour the sky's new uniforms are neutral, so the dresser keeps the SkyLook's
 ##     own material (the approved sky, exactly);
 ##   - (f) sky_clock_adopt: MatchSky.adopt(100, s) then now_s() ≈ 100 (±1 tick) and sky_seed() == s;
@@ -10,11 +12,15 @@ extends RefCounted
 ## Every case returns {ok, ...}; a failing one prints the values. Prints ATMOSPHERE <case>=<bool>.
 
 const GODS: Array[StringName] = [&"persephone", &"james", &"stratos", &"pyro", &"charnel"]
+const PLAN := preload("res://data/look/weather/plan.tres")
+const STATES: Array[String] = ["clear", "fog", "rain", "storm", "snow"]
 
 
 func run(_host: Node) -> Dictionary:
 	var results: Dictionary[String, Dictionary] = {
 		"day_neutral_start": _day_neutral_start(),
+		"weather_repeatable": _weather_repeatable(),
+		"fog_lets_see": _fog_lets_see(),
 		"sky_neutral_start": _sky_neutral_start(),
 		"sky_clock_adopt": _sky_clock_adopt(),
 		"mix_commutative": _mix_commutative(),
@@ -45,6 +51,51 @@ func _day_neutral_start() -> Dictionary:
 	if not bad.is_empty():
 		print("ATMOSPHERE   day: %s" % bad)
 	return {"ok": bad.is_empty(), "problems": bad}
+
+
+func _weather_repeatable() -> Dictionary:
+	var plan := PLAN as WeatherPlan
+	var times: Array[float] = []
+	for i in 1000:
+		times.append(float(i) * 7.3)
+	var first_pass: Array[AtmosphereSample] = []
+	for t in times:
+		first_pass.append(AtmosphereRules.weather_at(plan, 58, t))
+	var order: Array[int] = []
+	order.assign(range(times.size()))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 1
+	for i in range(order.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var swap := order[i]
+		order[i] = order[j]
+		order[j] = swap
+	var mismatches := 0
+	for i in order:
+		if not AtmosphereRules.weather_at(plan, 58, times[i]).is_close(first_pass[i], 0.0):
+			mismatches += 1
+	var starts_first := AtmosphereRules.state_at(plan, 58, 0.0) == plan.first \
+			and AtmosphereRules.state_at(plan, 58, plan.segment_s - 0.01) == plan.first
+	var seen := {}
+	for k in 200:
+		seen[AtmosphereRules.segment_state(plan, 58, k)] = true
+	var passed := mismatches == 0 and starts_first and seen.size() >= 4
+	if not passed:
+		print("ATMOSPHERE   weather: mismatches=%d starts_first=%s kinds=%d" % [mismatches, starts_first, seen.size()])
+	return {"ok": passed, "mismatches": mismatches, "kinds": seen.size()}
+
+
+func _fog_lets_see() -> Dictionary:
+	var bad := PackedStringArray()
+	for look in _looks():
+		for state_name in STATES:
+			var state := load("res://data/look/weather/%s.tres" % state_name) as WeatherState
+			var through := AtmosphereRules.fog_transmittance(look.sky, AtmosphereRules.state_sample(state), 150.0)
+			if through < 0.75:
+				bad.append("%s/%s=%.3f" % [look.god, state_name, through])
+	if not bad.is_empty():
+		print("ATMOSPHERE   fog: %s" % bad)
+	return {"ok": bad.is_empty(), "bad": bad}
 
 
 func _sky_neutral_start() -> Dictionary:

@@ -18,7 +18,7 @@
 
 [sub_resource type="Curve" id="Day_charnel_elevation_change_deg"]
 _limits = [-30, 30, 0.0, 24.0]
-_data = [Vector2(0, 0), 0, 0, 0, 0, Vector2(3, 8.485281), 2, 2, 0, 0, Vector2(6, 12), 0, 0, 0, 0, Vector2(9, 8.485281), -2, -2, 0, 0, Vector2(12, 0), -2.828427, -2.828427, 0, 0, Vector2(15, -8.485281), -2, -2, 0, 0, Vector2(18, -12), 0, 0, 0, 0, Vector2(21, -8.485281), 2, 2, 0, 0, Vector2(24, 0), 0, 0, 0, 0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(3, 8.485281), 2.0, 2.0, 0, 0, Vector2(6, 12), 0.0, 0.0, 0, 0, Vector2(9, 8.485281), -2.0, -2.0, 0, 0, Vector2(12, 0), -2.828427, -2.828427, 0, 0, Vector2(15, -8.485281), -2.0, -2.0, 0, 0, Vector2(18, -12), 0.0, 0.0, 0, 0, Vector2(21, -8.485281), 2.0, 2.0, 0, 0, Vector2(24, 0), 0.0, 0.0, 0, 0]
 point_count = 9
 
 [sub_resource type="Resource" id="Day_charnel"]

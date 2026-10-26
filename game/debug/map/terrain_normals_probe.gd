@@ -5,7 +5,7 @@ extends SceneTree
 ## triangles keep a single flat normal. Then flips smooth_ground and counts again.
 ## Run: Godot --headless --path game --script res://debug/map/terrain_normals_probe.gd
 
-const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
+const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain_mesh.gd"
 const SHAPE_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
 const WALL_AREA := 0.01
 

@@ -351,7 +351,7 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
-	var terrain := Terrain.new()
+	var terrain := TerrainMesh.new()
 	terrain.name = "Terrain"
 	terrain.shape = GroundSurface.with_data(MapCatalog.active().terrain)
 	terrain.add_child(terrain.shape)
@@ -367,7 +367,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	service.build_on_ready = false
 	root.add_child(service)
 	host.add_child(root)
-	terrain.add_child(terrain.make_collision_body())  # a Terrain from the script alone has no body
+	terrain.add_child(terrain.make_collision_body())  # a TerrainMesh from the script alone has no body
 	if not terrain.shape.is_loaded():
 		root.free()
 		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}

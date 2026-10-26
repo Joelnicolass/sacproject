@@ -249,7 +249,7 @@ func _plan() -> Dictionary:
 
 ## Instances of a buffer that do not stand on the ground (more than 1 cm from height_at; the pose may lift a model,
 ## so the check is that the instance origin before the pose is on the ground: the pose of the plants has no offset).
-static func _off_ground(buffer: PackedFloat32Array, key: Vector2i, land: Terrain) -> int:
+static func _off_ground(buffer: PackedFloat32Array, key: Vector2i, land: TerrainMesh) -> int:
 	var wrong := 0
 	var corner := Vector2(key) * MeshPlanter.CELL_M
 	for i in buffer.size() / MeshPlanter.XFORM_STRIDE:
@@ -358,7 +358,7 @@ func _worker() -> Dictionary:
 
 
 ## A threaded MeshPlanter over cell `key` until nothing is pending; then far away and back mid-plan.
-func _planter_run(config: VegetationLayerConfig, flora: FloraDensity, land: Terrain, key: Vector2i) -> Dictionary:
+func _planter_run(config: VegetationLayerConfig, flora: FloraDensity, land: TerrainMesh, key: Vector2i) -> Dictionary:
 	var quality := (load("res://data/look/quality_high.tres") as LookQuality).vegetation_for(config.id)
 	var host := Node3D.new()
 	tree.root.add_child(host)

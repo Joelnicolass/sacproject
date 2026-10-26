@@ -9,7 +9,7 @@ extends Node
 ## User args (after `--`): --scene=res://...  --out=res://agent/out/035  --frames=N  --reload
 
 const DEFAULT_SCENE := "res://scenes/match/high_noon.tscn"
-const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain.gd"
+const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain_mesh.gd"
 const COUNTED := ["Buildings", "Npcs"]
 
 var _scene := DEFAULT_SCENE

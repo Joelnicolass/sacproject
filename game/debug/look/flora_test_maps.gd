@@ -51,13 +51,13 @@ static func layer_copies(map_tag: String) -> Array[FloraLayer]:
 	return copies
 
 
-## A Terrain whose `shape` holds the map's ground index, to ask is_on_ground and height_at as the game does. Not in the
+## A TerrainMesh whose `shape` holds the map's ground index, to ask is_on_ground and height_at as the game does. Not in the
 ## tree: the caller frees it. Null when the map has no valid terrain.
-static func land_of(map: MapDefinition) -> Terrain:
+static func land_of(map: MapDefinition) -> TerrainMesh:
 	var data := map.terrain
 	if data == null or not data.is_valid():
 		return null
-	var land := Terrain.new()
+	var land := TerrainMesh.new()
 	land.shape = GroundSurface.with_data(data)
 	land.add_child(land.shape)
 	return land

@@ -7,8 +7,6 @@ extends Node3D
 ## The height comes from the terrain data (GroundSurface.height_at), not from a physics ray,
 ## so the dedicated server and every client get the same number.
 
-const TERRAIN_GROUP := &"terrain"
-
 @export var enabled := true:
 	set(value):
 		enabled = value
@@ -46,7 +44,7 @@ func snap() -> void:
 	var terrain := _terrain()
 	if terrain == null or terrain.shape == null:
 		return
-	# Terrain-local = map coordinates. In the editor the scene root is shifted (terrain.gd).
+	# Mesh-local = map coordinates. In the editor the scene root is shifted (terrain_mesh.gd).
 	var at := terrain.to_local(body.global_position)
 	var height := terrain.shape.height_at(at.x, at.z)
 	if is_nan(height):
@@ -62,9 +60,9 @@ func snap() -> void:
 
 
 ## The terrain of the same scene: the one that hangs from an ancestor of this node.
-func _terrain() -> Terrain:
-	for node in get_tree().get_nodes_in_group(TERRAIN_GROUP):
-		var terrain := node as Terrain
+func _terrain() -> TerrainMesh:
+	for node in get_tree().get_nodes_in_group(TerrainMesh.GROUP):
+		var terrain := node as TerrainMesh
 		if terrain and terrain.get_parent() and terrain.get_parent().is_ancestor_of(self):
 			return terrain
 	return null

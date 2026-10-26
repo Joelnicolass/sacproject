@@ -74,25 +74,25 @@ func _refresh() -> void:
 	if terrain == null:
 		return
 	# The terrain keeps a private copy of the classic material (the grass paints into it): hand it over once per material.
-	if terrain is Terrain and _classic != null and _classic != _classic_given:
-		(terrain as Terrain).set_classic_material(_classic)
+	if terrain is TerrainMesh and _classic != null and _classic != _classic_given:
+		(terrain as TerrainMesh).set_classic_material(_classic)
 		_classic_given = _classic
 	if _ground == null or not is_visible_in_tree():
 		_restore()
 		return
 	if _material == null:
-		var map_terrain := terrain as Terrain
+		var map_terrain := terrain as TerrainMesh
 		_material = GroundMaterial.build(_ground, map_terrain.ground_roles if map_terrain else null,
 				map_terrain.light_map if map_terrain else null, _preset)
 	else:
 		GroundMaterial.update(_material, _ground, _preset)
-	terrain.call("set_ground_override", _material)  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+	terrain.call("set_ground_override", _material)  # dynamic: TerrainMesh or the grass lab's GrassLabGround (debug/look) answers it
 
 
 func _restore() -> void:
 	var terrain := _mesh()
 	if terrain:
-		terrain.call("clear_ground_override")  # dynamic: Terrain or the grass lab's GrassLabGround (debug/look) answers it
+		terrain.call("clear_ground_override")  # dynamic: TerrainMesh or the grass lab's GrassLabGround (debug/look) answers it
 
 
 ## The node that draws the map's ground (the first of `ground.meshes`).

@@ -8,7 +8,7 @@ extends RefCounted
 const SHADER := preload("res://scenes/look/ground/ground.gdshader")
 
 
-## `roles`: the map's ground_roles.png (Terrain.ground_roles); `light`: its baked light (Terrain.light_map). Either may be null.
+## `roles`: the map's ground_roles.png (TerrainMesh.ground_roles); `light`: its baked light (TerrainMesh.light_map). Either may be null.
 static func build(ground: GodGround, roles: Texture2D, light: Texture2D, preset: LookQuality) -> ShaderMaterial:
 	var mat := ShaderMaterial.new()
 	mat.shader = SHADER

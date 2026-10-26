@@ -20,13 +20,13 @@ const REBAKE_MS := 3000.0
 
 var _root: Node3D
 var _service: NavService
-var _terrain: Terrain
+var _terrain: TerrainMesh
 
 
 func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frames
 	_root = Node3D.new()
 	_root.name = "NavCases"
-	_terrain = Terrain.new()
+	_terrain = TerrainMesh.new()
 	_terrain.name = "Terrain"
 	_terrain.shape = GroundSurface.with_data(MapCatalog.active().terrain)
 	_terrain.add_child(_terrain.shape)
@@ -53,7 +53,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	_service.build_on_ready = false
 	_root.add_child(_service)
 	host.add_child(_root)
-	_terrain.add_child(_terrain.make_collision_body())  # a Terrain from the script alone has no body
+	_terrain.add_child(_terrain.make_collision_body())  # a TerrainMesh from the script alone has no body
 	var out := {}
 	if not _terrain.shape.is_loaded():
 		var missing := {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}

@@ -7,7 +7,7 @@ extends RefCounted
 ## What it does NOT do: hold a mesh node or answer heights.
 ## Ref: sacmap.d generateNormals, appendEdgeWall.
 
-## Bumped when the arrays change shape: an imported terrain.glb mesh of an older version is rebuilt (Terrain).
+## Bumped when the arrays change shape: an imported terrain.glb mesh of an older version is rebuilt (TerrainMesh).
 const VERSION := 2
 
 ## The arrays of a Mesh without the normals; `with_normals` completes them.

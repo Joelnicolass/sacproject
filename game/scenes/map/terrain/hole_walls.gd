@@ -8,7 +8,7 @@ extends MeshInstance3D
 
 ## The map's ground numbers, and the mesh whose material the walls wear.
 @export var shape: GroundSurface
-@export var terrain: Terrain
+@export var terrain: TerrainMesh
 ## The ground shader moves the vertices up to this far (m): the walls are not culled while it does.
 @export_range(0.0, 60.0, 1.0, "suffix:m") var lift_margin_m := 30.0
 
@@ -26,7 +26,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if shape == null:
 		warnings.append("Falta el socket `shape` (el GroundSurface del mapa).")
 	if terrain == null:
-		warnings.append("Falta el socket `terrain` (el Terrain cuyo material usan las paredes).")
+		warnings.append("Falta el socket `terrain` (el TerrainMesh cuyo material usan las paredes).")
 	return warnings
 
 

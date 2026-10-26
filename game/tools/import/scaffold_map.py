@@ -173,7 +173,7 @@ gltf/texture_map_mode=0
 MAP_HEAD = """[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_mesh.gd" id="2_terrain"]
 [ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="shape_script"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="deformer_script"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]

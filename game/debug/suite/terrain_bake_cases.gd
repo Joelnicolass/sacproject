@@ -53,7 +53,7 @@ func _initialize() -> void:
 	_finish()
 
 
-## The mesh Terrain builds at runtime from terrain.res: its trimesh is what the sim and the collision had so far.
+## The mesh TerrainMesh builds at runtime from terrain.res: its trimesh is what the sim and the collision had so far.
 func _round_trip(current: MapTerrainData) -> void:
 	var terrain := await _built_terrain(current)
 	var built := terrain.mesh as ArrayMesh
@@ -73,7 +73,7 @@ func _scene_instance(current: MapTerrainData) -> void:
 		world.free()
 		return
 	_check("scene_terrain_is_glb", scene_terrain.scene_file_path == glb, scene_terrain.scene_file_path)
-	_check("scene_script_data", scene_terrain is Terrain and (scene_terrain as Terrain).shape != null and (scene_terrain as Terrain).shape.data != null)
+	_check("scene_script_data", scene_terrain is TerrainMesh and (scene_terrain as TerrainMesh).shape != null and (scene_terrain as TerrainMesh).shape.data != null)
 	var shape_node := scene_terrain.get_node_or_null("Collision/Shape") as CollisionShape3D
 	_check("scene_collision_found", shape_node != null and shape_node.shape is ConcavePolygonShape3D)
 	if shape_node != null:
@@ -136,14 +136,14 @@ func _through_glb(data: MapTerrainData, path := "user://terrain_bake_moved.glb")
 	return GlbImport.validate(read["data"])
 
 
-func _terrain_from_glb(path: String) -> Terrain:
+func _terrain_from_glb(path: String) -> TerrainMesh:
 	var read := GlbImport.read_glb(path)
 	return await _built_terrain(read["data"] if read.has("data") else null)
 
 
-## A Terrain made from the script alone, built in _ready from `data` (no saved mesh).
-func _built_terrain(data: MapTerrainData) -> Terrain:
-	var terrain := Terrain.new()
+## A TerrainMesh made from the script alone, built in _ready from `data` (no saved mesh).
+func _built_terrain(data: MapTerrainData) -> TerrainMesh:
+	var terrain := TerrainMesh.new()
 	terrain.shape = GroundSurface.with_data(data)
 	terrain.add_child(terrain.shape)
 	root.add_child(terrain)

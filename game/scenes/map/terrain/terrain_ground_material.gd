@@ -26,7 +26,7 @@ func classic() -> ShaderMaterial:
 	return _classic
 
 
-## Takes the classic ground from the scene's `material_override`; a Terrain built from the script alone (a probe) gets
+## Takes the classic ground from the scene's `material_override`; a TerrainMesh built from the script alone (a probe) gets
 ## James's.
 func adopt_scene_material() -> void:
 	var scene_material: ShaderMaterial = null if _swapped else (_target.material_override as ShaderMaterial)

@@ -25,7 +25,7 @@ func _ready() -> void:
 ## `params["vertex"]`: the lattice id of the vertex that was taken away.
 func play(params: Dictionary) -> void:
 	var shape := GroundSurface.of(self)
-	var terrain := get_tree().get_first_node_in_group(Terrain.GROUP) as Terrain
+	var terrain := get_tree().get_first_node_in_group(TerrainMesh.GROUP) as TerrainMesh
 	if shape == null or terrain == null or DisplayServer.get_name() == "headless":
 		queue_free()
 		return

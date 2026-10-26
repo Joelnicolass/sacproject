@@ -3,7 +3,7 @@ extends MeshInstance3D
 
 ## Lab ground (debug only): a flat-ish square patch cut from the real map's heights (so the grass has the same
 ## heights as in the map), at map coordinates, with the ground look given by the rig's `TerrainLayer` like the real
-## terrain. It offers the small part of Terrain the look layers use: a `shape` (heights and tile ids, every cell the
+## terrain. It offers the small part of TerrainMesh the look layers use: a `shape` (heights and tile ids, every cell the
 ## same tile so the first layer paints it) and `set_ground_override`.
 
 @export var center := Vector2(1500.0, 1500.0)

@@ -248,7 +248,7 @@ func _push_ground_light(terrain: Node) -> void:
 	if _material == null or terrain == null:
 		return
 	var shown := terrain.get("material_override") as ShaderMaterial
-	var classic: bool = shown != null and terrain is Terrain and (terrain as Terrain).classic_material() == shown
+	var classic: bool = shown != null and terrain is TerrainMesh and (terrain as TerrainMesh).classic_material() == shown
 	_material.set_shader_parameter("fade_roughness", 1.0 if classic else PBR_ROUGHNESS)
 	_material.set_shader_parameter("fade_specular", 0.5 if classic else 0.2)
 
@@ -385,7 +385,7 @@ func _clear_paint() -> void:
 	var shown := _paintable(terrain.get("material_override"))
 	if shown:
 		shown.set_shader_parameter("grass_paint_amount", 0.0)
-	var classic := _paintable((terrain as Terrain).classic_material()) if terrain is Terrain else null
+	var classic := _paintable((terrain as TerrainMesh).classic_material()) if terrain is TerrainMesh else null
 	if classic:
 		classic.set_shader_parameter("grass_paint_amount", 0.0)
 

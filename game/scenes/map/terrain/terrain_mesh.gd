@@ -1,5 +1,5 @@
 @tool
-class_name Terrain
+class_name TerrainMesh
 extends MeshInstance3D
 
 ## The map's ground as something to see: the mesh (the instanced terrain.glb, or one built from the data) and the editor
@@ -7,7 +7,7 @@ extends MeshInstance3D
 ## own with ConcavePolygonShape3D `terrain_collision.res`). Heights, holes and tiles are not here: ask the child GroundSurface.
 ## The material swap is TerrainGroundMaterial.
 
-const GROUP := &"terrain"
+const GROUP := &"terrain_mesh"
 
 ## The ground as numbers: its `Shape` child.
 @export var shape: GroundSurface
@@ -77,7 +77,7 @@ func _ready() -> void:
 		missing.visible = not built
 
 
-## The mesh arrays as Terrain builds them at runtime (for the bake tools); empty without usable data.
+## The mesh arrays as TerrainMesh builds them at runtime (for the bake tools); empty without usable data.
 func bake_arrays() -> Array:
 	var built := _prepare()
 	return built.with_normals(smooth_ground) if built != null else []
@@ -116,10 +116,10 @@ func _set_preview_offset(offset: Vector3) -> void:
 
 func _load_mesh() -> bool:
 	if shape == null or shape.data == null:
-		push_error("Terrain '%s' has no ground: its `shape` needs a GroundSurface with data (MapTerrainData)." % name)
+		push_error("TerrainMesh '%s' has no ground: its `shape` needs a GroundSurface with data (MapTerrainData)." % name)
 		return false
 	if not shape.data.is_valid():
-		push_error("Terrain '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)
+		push_error("TerrainMesh '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)
 		return false
 	if not _saved_mesh_matches():
 		if _prepare() == null:
@@ -138,7 +138,7 @@ func _saved_mesh_matches() -> bool:
 			and bool(mesh.get_meta("smooth_ground", true)) == smooth_ground \
 			and int(mesh.get_meta("arrays_version", 1)) == TerrainMeshArrays.VERSION
 	if not fits:
-		push_warning("Terrain '%s': %s is stale (vertices, smooth_ground or the arrays' version differ; reimport it); rebuilding it in memory." % [name, mesh.resource_path])
+		push_warning("TerrainMesh '%s': %s is stale (vertices, smooth_ground or the arrays' version differ; reimport it); rebuilding it in memory." % [name, mesh.resource_path])
 	return fits
 
 
@@ -160,7 +160,7 @@ func ground_shape() -> ConcavePolygonShape3D:
 	return mesh.create_trimesh_shape() if mesh != null else null
 
 
-## A StaticBody3D with `ground_shape()`, for code that builds a Terrain from the script alone (the suites): a map saves its own.
+## A StaticBody3D with `ground_shape()`, for code that builds a TerrainMesh from the script alone (the suites): a map saves its own.
 func make_collision_body() -> StaticBody3D:
 	var body := StaticBody3D.new()
 	body.name = "Collision"

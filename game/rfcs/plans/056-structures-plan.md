@@ -1,4 +1,4 @@
-Estado: **propuesto**, espera el OK del usuario. Nota del orquestador: F390 es de 060; este toma F391.
+Estado: **aprobado 2026-10-26** con todas las recomendaciones (linger 1 s, sacudida 0,35, el mismo estallido para todo, el corte de 065 se queda con su explosión chica). Nota del orquestador: F390 es de 060; este toma F391.
 
 # Plan RFC-056: estructuras (solo destrucción, extensible)
 

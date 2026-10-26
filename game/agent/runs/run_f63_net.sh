@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 . "$(dirname "$0")/../harness/env.sh"
-# usage: run_f63_net.sh PORT -- dedicated + client A (casts Manalith then Guardian) + client B (watches) + late client C,
-# all on debug/spells/guardian_manalith.tscn (RFC-021b).
+# usage: run_f63_net.sh PORT -- dedicated (two seats to start, RFC-068 gate) + client A (casts Manalith then Guardian) + client B
+# (watches, leaves by the pause menu and comes back to its seat while the bond stands), all on debug/spells/guardian_manalith.tscn (RFC-021b).
 set -u
 GODOT="$GODOT_BIN"
 export GODOT
@@ -10,7 +10,7 @@ OUT="$ROOT/agent/out/f63net"
 WORLD=res://debug/spells/guardian_manalith.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
-"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=$WORLD > "$OUT/server.log" 2>&1 &
+"$GODOT" --headless --path "$ROOT" -- --dedicated --start-seats=2 --mp-port="$PORT" --world=$WORLD > "$OUT/server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 80); do grep -q "dedicated listo" "$OUT/server.log" && break; sleep 0.25; done
 launch() { # flow log
@@ -18,13 +18,10 @@ launch() { # flow log
   LP=$!
 }
 launch f63_client_a.json a; A=$LP; sleep 5
-launch f63_client_b.json b; B=$LP
-# B leaves once it has seen the beam; the late client takes its slot while the bond is already standing
-wait $B; echo "b exit $?"
-sleep 2
-launch f63_client_late.json c; C=$LP
-echo "a $A b $B c $C server $SERVER"
-wait $C; echo "c exit $?"
+launch f63_client_rejoin.json b; B=$LP
+# B leaves once it has seen the beam and comes back to its own seat (same process) while the bond is already standing
+echo "a $A b $B server $SERVER"
+wait $B; echo "b (rejoin) exit $?"
 wait $A; echo "a exit $?"
 sleep 1
 kill "$SERVER" 2>/dev/null

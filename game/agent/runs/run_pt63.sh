@@ -8,7 +8,7 @@ PORT="$1"
 OUT="$ROOT/agent/out/pt63"
 mkdir -p "$OUT"
 cd "$ROOT"
-"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=res://debug/map/structure_siege.tscn > "$OUT/server.log" 2>&1 &
+"$GODOT" --headless --path "$ROOT" -- --dedicated --start-seats=2 --mp-port="$PORT" --world=res://debug/map/structure_siege.tscn > "$OUT/server.log" 2>&1 &
 SERVER=$!
 echo "$SERVER" > "$OUT/server.pid"
 for _ in $(seq 1 80); do grep -q "dedicated listo" "$OUT/server.log" && break; sleep 0.25; done

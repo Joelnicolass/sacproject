@@ -16,6 +16,53 @@
    }
   },
   {
+   "wait_until": {
+    "node": "%SacrificeSystem/Doctors/Doctor1",
+    "timeout": 180
+   }
+  },
+  {
+   "wait": 3.5
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Quit"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%ConfirmQuit"
+  },
+  {
+   "wait_until": {
+    "node": "%Play",
+    "visible_in_tree": true,
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 30
+   }
+  },
+  {
    "wait": 1.0
   },
   {

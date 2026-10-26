@@ -14,6 +14,9 @@ Los `run_*.sh` del banco. Se corren con `bash agent/runs/run_X.sh` (no hace falt
 | | `run_049a.sh` | ~6 s | mapa elegido por la sala (como quick, mas `bad_ticket` de un dedicated a mano) |
 | | `run_049e.sh` | ~8 s | dedicated a mano 2v2 con 3 IA, tercer humano afuera, «Contra la IA» con modo |
 | | `run_049g.sh` | ~21 s | 2v2 de punta a punta: cuatro humanos (rejoin, abandono de un lado) y dos humanos + dos bots |
+| | `run_068_gate.sh` | ~30 s | puerta de arranque LAN: host `--listen-host` ffa3 espera pausado a 2 clientes (arranca en el tick 0), un tercero tarde rechazado (`match_started`), A se va y vuelve a su asiento, B vuelve pasada la gracia (`grace_over`). `GATE_WINDOW=1` muestra el host |
+
+Un dedicated a mano (sin ticket) arranca cuando cargan `--start-seats=N` asientos (1 por defecto). Las corridas con dos clientes a la vez pasan `--start-seats=2`; las que antes probaban un «late join» ahora prueban un rejoin (el mismo cliente sale por la pausa y vuelve a su asiento).
 
 Las duraciones son de pared en esta Mac (sin cola). Los viejos tardaban 20-120 s.
 

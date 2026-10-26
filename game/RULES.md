@@ -25,7 +25,7 @@ Autoload: `MpKit` antes que `SacrificeFlow`.
 
 ## Red
 
-Online = servidor de salas + dedicado por partida. El dedicado admite solo con ticket (`MpKit.admission`; sin `admission` queda el modo directo `join(ip)` de hoy, para pruebas y banco). Los clientes no escriben IP: `MpLobby` + `join_endpoint`. `play_solo()` no abre servidor. El host LAN no es el camino de internet. Lo genérico de salas vive en `addons/mp_kit/lobby/` sin textos ni reglas de Sacrifice; validadores, opciones y resultado van en `scenes/net/`.
+Online = servidor de salas + dedicado por partida. El dedicado admite solo con ticket (`MpKit.admission`; sin `admission` queda el modo directo `join(ip)`, para pruebas y banco). Todo camino de red pasa por la puerta de arranque (`MpMatchGate`, RFC-068): la partida arranca cuando cargaron los asientos que espera; después solo vuelve un asiento que se cayó, dentro de `rejoin_grace_s`, y cualquier otro peer se rechaza con un motivo. El dedicado a mano también tiene la puerta: arranca con `--start-seats=N` asientos cargados (1 por defecto), así que una corrida con dos clientes pasa `--start-seats=2` y un «late join» se prueba como rejoin. Los clientes no escriben IP: `MpLobby` + `join_endpoint`. `play_solo()` no abre servidor. El host LAN no es el camino de internet. Lo genérico de salas vive en `addons/mp_kit/lobby/` sin textos ni reglas de Sacrifice; validadores, opciones y resultado van en `scenes/net/`.
 
 El mapa y el modo de una partida en red los elige la sala y viajan en el ticket (`world`, `mode`). El cliente los recibe del dedicado; nunca los elige él. Un modo es un `GameMode` `.tres` en `data/modes/` (RFC-049); los equipos no entran al kit: para el kit son asientos y nada más.
 

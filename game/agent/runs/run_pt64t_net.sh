@@ -9,7 +9,7 @@ OUT="$ROOT/agent/out/pt64t/net"
 WORLD=res://debug/spells/teleport_home.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
-"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=$WORLD > "$OUT/server.log" 2>&1 &
+"$GODOT" --headless --path "$ROOT" -- --dedicated --start-seats=2 --mp-port="$PORT" --world=$WORLD > "$OUT/server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 80); do grep -q "dedicated listo" "$OUT/server.log" && break; sleep 0.25; done
 launch() { # flow log

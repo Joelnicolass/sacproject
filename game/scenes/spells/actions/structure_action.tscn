@@ -1,10 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/structure_action.gd" id="1_script"]
-[ext_resource type="Resource" path="res://data/fx/summon.tres" id="fx_summon"]
 
 [node name="Structure" type="Node"]
 script = ExtResource("1_script")
 prompt = "Elegí el suelo"
-rise_fx = ExtResource("fx_summon")
 stationary = true

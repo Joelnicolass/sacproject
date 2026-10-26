@@ -17,12 +17,26 @@
   },
   {
    "wait_until": {
-    "node": "%Structures/Structure1",
+    "node": "%Structures/Tower1",
     "timeout": 40
    }
   },
   {
-   "wait": 3.0
+   "print": {
+    "node": "/root/StructureSiege/HighNoon/Map/MapProps/Founts/FountEast/ManalithFx",
+    "prop": "emitting"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "%Structures/Tower1",
+    "prop": "build_progress",
+    "gte": 1.0,
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 1.2
   },
   {
    "print": {
@@ -44,8 +58,8 @@
   },
   {
    "print": {
-    "node": "%Structures/Structure1",
-    "prop": "manafount_path"
+    "node": "%Structures/Tower1",
+    "prop": "build_progress"
    }
   },
   {

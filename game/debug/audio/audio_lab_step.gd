@@ -18,7 +18,8 @@ enum Expect {
 ## Node of the lab (path from its root): "Original", "Custom", "Wizard"; "." for the FX actions; "Fountain", "Altar";
 ## "Building" (052e).
 @export var target: NodePath
-## What the lab does: summon, swing, shoot, damaged, death (units); cast, damaged, death, ghost (the wizard);
+## What the lab does: summon, swing, shoot, damaged, death (units); cast, damaged, death, ghost (the wizard; 065: chant starts a
+## cast that lasts, end_cast ends it);
 ## fx, puff, beam, scene (FxBus with the effect whose res:// path is `arg`, 052d); spawn (`arg` a projectile scene, 052d); loop, occupy, release (the
 ## target's SoundEmitter3D loops; a manafount's Manalith on and off, 052d); select (the target alone in the Selection),
 ## order (`arg` a command of Orders.requested for the target), refuse (`arg` a Refusal key said on the CommandLog), hit (a
@@ -45,3 +46,5 @@ enum Expect {
 @export var from_wait := false
 ## 052i: with PLAYED, the stream of the entry must contain this text (`testmonster/swing_1.wav`: the file a bake took).
 @export var stream_has := ""
+## 065: with PLAYED, at least this many entries of `event` (the chant repeats while the cast lasts).
+@export_range(1, 100) var at_least := 1

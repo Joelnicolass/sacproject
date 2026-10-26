@@ -32,3 +32,12 @@ func is_silent() -> bool:
 		if stream != null:
 			return false
 	return true
+
+
+## Seconds of the longest variant: how long a play of this cue may last. 0 when it is silent.
+func longest_s() -> float:
+	var longest := 0.0
+	for stream in streams:
+		if stream != null:
+			longest = maxf(longest, stream.get_length())
+	return longest

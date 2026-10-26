@@ -97,11 +97,6 @@ cue = ExtResource("cue_manalith_loop")
 loop = true
 active = false
 
-[node name="SummonSpot" type="Marker3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-editor_description = "Where the summon burst plays when a Manalith or Shrine rises here. Move it with the gizmo."
-
 [node name="GroundSnap" type="Node3D" parent="."]
 script = ExtResource("6_snap")
 

@@ -190,7 +190,9 @@ func _run_step() -> void:
 		if not found.is_empty() and not stream_has.is_empty() and not stream.contains(stream_has):
 			_report(false, event, "sonó %s y no %s" % [stream, stream_has])
 		else:
-			_report(not found.is_empty(), event, stream if not found.is_empty() else "no sonó (%s)" % body.name)
+			var at_least := int(step.get("at_least")) if step.get("at_least") != null else 1
+			var played := _count_since(before, emitter, event)
+			_report(played >= at_least, event, ("%s (%d)" % [stream, played]) if not found.is_empty() else "no sonó (%s)" % body.name)
 	else:
 		_report(found.is_empty(), event, "-" if found.is_empty() else "sonó y no debía: %s" % found.get("stream"))
 	_busy = false
@@ -427,6 +429,10 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 				caster.cast_fx_shown = ""
 				caster.cast_fx_shown = "cast_lab"
 				caster.cast_fx_shown = ""
+			&"chant":
+				caster.cast_fx_shown = "cast_lab"
+			&"end_cast":
+				caster.cast_fx_shown = ""
 			&"damaged":
 				_hurt(wizard.get_node("Health"))
 			&"death":
@@ -558,6 +564,16 @@ func _played_since(before: int, emitter: StringName, event: StringName) -> Dicti
 		if entry.emitter == emitter and entry.event == event and bool(entry.played):
 			return entry
 	return {}
+
+
+func _count_since(before: int, emitter: StringName, event: StringName) -> int:
+	var entries: Array[Dictionary] = SoundBus.sound_log.entries()
+	var count := 0
+	for i in range(mini(before, entries.size()), entries.size()):
+		var entry: Dictionary = entries[i]
+		if entry.emitter == emitter and entry.event == event and bool(entry.played):
+			count += 1
+	return count
 
 
 func _report(ok: bool, event: StringName, detail: String) -> void:

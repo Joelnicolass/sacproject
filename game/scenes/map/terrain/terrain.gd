@@ -12,7 +12,6 @@ signal changed(rect: Rect2)  ## x, z in metres; every peer. The stamps that play
 signal settled(rect: Rect2)  ## what stays moved (commit, unstamp, holes): flora, nav and scars follow this, never a live stamp
 signal holes_changed(rect: Rect2)  ## a vertex came or went (the collision flushes now, NavService bakes again)
 signal derived  ## the triangles were derived again from `heights` (on load; editor: after a reimport or a brush stroke)
-signal settled(rect: Rect2)  ## what stays moved (commit, unstamp, holes): flora, nav and scars follow this, never a live stamp
 signal kept(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array)  ## `delta` over `rect` stays as change `rev` (Net sends it)
 signal hole_set(rev: int, id: int, removed: bool)  ## the lattice vertex `id` went or came back as change `rev` (Net sends it)
 const GROUP := &"terrain"

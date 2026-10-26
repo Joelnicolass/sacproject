@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
 [ext_resource type="Script" path="res://scenes/structures/towers/cast_tower.gd" id="2_tower"]
 [ext_resource type="Script" path="res://scenes/components/health_regen.gd" id="3_regen"]
 [ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="4_source"]
 [ext_resource type="Script" path="res://scenes/spells/guardian/guard_post.gd" id="5_post"]
+[ext_resource type="PackedScene" path="res://scenes/structures/reveal/build_reveal.tscn" id="9_reveal"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_reach"]
 radius = 50.0
@@ -60,3 +61,7 @@ script = ExtResource("5_post")
 host = NodePath("..")
 attach_point = NodePath("../AttachPoint")
 health = NodePath("../Health")
+
+[node name="BuildReveal" parent="." instance=ExtResource("9_reveal") node_paths=PackedStringArray("tower", "visuals")]
+tower = NodePath("..")
+visuals = NodePath("../Visuals")

@@ -19,8 +19,7 @@ const PUSHED: Array[StringName] = [&"wizard", &"unit", &"doctor"]
 ## The wizard who casts is pushed too, like every other body (off: he stays where he stands).
 @export var push_caster := true
 ## The ring on the ground that shows the area while a structure is armed.
-## WORKAROUND: typed MeshInstance3D until BuildRing (064 S2) lands; then it becomes `BuildRing` and show_preview calls show_state.
-@export var ring: MeshInstance3D
+@export var ring: BuildRing
 
 
 func _enter_tree() -> void:
@@ -70,7 +69,8 @@ func push_bodies(caster: Node3D = null) -> int:
 	return moved
 
 
-## The armed preview's answer for this fount: 0 hidden, 1 the cast would start, 2 refused (BuildRing.State).
-func show_preview(state: int) -> void:
+## The armed preview's answer for this fount: hidden, the cast would start, or refused. Calls go down to the ring.
+func show_preview(state: BuildRing.State) -> void:
 	if ring != null:
-		ring.visible = state != 0
+		ring.set_radius(radius_m())
+		ring.show_state(state)

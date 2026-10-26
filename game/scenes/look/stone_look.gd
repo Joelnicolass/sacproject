@@ -176,8 +176,8 @@ func _stone_for(source: Material) -> ShaderMaterial:
 	if base:
 		built.set_shader_parameter("albedo_tex", base.albedo_texture)
 		built.set_shader_parameter("albedo_color", base.albedo_color)
-		if base.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR:
-			built.set_shader_parameter("alpha_scissor", base.alpha_scissor_threshold)
+		built.set_shader_parameter("alpha_scissor", base.alpha_scissor_threshold if base.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR else 0.0)
+		SurfaceRelief.forward(base, built)
 	_materials[key] = built
 	return built
 

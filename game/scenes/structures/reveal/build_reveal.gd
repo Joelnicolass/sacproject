@@ -109,6 +109,7 @@ func _reveal_of(source: BaseMaterial3D) -> ShaderMaterial:
 	copy.set_shader_parameter(&"roughness", source.roughness)
 	var scissor := source.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 	copy.set_shader_parameter(&"alpha_scissor", source.alpha_scissor_threshold if scissor else 0.0)
+	SurfaceRelief.forward(source, copy)
 	copy.set_shader_parameter(&"noise_tex", noise)
 	copy.set_shader_parameter(&"noise_scale", noise_scale)
 	copy.set_shader_parameter(&"edge_color", edge_color)

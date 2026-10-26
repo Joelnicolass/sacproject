@@ -5,6 +5,8 @@ shader_type spatial;
 // The formula works on the texture's stored (sRGB) values, so the texture is read raw and the grey is turned to linear
 // for ALBEDO: on screen it is the same grey sacengine writes. One ShaderMaterial per source material (StoneLook).
 
+#include "res://scenes/look/surface_relief.gdshaderinc"
+
 uniform sampler2D albedo_tex : hint_default_white, filter_linear_mipmap, repeat_enable;
 // The source material's albedo_color (sRGB, like the texture).
 uniform vec4 albedo_color = vec4(1.0);
@@ -42,4 +44,6 @@ void fragment() {
 		ALBEDO = srgb_to_linear(c.rgb);
 		ROUGHNESS = plain_roughness;
 	}
+	// RFC-067: the surface's own normal map, when it has one (SurfaceRelief).
+	relief_apply(UV);
 }

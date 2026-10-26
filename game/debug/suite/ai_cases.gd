@@ -508,8 +508,8 @@ func _box_blockers() -> Dictionary:
 	return _verdict(checks, {})
 
 
-## 024e: the three difficulties (RFC-024 §6 024e). Normal = the original (aggression 1, no delay); Easy 0.6, 0.5 s; Hard 1.0, perfect
-## information (their clock periods: ai_tactics_cases). No difficulty has a bonus: resource_bonus is locked at 0 (setting another
+## 024e: the three difficulties (RFC-024 §6 024e). Normal = the original (aggression 1, no delay); Easy 0.6, 0.5 s; Hard 1.0, sight
+## and minimap (055f f6; their clock periods: ai_tactics_cases). No difficulty has a bonus: resource_bonus is locked at 0 (setting another
 ## value leaves 0).
 func _difficulties() -> Dictionary:
 	var easy: AiDifficulty = load("res://data/ai/difficulty_easy.tres")
@@ -518,9 +518,9 @@ func _difficulties() -> Dictionary:
 	var checks := {"loaded": easy != null and normal != null and hard != null}
 	if not checks["loaded"]:
 		return _verdict(checks)
-	checks["normal_is_original"] = normal.aggression == 1.0 and normal.period_scale == 1.0 and not normal.perfect_information and normal.delay_ticks(60) == 0
-	checks["easy_aggression"] = easy.aggression == 0.6 and easy.period_scale == 2.0 and easy.delay_ticks(60) == 30 and not easy.perfect_information
-	checks["hard_aggression"] = hard.aggression == 1.0 and hard.period_scale == 0.75 and hard.delay_ticks(60) == 0 and hard.perfect_information
+	checks["normal_is_original"] = normal.aggression == 1.0 and normal.period_scale == 1.0 and normal.knowledge == AiDifficulty.Knowledge.SIGHT and normal.delay_ticks(60) == 0
+	checks["easy_aggression"] = easy.aggression == 0.6 and easy.period_scale == 2.0 and easy.delay_ticks(60) == 30 and easy.knowledge == AiDifficulty.Knowledge.SIGHT
+	checks["hard_aggression"] = hard.aggression == 1.0 and hard.period_scale == 0.75 and hard.delay_ticks(60) == 0 and hard.knowledge == AiDifficulty.Knowledge.SIGHT_AND_MAP
 	## Adenda 1.3: only Easy paces its summons and keeps a reserve; Normal and Hard are the original (0 and 0).
 	checks["summon_pace"] = easy.summon_interval_s > 0.0 and easy.mana_reserve > 0.0 and normal.summon_interval_s == 0.0 \
 			and normal.mana_reserve == 0.0 and hard.summon_interval_s == 0.0 and hard.mana_reserve == 0.0 and normal.summon_interval_ticks(60) == 0
@@ -531,9 +531,9 @@ func _difficulties() -> Dictionary:
 	return _verdict(checks)
 
 
-## 024e (N1/N2 of REVIEW-RFC-024c): without perfect information the AI keeps, of an enemy body its side does not see, the position,
-## health and mana it saw last, and cannot aim a cast at it; once the side sees it, the real ones. With perfect information it reads the
-## real state, and each such read of an unseen body is counted.
+## 024e (N1/N2 of REVIEW-RFC-024c), f6: the AI keeps, of an enemy body its side does not see, the position, health and mana it saw
+## last (none if it never saw it), and cannot aim a cast at it; once the side sees it, the real ones. What the minimap adds
+## (SIGHT_AND_MAP): ai_knowledge_cases.
 func _limited_information(host: Node3D) -> Dictionary:
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception"
@@ -553,11 +553,11 @@ func _limited_information(host: Node3D) -> Dictionary:
 			node.queue_free()
 		return _verdict(checks)
 	var seen_at := t.cur_pos
-	var hp_seen := perception.health_of(t)
+	var hp_seen := AiBody.health_pair(foe)
 	foe.global_position = Vector3(760.0, 0.0, 700.0)
 	foe.get_node("Health").set("current", hp_seen.x * 0.5)
 	checks["unseen_keeps_position"] = perception.pos_of(t) == seen_at
-	checks["unseen_keeps_health"] = perception.health_of(t) == hp_seen
+	checks["never_seen_health_unknown"] = perception.health_of(t) == Vector2i.ZERO
 	checks["unseen_cannot_aim"] = not port.can_aim(t)
 	checks["no_reads"] = perception.unseen_reads == 0
 	t.seen = true
@@ -573,14 +573,8 @@ func _limited_information(host: Node3D) -> Dictionary:
 	checks["seen_can_aim"] = port.can_aim(t)
 	perception._update_node(t, 1)
 	checks["followed_again"] = not t.frozen and t.cur_pos.distance_to(Vector3(760.0, 0.0, 700.0)) < 0.01
-	var other := _unit(host, 1, Vector3(720.0, 0.0, 720.0))
-	var u := perception.add_node(other, &"scan")
-	perception.perfect_information = true
-	other.global_position = Vector3(730.0, 0.0, 720.0)
-	checks["perfect_reads_real"] = u != null and perception.pos_of(u).distance_to(Vector3(730.0, 0.0, 720.0)) < 0.01
-	checks["perfect_read_counted"] = perception.unseen_reads == 1
-	checks["perfect_can_aim"] = u != null and port.can_aim(u)
-	for node: Node in [watcher, perception, port, foe, other]:
+	checks["still_no_reads"] = perception.unseen_reads == 0
+	for node: Node in [watcher, perception, port, foe]:
 		node.queue_free()
 	return _verdict(checks, {"seen_at": seen_at, "reads": perception.unseen_reads})
 
@@ -603,8 +597,8 @@ func _reserved_soul() -> Dictionary:
 	return _verdict(checks)
 
 
-## 024e, without perfect information: the side looks where it last knew a foe (an own body has the place in its sight) and the foe is
-## not seen: the AI forgets it; once its side sees it again it knows it again. With perfect information nothing is forgotten.
+## 024e, f6: the side looks where it last knew a foe (an own body has the place in its sight) and the foe is not seen: the AI forgets
+## it; once its side sees it again it knows it again. While the foe is on the minimap (SIGHT_AND_MAP) it is not forgotten.
 func _forget_checked(host: Node3D) -> Dictionary:
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception2"
@@ -622,10 +616,10 @@ func _forget_checked(host: Node3D) -> Dictionary:
 	foe.global_position = Vector3(1300.0, 0.0, 900.0)
 	var sight := eyes.range_m()
 	checks["sight_covers"] = sight >= 60.0
-	perception.perfect_information = true
+	perception.belief.look_from(mine, AiDifficulty.Knowledge.SIGHT_AND_MAP, 500.0)
 	perception.update_nodes(1)
-	checks["perfect_keeps"] = perception.find(foe) != null and perception.forgotten == 0
-	perception.perfect_information = false
+	checks["map_keeps"] = perception.find(foe) != null and perception.forgotten == 0
+	perception.belief.look_from(mine, AiDifficulty.Knowledge.SIGHT, 500.0)
 	perception.update_nodes(1)
 	checks["forgotten"] = perception.find(foe) == null and perception.forgotten == 1
 	foe.global_position = Vector3(1000.0, 0.0, 900.0)

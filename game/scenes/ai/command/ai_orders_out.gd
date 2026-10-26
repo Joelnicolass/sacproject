@@ -22,7 +22,7 @@ var orders_issued := 0
 ## Diagnostic for the report: the issued orders (and the port's casts) by «kind ostate reason» -> [count, microseconds]
 ## (AiOrderIssue.reason says what the reasons mean).
 var order_stats := {}
-## The port adds these to its own (game_us: microseconds inside the game; unseen_target_reads: perfect information only).
+## The port adds these to its own (game_us: microseconds inside the game; unseen_target_reads: a guard that stays 0).
 var game_us := 0
 var delayed := 0
 var unseen_target_reads := 0

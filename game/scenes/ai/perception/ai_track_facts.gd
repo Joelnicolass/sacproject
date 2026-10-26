@@ -79,21 +79,21 @@ static func make(node: Node3D, kind: AiTrack.Kind, origin: StringName, perceptio
 	return t
 
 
-## A new track of `perception`: its side, where it is, what it is and, for a body, what it is worth.
+## A new track of `perception`: its side, where it is, what it is and, for a body, what it is worth. Health and mana only of a body
+## the side sees now: of one it does not (a foe of the first scan) it knows nothing until it sees it (no difficulty cheats).
 static func setup(t: AiTrack, perception: AiPerception) -> void:
 	t.relation = perception.relation_of(t.node)
 	if t.relation == AiTrack.Relation.OWN:
 		t.age_seen = 0
 	var here := t.node.global_position
-	t.cur_pos = here
-	t.prev_pos = here
-	t.extrap_pos = here
-	if t.is_body():
-		AiBelief.snapshot(t)
+	t.cur_pos = here; t.prev_pos = here; t.extrap_pos = here
+	var seen := perception.sees(t)
+	if t.is_body() and seen:
+		perception.belief.snapshot(t, perception.slot)
 	match t.kind:
 		AiTrack.Kind.WIZARD:
 			t.fights = true
-			t.min_mana_cost = float(AiRater.ftol(AiBody.mana_max(t.node)) / 4)
+			if seen: t.min_mana_cost = float(AiRater.ftol(AiBody.mana_max(t.node)) / 4)
 			t.spell_dirty = true
 			rate(t, perception)
 		AiTrack.Kind.CREATURE, AiTrack.Kind.MANAHOAR:
@@ -102,7 +102,7 @@ static func setup(t: AiTrack, perception: AiPerception) -> void:
 				t.fights = true
 			## The mana below which a creature with abilities goes to a source to recharge (the Manahoar has none). 024d (autoCapture).
 			## Ref: shiny.d:892-900 setupT4oBody, setupMaho.
-			if t.kind == AiTrack.Kind.CREATURE and type != null:
+			if t.kind == AiTrack.Kind.CREATURE and type != null and seen:
 				t.min_mana_cost = float(AiRater.ftol(AiBody.mana_max(t.node))) if ability_count(type) > 0 else 0.0
 				for ability in type.abilities():
 					if float(ability.mana_cost) < t.min_mana_cost:

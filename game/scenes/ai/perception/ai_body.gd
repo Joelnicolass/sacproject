@@ -15,6 +15,16 @@ static func is_dead(node: Node) -> bool:
 	return false
 
 
+## A foe body the minimap draws: a creature or a wizard that can be targeted (not dying, not hidden, not a ghost), as
+## MinimapMarkers._unit_shows and _wizard_shows. Any other body shows.
+static func shows_on_map(node: Node) -> bool:
+	if node is UnitBody:
+		return (node as UnitBody).is_targetable()
+	if node is WizardBody:
+		return (node as WizardBody).is_targetable()
+	return true
+
+
 static func mana_now(node: Node) -> float:
 	var pool := node.get_node_or_null("ManaPool")
 	return float(pool.get("current")) if pool != null else 0.0

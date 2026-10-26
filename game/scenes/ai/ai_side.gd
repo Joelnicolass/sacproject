@@ -75,7 +75,7 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 		(wizard as WizardBody).book = ai_seat.book
 	perception.slot = slot
 	perception.wizard = wizard
-	perception.perfect_information = play.difficulty.perfect_information
+	perception.belief.look_from(wizard, play.difficulty.knowledge, play.tactics.senses.map_sight_m)
 	port.delay_ticks = play.difficulty.delay_ticks(Engine.physics_ticks_per_second)
 	port.can_cast = brain.casting.cast_refusal
 	brain.prepare()

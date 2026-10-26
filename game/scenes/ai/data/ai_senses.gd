@@ -21,3 +21,9 @@ extends Resource
 ## The groups between these two distances of the wizard weigh in his threat (1 at near, falling to 0 at far).
 @export var threat_near_m := 10.0
 @export var threat_far_m := 280.0
+
+@export_group("Minimapa")
+## With AiDifficulty.Knowledge.SIGHT_AND_MAP: the AI knows where the bodies within this flat distance of its wizard are (never their
+## health or mana), as a human reads them on the minimap. Equal to the minimap's starting view radius (data/ui/minimap/view.tres,
+## MinimapView.view_radius_m); ai_knowledge_cases compares the two. It also bounds the foe creatures of the first scan.
+@export_range(0.0, 2000.0, 1.0, "suffix:m") var map_sight_m := 216.0

@@ -26,7 +26,7 @@ func rebuild() -> void:
 
 func _form(bodies: Array) -> Array:
 	var pending: Array[AiTrack] = []
-	## the live position (shiny.d:1710-1711 «cached live entPos»), or the last seen without perfect information (024e); read once per
+	## the live position while the side knows where it is (seen, or on the minimap), else the last seen (024e, f6); read once per
 	## body here (nothing moves during the rebuild), not once per test.
 	var at: Array[Vector3] = []
 	for t: AiTrack in bodies:

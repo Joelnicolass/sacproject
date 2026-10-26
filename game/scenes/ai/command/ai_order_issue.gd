@@ -96,8 +96,8 @@ static func issue(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, po
 		if AiCommandPort.aims(out.perception, target):
 			out.unseen_target_reads += 1
 		else:
-			## a body the side does not see: its creatures go to where it was seen last (024e, no perfect information)
-			seen_at = target.cur_pos
+			## a body the side does not see: its creatures go to where the side believes it is (last seen, or on the minimap)
+			seen_at = out.perception.pos_of(target)
 			goal_node = null
 			## guard it -> hold that place; attack it -> advance there (fight what is found on the way)
 			if command == "guard":

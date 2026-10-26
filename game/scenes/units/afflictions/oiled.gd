@@ -30,12 +30,12 @@ const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 ## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard (sacengine `!isWizard`).
 @export var orders: Node
-## FxBus type puffed on each body the blast lights, and how long that fire of no damage lasts (setAblaze(…, updateFPS)).
-@export var fire_fx := "fire"
+## The fire puffed on each body the blast lights, and how long that fire of no damage lasts (setAblaze(…, updateFPS)).
+@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var fire_s := 1.0
-## FxBus type of the fireball that blasts at the body's center (sacengine animateFireballExplosion, 25650; the explosion's
-## particles of the original are the `fire` atlas here, in MIX like the Bombard's).
-@export var blast_fx := "oil_blast"
+## The fireball that blasts at the body's center (sacengine animateFireballExplosion, 25650; the explosion's
+## particles of the original are the `fire` atlas here, in MIX like the Bombard's). Empty = none.
+@export var blast_fx: ParticleType = preload("res://data/fx/oil_blast.tres")
 
 var _frame := 0
 var _ticks := 0
@@ -126,7 +126,8 @@ func _shown(on: bool) -> void:
 func _blast(body: Node3D) -> void:
 	var center := BodyNudge.center(body)
 	_say("explota en (%.3f, %.3f, %.3f) radio %.1f" % [center.x, center.y, center.z, _radius])
-	FxBus.broadcast(blast_fx, center)
+	if blast_fx != null:
+		FxBus.broadcast(blast_fx, center)
 	var tree := get_tree()
 	for target in SplashDamage.bodies_within(tree, center, _radius):
 		Burning.ignite(target, 0.0, MatchClock.ticks_for(fire_s), Health.SPLASH_RANGED, _slot, 0.0, false, fire_fx)

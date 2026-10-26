@@ -33,8 +33,10 @@ extends AbilityEffect
 @export var max_pulls := 4
 ## The thread (pull_thread.tscn / cage_thread.tscn), played by Pulling with FxBus.broadcast_scene.
 @export var thread_scene: PackedScene
-## FxBus type played at the target when it ends (sacengine animateWebPullBreaking / animateCagePullBreaking, 64 particles).
-@export var break_fx := ""
+## The burst played at the target when it ends, and the socket of the target it leaves from (sacengine animateWebPullBreaking /
+## animateCagePullBreaking, 64 particles). Empty = none.
+@export var break_fx: ParticleType
+@export var break_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 
 ## 2 ticks per frame up to the load frame. The one owner of the preparation of a pull (AbilitySlot asks).

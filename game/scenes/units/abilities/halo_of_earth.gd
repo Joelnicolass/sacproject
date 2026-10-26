@@ -59,8 +59,8 @@ const GROUP := &"halo_of_earth"
 @export_range(0.0, 600.0, 0.0001, "suffix:s") var life_s := 35.0
 ## The line of sight starts at least this high over the land (a newborn rock is buried).
 @export var los_lift := 0.5
-## FxBus type played where a rock is born.
-@export var emerge_fx := "rock_emerge"
+## The burst played where a rock is born (empty = none).
+@export var emerge_fx: ParticleType = preload("res://data/fx/rock_emerge.tres")
 ## More types played where a rock is born (the wizard's halo throws dirt and dust up too).
 @export var emerge_extra: Array[ParticleType] = []
 ## Played where a rock picks its target (the sound `halo`). Optional.
@@ -249,9 +249,10 @@ func _spawn() -> void:
 	rock.node = _make_node(at)
 	_active.append(rock)
 	_spawned += 1
-	FxBus.broadcast(emerge_fx, at)
-	for extra in emerge_extra:
-		FxBus.broadcast(extra.bus_name(), at)
+	if emerge_fx != null:
+		FxBus.broadcast(emerge_fx, at)
+	for extra: ParticleType in emerge_extra:
+		FxBus.broadcast(extra, at)
 	_say("halo %s roca %d nace en %s (tick %d)" % [_who, rock.index, _v(at), MatchClock.now()])
 
 
@@ -394,7 +395,7 @@ func _seek(rock: Rock) -> void:
 			rock.target = body
 			rock.target_center = BodyNudge.center(body)
 			if throw_burst != null:
-				FxBus.broadcast(throw_burst.bus_name(), rock.position)
+				FxBus.broadcast(throw_burst, rock.position)
 			var half := BodyNudge.box(body).size * 0.5
 			_say("halo %s roca %d blanco %s a %.4f m desde %s hacia %s caja %s (tick %d)" % [
 				_who, rock.index, body.name, entry[0], _v(rock.position), _v(rock.target_center), _v(half), MatchClock.now()])
@@ -428,7 +429,7 @@ func _explode(rock: Rock, hit: Node3D, why: String) -> void:
 		_who, rock.index, why, _v(rock.position), hit.name if hit != null and is_instance_valid(hit) else "nadie", MatchClock.now()])
 	if _valid(hit):
 		_hurt(hit)
-	for fx in _look.impact_fx:
+	for fx: ParticleType in _look.impact_fx:
 		FxBus.broadcast(fx, rock.position)
 	ScarMark.broadcast(_look.ground_mark, rock.position)
 	if rock.node != null and is_instance_valid(rock.node):

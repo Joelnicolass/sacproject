@@ -28,8 +28,8 @@ extends ShotStrike
 ## A body of the shooter's side that is not the intended target stops the ray and takes nothing. Off: Health decides
 ## (friendly fire, Health._side_factor).
 @export var foes_only := false
-## FxBus beam type (res://data/fx/beams/) drawn from the origin of each ray. Empty: none.
-@export var beam := ""
+## The bolt (a BeamType of data/fx/beams) drawn from the origin of each ray. Empty: none.
+@export var beam: BeamType
 ## Meters of the beam along the ray: a gun flame at the muzzle (the Gnome's GnomeEffect, createGunFlameMeshes length
 ## 1.7, sacobject.d:4268-4283). 0: the whole ray, to where it ends.
 @export_range(0.0, 200.0, 0.1, "suffix:m") var beam_length := 0.0
@@ -102,7 +102,7 @@ func _cast(from: Vector3, direction: Vector3) -> void:
 		if collider != null and Attackable.is_body(collider):
 			body = collider
 		break
-	if not beam.is_empty():
+	if beam != null:
 		var seen_end := end if stopped else from + (end - from) * miss_fraction
 		FxBus.broadcast_beam(beam, from, from + direction * beam_length if beam_length > 0.0 else seen_end)
 	var distance := from.distance_to(end)

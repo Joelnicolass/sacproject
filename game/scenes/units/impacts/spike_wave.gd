@@ -37,8 +37,8 @@ const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var life_s := 1.5
 ## The SPEL's effectRange (hrba: 30 m); SpikeImpact writes it. The outer radius of the last ring and of the spikes.
 @export var effect_range := 30.0
-## The spikes of a ring: SpikeField scene played by FxBus on every peer (empty: none).
-@export_file("*.tscn") var spike_scene := "res://scenes/fx/spike_field.tscn"
+## The spikes of a ring: spike_field.tscn (an FxScene) played by FxBus on every peer (empty: none).
+@export var spike_scene: PackedScene
 ## Spikes per square meter of a ring's strip (sacengine keeps about 30 per update · 40 updates = 1200 standing on the
 ## circle at full radius).
 @export var spikes_per_m2 := 1.0
@@ -123,7 +123,7 @@ func _ring(i: int, frame: int) -> void:
 
 ## One SpikeField event that fills ring i's strip (presentation, every peer).
 func _bristle(i: int, bounds: Vector2) -> void:
-	if spike_scene.is_empty() or spikes_per_m2 <= 0.0:
+	if spike_scene == null or spikes_per_m2 <= 0.0:
 		return
 	var area := PI * (bounds.y * bounds.y - bounds.x * bounds.x)
 	FxBus.broadcast_scene(spike_scene, global_position, {"inner": bounds.x, "outer": bounds.y,

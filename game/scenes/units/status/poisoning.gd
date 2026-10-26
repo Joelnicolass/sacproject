@@ -31,9 +31,10 @@ extends Node
 ## sacengine movingObjects: who an infection may touch.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")
-## FxBus puff on the body while a dose takes health (relativePoison, state.d:23565-23575: one particle every 2 frames;
-## a puff every 30 ticks is the same rate).
-@export var fx_name := "poison_dose"
+## The puff on the body while a dose takes health, and its socket (relativePoison, state.d:23565-23575: one particle every 2
+## frames inside the box; a puff every 30 ticks is the same rate). Empty = none.
+@export var dose_fx: ParticleType = preload("res://data/fx/poison_dose.tres")
+@export var dose_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var fx_every_s := 0.5
 
 ## MatchClock tick until which no infection reaches this body.
@@ -89,7 +90,8 @@ func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, in
 	added.resistance_debuff = resistance_debuff
 	added.regeneration_factor = regen_factor
 	added.mana_block_frame = MatchClock.ticks_for(mana_block_s)
-	added.fx_name = fx_name
+	added.fx = dose_fx
+	added.fx_socket = dose_socket
 	added.fx_every_ticks = MatchClock.ticks_for(fx_every_s)
 	add_child(added, true)
 	_log_regeneration(regen_before)

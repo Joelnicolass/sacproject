@@ -97,13 +97,13 @@ func _process(_delta: float) -> void:
 	_rebuild(start, end, ramp)
 
 
-## The user's shot position (sacengine shotPosition), else a hand above its feet.
+## The user's shot position (sacengine shotPosition), else the muzzle socket of its body.
 func _origin() -> Vector3:
 	var unit := _user as UnitBody
 	var ranged := unit.weapons.ranged if unit != null else null
 	if ranged != null:
 		return ranged.shot_origin()
-	return _user.global_position + Vector3.UP * 1.5
+	return BodyFacts.point(_user, BodyFacts.Socket.MUZZLE)
 
 
 func _rebuild(start: Vector3, end: Vector3, ramp: float) -> void:

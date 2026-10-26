@@ -23,10 +23,11 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## Mana drained per update (sacengine manaDrainPerFrame).
 var mana_drain_per_tick := 0.0
-## The fire (a ParticleType; in the transition its old name, or "" for none) puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only).
+## The fire (a ParticleType; in the transition its old name, or "" for none) puffed on the body every `fire_every_ticks` updates while it
+## burns, whatever it takes (a creature only), at `fire_socket` (sacengine spawnFireParticles: inside the box, 15124-15127).
 var fire_fx = null
 var fire_every_ticks := 10
-var fire_height_m := 0.8
+var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 ## Mana this fire drained so far (for the log).
 var drained := 0.0
 
@@ -54,7 +55,7 @@ static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringNam
 	fire.kind = kind
 	fire.from_slot = from_slot
 	fire.ignore_friendly = false
-	fire.fx_name = ""
+	fire.fx = null
 	fire.mana_drain_per_tick = maxf(0.0, mana_drain) / float(frames) if creature else 0.0
 	fire.pierce_shield = pierce
 	fire.fire_fx = fx if creature else null
@@ -87,7 +88,7 @@ func step(health: Health) -> bool:
 	if fire_fx != null and fire_every_ticks > 0 and (updates - 1) % fire_every_ticks == 0:
 		var on := get_parent() as Node3D
 		if on:
-			FxBus.broadcast(fire_fx, on.global_position + Vector3.UP * fire_height_m)
+			FxBus.broadcast(fire_fx, BodyFacts.point(on, fire_socket))
 	return going
 
 

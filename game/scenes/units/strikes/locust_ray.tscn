@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/strikes/ray_strike.gd" id="1_ray"]
+[ext_resource type="Resource" path="res://data/fx/beams/locust_ray.tres" id="fx_locust_ray"]
 
 [node name="LocustRay" type="Node3D"]
 process_physics_priority = -1
@@ -10,5 +11,5 @@ bursts = 1
 first_tick = 0
 rays_per_burst = 1
 foes_only = false
-beam = "locust_ray"
+beam = ExtResource("fx_locust_ray")
 miss_fraction = 0.5

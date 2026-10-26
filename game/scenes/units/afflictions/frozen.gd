@@ -29,10 +29,9 @@ const _HEALTH := preload("res://scenes/components/health.gd")
 @export var creature_k := 1000.0
 ## freeze: a wizard lasts wizard_factor · the SPEL duration (s).
 @export var wizard_factor := 0.25
-## Its body_height() puts the shards at the middle of the body.
-@export var visual: Node3D
-## FxBus type of the shards broadcast when it ends (sacengine ParticleType.shard ×30, 17596-17609).
-@export var shards_fx := "freeze_shards"
+## The shards broadcast when it ends, and the socket of the body they leave from (sacengine ParticleType.shard ×30, 17596-17609).
+@export var shards_fx: ParticleType = preload("res://data/fx/freeze_shards.tres")
+@export var shards_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _cooldown := 0
 ## Simulation ticks it has lived (counted in _physics_process, so a paused tree does not count).
@@ -205,8 +204,8 @@ func _shatter() -> void:
 	var immune := health != null and taken <= 0.0 and health.resistance(_HEALTH.DIRECT_SPELL) <= 0.0
 	print("deshielo %s %d de hechizo vida %d%s (cuadro %d)" % [str(body.name), roundi(taken),
 		roundi(health.current) if health else 0, " (inmune)" if immune else "", MatchClock.now()])
-	var height := (visual as BodyVisual).body_height() if visual is BodyVisual else 1.0
-	FxBus.broadcast(shards_fx, body.global_position + Vector3.UP * height * 0.5)
+	if shards_fx != null:
+		FxBus.broadcast(shards_fx, BodyFacts.point(body, shards_socket))
 
 
 func _shown(on: bool) -> void:

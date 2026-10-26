@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
+[ext_resource type="Resource" path="res://data/fx/spit_trail.tres" id="fx_spit_trail"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="pt_script"]
+[ext_resource type="Resource" path="res://data/fx/spit_rock.tres" id="fx_spit_rock"]
+[ext_resource type="Resource" path="res://data/fx/spit_dirt.tres" id="fx_spit_dirt"]
 
 [node name="Ekba" type="Node"]
 script = ExtResource("1_look")
@@ -9,9 +13,9 @@ model_scale = 0.3
 hit_size = 0.7
 spin_min = 0.2
 spin_max = 0.8
-trail_fx = "spit_trail"
+trail_fx = ExtResource("fx_spit_trail")
 trail_every = 1
-impact_fx = PackedStringArray("spit_rock", "spit_dirt")
+impact_fx = Array[ExtResource("pt_script")]([ExtResource("fx_spit_rock"), ExtResource("fx_spit_dirt")])
 fallback_color = Color(0.42, 0.4, 0.34, 1)
 fallback_radius = 0.15
 mesh = ExtResource("mesh_rock")

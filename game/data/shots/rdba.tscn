@@ -1,12 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
 [ext_resource type="PackedScene" path="res://scenes/units/attacks/frost_wave.tscn" id="2_wave"]
+[ext_resource type="Resource" path="res://data/fx/frost_breath.tres" id="fx_frost_breath"]
 
 [node name="Rdba" type="Node"]
 script = ExtResource("1_look")
 hit_size = 0.5
-trail_fx = "frost_breath"
+trail_fx = ExtResource("fx_frost_breath")
 trail_every = 1
 in_flight = ExtResource("2_wave")
 collides = false

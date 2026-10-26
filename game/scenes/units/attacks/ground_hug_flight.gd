@@ -15,8 +15,8 @@ extends ShotInFlight
 
 ## Meters over the ground (land or building top).
 @export var lift := 0.05
-## The spikes along the way: SpikeField scene played by FxBus on every peer (empty: none).
-@export_file("*.tscn") var spike_scene := "res://scenes/fx/spike_field.tscn"
+## The spikes along the way: spike_field.tscn (an FxScene) played by FxBus on every peer (empty: none).
+@export var spike_scene: PackedScene
 ## One event every this long of flight (0: none).
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var spike_every_s := 0.1
 ## sacengine movingSpikeRate: spikes per tick of flight.
@@ -40,7 +40,7 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		print("pegado %s tick %d en (%.3f, %.3f, %.3f) suelo %s (cuadro %d)" % [shot.name, ticks, now.x, now.y, now.z,
 			"%.3f" % ground if ground > -INF else "ninguno", MatchClock.now()])
 	var spike_every_ticks := MatchClock.ticks_for(spike_every_s)
-	if not spike_scene.is_empty() and spike_every_ticks > 0 and (ticks - 1) % spike_every_ticks == 0:
+	if spike_scene != null and spike_every_ticks > 0 and (ticks - 1) % spike_every_ticks == 0:
 		FxBus.broadcast_scene(spike_scene, shot.global_position, {
 			"inner": 0.0, "outer": spike_radius, "count": spikes_per_tick * spike_every_ticks, "height": spike_height,
 			"seed": MatchSeed.derive(["spikes", String(shot.name), MatchClock.now()])})

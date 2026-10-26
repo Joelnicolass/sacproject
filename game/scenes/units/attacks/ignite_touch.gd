@@ -12,8 +12,8 @@ extends WaveTouch
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var fire_s := 0.5
 ## Damage of the whole fire (the original sets it to 0).
 @export var fire_damage := 0.0
-## FxBus fire puffed on a creature while it burns (presentation only, like BurnImpact and Oiled).
-@export var fire_fx := "fire"
+## The fire puffed on a creature while it burns (presentation only, like BurnImpact and Oiled). Empty = none.
+@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
 
 
 func before_hit(body: Node3D, direct: bool, shot: RangedShot, _wave: GrowingWave) -> Variant:

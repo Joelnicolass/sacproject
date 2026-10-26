@@ -29,14 +29,16 @@ var frames: int:
 	get: return MatchClock.ticks_for(walk_s)
 ## The mesh pivot that is hidden while it lasts.
 @export var tilt: Node3D
-## FxBus type of the trail (sacengine placeFirewalkParticles) and the height above the feet it is placed at (m).
-@export var trail_fx := "firewalk_trail"
-@export var trail_lift := 0.8
+## The trail of flames puffed while it walks, and the socket it leaves from: the muzzle, where the Warmonger's flame is.
+## Ref: sacengine placeFirewalkParticles at warmongerFlame (state.d:25761-25783, sacobject.d:389).
+@export var trail_fx: ParticleType = preload("res://data/fx/firewalk_trail.tres")
+@export var trail_socket: BodyFacts.Socket = BodyFacts.Socket.MUZZLE
 ## How often a trail flame is placed. sacengine places 6 flames every tick; the type's 14 every 2 ticks is the same density with
 ## a quarter of the emitters.
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var trail_every_s := 0.0333
-## FxBus type of the burst at the start and at the end (sacengine animateFirewalk: 32 flames in the body's box).
-@export var burst_fx := "firewalk_burst"
+## The burst at the start and at the end, and its socket (sacengine animateFirewalk: 32 flames in the body's box).
+@export var burst_fx: ParticleType = preload("res://data/fx/firewalk_burst.tres")
+@export var burst_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _start := Vector3.ZERO
 var _end := Vector3.ZERO
@@ -122,8 +124,8 @@ func _physics_process(_delta: float) -> void:
 		return
 	var body := _body()
 	var every := MatchClock.ticks_for(trail_every_s)
-	if body and every > 0 and MatchClock.now() % every == 0:
-		FxBus.puff(trail_fx, body.global_position + Vector3.UP * trail_lift)
+	if body and trail_fx != null and every > 0 and MatchClock.now() % every == 0:
+		FxBus.puff(trail_fx, BodyFacts.point(body, trail_socket))
 	if _simulates() and _running and _frame >= frames:
 		_running = false
 		_afflictions().mark(self, false)
@@ -133,8 +135,8 @@ func _physics_process(_delta: float) -> void:
 
 func _shown(on: bool) -> void:
 	var body := _body()
-	if body and burst_fx != "":
-		FxBus.play(burst_fx, body.global_position + Vector3.UP * trail_lift)
+	if body and burst_fx != null:
+		FxBus.play(burst_fx, BodyFacts.point(body, burst_socket))
 	if tilt:
 		tilt.visible = not on
 	set_physics_process(on)

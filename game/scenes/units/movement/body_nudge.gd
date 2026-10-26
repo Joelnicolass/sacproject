@@ -8,6 +8,15 @@ extends RefCounted
 ## and the ground is where the body stands.
 
 
+## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in a line to `edge` at `radius`, 0 from
+## `radius` out; under `inner` it keeps growing (1.5 times `speed` at the middle with inner 5 and radius 15). The ritual and a tower
+## being cast push with it.
+## Ref: sacengine pushAll, state.d:8614-8628.
+static func push_speed(distance: float, inner: float, radius: float, speed: float, edge := 0.0) -> float:
+	if distance >= radius or radius <= inner:
+		return 0.0
+	return lerpf(speed, edge, (maxf(distance, 0.0) - inner) / (radius - inner))
+
 
 ## sacengine push(velocity): one tick of `velocity` (m/s). True when the body moved.
 static func push(body: Node3D, velocity: Vector3) -> bool:

@@ -77,9 +77,9 @@ func _numbers() -> Dictionary:
 	checks["drain_window_fits_shoot"] = RULES.ritual_drain_start_s + RULES.ritual_drain_s <= RULES.ritual_shoot_s + 0.001
 	checks["drain_per_second_1_soul"] = absf(SacrificeMath.desecrate_health(1) / RULES.ritual_drain_s - 96.0) < 0.1
 	checks["round_is_13_5"] = is_equal_approx(RULES.ritual_walk_s + RULES.ritual_shoot_s + RULES.ritual_wait_s, 13.5) and is_equal_approx(RULES.ritual_setup_s, 5.0)
-	checks["push_full_at_inner"] = is_equal_approx(SacrificeMath.push_speed(5.0), 20.0)
-	checks["push_half_at_12_5"] = is_equal_approx(SacrificeMath.push_speed(12.5), 10.0)
-	checks["push_none_at_edge"] = is_equal_approx(SacrificeMath.push_speed(20.0), 0.0) and is_equal_approx(SacrificeMath.push_speed(25.0), 0.0)
+	checks["push_full_at_inner"] = is_equal_approx(BodyNudge.push_speed(5.0, 5.0, 20.0, 20.0), 20.0)
+	checks["push_half_at_12_5"] = is_equal_approx(BodyNudge.push_speed(12.5, 5.0, 20.0, 20.0), 10.0)
+	checks["push_none_at_edge"] = is_equal_approx(BodyNudge.push_speed(20.0, 5.0, 20.0, 20.0), 0.0) and is_equal_approx(BodyNudge.push_speed(25.0, 5.0, 20.0, 20.0), 0.0)
 	var at_setup := SacrificeMath.schedule(4.9)
 	var at_walk := SacrificeMath.schedule(5.0)
 	var at_shoot := SacrificeMath.schedule(5.0 + 4.5 + 1.0)

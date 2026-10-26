@@ -16,6 +16,9 @@ properties/0/replication_mode = 2
 properties/1/path = NodePath("Health:current")
 properties/1/spawn = true
 properties/1/replication_mode = 2
+properties/2/path = NodePath(".:build_progress")
+properties/2/spawn = true
+properties/2/replication_mode = 2
 
 [node name="Tower" instance=ExtResource("1_building") node_paths=PackedStringArray("mana_source", "guard_post")]
 script = ExtResource("2_tower")

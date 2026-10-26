@@ -5,7 +5,14 @@ extends MapBuilding
 ## A tower a wizard casts over a free manafount (Manalith or Shrine). While it stands it keeps the fount taken, its ManaSource
 ## feeds mana to its side and the allies, and guardians can tie to its GuardPost. When its health runs out the server frees it
 ## and the fount is free again on every peer. Its look, health, regeneration and mana rate are the nodes of its scene.
-## Does not decide who may build one (StructureAction) nor how it reaches the other peers (StructureSpawner).
+## It is born when the cast starts and rises while it lasts (`build_progress` 0 -> 1, replicated): rising, it cannot be hurt, gives no
+## mana and does not stop bodies; the cast that is cut frees it; at 1 it stands (complete).
+## Does not decide who may build one (StructureAction) nor how it reaches the other peers (StructureSpawner), nor draw the rise.
+## Ref: sacengine makeBuilding(inactive | cannotDamage) at the cast start, destroy on interrupt, activate on finish (state.d:10072-10083,
+## 15259-15274).
+
+## `build_progress` changed (every peer): what draws the rise follows it.
+signal build_progress_changed(progress: float)
 
 ## Every tower in play, whoever's it is.
 const TOWER_GROUP := &"cast_tower"
@@ -20,6 +27,19 @@ const TOWER_GROUP := &"cast_tower"
 @export var fount: ManafountBody
 ## Layers that count as ground when the dead are moved out of the footprint (clear_footprint).
 @export_flags_3d_physics var ground_mask := 1
+## How far the tower has risen: the server sets it from 0 when the cast starts to 1 when it ends; the Sync replicates it. Below 1 the
+## tower is rising (is_rising). A tower placed by hand in a map stands: 1.
+@export_range(0.0, 1.0, 0.01) var build_progress := 1.0:
+	set(value):
+		value = clampf(value, 0.0, 1.0)
+		if value == build_progress:
+			return
+		build_progress = value
+		if is_node_ready() and not Engine.is_editor_hint():
+			_show_rising()
+		build_progress_changed.emit(build_progress)
+
+var _standing_layer := 1
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -40,11 +60,29 @@ func _ready() -> void:
 	health.died.connect(_on_died)
 	if fount != null:
 		fount.occupy(get_path())
+	_standing_layer = collision_layer
+	_show_rising()
 
 
 func _exit_tree() -> void:
 	if fount != null and is_instance_valid(fount):
 		fount.release(get_path())
+
+
+## Below 1 of `build_progress`: the cast that raises it is still going.
+func is_rising() -> bool:
+	return build_progress < 1.0
+
+
+## A rising tower is no target: it takes no damage (Health asks this) and no one aims at it.
+func is_targetable() -> bool:
+	return not is_rising()
+
+
+## Server or solo: the cast ended. The tower stands (build_progress 1) and the bodies still on its ground go out of it.
+func complete() -> void:
+	build_progress = 1.0
+	clear_footprint()
 
 
 ## Metres a tower of this scene takes on the ground (half the wider side of its box): the room a cast needs.
@@ -53,9 +91,10 @@ func footprint_m() -> float:
 	return maxf(1.0, maxf(box.size.x, box.size.z) * 0.5) if box != null else 1.0
 
 
-## Moves the dead out of the ground the tower just took: every corpse (its soul rides on it) and every loose soul within the
-## footprint plus TowerRules.MARGIN_M goes straight out from the tower's middle to that ring, on the ground. A doctor or a
-## collector could never reach them inside the box. The spawner calls it once, on the side that runs the game.
+## Moves out of the ground the tower just took everything within the footprint plus TowerRules.MARGIN_M: every corpse (its soul
+## rides on it), every loose soul and every live creature, wizard and doctor, straight out from the tower's middle to that ring, on
+## the ground (a flier keeps its height). A doctor or a collector could never reach the dead inside the box, and nobody stays caught in
+## it. Idempotent; the side that runs the game calls it when the tower stands (complete, or the spawner for a tower born standing).
 func clear_footprint() -> void:
 	var reach := footprint_m() + TowerRules.MARGIN_M
 	var exclude: Array[RID] = [get_rid()]
@@ -66,6 +105,9 @@ func clear_footprint() -> void:
 		if soul != null and not soul.attached and soul.carrier == null \
 				and soul.state in [Soul.State.NORMAL, Soul.State.EMERGING]:
 			_push_out(soul, reach, exclude)
+	var around := AABB(global_position - Vector3(reach, reach, reach), Vector3.ONE * reach * 2.0)
+	for body in BodyNudge.bodies_in(get_tree(), around, BuildArea.PUSHED):
+		_push_out(body, reach, exclude)
 
 
 func _push_out(body: Node3D, reach: float, exclude: Array[RID]) -> void:
@@ -76,8 +118,17 @@ func _push_out(body: Node3D, reach: float, exclude: Array[RID]) -> void:
 		return
 	var out := flat.normalized() if flat.length() > 0.01 else Vector3.RIGHT
 	var to := global_position + out * reach
-	to.y = GroundRay.surface_y(self, to, ground_mask, exclude, body.global_position.y)
+	to.y = body.global_position.y if BodyNudge.airborne(body) \
+			else GroundRay.surface_y(self, to, ground_mask, exclude, body.global_position.y)
 	body.global_position = to
+
+
+## Rising: no body stops on it and its ManaSource gives nothing; standing: both as the scene says. The destroyed state
+## (MapBuilding) comes after, never while rising (a rising tower takes no damage).
+func _show_rising() -> void:
+	var rising := is_rising()
+	collision_layer = 0 if rising else _standing_layer
+	mana_source.process_mode = Node.PROCESS_MODE_DISABLED if rising else Node.PROCESS_MODE_INHERIT
 
 
 ## Only the side that applies damage hears `died`: the others lose the tower when the spawner despawns it.

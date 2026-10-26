@@ -7,3 +7,4 @@
 script = ExtResource("1_script")
 prompt = "Elegí el suelo"
 rise_fx = ExtResource("fx_summon")
+stationary = true

@@ -1,10 +1,10 @@
 class_name GroundScars
 extends Node3D
 
-## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one owner of the painted
-## tiles. A mark is a picture painted INTO the ground, 0.15625 m per pixel, centered, never turned, over what is there; marks on
-## a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago is cleaned (ground_scars.gdshaderinc reads it).
-## Presentation only: with no window (headless, dedicated) it holds nothing. ScarMark decides when; the ground's mesh, collision and height are untouched.
+## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one owner of `marks` (what was
+## painted, in order) and of the tiles drawn from it. A mark is a picture painted INTO the ground, 0.15625 m per pixel, centered, never turned, over
+## what is there; marks on a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago is cleaned (ground_scars.gdshaderinc reads it).
+## Presentation only: headless (dedicated) it holds nothing. ScarMark decides when; GroundScarsNet hands `marks` to a peer back from a drop.
 
 const GROUP := &"ground_scars"
 const INDEX_PARAM := &"scar_index"
@@ -18,6 +18,7 @@ const TILES_PARAM := &"scar_tiles"
 ## The painted tiles the shaders read (empty in the scene; `_ready` fills it).
 @export var tiles: Texture2DArray
 
+var marks := GroundScarRecord.new()
 var _pool: GroundScarRules.Pool
 var _layers: Array[Image] = []
 var _index: Image
@@ -92,7 +93,8 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	if _pool == null or texture == null:
 		return false
 	var local := to_local(at)
-	var refusal := _refusal(local, max_height_m)
+	var ground_y := terrain.height_at(local.x, local.z)
+	var refusal := GroundScarRules.refusal(terrain.is_on_ground(local.x, local.z), ground_y, local.y, max_height_m)
 	if not refusal.is_empty():
 		note("refused (%s) %s at map %s, max height %.1f" % [refusal, texture.resource_path.get_file(), local, max_height_m])
 		return false
@@ -103,20 +105,19 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 		_paint_tile(mark, origin, tile)
 	_index_texture.update(_index)
 	_publish()
-	note("painted %s at map %s, %.1f m over the ground, %d tiles" % [texture.resource_path.get_file(), local, local.y - terrain.height_at(local.x, local.z), touched.size()])
+	note("painted %s at map %s, %.1f m over the ground, %d tiles" % [texture.resource_path.get_file(), local, local.y - ground_y, touched.size()])
+	if not touched.is_empty():
+		marks.add(texture, at, max_height_m)
 	return not touched.is_empty()
 
 
-## Why a mark at `local` is not painted, or "". The height is from the ground's own height there.
-func _refusal(local: Vector3, max_height_m: float) -> String:
-	if terrain == null:
-		return "no terrain"
-	if not terrain.is_on_ground(local.x, local.z):
-		return "not over land"
-	var ground_y := terrain.height_at(local.x, local.z)
-	if not GroundScarRules.allows_height(ground_y, local.y, max_height_m):
-		return "too far from the ground: %.1f m" % (local.y - ground_y)
-	return ""
+## Cleans every tile and forgets the marks (before painting the list of another peer again).
+func clear() -> void:
+	if _pool != null:
+		_pool = GroundScarRules.Pool.new(_pool.capacity)
+		_index.fill(Color(0.0, 0.0, 0.0, 0.0))
+		_index_texture.update(_index)
+	marks.clear()
 
 
 static func note(text: String) -> void:
@@ -139,9 +140,8 @@ func _paint_tile(mark: Image, origin: Vector2i, tile: Vector2i) -> void:
 
 func _image_of(texture: Texture2D) -> Image:
 	if not _images.has(texture):
-		var image := texture.get_image()
-		image.convert(Image.FORMAT_RGBA8)
-		_images[texture] = image
+		_images[texture] = texture.get_image()
+		(_images[texture] as Image).convert(Image.FORMAT_RGBA8)
 	return _images[texture]
 
 

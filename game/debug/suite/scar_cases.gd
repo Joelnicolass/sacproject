@@ -36,6 +36,7 @@ func run(host: Node3D) -> Dictionary:
 		"scar_maps": _maps(),
 		"scar_shaders": _shaders(),
 		"scar_effects": _effects(),
+		"scar_record": _record(),
 	}
 
 
@@ -250,3 +251,27 @@ static func _same(tiles: Array[Vector2i], expected: Array) -> bool:
 		if tiles[i] != expected[i]:
 			return false
 	return true
+
+
+## The list a peer back from a drop paints again (GroundScarsNet): in order, the newest `limit` only, the same pictures and
+## points after the trip, and nothing that is not an imported texture (a picture made in code, a path from a peer that is not one).
+func _record() -> Dictionary:
+	var blud := load(SCARS_DIR + "blud.png") as Texture2D
+	var scar := load(SCARS_DIR + "scar.png") as Texture2D
+	var record := GroundScarRecord.new()
+	record.limit = 2
+	record.add(scar, Vector3(1.0, 2.0, 3.0), 0.0)
+	record.add(blud, Vector3(4.0, 5.0, 6.0), 4.0)
+	record.add(scar, Vector3(7.0, 8.0, 9.0), 2.5)
+	record.add(ImageTexture.create_from_image(Image.create_empty(8, 8, false, Image.FORMAT_RGBA8)), Vector3.ZERO, 0.0)
+	var wire := record.to_wire()
+	var back := GroundScarRecord.entries(wire)
+	var checks := {}
+	checks["newest_kept"] = record.size() == 2 and GroundScarRecord.count(wire) == 2
+	checks["same_after_trip"] = back.size() == 2 and back[0][0] == blud and back[0][1] == Vector3(4.0, 5.0, 6.0) \
+			and is_equal_approx(back[0][2], 4.0) and back[1][0] == scar and back[1][1] == Vector3(7.0, 8.0, 9.0)
+	var bad := {GroundScarRecord.PATHS: PackedStringArray(["res://project.godot"]), GroundScarRecord.MARKS: PackedFloat32Array([0, 1, 2, 3, 0])}
+	checks["foreign_path_skipped"] = GroundScarRecord.entries(bad).is_empty() and GroundScarRecord.entries({}).is_empty()
+	record.clear()
+	checks["cleared"] = record.size() == 0
+	return {"ok": not checks.values().has(false), "checks": checks}

@@ -9,8 +9,8 @@ extends Node3D
 
 ## The ground as numbers: heights, holes, size (the child `Shape` of `terrain`). Everyone asks it.
 @export var ground: GroundSurface
-## The ground as a mesh (a grid map; goes away when the surface lists its own meshes).
-@export var terrain: Terrain
+## The node that holds the ground: a grid map's Terrain, or the root of a mesh map's ground.glb (Chunks, Surface, Collision).
+@export var terrain: Node3D
 @export var nav_region: NavigationRegion3D
 ## The PlayerStart nodes, one per seat.
 @export var starts: Node3D

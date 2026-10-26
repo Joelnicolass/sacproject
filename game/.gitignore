@@ -4,6 +4,7 @@ cache/
 !assets/cc0/**/*.import
 !assets/original/**/*.import
 !assets/custom/**/*.import
+!scenes/map/maps/*/ground.glb.import
 
 # Capturas del juego original usadas como referencia: no se versionan.
 visual/refs/original/

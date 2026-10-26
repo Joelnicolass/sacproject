@@ -31,7 +31,7 @@ func _initialize() -> void:
 	var out := _output_path()
 	var result := {"script": _surface_script(), "points": POINTS, "seed": SEED, "maps": {}}
 	var ok := true
-	var tags := Array(DirAccess.get_directories_at(MAPS_DIR))
+	var tags := Array(DirAccess.get_directories_at(MAPS_DIR)).filter(func(tag: String) -> bool: return not FileAccess.file_exists(MAPS_DIR + "%s/ground.glb" % tag))
 	tags.sort()
 	for index in tags.size():
 		var entry := _dump_map(str(tags[index]), index)

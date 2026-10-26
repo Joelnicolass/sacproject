@@ -8,6 +8,7 @@ Herramientas de desarrollo, nunca parte del juego (el export las excluye).
 - `material/`: Material Maker por consola.
 - `deploy/`: unidad systemd del servidor de salas.
 - `move_map/` y `move_map.py`: el mudador de rutas del RFC-048.
-- `skeletal_post_import.gd` y `terrain_import.gd` quedan en la raiz: los nombran los `.import` de `assets/`.
+- `skeletal_post_import.gd`, `terrain_import.gd` y `ground_import.gd` quedan en la raiz: los nombran los `.import` de `assets/` y de `scenes/map/maps/`. `ground_import.gd` (RFC-063) importa el `ground.glb` de un mapa de malla libre (sus pasos estan en `ground/`: leer, cortar aristas largas, partir en trozos); no necesita el juego original.
+- `blender/`: scripts de Blender por consola. `make_ground_template.py` y `export_ground.py` (el suelo de un mapa de malla libre: plantilla y exportacion), `make_mesh_test.py` (la isla de prueba de `scenes/map/maps/mesh_test/`), `make_test_creature.py`.
 
 Agregar uno: en la carpeta que corresponda; los `.py` calculan `ROOT` con `Path(__file__).resolve().parents[2]`, los `.sh` con `dirname "$0")/../..`.

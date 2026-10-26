@@ -13,8 +13,10 @@ const RING := preload("res://scenes/fx/quake_ring.tscn")
 const CENTER := Vector2(1260.0, 1270.0)
 const DISTANCES: Array[float] = [0.0, 10.0, 25.0, 40.0, 55.0]
 const TICKS: Array[int] = [1, 5, 10, 20, 29]
-## The Live redraws a stamp only when it moved by its `min_step_m` (0.1 m), so the sinking near its deepest lags a few cm.
-const TOLERANCE_M := 0.05
+## The Live redraws a stamp only when its height moved by `min_step_m` (Terrain/Live, 0.1 m): near the deepest, where the
+## sinking slows, the ground may show the last drawn height, up to that much behind the formula. That is the tolerance; the
+## rest of the timeline lands within a millimetre. Plus a sampling slack for the straight line between two vertices.
+const SAMPLING_M := 0.001
 const BACK_M := 0.01
 ## The 58 m reach of the wave around CENTER.
 const RECT_M := 60.0
@@ -74,7 +76,7 @@ func _ground() -> Dictionary:
 				worst = maxf(worst, absf(got - wanted))
 				_c._note("quake t %d d %d got / wanted" % [tick, int(d)], [got, wanted])
 	checks["every_tick_measured"] = seen.size() == TICKS.size()
-	checks["follows_the_formula"] = worst <= TOLERANCE_M
+	checks["follows_the_formula"] = worst <= shape.live.min_step_m + SAMPLING_M
 	checks["two_keys_on_the_server"] = most_keys == 2
 	await _c._frames(2)
 	var left := 0.0

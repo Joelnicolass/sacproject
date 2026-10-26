@@ -8,7 +8,8 @@ extends RefCounted
 ## `mark` also takes areas whose flora was painted (the map brush), under the same brake.
 ## RFC-057 057e: with `live_every_s` > 0 it also follows the stamps that play (Terrain.changed while one plays: the Volcano
 ## mound for 64 s). A tick only joins its rect to a list of their own; that list is planted again every `live_every_s`
-## seconds, only the cells it touches. 0 ignores them (only what settles plants again).
+## seconds, only the cells it touches, on the ground as it is then (Terrain.refresh_sampler). 0 ignores them (only what
+## settles plants again).
 
 ## Seconds between two replans of what the playing stamps moved (FloraField.live_replan_s); 0 = never.
 var live_every_s := 0.0
@@ -49,6 +50,8 @@ func update(delta: float, every_s: float, planters: Array[MeshPlanter], tree: Sc
 		_live.clear()
 	elif not _live.is_empty() and _live_left <= 0.0:
 		_live_left = live_every_s
+		if is_instance_valid(_shape):
+			_shape.refresh_sampler()
 		_replan(_live, planters, tree)
 
 

@@ -99,6 +99,12 @@ func sampler() -> Callable:
 	return TerrainRules.height_in.bind(index.ground, index.cells, _field.snapshot(), index.corners)
 
 
+## The next `sampler` copies the ground as it is now, playing stamps included: what follows a stamp that plays for long (the
+## flora's live replan) asks it before reading; one copy per ask, never per tick.
+func refresh_sampler() -> void:
+	_field.drop_snapshot()
+
+
 ## True on the server (and alone): the only peer that decides what stays.
 func is_authority() -> bool:
 	return not is_inside_tree() or multiplayer.is_server()

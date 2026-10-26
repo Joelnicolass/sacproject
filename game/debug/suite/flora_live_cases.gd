@@ -88,6 +88,8 @@ func _live() -> Dictionary:
 				outside += 1
 		for key in touched:
 			all_queued = all_queued and queued.has(key)
+		# The eye stays 30 m above the sinking mound: the planter's ring keeps its size (a fixed eye would see it shrink).
+		eye.y = shape.height_at(eye.x, eye.z) + 30.0
 		await _c._settle(planter, eye)
 		all_built = all_built and planter.built_cells - built_before >= touched.size() and planter.pending_count() == 0
 		var now := shape.sampler()
@@ -110,10 +112,11 @@ func _live() -> Dictionary:
 	holder.free()
 	for layer in layers:
 		layer.free()
+	var center := mound.center()
 	zone.queue_free()
 	wizard.queue_free()
 	await _c._frames(2)
-	await _put_back(shape, before, mound.center(), reach_m)
+	await _put_back(shape, before, center, reach_m)
 	return _c._verdict("terrain_flora_live", checks)
 
 

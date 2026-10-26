@@ -91,6 +91,11 @@ func snapshot() -> PackedFloat32Array:
 	return _snapshot
 
 
+## The next `snapshot` copies `texels` as they are now, live stamps included (once; then it waits for a settle again).
+func drop_snapshot() -> void:
+	_snapshot_version = -1
+
+
 ## The shift of the vertex `id` right now.
 func at(id: int) -> float:
 	return texels[id * 2]

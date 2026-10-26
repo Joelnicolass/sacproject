@@ -25,6 +25,9 @@ const FALLBACK_COLLAPSE_S := 11.0
 @export var rules: MatchRules
 ## Node whose subtree holds the altars of this match (the world).
 @export var world: Node
+## The node the wizards are spawned under (match.tscn: Wizards). On the authority every wizard that is or comes in there seats
+## its slot; empty (a bench with no wizards) = every owner of an altar counts.
+@export var wizards: Node
 
 ## 0 while the match has no winner. With teams (RFC-049 049b) it is the lowest slot of the winning team, kept for the room
 ## and the banner; `winner_slots` is the whole team and `won(slot)` the question to ask.
@@ -33,7 +36,7 @@ var winner_slot := 0
 var winner_slots: Array[int] = []
 ## The team (SideRelations.team_of) of the winners; 0 with no winner.
 var winner_team := 0
-## RFC-049 049b: the slots with a wizard seated (human or AI), marked by WizardSpawner on the authority. Only they count for the
+## RFC-049 049b: the slots with a wizard seated (human or AI), derived on the authority from the children of `wizards`. Only they count for the
 ## victory (sacengine altarSides, state.d:31493); the altar of an empty seat stays in the map and does not count (P4).
 var seated_slots: Array[int] = []
 var defeated_slots: Array[int] = []
@@ -60,6 +63,7 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	if is_authority():
 		take_rules()
+		_seat_wizards()
 	for altar in altars():
 		altar.state_changed.connect(_on_altar_state_changed.bind(altar))
 	if not MpKit.is_networked():
@@ -132,13 +136,28 @@ func sides() -> Array[int]:
 	return found
 
 
-## Authority: a wizard sat in `slot` (WizardSpawner._place). Idempotent.
+## Authority: a wizard sat in `slot` (a wizard under `wizards`; a bench may call it). Idempotent.
 func mark_seated(slot: int) -> void:
 	if slot <= 0 or seated_slots.has(slot):
 		return
 	seated_slots.append(slot)
 	seated_slots.sort()
 	publish()
+
+
+## Authority: the wizards already under `wizards` (the listen host and solo spawn theirs before this node is ready) and every
+## one that comes in later seat their slot. Derived from the tree, so the order of `_ready` does not matter.
+func _seat_wizards() -> void:
+	if wizards == null:
+		return
+	wizards.child_entered_tree.connect(_on_wizard_entered)
+	for child in wizards.get_children():
+		_on_wizard_entered(child)
+
+
+func _on_wizard_entered(node: Node) -> void:
+	if node is WizardBody:
+		mark_seated((node as WizardBody).owner_slot)
 
 
 func is_seated(slot: int) -> bool:

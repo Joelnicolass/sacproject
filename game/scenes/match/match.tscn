@@ -223,9 +223,10 @@ unique_name_in_owner = true
 world = NodePath("..")
 
 
-[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world") instance=ExtResource("f57_match")]
+[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world", "wizards") instance=ExtResource("f57_match")]
 unique_name_in_owner = true
 world = NodePath("..")
+wizards = NodePath("../Wizards")
 
 
 [node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("structures")]

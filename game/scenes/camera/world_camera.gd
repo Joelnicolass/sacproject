@@ -3,8 +3,11 @@ extends Camera3D
 ## Third-person camera of sacengine (dagonBackend.d positionCamera / cameraControl). Units 1:1 sac → m.
 
 @export var follow: Node3D
-## Only this ground counts for the height under the camera (props on layer 1 are skipped).
+## Only this ground counts for the ray under the camera (props on layer 1 are skipped). The live land (Terrain.height_at,
+## playing stamps included) always counts too, so a Volcano that rises before its collision is remade never buries the view.
 @export var ground: Node3D
+## The eye never goes lower than this over the live land under it.
+@export var ground_clearance_m := 0.5
 ## Edges only scroll while the pointer hovers this control (the HUD bar is excluded).
 @export var edge_area: Control
 ## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms itself). A control with a
@@ -66,6 +69,8 @@ var _drag_travel := 0.0
 var _mouse_inside := true
 ## Last pointer position this viewport received as an event; x < 0 until the first one.
 var _pointer := Vector2(-1.0, -1.0)
+## The ground of the map (Terrain.of), looked up again while it is missing or not loaded.
+var _terrain: Terrain
 
 
 func _ready() -> void:
@@ -234,6 +239,7 @@ func _place() -> void:
 	var view := ahead * cos(down) + Vector3.DOWN * sin(down)
 	var look := Basis.looking_at(view, Vector3.UP)
 	var eye := spot + Vector3.UP * eye_lift
+	eye.y = maxf(eye.y, _ground_y(eye, eye.y) + ground_clearance_m)
 	# The shake only computes; the camera composes it last, so it never feeds back into the follow.
 	if shake != null and is_instance_valid(shake):
 		eye += look * shake.offset()
@@ -248,10 +254,22 @@ func _subject_height() -> float:
 	return min_subject_height
 
 
+## The highest of the live land and what the ray finds under `at`; `fallback` when neither is there.
 func _ground_y(at: Vector3, fallback: float) -> float:
+	if _terrain == null or not is_instance_valid(_terrain):
+		_terrain = Terrain.of(self)
+	var land := _terrain.height_at(at.x, at.z) if _terrain != null else NAN
+	var hit := _ray_y(at, fallback)
+	if is_nan(land):
+		return fallback if is_nan(hit) else hit
+	return land if is_nan(hit) else maxf(land, hit)
+
+
+## NAN when the ray from above finds no ground under `at`.
+func _ray_y(at: Vector3, fallback: float) -> float:
 	var world := get_world_3d()
 	if world == null:
-		return fallback
+		return NAN
 	var query := PhysicsRayQueryParameters3D.create(
 		Vector3(at.x, fallback + 500.0, at.z), Vector3(at.x, fallback - 500.0, at.z)
 	)
@@ -262,9 +280,9 @@ func _ground_y(at: Vector3, fallback: float) -> float:
 		query.exclude = skip
 		var hit := world.direct_space_state.intersect_ray(query)
 		if hit.is_empty():
-			return fallback
+			return NAN
 		var body: Object = hit.get("collider")
 		if ground == null or body == ground or (body is Node and ground.is_ancestor_of(body)):
 			return float(hit.position.y)
 		skip.append(hit.get("rid"))
-	return fallback
+	return NAN

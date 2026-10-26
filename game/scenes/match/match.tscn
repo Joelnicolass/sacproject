@@ -135,6 +135,7 @@ spawn_path = NodePath("../Wizards")
 script = ExtResource("4_spawner")
 pawn_scene = ExtResource("5_wizard")
 actor_name_prefix = "Wizard"
+despawn_on_leave = false
 
 
 [node name="MatchBiome" type="Node" parent="." unique_id=1771451217 node_paths=PackedStringArray("world")]

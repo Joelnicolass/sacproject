@@ -5,12 +5,10 @@ extends MpSlotSpawner
 ## start), among the children of spawn_points (MapProps/Starts).
 
 
+## RFC-068: `despawn_on_leave` is off in match.tscn: a player who drops may come back to the same slot within the grace of the
+## door of the match (MpMatchGate), on every networked path. His wizard, creatures and altar stay in the world, the wizard standing
+## still; past the grace the slot loses (SeatPresence).
 func _ready() -> void:
-	## RFC-034 034g (F184): in a room's match (the dedicated has a ticket) a player who drops may come back to the same slot
-	## (`rejoin_grace_s`): his wizard, creatures and altar stay in the world, the wizard standing still. The match decides the
-	## rest: past the grace the slot loses (MatchTicketGlue).
-	if not MpBoot.user_value("match-ticket-file", "").is_empty():
-		despawn_on_leave = false
 	super._ready()
 	if not despawn_on_leave and MpKit.is_networked() and MpKit.is_server():
 		MpKit.peer_left.connect(_on_slot_peer_away)

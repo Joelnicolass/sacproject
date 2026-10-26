@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" path="res://scenes/look/sky/sky_underside.tscn" id="13_underside"]
 [ext_resource type="PackedScene" path="res://scenes/look/atmosphere/atmosphere.tscn" id="14_atmosphere"]
 [ext_resource type="PackedScene" path="res://scenes/look/life/ambient_life.tscn" id="15_life"]
+[ext_resource type="Script" path="res://scenes/look/surface_relief_layer.gd" id="16_relief"]
+[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="17_prefs"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")
@@ -69,6 +71,11 @@ rig = NodePath("../..")
 
 [node name="AmbientLife" parent="Layers" node_paths=PackedStringArray("atmosphere") instance=ExtResource("15_life")]
 atmosphere = NodePath("../Atmosphere")
+
+[node name="SurfaceRelief" type="Node3D" parent="Layers"]
+editor_description = "RFC-067: el interruptor global de los mapas de normales (preset relief_maps y la opción «Relieve»). Apagado, los apaga en memoria; nunca guarda."
+script = ExtResource("16_relief")
+prefs = ExtResource("17_prefs")
 
 [node name="Quality" type="Node" parent="."]
 script = ExtResource("2_quality")

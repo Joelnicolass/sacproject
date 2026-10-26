@@ -2,7 +2,7 @@ class_name GraphicsTab
 extends VBoxContainer
 
 ## RFC-031 031c (F142): Options → Gráficos. Quality (one of the GraphicsPrefs presets), fullscreen, VSync, the FPS cap,
-## the vegetation switch (RFC-054 054f), the number of ground marks (061k-5) and the interface size (UiScalePrefs). Every control writes the shared preference at once; the GraphicsApplier and the
+## the vegetation switch (RFC-054 054f), the relief switch (RFC-067), the number of ground marks (061k-5) and the interface size (UiScalePrefs). Every control writes the shared preference at once; the GraphicsApplier and the
 ## UiScaleApplier of the running scene listen to `changed`, so the change shows live. The controls also follow changes made elsewhere.
 ## OptionButton, CheckButton and HSlider only: AgentKit drives them with select / click / range (no popups needed).
 
@@ -27,6 +27,7 @@ func _ready() -> void:
 	%Fullscreen.toggled.connect(prefs.set_fullscreen)
 	%VSync.toggled.connect(prefs.set_vsync)
 	%Vegetation.toggled.connect(prefs.set_vegetation_enabled)
+	%Relief.toggled.connect(prefs.set_relief_enabled)
 	%ScarTiles.value_changed.connect(_on_scar_tiles)
 	%HudSize.value_changed.connect(_on_hud_size)
 	prefs.changed.connect(_sync)
@@ -57,6 +58,7 @@ func _sync() -> void:
 	%Fullscreen.set_pressed_no_signal(prefs.fullscreen())
 	%VSync.set_pressed_no_signal(prefs.vsync())
 	%Vegetation.set_pressed_no_signal(prefs.vegetation_enabled())
+	%Relief.set_pressed_no_signal(prefs.relief_enabled())
 	%ScarTiles.set_value_no_signal(prefs.scar_tiles())
 	%ScarTilesValue.text = str(prefs.scar_tiles())
 	%HudSize.set_value_no_signal(ui_scale.get_scale())

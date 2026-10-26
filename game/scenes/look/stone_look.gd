@@ -158,7 +158,7 @@ func _undress() -> void:
 
 
 func _stone_for(source: Material) -> ShaderMaterial:
-	var key: Array = [source if source else shader, tint, base, gain, roughness, metallic, swap_texture, stone]
+	var key: Array = [source if source else shader, tint, base, gain, roughness, metallic, swap_texture, stone, SurfaceRelief.is_on(source)]
 	var found := _materials.get(key) as ShaderMaterial
 	if found and found.shader == shader:
 		return found

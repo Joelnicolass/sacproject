@@ -3,7 +3,8 @@ extends Node
 
 ## The land of the match: the server (or solo) takes the god the setup chose (rules.biome_god) or draws one per match (BiomeRules) and sends it to each client on
 ## the MpKit custom channel once that client's world is ready. Every peer with a screen then hands that god's look
-## to the map's LookRig, after the world's _ready (the rig exists).
+## to the map's LookRig, after the world's _ready (the rig exists). The same message carries the sky's clock and seed
+## (MatchSky): every peer then derives the same hour and weather (AtmosphereRules), the dedicated server too.
 
 ## The land is on the map's look rig: the GodType whose `look` (with its music and ambience) the match uses (MusicDirector and
 ## AmbienceDirector listen).
@@ -18,9 +19,11 @@ var _world_ready := false
 
 
 func _ready() -> void:
+	MatchSky.reset()
 	MpKit.custom_received.connect(_on_custom_received)
 	if _is_authority():
 		_draw()
+		_begin_sky()
 		if MpKit.is_networked():
 			MpKit.client_world_ready.connect(_send_to)
 			for peer in multiplayer.get_peers():
@@ -59,10 +62,19 @@ func _draw() -> void:
 	if DebugLog.on(&"biome"): print("bioma %s semilla %d" % [god, match_seed])
 
 
+## The sky's seed is a hash of the match seed (it moves no stream); 0 is kept for «no match».
+func _begin_sky() -> void:
+	var sky_seed := MatchSeed.derive(["sky"]) & 0x7fffffff
+	MatchSky.begin(maxi(1, sky_seed))
+	if DebugLog.on(&"atmosphere"): print("atmosfera semilla %d" % MatchSky.sky_seed())
+
+
 func _send_to(peer_id: int) -> void:
 	if god == &"":
 		return
-	MpKit.push_custom_to(peer_id, CHANNEL, {"god": String(god)})
+	var payload := {"god": String(god)}
+	payload.merge(MatchSky.message())
+	MpKit.push_custom_to(peer_id, CHANNEL, payload)
 
 
 func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) -> void:
@@ -72,7 +84,9 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 	if not BiomeRules.has_look(received):
 		return
 	god = received
+	MatchSky.adopt(float(data.get("at_s", 0.0)), int(data.get("sky_seed", 0)))
 	if DebugLog.on(&"biome"): print("bioma %s" % god)
+	if DebugLog.on(&"atmosphere"): print("atmosfera semilla %d" % MatchSky.sky_seed())
 	_apply()
 
 

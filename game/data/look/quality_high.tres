@@ -40,4 +40,5 @@ fx_soft_particles = true
 fx_frame_blend = true
 fx_max_lights = 16
 actor_max_lights = 24
+rain_density_scale = 1.5
 vegetation = Array[ExtResource("2_veg")]([SubResource("Veg_original_plants")])

@@ -72,15 +72,16 @@ extends Resource
 
 ## Unit vector from the ground toward the sun.
 func sun_direction() -> Vector3:
-	return _direction(sun_azimuth_deg, sun_elevation_deg)
+	return direction_of(sun_azimuth_deg, sun_elevation_deg)
 
 
 ## Unit vector from the ground toward the fill.
 func fill_direction() -> Vector3:
-	return _direction(sun_azimuth_deg + fill_azimuth_offset_deg, fill_elevation_deg)
+	return direction_of(sun_azimuth_deg + fill_azimuth_offset_deg, fill_elevation_deg)
 
 
-static func _direction(azimuth_deg: float, elevation_deg: float) -> Vector3:
+## Unit vector from the ground toward a body at this compass azimuth (0 = +Z) and elevation, in degrees.
+static func direction_of(azimuth_deg: float, elevation_deg: float) -> Vector3:
 	var az := deg_to_rad(azimuth_deg)
 	var el := deg_to_rad(elevation_deg)
 	return Vector3(sin(az) * cos(el), sin(el), cos(az) * cos(el))

@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://debug/look/look_gallery.tscn" id="1_gallery"]
+
+[node name="AmbienceLab" instance=ExtResource("1_gallery")]
+editor_description = "RFC-058: la galería con el ambiente corriendo. El día dura 24 s (time_scale 60) y arranca en la luz aprobada. F1 bioma, F2 cámara, F3 calidad, KP1..KP0 una capa (Atmosphere = KP0). Capturas: Atmosphere.frozen_hour (0, 6, 12, 18)."
+classic = false
+freeze_sky = false
+hide_hud = true
+
+[node name="Atmosphere" parent="HighNoon/Map/Look/Layers"]
+time_scale = 60.0

@@ -36,3 +36,30 @@ extends Resource
 ## Milky veil of the volumetric fog. The engine default (0.05) buries the game camera in white: keep it near 0.01.
 @export_range(0.0, 0.1, 0.001) var volumetric_density: float = 0.01
 @export_range(16.0, 512.0, 1.0, "suffix:m") var volumetric_length_m: float = 64.0
+
+
+## Writes the atmosphere on `copy` (a private duplicate of `material`, never `material` itself): night and stars, the
+## storm's clouds, grey and tint, the flash, the moon disc where the moon light is (`moon_dir_deg` = azimuth,
+## elevation) and no sun disc while the light is the moon. Every value starts from `material`'s own, so it is
+## idempotent; a neutral sample leaves the copy equal to `material`. `cloud_phase` keeps the cloud drift continuous.
+func write_atmosphere(copy: ShaderMaterial, sample: AtmosphereSample, moon_dir_deg: Vector2, cloud_phase: float) -> void:
+	copy.set_shader_parameter(&"night_amount", sample.stars)
+	copy.set_shader_parameter(&"cloud_cover", sample.cloud_cover)
+	copy.set_shader_parameter(&"cloud_darken", sample.cloud_darken)
+	copy.set_shader_parameter(&"cloud_speed_mul", sample.cloud_speed_mul)
+	copy.set_shader_parameter(&"cloud_phase", cloud_phase)
+	copy.set_shader_parameter(&"sky_grey", sample.sky_grey)
+	copy.set_shader_parameter(&"sky_tint", sample.sky_tint)
+	copy.set_shader_parameter(&"flash_amount", sample.flash)
+	for name: StringName in [&"sun_intensity", &"halo_strength"]:
+		copy.set_shader_parameter(name, 0.0 if sample.moon else _own(name, 0.0))
+	var moon_shows := sample.moon_intensity > 0.0
+	copy.set_shader_parameter(&"moon_intensity", _own(&"moon_intensity", 0.0) + sample.moon_intensity)
+	copy.set_shader_parameter(&"moon_azimuth_deg", moon_dir_deg.x if moon_shows else _own(&"moon_azimuth_deg", -40.0))
+	copy.set_shader_parameter(&"moon_elevation_deg", moon_dir_deg.y if moon_shows else _own(&"moon_elevation_deg", 40.0))
+
+
+## The material's own value of a float uniform (the shader's default when the material does not set it).
+func _own(name: StringName, fallback: float) -> float:
+	var value: Variant = material.get_shader_parameter(name) if material else null
+	return float(value) if value != null else fallback

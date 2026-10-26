@@ -58,6 +58,7 @@ const SPELL_FIELD_CASES := preload("res://debug/suite/spell_field_cases.gd")  # 
 const ABILITY_FIELD_CASES := preload("res://debug/suite/ability_field_cases.gd")  # 055e e6
 const SPELL_LINK_CASES := preload("res://debug/suite/spell_link_cases.gd")  # 055e e3
 const FX_WIRE_CASES := preload("res://debug/suite/fx_wire_cases.gd")  # 055x x1
+const ATMOSPHERE_CASES := preload("res://debug/suite/atmosphere_cases.gd")  # 058
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -146,6 +147,7 @@ func _run_suite() -> void:
 	_results.merge(await preload("res://debug/suite/ai_spell_use_cases.gd").new().run(self))  # 055f f5
 	_results.merge(await SPELL_LINK_CASES.new().run(self))  # 055e e3
 	_results.merge(FX_WIRE_CASES.new().run(self))  # 055x x1
+	_results.merge(ATMOSPHERE_CASES.new().run(self))  # 058
 	_results.merge(await preload("res://debug/suite/tree_block_cases.gd").new().run(self))  # playtest 2026-10-26: trees block
 	_print_suite()
 

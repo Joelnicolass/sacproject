@@ -20,6 +20,10 @@ extends Resource
 ## Color correction, one gradient per god.
 @export var grade: GradientTexture1D
 
+@export_group("Ambience (058)")
+## How the day goes by over the approved light (night, moon, stars). Empty = no cycle: always the approved light.
+@export var day: DayCycle
+
 @export_group("Ground and plants")
 ## The original's flat ground (atlas, edge and light map): what the terrain wears when `ground` is empty.
 @export var ground_classic: ShaderMaterial

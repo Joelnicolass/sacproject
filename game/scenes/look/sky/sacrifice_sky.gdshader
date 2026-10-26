@@ -12,6 +12,7 @@ shader_type sky;
 #include "res://scenes/look/sky/sky_clouds.gdshaderinc"
 #include "res://scenes/look/sky/sky_discs.gdshaderinc"
 #include "res://scenes/look/sky/aurora.gdshaderinc"
+#include "res://scenes/look/sky/sky_stars.gdshaderinc"
 
 group_uniforms background;
 // Colour seen where no band or cloud covers the sky (the original's ENVI background).
@@ -79,6 +80,31 @@ uniform float moon_radius_deg : hint_range(0.1, 15.0, 0.1) = 3.0;
 uniform float moon_azimuth_deg : hint_range(-180.0, 180.0, 1.0) = -40.0;
 uniform float moon_elevation_deg : hint_range(-10.0, 89.0, 1.0) = 40.0;
 
+// The groups below are the atmosphere's (day and night, weather): EnvironmentLayer writes them on its private copy of
+// the material from the AtmosphereSample. All of them at their default change nothing, exactly.
+group_uniforms night;
+// How many of the stars show (0 = none: the stars code does not run).
+uniform float night_amount : hint_range(0.0, 1.0, 0.01) = 0.0;
+// Share of the sky with a star, and the brightest star's light.
+uniform float star_density : hint_range(0.0, 1.0, 0.01) = 0.4;
+uniform float star_brightness : hint_range(0.0, 8.0, 0.01) = 2.0;
+
+group_uniforms storm;
+// Extra cloud cover over the texture's own (0..1) and how much darker the clouds are.
+uniform float cloud_cover : hint_range(0.0, 1.0, 0.01) = 0.0;
+uniform float cloud_darken : hint_range(0.0, 1.0, 0.01) = 0.0;
+// The clouds drift this many times faster. `cloud_phase` (texture repeats) keeps the drift continuous when it changes.
+uniform float cloud_speed_mul : hint_range(0.0, 8.0, 0.01) = 1.0;
+uniform float cloud_phase = 0.0;
+// 0 = the sky's colors, 1 = grey.
+uniform float sky_grey : hint_range(0.0, 1.0, 0.01) = 0.0;
+// Multiplies the whole sky (night, storm) and the reflection cubemap.
+uniform vec3 sky_tint : source_color = vec3(1.0);
+
+group_uniforms flash;
+// A storm's flash: the sky is (1 + flash_amount) times brighter.
+uniform float flash_amount : hint_range(0.0, 1.0, 0.01) = 0.0;
+
 group_uniforms time;
 // -1 = the engine's TIME. 0 or more freezes the sky at that second (captures and comparisons).
 uniform float time_override_s : hint_range(-1.0, 4096.0, 0.01) = -1.0;
@@ -88,12 +114,12 @@ void sky() {
 		float up = EYEDIR.y;
 		float amount = pow(clamp(abs(up), 0.0, 1.0), ambient_curve);
 		vec3 far_color = up >= 0.0 ? ambient_top_color : ambient_ground_color;
-		COLOR = mix(ambient_horizon_color, far_color, amount) * ambient_energy;
+		COLOR = mix(ambient_horizon_color, far_color, amount) * ambient_energy * sky_tint;
 	} else {
 		vec3 dir = normalize(EYEDIR);
 		float t = time_override_s >= 0.0 ? time_override_s : TIME;
 		float spin = TAU * t / rotation_period_s;
-		vec2 cloud_offset = fract(t / cloud_period_s) * vec2(1.0, -1.0);
+		vec2 cloud_offset = fract(t / cloud_period_s * cloud_speed_mul + cloud_phase) * vec2(1.0, -1.0);
 
 		// Texture coordinates first, outside any branch, so their derivatives (the mip level) are valid.
 		float bottom_u;
@@ -117,7 +143,12 @@ void sky() {
 		vec3 color = background_color;
 		color = sky_band_blend(color, bottom_texture, bottom, bottom_dx, bottom_dy, energy, 1.0);
 		color = sky_band_blend(color, top_texture, top, top_dx, top_dy, energy, top_weight);
-		color = sky_cloud_blend(color, clouds_texture, cloud, cloud_dx, cloud_dy, energy, cloud_alpha);
+		if (night_amount > 0.0) {
+			// Turned with the bands, so the stars stay put on the sky; behind the clouds.
+			vec3 star_dir = vec3(dir.x * cos(spin) + dir.z * sin(spin), dir.y, dir.z * cos(spin) - dir.x * sin(spin));
+			color += sky_stars(star_dir, star_density, star_brightness) * night_amount;
+		}
+		color = sky_cloud_blend(color, clouds_texture, cloud, cloud_dx, cloud_dy, energy, cloud_alpha, cloud_cover, cloud_darken);
 
 		if (aurora_strength > 0.0 && dir.y > -0.1) {
 			vec4 glow = aurora_color(dir, aurora_gradient, t, aurora_brightness, aurora_speed, aurora_height, aurora_scale);
@@ -128,6 +159,13 @@ void sky() {
 			vec3 sun_dir = LIGHT0_ENABLED ? LIGHT0_DIRECTION : vec3(0.0, 0.6, 0.8);
 			color = sky_disc_add(color, dir, sun_dir, sun_color * sun_intensity, sun_radius_deg, halo_color * halo_strength, halo_power,
 					sky_direction_from_angles(moon_azimuth_deg, moon_elevation_deg), moon_color * moon_intensity, moon_radius_deg);
+		}
+		if (sky_grey > 0.0) {
+			color = mix(color, vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), sky_grey);
+		}
+		color *= sky_tint;
+		if (flash_amount > 0.0) {
+			color *= 1.0 + flash_amount;
 		}
 		COLOR = color;
 	}

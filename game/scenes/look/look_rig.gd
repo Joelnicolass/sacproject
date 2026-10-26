@@ -4,7 +4,7 @@ extends Node
 
 ## Holds the look layers of a map: one line in the world scene (`%Look`). Each layer is a packed
 ## scene or a node under `Layers`; removing one removes that layer. It also holds the world's sun and
-## Environment inside their layers, and the empty slots time of day and weather will fill.
+## Environment inside their layers, and the atmosphere (hour and weather) the other layers read.
 ## The rig hands every `LookLayer` the profile and the quality preset; the layer works out its own
 ## object from them. Presentation only: a dedicated or headless process frees the whole rig. Runs in the editor too.
 

@@ -2,8 +2,9 @@ extends Node3D
 
 ## Check of RFC-067 (F6): the pilot models in three rows under one grazing light and a fixed camera. Top row: copies of their
 ## materials as they were before any map (debug/look/surface_lab/flat/); middle row: the real materials, with their maps; bottom
-## row: a petrified Trogg (StoneLook) and a house half risen (BuildReveal). `debug_light_turn` turns the light 30 degrees around,
-## `debug_light_tilt` steps its height through `elevations_deg`: the relief of the middle row follows the light, the top row does not.
+## row: a petrified Trogg (StoneLook) and a house half risen (BuildReveal). The light orbits around the rows (`orbit_deg_per_s`;
+## `debug_light_orbit` pauses / resumes it), `debug_light_turn` turns it 30 degrees, `debug_light_tilt` steps its height
+## through `elevations_deg`: the relief of the middle row follows the light, the top row does not.
 ## Not: what a model looks like (its material .tres), how the maps are made (addons/surface_maps). The measured capture is
 ## agent/harness/surface_lab_capture.gd, the numbers tools/look/measure_relief.py.
 
@@ -11,6 +12,9 @@ extends Node3D
 ## Heights of the light over the horizon that `debug_light_tilt` steps through; the first one is the start (grazing).
 @export var elevations_deg := PackedFloat32Array([15.0, 45.0, 75.0])
 @export_range(1.0, 180.0, 1.0, "suffix:°") var yaw_step_deg := 30.0
+## The light goes around the rows by itself at this speed (yaw), from the start; 0 = still.
+@export_range(0.0, 360.0, 1.0, "suffix:°/s") var orbit_deg_per_s := 30.0
+@export var orbiting := true
 ## The petrified Trogg is a skeletal body: its rig wears this look (a skeleton is what StoneLook dresses with the shared materials).
 @export var stone_rig: BodyRig
 @export var stone_look: PackedScene
@@ -33,9 +37,16 @@ func _ready() -> void:
 	_aim()
 
 
+func _process(delta: float) -> void:
+	if orbiting and light != null:
+		turn_light(orbit_deg_per_s * delta)
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"debug_light_turn"):
-		light.rotation_degrees.y = fposmod(light.rotation_degrees.y + yaw_step_deg, 360.0)
+	if event.is_action_pressed(&"debug_light_orbit"):
+		orbiting = not orbiting
+	elif event.is_action_pressed(&"debug_light_turn"):
+		turn_light(yaw_step_deg)
 	elif event.is_action_pressed(&"debug_light_tilt"):
 		_tilt = (_tilt + 1) % maxi(1, elevations_deg.size())
 		_aim()
@@ -44,6 +55,11 @@ func _unhandled_input(event: InputEvent) -> void:
 ## The light's height over the horizon: the current step of `elevations_deg`.
 func elevation_deg() -> float:
 	return elevations_deg[_tilt] if not elevations_deg.is_empty() else 15.0
+
+
+## Turns the light `degrees` around the rows (yaw), keeping its height.
+func turn_light(degrees: float) -> void:
+	light.rotation_degrees.y = fposmod(light.rotation_degrees.y + degrees, 360.0)
 
 
 func _aim() -> void:

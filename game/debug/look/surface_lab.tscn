@@ -29,7 +29,7 @@ ambient_light_energy = 0.25
 tonemap_mode = 0
 
 [node name="SurfaceLab" type="Node3D" node_paths=PackedStringArray("light", "stone_rig")]
-editor_description = "RFC-067: the pilot models with no maps (top), with their maps (middle) and under StoneLook / BuildReveal (bottom), one grazing light, a fixed camera. U turns the light 30 degrees (debug_light_turn), I steps its height 15/45/75 (debug_light_tilt). Measured by agent/harness/surface_lab_capture.gd + tools/look/measure_relief.py."
+editor_description = "RFC-067: the pilot models with no maps (top), with their maps (middle) and under StoneLook / BuildReveal (bottom), one grazing light, a fixed camera. The light orbits the rows (orbit_deg_per_s); O pauses / resumes it (debug_light_orbit), U turns it 30 degrees (debug_light_turn), I steps its height 15/45/75 (debug_light_tilt). Measured by agent/harness/surface_lab_capture.gd + tools/look/measure_relief.py."
 script = ExtResource("1_lab")
 light = NodePath("Light")
 stone_rig = NodePath("Effects/Stone/Visual/Rig")
@@ -39,7 +39,7 @@ stone_look = ExtResource("18_trogg_look")
 environment = SubResource("Environment_lab")
 
 [node name="Light" type="DirectionalLight3D" parent="."]
-editor_description = "Grazing: 15 degrees over the horizon, from the front left. The lab script sets its height (elevations_deg); turn it with the gizmo or U."
+editor_description = "Grazing: 15 degrees over the horizon, from the front left. The lab script sets its height (elevations_deg); it orbits by itself (O pauses), U turns it 30 degrees."
 transform = Transform3D(0.5, 0, 0.866025, 0.224144, 0.965926, -0.12941, -0.836516, 0.258819, 0.482963, 0, 10, 10)
 shadow_enabled = false
 

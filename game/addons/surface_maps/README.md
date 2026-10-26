@@ -1,9 +1,9 @@
 # addons/surface_maps
 What: guesses a relief from a colour picture and saves it as maps a material can use: a normal map (OpenGL, green up) and, on request, an ORM (R occlusion, G roughness, B metal or height). Generic (no game rules) and dev only: the export excludes it and nothing in `scenes/` or `data/` refers to it.
 Not: how a model looks in a match (its `StandardMaterial3D` `.tres` is the only owner), the ground's shader, Material Maker graphs (tools/material).
-Talks to: `ReliefRecipe` (the knobs) -> `ReliefBaker.bake(image, recipe)` (pure pixels: brightness -> high-pass -> blur -> `Image.bump_map_to_normal_map`; cavity occlusion; cutout fill; per-tile wrap) -> `MapWriter` (path, PNG + `.import`, assign with `EditorUndoRedoManager`). `plugin.gd` adds the settings `surface_maps/mirror_from` / `surface_maps/mirror_to`, the inspector section (`surface_inspector` -> `surface_panel.tscn`, knobs from `recipe_form`) and Project > Tools > «Generar relieve…» (`batch_dialog.tscn`); both go through `relief_job` and share one recipe per editor session. CLI: `tools/bake/bake_relief.gd`.
-Edit: the recipe's defaults in `relief_recipe.gd` (strength 0.3, blur 1, high-pass 12, no ORM, roughness 0.85, metallic 0); where maps go in Project Settings `surface_maps/*`; the maps themselves are PNGs under `assets/surfaces/` (retouch them in any image editor).
-Check: rules_suite `surface_maps_cases` (determinism, flat, ramp sign, cutout halo, paths) · `Godot --headless --path . --script res://tools/bake/bake_relief.gd -- <material.tres>` · in the editor: `scenes/bodies/materials/eorc_001.tres` > «Relieve desde albedo» > Generar, then Ctrl+Z.
+Talks to: `ReliefRecipe` (the knobs) -> `ReliefBaker.bake(image, recipe)` (pure pixels, NormalMap-Online's algorithm: brightness -> [invert] -> [high-pass, off by default] -> smoothing / sharpen -> 3x3 Sobel or Scharr slope -> normalize(slope * 255, (1 + 2^level) / strength), OpenGL; cavity occlusion; cutout fill; per-tile wrap) -> `MapWriter` (path, PNG + `.import`, assign with `EditorUndoRedoManager`). `plugin.gd` adds the settings `surface_maps/mirror_from` / `surface_maps/mirror_to`, the inspector section (`surface_inspector` -> `surface_panel.tscn`, knobs from `recipe_form`) and Project > Tools > «Generar relieve…» (`batch_dialog.tscn`); both go through `relief_job` and share one recipe per editor session. CLI: `tools/bake/bake_relief.gd`.
+Edit: the recipe's defaults in `relief_recipe.gd` (NormalMap-Online's: strength 2.5, level 7, smoothing 0, Sobel; high-pass off; no ORM, roughness 0.85, metallic 0); where maps go in Project Settings `surface_maps/*`; the maps themselves are PNGs under `assets/surfaces/` (retouch them in any image editor).
+Check: rules_suite `surface_maps_cases` (determinism, flat, ramp signs, invert, Scharr, cutout halo, paths) · F6 `debug/look/surface_lab.tscn` (the light orbits; O pauses, U turns, I tilts) · `Godot --headless --path . --script res://tools/bake/bake_relief.gd -- <material.tres>` · in the editor: `scenes/bodies/materials/eorc_001.tres` > «Relieve desde albedo» > Generar, then Ctrl+Z.
 
 ---
 
@@ -16,10 +16,9 @@ Where maps go: a picture under `assets/original/textures/<owner>/` gets `assets/
 
 Assigning: on a `BaseMaterial3D` the normal goes to Normal Map (`normal_enabled`), the ORM to Ambient Occlusion (channel R) and Roughness (channel G, `roughness` set to 1 because Godot multiplies them). Metallic is left alone: with the default metallic 0 there is nothing to show. Any other Resource with `normal` / `orm` Texture2D fields gets those fields. A material can be shared by several models: its maps show on all of them.
 
-Turning the relief upside down: `invert` in the recipe, or a negative `normal_scale` on the material.
+Turning the relief upside down: `invert_height` in the recipe, or a negative `normal_scale` on the material. `invert_r` / `invert_g` flip one axis (`invert_g` gives DirectX, green down; Godot reads OpenGL). Softer: lower `strength` or raise `level`, or `normal_scale` on the material; less speckle on a busy picture (leaves): `smoothing` 1-2.
 
 References:
-- NormalMap-Online (cpetry, MIT): https://cpetry.github.io/NormalMap-Online/ — the same chain (grey height, blur, strength, invert).
-- Godot `Image.bump_map_to_normal_map`: https://docs.godotengine.org/en/stable/classes/class_image.html#class-image-method-bump-map-to-normal-map
+- NormalMap-Online (cpetry, MIT): https://cpetry.github.io/NormalMap-Online/ , source https://github.com/cpetry/NormalMap-Online (`javascripts/normalMap.js`, `shader/NormalMapShader.js`) — the algorithm ReliefBaker ports: grey height, Sobel / Scharr, dz = (1 + 2^level) / strength, defaults 2.5 / 7 / 0.
 - Godot `BaseMaterial3D` (normal map is OpenGL, Y up; ORM is R occlusion, G roughness, B metal): https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
 - Godot texture import (`compress/normal_map`): https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html

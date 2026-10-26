@@ -2,16 +2,15 @@
 class_name ReliefBaker
 extends RefCounted
 
-## Guesses a relief from a colour picture: brightness is height, the broad painted light is taken away (high-pass), the
-## rest is smoothed and turned into a normal map with Image.bump_map_to_normal_map (OpenGL: green up). On request it also
-## makes an ORM (R occlusion from the hollows, G roughness, B metal or height). Holes of a cutout take the height of the
-## nearest solid texel, so the edge leaves no halo. With `tile_cells` each tile of a sheet wraps on itself; without, the
-## edges clamp. Pure, static and deterministic: the same picture and recipe give the same bytes. Not: files (MapWriter).
-## Ref: NormalMap-Online (cpetry) does the same chain (grey height, blur, strength, invert) with a Sobel filter.
+## Guesses a relief from a colour picture the way NormalMap-Online (cpetry, MIT) does: brightness is height, optionally
+## inverted, smoothed or sharpened, then a 3x3 Sobel (or Scharr) slope gives the normal normalize(slope * 255, (1 + 2^level)
+## / strength), written OpenGL (green up) as Godot reads it. A high-pass that takes the broad painted light away first is
+## optional (off by default). On request it also makes an ORM (R occlusion from the hollows, G roughness, B metal or height).
+## Holes of a cutout take the height of the nearest solid texel, so the edge leaves no halo. With `tile_cells` each tile of a
+## sheet wraps on itself; without, the edges clamp. Pure, static and deterministic: the same picture and recipe give the same
+## bytes. Not: files (MapWriter).
+## Ref: https://github.com/cpetry/NormalMap-Online (javascripts/normalMap.js, shader/NormalMapShader.js).
 
-## A brightness step of 1 / BUMP_GAIN between two texels tilts the normal 45° at strength 1.
-const BUMP_GAIN := 16.0
-## How dark a hollow of a given depth gets at ao_strength 1.
 const AO_GAIN := 8.0
 const LUMA_WEIGHTS := Vector3(0.299, 0.587, 0.114)
 
@@ -42,17 +41,21 @@ static func _bake_cell(part: Image, recipe: ReliefRecipe, normal: Image, orm: Im
 	var wrap := recipe.tile_cells > 0
 	var luma := _fill_holes(_luma(part), _solid(part, recipe.alpha_cut), w, h)
 	var height := luma.duplicate()
-	if recipe.flatten_px > 0:
-		var broad := _blur(luma, w, h, recipe.flatten_px, wrap)
-		for i in height.size():
-			height[i] = luma[i] - broad[i] + 0.5
-	if recipe.blur_px > 0:
-		height = _blur(height, w, h, recipe.blur_px, wrap)
-	if recipe.invert:
+	if recipe.invert_height:
 		for i in height.size():
 			height[i] = 1.0 - height[i]
+	if recipe.flatten_px > 0:
+		var broad := _blur(height, w, h, recipe.flatten_px, wrap)
+		for i in height.size():
+			height[i] = height[i] - broad[i] + 0.5
+	if recipe.smoothing > 0:
+		height = _blur(height, w, h, recipe.smoothing, wrap)
+	elif recipe.smoothing < 0:
+		var soft := _blur(height, w, h, -recipe.smoothing, wrap)
+		for i in height.size():
+			height[i] = 2.0 * height[i] - soft[i]
 	var whole := Rect2i(0, 0, w, h)
-	normal.blit_rect(_normal_of(height, w, h, recipe.strength * BUMP_GAIN, wrap), whole, at)
+	normal.blit_rect(_normal_of(height, w, h, recipe, wrap), whole, at)
 	if orm != null:
 		orm.blit_rect(_orm_of(height, luma, w, h, recipe, wrap), whole, at)
 
@@ -141,22 +144,36 @@ static func _at(i: int, length: int, wrap: bool) -> int:
 	return posmod(i, length) if wrap else clampi(i, 0, length - 1)
 
 
-## bump_map_to_normal_map wraps at the edges; without `wrap` the field gets one more clamped column and row, cut after.
-static func _normal_of(height: PackedFloat32Array, w: int, h: int, scale: float, wrap: bool) -> Image:
-	var field := height
-	var fw := w
-	var fh := h
-	if not wrap:
-		fw = w + 1
-		fh = h + 1
-		field = PackedFloat32Array()
-		field.resize(fw * fh)
-		for y in fh:
-			for x in fw:
-				field[y * fw + x] = height[mini(y, h - 1) * w + mini(x, w - 1)]
-	var image := Image.create_from_data(fw, fh, false, Image.FORMAT_RF, field.to_byte_array())
-	image.bump_map_to_normal_map(scale)
-	return image if wrap else image.get_region(Rect2i(0, 0, w, h))
+## The 3x3 slope of the height at every texel (Sobel 1 2 1 or Scharr 3 10 3), as NormalMap-Online: x grows to the right,
+## y up (OpenGL), z = (1 + 2^level) / strength over a slope in 0..255 steps. Edges wrap or clamp.
+static func _normal_of(height: PackedFloat32Array, w: int, h: int, recipe: ReliefRecipe, wrap: bool) -> Image:
+	var scharr := recipe.filter == ReliefRecipe.Filter.SCHARR
+	var side := 3.0 if scharr else 1.0
+	var mid := 10.0 if scharr else 2.0
+	var gain := 255.0 * recipe.strength / (1.0 + pow(2.0, recipe.level))
+	var flip := Vector2(-1.0 if recipe.invert_r else 1.0, -1.0 if recipe.invert_g else 1.0)
+	var bytes := PackedByteArray()
+	bytes.resize(w * h * 4)
+	for y in h:
+		var up := _at(y - 1, h, wrap) * w
+		var row := y * w
+		var down := _at(y + 1, h, wrap) * w
+		for x in w:
+			var left := _at(x - 1, w, wrap)
+			var right := _at(x + 1, w, wrap)
+			var tl := height[up + left]
+			var tr := height[up + right]
+			var bl := height[down + left]
+			var br := height[down + right]
+			var dx := side * (tl + bl - tr - br) + mid * (height[row + left] - height[row + right])
+			var dy := side * (bl + br - tl - tr) + mid * (height[down + x] - height[up + x])
+			var n := Vector3(dx * gain * flip.x, dy * gain * flip.y, 1.0).normalized()
+			var i := (row + x) * 4
+			bytes[i] = _byte(n.x * 0.5 + 0.5)
+			bytes[i + 1] = _byte(n.y * 0.5 + 0.5)
+			bytes[i + 2] = _byte(n.z * 0.5 + 0.5)
+			bytes[i + 3] = 255
+	return Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, bytes)
 
 
 ## R = 1 minus how far a texel sits below its surroundings, G = roughness, B = metal or the height.

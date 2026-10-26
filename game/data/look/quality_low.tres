@@ -31,6 +31,7 @@ ground_macro = true
 ssil_enabled = false
 glow_enabled = false
 grass_enabled = false
+relief_maps = false
 grass_radius_m = 24.0
 grass_near_radius_m = 8.0
 grass_density_scale = 0.3

@@ -8,7 +8,13 @@ extends RefCounted
 
 
 static func forward(source: BaseMaterial3D, target: ShaderMaterial) -> void:
-	var on := source != null and source.normal_enabled and source.normal_texture != null
+	var on := is_on(source)
 	target.set_shader_parameter(&"use_relief", on)
 	target.set_shader_parameter(&"relief_normal_tex", source.normal_texture if on else null)
 	target.set_shader_parameter(&"relief_normal_scale", source.normal_scale if on else 1.0)
+
+
+## True while `source` draws a normal map (a BaseMaterial3D with its map on; SurfaceReliefLayer turns them off globally).
+static func is_on(source: Material) -> bool:
+	var base := source as BaseMaterial3D
+	return base != null and base.normal_enabled and base.normal_texture != null

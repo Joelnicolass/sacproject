@@ -6,6 +6,7 @@ extends Resource
 ## - The quality is one of `presets` (the existing LookQuality .tres); this resource never copies their fields.
 ## - VSync, fullscreen and the FPS cap are the window's.
 ## - «Vegetación» (RFC-054 054f): off, the mesh vegetation layers (FloraField) draw nothing whatever the preset says.
+## - «Relieve» (RFC-067): off, no model draws its normal maps whatever the preset says (SurfaceReliefLayer reads it).
 ## - It lives in `user://settings.cfg` `[graphics]` through UserSettings. `--quality=low|medium|high` on the command
 ##   line wins for one run and is not saved.
 ## - «Cantidad de marcas»: how many 10 m tiles of the ground can hold a mark (burns, cracks) at once; GroundScars reads it when the map loads.
@@ -25,6 +26,7 @@ const ARG := "--quality="
 @export var default_vsync := true
 @export var default_fullscreen := false
 @export var default_vegetation := true
+@export var default_relief := true
 ## 32 to 256 painted ground tiles.
 @export_range(32, 256) var default_scar_tiles := 256
 ## 0 = no cap.
@@ -40,6 +42,7 @@ var _vsync := true
 var _fullscreen := false
 var _max_fps := 0
 var _vegetation := true
+var _relief := true
 var _scar_tiles := 256
 
 
@@ -72,6 +75,18 @@ func max_fps() -> int:
 func vegetation_enabled() -> bool:
 	_ensure_loaded()
 	return _vegetation
+
+
+func relief_enabled() -> bool:
+	_ensure_loaded()
+	return _relief
+
+
+func set_relief_enabled(on: bool) -> void:
+	if on == relief_enabled():
+		return
+	_relief = on
+	_commit()
 
 
 func scar_tiles() -> int:
@@ -154,6 +169,7 @@ func _commit() -> void:
 			"fullscreen": _fullscreen,
 			"max_fps": _max_fps,
 			"vegetation": _vegetation,
+			"relief": _relief,
 			"scar_tiles": _scar_tiles,
 		})
 	emit_changed()
@@ -168,6 +184,7 @@ func _ensure_loaded() -> void:
 	_fullscreen = default_fullscreen
 	_max_fps = default_max_fps
 	_vegetation = default_vegetation
+	_relief = default_relief
 	_scar_tiles = default_scar_tiles
 	if Engine.is_editor_hint():
 		return
@@ -179,6 +196,7 @@ func _ensure_loaded() -> void:
 	_vsync = _read_bool("vsync", default_vsync)
 	_fullscreen = _read_bool("fullscreen", default_fullscreen)
 	_vegetation = _read_bool("vegetation", default_vegetation)
+	_relief = _read_bool("relief", default_relief)
 	var tiles: Variant = UserSettings.read_value(SECTION, "scar_tiles", default_scar_tiles)
 	_scar_tiles = clampi(int(tiles), 32, 256) if typeof(tiles) in [TYPE_INT, TYPE_FLOAT] else default_scar_tiles
 	var fps: Variant = UserSettings.read_value(SECTION, "max_fps", default_max_fps)

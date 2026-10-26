@@ -39,6 +39,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "UI_GRAPHICS_TAB_VEGETATION"
 
+[node name="Relief" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_GRAPHICS_TAB_RELIEF"
+
 [node name="MaxFpsRow" type="HBoxContainer" parent="."]
 layout_mode = 2
 

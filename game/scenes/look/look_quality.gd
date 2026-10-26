@@ -86,6 +86,11 @@ extends Resource
 ## Multiplies the particles of the ambient life (pollen, fireflies...). 0 = no ambient life at all.
 @export_range(0.0, 2.0, 0.05) var life_density_scale: float = 1.0
 
+@export_group("Relieve (067)")
+## The normal maps of the models (SurfaceReliefLayer). Off = every material draws as if it had none; the player's
+## «Relieve» option can only turn them off on top of this.
+@export var relief_maps: bool = true
+
 @export_group("Vegetación (RFC-054)")
 ## One entry per mesh vegetation layer (FloraField), by the layer's id. A layer without an entry is not drawn.
 @export var vegetation: Array[VegetationQuality] = []

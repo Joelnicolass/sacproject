@@ -14,12 +14,12 @@ extends ChainEffect
 
 func hop(_chain: ChainHop, from: Vector3, body: Node3D, point: Vector3) -> void:
 	if beam != null:
-		FxBus.broadcast_beam(beam.fx_name(), from, BodyNudge.center(body) if body != null else point, body)
+		FxBus.broadcast_beam(beam, from, BodyNudge.center(body) if body != null else point, body)
 
 
 func land(_chain: ChainHop, body: Node3D, _point: Vector3) -> void:
 	if body == null:
 		return
 	if burst != null:
-		FxBus.broadcast(burst.bus_name(), BodyNudge.center(body))
+		FxBus.broadcast(burst, BodyNudge.center(body))
 	HealEffect.heal_full(body)

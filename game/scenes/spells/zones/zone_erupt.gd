@@ -38,6 +38,6 @@ func _fire(_step: int) -> void:
 func _show(center: Vector3) -> void:
 	var at := center + (burst_at.position if burst_at != null else Vector3.ZERO)
 	for type in puffs:
-		FxBus.broadcast(type.bus_name(), at)
+		FxBus.broadcast(type, at)
 	if burst != null:
-		FxBus.broadcast_scene(burst.resource_path, at, {})
+		FxBus.broadcast_scene(burst, at, {})

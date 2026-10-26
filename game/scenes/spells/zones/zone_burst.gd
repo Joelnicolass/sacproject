@@ -23,9 +23,9 @@ func _fire(_step: int) -> void:
 	var point := zone.points[0]
 	var at := point + (burst_at.position if burst_at != null else Vector3.ZERO)
 	for type in puffs:
-		FxBus.broadcast(type.bus_name(), at)
+		FxBus.broadcast(type, at)
 	if burst != null:
-		FxBus.broadcast_scene(burst.resource_path, at, {})
+		FxBus.broadcast_scene(burst, at, {})
 	for mark in marks:
 		ScarMark.broadcast(mark, point)
 	if damage_radius_m > 0.0:

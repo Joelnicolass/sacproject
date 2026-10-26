@@ -25,7 +25,7 @@ func _fire(_step: int) -> void:
 		_show(point)
 		SplashDamage.deal(get_tree(), point, float(spell.damage), spell.damage_range_m, null, zone.from_slot, Health.SPLASH_SPELL, Health.IGNITE)
 		for body in SplashDamage.bodies_within(get_tree(), point, spell.damage_range_m):
-			Burning.ignite(body, 0.0, MatchClock.ticks_for(burn_s), Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look.bus_name() if burn_look else "")
+			Burning.ignite(body, 0.0, MatchClock.ticks_for(burn_s), Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look)
 	if throws:
 		_throw_all()
 
@@ -43,6 +43,6 @@ func _throw_all() -> void:
 func _show(point: Vector3) -> void:
 	var at := point + (burst_at.position if burst_at else Vector3.ZERO)
 	for type in puffs:
-		FxBus.broadcast(type.bus_name(), at)
+		FxBus.broadcast(type, at)
 	if burst != null:
-		FxBus.broadcast_scene(burst.resource_path, at, {})
+		FxBus.broadcast_scene(burst, at, {})

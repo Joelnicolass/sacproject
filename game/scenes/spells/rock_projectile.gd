@@ -25,9 +25,14 @@ const CAST_AHEAD := 1.5
 const SPIN_MIN := 0.2
 const SPIN_MAX := 0.8
 ## Trail puffs (animateRock) on every peer, by time (FxTrail): one per 2/60 s.
-const TRAIL_FX := "rock_trail"
 const TRAIL_INTERVAL_S := 2.0 / 60.0
 
+## Puffed behind it while it flies (FxTrail, one per TRAIL_INTERVAL_S). Empty = no trail.
+@export var trail: ParticleType
+## Bursts where it leaves the ground, on every peer.
+@export var emerge: Array[ParticleType] = []
+## Bursts where it breaks, on every peer.
+@export var explosion: Array[ParticleType] = []
 ## 061k-5: the crack it leaves where it bursts (spells/marks/rock_mark.tscn), played on every peer.
 @export var ground_mark: PackedScene
 
@@ -68,7 +73,7 @@ func setup(data: Dictionary) -> void:
 	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
 	_spin_rate = TAU * rng.randf_range(SPIN_MIN, SPIN_MAX)
 	_attach_net()
-	_trail = FxTrail.attach(self, TRAIL_FX, TRAIL_INTERVAL_S)
+	_trail = FxTrail.attach(self, trail, TRAIL_INTERVAL_S)
 
 
 func _ready() -> void:
@@ -116,8 +121,8 @@ func _cast_step() -> void:
 		return
 	global_position.y = maxf(global_position.y, _ground_height(global_position))
 	flying = true
-	FxBus.broadcast("rock_emerge", global_position)
-	FxBus.broadcast("rock_dust", global_position)
+	for type in emerge:
+		FxBus.broadcast(type, global_position)
 
 
 ## sacengine rockCastingPosition: ahead of the caster, past the front of its hit box.
@@ -239,8 +244,8 @@ func _burst(target: Node3D) -> void:
 		var health := target.get_node("Health") as Health
 		var taken := health.damage_typed(damage, _HEALTH.DIRECT_SPELL, from_slot)
 		report(target, taken, _HEALTH.DIRECT_SPELL)
-	FxBus.broadcast("rock", global_position)
-	FxBus.broadcast("dirt", global_position)
+	for type in explosion:
+		FxBus.broadcast(type, global_position)
 	ScarMark.broadcast(ground_mark, global_position)
 	set_physics_process(false)
 	queue_free()

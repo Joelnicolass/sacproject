@@ -42,7 +42,7 @@ func setup(data: Dictionary) -> void:
 	_attach_net()
 	## Its own trail (7 firy + 1 fbal per tick, scale 1.5), played locally on every peer.
 	for type in trail:
-		FxTrail.attach(self, type.bus_name(), TRAIL_INTERVAL_S)
+		FxTrail.attach(self, type, TRAIL_INTERVAL_S)
 
 
 func _ready() -> void:
@@ -127,7 +127,7 @@ func _explode(direct: Node3D) -> void:
 	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
 	## Its own explosion: xplo + exp2 + frck + smok (sacengine animateFireballExplosion, state.d:16631-16665).
 	for type in explosion:
-		FxBus.broadcast(type.bus_name(), center)
+		FxBus.broadcast(type, center)
 	set_physics_process(false)
 	set_process(false)
 	queue_free()

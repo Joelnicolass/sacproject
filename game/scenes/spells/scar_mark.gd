@@ -43,7 +43,7 @@ func play(_params: Dictionary) -> void:
 ## Plays the mark scene `scene` at `at` on every peer (one event, like any other effect). Empty scene: nothing.
 static func broadcast(scene: PackedScene, at: Vector3) -> void:
 	if scene != null:
-		FxBus.broadcast_scene(scene.resource_path, at, {})
+		FxBus.broadcast_scene(scene, at, {})
 
 
 func _get_configuration_warnings() -> PackedStringArray:

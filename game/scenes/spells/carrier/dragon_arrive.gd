@@ -86,4 +86,4 @@ func _wander(carrier: SpellCarrier) -> void:
 
 func _roar(carrier: SpellCarrier) -> void:
 	if roar != null:
-		FxBus.broadcast(roar.bus_name(), carrier.global_position)
+		FxBus.broadcast(roar, carrier.global_position)

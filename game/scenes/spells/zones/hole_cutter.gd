@@ -93,7 +93,7 @@ func _take(vertex: Vector2i) -> void:
 	_taken.append(id)
 	_fling(at)
 	if chunk != null:
-		FxBus.broadcast_scene(chunk.resource_path, at, {"vertex": id})
+		FxBus.broadcast_scene(chunk, at, {"vertex": id})
 	if dig_burst != null:
 		FxBus.broadcast(dig_burst, at)
 	vertex_taken.emit(id)

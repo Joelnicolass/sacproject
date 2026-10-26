@@ -14,7 +14,11 @@ const FPS := 60.0
 const WIZARD_DURATION_FACTOR := 0.2
 const EXTRA_S := 0.5
 
-## Seconds between `speedup` bursts on the target.
+## Played on the target every `fx_interval_s`. Empty = no bursts.
+@export var speedup_fx: ParticleType
+## Where on the target's body the burst plays.
+@export var speedup_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
+## Seconds between `speedup_fx` bursts on the target.
 @export var fx_interval_s := 1.0
 
 var frames_left := 0
@@ -48,7 +52,7 @@ func _physics_process(delta: float) -> void:
 	_fx_left -= delta
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s
-		FxBus.broadcast("speedup", (body as Node3D).global_position + Vector3.UP)
+		FxBus.broadcast(speedup_fx, BodyFacts.point(body as Node3D, speedup_socket))
 
 
 func _exit_tree() -> void:

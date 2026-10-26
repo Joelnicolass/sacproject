@@ -28,6 +28,6 @@ func apply(carrier: SpellCarrier, body: Node3D) -> bool:
 			var along := Vector3(cos(angle), rng.randf_range(-1.0, 1.0), sin(angle)).normalized() * half
 			FxBus.broadcast_beam(beam, center - along, center + along, null)
 	if strike != null:
-		FxBus.broadcast(strike.bus_name(), center)
+		FxBus.broadcast(strike, center)
 	Health.of(body).kill(carrier.from_slot)
 	return true

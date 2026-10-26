@@ -46,7 +46,7 @@ func _on_event(target: Node3D) -> void:
 	if effect == null:
 		return
 	if flash != null:
-		FxBus.broadcast(flash.bus_name(), carrier.global_position)
+		FxBus.broadcast(flash, carrier.global_position)
 	if reach == null:
 		effect.apply(carrier, target)
 		return

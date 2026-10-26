@@ -135,6 +135,7 @@ func _run_suite() -> void:
 	_results.merge(PRESENTATION_REFS_CASES.new().run(self))  # 055s s2
 	_results.merge(WIRE_CONFIG_CASES.new().run(self))  # 055s
 	_results.merge(PROP_FACTS_CASES.new().run(self))  # 055s s5a
+	_results.merge(preload("res://debug/suite/surface_refs_cases.gd").new().run(self))  # 067 P3
 	_results.merge(SACRIFICE_PLACES_CASES.new().run(self))  # 055g g1
 	_results.merge(REACH_PLACES_CASES.new().run(self))  # 055r r2
 	_results.merge(await RITUAL_PARTS_CASES.new().run(self))  # 055g g3

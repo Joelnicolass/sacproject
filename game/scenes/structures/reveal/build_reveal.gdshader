@@ -1,10 +1,12 @@
 shader_type spatial;
 // A tower that is still rising (BuildReveal): below `line_y` it is drawn whole, above `line_y + edge_width_m` it is not drawn
 // at all, and in between it dissolves with the noise, with a glowing edge. Opaque (discard), so it sorts and casts shadows
-// like the tower itself; works in every renderer. The surface look (albedo, roughness, alpha scissor) is copied from the
+// like the tower itself; works in every renderer. The surface look (albedo, roughness, alpha scissor, normal map) is copied from the
 // tower's own StandardMaterial3D, so the finished tower looks the same once BuildReveal gives its materials back.
 // Ref: buildingSummon.d:155 and 465-470 (clip plane rising from the base with a 2 m fading band), state.d:15231 and 15253.
 render_mode cull_disabled;
+
+#include "res://scenes/look/surface_relief.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_enable, hint_default_white;
 uniform vec4 albedo_color : source_color = vec4(1.0);
@@ -47,4 +49,6 @@ void fragment() {
 	ALBEDO = mix(tex.rgb, edge_color.rgb, glow);
 	ROUGHNESS = roughness;
 	EMISSION = edge_color.rgb * edge_energy * glow;
+	// RFC-067: the tower's own normal map, when it has one (SurfaceRelief).
+	relief_apply(UV);
 }

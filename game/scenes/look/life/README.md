@@ -1,0 +1,7 @@
+# look/life
+
+What: ambient life by hour and weather: the god's swarms in the air around the camera (pool `Air1..Air3`) and, in the map's `LifeSpot`s, the swarm of each spot's habitat (meadow, water, woods, rock), drawn only while its box is on screen. In low quality (`life_density_scale` 0) nothing shows.
+Not: where the spots are (nodes of each `map.tscn`), the hour or the weather (look/atmosphere), the night sounds (AmbienceDirector plays `AmbienceSet.night_one_shots` by the same hour).
+Talks to: `Atmosphere.changed(sample)` -> `AmbientLifeLayer` -> `LifeSpot.show_swarm(swarm, density)`; the map's `Look/Layers/AmbientLife.spots` points at its `LifeSpots`.
+Edit: a swarm = `data/look/life/<name>.tres` (motion, mesh, amount, by_day / by_night / in_rain) · which swarms a god uses = `data/look/<god>.tres` -> Life (air and one list per habitat; the first that shows wins) · a spot = drag `life_spot.tscn` under the map's `LifeSpots`, pick its habitat, scale the `OnScreen` box.
+Check: F6 `debug/look/ambience_lab.tscn` (pollen by day, fireflies at night, none in the rain; F3 low = none) · the tutorial map with `--log=life`: `vida spots activos a/n` every 10 s (a ≤ spots on screen).

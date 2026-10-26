@@ -10,6 +10,12 @@
 [ext_resource type="Resource" path="res://data/audio/ambience/stratos.tres" id="gm_ambience"]
 [ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
 [ext_resource type="Resource" path="res://data/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://data/look/life/dust.tres" id="58_dust"]
+[ext_resource type="Resource" path="res://data/look/life/fireflies.tres" id="58_fireflies"]
+[ext_resource type="Resource" path="res://data/look/life/gnats.tres" id="58_gnats"]
+[ext_resource type="Resource" path="res://data/look/life/pollen.tres" id="58_pollen"]
 
 [sub_resource type="Curve" id="Day_stratos_elevation_change_deg"]
 _limits = [-120, 60, 0.0, 24.0]
@@ -57,6 +63,14 @@ stars = SubResource("Day_stratos_stars")
 moon_intensity = SubResource("Day_stratos_moon_intensity")
 dusk = SubResource("Day_stratos_dusk")
 
+[sub_resource type="Resource" id="Life_stratos"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_pollen"), ExtResource("58_fireflies")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_pollen")])
+water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Stratos"
@@ -70,3 +84,4 @@ music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")
 day = SubResource("Day_stratos")
 weather = ExtResource("58_weather")
+life = SubResource("Life_stratos")

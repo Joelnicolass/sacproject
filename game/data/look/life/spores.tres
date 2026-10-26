@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="AmbientSwarm" format=3]
+
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="1_swarm"]
+
+[sub_resource type="ParticleProcessMaterial" id="Mote_move"]
+emission_shape = 3
+emission_box_extents = Vector3(25, 8, 25)
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 0.1
+initial_velocity_max = 0.4
+gravity = Vector3(0, 0.05, 0)
+
+[sub_resource type="StandardMaterial3D" id="Mote_material"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.5, 0.9, 0.6, 0.9)
+emission_enabled = true
+emission = Color(0.5, 0.9, 0.6, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="SphereMesh" id="Mote_mesh"]
+material = SubResource("Mote_material")
+radius = 0.07
+height = 0.14
+radial_segments = 6
+rings = 3
+
+[resource]
+script = ExtResource("1_swarm")
+process_material = SubResource("Mote_move")
+mesh = SubResource("Mote_mesh")
+amount = 100
+lifetime_s = 9.0
+by_day = true
+by_night = true
+in_rain = true

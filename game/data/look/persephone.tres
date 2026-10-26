@@ -21,6 +21,12 @@
 [ext_resource type="Resource" path="res://data/audio/ambience/persephone.tres" id="gm_ambience"]
 [ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
 [ext_resource type="Resource" path="res://data/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://data/look/life/dust.tres" id="58_dust"]
+[ext_resource type="Resource" path="res://data/look/life/fireflies.tres" id="58_fireflies"]
+[ext_resource type="Resource" path="res://data/look/life/gnats.tres" id="58_gnats"]
+[ext_resource type="Resource" path="res://data/look/life/pollen.tres" id="58_pollen"]
 
 [sub_resource type="Resource" id="Role_open"]
 script = ExtResource("21_ground_role")
@@ -96,6 +102,14 @@ stars = SubResource("Day_persephone_stars")
 moon_intensity = SubResource("Day_persephone_moon_intensity")
 dusk = SubResource("Day_persephone_dusk")
 
+[sub_resource type="Resource" id="Life_persephone"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_pollen"), ExtResource("58_fireflies")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_pollen"), ExtResource("58_fireflies")])
+water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats"), ExtResource("58_fireflies")])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Pradera de Persephone"
@@ -110,3 +124,4 @@ music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")
 day = SubResource("Day_persephone")
 weather = ExtResource("58_weather")
+life = SubResource("Life_persephone")

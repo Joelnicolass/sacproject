@@ -47,6 +47,7 @@
 [ext_resource type="Texture2D" path="res://assets/original/maps/high_noon/light.png" id="62_light"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
 [ext_resource type="Resource" uid="uid://cmpaot4pm4cus" path="res://scenes/map/maps/high_noon/heights.png" id="t_heights"]
+[ext_resource type="PackedScene" path="res://scenes/look/life/life_spot.tscn" id="58_spot"]
 
 [node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -525,3 +526,36 @@ script = ExtResource("flora_layer_script")
 species = ExtResource("sp_james_bush_5")
 density = ExtResource("fd_james_bush_5")
 max_per_cell = 1
+
+[node name="AmbientLife" parent="Look/Layers" node_paths=PackedStringArray("spots")]
+spots = NodePath("../../../LifeSpots")
+
+[node name="LifeSpots" type="Node3D" parent="."]
+editor_description = "Lugares con vida ambiental (RFC-058). Arrastrá life_spot.tscn acá, elegí el hábitat y escalá la caja."
+
+[node name="Meadow01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1452, 30.5, 1468)
+
+[node name="Meadow02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1268, 15.1, 1156)
+
+[node name="Meadow03" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1108, 25.1, 1060)
+
+[node name="Meadow04" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1436, 14.4, 1020)
+
+[node name="Meadow05" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1244, 12.9, 1348)
+
+[node name="Rock01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 948, 40.9, 1052)
+habitat = 3
+
+[node name="Rock02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1052, 32.4, 1252)
+habitat = 3
+
+[node name="Rock03" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1092, 37.5, 1412)
+habitat = 3

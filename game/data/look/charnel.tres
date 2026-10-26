@@ -10,6 +10,11 @@
 [ext_resource type="Resource" path="res://data/audio/ambience/charnel.tres" id="gm_ambience"]
 [ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
 [ext_resource type="Resource" path="res://data/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://data/look/life/ash.tres" id="58_ash"]
+[ext_resource type="Resource" path="res://data/look/life/fireflies.tres" id="58_fireflies"]
+[ext_resource type="Resource" path="res://data/look/life/spores.tres" id="58_spores"]
 
 [sub_resource type="Curve" id="Day_charnel_elevation_change_deg"]
 _limits = [-30, 30, 0.0, 24.0]
@@ -20,6 +25,14 @@ point_count = 9
 script = ExtResource("58_day")
 start_hour = 0
 elevation_change_deg = SubResource("Day_charnel_elevation_change_deg")
+
+[sub_resource type="Resource" id="Life_charnel"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_spores"), ExtResource("58_ash")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_spores")])
+water = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_spores")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_ash")])
 
 [resource]
 script = ExtResource("1_p")
@@ -34,3 +47,4 @@ music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")
 day = SubResource("Day_charnel")
 weather = ExtResource("58_weather")
+life = SubResource("Life_charnel")

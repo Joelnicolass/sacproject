@@ -10,6 +10,10 @@
 [ext_resource type="Resource" path="res://data/audio/ambience/pyro.tres" id="gm_ambience"]
 [ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
 [ext_resource type="Resource" path="res://data/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://data/look/life/ash.tres" id="58_ash"]
+[ext_resource type="Resource" path="res://data/look/life/embers.tres" id="58_embers"]
 
 [sub_resource type="Curve" id="Day_pyro_elevation_change_deg"]
 _limits = [-120, 60, 0.0, 24.0]
@@ -57,6 +61,14 @@ stars = SubResource("Day_pyro_stars")
 moon_intensity = SubResource("Day_pyro_moon_intensity")
 dusk = SubResource("Day_pyro_dusk")
 
+[sub_resource type="Resource" id="Life_pyro"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_embers"), ExtResource("58_ash")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_embers")])
+water = Array[ExtResource("58_swarm")]([])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_ash")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_embers")])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Pyro"
@@ -70,3 +82,4 @@ music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")
 day = SubResource("Day_pyro")
 weather = ExtResource("58_weather")
+life = SubResource("Life_pyro")

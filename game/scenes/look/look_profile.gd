@@ -25,6 +25,8 @@ extends Resource
 @export var day: DayCycle
 ## How the weather goes (the five gods share `data/look/weather/plan.tres`). Empty = always clear.
 @export var weather: WeatherPlan
+## Pollen, fireflies, embers...: in the air around the camera and in the map's LifeSpots. Empty = no ambient life.
+@export var life: AmbientLifeSet
 
 @export_group("Ground and plants")
 ## The original's flat ground (atlas, edge and light map): what the terrain wears when `ground` is empty.

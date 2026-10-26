@@ -10,7 +10,8 @@
 ; 055f f5: la variante con amenaza del laboratorio (misma escena, --rules=res://debug/rules/ai_spells_lab_threat.tres). 8 Troggs enemigos
 ; encima del mago IA, que esta a 20 m de su Manalith del centro (a 370 m de su altar); 2 Troggs propios junto a la Manalith, fuera del
 ; alcance del Teleport (30 m). Criterio: la IA lanza Teleport (al altar) y Guardian (un Trogg propio atado a un edificio presionado), y el
-; Caster no le rechaza nada.
+; Caster no le rechaza nada. Nivel 8 con la vida y el mana del nivel (wizard_level_stats, 1800): con los 1000 sin nivel salta en el
+; segundo 2 y el Teleport lo deja sin mana para el Guardian (medido).
 
 [sub_resource type="Resource" id="Manalith_center"]
 script = ExtResource("5_structure")
@@ -66,6 +67,7 @@ max_count = 0
 script = ExtResource("1_rules")
 starting_souls = 20
 wizard_level = 8
+wizard_level_stats = true
 biome_god = &"persephone"
 match_seed = 7
 groups = Array[ExtResource("2_group")]([SubResource("Group_swarm"), SubResource("Group_guards")])

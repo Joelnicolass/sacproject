@@ -67,8 +67,9 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 @export_range(1, 10) var guard_min_foes := 2
 ## A heal on an area (Rainbow, Healing Aura) goes where the own bodies inside it miss at least this much health in all (055f f5).
 @export_range(0.0, 5000.0, 10.0) var heal_area_min_missing := 300.0
-## He jumps to an own building far away (Teleport) when his threat is at least this (0: calm, 1: overrun) (055f f5).
-@export_range(0.0, 1.0, 0.05) var escape_threat := 0.7
+## He jumps to an own building far away (Teleport) when his threat is at least this (0: calm, 1: overrun) (055f f5). 0.5: the
+## enemy near him weighs as much as his whole side near him (8 Troggs on a wizard with 2 creatures measure about that).
+@export_range(0.0, 1.0, 0.05) var escape_threat := 0.5
 
 @export_group("Convocar")
 ## The emergency Manahoar is considered when a random draw is at least threat * this.
@@ -102,6 +103,8 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 @export var soul_reach_base := 80.0
 ## Deviation: while he walks to a soul he keeps looking for it within this times the reach (the way can first lead away). 1: the original.
 @export var soul_keep_factor := 1.25
+## A soul farther than this he would rather send a spell for (Soul Wind, Soul Mole) than walk to; nearer, he walks (055f f5).
+@export_range(0.0, 200.0, 1.0, "suffix:m") var soul_send_min_m := 40.0
 
 
 ## `tactics` or, when null, the Normal one.

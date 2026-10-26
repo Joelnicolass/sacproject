@@ -102,4 +102,4 @@ soul_keep_factor = 1.25
 ; 055f f5: los usos nuevos (Halo, Rainbow y Healing Aura, Teleport); diseno propio, no del original
 self_area_min_foes = 3
 heal_area_min_missing = 400.0
-escape_threat = 0.8
+escape_threat = 0.6

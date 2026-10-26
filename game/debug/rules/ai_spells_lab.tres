@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=18 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
@@ -6,11 +6,16 @@
 [ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
 [ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="5_structure"]
 [ext_resource type="Resource" path="res://debug/ai/ai_spells_lab_seat.tres" id="6_seat"]
+[ext_resource type="Script" path="res://debug/suite/bench_event.gd" id="7_event"]
 
 ; 055f f5: el laboratorio de hechizos de la IA (debug/ai/ai_spells_lab.tscn). El mago IA (slot 2, Persephone, libro mezclado) quieto
 ; junto a su Manalith del centro; 4 Troggs enemigos a 35 m; 2 Troggs propios con vida casi nula junto a ellos (al morir dejan cadaver
 ; y alma: Animate Dead, Soul Wind); el mago humano pasivo a 60 m. Criterio: en 4 min la IA lanza Halo, Charm, Death, Meanstalks,
 ; Rainbow, Animate Dead y Soul Wind, y el Caster no le rechaza nada.
+; Nivel 9 con 1000 de mana por nivel (10000): el laboratorio mide que hechizo elige la IA, no la economia. Con los 1000 del mago sin
+; nivel no paga ninguno de 1800 (Charm, Death, Meanstalks), y con los 1900 del producto junta ~10 de mana por segundo lejos de las
+; fuentes: no llega a tres de 1800 en 4 min. A los 30 s llegan 2 Troggs enemigos mas a 55 m del mago (wave2): Death barre la
+; primera ola en el segundo 3, y sin criaturas enemigas vivas no hay a quien lanzarle Charm.
 
 [sub_resource type="Resource" id="Manalith_center"]
 script = ExtResource("5_structure")
@@ -39,6 +44,28 @@ offset_m = 30.0
 offset_z_m = 18.0
 health_fraction = 0.005
 label = "victims"
+
+[sub_resource type="Resource" id="Event_wave_a"]
+script = ExtResource("7_event")
+at_s = 30.0
+action = "spawn"
+label = "wave2"
+tag = "ycro"
+slot = 1
+from_slot = 2
+distance_m = 55.0
+angle_deg = 0.0
+
+[sub_resource type="Resource" id="Event_wave_b"]
+script = ExtResource("7_event")
+at_s = 30.0
+action = "spawn"
+label = "wave2"
+tag = "ycro"
+slot = 1
+from_slot = 2
+distance_m = 55.0
+angle_deg = 15.0
 
 [sub_resource type="Resource" id="Expect_olah"]
 script = ExtResource("4_expect")
@@ -106,12 +133,15 @@ max_count = 0
 [resource]
 script = ExtResource("1_rules")
 starting_souls = 20
-wizard_level = 8
+wizard_level = 9
+wizard_level_stats = true
+mana_per_level = 1000.0
 biome_god = &"persephone"
 match_seed = 7
 groups = Array[ExtResource("2_group")]([SubResource("Group_foes"), SubResource("Group_victims")])
 start_paused = true
 structures = Array[ExtResource("5_structure")]([SubResource("Manalith_center")])
+events = Array[ExtResource("7_event")]([SubResource("Event_wave_a"), SubResource("Event_wave_b")])
 ignore_annihilation = true
 ai_seats = Array[ExtResource("3_seat")]([ExtResource("6_seat")])
 ai_start_at_anchor = true

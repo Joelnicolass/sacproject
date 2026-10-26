@@ -36,7 +36,7 @@ static func blood_of(body: Node3D) -> BloodFx:
 
 func run() -> void:
 	_arm_watchdog()
-	FxBus.played.connect(func(kind: StringName, fx: Resource, at: Vector3) -> void: _played.append({"kind": kind, "fx": fx, "at": at}))
+	FxBus.played.connect(_on_played)
 	await wait(1.0)
 	var scars := GroundScars.of(self)
 	check("ground scars active (window)", scars != null)
@@ -92,6 +92,10 @@ func run_headless() -> void:
 	_finish()
 
 
+func _on_played(kind: StringName, fx: Resource, at: Vector3) -> void:
+	_played.append({"kind": kind, "fx": fx, "at": at})
+
+
 func _played_near(fx: ParticleType, at: Vector3, within_m: float) -> bool:
 	for entry in _played:
 		if entry["fx"] == fx and (entry["at"] as Vector3).distance_to(at) <= within_m:
@@ -118,9 +122,12 @@ func _finish() -> void:
 
 
 func _arm_watchdog() -> void:
-	get_tree().create_timer(timeout_s, true, false, true).timeout.connect(func() -> void:
-		print("BLOOD FAIL timeout")
-		get_tree().quit(1))
+	get_tree().create_timer(timeout_s, true, false, true).timeout.connect(_on_timeout)
+
+
+func _on_timeout() -> void:
+	print("BLOOD FAIL timeout")
+	get_tree().quit(1)
 
 
 ## Waits `seconds` of real time (BloodFx counts real time, not game time).

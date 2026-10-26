@@ -72,7 +72,7 @@ func is_active() -> bool:
 
 ## The blood this body shows now: its look's, or `fallback`.
 func blood_type() -> BloodType:
-	var look := mount.look if mount != null else null
+	var look: BodyLook = mount.look if mount != null else null
 	return look.blood if look != null and look.blood != null else fallback
 
 

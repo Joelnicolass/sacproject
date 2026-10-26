@@ -7,11 +7,14 @@ extends RefCounted
 ##   - ClipFacts on the copy answers exactly as on the original: has, frames, fps, seconds, seconds_at_30, hits and shots of every role;
 ##   - the clip folders are recognised by is_clip_path and nothing else is;
 ##   - an audio stream of every class a sound can have comes out empty and of the same class.
+##   - every Mesh file of a sample of props, buildings and bodies comes out a PlaceholderMesh with the same aabb and name;
+##     the map's folders, a PrimitiveMesh and a PlaceholderMesh are not stripped (strips_mesh / keeps_mesh_path).
 ## Prints CLIP STRIP libs=<n> roles=<n> tracks_in=<n> tracks_out=<n> bad=<n>.
 
 const STRIP := preload("res://addons/sacrifice_tools/dedicated_strip.gd")
 const MODELS_DIR := "res://scenes/bodies/models/"
 const MAX_LINES := 12
+const MESH_SAMPLE := 6
 const AUDIO_CLASSES: PackedStringArray = ["AudioStreamWAV", "AudioStreamOggVorbis", "AudioStreamMP3", "AudioStreamRandomizer"]
 
 
@@ -20,11 +23,12 @@ func run(_host: Node) -> Dictionary:
 	var totals := _libraries(bad)
 	_paths(bad)
 	_audio(bad)
-	print("CLIP STRIP libs=%d roles=%d tracks_in=%d tracks_out=%d bad=%d" % [totals["libs"], totals["roles"], totals["tracks_in"], totals["tracks_out"], bad.size()])
+	var meshes := _meshes(bad)
+	print("CLIP STRIP libs=%d roles=%d tracks_in=%d tracks_out=%d meshes=%d bad=%d" % [totals["libs"], totals["roles"], totals["tracks_in"], totals["tracks_out"], meshes, bad.size()])
 	for line in bad:
 		print("CLIP STRIP   " + line)
-	var ok: bool = bad.is_empty() and totals["roles"] > 0 and totals["tracks_in"] > 0 and totals["tracks_out"] == 0
-	return {"clip_strip": {"ok": ok, "libs": totals["libs"], "roles": totals["roles"], "tracks_in": totals["tracks_in"], "tracks_out": totals["tracks_out"], "bad": bad}}
+	var ok: bool = bad.is_empty() and meshes > 0 and totals["roles"] > 0 and totals["tracks_in"] > 0 and totals["tracks_out"] == 0
+	return {"clip_strip": {"ok": ok, "libs": totals["libs"], "roles": totals["roles"], "tracks_in": totals["tracks_in"], "tracks_out": totals["tracks_out"], "meshes": meshes, "bad": bad}}
 
 
 func _libraries(bad: PackedStringArray) -> Dictionary:
@@ -97,6 +101,53 @@ func _audio(bad: PackedStringArray) -> void:
 	var stripped_wav := STRIP.stripped_audio(wav) as AudioStreamWAV
 	if stripped_wav == null or not stripped_wav.data.is_empty():
 		_note(bad, "AudioStreamWAV: the stripped stream keeps its samples")
+
+
+## Samples of the standalone mesh files the export strips (props, bodies, spell tubes) and of the folders it keeps.
+func _meshes(bad: PackedStringArray) -> int:
+	var checked := 0
+	for dir: String in ["res://scenes/props/meshes/", "res://scenes/bodies/meshes/", "res://scenes/spells/zones/", "res://scenes/spells/tornado/"]:
+		var taken := 0
+		for file in DirAccess.get_files_at(dir):
+			if not file.ends_with(".res") or taken >= MESH_SAMPLE:
+				continue
+			var path: String = dir + file
+			var source := load(path) as Mesh
+			if source == null:
+				continue
+			taken += 1
+			checked += 1
+			if not STRIP.strips_mesh(source, path):
+				_note(bad, path + ": a mesh file the export should strip")
+				continue
+			var out := STRIP.stripped_mesh(source)
+			if not (out is PlaceholderMesh) or out.get_aabb() != source.get_aabb() or out.resource_name != source.resource_name:
+				_note(bad, "%s: the placeholder does not keep aabb %s" % [path, source.get_aabb()])
+	## BuildingFit measures buildings with get_aabb(): the box of the parts must not change.
+	var building := load("res://scenes/structures/buildings/james_rock_1.tscn") as PackedScene
+	if building != null:
+		var root := building.instantiate()
+		for part in root.find_children("*", "MeshInstance3D", true, false):
+			var mesh_node := part as MeshInstance3D
+			if mesh_node.mesh != null and mesh_node.mesh.resource_path.ends_with(".res"):
+				var copy := STRIP.stripped_mesh(mesh_node.mesh)
+				if copy.get_aabb() != mesh_node.mesh.get_aabb():
+					_note(bad, "%s: building part aabb changes" % mesh_node.mesh.resource_path)
+		root.free()
+	for path: String in ["res://scenes/map/maps/high_noon/terrain.res", "res://assets/original/maps/high_noon/terrain.res", "res://scenes/map/anything.res"]:
+		if not STRIP.keeps_mesh_path(path):
+			_note(bad, path + ": a map file that keeps_mesh_path does not keep")
+	for path: String in ["res://scenes/props/meshes/rock.res", "res://scenes/bodies/meshes/baby.res", "res://scenes/spells/zones/volcano_lava_tube.res"]:
+		if STRIP.keeps_mesh_path(path):
+			_note(bad, path + ": keeps_mesh_path keeps a file that is not the map's")
+	var ground := ArrayMesh.new()
+	if STRIP.strips_mesh(ground, "res://assets/original/maps/high_noon/terrain.res") or STRIP.strips_mesh(ground, "res://scenes/map/maps/x/ground.res"):
+		_note(bad, "a map mesh would be stripped")
+	if STRIP.strips_mesh(CylinderMesh.new(), "res://scenes/props/meshes/x.res") or STRIP.strips_mesh(PlaceholderMesh.new(), "res://scenes/props/meshes/x.res"):
+		_note(bad, "a PrimitiveMesh or a PlaceholderMesh would be stripped")
+	if not STRIP.strips_mesh(ground, "res://scenes/props/meshes/x.res"):
+		_note(bad, "an ArrayMesh of props would not be stripped")
+	return checked
 
 
 func _note(notes: PackedStringArray, line: String) -> void:

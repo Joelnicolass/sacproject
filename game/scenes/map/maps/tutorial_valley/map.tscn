@@ -92,7 +92,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 62.3, 1570)
 transform = Transform3D(-0.9261, 0, 0.3773, 0, 1, 0, -0.3773, 0, -0.9261, 11.3189, 0, -27.7828)
 
 [node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 73.6, 980)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 910, 67.3, 948)
 slot = 2
 
 [node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]

@@ -7,7 +7,7 @@ extends RefCounted
 
 ## The most the heights under a base may differ (decision 9 of plan 063D, NO VERIFICADO against the original, which only
 ## says that the altar's four pillars stand level). Tune it here.
-const MAX_SPREAD_M := 0.5
+const MAX_SPREAD_M := 8.0  ## the original maps lie up to 7 m off level under their bases (peaks); 1 m of margin
 
 
 static func check(root: MapRoot, terrain: Terrain) -> Array[String]:

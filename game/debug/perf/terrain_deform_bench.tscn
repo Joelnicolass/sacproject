@@ -1,13 +1,15 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://debug/perf/terrain_deform_bench.gd" id="1_bench"]
 [ext_resource type="PackedScene" path="res://debug/spells/cast_terrain.tscn" id="2_world"]
 [ext_resource type="Resource" path="res://data/look/quality_high.tres" id="3_quality"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/volcano_zone.tscn" id="4_volcano"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_wave.tscn" id="5_quake"]
 
 [node name="TerrainDeformBench" type="Node"]
-editor_description = "Bench del costo de deformar el terreno (diagnóstico 063D). F6 con ventana: imprime por fase (quieto, sello vivo de Volcano cada tick, agujeros de Bore) el tiempo de script por tick, el frame, cada llamada al Terrain y lo que TerrainDeformTexture sube a la GPU (upload_kb, upload_us). Meta: el sello vivo suma <= 1 ms por tick y ningún frame pasa de 20 ms; F4: <= 10 KB y <= 20 us por frame con un sello vivo."
+editor_description = "Bench del costo de deformar el terreno (diagnóstico 063D). F6 con ventana: imprime por fase (quieto, sello vivo de Volcano cada tick, 5 Quakes a la vez una tanda tras otra, agujeros de Bore) el tiempo de script por tick, el frame, cada llamada al Terrain y lo que TerrainDeformTexture sube a la GPU (upload_kb, upload_us). Meta: el sello vivo suma <= 1 ms por tick y ningún frame pasa de 20 ms; F4: <= 10 KB y <= 20 us por frame con un sello vivo. Al final, TERRAIN DEFORM BENCH PASS si los 5 Quakes suman <= 1 ms al tick promedio de la base y ningún frame suyo pasa de 20 ms (RFC-057, criterio 10)."
 script = ExtResource("1_bench")
 world_scene = ExtResource("2_world")
 quality = ExtResource("3_quality")
 live_zone = ExtResource("4_volcano")
+quake_scene = ExtResource("5_quake")

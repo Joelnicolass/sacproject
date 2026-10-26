@@ -1,8 +1,14 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_building.gd" id="1_building"]
 [ext_resource type="Script" path="res://scenes/components/health.gd" id="2_health"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="3_bar"]
+[ext_resource type="Script" path="res://scenes/structures/breaking/structure_break.gd" id="4_break"]
+[ext_resource type="PackedScene" path="res://scenes/structures/breaking/building_break.tscn" id="5_break_scene"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="6_particle_type"]
+[ext_resource type="Resource" path="res://data/fx/explosion_blast.tres" id="7_blast"]
+[ext_resource type="Resource" path="res://data/fx/explosion_blast2.tres" id="8_blast2"]
+[ext_resource type="Script" path="res://scenes/structures/breaking/building_ruin.gd" id="9_ruin"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_building"]
 size = Vector3(4, 4, 4)
@@ -12,7 +18,7 @@ size = Vector2(3, 0.32)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_building"]
 properties/0/path = NodePath("Health:current")
-properties/0/spawn = false
+properties/0/spawn = true
 properties/0/replication_mode = 2
 
 [node name="MapBuilding" type="StaticBody3D" node_paths=PackedStringArray("visuals", "health", "collision", "sync", "health_bar") groups=["nav_source"]]
@@ -40,3 +46,15 @@ replication_config = SubResource("SceneReplicationConfig_building")
 visible = false
 mesh = SubResource("QuadMesh_building_bar")
 only_when_selected = true
+
+[node name="StructureBreak" type="Node" parent="." node_paths=PackedStringArray("building")]
+editor_description = "Al caer, cada parte de Visuals estalla (building_break.tscn + las partículas de bursts) en todos los peers. Sacalo y el edificio cae sin FX; cambiá scene en la escena de un edificio para otra caída."
+script = ExtResource("4_break")
+building = NodePath("..")
+scene = ExtResource("5_break_scene")
+bursts = Array[ExtResource("6_particle_type")]([ExtResource("7_blast"), ExtResource("8_blast2")])
+
+[node name="BuildingRuin" type="Node3D" parent="." node_paths=PackedStringArray("building")]
+editor_description = "Al caer, oculta Visuals y agrega aquí la ruina del BuildingType (ruin_scene) como hijo normal."
+script = ExtResource("9_ruin")
+building = NodePath("..")

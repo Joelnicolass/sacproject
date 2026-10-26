@@ -26,6 +26,7 @@ const DEATH_CASES := preload("res://debug/suite/death_cases.gd")  # 055a
 const CAPTIVE_LOOK_CASES := preload("res://debug/suite/captive_look_cases.gd")  # 055a-5
 const TOWER_CASES := preload("res://debug/suite/tower_cases.gd")  # 061a
 const BUILD_AREA_CASES := preload("res://debug/suite/build_area_cases.gd")  # 064 S1
+const STRUCTURE_BREAK_CASES := preload("res://debug/suite/structure_break_cases.gd")  # 056 S3
 const WARD_CASES := preload("res://debug/suite/ward_cases.gd")  # 061b
 const CHAIN_CASES := preload("res://debug/suite/chain_cases.gd")  # 061e
 const CONTROL_CASES := preload("res://debug/suite/control_cases.gd")  # 061c
@@ -108,6 +109,7 @@ func _run_suite() -> void:
 	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
 	_results.merge(await TOWER_CASES.new().run(self))  # 061a
 	_results.merge(await BUILD_AREA_CASES.new().run(self))  # 064 S1
+	_results.merge(await STRUCTURE_BREAK_CASES.new().run(self))  # 056 S3
 	_results.merge(await WARD_CASES.new().run(self))  # 061b
 	_results.merge(await CHAIN_CASES.new().run(self))  # 061e
 	_results.merge(await CONTROL_CASES.new().run(self))  # 061c

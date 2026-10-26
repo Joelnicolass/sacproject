@@ -1,0 +1,79 @@
+{
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "c00_boot.png"
+  },
+  {
+   "repeat": {
+    "times": 20,
+    "until": {
+     "node": "%Join",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "try_click": "%Play"
+     },
+     {
+      "wait": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "shot": "c01_menu.png"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "print": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "boot_status"
+   }
+  },
+  {
+   "shot": "c02_after_5s.png"
+  },
+  {
+   "wait": 25.0
+  },
+  {
+   "print": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "boot_status"
+   }
+  },
+  {
+   "shot": "c03_after_30s.png"
+  },
+  {
+   "wait": 40.0
+  },
+  {
+   "print": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "boot_status"
+   }
+  },
+  {
+   "shot": "c04_after_70s.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "end"
+    ]
+   }
+  }
+ ]
+}

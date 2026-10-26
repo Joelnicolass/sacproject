@@ -1,0 +1,89 @@
+{
+ "wait_first": 0.5,
+ "steps": [
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "h00_wait_0of2.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "banner_text",
+    "timeout": 200,
+    "contains": "1/2"
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "h01_wait_1of2_start_now.png"
+  },
+  {
+   "click": "%StartNow"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "banner",
+    "timeout": 30,
+    "equals": false
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "started_early"
+    ]
+   }
+  },
+  {
+   "shot": "h02_started.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "started"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "run.C_done"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 200,
+    "equals": true
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "after_intruder"
+    ]
+   }
+  },
+  {
+   "shot": "h03_after_intruder.png"
+  }
+ ]
+}

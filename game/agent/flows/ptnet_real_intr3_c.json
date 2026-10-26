@@ -1,0 +1,63 @@
+{
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "wait": 1.0
+  },
+  {
+   "repeat": {
+    "times": 20,
+    "until": {
+     "node": "%Join",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "try_click": "%Play"
+     },
+     {
+      "wait": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "boot_status",
+    "timeout": 60,
+    "contains": "ya empez"
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "print": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "boot_status"
+   }
+  },
+  {
+   "shot": "c00_turned_away.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "turned_away"
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "c01_still_boot.png"
+  }
+ ]
+}

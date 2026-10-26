@@ -100,7 +100,7 @@ func _save_rects(lab: Node3D, image: Image) -> void:
 	var items: Array = []
 	for row in ROWS:
 		for item in lab.get_node(row).get_children():
-			var origin := (item as Node3D).global_position
+			var origin := (item as Node3D).global_transform.origin
 			var low := camera.unproject_position(origin + Vector3(-CELL_HALF_WIDTH_M, -CELL_BELOW_M, 0.0))
 			var high := camera.unproject_position(origin + Vector3(CELL_HALF_WIDTH_M, CELL_ABOVE_M, 0.0))
 			var box := Rect2(low * to_image, Vector2.ZERO).expand(high * to_image)

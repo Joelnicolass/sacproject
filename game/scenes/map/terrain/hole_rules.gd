@@ -1,10 +1,11 @@
 class_name HoleRules
 extends RefCounted
 
-## When the ground may lose a vertex (a hole): never one at the rim of the map, one that is already gone, or one close to a
-## building; and which vertices a hole at a point means. Static: the caller hands the places of the building parts (`parts_of`
-## gathers them), so the rule itself needs no tree. It does not make the hole (Terrain does) nor choose where to dig (HoleCutter).
-## Ref: sacengine canRemoveLandVertex (state.d:28999-29026).
+## When the ground may lose a vertex (a hole): never one at the rim of the map, one that is already gone, one close to a
+## building, or one under the base of an altar or a manafount; and which vertices a hole at a point means. Static: the caller
+## hands the places of the building parts and the bases (`parts_of`, `bases_of` gather them), so the rule itself needs no tree.
+## It does not make the hole (Terrain does) nor choose where to dig (HoleCutter).
+## Ref: sacengine canRemoveLandVertex (state.d:28999-29026); the base is its checkGround (state.d:29013-29023).
 
 ## A vertex this close (m, on the ground plane) to a building part is never taken away.
 const BUILDING_CLEARANCE_M := 11.0
@@ -12,9 +13,10 @@ const BUILDING_CLEARANCE_M := 11.0
 const DEPTH_BAND_M := 50.0
 
 
-## True when the vertex at (column, row) may be taken away. `parts` are the world places of the parts of every building.
-static func can_remove(shape: Terrain, vertex: Vector2i, parts: PackedVector3Array) -> bool:
-	if not is_open(shape, vertex):
+## True when the vertex at (column, row) may be taken away. `parts` are the world places of the parts of every building, `bases`
+## the lattice vertices under every base (`bases_of`).
+static func can_remove(shape: Terrain, vertex: Vector2i, parts: PackedVector3Array, bases: Array[Rect2i] = []) -> bool:
+	if not is_open(shape, vertex) or is_under_base(vertex, bases):
 		return false
 	var spot := TerrainGrid.point_of(vertex)
 	var height := shape.height_at(spot.x, spot.y)
@@ -27,6 +29,14 @@ static func is_open(shape: Terrain, vertex: Vector2i) -> bool:
 		return false
 	var id := TerrainGrid.id_of(vertex)
 	return shape.index.land[id] != 0 and not shape.field().is_removed(id)
+
+
+## True when the vertex is one of a base's: one of the four cells around it lies under the base.
+static func is_under_base(vertex: Vector2i, bases: Array[Rect2i]) -> bool:
+	for base in bases:
+		if base.has_point(vertex):
+			return true
+	return false
 
 
 ## True when a part stands within `BUILDING_CLEARANCE_M` of `spot` (and not far above or below `height`).
@@ -57,18 +67,20 @@ static func around(center: Vector2, radius_m: float) -> Array[Vector2i]:
 	return found
 
 
-## The vertices of `around` that may be taken away now. The building parts are gathered only once a vertex passes the rest.
+## The vertices of `around` that may be taken away now. The building parts and bases are gathered only once a vertex passes the rest.
 static func removable(shape: Terrain, center: Vector2, radius_m: float) -> Array[Vector2i]:
 	var found: Array[Vector2i] = []
 	var parts := PackedVector3Array()
+	var bases: Array[Rect2i] = []
 	var gathered := false
 	for vertex in around(center, radius_m):
 		if not is_open(shape, vertex):
 			continue
-		if not gathered:
-			parts = parts_of(shape.get_tree()) if shape.is_inside_tree() else parts
-			gathered = true
-		if can_remove(shape, vertex, parts):
+		if not gathered and shape.is_inside_tree():
+			parts = parts_of(shape.get_tree())
+			bases = bases_of(shape.get_tree())
+		gathered = true
+		if can_remove(shape, vertex, parts, bases):
 			found.append(vertex)
 	return found
 
@@ -103,3 +115,13 @@ static func parts_of(tree: SceneTree) -> PackedVector3Array:
 					if part is Node3D:
 						parts.append((part as Node3D).global_position)
 	return parts
+
+
+## The lattice vertices under every base of `tree` (each GroundFootprint, FootprintRules.vertices_under): a hole there cuts a base.
+static func bases_of(tree: SceneTree) -> Array[Rect2i]:
+	var bases: Array[Rect2i] = []
+	for node in tree.get_nodes_in_group(GroundFootprint.GROUP):
+		var footprint := node as GroundFootprint
+		if footprint != null:
+			bases.append(FootprintRules.vertices_under(footprint.area()))
+	return bases

@@ -57,6 +57,7 @@ func _ready() -> void:
 		return
 	if live != null:
 		live.ticked.connect(_on_live_ticked)
+		live.pins = PinRules.of_tree(get_tree())
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -125,10 +126,12 @@ func unstamp(key: StringName) -> void:
 		live.drop(String(key))
 
 
-## Server (or alone): what the stamp reaches at its end stays, its live shift `key` goes in the same step; the clients get it.
+## Server (or alone): what the stamp reaches at its end stays (never under a base that pins its ground), its live shift `key` goes
+## in the same step; the clients get it.
 func keep_stamp(key: StringName, profile: StampProfile, center: Vector2, reach_m: float, peak_m: float, pattern := PackedFloat32Array()) -> void:
 	var rect := TerrainGrid.vertex_rect(center, reach_m)
 	var delta := StampRules.shift(profile, center, reach_m, peak_m, profile.duration_s() - 1e-4, rect, pattern)
+	PinRules.apply(delta, rect, live.pins if live != null else PackedFloat32Array())
 	if _may_edit("keep_stamp") and delta.size() == rect.get_area():
 		keep(_field.rev + 1, String(key), rect, delta)
 
@@ -169,7 +172,7 @@ func keep(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array) -> voi
 	var standing := StampCarry.standing(self, rect)
 	var moved := _field.commit(rect, delta, key if not key.is_empty() else null)
 	_field.rev = rev
-	StampCarry.lift(standing, self)
+	StampCarry.follow(standing, self)
 	_tell(moved, true)
 	kept.emit(rev, key, rect, delta)
 
@@ -207,7 +210,7 @@ func _on_live_ticked(shifts: Array, ended: PackedStringArray) -> void:
 	var moved := gone
 	for shift: TerrainLive.Shift in shifts:
 		moved = TerrainGrid.union(moved, _field.set_live(shift.key, shift.rect, shift.values))
-	StampCarry.lift(standing, self)
+	StampCarry.follow(standing, self)
 	_tell(moved, false)
 	if gone.has_area():
 		settled.emit(TerrainGrid.area_of(gone))

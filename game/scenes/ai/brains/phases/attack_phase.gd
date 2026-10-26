@@ -13,7 +13,7 @@ extends AiPhase
 ## RFC-053 053d (F373): the target the side committed to (FocusTask.committed) weighs AiTactics.commit_weight more, so the wizard's
 ## spells go where his creatures were sent, replan after replan; an enemy healer the side sees near that target (AiKillEstimate.
 ## healer_near; the target itself when it heals) weighs healer_weight more. Measured in f373_ai_finish before the change: each replan took the closest foe again.
-## RFC-053 (deviation, wizAttack has no such test): a body the side's attack spells do not bring down (AiWizardBrain.spell_futile:
+## RFC-053 (deviation, wizAttack has no such test): a body the side's attack spells do not bring down (AiFutileTargets.is_futile:
 ## it regenerated between two casts) is passed over for AiTactics.spell_futile_forget_s. Measured in ai_easy_vs_normal seed 7: the
 ## Easy wizard threw a Rock at the same Taurock every ~19 s for five minutes (310 of 1500 each, back to full in between).
 
@@ -30,7 +30,7 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 	var committed := focus.committed() if focus != null else null
 	var committed_at := brain.perception.pos_of(committed) if committed != null else Vector3.ZERO
 	for foe: AiTrack in brain.perception.bodies(3):
-		if not AiWizardBrain.target_alive(foe) or brain.spell_futile(foe):
+		if not AiWizardBrain.target_alive(foe) or brain.casting.futile.is_futile(foe):
 			continue
 		var distance := wizard.extrap_pos.distance_to(foe.extrap_pos)
 		var w := AiField.attack_weight(distance, thr, foe)

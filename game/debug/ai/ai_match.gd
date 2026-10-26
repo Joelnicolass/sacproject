@@ -309,11 +309,11 @@ func _finish(winner: int, reason: String) -> void:
 		audit.set_extra(int(slot), "ai_slot_ms", side.slot_stats())
 		audit.set_extra(int(slot), "ai_orders", side.port.orders_issued)
 		audit.set_extra(int(slot), "ai_order_stats", side.port.order_stats)
-		audit.set_extra(int(slot), "ai_casts_started", side.brain.casts_started)
+		audit.set_extra(int(slot), "ai_casts_started", side.brain.casting.casts_started)
 		## F371: casts held back for want of a clear line (walked closer) and for the burst on own bodies.
-		audit.set_extra(int(slot), "ai_line_walks", side.brain.line_walks)
-		audit.set_extra(int(slot), "ai_splash_vetoes", side.brain.splash_vetoes)
-		audit.set_extra(int(slot), "ai_heal_skips", side.brain.heal_skips)
+		audit.set_extra(int(slot), "ai_line_walks", side.brain.casting.shots.line_walks)
+		audit.set_extra(int(slot), "ai_splash_vetoes", side.brain.casting.shots.splash_vetoes)
+		audit.set_extra(int(slot), "ai_heal_skips", side.brain.casting.heal_skips)
 		## F373: the commitments of the focus (FocusTask) and the last one («name kill_s score»).
 		var focus := side.board.get_node_or_null("FocusTask") as FocusTask
 		if focus != null:

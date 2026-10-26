@@ -42,3 +42,13 @@ static func mana_pair(t: AiTrack) -> Vector2i:
 
 static func spellbook(node: Node) -> Spellbook:
 	return node.get_node_or_null("Spellbook") as Spellbook
+
+
+## The souls a body carries in its purse (0 without one: only a wizard has a purse).
+static func souls(node: Node) -> int:
+	var purse := node.get_node_or_null("SoulPurse") as SoulPurse
+	return purse.count if purse != null else 0
+
+
+static func caster(node: Node) -> Caster:
+	return node.get_node_or_null("Caster") as Caster

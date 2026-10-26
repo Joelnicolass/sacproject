@@ -695,14 +695,14 @@ func _own_splash(host: Node3D) -> Dictionary:
 	var wrath := GameData.spell("oalf")
 	var checks := {"tracked": perception.add_node(ranger, &"event") != null}
 	var at := ranger.global_position
-	var near := eval.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath)
-	var far := eval.own_splash(at + Vector3(15.0, 0.0, 0.0), wrath)
+	var near := AiAreaRating.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath, null, perception, eval.tactics)
+	var far := AiAreaRating.own_splash(at + Vector3(15.0, 0.0, 0.0), wrath, null, perception, eval.tactics)
 	checks["one_state"] = host.get_tree().get_nodes_in_group(&"match_state").size() == 1
 	checks["near_over_threshold"] = near > eval.tactics.own_splash_max_ratio and near > 0.27
 	checks["far_zero"] = far == 0.0
-	checks["direct_whole"] = _near(AiSpellEval.splash_loss(ranger, at + Vector3(15.0, 0.0, 0.0), wrath, 2, true), 550.0 * 0.5 / 800.0)
+	checks["direct_whole"] = _near(AiAreaRating.splash_loss(ranger, at + Vector3(15.0, 0.0, 0.0), wrath, 2, true), 550.0 * 0.5 / 800.0)
 	state.friendly_fire = false
-	var off := eval.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath)
+	var off := AiAreaRating.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath, null, perception, eval.tactics)
 	checks["friendly_fire_off_zero"] = off == 0.0
 	for node: Node in [state, perception, ranger]:
 		node.queue_free()
@@ -763,7 +763,7 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 		var health := trogg.get_node("Health") as Health
 		for fraction: float in [0.3, 0.55, 0.6, 0.95, 1.0]:
 			health.current = health.maximum * fraction
-			scores[str(fraction)] = eval._heal(heal, track)
+			scores[str(fraction)] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		checks["low_heals"] = float(scores["0.3"]) > 0.0 and float(scores["0.55"]) > 0.0
 		checks["at_threshold_zero"] = float(scores["0.6"]) == 0.0
 		checks["above_threshold_zero"] = float(scores["0.95"]) == 0.0 and float(scores["1.0"]) == 0.0
@@ -772,16 +772,16 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 		loose.heal_below_ratio = 1.0
 		eval.tactics = loose
 		health.current = health.maximum - 50.0
-		scores["missing_50"] = eval._heal(heal, track)
+		scores["missing_50"] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		checks["min_missing_zero"] = float(scores["missing_50"]) == 0.0
 		eval.tactics = AiTactics.or_normal(null)
 		health.current = health.maximum * 0.3
 		trogg.begin_summon()
-		scores["summoning"] = eval._heal(heal, track)
+		scores["summoning"] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		trogg.finish_summon()
 		checks["summoning_zero"] = float(scores["summoning"]) == 0.0
 		HealEffect.on(trogg)
-		scores["healing"] = eval._heal(heal, track)
+		scores["healing"] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		checks["heal_running_zero"] = float(scores["healing"]) == 0.0
 	for node: Node in [perception, trogg]:
 		node.queue_free()

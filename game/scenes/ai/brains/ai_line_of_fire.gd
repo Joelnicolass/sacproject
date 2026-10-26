@@ -85,7 +85,7 @@ static func clear(wizard: WizardBody, target: Node3D, spell: SpellType) -> Node3
 ## How the spell of `wizard`'s book travels: a thrown ball that skips its own side (ThrownAction: Wrath, Fireball, Swarm), a
 ## projectile that does not (Rock), or nothing (Lightning, Heal).
 static func flight_of(wizard: WizardBody, spell: SpellType) -> int:
-	var caster := wizard.get_node_or_null("Caster") as Caster
+	var caster := AiBody.caster(wizard)
 	var action: SpellAction = caster.action_for(spell.tag) if caster != null else null
 	if action is ThrownAction:
 		return FLIGHT_THROWN

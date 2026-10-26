@@ -282,7 +282,7 @@ func _ai_view(body: Node3D) -> String:
 		text += " lider %s" % track.record.leader.node.name if track.record.leader.is_valid() else ""
 	if body is WizardBody:
 		var brain := side.brain
-		text += " amenaza %.2f ratio %.2f walks %d cola %d" % [track.threat, side.stance.enemy_ratio(), brain.line_walks, track.cast_queue.size()]
+		text += " amenaza %.2f ratio %.2f walks %d cola %d" % [track.threat, side.stance.enemy_ratio(), brain.casting.shots.line_walks, track.cast_queue.size()]
 		if not track.cast_queue.is_empty():
 			var e: Dictionary = track.cast_queue[0]
 			var spell: Resource = e["spell"]

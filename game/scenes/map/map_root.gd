@@ -7,10 +7,8 @@ extends Node3D
 ## (scenes/match/match.tscn) instances it and binds its own systems to these sockets. A map you make in the editor
 ## fills the sockets it has; the required ones warn.
 
-## The ground as numbers: heights, holes, size (the child `Shape` of `terrain`). Everyone asks it.
-@export var ground: GroundSurface
-## The ground as a mesh: shows what `ground` answers.
-@export var terrain: TerrainMesh
+## The map's ground: heights, holes, size, and the mesh that draws it (`terrain.mesh`). Everyone asks it.
+@export var terrain: Terrain
 @export var nav_region: NavigationRegion3D
 ## The PlayerStart nodes, one per seat.
 @export var starts: Node3D
@@ -29,7 +27,7 @@ extends Node3D
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	for pair in [["terrain", terrain], ["ground", ground], ["nav_region", nav_region], ["starts", starts]]:
+	for pair in [["terrain", terrain], ["nav_region", nav_region], ["starts", starts]]:
 		if pair[1] == null:
 			warnings.append("Asigná `%s`." % pair[0])
 	return warnings

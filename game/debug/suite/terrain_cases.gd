@@ -1,9 +1,11 @@
 extends "res://debug/suite/zone_case_base.gd"
 
-## RFC-057 061k-1 cases of rules_suite: the ground that moves. The arithmetic (a shifted corner, a taken-away vertex), the numbers
+## Cases of rules_suite for the ground that moves. The arithmetic (a shifted corner, a taken-away vertex), the numbers
 ## GroundField keeps (live stamps leave no trace, a commit adds up, a snapshot copies), Erupt end to end on the map of
 ## High Noon (the mound at 4.2 s, the ground back at 5.2 s, the ray of the collision against height_at, the damage, the throw and
-## the stun), a hole in the collision, and the plants planted again at the new height. No network here (terrain_late_join).
+## the stun), a hole in the collision, and the plants planted again at the new height. Every change goes through the Terrain API
+## (keep_stamp, cut_hole, fill_hole); the network case drives TerrainNet the way the RPC does (terrain_late_join runs it alone).
+## Ref: RFC-057 061k-1.
 
 const BED := preload("res://debug/map/terrain_bed.tscn")
 const Maps := preload("res://debug/look/flora_test_maps.gd")
@@ -23,11 +25,20 @@ const CASE_CAP_S := 60.0
 
 var _case_started := 0
 var _bed: Node3D
-var _shape: GroundSurface
+var _shape: Terrain
 var _collision: TerrainCollision
 ## The Bore cases (they borrow this world); kept here because their Callables do not keep them alive.
 var _bore
 var _dent
+## A picture stamp that keeps exactly the pattern it is given (its timeline is 1): how a case puts any numbers on the ground.
+var _raw: StampProfile
+
+
+func _init() -> void:
+	_raw = StampProfile.new()
+	_raw.flatten = Curve.new()
+	_raw.timeline = Curve.new()
+	_raw.timeline.add_point(Vector2(0.0, 1.0))
 
 
 func run(host: Node3D) -> Dictionary:
@@ -36,7 +47,7 @@ func run(host: Node3D) -> Dictionary:
 	_bed = BED.instantiate() as Node3D
 	_root.add_child(_bed)
 	_note("collision chunks built ms", [snappedf((Time.get_ticks_usec() - started) / 1000.0, 0.1)])
-	_shape = _bed.get_node("Shape") as GroundSurface
+	_shape = _bed.get_node("Shape") as Terrain
 	_collision = _bed.get_node("Collision") as TerrainCollision
 	await _frames(2)
 	var only := ""
@@ -70,9 +81,9 @@ func run_net(host: Node3D) -> Dictionary:
 	return out
 
 
-## Server and clients in one process: the server's deformer commits, and each commit is handed to the client's deformer the way
-## the RPC hands it (same arguments, same order); a client that joins late gets the snapshot, then only the newer commits count.
-## The transport (ENet, the RPC itself) is the kit's and is not under test here.
+## Server and clients in one process: the server's Terrain keeps a stamp and cuts a hole through its API, and each one is handed to a
+## client's Net the way the RPC hands it (same arguments, same order); a client that joins late gets the snapshot, then only the
+## newer ones count. The transport (ENet, the RPC itself) is the kit's and is not under test here.
 func _net() -> Dictionary:
 	var checks := {}
 	var server := BED.instantiate() as Node3D
@@ -81,33 +92,36 @@ func _net() -> Dictionary:
 	for bed in [server, early, late]:
 		_root.add_child(bed)
 	await _frames(2)
-	var host := server.get_node("Deformer") as TerrainDeformer
-	var first := early.get_node("Deformer") as TerrainDeformer
-	var second := late.get_node("Deformer") as TerrainDeformer
+	var host := server.get_node("Shape") as Terrain
+	var first := early.get_node("Net") as TerrainNet
+	var second := late.get_node("Net") as TerrainNet
+	var first_ground := early.get_node("Shape") as Terrain
+	var second_ground := late.get_node("Shape") as Terrain
 	var rect := TerrainGrid.vertex_rect(CENTER, 35.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	for k in delta.size():
 		delta[k] = 2.0 + sin(float(k))
-	host.commit(rect, delta)
-	first.rpc_commit(host.shape.field().rev, "", rect, delta)
-	var hole := TerrainGrid.vertex_id(CENTER.x, CENTER.y + 30.0)
-	host.set_removed(hole, true)
-	first.rpc_removed(host.shape.field().rev, hole, true)
-	var truth := host.shape.field()
-	checks["early_client_same"] = first.shape.field().checksum() == truth.checksum() and first.shape.field().rev == truth.rev
+	_keep(host, CENTER, 35.0, delta)
+	first.rpc_commit(host.field().rev, "", rect, delta)
+	var hole_at := CENTER + Vector2(0.0, 30.0)
+	var hole := TerrainGrid.vertex_id(hole_at.x, hole_at.y)
+	checks["hole_cut"] = host.cut_hole(hole_at).size() == 1
+	first.rpc_removed(host.field().rev, hole, true)
+	var truth := host.field()
+	checks["early_client_same"] = first_ground.field().checksum() == truth.checksum() and first_ground.field().rev == truth.rev
 	first.rpc_commit(1, "", rect, delta)
-	checks["old_commit_ignored"] = first.shape.field().checksum() == truth.checksum()
-	second._on_snapshot({TerrainDeformer.SNAPSHOT_KEY: truth.to_snapshot()})
-	checks["late_client_same"] = second.shape.field().checksum() == truth.checksum() and second.shape.field().rev == truth.rev
+	checks["old_commit_ignored"] = first_ground.field().checksum() == truth.checksum()
+	second._on_snapshot({TerrainNet.SNAPSHOT_KEY: truth.to_snapshot()})
+	checks["late_client_same"] = second_ground.field().checksum() == truth.checksum() and second_ground.field().rev == truth.rev
 	second.rpc_commit(1, "", rect, delta)
-	checks["late_ignores_commit_in_snapshot"] = second.shape.field().checksum() == truth.checksum()
+	checks["late_ignores_commit_in_snapshot"] = second_ground.field().checksum() == truth.checksum()
 	var more := PackedFloat32Array([0.5])
-	host.commit(Rect2i(rect.position, Vector2i.ONE), more)
-	for client in [first, second]:
+	_keep(host, TerrainGrid.point_of(rect.position), 0.0, more)
+	for client: TerrainNet in [first, second]:
 		client.rpc_commit(truth.rev, "", Rect2i(rect.position, Vector2i.ONE), more)
-	checks["both_follow_after"] = first.shape.field().checksum() == truth.checksum() and second.shape.field().checksum() == truth.checksum()
-	checks["hole_arrived"] = second.shape.field().is_removed(hole) and not second.shape.is_on_ground(CENTER.x + 1.0, CENTER.y + 31.0)
+	checks["both_follow_after"] = first_ground.field().checksum() == truth.checksum() and second_ground.field().checksum() == truth.checksum()
+	checks["hole_arrived"] = second_ground.field().is_removed(hole) and not second_ground.is_on_ground(CENTER.x + 1.0, CENTER.y + 31.0)
 	_note("net crc/rev", [truth.checksum(), truth.rev])
 	for bed in [server, early, late]:
 		bed.queue_free()
@@ -177,23 +191,22 @@ func _displacement() -> Dictionary:
 ## A lump on the ground reaches the collision: the ray finds it; a vertex taken away leaves a hole the ray passes through.
 func _hole() -> Dictionary:
 	var checks := {}
-	var deformer := _bed.get_node("Deformer") as TerrainDeformer
-	var spot := CENTER + Vector2(3.0, 63.0)
+	var lump := CENTER + Vector2(3.0, 63.0)
+	var spot := lump
 	var base := _shape.height_at(spot.x, spot.y)
 	checks["on_land"] = not is_nan(base) and _collision.chunk_count() > 0
-	var rect := TerrainGrid.vertex_rect(spot, 20.0)
+	var rect := TerrainGrid.vertex_rect(lump, 20.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	delta.fill(4.0)
-	deformer.commit(rect, delta)
+	_keep(_shape, lump, 20.0, delta)
 	_collision.flush()
 	await _frames(2)
 	checks["height_lifted"] = absf(_shape.height_at(spot.x, spot.y) - base - 4.0) < 1e-3
 	_note("lift base/expected/ray", [base, base + 4.0, _ray(spot)])
 	checks["ray_sees_lift"] = absf(_ray(spot) - (base + 4.0)) < 0.05
-	var id := TerrainGrid.vertex_id(CENTER.x, CENTER.y + 60.0)
 	spot = CENTER + Vector2(0.0, 60.0)
-	deformer.set_removed(id, true)
+	checks["hole_cut"] = _shape.cut_hole(spot).size() == 1
 	_collision.flush()
 	await _frames(2)
 	var around := true
@@ -201,9 +214,9 @@ func _hole() -> Dictionary:
 		around = around and not _shape.is_on_ground(spot.x + corner.x, spot.y + corner.y)
 	checks["hole_no_ground"] = around and not _shape.is_on_ground(spot.x, spot.y)
 	checks["ray_through_hole"] = is_nan(_ray(spot))
-	deformer.set_removed(id, false)
+	checks["hole_filled"] = _shape.fill_hole(spot).size() == 1
 	delta.fill(-4.0)
-	deformer.commit(rect, delta)
+	_keep(_shape, lump, 20.0, delta)
 	_collision.flush()
 	await _frames(2)
 	spot = CENTER + Vector2(3.0, 63.0)
@@ -345,8 +358,7 @@ func _flora() -> Dictionary:
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	delta.fill(10.0)
-	land.shape.field().commit(rect, delta)
-	land.shape.notify_changed(rect)
+	_keep(land.shape, spot, 40.0, delta)
 	var after := MeshPlanter.plan_cell(config, flora, plain, 1.0, key, land.shape.sampler(), PackedVector4Array())
 	checks["old_sampler_keeps_old_ground"] = MeshPlanter.plan_cell(config, flora, plain, 1.0, key, old_ground, PackedVector4Array()) == before
 	checks["cell_has_plants"] = not before.is_empty() and before.size() == after.size()
@@ -645,6 +657,11 @@ func _far_wizard_spot() -> Vector3:
 	var at := CENTER - Vector2(150.0, 0.0)
 	var ground := _shape.height_at(at.x, at.y)
 	return Vector3(at.x, 1.0 if is_nan(ground) else ground + 0.5, at.y)
+
+
+## Keeps exactly `delta` (row by row) over the vertices within `reach_m` of `center`, through the API (keep_stamp).
+func _keep(terrain: Terrain, center: Vector2, reach_m: float, delta: PackedFloat32Array) -> void:
+	terrain.keep_stamp(&"", _raw, center, reach_m, 0.0, delta)
 
 
 func _note(label: String, values: Array) -> void:

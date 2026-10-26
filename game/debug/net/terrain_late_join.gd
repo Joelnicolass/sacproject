@@ -1,6 +1,6 @@
 extends Node3D
 
-## Net case of the deformable ground, alone: a server's deformer and two clients' (one early, one that joins late with the
+## Net case of the deformable ground, alone: a server's Terrain and two clients' Net (one early, one that joins late with the
 ## snapshot) in this one process, and the checksum of their ground compared (debug/suite/terrain_cases.gd `_net`). Prints
 ## TERRAIN NET PASS. `godot --headless --fixed-fps 600 --path game res://debug/net/terrain_late_join.tscn`.
 

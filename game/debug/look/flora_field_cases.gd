@@ -12,8 +12,8 @@ extends RefCounted
 ## - flora_switch (054f): with the rig's «Vegetación» switch off (GraphicsPrefs.vegetation_enabled through
 ##   GraphicsApplier) the field has no layer and no cell; on, the layer comes back. The shared prefs start on.
 ## - flora_worker (054e): the densest peaks cells planned on WorkerThreadPool tasks (MeshPlanter.PlanJob with a
-##   GroundSurface.sampler snapshot, several at once) give the same buffers as plan_cell on this thread with
-##   GroundSurface.height_at; and a threaded MeshPlanter (no FloraField: it would not build here) driven over the densest
+##   Terrain.sampler snapshot, several at once) give the same buffers as plan_cell on this thread with
+##   Terrain.height_at; and a threaded MeshPlanter (no FloraField: it would not build here) driven over the densest
 ##   spot fills each MultiMesh with exactly those bytes, drops the plans of cells that left the ring and leaves no task.
 ## - flora_maps: every map of the catalog with a map scene (playable or not, tutorial_valley and alpine_meadow included):
 ##   its `Vegetation` node holds FloraLayers, their images hold the plants of the old flora.res (flora_test_maps.gd TOTALS),
@@ -157,7 +157,7 @@ func _guard() -> Dictionary:
 	var map := MapCatalog.shared().find(&"peaks")
 	var land := Maps.land_of(map)
 	var rig := LookRig.new()
-	rig.ground = land.shape
+	rig.terrain = land.shape
 	rig.quality_preset = load("res://data/look/quality_high.tres") as LookQuality
 	var host := _host_with_layers("peaks")
 	var field := FloraField.new()
@@ -480,7 +480,7 @@ func _switch() -> Dictionary:
 	var map := MapCatalog.shared().find(&"roads")
 	var land := Maps.land_of(map)
 	var rig := LookRig.new()
-	rig.ground = land.shape
+	rig.terrain = land.shape
 	rig.quality_preset = load("res://data/look/quality_high.tres") as LookQuality
 	var host := _host_with_layers("roads")
 	var field := FloraField.new()

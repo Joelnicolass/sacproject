@@ -86,7 +86,7 @@ func _plant() -> void:
 	_show_circle()
 	var field := get_tree().get_first_node_in_group(FloraField.GROUP) as FloraField
 	var rig := field.rig if field else null
-	var surface := rig.ground if rig else null
+	var surface := rig.terrain if rig else null
 	var quality := _quality(field)
 	if species == null or surface == null or quality == null or not rig.vegetation_enabled:
 		_clear_multimesh()

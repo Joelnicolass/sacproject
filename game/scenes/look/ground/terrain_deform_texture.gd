@@ -14,7 +14,7 @@ const ON := &"terrain_deform_on"
 ## The rig this layer belongs to (look_rig.tscn sets it): its `ground` is the one to follow.
 @export var rig: LookRig
 
-var _shape: GroundSurface
+var _shape: Terrain
 var _image: Image
 var _texture: ImageTexture
 var _dirty := false
@@ -30,12 +30,12 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func _process(_delta: float) -> void:
 	if _shape == null:
-		_follow(rig.ground if rig != null else null)
+		_follow(rig.terrain if rig != null else null)
 	elif _dirty:
 		_upload()
 
 
-func _follow(ground: GroundSurface) -> void:
+func _follow(ground: Terrain) -> void:
 	if ground == null or not ground.is_loaded():
 		return
 	_shape = ground

@@ -6,6 +6,6 @@ extends RefCounted
 
 
 static func height(node: Node, x: float, z: float, fallback: float) -> float:
-	var shape := GroundSurface.of(node)
+	var shape := Terrain.of(node)
 	var land := shape.height_at(x, z) if shape != null else NAN
 	return fallback if is_nan(land) else land

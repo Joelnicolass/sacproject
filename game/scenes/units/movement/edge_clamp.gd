@@ -11,7 +11,7 @@ extends RefCounted
 
 ## `velocity` whose horizontal step from the body's position this tick stays on the land. Y is kept.
 static func clamp_velocity(body: Node3D, velocity: Vector3, delta: float) -> Vector3:
-	var shape := GroundSurface.of(body)
+	var shape := Terrain.of(body)
 	if shape == null or delta <= 0.0:
 		return velocity
 	var at := body.global_position

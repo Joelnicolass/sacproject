@@ -2,15 +2,15 @@ class_name TerrainCollision
 extends StaticBody3D
 
 ## The ground to stand on: the map's triangles (land and cliff walls) cut in chunks of `chunk_cells` x `chunk_cells` cells,
-## one collision shape each, all on this one body. When the ground moves (GroundSurface.changed) only the chunks it touched
-## are made again, at most every `refresh_s` (a hole at once), with the corners moved as the shape says; a triangle
-## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground GroundSurface.height_at answers, a
+## one collision shape each, all on this one body. When the ground moves (Terrain.changed) only the chunks it touched
+## are made again, at most every `refresh_s` (a hole at once), with the corners moved as the Terrain says; a triangle
+## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground Terrain.height_at answers, a
 ## few ticks late. It does not decide how the ground moves (Terrain) and draws nothing.
 
 ## An empty shape every chunk copies, so no shape is built in code.
 const CHUNK_SHAPE := preload("res://scenes/map/terrain/terrain_chunk.tres")
 
-@export var shape: GroundSurface
+@export var terrain: Terrain
 @export_range(1, 32) var chunk_cells := 8
 ## Time between two remakes of the chunks that moved.
 @export_range(0.0166, 0.5, 0.0001, "suffix:s") var refresh_s := 0.05
@@ -28,20 +28,20 @@ var _tick := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shape != null else PackedStringArray(["Falta el socket `shape` (el GroundSurface del mapa)."])
+	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
 
 
 func _ready() -> void:
 	set_physics_process(false)
-	if Engine.is_editor_hint() or shape == null or shape.data == null or not shape.data.is_valid():
+	if Engine.is_editor_hint() or terrain == null or terrain.data == null or not terrain.data.is_valid():
 		return
-	_vertices = shape.data.vertices
-	_indices = shape.data.indices
+	_vertices = terrain.data.vertices
+	_indices = terrain.data.indices
 	_split_in_chunks()
 	for chunk: Vector2i in _triangles:
 		_remake(chunk)
-	shape.changed.connect(_on_shape_changed)
-	shape.holes_changed.connect(_on_holes_changed)
+	terrain.changed.connect(_on_terrain_changed)
+	terrain.holes_changed.connect(_on_holes_changed)
 	set_physics_process(true)
 
 
@@ -78,7 +78,7 @@ func _split_in_chunks() -> void:
 
 ## The triangles of `chunk` with their corners where the ground is now.
 func _faces_of(chunk: Vector2i) -> PackedVector3Array:
-	var texels := shape.field().texels
+	var texels := terrain.field().texels
 	var faces := PackedVector3Array()
 	for first: int in _triangles[chunk]:
 		var ids := [_indices[first], _indices[first + 1], _indices[first + 2]]
@@ -99,7 +99,7 @@ func _remake(chunk: Vector2i) -> void:
 	(_chunks[chunk]["shape"] as ConcavePolygonShape3D).set_faces(faces)
 
 
-func _on_shape_changed(area: Rect2) -> void:
+func _on_terrain_changed(area: Rect2) -> void:
 	# A moved vertex is a corner of the four cells around it.
 	var low := Vector2i((area.position / TerrainGrid.CELL_M).floor()) - Vector2i.ONE
 	var high := Vector2i(((area.position + area.size) / TerrainGrid.CELL_M).ceil())

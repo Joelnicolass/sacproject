@@ -28,7 +28,7 @@ func play(params: Dictionary) -> void:
 	if terrain == null or terrain.mesh == null or DisplayServer.get_name() == "headless":
 		queue_free()
 		return
-	var at := params["at"] as Vector3
+	var at: Vector3 = params["at"]
 	var built := FallingChunkRules.arrays(terrain.index, terrain.field().texels, terrain.tile_ids(), TerrainGrid.vertex_id(at.x, at.z))
 	if built.is_empty():
 		queue_free()

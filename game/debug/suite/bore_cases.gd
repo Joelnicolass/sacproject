@@ -41,7 +41,7 @@ func _rules() -> Dictionary:
 	checks["spiral_ends_at_50m"] = absf(last.distance_to(CENTER) - 50.0) < 1e-3
 	checks["spiral_972_ticks_at_0_8m"] = ticks == 972
 	checks["spiral_1080_ticks_at_0_72m"] = _ticks_of(BoreSpiral.new(CENTER, 50.0, 0.72)) == 1080
-	var shape: GroundSurface = _c._shape
+	var shape: Terrain = _c._shape
 	var inside := _full_vertex(shape, 3)
 	var spot := TerrainGrid.point_of(inside)
 	var height := shape.height_at(spot.x, spot.y)
@@ -55,10 +55,10 @@ func _rules() -> Dictionary:
 	checks["building_10_9m_blocks"] = not HoleRules.can_remove(shape, inside, close)
 	checks["building_11_1m_does_not"] = HoleRules.can_remove(shape, inside, far)
 	checks["building_60m_above_does_not"] = HoleRules.can_remove(shape, inside, high)
-	var id := TerrainGrid.id_of(inside)
-	(_c._bed.get_node("Deformer") as TerrainDeformer).set_removed(id, true)
-	checks["gone_never_again"] = not HoleRules.can_remove(shape, inside, PackedVector3Array())
-	(_c._bed.get_node("Deformer") as TerrainDeformer).set_removed(id, false)
+	var cut := shape.cut_hole(spot)
+	checks["cut_hole_takes_the_vertex"] = cut.size() == 1 and Vector2(cut[0].x, cut[0].z) == spot and not is_nan(cut[0].y)
+	checks["gone_never_again"] = not HoleRules.can_remove(shape, inside, PackedVector3Array()) and shape.cut_hole(spot).is_empty()
+	checks["fill_hole_gives_it_back"] = shape.fill_hole(spot).size() == 1 and shape.fill_hole(spot).is_empty()
 	checks["back_it_may_go"] = HoleRules.can_remove(shape, inside, PackedVector3Array())
 	checks["vertex_near_rounds"] = TerrainGrid.vertex_near(Vector2(1264.9, 1275.0)) == Vector2i(126, 128) and TerrainGrid.vertex_near(Vector2(1265.1, 1274.9)) == Vector2i(127, 127)
 	return _c._verdict("bore_rules", checks)
@@ -67,7 +67,7 @@ func _rules() -> Dictionary:
 ## The walls round a hole, the piece that falls, and the pit the shader leaves.
 func _walls() -> Dictionary:
 	var checks := {}
-	var shape: GroundSurface = _c._shape
+	var shape: Terrain = _c._shape
 	var index := shape.index
 	var one := _full_vertex(shape, 3)
 	var id := TerrainGrid.id_of(one)
@@ -99,7 +99,7 @@ func _walls() -> Dictionary:
 ## Bore from the click to the last vertex back.
 func _cut() -> Dictionary:
 	var checks := {}
-	var shape: GroundSurface = _c._shape
+	var shape: Terrain = _c._shape
 	var ground_spot := func(at: Vector2) -> Vector3: return Vector3(at.x, shape.height_at(at.x, at.y), at.y)
 	var wizard = _c._wizard(1, _c._far_wizard_spot(), "james", 8)
 	var spell := GameData.spell("erob").duplicate() as SpellType
@@ -132,8 +132,8 @@ func _cut() -> Dictionary:
 	var drill := zone.get_node("Drill") as BoreDrill
 	var took := []
 	var gave := []
-	cutter.vertex_taken.connect(func(id: int) -> void: took.append([clock[0], id]))
-	cutter.vertex_given_back.connect(func(id: int) -> void: gave.append([clock[0], id]))
+	cutter.hole_cut.connect(func(at: Vector3) -> void: took.append([clock[0], TerrainGrid.vertex_id(at.x, at.z)]))
+	cutter.hole_filled.connect(func(at: Vector3) -> void: gave.append([clock[0], TerrainGrid.vertex_id(at.x, at.z)]))
 	var ground := shape.field()
 	var near_start := true
 	var drill_gone := false
@@ -210,7 +210,7 @@ func _cut() -> Dictionary:
 func _cancel() -> Dictionary:
 	var checks := {}
 	var wizard = _c._wizard(1, _c._far_wizard_spot(), "james", 8)
-	var shape: GroundSurface = _c._shape
+	var shape: Terrain = _c._shape
 	var zone: GroundZone = _c._zone("Bore", PackedVector3Array([Vector3(CENTER.x, shape.height_at(CENTER.x, CENTER.y), CENTER.y)]), wizard, 30, ARM_TICKS)
 	await _c._frames(20)
 	zone.cancel()
@@ -225,11 +225,10 @@ func _cancel() -> Dictionary:
 ## A path goes round a hole once the navmesh is baked again, and the pathfinder knows the place is not free any more.
 func _nav() -> Dictionary:
 	var checks := {}
-	var shape: GroundSurface = _c._shape
-	var deformer := _c._bed.get_node("Deformer") as TerrainDeformer
+	var shape: Terrain = _c._shape
 	var service := NavService.new()
 	service.name = "Nav"
-	service.ground = shape
+	service.terrain = shape
 	service.build_on_ready = false
 	_c._collision.add_to_group(NavFingerprint.GROUP)
 	_c._bed.add_child(service)
@@ -253,8 +252,7 @@ func _nav() -> Dictionary:
 	_c._note("path points / longest leg m / hole at", [before.size(), snappedf(best, 0.1), centre])
 	checks["a_path_exists"] = before.size() >= 1 and best > 15.0 and shape.index.land[id] == 1
 	checks["old_path_passes_over_the_place"] = not _crosses(start, before, shape) and _near(start, before, centre) < 7.1
-	deformer.set_removed(id, true)
-	checks["the_hole_is_there"] = not shape.is_on_ground(centre.x, centre.y)
+	checks["the_hole_is_there"] = shape.cut_hole(centre).size() == 1 and not shape.is_on_ground(centre.x, centre.y)
 	checks["old_path_would_cross_it"] = _crosses(start, before, shape)
 	var guard := 1800
 	while guard > 0 and (service.rebakes == 0 or service.is_rebaking()):
@@ -266,7 +264,7 @@ func _nav() -> Dictionary:
 	checks["new_path_exists"] = after.size() >= 1
 	checks["new_path_never_over_the_hole"] = not _crosses(start, after, shape)
 	checks["hole_is_not_free_for_the_pathfinder"] = not service.is_free_at(Vector3(centre.x, shape.height_at(centre.x + 20.0, centre.y), centre.y))
-	deformer.set_removed(id, false)
+	shape.fill_hole(centre)
 	service.queue_free()
 	_c._collision.remove_from_group(NavFingerprint.GROUP)
 	await _c._frames(2)
@@ -274,7 +272,7 @@ func _nav() -> Dictionary:
 
 
 ## True when a leg of the path from `start` has a point (every metre) with no land under it.
-func _crosses(start: Vector3, path: PackedVector3Array, shape: GroundSurface) -> bool:
+func _crosses(start: Vector3, path: PackedVector3Array, shape: Terrain) -> bool:
 	var last := Vector2(start.x, start.z)
 	for point in path:
 		var here := Vector2(point.x, point.z)
@@ -307,8 +305,8 @@ func _ticks_of(spiral: BoreSpiral) -> int:
 
 ## A lattice vertex near the click whose surroundings (`margin` cells each way) are all full land cells; `with_next` also wants
 ## the vertex to its east to be like that.
-func _full_vertex(shape: GroundSurface, margin: int, with_next := false) -> Vector2i:
-	var counts := shape.cell_counts()
+func _full_vertex(shape: Terrain, margin: int, with_next := false) -> Vector2i:
+	var counts := GroundTiles.counts(shape.index.cells)
 	for dz in range(-12, 13):
 		for dx in range(-12, 13):
 			var vertex := Vector2i(int(CENTER.x / TerrainGrid.CELL_M) + dx, int(CENTER.y / TerrainGrid.CELL_M) + dz)

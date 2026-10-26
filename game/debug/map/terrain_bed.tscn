@@ -23,6 +23,6 @@ terrain = NodePath("..")
 [node name="Net" type="Node" parent="."]
 script = ExtResource("2_net")
 
-[node name="Collision" type="StaticBody3D" parent="." node_paths=PackedStringArray("shape")]
+[node name="Collision" type="StaticBody3D" parent="." node_paths=PackedStringArray("terrain")]
 script = ExtResource("3_collision")
-shape = NodePath("../Shape")
+terrain = NodePath("../Shape")

@@ -26,8 +26,8 @@ script = ExtResource("5_shape")
 data = ExtResource("6_data")
 mesh = NodePath("..")
 
-[node name="Look" parent="." unique_id=296819492 node_paths=PackedStringArray("ground") instance=ExtResource("3_rig")]
-ground = NodePath("../Ground/Shape")
+[node name="Look" parent="." unique_id=296819492 node_paths=PackedStringArray("terrain") instance=ExtResource("3_rig")]
+terrain = NodePath("../Ground/Shape")
 
 [node name="LabCamera" type="Camera3D" parent="." unique_id=182705118]
 current = true

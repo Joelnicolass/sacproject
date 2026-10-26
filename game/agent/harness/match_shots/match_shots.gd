@@ -379,7 +379,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 			var toward := (focus - tower.global_transform.origin) * Vector3(1.0, 0.0, 1.0)
 			spot = look + (toward.normalized() if toward.length() > 0.1 else Vector3.BACK) * tower_m + Vector3.UP * tower_up_m
 		"ground":
-			var shape := GroundSurface.of(world)
+			var shape := Terrain.of(world)
 			if shape == null:
 				print("match_shots: no ground loaded; view skipped")
 				return
@@ -413,7 +413,7 @@ func _shoot(world: MatchWorld, view: String, file: String) -> void:
 		_hover(world, wizard)
 	await _save(file)
 	if view == "ground":
-		GroundGrid.write(camera, GroundSurface.of(world), _ground_at(focus), ground_grid_reach_m, ProjectSettings.globalize_path(file.get_basename() + ".json"))
+		GroundGrid.write(camera, Terrain.of(world), _ground_at(focus), ground_grid_reach_m, ProjectSettings.globalize_path(file.get_basename() + ".json"))
 
 
 ## The "hud" view: the game's camera, the HUD as the player sees it (mana from --mana, creatures from --select, the order menu from --radial) and
@@ -444,7 +444,7 @@ func _shoot_hud(world: MatchWorld, file: String) -> void:
 
 ## The top of the wall closest to `focus` in the map's ground mesh (a vertex marked as wall with UV.y 0), or INF without walls.
 func _nearest_rim(world: MatchWorld, focus: Vector3) -> Vector3:
-	var terrain := world.map.terrain if world.map != null else null
+	var terrain := world.map.terrain.mesh if world.map != null and world.map.terrain != null else null
 	if terrain == null or terrain.mesh == null:
 		return Vector3.INF
 	var arrays := terrain.mesh.surface_get_arrays(0)
@@ -573,7 +573,7 @@ func _clear_spot(look: Vector3, toward: Vector3, distance := zone_m, up := zone_
 
 ## `spot` raised to `margin` above the land (with its displacement) under it.
 func _over_land(spot: Vector3, margin: float) -> Vector3:
-	var shape := GroundSurface.of(self)
+	var shape := Terrain.of(self)
 	var ground := shape.height_at(spot.x, spot.z) if shape != null else NAN
 	if not is_nan(ground):
 		spot.y = maxf(spot.y, ground + margin)

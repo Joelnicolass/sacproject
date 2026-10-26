@@ -9,7 +9,7 @@ extends MeshInstance3D
 const GROUP := &"terrain_mesh"
 
 ## The ground as numbers: its `Shape` child.
-@export var shape: GroundSurface
+@export var shape: Terrain
 ## The label that says the map has no ground (shown only when it could not be built).
 @export var missing: Label3D
 ## Which kind of ground lies where: 256x256, one pixel per 10 m cell, R open, G earth, B rock, A path (the map's
@@ -48,7 +48,7 @@ func _validate_property(property: Dictionary) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if shape == null:
-		warnings.append("Falta el hijo Shape (GroundSurface) en `shape`.")
+		warnings.append("Falta el hijo Shape (Terrain) en `shape`.")
 	if ground_roles == null:
 		warnings.append("Falta `ground_roles` (el ground_roles.png del mapa): el suelo del dios no sabe qué va dónde.")
 	return warnings
@@ -110,7 +110,7 @@ func _set_preview_offset(offset: Vector3) -> void:
 
 func _load_mesh() -> bool:
 	if shape == null or shape.data == null:
-		push_error("TerrainMesh '%s' has no ground: its `shape` needs a GroundSurface with data (MapTerrainData)." % name)
+		push_error("TerrainMesh '%s' has no ground: its `shape` needs a Terrain with data (MapTerrainData)." % name)
 		return false
 	if not shape.data.is_valid():
 		push_error("TerrainMesh '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)

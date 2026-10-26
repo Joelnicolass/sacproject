@@ -80,7 +80,7 @@ func frame(x: float, z: float, ox: float, oy: float, oz: float) -> String:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return "no camera"
-	var t := GroundSurface.of(self)
+	var t := Terrain.of(self)
 	var y := 0.0
 	if t != null:
 		var g: float = t.height_at(x, z)

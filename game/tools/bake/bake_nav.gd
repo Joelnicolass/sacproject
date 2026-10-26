@@ -99,13 +99,13 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	var bake_root := Node3D.new()
 	bake_root.name = "BakeRoot"
 	var map := world as MapRoot
-	if map == null or map.terrain == null:
+	if map == null or map.terrain == null or map.terrain.mesh == null:
 		_fail("the scene of '%s' is not a MapRoot with a terrain" % _map.tag)
 		bake_root.free()
 		world.free()
 		return null
 	# The terrain is required; the buildings and the founts are optional.
-	var parts: Array[Node] = [map.terrain]
+	var parts: Array[Node] = [map.terrain.mesh]
 	if map.buildings != null:
 		parts.append(map.buildings)
 	var founts := map.get_node_or_null(FOUNTS_PATH)

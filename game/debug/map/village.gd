@@ -54,7 +54,7 @@ func _start() -> void:
 		await get_tree().physics_frame
 	var rule := rules()
 	var focus := _focus_point(rule)
-	var terrain := GroundSurface.of(world)
+	var terrain := Terrain.of(world)
 	var spot := focus + Vector3(rule.from_direction.x, 0.0, rule.from_direction.y).normalized() * rule.wizard_distance_m
 	spot.y = _ground(terrain, spot.x, spot.z)
 	wizard.global_position = spot
@@ -90,7 +90,7 @@ func _focus_point(rule: VillageRules) -> Vector3:
 	return Vector3(rule.focus_hut.x, 0.0, rule.focus_hut.y)
 
 
-func _place_taurock(gap: float, terrain: GroundSurface) -> void:
+func _place_taurock(gap: float, terrain: Terrain) -> void:
 	var taurock := world.get_node_or_null("%Units/Taurock1") as Node3D
 	if taurock == null:
 		return
@@ -107,7 +107,7 @@ func _isolate_taurock() -> void:
 			npc.queue_free()
 
 
-func _ground(terrain: GroundSurface, x: float, z: float) -> float:
+func _ground(terrain: Terrain, x: float, z: float) -> float:
 	var y := float(terrain.height_at(x, z))
 	return 0.0 if is_nan(y) else y
 

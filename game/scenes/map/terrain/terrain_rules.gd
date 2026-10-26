@@ -5,7 +5,7 @@ extends RefCounted
 ## the raw triangles of a MapTerrainData become the per-cell index. Pure and static, so a WorkerThreadPool task can
 ## call it on copies of an index. A ground that was raised, dug or holed passes its `shift` (two floats per 10 m vertex:
 ## how far it moved, and 1 when it was taken away): a corner moves with it, and a triangle with a removed corner is no
-## land. What it does NOT do: hold the data (GroundSurface), build the mesh (TerrainMesh) or say where the lattice lies (TerrainGrid).
+## land. What it does NOT do: hold the data (Terrain), build the mesh (TerrainMesh) or say where the lattice lies (TerrainGrid).
 ## Ref: sacmap.d getTriangles, isInside, getGroundHeight.
 
 ## Edge tolerance of the inside test; a point on an edge counts as inside.

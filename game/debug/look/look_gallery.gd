@@ -141,7 +141,7 @@ func _rig() -> LookRig:
 
 ## Feet on the terrain: the scene sets x and z, the terrain gives y.
 func _place_bodies() -> void:
-	var terrain := GroundSurface.of(self)
+	var terrain := Terrain.of(self)
 	if terrain == null:
 		return
 	for body in bodies.get_children():

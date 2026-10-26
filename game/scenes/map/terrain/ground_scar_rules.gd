@@ -30,7 +30,7 @@ static func texel_origin(center_xz: Vector2, size: Vector2i) -> Vector2i:
 	return Vector2i((center_xz / TEXEL_M - Vector2(size) * 0.5).floor())
 
 
-## How many 10 m tiles the map has on each side: its footprint (GroundSurface.bounds) over the tile size, rounded up.
+## How many 10 m tiles the map has on each side: its footprint (Terrain.bounds) over the tile size, rounded up.
 static func grid_for(bounds: Rect2) -> Vector2i:
 	return Vector2i((bounds.size / TILE_M).ceil())
 

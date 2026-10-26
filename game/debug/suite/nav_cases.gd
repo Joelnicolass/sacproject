@@ -48,7 +48,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	_root.add_child(fount)
 	_service = NavService.new()
 	_service.name = "Nav"
-	_service.ground = _terrain.shape
+	_service.terrain = _terrain.shape
 	_service.build_on_ready = false
 	_root.add_child(_service)
 	host.add_child(_root)

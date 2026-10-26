@@ -361,7 +361,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.add_child(structures)
 	var service := NavService.new()
 	service.name = "Nav"
-	service.ground = terrain.shape
+	service.terrain = terrain.shape
 	service.structures = structures
 	service.build_on_ready = false
 	root.add_child(service)

@@ -10,7 +10,7 @@ extends EditorExportPlugin
 ## PlaceholderMesh with the same `aabb`: the server never draws, and the only thing the rules read from a mesh is get_aabb()
 ## (BuildingFit). Two things keep their geometry, each with the reader that needs it:
 ##   - MESH_KEEP_DIRS: the map (scenes/map/ and assets/original/maps/). TerrainMesh compares surface_get_array_len and the metas of its
-##     mesh with the GroundSurface data (TerrainMesh._saved_mesh_matches), builds the ground trimesh from it (Mesh.create_trimesh_shape in
+##     mesh with the Terrain data (TerrainMesh._saved_mesh_matches), builds the ground trimesh from it (Mesh.create_trimesh_shape in
 ##     TerrainMesh.ground_shape) and the falling chunks and hole walls are cut from its arrays. A placeholder has none.
 ##   - PrimitiveMesh (Cylinder, Sphere, ...): its parameters are the data (RiftSpawner reads the radius of a CylinderMesh) and it costs
 ##     a few bytes. Not a size problem, so not touched.

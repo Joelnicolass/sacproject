@@ -172,7 +172,7 @@ func _refresh() -> void:
 	if _preset == null or not _preset.grass_enabled:
 		return
 	var terrain := _ground_mesh()
-	if terrain == null or GroundSurface.of(self) == null:
+	if terrain == null or Terrain.of(self) == null:
 		return
 	if _rig.tile_map == null or terrain.get("material_override") == null:
 		return
@@ -265,7 +265,7 @@ func _zone_view(mode: int) -> SubViewport:
 	var mat := ShaderMaterial.new()
 	mat.shader = BAKE_SHADER
 	mat.set_shader_parameter("mode", mode)
-	var ids := GroundSurface.of(self).tile_ids()
+	var ids := Terrain.of(self).tile_ids()
 	mat.set_shader_parameter("splat", GroundMaterial.splat_texture(_rig.tile_map, ids))
 	mat.set_shader_parameter("noise_tex", GroundMaterial.shared_noise())
 	mat.set_shader_parameter("height_tex", _height_texture)
@@ -624,9 +624,9 @@ func _update_trample(delta: float, radius: float) -> void:
 	_stamps_on = count > 0
 
 
-## The node that draws the map's ground (`ground.mesh`).
+## The node that draws the map's ground (`terrain.mesh`).
 func _ground_mesh() -> MeshInstance3D:
-	return _rig.ground.mesh if _rig and _rig.ground else null
+	return _rig.terrain.mesh if _rig and _rig.terrain else null
 
 
 func _camera() -> Camera3D:
@@ -663,7 +663,7 @@ func _height_range(key: Vector2i) -> Vector2:
 func _load_height(terrain: Object) -> bool:
 	if _height_texture:
 		return true
-	var shape := GroundSurface.of(self)
+	var shape := Terrain.of(self)
 	if shape == null:
 		return false
 	var image := GrassHeight.from_shape(shape)

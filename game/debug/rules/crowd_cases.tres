@@ -5,11 +5,8 @@
 [resource]
 script = ExtResource("1_rules")
 starting_souls = 12
-soul_collect_distance = 5.0
 manafount_rate = 33.333
-manafount_radius = 50.0
 altar_rate = 16.667
-altar_radius = 50.0
 ghost_health_per_mana = 4.2
 ghost_speed_factor = 1.75
 cast_drain_per_s = 500.0

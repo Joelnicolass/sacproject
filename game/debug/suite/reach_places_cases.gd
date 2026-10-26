@@ -29,23 +29,23 @@ func run(host: Node) -> Dictionary:
 	return {"reach_places": {"ok": ok, "cases": results}}
 
 
-## (scene value, the double the old MatchRules field held) per reach, in the order of the plan.
+## (scene value, the literal the old MatchRules field held) per reach, in the order of the plan.
 func _pairs(facts: ReachFacts) -> Dictionary[String, Array]:
 	return {
-		"soul_collect_distance": [facts.soul_m, 5.0],
+		"soul_reach": [facts.soul_m, 5.0],
 		"soul_collect_height": [facts.soul_up_m, 5.0],
-		"manafount_radius": [facts.fount_m, 50.0],
-		"altar_radius": [facts.altar_m, 50.0],
-		"manahoar_radius": [facts.manahoar_aura_m, 40.0],
-		"manahoar_near_distance": [facts.manahoar_peak_m, 50.0],
-		"manahoar_far_distance": [facts.manahoar_end_m, 1000.0],
-		"guardian_arm_radius": [facts.guardian_arm_m, 50.0],
+		"fount_reach": [facts.fount_m, 50.0],
+		"altar_reach": [facts.altar_m, 50.0],
+		"manahoar_aura": [facts.manahoar_aura_m, 40.0],
+		"manahoar_peak": [facts.manahoar_peak_m, 50.0],
+		"manahoar_end": [facts.manahoar_end_m, 1000.0],
+		"guardian_arm": [facts.guardian_arm_m, 50.0],
 		"guardian_leash": [facts.guardian_leash_m, 50.0],
-		"guardian_return_distance": [facts.guardian_return_m, 20.0],
+		"guardian_return": [facts.guardian_return_m, 20.0],
 	}
 
 
-## The fields of the old rules the facts must equal; the plan's 9 plus the half height of the soul cylinder.
+## The literals of the old rules fields the facts must equal; the plan's 9 plus the half height of the soul cylinder.
 func _facts_match_old_rules(rules: MatchRules) -> Dictionary:
 	var facts := ReachFacts.of_rules(rules)
 	var pairs := _pairs(facts)
@@ -63,21 +63,7 @@ func _facts_match_old_rules(rules: MatchRules) -> Dictionary:
 		print("REACH PLACES   leash_from differs: scene=%s rules=(0, 0.9, 0)" % [facts.guardian_leash_from])
 	for line in differs:
 		print("REACH PLACES   %s" % line)
-	# The old fields still exist (r2 removes nothing): they must agree with the scene while both are there.
-	var rule_fields: Dictionary[String, float] = {
-		"soul_collect_distance": rules.soul_collect_distance, "manafount_radius": rules.manafount_radius,
-		"altar_radius": rules.altar_radius, "manahoar_radius": rules.manahoar_radius,
-		"manahoar_near_distance": rules.manahoar_near_distance, "manahoar_far_distance": rules.manahoar_far_distance,
-		"guardian_arm_radius": rules.guardian_arm_radius, "guardian_leash": rules.guardian_leash,
-		"guardian_return_distance": rules.guardian_return_distance}
-	var rules_same := true
-	for field: String in rule_fields:
-		var pair: Array = pairs[field]
-		var scene_value: float = pair[0]
-		if scene_value != rule_fields[field]:
-			rules_same = false
-			print("REACH PLACES   %s differs: scene=%s MatchRules=%s" % [field, scene_value, rule_fields[field]])
-	return {"ok": same and origin_same and rules_same, "differs": differs}
+	return {"ok": same and origin_same, "differs": differs}
 
 
 func _far_variant(rules: MatchRules) -> Dictionary:
@@ -86,7 +72,7 @@ func _far_variant(rules: MatchRules) -> Dictionary:
 	var rest_same := true
 	var far_pairs := _pairs(far)
 	for field: String in far_pairs:
-		if field == "manafount_radius":
+		if field == "fount_reach":
 			continue
 		var pair: Array = far_pairs[field]
 		var scene_value: float = pair[0]

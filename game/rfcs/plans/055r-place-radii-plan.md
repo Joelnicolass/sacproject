@@ -149,4 +149,12 @@ Física instanciada (`never_instanced`) · float32 (todos exactos; 0,9 como `Vec
 1. Una sola escena con grupos por sistema. 2. Nombres `reach_places.tscn`, `ReachFrame`, `ReachFacts`, `MatchRules.reach_places`. 3. Incluir `guardian_leash` (9 campos). 4. La correa sigue desde 0,9 (`LeashFrom`); pasar al `Center` real es otra decisión. 5. El rayo usa `BodyFacts.center`. 6. El `Reach` de la torre no se muda en 055r. 7. El alma como cilindro con altura. 8. No se fusiona con `sacrifice_places.tscn`. 9. Base nueva de la línea de tiempo en r0. 10. Limpiar los 25 `.tres` con `sed` en r4. 11. Variante `far_reach_places.tscn` solo para la suite. 12. `PlaceWarnings` y `SceneStateReader.radius` compartidos.
 
 ## 14. Cierre (r4)
-(Lo completa el developer de r4.)
+Hecho: los 9 campos ya no existen en `MatchRules`; los radios salen de `reach_places.tscn` vía `ReachFacts`. C20 8 -> 0.
+
+Cambios respecto del plan:
+- Al borrar, el grep no encontró lectores restantes fuera de `reach_places_cases` (r1-r3 los habían movido todos, IA y debug incluidos).
+- Los `.tres` guardaban solo 3 de los 9 campos (`soul_collect_distance`, `manafount_radius`, `altar_radius`, todos en su valor por defecto): se quitaron esas 3 líneas, textuales, de 25 archivos (23 de `debug/rules/` más los 2 fixtures de `agent/`; el grep no halló otros).
+- `reach_places_cases.facts_match_old_rules` conserva solo los literales (5, 5, 50, 50, 40, 50, 1000, 50, 50, 20 y `leash_from` 0,9); se quitó la parte que leía los campos viejos.
+- `guardian_leash` y similares siguen como nombres de nodo/socket de `ReachFrame` y `reach_places.tscn`: no son campos de reglas.
+- `scenes/match/README.md` con las cinco líneas y `Check:`. El baseline del lint lo actualiza el orquestador.
+- No se corrió Godot ni banco en r4 (orden del orquestador); la verificación en ejecución queda para la pasada final.

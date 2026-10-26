@@ -5,19 +5,13 @@ extends Resource
 ## RFC-036 036d. Live creatures a player may own at once (summons in progress count). 0 = no cap.
 @export var max_creatures_per_player: int = 0
 ## Where the reaches (souls, mana of a fount and an altar, the Manahoar aura, arming and leashing a Guardian) live as shapes.
-## The radius fields below go once every reader uses it (055r).
+## The radii live there, not here (055r).
 @export var reach_places: PackedScene = preload("res://scenes/match/reach_places.tscn")
-@export var soul_collect_distance: float = 5.0
 @export var manafount_rate: float = 33.333
-@export var manafount_radius: float = 50.0
 @export var altar_rate: float = 16.667
-@export var altar_radius: float = 50.0
 ## sacengine manahoar mana aura (state.d ManaEntries.addManahoar): max 20 mana/s, radius 40.
 @export var manahoar_rate: float = 20.0
-@export var manahoar_radius: float = 40.0
 ## sacengine addManahoar ramps with distance to allied manaliths from 50 to 1000.
-@export var manahoar_near_distance: float = 50.0
-@export var manahoar_far_distance: float = 1000.0
 ## Negative: wizards start with full mana. Debug rules lower it to watch the sources fill it.
 @export var start_mana: float = -1.0
 @export var ghost_health_per_mana: float = 4.2
@@ -104,7 +98,6 @@ extends Resource
 ## The wizard needs a standing building of his own (altar, shrine, Manalith) this close on the plane
 ## to arm Guardian: `candidateDistance>50.0f^^2` skips it (state.d:28082), else `mustBeNearBuilding`
 ## (state.d:29561).
-@export var guardian_arm_radius: float = 50.0
 ## A guardian hits this much harder (attackDamageFactor, state.d:8884; poison too).
 @export var guardian_attack_factor: float = 1.5
 ## A guardian takes this much of a spell's damage and of a ranged attack's; melee goes through
@@ -118,8 +111,6 @@ extends Resource
 ## Farther than this from the post's attach point the guardian gets a move order back (state.d:15366)
 ## to this distance from the building (state.d:15368). sacengine leaves `TODO: bind creature to
 ## building` there (state.d:15393): the hard leash of the original is not verified.
-@export var guardian_leash: float = 50.0
-@export var guardian_return_distance: float = 20.0
 
 @export_group("Teleport")
 # 021c (numbers follow sacengine, `sacengine/source/state.d`; none checked against Sacrifice.exe). The carry radius and

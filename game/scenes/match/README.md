@@ -1,5 +1,13 @@
 # scenes/match/
 
+What: the match: rules, clock, defeat, biome and the `match.tscn` scene; the reaches of the places (a soul, a fount, an altar, the Manahoar aura, arming and leashing a Guardian) are shapes of `reach_places.tscn`.
+Not: who wins by what (Match state only holds the result) or the radius numbers (they are not in MatchRules any more).
+Talks to: MatchRules.reach_places -> ReachFacts (meters, cached per scene) -> SoulSystem, ManaSource, UnitManaSupport and the Guardian bond; ReachFrame lists the nodes.
+Edit: move or resize a reach in `reach_places.tscn` (a variant is an inherited scene, e.g. debug/match/far_reach_places.tscn) · round numbers in `data/match_rules.tres`.
+Check: `bash tools/lint/conventions.sh` · rules_suite reach_places_cases · debug/match/far_reach_places.tscn (F6).
+
+---
+
 La partida: reglas, reloj, derrota, bioma y la escena `match.tscn`. Las reglas de ronda son un `MatchRules.tres`.
 
 - `match.tscn` (raiz `HighNoon`, nombre heredado: los benches lo usan) trae los sistemas, el HUD y la camara, y no sabe de ningun mapa. Al entrar al arbol, `match_world.gd` pone el mapa de la `MapDefinition` activa (`--map=<tag>`, High Noon por defecto) como primer hijo `Map` y conecta los sistemas a sus enchufes (`MapRoot`).

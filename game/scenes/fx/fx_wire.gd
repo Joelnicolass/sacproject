@@ -1,18 +1,19 @@
 class_name FxWire
 extends RefCounted
 
-## The one place where text and effects meet: the network id of an effect is the path of its resource, and this turns it back
-## into the resource on the receiving peer (loaded once, then cached). Also the transition door: while a caller still names an
-## effect with text (an old `data/fx` name, or the path of a scene), `as_particle`/`as_beam`/`as_scene` find it here and warn once.
+## The one place where text and effects meet, for the wire only: the network id of an effect is the path of its resource, and this
+## turns it back into the resource on the receiving peer (loaded once, then cached). Gameplay never names an effect with text: it holds
+## the ParticleType, BeamType or PackedScene in an `@export`.
 ## What it does not do: play anything (FxBus), pool anything (BurstPool, BeamPool), or decide who may see an effect.
 
+## Where the pools and the gallery find every type to warm up (folders, not names).
 const PARTICLES_DIR := "res://data/fx/"
 const BEAMS_DIR := "res://data/fx/beams/"
 
 ## id (resource path) -> loaded effect, or null when the path is not an effect. Never cleared: the effects are few and small.
 static var _by_id: Dictionary[String, Resource] = {}
 static var _warned: Dictionary[String, bool] = {}
-## How many ids or names did not turn into an effect since the process started (the net probe reads it; 0 is healthy).
+## How many ids did not turn into an effect since the process started (the net probe reads it; 0 is healthy).
 static var unresolved := 0
 
 
@@ -61,36 +62,6 @@ static func all_in(dir: String) -> Array[Resource]:
 	for sub: String in DirAccess.get_directories_at(dir):
 		found.append_array(all_in(dir + sub + "/"))
 	return found
-
-
-## A ParticleType from the type itself or, in the transition, from its old `data/fx` name. Null for "" or an unknown name.
-static func as_particle(fx: Variant) -> ParticleType:
-	if fx is ParticleType:
-		return fx
-	return _named(fx, PARTICLES_DIR + "%s.tres") as ParticleType
-
-
-## A BeamType from the type itself or from its old `data/fx/beams` name.
-static func as_beam(fx: Variant) -> BeamType:
-	if fx is BeamType:
-		return fx
-	return _named(fx, BEAMS_DIR + "%s.tres") as BeamType
-
-
-## A PackedScene from the scene itself or from its res:// path.
-static func as_scene(fx: Variant) -> PackedScene:
-	if fx is PackedScene:
-		return fx
-	return _named(fx, "%s") as PackedScene
-
-
-static func _named(fx: Variant, pattern: String) -> Resource:
-	if not (fx is String or fx is StringName):
-		return null
-	var text: String = String(fx)
-	if text.is_empty():
-		return null
-	return resource(text if text.begins_with("res://") else pattern % text)
 
 
 static func _warn_once(text: String) -> void:

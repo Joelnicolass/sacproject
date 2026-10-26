@@ -5,7 +5,7 @@ extends Node
 ## his wizard (`--audio-duel=ycro,plfl`: slot 1 and slot 2), ends the summon after `summon_ticks`, cuts their health to
 ## `duel_health` and makes them fight. Every sound the client then hears comes from the replicated state (mode, swings, shots,
 ## Health): nothing here is sent to the client. Only the authority acts; not in the product.
-## 052d: then it broadcasts `fx_name` through FxBus (the RPC every FX already uses) `fx_times` times, one every
+## 052d: then it broadcasts `fx` through FxBus (the RPC every FX already uses) `fx_times` times, one every
 ## `fx_every_ticks`, between the two creatures: the client hears it through FxBus.played and FxSounds (the `sound` of the blood ParticleType).
 ## 052f: the fight first lasts `battle_hold_ms` of REAL time with `battle_health` (nobody dies), and only then the health drops
 ## to `duel_health`. With --fixed-fps the dedicated runs far faster than real time, so a short duel would end between two
@@ -20,7 +20,7 @@ extends Node
 @export var battle_hold_ms := 3000
 @export var gap_m := 4.0
 @export var ahead_m := 6.0
-@export var fx_name := "blood"
+@export var fx: ParticleType = preload("res://data/fx/blood.tres")
 @export var fx_times := 4
 @export var fx_every_ticks := 30
 
@@ -78,10 +78,10 @@ func _physics_process(_delta: float) -> void:
 			_armed_tick = MatchClock.now()
 			var wizard := _wizard(1)
 			if wizard != null:
-				FxBus.broadcast(fx_name, wizard.global_position + Vector3.UP)
+				FxBus.broadcast(fx, wizard.global_position + Vector3.UP)
 			_fx_sent += 1
 			if _fx_sent >= fx_times:
-				print("duelo de audio: %d FX %s" % [_fx_sent, fx_name])
+				print("duelo de audio: %d FX %s" % [_fx_sent, FxWire.label_of(fx)])
 				_phase = 5
 
 

@@ -10,7 +10,5 @@ extends CreaturePassive
 @export var ability: AbilityType
 ## A DeathCloud scene: what the cloud does to the bodies around it.
 @export var scene: PackedScene
-## ParticleType of data/fx played once where the body died (FxBus, every peer). Empty = no puff.
-@export var fx_name: String = ""
-## Height of the puff over the body's center, in meters.
-@export var fx_height_m: float = 0.0
+## The puff played once at the center of the dead body's box (FxBus, every peer). Empty = no puff.
+@export var fx: ParticleType

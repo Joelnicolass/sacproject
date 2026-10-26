@@ -1,13 +1,14 @@
-[gd_resource type="Resource" script_class="BeamType" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="BeamType" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/beam_type.gd" id="1_type"]
 [ext_resource type="PackedScene" path="res://scenes/fx/beam_fx.tscn" id="2_scene"]
 [ext_resource type="Resource" path="res://data/fx/lights/lightning_flash.tres" id="3_light"]
+[ext_resource type="Texture2D" uid="uid://ba52mvipwrjlj" path="res://assets/original/fx/ltn2.png" id="atlas_png"]
 
 [resource]
 script = ExtResource("1_type")
 scene = ExtResource("2_scene")
-atlas_tag = "ltn2"
+atlas = ExtResource("atlas_png")
 change_s = 0.06667
 life_s = 0.53333
 travel_s = 0.0

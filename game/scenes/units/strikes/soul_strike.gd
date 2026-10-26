@@ -7,8 +7,8 @@ extends ShotStrike
 ## dealSplashRangedDamageAt(0, …, damageRange): that is ShotLook.impact (impacts/rend_blast_impact.tscn: nobody takes the whole
 ## amount). If the soul went, nothing happens (the mana is already spent). Born from RendSoulAbility, not from RangedWeapon.
 
-## FxBus beam type (res://data/fx/beams/) from the shot origin to the soul's center. Empty: none.
-@export var beam := "styx"
+## The beam from the shot origin to the soul's center. Empty: none.
+@export var beam: BeamType = preload("res://data/fx/beams/styx.tres")
 ## Tick it lands on (1 = the tick after the shot).
 @export_range(0, 120) var land_tick := 1
 
@@ -30,7 +30,7 @@ func _strike_tick(age: int) -> void:
 		return
 	var point := center_of_soul(soul)
 	soul.burst()
-	if not beam.is_empty():
+	if beam != null:
 		FxBus.broadcast_beam(beam, origin, point, null)
 	_log("golpe %s %s → alma en (%.1f, %.1f, %.1f) a %.1f m (tick %d)" % [tag, shooter_name(), point.x, point.y, point.z,
 			origin.distance_to(point), MatchClock.now()])

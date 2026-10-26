@@ -11,7 +11,7 @@ extends FxScene
 ## gone; `wait_s` covers the clients whose bit arrives after the event. Presentation only, never headless, drawn in MIX
 ## (alpha blend, never additive).
 ## WORKAROUND: the textures of the original (TXTR `cord`, `ltng`) are not in the exporter's atlases (tools/import/fx_catalog.py):
-## a flat color stands in until `texture_tag` has an atlas.
+## a flat color stands in until `texture` has an atlas.
 ## Divergences (declared): the web / cage mesh around the target is not drawn; the cage's shape does not reset at each pull
 ## (the clients do not see the pull ticks): one ramp from the start.
 
@@ -28,8 +28,8 @@ extends FxScene
 @export_range(0.0166, 2.0, 0.0001, "suffix:s") var reshape_s := 0.1
 ## The bolt grows from nothing to its full spread over this long (sacengine boltScaleGrowth 2 per second).
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var ramp_s := 0.5
-## Texture tag of the atlas (FxAtlas). Empty or missing: the material's color.
-@export var texture_tag := ""
+## The thread's texture. Empty: the material's color.
+@export var texture: Texture2D
 ## It frees itself when the user's Pulling was not seen on within this long (a bit that never arrives).
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var wait_s := 0.5
 ## ... and in any case after this long.
@@ -64,7 +64,6 @@ func play(params: Dictionary) -> void:
 	_mesh = ImmediateMesh.new()
 	_strand.mesh = _mesh
 	_strand.global_transform = Transform3D.IDENTITY
-	var texture := FxAtlas.texture(texture_tag)
 	var material := _strand.material_override as StandardMaterial3D
 	if texture != null and material != null:
 		material.albedo_texture = texture

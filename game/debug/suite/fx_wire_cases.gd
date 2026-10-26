@@ -3,7 +3,7 @@ extends RefCounted
 ## 055x x1 case of rules_suite: an effect is a typed Resource and the network id is its path.
 ##   - round_trip: every ParticleType and BeamType under data/fx (and its folders) goes id -> resource -> the same object, no empty id;
 ##   - foreign_ids: an id that is not an effect (no res://, a ShakeMap, nothing) comes back null;
-##   - transition_names: the old text still finds its Resource (a name, a scene path) and "" finds none;
+##   - empty_says_nothing: FxBus with no effect (null) says nothing and instances nothing (055x x7 closed the text door);
 ##   - camera_trauma: the 9 ParticleTypes and the 4 FxScene roots carry the shake the old table gave them; ShakeMap keeps only the fall-off;
 ##   - played_headless: FxBus says `played` with the Resource and instances nothing (a headless process has no pool children);
 ##   - sockets: BodyFacts.point puts the four sockets of a body without a mount where its default says, rotated with the body.
@@ -11,6 +11,7 @@ extends RefCounted
 
 const FX_DIR := "res://data/fx/"
 const BLOOD := "res://data/fx/blood.tres"
+const LIGHTNING := "res://data/fx/beams/lightning.tres"
 const FALLING_CHUNK := "res://scenes/map/terrain/falling_chunk.tscn"
 const SHAKE_MAP := "res://data/fx/shake_map.tres"
 const PARTICLE_TRAUMA := {
@@ -27,7 +28,7 @@ func run(host: Node) -> Dictionary:
 	var results: Dictionary[String, Dictionary] = {
 		"round_trip": _round_trip(),
 		"foreign_ids": _foreign_ids(),
-		"transition_names": _transition_names(),
+		"empty_says_nothing": _empty_says_nothing(),
 		"camera_trauma": _camera_trauma(),
 		"played_headless": _played_headless(host),
 		"sockets": _sockets(host),
@@ -67,18 +68,23 @@ func _foreign_ids() -> Dictionary:
 	return {"ok": passed, "no_scheme": no_scheme, "empty": empty, "not_an_effect": not_an_effect}
 
 
-func _transition_names() -> Dictionary:
-	var blood: ParticleType = FxWire.as_particle("blood")
-	var lightning: BeamType = FxWire.as_beam("lightning")
-	var chunk: PackedScene = FxWire.as_scene(FALLING_CHUNK)
-	var by_name: bool = blood != null and blood.resource_path == BLOOD
-	var beam_by_name: bool = lightning != null
-	var scene_by_path: bool = chunk != null and chunk == load(FALLING_CHUNK)
-	var none_for_empty: bool = FxWire.as_particle("") == null and FxWire.as_beam("") == null and FxWire.as_scene("") == null
-	var typed_passes_through: bool = FxWire.as_particle(blood) == blood and FxWire.as_scene(chunk) == chunk
-	var passed := by_name and beam_by_name and scene_by_path and none_for_empty and typed_passes_through
-	return {"ok": passed, "by_name": by_name, "beam_by_name": beam_by_name, "scene_by_path": scene_by_path,
-		"none_for_empty": none_for_empty, "typed_passes_through": typed_passes_through}
+func _empty_says_nothing() -> Dictionary:
+	var heard: Array[StringName] = []
+	var listener := func(kind: StringName, _fx: Resource, _at: Vector3) -> void:
+		heard.append(kind)
+	FxBus.played.connect(listener)
+	FxBus.play(null, Vector3.ZERO)
+	FxBus.puff(null, Vector3.ZERO)
+	FxBus.broadcast(null, Vector3.ZERO)
+	FxBus.play_beam(null, Vector3.ZERO, Vector3.ONE)
+	FxBus.broadcast_beam(null, Vector3.ZERO, Vector3.ONE)
+	FxBus.play_scene(null, Vector3.ZERO, {})
+	FxBus.broadcast_scene(null, Vector3.ZERO, {})
+	FxBus.played.disconnect(listener)
+	var passed: bool = heard.is_empty()
+	if not passed:
+		print("FX WIRE   empty: heard=%s" % [heard])
+	return {"ok": passed, "heard": heard.size()}
 
 
 func _camera_trauma() -> Dictionary:
@@ -110,14 +116,13 @@ func _played_headless(host: Node) -> Dictionary:
 		heard.append({"kind": kind, "fx": fx, "at": at})
 	FxBus.played.connect(listener)
 	var scene_children_before: int = host.get_tree().current_scene.get_child_count() if host.get_tree().current_scene != null else 0
-	var blood: ParticleType = FxWire.as_particle("blood")
-	var lightning: BeamType = FxWire.as_beam("lightning")
-	var chunk: PackedScene = FxWire.as_scene(FALLING_CHUNK)
+	var blood := load(BLOOD) as ParticleType
+	var lightning := load(LIGHTNING) as BeamType
+	var chunk := load(FALLING_CHUNK) as PackedScene
 	FxBus.play(blood, Vector3(1.0, 0.0, 2.0))
 	FxBus.puff(blood, Vector3.ZERO)
 	FxBus.play_beam(lightning, Vector3.ZERO, Vector3(0.0, 0.0, 10.0))
 	FxBus.play_scene(chunk, Vector3(5.0, 0.0, 0.0), {"vertex": 0})
-	FxBus.play("no_such_fx_055x", Vector3.ZERO)
 	FxBus.played.disconnect(listener)
 	var kinds: PackedStringArray = []
 	for row: Dictionary in heard:

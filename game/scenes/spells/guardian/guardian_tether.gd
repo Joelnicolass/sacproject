@@ -25,8 +25,8 @@ enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE
 @export var jitter_radius := 0.75
 ## Distance from the axis to each of the 3 planes, meters (the 1.0 passed to makeLineMeshes, sacobject.d:4472).
 @export var width := 1.0
-## Atlas tag of the beam (assets/original/fx/<tag>.png).
-@export var atlas_tag := "grdn"
+## The atlas of the beam (grdn.png in guardian_tether.tscn). Empty = the flat `color`.
+@export var atlas: Texture2D
 ## Brightness (SacGuardianTether material energy, renderer.d:257).
 @export var energy := 5.0
 ## Seconds per atlas cell.
@@ -77,9 +77,8 @@ func _apply_look() -> void:
 		return
 	material = material.duplicate()
 	beam.material_override = material
-	var texture := FxAtlas.texture(atlas_tag)
-	material.set_shader_parameter("use_textures", texture != null)
-	material.set_shader_parameter("atlas", texture)
+	material.set_shader_parameter("use_textures", atlas != null)
+	material.set_shader_parameter("atlas", atlas)
 	material.set_shader_parameter("fallback_color", color)
 	material.set_shader_parameter("energy", energy)
 	material.set_shader_parameter("frame_s", frame_s)

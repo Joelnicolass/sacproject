@@ -122,14 +122,16 @@ xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|
 #   - an effect turned into text to be played (`.bus_name()`, `.fx_name()`, `.cast_fx_name()`, `.resource_path` handed to FxBus,
 #     `FxTrail.attach(host, "name", ...)`);
 #   - a `.tscn` / `.tres` property named *fx / *burst / *puff set to a "..." text (an effect is an ExtResource, not a name).
-# 055x x7 takes it to 0. The lines are de-duplicated with the older patterns above.
+# 055x x7 took it to 0. The lines are de-duplicated with the older patterns above. Allowlist: the network id of the hand's effect
+# (`Caster.cast_fx_shown`, a replicated String: FxWire.id_of on the server, FxWire.resource on each peer).
 {
 	xargs grep -nE '^[ 	]*(@export[a-z_]*(\([^)]*\))? )?var [a-z][a-z_0-9]*(fx|burst|puff)[a-z_0-9]*[ ]*(:=[ ]*&?"|:[ ]*(String|StringName)\b)' < "$OUT/all.txt" 2>/dev/null
 	xargs grep -nE '\.(bus_name|fx_name|cast_fx_name)\(\)|FxTrail\.attach\([^,]*,[ ]*&?"|FxBus\.[a-z_]+\(.*\.resource_path' < "$OUT/all.txt" 2>/dev/null
 	find scenes data \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
 		| xargs grep -nE '^[a-z_0-9]*(fx|burst|puff)[a-z_0-9]* = &?"[^"]+"' 2>/dev/null
 } | grep -vE ':[0-9]+:[ 	]*#' | grep -v 'editor_description' >> "$OUT/C17.txt" || true
-sort -u "$OUT/C17.txt" -o "$OUT/C17.txt"
+grep -vE '^scenes/spells/caster\.gd:[0-9]+:@export var cast_fx_shown\b' "$OUT/C17.txt" | sort -u > "$OUT/C17.sorted" || true
+mv "$OUT/C17.sorted" "$OUT/C17.txt"
 
 # C18: text-tag lookups of content in gameplay (allowed in spawners, scenes/net/, scenes/core/catalog/).
 xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
@@ -149,11 +151,11 @@ xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|MapC
 # C18c (055c1): a content reference exported as text where the Resource exists: `*_tag`, `*_tags`, `*_spell`, `spell`, and the old passive
 # slots, as String / StringName / PackedStringArray, or a `const TAGS` list of creature tags, in units, ai, wizards and sacrifice. A component
 # receives the AbilityType / SpellType / CreaturePassive by `@export`. Allowlist: the network ids (`tag` in a `*_type.gd`, `creature_tag`,
-# `wizard_tag`) and the FX by text that 055x owns (`look_tag`, `rock_tag`, `texture_tag`, `shot_tag`); the AI difficulty names are not content.
+# `wizard_tag`); the AI difficulty names are not content. (The FX by text, `look_tag`, `rock_tag`, `texture_tag`, `shot_tag`, left in 055x.)
 find scenes/units scenes/ai scenes/wizards scenes/sacrifice -name '*.gd' 2>/dev/null | sort \
 	| xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (tag|[a-z_0-9]*_tags?|[a-z_0-9]*_spell|spell|passive_on_damage|passive_abilities)[ ]*(:[ ]*(String|StringName|PackedStringArray)\b|:=[ ]*(&?"|PackedStringArray))|^const [A-Z_]*TAGS?[ ]*(:[^=]*)?=[ ]*(PackedStringArray|\[)' 2>/dev/null \
 	| grep -vE '^[^:]*_type\.gd:[0-9]+:@export[a-z_]* var tag\b' \
-	| grep -vE 'var (creature_tag|wizard_tag|look_tag|rock_tag|texture_tag|shot_tag)\b|const DIFFICULTY_TAGS' > "$OUT/C18c.txt" || true
+	| grep -vE 'var (creature_tag|wizard_tag)\b|const DIFFICULTY_TAGS' > "$OUT/C18c.txt" || true
 
 # C19: data/*.tres that store positions/offsets/transforms (counted by FILE). debug/ is reported, not ratcheted.
 TRES_POS='^([a-z_0-9]*_(offset|position|origin|transform|pos)|position[a-z_0-9]*|offsets|origin|transform) = |Transform3D\('

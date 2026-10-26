@@ -143,7 +143,7 @@ func _fire() -> Dictionary:
 	var feeder := scythe.get_node("Health") as Health
 	feeder.current = feeder.maximum * 0.5
 	var start := feeder.current
-	var burn := Burning.ignite(victim, 120.0, 60, Health.DIRECT_RANGED, 2, 0.0, false, "", scythe)
+	var burn := Burning.ignite(victim, 120.0, 60, Health.DIRECT_RANGED, 2, 0.0, false, null, scythe)
 	checks["fire_made"] = burn != null
 	if burn != null:
 		burn.set_physics_process(false)
@@ -160,7 +160,7 @@ func _fire() -> Dictionary:
 		anon.set_physics_process(false)
 		anon.step(victim.get_node("Health") as Health)
 	checks["fire_without_attacker_no_drain"] = anon != null and anon.attacker_path.is_empty() and is_equal_approx(feeder.current, mid)
-	var building := Burning.ignite(structure, 0.0, 30, Health.DIRECT_RANGED, 2, 0.0, false, "", scythe)
+	var building := Burning.ignite(structure, 0.0, 30, Health.DIRECT_RANGED, 2, 0.0, false, null, scythe)
 	checks["building_fire_made"] = building != null
 	if building != null:
 		building.set_physics_process(false)

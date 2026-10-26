@@ -20,15 +20,15 @@ var from_slot := 0
 var dead: Node3D
 
 
-## Acts once around `center` (the dead body's box center), plays `fx` and frees the node.
-func burst(center: Vector3, fx: String, fx_height_m: float) -> void:
+## Acts once around `center` (the dead body's box center), plays `fx` there and frees the node.
+func burst(center: Vector3, fx: ParticleType) -> void:
 	global_position = center
 	var dead_name := who(dead) if dead else "?"
 	print("nube %s de %s (slot %d) en (%.1f, %.1f, %.1f)" % [ability.tag if ability else "?", dead_name, from_slot, center.x, center.y, center.z])
 	if ability:
 		_affect(center)
-	if not fx.is_empty():
-		FxBus.broadcast(fx, center + Vector3.UP * fx_height_m)
+	if fx != null:
+		FxBus.broadcast(fx, center)
 	queue_free()
 
 

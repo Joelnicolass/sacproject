@@ -196,9 +196,8 @@ static func material_for(beam: BeamType) -> ShaderMaterial:
 		material = ShaderMaterial.new()
 		_materials[beam] = material
 	material.shader = SHADER_MIX if beam.blend == BeamType.Blend.MIX else SHADER
-	var texture := FxAtlas.texture(beam.atlas_tag)
-	material.set_shader_parameter("use_textures", texture != null)
-	material.set_shader_parameter("atlas", texture)
+	material.set_shader_parameter("use_textures", beam.atlas != null)
+	material.set_shader_parameter("atlas", beam.atlas)
 	material.set_shader_parameter("h_frames", beam.h_frames)
 	material.set_shader_parameter("v_frames", beam.v_frames)
 	material.set_shader_parameter("soft_distance_m", beam.soft_distance_m)

@@ -16,10 +16,12 @@ const _POOL := preload("res://debug/fx/fx_pool_count.gd")
 @export var turns_per_s := 0.25
 ## Wait after the flight until every puff is idle again.
 @export var settle_s := 4.0
-@export var trail_types: PackedStringArray = PackedStringArray(["wrath_trail", "spit_trail", "rock_trail"])
+@export var trail_types: Array[ParticleType] = [preload("res://data/fx/wrath_trail.tres"), preload("res://data/fx/spit_trail.tres"),
+		preload("res://data/fx/rock_trail.tres")]
 @export var trail_plays := 32
 ## Bursts of one Wrath explosion (wrath_strike.gd _explode).
-@export var burst_types: PackedStringArray = PackedStringArray(["wrath_explosion1", "wrath_explosion2", "wrath_particle"])
+@export var burst_types: Array[ParticleType] = [preload("res://data/fx/wrath_explosion1.tres"), preload("res://data/fx/wrath_explosion2.tres"),
+		preload("res://data/fx/wrath_particle.tres")]
 @export var burst_events := 6
 @export var trail_budget_us := 50.0
 @export var burst_budget_ms := 0.5
@@ -50,7 +52,8 @@ func _process(delta: float) -> void:
 func _run() -> void:
 	await get_tree().create_timer(flight_s).timeout
 	_set_trails(false)
-	for type_name in trail_types:
+	for type: ParticleType in trail_types:
+		var type_name := FxWire.label_of(type)
 		var row: Vector3i = _POOL.by_type(FxBus).get(type_name, Vector3i.ZERO)
 		var peak := int(_peaks.get(type_name, 0))
 		print("fx_pool_pico %s %d/%d %s" % [type_name, peak, row.z, "ok" if peak < row.z else "TOPE"])
@@ -62,18 +65,20 @@ func _run() -> void:
 
 func _physics_process(_delta: float) -> void:
 	var rows := _POOL.by_type(FxBus)
-	for type_name in trail_types:
+	for type: ParticleType in trail_types:
+		var type_name := FxWire.label_of(type)
 		var row: Vector3i = rows.get(type_name, Vector3i.ZERO)
 		_peaks[type_name] = maxi(int(_peaks.get(type_name, 0)), row.x)
 
 
 func _measure() -> void:
 	var far := Vector3(0.0, -500.0, 0.0)
-	for type_name in trail_types:
+	for type: ParticleType in trail_types:
+		var type_name := FxWire.label_of(type)
 		var total := 0
 		for i in trail_plays:
 			var t0 := Time.get_ticks_usec()
-			FxBus.play(type_name, far)
+			FxBus.play(type, far)
 			total += Time.get_ticks_usec() - t0
 		var mean := float(total) / float(trail_plays)
 		print("fx_play %s media %.1f us (n %d) %s" % [type_name, mean, trail_plays, "ok" if mean <= trail_budget_us else "FALLA"])
@@ -81,8 +86,8 @@ func _measure() -> void:
 	var sum := 0
 	for i in burst_events:
 		var t0 := Time.get_ticks_usec()
-		for type_name in burst_types:
-			FxBus.play(type_name, far)
+		for type: ParticleType in burst_types:
+			FxBus.play(type, far)
 		var spent := Time.get_ticks_usec() - t0
 		sum += spent
 		worst = maxi(worst, spent)

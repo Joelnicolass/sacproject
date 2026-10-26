@@ -41,7 +41,8 @@ static func upkeep(t: AiTrack, perception: AiPerception) -> void:
 				AiTrackFacts.rate(t, perception)
 			if t.kind == AiTrack.Kind.MANAHOAR and t.age >= t.status_tick:
 				t.status_tick = t.age + play.ages_for(senses.status_s)
-				t.ready = maho_ready(t.node)
+				if perception.sees(t):  # an unseen Manahoar keeps the readiness seen last (no difficulty cheats)
+					t.ready = maho_ready(t.node)
 			if t.kind == AiTrack.Kind.WIZARD and t.relation == AiTrack.Relation.OWN and t.age >= t.souls_snap_tick:
 				t.souls_snap_tick = t.age + play.ages_for(senses.souls_snapshot_s)
 				var purse := t.node.get_node_or_null("SoulPurse")

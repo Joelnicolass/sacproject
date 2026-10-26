@@ -8,7 +8,7 @@ extends RefCounted
 var slot := 0
 var wizard: WizardBody
 var caster: Caster
-## Casts that took the real body of a body of another side the side did not see (perfect information only).
+## Casts that took the real body of a body of another side the side did not see (a guard: no difficulty aims at one, stays 0).
 var unseen_target_reads := 0
 var _units_root: Node
 var _answers: Array[String] = []

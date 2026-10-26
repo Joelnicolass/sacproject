@@ -2,9 +2,9 @@ class_name AiSightIntake
 extends Node
 
 ## How what the side's Visions see reaches the AI. It hears every body a Vision learns (VisionSides.events.learned) and, when the AI
-## looks (`take_new`), hands over the ones its side remembers now and the AI does not track yet, in name order. Without perfect
-## information it also forgets a foe whose last known place one of the side's bodies is looking at while the foe is not there, and
-## hands it back once the side sees it again. It does not look (Vision) nor decide anything; AiPerception adds and drops the tracks.
+## looks (`take_new`), hands over the ones its side remembers now and the AI does not track yet, in name order. It also forgets a
+## foe whose last known place one of the side's bodies is looking at while the foe is not there, and hands it back once the side
+## sees it again. It does not look (Vision) nor decide anything; AiPerception adds and drops the tracks.
 ## Ref: shiny.d:616-635 botSeen.
 
 ## Bodies forgotten because the side looked where they were and they were not there.
@@ -49,11 +49,11 @@ func take_new(side: int, tracks: Dictionary) -> Array[Node3D]:
 	return found
 
 
-## Without perfect information: the bodies of another side (lists 1..3 of `bodies`) that side `side` does not see now, whose last
-## known place lies inside the sight of one of its own bodies (list 0), are not there any more (they would have been marked). They are
-## kept as lost until the side sees them again; the caller drops their tracks (else a group seen near the wizard and gone stays there
-## for good and keeps his threat up). The original never needs it: it reads the real position.
-func forget_checked(bodies: Array, side: int) -> Array[AiTrack]:
+## The bodies of another side (lists 1..3 of `bodies`) whose place `belief` does not know now (not seen, not on the minimap), whose
+## last known place lies inside the sight of one of the side's own bodies (list 0), are not there any more (they would have been
+## marked). They are kept as lost until the side sees them again; the caller drops their tracks (else a group seen near the wizard
+## and gone stays there for good and keeps his threat up). The original never needs it: it reads the real position.
+func forget_checked(bodies: Array, side: int, belief: AiBelief) -> Array[AiTrack]:
 	var lookers: Array = []
 	for own: AiTrack in bodies[0]:
 		if own.is_valid():
@@ -66,7 +66,7 @@ func forget_checked(bodies: Array, side: int) -> Array[AiTrack]:
 		return gone
 	for k in [1, 2, 3]:
 		for t: AiTrack in bodies[k]:
-			if not t.is_valid() or AiBelief.sees(t, side):
+			if not t.is_valid() or belief.knows_where(t, side):
 				continue
 			for looker: Array in lookers:
 				var at: Vector3 = looker[0]

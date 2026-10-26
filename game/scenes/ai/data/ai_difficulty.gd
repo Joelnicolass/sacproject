@@ -31,12 +31,17 @@ extends Resource
 @export_range(0.0, 0.9, 0.05) var mana_reserve := 0.0
 
 @export_group("Información")
-## true: the AI reads the real state of the bodies it knows (position, health, mana), seen or not, as the original does
-## (shiny.d:1710-1711 «cached live entPos», healthPair, startCasting on the entity). false: of an enemy, ally or neutral body its side
-## does not see now (VisionSides.sees) it uses only what it saw last: the position where it was (extrapolated one step),
-## its health and mana of that moment; it cannot cast on it nor order its creatures after it (a human cannot click what he does not
-## see). Deviation of the port in Normal (decision of the user, 2026-10-15); Hard = the original.
-@export var perfect_information := false
+## What the AI may know of the bodies its side does not see now. No difficulty reads the real health or mana of one of them (RULES.md
+## «IA»: no cheat in any difficulty); what changes is the position.
+enum Knowledge {
+	## Only what the side's Visions see. Of a body it does not see it keeps what it saw last: the place where it was (one step of
+	## its last velocity ahead), its health and mana of that moment; it cannot cast on it nor order its creatures after it.
+	SIGHT,
+	## SIGHT plus what a human reads on the minimap: the position (never health nor mana) of the bodies within
+	## `tactics.senses.map_sight_m` of the own wizard, and of every enemy wizard (the arrow at the edge of the minimap).
+	SIGHT_AND_MAP,
+}
+@export var knowledge: Knowledge = Knowledge.SIGHT
 
 @export_group("Sensatez (RFC-053)")
 ## How the wizard and his creatures play this difficulty (data/ai/tactics_*.tres, with crowd and senses). Empty: tactics_normal.tres.

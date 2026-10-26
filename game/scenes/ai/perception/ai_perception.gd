@@ -3,9 +3,10 @@ class_name AiPerception
 extends Node
 
 ## The bodies one AI side knows and what each is to it (own, ally, neutral, enemy): the index the rest of the AI reads. At the start
-## it takes in every structure, wizard and creature of the map; then its own bodies as they appear, a foe once its side sees it
-## (SightIntake), and it drops what dies. What it believes of an unseen body is Belief's, the souls Souls', the rituals AiRituals'.
-## It takes no decisions. ## Ref: shiny.d:1129-1200 scanGlobal (0x10, 1158), 575-584, 563-566, 1289-1300, 1373-1400, 975, 536.
+## it takes in every structure and wizard, its own and allied creatures and, with SIGHT_AND_MAP, the others on its minimap; then its
+## own bodies as they appear, a foe once its side sees it (SightIntake), and it drops what dies. What it believes of an unseen body
+## is Belief's, the souls Souls', the rituals AiRituals'. It takes no decisions.
+## Ref: shiny.d:1129-1200 scanGlobal (0x10, 1158), 575-584, 563-566, 1289-1300, 1373-1400, 975, 536.
 
 signal forced(bits: int)
 signal tracked(track: AiTrack)
@@ -25,9 +26,6 @@ var scanned := false
 ## What the side has seen of souls and of free founts (the stance and the capture task read them). ## Ref: shiny.d:1243-1262.
 var neutral_founts := 0
 var max_souls_seen := 0
-var perfect_information: bool:
-	get: return belief != null and belief.perfect_information
-	set(value): belief.perfect_information = value
 var unseen_reads: int:
 	get: return belief.unseen_reads if belief != null else 0
 var forgotten: int:
@@ -56,6 +54,7 @@ func scan_global() -> void:
 	scanned = true
 	for group in [Altar.GROUP, &"manafount", &"structure", &"wizard", &"unit"]:
 		for node in get_tree().get_nodes_in_group(group):
+			if group == &"unit" and relation_of(node) > AiTrack.Relation.ALLY and not belief.within_map(node as Node3D): continue
 			add_node(node as Node3D, &"scan")
 	print("ia slot %d: escaneo inicial %d propios, %d aliados, %d neutrales, %d enemigos" % [slot, tracks_of(0).size(), tracks_of(1).size(), tracks_of(2).size(), tracks_of(3).size()])
 	forced.emit(1)
@@ -88,8 +87,8 @@ func _erase(t: AiTrack) -> void:
 	untracked.emit(t)
 	forced.emit(1)
 
-## Drops what no longer exists and updates the rest, `dt` ticks after the last run; without perfect information it forgets what is
-## not where it was seen and knows again what its side sees again.
+## Drops what no longer exists and updates the rest, `dt` ticks after the last run; it forgets what is not where it was seen and
+## knows again what its side sees again.
 func update_nodes(dt: int) -> void:
 	if souls != null: souls.prune()
 	for t: AiTrack in tracks.values():
@@ -97,15 +96,15 @@ func update_nodes(dt: int) -> void:
 			_erase(t)
 			continue
 		_update_node(t, dt)
-	if not perfect_information and intake != null:
-		for t in intake.forget_checked(_bodies, slot): _erase(t)
+	if intake != null:
+		for t in intake.forget_checked(_bodies, slot, belief): _erase(t)
 		for node in intake.take_recalled(slot):
 			var t := add_node(node, &"seen")
 			if t != null: t.seen = true
 
 func _update_node(t: AiTrack, dt: int) -> void:
 	belief.follow(t, dt, slot)
-	if t.is_body() and t.relation != AiTrack.Relation.OWN and sees(t): AiBelief.snapshot(t)
+	if t.is_body() and t.relation != AiTrack.Relation.OWN and sees(t): belief.snapshot(t, slot)
 	AiTrackUpkeep.upkeep(t, self)
 
 ## Takes in what the side sees and does not track yet; marks «seen» (followed from now on) what it sees; ghosts and dead bodies go.
@@ -140,6 +139,7 @@ func tag_acc(type: CreatureType) -> PackedFloat32Array: return AiTrackFacts.tag_
 func leak_count() -> int: return AiSightIntake.leak_count(tracks, slot)
 func sees(t: AiTrack) -> bool: return AiBelief.sees(t, slot)
 func knows_live(t: AiTrack) -> bool: return belief.knows_live(t, slot)
+func knows_where(t: AiTrack) -> bool: return belief.knows_where(t, slot)
 func pos_of(t: AiTrack) -> Vector3: return belief.pos_of(t, slot)
 func health_of(t: AiTrack) -> Vector2i: return belief.health_of(t, slot)
 func mana_of(t: AiTrack) -> Vector2i: return belief.mana_of(t, slot)

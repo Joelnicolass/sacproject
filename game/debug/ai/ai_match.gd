@@ -318,11 +318,11 @@ func _finish(winner: int, reason: String) -> void:
 		var focus := side.board.get_node_or_null("FocusTask") as FocusTask
 		if focus != null:
 			audit.set_extra(int(slot), "ai_focus", {"commits": focus.commits, "last": focus.last_commit})
-		## 024e: the difficulty and what the side read of bodies it did not see (0 without perfect information).
+		## 024e: the difficulty and what the side read of bodies it did not see (0 in every difficulty, 055f f6).
 		audit.set_extra(int(slot), "difficulty", {
 			"name": side.play.difficulty.display_name, "file": side.play.difficulty.resource_path,
 			"periods": _periods(side.clock), "aggression": side.play.aggression,
-			"delay_ticks": side.port.delay_ticks, "perfect_information": side.perception.perfect_information,
+			"delay_ticks": side.port.delay_ticks, "knowledge": AiDifficulty.Knowledge.keys()[side.play.difficulty.knowledge],
 			"resource_bonus": side.play.difficulty.resource_bonus})
 		audit.set_extra(int(slot), "unseen_target_reads", side.port.unseen_target_reads)
 		audit.set_extra(int(slot), "unseen_state_reads", side.perception.unseen_reads)

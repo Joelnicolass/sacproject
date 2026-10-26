@@ -34,8 +34,8 @@ var cur_pos := Vector3.ZERO
 var extrap_pos := Vector3.ZERO
 var prev_pos := Vector3.ZERO
 var velocity := Vector3.ZERO
-## 024e, without perfect information (Easy, Normal): the body is not seen by the side now, so its position stays where it was last
-## seen (cur_pos) and its health and mana are the ones of that moment (seen_health, seen_mana: (current, maximum)).
+## 024e, f6 (every difficulty): the side does not know where the body is now, so its position stays where it was last seen (cur_pos);
+## its health and mana are the ones of the moment it was last seen (seen_health, seen_mana: (current, maximum); zero if never seen).
 var frozen := false
 var seen_health := Vector2i.ZERO
 var seen_mana := Vector2i.ZERO

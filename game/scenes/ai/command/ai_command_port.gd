@@ -5,8 +5,8 @@ extends Node
 ## goes through the child `orders` (AiOrdersOut). So the AI pays mana and souls, waits for the cooldowns and cannot order what is
 ## not its own; it never touches a body, a pool or a purse. Only where the game is simulated (solo or the server): no RPC.
 ## 024e (AiDifficulty): with a delay (Easy) every request waits `delay_ticks`, as a human's hand does; a waiting cast keeps the
-## wizard busy and goes out only if it still can be paid and its target still lives (else it lapses, never a refusal). Without
-## perfect information a request never takes a body of another side the side does not see now. Ref: RFC-024 §3.1.
+## wizard busy and goes out only if it still can be paid and its target still lives (else it lapses, never a refusal). In no
+## difficulty a request takes a body of another side the side does not see now. Ref: RFC-024 §3.1.
 
 ## What a brain asks a body to do (`ostate`). The numbers are the original's order states and show in the logs.
 ##   MOVE_NEAR  walk to within a radius of a point        GUARD    stay near a body (or a place) and fight what comes
@@ -39,7 +39,7 @@ var can_cast: Callable
 var lapsed := 0
 var lapse_reasons := {}
 ## Diagnostic, casts plus orders: microseconds inside the game on behalf of the AI (AiSide subtracts them), delayed requests, and
-## requests that took the real body or position of an unseen body (perfect information only).
+## requests that took the real body or position of an unseen body (a guard: it stays 0).
 var game_us: int:
 	get: return _cast_us + (orders.game_us if orders != null else 0)
 var delayed: int:
@@ -131,7 +131,7 @@ func flush() -> void:
 	orders.flush_due()
 
 
-## A cast may take `target`: with perfect information always; else a body of another side only while the side sees it.
+## A cast may take `target`: a body of another side only while the side sees it (the minimap is not a click).
 func can_aim(target: AiTrack) -> bool:
 	return aims(perception, target)
 

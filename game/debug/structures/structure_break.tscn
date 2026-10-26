@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/map/structure_siege.tscn" id="1_siege"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="2_tower"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_hut.tscn" id="3_hut"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_1.tscn" id="4_cactus"]
+[ext_resource type="Script" path="res://debug/structures/break_key.gd" id="5_key"]
+
+[node name="StructureBreak" instance=ExtResource("1_siege")]
+editor_description = "F391 (RFC-056). Hereda structure_siege.tscn (High Noon). El mago (slot 1) a 30 m de FountEast (1520, 16.1, 1450); sobre el manantial una Manalith enemiga (slot 2) en pie, puesta a mano; una choza (5000) y un cactus (1000) cerca. El Sieger quieto y lejos. Prueba: K (debug_hit) pega la mitad de la vida al blanco que sigue: K, K tira la torre (estallido, manantial libre, sale 1 s después), K, K la choza (estallido y ruina), K, K el cactus. Inspector remoto: EnemyTower/Health.current, EnemyTower/StructureBreak (señal broke), FountEast.is_free(), BreakKey.report."
+
+[node name="WizardSpot" parent="HighNoon/Map/MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-0.986393929, 0, 0.164398983, 0, 1, 0, -0.164398983, 0, -0.986393929, 20, 0, -90)
+
+[node name="Sieger" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600, 30, 1560)
+idle_aggro = false
+
+[node name="EnemyTower" parent="." node_paths=PackedStringArray("fount") instance=ExtResource("2_tower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 16.1, 1450)
+owner_slot = 2
+fount = NodePath("../HighNoon/Map/MapProps/Founts/FountEast")
+
+[node name="Hut" parent="." instance=ExtResource("3_hut")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1555, 17.5, 1480)
+
+[node name="Cactus" parent="." instance=ExtResource("4_cactus")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1490, 15.5, 1490)
+
+[node name="BreakKey" type="Node" parent="." node_paths=PackedStringArray("targets", "fount", "shake")]
+script = ExtResource("5_key")
+targets = [NodePath("../EnemyTower"), NodePath("../Hut"), NodePath("../Cactus")]
+fount = NodePath("../HighNoon/Map/MapProps/Founts/FountEast")
+shake = NodePath("../HighNoon/Camera/CameraShake")

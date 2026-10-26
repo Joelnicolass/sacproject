@@ -48,6 +48,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 
 ### Hechizos
 - **Hecho.** Lanzador (maná, enfriamiento, tiempo de lanzamiento), daño, estructuras del libro, Guardian, Teleport, Manalith. Cada hechizo con procedimiento propio es una escena `SpellAction` más un `SpellType.tres`. F24, F28, F33, F34, F62-F64, F230.
+- **RFC-056.** Caída de torres y edificios en todos los peers: estallido por parte (esferas, rocas, partículas, sonido), ruina, manantial libre en el mismo tick y la torre 1 s en pie antes de salir; cada reacción nueva es un nodo hijo que escucha `damaged`/`destroyed`. Prueba: `debug/structures/structure_break.tscn` (K), rules_suite `structure_break_cases`, `agent/flows/f391_structure_break.json`. F391.
 
 ### Criaturas y habilidades
 - **Hecho.** Convocar, melé, muerte y cadáver, almas, bestiario completo con sus habilidades (aliento, disparos, congelar, veneno, aturdir, drenaje, empuje, pasivas, nubes de muerte…). F25, F26, F29, F30, F41, F112, F116-F166, F177, F205.

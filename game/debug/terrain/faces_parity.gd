@@ -1,6 +1,7 @@
 extends SceneTree
 
-## Checks, map by map, that the ground TerrainFaces derives from heights.res is the ground the map loads today (the
+## Checks, map by map, that the ground TerrainFaces derives from heights.png (the TerrainHeights the addon terrain_tools
+## imports from heights.png and void.png: import first) is the ground the map loads today (the
 ## terrain.res of its MapDefinition): the same multiset of triangles, positions rounded to 1e-4 and winding kept, land
 ## and walls counted apart, and the same land height at two points of every cell. A test map (its ground does not
 ## come from the original) may gain walls on its rim and pick the other diagonal of a flat cell: that is reported, not
@@ -37,10 +38,10 @@ func _check(tag: String) -> bool:
 	var definition := load(folder.path_join(tag + ".tres")) as MapDefinition
 	var before: MapTerrainData = definition.terrain if definition != null else null
 	var heights: TerrainHeights = null
-	if ResourceLoader.exists(folder.path_join("heights.res")):
-		heights = load(folder.path_join("heights.res")) as TerrainHeights
+	if ResourceLoader.exists(folder.path_join("heights.png")):
+		heights = load(folder.path_join("heights.png")) as TerrainHeights
 	if before == null or heights == null or not heights.is_valid():
-		print("FACES PARITY %s missing: terrain.res=%s heights.res=%s" % [tag, before != null, heights != null and heights.is_valid()])
+		print("FACES PARITY %s missing: terrain.res=%s heights.png imported=%s" % [tag, before != null, heights != null and heights.is_valid()])
 		return false
 	var after := TerrainFaces.build(heights)
 	var old_sets := _triangles(before)

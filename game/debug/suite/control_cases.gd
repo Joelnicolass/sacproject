@@ -436,7 +436,7 @@ func _vines_reach_up(look: VineLook, body: Node3D) -> bool:
 ## The AI rates a control spell on the foe it is worth most and never on a protected one, an ally or a structure.
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "ControlCasesPerception"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 1

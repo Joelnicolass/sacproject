@@ -166,7 +166,7 @@ func _cut() -> Dictionary:
 
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "TornadoCasesPerception"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 1

@@ -297,7 +297,7 @@ func _cast() -> Dictionary:
 ## guard_threat_m and the ward off; nothing with one, with none far away, or with the ward on. The support phase picks it.
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "WardCasesPerception"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 1

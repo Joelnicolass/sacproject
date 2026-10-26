@@ -444,7 +444,7 @@ func _lights() -> Dictionary:
 ## The AI sees the five without breaking: each an area spell for the AI, and its evaluator gives a finite rating.
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "CloudCasesPerception"
 	perception.profile = load("res://data/ai/profile_original.tres")
 	perception.slot = 1

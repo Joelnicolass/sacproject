@@ -135,7 +135,7 @@ func refresh() -> void:
 
 ## Side `slot` has just seen this body strike one of its own.
 func expose_to(slot: int) -> void:
-	memory.expose_to(slot, MatchClock.now())
+	memory.expose_to(slot, MatchClock.now(), body)
 
 
 func _candidates() -> Array:

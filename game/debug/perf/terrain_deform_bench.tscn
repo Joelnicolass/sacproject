@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://debug/perf/terrain_deform_bench.gd" id="1_bench"]
+[ext_resource type="PackedScene" path="res://debug/spells/cast_terrain.tscn" id="2_world"]
+[ext_resource type="Resource" path="res://data/look/quality_high.tres" id="3_quality"]
+
+[node name="TerrainDeformBench" type="Node"]
+editor_description = "Bench del costo de deformar el terreno (diagnóstico 063D). F6 con ventana: imprime por fase (quieto, sello vivo de Volcano cada tick, agujeros de Bore) el tiempo de script por tick, el frame y cada llamada al TerrainDeformer. Meta: el sello vivo suma <= 1 ms por tick y ningún frame pasa de 20 ms."
+script = ExtResource("1_bench")
+world_scene = ExtResource("2_world")
+quality = ExtResource("3_quality")

@@ -5,7 +5,7 @@ extends RefCounted
 ## editor; never a live tick) and, at most every `every_s` seconds, tells the planters which part of it moved so they plant
 ## it again at the new height, and replants the patches whose circle that part touches (no other). It remembers the moved
 ## areas in between and joins the ones that overlap. It plants nothing itself (MeshPlanter, VegetationPatch) and never
-## touches the ground.
+## touches the ground. `mark` also takes areas whose flora was painted (the map brush), under the same brake.
 
 var _shape: Terrain
 var _moved: Array[Rect2] = []
@@ -16,12 +16,12 @@ var _left := 0.0
 func follow(shape: Terrain) -> void:
 	if shape == _shape:
 		return
-	if _shape != null and is_instance_valid(_shape) and _shape.settled.is_connected(_on_moved):
-		_shape.settled.disconnect(_on_moved)
+	if _shape != null and is_instance_valid(_shape) and _shape.settled.is_connected(mark):
+		_shape.settled.disconnect(mark)
 	_shape = shape
 	_moved.clear()
 	if _shape != null:
-		_shape.settled.connect(_on_moved)
+		_shape.settled.connect(mark)
 
 
 ## Counts `delta` seconds; when `every_s` have passed since the last time and something moved, the planters replan it and
@@ -51,7 +51,9 @@ func _touches(patch: VegetationPatch) -> bool:
 	return false
 
 
-func _on_moved(area: Rect2) -> void:
+## `area` (the ground's x, z) has to be planted again: the ground under it settled (Terrain.settled) or its flora was
+## painted (FloraField.layer_painted). It waits for the next `update`, joined to an overlapping area already waiting.
+func mark(area: Rect2) -> void:
 	for i in _moved.size():
 		if _moved[i].intersects(area):
 			_moved[i] = _moved[i].merge(area)

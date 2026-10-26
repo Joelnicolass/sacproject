@@ -34,7 +34,11 @@ static func resolve(history: TerrainHistory, node: Node, tool: Toolbar.Tool, shi
 				return _made(history.lattice(terrain), BrushStroke.Mode.FILL if shift else BrushStroke.Mode.VOID, false)
 		if ROLE_CHANNELS.has(tool):
 			return _role(history, terrain, tool)
-	# The flora canvas (FLORA, on a FloraLayer) comes in 066d.
+	var layer := node as FloraLayer
+	if layer != null and tool == Toolbar.Tool.FLORA:
+		var density := history.density(layer)
+		if density != null:
+			return _made(density, DensityCanvas.Mode.ERASE if shift else DensityCanvas.Mode.PAINT, false)
 	return null
 
 

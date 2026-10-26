@@ -2,9 +2,11 @@
 class_name FloraLayer
 extends Node3D
 
-## Where one kind of plant grows on a map (child of the map's `Vegetation` node). Paint `density` in any image editor
-## (L8 PNG, white = `max_per_cell` plants in the cell); 1 px = `cell_m` meters and the image starts at the map origin
-## (keep this node at 0, 0, 0). The FloraField of the map's look draws it around the camera: FloraPlacement scatters the
+## Where one kind of plant grows on a map (child of the map's `Vegetation` node). Paint `density` with the map brush
+## (select this node, «Flora» in the 3D bar; it makes the PNG when there is none) or in any image editor (L8 PNG, white =
+## `max_per_cell` plants in the cell); 1 px = `cell_m` meters and the image starts at the map origin
+## (keep this node at 0, 0, 0). While the brush paints, the field draws the picture being painted (`show_painting`, editor
+## only, never saved) until the PNG is saved and imported again. The FloraField of the map's look draws it around the camera: FloraPlacement scatters the
 ## cell's plants (same tag, cell and seed: same spots), heights from the terrain, none inside a VegetationClear.
 ## For a few plants in one place use a VegetationPatch instead. Nothing here is simulation: a headless or dedicated
 ## process never draws it. In the editor `show_overlay` tints the cells where it grows.
@@ -20,6 +22,7 @@ const GROUP := &"flora_layer"
 	set(value):
 		_watch(density, value)
 		density = value
+		_painting = null  # a painting belongs to the picture it was made from
 		_changed()
 ## Side of one image pixel in the map, in meters. It must divide 32 (the planter's cell).
 @export_range(1.0, 32.0, 1.0, "suffix:m") var cell_m := 8.0:
@@ -37,6 +40,8 @@ const GROUP := &"flora_layer"
 		show_overlay = value
 		_changed()
 
+var _painting: Image  ## editor only: the picture the brush is painting, not saved yet
+
 
 func _enter_tree() -> void:
 	add_to_group(GROUP)
@@ -48,11 +53,42 @@ func _exit_tree() -> void:
 	get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFERRED, FloraField.GROUP, &"layers_changed")
 
 
+## The brush painted `area_m` (map x, z) of `image` (L8, the size of `density`): the field replants that area from it.
+func show_painting(image: Image, area_m: Rect2) -> void:
+	_painting = image
+	if is_inside_tree():
+		get_tree().call_group(FloraField.GROUP, &"layer_painted", self, area_m)
+	if show_overlay:
+		_update_overlay()
+
+
+## Back to the imported `density` (the brush's picture was saved and imported again).
+func stop_painting() -> void:
+	_painting = null
+	_update_overlay()
+
+
+## A copy of where it grows as an L8 picture: the brush's painting if one is on, else `density`. Null without one.
+func density_image() -> Image:
+	if _painting != null:
+		return _painting.duplicate() as Image
+	if density == null:
+		return null
+	var image := density.get_image()
+	if image == null or image.is_empty():
+		return null
+	if image.is_compressed():
+		image.decompress()
+	image.convert(Image.FORMAT_L8)
+	return image
+
+
 func _changed() -> void:
 	if not is_inside_tree():
 		return
 	get_tree().call_group(FloraField.GROUP, &"layers_changed")
 	_update_overlay()
+	update_configuration_warnings()
 
 
 func _watch(old: Resource, new: Resource) -> void:
@@ -66,14 +102,11 @@ func _update_overlay() -> void:
 	for child in get_children(true):
 		if child.name == &"Overlay":
 			child.free()
-	if not (Engine.is_editor_hint() and show_overlay) or density == null:
+	if not (Engine.is_editor_hint() and show_overlay):
 		return
-	var image := density.get_image()
-	if image == null or image.is_empty():
+	var image := density_image()
+	if image == null:
 		return
-	if image.is_compressed():
-		image.decompress()
-	image.convert(Image.FORMAT_L8)
 	var bytes := image.get_data()
 	var rgba := PackedByteArray()
 	rgba.resize(bytes.size() * 4)

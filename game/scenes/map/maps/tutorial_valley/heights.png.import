@@ -1,0 +1,16 @@
+[remap]
+
+importer="sacrifice.terrain_heights"
+importer_version=1
+type="Resource"
+uid="uid://b1x0tt2ggca6t"
+path="res://.godot/imported/heights.png-06bceed29af926eb258bd487fd051747.res"
+
+[deps]
+
+source_file="res://scenes/map/maps/tutorial_valley/heights.png"
+dest_files=["res://.godot/imported/heights.png-06bceed29af926eb258bd487fd051747.res"]
+
+[params]
+
+metres_per_unit=0.1

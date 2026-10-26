@@ -6,7 +6,7 @@ extends RefCounted
 ## members to the center. Each brain gets the kind of the task whose record it is in. It does not make records nor claim
 ## creatures (the tasks do). Ref: shiny.d:3380-3447 recordUpdate and proximityTrigger, 1915-1952 recordRefresh, 2471-2491 node vtbl.
 
-## The board whose brains, port and profile it uses (read at every call).
+## The board whose brains, port and play it uses (read at every call).
 var board: AiTaskBoard
 var records_updated := 0
 
@@ -56,7 +56,7 @@ func record_update(record: AiRecord, task_kind: AiTask.Kind) -> void:
 	records_updated += 1
 	if record.count == 0:
 		return
-	var profile := board.profile
+	var crowd := board.play.tactics.crowd
 	if record.leader != null:
 		for m in record.members.duplicate():
 			if m.is_inert():
@@ -64,17 +64,17 @@ func record_update(record: AiRecord, task_kind: AiTask.Kind) -> void:
 			if m == record.leader:
 				var dx: float = m.cur_pos.x - record.center.x
 				var dz: float = m.cur_pos.z - record.center.z
-				if dx * dx + dz * dz <= profile.record_near_m * profile.record_near_m:
+				if dx * dx + dz * dz <= crowd.record_near_m * crowd.record_near_m:
 					node_brain(m, task_kind, record)
 				else:
 					node_slot19(m, task_kind, record, record.center)
 			else:
-				board.port.orders.order_pos_radius(m, AiCommandPort.AiOrder.ADVANCE, record.leader.extrap_pos, profile.follow_radius_m)
+				board.port.orders.order_pos_radius(m, AiCommandPort.AiOrder.ADVANCE, record.leader.extrap_pos, crowd.follow_radius_m)
 		return
 	if record.capture:
 		var dx: float = record.anchor.x - record.center.x
 		var dz: float = record.anchor.z - record.center.z
-		if dx * dx + dz * dz <= profile.record_near_m * profile.record_near_m and _proximity_trigger(record, task_kind):
+		if dx * dx + dz * dz <= crowd.record_near_m * crowd.record_near_m and _proximity_trigger(record, task_kind):
 			return
 	for m in record.members.duplicate():
 		if m.is_inert():

@@ -75,7 +75,7 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 		side.setup(world, wizard, seat)
 		side.active = seat.start_active
 		sides[seat.slot] = side
-		print("ia slot %d lista (%s, %s)" % [seat.slot, seat.god.id(), side.difficulty.display_name])
+		print("ia slot %d lista (%s, %s)" % [seat.slot, seat.god.id(), side.play.difficulty.display_name])
 		seated.emit(seat.slot, side)
 
 

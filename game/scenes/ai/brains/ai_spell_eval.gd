@@ -18,15 +18,14 @@ const FN_OF_USE := {SpellType.AiUse.HIT_ONE: FN_SINGLE, SpellType.AiUse.HIT_AREA
 var perception: AiPerception
 var stance: AiStance
 var groups: AiGroups
-var profile: AiProfile
-var tactics: AiTactics = AiTactics.or_normal(null)  # set by AiWizardBrain.prepare (Normal's until then)
+var tactics: AiTactics  # the side's (AiPlay.tactics, given by AiWizardBrain.prepare)
 
 
-func _init(p_perception: AiPerception, p_stance: AiStance, p_groups: AiGroups, p_profile: AiProfile) -> void:
+func _init(p_perception: AiPerception, p_stance: AiStance, p_groups: AiGroups, p_tactics: AiTactics) -> void:
 	perception = p_perception
 	stance = p_stance
 	groups = p_groups
-	profile = p_profile
+	tactics = p_tactics
 
 
 ## The AI keeps in its book list the spells it may cast on its own: those with a phase (attack or support).
@@ -130,9 +129,9 @@ func find_best(caster: AiTrack, target: AiTrack, phase: SpellType.AiPhase) -> Di
 	var pool := float(AiRater.ftol(AiBody.mana_max(caster.node)) * stance.manalith_count())
 	var dist_scaled := 0.0
 	if target != null:
-		var dse := caster.cur_pos.distance_squared_to(target.cur_pos) * profile.range_distance_scale
+		var dse := caster.cur_pos.distance_squared_to(target.cur_pos) * tactics.range_distance_scale
 		dist_scaled = dse
-		if dse < profile.near_distance_sq:
+		if dse < tactics.near_distance_sq:
 			dist_scaled = 0.0
 	var best := 0.0
 	var best_spell: SpellType

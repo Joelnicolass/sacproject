@@ -28,7 +28,7 @@ signal updated
 
 @export var perception: AiPerception
 @export var groups: AiGroups
-@export var profile: AiProfile
+var play: AiPlay  # what the side plays with (AiSide.setup)
 
 var recs: Array[Rec] = [Rec.new(), Rec.new(), Rec.new(), Rec.new()]
 var strength_ratio := 1.0
@@ -179,14 +179,15 @@ func npc_share(at: Vector3, radius: float) -> float:
 func update_threat(wizard: AiTrack) -> void:
 	if wizard == null or wizard.relation != AiTrack.Relation.OWN or wizard.age < wizard.threat_tick:
 		return
-	wizard.threat_tick = wizard.age + profile.threat_age
+	var senses := play.tactics.senses
+	wizard.threat_tick = wizard.age + play.ages_for(senses.threat_s)
 	wizard.threat = 0.0
 	var acc0 := AiRater.new_acc()
 	var acc1_local := AiRater.new_acc()
 	var acc3 := AiRater.new_acc()
-	influence(0, wizard.extrap_pos, profile.threat_near, profile.threat_far, acc0)
-	influence(1, wizard.extrap_pos, profile.threat_near, profile.threat_far, acc1_local)
-	influence(3, wizard.extrap_pos, profile.threat_near, profile.threat_far, acc3)
+	influence(0, wizard.extrap_pos, senses.threat_near_m, senses.threat_far_m, acc0)
+	influence(1, wizard.extrap_pos, senses.threat_near_m, senses.threat_far_m, acc1_local)
+	influence(3, wizard.extrap_pos, senses.threat_near_m, senses.threat_far_m, acc3)
 	wizard.threat = AiRater.rate(acc3)
 	if wizard.threat != 0.0:
 		wizard.threat = AiField.f32(AiField.safediv(wizard.threat, wizard.threat + AiRater.rate(acc0) + AiRater.rate(acc1_local)))

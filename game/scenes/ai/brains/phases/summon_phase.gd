@@ -18,7 +18,7 @@ extends AiPhase
 
 
 func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
-	var profile := brain.profile
+	var tactics := brain.play.tactics
 	var node := wizard.node
 	var max_mana := AiRater.ftol(AiBody.mana_max(node))
 	var souls := AiBody.souls(node)
@@ -30,7 +30,7 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 		return
 	var stance := brain.stance
 	var randv := brain.rng.unit()
-	var threatv := AiField.f32(wizard.threat * profile.emergency_threat_factor)
+	var threatv := AiField.f32(wizard.threat * tactics.emergency_threat_factor)
 	var manaliths := stance.manalith_count()
 	if randv >= threatv:
 		if manaliths > 0 and wizard.manahoar_spell != null:
@@ -38,16 +38,16 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 			for group: AiGroup in brain.groups.list(0):
 				ready += group.ready_count
 			@warning_ignore("integer_division")
-			var ready_cap := stance.recs[0].souls_all / profile.ready_divisor
+			var ready_cap := stance.recs[0].souls_all / tactics.ready_divisor
 			if ready < ready_cap:
 				var deficit := 2 * stance.recs[0].max_mana - stance.recs[0].mana
-				if ready == 0 or AiField.safediv(float(deficit), float(manaliths * ready)) > profile.emergency_mana_ratio:
+				if ready == 0 or AiField.safediv(float(deficit), float(manaliths * ready)) > tactics.emergency_mana_ratio:
 					AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(AiCastQueue.FORCED, 0.0, null, wizard.manahoar_spell, 0.0, null))
 					return
-	if not (_summon_threat(wizard) < profile.summon_threat_cap):
+	if not (_summon_threat(wizard) < tactics.summon_threat_cap):
 		_note(wizard, "amenaza %.2f (para convocar %.2f)" % [wizard.threat, _summon_threat(wizard)])
 		return
-	var pool := max_mana * maxi(manaliths, brain.tactics.summon_min_manaliths if brain.tactics != null else 0)
+	var pool := max_mana * maxi(manaliths, tactics.summon_min_manaliths)
 	if pool == 0 or wizard.summons.is_empty():
 		_note(wizard, "sin pozo (manalitos %d)" % manaliths)
 		return
@@ -77,10 +77,10 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 ## The threat BLOCK2 compares with summon_threat_cap: the wizard's threat less the share of it that hostile NPC make, by
 ## (1 - npc_summon_threat_weight).
 func _summon_threat(wizard: AiTrack) -> float:
-	var weight := brain.tactics.npc_summon_threat_weight if brain.tactics != null else 1.0
+	var weight := brain.play.tactics.npc_summon_threat_weight
 	if weight >= 1.0 or wizard.threat <= 0.0:
 		return wizard.threat
-	var share := brain.stance.npc_share(wizard.extrap_pos, brain.profile.threat_far)
+	var share := brain.stance.npc_share(wizard.extrap_pos, brain.play.tactics.senses.threat_far_m)
 	return AiField.f32(wizard.threat * (1.0 - share * (1.0 - weight)))
 
 

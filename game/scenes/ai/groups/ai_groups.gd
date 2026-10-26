@@ -9,7 +9,6 @@ extends Node
 ## are not tracked in 024c («aprox.»).
 
 @export var perception: AiPerception
-@export var profile: AiProfile
 
 ## groups[category] = Array[AiGroup]
 var groups: Array = [[], [], [], []]

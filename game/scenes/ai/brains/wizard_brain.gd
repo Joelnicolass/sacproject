@@ -16,15 +16,14 @@ signal replanned(wizard: AiTrack, queue: Array)
 @export var groups: AiGroups
 @export var port: AiCommandPort
 @export var creature_brain: CreatureBrain
-@export var profile: AiProfile
 ## The child that walks the cast queue and casts.
 @export var casting: AiWizardCasting
 
 var rng := AiRand.new()
 var eval: AiSpellEval
 var phases: Array[AiPhase] = []
-## RFC-053 (F371): the common sense of the difficulty (AiSide.setup sets it; Normal's until then).
-var tactics: AiTactics
+## What the side plays with: tactics, aggression, ages (AiSide.setup sets it once, before prepare).
+var play: AiPlay
 var capture: AiCaptureCasts
 
 
@@ -35,13 +34,13 @@ func _ready() -> void:
 			phases.append(child)
 
 
-## Called by AiSide.setup once the profile is set.
+## Called by AiSide.setup once `play` is set.
 func prepare() -> void:
-	tactics = AiTactics.or_normal(tactics)
-	eval = AiSpellEval.new(perception, stance, groups, profile)
-	eval.tactics = tactics
-	casting.prepare(eval, tactics)
-	capture = AiCaptureCasts.new(perception, port, profile, casting)
+	casting.pace.interval_ticks = play.difficulty.summon_interval_ticks(Engine.physics_ticks_per_second)
+	casting.pace.mana_reserve = play.difficulty.mana_reserve
+	eval = AiSpellEval.new(perception, stance, groups, play.tactics)
+	casting.prepare(eval, play.tactics)
+	capture = AiCaptureCasts.new(perception, port, play, casting)
 
 
 ## wizBrain (shiny.d:3303-3387). Returns 1 when it gave an order or cast, 2 when it started a capture cast, 0 when it had nothing to do.
@@ -56,19 +55,20 @@ func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 		return 1
 	if wizard.spell_dirty:
 		rebuild_spells(wizard)
+	var tactics := play.tactics
 	if wizard.age >= wizard.next_replan:
-		wizard.next_replan = wizard.age + profile.wizard_replan_age
+		wizard.next_replan = wizard.age + play.ages_for(tactics.wizard_replan_s)
 		wizard.next_reissue = wizard.age - 1
-		var w3 := AiField.weight_triple(task_kind, stance.enemy_ratio(), profile.aggression)
+		var w3 := AiField.weight_triple(task_kind, stance.enemy_ratio(), play.aggression)
 		wizard.cast_queue.clear()
 		for phase in phases:
 			phase.run(wizard, w3, record if task_kind == AiTask.Kind.CAPTURE else null)
 		replanned.emit(wizard, wizard.cast_queue)
 	## Souls he can take by touching (retail: 100 + 80 m scaled by the threat; the beta 80 + 60): first what he can cast in passing
 	## (checkOnly), else he walks onto the soul.
-	var reach := AiField.f32((1.0 - wizard.threat) * profile.soul_reach_scale + profile.soul_reach_base)
+	var reach := AiField.f32((1.0 - wizard.threat) * tactics.soul_reach_scale + tactics.soul_reach_base)
 	if wizard.ord_state == AiCommandPort.AiOrder.TAKE_SOUL:
-		reach *= profile.soul_keep_factor
+		reach *= tactics.soul_keep_factor
 	var soul := perception.find_best_near(wizard.cur_pos, reach, true)
 	if soul != null:
 		if casting.execute_best_cast(wizard, true) != 0:
@@ -84,11 +84,12 @@ func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 	return creature_brain.think(wizard, task_kind, record)
 
 
-## The ghost (shiny.d:3306-3326): his own Manahoars within 256 m will channel him back, so he waits; with none near he goes to the
+## The ghost (shiny.d:3306-3326): his own Manahoars within ghost_wait_m will channel him back, so he waits; with none near he goes to the
 ## nearest mana building of his side (altar, Manalith). That last part is a deliberate deviation of sacengine, not of thaum.
 func _ghost(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
+	var wait_m := play.tactics.ghost_wait_m
 	for t: AiTrack in perception.bodies(0):
-		if t.kind == AiTrack.Kind.MANAHOAR and wizard.cur_pos.distance_squared_to(t.cur_pos) <= 256.0 * 256.0:
+		if t.kind == AiTrack.Kind.MANAHOAR and wizard.cur_pos.distance_squared_to(t.cur_pos) <= wait_m * wait_m:
 			return creature_brain.think(wizard, task_kind, record)
 	var best: AiTrack
 	var best_d := INF

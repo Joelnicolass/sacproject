@@ -5,7 +5,7 @@ extends RefCounted
 ## wizard `mana_reserve` of his pool. 0 and 0 = the original (Normal, Hard). It does not summon: the summon phase asks it and
 ## Casting notes each summon it starts. Adenda 1.3 (AiDifficulty.summon_interval_s, mana_reserve).
 
-## Set by AiSide.setup.
+## Set by AiWizardBrain.prepare from the difficulty.
 var interval_ticks := 0
 var mana_reserve := 0.0
 ## The port tick of the last summon he started (the summon interval counts from it).

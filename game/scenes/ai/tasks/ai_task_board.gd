@@ -15,7 +15,7 @@ signal replanned(tasks: Array[AiTask])
 @export var perception: AiPerception
 @export var groups: AiGroups
 @export var stance: AiStance
-@export var profile: AiProfile
+var play: AiPlay  # what the side plays with (AiSide.setup)
 @export var wizard_brain: AiWizardBrain
 @export var creature_brain: CreatureBrain
 ## The Manahoar thinks apart (mahoBrain); without it a Manahoar thinks like any creature.

@@ -27,11 +27,11 @@ func state(path: String = "") -> String:
 	return line
 
 
-## Sum of AiSide.ticks (its decision clock): it stays put while the AI gives no orders.
+## Sum of AiClock.ticks_run (the decision clock of each AI side): it stays put while the AI gives no orders.
 func _ai_ticks(scene: Node) -> int:
 	var total := 0
 	for node in scene.find_children("*", "Node", true, false):
 		var script := node.get_script() as Script
-		if script != null and script.resource_path.ends_with("ai/ai_side.gd"):
-			total += int(node.get("ticks"))
+		if script != null and script.resource_path.ends_with("ai/ai_clock.gd"):
+			total += int(node.get("ticks_run"))
 	return total

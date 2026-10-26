@@ -15,12 +15,12 @@ func kind() -> Kind:
 func replan() -> void:
 	records.clear()
 	var total := 0.0
-	var profile := board.profile
+	var aggression := board.play.aggression
 	for target: AiTrack in board.perception.tracks_of(0):
 		var score := 0.0
 		if target.is_wizard():
 			## The wizard: its creatures escort it (the status bits 4/8 of the original, shiny.d:2200-2202).
-			score = AiField.f32(target.value_6c() * profile.aggression * 0.6 + 0.4)
+			score = AiField.f32(target.value_6c() * aggression * 0.6 + 0.4)
 		else:
 			if target.kind != AiTrack.Kind.STRUCTURE or not target.ready:
 				continue

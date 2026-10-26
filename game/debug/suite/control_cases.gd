@@ -438,7 +438,7 @@ func _ai() -> Dictionary:
 	var checks := {}
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "ControlCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 1
 	_root.add_child(perception)
 	var wizard := _wizard(1, Vector3(-400.0, 0.0, -400.0), "stratos", 3)
@@ -449,7 +449,7 @@ func _ai() -> Dictionary:
 	LifeShield.of(guarded).start(100000)
 	var stance := AiStance.new()
 	stance.recs[0].manaliths = 1
-	var eval := AiSpellEval.new(perception, stance, null, perception.profile)
+	var eval := AiSpellEval.new(perception, stance, null, perception.play.tactics)
 	var spell := GameData.spell("zerf")
 	var track := perception.add_node(wizard, &"event")
 	var big_track := perception.add_node(big, &"event")

@@ -299,7 +299,7 @@ func _ai() -> Dictionary:
 	var checks := {}
 	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "WardCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 1
 	_root.add_child(perception)
 	var wizard := _wizard(1, Vector3(-400.0, 0.0, -400.0), "james", 3)
@@ -309,7 +309,7 @@ func _ai() -> Dictionary:
 	await _frames(2)
 	var stance := AiStance.new()
 	stance.recs[0].manaliths = 1
-	var eval := AiSpellEval.new(perception, stance, null, perception.profile)
+	var eval := AiSpellEval.new(perception, stance, null, perception.play.tactics)
 	var spell := GameData.spell("niks")
 	var track := perception.add_node(wizard, &"event")
 	var a := perception.add_node(near_a, &"event")

@@ -1,7 +1,7 @@
 class_name AiDifficultyPicker
 extends OptionButton
 
-## RFC-049 049h (F297): how well an AI plays (AiSeat.DIFFICULTY_TAGS: easy, normal, hard). With `offer_human`, item 0 is «a person»
+## RFC-049 049h (F297): how well an AI plays (AiSeat.difficulty_ids(): easy, normal, hard). With `offer_human`, item 0 is «a person»
 ## (metadata ""): the local server uses it for each seat (a person with a code, or an AI of this difficulty). It only lists: the choice
 ## goes out through `selected_difficulty()` and `is_human()`.
 
@@ -10,7 +10,7 @@ extends OptionButton
 @export var human_text := "UI_AI_SEAT_HUMAN"
 ## Format of an AI item; `%s` is the translated name of the difficulty.
 @export var item_text := "UI_AI_DIFFICULTY_ITEM"
-## The item selected at start (a tag of AiSeat.DIFFICULTY_TAGS); with `offer_human` the person is selected at start.
+## The item selected at start (an id of AiSeat.difficulty_ids()); with `offer_human` the person is selected at start.
 @export var initial_difficulty := "normal"
 
 const NAMES := {"easy": "UI_AI_DIFFICULTY_EASY", "normal": "UI_AI_DIFFICULTY_NORMAL", "hard": "UI_AI_DIFFICULTY_HARD"}
@@ -26,7 +26,7 @@ func fill() -> void:
 	if offer_human:
 		add_item(tr(human_text))
 		set_item_metadata(0, "")
-	for tag in AiSeat.DIFFICULTY_TAGS:
+	for tag in AiSeat.difficulty_ids():
 		add_item(tr(item_text) % tr(NAMES.get(tag, tag)))
 		set_item_metadata(item_count - 1, tag)
 		if tag == initial_difficulty and not offer_human:

@@ -5,7 +5,7 @@ extends SceneTree
 ##   - every file is a type of its folder, named after its tag (a case-only repeat gets _2, _3...); wizards only need a unique tag and a snake_case file name
 ##   - no duplicate tags in a folder
 ##   - every tag that abilities mention exists
-##   - every god (RFC-042) has theme, look, AI profile and a typed book whose rows are files of the catalog
+##   - every god (RFC-042) has theme, look and a typed book whose rows are files of the catalog, and no AI profile
 ##   - every creature and wizard has a complete body scene (a BodyFrame)
 ##   - the numbers are sane (health > 0, costs >= 0, ...)
 ##   - (RFC-049 049d) every map has as many PlayerStart (slots 1..N, no repeats) as its `player_starts`, and every mode has
@@ -183,10 +183,9 @@ func _check_gods(tags: Dictionary) -> void:
 		_check_god_look(file, god)
 		if god.cast_fx != null and god.cast_fx.resource_path.is_empty():
 			_report("gods/%s: cast_fx is embedded (it needs its own file in data/fx to travel)" % file)
-		if god.ai_profile == null:
-			_report("gods/%s: no ai_profile" % file)
-		elif str(god.ai_profile.god) != god.tag:
-			_report("gods/%s: the ai_profile is of \"%s\"" % [file, god.ai_profile.god])
+		## 055f f4: how the AI plays is its seat's and its difficulty's (data/ai/tactics_*.tres), never the god's
+		if "ai_profile" in god:
+			_report("gods/%s: still has an ai_profile" % file)
 		if god.book == null:
 			_report("gods/%s: no book" % file)
 			continue

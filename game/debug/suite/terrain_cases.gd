@@ -11,6 +11,10 @@ const BED := preload("res://debug/map/terrain_bed.tscn")
 const Maps := preload("res://debug/look/flora_test_maps.gd")
 const BORE_CASES := preload("res://debug/suite/bore_cases.gd")
 const DENT_CASES := preload("res://debug/suite/dent_cases.gd")
+const QUAKE_GROUND_CASES := preload("res://debug/suite/quake_ground_cases.gd")
+const CARRY_CASES := preload("res://debug/suite/carry_cases.gd")
+const BASE_CASES := preload("res://debug/suite/base_cases.gd")
+const DEFORM_EDGE_CASES := preload("res://debug/suite/deform_edge_cases.gd")
 ## A vertex of the lattice of High Noon on land, with land 40 m to its east.
 const CENTER := Vector2(1260.0, 1270.0)
 const BURST_TICKS := 252
@@ -30,6 +34,10 @@ var _collision: TerrainCollision
 ## The Bore cases (they borrow this world); kept here because their Callables do not keep them alive.
 var _bore
 var _dent
+var _quake_ground
+var _carry
+var _base
+var _deform_edge
 ## A picture stamp that keeps exactly the pattern it is given (its timeline is 1): how a case puts any numbers on the ground.
 var _raw: StampProfile
 
@@ -63,6 +71,14 @@ func run(host: Node3D) -> Dictionary:
 	cases.merge(_bore.cases())
 	_dent = DENT_CASES.new(self)
 	cases.merge(_dent.cases())
+	_quake_ground = QUAKE_GROUND_CASES.new(self)
+	cases.merge(_quake_ground.cases())
+	_carry = CARRY_CASES.new(self)
+	cases.merge(_carry.cases())
+	_base = BASE_CASES.new(self)
+	cases.merge(_base.cases())
+	_deform_edge = DEFORM_EDGE_CASES.new(self)
+	cases.merge(_deform_edge.cases())
 	var out := {}
 	for name: String in cases:
 		if only.is_empty() or only == name:

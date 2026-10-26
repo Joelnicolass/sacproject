@@ -26,6 +26,84 @@
   },
   {
    "wait_until": {
+    "node": "/root/MpKit/Gate",
+    "prop": "phase",
+    "equals": 2,
+    "timeout": 90
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "arm",
+    "args": [
+     1
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/pt116_watch",
+    "prop": "flying_now",
+    "gte": 1,
+    "timeout": 60
+   }
+  },
+  {
+   "call": {
+    "harness": "pt116_watch",
+    "method": "report",
+    "args": []
+   }
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%Quit"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "click": "%ConfirmQuit"
+  },
+  {
+   "wait_until": {
+    "node": "%Play",
+    "visible_in_tree": true,
+    "timeout": 15
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "click": "%Play"
+  },
+  {
+   "click": "%Join"
+  },
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 30
+   }
+  },
+  {
+   "wait_until": {
+    "node": "/root/MpKit/Gate",
+    "prop": "phase",
+    "equals": 2,
+    "timeout": 90
+   }
+  },
+  {
+   "wait_until": {
     "node": "%Wizards/Wizard1",
     "timeout": 60
    }

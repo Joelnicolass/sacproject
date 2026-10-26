@@ -8,6 +8,7 @@
   {"wait": 0.5},
   {"click": "%Join"},
   {"wait_until": {"node": "%Stats", "text_contains": "Vida", "timeout": 30}},
+  {"wait_until": {"node": "/root/MpKit/Gate", "prop": "phase", "equals": 2, "timeout": 90}},
   {"wait": 1.0},
   {"press": "pause_menu"},
   {"wait": 0.3},

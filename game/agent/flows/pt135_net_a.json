@@ -25,6 +25,14 @@
    }
   },
   {
+   "wait_until": {
+    "node": "/root/MpKit/Gate",
+    "prop": "phase",
+    "equals": 2,
+    "timeout": 90
+   }
+  },
+  {
    "wait": 2.0
   },
   {

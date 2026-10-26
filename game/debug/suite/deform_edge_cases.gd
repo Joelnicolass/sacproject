@@ -180,10 +180,13 @@ func _nav() -> Dictionary:
 	var wizard: Node3D = _c._wizard(1, _c._far_wizard_spot(), "james", 6)
 	var zone: GroundZone = _c._erupt(wizard)
 	var mound := zone.get_node("Mound") as TerrainStamp
-	while mound.ticks < OVER_TICKS + wait:
+	# The zone frees itself (and its Mound) soon after the Erupt is over: wait for the end, then a whole re-bake window.
+	while is_instance_valid(mound) and mound.ticks < OVER_TICKS:
 		await _c._frames(1)
+	await _c._frames(wait)
 	checks["erupt_bakes_nothing"] = service.rebakes == 0 and not service.is_rebaking()
-	zone.queue_free()
+	if is_instance_valid(zone):
+		zone.queue_free()
 	wizard.queue_free()
 	_c._keep(shape, CENTER, 0.0, PackedFloat32Array([-1.2]))
 	checks["dent_bakes_once"] = await _baked(service, 1)

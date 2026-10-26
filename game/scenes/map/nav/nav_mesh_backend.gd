@@ -24,6 +24,8 @@ const ISLAND_POLYGONS := 100
 
 var built := false
 var build_ms := 0.0
+## Main-thread milliseconds of the last swap (reports only).
+var swap_ms := 0.0
 var polygon_count := 0
 var regions := NavRegions.new()
 var box_blockers := NavBoxBlockers.new()
@@ -44,6 +46,8 @@ func build(nav_region: NavigationRegion3D, box_entries: Array, box_clearance_m: 
 	var started := Time.get_ticks_usec()
 	region = nav_region
 	_resolve_map()
+	regions = NavRegions.new()
+	regions.build(region.navigation_mesh)
 	_index(region.navigation_mesh)
 	_synced = false
 	_checks = 0
@@ -52,10 +56,19 @@ func build(nav_region: NavigationRegion3D, box_entries: Array, box_clearance_m: 
 	build_ms = float(Time.get_ticks_usec() - started) / 1000.0
 
 
-## Puts a re-baked navmesh in the region; the engine syncs it on its next physics frame (the old one answers until then).
-func swap(navmesh: NavigationMesh) -> void:
+## Puts a re-baked navmesh and its components (built with it off the main thread, NavRebake.regions) in the region; the engine
+## syncs it on its next physics frame (the old one answers until then). Only references change hands here: the index it replaced
+## is returned, so the caller frees it off the main thread (freeing ~11k polygons costs a millisecond or more, NavRebake.retire).
+## The engine's own sync of the new region stays on the next physics step (synchronous on purpose, so the swap tick is the same on
+## every machine: project.godot navigation/world/*_async_iterations=false); on High Noon it is about 8-11 ms.
+func swap(navmesh: NavigationMesh, components: NavRegions) -> NavRegions:
+	var started := Time.get_ticks_usec()
+	var replaced := regions
 	region.navigation_mesh = navmesh
+	regions = components
 	_index(navmesh)
+	swap_ms = float(Time.get_ticks_usec() - started) / 1000.0
+	return replaced
 
 
 func set_boxes(box_entries: Array, box_clearance_m: float) -> void:
@@ -185,9 +198,9 @@ func _near_land(point: Vector3, within: float) -> bool:
 	return not is_nan(land.x)
 
 
+## The polygon count and the probe of `navmesh` (the middle of its first polygon).
 func _index(navmesh: NavigationMesh) -> void:
 	polygon_count = navmesh.get_polygon_count()
-	regions.build(navmesh)
 	var vertices := navmesh.get_vertices()
 	if navmesh.get_polygon_count() > 0:
 		## The middle of the first polygon: a point that is surely on the mesh (a corner may be shaved by the server's merge).

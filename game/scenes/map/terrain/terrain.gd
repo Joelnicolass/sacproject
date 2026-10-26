@@ -10,6 +10,7 @@ extends Node3D
 signal changed(rect: Rect2)  ## x, z in metres; every peer
 signal holes_changed(rect: Rect2)  ## a vertex came or went (the collision flushes now, NavService bakes again)
 signal derived  ## the triangles were derived again from `heights` (on load; editor: after a reimport or a brush stroke)
+signal settled(rect: Rect2)  ## what stays moved (commit, unstamp, holes): flora, nav and scars follow this, never a live stamp
 const GROUP := &"terrain"
 
 ## The shape of the map's ground: its heights.png and void.png, imported as TerrainHeights. Everything else is derived.

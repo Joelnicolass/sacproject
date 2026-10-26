@@ -471,11 +471,12 @@ Verificado: el formato de ambiente del original solo trae niebla por mapa (`sace
 Verificado: sacengine no tiene luces dinámicas puntuales (`renderer.d`: no hay `PointLight` ni equivalente). El brillo del original sale de partículas aditivas (`dagonBackend.d:2677`). El maná brilla con el **color del bando**: `manaColor(side)` y `manaEnergy(side)` (`state.d:30104-30112`) tiñen las partículas del Manalith, del Shrine y la **llama del Manahoar** (`sacobject.d:1408-1412`, emitida en su punto de enganche, `state.d:28325`). Corrección en curso: bloom sutil, emisión de vuelta a valores sobrios, mago y unidades sin charco de luz por defecto, llama del Manahoar y partículas de maná con el color del bando.
 
 ### 14.2 Sangre (nuevo: RFC-060)
-Hoy el port solo tiene sangre al desintegrar un cuerpo (`unit_body.gd:608`) y en el ritual (`ritual.gd:186`). En los videos del original se ven manchas rojas en el suelo donde hubo combate y salpicaduras al golpear. sacengine solo emite partículas `blood`/`hoverBlood` al desintegrar y en la plaga (`state.d:8313-8324`, `21019`): las manchas en el suelo no están en sacengine y se toman de los videos.
+Hoy el port solo tiene sangre al desintegrar un cuerpo (`Gib.burst`, `scenes/units/gib.gd`) y en el ritual (`ritual.gd:186`). En los videos del original se ven manchas rojas en el suelo donde hubo combate y salpicaduras al golpear. sacengine solo emite partículas `blood`/`hoverBlood` al desintegrar y en la plaga (`state.d:8313-8324`, `21019`): las manchas en el suelo no están en sacengine y se toman de los videos.
 **RFC-060 Sangre y feedback de golpe** (presentación, fase 2, después de 055c porque escucha `Weapons.struck`):
 - `BloodFx` (nodo hijo de la unidad): al recibir daño emite salpicadura (`GPUParticles3D` o el sistema de partículas existente) con el color de sangre del tipo de criatura (`CreatureType.blood_color`: rojo por defecto; verde, negro o nada para no-muertos y elementales).
 - `BloodDecals` (capa del `LookRig`): `Decal` de Godot en el suelo con pool y tope por calidad, se desvanecen en `fade_s`; nunca entran a la sim.
 - Escena de prueba `debug/fx/blood_lab.tscn`.
+- Nota (2026-10-26): este boceto lo reemplaza `rfcs/RFC-060-blood-hit-feedback.md` (escucha `Health.changed`, `BodyLook.blood`, manchas en `GroundScars`; todo sangra rojo).
 
 ## 15. Regla «todo en el editor, movible con gizmo» (aprobada 2026-10-23)
 Auditoría: `research/055R-editor-gizmo-audit.md`. El usuario aprobó los 5 cortes nuevos, el orden y los cambios a decisiones previas.

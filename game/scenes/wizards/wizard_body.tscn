@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3]
+[gd_scene load_steps=45 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -78,6 +78,8 @@
 [ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
 [ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="typed_cwa0"]
 [ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -569,6 +571,15 @@ health = NodePath("../Health")
 caster = NodePath("../Caster")
 ghost = NodePath("../GhostForm")
 height_m = 1.6
+
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
 
 [node name="Locomotion" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "avoidance")]
 script = ExtResource("c4_locomotion")

@@ -71,6 +71,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 ### FX y apariencia
 - **Hecho.** Partículas de sprite con pool, luces de efectos, rayos, shader moderno, cielo, pasto en James/Stratos/Charnel (apagado provisorio en los presets). F23, F54, F65-F69, F95-F98, F108, F210.
 - **Parcial.** Flora de los mapas (RFC-054, F380-F387). Hecho: la flora de cada mapa son nodos `FloraLayer` (una especie + un PNG de densidad en `scenes/map/maps/<mapa>/flora/`, RFC-055 055d-d3; antes `FloraMap`/`flora.res`) y `VegetationPatch` para grupos sueltos, con `FloraPlacement` determinista; `CellRing` compartido con el pasto; `FloraField` (`Look/Layers/Flora`) dibuja las plantas del original en los cinco mapas, también en el editor; High Noon y Peasantville con sus JAW1–5 reales y sin nodos `Plants`. Opciones → Gráficos → «Vegetación» la apaga. F380, F381, F382, F383, F385. Falta: el presupuesto (054e, con ventana).
+- **Hecho (falta la pasada con ventana).** Sangre y golpe (RFC-060): todo cuerpo que pierde vida (criaturas y magos, cualquier daño) salpica rojo y deja manchas `blud` permanentes en el pool de «Cantidad de marcas»; el gib deja un charco; destello sutil de 0,12 s; Opciones → Jugabilidad → «Sangre» apaga todo. Solo presentación. `scenes/fx/blood/`, `debug/fx/blood_lab.tscn`. F390.
 
 ### Determinismo y pruebas
 - **Hecho.** `MatchClock` por tick, un dueño del azar, plazos en ticks de partida, banco de determinismo (`agent/run_determinism.sh quick|all`) y `rules_suite` sin ventana. F6-F11, F42, F144-F147, F187, F188.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=128 format=3]
+[gd_scene load_steps=130 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -98,6 +98,8 @@
 [ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="f159_vined_type"]
 [ext_resource type="Resource" path="res://data/afflictions/oiled.tres" id="f155_oiled_type"]
 [ext_resource type="Script" path="res://scenes/audio/unit_sounds.gd" id="a052_sounds"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/spell_affliction.gd" id="f161_spell_affliction"]
 [ext_resource type="Resource" path="res://data/afflictions/rings_of_fire.tres" id="f161_rings_type"]
 [ext_resource type="Resource" path="res://data/afflictions/slimed.tres" id="f161_slimed_type"]
@@ -769,6 +771,15 @@ script = ExtResource("a052_sounds")
 body = NodePath("..")
 health = NodePath("../Health")
 summon = ExtResource("a055_summon")
+
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
 
 [node name="CaptiveRing" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("g5_ring")

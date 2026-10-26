@@ -18,6 +18,8 @@ extends Node3D
 @export var sounds: SoundSet
 ## A scene the creature carries (CreatureFx adds it, tinted with the side's mana color): the Manahoar's mana flame. Empty: none.
 @export var carried_fx: PackedScene
+## How the body bleeds (data/fx/blood/). Empty: the `fallback` of its BloodFx, red like every other body.
+@export var blood: BloodType
 
 
 ## The editor always shows meshes; a headless run (the dedicated server) never loads them.

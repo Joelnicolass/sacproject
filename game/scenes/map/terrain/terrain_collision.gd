@@ -64,12 +64,12 @@ func flush() -> void:
 func _split_in_chunks() -> void:
 	_lattice.resize(_vertices.size())
 	for i in _vertices.size():
-		_lattice[i] = TerrainRules.vertex_id(_vertices[i].x, _vertices[i].z)
+		_lattice[i] = TerrainGrid.vertex_id(_vertices[i].x, _vertices[i].z)
 	for first in range(0, _indices.size(), 3):
 		var a := _vertices[_indices[first]]
 		var b := _vertices[_indices[first + 1]]
 		var c := _vertices[_indices[first + 2]]
-		var cell := Vector2i(floori(minf(a.x, minf(b.x, c.x)) / TerrainRules.CELL), floori(minf(a.z, minf(b.z, c.z)) / TerrainRules.CELL))
+		var cell := Vector2i(floori(minf(a.x, minf(b.x, c.x)) / TerrainGrid.CELL_M), floori(minf(a.z, minf(b.z, c.z)) / TerrainGrid.CELL_M))
 		var chunk := cell / chunk_cells
 		if not _triangles.has(chunk):
 			_triangles[chunk] = []
@@ -101,8 +101,8 @@ func _remake(chunk: Vector2i) -> void:
 
 func _on_shape_changed(area: Rect2) -> void:
 	# A moved vertex is a corner of the four cells around it.
-	var low := Vector2i((area.position / TerrainRules.CELL).floor()) - Vector2i.ONE
-	var high := Vector2i(((area.position + area.size) / TerrainRules.CELL).ceil())
+	var low := Vector2i((area.position / TerrainGrid.CELL_M).floor()) - Vector2i.ONE
+	var high := Vector2i(((area.position + area.size) / TerrainGrid.CELL_M).ceil())
 	for z in range(maxi(low.y, 0) / chunk_cells, high.y / chunk_cells + 1):
 		for x in range(maxi(low.x, 0) / chunk_cells, high.x / chunk_cells + 1):
 			if _triangles.has(Vector2i(x, z)):

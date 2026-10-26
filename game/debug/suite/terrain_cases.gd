@@ -84,14 +84,14 @@ func _net() -> Dictionary:
 	var host := server.get_node("Deformer") as TerrainDeformer
 	var first := early.get_node("Deformer") as TerrainDeformer
 	var second := late.get_node("Deformer") as TerrainDeformer
-	var rect := GroundField.vertex_rect(CENTER, 35.0)
+	var rect := TerrainGrid.vertex_rect(CENTER, 35.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	for k in delta.size():
 		delta[k] = 2.0 + sin(float(k))
 	host.commit(rect, delta)
 	first.rpc_commit(host.shape.field().rev, "", rect, delta)
-	var hole := TerrainRules.vertex_id(CENTER.x, CENTER.y + 30.0)
+	var hole := TerrainGrid.vertex_id(CENTER.x, CENTER.y + 30.0)
 	host.set_removed(hole, true)
 	first.rpc_removed(host.shape.field().rev, hole, true)
 	var truth := host.shape.field()
@@ -125,7 +125,7 @@ func _rules() -> Dictionary:
 	var inside := (a + b + c) / 3.0
 	var base := TerrainRules.height_in(inside.x, inside.z, index.ground, index.cells)
 	var texels := PackedFloat32Array()
-	texels.resize(GroundField.COUNT * 2)
+	texels.resize(TerrainGrid.COUNT * 2)
 	for k in 3:
 		texels[corners[k] * 2] = 5.0
 	var lifted := TerrainRules.height_in(inside.x, inside.z, index.ground, index.cells, texels, corners)
@@ -133,7 +133,7 @@ func _rules() -> Dictionary:
 	checks["no_shift_same_as_before"] = TerrainRules.height_in(inside.x, inside.z, index.ground, index.cells, PackedFloat32Array(), corners) == base
 	texels[corners[0] * 2 + 1] = 1.0
 	checks["hole_corner_no_land"] = is_nan(TerrainRules.height_in(inside.x, inside.z, index.ground, index.cells, texels, corners))
-	checks["vertex_id"] = TerrainRules.vertex_id(1260.0, 1270.0) == 127 * 256 + 126
+	checks["vertex_id"] = TerrainGrid.vertex_id(1260.0, 1270.0) == 127 * 256 + 126
 	checks["shape_without_shift_equals_rules"] = absf(_shape.height_at(inside.x, inside.z) - base) < 1e-6
 	var spell := GameData.spell("tpre")
 	var action := spell.action.instantiate() as ZoneAction if spell != null and spell.action != null else null
@@ -153,23 +153,23 @@ func _displacement() -> Dictionary:
 	var nine := PackedFloat32Array([1, 1, 1, 1, 1, 1, 1, 1, 1])
 	ground.set_live("a", rect, nine)
 	ground.set_live("b", Rect2i(101, 101, 1, 1), PackedFloat32Array([0.5]))
-	checks["live_sums"] = ground.at(101 * 256 + 101) == 1.5 and ground.at(100 * 256 + 100) == 1.0
+	checks["live_sums"] = ground.at(TerrainGrid.id_of(Vector2i(101, 101))) == 1.5 and ground.at(TerrainGrid.id_of(Vector2i(100, 100))) == 1.0
 	ground.set_live("b", Rect2i(101, 101, 1, 1), PackedFloat32Array([0.25]))
-	checks["live_replaces"] = ground.at(101 * 256 + 101) == 1.25
+	checks["live_replaces"] = ground.at(TerrainGrid.id_of(Vector2i(101, 101))) == 1.25
 	ground.drop_live("b")
 	ground.drop_live("a")
-	checks["drop_leaves_nothing"] = ground.at(101 * 256 + 101) == 0.0 and ground.live_count() == 0
+	checks["drop_leaves_nothing"] = ground.at(TerrainGrid.id_of(Vector2i(101, 101))) == 0.0 and ground.live_count() == 0
 	ground.commit(rect, nine)
 	ground.commit(rect, nine)
-	checks["commit_adds"] = ground.at(100 * 256 + 100) == 2.0 and ground.rev == 2
+	checks["commit_adds"] = ground.at(TerrainGrid.id_of(Vector2i(100, 100))) == 2.0 and ground.rev == 2
 	ground.set_live("c", rect, nine)
 	ground.commit(rect, nine, "c")
-	checks["commit_takes_live_in_one_step"] = ground.at(100 * 256 + 100) == 3.0 and ground.live_count() == 0
+	checks["commit_takes_live_in_one_step"] = ground.at(TerrainGrid.id_of(Vector2i(100, 100))) == 3.0 and ground.live_count() == 0
 	checks["removed"] = ground.set_removed(5, true) and not ground.set_removed(5, true) and ground.removed_ids() == PackedInt32Array([5])
 	var copy := GroundField.new()
 	copy.apply_snapshot(ground.to_snapshot())
-	checks["snapshot_copy"] = copy.checksum() == ground.checksum() and copy.rev == ground.rev and copy.at(100 * 256 + 100) == 3.0
-	var rect_far := GroundField.vertex_rect(Vector2(1000.0, 1000.0), 25.0)
+	checks["snapshot_copy"] = copy.checksum() == ground.checksum() and copy.rev == ground.rev and copy.at(TerrainGrid.id_of(Vector2i(100, 100))) == 3.0
+	var rect_far := TerrainGrid.vertex_rect(Vector2(1000.0, 1000.0), 25.0)
 	checks["vertex_rect"] = rect_far == Rect2i(97, 97, 7, 7)
 	return _verdict("terrain_displacement", checks)
 
@@ -181,7 +181,7 @@ func _hole() -> Dictionary:
 	var spot := CENTER + Vector2(3.0, 63.0)
 	var base := _shape.height_at(spot.x, spot.y)
 	checks["on_land"] = not is_nan(base) and _collision.chunk_count() > 0
-	var rect := GroundField.vertex_rect(spot, 20.0)
+	var rect := TerrainGrid.vertex_rect(spot, 20.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	delta.fill(4.0)
@@ -191,7 +191,7 @@ func _hole() -> Dictionary:
 	checks["height_lifted"] = absf(_shape.height_at(spot.x, spot.y) - base - 4.0) < 1e-3
 	_note("lift base/expected/ray", [base, base + 4.0, _ray(spot)])
 	checks["ray_sees_lift"] = absf(_ray(spot) - (base + 4.0)) < 0.05
-	var id := TerrainRules.vertex_id(CENTER.x, CENTER.y + 60.0)
+	var id := TerrainGrid.vertex_id(CENTER.x, CENTER.y + 60.0)
 	spot = CENTER + Vector2(0.0, 60.0)
 	deformer.set_removed(id, true)
 	_collision.flush()
@@ -234,7 +234,7 @@ func _erupt_ground() -> Dictionary:
 	while mound.ticks < OVER_TICKS:
 		await _frames(1)
 	var worst := 0.0
-	for id in GroundField.COUNT:
+	for id in TerrainGrid.COUNT:
 		worst = maxf(worst, absf(_shape.field().at(id)))
 	checks["back_to_zero"] = worst < 0.01 and _shape.field().live_count() == 0
 	checks["permanent_untouched"] = _shape.field().rev == rev_before
@@ -341,7 +341,7 @@ func _flora() -> Dictionary:
 	var before := MeshPlanter.plan_cell(config, flora, plain, 1.0, key, old_ground, PackedVector4Array())
 	var watch := FloraGroundWatch.new()
 	watch.follow(land.shape)
-	var rect := GroundField.vertex_rect(spot, 40.0)
+	var rect := TerrainGrid.vertex_rect(spot, 40.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	delta.fill(10.0)
@@ -351,7 +351,7 @@ func _flora() -> Dictionary:
 	checks["old_sampler_keeps_old_ground"] = MeshPlanter.plan_cell(config, flora, plain, 1.0, key, old_ground, PackedVector4Array()) == before
 	checks["cell_has_plants"] = not before.is_empty() and before.size() == after.size()
 	checks["plants_follow_the_lift"] = _lifted_by(before, after, 10.0)
-	var area := Rect2(Vector2(rect.position) * TerrainRules.CELL, Vector2(rect.size) * TerrainRules.CELL)
+	var area := TerrainGrid.area_of(rect)
 	var touched := []
 	for cell: Vector2i in planter._cells:
 		if Rect2(Vector2(cell) * MeshPlanter.CELL_M, Vector2(MeshPlanter.CELL_M, MeshPlanter.CELL_M)).intersects(area):
@@ -383,7 +383,7 @@ func _volcano_rules() -> Dictionary:
 	if action != null:
 		action.tag = "clov"
 		checks["volcano_action_no_warnings"] = action._get_configuration_warnings().is_empty()
-		checks["volcano_action_on_lattice"] = action.snap_m == TerrainRules.CELL and action.arm_from_start
+		checks["volcano_action_on_lattice"] = action.snap_m == TerrainGrid.CELL_M and action.arm_from_start
 		action.free()
 	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
 	await _frames(2)
@@ -404,7 +404,7 @@ func _volcano_rules() -> Dictionary:
 	checks["picture_center_255"] = picture.get_pixel(16, 16).r8 == 255 and picture.get_pixel(0, 0).r8 == 0
 	var mound := zone.get_node("Mound") as TerrainStamp
 	var reach := (mound.reach.shape as CylinderShape3D)
-	var rect := GroundField.vertex_rect(CENTER, reach.radius)
+	var rect := TerrainGrid.vertex_rect(CENTER, reach.radius)
 	checks["mound_rect_33"] = rect.size == Vector2i(33, 33)
 	var flat := PackedFloat32Array()
 	flat.resize(33 * 33)
@@ -439,14 +439,14 @@ func _volcano_cut() -> Dictionary:
 	while mound.ticks < 150:
 		await _frames(1)
 	var raised := 0.0
-	for id in GroundField.COUNT:
+	for id in TerrainGrid.COUNT:
 		raised = maxf(raised, absf(ground.at(id)))
 	checks["it_rose"] = raised > 20.0 and ground.live_count() == 1
 	zone.cancel()
 	await _frames(3)
 	var worst := 0.0
 	var kept := 0.0
-	for id in GroundField.COUNT:
+	for id in TerrainGrid.COUNT:
 		worst = maxf(worst, absf(ground.at(id)))
 		kept = maxf(kept, absf(ground.permanent[id]))
 	_note("cut: raised/after/kept/live", [raised, worst, kept, ground.live_count()])
@@ -464,7 +464,7 @@ func _volcano_cut() -> Dictionary:
 func _volcano_ground() -> Dictionary:
 	var checks := {}
 	var wizard := _wizard(1, _far_wizard_spot(), "pyro", 8)
-	var rect := GroundField.vertex_rect(CENTER, 160.0)
+	var rect := TerrainGrid.vertex_rect(CENTER, 160.0)
 	var before := StampRules.ground_under(_shape, rect)
 	var rev_before := _shape.field().rev
 	var target := before[16 * 33 + 16]
@@ -494,13 +494,14 @@ func _volcano_ground() -> Dictionary:
 	var worst := 0.0
 	var at_100 := 0.0
 	var outside := 0.0
-	for id in GroundField.COUNT:
-		var x := id % GroundField.SIDE
-		var z := id / GroundField.SIDE
+	for id in TerrainGrid.COUNT:
+		var vertex := TerrainGrid.vertex_of(id)
+		var x := vertex.x
+		var z := vertex.y
 		if not rect.has_point(Vector2i(x, z)):
 			outside = maxf(outside, absf(ground.permanent[id]))
 			continue
-		var offset := Vector2(x, z) * TerrainRules.CELL - CENTER
+		var offset := TerrainGrid.point_of(vertex) - CENTER
 		var cell := (rect.position + Vector2i.ZERO)
 		var at := (z - cell.y) * rect.size.x + x - cell.x
 		if is_nan(before[at]):

@@ -5,11 +5,9 @@ extends RefCounted
 ## the raw triangles of a MapTerrainData become the per-cell index. Pure and static, so a WorkerThreadPool task can
 ## call it on copies of an index. A ground that was raised, dug or holed passes its `shift` (two floats per 10 m vertex:
 ## how far it moved, and 1 when it was taken away): a corner moves with it, and a triangle with a removed corner is no
-## land. What it does NOT do: hold the data (GroundSurface) or build the mesh (Terrain).
+## land. What it does NOT do: hold the data (GroundSurface), build the mesh (Terrain) or say where the lattice lies (TerrainGrid).
 ## Ref: sacmap.d getTriangles, isInside, getGroundHeight.
 
-const CELL := 10.0
-const GRID := 256
 ## Edge tolerance of the inside test; a point on an edge counts as inside.
 const EDGE_TOLERANCE := 0.0001
 ## A triangle with less area than this seen from above is a cliff wall, not land.
@@ -17,7 +15,7 @@ const WALL_AREA := 0.01
 
 
 ## The land of a map ready to be asked: `ground` holds three vertices per land triangle; `cells` two triangle ids per
-## 10 m cell (-1 when the cell has fewer); `corners` the grid vertex (see `vertex_id`) of each of those corners;
+## 10 m cell (-1 when the cell has fewer); `corners` the lattice vertex (TerrainGrid.vertex_id) of each of those corners;
 ## `lowest` is the lowest land vertex (0 without land); `land` has 1 for each grid vertex a land triangle uses.
 class Index:
 	var ground := PackedVector3Array()
@@ -30,9 +28,9 @@ class Index:
 ## Splits the land from the cliff walls of `data` and files each land triangle under the 10 m cell of its lowest corner.
 static func index(data: MapTerrainData) -> Index:
 	var result := Index.new()
-	result.cells.resize(GRID * GRID * 2)
+	result.cells.resize(TerrainGrid.COUNT * 2)
 	result.cells.fill(-1)
-	result.land.resize(GRID * GRID)
+	result.land.resize(TerrainGrid.COUNT)
 	result.lowest = INF
 	if data == null:
 		result.lowest = 0.0
@@ -47,16 +45,16 @@ static func index(data: MapTerrainData) -> Index:
 		triangle += 3
 		if is_wall(a, b, c):
 			continue
-		var cell_x := clampi(int(round(minf(minf(a.x, b.x), c.x) / CELL)), 0, GRID - 1)
-		var cell_z := clampi(int(round(minf(minf(a.z, b.z), c.z) / CELL)), 0, GRID - 1)
-		var slot := (cell_z * GRID + cell_x) * 2
+		var cell_x := clampi(int(round(minf(minf(a.x, b.x), c.x) / TerrainGrid.CELL_M)), 0, TerrainGrid.SIDE - 1)
+		var cell_z := clampi(int(round(minf(minf(a.z, b.z), c.z) / TerrainGrid.CELL_M)), 0, TerrainGrid.SIDE - 1)
+		var slot := TerrainGrid.id_of(Vector2i(cell_x, cell_z)) * 2
 		if result.cells[slot] >= 0:
 			slot += 1
 		if result.cells[slot] >= 0:
 			continue
 		result.cells[slot] = result.ground.size() / 3
 		result.ground.append_array([a, b, c])
-		result.corners.append_array([vertex_id(a.x, a.z), vertex_id(b.x, b.z), vertex_id(c.x, c.z)])
+		result.corners.append_array([TerrainGrid.vertex_id(a.x, a.z), TerrainGrid.vertex_id(b.x, b.z), TerrainGrid.vertex_id(c.x, c.z)])
 		for corner in 3:
 			result.land[result.corners[result.corners.size() - 1 - corner]] = 1
 		result.lowest = minf(result.lowest, minf(minf(a.y, b.y), c.y))
@@ -68,11 +66,6 @@ static func index(data: MapTerrainData) -> Index:
 ## True for a triangle that has no area seen from above (a cliff wall).
 static func is_wall(a: Vector3, b: Vector3, c: Vector3) -> bool:
 	return absf(flat_cross(a, b, Vector2(c.x, c.z))) < WALL_AREA
-
-
-## The vertex of the 256x256 grid at (x, z): the corners of the map lie on the 10 m lattice.
-static func vertex_id(x: float, z: float) -> int:
-	return clampi(roundi(z / CELL), 0, GRID - 1) * GRID + clampi(roundi(x / CELL), 0, GRID - 1)
 
 
 ## Land height under (x, z) in world units, NAN over a hole or off the map. `shift`/`corners`: see the class doc.
@@ -114,13 +107,14 @@ static func triangle_in(x: float, z: float, ground: PackedVector3Array, cells: P
 		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> int:
 	if ground.is_empty():
 		return -1
-	var cell_x := int(floor(x / CELL))
-	var cell_z := int(floor(z / CELL))
-	if cell_x < 0 or cell_z < 0 or cell_x >= GRID or cell_z >= GRID:
+	var cell_x := int(floor(x / TerrainGrid.CELL_M))
+	var cell_z := int(floor(z / TerrainGrid.CELL_M))
+	if cell_x < 0 or cell_z < 0 or cell_x >= TerrainGrid.SIDE or cell_z >= TerrainGrid.SIDE:
 		return -1
 	var at := Vector2(x, z)
+	var slot := TerrainGrid.id_of(Vector2i(cell_x, cell_z)) * 2
 	for k in 2:
-		var id := cells[(cell_z * GRID + cell_x) * 2 + k]
+		var id := cells[slot + k]
 		if id < 0:
 			continue
 		if _inside(ground, id, at) and (shift.is_empty() or not _has_hole(shift, corners, id)):

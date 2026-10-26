@@ -13,15 +13,18 @@ global uniform float terrain_deform_on;
 // 0 on a piece of ground that carries its own heights and falls (FallingChunk): it must not take the shift of the map again.
 instance uniform float deform_follow = 1.0;
 
-// The vertices of the map lie on a 10 m lattice.
+// Mirror of TerrainGrid (scenes/map/terrain/terrain_grid.gd), the one copy in the shaders: DEFORM_CELL = CELL_M, the metres
+// between two vertices; DEFORM_LAST = SIDE - 1, the last column and row of the lattice. debug/suite/grid_constants_cases.gd
+// fails when they differ.
 const float DEFORM_CELL = 10.0;
+const float DEFORM_LAST = 255.0;
 
 // Passed to the fragment: above 0 in every triangle that touches a vertex taken away.
 varying float deform_hole;
 
 // x: how far the vertex at the ground point xz is raised; y: 1 when it was taken away.
 vec2 deform_at(vec2 xz) {
-	ivec2 lattice = ivec2(clamp(round(xz / DEFORM_CELL), vec2(0.0), vec2(255.0)));
+	ivec2 lattice = ivec2(clamp(round(xz / DEFORM_CELL), vec2(0.0), vec2(DEFORM_LAST)));
 	return texelFetch(terrain_deform_map, lattice, 0).rg;
 }
 

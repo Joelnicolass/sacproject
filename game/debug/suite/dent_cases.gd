@@ -30,13 +30,13 @@ func _rules() -> Dictionary:
 	var cylinder := (stamp.get_node("Reach") as CollisionShape3D).shape as CylinderShape3D
 	checks["radius_15_depth_1_2"] = is_equal_approx(cylinder.radius, RADIUS_M) and is_equal_approx(cylinder.height, DEPTH_M)
 	checks["manual_and_kept"] = stamp.manual and stamp.keep
-	var rect := GroundField.vertex_rect(CENTER, cylinder.radius)
+	var rect := TerrainGrid.vertex_rect(CENTER, cylinder.radius)
 	var values := StampRules.values(stamp.profile, CENTER, cylinder.radius, cylinder.height, stamp.profile.duration_s() - 1e-4, rect)
 	var worst := 0.0
 	var centre_value := 0.0
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var spot := Vector2(rect.position + Vector2i(column, row)) * TerrainRules.CELL
+			var spot := TerrainGrid.point_of(rect.position + Vector2i(column, row))
 			var wanted := _dent(spot.distance_to(CENTER))
 			var got := values[row * rect.size.x + column]
 			worst = maxf(worst, absf(got - wanted))
@@ -55,7 +55,7 @@ func _impact() -> Dictionary:
 	var shape: GroundSurface = _c._shape
 	var ground := shape.field()
 	var near := CENTER + Vector2(10.0, 0.0)
-	var rect := Rect2i(Vector2i(CENTER / TerrainRules.CELL) - Vector2i(4, 4), Vector2i(9, 9))
+	var rect := Rect2i(Vector2i(CENTER / TerrainGrid.CELL_M) - Vector2i(4, 4), Vector2i(9, 9))
 	var before := ground.permanent.duplicate()
 	var rev_before := ground.rev
 	var base := shape.height_at(CENTER.x, CENTER.y)
@@ -82,7 +82,7 @@ func _impact() -> Dictionary:
 	restore.resize(rect.size.x * rect.size.y)
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var id := (rect.position.y + row) * GroundField.SIDE + rect.position.x + column
+			var id := TerrainGrid.id_of(rect.position + Vector2i(column, row))
 			restore[row * rect.size.x + column] = before[id] - ground.permanent[id]
 	(_c._bed.get_node("Deformer") as TerrainDeformer).commit(rect, restore)
 	await _c._frames(2)

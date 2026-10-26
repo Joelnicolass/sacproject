@@ -29,9 +29,9 @@ static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMe
 	for triangle in range(0, indices.size(), 3):
 		var ids := [indices[triangle], indices[triangle + 1], indices[triangle + 2]]
 		var corners := [vertices[ids[0]], vertices[ids[1]], vertices[ids[2]]]
-		var cell_x := clampi(mini(mini(int(round(corners[0].x / 10.0)), int(round(corners[1].x / 10.0))), int(round(corners[2].x / 10.0))), 0, 255)
-		var cell_z := clampi(mini(mini(int(round(corners[0].z / 10.0)), int(round(corners[1].z / 10.0))), int(round(corners[2].z / 10.0))), 0, 255)
-		var tile := 0 if tiles.is_empty() else tiles[cell_z * 256 + cell_x]
+		var cell_x := clampi(mini(mini(int(round(corners[0].x / TerrainGrid.CELL_M)), int(round(corners[1].x / TerrainGrid.CELL_M))), int(round(corners[2].x / TerrainGrid.CELL_M))), 0, TerrainGrid.SIDE - 1)
+		var cell_z := clampi(mini(mini(int(round(corners[0].z / TerrainGrid.CELL_M)), int(round(corners[1].z / TerrainGrid.CELL_M))), int(round(corners[2].z / TerrainGrid.CELL_M))), 0, TerrainGrid.SIDE - 1)
+		var tile := 0 if tiles.is_empty() else tiles[TerrainGrid.id_of(Vector2i(cell_x, cell_z))]
 		if TerrainRules.is_wall(corners[0], corners[1], corners[2]):
 			for id in ids:
 				colors[id] = Color(float(tile) / 255.0, 0.0, 0.0, 0.0)  # alpha 0 marks a wall for the ground shader
@@ -40,8 +40,8 @@ static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMe
 		# The whole tile over the whole cell (0..1), so a tile meets its neighbour edge to edge; the shader keeps the
 		# lookup inside the tile. Ref: sacmap.d:888.
 		for id in ids:
-			var local_x := clampf(vertices[id].x / 10.0 - float(cell_x), 0.0, 1.0)
-			var local_z := clampf(vertices[id].z / 10.0 - float(cell_z), 0.0, 1.0)
+			var local_x := clampf(vertices[id].x / TerrainGrid.CELL_M - float(cell_x), 0.0, 1.0)
+			var local_z := clampf(vertices[id].z / TerrainGrid.CELL_M - float(cell_z), 0.0, 1.0)
 			colors[id] = Color(float(tile) / 255.0, local_x, local_z)
 	var built := TerrainMeshArrays.new()
 	built.arrays.resize(Mesh.ARRAY_MAX)

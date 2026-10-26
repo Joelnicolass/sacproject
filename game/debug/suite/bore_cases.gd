@@ -43,7 +43,7 @@ func _rules() -> Dictionary:
 	checks["spiral_1080_ticks_at_0_72m"] = _ticks_of(BoreSpiral.new(CENTER, 50.0, 0.72)) == 1080
 	var shape: GroundSurface = _c._shape
 	var inside := _full_vertex(shape, 3)
-	var spot := Vector2(inside) * TerrainRules.CELL
+	var spot := TerrainGrid.point_of(inside)
 	var height := shape.height_at(spot.x, spot.y)
 	checks["a_land_vertex_may_go"] = HoleRules.can_remove(shape, inside, PackedVector3Array())
 	checks["rim_never"] = not HoleRules.can_remove(shape, Vector2i(0, 100), PackedVector3Array()) and not HoleRules.can_remove(shape, Vector2i(255, 100), PackedVector3Array()) \
@@ -55,12 +55,12 @@ func _rules() -> Dictionary:
 	checks["building_10_9m_blocks"] = not HoleRules.can_remove(shape, inside, close)
 	checks["building_11_1m_does_not"] = HoleRules.can_remove(shape, inside, far)
 	checks["building_60m_above_does_not"] = HoleRules.can_remove(shape, inside, high)
-	var id := inside.y * TerrainRules.GRID + inside.x
+	var id := TerrainGrid.id_of(inside)
 	(_c._bed.get_node("Deformer") as TerrainDeformer).set_removed(id, true)
 	checks["gone_never_again"] = not HoleRules.can_remove(shape, inside, PackedVector3Array())
 	(_c._bed.get_node("Deformer") as TerrainDeformer).set_removed(id, false)
 	checks["back_it_may_go"] = HoleRules.can_remove(shape, inside, PackedVector3Array())
-	checks["vertex_near_rounds"] = HoleRules.vertex_near(Vector2(1264.9, 1275.0)) == Vector2i(126, 128) and HoleRules.vertex_near(Vector2(1265.1, 1274.9)) == Vector2i(127, 127)
+	checks["vertex_near_rounds"] = TerrainGrid.vertex_near(Vector2(1264.9, 1275.0)) == Vector2i(126, 128) and TerrainGrid.vertex_near(Vector2(1265.1, 1274.9)) == Vector2i(127, 127)
 	return _c._verdict("bore_rules", checks)
 
 
@@ -70,14 +70,14 @@ func _walls() -> Dictionary:
 	var shape: GroundSurface = _c._shape
 	var index := shape.index
 	var one := _full_vertex(shape, 3)
-	var id := one.y * TerrainRules.GRID + one.x
+	var id := TerrainGrid.id_of(one)
 	var edges := HoleWallRules.boundary(index, PackedInt32Array([id]))
 	checks["one_vertex_six_walls"] = edges.size() == 6
 	var built := HoleWallRules.arrays(index, PackedInt32Array([id]))
 	checks["wall_arrays"] = built.size() == 5 and (built[0] as PackedVector3Array).size() == 24 and (built[3] as PackedInt32Array).size() == 36
 	var drops := true
 	var faces_the_hole := true
-	var centre := Vector3(one.x * TerrainRules.CELL, 0.0, one.y * TerrainRules.CELL)
+	var centre := Vector3(one.x * TerrainGrid.CELL_M, 0.0, one.y * TerrainGrid.CELL_M)
 	for k in 6:
 		var top: Vector3 = (built[0] as PackedVector3Array)[k * 4]
 		var bottom: Vector3 = (built[0] as PackedVector3Array)[k * 4 + 3]
@@ -87,7 +87,7 @@ func _walls() -> Dictionary:
 	checks["walls_drop_50m"] = drops
 	checks["walls_face_the_hole"] = faces_the_hole
 	var pair := _full_vertex(shape, 3, true)
-	var pair_id := pair.y * TerrainRules.GRID + pair.x
+	var pair_id := TerrainGrid.id_of(pair)
 	checks["two_neighbours_eight_walls"] = HoleWallRules.boundary(index, PackedInt32Array([pair_id, pair_id + 1])).size() == 8
 	checks["no_hole_no_walls"] = HoleWallRules.arrays(index, PackedInt32Array()).is_empty()
 	var chunk := FallingChunkRules.arrays(index, shape.field().texels, shape.tile_ids(), id)
@@ -104,8 +104,8 @@ func _cut() -> Dictionary:
 	var wizard = _c._wizard(1, _c._far_wizard_spot(), "james", 8)
 	var spell := GameData.spell("erob").duplicate() as SpellType
 	spell.effect_range_m = TRY_RANGE_M
-	var first_vertex := HoleRules.vertex_near(CENTER + Vector2(0.0, 5.0))
-	var first_at: Vector3 = ground_spot.call(Vector2(first_vertex) * TerrainRules.CELL)
+	var first_vertex := TerrainGrid.vertex_near(CENTER + Vector2(0.0, 5.0))
+	var first_at: Vector3 = ground_spot.call(TerrainGrid.point_of(first_vertex))
 	var body = _c._tough(first_at + Vector3(0.0, 0.1, 0.0), 3)
 	var house_xz := CENTER + Vector2(0.0, -20.0)
 	var house := Node3D.new()
@@ -148,8 +148,8 @@ func _cut() -> Dictionary:
 	checks["first_hole_600_ticks_after_birth"] = absi(clock[0] - ARM_TICKS) <= 1
 	checks["drill_walks_from_the_start"] = near_start
 	var holes := ground.removed_ids()
-	checks["first_hole_is_the_spiral_start"] = holes.size() == 1 and holes[0] == first_vertex.y * TerrainRules.GRID + first_vertex.x
-	var at := Vector2(first_vertex) * TerrainRules.CELL
+	checks["first_hole_is_the_spiral_start"] = holes.size() == 1 and holes[0] == TerrainGrid.id_of(first_vertex)
+	var at := TerrainGrid.point_of(first_vertex)
 	var off := true
 	for corner in [Vector2(3.0, 3.0), Vector2(-3.0, 3.0), Vector2(3.0, -3.0), Vector2(-3.0, -3.0)]:
 		off = off and not shape.is_on_ground(at.x + corner.x, at.y + corner.y) and is_nan(shape.height_at(at.x + corner.x, at.y + corner.y))
@@ -188,13 +188,13 @@ func _cut() -> Dictionary:
 	var ring := BoreSpiral.new(CENTER, TRY_RANGE_M, 0.8)
 	var seen := {}
 	while not ring.arrived:
-		var vertex := HoleRules.vertex_near(ring.advance())
-		if not seen.has(vertex) and shape.index.land[vertex.y * TerrainRules.GRID + vertex.x] == 1 and Vector2(vertex).distance_to(house_xz / TerrainRules.CELL) * TerrainRules.CELL < HoleRules.BUILDING_CLEARANCE_M:
+		var vertex := TerrainGrid.vertex_near(ring.advance())
+		if not seen.has(vertex) and shape.index.land[TerrainGrid.id_of(vertex)] == 1 and Vector2(vertex).distance_to(house_xz / TerrainGrid.CELL_M) * TerrainGrid.CELL_M < HoleRules.BUILDING_CLEARANCE_M:
 			spared += 1
 		seen[vertex] = true
 	var closest := INF
 	for pair in took:
-		var vertex_at := Vector2(pair[1] % TerrainRules.GRID, pair[1] / TerrainRules.GRID) * TerrainRules.CELL
+		var vertex_at := TerrainGrid.point_of(TerrainGrid.vertex_of(int(pair[1])))
 		closest = minf(closest, vertex_at.distance_to(house_xz))
 	_c._note("house: vertices spared / closest taken m", [spared, snappedf(closest, 0.1)])
 	checks["house_had_vertices_in_the_way"] = spared > 0
@@ -247,9 +247,9 @@ func _nav() -> Dictionary:
 			best = last.distance_to(here)
 			middle = (last + here) * 0.5
 		last = here
-	var vertex := HoleRules.vertex_near(middle)
-	var id := vertex.y * TerrainRules.GRID + vertex.x
-	var centre := Vector2(vertex) * TerrainRules.CELL
+	var vertex := TerrainGrid.vertex_near(middle)
+	var id := TerrainGrid.id_of(vertex)
+	var centre := TerrainGrid.point_of(vertex)
 	_c._note("path points / longest leg m / hole at", [before.size(), snappedf(best, 0.1), centre])
 	checks["a_path_exists"] = before.size() >= 1 and best > 15.0 and shape.index.land[id] == 1
 	checks["old_path_passes_over_the_place"] = not _crosses(start, before, shape) and _near(start, before, centre) < 7.1
@@ -311,11 +311,11 @@ func _full_vertex(shape: GroundSurface, margin: int, with_next := false) -> Vect
 	var counts := shape.cell_counts()
 	for dz in range(-12, 13):
 		for dx in range(-12, 13):
-			var vertex := Vector2i(int(CENTER.x / TerrainRules.CELL) + dx, int(CENTER.y / TerrainRules.CELL) + dz)
+			var vertex := Vector2i(int(CENTER.x / TerrainGrid.CELL_M) + dx, int(CENTER.y / TerrainGrid.CELL_M) + dz)
 			var full := true
 			for cz in range(vertex.y - margin + 1, vertex.y + margin + (1 if with_next else 0) + 1):
 				for cx in range(vertex.x - margin + 1, vertex.x + margin + (2 if with_next else 1)):
-					full = full and counts[cz * TerrainRules.GRID + cx] == 2
+					full = full and counts[TerrainGrid.id_of(Vector2i(cx, cz))] == 2
 			if full:
 				return vertex
 	return Vector2i(-1, -1)

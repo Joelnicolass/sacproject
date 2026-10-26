@@ -26,11 +26,10 @@ func ids(path: String) -> PackedByteArray:
 
 ## Land triangles per cell from the index `cells` (two ids per cell, -1 for none); made once, until `forget_counts`.
 func counts(cells: PackedInt32Array) -> PackedByteArray:
-	var side := TerrainRules.GRID
-	if _counts.size() != side * side:
-		_counts.resize(side * side)
+	if _counts.size() != TerrainGrid.COUNT:
+		_counts.resize(TerrainGrid.COUNT)
 		_counts.fill(0)
-		if cells.size() == side * side * 2:
+		if cells.size() == TerrainGrid.COUNT * 2:
 			for cell in _counts.size():
 				_counts[cell] = int(cells[cell * 2] >= 0) + int(cells[cell * 2 + 1] >= 0)
 	return _counts
@@ -53,8 +52,8 @@ func _load(path: String) -> PackedByteArray:
 	if image == null:
 		return PackedByteArray()
 	var out := PackedByteArray()
-	out.resize(TerrainRules.GRID * TerrainRules.GRID)
-	for y in TerrainRules.GRID:
-		for x in TerrainRules.GRID:
-			out[y * TerrainRules.GRID + x] = int(image.get_pixel(x, y).r8)
+	out.resize(TerrainGrid.COUNT)
+	for y in TerrainGrid.SIDE:
+		for x in TerrainGrid.SIDE:
+			out[TerrainGrid.id_of(Vector2i(x, y))] = int(image.get_pixel(x, y).r8)
 	return out

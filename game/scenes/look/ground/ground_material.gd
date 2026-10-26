@@ -89,11 +89,11 @@ static func shared_noise() -> ImageTexture:
 ## RGBA8, one slot per channel: tile id -> slot via a TileLayerMap, for the grass of the classic ground.
 ## WORKAROUND: kept until the grass reads the map's ground_roles.png (plan 062, cut 3), then removed with TileLayerMap.
 static func splat_texture(tiles: TileLayerMap, tile_ids: PackedByteArray) -> ImageTexture:
-	var side := 256
+	var side := TerrainGrid.SIDE
 	var data := PackedByteArray()
-	data.resize(side * side * 4)
+	data.resize(TerrainGrid.COUNT * 4)
 	data.fill(0)
-	if tiles != null and tile_ids.size() == side * side:
+	if tiles != null and tile_ids.size() == TerrainGrid.COUNT:
 		for cell in tile_ids.size():
 			var slot := tiles.slot_of(tile_ids[cell])
 			if slot < 4:

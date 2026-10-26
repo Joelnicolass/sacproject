@@ -17,7 +17,7 @@ static func values(profile: StampProfile, center: Vector2, reach_m: float, peak_
 	var half := maxf(profile.ring_width.sample(local_s), 0.001) if profile.is_ring() else maxf(reach_m, 0.001)
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var spot := Vector2(rect.position + Vector2i(column, row)) * TerrainRules.CELL
+			var spot := TerrainGrid.point_of(rect.position + Vector2i(column, row))
 			var across := absf(spot.distance_to(center) - ring_at) / half
 			if across < 1.0:
 				out[row * rect.size.x + column] = amount * profile.radial.sample(across)
@@ -32,8 +32,9 @@ static func ground_under(shape: GroundSurface, rect: Rect2i) -> PackedFloat32Arr
 	var ground := shape.field()
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var id := (rect.position.y + row) * GroundField.SIDE + rect.position.x + column
-			var spot := Vector2(rect.position + Vector2i(column, row)) * TerrainRules.CELL
+			var vertex := rect.position + Vector2i(column, row)
+			var id := TerrainGrid.id_of(vertex)
+			var spot := TerrainGrid.point_of(vertex)
 			out[row * rect.size.x + column] = shape.height_at(spot.x, spot.y) - ground.at(id) + ground.permanent[id]
 	return out
 
@@ -48,7 +49,7 @@ static func pattern(profile: StampProfile, center: Vector2, reach_m: float, peak
 	var picture := profile.heightmap.get_image() if profile.heightmap != null else null
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var offset := Vector2(rect.position + Vector2i(column, row)) * TerrainRules.CELL - center
+			var offset := TerrainGrid.point_of(rect.position + Vector2i(column, row)) - center
 			if maxf(absf(offset.x), absf(offset.y)) > reach_m + 0.001:
 				continue
 			var at := row * rect.size.x + column

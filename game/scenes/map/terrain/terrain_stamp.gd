@@ -60,7 +60,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 func center() -> Vector2:
 	var at := Vector2(global_position.x, global_position.z)
 	if profile != null and profile.heightmap != null:
-		return Vector2(floorf((at.x + TerrainRules.CELL * 0.5) / TerrainRules.CELL), floorf((at.y + TerrainRules.CELL * 0.5) / TerrainRules.CELL)) * TerrainRules.CELL
+		return TerrainGrid.point_of(TerrainGrid.vertex_near(at))
 	return at
 
 
@@ -75,7 +75,7 @@ func local_s() -> float:
 
 ## The lattice vertices it can touch.
 func vertex_rect() -> Rect2i:
-	return GroundField.vertex_rect(center(), (reach.shape as CylinderShape3D).radius)
+	return TerrainGrid.vertex_rect(center(), (reach.shape as CylinderShape3D).radius)
 
 
 ## The shift it makes at `at_s` seconds over `rect`.
@@ -90,7 +90,7 @@ func values_at(at_s: float, rect: Rect2i) -> PackedFloat32Array:
 func _make_pattern(rect: Rect2i) -> void:
 	var ground := StampRules.ground_under(_deformer.shape, rect)
 	var middle := center()
-	var at := Vector2i(middle / TerrainRules.CELL) - rect.position
+	var at := Vector2i(middle / TerrainGrid.CELL_M) - rect.position
 	var target := ground[at.y * rect.size.x + at.x] if Rect2i(Vector2i.ZERO, rect.size).has_point(at) else NAN
 	var cylinder := reach.shape as CylinderShape3D
 	pattern = StampRules.pattern(profile, middle, cylinder.radius, cylinder.height, rect, ground, 0.0 if is_nan(target) else target)

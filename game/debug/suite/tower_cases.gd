@@ -246,10 +246,14 @@ func _cast() -> Dictionary:
 		soul.queue_free()
 		unit.queue_free()
 		checks[god + "_busy_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.FOUNT_TAKEN
+		## RFC-056: the fount is free the tick it falls; the ruin stays `linger_s` (so every peer sees it fall) and then goes.
+		var linger := MatchClock.ticks_for(tower.linger_s) if tower != null else 0
 		if tower != null:
 			tower.health.damage(99999.0, 2)
-		await _frames(3)
-		checks[god + "_fount_free_after_fall"] = fount.is_free() and towers.get_child_count() == 0
+		await _frames(1)
+		var free_at_once := fount.is_free()
+		await _frames(linger + 3)
+		checks[god + "_fount_free_after_fall"] = free_at_once and fount.is_free() and towers.get_child_count() == 0
 		wizard.queue_free()
 	checks["shrine_models"] = results.get("persephone", "") == "pcsh" and results.get("james", "") == "jsac"
 	fount.queue_free()

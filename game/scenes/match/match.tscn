@@ -75,6 +75,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hover_frame/hover_frame.tscn" id="hover_frame"]
 [ext_resource type="PackedScene" path="res://scenes/camera/camera_shake.tscn" id="f375_shake"]
 [ext_resource type="PackedScene" path="res://scenes/fx/damage_numbers.tscn" id="f375_numbers"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/spray_marks.tscn" id="b060_spray_marks"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/explosion_zone.tscn" id="z61_explosion"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/frozen_ground.tscn" id="z61_frozen"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/demonic_rift.tscn" id="z61_rift"]
@@ -121,6 +122,8 @@ shake = NodePath("CameraShake")
 
 [node name="DamageNumbers" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("f375_numbers")]
 camera = NodePath("../Camera")
+
+[node name="SprayMarks" parent="." instance=ExtResource("b060_spray_marks")]
 
 
 [node name="Wizards" type="Node3D" parent="." unique_id=322085300]

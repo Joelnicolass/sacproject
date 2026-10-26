@@ -1,0 +1,12 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/blood/spray_marks.gd" id="1_marks"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="2_ptype"]
+[ext_resource type="Resource" path="res://data/fx/blood.tres" id="3_spray"]
+[ext_resource type="Resource" path="res://data/fx/blood/red.tres" id="4_red"]
+
+[node name="SprayMarks" type="Node"]
+editor_description = "Charco del gib: cuando suena data/fx/blood.tres, pinta 12 manchas blud en 4 m. Nada sin ventana."
+script = ExtResource("1_marks")
+sprays = Array[ExtResource("2_ptype")]([ExtResource("3_spray")])
+blood = ExtResource("4_red")

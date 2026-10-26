@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://debug/fx/blood_lab.gd" id="1_lab"]
 [ext_resource type="Script" path="res://debug/fx/blood_checks.gd" id="2_checks"]
@@ -8,6 +8,7 @@
 [ext_resource type="Resource" path="res://data/catalog/creatures/earthfling.tres" id="6_earthfling"]
 [ext_resource type="Resource" path="res://data/fx/blood/none.tres" id="7_none"]
 [ext_resource type="Script" path="res://debug/fx/blood_more_checks.gd" id="8_more"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/spray_marks.tscn" id="9_spray_marks"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lab"]
 
@@ -70,10 +71,13 @@ trogg_b = NodePath("../World/TroggB")
 stone = NodePath("../World/Stone")
 more = NodePath("More")
 
-[node name="More" type="Node" parent="Checks" node_paths=PackedStringArray("trogg_a", "trogg_b")]
+[node name="More" type="Node" parent="Checks" node_paths=PackedStringArray("trogg_a", "trogg_b", "spray_marks")]
 script = ExtResource("8_more")
 trogg_a = NodePath("../../World/TroggA")
 trogg_b = NodePath("../../World/TroggB")
+spray_marks = NodePath("../../SprayMarks")
+
+[node name="SprayMarks" parent="." instance=ExtResource("9_spray_marks")]
 
 [node name="Overlay" type="CanvasLayer" parent="."]
 
@@ -84,6 +88,6 @@ offset_right = 900.0
 offset_bottom = 48.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
-text = "K: golpe 20 % · Shift+K: golpe 45 %"
+text = "K: golpe 20 % · Shift+K: golpe 45 % · L: gib"
 
 [editable path="World/Stone"]

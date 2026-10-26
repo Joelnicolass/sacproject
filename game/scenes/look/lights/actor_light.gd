@@ -53,6 +53,13 @@ func set_lit(on: bool, fade_s := 0.0) -> void:
 		_fade.finished.connect(_on_faded_out)
 
 
+## Sets `light_energy` to the scene's energy times `fraction` (a light that grows with something, like a rising tower's edge).
+## Stops a running fade. The only other writer of `light_energy` is set_lit.
+func set_level(fraction: float) -> void:
+	_stop_fade()
+	light_energy = _full_energy * maxf(fraction, 0.0)
+
+
 func is_lit() -> bool:
 	return _lit
 

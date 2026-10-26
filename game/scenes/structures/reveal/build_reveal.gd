@@ -63,9 +63,18 @@ func _process(delta: float) -> void:
 		return
 	if not _dressed:
 		_dress()
-	var line := _base_y - edge_width_m + (_height_m + edge_width_m) * progress
+	var line := line_y()
 	for material in _materials:
 		material.set_shader_parameter(&"line_y", line)
+
+
+## Global Y of the cut line for the current progress: `edge_width_m` under the base at 0, the top at 1 (the tower's own Y before
+## the parts were measured). BuildEdge puts the rings and the light on it.
+func line_y() -> float:
+	if not _dressed:
+		return tower.global_position.y if tower != null else 0.0
+	var progress := clampf(tower.build_progress, 0.0, 1.0)
+	return _base_y - edge_width_m + (_height_m + edge_width_m) * progress
 
 
 ## Every surface under `visuals` that has a StandardMaterial3D gets a reveal copy of it (other materials stay as they are).

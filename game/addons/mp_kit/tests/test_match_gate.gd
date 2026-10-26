@@ -199,6 +199,21 @@ func test_all_gone() -> void:
 	_done(gate)
 
 
+func test_listen_host_abandons_when_every_client_is_gone() -> void:
+	var gate := _gate([2, 3])
+	gate.host_present = true
+	gate.admit(10, "")
+	gate.admit(11, "")
+	gate.mark_loaded(2)
+	gate.mark_loaded(3)
+	gate.mark_left(2)
+	gate.mark_left(3)
+	_advance_s(6.0, gate)
+	check(not _events.has("all_gone") and _events.has("abandoned 2 grace_over true") and _events.has("abandoned 3 grace_over true"),
+		"a listen host still plays: every client past the grace is abandoned, no all_gone")
+	_done(gate)
+
+
 func test_host_starts_now() -> void:
 	var gate := MpMatchGate.new()
 	tree.root.add_child(gate)

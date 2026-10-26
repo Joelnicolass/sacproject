@@ -434,7 +434,6 @@ tools/export_stats.py,tools/import/export_stats.py,j
 tools/fx_catalog.py,tools/import/fx_catalog.py,j
 tools/import_map.py,tools/import/import_map.py,j
 tools/import_props.py,tools/import/import_props.py,j
-tools/import_terrain.gd,tools/bake/import_terrain.gd,j
 tools/import_textures.py,tools/import/import_textures.py,j
 tools/import_themes.py,tools/import/import_themes.py,j
 tools/import_ui.py,tools/import/import_ui.py,j
@@ -447,7 +446,6 @@ tools/mm_export.sh,tools/material/mm_export.sh,j
 tools/mm_gen_grass.py,tools/material/mm_gen_grass.py,j
 tools/sac_formats/,tools/import/sac_formats/,j
 tools/sample_grass_palette.py,tools/import/sample_grass_palette.py,j
-tools/terrain_glb_export.gd,tools/bake/terrain_glb_export.gd,j
 # ---- cut k
 agent/editor_capture.sh,agent/scripts/editor_capture.sh,k
 agent/f037b/,agent/fixtures/f037b/,k

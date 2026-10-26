@@ -9,7 +9,7 @@ extends RefCounted
 const SNAP_M := 6.0
 
 
-static func check(root: MapRoot, definition: MapDefinition, terrain: Terrain, regions: NavRegions) -> Array[String]:
+static func check(root: MapRoot, terrain: Terrain, definition: MapDefinition, regions: NavRegions) -> Array[String]:
 	var problems: Array[String] = []
 	var starts: Array[PlayerStart] = []
 	for node in root.starts.get_children():

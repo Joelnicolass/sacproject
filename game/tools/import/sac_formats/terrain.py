@@ -1,15 +1,15 @@
-"""The height map (HMAP) and cliff walls as the HNTR v1 mesh bin: vertices and flat normals in Godot axes, then the
-triangle indices. tools/import/import_map.py writes it outside the repo and tools/bake/import_terrain.gd turns it into terrain.res.
+"""The height map (HMAP) of a .scp as a grid of void flags and heights, and the land height under a point of it.
 
+The game's ground is not written from here: tools/terrain/heights_from_original.gd reads the HMAP of each map of the original
+into its heights.png and void.png, and the game derives the triangles from those (scenes/map/terrain/terrain_faces.gd).
+This module serves the Python tools that need the land of a map of the installation (import_map.py --list, scaffold_map.py).
 The HMAP of any .scp is found by its tag in the file directory (wad.extract), so every map of the installation goes through the same path.
 """
 
-import struct
 from pathlib import Path
 
 from .wad import extract
 
-MAP_DEPTH = 50.0
 CELL = 10.0
 
 
@@ -44,69 +44,8 @@ def get_faces(edges, j, i):
     return out
 
 
-def edge_wall_exists(n, m, edges, j, i, slot):
-    def e(yy, xx):
-        if yy < 0 or xx < 0 or yy >= n or xx >= m:
-            return True
-        return edges[yy][xx]
-
-    if slot == 0:
-        return (j == 0 or (e(j - 1, i) and e(j - 1, i + 1))) and (not e(j, i)) and (not e(j, i + 1)) and ((not e(j + 1, i)) or (not e(j + 1, i + 1)))
-    if slot == 1:
-        return (j + 1 == n - 1 or (e(j + 2, i + 1) and e(j + 2, i))) and (not e(j + 1, i + 1)) and (not e(j + 1, i)) and ((not e(j, i)) or (not e(j, i + 1)))
-    if slot == 2:
-        return (i == 0 or (e(j + 1, i - 1) and e(j, i - 1))) and (not e(j + 1, i)) and (not e(j, i)) and ((not e(j + 1, i + 1)) or (not e(j, i + 1)))
-    if slot == 3:
-        return (i + 1 == m - 1 or (e(j, i + 2) and e(j + 1, i + 2))) and (not e(j, i + 1)) and (not e(j + 1, i + 1)) and ((not e(j, i)) or (not e(j + 1, i)))
-    if slot == 4:
-        return e(j, i + 1) and (not e(j, i)) and (not e(j + 1, i + 1)) and (not e(j + 1, i))
-    if slot == 5:
-        return e(j + 1, i + 1) and (not e(j, i + 1)) and (not e(j + 1, i)) and (not e(j, i))
-    if slot == 6:
-        return e(j + 1, i) and (not e(j + 1, i + 1)) and (not e(j, i)) and (not e(j, i + 1))
-    if slot == 7:
-        return e(j, i) and (not e(j + 1, i)) and (not e(j, i + 1)) and (not e(j + 1, i + 1))
-    return False
-
-
-def slot_ends(i, j, slot):
-    return {
-        0: (i, j, i + 1, j),
-        1: (i + 1, j + 1, i, j + 1),
-        2: (i, j + 1, i, j),
-        3: (i + 1, j, i + 1, j + 1),
-        4: (i, j, i + 1, j + 1),
-        5: (i + 1, j, i, j + 1),
-        6: (i + 1, j + 1, i, j),
-        7: (i, j + 1, i + 1, j),
-    }[slot]
-
-
 def godot(i, j, h):
     return (CELL * i, h, CELL * j)
-
-
-def cross(a, b):
-    return (
-        a[1] * b[2] - a[2] * b[1],
-        a[2] * b[0] - a[0] * b[2],
-        a[0] * b[1] - a[1] * b[0],
-    )
-
-
-def sub(a, b):
-    return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
-
-
-def add(a, b):
-    return (a[0] + b[0], a[1] + b[1], a[2] + b[2])
-
-
-def norm(v):
-    length = (v[0] ** 2 + v[1] ** 2 + v[2] ** 2) ** 0.5
-    if length == 0:
-        return (0.0, 1.0, 0.0)
-    return (v[0] / length, v[1] / length, v[2] / length)
 
 
 def load_grid(scp: Path) -> tuple:
@@ -141,7 +80,7 @@ def load_grid(scp: Path) -> tuple:
 
 def ground_height_fn(scp: Path):
     """f(x, z) -> the land height under that point in Godot units (the plane of the ground triangle there), None over a hole.
-    The same triangles hntr() writes, so it answers what Terrain.ground_height answers in the game."""
+    The land triangles the game derives (TerrainFaces), so it answers what Terrain.height_at answers in the game."""
     edges, heights = load_grid(scp)
 
     def height_at(x: float, z: float):
@@ -161,65 +100,3 @@ def ground_height_fn(scp: Path):
         return None
 
     return height_at
-
-
-def hntr(scp: Path) -> bytes:
-    """The HNTR v1 bytes of the map's ground and cliff walls."""
-    edges, heights = load_grid(scp)
-    n, m = len(edges), len(edges[0])
-    width, height = m, n
-
-    verts = []
-    normals = []
-    indices = []
-
-    def push_tri(a, b, c, flip_winding):
-        start = len(verts)
-        verts.extend((a, b, c))
-        rhs = cross(sub(b, a), sub(c, a))
-        # Godot's front normal is the opposite of the right-hand normal.
-        # Land keeps sac order so the floor faces up. Walls stay flipped;
-        # that side is the one already visible from the canyon.
-        if flip_winding:
-            nn = norm(rhs)
-            indices.extend((start, start + 2, start + 1))
-        else:
-            nn = norm((-rhs[0], -rhs[1], -rhs[2]))
-            indices.extend((start, start + 1, start + 2))
-        normals.extend((nn, nn, nn))
-
-    for j in range(n - 1):
-        for i in range(m - 1):
-            faces = get_faces(edges, j, i) or []
-            for f in faces:
-                corners = []
-                for k in range(3):
-                    jj = j + dj(f[k])
-                    ii = i + di(f[k])
-                    corners.append(godot(ii, jj, heights[jj][ii]))
-                push_tri(*corners, False)
-
-    for j in range(n - 1):
-        for i in range(m - 1):
-            for slot in range(8):
-                if not edge_wall_exists(n, m, edges, j, i, slot):
-                    continue
-                x1, y1, x2, y2 = slot_ends(i, j, slot)
-                top_a = godot(x1, y1, heights[y1][x1])
-                top_b = godot(x2, y2, heights[y2][x2])
-                bot_b = add(top_b, (0.0, -MAP_DEPTH, 0.0))
-                bot_a = add(top_a, (0.0, -MAP_DEPTH, 0.0))
-                push_tri(top_a, bot_b, top_b, True)
-                push_tri(bot_b, top_a, bot_a, True)
-
-    payload = bytearray()
-    payload += b"HNTR"
-    payload += struct.pack("<HHH", 1, width, height)
-    payload += struct.pack("<II", len(verts), len(indices))
-    for v in verts:
-        payload += struct.pack("<fff", *v)
-    for v in normals:
-        payload += struct.pack("<fff", *v)
-    for idx in indices:
-        payload += struct.pack("<I", idx)
-    return bytes(payload)

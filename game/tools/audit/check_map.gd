@@ -60,7 +60,7 @@ func _check(tag: StringName) -> Array[String]:
 	if terrain == null or not terrain.is_loaded():
 		problems.append("the map has no loaded Terrain")
 	else:
-		problems.append_array(MapSeatChecks.check(root, definition, terrain, regions))
+		problems.append_array(MapSeatChecks.check(root, terrain, definition, regions))
 		problems.append_array(MapGroundChecks.check(root, terrain))
 	if navmesh != null:
 		problems.append_array(await MapPathChecks.check(root, navmesh, regions))

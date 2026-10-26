@@ -9,23 +9,30 @@ extends Node3D
 
 signal changed(rect: Rect2)  ## x, z in metres; every peer
 signal holes_changed(rect: Rect2)  ## a vertex came or went (the collision flushes now, NavService bakes again)
+signal derived  ## the triangles were derived again from `heights` (on load; editor: after a reimport or a brush stroke)
 const GROUP := &"terrain"
 
-## The map's raw ground (terrain.res).
-@export var data: MapTerrainData:
+## The shape of the map's ground: its heights.png and void.png, imported as TerrainHeights. Everything else is derived.
+@export var heights: TerrainHeights:
 	set(value):
-		data = value
-		index = TerrainRules.index(data) if data != null and data.is_valid() else TerrainRules.Index.new()
-		_field = GroundField.new()
+		heights = value
+		_shape.follow(heights, self)
 ## The map's tile index: its tiles.png imported as Image (256x256, the original tile id in R). Empty = tile 0 everywhere.
 @export var tiles: Image
-## The node that draws this ground (the map's TerrainMesh): the look layer dresses it, the minimap bakes it.
+## Which kind of ground lies where (the map's ground_roles.png, 1 px per 10 m cell: R open, G earth, B rock, A path).
+@export var ground_roles: Texture2D
+## The map's own baked light on the ground (the map's light.png). Empty = the ground reads evenly lit.
+@export var light_map: Texture2D
+## The node that draws this ground (the child `Mesh`): the look layer dresses it, the minimap bakes it.
 @export var mesh: MeshInstance3D
 ## The network transport of what stays (the child `Net`). Empty = alone.
 @export var net: TerrainNet
 
-## The land triangles of the file (read only: the walls of the holes, the falling piece and HoleRules read them).
+## The triangles derived from `heights` (land first, then the cliff walls), in memory only: Mesh and Collision read them.
+var data := MapTerrainData.new()
+## The land triangles per cell (read only: the walls of the holes, the falling piece and HoleRules read them).
 var index := TerrainRules.Index.new()
+var _shape := TerrainShape.new()
 var _field := GroundField.new()
 var _tiles := GroundTiles.new()
 
@@ -34,6 +41,10 @@ var _tiles := GroundTiles.new()
 static func of(node: Node) -> Terrain:
 	var found := node.get_tree().get_first_node_in_group(GROUP) as Terrain if node != null and node.is_inside_tree() else null
 	return found if found != null and found.is_loaded() else null
+
+
+func _init() -> void:
+	_shape.derived.connect(_on_derived)
 
 
 func _ready() -> void:
@@ -46,8 +57,8 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var wired := data != null and mesh != null and net != null
-	return PackedStringArray() if wired else PackedStringArray(["Faltan `data` (el terrain.res), `mesh` (el TerrainMesh) o `net` (el hijo Net)."])
+	var wired := heights != null and ground_roles != null and mesh != null and net != null
+	return PackedStringArray() if wired else PackedStringArray(["Faltan `heights` (heights.png), `ground_roles` (ground_roles.png), `mesh` (el hijo Mesh) o `net` (el hijo Net)."])
 
 
 func is_loaded() -> bool:
@@ -92,7 +103,6 @@ func is_authority() -> bool:
 ## How far the ground has moved from the file. Read only: only Terrain writes it.
 func field() -> GroundField:
 	return _field
-
 
 
 ## The original tile id of each 10 m cell, 256x256 row-major (empty without `tiles`).
@@ -158,7 +168,6 @@ func _may_edit(what: String) -> bool:
 	return is_authority()
 
 
-
 ## Takes the vertex away or gives it back, and sends it to the clients. True when that changed something.
 func _set_hole(vertex: Vector2i, removed: bool) -> bool:
 	var id := TerrainGrid.id_of(vertex)
@@ -198,3 +207,11 @@ func _on_snapshot_received(snapshot: Dictionary) -> void:
 	if int(snapshot["rev"]) >= _field.rev:
 		_field.apply_snapshot(snapshot)
 		_tell(Rect2i(Vector2i.ZERO, _field.size))
+
+
+## New triangles from the heights: the match state starts over (nothing has moved yet).
+func _on_derived() -> void:
+	data = _shape.faces
+	index = _shape.index
+	_field = GroundField.new()
+	derived.emit()

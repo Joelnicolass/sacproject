@@ -8,7 +8,8 @@ Herramientas de desarrollo, nunca parte del juego (el export las excluye).
 - `material/`: Material Maker por consola.
 - `deploy/`: unidad systemd del servidor de salas.
 - `move_map/` y `move_map.py`: el mudador de rutas del RFC-048.
-- `skeletal_post_import.gd` y `terrain_import.gd` quedan en la raiz: los nombran los `.import` de `assets/`.
+- `skeletal_post_import.gd` queda en la raiz: lo nombran los `.import` de `assets/`.
+- `terrain/heights_from_original.gd` (requiere el juego original): escribe el `heights.png` y el `void.png` de un mapa del original, la unica fuente de su suelo.
 - `blender/`: scripts de Blender por consola (`make_test_creature.py`; el terreno, abajo).
   - **Terreno en Blender** (plan 063D S4, no necesita el juego original). Desde `game/`, con `BLENDER_BIN` (ver `agent/harness/env.sh`):
     - Ida, imágenes del mapa → `.blend`: `"$BLENDER_BIN" --background --python tools/blender/terrain_make_blend.py -- --map=scenes/map/maps/<tag>` (o `--flat=<m>` para un suelo plano nuevo). Escribe `scenes/map/maps/<tag>/terrain_work/terrain.blend` (ignorada por git y por Godot). Abrilo en Blender y seguí el texto «README» de adentro: solo mover en Z, no agregar ni borrar vértices, pintar el grupo «void» para hacer huecos.

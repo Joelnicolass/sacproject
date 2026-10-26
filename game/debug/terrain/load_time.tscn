@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://debug/terrain/load_time.gd" id="1_time"]
+
+[node name="LoadTime" type="Node"]
+editor_description = "Cuánto tarda en cargar un mapa con su suelo (plan 063D S3, criterio 2): carga, instancia y entra al árbol High Noon y Winter Wonder tres veces cada uno e imprime LOAD TIME por corrida. No nombra clases del terreno: la misma escena mide antes y después de un corte."
+script = ExtResource("1_time")

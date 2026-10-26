@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/winter_wonder/map.tscn" id="2_scene"]
-[ext_resource type="Resource" path="res://assets/original/maps/winter_wonder/terrain.res" id="3_terrain"]
 [ext_resource type="Image" path="res://assets/original/maps/winter_wonder/tiles.png" id="4_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/winter_wonder/light.png" id="5_light"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/winter_wonder/nav.res" id="6_nav"]
@@ -12,7 +11,6 @@ script = ExtResource("1_def")
 tag = &"winter_wonder"
 display_name = "Winter Wonder"
 map_scene = ExtResource("2_scene")
-terrain = ExtResource("3_terrain")
 tiles = ExtResource("4_tiles")
 light = ExtResource("5_light")
 nav = ExtResource("6_nav")

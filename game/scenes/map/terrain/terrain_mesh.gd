@@ -2,33 +2,21 @@
 class_name TerrainMesh
 extends MeshInstance3D
 
-## The map's ground as something to see: the mesh (the instanced terrain.glb, or one built from the data) and the editor
-## preview. Not: the body to stand on (the map's `Collision`, TerrainCollision), heights, holes and tiles (its `shape`, the
-## Terrain). The material swap is TerrainGroundMaterial.
+## The map's ground as something to see: a mesh built in memory from the triangles of its `terrain` (again when they are
+## derived again in the editor), never saved and never built without a window (headless, the dedicated server).
+## Not: the body to stand on (TerrainCollision), heights, holes, tiles and roles (its `terrain`), where the editor shows
+## the map (MapRoot). The material swap is TerrainGroundMaterial.
 
-const GROUP := &"terrain_mesh"
-
-## The ground as numbers: its `Shape` child.
-@export var shape: Terrain
-## The label that says the map has no ground (shown only when it could not be built).
+## The ground as numbers: the Terrain this node hangs from.
+@export var terrain: Terrain
+## The label that says the map has no ground (shown only when the Terrain has no heights).
 @export var missing: Label3D
-## Which kind of ground lies where: 256x256, one pixel per 10 m cell, R open, G earth, B rock, A path (the map's
-## ground_roles.png; paint it in any image editor). The god's look says what each kind looks like.
-@export var ground_roles: Texture2D
-## The map's own baked light on the ground (the map's light.png). Empty = the ground reads evenly lit.
-@export var light_map: Texture2D
-## The map sits far from where the editor camera opens: in the editor only, the parent is shifted so the map shows
-## at the origin (the shift is taken off while saving).
-@export var editor_preview_recenter := true:
-	set(value):
-		editor_preview_recenter = value
-		_apply_preview_offset()
-## Normals averaged per grid vertex so the slopes read as one surface; off: one flat normal per triangle. Changing it
-## swaps the normals only: collision and heights come from the positions.
+## Normals averaged per lattice vertex so the slopes read as one surface; off: one flat normal per triangle. Changing it
+## swaps the normals only: collision and heights come from the triangles.
 @export var smooth_ground := true:
 	set(value):
 		smooth_ground = value
-		if mesh != null and _prepare() != null:
+		if _arrays != null:
 			mesh = _make_mesh()
 
 var _arrays: TerrainMeshArrays
@@ -38,43 +26,29 @@ var _material: TerrainGroundMaterial
 func _init() -> void:
 	_material = TerrainGroundMaterial.new(self)
 
-## A mesh built in memory is rebuilt on load and never written into the scene (only the instanced terrain.glb is).
+
+## The mesh is made from the heights on every load: it is never written into the scene.
 func _validate_property(property: Dictionary) -> void:
-	if property.name == "mesh" and not _mesh_is_file():
+	if property.name == "mesh":
 		property.usage &= ~PROPERTY_USAGE_STORAGE
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if shape == null:
-		warnings.append("Falta el hijo Shape (Terrain) en `shape`.")
-	if ground_roles == null:
-		warnings.append("Falta `ground_roles` (el ground_roles.png del mapa): el suelo del dios no sabe qué va dónde.")
-	return warnings
+	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain padre)."])
 
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EDITOR_PRE_SAVE:
-		_set_preview_offset(Vector3.ZERO)
 		_material.before_save()
 	elif what == NOTIFICATION_EDITOR_POST_SAVE:
-		_apply_preview_offset()
 		_material.after_save()
 
 
 func _ready() -> void:
-	add_to_group(GROUP)
-	var built := _load_mesh()
-	_apply_preview_offset()
-	if missing:
-		missing.visible = not built
-
-
-## The mesh arrays as TerrainMesh builds them at runtime (for the bake tools); empty without usable data.
-func bake_arrays() -> Array:
-	var built := _prepare()
-	return built.with_normals(smooth_ground) if built != null else []
+	if terrain != null:
+		terrain.derived.connect(_build)
+	_build()
 
 
 func classic_material() -> ShaderMaterial:
@@ -93,58 +67,27 @@ func clear_ground_override() -> void:
 	_material.set_override(null)
 
 
-func _mesh_is_file() -> bool:
-	return mesh != null and not mesh.resource_path.is_empty()
+## Builds the mesh from the terrain's triangles and tiles (none without a window or without heights).
+func _build() -> void:
+	var started := Time.get_ticks_usec()
+	var loaded := terrain != null and terrain.is_loaded()
+	_arrays = TerrainMeshArrays.from_data(terrain.data, terrain.tile_ids()) if loaded and _draws() else null
+	mesh = _make_mesh() if _arrays != null else null
+	if loaded:
+		_material.adopt_scene_material()
+	elif not Engine.is_editor_hint():
+		push_error("TerrainMesh '%s' has no ground: its `terrain` needs `heights` (the map's heights.png)." % name)
+	if missing:
+		missing.visible = not loaded
+	if DebugLog.on(&"terrain_load"): print("terrain_load: %s mesh %.0f ms (%s)" % [name, (Time.get_ticks_usec() - started) / 1000.0, "built" if mesh else "none"])
 
 
-func _apply_preview_offset() -> void:
-	if Engine.is_editor_hint() and is_node_ready():
-		var center := mesh.get_aabb().get_center() if editor_preview_recenter and mesh else Vector3.ZERO
-		_set_preview_offset(Vector3(-center.x, 0.0, -center.z))
-
-
-func _set_preview_offset(offset: Vector3) -> void:
-	if Engine.is_editor_hint() and get_parent() is Node3D:
-		(get_parent() as Node3D).position = offset
-
-
-func _load_mesh() -> bool:
-	if shape == null or shape.data == null:
-		push_error("TerrainMesh '%s' has no ground: its `shape` needs a Terrain with data (MapTerrainData)." % name)
-		return false
-	if not shape.data.is_valid():
-		push_error("TerrainMesh '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)
-		return false
-	if not _saved_mesh_matches():
-		if _prepare() == null:
-			return false
-		mesh = _make_mesh()
-	_material.adopt_scene_material()
-	return true
-
-
-## The mesh the scene holds (the instanced terrain.glb) is shown as it is when it still matches the data and smooth_ground;
-## otherwise it is rebuilt from the data (with a warning when a file is stale, e.g. imported before TerrainMeshArrays.VERSION).
-func _saved_mesh_matches() -> bool:
-	if not _mesh_is_file() or not (mesh is ArrayMesh) or mesh.get_surface_count() != 1:
-		return false
-	var fits: bool = mesh.surface_get_array_len(0) == shape.data.vertices.size() \
-			and bool(mesh.get_meta("smooth_ground", true)) == smooth_ground \
-			and int(mesh.get_meta("arrays_version", 1)) == TerrainMeshArrays.VERSION
-	if not fits:
-		push_warning("TerrainMesh '%s': %s is stale (vertices, smooth_ground or the arrays' version differ; reimport it); rebuilding it in memory." % [name, mesh.resource_path])
-	return fits
-
-
-## Builds (once) both normal sets from the shape's data and tiles. Null when there is no usable data.
-func _prepare() -> TerrainMeshArrays:
-	if _arrays == null and shape != null:
-		_arrays = TerrainMeshArrays.from_data(shape.data, shape.tile_ids())
-	return _arrays
+## A mesh is only worth building where something is drawn.
+static func _draws() -> bool:
+	return DisplayServer.get_name() != "headless"
 
 
 func _make_mesh() -> ArrayMesh:
 	var built := ArrayMesh.new()
 	built.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, _arrays.with_normals(smooth_ground))
 	return built
-

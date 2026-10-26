@@ -8,7 +8,7 @@ extends RefCounted
 ##   - the clip folders are recognised by is_clip_path and nothing else is;
 ##   - an audio stream of every class a sound can have comes out empty and of the same class.
 ##   - every Mesh file of a sample of props, buildings and bodies comes out a PlaceholderMesh with the same aabb and name;
-##     the map's folders, a PrimitiveMesh and a PlaceholderMesh are not stripped (strips_mesh / keeps_mesh_path).
+##     a PrimitiveMesh and a PlaceholderMesh are not stripped, any other mesh is, the map's folders too (strips_mesh).
 ## Prints CLIP STRIP libs=<n> roles=<n> tracks_in=<n> tracks_out=<n> bad=<n>.
 
 const STRIP := preload("res://addons/sacrifice_tools/dedicated_strip.gd")
@@ -117,7 +117,7 @@ func _meshes(bad: PackedStringArray) -> int:
 				continue
 			taken += 1
 			checked += 1
-			if not STRIP.strips_mesh(source, path):
+			if not STRIP.strips_mesh(source):
 				_note(bad, path + ": a mesh file the export should strip")
 				continue
 			var out := STRIP.stripped_mesh(source)
@@ -134,19 +134,11 @@ func _meshes(bad: PackedStringArray) -> int:
 				if copy.get_aabb() != mesh_node.mesh.get_aabb():
 					_note(bad, "%s: building part aabb changes" % mesh_node.mesh.resource_path)
 		root.free()
-	for path: String in ["res://scenes/map/maps/high_noon/terrain.res", "res://assets/original/maps/high_noon/terrain.res", "res://scenes/map/anything.res"]:
-		if not STRIP.keeps_mesh_path(path):
-			_note(bad, path + ": a map file that keeps_mesh_path does not keep")
-	for path: String in ["res://scenes/props/meshes/rock.res", "res://scenes/bodies/meshes/baby.res", "res://scenes/spells/zones/volcano_lava_tube.res"]:
-		if STRIP.keeps_mesh_path(path):
-			_note(bad, path + ": keeps_mesh_path keeps a file that is not the map's")
 	var ground := ArrayMesh.new()
-	if STRIP.strips_mesh(ground, "res://assets/original/maps/high_noon/terrain.res") or STRIP.strips_mesh(ground, "res://scenes/map/maps/x/terrain.res"):
-		_note(bad, "a map mesh would be stripped")
-	if STRIP.strips_mesh(CylinderMesh.new(), "res://scenes/props/meshes/x.res") or STRIP.strips_mesh(PlaceholderMesh.new(), "res://scenes/props/meshes/x.res"):
+	if STRIP.strips_mesh(CylinderMesh.new()) or STRIP.strips_mesh(PlaceholderMesh.new()):
 		_note(bad, "a PrimitiveMesh or a PlaceholderMesh would be stripped")
-	if not STRIP.strips_mesh(ground, "res://scenes/props/meshes/x.res"):
-		_note(bad, "an ArrayMesh of props would not be stripped")
+	if not STRIP.strips_mesh(ground):
+		_note(bad, "an ArrayMesh would not be stripped (the map keeps no mesh file since 063D S3b)")
 	return checked
 
 

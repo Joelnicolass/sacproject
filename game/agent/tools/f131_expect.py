@@ -173,7 +173,7 @@ def lane_report(lanes, margin=5.0, step=2.5, half_box=None, big_struct=None):
     except OSError:
         ntts, widgets = {"structures": []}, {}
     if terrain is None:
-        print("(sin assets/original/maps/high_noon/terrain.res: se omite el suelo)")
+        print("(sin scenes/map/maps/high_noon/heights.png: se omite el suelo)")
     structures = ntts.get("structures", [])
     for name in lanes:
         x, z = world(lanes, name)

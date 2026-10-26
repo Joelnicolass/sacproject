@@ -1,20 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_mesh.gd" id="2_terrain"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="shape_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_status.gd" id="s2_status"]
 [ext_resource type="Image" path="res://assets/original/maps/alpine_meadow/tiles.png" id="s2_tiles"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_net.gd" id="net_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
 [ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
-[ext_resource type="Resource" path="res://assets/original/maps/alpine_meadow/terrain.res" id="10_data"]
-[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
-[ext_resource type="PackedScene" path="res://assets/original/maps/alpine_meadow/terrain.glb" id="12_glb"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/alpine_meadow/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
@@ -63,14 +55,14 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/alpine_meadow/flora/persephone_reed_2.png" id="fd_persephone_reed_2"]
 [ext_resource type="Resource" path="res://data/vegetation/species/persephone_reed_3.tres" id="sp_persephone_reed_3"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/alpine_meadow/flora/persephone_reed_3.png" id="fd_persephone_reed_3"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="hole_walls"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/alpine_meadow/ground_roles.png" id="62_roles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/alpine_meadow/light.png" id="62_light"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
+[ext_resource type="Resource" uid="uid://bhvgyjagps0lv" path="res://scenes/map/maps/alpine_meadow/heights.png" id="t_heights"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
-terrain = NodePath("Terrain/Shape")
+terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
@@ -81,50 +73,16 @@ props = NodePath("Props")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain")
 tile_map = ExtResource("9_tiles")
 native_ground = ExtResource("native_ground")
 
-[node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
+[node name="Terrain" parent="." instance=ExtResource("t_terrain")]
 unique_name_in_owner = true
-material_override = ExtResource("11_ground")
-script = ExtResource("2_terrain")
-shape = NodePath("Shape")
-missing = NodePath("Missing")
+heights = ExtResource("t_heights")
+tiles = ExtResource("s2_tiles")
 ground_roles = ExtResource("62_roles")
 light_map = ExtResource("62_light")
-
-[node name="Shape" type="Node3D" parent="Terrain" node_paths=PackedStringArray("mesh", "net")]
-script = ExtResource("shape_script")
-data = ExtResource("10_data")
-tiles = ExtResource("s2_tiles")
-mesh = NodePath("..")
-net = NodePath("../Net")
-
-[node name="Status" type="Node" parent="Terrain/Shape" node_paths=PackedStringArray("terrain")]
-script = ExtResource("s2_status")
-terrain = NodePath("..")
-
-[node name="Missing" type="Label3D" parent="Terrain"]
-visible = false
-text = "UI_MAP_MISSING"
-font_size = 48
-
-[node name="Net" type="Node" parent="Terrain"]
-script = ExtResource("net_script")
-
-[node name="Collision" parent="Terrain" index="0" node_paths=PackedStringArray("terrain")]
-script = ExtResource("collision_script")
-terrain = NodePath("../Shape")
-
-[node name="Shape" parent="Terrain/Collision" index="0"]
-disabled = true
-
-[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("terrain") instance=ExtResource("ground_scars")]
-terrain = NodePath("../Shape")
-
-[node name="HoleWalls" parent="Terrain" node_paths=PackedStringArray("terrain") instance=ExtResource("hole_walls")]
-terrain = NodePath("../Shape")
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")
@@ -531,7 +489,7 @@ bake_settings = ExtResource("14_bake")
 
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain")
 
 [node name="Vegetation" type="Node3D" parent="."]
 

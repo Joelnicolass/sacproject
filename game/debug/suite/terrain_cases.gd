@@ -47,8 +47,8 @@ func run(host: Node3D) -> Dictionary:
 	_bed = BED.instantiate() as Node3D
 	_root.add_child(_bed)
 	_note("collision chunks built ms", [snappedf((Time.get_ticks_usec() - started) / 1000.0, 0.1)])
-	_shape = _bed.get_node("Shape") as Terrain
-	_collision = _bed.get_node("Collision") as TerrainCollision
+	_shape = _bed.get_node("Terrain") as Terrain
+	_collision = _bed.get_node("Terrain/Collision") as TerrainCollision
 	await _frames(2)
 	var only := ""
 	for arg in OS.get_cmdline_user_args():
@@ -92,11 +92,11 @@ func _net() -> Dictionary:
 	for bed in [server, early, late]:
 		_root.add_child(bed)
 	await _frames(2)
-	var host := server.get_node("Shape") as Terrain
-	var first := early.get_node("Net") as TerrainNet
-	var second := late.get_node("Net") as TerrainNet
-	var first_ground := early.get_node("Shape") as Terrain
-	var second_ground := late.get_node("Shape") as Terrain
+	var host := server.get_node("Terrain") as Terrain
+	var first := early.get_node("Terrain/Net") as TerrainNet
+	var second := late.get_node("Terrain/Net") as TerrainNet
+	var first_ground := early.get_node("Terrain") as Terrain
+	var second_ground := late.get_node("Terrain") as Terrain
 	var rect := TerrainGrid.vertex_rect(CENTER, 35.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
@@ -344,22 +344,22 @@ func _flora() -> Dictionary:
 	var quality := (load("res://data/look/quality_high.tres") as LookQuality).vegetation_for(config.id)
 	var holder := Node3D.new()
 	_root.add_child(holder)
-	var planter := MeshPlanter.new(config, quality, flora, land.shape, holder)
+	var planter := MeshPlanter.new(config, quality, flora, land, holder)
 	planter.threaded = false
 	var spot := (Vector2(key) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
 	var eye := Vector3(spot.x, 30.0, spot.y)
 	await _settle(planter, eye)
 	var plain := MeshPlanter.plan_groups(groups)
-	var old_ground := land.shape.sampler()
+	var old_ground := land.sampler()
 	var before := MeshPlanter.plan_cell(config, flora, plain, 1.0, key, old_ground, PackedVector4Array())
 	var watch := FloraGroundWatch.new()
-	watch.follow(land.shape)
+	watch.follow(land)
 	var rect := TerrainGrid.vertex_rect(spot, 40.0)
 	var delta := PackedFloat32Array()
 	delta.resize(rect.size.x * rect.size.y)
 	delta.fill(10.0)
-	_keep(land.shape, spot, 40.0, delta)
-	var after := MeshPlanter.plan_cell(config, flora, plain, 1.0, key, land.shape.sampler(), PackedVector4Array())
+	_keep(land, spot, 40.0, delta)
+	var after := MeshPlanter.plan_cell(config, flora, plain, 1.0, key, land.sampler(), PackedVector4Array())
 	checks["old_sampler_keeps_old_ground"] = MeshPlanter.plan_cell(config, flora, plain, 1.0, key, old_ground, PackedVector4Array()) == before
 	checks["cell_has_plants"] = not before.is_empty() and before.size() == after.size()
 	checks["plants_follow_the_lift"] = _lifted_by(before, after, 10.0)

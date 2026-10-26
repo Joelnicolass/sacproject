@@ -83,7 +83,7 @@ func _run() -> void:
 	await _wait(settle_s)
 	var rig := world.get_node_or_null("Map/Look")
 	_field = get_tree().get_first_node_in_group("grass_field")
-	_terrain = get_tree().get_first_node_in_group(TerrainMesh.GROUP)
+	_terrain = get_tree().get_first_node_in_group(Terrain.GROUP)
 	_wizard = get_tree().get_first_node_in_group("local_wizard") as Node3D
 	if rig == null or _field == null or _terrain == null or _wizard == null:
 		print("GRASSBENCH missing nodes ", rig, _field, _terrain, _wizard)
@@ -144,10 +144,11 @@ func _freeze() -> void:
 		material.set_shader_parameter("color_fade_start", 0.0)
 		material.set_shader_parameter("color_fade_end", 0.002)
 		material.set_shader_parameter("fade_end", 50.0)
-	var ground := _terrain.get("material_override") as ShaderMaterial
+	var drawn := (_terrain as Terrain).mesh
+	var ground := drawn.material_override as ShaderMaterial if drawn else null
 	if ground:
 		ground.set_shader_parameter("grass_time_override", 1.0)
-	var classic: Variant = _terrain.call("classic_material") if _terrain.has_method("classic_material") else null
+	var classic: Variant = drawn.call("classic_material") if drawn and drawn.has_method("classic_material") else null
 	if classic:
 		(classic as ShaderMaterial).set_shader_parameter("grass_time_override", 1.0)
 	if _no_ssao:
@@ -168,7 +169,7 @@ func _stop_time(stopped: bool) -> void:
 
 
 func _ground_y(x: float, z: float) -> float:
-	var y: float = (_terrain as TerrainMesh).shape.height_at(x, z)
+	var y: float = (_terrain as Terrain).height_at(x, z)
 	return 0.0 if is_nan(y) else y
 
 

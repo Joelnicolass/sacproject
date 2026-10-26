@@ -151,16 +151,20 @@ func _option() -> Dictionary:
 	return _result(checks)
 
 
-## Each map scene (and the scaffold that writes new ones) has the GroundScars node under Terrain, wired to the Shape (its `terrain`).
+## Every map scene (and the scaffold that writes new ones) instances terrain.tscn, whose GroundScars is wired to its Terrain.
 func _maps() -> Dictionary:
 	var missing := PackedStringArray()
 	var dir := DirAccess.open("res://scenes/map/maps")
 	for map_dir in dir.get_directories():
 		var text := FileAccess.get_file_as_string("res://scenes/map/maps/%s/map.tscn" % map_dir)
-		if not text.contains('[node name="GroundScars" parent="Terrain"') or not text.contains('terrain = NodePath("../Shape")'):
+		if not text.contains('path="res://scenes/map/terrain/terrain.tscn"'):
 			missing.append(map_dir)
+	var ground := (load("res://scenes/map/terrain/terrain.tscn") as PackedScene).instantiate()
+	var scars := ground.get_node_or_null("GroundScars") as GroundScars
+	var wired := scars != null and scars.terrain == ground
+	ground.free()
 	var scaffold := FileAccess.get_file_as_string("res://tools/import/scaffold_map.py")
-	return {"ok": missing.is_empty() and dir.get_directories().size() >= 9 and scaffold.contains('name="GroundScars"'), "missing": missing}
+	return {"ok": missing.is_empty() and wired and dir.get_directories().size() >= 9 and scaffold.contains("scenes/map/terrain/terrain.tscn"), "missing": missing}
 
 
 func _shaders() -> Dictionary:

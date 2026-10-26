@@ -1,20 +1,18 @@
 extends SceneTree
 
-## Requiere el juego original instalado para los mapas que vienen de él (`--original=<carpeta del juego>` o la variable
-## SACRIFICE_DIR; también sirve SAC_ROOT). Los mapas de prueba no lo necesitan.
+## Requiere el juego original instalado (`--original=<carpeta del juego>` o la variable SACRIFICE_DIR; también sirve
+## SAC_ROOT). Los mapas que no vienen del original (test_flat, test_flat4 o uno propio) no pasan por acá: su heights.png
+## se edita directamente.
 ## Writes scenes/map/maps/<tag>/heights.png (grey, 16 bits, value x 0.1 m) and void.png (white = void), the one source
-## of a map's ground (the addon terrain_tools imports the pair as its TerrainHeights), once per map:
-##  - a map of the original: the exact heights and voids of its .scp (HMAP: u16, bit 15 = void, the rest = height in
-##    steps of 0.1 m), the heights under the voids included, all lowered by the lowest land (the base import_map.py
-##    subtracts), so its land is the land of today's terrain.res. A height under a void that lies below the lowest land
-##    cannot be stored (heights.png has no sign): it is kept at the lowest land and counted. Only a filled void of the
-##    map would show it, and nothing in a match fills one;
-##  - any other map (test_flat, and test_flat4, whose definition points at test_flat's terrain.res): the land vertices
-##    of the ground its MapDefinition loads today, kept as they are, and the voids filled by diffusion from the land.
-## Fails a map whose land (or, from the original, any vertex) is not a whole number of 0.1 m, and checks the written
-## pictures read back the same. Idempotent: an unchanged picture is not written. One-shot of plan 063D S3.
+## of a map's ground (the addon terrain_tools imports the pair as its TerrainHeights), from the map's .scp in the game:
+## the exact heights and voids of its HMAP (u16, bit 15 = void, the rest = height in steps of 0.1 m), the heights under
+## the voids included, all lowered by the lowest land (as tools/import/import_map.py lowers the land). A height under a
+## void that lies below the lowest land cannot be stored (heights.png has no sign): it is kept at the lowest land and
+## counted. Only a filled void of the map would show it, and nothing in a match fills one.
+## The maps of the original are listed in ORIGINAL_SCP; a new one is `--map=<tag> --scp=<.scp relative to the game's
+## maps folder>`. Checks the written pictures read back the same. Idempotent: an unchanged picture is not written.
 ## Import again after it (`--import`) so the new pictures become TerrainHeights.
-## "$GODOT" --headless --path game --script res://tools/terrain/heights_from_original.gd -- [--original=<dir>] [--map=<tag>]
+## "$GODOT" --headless --path game --script res://tools/terrain/heights_from_original.gd -- [--original=<dir>] [--map=<tag> [--scp=<file>]]
 
 const MapImages := preload("res://addons/terrain_tools/map_images.gd")
 const MAPS_DIR := "res://scenes/map/maps"
@@ -33,7 +31,6 @@ const HEIGHT_STEP_M := MapImages.DEFAULT_METRES_PER_UNIT
 ## How far a height may be from a whole number of HEIGHT_STEP_M and still count as one (float32 rounding).
 const EXACT_TOLERANCE_M := 1e-3
 const NEEDS_ORIGINAL := "ERROR: los mapas del original necesitan el juego original instalado. Pasá --original=<carpeta del juego, la que tiene maps/> o exportá SACRIFICE_DIR. El juego no viene en el repositorio."
-const STEPS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 
 
 func _initialize() -> void:
@@ -41,24 +38,30 @@ func _initialize() -> void:
 	if original.is_empty():
 		original = OS.get_environment("SAC_ROOT")
 	var only := ""
+	var scp := ""
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--original="):
 			original = argument.substr(11)
 		elif argument.begins_with("--map="):
 			only = argument.substr(6)
-	var tags := Array(DirAccess.get_directories_at(MAPS_DIR)).filter(func(tag: String) -> bool: return only.is_empty() or tag == only)
-	if tags.is_empty():
-		push_error("heights: no map '%s' in %s." % [only, MAPS_DIR])
+		elif argument.begins_with("--scp="):
+			scp = argument.substr(6)
+	var scp_files := ORIGINAL_SCP.duplicate()
+	if not only.is_empty() and not scp.is_empty():
+		scp_files[only] = scp
+	var tags := Array(scp_files.keys()).filter(func(tag: String) -> bool: return only.is_empty() or tag == only)
+	if tags.is_empty() or not DirAccess.dir_exists_absolute(MAPS_DIR.path_join(tags[0])):
+		push_error("heights: '%s' is no map of the original in %s (a map of your own: edit its heights.png)." % [only, MAPS_DIR])
 		quit(1)
 		return
-	if tags.any(func(tag: String) -> bool: return ORIGINAL_SCP.has(tag)) and not DirAccess.dir_exists_absolute(original):
+	if not DirAccess.dir_exists_absolute(original):
 		printerr(NEEDS_ORIGINAL)
 		quit(2)
 		return
 	var failed := 0
 	for tag: String in tags:
-		var heights: TerrainHeights = _from_original(original, ORIGINAL_SCP[tag]) if ORIGINAL_SCP.has(tag) else _from_definition(tag)
-		if heights == null or not _write(heights, MAPS_DIR.path_join(tag), tag, ORIGINAL_SCP.has(tag)):
+		var heights := _from_original(original, scp_files[tag])
+		if heights == null or not _write(heights, MAPS_DIR.path_join(tag), tag):
 			failed += 1
 	quit(1 if failed > 0 else 0)
 
@@ -91,7 +94,7 @@ func _from_original(root: String, relative: String) -> TerrainHeights:
 		push_error("heights: %s has no land." % relative)
 		return null
 	for v in TerrainHeights.COUNT:
-		heights_m[v] = raw_m[v] - base  # in double, as import_map.py, then stored as float32 like terrain.res
+		heights_m[v] = raw_m[v] - base  # in double, then stored as float32 (as the game has always loaded them)
 	return _make(heights_m, void_mask)
 
 
@@ -119,68 +122,6 @@ static func _hmap(path: String) -> PackedByteArray:
 	return PackedByteArray()
 
 
-## The heights of the ground a map's definition loads today: every corner of a land triangle, as it is.
-func _from_definition(tag: String) -> TerrainHeights:
-	var definition := load(MAPS_DIR.path_join(tag).path_join(tag + ".tres")) as MapDefinition
-	var soup: MapTerrainData = definition.terrain if definition != null else null
-	if soup == null or not soup.is_valid():
-		push_error("heights: map '%s' has no ground to convert (no MapDefinition.terrain)." % tag)
-		return null
-	var side := TerrainGrid.SIDE
-	var heights_m := PackedFloat32Array()
-	heights_m.resize(TerrainHeights.COUNT)
-	var void_mask := PackedByteArray()
-	void_mask.resize(TerrainHeights.COUNT)
-	void_mask.fill(1)
-	var vertices := soup.vertices
-	var indices := soup.indices
-	for t in range(0, indices.size(), 3):
-		var corners: Array[Vector3] = [vertices[indices[t]], vertices[indices[t + 1]], vertices[indices[t + 2]]]
-		if TerrainRules.is_wall(corners[0], corners[1], corners[2]):
-			continue
-		for corner in corners:
-			var v := clampi(roundi(corner.z / TerrainGrid.CELL_M), 0, side - 1) * side + clampi(roundi(corner.x / TerrainGrid.CELL_M), 0, side - 1)
-			heights_m[v] = corner.y
-			void_mask[v] = 0
-	return _make(_filled(heights_m, void_mask), void_mask)
-
-
-## `heights_m` with every void vertex set to the mean of its land (or already filled) neighbours, ring after ring
-## outward from the land. All land: nothing changes; no land: all zero.
-static func _filled(heights_m: PackedFloat32Array, void_mask: PackedByteArray) -> PackedFloat32Array:
-	var side := TerrainGrid.SIDE
-	var known := PackedByteArray()
-	known.resize(TerrainHeights.COUNT)
-	var ring := PackedInt32Array()
-	for v in TerrainHeights.COUNT:
-		known[v] = 1 - void_mask[v]
-		if known[v] == 1:
-			ring.append(v)
-	while not ring.is_empty():
-		var next := PackedInt32Array()
-		for v in ring:
-			for step in STEPS:
-				var x := v % side + step.x
-				var z := v / side + step.y
-				if x >= 0 and z >= 0 and x < side and z < side and known[z * side + x] == 0:
-					known[z * side + x] = 2  # queued in this ring
-					next.append(z * side + x)
-		for v in next:
-			var sum := 0.0
-			var count := 0
-			for step in STEPS:
-				var x := v % side + step.x
-				var z := v / side + step.y
-				if x >= 0 and z >= 0 and x < side and z < side and known[z * side + x] == 1:
-					sum += heights_m[z * side + x]
-					count += 1
-			heights_m[v] = sum / count
-		for v in next:
-			known[v] = 1
-		ring = next
-	return heights_m
-
-
 static func _make(heights_m: PackedFloat32Array, void_mask: PackedByteArray) -> TerrainHeights:
 	var heights := TerrainHeights.new()
 	heights.heights_m = heights_m
@@ -188,16 +129,16 @@ static func _make(heights_m: PackedFloat32Array, void_mask: PackedByteArray) -> 
 	return heights
 
 
-## Writes the pictures of `heights` into `folder`, after checking the heights are whole steps (land always; every
-## vertex when `all_exact`, a map of the original), and reads them back to check they give the same ground.
-static func _write(heights: TerrainHeights, folder: String, tag: String, all_exact: bool) -> bool:
+## Writes the pictures of `heights` into `folder`, after checking every height is a whole step, and reads them back to
+## check they give the same ground.
+static func _write(heights: TerrainHeights, folder: String, tag: String) -> bool:
 	var units := MapImages.units(heights, HEIGHT_STEP_M)
 	var inexact := 0
 	var below := 0
 	for v in TerrainHeights.COUNT:
 		if heights.height(v) < -EXACT_TOLERANCE_M:
 			below += 1
-		elif (all_exact or not heights.is_void(v)) and absf(heights.height(v) - units[v] * HEIGHT_STEP_M) > EXACT_TOLERANCE_M:
+		elif absf(heights.height(v) - units[v] * HEIGHT_STEP_M) > EXACT_TOLERANCE_M:
 			inexact += 1
 	if inexact > 0:
 		push_error("heights %s: %d heights are not a whole number of %s m; heights.png cannot keep them exact." % [tag, inexact, HEIGHT_STEP_M])

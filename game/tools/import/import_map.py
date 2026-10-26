@@ -13,7 +13,6 @@ idempotent: a second run writes nothing, and an existing .png.import is never to
   python3 tools/import/import_map.py --list             # every .scp of the installation with its player seats, size and content
   python3 tools/import/import_map.py --check            # report what would change, write nothing
   python3 tools/import/import_map.py --out=DIR          # write there instead (to compare with the versioned ones)
-  python3 tools/import/import_map.py --terrain-bin=F    # also write the HNTR mesh bin to F (see below)
   python3 tools/import/import_map.py --native-tiles     # also tiles_native.png and atlas_native.png: the map's own tile ids and the tiles it paints (RFC-059b)
 
 The Godot side of a new map (MapDefinition, map.tscn, catalog entry) is tools/import/scaffold_map.py; the whole sequence is in
@@ -25,11 +24,11 @@ Source: "(N) <name>.scp" of the installation, read with tools/import/sac_formats
                                                                       -> atlas_native.png (--native-tiles: the land's MAPTs the map paints, each at its id)
   LMAP   the baked light of the ground                              -> light.png
   NTTS   creatures, structures and widgets, SIDS the sides          -> ntts.json, widgets.json
-  HMAP   the height map and cliff walls                             -> HNTR bin -> terrain.res
-terrain.res is made in two steps because only Godot writes a Resource: this script builds the HNTR v1 bin (vertices, normals,
-indices) at --terrain-bin (a temporary file, not in the repo) and then
-  "$GODOT" --headless --path game --script res://tools/bake/import_terrain.gd -- [--map=<tag>] --bin=F
-turns it into a MapTerrainData. Run both once; the result is versioned.
+  HMAP   the height map                                             -> not here: the map's ground is its heights.png + void.png
+The ground (heights and voids, the heights under the voids included) is written by Godot, once per map, into
+scenes/map/maps/<tag>/heights.png and void.png (the one source of the ground; the game derives its triangles from them):
+  "$GODOT" --headless --path game --script res://tools/terrain/heights_from_original.gd -- --original=<game folder> --map=<tag>
+then `--import` once so the pictures become the map's TerrainHeights.
 
 tiles.png and light.png are imported as Image (importer="image": exact pixels, no sRGB, no mipmaps, no compression):
 tiles.png is an index and must not go through mipmaps or compression; the game reads both on the CPU.
@@ -151,9 +150,7 @@ def main() -> None:
             if not imp.exists() and not check:
                 rel = path.relative_to(OUT.parents[1]).as_posix()
                 imp.write_text(IMPORT_TEMPLATE.format(rel=rel, mips="false").replace("compress_to=1", "compress_to=0"))
-    if "--terrain-bin" in ARGS:
-        Path(ARGS["--terrain-bin"]).write_bytes(terrain.hntr(SCP))
-        print("terrain bin written to", ARGS["--terrain-bin"], "(next: import_terrain.gd -- --bin=...)")
+    print("next, the ground: heights_from_original.gd -- --map=%s (writes scenes/map/maps/%s/heights.png and void.png)" % (TAG, TAG))
     print("map: %d written, %d unchanged%s" % (written, kept, " [check]" if check else ""))
 
 

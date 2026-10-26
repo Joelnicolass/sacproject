@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://bd6sx0dvtaaoi" path="res://scenes/map/terrain/terrain.gd" id="1_terrain"]
+[ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/map/terrain/terrain_mesh.gd" id="2_mesh"]
+[ext_resource type="Script" uid="uid://by7c07ec4chfh" path="res://scenes/map/terrain/terrain_collision.gd" id="3_collision"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_net.gd" id="4_net"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_status.gd" id="5_status"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="6_walls"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="7_scars"]
+[ext_resource type="Material" uid="uid://b6pd04js5lq4t" path="res://assets/original/themes/james/ground_classic.tres" id="8_ground"]
+
+[node name="Terrain" type="Node3D" node_paths=PackedStringArray("mesh", "net") groups=["nav_source"]]
+editor_description = "El suelo de un mapa. Un mapa instancia esta escena y solo pone sus datos: `heights` (su heights.png, con void.png al lado), `tiles` (tiles.png), `ground_roles` (ground_roles.png) y `light_map` (light.png). La malla, la colisión y el índice salen de las alturas al cargar; no se guardan. Remote → Status muestra rev, version, live_stamps y holes."
+script = ExtResource("1_terrain")
+mesh = NodePath("Mesh")
+net = NodePath("Net")
+
+[node name="Mesh" type="MeshInstance3D" parent="." node_paths=PackedStringArray("terrain", "missing")]
+material_override = ExtResource("8_ground")
+script = ExtResource("2_mesh")
+terrain = NodePath("..")
+missing = NodePath("../Missing")
+
+[node name="Collision" type="StaticBody3D" parent="." node_paths=PackedStringArray("terrain")]
+script = ExtResource("3_collision")
+terrain = NodePath("..")
+
+[node name="Net" type="Node" parent="."]
+script = ExtResource("4_net")
+
+[node name="Status" type="Node" parent="." node_paths=PackedStringArray("terrain")]
+script = ExtResource("5_status")
+terrain = NodePath("..")
+
+[node name="HoleWalls" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("6_walls")]
+terrain = NodePath("..")
+
+[node name="GroundScars" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("7_scars")]
+terrain = NodePath("..")
+
+[node name="Missing" type="Label3D" parent="."]
+visible = false
+text = "UI_MAP_MISSING_2"
+font_size = 48

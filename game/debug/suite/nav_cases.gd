@@ -21,13 +21,13 @@ const REBAKE_MS := 3000.0
 
 var _root: Node3D
 var _service: NavService
-var _terrain: TerrainMesh
+var _terrain: Terrain
 
 
 func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frames
 	_root = Node3D.new()
 	_root.name = "NavCases"
-	_terrain = Maps.land_from(MapCatalog.active().terrain, MapCatalog.active().tiles)
+	_terrain = Maps.land_from(Maps.heights_of(MapCatalog.active()), MapCatalog.active().tiles)
 	_terrain.name = "Terrain"
 	_terrain.add_to_group(NavFingerprint.GROUP)
 	_root.add_child(_terrain)
@@ -43,19 +43,19 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	shape.shape = cylinder
 	shape.position = Vector3(0.0, 4.0, 0.0)
 	fount.add_child(shape)
-	var ground: float = _terrain.shape.height_at(FOUNT_AT.x, FOUNT_AT.z)
+	var ground: float = _terrain.height_at(FOUNT_AT.x, FOUNT_AT.z)
 	fount.position = FOUNT_AT if is_nan(ground) else Vector3(FOUNT_AT.x, ground, FOUNT_AT.z)
 	_root.add_child(fount)
 	_service = NavService.new()
 	_service.name = "Nav"
-	_service.terrain = _terrain.shape
+	_service.terrain = _terrain
 	_service.build_on_ready = false
 	_root.add_child(_service)
 	host.add_child(_root)
 	_terrain.add_child(Maps.collision_of(_terrain))
 	var out := {}
-	if not _terrain.shape.is_loaded():
-		var missing := {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
+	if not _terrain.is_loaded():
+		var missing := {"ok": false, "reason": "sin terreno (el heights.png del mapa activo)"}
 		_root.free()
 		return {"nav_build": missing}
 	_service.build()
@@ -77,7 +77,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	out["nav_goal_off_land"] = _off_land()
 	out["nav_line_clear"] = _line_clear()
 	out["nav_box_corner"] = _box_corner()
-	out.merge(await EDGE_CASES.new().run(_root, _terrain.shape, _service))  # 036h
+	out.merge(await EDGE_CASES.new().run(_root, _terrain, _service))  # 036h
 	out["nav_rebake_ms"] = _rebake()
 	_root.free()
 	return out

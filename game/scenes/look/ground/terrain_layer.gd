@@ -81,9 +81,8 @@ func _refresh() -> void:
 		_restore()
 		return
 	if _material == null:
-		var map_terrain := terrain as TerrainMesh
-		_material = GroundMaterial.build(_ground, map_terrain.ground_roles if map_terrain else null,
-				map_terrain.light_map if map_terrain else null, _preset)
+		var map_ground := _rig.terrain
+		_material = GroundMaterial.build(_ground, map_ground.ground_roles, map_ground.light_map, _preset)
 	else:
 		GroundMaterial.update(_material, _ground, _preset)
 	terrain.call("set_ground_override", _material)  # dynamic: TerrainMesh or the grass lab's GrassLabGround (debug/look) answers it

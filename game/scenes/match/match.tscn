@@ -95,6 +95,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/stalks/meanstalks.tscn" id="z61_stalks"]
 [ext_resource type="PackedScene" path="res://scenes/spells/tornado/tornado.tscn" id="z61_tornado"]
 [ext_resource type="PackedScene" path="res://scenes/look/post/psx_screen.tscn" id="post_psx"]
+[ext_resource type="PackedScene" path="res://scenes/ui/match_wait/match_wait.tscn" id="g68_wait"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -413,6 +414,9 @@ match_state = NodePath("../../Match")
 [node name="LobbyReturn" parent="Hud" unique_id=803648076 node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
 unique_name_in_owner = true
 match_state = NodePath("../../Match")
+
+
+[node name="MatchWait" parent="Hud" instance=ExtResource("g68_wait")]
 
 
 [node name="RitualNotice" parent="Hud" unique_id=1957000103 instance=ExtResource("f60_notice")]

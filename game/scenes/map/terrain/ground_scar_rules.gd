@@ -51,6 +51,15 @@ static func allows_height(ground_y: float, y: float, max_height_m: float) -> boo
 	return max_height_m <= 0.0 or absf(ground_y - y) < max_height_m
 
 
+## Why a mark at height `y` is not drawn, or "": it is not over land, or too far from the ground at `ground_y`.
+static func refusal(on_land: bool, ground_y: float, y: float, max_height_m: float) -> String:
+	if not on_land:
+		return "not over land"
+	if not allows_height(ground_y, y, max_height_m):
+		return "too far from the ground: %.1f m" % (y - ground_y)
+	return ""
+
+
 static func clamp_capacity(count: int) -> int:
 	return clampi(count, MIN_TILES, MAX_TILES)
 

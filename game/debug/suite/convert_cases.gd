@@ -91,6 +91,8 @@ func _revive() -> Dictionary:
 	checks["soul_dropped"] = first != null and first.owner_slot == 2 and first.attached
 	checks["red_for_slot_1"] = first != null and first.color_for(1) == Soul.SoulColor.RED
 	checks["blue_for_owner"] = first != null and first.color_for(2) == Soul.SoulColor.BLUE
+	## A soul still growing in can already be converted (the PTNET Convert on a fresh Cog soul answered bad_target).
+	checks["emerging_convertible_by_1"] = first != null and first.state == Soul.State.EMERGING and first.can_convert_by(1)
 	await _until(func() -> bool: return first != null and first.state == Soul.State.NORMAL, 400)
 	checks["convertible_by_1"] = first != null and first.can_convert_by(1)
 	first.reserve_for(1)

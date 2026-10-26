@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="2_seat"]
+[ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="3_normal"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="seat_wizard_jadugarr"]
+[ext_resource type="Resource" uid="uid://dxr20hx8hlmpf" path="res://data/gods/james.tres" id="seat_god_james"]
+
+; RFC-063 063-2a: IA Normal contra IA Normal en la isla de malla libre (mesh_test), sin NPC. Se corre con `--map=mesh_test`
+; (debug/map/mesh_ai_duel.tscn). Mide que nadie cae del suelo (FallCheck = 0) durante 3 min.
+
+[sub_resource type="Resource" id="Seat_one"]
+script = ExtResource("2_seat")
+slot = 1
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
+difficulty = ExtResource("3_normal")
+
+[sub_resource type="Resource" id="Seat_two"]
+script = ExtResource("2_seat")
+slot = 2
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
+difficulty = ExtResource("3_normal")
+
+[resource]
+script = ExtResource("1_rules")
+starting_souls = 12
+biome_god = &"james"
+match_seed = 1
+anchor = Vector3(600, 0, 250)
+start_paused = true
+ai_seats = Array[ExtResource("2_seat")]([SubResource("Seat_one"), SubResource("Seat_two")])
+pending_text = "IA contra IA en mesh_test"
+ignore_annihilation = true

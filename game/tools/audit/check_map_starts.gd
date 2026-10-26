@@ -18,8 +18,8 @@ func _run() -> void:
 	var map := MapCatalog.active()
 	var packed := map.map_scene
 	var root: MapRoot = packed.instantiate() as MapRoot if packed else null
-	if root == null or root.terrain == null or root.starts == null:
-		_finish(["the scene of '%s' is not a MapRoot with terrain and starts" % map.tag])
+	if root == null or root.ground == null or root.starts == null:
+		_finish(["the scene of '%s' is not a MapRoot with ground and starts" % map.tag])
 		return
 	add_child(root)
 	await get_tree().physics_frame
@@ -44,7 +44,7 @@ func _run() -> void:
 			problems.append("%s: slot %d is out of range or repeated" % [start.name, start.slot])
 		seen[start.slot] = true
 		var spot := start.spawn_transform().origin
-		var on_ground := root.terrain.shape.is_on_ground(spot.x, spot.z)
+		var on_ground := root.ground.is_on_ground(spot.x, spot.z)
 		var region := regions.component_at(spot, SNAP_M) if regions.polygon_count > 0 else -1
 		var region_size := regions.component_size_at(spot, SNAP_M) if regions.polygon_count > 0 else 0
 		print("start %s slot %d: altar (%.0f, %.0f) wizard (%.0f, %.0f) ground %s, region %d of %d polygons" % [

@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/bodies/models/eldred_model.tscn" id="1_base"]
+[ext_resource type="Material" path="res://debug/look/surface_lab/flat/hero_001.tres" id="2_m1"]
+[ext_resource type="Material" path="res://debug/look/surface_lab/flat/hero_002.tres" id="3_m2"]
+[ext_resource type="Material" path="res://debug/look/surface_lab/flat/hero_003.tres" id="4_m3"]
+[ext_resource type="Material" path="res://debug/look/surface_lab/flat/hero_004.tres" id="5_m4"]
+[ext_resource type="Material" path="res://debug/look/surface_lab/flat/hero_005.tres" id="6_m5"]
+[ext_resource type="Material" path="res://debug/look/surface_lab/flat/hero_006.tres" id="7_m6"]
+[ext_resource type="Material" path="res://debug/look/surface_lab/flat/hero_007_cutout.tres" id="8_m7"]
+
+[node name="hero" instance=ExtResource("1_base")]
+editor_description = "Eldred with his materials as they were before RFC-067 (copies in flat/): the surface_lab row with no maps."
+
+[node name="hero_mesh" parent="Model/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("2_m1")
+surface_material_override/1 = ExtResource("3_m2")
+surface_material_override/2 = ExtResource("4_m3")
+surface_material_override/3 = ExtResource("5_m4")
+surface_material_override/4 = ExtResource("6_m5")
+surface_material_override/5 = ExtResource("7_m6")
+surface_material_override/6 = ExtResource("8_m7")

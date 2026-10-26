@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/eorc/003.png" id="1_fsj8a"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/eorc/003_normal.png" id="2_kdjb0"]
 
 [resource]
 resource_name = "eorc_003"
 albedo_texture = ExtResource("1_fsj8a")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_kdjb0")

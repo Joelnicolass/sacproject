@@ -2,39 +2,33 @@
 class_name GroundSurface
 extends Node
 
-## The one owner of the map's ground as numbers: land height, slope, holes, the lowest land, the map's size. Everyone who needs
-## a height or to know if a point is land asks here (the mesh and the physics ray GroundRay are other things). The ground is a
-## grid map (`data`, the 10 m lattice) or a free mesh (`mesh_data`, any shape from Blender): `_reindex` picks the backend once
-## and every answer is forwarded to it. An unloaded map answers like a map with only holes. The ground can move after loading
-## (TerrainDeformer writes `field()`): `changed(rect)` says which part (x, z in metres) moved, `holes_changed(rect)` when vertices went.
+## The one owner of the map's ground as numbers: land height, slope, holes, the lowest land, the map's size, all read from the
+## 10 m lattice of `data` through TerrainRules. Everyone who needs a height or to know if a point is land asks here (the mesh
+## Terrain and the physics ray GroundRay are other things). An unloaded map answers like a map with only holes. The ground can
+## move after loading (TerrainDeformer writes `field()`): `changed(rect)` says which part (x, z in metres) moved,
+## `holes_changed(rect)` when vertices came or went.
 
 signal changed(rect: Rect2)
 signal holes_changed(rect: Rect2)
 const GROUP := &"ground_surface"
 
-## A grid map's raw ground (terrain.res). Only the editor falls back to the active map's, with a warning.
+## The map's raw ground (terrain.res). Only the editor falls back to the active map's, with a warning.
 @export var data: MapTerrainData:
 	set(value):
 		data = value
-		_reindex()
-## A mesh map's ground (ground.res, written by the import of its glb). Set = the mesh backend answers and `data` stays empty.
-@export var mesh_data: MeshGroundData:
-	set(value):
-		mesh_data = value
 		_reindex()
 ## The map's tile index (256x256, tile id in R). Empty = the active map's (MapDefinition.tiles), which may have none.
 @export_file("*.png") var tiles_path := "":
 	set(value):
 		tiles_path = value
 		_tiles.reset()
-## The nodes that draw this ground (the look layer dresses them, the minimap bakes them): a grid map's Terrain adds itself.
+## The nodes that draw this ground (the look layer dresses them, the minimap bakes them): the Terrain adds itself.
 @export var meshes: Array[GeometryInstance3D] = []
 
-## The land triangles of a grid map (read only: the walls of the holes and the falling piece read them). Empty on a mesh map.
+## The land triangles of the file (read only: the walls of the holes and the falling piece read them).
 var index := TerrainRules.Index.new()
 var _field := GroundField.new()
 var _tiles := GroundTiles.new()
-var _ground: GroundBackend = GridGround.new(index, _field)
 
 
 ## A surface that holds `data` (and its tiles), for a probe or a tool that builds a ground without a map scene.
@@ -53,36 +47,36 @@ static func of(node: Node) -> GroundSurface:
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	if data == null and mesh_data == null and Engine.is_editor_hint():
+	if data == null and Engine.is_editor_hint():
 		_use_active_map_data()
 
 
 ## True once there is land to ask about.
 func is_loaded() -> bool:
-	return _ground.is_loaded()
+	return not index.ground.is_empty()
 
 
 ## Land height under (x, z) in world units, NAN over a hole.
 func height_at(x: float, z: float) -> float:
-	return _ground.height_at(x, z)
+	return TerrainRules.height_in(x, z, index.ground, index.cells, _field.texels, index.corners)
 
 
 ## True when a land triangle lies under (x, z). Holes and the map rim have none.
 func is_on_ground(x: float, z: float) -> bool:
-	return _ground.is_on_ground(x, z)
+	return TerrainRules.triangle_in(x, z, index.ground, index.cells, _field.texels, index.corners) >= 0
 
 
 ## Unit normal (pointing up) of the land under (x, z); straight up over a hole or off the land.
 func normal_at(x: float, z: float) -> Vector3:
-	return _ground.normal_at(x, z)
+	return TerrainRules.normal_in(x, z, index.ground, index.cells, _field.texels, index.corners)
 
 
 ## The map's footprint on the ground (x, z in metres; the map lives at x, z >= 0).
 func bounds() -> Rect2:
-	return _ground.bounds()
+	return Rect2(Vector2.ZERO, Vector2(_field.size) * _field.cell_m)
 
 
-## The first node that draws the ground (the Terrain of a grid map); null when none was listed.
+## The first node that draws the ground (the Terrain); null when none was listed.
 func main_mesh() -> MeshInstance3D:
 	return meshes[0] as MeshInstance3D if not meshes.is_empty() and is_instance_valid(meshes[0]) else null
 
@@ -100,12 +94,13 @@ func version() -> int:
 
 ## The lowest land vertex (0 without land).
 func lowest() -> float:
-	return _ground.lowest()
+	return index.lowest
 
 
-## A Callable(x, z) -> float that answers like height_at from a copy of the ground taken now; it reads no node (WorkerThreadPool-safe).
+## A Callable(x, z) -> float that answers like height_at from a copy of the index and the field taken now (a later change
+## does not touch it); it reads no node (WorkerThreadPool-safe).
 func sampler() -> Callable:
-	return _ground.sampler()
+	return TerrainRules.height_in.bind(index.ground, index.cells, _field.snapshot(), index.corners)
 
 
 ## How far the ground has moved from the file. Only TerrainDeformer writes it.
@@ -133,14 +128,10 @@ func use_tiles(ids: PackedByteArray) -> void:
 	_tiles.use(ids)
 
 
-## The one place that picks the backend: a mesh ground when `mesh_data` is set, the grid otherwise.
 func _reindex() -> void:
+	index = TerrainRules.index(data) if data != null and data.is_valid() else TerrainRules.Index.new()
 	_field = GroundField.new()
 	_tiles.forget_counts()
-	var is_mesh := mesh_data != null and mesh_data.is_valid()
-	var grid := GridGround.new(TerrainRules.index(data) if not is_mesh and data != null and data.is_valid() else TerrainRules.Index.new(), _field)
-	index = grid.index
-	_ground = MeshGround.new(mesh_data) if is_mesh else grid
 
 
 func _use_active_map_data() -> void:

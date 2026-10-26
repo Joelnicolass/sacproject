@@ -680,7 +680,7 @@ WEIGHT_SUM_TOLERANCE = 0.002
 MAX_ERROR_MM = 30.0
 
 
-def build_mesh_data(model: Model, exact: bool = True):
+def build_skin_parts(model: Model, exact: bool = True):
     """Bind positions, joints, weights per part.
 
     The game gives every influence its own offset in bone space; glTF skinning has one bind position per vertex.
@@ -788,7 +788,7 @@ def write_glb(path: Path, model_tag: str, model: Model, clips: dict, exact: bool
     g = Gltf()
     abs_pos = model.abs_pos()
     nbones = len(model.bone_pos)
-    parts, discrepancy, helpers, unnormalized = build_mesh_data(model, exact)
+    parts, discrepancy, helpers, unnormalized = build_skin_parts(model, exact)
     # glTF front faces are counter-clockwise. The engine order is counter-clockwise seen from outside when
     # the cross product (b-a)x(c-a) points away from the centre, so keep it; reverse otherwise.
     reverse = winding_is_flipped(model, parts)
@@ -981,7 +981,7 @@ def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact
     global BIND_THRESHOLD
     saved_threshold = BIND_THRESHOLD
     if exact is None:
-        single = build_mesh_data(model, False)[1]
+        single = build_skin_parts(model, False)[1]
         exact = single["max_mm"] > MAX_ERROR_MM
         BIND_THRESHOLD = max(BIND_THRESHOLD, MAX_ERROR_MM / 1000.0) if exact else BIND_THRESHOLD
     try:

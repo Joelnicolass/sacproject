@@ -141,7 +141,7 @@ func _meshes(bad: PackedStringArray) -> int:
 		if STRIP.keeps_mesh_path(path):
 			_note(bad, path + ": keeps_mesh_path keeps a file that is not the map's")
 	var ground := ArrayMesh.new()
-	if STRIP.strips_mesh(ground, "res://assets/original/maps/high_noon/terrain.res") or STRIP.strips_mesh(ground, "res://scenes/map/maps/x/ground.res"):
+	if STRIP.strips_mesh(ground, "res://assets/original/maps/high_noon/terrain.res") or STRIP.strips_mesh(ground, "res://scenes/map/maps/x/terrain.res"):
 		_note(bad, "a map mesh would be stripped")
 	if STRIP.strips_mesh(CylinderMesh.new(), "res://scenes/props/meshes/x.res") or STRIP.strips_mesh(PlaceholderMesh.new(), "res://scenes/props/meshes/x.res"):
 		_note(bad, "a PrimitiveMesh or a PlaceholderMesh would be stripped")

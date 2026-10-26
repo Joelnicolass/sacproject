@@ -1,5 +1,7 @@
 # 063 — Terreno de malla libre (plan aprobado)
 
+> **Reemplazado por 063D (2026-10-26).** El terreno vuelve a ser la grilla de 256²; ver `rfcs/plans/063D-grid-terrain-plan.md`. El camino de malla de 063-2a se borró en 063D S1. Este plan queda solo como historia.
+
 # Plan RFC-063: terreno de malla libre (convivencia con la grilla solo durante la transición, después se borra la grilla)
 
 No toqué el repo. El lint de convenciones está verde y quedó igual que la base, todo en OK.

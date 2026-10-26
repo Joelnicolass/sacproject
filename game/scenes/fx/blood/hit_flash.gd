@@ -4,7 +4,7 @@ extends Node
 
 ## A body lights up for a blink when it loses health: `material` goes over its meshes as `material_overlay` and its `hit_flash`
 ## falls from `peak` to 0 in `flash_s`; then the overlay comes off. Every peer sees it (Health.current is replicated).
-## It does not blink a body that is hidden or faded (stealth, playing dead, a ghost, summoning), and nothing headless.
+## It does not blink with «Sangre» off (FeelPrefs.blood), nor a body that is hidden or faded (stealth, playing dead, a ghost, summoning), and nothing headless.
 ## What it does not do: change the body's own materials (StoneLook owns the surface overrides) or its rig's speed (no hit-stop).
 
 const PARAM := &"hit_flash"
@@ -22,6 +22,11 @@ const PARAM := &"hit_flash"
 @export var material: ShaderMaterial:
 	set(value):
 		material = value
+		update_configuration_warnings()
+## The player's «Sangre» (data/ui/feel_prefs.tres): off, nothing shows.
+@export var prefs: FeelPrefs:
+	set(value):
+		prefs = value
 		update_configuration_warnings()
 @export_range(0.0, 2.0, 0.01) var peak := 0.45
 @export_range(0.01, 1.0, 0.01, "suffix:s") var flash_s := 0.12
@@ -48,8 +53,9 @@ func _ready() -> void:
 	health.changed.connect(_on_health_changed)
 
 
+## False headless, or with «Sangre» off.
 func is_active() -> bool:
-	return _active
+	return _active and (prefs == null or prefs.blood())
 
 
 ## Where the blink is now (0 = none).
@@ -127,4 +133,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		out.append("Asigná `visual` (su BodyVisual, Tilt/Mesh).")
 	if material == null:
 		out.append("Asigná `material` (data/fx/blood/hit_flash.tres).")
+	var prefs_warning := FeelPrefs.socket_warning(prefs)
+	if not prefs_warning.is_empty():
+		out.append(prefs_warning)
 	return out

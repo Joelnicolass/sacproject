@@ -7,7 +7,7 @@ extends Node
 ## blow always bleeds; drops close together (poison) bleed now and then (BloodRules). The blood is the `blood` of the look the body
 ## wears (BodyMount.look) or `fallback` (red).
 ## Presentation only: it never writes the simulation, sends nothing and draws nothing headless (the dedicated server). It is quiet
-## while the body is hidden (a gib throws its own blood) and, on a networked client, during its first `quiet_s` (the first value
+## with «Sangre» off (FeelPrefs.blood), while the body is hidden (a gib throws its own blood) and, on a networked client, during its first `quiet_s` (the first value
 ## that reaches a peer that joins late is not a hit).
 ## What it does not do: bleed buildings, choose the spray's look (BloodType, ParticleType) or own the marks (GroundScars).
 
@@ -31,6 +31,11 @@ signal bled(at: Vector3, heavy: bool)
 @export var fallback: BloodType:
 	set(value):
 		fallback = value
+		update_configuration_warnings()
+## The player's «Sangre» (data/ui/feel_prefs.tres): off, nothing shows.
+@export var prefs: FeelPrefs:
+	set(value):
+		prefs = value
 		update_configuration_warnings()
 ## Seconds after entering the tree in which a networked client does not bleed.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var quiet_s := 0.5
@@ -60,8 +65,9 @@ func _ready() -> void:
 	health.changed.connect(_on_health_changed)
 
 
+## False headless, or with «Sangre» off.
 func is_active() -> bool:
-	return _active
+	return _active and (prefs == null or prefs.blood())
 
 
 ## The blood this body shows now: its look's, or `fallback`.
@@ -124,4 +130,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		out.append("Asigná `mount` (su BodyMount: el look puede traer su sangre).")
 	if fallback == null:
 		out.append("Asigná `fallback` (data/fx/blood/red.tres).")
+	var prefs_warning := FeelPrefs.socket_warning(prefs)
+	if not prefs_warning.is_empty():
+		out.append(prefs_warning)
 	return out

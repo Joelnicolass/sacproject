@@ -1,9 +1,11 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/blood/hit_flash.gd" id="1_flash"]
 [ext_resource type="Material" path="res://data/fx/blood/hit_flash.tres" id="2_material"]
+[ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="9_prefs"]
 
 [node name="HitFlash" type="Node"]
 editor_description = "Destello sutil (0,12 s) sobre el cuerpo cuando baja su Health.current. Al instanciarlo asigná health y visual (Tilt/Mesh)."
 script = ExtResource("1_flash")
 material = ExtResource("2_material")
+prefs = ExtResource("9_prefs")

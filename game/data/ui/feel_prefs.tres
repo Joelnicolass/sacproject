@@ -7,3 +7,4 @@ script = ExtResource("1_prefs")
 default_shake_scale = 0.5
 default_damage_numbers = true
 default_hover_info = true
+default_blood = true

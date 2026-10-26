@@ -14,6 +14,11 @@ extends Node
 	set(value):
 		blood = value
 		update_configuration_warnings()
+## The player's «Sangre» (data/ui/feel_prefs.tres): off, nothing shows.
+@export var prefs: FeelPrefs:
+	set(value):
+		prefs = value
+		update_configuration_warnings()
 @export_range(0, 64) var marks := 12
 @export_range(0.0, 20.0, 0.1, "suffix:m") var radius_m := 4.0
 ## No mark when the ground is this far under the burst (it bursts at the body's center, over a hole it paints nothing).
@@ -36,8 +41,9 @@ func _ready() -> void:
 	FxBus.played.connect(_on_played)
 
 
+## False headless, or with «Sangre» off.
 func is_active() -> bool:
-	return _active
+	return _active and (prefs == null or prefs.blood())
 
 
 func _on_played(kind: StringName, fx: Resource, at: Vector3) -> void:
@@ -54,4 +60,10 @@ func _on_played(kind: StringName, fx: Resource, at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if blood != null else PackedStringArray(["Asigná `blood` (data/fx/blood/red.tres)."])
+	var out := PackedStringArray()
+	if blood == null:
+		out.append("Asigná `blood` (data/fx/blood/red.tres).")
+	var prefs_warning := FeelPrefs.socket_warning(prefs)
+	if not prefs_warning.is_empty():
+		out.append(prefs_warning)
+	return out

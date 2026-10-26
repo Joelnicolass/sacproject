@@ -13,6 +13,13 @@
 > 8. Roles en Blender como color por vértice: sí, opcional.
 > 9. Tolerancia de «base a nivel»: 0,5 m.
 >
+> **Enmienda aprobada (2026-10-26): la fuente versionada es la imagen, no un `.res`.**
+> - Cada mapa guarda `scenes/map/maps/<tag>/heights.png`: PNG gris de 16 bits, valor × 0,1 m = altura (techo de unos 6553 m sin signo). También guarda `void.png`: 1 bit o 8 bits, blanco = vacío; la altura de abajo se conserva en `heights.png`.
+> - Un `EditorImportPlugin` (`terrain_heights_importer`) importa el par como `TerrainHeights`. Es automático, como cualquier textura, y el multiplicador de altura está en el dock Import. El `.res` resultante vive en `.godot/imported`, no en git. Si `void.png` falta, no hay vacíos.
+> - Un mapa de un usuario es copiar las dos imágenes a la carpeta del mapa, sin botón ni paso extra. Blender, los pinceles y cualquier editor de imágenes leen y escriben esos mismos PNG.
+> - Para eso el códec PNG16 (`png16.gd`, lectura y escritura) sube de S4 a S3b. «Importar imágenes» deja de ser un paso aparte. Lo que queda en el inspector es «Abrir en Blender», «Traer de Blender» y «Suelo plano nuevo», y todos escriben los PNG.
+> - Los `heights.res` commiteados en 81d3d6a4 se reemplazan por los PNG. El conversor desde el original escribe PNG.
+>
 > **Prioridad del usuario:** primero S1–S3 (la fuente única `heights.res`, la API clara y las constantes en un solo lugar). Evitar código poco claro, repeticiones y cualquier cosa que impida escalar. Guardar la sopa de triángulos derivada como fuente «tuvo que ser inaceptable desde el primer momento».
 
 No toqué el repo. Corrí `bash tools/lint/conventions.sh` y todas las reglas están en OK contra la base (C1a 84, C12 70, C18 12, C21 1…).

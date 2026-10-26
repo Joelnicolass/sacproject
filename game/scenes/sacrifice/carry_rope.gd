@@ -15,7 +15,8 @@ extends Node3D
 @export var rig: BodyRig
 @export var tether: Tether
 @export_group("Needle sparks")
-## Sparks at the needle tip (data/fx/needle.tres). Empty = none. sacengine: 2 per tick (120/s).
+## Sparks at the needle tip (data/fx/needle.tres), drawn by FxBus from its pool (the type's `pool_max`). Empty = none.
+## Ref: sacengine 2 per tick (120/s).
 @export var spark_type: ParticleType
 ## Seconds between bursts of `spark_count`. 120/s in the original; bursts of 4 every 1/30 s are about as many.
 @export_range(0.01, 1.0, 0.0001, "suffix:s") var spark_period_s := 0.0333
@@ -85,10 +86,5 @@ func _spark(delta: float, needle: Node3D) -> void:
 	if _spark_left > 0.0:
 		return
 	_spark_left = spark_period_s
-	var emitter: SpriteParticles = preload("res://scenes/fx/sprite_particles.tscn").instantiate()
-	emitter.type = spark_type
-	## The sparks stay where they were born, not on the doctor.
-	var host := get_tree().current_scene if get_tree().current_scene != null else get_tree().root
-	host.add_child(emitter)
-	emitter.global_position = needle.global_position
-	emitter.direction = (needle.global_basis * tether.start_axis).normalized()
+	## A pooled burst on this peer only (every peer draws its own from `doctor.carried`); the sparks stay where they were born.
+	FxBus.play(spark_type, needle.global_position, (needle.global_basis * tether.start_axis).normalized())

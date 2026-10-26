@@ -24,6 +24,8 @@ static var _cone_mesh: ArrayMesh
 @export_range(0.1, 4.0, 0.05) var size_scale := 1.0
 ## Extra tint multiplied over the tone's color (white = the original's colors).
 @export var color := Color.WHITE
+## The texture of the cone (aura.png in order_marker.tscn). Empty = the cone reads plain white, like the shells.
+@export var aura: Texture2D
 ## Meters over the ground, so the apex does not z-fight the land.
 @export var lift := 0.1
 
@@ -74,7 +76,7 @@ func _build() -> void:
 	var shader := load("res://scenes/fx/order_marker.gdshader") as Shader
 	_cone_material = ShaderMaterial.new()
 	_cone_material.shader = shader
-	_cone_material.set_shader_parameter("aura", load("res://assets/original/fx/aura.png"))
+	_cone_material.set_shader_parameter("aura", aura)
 	_shell_material = ShaderMaterial.new()
 	_shell_material.shader = shader
 	var mesh := _mesh()

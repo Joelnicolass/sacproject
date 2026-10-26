@@ -6,10 +6,10 @@ extends MeshInstance3D
 ## state.d:15556-15613; mesh makeLineMeshes sacobject.d:2189-2227, 4446-4459; render renderer.d:1678-1703).
 ## Five control points: P0 at `start`, P1 along the start's `start_axis` by `elbow` meters, P4 at `end`;
 ## P2 and P3 are masses on a spring (state.d:15577-15600). The rope is a tube of 3 planes at 120 degrees
-## with pointed ends, drawn additive from the `ltn2` atlas with the brightness pulse of renderer.d:1688.
+## with pointed ends, drawn additive from its `atlas` (ltn2) with the brightness pulse of renderer.d:1688.
 ## The Sac Doctor's carry uses it with the elbow; the ritual (RFC-020d) uses it with `elbow = 0`.
 ## Presentation only: it moves nothing. Remove the node to switch it off.
-## Mesh and material are made here from the cache and are not stored in the scene.
+## Mesh and material are made here and are not stored in the scene.
 
 const CORNERS := 4
 const UV_INSET := 0.5 / 64.0
@@ -40,8 +40,8 @@ const UV_INSET := 0.5 / 64.0
 @export var max_relative_speed := 20.0
 
 @export_group("Look")
-## Atlas tag (4x4) of the rope, imported by tools/import/import_ui.py.
-@export var atlas_tag := "ltn2"
+## The 4x4 atlas of the rope (ltn2.png in tether.tscn). Empty = a flat `fallback_color` fill.
+@export var atlas: Texture2D
 ## sacengine: 0.375 + 14.625 * (...) = between 0.375 and 15 (renderer.d:1688-1690).
 @export var energy_min := 0.375
 @export var energy_max := 15.0
@@ -53,7 +53,6 @@ const UV_INSET := 0.5 / 64.0
 @export var fallback_color := Color(0.4, 0.8, 1.0)
 
 var _material: ShaderMaterial
-var _missing := false
 var _imesh: ImmediateMesh
 var _loc: Array[Vector3] = []
 var _vel: Array[Vector3] = []
@@ -89,8 +88,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if start == null:
 		warnings.append("Asigná en `start` el nodo donde empieza la cuerda (la aguja del doctor).")
-	if _missing:
-		warnings.append("Falta el atlas `%s.png` en assets/original/fx/ (tools/import/import_ui.py): se dibuja un relleno." % atlas_tag)
+	if atlas == null:
+		warnings.append("Asigná en `atlas` la textura de la cuerda (ltn2.png); sin ella se dibuja un relleno.")
 	return warnings
 
 
@@ -228,10 +227,8 @@ func _draw() -> void:
 func _build_material() -> void:
 	_material = ShaderMaterial.new()
 	_material.shader = preload("res://scenes/fx/tether.gdshader")
-	var texture := FxAtlas.texture(atlas_tag)
-	_missing = texture == null
-	_material.set_shader_parameter("use_textures", not _missing)
-	_material.set_shader_parameter("atlas", texture)
+	_material.set_shader_parameter("use_textures", atlas != null)
+	_material.set_shader_parameter("atlas", atlas)
 	_push_params()
 	material_override = _material
 	update_configuration_warnings()

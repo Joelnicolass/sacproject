@@ -22,8 +22,8 @@ extends FxScene
 @export var neck_height := 0.75
 ## Sides of the mesh (sacengine 32).
 @export_range(3, 32) var sides := 12
-## FxAtlas tag of the texture; without the cache, `fallback_color`.
-@export var texture_tag := "jspk"
+## The spike texture (jspk.png in spike_field.tscn). Empty = a flat `fallback_color`.
+@export var texture: Texture2D
 @export var fallback_color := Color(0.4, 0.3, 0.2, 1)
 
 @onready var _spikes: MultiMeshInstance3D = %Spikes
@@ -68,7 +68,7 @@ func play(params: Dictionary) -> void:
 	multimesh.mesh = spike_mesh(sides, base_radius, neck_radius, neck_height)
 	multimesh.instance_count = _bases.size()
 	_spikes.multimesh = multimesh
-	_spikes.material_override = spike_material(texture_tag, fallback_color)
+	_spikes.material_override = spike_material(texture, fallback_color)
 	_age = 0.0
 	_playing = true
 	_pose()
@@ -94,14 +94,13 @@ func _pose() -> void:
 		multimesh.set_instance_transform(i, Transform3D(basis, _bases[i]))
 
 
-## The material of a spike: the texture `tag` (jspk) lit, or `fallback` without the cache. The Wall of Spikes draws its own with it.
-static func spike_material(tag: String, fallback: Color) -> StandardMaterial3D:
+## The material of a spike: `albedo` (jspk) lit, or `fallback` when there is none. The Wall of Spikes draws its own with it.
+static func spike_material(albedo: Texture2D, fallback: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.roughness = 1.0
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	var texture := FxAtlas.texture(tag)
-	if texture:
-		material.albedo_texture = texture
+	if albedo:
+		material.albedo_texture = albedo
 	else:
 		material.albedo_color = fallback
 	return material

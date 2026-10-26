@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/tether.gd" id="1_tether"]
+[ext_resource type="Texture2D" uid="uid://ba52mvipwrjlj" path="res://assets/original/fx/ltn2.png" id="2_atlas"]
 
 [node name="Tether" type="MeshInstance3D"]
 top_level = true
 cast_shadow = 0
 script = ExtResource("1_tether")
+atlas = ExtResource("2_atlas")

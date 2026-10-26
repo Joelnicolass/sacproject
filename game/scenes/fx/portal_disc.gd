@@ -6,7 +6,7 @@ extends MeshInstance3D
 ## by a Sac Doctor (blue) and the red vortex the doctor falls out of (sacengine SacVortex, renderer.d:1616-1677).
 ## Presentation only: it reads no simulation and the headless server draws nothing. Opens in `open_s`,
 ## closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to switch it off.
-## The mesh and the material are made here from the cache (they are not stored in the scene).
+## The mesh and the material are made here (they are not stored in the scene).
 
 ## Finished closing (openness reached 0).
 signal closed
@@ -57,7 +57,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if look == null:
 		warnings.append("Asigná en `look` el PortalLook (data/fx/portal_blue.tres o portal_red.tres).")
 	elif _missing:
-		warnings.append("Falta el atlas `%s.png` o `%s.png` en assets/original/fx/ (tools/import/import_ui.py): se dibuja un relleno." % [look.rim_tag, look.center_tag])
+		warnings.append("El PortalLook no tiene `rim` o `center` (las texturas del anillo y del centro): se dibuja un relleno.")
 	return warnings
 
 
@@ -102,8 +102,8 @@ func _refresh() -> void:
 	if look != null:
 		_material = ShaderMaterial.new()
 		_material.shader = preload("res://scenes/fx/portal_disc.gdshader")
-		var rim := FxAtlas.texture(look.rim_tag)
-		var center := FxAtlas.texture(look.center_tag)
+		var rim := look.rim
+		var center := look.center
 		_missing = rim == null or center == null
 		_material.set_shader_parameter("use_textures", not _missing)
 		_material.set_shader_parameter("rim_tex", rim)

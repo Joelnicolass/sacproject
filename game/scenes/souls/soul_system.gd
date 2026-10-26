@@ -124,16 +124,16 @@ func _say(text: String) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	var rules := _rules()
-	var reach := rules.soul_collect_distance if rules else 5.0
+	var facts := ReachFacts.of_rules(_rules())
 	var wizards := get_tree().get_nodes_in_group("wizard")
 	for soul in get_tree().get_nodes_in_group("soul"):
 		if soul.state == _SOUL.State.NORMAL:
-			_try_collect(soul, wizards, reach)
+			_try_collect(soul, wizards, facts.soul_m, facts.soul_up_m)
 
 
-## Nearest wizard within `reach` horizontally and vertically, best stance first; a tie leaves it.
-func _try_collect(soul: Node3D, wizards: Array[Node], reach: float) -> void:
+## Nearest wizard within `reach` on the ground and `reach_up` up and down, best stance first; a tie leaves it.
+## Ref: res://scenes/match/reach_facts.gd (soul_m, soul_up_m).
+func _try_collect(soul: Node3D, wizards: Array[Node], reach: float, reach_up: float) -> void:
 	var best: Node3D = null
 	var best_stance := Stance.ENEMY + 1
 	var best_d := INF
@@ -146,7 +146,7 @@ func _try_collect(soul: Node3D, wizards: Array[Node], reach: float) -> void:
 		if not (soul as Soul).can_be_collected_by(slot):
 			continue
 		var d := _center(wizard) - soul.global_position
-		if Vector2(d.x, d.z).length_squared() > reach * reach or absf(d.y) > reach:
+		if Vector2(d.x, d.z).length_squared() > reach * reach or absf(d.y) > reach_up:
 			continue
 		var stance := _stance(soul, slot)
 		var dist := d.length_squared()

@@ -4,6 +4,8 @@ extends Node3D
 ## Server-authoritative mana support aura for units like Manahoar (hmba).
 ## Mirrors sacengine addManahoar shape (state.d): aura radius 40 and rate derived from
 ## allied manalith distance (50..1000) with a triangular ramp peaking at 20 mana/s.
+## The aura radius and the ramp distances come from ReachFacts.of_rules(rules), read at every use (rules may be set without setup()).
+## Ref: res://scenes/match/reach_facts.gd (manahoar_aura_m, manahoar_peak_m, manahoar_end_m).
 
 @export var rules: MatchRules
 @export var owner_slot := 0
@@ -37,7 +39,7 @@ func _physics_process(delta: float) -> void:
 	var rate := _rate_from_manaliths()
 	if rate <= 0.0:
 		return
-	var radius := rules.manahoar_radius if rules else 40.0
+	var radius := ReachFacts.of_rules(rules).manahoar_aura_m
 	for group in target_groups:
 		for node in get_tree().get_nodes_in_group(group):
 			var target := node as Node3D
@@ -65,8 +67,9 @@ func flame_rate() -> float:
 
 func _rate_from_manaliths() -> float:
 	var peak := rules.manahoar_rate if rules else 20.0
-	var near := rules.manahoar_near_distance if rules else 50.0
-	var far := rules.manahoar_far_distance if rules else 1000.0
+	var facts := ReachFacts.of_rules(rules)
+	var near := facts.manahoar_peak_m
+	var far := facts.manahoar_end_m
 	if peak <= 0.0 or near <= 0.0 or far <= near:
 		return 0.0
 	var total := 0.0

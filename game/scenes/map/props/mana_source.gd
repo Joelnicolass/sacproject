@@ -6,6 +6,8 @@ extends Node3D
 ## FOUNT and ALTAR read rate and radius from `rules`; CUSTOM keeps the exported values.
 ## sacengine feeds every creature this way, not only wizards (updateCreatureStats, state.d:14409);
 ## a body with can_take_mana() false (dead, being summoned) gets nothing (canRegenerateMana).
+## The reach of a FOUNT and an ALTAR comes from ReachFacts.of_rules(rules), the rate from `rules`.
+## Ref: res://scenes/match/reach_facts.gd (fount_m, altar_m).
 
 enum Kind { FOUNT, ALTAR, CUSTOM }
 
@@ -32,13 +34,14 @@ func _ready() -> void:
 func _read_rules() -> void:
 	if rules == null:
 		return
+	var facts := ReachFacts.of_rules(rules)
 	match kind:
 		Kind.FOUNT:
 			rate = rules.manafount_rate
-			radius = rules.manafount_radius
+			radius = facts.fount_m
 		Kind.ALTAR:
 			rate = rules.altar_rate
-			radius = rules.altar_radius
+			radius = facts.altar_m
 
 
 ## What the audit calls this source.

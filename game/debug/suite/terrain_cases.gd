@@ -45,7 +45,7 @@ func run(host: Node3D) -> Dictionary:
 			only = arg.trim_prefix("--case=")
 	var cases := {
 		"rules": _rules, "displacement": _displacement, "hole": _hole, "erupt_ground": _erupt_ground,
-		"erupt_bodies": _erupt_bodies, "flora": _flora, "net": _net,
+		"erupt_bodies": _erupt_bodies, "erupt_buried": _erupt_buried, "flora": _flora, "net": _net,
 		"volcano_rules": _volcano_rules, "volcano_cut": _volcano_cut, "volcano_ground": _volcano_ground, "volcano_bodies": _volcano_bodies,
 	}
 	_bore = BORE_CASES.new(self)
@@ -283,6 +283,39 @@ func _erupt_bodies() -> Dictionary:
 		node.queue_free()
 	await _frames(2)
 	return _verdict("terrain_erupt_bodies", checks)
+
+
+## Erupt's wave (a 15 m ring that crosses 90 m in a second) comes up through three Manahoar at 52, 60 and 70 m: when it is over each
+## one stands on the ground and a ray from above (the selection's, mask 3) finds the creature before the land (playtest 2026-10-26).
+func _erupt_buried() -> Dictionary:
+	var checks := {}
+	var wizard := _wizard(1, _far_wizard_spot(), "james", 6)
+	var bodies := {}
+	for meters in [52.0, 60.0, 70.0]:
+		var at := Vector2(CENTER.x, CENTER.y + meters)
+		bodies[meters] = _unit("oham", Vector3(at.x, _shape.height_at(at.x, at.y) + 0.1, at.y), 3)
+	await _frames(10)
+	var zone := _erupt(wizard)
+	for _i in OVER_TICKS + 120:
+		await _frames(1)
+	_collision.flush()
+	await _frames(2)
+	var space := _collision.get_world_3d().direct_space_state
+	for meters: float in bodies:
+		var body: UnitBody = bodies[meters]
+		var at := body.global_position
+		var ground := _shape.height_at(at.x, at.z)
+		var query := PhysicsRayQueryParameters3D.create(at + Vector3(0.0, 40.0, 0.0), at + Vector3(0.0, -5.0, 0.0), 3)
+		var hit := space.intersect_ray(query)
+		_note("manahoar at %d m: y / ground / on floor" % int(meters), [at.y, ground, body.is_on_floor()])
+		checks["stands_%d" % int(meters)] = absf(at.y - ground) < 0.5
+		checks["picked_%d" % int(meters)] = hit.get("collider") == body
+	if is_instance_valid(zone):
+		zone.queue_free()
+	for node: Node in bodies.values() + [wizard]:
+		node.queue_free()
+	await _frames(2)
+	return _verdict("terrain_erupt_buried", checks)
 
 
 ## The plants of the 32 m cells are planted again after the ground under them lifted 10 m: the sampler a job took before the

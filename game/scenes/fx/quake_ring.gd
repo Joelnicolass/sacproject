@@ -1,11 +1,13 @@
 class_name QuakeRing
 extends FxScene
 
-## F132 (RFC-030 030u-a): the look of the Jabberocky's Quake wave. sacengine bends the land (Quake.displacement,
-## state.d:5187-5225: a crest that moves out at waveRange/waveDur with a width of (0.15 + 0.65·(1 − p)²)·waveRange);
-## the port draws a ring of earth on the ground that goes out with the wave and fades. Placeholder look: MIX (alpha
-## blend), never additive. One event (FxBus.broadcast_scene, one RPC); presentation only, never headless. It frees itself.
+## The look of a Quake wave: a ring of earth drawn on the ground that goes out with the wave and fades. Placeholder look: MIX
+## (alpha blend), never additive. One event (FxBus.broadcast_scene, one RPC); presentation only, never headless. It frees itself.
 ## Its clock is MatchClock (ticks), like the wave it shows: a paused match freezes it, a capture does not make it run ahead.
+## Its child Ground (quake_ground.tscn, on_clients_only) bends the land on a client the way the server's QuakeWave does; on the
+## server, alone or on the host it does nothing (the real one plays there). It does not stun nor decide anything.
+## Ref: sacengine Quake.displacement (state.d:5187-5225: a crest that moves out at waveRange/waveDur with a width of
+## (0.15 + 0.65·(1 − p)²)·waveRange). F132 (RFC-030 030u-a), RFC-057 057a.
 
 ## Segments of the ring (each follows the land under it).
 @export_range(8, 128) var segments := 64

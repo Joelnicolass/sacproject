@@ -20,6 +20,9 @@ extends Node3D
 @export var manual := false
 ## Ticks a peer may be off the server's count before it takes the server's.
 @export_range(1, 60) var resync_ticks := 8
+## A copy for the look on a client: the server plays the real one in its own scene (a Quake's QuakeWave lives only there). It does
+## not play on the server, alone or on the host, where the real one is seen; on a client it keeps its own count of ticks.
+@export var on_clients_only := false
 
 ## Ticks since it was born, on this peer.
 var ticks := 0
@@ -32,6 +35,8 @@ var pattern := PackedFloat32Array()
 var _key := &""
 var _terrain: Terrain
 var _over := false
+## A copy for the clients on the peer that plays the real one: it never shows nor takes back anything.
+var _idle_copy := false
 
 
 func _ready() -> void:
@@ -41,7 +46,8 @@ func _ready() -> void:
 		return
 	_terrain = Terrain.of(self)
 	_key = StringName(String(get_path()))
-	set_physics_process(_terrain != null and is_ready() and not manual)
+	_idle_copy = on_clients_only and _terrain != null and _terrain.is_authority()
+	set_physics_process(_terrain != null and is_ready() and not manual and not _idle_copy)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -80,7 +86,7 @@ func _physics_process(_delta: float) -> void:
 	ticks += 1
 	if _terrain.is_authority():
 		synced_ticks = ticks
-	elif absi(synced_ticks - ticks) > resync_ticks:
+	elif not on_clients_only and absi(synced_ticks - ticks) > resync_ticks:
 		ticks = synced_ticks
 	if _over or ticks <= MatchClock.ticks_for(start_s):
 		return
@@ -101,14 +107,14 @@ func _physics_process(_delta: float) -> void:
 
 ## Takes back at once what it shows and never plays again (whoever owns it was cut short). What it already kept stays.
 func stop() -> void:
-	if _terrain != null and not _over:
+	if _terrain != null and not _over and not _idle_copy:
 		_terrain.unstamp(_key)
 	_over = true
 
 
 func _exit_tree() -> void:
 	# A stamp that keeps its mark waits for the server's keep to take its live shift away.
-	if _terrain != null and is_instance_valid(_terrain) and not (keep and _over):
+	if _terrain != null and is_instance_valid(_terrain) and not (keep and _over) and not _idle_copy:
 		_terrain.unstamp(_key)
 
 

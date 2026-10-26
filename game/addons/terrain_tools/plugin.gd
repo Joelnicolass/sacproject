@@ -15,12 +15,15 @@ const Inspector := preload("res://addons/terrain_tools/terrain_inspector.gd")
 const ToolbarScene := preload("res://addons/terrain_tools/brush/brush_toolbar.tscn")
 const BrushPainter := preload("res://addons/terrain_tools/brush/brush_painter.gd")
 const EditorDialogs := preload("res://addons/terrain_tools/editor_dialogs.gd")
+const NewMapAction := preload("res://addons/terrain_tools/new_map/new_map_action.gd")
+const NEW_MAP_ITEM := "Mapa nuevo…"
 
 var _importer: EditorImportPlugin
 var _history: TerrainHistory
 var _inspector: EditorInspectorPlugin
 var _toolbar: Control
 var _painter: BrushPainter
+var _new_map: NewMapAction
 
 
 func _enter_tree() -> void:
@@ -35,9 +38,11 @@ func _enter_tree() -> void:
 	add_control_to_container(CONTAINER_SPATIAL_EDITOR_MENU, _toolbar)
 	_painter = BrushPainter.new(_history, _toolbar)
 	_toolbar.rebuild_pressed.connect(_painter.rebuild)
+	_add_new_map_item()
 
 
 func _exit_tree() -> void:
+	_remove_new_map_item()
 	_painter.release()
 	_history.budget.finish()
 	remove_control_from_container(CONTAINER_SPATIAL_EDITOR_MENU, _toolbar)
@@ -93,3 +98,14 @@ func _on_resources_reimported(resources: PackedStringArray) -> void:
 			stale.append(heights)
 	if not stale.is_empty():
 		EditorInterface.get_resource_filesystem().reimport_files.call_deferred(stale)
+
+
+## Project → Tools → «Mapa nuevo…»: a map folder made from scenes/map/maps/_template/ (NewMapAction).
+func _add_new_map_item() -> void:
+	_new_map = NewMapAction.new(TerrainActions.new(_history))
+	add_tool_menu_item(NEW_MAP_ITEM, _new_map.open)
+
+
+func _remove_new_map_item() -> void:
+	remove_tool_menu_item(NEW_MAP_ITEM)
+	_new_map = null

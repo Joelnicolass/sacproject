@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Dumps what the ground answers at 10 000 seeded points on each of the 9 maps, so the answers before and after a cut can be
-## compared bit by bit. It loads terrain.gd (the Terrain) and gives it each map's heights.png (imported as TerrainHeights: import
+## compared bit by bit (a folder starting with "_", like the _template of «Mapa nuevo», is not a map). It loads terrain.gd (the Terrain) and gives it each map's heights.png (imported as TerrainHeights: import
 ## first), and only calls height_at / is_on_ground / lowest. It reads the ground files straight (no autoloads, no scenes),
 ## always quits, and gives up after 120 s. (Before 063D S3b it read each map's saved triangles: a dump taken then compares the same.)
 ## Run: Godot --headless --path game --script res://debug/map/ground_dump.gd -- --label=before
@@ -30,7 +30,7 @@ func _initialize() -> void:
 	var out := _output_path()
 	var result := {"script": _surface_script(), "points": POINTS, "seed": SEED, "maps": {}}
 	var ok := true
-	var tags := Array(DirAccess.get_directories_at(MAPS_DIR))
+	var tags := Array(DirAccess.get_directories_at(MAPS_DIR)).filter(func(tag: String) -> bool: return not tag.begins_with("_"))
 	tags.sort()
 	for index in tags.size():
 		var entry := _dump_map(str(tags[index]), index)

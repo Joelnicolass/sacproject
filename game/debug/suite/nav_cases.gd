@@ -244,16 +244,21 @@ func _box_corner() -> Dictionary:
 
 
 ## RFC-035 035g: the whole navmesh baked again from the nav_source colliders (parse on this thread, bake on a worker thread, waited for).
-## The gate is REBAKE_MS; the report gives the parse and the total.
+## The gate is REBAKE_MS; the report gives the parse and the total. 063D F6: the components built on the worker are the ones this thread
+## builds from the same navmesh (same ids in the same order).
 func _rebake() -> Dictionary:
 	var rebake := NavRebake.new(load("res://data/nav/nav_bake.tres") as NavBakeSettings)
 	var started := Time.get_ticks_usec()
 	var baked := rebake.bake_now(_root)
 	var total_ms := float(Time.get_ticks_usec() - started) / 1000.0
 	var polygons := baked.get_polygon_count() if baked != null else 0
+	var here := NavRegions.new()
+	if baked != null:
+		here.build(baked)
 	var checks := {
 		"has_polygons": polygons > 0,
 		"under_limit": total_ms <= REBAKE_MS,
+		"worker_regions_match": rebake.regions != null and rebake.regions.sizes == here.sizes and rebake.regions.polygon_count == polygons,
 	}
 	return _verdict(checks, {"total_ms": snappedf(total_ms, 0.1), "parse_ms": snappedf(rebake.parse_ms, 0.1), "bake_ms": snappedf(rebake.bake_ms, 0.1), "polygons": polygons})
 

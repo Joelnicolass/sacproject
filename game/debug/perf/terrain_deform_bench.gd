@@ -6,7 +6,7 @@ extends Node
 ## - live: a Volcano-sized live stamp (r = 160 m, 34x34 vertices) changes every physics tick, as a rising mound does;
 ## - holes: a vertex is taken away and given back every `hole_every_s` (Bore), so the navmesh re-bakes and swaps.
 ## Per phase it prints the script time of each physics tick (from the first to the last _physics_process of the tick, the
-## physics server step not included), the frame time and its worst frame, and the wall time of every TerrainDeformer call
+## physics server step not included), the frame time and its worst frame, and the wall time of every Terrain call
 ## (call_ms: it runs on `physics_frame`, just before the tick window, so the cost of a tick is tick_ms + call_ms).
 ## Measured on an M4 before the fixes: baseline tick 0.42 ms; live tick 1.14 (p95 2.80) + call 0.74; holes worst frame 70 ms.
 ## Run: Godot --path game res://debug/perf/terrain_deform_bench.tscn (window: the look layers only live with one).
@@ -69,48 +69,60 @@ func _run() -> void:
 	if rig != null and quality != null:
 		rig.apply_quality(quality)
 	await _wait(warmup_s)
-	var deformer := TerrainDeformer.of(self)
+	var terrain := Terrain.of(self)
 	var wizard := get_tree().get_first_node_in_group(&"wizard") as WizardBody
-	if deformer == null or wizard == null:
-		printerr("terrain_deform_bench: no deformer or wizard")
+	if terrain == null or wizard == null:
+		printerr("terrain_deform_bench: no terrain or wizard")
 		get_tree().quit(1)
 		return
 	_begin()
 	await _wait(phase_s)
 	_end("baseline")
 	var at := wizard.global_position + wizard.facing_flat() * stamp_ahead_m
-	var rect := TerrainGrid.vertex_rect(Vector2(at.x, at.z), stamp_radius_m)
-	var values := PackedFloat32Array()
-	values.resize(rect.size.x * rect.size.y)
+	var center := Vector2(at.x, at.z)
+	var profile := _flat_profile()
 	_begin()
 	var until := Time.get_ticks_msec() + int(phase_s * 1000.0)
 	var step := 0
 	while Time.get_ticks_msec() < until:
 		await get_tree().physics_frame
 		step += 1
-		values.fill(10.0 * sin(step * 0.05))
 		var started := Time.get_ticks_usec()
-		deformer.set_live("bench", rect, values)
+		terrain.stamp(&"bench", profile, center, stamp_radius_m, 10.0 * sin(step * 0.05), 0.0)
 		_calls.append(float(Time.get_ticks_usec() - started) / 1000.0)
-	_end("live %dx%d every tick" % [rect.size.x, rect.size.y])
-	deformer.drop_live("bench")
+	_end("live r=%.0f m every tick" % stamp_radius_m)
+	terrain.unstamp(&"bench")
 	await _wait(2.0)
-	var vertex := TerrainGrid.vertex_near(Vector2(at.x, at.z))
-	var id := TerrainGrid.id_of(vertex)
 	_begin()
 	until = Time.get_ticks_msec() + int(phase_s * 1000.0)
 	var removed := false
 	while Time.get_ticks_msec() < until:
 		removed = not removed
 		var started := Time.get_ticks_usec()
-		deformer.set_removed(id, removed)
+		if removed:
+			terrain.cut_hole(center)
+		else:
+			terrain.fill_hole(center)
 		_calls.append(float(Time.get_ticks_usec() - started) / 1000.0)
 		await _wait(hole_every_s)
 	if removed:
-		deformer.set_removed(id, false)
+		terrain.fill_hole(center)
 	await _wait(4.0)
 	_end("holes every %.1f s" % hole_every_s)
 	get_tree().quit()
+
+
+## A disc that lifts every vertex within the reach by the whole peak, for as long as the bench plays it.
+func _flat_profile() -> StampProfile:
+	var profile := StampProfile.new()
+	profile.radial = Curve.new()
+	profile.radial.add_point(Vector2(0.0, 1.0))
+	profile.radial.add_point(Vector2(1.0, 1.0))
+	profile.timeline = Curve.new()
+	profile.timeline.max_domain = 1000.0
+	profile.timeline.add_point(Vector2(0.0, 1.0))
+	profile.timeline.add_point(Vector2(1000.0, 1.0))
+	return profile
 
 
 func _begin() -> void:

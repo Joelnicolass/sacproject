@@ -26,7 +26,8 @@ const SEARCH_LOG_MAX := 200000
 ## Time between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
 ## is not done by then the swap waits for it). Counted in physics ticks, never a clock.
 @export_range(0.0, 30.0, 0.0001, "suffix:s") var rebake_swap_s := 3.0
-## Time the holes of the ground (Bore) are gathered for before the navmesh is baked again, so a spiral of holes costs a few bakes and not one per vertex.
+## Time the lasting changes of the ground (the holes of Bore, a mound that stays) are gathered for before the navmesh is baked
+## again, so a spiral of holes costs a few bakes and not one per vertex.
 @export_range(0.0, 30.0, 0.0001, "suffix:s") var holes_rebake_s := 2.0
 ## The groups whose colliders are in the stored bake and move on their own (the buildings, the manafounts). The nodes of the other
 ## blocker groups and the built structures join the group NavFingerprint.GROUP before a re-bake so the bake sees them.
@@ -59,7 +60,7 @@ var rebuilds := 0
 
 var _rebuild_in := -1
 var _tick := 0
-## A building fell, or a hole opened or closed in the ground: the stored bake is out of date and a new one is due.
+## A building fell, or the ground changed for good (a hole, a mound): the stored bake is out of date and a new one is due.
 var _baked_changed := false
 ## Tick at which the bake for the holes that came since is asked; -1 with none waiting.
 var _holes_at := -1
@@ -81,7 +82,8 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	if terrain != null:
-		terrain.holes_changed.connect(_on_holes_changed.unbind(1))
+		terrain.holes_changed.connect(_on_ground_settled.unbind(1))
+		terrain.settled.connect(_on_ground_settled.unbind(1))
 	if structures != null:
 		structures.child_entered_tree.connect(_on_structure_changed.unbind(1))
 		structures.child_exiting_tree.connect(_on_structure_changed.unbind(1))
@@ -153,8 +155,9 @@ func _watch_buildings() -> void:
 			building.destroyed.connect(_on_building_destroyed)
 
 
-## A vertex of the ground was taken away or given back: a path may not cross the hole any more. The re-bake waits a little for the next ones.
-func _on_holes_changed() -> void:
+## The ground changed for good: a vertex was taken away or given back (a path may not cross the hole any more), or a mound or a
+## crater stays. Idempotent: the re-bake waits a little for the next ones, both signals of one hole ask for one bake.
+func _on_ground_settled() -> void:
 	_baked_changed = true
 	if _holes_at < 0:
 		_holes_at = _tick + MatchClock.ticks_for(holes_rebake_s)
@@ -228,10 +231,10 @@ func _swap_rebaked() -> void:
 	_swap_at = -1
 	var baked := rebake.finish()
 	if baked != null:
-		mesh.swap(baked)
+		rebake.retire(mesh.swap(baked, rebake.regions))
 		_baked_signature = _pending_signature
 		rebakes += 1
-		print("nav: re-bake %d polígonos, %d regiones (parse %.0f ms, bake %.0f ms)" % [mesh.polygon_count, mesh.regions.component_count, rebake.parse_ms, rebake.bake_ms])
+		print("nav: re-bake %d polígonos, %d regiones (parse %.1f ms, bake %.0f ms en el worker, swap %.2f ms)" % [mesh.polygon_count, mesh.regions.component_count, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms])
 	else:
 		push_warning("nav: the re-bake came out empty, the old navmesh stays")
 	if _dirty:

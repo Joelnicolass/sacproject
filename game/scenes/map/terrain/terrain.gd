@@ -9,6 +9,7 @@ extends Node3D
 
 signal changed(rect: Rect2)  ## x, z in metres; every peer
 signal holes_changed(rect: Rect2)  ## a vertex came or went (the collision flushes now, NavService bakes again)
+signal settled(rect: Rect2)  ## what stays moved (commit, unstamp, holes): flora, nav and scars follow this, never a live stamp
 const GROUP := &"terrain"
 
 ## The map's raw ground (terrain.res).

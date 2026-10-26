@@ -36,6 +36,8 @@ const TICKET_MAX_LEN := 512
 const REJECT_FLUSH_S := 0.2
 ## Peers that may wait for admission at once; more are disconnected on arrival (a flood of empty connections).
 var max_pending_admission: int = 64
+## ENet's hard limit of peers per host.
+const ENET_MAX_PEERS := 4095
 ## Largest Dictionary a client may send through the custom tunnel (var_to_bytes), and how often.
 var custom_max_bytes: int = 8192
 var custom_limit := MpRateLimit.new(30.0, 60.0)
@@ -370,10 +372,10 @@ func _broadcast_peers() -> PackedInt32Array:
 	return out
 
 
+## ENet's own cap leaves room for the peers waiting at the door: a peer past it never connects, so it would wait for the ENet
+## timeout and never hear why. Who sits is decided in _on_peer_connected (the gate, admission, or the seat count), with a reason.
 func _enet_max_clients() -> int:
-	if ids.dedicated:
-		return maxi(1, max_players)
-	return maxi(1, max_players - 1)
+	return mini(ENET_MAX_PEERS, maxi(1, max_players) + maxi(1, max_pending_admission))
 
 
 func _connected_player_count() -> int:
@@ -396,11 +398,11 @@ func _on_peer_connected(id: int) -> void:
 		get_tree().create_timer(admission_timeout_s).timeout.connect(_on_admission_timeout.bind(id))
 		return
 	if exceeds_max_players(_connected_player_count()):
-		multiplayer.multiplayer_peer.disconnect_peer(id)
+		_reject_peer(id, MpMatchGate.FULL)
 		return
 	var slot := ids.assign_client(id)
 	if slot == 0:
-		multiplayer.multiplayer_peer.disconnect_peer(id)
+		_reject_peer(id, MpMatchGate.FULL)
 		return
 	rpc_assign_slot.rpc_id(id, slot)
 	peer_joined.emit(id, slot)

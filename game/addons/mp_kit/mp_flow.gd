@@ -437,7 +437,9 @@ func _begin_match() -> void:
 		MpKit.push_snapshot(snap)
 	MpKit.broadcast_load_world()
 	_start_advertise()
-	goto_world()
+	## At the end of the frame: a caller inside a tree change (host_lan from _ready, while the root still adds the autoloads)
+	## cannot swap the scene then.
+	goto_world.call_deferred()
 
 
 ## MpKit says joined only for a seat the gate let in, so the world goes to admitted seats only (a newcomer after the start was

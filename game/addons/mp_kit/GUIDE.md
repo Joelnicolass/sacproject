@@ -656,7 +656,7 @@ Qué replica un spawner:
 
 - Un nodo de una escena de su lista (**Extra Scenes**), o uno hecho por `spawn(data)` con tu `spawn_function`.
 - Un nodo que un script agrega a mano en `spawn_path` (`add_child` de algo que no está en la lista) **no** se replica: queda solo en el servidor. Sirve para un efecto solo del servidor.
-- Si usás `spawn_function`, asignala **antes** de `super._ready()` en tu script del spawner. Si la asignás después, sale un warning y el primer nodo cuenta como agregado a mano.
+- Si usás `spawn_function`, asignala en un `_ready` de la escena (el del spawner, un hermano o el padre): el spawner la toma al final de ese frame, antes de que nada spawnee. Si la asignás más tarde, sale un warning y el primer nodo cuenta como agregado a mano.
 
 ### 7.3 Borrar cosas
 
@@ -1442,8 +1442,8 @@ Agregá esa escena a **Extra Scenes** del spawner, en el editor.
 **"MpSpawner 'X': set spawn_path to the parent of replicated actors"** / **"spawn_path does not resolve"**
 Poné `spawn_path` en el nodo vacío donde aparecen las cosas (`../Actors`, `../Projectiles`).
 
-**"MpSpawner 'X': spawn_function was set after _ready; set it before super._ready()"**
-En tu script del spawner, asigná `spawn_function` antes de llamar `super._ready()`.
+**"MpSpawner 'X': spawn_function was set after the scene was set up; set it in a _ready"**
+Asigná `spawn_function` en un `_ready` de la escena (el del spawner, un hermano o el padre), no más tarde.
 
 **"MpSlotSpawner 'X': assign pawn_scene"**
 Asigná la escena del jugador.

@@ -38,6 +38,8 @@ const GROUP := &"flora_field"
 @export_range(0.1, 8.0, 0.1, "suffix:ms") var build_budget_ms := 1.0
 ## The ground moved (a spell raised it): the plants of that part are planned again at most this often.
 @export_range(0.05, 2.0, 0.05, "suffix:s") var replan_every_s := 0.25
+## RFC-057 057e: a stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 = only when settled.
+@export_range(0.0, 5.0, 0.05, "suffix:s") var live_replan_s := 1.0
 
 var _planters: Array[MeshPlanter] = []
 var _ground := FloraGroundWatch.new()
@@ -197,6 +199,7 @@ func _process(delta: float) -> void:
 	if camera == null:
 		return
 	_clears.update(delta, _planters, get_tree())
+	_ground.live_every_s = live_replan_s
 	_ground.update(delta, replan_every_s, _planters, get_tree())
 	var started := Time.get_ticks_usec()
 	var deadline := started + int(build_budget_ms * 1000.0)

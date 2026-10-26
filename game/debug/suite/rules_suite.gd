@@ -114,6 +114,7 @@ func _run_suite() -> void:
 	_results.merge(await RIFT_CASES.new().run(self))  # 061f
 	_results.merge(await AURA_CASES.new().run(self))  # 061f
 	_results.merge(await TERRAIN_CASES.new().run(self))  # 061k
+	_results.merge(preload("res://debug/suite/grid_constants_cases.gd").new().run(self))  # 063D-2a
 	_results.merge(await STALK_CASES.new().run(self))  # 061j
 	_results.merge(await TORNADO_CASES.new().run(self))  # 061j
 	_results.merge(await CLOUD_CASES.new().run(self))  # 061h

@@ -7,7 +7,6 @@ extends SceneTree
 ## Needs the project imported once (MapTerrainData is a global class). Idempotent: the same arguments write the same file.
 
 const OUT := "res://scenes/map/maps/test_flat/terrain.res"
-const CELL := 10.0
 
 
 func _initialize() -> void:
@@ -31,7 +30,7 @@ func _initialize() -> void:
 	var side := cells + 1
 	for row in side:
 		for column in side:
-			vertices.append(Vector3((from_cell + column) * CELL, height, (from_cell + row) * CELL))
+			vertices.append(Vector3((from_cell + column) * TerrainGrid.CELL_M, height, (from_cell + row) * TerrainGrid.CELL_M))
 			normals.append(Vector3.UP)
 	for row in cells:
 		for column in cells:

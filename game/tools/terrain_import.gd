@@ -17,7 +17,8 @@ const COMPONENT_UBYTE := 5121
 const COMPONENT_USHORT := 5123
 const COMPONENT_UINT := 5125
 const COMPONENT_FLOAT := 5126
-const CELL := 10.0
+## Preloaded, not named by class_name: a post-import script names no class_name.
+const Grid := preload("res://scenes/map/terrain/terrain_grid.gd")
 const GRID_TOLERANCE := 1e-3
 const WALL_AREA := 0.01
 const MAX_GROUND_PER_CELL := 2
@@ -143,12 +144,12 @@ static func validate(data: MapTerrainData) -> String:
 		if absf((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x)) < WALL_AREA:
 			continue
 		for corner in [a, b, c]:
-			var off_x := absf(corner.x - roundf(corner.x / CELL) * CELL)
-			var off_z := absf(corner.z - roundf(corner.z / CELL) * CELL)
+			var off_x := absf(corner.x - roundf(corner.x / Grid.CELL_M) * Grid.CELL_M)
+			var off_z := absf(corner.z - roundf(corner.z / Grid.CELL_M) * Grid.CELL_M)
 			if off_x > GRID_TOLERANCE or off_z > GRID_TOLERANCE:
 				return "cell (%d, %d): vertex (%.4f, %.4f, %.4f) is off the 10 m grid. Only Y may change in Blender." % [
-						roundi(corner.x / CELL), roundi(corner.z / CELL), corner.x, corner.y, corner.z]
-		var cell := Vector2i(roundi(minf(minf(a.x, b.x), c.x) / CELL), roundi(minf(minf(a.z, b.z), c.z) / CELL))
+						roundi(corner.x / Grid.CELL_M), roundi(corner.z / Grid.CELL_M), corner.x, corner.y, corner.z]
+		var cell := Vector2i(roundi(minf(minf(a.x, b.x), c.x) / Grid.CELL_M), roundi(minf(minf(a.z, b.z), c.z) / Grid.CELL_M))
 		per_cell[cell] = int(per_cell.get(cell, 0)) + 1
 		if per_cell[cell] > MAX_GROUND_PER_CELL:
 			return "cell (%d, %d): has more than %d ground triangles. The topology cannot change." % [cell.x, cell.y, MAX_GROUND_PER_CELL]

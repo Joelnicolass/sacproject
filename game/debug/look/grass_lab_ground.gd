@@ -48,7 +48,7 @@ func _paint_tiles() -> void:
 	if shape == null:
 		return
 	var ids := PackedByteArray()
-	ids.resize(256 * 256)
+	ids.resize(TerrainGrid.COUNT)
 	var pick := 0
 	if tiles:
 		for id in tiles.slots.size():

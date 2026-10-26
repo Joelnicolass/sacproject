@@ -5,7 +5,6 @@ extends RefCounted
 ## the cells. It reads the land height from GroundSurface and projects with the camera; it draws nothing.
 ## JSON: {"size": [w, h], "border": [[x, y, nx, ny], ...], "inside": [...]}: pixel and the unit screen normal of the line there.
 
-const CELL_M := 10.0
 ## Lines inside the cells used as the control: at a quarter, half and three quarters of a cell.
 const INSIDE_AT := [2.5, 5.0, 7.5]
 const STEP_M := 0.25
@@ -17,15 +16,15 @@ static func write(camera: Camera3D, shape: GroundSurface, center: Vector2, reach
 	var size := camera.get_viewport().get_visible_rect().size
 	var border: Array = []
 	var inside: Array = []
-	var first := floorf((center.x - reach_m) / CELL_M) * CELL_M
-	var first_z := floorf((center.y - reach_m) / CELL_M) * CELL_M
-	var cells := int(ceilf(2.0 * reach_m / CELL_M)) + 1
+	var first := floorf((center.x - reach_m) / TerrainGrid.CELL_M) * TerrainGrid.CELL_M
+	var first_z := floorf((center.y - reach_m) / TerrainGrid.CELL_M) * TerrainGrid.CELL_M
+	var cells := int(ceilf(2.0 * reach_m / TerrainGrid.CELL_M)) + 1
 	for k in cells:
-		_line(camera, shape, size, true, first + k * CELL_M, center.y, reach_m, border)
-		_line(camera, shape, size, false, first_z + k * CELL_M, center.x, reach_m, border)
+		_line(camera, shape, size, true, first + k * TerrainGrid.CELL_M, center.y, reach_m, border)
+		_line(camera, shape, size, false, first_z + k * TerrainGrid.CELL_M, center.x, reach_m, border)
 		for offset: float in INSIDE_AT:
-			_line(camera, shape, size, true, first + k * CELL_M + offset, center.y, reach_m, inside)
-			_line(camera, shape, size, false, first_z + k * CELL_M + offset, center.x, reach_m, inside)
+			_line(camera, shape, size, true, first + k * TerrainGrid.CELL_M + offset, center.y, reach_m, inside)
+			_line(camera, shape, size, false, first_z + k * TerrainGrid.CELL_M + offset, center.x, reach_m, inside)
 	var out := FileAccess.open(file, FileAccess.WRITE)
 	if out == null:
 		push_error("ground_grid: cannot write %s" % file)

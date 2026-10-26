@@ -71,7 +71,7 @@ void fragment() {
 	} else {
 		float id = COLOR.r * 255.0;
 		if (use_tile_index) {
-			id = floor(texture(tile_index, (floor(map_pos.xz / 10.0) + 0.5) / 256.0).r * 255.0 + 0.5);
+			id = floor(texture(tile_index, (floor(map_pos.xz / DEFORM_CELL) + 0.5) / (DEFORM_LAST + 1.0)).r * 255.0 + 0.5);
 		}
 		vec2 cell = vec2(mod(id, 16.0), floor(id / 16.0));
 		vec2 in_tile = clamp(COLOR.gb, vec2(0.5 / TILE_PX), vec2(1.0 - 0.5 / TILE_PX));
@@ -88,7 +88,7 @@ void fragment() {
 		albedo = grass_paint_textured(albedo, zone_splat_weights(map_pos.xz), map_pos.xz, TIME, slope_deg);
 	}
 	albedo = ground_scar_mix(albedo, map_pos.xz, false);
-	vec2 light_uv = vec2(map_pos.x, map_pos.z) / 2560.0;
+	vec2 light_uv = vec2(map_pos.x, map_pos.z) / (DEFORM_CELL * (DEFORM_LAST + 1.0));
 	vec3 light = texture(lightmap, light_uv).rgb;
 	ALBEDO = albedo * (light_base + light * light_gain);
 	ROUGHNESS = 1.0;

@@ -47,14 +47,14 @@ static func boundary(index: TerrainRules.Index, removed: PackedInt32Array) -> Ar
 		gone[id] = true
 	var seen := {}
 	for id in removed:
+		var vertex := TerrainGrid.vertex_of(id)
 		for dz in range(-2, 2):
 			for dx in range(-2, 2):
-				var column := id % TerrainRules.GRID + dx
-				var row := id / TerrainRules.GRID + dz
-				if column < 0 or row < 0 or column >= TerrainRules.GRID or row >= TerrainRules.GRID:
+				var cell := vertex + Vector2i(dx, dz)
+				if cell.x < 0 or cell.y < 0 or cell.x >= TerrainGrid.SIDE or cell.y >= TerrainGrid.SIDE:
 					continue
 				for k in 2:
-					var triangle := index.cells[(row * TerrainRules.GRID + column) * 2 + k]
+					var triangle := index.cells[TerrainGrid.id_of(cell) * 2 + k]
 					if triangle >= 0:
 						seen[triangle] = true
 	var sides := {}
@@ -62,7 +62,7 @@ static func boundary(index: TerrainRules.Index, removed: PackedInt32Array) -> Ar
 		for corner in 3:
 			var from := index.corners[triangle * 3 + corner]
 			var to := index.corners[triangle * 3 + (corner + 1) % 3]
-			var key := mini(from, to) * TerrainRules.GRID * TerrainRules.GRID + maxi(from, to)
+			var key := mini(from, to) * TerrainGrid.COUNT + maxi(from, to)
 			if not sides.has(key):
 				sides[key] = []
 			(sides[key] as Array).append([triangle, corner])

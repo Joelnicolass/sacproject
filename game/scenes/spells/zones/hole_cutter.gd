@@ -75,7 +75,7 @@ func _exit_tree() -> void:
 
 
 func _cut() -> void:
-	var vertex := HoleRules.vertex_near(_spiral.advance())
+	var vertex := TerrainGrid.vertex_near(_spiral.advance())
 	if vertex != _last:
 		_last = vertex
 		_take(vertex)
@@ -87,7 +87,7 @@ func _cut() -> void:
 func _take(vertex: Vector2i) -> void:
 	if not HoleRules.can_remove(_land, vertex, _building_parts()):
 		return
-	var id := vertex.y * TerrainRules.GRID + vertex.x
+	var id := TerrainGrid.id_of(vertex)
 	var at := _vertex_point(vertex)
 	_deformer.set_removed(id, true)
 	_taken.append(id)
@@ -108,7 +108,7 @@ func _give_back() -> void:
 	if _deformer.shape.field().is_removed(id):
 		_deformer.set_removed(id, false)
 		if restore_burst != null:
-			FxBus.broadcast(restore_burst, _vertex_point(Vector2i(id % TerrainRules.GRID, id / TerrainRules.GRID)))
+			FxBus.broadcast(restore_burst, _vertex_point(TerrainGrid.vertex_of(id)))
 		vertex_given_back.emit(id)
 	_next_at = _ticks + maxi(1, MatchClock.ticks_for(restore_every_s))
 
@@ -117,12 +117,12 @@ func _give_back() -> void:
 ## a little inside each of the four cells around it and, with all of them gone, the zone's own height. Never NAN: a NAN
 ## point would reach the chunk, the burst and the bodies flung.
 func _vertex_point(vertex: Vector2i) -> Vector3:
-	var spot := Vector2(vertex) * TerrainRules.CELL
+	var spot := TerrainGrid.point_of(vertex)
 	var height := _land.height_at(spot.x, spot.y)
 	for side: Vector2 in [Vector2(1, 1), Vector2(-1, 1), Vector2(1, -1), Vector2(-1, -1)]:
 		if not is_nan(height):
 			break
-		var inside := spot + side * TerrainRules.CELL * 0.25
+		var inside := spot + side * TerrainGrid.CELL_M * 0.25
 		height = _land.height_at(inside.x, inside.y)
 	return Vector3(spot.x, zone.global_position.y if is_nan(height) else height, spot.y)
 

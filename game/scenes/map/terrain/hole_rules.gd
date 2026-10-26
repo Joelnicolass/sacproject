@@ -12,19 +12,14 @@ const BUILDING_CLEARANCE_M := 11.0
 const DEPTH_BAND_M := 50.0
 
 
-## The lattice vertex (column, row) nearest to the ground point (x, z).
-static func vertex_near(point: Vector2) -> Vector2i:
-	return Vector2i(floori((point.x + TerrainRules.CELL * 0.5) / TerrainRules.CELL), floori((point.y + TerrainRules.CELL * 0.5) / TerrainRules.CELL))
-
-
 ## True when the vertex at (column, row) may be taken away. `parts` are the world places of the parts of every building.
 static func can_remove(shape: GroundSurface, vertex: Vector2i, parts: PackedVector3Array) -> bool:
-	if vertex.x < 0 or vertex.y < 0 or vertex.x >= TerrainRules.GRID - 1 or vertex.y >= TerrainRules.GRID - 1:
+	if vertex.x < 0 or vertex.y < 0 or vertex.x >= TerrainGrid.SIDE - 1 or vertex.y >= TerrainGrid.SIDE - 1:
 		return false
-	var id := vertex.y * TerrainRules.GRID + vertex.x
+	var id := TerrainGrid.id_of(vertex)
 	if shape.index.land[id] == 0 or shape.field().is_removed(id):
 		return false
-	var spot := Vector2(vertex) * TerrainRules.CELL
+	var spot := TerrainGrid.point_of(vertex)
 	var height := shape.height_at(spot.x, spot.y)
 	return not is_near_part(spot, height, parts)
 

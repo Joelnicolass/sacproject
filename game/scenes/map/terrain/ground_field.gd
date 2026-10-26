@@ -6,11 +6,9 @@ extends RefCounted
 ## who may write is TerrainDeformer, who asks the height is GroundSurface. A live stamp is stored whole and the sum made
 ## again from it, never added to, so dropping it leaves the ground as it was.
 
-const SIDE := TerrainRules.GRID  ## the grid map's lattice; anyone who needs the size reads `size`
-const COUNT := SIDE * SIDE
 ## Vertices per side (x, z) and metres between two of them: the ground covers `size * cell_m` from the origin.
-var size := Vector2i(SIDE, SIDE)
-var cell_m := TerrainRules.CELL
+var size := Vector2i(TerrainGrid.SIDE, TerrainGrid.SIDE)
+var cell_m := TerrainGrid.CELL_M
 ## Two floats per vertex (the layout the ground shader reads): [0] how far it is raised (permanent + live), [1] 1 if taken away.
 var texels := PackedFloat32Array()
 ## What stays (floats, one per vertex). Only `commit` changes it.
@@ -27,17 +25,8 @@ var _snapshot_version := -1
 
 
 func _init() -> void:
-	texels.resize(COUNT * 2)
-	permanent.resize(COUNT)
-
-
-## The lattice vertices that lie within `radius_m` of the ground point `center` (x, z), cut to the grid.
-static func vertex_rect(center: Vector2, radius_m: float) -> Rect2i:
-	var low := Vector2i(floori((center.x - radius_m) / TerrainRules.CELL), floori((center.y - radius_m) / TerrainRules.CELL))
-	var high := Vector2i(ceili((center.x + radius_m) / TerrainRules.CELL), ceili((center.y + radius_m) / TerrainRules.CELL))
-	low = low.clamp(Vector2i.ZERO, Vector2i(SIDE - 1, SIDE - 1))
-	high = high.clamp(Vector2i.ZERO, Vector2i(SIDE - 1, SIDE - 1))
-	return Rect2i(low, high - low + Vector2i.ONE)
+	texels.resize(TerrainGrid.COUNT * 2)
+	permanent.resize(TerrainGrid.COUNT)
 
 
 ## Adds `delta` (row by row over `rect`) to what stays and, in the same step, takes away the live stamp `drop_key` (the
@@ -45,7 +34,7 @@ static func vertex_rect(center: Vector2, radius_m: float) -> Rect2i:
 func commit(rect: Rect2i, delta: PackedFloat32Array, drop_key: Variant = null) -> Rect2i:
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var at := (rect.position.y + row) * SIDE + rect.position.x + column
+			var at := TerrainGrid.id_of(rect.position + Vector2i(column, row))
 			permanent[at] = permanent[at] + delta[row * rect.size.x + column]
 	var changed := rect
 	if drop_key != null and _live.has(drop_key):
@@ -120,12 +109,13 @@ func refresh(rect: Rect2i) -> void:
 		for column in rect.size.x:
 			var x := rect.position.x + column
 			var y := rect.position.y + row
-			var sum := permanent[y * SIDE + x]
+			var id := TerrainGrid.id_of(Vector2i(x, y))
+			var sum := permanent[id]
 			for stamp: Array in stamps:
 				var area: Rect2i = stamp[0]
 				if area.has_point(Vector2i(x, y)):
 					sum += (stamp[1] as PackedFloat32Array)[(y - area.position.y) * area.size.x + x - area.position.x]
-			texels[(y * SIDE + x) * 2] = sum
+			texels[id * 2] = sum
 
 
 ## A number that is equal on two peers only when what stays and the holes are equal.
@@ -147,4 +137,4 @@ func apply_snapshot(data: Dictionary) -> void:
 	for id in holes.ids():
 		texels[id * 2 + 1] = 1.0
 	rev = int(data["rev"])
-	refresh(Rect2i(0, 0, SIDE, SIDE))
+	refresh(Rect2i(0, 0, TerrainGrid.SIDE, TerrainGrid.SIDE))

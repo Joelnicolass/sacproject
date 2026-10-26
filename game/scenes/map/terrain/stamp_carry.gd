@@ -14,7 +14,7 @@ const SINK_M := 0.5
 ## The bodies over `rect` (lattice vertices) of `shape` standing on or above the land right now.
 static func standing(tree: SceneTree, shape: GroundSurface, rect: Rect2i) -> Array[Node3D]:
 	var found: Array[Node3D] = []
-	var area := Rect2(Vector2(rect.position) * TerrainRules.CELL, Vector2(rect.size) * TerrainRules.CELL)
+	var area := TerrainGrid.area_of(rect)
 	for group in [&"unit", &"wizard"]:
 		for node in tree.get_nodes_in_group(group):
 			var body := node as Node3D

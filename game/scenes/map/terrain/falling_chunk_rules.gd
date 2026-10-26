@@ -20,11 +20,12 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles:
 	var sides := {}
 	var middle := Vector3.ZERO
 	var count := 0
-	for cell_row in [id / TerrainRules.GRID - 1, id / TerrainRules.GRID]:
-		for cell_column in [id % TerrainRules.GRID - 1, id % TerrainRules.GRID]:
-			if cell_row < 0 or cell_column < 0 or cell_row >= TerrainRules.GRID or cell_column >= TerrainRules.GRID:
+	var vertex := TerrainGrid.vertex_of(id)
+	for cell_row in [vertex.y - 1, vertex.y]:
+		for cell_column in [vertex.x - 1, vertex.x]:
+			if cell_row < 0 or cell_column < 0 or cell_row >= TerrainGrid.SIDE or cell_column >= TerrainGrid.SIDE:
 				continue
-			var cell: int = cell_row * TerrainRules.GRID + cell_column
+			var cell := TerrainGrid.id_of(Vector2i(cell_column, cell_row))
 			for k in 2:
 				var triangle := index.cells[cell * 2 + k]
 				if triangle < 0 or not _touches(index, triangle, id):
@@ -39,7 +40,7 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles:
 					count += 1
 					indices.append(vertices.size())
 					vertices.append(at)
-					var inside := Vector2(at.x / TerrainRules.CELL - float(cell_column), at.z / TerrainRules.CELL - float(cell_row))
+					var inside := Vector2(at.x / TerrainGrid.CELL_M - float(cell_column), at.z / TerrainGrid.CELL_M - float(cell_row))
 					colors.append(Color(float(tile) / 255.0, clampf(inside.x, 0.0, 1.0), clampf(inside.y, 0.0, 1.0)))
 					normals.append(Vector3.UP)
 					uvs.append(Vector2.ZERO)

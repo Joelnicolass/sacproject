@@ -1,4 +1,4 @@
-Estado: **propuesto**, espera el OK del usuario. Nota del orquestador: el id 067 ya es del plan de mapas PBR; este plan es **RFC-068** (F392). Donde el texto dice RFC-067 / run_067_gate / rfcs/RFC-067-start-gate.md, léase 068.
+Estado: **aprobado 2026-10-26** con todas las recomendaciones de §11. El usuario: no hay nada productivo que deba mantener compatibilidad de protocolo (subir la versión del kit alcanza; sin capa de compatibilidad). Nota del orquestador: el id 067 ya es del plan de mapas PBR; este plan es **RFC-068** (F392). Donde el texto dice RFC-067 / run_067_gate / rfcs/RFC-067-start-gate.md, léase 068.
 
 # Plan tech lead: una puerta de arranque para LAN y salas (propuesta: RFC-067, F392)
 

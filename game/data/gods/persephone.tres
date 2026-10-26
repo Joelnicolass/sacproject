@@ -33,7 +33,7 @@
 [ext_resource type="Resource" path="res://data/catalog/spells/rter.tres" id="32_s_rter"]
 [ext_resource type="Resource" path="res://data/catalog/spells/ruah.tres" id="33_s_ruah"]
 [ext_resource type="Resource" path="res://data/catalog/spells/wobr.tres" id="34_s_wobr"]
-[ext_resource type="Resource" uid="uid://jdwov472w2bn" path="res://data/look/persephone.tres" id="99_look"]
+[ext_resource type="Resource" path="res://data/look/persephone.tres" id="99_look"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/_mana.tscn" id="gs_mana"]
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/_pcsh.tscn" id="gs_shrine"]

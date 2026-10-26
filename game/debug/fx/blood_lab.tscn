@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://debug/fx/blood_lab.gd" id="1_lab"]
 [ext_resource type="Script" path="res://debug/fx/blood_checks.gd" id="2_checks"]
@@ -7,6 +7,7 @@
 [ext_resource type="Resource" path="res://data/catalog/creatures/trogg.tres" id="5_trogg"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/earthfling.tres" id="6_earthfling"]
 [ext_resource type="Resource" path="res://data/fx/blood/none.tres" id="7_none"]
+[ext_resource type="Script" path="res://debug/fx/blood_more_checks.gd" id="8_more"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lab"]
 
@@ -62,11 +63,17 @@ idle_aggro = false
 [node name="BloodFx" parent="World/Stone"]
 fallback = ExtResource("7_none")
 
-[node name="Checks" type="Node" parent="." node_paths=PackedStringArray("trogg_a", "trogg_b", "stone")]
+[node name="Checks" type="Node" parent="." node_paths=PackedStringArray("trogg_a", "trogg_b", "stone", "more")]
 script = ExtResource("2_checks")
 trogg_a = NodePath("../World/TroggA")
 trogg_b = NodePath("../World/TroggB")
 stone = NodePath("../World/Stone")
+more = NodePath("More")
+
+[node name="More" type="Node" parent="Checks" node_paths=PackedStringArray("trogg_a", "trogg_b")]
+script = ExtResource("8_more")
+trogg_a = NodePath("../../World/TroggA")
+trogg_b = NodePath("../../World/TroggB")
 
 [node name="Overlay" type="CanvasLayer" parent="."]
 

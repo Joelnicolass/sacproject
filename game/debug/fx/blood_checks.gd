@@ -12,6 +12,8 @@ const HEAVY: ParticleType = preload("res://data/fx/blood_hit_heavy.tres")
 @export var trogg_b: Node3D
 ## A body whose BloodFx wears data/fx/blood/none.tres.
 @export var stone: Node3D
+## The checks of the flash, the gib and the option (they share `check` and `wait`).
+@export var more: BloodMoreChecks
 @export var timeout_s := 30.0
 
 var _failed := false
@@ -35,56 +37,58 @@ static func blood_of(body: Node3D) -> BloodFx:
 func run() -> void:
 	_arm_watchdog()
 	FxBus.played.connect(func(kind: StringName, fx: Resource, at: Vector3) -> void: _played.append({"kind": kind, "fx": fx, "at": at}))
-	await _wait(1.0)
+	await wait(1.0)
 	var scars := GroundScars.of(self)
-	_check("ground scars active (window)", scars != null)
+	check("ground scars active (window)", scars != null)
 	var a := blood_of(trogg_a)
 	var b := blood_of(trogg_b)
 	# 1. A 20 % hit sprays once at the center and paints one mark.
 	GroundScars.log_lines.clear()
 	hit(trogg_a, 0.2)
-	await _wait(0.05)
-	_check("light spray", a.sprays == 1 and _played_near(SPRAY, BodyFacts.point(trogg_a, BodyFacts.Socket.CENTER), 0.15))
-	_check("light mark", a.marks == 1 and scars != null and scars.painted_tiles() > 0 and _log_has("painted blud.png"))
+	await wait(0.05)
+	check("light spray", a.sprays == 1 and _played_near(SPRAY, BodyFacts.point(trogg_a, BodyFacts.Socket.CENTER), 0.15))
+	check("light mark", a.marks == 1 and scars != null and scars.painted_tiles() > 0 and _log_has("painted blud.png"))
 	# 2. A 45 % hit is heavy: the heavy spray and three marks.
 	hit(trogg_b, 0.45)
-	await _wait(0.05)
-	_check("heavy spray", b.sprays == 1 and _played_near(HEAVY, BodyFacts.point(trogg_b, BodyFacts.Socket.CENTER), 0.15))
-	_check("heavy marks", b.marks == 3)
+	await wait(0.05)
+	check("heavy spray", b.sprays == 1 and _played_near(HEAVY, BodyFacts.point(trogg_b, BodyFacts.Socket.CENTER), 0.15))
+	check("heavy marks", b.marks == 3)
 	# 3. Feet far over the ground: the spray, but no mark.
-	await _wait(0.4)
+	await wait(0.4)
 	trogg_a.global_position.y += 3.0
 	GroundScars.log_lines.clear()
 	hit(trogg_a, 0.1)
-	await _wait(0.05)
-	_check("flier leaves no mark", a.sprays == 2 and a.marks == 1 and _log_has("too far"))
+	await wait(0.05)
+	check("flier leaves no mark", a.sprays == 2 and a.marks == 1 and _log_has("too far"))
 	trogg_a.global_position.y -= 3.0
 	# 4. Ten 1 % hits in one second (a poison): one to three sprays.
-	await _wait(0.4)
+	await wait(0.4)
 	var before := b.sprays
 	for i in 10:
 		hit(trogg_b, 0.01)
-		await _wait(0.1)
-	_check("no spam (%d sprays)" % (b.sprays - before), b.sprays - before >= 1 and b.sprays - before <= 3)
+		await wait(0.1)
+	check("no spam (%d sprays)" % (b.sprays - before), b.sprays - before >= 1 and b.sprays - before <= 3)
 	# 5. A type with nothing: five hits, nothing.
 	var s := blood_of(stone)
 	for i in 5:
 		hit(stone, 0.1)
-		await _wait(0.3)
-	_check("none bleeds nothing", s.sprays == 0 and s.marks == 0 and _played_near(SPRAY, BodyFacts.point(stone, BodyFacts.Socket.CENTER), 0.5) == false)
+		await wait(0.3)
+	check("none bleeds nothing", s.sprays == 0 and s.marks == 0 and _played_near(SPRAY, BodyFacts.point(stone, BodyFacts.Socket.CENTER), 0.5) == false)
+	if more != null:
+		await more.run(self)
 	_finish()
 
 
 func run_headless() -> void:
 	_arm_watchdog()
-	await _wait(0.3)
+	await wait(0.3)
 	var any_active := false
 	for body: Node3D in [trogg_a, trogg_b, stone]:
 		hit(body, 0.45)
 		any_active = any_active or blood_of(body).is_active()
-	await _wait(0.1)
-	_check("headless: no BloodFx active", not any_active and blood_of(trogg_a).sprays == 0)
-	_check("headless: no ground marks", GroundScars.of(self) == null)
+	await wait(0.1)
+	check("headless: no BloodFx active", not any_active and blood_of(trogg_a).sprays == 0)
+	check("headless: no ground marks", GroundScars.of(self) == null)
 	_finish()
 
 
@@ -103,7 +107,7 @@ static func _log_has(text: String) -> bool:
 	return false
 
 
-func _check(label: String, ok: bool) -> void:
+func check(label: String, ok: bool) -> void:
 	_failed = _failed or not ok
 	print("BLOOD %s: %s" % [label, "PASS" if ok else "FAIL"])
 
@@ -120,7 +124,7 @@ func _arm_watchdog() -> void:
 
 
 ## Waits `seconds` of real time (BloodFx counts real time, not game time).
-func _wait(seconds: float) -> void:
+func wait(seconds: float) -> void:
 	var until := Time.get_ticks_msec() + int(seconds * 1000.0)
 	while Time.get_ticks_msec() < until:
 		await get_tree().process_frame

@@ -146,9 +146,13 @@ func _souls(eval: AiSpellEval, perception: AiPerception, tactics: AiTactics, wiz
 	var mole := GameData.spell("pmcd")
 	var wind := GameData.spell("dnws")
 	me.threat = 0.0
+	## 055f f5: calm, he sends for the nearest soul farther than a short walk (soul_send_min_m), not only for the ones out of his reach.
 	var far := AiGatherSouls.aim(me, mole, perception, tactics)
-	_checks["pmcd_out_of_reach"] = far != null and far.node == free_far and AiGatherSouls.rate(mole, me, far, perception) > 0.0
-	_checks["dnws_all_in_reach_zero"] = AiGatherSouls.aim(me, wind, perception, tactics) == null
+	_checks["pmcd_beyond_short_walk"] = far != null and far.node == free_mid and AiGatherSouls.rate(mole, me, far, perception) > 0.0
+	var mid_at := free_mid.global_position
+	free_mid.global_position = Vector3(0.0, 0.0, -20.0)
+	_checks["dnws_all_a_short_walk_zero"] = AiGatherSouls.aim(me, wind, perception, tactics) == null
+	free_mid.global_position = mid_at
 	me.threat = 0.9
 	var mid := AiGatherSouls.aim(me, wind, perception, tactics)
 	_checks["dnws_out_of_reach"] = mid != null and mid.node == free_mid and AiGatherSouls.rate(wind, me, mid, perception) > 0.0
@@ -171,7 +175,7 @@ func _escape_and_guard(perception: AiPerception, tactics: AiTactics, me: AiTrack
 	sites.append(post)
 	me.threat = 0.9
 	_checks["elet_high_threat"] = AiEscape.aim(me, perception, tactics) == home and AiEscape.rate(me, tactics) > 0.0
-	me.threat = 0.5
+	me.threat = tactics.escape_threat - 0.2
 	_checks["elet_low_threat_zero"] = AiEscape.aim(me, perception, tactics) == null and AiEscape.rate(me, tactics) == 0.0
 	me.threat = 0.0
 	_checks["ndrg_pressed_site"] = AiGuardSite.rate(own, perception, tactics) > 0.0

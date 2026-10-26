@@ -12,7 +12,7 @@ size = Vector2(3, 0.32)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_building"]
 properties/0/path = NodePath("Health:current")
-properties/0/spawn = false
+properties/0/spawn = true
 properties/0/replication_mode = 2
 
 [node name="MapBuilding" type="StaticBody3D" node_paths=PackedStringArray("visuals", "health", "collision", "sync", "health_bar") groups=["nav_source"]]

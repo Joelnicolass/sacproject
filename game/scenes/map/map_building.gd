@@ -2,15 +2,15 @@
 class_name MapBuilding
 extends StaticBody3D
 
-## A building of the map (house, fence, tree, gravestone): the scene you drag into a map and move with the gizmo. Its parts
-## are saved children of `Visuals` (open them with «Hijos editables»), the box of `Collision` holds them (drag its handles),
-## and its BuildingType says how much it takes to destroy it and whether peasants hide in it. At play the body is that box
-## smaller by `inset_m` on x and z; the box itself is the melee reach and the splash. One that flattens the ground has no box
-## body; its `trunk`, if it has one (a tree), still stops the bodies (the server too: a shape, no mesh) and enters the navmesh.
-## A destroyed building gives no souls and shows its ruin on every peer. owner_slot 0 is the neutral side 31.
-## Joins `map_building`, `structure` (unless it flattens the ground) and, while it shelters, `shelter`.
-## Does not draw the parts nor measure them: their MeshInstance3D and BuildingFit do.
+## A building of the map (house, fence, tree, gravestone) you drag into a map and move with the gizmo. Its parts are saved
+## children of `Visuals` («Hijos editables»); the box of `Collision` holds them and is the melee reach and the splash, and at play
+## the body is that box minus `inset_m` on x and z. A flat one has no box body, only its `trunk` (a tree; server too, navmesh).
+## owner_slot 0 is the neutral side 31. Joins `map_building`, `structure` (unless flat) and `shelter` while it shelters. It owns
+## «fallen» (no souls, no collision) but draws and sounds nothing: children listen to `damaged` / `destroyed` (StructureBreak, BuildingRuin).
 
+## Every peer: the health went down (fraction_left = current / maximum, 0..1). Emitted once at 0, never after.
+signal damaged(fraction_left: float)
+## Every peer, once: the health reached 0. Collision and groups are already off.
 signal destroyed(building: MapBuilding)
 
 const GROUP := &"map_building"
@@ -43,6 +43,7 @@ var tag: String:
 
 var _box := AABB(Vector3(-2.0, 0.0, -2.0), Vector3(4.0, 4.0, 4.0))
 var _gone := false
+var _last_health := 0.0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -65,15 +66,15 @@ func _ready() -> void:
 		add_to_group(&"structure")
 	if shelter:
 		add_to_group(SHELTER_GROUP)
-	if max_health > 0.0:
-		## A tower on a client already has the maximum its synchronizer sent with the spawn: setting it again would erase the damage.
-		if health.maximum <= 0.0:
-			health.setup(max_health)
-	else:
+	## A tower on a client already has the maximum its synchronizer sent with the spawn: setting it again would erase the damage.
+	if max_health > 0.0 and health.maximum <= 0.0:
+		health.setup(max_health)
+	elif max_health <= 0.0:
 		health.maximum = 0.0
 		if sync != null:
 			sync.queue_free()
 	_read_body(flat)
+	_last_health = health.current
 	health.changed.connect(_on_health_changed)
 	if health_bar != null:
 		health_bar.bind(health, owner_slot)
@@ -133,7 +134,10 @@ func _fit_to_parts() -> void:
 	update_configuration_warnings()
 
 
-func _on_health_changed(_current: float, _maximum: float) -> void:
+func _on_health_changed(current: float, maximum: float) -> void:
+	if not _gone and maximum > 0.0 and current < _last_health:
+		damaged.emit(clampf(current / maximum, 0.0, 1.0))
+	_last_health = current
 	if _gone or not health.is_dead():
 		return
 	_gone = true
@@ -143,7 +147,4 @@ func _on_health_changed(_current: float, _maximum: float) -> void:
 	collision.set_deferred("disabled", true)
 	if trunk != null:
 		trunk.set_deferred("disabled", true)
-	visuals.visible = false
-	if type != null and type.ruin_scene != null:
-		add_child(type.ruin_scene.instantiate(), false, Node.INTERNAL_MODE_BACK)
 	destroyed.emit(self)

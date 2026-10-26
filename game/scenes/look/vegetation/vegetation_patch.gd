@@ -95,7 +95,7 @@ func _plant() -> void:
 		_bound_rig = rig
 		rig.vegetation_toggled.connect(_on_toggled)
 	var clears := VegetationClear.world_rows(get_tree())
-	var signature := "%s|%s|%s|%s|%s|%s|%s|%s|%s" % [[species.tag, species.mesh, species.variation(), species.visibility_end_m, species.cast_shadow], radius_m, count, seed, quality.density_scale, global_transform, clears, quality.shadows, surface.version()]
+	var signature := "%s|%s|%s|%s|%s|%s|%s|%s|%s" % [[species.tag, species.mesh, species.variation(), species.visibility_end_m, species.cast_shadow], radius_m, count, seed, quality.density_scale, global_transform, clears, quality.shadows, surface.field().version]
 	if signature == _signature and _multimesh:
 		return
 	_clear_multimesh()
@@ -103,7 +103,7 @@ func _plant() -> void:
 		get_tree().create_timer(0.5).timeout.connect(_queue)
 		return
 	var mesh := FloraMaterial.mesh_for(species.mesh)
-	var buffer := PatchPlanner.plan(species, seed, count, radius_m, global_transform, surface, surface.map_transform(), quality.density_scale, clears) if mesh else PackedFloat32Array()
+	var buffer := PatchPlanner.plan(species, seed, count, radius_m, global_transform, surface, MeshPlanter.map_transform_of(surface), quality.density_scale, clears) if mesh else PackedFloat32Array()
 	if buffer.is_empty():
 		return
 	_signature = signature

@@ -98,13 +98,19 @@ class PlanJob:
 			task_id = -1
 
 
+## Where the map is placed in the world: the transform of the mesh that draws `land` (identity without one).
+static func map_transform_of(land: GroundSurface) -> Transform3D:
+	var drawn := land.mesh
+	return Transform3D.IDENTITY if not is_instance_valid(drawn) else (drawn.global_transform if drawn.is_inside_tree() else drawn.transform)
+
+
 func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: GroundSurface, owner_node: Node3D) -> void:
 	config = layer
 	quality = preset
 	flora = map
 	shape = land
 	host = owner_node
-	map_xform = land.map_transform()
+	map_xform = map_transform_of(land)
 	_map_inverse = map_xform.affine_inverse()
 	var scale := quality.radius_scale
 	var starts := PackedFloat32Array()

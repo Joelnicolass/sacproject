@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Dumps what the ground answers at 10 000 seeded points on each of the 9 maps, so the answers before and after a cut can be
-## compared bit by bit. It works on both sides of the 063-1 rename: it loads ground_surface.gd when it exists, terrain_shape.gd
+## compared bit by bit. It works on both sides of the 063D-2 rename: it loads terrain.gd (the Terrain) when it exists, ground_surface.gd
 ## otherwise, and only calls height_at / is_on_ground / lowest. It reads the ground files straight (no autoloads, no scenes),
 ## always quits, and gives up after 120 s.
 ## Run: Godot --headless --path game --script res://debug/map/ground_dump.gd -- --label=before
@@ -14,8 +14,8 @@ const POINTS := 10000
 const SEED := 20261025
 const TIME_LIMIT_MS := 120000
 const MAPS_DIR := "res://scenes/map/maps/"
-const SURFACE_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
-const OLD_SCRIPT := "res://scenes/map/terrain/terrain_shape.gd"
+const SURFACE_SCRIPT := "res://scenes/map/terrain/terrain.gd"
+const OLD_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
 ## The seeded points reach a little past the 2560 m map on every side, so the rim and off-map answers are covered too.
 const REACH_MIN := -60.0
 const REACH_MAX := 2620.0

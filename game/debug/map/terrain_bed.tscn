@@ -1,20 +1,27 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
-[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="1_shape"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="2_deformer"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="1_shape"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_net.gd" id="2_net"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="3_collision"]
 [ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="4_data"]
+[ext_resource type="Image" path="res://assets/original/maps/high_noon/tiles.png" id="5_tiles"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_status.gd" id="6_status"]
 
 [node name="Terrain" type="Node3D"]
-editor_description = "Un suelo sin malla para verificar el terreno deformable: la forma (GroundSurface) de High Noon, su Deformer y su Collision por trozos. Lo usan terrain_cases y terrain_late_join; no tiene look."
+editor_description = "Un suelo sin malla para verificar el terreno deformable: el Terrain (Shape) de High Noon, su Net y su Collision por trozos. Lo usan terrain_cases y terrain_late_join; no tiene look. Remote → Shape/Status muestra rev, version, live_stamps y holes."
 
-[node name="Shape" type="Node" parent="."]
+[node name="Shape" type="Node3D" parent="." node_paths=PackedStringArray("net")]
 script = ExtResource("1_shape")
 data = ExtResource("4_data")
+tiles = ExtResource("5_tiles")
+net = NodePath("../Net")
 
-[node name="Deformer" type="Node" parent="." node_paths=PackedStringArray("shape")]
-script = ExtResource("2_deformer")
-shape = NodePath("../Shape")
+[node name="Status" type="Node" parent="Shape" node_paths=PackedStringArray("terrain")]
+script = ExtResource("6_status")
+terrain = NodePath("..")
+
+[node name="Net" type="Node" parent="."]
+script = ExtResource("2_net")
 
 [node name="Collision" type="StaticBody3D" parent="." node_paths=PackedStringArray("shape")]
 script = ExtResource("3_collision")

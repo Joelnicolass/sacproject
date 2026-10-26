@@ -57,7 +57,26 @@ static func land_of(map: MapDefinition) -> TerrainMesh:
 	var data := map.terrain
 	if data == null or not data.is_valid():
 		return null
+	return land_from(data, map.tiles)
+
+
+## A TerrainMesh with its Terrain child (`shape`) holding `data` and `tiles`, wired as a map scene wires them. Not in the tree.
+static func land_from(data: MapTerrainData, tiles: Image = null) -> TerrainMesh:
 	var land := TerrainMesh.new()
-	land.shape = GroundSurface.with_data(data)
-	land.add_child(land.shape)
+	var ground := Terrain.new()
+	ground.tiles = tiles
+	ground.data = data
+	ground.mesh = land
+	land.shape = ground
+	land.add_child(ground)
 	return land
+
+
+## A body with the trimesh of `land`'s mesh: a ground built from the script alone has none (a map saves its own Collision).
+static func collision_of(land: TerrainMesh) -> StaticBody3D:
+	var body := StaticBody3D.new()
+	body.name = "Collision"
+	var shape_node := CollisionShape3D.new()
+	shape_node.shape = land.mesh.create_trimesh_shape() if land.mesh != null else null
+	body.add_child(shape_node)
+	return body

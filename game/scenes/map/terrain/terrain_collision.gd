@@ -5,7 +5,7 @@ extends StaticBody3D
 ## one collision shape each, all on this one body. When the ground moves (GroundSurface.changed) only the chunks it touched
 ## are made again, at most every `refresh_s` (a hole at once), with the corners moved as the shape says; a triangle
 ## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground GroundSurface.height_at answers, a
-## few ticks late. It does not decide how the ground moves (TerrainDeformer) and draws nothing.
+## few ticks late. It does not decide how the ground moves (Terrain) and draws nothing.
 
 ## An empty shape every chunk copies, so no shape is built in code.
 const CHUNK_SHAPE := preload("res://scenes/map/terrain/terrain_chunk.tres")

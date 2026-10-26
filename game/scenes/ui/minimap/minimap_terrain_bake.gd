@@ -88,7 +88,7 @@ func _rebake_in_editor() -> void:
 func bake() -> void:
 	if viewport == null or ground == null or camera == null:
 		return
-	var drawn := surface.main_mesh() if surface != null else null
+	var drawn := surface.mesh if surface != null else null
 	if drawn != null and drawn.mesh != null:
 		ground.mesh = drawn.mesh
 		ground.transform = drawn.global_transform

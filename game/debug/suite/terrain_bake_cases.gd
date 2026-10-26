@@ -12,6 +12,7 @@ extends SceneTree
 const WORLD_SCENE := "res://scenes/match/high_noon.tscn"
 const GlbImport := preload("res://tools/terrain_import.gd")
 const GlbExport := preload("res://tools/bake/terrain_glb_export.gd")
+const Maps := preload("res://debug/look/flora_test_maps.gd")
 const REFERENCE := "res://debug/map/terrain_reference.res"
 const EDIT_X := 3.0
 const LIFT_Y := 5.0
@@ -143,9 +144,7 @@ func _terrain_from_glb(path: String) -> TerrainMesh:
 
 ## A TerrainMesh made from the script alone, built in _ready from `data` (no saved mesh).
 func _built_terrain(data: MapTerrainData) -> TerrainMesh:
-	var terrain := TerrainMesh.new()
-	terrain.shape = GroundSurface.with_data(data)
-	terrain.add_child(terrain.shape)
+	var terrain: TerrainMesh = Maps.land_from(data, MapCatalog.active().tiles)
 	root.add_child(terrain)
 	await process_frame
 	return terrain

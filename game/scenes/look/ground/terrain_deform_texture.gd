@@ -6,7 +6,7 @@ extends LookLayer
 ## where a vertex was taken away) set as the global `terrain_deform_map`, uploaded once per frame and only when the
 ## ground changed. The mesh of the map is never rebuilt: the shader moves its vertices. The first change also turns
 ## `terrain_deform_on` on, so a match that never deforms the ground pays nothing. It does not decide how the ground
-## moves (TerrainDeformer). Presentation only: the rig is freed in a dedicated or headless process.
+## moves (Terrain). Presentation only: the rig is freed in a dedicated or headless process.
 
 const MAP := &"terrain_deform_map"
 const ON := &"terrain_deform_on"

@@ -6,16 +6,18 @@ extends SceneTree
 ## Run: Godot --headless --path game --script res://debug/map/terrain_normals_probe.gd
 
 const TERRAIN_SCRIPT := "res://scenes/map/terrain/terrain_mesh.gd"
-const SHAPE_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
+const SHAPE_SCRIPT := "res://scenes/map/terrain/terrain.gd"
 const WALL_AREA := 0.01
 
 
 func _initialize() -> void:
 	var terrain := MeshInstance3D.new()
 	terrain.set_script(load(TERRAIN_SCRIPT))
-	var shape := Node.new()
+	var shape := Node3D.new()
 	shape.set_script(load(SHAPE_SCRIPT))
+	shape.set("tiles", MapCatalog.active().tiles)
 	shape.set("data", MapCatalog.active().terrain)
+	shape.set("mesh", terrain)
 	terrain.add_child(shape)
 	terrain.set("shape", shape)
 	root.add_child(terrain)

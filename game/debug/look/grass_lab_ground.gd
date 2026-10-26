@@ -20,11 +20,6 @@ extends MeshInstance3D
 var _material_classic := StandardMaterial3D.new()
 
 
-func _enter_tree() -> void:
-	if shape != null:
-		shape.meshes.assign([self])
-
-
 func _ready() -> void:
 	_material_classic.albedo_color = Color(0.25, 0.35, 0.12)
 	if shape == null or not shape.is_loaded():
@@ -47,16 +42,15 @@ func clear_ground_override() -> void:
 func _paint_tiles() -> void:
 	if shape == null:
 		return
-	var ids := PackedByteArray()
-	ids.resize(TerrainGrid.COUNT)
 	var pick := 0
 	if tiles:
 		for id in tiles.slots.size():
 			if tiles.slot_of(id) == 0:
 				pick = id
 				break
-	ids.fill(pick)
-	shape.use_tiles(ids)
+	var index := Image.create_empty(TerrainGrid.SIDE, TerrainGrid.SIDE, false, Image.FORMAT_R8)
+	index.fill(Color8(pick, 0, 0))
+	shape.tiles = index
 
 
 func _height(x: float, z: float) -> float:

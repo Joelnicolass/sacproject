@@ -33,7 +33,7 @@ signal vegetation_toggled(enabled: bool)
 @export var quality: QualityApplier
 ## The sun layer, for tools that turn the sun by hand.
 @export var sun_layer: SunLayer
-## The map's ground numbers; the nodes that draw it (`ground.meshes`) are what the ground layer dresses.
+## The map's ground numbers; the node that draws it (`ground.mesh`) is what the ground layer dresses.
 @export var ground: GroundSurface
 ## Which `GroundSet` slot paints each of the map's tile ids. The classic ground (a biome without a
 ## PBR `GroundSet`) uses it so the grass knows where it grows; it belongs to the map, not to a biome.

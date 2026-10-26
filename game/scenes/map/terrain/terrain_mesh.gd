@@ -3,9 +3,8 @@ class_name TerrainMesh
 extends MeshInstance3D
 
 ## The map's ground as something to see: the mesh (the instanced terrain.glb, or one built from the data) and the editor
-## preview. The body to stand on is a saved child of the map (`Collision`: the glb brings one, a map without glb saves its
-## own with ConcavePolygonShape3D `terrain_collision.res`). Heights, holes and tiles are not here: ask the child GroundSurface.
-## The material swap is TerrainGroundMaterial.
+## preview. Not: the body to stand on (the map's `Collision`, TerrainCollision), heights, holes and tiles (its `shape`, the
+## Terrain). The material swap is TerrainGroundMaterial.
 
 const GROUP := &"terrain_mesh"
 
@@ -62,11 +61,6 @@ func _notification(what: int) -> void:
 	elif what == NOTIFICATION_EDITOR_POST_SAVE:
 		_apply_preview_offset()
 		_material.after_save()
-
-
-func _enter_tree() -> void:
-	if shape != null:  # the surface lists who draws it; before any _ready, so the look layer and the minimap find it
-		shape.meshes.assign([self])
 
 
 func _ready() -> void:
@@ -154,17 +148,3 @@ func _make_mesh() -> ArrayMesh:
 	built.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, _arrays.with_normals(smooth_ground))
 	return built
 
-
-## The ground trimesh of the current mesh (Mesh.create_trimesh_shape): what a saved `Collision` holds. Null without a mesh.
-func ground_shape() -> ConcavePolygonShape3D:
-	return mesh.create_trimesh_shape() if mesh != null else null
-
-
-## A StaticBody3D with `ground_shape()`, for code that builds a TerrainMesh from the script alone (the suites): a map saves its own.
-func make_collision_body() -> StaticBody3D:
-	var body := StaticBody3D.new()
-	body.name = "Collision"
-	var shape_node := CollisionShape3D.new()
-	shape_node.shape = ground_shape()
-	body.add_child(shape_node)
-	return body

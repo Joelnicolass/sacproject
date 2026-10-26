@@ -95,9 +95,9 @@ func _restore() -> void:
 		terrain.call("clear_ground_override")  # dynamic: TerrainMesh or the grass lab's GrassLabGround (debug/look) answers it
 
 
-## The node that draws the map's ground (the first of `ground.meshes`).
+## The node that draws the map's ground (`ground.mesh`).
 func _mesh() -> MeshInstance3D:
-	return _rig.ground.main_mesh() if _rig and _rig.ground else null
+	return _rig.ground.mesh if _rig and _rig.ground else null
 
 
 func _exit_tree() -> void:

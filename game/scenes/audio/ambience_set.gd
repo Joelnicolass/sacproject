@@ -8,10 +8,12 @@ extends Resource
 ## - `bed`: a SoundCue whose stream loops by itself (gapless: a WAV with `edit/loop_mode=2` in its .import). Null = none
 ##   (the original has no bed for every god; a custom one goes here).
 ## - `one_shots`: the cues played at random around the listener (the birds, the wind, the lava of the land).
+## - `night_one_shots`: the ones played instead while it is night (owls, crickets, insects; RFC-058). Empty = the same by night.
 ## Ref: RFC-052 052g (F366).
 
 @export var bed: SoundCue
 @export var one_shots: Array[SoundCue] = []
+@export var night_one_shots: Array[SoundCue] = []
 ## Seconds between two one-shots (min, max).
 @export var interval_s := Vector2(6.0, 14.0)
 ## Horizontal distance from the listener (min, max).

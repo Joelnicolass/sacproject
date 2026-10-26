@@ -13,12 +13,24 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/brd9.wav" id="shot_s9"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/cri1.wav" id="shot_s10"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/cri2.wav" id="shot_s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/owl1.wav" id="night_owl1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/owl2.wav" id="night_owl2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/cri1.wav" id="night_cri1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/cri2.wav" id="night_cri2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/ins1.wav" id="night_ins1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/ins2.wav" id="night_ins2"]
 
 [sub_resource type="Resource" id="OneShot_0"]
 script = ExtResource("shot_script")
 streams = Array[AudioStream]([ExtResource("shot_s1"), ExtResource("shot_s2"), ExtResource("shot_s3"), ExtResource("shot_s4"), ExtResource("shot_s5"), ExtResource("shot_s6"), ExtResource("shot_s7"), ExtResource("shot_s8"), ExtResource("shot_s9"), ExtResource("shot_s10"), ExtResource("shot_s11")])
 bus = &"Ambience"
 
+[sub_resource type="Resource" id="NightShot_0"]
+script = ExtResource("shot_script")
+streams = Array[AudioStream]([ExtResource("night_owl1"), ExtResource("night_owl2"), ExtResource("night_cri1"), ExtResource("night_cri2"), ExtResource("night_ins1"), ExtResource("night_ins2")])
+bus = &"Ambience"
+
 [resource]
 script = ExtResource("1_set")
 one_shots = Array[SoundCue]([SubResource("OneShot_0")])
+night_one_shots = Array[SoundCue]([SubResource("NightShot_0")])

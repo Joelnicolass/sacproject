@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundCue" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/rain.wav" id="2_rain"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("2_rain")])
+volume_db = -4.0
+bus = &"Ambience"
+max_voices = 1
+priority = 40

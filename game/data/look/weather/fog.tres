@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeatherState" format=3]
+
+[ext_resource type="Script" path="res://scenes/look/atmosphere/weather_state.gd" id="1_state"]
+
+[resource]
+script = ExtResource("1_state")
+display_name = "Niebla"
+sun_energy_mul = 0.8
+ambient_mul = 0.95
+sky_tint = Color(0.92, 0.93, 0.95, 1)
+sky_grey = 0.25
+cloud_cover = 0.15
+fog_density_mul = 1.6
+fog_end_mul = 0.65

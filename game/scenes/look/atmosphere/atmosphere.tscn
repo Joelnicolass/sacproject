@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/atmosphere/atmosphere.gd" id="1_atmosphere"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/time_of_day.gd" id="2_time"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/weather.gd" id="3_weather"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/precipitation_fall.gd" id="4_fall"]
+[ext_resource type="Script" path="res://scenes/look/follow_camera.gd" id="5_follow"]
+
+[node name="Atmosphere" type="Node3D"]
+editor_description = "La hora y el clima de ahora: el sol, el entorno y la vida los leen (señal changed). Oculto = la luz aprobada, exacta."
+script = ExtResource("1_atmosphere")
+
+[node name="TimeOfDay" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_time")
+
+[node name="Weather" type="Node3D" parent="." node_paths=PackedStringArray("precipitation")]
+unique_name_in_owner = true
+script = ExtResource("3_weather")
+precipitation = NodePath("Precipitation")
+
+[node name="Precipitation" type="Node3D" parent="Weather" node_paths=PackedStringArray("drops", "bed")]
+script = ExtResource("4_fall")
+drops = NodePath("Follow/Drops")
+bed = NodePath("Bed")
+
+[node name="Follow" type="Node3D" parent="Weather/Precipitation"]
+script = ExtResource("5_follow")
+
+[node name="Drops" type="GPUParticles3D" parent="Weather/Precipitation/Follow"]
+editor_description = "Las gotas (o los copos) alrededor de la cámara. Qué cae y cuánto lo dice el estado del clima (PrecipitationLook)."
+emitting = false
+amount = 4000
+lifetime = 1.6
+local_coords = false
+visibility_aabb = AABB(-40, -20, -40, 80, 60, 80)
+
+[node name="Bed" type="AudioStreamPlayer" parent="Weather/Precipitation"]
+bus = &"Ambience"
+
+[node name="Storm" type="Node" parent="Weather"]
+editor_description = "058-3: los rayos de la tormenta (StormStrikes). Hueco vacío hasta que entre el plan 065."

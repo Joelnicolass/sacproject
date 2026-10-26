@@ -8,6 +8,31 @@
 [ext_resource type="Resource" path="res://data/look/grass/charnel_grass.tres" id="10_grass"]
 [ext_resource type="Resource" path="res://data/audio/music/charnel.tres" id="gm_music"]
 [ext_resource type="Resource" path="res://data/audio/ambience/charnel.tres" id="gm_ambience"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
+[ext_resource type="Resource" path="res://data/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://data/look/life/ash.tres" id="58_ash"]
+[ext_resource type="Resource" path="res://data/look/life/fireflies.tres" id="58_fireflies"]
+[ext_resource type="Resource" path="res://data/look/life/spores.tres" id="58_spores"]
+
+[sub_resource type="Curve" id="Day_charnel_elevation_change_deg"]
+_limits = [-30, 30, 0.0, 24.0]
+_data = [Vector2(0, 0), 0, 0, 0, 0, Vector2(3, 8.485281), 2, 2, 0, 0, Vector2(6, 12), 0, 0, 0, 0, Vector2(9, 8.485281), -2, -2, 0, 0, Vector2(12, 0), -2.828427, -2.828427, 0, 0, Vector2(15, -8.485281), -2, -2, 0, 0, Vector2(18, -12), 0, 0, 0, 0, Vector2(21, -8.485281), 2, 2, 0, 0, Vector2(24, 0), 0, 0, 0, 0]
+point_count = 9
+
+[sub_resource type="Resource" id="Day_charnel"]
+script = ExtResource("58_day")
+start_hour = 0
+elevation_change_deg = SubResource("Day_charnel_elevation_change_deg")
+
+[sub_resource type="Resource" id="Life_charnel"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_spores"), ExtResource("58_ash")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_spores")])
+water = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_spores")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_ash")])
 
 [resource]
 script = ExtResource("1_p")
@@ -20,3 +45,6 @@ ground_classic = ExtResource("3_kafxn")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")
+day = SubResource("Day_charnel")
+weather = ExtResource("58_weather")
+life = SubResource("Life_charnel")

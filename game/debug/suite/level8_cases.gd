@@ -45,7 +45,8 @@ func _data() -> Dictionary:
 	var checks := {}
 	checks["death_counts_eight"] = GameData.spell("taed").max_targets == 8
 	checks["death_duration_is_forty"] = is_equal_approx(GameData.spell("taed").duration_s, 40.0)
-	var fn_of := {"mrhc": AiSpellEval.FN_NONE, "egar": AiSpellEval.FN_AREA, "pavi": AiSpellEval.FN_SINGLE, "ivob": AiSpellEval.FN_SINGLE, "taed": AiSpellEval.FN_NONE}
+	## 055f f5: Charm takes a foe and Death is an attack on an area (they rated nothing before)
+	var fn_of := {"mrhc": AiSpellEval.FN_TAKE_FOE, "egar": AiSpellEval.FN_AREA, "pavi": AiSpellEval.FN_SINGLE, "ivob": AiSpellEval.FN_SINGLE, "taed": AiSpellEval.FN_AREA}
 	for pair in [["mrhc", "persephone"], ["egar", "pyro"], ["pavi", "charnel"], ["ivob", "james"], ["taed", "charnel"]]:
 		var tag: String = pair[0]
 		var spell := GameData.spell(tag)

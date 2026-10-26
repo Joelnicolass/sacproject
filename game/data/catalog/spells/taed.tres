@@ -25,6 +25,7 @@ action = ExtResource("2_action")
 targets_wizards = true
 targets_creatures = true
 targets_ground = true
+ai_use = 4
 ai_phase = 1
 ai_worth = 80000
 max_targets = 8

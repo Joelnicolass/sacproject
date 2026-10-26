@@ -87,7 +87,7 @@ func _proximity_trigger(record: AiRecord, task_kind: AiTask.Kind) -> bool:
 	if record.count == 1:
 		return false
 	var s := record.stddev.x * record.stddev.x + record.stddev.y * record.stddev.y + record.stddev.z * record.stddev.z
-	var r := AiField.group_radius(record.count)
+	var r := AiField.group_radius(record.count, board.play.tactics.crowd)
 	if s < r * r:
 		return false
 	if s > (r * 4.0) * (r * 4.0):

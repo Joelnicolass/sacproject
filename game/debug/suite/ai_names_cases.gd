@@ -15,6 +15,7 @@ const DISTANCES: Array[float] = [5.0, 10.0, 145.0, 279.0, 300.0]
 
 var _compared := 0
 var _lines := PackedStringArray()
+var _tactics: AiTactics = AiTactics.or_normal(null)
 
 
 func run(_host: Node) -> Dictionary:
@@ -83,12 +84,16 @@ func _track(label: String, t: AiTrack, flags: int, status: int) -> void:
 	_same(label, "fights (status & 1)", (status & LEGACY.ACTIVE) != 0, t.fights)
 	_same(label, "fights (status & 9)", (status & 9) != 0, t.fights)
 	_same(label, "fights (status & 3)", (status & 0x3) != 0, t.fights)
+	## 055f f5 changed what the two factors read (it fights, it has an ability it can pay) instead of the bits only a wizard or a
+	## ready Manahoar had; fed those old readings, the ramp and the factors still give the old numbers.
 	if t.is_body():
+		var old_reading := AiTrack.new()
+		old_reading.fights = t.is_wizard()
 		for thr in [280.0, 140.0]:
 			for d in DISTANCES:
 				for doctor in [false, true]:
 					_same(label, "attack_weight d=%s thr=%s doctor=%s" % [d, thr, doctor], LEGACY.attack_weight(d, thr, status, doctor),
-						AiField.attack_weight(d, thr, t, doctor))
+						AiField.attack_weight(d, thr, old_reading, t.ready, _tactics, doctor))
 
 
 ## The relation of a track and its old category, and the relation tests (own, own or ally, enemy).

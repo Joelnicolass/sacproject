@@ -4,7 +4,11 @@ extends Resource
 ## What the AI wants a spell for. Saved as an integer: only append at the end.
 ## SELF_GUARD: a ward on himself. DISABLE_FOE: a control spell on a foe. HIT_ONE / HIT_AREA: damage on one body or on a group.
 ## HEAL / SPEEDUP: help for an own body. CONVERT / DESECRATE: the spells of the altar, the brain casts them in their own phases.
-enum AiUse { NONE, SELF_GUARD, DISABLE_FOE, HIT_ONE, HIT_AREA, HEAL, SPEEDUP, CONVERT, DESECRATE }
+## SELF_AREA: a burst around himself while foes stand near (Halo). TAKE_FOE: an enemy creature becomes his (Charm).
+## RAISE_DEAD: an own corpse stands up again (Animate Dead). GATHER_SOULS: a soul he would not walk to is brought to him
+## (Soul Wind, Soul Mole). ESCAPE: away to an own building when the threat is high (Teleport). GUARD_SITE: an own creature is tied
+## to a threatened building (Guardian). HEAL_AREA: health back to the own bodies around the target (Rainbow, Healing Aura).
+enum AiUse { NONE, SELF_GUARD, DISABLE_FOE, HIT_ONE, HIT_AREA, HEAL, SPEEDUP, CONVERT, DESECRATE, SELF_AREA, TAKE_FOE, RAISE_DEAD, GATHER_SOULS, ESCAPE, GUARD_SITE, HEAL_AREA }
 ## When the wizard of the AI may cast it: against a foe (ATTACK), for his own side (SUPPORT) or never on his own (NEVER).
 ## Saved as an integer: only append at the end.
 enum AiPhase { NEVER, ATTACK, SUPPORT }

@@ -29,6 +29,9 @@ extends Resource
 ##                the rest, like «spared»; `watch_s` keeps it open). run_still: seconds of `run` without moving, the worst body;
 ##                idle_cycles: Idle→Chase→Idle per minute with no foe in sight, the worst body; gesture_root: meters the root of
 ##                the `gesture` clip slides, the worst model.
+## 055f f5, the AI asks the Caster before every cast:
+##   refused      the slot of `subject` sees at most `max_count` of its requests refused by the Caster (the audit's `reject` lines;
+##                with `spell`, of that spell only) during the whole run (decided with the rest, like «uncast»).
 ## «picked» with the quantifier `at_least`: at least `min_count` bodies of `subject` take a body of `object` within `within_s`.
 ## A label may name several groups with «|» (`wizard1|charlotte`).
 ## `from`: start = the tick the bench starts; hurt = the first tick the subject body takes damage; near = the first tick a
@@ -36,7 +39,7 @@ extends Resource
 ## «all», the fastest with «any») or the count.
 
 @export var check := "expect"
-@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst", "first_cast", "killed", "died_before", "probe") var kind := "picked"
+@export_enum("picked", "struck", "hurt", "dropped", "spared", "cast", "uncast", "unharmed", "burst", "first_cast", "killed", "died_before", "probe", "refused") var kind := "picked"
 @export var subject := ""
 @export var object := ""
 @export_enum("all", "any", "at_least") var quantifier := "all"

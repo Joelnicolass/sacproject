@@ -136,10 +136,12 @@ func mark_loaded(slot: int) -> void:
 	_loaded[slot] = true
 	if phase == Phase.FILLING and first:
 		seat_loaded.emit(slot, _loaded_count(), _target())
-		_set_waiting(true, true)
 		_check_start()
-	else:
-		_send_state_to(int(_peer_of.get(slot, 0)))
+		## Still waiting: every loaded seat (this one too) hears the new count. Started: _start already told them.
+		if phase == Phase.FILLING:
+			_set_waiting(true, true)
+		return
+	_send_state_to(int(_peer_of.get(slot, 0)))
 
 
 ## MpKit only: the seat's peer dropped.

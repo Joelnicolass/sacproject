@@ -58,4 +58,4 @@ func _process(delta: float) -> void:
 	_puff += delta
 	if trail != null and _puff >= trail_every_s:
 		_puff = fmod(_puff, trail_every_s)
-		FxBus.play_puff(trail.bus_name(), global_position)
+		FxBus.puff(trail.bus_name(), global_position)

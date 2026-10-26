@@ -20,3 +20,4 @@ speed_max = 6
 pool_max = 8
 light = ExtResource("9_light")
 sound = ExtResource("cue_fireball_blast")
+camera_trauma = 0.2

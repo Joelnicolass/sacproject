@@ -1,5 +1,5 @@
 class_name QuakeRing
-extends Node3D
+extends FxScene
 
 ## F132 (RFC-030 030u-a): the look of the Jabberocky's Quake wave. sacengine bends the land (Quake.displacement,
 ## state.d:5187-5225: a crest that moves out at waveRange/waveDur with a width of (0.15 + 0.65·(1 − p)²)·waveRange);

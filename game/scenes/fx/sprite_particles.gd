@@ -1,13 +1,13 @@
 class_name SpriteParticles
 extends CPUParticles3D
 
-## One-shot burst of atlas sprites. Frees itself when the burst ends, unless FxBus pools it.
+## One-shot burst of atlas sprites. Frees itself when the burst ends, unless FxBus's BurstPool owns it.
 ## RFC-053 053i (F379): its sprites fade out at the end of their life (ParticleType.alpha_ramp): with the type's own fade_s
 ## (sacengine getAlpha), or over `tail_fade_s` when the type has none, so no sprite vanishes at full alpha. The type's
 ## alpha_max is not applied to a burst (it never was).
 
 @export var type: ParticleType
-## Owned by FxBus's pool (RFC-029 029b): it waits hidden for `replay` and hides again when the burst
+## Owned by FxBus's BurstPool: it waits hidden for `replay` and hides again when the burst
 ## ends (`finished`) instead of freeing itself. Off = one burst on entering the tree, then queue_free.
 @export var pooled := false
 ## Seconds at the end of each sprite's life over which its alpha goes to 0 when its ParticleType has no fade_s. 0 = the old hard end.
@@ -32,11 +32,12 @@ func _ready() -> void:
 	_request_light()
 
 
-## The pool's play: the same configured burst again, somewhere else, in the type's direction.
+## The pool's play: the same configured burst again, somewhere else. `dir` ZERO = the type's own direction; else the cone points that way.
 ## The scene has `use_fixed_seed` and restart keeps it, so replaying never draws from the global RNG.
-func replay(at: Vector3, burst_seed: int) -> void:
+func replay(at: Vector3, burst_seed: int, dir := Vector3.ZERO) -> void:
 	seed = burst_seed
 	position = at
+	direction = dir if dir != Vector3.ZERO else type.direction
 	show()
 	restart(true)
 	_request_light()

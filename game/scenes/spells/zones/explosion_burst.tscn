@@ -25,6 +25,7 @@ rings = 25
 [node name="ExplosionBurst" type="Node3D" node_paths=PackedStringArray("big", "small", "scar")]
 editor_description = "El estallido de un punto de Explosion (FxBus.broadcast_scene): dos esferas de lava exeg que se hinchan, la grande a 40 m/s hasta 30 m y la chica a 10 m/s hasta 5 m, y 15 rocas bold. Su sonido es el nodo Sound (cue explosion_burst). Las partículas (xplo, exp2, ceniza, humo) las toca la zona al lado."
 script = ExtResource("1_script")
+camera_trauma = 0.5
 big = NodePath("Big")
 small = NodePath("Small")
 scar = NodePath("Scar")

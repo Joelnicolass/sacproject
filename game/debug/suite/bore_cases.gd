@@ -115,8 +115,9 @@ func _cut() -> Dictionary:
 	house.global_position = ground_spot.call(house_xz)
 	await _c._frames(10)
 	var played := {"scene": 0, "dig": 0, "repair": 0}
-	var hear := func(kind: StringName, fx_name: String, _at: Vector3) -> void:
-		if kind == FxBus.KIND_SCENE and fx_name.ends_with("falling_chunk.tscn"):
+	var hear := func(kind: StringName, fx: Resource, _at: Vector3) -> void:
+		var fx_name := FxWire.label_of(fx)
+		if kind == FxBus.KIND_SCENE and fx_name == "falling_chunk":
 			played["scene"] += 1
 		elif kind == FxBus.KIND_BURST and fx_name == "bore_hole":
 			played["dig"] += 1

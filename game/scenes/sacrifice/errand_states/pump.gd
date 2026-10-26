@@ -37,7 +37,7 @@ func enter() -> void:
 	_left = SacrificeMath.pump_seconds(soul.number, rules.convert_pump_s_per_soul if rules else 5.0)
 	body.begin_work(DoctorBody.Work.PUMP)
 	if heal_fx != null:
-		FxBus.broadcast(FxBus.name_of(heal_fx), corpse.global_position + Vector3.UP)
+		FxBus.broadcast(heal_fx, corpse.global_position + Vector3.UP)
 
 
 func physics_update(delta: float) -> void:

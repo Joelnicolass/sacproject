@@ -1,5 +1,5 @@
 class_name PullThread
-extends Node3D
+extends FxScene
 
 ## F128 (RFC-030 030q-a), F154 (030q-b): the thread of a pull, as renderer.d draws it (webPulls 3551-3565, cagePulls 1931-1946):
 ## from the user's shot position to the center of the target, growing out of the user over the first 20 frames

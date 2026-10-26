@@ -1,5 +1,5 @@
 class_name SpikeField
-extends Node3D
+extends FxScene
 
 ## F151 (RFC-030 030n-b): the Rhinok's spikes, sacengine Spike (state.d:3875-3885; updateSpike 20473-20478; placeSpike
 ## 25008-25015), drawn as renderer.d:2627-2638 draws them: SacSpike (sacobject.d:2984-2994), the mesh of

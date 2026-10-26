@@ -95,7 +95,7 @@ func _take(vertex: Vector2i) -> void:
 	if chunk != null:
 		FxBus.broadcast_scene(chunk.resource_path, at, {"vertex": id})
 	if dig_burst != null:
-		FxBus.broadcast(FxBus.name_of(dig_burst), at)
+		FxBus.broadcast(dig_burst, at)
 	vertex_taken.emit(id)
 
 
@@ -108,7 +108,7 @@ func _give_back() -> void:
 	if _deformer.shape.field().is_removed(id):
 		_deformer.set_removed(id, false)
 		if restore_burst != null:
-			FxBus.broadcast(FxBus.name_of(restore_burst), _vertex_point(Vector2i(id % TerrainRules.GRID, id / TerrainRules.GRID)))
+			FxBus.broadcast(restore_burst, _vertex_point(Vector2i(id % TerrainRules.GRID, id / TerrainRules.GRID)))
 		vertex_given_back.emit(id)
 	_next_at = _ticks + maxi(1, MatchClock.ticks_for(restore_every_s))
 

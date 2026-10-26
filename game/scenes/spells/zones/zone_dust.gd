@@ -43,4 +43,4 @@ func _physics_process(_delta: float) -> void:
 		var ground := _land.height_at(spot.x, spot.z)
 		if not is_nan(ground):
 			spot.y = ground + global_position.y - zone.global_position.y
-			FxBus.play_puff(type.bus_name(), spot)
+			FxBus.puff(type.bus_name(), spot)

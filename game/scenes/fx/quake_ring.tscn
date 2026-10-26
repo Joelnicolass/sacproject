@@ -7,6 +7,7 @@
 [node name="QuakeRing" type="Node3D"]
 editor_description = "F132 (RFC-030 030u-a): onda de tierra del Quake del Jabberocky. Un anillo que sale de los pies y se desvanece en wave_s, siguiendo el suelo; MIX, nunca aditivo. FxBus.broadcast_scene lo lanza en todos los pares. Solo presentación."
 script = ExtResource("1_ring")
+camera_trauma = 0.5
 
 [node name="Ring" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true

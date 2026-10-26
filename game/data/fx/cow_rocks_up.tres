@@ -19,3 +19,4 @@ scale_max = 1.5
 additive = false
 lit = true
 pool_max = 4
+camera_trauma = 0.4

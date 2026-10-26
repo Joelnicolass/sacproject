@@ -70,6 +70,28 @@ static func fallback() -> BodyFacts:
 	return _fallback
 
 
+## Where an effect leaves a body: its feet, its middle, the top of its head or the muzzle (where its hand or mouth throws from).
+enum Socket { FEET, CENTER, TOP, MUZZLE }
+
+
+## The local position of `socket` (the origin of the body is at its feet).
+func local(socket: Socket) -> Vector3:
+	match socket:
+		Socket.FEET:
+			return feet
+		Socket.TOP:
+			return top
+		Socket.MUZZLE:
+			return muzzle
+	return center
+
+
+## Where `socket` of `body` is in the world. A body that wears nothing gives the unknown-model default (1.8 m tall). Effects leave from here,
+## never from a height typed in code.
+static func point(body: Node3D, socket: Socket) -> Vector3:
+	return body.global_transform * of_body(body).local(socket)
+
+
 ## Half the width of the box: the larger of the footprint radius and the reach.
 func half_size_m() -> float:
 	return maxf(radius_m, reach_m)

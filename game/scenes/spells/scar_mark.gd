@@ -1,6 +1,6 @@
 @tool
 class_name ScarMark
-extends Node3D
+extends FxScene
 
 ## A mark an effect leaves on the ground (a burn under a blast, a crack where a rock lands). It sits in the effect's scene,
 ## where the mark should be (move it with the gizmo), and `mark()` asks the map's GroundScars to paint `texture` there. The

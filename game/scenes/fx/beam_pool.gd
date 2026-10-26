@@ -1,0 +1,79 @@
+class_name BeamPool
+extends Node
+
+## The bolts (BeamFx), one small pool per BeamType: a play reuses an idle bolt, and when all of a type (its `pool_max`) are playing the oldest
+## starts over. The client builds them all when it loads (data/fx/beams and its folders). A type without `scene` has no bolt, only the flash
+## of its `light` at the end. Never in a headless process.
+## What it does not do: pick the effect or the place (FxBus), talk to the network, or sound.
+
+## type -> Array[BeamFx] idle (hidden) / playing (oldest first).
+var _idle: Dictionary[BeamType, Array] = {}
+var _playing: Dictionary[BeamType, Array] = {}
+
+
+## Plays `type` from `from` to `to`; with `follow` the end keeps its offset from that node while it lives.
+func play(type: BeamType, from: Vector3, to: Vector3, beam_seed: int, follow: Node3D = null) -> void:
+	if type.scene == null:
+		if type.light != null:
+			type.light.light_up(get_tree(), null, to)
+		return
+	var beam := _take(type)
+	if beam != null:
+		beam.play(from, to, beam_seed, follow)
+
+
+## Builds every bolt of data/fx/beams and its folders up to `pool_max`.
+func prewarm_all() -> void:
+	for found: Resource in FxWire.all_in(FxWire.BEAMS_DIR):
+		var type := found as BeamType
+		if type != null and type.scene != null:
+			_open(type)
+			for i in type.pool_max:
+				var beam := _build(type)
+				if beam == null:
+					break
+				_idle[type].push_back(beam)
+
+
+func _take(type: BeamType) -> BeamFx:
+	_open(type)
+	var idle: Array = _idle[type]
+	var playing: Array = _playing[type]
+	var beam: BeamFx = null
+	if not idle.is_empty():
+		beam = idle.pop_back()
+	elif playing.size() < type.pool_max:
+		beam = _build(type)
+		if beam == null:
+			return null
+	else:
+		beam = playing.pop_front()
+	playing.push_back(beam)
+	return beam
+
+
+func _open(type: BeamType) -> void:
+	if not _playing.has(type):
+		_idle[type] = []
+		_playing[type] = []
+
+
+func _build(type: BeamType) -> BeamFx:
+	var beam := type.scene.instantiate() as BeamFx
+	if beam == null:
+		return null
+	beam.type = type
+	beam.pooled = true
+	beam.name = "beam_%s_%d" % [FxWire.label_of(type), (_playing[type] as Array).size() + (_idle[type] as Array).size()]
+	add_child(beam)
+	beam.finished.connect(_release.bind(type, beam))
+	return beam
+
+
+func _release(type: BeamType, beam: BeamFx) -> void:
+	var playing: Array = _playing.get(type, [])
+	var at := playing.find(beam)
+	if at < 0:
+		return
+	playing.remove_at(at)
+	(_idle[type] as Array).push_back(beam)

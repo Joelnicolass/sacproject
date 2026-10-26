@@ -23,8 +23,8 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## Mana drained per update (sacengine manaDrainPerFrame).
 var mana_drain_per_tick := 0.0
-## FxBus fire puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only).
-var fire_fx := ""
+## The fire (a ParticleType; in the transition its old name, or "" for none) puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only).
+var fire_fx = null
 var fire_every_ticks := 10
 var fire_height_m := 0.8
 ## Mana this fire drained so far (for the log).
@@ -39,7 +39,7 @@ var _mana: ManaPool
 ## still gets its fire (it ends on its first update, see above). `attacker`: the creature that set it ablaze (null = nobody
 ## drains).
 static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringName, from_slot: int, mana_drain := 0.0,
-		pierce := false, fx := "", attacker: Node = null) -> Burning:
+		pierce := false, fx = null, attacker: Node = null) -> Burning:
 	if target == null or not is_instance_valid(target) or not _ROCK.is_live_body(target):
 		return null
 	var health := target.get_node_or_null("Health") as Health
@@ -57,7 +57,7 @@ static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringNam
 	fire.fx_name = ""
 	fire.mana_drain_per_tick = maxf(0.0, mana_drain) / float(frames) if creature else 0.0
 	fire.pierce_shield = pierce
-	fire.fire_fx = fx if creature else ""
+	fire.fire_fx = fx if creature else null
 	if attacker != null and is_instance_valid(attacker) and attacker.is_inside_tree():
 		fire.attacker_path = attacker.get_path()
 	target.add_child(fire, true)
@@ -84,7 +84,7 @@ func step(health: Health) -> bool:
 	var going := super.step(health)
 	if mana_drain_per_tick > 0.0 and _mana:
 		drained += _mana.drain(mana_drain_per_tick)
-	if not fire_fx.is_empty() and fire_every_ticks > 0 and (updates - 1) % fire_every_ticks == 0:
+	if fire_fx != null and fire_every_ticks > 0 and (updates - 1) % fire_every_ticks == 0:
 		var on := get_parent() as Node3D
 		if on:
 			FxBus.broadcast(fire_fx, on.global_position + Vector3.UP * fire_height_m)

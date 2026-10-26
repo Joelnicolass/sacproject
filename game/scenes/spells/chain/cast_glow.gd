@@ -1,5 +1,5 @@
 class_name CastGlow
-extends Node3D
+extends FxScene
 
 ## The glow that rises around a wizard while he casts Rainbow: sprites born inside his box that climb on their own. A SpriteEmitter
 ## (its ParticleType says what and how many) that follows the wizard for the casting time and frees itself. A presentation that

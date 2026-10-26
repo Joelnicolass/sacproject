@@ -6,7 +6,7 @@ extends Node
 ## `roll()` on top of its own placement. Presentation only: no RPC, no sim writes, no global RNG (its own FastNoiseLite with a
 ## fixed seed). In a headless or dedicated process it does nothing (`run_headless` lets a check run it).
 ## - Trauma (0…1) from the hits to the local wizard (the `local_wizard` group): lost fraction × `wizard_hit_trauma_per_max`,
-##   read from Health.changed (every peer has it), and from the FX of `shake_map` (FxBus.played) near the camera.
+##   read from Health.changed (every peer has it), and from the `camera_trauma` of the FX near the camera (FxBus.played; `shake_map` gives the fall-off).
 ## - Trauma falls by `decay_per_s` a second. Offset = trauma² × `max_offset_m` × noise, roll = trauma² × `max_roll_deg` × noise,
 ##   both × FeelPrefs.shake_scale (0 = none, exactly).
 
@@ -106,12 +106,12 @@ func _amount() -> float:
 	return trauma * trauma * scale if scale > 0.0 else 0.0
 
 
-func _on_fx_played(kind: StringName, fx_name: String, at: Vector3) -> void:
+func _on_fx_played(kind: StringName, fx: Resource, at: Vector3) -> void:
 	if shake_map == null or listener == null or not listener.is_inside_tree():
 		return
 	var from := listener.global_position
 	var distance := Vector2(at.x - from.x, at.z - from.z).length()
-	add_trauma(shake_map.trauma_of(kind, fx_name, distance))
+	add_trauma(shake_map.trauma_of(kind, fx, distance))
 
 
 ## Keeps the local wizard's Health in sight (it spawns after the camera, or is replaced on a rejoin).

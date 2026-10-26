@@ -49,12 +49,12 @@ func _type_sound() -> Dictionary:
 	var fx: FxSounds = SoundBus.fx_sounds
 	var blood := load(BLOOD) as ParticleType
 	var lightning := load(LIGHTNING) as BeamType
-	var burst := blood != null and blood.sound != null and fx.cue_of(FxBus.KIND_BURST, "blood") == blood.sound
-	var beam := lightning != null and lightning.sound != null and fx.cue_of(FxBus.KIND_BEAM, "lightning") == lightning.sound
-	var puff := fx.cue_of(FxBus.KIND_PUFF, "blood") == null
-	var scene := fx.cue_of(FxBus.KIND_SCENE, "res://scenes/fx/spike_field.tscn") == null
-	var no_sound := fx.cue_of(FxBus.KIND_BURST, "dirt") == null
-	var no_type := fx.cue_of(FxBus.KIND_BURST, "no_such_fx") == null
+	var burst := blood != null and blood.sound != null and fx.cue_of(FxBus.KIND_BURST, blood) == blood.sound
+	var beam := lightning != null and lightning.sound != null and fx.cue_of(FxBus.KIND_BEAM, lightning) == lightning.sound
+	var puff := fx.cue_of(FxBus.KIND_PUFF, blood) == null
+	var scene := fx.cue_of(FxBus.KIND_SCENE, load("res://scenes/fx/spike_field.tscn") as PackedScene) == null
+	var no_sound := fx.cue_of(FxBus.KIND_BURST, FxWire.as_particle("dirt")) == null
+	var no_type := fx.cue_of(FxBus.KIND_BURST, null) == null
 	return {"ok": burst and beam and puff and scene and no_sound and no_type, "burst": burst, "beam": beam, "puff": puff,
 		"scene": scene, "no_sound": no_sound, "no_type": no_type}
 
@@ -69,7 +69,7 @@ func _bridge(host: Node) -> Dictionary:
 	var blood: bool = SoundBus.sound_log.size() == before + 1 and last.get("emitter") == &"blood" \
 		and last.get("event") == SoundEvent.FX and bool(last.get("played"))
 	var after_blood: int = SoundBus.sound_log.size()
-	FxBus.play_puff("blood", Vector3(2, 0, 0))
+	FxBus.puff("blood", Vector3(2, 0, 0))
 	FxBus.play("dirt", Vector3(3, 0, 0))
 	var quiet: bool = SoundBus.sound_log.size() == after_blood
 	FxBus.play_beam("lightning", Vector3(0, 4, 0), Vector3.ZERO)

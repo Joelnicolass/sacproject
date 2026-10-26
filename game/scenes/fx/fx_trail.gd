@@ -8,8 +8,8 @@ extends Node3D
 ## Played once per puff.
 signal puffed(at: Vector3)
 
-## FxBus type (res://data/fx/<name>.tres).
-@export var type_name := ""
+## The burst each puff plays (a ParticleType from data/fx). Empty = no puffs.
+@export var fx: ParticleType
 ## Time between two puffs (as one puff every 2 render frames at 60 fps did).
 @export_range(0.005, 1.0, 0.0001, "suffix:s") var interval_s := 0.0333
 ## Off: no puffs and the clock waits (a Rock still rising out of the ground).
@@ -23,13 +23,15 @@ var _clock := 0.0
 var _last := Vector3.INF
 
 
-## Adds a trail to `host` (also before it enters the tree). Null in a headless process.
-static func attach(host: Node3D, type: String, seconds: float) -> FxTrail:
-	if DisplayServer.get_name() == "headless" or type.is_empty():
+## Adds a trail to `host` (also before it enters the tree). `type` is a ParticleType (or, in the transition, its old data/fx name).
+## Null in a headless process.
+static func attach(host: Node3D, type: Variant, seconds: float) -> FxTrail:
+	var burst := FxWire.as_particle(type)
+	if DisplayServer.get_name() == "headless" or burst == null:
 		return null
 	var trail := FxTrail.new()
 	trail.name = "Trail"
-	trail.type_name = type
+	trail.fx = burst
 	trail.interval_s = seconds
 	host.add_child(trail)
 	return trail
@@ -43,7 +45,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	var here := global_position
 	var host := get_parent()
-	if not emitting or type_name.is_empty() or (host and host.is_queued_for_deletion()):
+	if not emitting or fx == null or (host and host.is_queued_for_deletion()):
 		_last = here
 		return
 	var from := here if _last == Vector3.INF else _last
@@ -58,5 +60,5 @@ func _process(delta: float) -> void:
 	for i in owed:
 		## The last puff is here; earlier ones step back along this frame's path.
 		var at := from.lerp(here, float(i + 1) / float(owed))
-		FxBus.play_puff(type_name, at)
+		FxBus.puff(fx, at)
 		puffed.emit(at)

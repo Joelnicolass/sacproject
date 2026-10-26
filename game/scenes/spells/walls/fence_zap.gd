@@ -132,4 +132,4 @@ func _on_post_born(at: Vector3) -> void:
 
 
 func _zap(from: Vector3, to: Vector3, follow: Node3D) -> void:
-	FxBus.broadcast_beam(FxBus.name_of(bolt), from, to, follow)
+	FxBus.broadcast_beam(bolt, from, to, follow)

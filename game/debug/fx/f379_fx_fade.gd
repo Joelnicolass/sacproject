@@ -115,10 +115,10 @@ func _bursts_case() -> void:
 	var hard_before := 0
 	var hard_now := 0
 	var names := PackedStringArray()
-	for file in DirAccess.get_files_at(FxBus.TYPES_DIR):
+	for file in DirAccess.get_files_at(FxWire.PARTICLES_DIR):
 		if not file.trim_suffix(".remap").ends_with(".tres"):
 			continue
-		var type := load(FxBus.TYPES_DIR + file.trim_suffix(".remap")) as ParticleType
+		var type := load(FxWire.PARTICLES_DIR + file.trim_suffix(".remap")) as ParticleType
 		if type == null or type.rate_per_s > 0.0 or type.lifetime_s <= 0.0:
 			continue
 		types += 1

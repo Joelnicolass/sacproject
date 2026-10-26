@@ -30,7 +30,7 @@ func _on_stung(victim: Node3D) -> void:
 	if not _next.has(id):
 		victim.tree_exited.connect(func() -> void: _next.erase(id), CONNECT_ONE_SHOT)
 	_next[id] = now + roundi(every_s * MatchClock.TICKS_PER_SECOND_F)
-	FxBus.broadcast(type.resource_path.trim_prefix(FxBus.TYPES_DIR).get_basename(), BodyNudge.center(victim))
+	FxBus.broadcast(type.resource_path.trim_prefix(FxWire.PARTICLES_DIR).get_basename(), BodyNudge.center(victim))
 
 
 func _get_configuration_warnings() -> PackedStringArray:

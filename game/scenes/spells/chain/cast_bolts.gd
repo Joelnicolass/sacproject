@@ -1,5 +1,5 @@
 class_name CastBolts
-extends Node3D
+extends FxScene
 
 ## The little bolts that climb around a wizard while he casts Chain Lightning: at each tick, half the time, a short bolt is born at a
 ## random point of his box (a bit larger than it) and rises a few metres. FxBus plays it on this peer only; the scene frees itself when

@@ -21,3 +21,4 @@ additive = false
 lit = true
 pool_max = 4
 light = ExtResource("light")
+camera_trauma = 0.6

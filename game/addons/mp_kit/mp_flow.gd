@@ -4,6 +4,8 @@ extends Node
 ## Optional session flow. Not gameplay: scenes, host/join/1P, when the world loads.
 ## Add as autoload (after MpKit) or instance in the boot scene.
 ## Override `snapshot_for_joiner()` in a subclass for game state.
+## Every path that hosts (Host LAN, a dedicated by hand, a room's dedicated) arms the match's start gate (MpKit.gate): free seats
+## are open until the match starts; after it only a seat that left comes back (rejoin). Knobs: the "Match start" group.
 
 signal status_changed(text: String)
 signal world_loading
@@ -51,6 +53,23 @@ enum StartWhen {
 @export var server_lost_status: String = "Lost the server"
 @export var dedicated_status: String = "Dedicated on port %d"
 @export var cannot_host_status: String = "This build cannot host (web): join a server"
+
+@export_group("Match start")
+## Seconds a seat that dropped keeps its place (`--rejoin-grace-s=`). A room's match takes its MpLobbyConfig instead.
+@export var rejoin_grace_s: float = 60.0
+## Seconds after the first player sat that the match waits for the rest to load (`--load-timeout-s=`).
+@export var load_timeout_s: float = 60.0
+## Host LAN: clients that must load before the match starts; 0 = every seat (`--start-seats=`).
+@export var start_seats: int = 0
+## A dedicated started by hand (no ticket): clients that must load before it starts (`--start-seats=`).
+@export var dedicated_start_seats: int = 1
+## The clients' world pauses too while the match waits for seats.
+@export var pause_clients: bool = true
+## Shown on a client the server turned away because the match already started.
+@export var match_started_status: String = "The match already started"
+## Shown for any other reason (`%s` = the reason code).
+@export var rejected_status: String = "The server turned this player away (%s)"
+@export_group("")
 
 const PORT_MIN := 1
 const PORT_MAX := 65535
@@ -113,6 +132,7 @@ func _ready() -> void:
 	MpKit.server_lost.connect(_on_server_lost)
 	MpKit.snapshot_received.connect(_on_flow_snapshot)
 	MpKit.session_ended.connect(_on_session_ended)
+	MpKit.admission_rejected.connect(_on_admission_rejected)
 	## A dedicated started by the room server: the ticket says who may join (unless the game armed its own agent),
 	## and how many seats the match has, before the port opens.
 	if not MpBoot.user_value("match-ticket-file", "").is_empty():
@@ -131,6 +151,7 @@ func _ready() -> void:
 			push_error("MpKit.host_dedicated failed: %s" % err)
 			get_tree().quit(1)
 			return
+		_arm_gate()
 		match_running = true
 		_set_status(dedicated_status % MpKit.port)
 		call_deferred("goto_world")
@@ -153,6 +174,7 @@ func _ready() -> void:
 			push_error("MpKit.host_dedicated failed: %s" % err)
 			get_tree().quit(1)
 			return
+		_arm_gate()
 		_set_status(dedicated_status % MpKit.port)
 		if start_when == StartWhen.LISTEN_IMMEDIATE:
 			match_running = true
@@ -223,6 +245,8 @@ func _exit_tree() -> void:
 		MpKit.snapshot_received.disconnect(_on_flow_snapshot)
 	if MpKit.session_ended.is_connected(_on_session_ended):
 		MpKit.session_ended.disconnect(_on_session_ended)
+	if MpKit.admission_rejected.is_connected(_on_admission_rejected):
+		MpKit.admission_rejected.disconnect(_on_admission_rejected)
 
 
 func play_solo() -> void:
@@ -240,6 +264,7 @@ func host_lan() -> Error:
 	if err != OK:
 		_set_status(host_fail_status)
 		return err
+	_arm_gate()
 	_begin_match()
 	return OK
 
@@ -366,7 +391,36 @@ func world_ids() -> PackedStringArray:
 	return out
 
 
-## Override in a subclass to send extra game state to a late joiner.
+## What a client shows when the server turned it away. Override to translate (`reason`: MpMatchGate's codes, "timeout"...).
+func rejection_text(reason: String) -> String:
+	if reason == MpMatchGate.MATCH_STARTED:
+		return match_started_status
+	return rejected_status % reason
+
+
+## Server: opens the start gate of this match. A room's dedicated arms it through its MpMatchAgent (the ticket names the seats);
+## any other host opens every client seat. Idempotent.
+func _arm_gate() -> void:
+	if not MpKit.is_server() or MpKit.gate.is_armed():
+		return
+	MpKit.gate.pause_clients = pause_clients
+	var agents := get_tree().get_nodes_in_group(&"mp_match_agent")
+	if not agents.is_empty():
+		## Untyped: the flow must not load the lobby scripts.
+		agents[0].call(&"arm_gate")
+		return
+	## A ticket whose agent is not up yet: _ensure_match_agent arms it.
+	if not MpBoot.user_value("match-ticket-file", "").is_empty():
+		return
+	var gate := MpKit.gate
+	gate.rejoin_grace_s = float(MpBoot.user_value("rejoin-grace-s", str(rejoin_grace_s)))
+	gate.load_timeout_s = float(MpBoot.user_value("load-timeout-s", str(load_timeout_s)))
+	gate.host_present = MpKit.is_listen_host()
+	var need := start_seats if MpKit.is_listen_host() else dedicated_start_seats
+	gate.arm(MpKit.open_seats(), int(MpBoot.user_value("start-seats", str(need))))
+
+
+## Sent to every seat the gate let in (a first time or a rejoin): the world, and what the joiner must know first.
 func snapshot_for_joiner() -> Dictionary:
 	var snap := {}
 	var id := _snapshot_world_id()
@@ -386,6 +440,8 @@ func _begin_match() -> void:
 	goto_world()
 
 
+## MpKit says joined only for a seat the gate let in, so the world goes to admitted seats only (a newcomer after the start was
+## turned away before this).
 func _on_peer_joined(peer_id: int, _slot: int) -> void:
 	if match_running:
 		var snap := snapshot_for_joiner()
@@ -395,6 +451,11 @@ func _on_peer_joined(peer_id: int, _slot: int) -> void:
 		return
 	if MpKit.is_dedicated() and start_when == StartWhen.DEDICATED_FIRST_CLIENT:
 		_begin_match()
+
+
+func _on_admission_rejected(reason: String) -> void:
+	match_running = false
+	_set_status(rejection_text(reason))
 
 
 func _on_join_failed() -> void:
@@ -449,10 +510,12 @@ func _ticket_seats() -> int:
 func _ensure_match_agent() -> void:
 	## By path, not by class: the flow must not depend on the lobby scripts to load.
 	if MpKit.admission.is_valid() or not get_tree().get_nodes_in_group(&"mp_match_agent").is_empty():
+		_arm_gate()
 		return
 	var agent: Node = (load("res://addons/mp_kit/lobby/mp_match_agent.gd") as GDScript).new()
 	agent.name = "MatchAgent"
 	add_child(agent)
+	_arm_gate()
 
 
 func _go_boot() -> void:

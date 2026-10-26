@@ -39,12 +39,12 @@ func run_checks() -> Dictionary:
 	checks["plain_ranged_node_is_inert"] = plain.weapons.ranged != null and not plain.weapons.ranged.armed()
 	checks["added_in_child_order"] = _names(added.weapons.ordered()) == ["Melee", "Spit"]
 	checks["added_is_the_ranged_one"] = added.weapons.ranged != null and added.weapons.ranged.name == "Spit" and added.weapons.ranged.attack.tag == "ekba"
-	checks["added_look_is_its_shot"] = added.weapons.ranged.look != null and added.weapons.ranged.look.tag == "ekba"
+	checks["added_look_is_its_shot"] = added.weapons.ranged.look != null and FxWire.label_of(added.weapons.ranged.look.source) == "ekba"
 	checks["added_shoots_the_far_foe"] = added.weapons.ranged.wants(foe) and not added.weapons.melee.wants(foe)
 	checks["removed_melee_only"] = _names(removed.weapons.ordered()) == ["Melee"] and removed.weapons.ranged == null
 	checks["removed_type_keeps_its_data"] = removed.type.ranged_attack != null
 	checks["changed_own_ability_wins"] = changed.weapons.ranged.attack.tag == "ekba" and changed.type.ranged_attack.tag != "ekba"
-	checks["changed_look_follows"] = changed.weapons.ranged.look.tag == "ekba"
+	checks["changed_look_follows"] = FxWire.label_of(changed.weapons.ranged.look.source) == "ekba"
 	checks["changed_ranged_before_melee"] = _names(changed.weapons.ordered()) == ["Ranged", "Melee"]
 	var heard := []
 	added.weapons.struck.connect(func(_target: Node3D, amount: float, _chance: float, _roll: float) -> void: heard.append(amount))
@@ -52,8 +52,8 @@ func run_checks() -> Dictionary:
 	checks["struck_reaches_the_container"] = heard == [5.0]
 	checks["ability_effect_from_the_type"] = removed.abilities.slot.effect is Rockform and plain.abilities.slot.effect == null
 	checks["ability_effects_on_the_types"] = _effects() == EFFECTS
-	var look := ShotLook.make("kcfa")
-	checks["shot_look_is_a_scene"] = look.ground_mark != null and look.tag == "kcfa"
+	var look := ShotLook.make(preload("res://data/shots/kcfa.tscn"))
+	checks["shot_look_is_a_scene"] = look.ground_mark != null and FxWire.label_of(look.source) == "kcfa"
 	look.free()
 	var ok := true
 	for key in checks:

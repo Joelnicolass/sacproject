@@ -15,8 +15,8 @@ extends Node3D
 
 
 
-## ShotLook tag of the breath (data/shots/breath_of_life.tscn). `breath_of_life` is not a SpellTag.
-@export var look_tag := "breath_of_life"
+## The breath's look (data/shots/breath_of_life.tscn). Empty = a plain ball.
+@export var look: PackedScene
 ## The revival the breath starts on arrival (fast_revive.tscn).
 @export var fast_revive_scene: PackedScene
 ## Arrived when the velocity of the tick is under this (updateBreathOfLife: 0.01 m/s).
@@ -107,7 +107,7 @@ func _make_shot() -> RangedShot:
 	var data := {
 		"x": _position.x, "y": _position.y, "z": _position.z, "vx": 0.0, "vy": 0.0, "vz": 0.0,
 		"damage": 0.0, "slot": int(user.get("owner_slot")) if "owner_slot" in user else 0, "gravity": 0.0,
-		"max_distance": 1.0e9, "tag": look_tag, "target": "",
+		"max_distance": 1.0e9, "look": FxWire.id_of(look), "target": "",
 		"shooter": str(user.get_path()) if user.is_inside_tree() else "",
 	}
 	return spawner.spawn_shot(data)

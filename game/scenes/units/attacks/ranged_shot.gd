@@ -41,8 +41,9 @@ var _spin_rate := 0.0
 var _in_flight: ShotInFlight
 
 
-## `shot_ability`: the ability the packet's `tag` names (ShotSpawner turns the text into it), or null for a shot that is not one.
-func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
+## `shot_ability`: the ability the packet's `tag` names, or null for a shot that is not one; `look_scene`: the scene its `look`
+## names (null = a plain ball). ShotSpawner turns both texts into them.
+func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: PackedScene = null) -> void:
 	name = str(data["name"])
 	spawn_data = data
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
@@ -53,7 +54,7 @@ func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
 	max_distance = float(data.get("max_distance", INF))
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
-	look = ShotLook.make(str(data.get("tag", "")))
+	look = ShotLook.make(look_scene)
 	add_child(look)
 	ability = shot_ability
 	mods = Health.IGNITE if look.ignites else 0

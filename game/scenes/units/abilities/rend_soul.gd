@@ -11,8 +11,8 @@ extends AbilityEffect
 
 ## The strike (strikes/soul_strike.tscn), a child of the user's RangedWeapon.
 @export var strike_scene: PackedScene
-## The shot's look: res://data/shots/<tag>.tscn (the blast at the soul and its sparks).
-@export var look_tag := "rend_soul"
+## The shot's look (data/shots/rend_soul.tscn: the blast at the soul and its sparks). Empty = a plain look with no blast.
+@export var look: PackedScene
 
 
 func status(_target_pos: Vector3, target: Node3D) -> String:
@@ -65,7 +65,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		"max_distance": ability.cast_range_m,
 		"target": "",
 		"shooter": str(user.get_path()),
-	}, ShotLook.make(look_tag), ability, parent)
+	}, ShotLook.make(look), ability, parent)
 	return true
 
 

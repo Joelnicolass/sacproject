@@ -75,6 +75,7 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 	var velocity: Vector3 = direction * attack.speed_m_s
 	var data := {
 		"tag": attack.tag,
+		"look": FxWire.id_of(look.source),
 		"x": origin.x, "y": origin.y, "z": origin.z,
 		"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
 		"damage": float(attack.damage) * maxf(0.0, body.attack_factor),

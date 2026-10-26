@@ -89,11 +89,11 @@ func _surface_script() -> String:
 
 func _dump_map(tag: String, index: int) -> Dictionary:
 	var path := MAPS_DIR + "%s/heights.png" % tag
-	var heights: Resource = load(path) if ResourceLoader.exists(path) else null
-	if heights == null:
+	var source: Resource = load(path) if ResourceLoader.exists(path) else null
+	if source == null:
 		return {"ok": false, "error": "no heights.png (import first)"}
 	var surface := (load(_surface_script()) as GDScript).new() as Node
-	surface.set("heights", heights)
+	surface.set("heights", source)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = SEED + index
 	var heights := PackedByteArray()

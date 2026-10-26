@@ -1,10 +1,10 @@
 extends Node
 
-## 063-2a: counts the bodies that fell off the ground while a bench match runs on a mesh map. Every half second it asks
+## Counts the bodies that fell off the ground while a bench match runs, on any map. Every half second it asks
 ## FallCheck.has_fallen (the product's own rule: over no land and 25 m under the lowest land) of every unit and wizard, and after
-## `run_s` of match time (physics ticks, so it follows --fixed-fps) prints MESH FALL PASS when none did and some bodies were
-## seen, FAIL otherwise, and quits. A wall clock limit quits it too. Presentation of nothing: it changes no game state.
-## Run: see debug/map/mesh_ai_duel.tscn.
+## `run_s` of match time (physics ticks, so it follows --fixed-fps) prints FALL WATCH PASS when none did and some bodies were
+## seen, FAIL otherwise, and quits. A wall clock limit quits it too. It changes no game state.
+## Run: a child of a bench scene, for example with debug/rules/ai_duel_quiet.tres (two AIs, no NPCs) and `-- --map=<tag>`.
 
 const TICKS_PER_SECOND := 60
 const CHECK_EVERY_TICKS := 30
@@ -44,5 +44,5 @@ func _look_at(body: Node) -> void:
 func _finish(code: int) -> void:
 	set_physics_process(false)
 	var ok := code == 0 and _fallen.is_empty() and not _seen.is_empty()
-	print("MESH FALL %s: %d bodies fell, %d bodies seen in %d ticks" % ["PASS" if ok else "FAIL", _fallen.size(), _seen.size(), _ticks])
+	print("FALL WATCH %s: %d bodies fell, %d bodies seen in %d ticks" % ["PASS" if ok else "FAIL", _fallen.size(), _seen.size(), _ticks])
 	get_tree().quit(0 if ok else 1)

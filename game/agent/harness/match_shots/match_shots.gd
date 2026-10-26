@@ -444,7 +444,7 @@ func _shoot_hud(world: MatchWorld, file: String) -> void:
 
 ## The top of the wall closest to `focus` in the map's ground mesh (a vertex marked as wall with UV.y 0), or INF without walls.
 func _nearest_rim(world: MatchWorld, focus: Vector3) -> Vector3:
-	var terrain := world.map.terrain as MeshInstance3D if world.map != null else null
+	var terrain := world.map.terrain if world.map != null else null
 	if terrain == null or terrain.mesh == null:
 		return Vector3.INF
 	var arrays := terrain.mesh.surface_get_arrays(0)

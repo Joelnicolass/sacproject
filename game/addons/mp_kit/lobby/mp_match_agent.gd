@@ -15,6 +15,10 @@ signal result_reported(data: Dictionary)
 ## Start by itself in _ready when `--match-ticket-file` is present.
 @export var auto_start: bool = true
 
+const GROUP := &"mp_match_agent"
+## Result reason when the relay refused this match's port (another live host): the launcher retries another port.
+const PORT_IN_USE := "port_in_use"
+
 var ticket: Dictionary = {}
 var match_id: String = ""
 var finished: bool = false
@@ -30,7 +34,13 @@ var _ever_joined: bool = false
 var _seats: Dictionary = {}
 
 
+func _enter_tree() -> void:
+	add_to_group(GROUP)
+
+
 func _ready() -> void:
+	## Infrastructure: it keeps the heartbeat and the state going while the match is paused (MpMatch waits for seats).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if config == null:
 		config = MpLobbyConfig.new()
 	config = config.with_cli_overrides()
@@ -95,7 +105,7 @@ func report_result(data: Dictionary) -> void:
 	_write_state()
 	MpKit.broadcast_session_ended(out)
 	result_reported.emit(out)
-	var delay := config.result_quit_delay_s if out["reason"] != "room_gone" else 0.0
+	var delay := config.result_quit_delay_s if out["reason"] != "room_gone" and out["reason"] != PORT_IN_USE else 0.0
 	if delay <= 0.0:
 		get_tree().quit()
 	else:
@@ -104,6 +114,10 @@ func report_result(data: Dictionary) -> void:
 
 func _process(delta: float) -> void:
 	if ticket.is_empty() or finished:
+		return
+	## Through the relay this port's room has another live host: say so, the launcher tries another port.
+	if MpKit.listen_refused():
+		report_result({"reason": PORT_IN_USE})
 		return
 	_hb_accum += delta
 	if _hb_accum >= config.heartbeat_s:
@@ -173,7 +187,7 @@ func _write_state() -> void:
 	var slots := {}
 	for slot in _seats.keys():
 		slots[str(slot)] = int(_seats[slot]["peer"]) != 0
-	var listening := MpKit.is_server() and MpKit.multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
+	var listening := MpKit.is_listening()
 	MpMatchFiles.write_json(MpMatchFiles.path_of(_root, match_id, MpMatchFiles.STATE), {
 		"match_id": match_id, "pid": OS.get_process_id(), "listening": listening,
 		"heartbeat_ms": MpMatchFiles.now_ms(), "started_ms": _started_ms,

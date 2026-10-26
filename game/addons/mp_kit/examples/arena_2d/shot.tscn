@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/examples/arena_2d/shot.gd" id="1"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_actor.gd" id="2"]
+
+[sub_resource type="SceneReplicationConfig" id="sync"]
+properties/0/path = NodePath("MpActor:net_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("MpActor:net_stamp")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("MpActor:owner_slot")
+properties/2/spawn = true
+properties/2/replication_mode = 0
+
+[node name="Shot" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(1, 0.9, 0.4, 1)
+polygon = PackedVector2Array(-5, -5, 5, -5, 5, 5, -5, 5)
+
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("2")
+sync_rotation = false
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
+replication_config = SubResource("sync")

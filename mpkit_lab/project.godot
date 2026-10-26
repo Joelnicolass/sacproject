@@ -1,0 +1,29 @@
+; MpKit lab: a tiny project that runs the kit's own examples and tests, apart from the game's autoloads.
+; addons/mp_kit is a symlink to game/addons/mp_kit (one copy of the kit).
+
+config_version=5
+
+[application]
+
+config/name="MpKit Lab"
+run/main_scene="res://addons/mp_kit/examples/arena_2d/boot.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[autoload]
+
+MpKit="*res://addons/mp_kit/mp_kit.gd"
+MpLabProbe="*res://probe/lab_probe.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/lab_editor_check/plugin.cfg")
+
+[display]
+
+window/size/viewport_width=960
+window/size/viewport_height=540
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

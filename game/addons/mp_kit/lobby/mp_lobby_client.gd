@@ -57,6 +57,8 @@ var port: int = 0
 
 ## `MpTransport.ENET` or `MpTransport.WS`; must equal the room server's. Default: `--transport=` flag.
 var transport: String = MpTransport.from_flags()
+## WebSocket TLS of the client (wss://): `--tls-client` flags, or set from an MpNetConfig (MpLobbyScreen does it).
+var tls: TLSOptions = MpTransport.client_tls_from_flags()
 var _peer: MultiplayerPeer
 var _connecting_since_msec: int = 0
 ## 0 = not resuming; otherwise the msec after which the client gives up.
@@ -78,7 +80,7 @@ func _process(_delta: float) -> void:
 	var now := Time.get_ticks_msec()
 	if link == Link.CONNECTING and _peer != null:
 		if now - _connecting_since_msec >= int(connect_timeout_s * 1000.0):
-			print("lobby client: timeout de %.1f s hacia %s:%d (%s)" % [connect_timeout_s, host, port, transport])
+			print("lobby client: no answer in %.1f s from %s:%d (%s)" % [connect_timeout_s, host, port, transport])
 			_drop()
 			_lose("connect_timeout")
 		return
@@ -223,16 +225,16 @@ func _ensure_signals() -> void:
 
 
 func _open() -> Error:
-	var made := MpTransport.create_client(transport, host, port)
+	var made := MpTransport.create_client(transport, host, port, tls)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
-		print("lobby client: no se pudo abrir %s:%d (%s): %s" % [host, port, transport, error_string(int(made["error"]))])
+		print("lobby client: cannot open %s:%d (%s): %s" % [host, port, transport, error_string(int(made["error"]))])
 		return int(made["error"]) as Error
 	_peer = peer
 	multiplayer.multiplayer_peer = peer
 	link = Link.CONNECTING
 	_connecting_since_msec = Time.get_ticks_msec()
-	print("lobby client: conectando a %s:%d (%s) como \"%s\"" % [host, port, transport, display_name])
+	print("lobby client: connecting to %s:%d (%s) as \"%s\"" % [host, port, transport, display_name])
 	return OK
 
 
@@ -251,7 +253,7 @@ func _on_connected() -> void:
 func _on_connection_failed() -> void:
 	if _peer == null:
 		return
-	print("lobby client: connect_failed hacia %s:%d (%s)" % [host, port, transport])
+	print("lobby client: connection to %s:%d (%s) failed" % [host, port, transport])
 	_drop()
 	_lose("connect_failed")
 
@@ -297,7 +299,7 @@ func rpc_welcome(p_session_id: String, p_resume_token: String) -> void:
 	resume_token = p_resume_token
 	_resume_deadline_msec = 0
 	link = Link.ONLINE
-	print("lobby client: bienvenido a %s:%d" % [host, port])
+	print("lobby client: welcome from %s:%d" % [host, port])
 	lobby_joined.emit(session_id)
 
 

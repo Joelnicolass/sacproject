@@ -57,6 +57,16 @@ func is_active() -> bool:
 	return _active
 
 
+## Clients can reach the lobby now (with the relay transport: once the relay accepted it).
+func is_listening() -> bool:
+	return _active and MpTransport.is_listening(_peer)
+
+
+## The relay turned the lobby away: its port is in use by another live lobby.
+func listen_refused() -> bool:
+	return _active and MpTransport.is_refused(_peer)
+
+
 func peer_of(session_id: String) -> int:
 	return int(_session_peer.get(session_id, 0))
 
@@ -73,7 +83,13 @@ func name_of_room(room_id: String) -> String:
 func start(p_config: MpLobbyConfig, launcher: MpMatchLauncher = null) -> Error:
 	stop()
 	config = p_config
-	var made := MpTransport.create_server(config.transport, config.lobby_port, config.max_connections)
+	MpTransport.relay_from_flags()
+	if not config.relay_url.is_empty():
+		MpTransport.relay_url = config.relay_url
+	if not config.relay_room.is_empty():
+		MpTransport.relay_room = config.relay_room
+	var tls := MpTransport.server_tls(config.tls_certificate_path, config.tls_key_path)
+	var made := MpTransport.create_server(config.transport, config.lobby_port, config.max_connections, tls)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		return int(made["error"]) as Error

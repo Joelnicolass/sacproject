@@ -33,12 +33,23 @@ var admission_timeout_s: float = 5.0
 const TICKET_MAX_LEN := 512
 ## Seconds between the rejection RPC and the disconnect.
 const REJECT_FLUSH_S := 0.2
+## Peers that may wait for admission at once; more are disconnected on arrival (a flood of empty connections).
+var max_pending_admission: int = 64
+## Largest Dictionary a client may send through the custom tunnel (var_to_bytes), and how often.
+var custom_max_bytes: int = 8192
+var custom_limit := MpRateLimit.new(30.0, 60.0)
 var rooms: MpRoomDirectory
 var matchmaker: MpMatchmaker
 
 ## `MpTransport.ENET` (default) or `MpTransport.WS`. Read from `--transport=` at startup; glue may set it
 ## before `host()` / `join()`. Same API and RPCs with both.
 var transport: String = MpTransport.ENET
+## WebSocket TLS (wss://). Server: certificate + key; client: TLSOptions.client(). Null = plain. MpNetConfig sets them.
+var tls_server: TLSOptions
+var tls_client: TLSOptions
+## This connection's RTT, jitter and loss (and, on the server, every player's). Mp.net_quality() reads it.
+var net_quality: MpNetQuality
+var _listen_refused: bool = false
 var _peer: MultiplayerPeer
 var _world_ready: Dictionary = {}
 var _broadcasting_custom: bool = false
@@ -47,7 +58,14 @@ var _awaiting_ticket: Dictionary = {}
 
 
 func _ready() -> void:
+	## Infrastructure: the session (admission timers, rejections) keeps going while the game is paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	net_quality = MpNetQuality.new()
+	net_quality.name = "NetQuality"
+	add_child(net_quality)
 	transport = MpTransport.from_flags()
+	tls_server = MpTransport.server_tls_from_flags()
+	tls_client = MpTransport.client_tls_from_flags()
 	_ensure_hub_children()
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
@@ -81,10 +99,29 @@ func is_dedicated() -> bool:
 	return is_server() and ids.dedicated
 
 
+## Server: clients can reach it now. ENet / WebSocket: as soon as it hosts; relay: once the relay accepted it.
+func is_listening() -> bool:
+	return is_server() and MpTransport.is_listening(_peer)
+
+
+## Server: the relay turned this server away (its port's room has another live host): host on another port.
+## Kept after the refused peer is dropped (Godot reports a host's lost link as server_disconnected), until the
+## next host / join.
+func listen_refused() -> bool:
+	return _listen_refused or MpTransport.is_refused(_peer)
+
+
 func is_listen_host() -> bool:
 	return is_server() and not ids.dedicated
 
 
+## True where the game rules run: solo (no network) or the server. Use it instead of
+## `not is_networked() or is_server()`.
+func is_authority() -> bool:
+	return not is_networked() or is_server()
+
+
+## The slot of the player on this machine; 0 on a dedicated server and on a client that has not got one yet.
 func local_slot() -> int:
 	if not is_networked():
 		return ids.host_slot
@@ -92,9 +129,12 @@ func local_slot() -> int:
 		if ids.dedicated:
 			return 0
 		return ids.host_slot
-	if ids.local_slot != 0:
-		return ids.local_slot
-	return ids.host_slot + 1
+	return ids.local_slot
+
+
+## True when this machine has a player with a known slot (solo, a listen host, a client once the server assigned it).
+func has_local_slot() -> bool:
+	return local_slot() > 0
 
 
 func occupied_slots() -> Array[int]:
@@ -119,8 +159,9 @@ func is_peer_world_ready(peer_id: int) -> bool:
 
 func host(dedicated: bool = false) -> Error:
 	leave()
+	_listen_refused = false
 	ids.dedicated = dedicated
-	var made := MpTransport.create_server(transport, port, _enet_max_clients())
+	var made := MpTransport.create_server(transport, port, _enet_max_clients(), tls_server)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		ids.dedicated = false
@@ -142,7 +183,8 @@ func host_dedicated() -> Error:
 ## `p_port` <= 0 uses `port`. A non-empty `ticket` is presented to the server on connect.
 func join(address: String, p_port: int = -1, ticket: String = "") -> Error:
 	leave()
-	var made := MpTransport.create_client(transport, address, p_port if p_port > 0 else port)
+	_listen_refused = false
+	var made := MpTransport.create_client(transport, address, p_port if p_port > 0 else port, tls_client)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		return int(made["error"]) as Error
@@ -311,6 +353,9 @@ func _on_peer_connected(id: int) -> void:
 	if not multiplayer.is_server():
 		return
 	if admission.is_valid():
+		if _awaiting_ticket.size() >= max_pending_admission:
+			multiplayer.multiplayer_peer.disconnect_peer(id)
+			return
 		_awaiting_ticket[id] = true
 		get_tree().create_timer(admission_timeout_s).timeout.connect(_on_admission_timeout.bind(id))
 		return
@@ -331,6 +376,7 @@ func _on_peer_disconnected(id: int) -> void:
 	if _awaiting_ticket.erase(id):
 		return
 	_world_ready.erase(id)
+	custom_limit.forget(id)
 	var slot := ids.unbind_peer(id)
 	if slot == 0 and admission.is_valid():
 		return
@@ -372,6 +418,11 @@ func _on_connection_failed() -> void:
 func _on_server_disconnected() -> void:
 	if _peer == null:
 		return
+	## A host the relay turned away (its room is taken): not a lost server. Say it through listen_refused().
+	if MpTransport.is_refused(_peer):
+		leave()
+		_listen_refused = true
+		return
 	## Dropped while still waiting for a slot: a rejection whose RPC did not arrive.
 	if not _pending_ticket.is_empty() and ids.local_slot == 0:
 		leave()
@@ -401,6 +452,9 @@ func rpc_present_ticket(ticket: String) -> void:
 	var slot := int(admission.call(sender, ticket))
 	if slot <= 0:
 		_reject_peer(sender, "rejected")
+		return
+	if slot < ids.first_client_slot() or slot > ids.max_players:
+		_reject_peer(sender, "slot_out_of_range")
 		return
 	if not ids.bind_client(sender, slot):
 		_reject_peer(sender, "slot_taken")
@@ -456,6 +510,8 @@ func rpc_custom_to_server(channel: String, data: Dictionary) -> void:
 		return
 	var name := StringName(channel)
 	if not is_custom_channel_allowed(name):
+		return
+	if var_to_bytes(data).size() > custom_max_bytes or not custom_limit.allow(sender):
 		return
 	custom_received.emit(name, data.duplicate(true), sender)
 

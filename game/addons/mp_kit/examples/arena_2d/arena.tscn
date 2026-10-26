@@ -1,0 +1,94 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/mp_slot_spawner.gd" id="1"]
+[ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/player.tscn" id="2"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_state.gd" id="3"]
+[ext_resource type="Script" path="res://addons/mp_kit/examples/arena_2d/hud.gd" id="4"]
+[ext_resource type="Script" path="res://addons/mp_kit/examples/arena_2d/arena.gd" id="5"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_match.gd" id="6"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_spawner.gd" id="7"]
+[ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/shot.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/bell.tscn" id="9"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_leave_button.gd" id="10"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_invite_label.gd" id="11"]
+
+[sub_resource type="SceneReplicationConfig" id="state_sync"]
+properties/0/path = NodePath(".:values")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[node name="Arena" type="Node2D"]
+script = ExtResource("5")
+
+[node name="Floor" type="ColorRect" parent="."]
+offset_right = 960.0
+offset_bottom = 540.0
+color = Color(0.11, 0.12, 0.16, 1)
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="P1" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(240, 180)
+
+[node name="P2" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(720, 180)
+
+[node name="P3" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(240, 380)
+
+[node name="P4" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(720, 380)
+
+[node name="Actors" type="Node2D" parent="."]
+
+[node name="Players" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Actors")
+script = ExtResource("1")
+pawn_scene = ExtResource("2")
+spawn_points = NodePath("../SpawnPoints")
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="Shots" type="MultiplayerSpawner" parent="." groups=["shot_spawner"]]
+spawn_path = NodePath("../Projectiles")
+script = ExtResource("7")
+extra_scenes = Array[PackedScene]([ExtResource("8")])
+
+[node name="Bell" parent="." instance=ExtResource("9")]
+position = Vector2(480, 470)
+
+[node name="Score" type="Node" parent="."]
+script = ExtResource("3")
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="Score"]
+root_path = NodePath("..")
+replication_config = SubResource("state_sync")
+
+[node name="Match" type="Node" parent="."]
+script = ExtResource("6")
+
+[node name="Hud" type="CanvasLayer" parent="." node_paths=PackedStringArray("state")]
+script = ExtResource("4")
+state = NodePath("../Score")
+
+[node name="Info" type="Label" parent="Hud"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 320.0
+offset_bottom = 120.0
+
+[node name="Leave" type="Button" parent="Hud"]
+script = ExtResource("10")
+offset_left = 860.0
+offset_top = 12.0
+offset_right = 944.0
+offset_bottom = 44.0
+text = "Leave"
+
+[node name="Invite" type="Label" parent="Hud"]
+script = ExtResource("11")
+offset_left = 16.0
+offset_top = 500.0
+offset_right = 944.0
+offset_bottom = 528.0

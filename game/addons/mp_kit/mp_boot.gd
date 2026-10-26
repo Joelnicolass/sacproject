@@ -31,6 +31,8 @@ static func role() -> String:
 		return "client1"
 	if user_flag("client2"):
 		return "client2"
+	if user_flag("listen-host"):
+		return "listen"
 	if user_flag("room-server"):
 		return "room-server"
 	if user_flag("dedicated"):

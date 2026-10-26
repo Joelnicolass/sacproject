@@ -1,0 +1,9 @@
+{
+  "name": "mpkit-relay",
+  "version": "1.0.0",
+  "description": "WebSocket relay for MpKit's relay transport (Godot). No dependencies.",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": { "start": "node server.mjs" },
+  "engines": { "node": ">=18" }
+}

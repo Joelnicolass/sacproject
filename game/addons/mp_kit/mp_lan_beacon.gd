@@ -2,10 +2,13 @@ class_name MpLanBeacon
 extends Node
 
 ## UDP broadcast rooms. Advertise from the host; browse from the join screen.
+## Several game windows on one PC can browse at once: each listens on the first free port of
+## discover_port .. discover_port + PORT_SPAN - 1, and an advertiser broadcasts to all of them.
 
 signal rooms_changed(rooms: Array)
 
 const MAGIC := "MPKIT1"
+const PORT_SPAN := 4
 
 @export var discover_port: int = 7778
 @export var broadcast_hz: float = 1.0
@@ -22,6 +25,8 @@ var _by_key: Dictionary = {}
 
 
 func _ready() -> void:
+	## Infrastructure: a host's pause menu does not stop LAN advertising.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(false)
 
 
@@ -35,7 +40,6 @@ func start_advertise(room_name: String = "MpKit", game_port: int = -1) -> Error:
 	if err != OK:
 		_udp = null
 		return err
-	_udp.set_dest_address("255.255.255.255", discover_port)
 	_advertising = true
 	_accum = 0.0
 	set_process(true)
@@ -46,8 +50,13 @@ func start_advertise(room_name: String = "MpKit", game_port: int = -1) -> Error:
 func start_browse() -> Error:
 	stop()
 	_udp = PacketPeerUDP.new()
-	var err := _udp.bind(discover_port)
+	var err := ERR_UNAVAILABLE
+	for offset in PORT_SPAN:
+		err = _udp.bind(discover_port + offset)
+		if err == OK:
+			break
 	if err != OK:
+		push_warning("MpLanBeacon: UDP %d-%d are all taken (%d game windows browsing?): this LAN list stays empty" % [discover_port, discover_port + PORT_SPAN - 1, PORT_SPAN])
 		_udp = null
 		return err
 	_browsing = true
@@ -100,7 +109,10 @@ func _send_advert() -> void:
 		"c": MpKit.occupied_slots().size() if MpKit.is_networked() else 1,
 		"m": MpKit.max_players,
 	}
-	_udp.put_packet(JSON.stringify(payload).to_utf8_buffer())
+	var bytes := JSON.stringify(payload).to_utf8_buffer()
+	for offset in PORT_SPAN:
+		_udp.set_dest_address("255.255.255.255", discover_port + offset)
+		_udp.put_packet(bytes)
 
 
 func _ingest(bytes: PackedByteArray, from: String) -> bool:

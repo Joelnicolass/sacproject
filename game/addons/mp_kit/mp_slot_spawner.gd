@@ -56,6 +56,9 @@ func spawn_slot(slot: int) -> Node:
 	pawn.name = "%s%d" % [actor_name_prefix, slot]
 	if "player_slot" in pawn:
 		pawn.player_slot = slot
+	var net := MpActor.of(pawn)
+	if net:
+		net.owner_slot = slot
 	_place(pawn, slot)
 	_root.add_child(pawn, true)
 	_pawns[slot] = pawn

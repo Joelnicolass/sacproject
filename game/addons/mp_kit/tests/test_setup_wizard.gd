@@ -1,0 +1,69 @@
+extends "res://addons/mp_kit/tests/mp_test.gd"
+
+## MpSetupWizard: a few choices become a working game folder; existing files are never overwritten.
+
+
+func _wizard(folder: String, is_3d: bool) -> MpSetupWizard:
+	_clean(folder)
+	var wizard := MpSetupWizard.new()
+	wizard.folder = folder
+	wizard.dimension_3d = is_3d
+	wizard.max_players = 3
+	return wizard
+
+
+func test_writes_a_2d_game_once() -> void:
+	var wizard := _wizard("user://mpkit_wizard_2d", false)
+	check(not wizard.plan_text().contains("[~]") and wizard.plan_text().contains("[+] user://mpkit_wizard_2d/boot.tscn"), "the plan lists new files")
+	check(wizard.write() == OK, "the game is written")
+	check(wizard.plan_text().contains("[~]") and not wizard.plan_text().contains("[+]"), "now every file exists")
+	check(wizard.write() == ERR_ALREADY_EXISTS, "a second write refuses to overwrite")
+	var world: Node = (load("user://mpkit_wizard_2d/world.tscn") as PackedScene).instantiate()
+	check(world.get_node("MpWorld") is MpWorld, "one MpWorld in the world")
+	check(world.get_node("MpWorld/SpawnPoints").get_child_count() == 3, "one spawn point per player")
+	check(world.get_node("MpWorld/Players") is MpSlotSpawner and world.get_node("MpWorld/Players").get("pawn_scene") != null, "the slot spawner has the player")
+	check(world.get_node("MpWorld/State") is MpState and world.get_node_or_null("MpWorld/State/MpSync") != null, "MpState with its synchronizer")
+	check(world.get_node("MpWorld/Match") is MpMatch, "MpMatch in the world")
+	world.free()
+	var player: Node = (load("user://mpkit_wizard_2d/player.tscn") as PackedScene).instantiate()
+	var actor := MpActor.of(player)
+	var sync := player.get_node("MpActor/MpSync") as MultiplayerSynchronizer
+	check(actor != null and actor.predict, "the player has a predicted MpActor")
+	check(sync != null and sync.replication_config.has_property(^"MpActor:net_position") and sync.replication_config.has_property(^"MpInput:acked_seq"), "the player's synchronizer is built")
+	check(player.has_method(&"mp_move"), "the player script has mp_move")
+	player.free()
+	var boot: Node = (load("user://mpkit_wizard_2d/boot.tscn") as PackedScene).instantiate()
+	var game: Variant = boot.get_node("Flow").get("game")
+	check(game is MpGame, "the boot's flow has only the game .tres")
+	check(game is MpGame and (game as MpGame).lobby_scene.ends_with("lobby.tscn") and (game as MpGame).world_scene.ends_with("world.tscn"), "the game knows its scenes")
+	boot.free()
+
+
+func test_each_game_gets_its_own_relay_rooms() -> void:
+	var a := _wizard("user://mpkit_wizard_relay_a", false)
+	var b := _wizard("user://mpkit_wizard_relay_b", false)
+	a.transport = "relay"
+	b.transport = "relay"
+	check(a.write() == OK and b.write() == OK, "two relay games are written")
+	var room_a := str((load("user://mpkit_wizard_relay_a/game.tres") as MpNetConfig).relay_room)
+	var room_b := str((load("user://mpkit_wizard_relay_b/game.tres") as MpNetConfig).relay_room)
+	check(not room_a.is_empty() and room_a != room_b, "two games made with the wizard never share relay rooms")
+
+
+func test_writes_a_3d_game_without_rooms() -> void:
+	var wizard := _wizard("user://mpkit_wizard_3d", true)
+	wizard.online_rooms = false
+	check(not wizard.plan_text().contains("lobby.tscn"), "without rooms there is no lobby in the plan")
+	check(wizard.write() == OK, "the 3D game is written")
+	var player: Node = (load("user://mpkit_wizard_3d/player.tscn") as PackedScene).instantiate()
+	check(player is CharacterBody3D and player.get_node("Visual") is MeshInstance3D, "a 3D player")
+	player.free()
+
+
+func _clean(folder: String) -> void:
+	var dir := ProjectSettings.globalize_path(folder)
+	if not DirAccess.dir_exists_absolute(dir):
+		return
+	for file in DirAccess.get_files_at(dir):
+		DirAccess.remove_absolute(dir.path_join(file))
+	DirAccess.remove_absolute(dir)

@@ -14,7 +14,7 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 	for own: AiTrack in brain.perception.bodies(0):
 		if not AiWizardBrain.target_alive(own):
 			continue
-		if own.kind == AiTrack.Kind.WIZ and (own.node as WizardBody).is_ghost():
+		if own.kind == AiTrack.Kind.WIZARD and (own.node as WizardBody).is_ghost():
 			continue
 		var found := brain.eval.find_best(wizard, own, SpellType.AiPhase.SUPPORT)
 		var s := float(found["score"])

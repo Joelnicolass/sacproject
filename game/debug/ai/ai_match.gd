@@ -689,7 +689,7 @@ static func _wizard_info(t: AiTrack) -> Dictionary:
 	return {
 		"near7": near, "slide": cols, "vel": str((t.node as CharacterBody3D).velocity) if t.node is CharacterBody3D else "",
 		"at": AiAudit.fmt(t.node.global_position), "walking": bool(t.node.call("is_walking")), "ord_state": t.ord_state, "ord_pos": AiAudit.fmt(t.ord_pos),
-		"queue_head": head, "queue": t.cast_queue.size(), "mana": snappedf(AiPerception._mana_now(t.node), 0.1),
+		"queue_head": head, "queue": t.cast_queue.size(), "mana": snappedf(AiBody.mana_now(t.node), 0.1),
 		"waypoints": str(follower.get("waypoints")) if follower != null else "", "follower_active": bool(follower.get("active")) if follower != null else false,
 		"record_target": str(t.record.target.node.name) if t.record != null and t.record.target != null and t.record.target.is_valid() else "-",
 		"next_reissue": t.next_reissue, "age": t.age,

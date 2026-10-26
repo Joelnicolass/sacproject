@@ -5,6 +5,10 @@ extends RefCounted
 ## weighs, how groups influence a point, how the three casting weights split. Each line names the
 ## `shiny.d` line it was ported from. Floats the engine stores as `float` go through f32().
 
+## wizAttack's weight of a foe that is not a wizard (the original: no status bit 2/4) and of one with no ready ability (no 0x1800).
+const PASSIVE_WEIGHT := 0.5
+const NO_ABILITY_WEIGHT := 0.3333333432674408
+
 ## A float32 round trip (the engine keeps most of these in float).
 static func f32(x: float) -> float:
 	var a := PackedFloat32Array([x])
@@ -55,17 +59,18 @@ static func can_accept(count: int, distance_sq: float) -> bool:
 
 
 ## weightTriple (shiny.d:2953-2966, 0x48cc70): the weights of attacking, supporting and converting.
-## `ratio` is stanceRecs[3] u[6] (own souls / (own + enemy)), `command` 0..2 the record's task command.
-static func weight_triple(command: int, ratio: float, aggression: float) -> Array[float]:
+## `ratio` is stanceRecs[3] u[6] (own souls / (own + enemy)), `task` the kind of the record's task: guard and capture have their
+## own split; idle and focus (the original's idle number, which neither branch takes) split evenly.
+static func weight_triple(task: AiTask.Kind, ratio: float, aggression: float) -> Array[float]:
 	var m := 1.0 - ratio
 	var o0 := 0.0
 	var o1 := 0.0
 	var o2 := 0.0
-	if command <= 1:
+	if task == AiTask.Kind.GUARD:
 		o0 = f32(aggression * (1.0 - m) * (1.0 / 6.0))
 		o1 = f32(1.0 - m)
 		o2 = m * aggression
-	elif command == 2:
+	elif task == AiTask.Kind.CAPTURE:
 		o0 = f32(aggression * (1.0 - m) * 0.5)
 		o1 = f32((1.0 - m) * (1.0 / 3.0))
 		o2 = m * aggression
@@ -76,9 +81,9 @@ static func weight_triple(command: int, ratio: float, aggression: float) -> Arra
 
 
 ## The weight a foe has for wizAttack (shiny.d:3052-3071, 0x48d640): 1 within 10 m; (thr-d)/(thr-10) up to `thr`;
-## halved when it is not aggressive/wizard-like (status & 6 == 0), a third when it has no ready ability
-## (status & 0x1800 == 0), x10 for a Sac Doctor. 0 when the foe is out of reach.
-static func attack_weight(distance: float, thr: float, status: int, sac_doctor: bool) -> float:
+## halved when it is not a wizard, a third when it is not ready (only a Manahoar that can channel is), x10 for a Sac Doctor.
+## 0 when the foe is out of reach.
+static func attack_weight(distance: float, thr: float, foe: AiTrack, sac_doctor := false) -> float:
 	var w := 0.0
 	if distance <= 10.0:
 		w = 1.0
@@ -88,10 +93,10 @@ static func attack_weight(distance: float, thr: float, status: int, sac_doctor: 
 		w = safediv(thr - distance, thr - 10.0)
 		if w == 0.0:
 			return 0.0
-	if (status & 0x6) == 0:
-		w *= 0.5
-	if (status & 0x1800) == 0:
-		w *= 0.3333333432674408
+	if not foe.is_wizard():
+		w *= PASSIVE_WEIGHT
+	if not foe.ready:
+		w *= NO_ABILITY_WEIGHT
 	if sac_doctor:
 		w *= 10.0
 	return w

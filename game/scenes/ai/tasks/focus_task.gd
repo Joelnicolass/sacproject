@@ -9,12 +9,9 @@ extends AiTask
 ## best one with kill seconds <= focus_kill_window_s and a local strength (AiStance influence of the own and allied groups over the
 ## enemy ones around it) >= focus_power_ratio becomes the commitment: it lasts commit_hold_s, or until the target dies, is no
 ## longer seen or leaves the radius of every own group; meanwhile no other one is picked. Its record claims those creatures first
-## (the first child of the board) and each gets the same order a human's right click gives: attack it (ostate 6, CreatureBrain).
+## (the first child of the board) and each gets the same order a human's right click gives: attack it (AiOrder.ATTACK, CreatureBrain).
 ## AttackPhase reads `committed()`: the wizard's spells go to the same target. Uses only what the side knows (AiPerception).
 ## Take this node out and the side never commits.
-
-## The board's command for the members of a focus record (CreatureBrain: attack the target).
-const COMMAND := 3
 
 ## Diagnostic for the report: commitments made and the last one («name kill_s score»).
 var commits := 0
@@ -26,10 +23,6 @@ var _until_tick := 0
 
 func kind() -> Kind:
 	return Kind.FOCUS
-
-
-func command() -> int:
-	return COMMAND
 
 
 ## The target the side is committed to now, or null.
@@ -110,7 +103,7 @@ func _pick() -> AiTrack:
 		if kill_s > tactics.focus_kill_window_s:
 			continue
 		var score := worth / maxf(kill_s, 0.1)
-		if foe.kind == AiTrack.Kind.CRE and AiKillEstimate.is_healer(foe.node.get("type") as CreatureType):
+		if foe.kind == AiTrack.Kind.CREATURE and AiKillEstimate.is_healer(foe.node.get("type") as CreatureType):
 			score *= tactics.healer_weight
 		if score <= best_score or not _strong_enough(at, tactics):
 			continue
@@ -130,7 +123,7 @@ func _fightable(t: AiTrack) -> bool:
 ## What `foe` is worth as a focus: a creature its souls (at least 1), a wizard focus_wizard_worth; a passive NPC times npc_passive_weight.
 func _worth(foe: AiTrack, tactics: AiTactics) -> float:
 	var worth := tactics.focus_wizard_worth
-	if foe.kind != AiTrack.Kind.WIZ:
+	if foe.kind != AiTrack.Kind.WIZARD:
 		worth = maxf(1.0, float(AiGroups.souls_pair(foe).x))
 	if TargetRules.is_passive_npc(foe.node):
 		worth *= tactics.npc_passive_weight
@@ -139,7 +132,7 @@ func _worth(foe: AiTrack, tactics: AiTactics) -> float:
 
 ## An own creature that can fight (status bit 1, not a pacifist).
 static func fighter(t: AiTrack) -> bool:
-	if t.kind != AiTrack.Kind.CRE or not (t.status & AiTrack.ACTIVE):
+	if t.kind != AiTrack.Kind.CREATURE or not t.fights:
 		return false
 	var type := t.node.get("type") as CreatureType
 	return type != null and type.aggressiveness > 0 and AiKillEstimate.dps_of(type) > 0.0

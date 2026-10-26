@@ -135,6 +135,7 @@ func _run_suite() -> void:
 	_results.merge(await BOOK_CASES.new().run(self))  # 055e e4
 	_results.merge(SPELL_FIELD_CASES.new().run(self))  # 055e e1
 	_results.merge(ABILITY_FIELD_CASES.new().run(self))  # 055e e6
+	_results.merge(preload("res://debug/suite/ai_names_cases.gd").new().run(self))  # 055f f1
 	_results.merge(await SPELL_LINK_CASES.new().run(self))  # 055e e3
 	_print_suite()
 

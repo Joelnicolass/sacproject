@@ -181,7 +181,7 @@ func _scan_probe() -> void:
 	for t: AiTrack in side.perception.tracks.values():
 		if t.node.is_in_group(&"npc"):
 			npc_tracked += 1
-		if t.kind == AiTrack.Kind.STR and t.node.is_in_group(Altar.GROUP) and AiPerception.owner_slot_of(t.node) != slot:
+		if t.kind == AiTrack.Kind.STRUCTURE and t.node.is_in_group(Altar.GROUP) and AiPerception.owner_slot_of(t.node) != slot:
 			enemy_altar = true
 	results["scan"] = {
 		"npc_tracked": npc_tracked,

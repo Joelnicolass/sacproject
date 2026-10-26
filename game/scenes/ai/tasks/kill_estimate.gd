@@ -109,7 +109,7 @@ static func seen_healing(perception: AiPerception, target: AiTrack) -> float:
 	var at := perception.pos_of(target)
 	var maximum := float(perception.health_of(target).y)
 	var healers := 0.0
-	var side: Array = perception.bodies(target.category())
+	var side: Array = perception.bodies(target.relation)
 	for other: AiTrack in side:
 		if other == target:
 			## A healer never picks itself, but its web bursts on its patient and heals all of its side within effect_range: it
@@ -143,7 +143,7 @@ static func _wounded_near(perception: AiPerception, healer: AiTrack, side: Array
 
 ## `t` is a live healer the side sees within HEAL_SEEN_M of `at`.
 static func healer_near(perception: AiPerception, t: AiTrack, at: Vector3) -> bool:
-	if t == null or t.kind != AiTrack.Kind.CRE or not AiGroups.alive(t):
+	if t == null or t.kind != AiTrack.Kind.CREATURE or not AiGroups.alive(t):
 		return false
 	## the cached catalog test first: the vision query is the costly one
 	if not is_healer(t.node.get("type") as CreatureType) or not perception.knows_live(t):

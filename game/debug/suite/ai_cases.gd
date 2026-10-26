@@ -175,24 +175,34 @@ func _field_ramp() -> Dictionary:
 	}, {"prob": prob})
 
 
-## weightTriple (shiny.d:2953-2966): ratio 0.5, aggression 1: cmd 0/1 -> o = [1/12 -> 0.0769231, 0.4615385, 0.4615385];
-## cmd 2 -> [0.2727273, 0.1818182, 0.5454546]; ratio 1.0 -> [1/7, 6/7, 0]; cmd 3 -> 0.3333 each.
-## wizAttack weight (3052-3072): d <= 10 -> 1; d=145, thr=280 -> 0.5; x0.5 without status bits 2/4; x1/3 without 0x1800; x10 Sac Doctor.
+## weightTriple (shiny.d:2953-2966): ratio 0.5, aggression 1: guard -> o = [1/12 -> 0.0769231, 0.4615385, 0.4615385];
+## capture -> [0.2727273, 0.1818182, 0.5454546]; ratio 1.0 -> [1/7, 6/7, 0]; focus (and idle) -> 0.3333 each.
+## wizAttack weight (3052-3072): d <= 10 -> 1; d=145, thr=280 -> 0.5; x0.5 not a wizard; x1/3 not ready; x10 Sac Doctor.
 func _field_weights() -> Dictionary:
-	var w0 := AiField.weight_triple(0, 0.5, 1.0)
-	var w2 := AiField.weight_triple(2, 0.5, 1.0)
-	var w1 := AiField.weight_triple(1, 1.0, 1.0)
-	var w3 := AiField.weight_triple(3, 0.5, 1.0)
+	var w0 := AiField.weight_triple(AiTask.Kind.GUARD, 0.5, 1.0)
+	var w2 := AiField.weight_triple(AiTask.Kind.CAPTURE, 0.5, 1.0)
+	var w1 := AiField.weight_triple(AiTask.Kind.GUARD, 1.0, 1.0)
+	var w3 := AiField.weight_triple(AiTask.Kind.FOCUS, 0.5, 1.0)
+	## the tracks the old status words 1 (a creature that fights), 0x2000e (a wizard) and 0x1001 (a ready Manahoar that fights) were
+	var fighter := AiTrack.new()
+	fighter.kind = AiTrack.Kind.CREATURE
+	fighter.fights = true
+	var wizard := AiTrack.new()
+	wizard.kind = AiTrack.Kind.WIZARD
+	var channeler := AiTrack.new()
+	channeler.kind = AiTrack.Kind.MANAHOAR
+	channeler.fights = true
+	channeler.ready = true
 	return _verdict({
 		"cmd0": _near(w0[0], 0.07692307978868484) and _near(w0[1], 0.4615384638309479) and _near(w0[2], 0.4615384638309479),
 		"cmd2": _near(w2[0], 0.27272728085517883) and _near(w2[1], 0.1818181872367859) and _near(w2[2], 0.5454545617103577),
 		"ratio1": _near(w1[0], 0.1428571492433548) and _near(w1[1], 0.8571428656578064) and _near(w1[2], 0.0),
 		"cmd3_default": _near(w3[0], 0.3333) and _near(w3[2], 0.3333),
-		"attack_near": _near(AiField.attack_weight(5.0, 280.0, 1, false), 0.1666666716337204),
-		"attack_wizard_status": _near(AiField.attack_weight(145.0, 280.0, 0x2000e, false), 0.1666666716337204),
-		"attack_creature": _near(AiField.attack_weight(145.0, 280.0, 1, false), 0.0833333358168602),
-		"attack_out": AiField.attack_weight(300.0, 280.0, 1, false) == 0.0,
-		"attack_doctor": _near(AiField.attack_weight(50.0, 280.0, 0x1001, true), 4.2592592592592595),
+		"attack_near": _near(AiField.attack_weight(5.0, 280.0, fighter), 0.1666666716337204),
+		"attack_wizard_status": _near(AiField.attack_weight(145.0, 280.0, wizard), 0.1666666716337204),
+		"attack_creature": _near(AiField.attack_weight(145.0, 280.0, fighter), 0.0833333358168602),
+		"attack_out": AiField.attack_weight(300.0, 280.0, fighter) == 0.0,
+		"attack_doctor": _near(AiField.attack_weight(50.0, 280.0, channeler, true), 4.2592592592592595),
 		"reach": _near(AiField.attack_reach(0.2, 280.0), 224.0),
 		"summon_pos": _near(AiField.summon_score(100.0, 300, 1000), 70.0),
 		"summon_neg": _near(AiField.summon_score(-100.0, 300, 1000), -30.0),
@@ -451,7 +461,8 @@ func _territory() -> Dictionary:
 	var make := func(at: Vector3, manalith: bool) -> AiTrack:
 		var t := AiTrack.new()
 		t.cur_pos = at
-		t.status = AiTrack.MANALITH if manalith else 0
+		t.kind = AiTrack.Kind.STRUCTURE
+		t.site = AiTrack.Site.MANALITH if manalith else AiTrack.Site.ALTAR
 		return t
 	perception._structures[0].append(make.call(Vector3(500.0, 0.0, 0.0), true))
 	checks["one_at_500"] = _near(task.territorial_score(Vector3.ZERO, null), 0.50505 * 0.50505, 0.001)
@@ -576,7 +587,7 @@ func _limited_information(host: Node3D) -> Dictionary:
 	checks["unseen_keeps_health"] = perception.health_of(t) == hp_seen
 	checks["unseen_cannot_aim"] = not port.can_aim(t)
 	checks["no_reads"] = perception.unseen_reads == 0
-	t.flags |= AiTrack.SEEN
+	t.seen = true
 	perception._update_node(t, 1)
 	checks["frozen_track"] = t.frozen and t.cur_pos == seen_at
 	## A body of its side stands next to the foe and looks: the side sees it now.
@@ -648,7 +659,7 @@ func _forget_checked(host: Node3D) -> Dictionary:
 	eyes.refresh()
 	perception.update_nodes(1)
 	var again := perception.find(foe)
-	checks["known_again"] = again != null and (again.flags & AiTrack.SEEN) != 0
+	checks["known_again"] = again != null and again.seen
 	for node: Node in [perception, foe, mine]:
 		node.queue_free()
 	return _verdict(checks, {"sight": sight, "tracked": t != null})

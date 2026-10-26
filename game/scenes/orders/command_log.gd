@@ -10,6 +10,9 @@ extends Node
 
 signal armed_changed(kind: String, icon: Texture2D)
 signal said(text: String, cue: StringName)
+## The live answer for the armed icon at the pointer changed (`status` = a Refusal key or &"" when it would start; `site` = where
+## it would build or land, or null). Only ArmedPreview writes it; the cursor, the cue and the words read it.
+signal aim_changed(status: StringName, site: Node3D)
 
 ## Words -> cue («Sin maná» is a refusal). Without it every message is only text.
 @export var cues: CueSet
@@ -19,6 +22,10 @@ var armed_icon: Texture2D
 ## Classes of target (TargetProbe) the armed icon can land on; empty = any.
 var armed_accepts := PackedStringArray()
 var text := ""
+## What a click on the pointer would answer now (ArmedPreview): &"" = it would start.
+var aim_status: StringName = &""
+## Where that click would build or land (a manafount for a structure), or null.
+var aim_site: Node3D
 
 
 ## Something waits for its target. `prompt` is the old line, kept in `text` and not drawn.
@@ -37,7 +44,17 @@ func disarm() -> void:
 	armed = ""
 	armed_icon = null
 	armed_accepts = PackedStringArray()
+	show_aim(&"", null)
 	armed_changed.emit("", null)
+
+
+## The preview's answer for the armed icon at the pointer. Nothing happens when it did not change.
+func show_aim(status: StringName, site: Node3D) -> void:
+	if status == aim_status and site == aim_site:
+		return
+	aim_status = status
+	aim_site = site
+	aim_changed.emit(status, site)
 
 
 ## True when `message` is a refusal key (a reason the server gave), not the name of what started.

@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://scenes/map/props/build_ring.gdshader" id="1_ring"]
+
+[resource]
+resource_name = "build_ring"
+render_priority = 1
+shader = ExtResource("1_ring")

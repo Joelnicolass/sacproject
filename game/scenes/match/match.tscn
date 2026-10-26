@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scenes/orders/command/group_keys.gd" id="ef25_group_keys"]
 [ext_resource type="Script" path="res://scenes/orders/command/command_input.gd" id="ef25_command_input"]
 [ext_resource type="Script" path="res://scenes/orders/command/minimap_pointing.gd" id="ef25_minimap_pointing"]
+[ext_resource type="Script" path="res://scenes/orders/command/armed_preview.gd" id="f388_armed_preview"]
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/camera/world_camera.gd" id="11_camera"]
 [ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/match/match_biome.gd" id="13_biome"]
@@ -301,6 +302,13 @@ ray = NodePath("../PointerRay")
 spells = NodePath("../SpellCommand")
 abilities = NodePath("../AbilityCommand")
 orders = NodePath("../OrderCommand")
+
+[node name="ArmedPreview" type="Node" parent="MatchCommand" node_paths=PackedStringArray("armed", "ray", "probe")]
+editor_description = "F388: con una estructura armada, 15 veces por segundo pregunta al Caster local qué respondería un clic en el puntero (aim_for) y lo deja en %Battle (aim_status, aim_site); prende el anillo del manantial en verde o rojo. Local, sin RPC. Sacalo y queda solo el parpadeo después del clic."
+script = ExtResource("f388_armed_preview")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+probe = NodePath("../../Hud/TargetProbe")
 
 
 

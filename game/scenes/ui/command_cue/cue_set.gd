@@ -17,6 +17,8 @@ extends Resource
 @export var free_cursors: Dictionary[StringName, Texture2D] = {}
 ## The same while an icon waits for its target.
 @export var target_cursors: Dictionary[StringName, Texture2D] = {}
+## The cursor while the armed icon would be refused where the pointer is (CommandLog.aim_status), whatever lies there.
+@export var blocked_cursor: Texture2D
 ## Cursor for the pointer over the HUD (not the world) and the one in the pointer's rest state.
 @export var hud_cursor: Texture2D
 
@@ -36,7 +38,9 @@ func aim_icon(kind: String) -> Texture2D:
 	return aim_icons.get(StringName(kind))
 
 
-## Cursor picture for a target class; `armed` = an icon waits for its target.
-func cursor_for(target_class: StringName, armed: bool) -> Texture2D:
+## Cursor picture for a target class; `armed` = an icon waits for its target; `blocked` = it would be refused there.
+func cursor_for(target_class: StringName, armed: bool, blocked := false) -> Texture2D:
+	if armed and blocked and blocked_cursor != null:
+		return blocked_cursor
 	var table := target_cursors if armed else free_cursors
 	return table.get(target_class, hud_cursor)

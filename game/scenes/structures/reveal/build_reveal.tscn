@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/structures/reveal/build_reveal.gd" id="1_reveal"]
+[ext_resource type="Shader" path="res://scenes/structures/reveal/build_reveal.gdshader" id="2_shader"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_reveal"]
+noise_type = 1
+seed = 388
+frequency = 0.04
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_reveal"]
+width = 128
+height = 128
+seamless = true
+noise = SubResource("FastNoiseLite_reveal")
+
+[node name="BuildReveal" type="Node"]
+editor_description = "La torre que sube: una línea va de la base a la punta con build_progress (0 a 1); abajo se ve entera, arriba se disuelve con el ruido y un borde que brilla. Al terminar vuelven los materiales de la torre. Solo presentación (nada en headless). Knobs en el grupo Look."
+script = ExtResource("1_reveal")
+shader = ExtResource("2_shader")
+noise = SubResource("NoiseTexture2D_reveal")

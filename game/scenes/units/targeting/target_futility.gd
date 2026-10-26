@@ -62,7 +62,7 @@ func _physics_process(_delta: float) -> void:
 	if body == null or not body.simulates():
 		return
 	var target := body.target
-	if target == null or not is_instance_valid(target) or not _measured(target) or body.is_attack_order_on(target):
+	if target == null or not is_instance_valid(target) or not _measured(target) or body.engagement.is_attack_order_on(target):
 		_forget()
 		return
 	var health := target.get_node_or_null("Health") as Health

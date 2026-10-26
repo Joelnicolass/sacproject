@@ -119,7 +119,7 @@ func _physics_process(delta: float) -> void:
 				clear()
 			return
 		Command.ATTACK:
-			if _body.is_foe(target):
+			if _body.engagement.is_foe(target):
 				if _body.target != target:
 					_body.engage(target)
 				return
@@ -156,7 +156,7 @@ func _think() -> void:
 ## spot and drop the order (`goto case CommandType.move`).
 func _lost_target() -> void:
 	target = null
-	var foe: Node3D = _body.closest_foe(_body.global_position)
+	var foe: Node3D = _body.engagement.closest_foe(_body.global_position)
 	if foe:
 		_engage(foe)
 		return
@@ -190,10 +190,10 @@ func _hold(center: Vector3, leash: float, stop_within: float) -> void:
 ## is ~0 and any foe the side has seen would be taken, then dropped as the threshold rises: jitter).
 func _acquire(center: Vector3, leash: float) -> Node3D:
 	if is_inf(leash):
-		return _body.closest_foe(center, 0.25, 150.0)
+		return _body.engagement.closest_foe(center, 0.25, 150.0)
 	var threshold := minf(100.0, _flat(_body.global_position, center)) * 0.01
 	var sight := _body.vision.range_m()
-	return _body.closest_foe(center, threshold, 100.0, sight)
+	return _body.engagement.closest_foe(center, threshold, 100.0, sight)
 
 
 func _engage(foe: Node3D) -> void:

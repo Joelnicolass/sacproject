@@ -135,9 +135,9 @@ func farmer(node_name: String) -> String:
 	var body := _find(node_name)
 	if body == null:
 		return "sin %s" % node_name
-	var behavior := body.get_node_or_null("PeasantBehavior")
+	var behavior := body.get_node_or_null("Brain") as VillagerBrain
 	return "%s (%.1f,%.1f) mode=%s estado=%s hp=%s" % [node_name, body.global_transform.origin.x, body.global_transform.origin.z,
-		UnitBody.Mode.keys()[int(body.get("mode"))], behavior.get("state") if behavior else "-", body.get_node("Health").get("current")]
+		UnitBody.Mode.keys()[int(body.get("mode"))], behavior.state_name() if behavior else "-", body.get_node("Health").get("current")]
 
 
 ## Nothing selected: the next order_units walks the wizard (what a click on empty ground does without a selection).

@@ -55,7 +55,7 @@ func _hang() -> Dictionary:
 	var model: BodyModel = s.model
 	var checks := {"can_hang": ragdoll.can_hang(), "taken": s.taken}
 	checks["hangs"] = ragdoll.pose() == RagdollDriver.Pose.HANG and ragdoll.is_running()
-	checks["no_captive_clip"] = s.unit.captive_role.is_empty()
+	checks["no_captive_clip"] = s.unit.clips.captive_role.is_empty()
 	checks["pending_055a5j_anchor_follows"] = model.hang_bone != null and model.hang_bone.global_position.y > 1.0
 	checks["no_nan"] = not METRICS.has_nan(_w.bone_points(model))
 	var info := _w.state(ragdoll, s.unit)

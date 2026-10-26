@@ -37,14 +37,14 @@ func _physics_process(_delta: float) -> void:
 
 
 func refresh() -> void:
-	if body.ordered or not body.idle_aggro or body.is_taken() or body.is_playing_dead() or body.afflictions.holds():
+	if body.ordered or not body.idle_aggro or body.is_taken() or body.special_forms.playing_dead or body.afflictions.holds():
 		return
 	var mode := body.mode
 	if mode != UnitBody.Mode.IDLE and mode != UnitBody.Mode.CHASE and mode != UnitBody.Mode.ATTACK and mode != UnitBody.Mode.SHOOT:
 		return
-	var foe := body.closest_foe(body.global_position)
+	var foe := body.engagement.closest_foe(body.global_position)
 	if foe == null:
-		if mode != UnitBody.Mode.IDLE and body.is_futile(body.target):
+		if mode != UnitBody.Mode.IDLE and body.engagement.is_futile(body.target):
 			body.halt()
 		return
 	if foe != body.target or mode == UnitBody.Mode.IDLE:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3]
+[gd_scene load_steps=43 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -77,6 +77,7 @@
 [ext_resource type="Resource" path="res://data/audio/cues/rings_loop.tres" id="cue_rings_loop"]
 [ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
 [ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="typed_cwa0"]
+[ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -571,5 +572,14 @@ caster = NodePath("../Caster")
 ghost = NodePath("../GhostForm")
 height_m = 1.6
 
-[connection signal="solved" from="Avoidance" to="." method="_on_avoided"]
+[node name="Locomotion" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "avoidance")]
+script = ExtResource("c4_locomotion")
+body = NodePath("..")
+afflictions = NodePath("../Afflictions")
+avoidance = NodePath("../Avoidance")
+face_velocity = false
+
+[connection signal="solved" from="Avoidance" to="Locomotion" method="resume"]
+[connection signal="moved" from="Locomotion" to="." method="_on_moved"]
+[connection signal="fell" from="Locomotion" to="." method="_return_to_altar"]
 [connection signal="shown_changed" from="Wards/EtherealForm" to="GhostForm" method="set_ethereal"]

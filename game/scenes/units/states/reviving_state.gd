@@ -7,4 +7,4 @@ extends UnitState
 
 func present(_animate: bool) -> void:
 	body.target = null
-	body.cancel_attacks()
+	body.engagement.cancel_attacks()

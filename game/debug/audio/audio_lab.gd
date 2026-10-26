@@ -408,9 +408,9 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 				unit.mode = UnitBody.Mode.SUMMONING
 				unit.mode = UnitBody.Mode.IDLE
 			&"swing":
-				unit.swings += 1
+				unit.weapons.swings += 1
 			&"shoot":
-				unit.shots += 1
+				unit.weapons.shots += 1
 			&"damaged":
 				_hurt(unit.get_node("Health"))
 			&"death":

@@ -1,11 +1,17 @@
 class_name UnitAir
 extends Node
 
-## RFC-036 036j follow-up: the vertical half of a UnitBody step. Seats the body on the ground when it spawns, holds the
-## height of a creature that must fly, finds the ground under it and takes a walk by air (F116, RFC-030e). The body
-## calls it from its physics step; it holds no mode and no order.
+## The vertical half of a creature's step: seats the body on the ground when it spawns, gives it gravity or the lift of a flier
+## (holds the height of one that must fly, takes off and lands a hybrid), finds the ground under it and decides when a walk goes by air.
+## Not: the horizontal walk (Locomotion) nor when to step (the body calls it from its physics step); it holds no mode and no order.
 
 @export var body: UnitBody
+## Height over the ground (m) a creature that must fly keeps.
+@export var flying_height := 4.5
+## Vertical speed (m/s) at which it climbs or sinks to that height.
+@export var flying_hover_speed := 3.0
+## Ray casts the body gets to find the ground and sit on it when it spawns on the server.
+@export var seat_attempts := 12
 ## Ray casts left to seat the body on the ground (UnitBody sets it when it spawns on the server).
 var seat_left := 0
 
@@ -24,6 +30,31 @@ func seat() -> bool:
 	return true
 
 
+## Gravity, or the lift of a flier, for this step (Locomotion.begin). `walking`: the body is in MOVE. True when the body flew as
+## the step began.
+func step_vertical(delta: float, walking: bool) -> bool:
+	var must_fly := body.type != null and body.type.is_flying()
+	var airborne := body.is_flying()
+	var gravity := float(ProjectSettings.get_setting("physics/3d/default_gravity"))
+	var flight := body.flight
+	if must_fly and not (flight != null and flight.is_dropped()):
+		hold_height(delta)
+	elif flight != null and (must_fly or flight.is_capable()):
+		var above := body.global_position.y - ground_height(body.global_position) if airborne else 0.0
+		var lift := flight.advance(delta, walking, above, body.is_on_floor())
+		if airborne:
+			body.velocity.y = lift
+		elif body.is_on_floor():
+			body.velocity.y = 0.0
+		else:
+			body.velocity.y -= gravity * delta
+	elif body.is_on_floor():
+		body.velocity.y = 0.0
+	else:
+		body.velocity.y -= gravity * delta
+	return airborne
+
+
 ## The ground height under `at` (NAN off the map).
 func ground_height(at: Vector3) -> float:
 	return GroundRay.surface_y(body, at, body.ground_mask, [body.get_rid()], NAN)
@@ -35,20 +66,29 @@ func hold_height(delta: float) -> void:
 	if not is_finite(ground_y):
 		body.velocity.y = 0.0
 		return
-	var dy := ground_y + body.flying_height - body.global_position.y
+	var dy := ground_y + flying_height - body.global_position.y
 	if absf(dy) < 0.001:
 		body.velocity.y = 0.0
 		return
-	var step := body.flying_hover_speed * delta
+	var step := flying_hover_speed * delta
 	if absf(dy) <= step:
 		body.velocity.y = dy / maxf(delta, 0.000001)
 	else:
-		body.velocity.y = signf(dy) * body.flying_hover_speed
+		body.velocity.y = signf(dy) * flying_hover_speed
 
 
-## F116: a hybrid in the air keeps its flying pace; the avoidance turns its heading but does not add to
-## it (sacengine caps the air speed at speedInAir, state.d:14742-14751).
+## A flight that holds the body still (landing, taking off) leaves it no flat speed.
+func hold_still() -> void:
+	if body.flight != null and body.flight.holds_still():
+		body.velocity.x = 0.0
+		body.velocity.z = 0.0
+
+
+## A hybrid in the air keeps its flying pace: the avoidance turns its heading but does not add to it.
+## Ref: sacengine speedInAir (state.d:14742-14751), F116.
 func cap_pace() -> void:
+	if body.flight == null or not body.flight.is_airborne():
+		return
 	var pace := body.move_speed * body.speed_factor
 	var flat := Vector2(body.velocity.x, body.velocity.z)
 	if pace > 0.0 and flat.length() > pace:
@@ -86,9 +126,9 @@ func reroute() -> void:
 	var flight := body.flight
 	if flight == null or flight.state != Flight.State.GROUND or not flight.is_capable():
 		return
-	var final_goal := body.walk_goal()
+	var final_goal := body.locomotion.goal
 	var follower := body.path_follower
 	if is_instance_valid(follower) and follower.is_active():
 		final_goal = follower.goal
 	if flies_to(final_goal):
-		body.set_walk_goal(final_goal)
+		body.locomotion.goal = final_goal

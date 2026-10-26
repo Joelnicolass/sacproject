@@ -1,4 +1,4 @@
-[gd_scene load_steps=123 format=3]
+[gd_scene load_steps=128 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -71,7 +71,12 @@
 [ext_resource type="Script" path="res://scenes/units/afflictions/firewalking.gd" id="f152_firewalking"]
 [ext_resource type="Resource" path="res://data/afflictions/firewalking.tres" id="f152_firewalking_type"]
 [ext_resource type="Script" path="res://scenes/units/status/poisoning.gd" id="f122_poisoning"]
-[ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="f221_machine"]
+[ext_resource type="Script" path="res://scenes/units/states/unit_states.gd" id="c4_states"]
+[ext_resource type="Script" path="res://scenes/units/creature_link.gd" id="c4_creature"]
+[ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
+[ext_resource type="Script" path="res://scenes/units/targeting/engagement.gd" id="c4_engagement"]
+[ext_resource type="Script" path="res://scenes/units/special_forms.gd" id="c4_forms"]
+[ext_resource type="Script" path="res://scenes/units/regeneration.gd" id="c4_regen"]
 [ext_resource type="Script" path="res://scenes/units/states/unit_state.gd" id="f221_base"]
 [ext_resource type="Script" path="res://scenes/units/states/idle_state.gd" id="f221_idle"]
 [ext_resource type="Script" path="res://scenes/units/states/move_state.gd" id="f221_move"]
@@ -145,7 +150,7 @@ properties/4/replication_mode = 2
 properties/5/path = NodePath(".:mode")
 properties/5/spawn = true
 properties/5/replication_mode = 2
-properties/6/path = NodePath(".:swings")
+properties/6/path = NodePath("Weapons:swings")
 properties/6/spawn = true
 properties/6/replication_mode = 2
 properties/7/path = NodePath("Health:maximum")
@@ -160,7 +165,7 @@ properties/9/replication_mode = 2
 properties/10/path = NodePath("ManaPool:current")
 properties/10/spawn = true
 properties/10/replication_mode = 2
-properties/11/path = NodePath(".:shots")
+properties/11/path = NodePath("Weapons:shots")
 properties/11/spawn = true
 properties/11/replication_mode = 2
 properties/12/path = NodePath("GuardianBond:post_path")
@@ -187,7 +192,7 @@ properties/18/replication_mode = 2
 properties/19/path = NodePath("Corpse:dissolving")
 properties/19/spawn = true
 properties/19/replication_mode = 2
-properties/20/path = NodePath(".:_stealth")
+properties/20/path = NodePath("SpecialForms:stealth")
 properties/20/spawn = true
 properties/20/replication_mode = 2
 properties/21/path = NodePath("Wards/HealingAura:shown")
@@ -199,7 +204,7 @@ properties/22/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
-[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities")]
+[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities", "health", "creature", "locomotion", "engagement", "special_forms", "regeneration", "clips", "states", "health_bar")]
 collision_layer = 2
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
@@ -207,6 +212,15 @@ mount = NodePath("BodyMount")
 vision = NodePath("Vision")
 weapons = NodePath("Weapons")
 abilities = NodePath("Abilities")
+health = NodePath("Health")
+creature = NodePath("Creature")
+locomotion = NodePath("Locomotion")
+engagement = NodePath("Engagement")
+special_forms = NodePath("SpecialForms")
+regeneration = NodePath("Regeneration")
+clips = NodePath("Clips")
+states = NodePath("States")
+health_bar = NodePath("HealthBar")
 
 [node name="Tilt" type="Node3D" parent="."]
 
@@ -283,11 +297,12 @@ visual = NodePath("../Tilt/Mesh")
 body = NodePath("..")
 pace = NodePath("../PaceFactors")
 
-[node name="Weapons" type="Node" parent="." node_paths=PackedStringArray("mana", "health", "passive")]
+[node name="Weapons" type="Node" parent="." node_paths=PackedStringArray("mana", "health", "passive", "clips")]
 script = ExtResource("f55c3_weapons")
 mana = NodePath("../ManaPool")
 health = NodePath("../Health")
 passive = NodePath("../DamagePassive")
+clips = NodePath("../Clips")
 
 [node name="Ranged" parent="Weapons" instance=ExtResource("f55c3_ranged")]
 
@@ -695,12 +710,13 @@ body = NodePath("..")
 script = ExtResource("f221_air")
 body = NodePath("..")
 
-[node name="Clips" type="Node" parent="." node_paths=PackedStringArray("body")]
+[node name="Clips" type="Node" parent="." node_paths=PackedStringArray("body", "clip_pose")]
 script = ExtResource("f221_clips")
 body = NodePath("..")
+clip_pose = NodePath("../ClipPose")
 
 [node name="States" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor")]
-script = ExtResource("f221_machine")
+script = ExtResource("c4_states")
 initial_state = NodePath("Idle")
 actor = NodePath("..")
 run_process = false
@@ -761,4 +777,43 @@ script = ExtResource("g5_ring")
 body = NodePath("..")
 portal_scene = ExtResource("f59_portal")
 
-[connection signal="solved" from="Avoidance" to="." method="_on_avoided"]
+[node name="Creature" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "regeneration", "health_bar", "flight", "locomotion", "mana_support")]
+script = ExtResource("c4_creature")
+body = NodePath("..")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
+regeneration = NodePath("../Regeneration")
+health_bar = NodePath("../HealthBar")
+flight = NodePath("../Flight")
+locomotion = NodePath("../Locomotion")
+mana_support = NodePath("../ManaSupport")
+
+[node name="Locomotion" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "avoidance", "air")]
+script = ExtResource("c4_locomotion")
+body = NodePath("..")
+afflictions = NodePath("../Afflictions")
+avoidance = NodePath("../Avoidance")
+air = NodePath("../Air")
+
+[node name="Engagement" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "orders", "picker", "warp_snap")]
+script = ExtResource("c4_engagement")
+body = NodePath("..")
+afflictions = NodePath("../Afflictions")
+orders = NodePath("../Orders")
+picker = NodePath("../TargetPicker")
+warp_snap = NodePath("../WarpSnap")
+
+[node name="SpecialForms" type="Node" parent="." node_paths=PackedStringArray("body", "orders", "visual")]
+script = ExtResource("c4_forms")
+body = NodePath("..")
+orders = NodePath("../Orders")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="Regeneration" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana")]
+script = ExtResource("c4_regen")
+body = NodePath("..")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
+
+[connection signal="solved" from="Avoidance" to="Locomotion" method="resume"]
+[connection signal="moved" from="Locomotion" to="Clips" method="update"]

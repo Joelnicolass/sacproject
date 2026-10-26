@@ -172,7 +172,7 @@ func _case_passive() -> void:
 
 func _case_flee() -> void:
 	var farmer := _npc("Farmer3")
-	var behavior := farmer.get_node("PeasantBehavior") as PeasantBehavior
+	var behavior := farmer.get_node("Senses") as VillagerSenses
 	var shelter := behavior.closest_shelter()
 	_out["shelter"] = shelter.name if shelter else "-"
 	_out["shelter_m"] = snappedf(_flat(shelter.global_position, farmer.global_position), 0.1) if shelter else -1
@@ -242,7 +242,7 @@ func _case_grudge() -> void:
 		if first[0] >= 0 and all_at < 0 and not herd.is_empty():
 			var all := true
 			for other in herd:
-				all = all and (other.get_node("PeasantBehavior").grudge as GrudgeMemory).has_grudge(1)
+				all = all and (other.get_node("Senses").grudge as GrudgeMemory).has_grudge(1)
 			if all:
 				all_at = ticks[0]
 		if all_at >= 0:
@@ -253,7 +253,7 @@ func _case_grudge() -> void:
 	_out["delay_s"] = snappedf(float(all_at - first[0]) / 60.0, 0.001) if all_at >= 0 else -1.0
 	var far_with := 0
 	for other in _farmers():
-		if other != farmer and _flat(other.global_position, anchor) > 80.0 and (other.get_node("PeasantBehavior").grudge as GrudgeMemory).has_grudge(1):
+		if other != farmer and _flat(other.global_position, anchor) > 80.0 and (other.get_node("Senses").grudge as GrudgeMemory).has_grudge(1):
 			far_with += 1
 	_out["beyond_80m_with_grudge_at_that_moment"] = far_with
 

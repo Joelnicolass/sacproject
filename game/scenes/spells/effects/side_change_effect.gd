@@ -17,7 +17,7 @@ func apply(carrier: SpellCarrier, body: Node3D) -> bool:
 	if unit == null or wizard == null or not is_live(body) or body.is_in_group(&"wizard") or unit.owner_slot == carrier.from_slot:
 		return false
 	unit.owner_slot = carrier.from_slot
-	unit.follow(wizard)
+	unit.engagement.follow(wizard)
 	if hearts != null:
 		FxBus.broadcast(hearts.bus_name(), BodyNudge.center(unit))
 	return true

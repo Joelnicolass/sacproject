@@ -38,7 +38,7 @@ static func step(weapon: RangedWeapon, target: Node3D) -> Weapon.Step:
 	var to := led - body.global_position
 	to.y = 0.0
 	var facing: Vector3 = body.facing_flat()
-	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > float(MatchClock.ticks_for(weapon.facing_s)) * body.turn_rate / RangedWeapon.FPS:
+	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > float(MatchClock.ticks_for(weapon.facing_s)) * body.locomotion.turn_rate / RangedWeapon.FPS:
 		return Weapon.Step.HOLD
 	return Weapon.Step.FIRE if RangedFire.loaded(weapon) else Weapon.Step.HOLD
 

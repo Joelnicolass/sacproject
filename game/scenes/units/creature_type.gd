@@ -44,7 +44,7 @@ extends Resource
 @export var spell_order: int = 0
 ## Widens the box of its melee swing (the Druid is 1.3); 1 = the creature's own box.
 @export var melee_width_scale := 1.0
-## A villager: gets the peasant scene (it digs, cowers and holds a grudge) and never attacks (PeasantBehavior).
+## A villager: gets the villager scene (it digs, cowers and holds a grudge) and never attacks (VillagerBrain).
 @export var peasant := false
 @export_group("Abilities")
 ## The ranged attack of the creature (data/catalog/abilities/), or empty for one that only fights in melee.

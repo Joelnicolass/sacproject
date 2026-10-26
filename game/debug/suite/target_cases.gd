@@ -6,7 +6,7 @@ extends RefCounted
 ## bodies do not simulate (physics off), only their positions and the picker/vision answers matter.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const PEASANT_SCENE := preload("res://scenes/units/peasant.tscn")
+const PEASANT_SCENE := preload("res://scenes/units/villager/villager.tscn")
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0001
@@ -264,7 +264,7 @@ func _wiring() -> Dictionary:
 func _pacifist() -> Dictionary:
 	var farmer := _unit(1, Vector3.ZERO, "Farmer", "zepe")
 	var foe := _unit(2, Vector3(10.0, 0.0, 0.0), "Foe")
-	var picked := farmer.closest_foe(Vector3.ZERO)
+	var picked := farmer.engagement.closest_foe(Vector3.ZERO)
 	var checks := {"null": picked == null, "has_picker": farmer.get_node_or_null("TargetPicker") != null}
 	farmer.free()
 	foe.free()
@@ -297,16 +297,16 @@ func _explicit_attack() -> Dictionary:
 	var house := _unit(0, Vector3(5.0, 0.0, 0.0), "House")
 	var orders := trogg.get_node("Orders")
 	orders.call("give", UnitOrders.Command.GUARD_AREA, null, Vector3.ZERO, Vector2.ZERO, 0.0)
-	var guarded := trogg.is_foe(house) or trogg.accepts_target(house)
+	var guarded := trogg.engagement.is_foe(house) or trogg.engagement.accepts_target(house)
 	orders.set("command", UnitOrders.Command.ATTACK)
 	orders.set("target", house)
-	var attacked := trogg.is_foe(house) and trogg.accepts_target(house) and trogg.is_attack_order_on(house)
+	var attacked := trogg.engagement.is_foe(house) and trogg.engagement.accepts_target(house) and trogg.engagement.is_attack_order_on(house)
 	orders.call("clear")
 	var checks := {
 		"neutral_stance": SideRelations.stance(1, 0) == SideRelations.Stance.NEUTRAL,
 		"guard_ignores_neutral": not guarded,
 		"attack_order_takes_it": attacked,
-		"cleared_drops_it": not trogg.accepts_target(house),
+		"cleared_drops_it": not trogg.engagement.accepts_target(house),
 	}
 	trogg.free()
 	house.free()
@@ -337,7 +337,7 @@ func _passive_weight() -> Dictionary:
 
 
 ## F372: one owner of «a passive NPC» (TargetRules): a Farmer of the map (peasant scene, slot 3 of High Noon) is one even with an
-## aggressiveness of 1000 (its PeasantBehavior never attacks); a pacifist of a player slot is passive but no NPC; a Trogg is neither.
+## aggressiveness of 1000 (its VillagerBrain never attacks); a pacifist of a player slot is passive but no NPC; a Trogg is neither.
 func _peasant_passive() -> Dictionary:
 	SideRelations.refresh()
 	var farmer: UnitBody = PEASANT_SCENE.instantiate()
@@ -380,7 +380,7 @@ func _futile_skipped() -> Dictionary:
 		"has_futility": picker.futility != null,
 		"near_first": before == near,
 		"banned_skipped": after == set["foes"][1],
-		"body_sees_ban": body.is_futile(near),
+		"body_sees_ban": body.engagement.is_futile(near),
 	}
 	_clean(set)
 	return _verdict(checks, {})

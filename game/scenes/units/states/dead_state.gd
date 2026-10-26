@@ -8,7 +8,7 @@ extends UnitState
 
 func present(animate: bool) -> void:
 	body.target = null
-	body.cancel_attacks()
+	body.engagement.cancel_attacks()
 	body.corpse().lay_down(body, _death_role(), not animate)
 
 

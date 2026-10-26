@@ -27,7 +27,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if not _has_authority():
 		return false
-	user.enter_rock_form()
+	user.special_forms.enter_rock()
 	FxBus.broadcast("rock_emerge", user.global_position + Vector3.UP * 0.5)
 	return true
 

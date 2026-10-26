@@ -9,7 +9,7 @@ extends RefCounted
 const ROOT := "res://scenes"
 ## Scenes that inherit a replicated one and so carry its wire without naming a synchronizer.
 const INHERITING: PackedStringArray = [
-	"res://scenes/units/peasant.tscn",
+	"res://scenes/units/villager/villager.tscn",
 	"res://scenes/sacrifice/carrier_doctor.tscn",
 	"res://scenes/sacrifice/ritual_doctor.tscn",
 ]

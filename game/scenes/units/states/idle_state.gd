@@ -20,9 +20,9 @@ func regenerates() -> bool:
 	return true
 
 
-## "work" for a calm peasant (PeasantBehavior), then the gesture, else the CRE8 idle0.
+## "work" for a calm villager (VillagerBrain), then the gesture, else the CRE8 idle0.
 func clip_role() -> String:
-	var role := body.idle_role()
+	var role := body.clips.idle_role
 	if role != "idle" and body.has_clip(role):
 		return role
 	if _gesturing and body.has_clip("gesture"):

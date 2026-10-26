@@ -88,7 +88,7 @@ func aim(target: Node3D) -> Step:
 
 
 func announce() -> void:
-	body.swings += 1
+	weapons.swings += 1
 
 
 func busy_state() -> StringName:

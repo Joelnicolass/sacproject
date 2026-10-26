@@ -1,4 +1,13 @@
-Estado: **propuesto**, espera el OK del usuario.
+Estado: **aprobado 2026-10-26** con estos cambios del usuario (mandan sobre el resto del plan):
+
+1. Manchas permanentes en el pool de «Cantidad de marcas»: OK.
+2. **Todo sangra.** Toda criatura que sufre daño sangra, sin excepciones (sin `none.tres` en ningún look; `none.tres` se puede quedar como dato disponible pero ningún look lo usa). «A nivel de diseño debería pensarse así»: el daño produce sangre, punto. Si algún camino de daño no provoca sangre hoy, analizar por qué y arreglarlo (todo daño que baje `Health.current`, sea melee, proyectil, hechizo, zona o veneno).
+3. **Toda la sangre es roja.** Sin verde ni negro. Si hace falta una textura nueva, crearla con Material Maker o Aseprite (arte propio en `assets/blood/`).
+4. Flash sutil 0,12 s, se apaga con «Sangre»: OK.
+5. **El mago sangra en este corte**, reaprovechando los mismos nodos (`BloodFx` y `HitFlash` en `wizard_body.tscn`), sin código nuevo.
+6. Sin hit-stop: OK.
+7. Opción «Sangre» en Jugabilidad: OK.
+8. Feature F390.
 
 # Plan RFC-060: sangre y feedback de golpe (fase 2, solo presentación)
 

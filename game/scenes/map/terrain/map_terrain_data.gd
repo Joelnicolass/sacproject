@@ -13,6 +13,8 @@ var indices := PackedInt32Array()
 var lattice := PackedInt32Array()
 ## Triangles before the first wall: triangle t is land when t < land_triangles.
 var land_triangles := 0
+## The 10 m cell (TerrainGrid id of its low corner) of each land triangle, in order.
+var land_cells := PackedInt32Array()
 
 
 func is_valid() -> bool:

@@ -136,7 +136,7 @@ func _refresh() -> void:
 	var surface := rig.terrain if rig else null
 	if surface == null or not surface.is_loaded():
 		layers.clear()
-	_ground.follow(surface if surface != null and not Engine.is_editor_hint() else null)
+	_ground.follow(surface)  # the editor too: a brush stroke settles the ground under the plants
 	var signature := _signature_of(layers, surface)
 	if signature == _signature:
 		return

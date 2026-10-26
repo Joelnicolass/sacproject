@@ -91,7 +91,7 @@ func _run() -> void:
 	var at := wizard.global_position + wizard.facing_flat() * stamp_ahead_m
 	var center := TerrainGrid.point_of(TerrainGrid.vertex_near(Vector2(at.x, at.z)))
 	var reach := stamp.reach.shape as CylinderShape3D
-	var pattern := terrain.stamp_pattern(stamp.profile, center, reach.radius, reach.height) if stamp.profile.has_pattern() else PackedFloat32Array()
+	var pattern := StampRules.pattern_under(terrain, stamp.profile, center, reach.radius, reach.height) if stamp.profile.has_pattern() else PackedFloat32Array()
 	_begin()
 	var until := Time.get_ticks_msec() + int(phase_s * 1000.0)
 	var step := 0

@@ -23,9 +23,9 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## Mana drained per update (sacengine manaDrainPerFrame).
 var mana_drain_per_tick := 0.0
-## The fire (a ParticleType; in the transition its old name, or "" for none) puffed on the body every `fire_every_ticks` updates while it
-## burns, whatever it takes (a creature only), at `fire_socket` (sacengine spawnFireParticles: inside the box, 15124-15127).
-var fire_fx = null
+## The fire puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only), at
+## `fire_socket` (sacengine spawnFireParticles: inside the box, 15124-15127). Null = none.
+var fire_fx: ParticleType = null
 var fire_every_ticks := 10
 var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 ## Mana this fire drained so far (for the log).
@@ -40,7 +40,7 @@ var _mana: ManaPool
 ## still gets its fire (it ends on its first update, see above). `attacker`: the creature that set it ablaze (null = nobody
 ## drains).
 static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringName, from_slot: int, mana_drain := 0.0,
-		pierce := false, fx = null, attacker: Node = null) -> Burning:
+		pierce := false, fx: ParticleType = null, attacker: Node = null) -> Burning:
 	if target == null or not is_instance_valid(target) or not _ROCK.is_live_body(target):
 		return null
 	var health := target.get_node_or_null("Health") as Health

@@ -2,23 +2,9 @@
 class_name FxAtlas
 extends RefCounted
 
-## Atlases of the particle importer (tools/import/import_ui.py) by TXTR tag (ParticleType holds its own Texture2D): `res://assets/original/fx/<tag>.png` (RFC-033d), imported
-## textures read with `load()`. Static and @tool so the editor and a headless run can use it without autoloads. A missing
-## file is null: the caller draws its own fill and warns.
-
-static var _textures: Dictionary = {}
-
-
-static func texture(tag: String) -> Texture2D:
-	if tag.is_empty():
-		return null
-	if _textures.has(tag):
-		return _textures[tag]
-	var path := OriginalAssets.fx(tag)
-	var texture_out: Texture2D = load(path) as Texture2D if ResourceLoader.exists(path) else null
-	_textures[tag] = texture_out
-	return texture_out
-
+## The shared look of a ParticleType: its material (shader, atlas and knobs) and its quad, cached per type. Every effect holds its
+## own Texture2D (ParticleType.atlas, BeamType.atlas, a node's `atlas`); nothing here looks an atlas up by name. Static and @tool so
+## the editor and a headless run can use it without autoloads.
 
 const SHADER_ADD := preload("res://scenes/fx/sprite_particle_add.gdshader")
 const SHADER_MIX := preload("res://scenes/fx/sprite_particle_mix.gdshader")

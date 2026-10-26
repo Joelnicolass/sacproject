@@ -50,7 +50,7 @@ func _burst(cloud_type: DeathCloudType, ability: AbilityType, center: Vector3) -
 	cloud.from_slot = body.owner_slot
 	cloud.dead = body
 	add_child(cloud)
-	cloud.burst(center, cloud_type.fx_name, cloud_type.fx_height_m)
+	cloud.burst(center, cloud_type.fx)
 
 
 ## sacengine boxCenter(hitbox): the center of the body's collision capsule.

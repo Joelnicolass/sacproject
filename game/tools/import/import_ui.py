@@ -23,7 +23,7 @@ with the `png` paths on res://assets/original/fx/.
 
 Import settings (so the pixels reach the screen as before): lossless, no fix_alpha_border, and mipmaps only where the old
 code generated them: fx atlases the catalog lists (FxAtlas.catalog_texture) and `scri`. The atlases read without mipmaps
-(FxAtlas.texture: tethers, portals, spikes) and every ui image have none.
+(the Texture2D of tethers, portals, spikes and beams) and every ui image have none.
 """
 
 import json

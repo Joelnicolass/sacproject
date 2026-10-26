@@ -51,8 +51,8 @@ const PACE_SOURCE := &"lightning_charge"
 ## The nearest the land strike falls from the body.
 @export var ground_min_m := 5.0
 @export_group("Look")
-## FxBus burst over the body while charged (reserve look).
-@export var spark_fx := "styx_spark"
+## The burst over the body while charged (reserve look). Empty = none.
+@export var spark_fx: ParticleType = preload("res://data/fx/styx_spark.tres")
 ## sacengine LightningCharge.sparkRate (per second).
 @export var spark_rate := 2.0
 
@@ -226,7 +226,7 @@ func _trace_walk() -> void:
 
 ## sparkAnimation!48 over the body's box at sparkProb per tick; the stream is the look's, not the simulation's.
 func _spark() -> void:
-	if body == null or spark_fx.is_empty():
+	if body == null or spark_fx == null:
 		return
 	var chance := 1.0 - exp(-spark_rate / MatchClock.TICKS_PER_SECOND_F)
 	if _look_rng.randf() > chance:

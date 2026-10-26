@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/guardian/guardian_tether.gd" id="1_tether"]
 [ext_resource type="Shader" path="res://scenes/spells/guardian/guardian_tether.gdshader" id="2_shader"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Texture2D" uid="uid://jar05fr413qw" path="res://assets/original/fx/grdn.png" id="atlas_grdn"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_beam"]
 shader = ExtResource("2_shader")
@@ -11,6 +12,7 @@ shader = ExtResource("2_shader")
 script = ExtResource("1_tether")
 beam = NodePath("Beam")
 glow = NodePath("Glow")
+atlas = ExtResource("atlas_grdn")
 
 [node name="Beam" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_beam")

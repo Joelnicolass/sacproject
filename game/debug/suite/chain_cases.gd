@@ -68,9 +68,11 @@ func _scenes() -> Dictionary:
 		checks[tag + "_no_warnings"] = action._get_configuration_warnings().is_empty()
 		checks[tag + "_pick"] = action.pick == pair[2]
 		action.free()
-	checks["rainbow_beam_is_arc"] = FxWire.as_beam("rainbow_arc") != null and FxWire.as_beam("rainbow_arc").path == BeamType.Path.ARC
-	checks["rainbow_arc_numbers"] = FxWire.as_beam("rainbow_arc").segments == 31 and absf(FxWire.as_beam("rainbow_arc").width_m - 0.7) < 0.001
-	checks["ltng_knob_exists"] = FxWire.as_beam("lightning_ltng") != null and FxWire.as_beam("lightning_ltng").atlas_tag == "ltng"
+	var rainbow := load("res://data/fx/beams/rainbow_arc.tres") as BeamType
+	var ltng := load("res://data/fx/beams/lightning_ltng.tres") as BeamType
+	checks["rainbow_beam_is_arc"] = rainbow != null and rainbow.path == BeamType.Path.ARC
+	checks["rainbow_arc_numbers"] = rainbow != null and rainbow.segments == 31 and absf(rainbow.width_m - 0.7) < 0.001
+	checks["ltng_knob_exists"] = ltng != null and ltng.atlas != null and ltng.atlas.resource_path.get_file() == "ltng.png"
 	checks["dragon_kind"] = (_spells.get_parent().get_node("SpellSpawner") as SpellSpawner).projectiles.has("Dragonfire")
 	var caster_wizard := _wizard(1, ORIGIN, "stratos", 5)
 	await _frames(2)

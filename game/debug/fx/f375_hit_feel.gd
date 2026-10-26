@@ -11,6 +11,7 @@ extends Node3D
 ## none is active. Prints `FEEL <check>: PASS|FAIL` and `FEEL PASS|FAIL`; quits 0 / 1. Watchdog: `timeout_s` real seconds.
 
 const MATCH_SCENE := "res://scenes/match/high_noon.tscn"
+const EXPLOSION: ParticleType = preload("res://data/fx/wrath_explosion1.tres")
 
 ## Real seconds (not game time: --fixed-fps would stretch a game-time timer).
 @export var timeout_s := 20.0
@@ -104,10 +105,10 @@ func _feel_script() -> void:
 	prefs.set_shake_scale(1.0, false)
 	shake.trauma = 0.0
 	var far := camera.global_position + Vector3(shake.shake_map.max_distance_m + 5.0, 0.0, 0.0)
-	FxBus.play("wrath_explosion1", far)
+	FxBus.play(EXPLOSION, far)
 	await get_tree().process_frame
 	_check("explosion beyond max distance adds nothing", shake.trauma == 0.0 and shake.offset() == Vector3.ZERO)
-	FxBus.play("wrath_explosion1", camera.global_position + Vector3(4.0, 0.0, 0.0))
+	FxBus.play(EXPLOSION, camera.global_position + Vector3(4.0, 0.0, 0.0))
 	_check("explosion close by shakes", shake.trauma > 0.0)
 	# Damage numbers (once the wizard's numbers of the shake checks are gone).
 	await _wait(numbers.life_s + 0.1)

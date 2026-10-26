@@ -23,10 +23,8 @@ var _clock := 0.0
 var _last := Vector3.INF
 
 
-## Adds a trail to `host` (also before it enters the tree). `type` is a ParticleType (or, in the transition, its old data/fx name).
-## Null in a headless process.
-static func attach(host: Node3D, type: Variant, seconds: float) -> FxTrail:
-	var burst := FxWire.as_particle(type)
+## Adds a trail of `burst` puffs to `host` (also before it enters the tree). Null in a headless process or without a burst.
+static func attach(host: Node3D, burst: ParticleType, seconds: float) -> FxTrail:
 	if DisplayServer.get_name() == "headless" or burst == null:
 		return null
 	var trail := FxTrail.new()

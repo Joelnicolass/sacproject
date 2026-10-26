@@ -114,7 +114,7 @@ func _lights() -> Dictionary:
 			checks[name + "_light_no_shadow"] = not light.shadow_enabled
 		carrier.free()
 	for fx in ["charm_hearts", "rage_blast", "vaporize_burst", "cow_burst", "death_strike"]:
-		var type := FxWire.as_particle(fx)
+		var type := load("res://data/fx/%s.tres" % fx) as ParticleType
 		checks[fx + "_has_light"] = type != null and type.light != null
 	return _w.verdict("level8_lights", checks)
 

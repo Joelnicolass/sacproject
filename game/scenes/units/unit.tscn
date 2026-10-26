@@ -357,11 +357,10 @@ clip_pose = NodePath("../../ClipPose")
 tilt = NodePath("../../Tilt")
 visual = NodePath("../../Tilt/Mesh")
 
-[node name="Petrified" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned", "visual")]
+[node name="Petrified" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned")]
 script = ExtResource("f137_petrified")
 type = ExtResource("f137_petrified_type")
 stunned = NodePath("../Stunned")
-visual = NodePath("../../Tilt/Mesh")
 
 [node name="Look" type="Node" parent="Afflictions" node_paths=PackedStringArray("mesh")]
 script = ExtResource("f137_stone_look")
@@ -374,10 +373,9 @@ type = ExtResource("f121_tumbling_type")
 stunned = NodePath("../Stunned")
 tilt = NodePath("../../Tilt")
 
-[node name="Frozen" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("visual")]
+[node name="Frozen" type="Node3D" parent="Afflictions"]
 script = ExtResource("f149_frozen")
 type = ExtResource("f149_frozen_type")
-visual = NodePath("../../Tilt/Mesh")
 
 [node name="Cues" type="Node" parent="Afflictions/Frozen" node_paths=PackedStringArray("affliction", "on_start")]
 script = ExtResource("l161_cues")

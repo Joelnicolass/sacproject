@@ -4,7 +4,7 @@ extends RefCounted
 ## Open gate (--audio-probe):
 ## - fx_type_sound: FxSounds answers a burst with the `sound` of its ParticleType and a beam with the one of its BeamType;
 ##   a puff, a scene, a type with no sound and a name with no type are null.
-## - fx_bridge: FxBus.play("blood") leaves a played entry (emitter blood, event fx); a puff and an FX with no sound leave none.
+## - fx_bridge: FxBus.play(blood) leaves a played entry (emitter blood, event fx); a puff and an FX with no sound leave none.
 ## - loop_budget: three loops held, then 200 requests in one frame: the 3D voices (pool + loops) stay <= pool_3d_size and
 ##   the loops are still held; past max_loops_3d a claim is refused (loops_full).
 ## - emitter_one_shot: a SoundEmitter3D with play_on_ready plays its cue once on entering the tree; one with no cue is silent.
@@ -14,6 +14,7 @@ extends RefCounted
 const EMITTER_SCENE := "res://scenes/audio/sound_emitter_3d.tscn"
 const BLOOD := "res://data/fx/blood.tres"
 const LIGHTNING := "res://data/fx/beams/lightning.tres"
+const DIRT := "res://data/fx/dirt.tres"
 const FIREBALL_CAST := "res://data/audio/cues/fireball_cast.tres"
 const FOUNTAIN_LOOP := "res://data/audio/cues/fountain_loop.tres"
 
@@ -53,7 +54,7 @@ func _type_sound() -> Dictionary:
 	var beam := lightning != null and lightning.sound != null and fx.cue_of(FxBus.KIND_BEAM, lightning) == lightning.sound
 	var puff := fx.cue_of(FxBus.KIND_PUFF, blood) == null
 	var scene := fx.cue_of(FxBus.KIND_SCENE, load("res://scenes/fx/spike_field.tscn") as PackedScene) == null
-	var no_sound := fx.cue_of(FxBus.KIND_BURST, FxWire.as_particle("dirt")) == null
+	var no_sound := fx.cue_of(FxBus.KIND_BURST, load(DIRT) as ParticleType) == null
 	var no_type := fx.cue_of(FxBus.KIND_BURST, null) == null
 	return {"ok": burst and beam and puff and scene and no_sound and no_type, "burst": burst, "beam": beam, "puff": puff,
 		"scene": scene, "no_sound": no_sound, "no_type": no_type}
@@ -64,15 +65,16 @@ func _bridge(host: Node) -> Dictionary:
 	await host.get_tree().process_frame
 	SoundBus.sound_log.clear()
 	var before: int = SoundBus.sound_log.size()
-	FxBus.play("blood", Vector3(1, 0, 0))
+	var blood_type := load(BLOOD) as ParticleType
+	FxBus.play(blood_type, Vector3(1, 0, 0))
 	var last: Dictionary = SoundBus.sound_log.last()
 	var blood: bool = SoundBus.sound_log.size() == before + 1 and last.get("emitter") == &"blood" \
 		and last.get("event") == SoundEvent.FX and bool(last.get("played"))
 	var after_blood: int = SoundBus.sound_log.size()
-	FxBus.puff("blood", Vector3(2, 0, 0))
-	FxBus.play("dirt", Vector3(3, 0, 0))
+	FxBus.puff(blood_type, Vector3(2, 0, 0))
+	FxBus.play(load(DIRT) as ParticleType, Vector3(3, 0, 0))
 	var quiet: bool = SoundBus.sound_log.size() == after_blood
-	FxBus.play_beam("lightning", Vector3(0, 4, 0), Vector3.ZERO)
+	FxBus.play_beam(load(LIGHTNING) as BeamType, Vector3(0, 4, 0), Vector3.ZERO)
 	var beam: bool = SoundBus.sound_log.last().get("emitter") == &"lightning"
 	return {"ok": blood and quiet and beam, "blood": blood, "puff_and_missing_quiet": quiet, "beam": beam}
 

@@ -10,8 +10,8 @@ extends Resource
 
 ## Drawing of the beam. Empty = no bolt: only the flash (`light`) at the end.
 @export var scene: PackedScene
-## Atlas tag of res://assets/original/fx/ (tools/import/import_ui.py). sacengine `ltn2`; `elec` also fits.
-@export var atlas_tag := "ltn2"
+## The atlas of the ribbon (ltn2.png for the lightning bolts; elec.png also fits). Empty = a flat fill.
+@export var atlas: Texture2D
 @export_range(1, 8) var h_frames := 4
 @export_range(1, 8) var v_frames := 4
 ## Seconds each atlas cell stays.
@@ -99,8 +99,3 @@ func span_at(t: float) -> Vector2:
 	if t > life_s - travel_s:
 		return Vector2(clampf((t - (life_s - travel_s)) / travel_s, 0.0, 1.0), 1.0)
 	return Vector2(0.0, 1.0)
-
-
-## The name FxBus plays this type by: its file under data/fx/beams/ without the extension.
-func fx_name() -> String:
-	return resource_path.trim_prefix("res://data/fx/beams/").get_basename()

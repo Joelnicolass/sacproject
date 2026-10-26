@@ -235,11 +235,11 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 		&"select", &"order":
 			return command_voice.cue_for(body as UnitBody, event) if command_voice != null else false
 		&"fx":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, FxWire.as_particle(arg))
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, FxWire.resource(arg) as ParticleType)
 		&"puff":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, FxWire.as_particle(arg))
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, FxWire.resource(arg) as ParticleType)
 		&"beam":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, FxWire.as_beam(arg))
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, FxWire.resource(arg) as BeamType)
 		&"spawn":
 			return true
 		&"loop", &"occupy", &"release":
@@ -318,16 +318,16 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 		&"wait":
 			return true
 		&"fx":
-			FxBus.play(arg, spot + Vector3.UP)
+			FxBus.play(FxWire.resource(arg) as ParticleType, spot + Vector3.UP)
 			return true
 		&"puff":
-			FxBus.puff(arg, spot + Vector3.UP)
+			FxBus.puff(FxWire.resource(arg) as ParticleType, spot + Vector3.UP)
 			return true
 		&"beam":
-			FxBus.play_beam(arg, spot + Vector3.UP * 4.0, spot)
+			FxBus.play_beam(FxWire.resource(arg) as BeamType, spot + Vector3.UP * 4.0, spot)
 			return true
 		&"scene":
-			FxBus.play_scene(arg, spot, {})
+			FxBus.play_scene(FxWire.resource(arg) as PackedScene, spot, {})
 			return true
 		&"spawn":
 			return body is Node3D and _spawn(body as Node3D, arg)

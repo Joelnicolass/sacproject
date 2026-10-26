@@ -70,6 +70,12 @@ func id() -> String:
 	return tag if not tag.is_empty() else resource_path.get_file().get_basename()
 
 
+## True when `passive` is the one this creature has (its `on_damage`). The only place that answers it: FireShield, LightningCharge,
+## DamagePassive and the Manahoar's ManaSupport ask here, so a passive node only wakes up on a creature that lists its ability.
+func has_passive(passive: AbilityType) -> bool:
+	return passive != null and on_damage == passive
+
+
 ## True when the creature has a ranged attack.
 func is_ranged() -> bool:
 	return ranged_attack != null

@@ -209,7 +209,7 @@ func _wake() -> void:
 
 func _carries() -> bool:
 	var type: Variant = body.get("type") if body != null and "type" in body else null
-	return passive != null and type is CreatureType and (type as CreatureType).on_damage == passive
+	return type is CreatureType and (type as CreatureType).has_passive(passive)
 
 
 ## Bench only: `marcha body ×pace (x, y, z)` on every tick the carrier moved, for the replica to measure the step.

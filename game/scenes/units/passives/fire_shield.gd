@@ -151,7 +151,7 @@ func _mana_cost() -> float:
 
 func _carries() -> bool:
 	var type: CreatureType = body.get("type") as CreatureType if body != null and "type" in body else null
-	return passive != null and type != null and type.on_damage == passive
+	return type != null and type.has_passive(passive)
 
 
 ## canShield (state.d:218-225): stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,

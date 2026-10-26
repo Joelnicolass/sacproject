@@ -55,7 +55,7 @@ func melee_accuracy_factor() -> float:
 
 ## The Lightning Charge, when the body's passive is its (the other bodies carry the node and ignore it).
 func _charge() -> LightningCharge:
-	if charge == null or body == null or body.type == null or charge.passive == null or body.type.on_damage != charge.passive:
+	if charge == null or body == null or body.type == null or not body.type.has_passive(charge.passive):
 		return null
 	return charge
 

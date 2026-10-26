@@ -21,7 +21,7 @@ func setup(body: UnitBody, creature: CreatureType, slot: int, match_rules: Match
 	_body = body
 	owner_slot = slot
 	rules = match_rules
-	enabled = creature != null and source != null and creature.abilities().has(source)
+	enabled = creature != null and creature.has_passive(source)
 
 
 func _ready() -> void:

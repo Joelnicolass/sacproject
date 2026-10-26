@@ -5,7 +5,9 @@ extends RefCounted
 ## old rule (11 m from a part) would have let some go; a live stamp (an Erupt-like mound, every tick) and a kept one (a dent) over the
 ## altar leave the land under every footprint with pins_ground at 0 and the ring around it at most half of the free stamp. The stamps
 ## go through the Terrain API of the bed's own ground (two grounds live in the tree here, so the case asks it by hand, never
-## Terrain.of). It borrows the checks of TerrainCases (`cases`).
+## Terrain.of). What that ground asks the tree (the parts and bases for a hole, the pins in its _ready, the bodies a stamp carries)
+## must be the bed's own: each case checks first that no other base, building or body is there (`bed_alone`), and frees the bed at
+## once when it ends, so no later case finds its altar or its ground. It borrows the checks of TerrainCases (`cases`).
 
 const BED := preload("res://debug/terrain/edit_bed.tscn")
 const SPIRAL_M := 50.0
@@ -34,6 +36,7 @@ func _hole() -> Dictionary:
 	var shape := bed.get_node("Terrain") as Terrain
 	var footprints := _footprints(bed)
 	checks["two_footprints"] = footprints.size() == 2
+	checks["bed_alone"] = _alone(bed, footprints)
 	var parts := HoleRules.parts_of(shape.get_tree())
 	var old_rule_lets_go := false
 	for footprint in footprints:
@@ -56,7 +59,7 @@ func _hole() -> Dictionary:
 	_c._note("base hole cut / under a base", [cut, under])
 	checks["the_spiral_dug"] = cut > 0
 	checks["no_hole_under_a_base"] = under == 0
-	bed.queue_free()
+	_free(bed)
 	await _c._frames(2)
 	return _c._verdict("base_hole", checks)
 
@@ -69,6 +72,7 @@ func _pin() -> Dictionary:
 	var bed := await _bed()
 	var shape := bed.get_node("Terrain") as Terrain
 	var footprints := _footprints(bed)
+	checks["bed_alone"] = _alone(bed, footprints)
 	var altar := footprints[0].area().get_center()
 	var mound := _profile(MOUND_S)
 	var worst := Vector3.ZERO
@@ -90,7 +94,7 @@ func _pin() -> Dictionary:
 	checks["kept_the_land_moved"] = kept.z > 0.5
 	checks["kept_base_level"] = kept.x <= 1e-4
 	checks["kept_ring_soft"] = kept.y <= 1e-3
-	bed.queue_free()
+	_free(bed)
 	await _c._frames(2)
 	return _c._verdict("base_pin", checks)
 
@@ -144,6 +148,30 @@ func _bed() -> Node3D:
 	_c._root.add_child(bed)
 	await _c._frames(2)
 	return bed
+
+
+## Out of the tree and freed now (not at the end of the frame): its altar, manafount and ground leave every group at once.
+func _free(bed: Node3D) -> void:
+	bed.get_parent().remove_child(bed)
+	bed.free()
+
+
+## True when the bases, buildings and parts in the tree are all the bed's (HoleRules.parts_of/bases_of and PinRules.of_tree read
+## the whole tree), and no body of the suite stands where the bed's ground may move (StampCarry would carry it).
+func _alone(bed: Node3D, footprints: Array[GroundFootprint]) -> bool:
+	var tree := bed.get_tree()
+	for group in [GroundFootprint.GROUP, MapBuilding.GROUP, ManafountBody.GROUP, Altar.ANY_GROUP]:
+		for node in tree.get_nodes_in_group(group):
+			if not bed.is_ancestor_of(node):
+				return false
+	for group in [&"unit", &"wizard"]:
+		for node in tree.get_nodes_in_group(group):
+			var body := node as Node3D
+			for footprint in footprints:
+				var at := Vector2(body.global_position.x, body.global_position.z) if body != null else Vector2.INF
+				if at.distance_to(footprint.area().get_center()) < REACH_M + SPIRAL_M:
+					return false
+	return true
 
 
 ## The footprints of the bed, the altar's first.

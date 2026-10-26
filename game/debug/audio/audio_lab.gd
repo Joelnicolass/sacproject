@@ -235,11 +235,11 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 		&"select", &"order":
 			return command_voice.cue_for(body as UnitBody, event) if command_voice != null else false
 		&"fx":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, FxWire.as_particle(arg))
 		&"puff":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, FxWire.as_particle(arg))
 		&"beam":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, FxWire.as_beam(arg))
 		&"spawn":
 			return true
 		&"loop", &"occupy", &"release":
@@ -321,7 +321,7 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			FxBus.play(arg, spot + Vector3.UP)
 			return true
 		&"puff":
-			FxBus.play_puff(arg, spot + Vector3.UP)
+			FxBus.puff(arg, spot + Vector3.UP)
 			return true
 		&"beam":
 			FxBus.play_beam(arg, spot + Vector3.UP * 4.0, spot)

@@ -117,6 +117,20 @@ xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|
 		| xargs grep -nE '^(cue = &"|source = "|set_path = "|fallback_path = "|metadata/ui_sound = "|one_shot_keys = )' 2>/dev/null
 } | grep -vE ':[0-9]+:[ 	]*#' >> "$OUT/C17.txt" || true
 
+# C17 widened (055x x1): the same defect measured better. It also counts an effect named by text where the old pattern did not look:
+#   - a `var`/`@export var` named *fx / *burst / *puff holding text (a String type or a "..." / &"..." default), private ones (`_x`) aside;
+#   - an effect turned into text to be played (`.bus_name()`, `.fx_name()`, `.cast_fx_name()`, `.resource_path` handed to FxBus,
+#     `FxTrail.attach(host, "name", ...)`);
+#   - a `.tscn` / `.tres` property named *fx / *burst / *puff set to a "..." text (an effect is an ExtResource, not a name).
+# 055x x7 takes it to 0. The lines are de-duplicated with the older patterns above.
+{
+	xargs grep -nE '^[ 	]*(@export[a-z_]*(\([^)]*\))? )?var [a-z][a-z_0-9]*(fx|burst|puff)[a-z_0-9]*[ ]*(:=[ ]*&?"|:[ ]*(String|StringName)\b)' < "$OUT/all.txt" 2>/dev/null
+	xargs grep -nE '\.(bus_name|fx_name|cast_fx_name)\(\)|FxTrail\.attach\([^,]*,[ ]*&?"|FxBus\.[a-z_]+\(.*\.resource_path' < "$OUT/all.txt" 2>/dev/null
+	find scenes data \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
+		| xargs grep -nE '^[a-z_0-9]*(fx|burst|puff)[a-z_0-9]* = &?"[^"]+"' 2>/dev/null
+} | grep -vE ':[0-9]+:[ 	]*#' | grep -v 'editor_description' >> "$OUT/C17.txt" || true
+sort -u "$OUT/C17.txt" -o "$OUT/C17.txt"
+
 # C18: text-tag lookups of content in gameplay (allowed in spawners, scenes/net/, scenes/core/catalog/).
 xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \

@@ -59,7 +59,7 @@ const RAMP_POINTS := 25
 ## Emitters FxBus keeps for this type: puffs per second × lifetime_s × bursts alive at once, plus
 ## ~25 % because an emitter frees a little after its life (e.g. a trail of 30 puffs/s living 0.517 s on
 ## 4 projectiles: 30 × 0.517 × 4 × 1.25 ≈ 80).
-## 0 = FxBus.max_pooled_per_type.
+## 0 = BurstPool.max_per_type.
 @export_range(0, 512) var pool_max: int = 0
 
 @export_group("Light (029c)")
@@ -70,6 +70,10 @@ const RAMP_POINTS := 25
 @export_group("Sound")
 ## What each burst of this type sounds like (a SoundCue from data/audio/cues/). Empty = silent. A trail's puffs never sound.
 @export var sound: SoundCue
+
+@export_group("Camera")
+## How hard the camera shakes near each burst of this type, 0 to 1 (full inside ShakeMap.full_within_m, fading with distance). 0 = none.
+@export_range(0.0, 1.0, 0.01) var camera_trauma := 0.0
 
 
 ## sacengine getAlpha over the normalised life (RFC-053 053i shares it between SpriteEmitter and SpriteParticles):

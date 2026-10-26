@@ -1,5 +1,5 @@
 class_name WallSpirit
-extends MeshInstance3D
+extends FxScene
 
 ## A spirit of the Wailing Wall: a glowing green comet that drags a ribbon of the last 90 ticks of its flight (the ribbon of Animate Dead's
 ## streams, with `wlsp`). A PATROL spirit (twelve in the wall's scene) flies from point to point along the wall, at any height of it, appears
@@ -40,6 +40,8 @@ var _life := 0
 var _target: Node3D
 var _phase := 0.0
 
+@onready var _view: MeshInstance3D = %Mesh
+
 
 func _ready() -> void:
 	if (mode == Mode.PATROL and wall == null) or type == null or DisplayServer.get_name() == "headless":
@@ -48,10 +50,10 @@ func _ready() -> void:
 	_rng = MatchSeed.rng(["wall_spirit", String(name), index])
 	top_level = true
 	global_transform = Transform3D.IDENTITY
-	mesh = _mesh
-	material_override = BeamFx.material_for(type)
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	custom_aabb = AABB(Vector3(-400.0, -50.0, -400.0), Vector3(800.0, 200.0, 800.0))
+	_view.mesh = _mesh
+	_view.material_override = BeamFx.material_for(type)
+	_view.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_view.custom_aabb = AABB(Vector3(-400.0, -50.0, -400.0), Vector3(800.0, 200.0, 800.0))
 
 
 ## FxBus.play_scene (ORBIT): `target` the body's path, `ticks` how long it circles it.
@@ -131,8 +133,8 @@ func _draw() -> void:
 		var tangent := _trail[link] - _trail[link + 1]
 		var along := tangent.normalized() if tangent.length_squared() > 0.000001 else Vector3.BACK
 		turns.append(Quaternion(Vector3.BACK, along) if along.dot(Vector3.BACK) > -0.9999 else Quaternion(Vector3.RIGHT, PI))
-	set_instance_shader_parameter(&"cell", float(int(floor(Time.get_ticks_msec() / 1000.0 / type.frame_s)) % (type.h_frames * type.v_frames)))
-	set_instance_shader_parameter(&"energy", type.energy_max)
+	_view.set_instance_shader_parameter(&"cell", float(int(floor(Time.get_ticks_msec() / 1000.0 / type.frame_s)) % (type.h_frames * type.v_frames)))
+	_view.set_instance_shader_parameter(&"energy", type.energy_max)
 	_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in n:
 		for j in 3:

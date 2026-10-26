@@ -396,7 +396,8 @@ func _on_unharmed_hit(amount: float, from_slot: int, row: Dictionary, slot: int,
 
 
 ## F371: an FX played somewhere; a «burst» row counts the ones of its `fx` near a body of its `object`.
-func _on_fx(_kind: StringName, fx_name: String, at: Vector3) -> void:
+func _on_fx(_kind: StringName, fx: Resource, at: Vector3) -> void:
+	var fx_name := FxWire.label_of(fx)
 	if not _started or _finished:
 		return
 	for row in _rows:

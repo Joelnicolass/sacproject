@@ -24,3 +24,4 @@ additive = false
 lit = true
 pool_max = 16
 sound = ExtResource("cue_meteor_emerge")
+camera_trauma = 0.25

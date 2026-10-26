@@ -1,5 +1,5 @@
 class_name FallingChunk
-extends MeshInstance3D
+extends FxScene
 
 ## The piece of ground that drops when a vertex is taken away: the triangles that touched it, in the ground's own look, fall
 ## straight down faster and faster and go out of sight. Played on every peer by FxBus.broadcast_scene (params `vertex`: the lattice
@@ -14,6 +14,8 @@ extends MeshInstance3D
 
 var _speed := 0.0
 var _gone_at := 0.0
+
+@onready var _mesh: MeshInstance3D = %Mesh
 
 
 func _ready() -> void:
@@ -33,11 +35,11 @@ func play(params: Dictionary) -> void:
 		return
 	var piece := ArrayMesh.new()
 	piece.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, built)
-	mesh = piece
-	material_override = terrain.material_override
+	_mesh.mesh = piece
+	_mesh.material_override = terrain.material_override
 	# The piece carries its own heights and the ground shader reads the light and the marks from map coordinates: the mesh is in
 	# them, and this node stays at the origin and only goes down.
-	set_instance_shader_parameter(&"deform_follow", 0.0)
+	_mesh.set_instance_shader_parameter(&"deform_follow", 0.0)
 	global_position = Vector3.ZERO
 	_gone_at = piece.get_aabb().position.y + FallingChunkRules.SKIRT_M - fall_depth_m
 	set_process(true)

@@ -1,17 +1,18 @@
 extends RefCounted
 
-## Reads FxBus's pool from its children (RFC-029 029b), never through a play: emitters are named
+## Reads FxBus's burst pool from the children of its %Bursts (RFC-029 029b), never through a play: emitters are named
 ## `<type>_<n>`, visible while their burst plays and hidden when idle. For the labs and benches of debug/.
 
 
 ## type name -> Vector3i(playing, idle, cap).
 static func by_type(bus: Node) -> Dictionary:
+	var pool := bus.get_node("%Bursts") as BurstPool
 	var out := {}
-	for child in bus.get_children():
+	for child in pool.get_children():
 		if not child is SpriteParticles:
 			continue
 		var type_name := type_of(child)
-		var row: Vector3i = out.get(type_name, Vector3i(0, 0, bus.pool_cap((child as SpriteParticles).type)))
+		var row: Vector3i = out.get(type_name, Vector3i(0, 0, pool.cap_of((child as SpriteParticles).type)))
 		if (child as Node3D).visible:
 			row.x += 1
 		else:
@@ -20,7 +21,7 @@ static func by_type(bus: Node) -> Dictionary:
 	return out
 
 
-## "fx_pool activos n libres m · hijos h · tope t": t = Σ caps of the types FxBus holds.
+## "fx_pool activos n libres m · hijos h · tope t": t = Σ caps of the types the pool holds.
 static func line(bus: Node) -> String:
 	var playing := 0
 	var idle := 0
@@ -29,7 +30,7 @@ static func line(bus: Node) -> String:
 		playing += row.x
 		idle += row.y
 		cap += row.z
-	return "fx_pool activos %d libres %d · hijos %d · tope %d" % [playing, idle, bus.get_child_count(), cap]
+	return "fx_pool activos %d libres %d · hijos %d · tope %d" % [playing, idle, bus.get_node("%Bursts").get_child_count(), cap]
 
 
 ## `wrath_trail_12` -> `wrath_trail`.

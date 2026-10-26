@@ -77,7 +77,7 @@ func _ready() -> void:
 
 ## The FxBus name of `cast_type` (the file under data/fx/ without extension), "" without one. WardAction hands it to the Caster.
 func cast_fx_name() -> String:
-	return cast_type.resource_path.trim_prefix(FxBus.TYPES_DIR).get_basename() if cast_type != null else ""
+	return cast_type.resource_path.trim_prefix(FxWire.PARTICLES_DIR).get_basename() if cast_type != null else ""
 
 
 ## Listens to the wizard's cast particle: while it is this ward's own, the spell is being cast.

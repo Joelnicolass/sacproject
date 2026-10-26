@@ -1,5 +1,5 @@
 class_name DebrisBurst
-extends Node3D
+extends FxScene
 
 ## A shower of rocks thrown from one point, played on every peer by FxBus.broadcast_scene: each rock is a DebrisPiece
 ## scene flying in a random direction at about `speed`, spinning. The sprites of the burst (rock dust, the light) are

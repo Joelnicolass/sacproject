@@ -25,3 +25,4 @@ lit = true
 pool_max = 8
 light = ExtResource("9_light")
 sound = ExtResource("cue_meteor_hit")
+camera_trauma = 0.6

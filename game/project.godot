@@ -25,7 +25,7 @@ MpLobby="*res://addons/mp_kit/lobby/mp_lobby.gd"
 GameData="*res://scenes/core/catalog/game_data.gd"
 SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.tscn"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"
-FxBus="*res://scenes/fx/fx_bus.gd"
+FxBus="*res://scenes/fx/fx_bus.tscn"
 SoundBus="*res://scenes/audio/sound_bus.tscn"
 
 [display]

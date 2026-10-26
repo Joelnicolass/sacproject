@@ -54,8 +54,8 @@ func _process(delta: float) -> void:
 	else:
 		_fly()
 	if trail != null and zone.phase == GroundZone.Phase.ARMING:
-		FxBus.play_puff(trail.bus_name(), global_position)
-		FxBus.play_puff(trail.bus_name(), global_position)
+		FxBus.puff(trail.bus_name(), global_position)
+		FxBus.puff(trail.bus_name(), global_position)
 
 
 ## In front of the wizard, rising from his feet to over his head as it grows from nothing to its size.

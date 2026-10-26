@@ -60,5 +60,5 @@ func _burst() -> bool:
 			return false
 		points.append(body.global_position + BodyFacts.of_body(body).center)
 	for point in points:
-		FxBus.play_puff(_type, point)
+		FxBus.puff(_type, point)
 	return true

@@ -56,6 +56,7 @@ const BOOK_CASES := preload("res://debug/suite/book_cases.gd")  # 055e e4
 const SPELL_FIELD_CASES := preload("res://debug/suite/spell_field_cases.gd")  # 055e e1
 const ABILITY_FIELD_CASES := preload("res://debug/suite/ability_field_cases.gd")  # 055e e6
 const SPELL_LINK_CASES := preload("res://debug/suite/spell_link_cases.gd")  # 055e e3
+const FX_WIRE_CASES := preload("res://debug/suite/fx_wire_cases.gd")  # 055x x1
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -136,6 +137,7 @@ func _run_suite() -> void:
 	_results.merge(SPELL_FIELD_CASES.new().run(self))  # 055e e1
 	_results.merge(ABILITY_FIELD_CASES.new().run(self))  # 055e e6
 	_results.merge(await SPELL_LINK_CASES.new().run(self))  # 055e e3
+	_results.merge(FX_WIRE_CASES.new().run(self))  # 055x x1
 	_print_suite()
 
 

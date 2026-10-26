@@ -77,6 +77,10 @@ enum Blend { ADD, MIX }
 ## What each beam of this type sounds like (a SoundCue from data/audio/cues/), played at the middle of the beam. Empty = silent.
 @export var sound: SoundCue
 
+@export_group("Camera")
+## How hard the camera shakes near each beam of this type, 0 to 1 (at the middle of the beam). 0 = none.
+@export_range(0.0, 1.0, 0.01) var camera_trauma := 0.0
+
 
 ## Brightness at `t` seconds of the beam's life.
 func energy_at(t: float) -> float:

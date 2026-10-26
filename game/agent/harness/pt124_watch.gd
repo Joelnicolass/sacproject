@@ -68,7 +68,7 @@ func report() -> String:
 ## The FxBus beams on screen now (read-only): name, visible, start → end, age.
 func beams() -> String:
 	var parts: PackedStringArray = []
-	for child in FxBus.get_children():
+	for child in FxBus.get_node("%Beams").get_children():
 		if child is BeamFx:
 			var b := child as BeamFx
 			parts.append("%s vis %s %s→%s t %.3f" % [b.name, b.visible, b.get("_from"), b.get("_to"), float(b.get("_t"))])

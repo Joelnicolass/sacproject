@@ -56,7 +56,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 ## The creature turns to blood (every peer sees it: the server broadcasts).
 func splash_blood(at: Vector3) -> void:
 	if blood_fx != null:
-		FxBus.broadcast(FxBus.name_of(blood_fx), at)
+		FxBus.broadcast(blood_fx, at)
 
 
 func _process(delta: float) -> void:

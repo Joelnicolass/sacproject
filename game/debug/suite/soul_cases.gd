@@ -199,8 +199,8 @@ func _wind() -> Dictionary:
 	var bolts := [0]
 	var hits: Array[float] = []
 	foe_health.hit.connect(func(amount: float, _slot: int, _full: bool) -> void: hits.append(amount))
-	var count_bolt := func(kind: StringName, fx_name: String, _at: Vector3) -> void:
-		if kind == FxBus.KIND_BEAM and fx_name == "soul_wind_bolt":
+	var count_bolt := func(kind: StringName, fx: Resource, _at: Vector3) -> void:
+		if kind == FxBus.KIND_BEAM and FxWire.label_of(fx) == "soul_wind_bolt":
 			bolts[0] += 1
 	FxBus.played.connect(count_bolt)
 	var caster := wizard.get_node("Caster") as Caster

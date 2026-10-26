@@ -123,7 +123,7 @@ func _physics_process(_delta: float) -> void:
 	var body := _body()
 	var every := MatchClock.ticks_for(trail_every_s)
 	if body and every > 0 and MatchClock.now() % every == 0:
-		FxBus.play_puff(trail_fx, body.global_position + Vector3.UP * trail_lift)
+		FxBus.puff(trail_fx, body.global_position + Vector3.UP * trail_lift)
 	if _simulates() and _running and _frame >= frames:
 		_running = false
 		_afflictions().mark(self, false)

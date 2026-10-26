@@ -7,16 +7,14 @@ extends SpellAction
 ## FOUNT_TAKEN, a building on its BuildArea OCCUPIED. Creatures and wizards never refuse it. The tower is born on the fount when the
 ## cast starts and rises while it lasts (the wizard stands still, the BuildArea pushes everyone out); a cut cast frees it, an ended
 ## one makes it stand. The tower scene comes from the wizard's god (GodType.structures), so the same node serves every structure
-## spell. Does not build anything itself (StructureSpawner does) nor draw the rise (CastTower.build_progress).
+## spell. Does not build anything itself (StructureSpawner does) nor draw or sound the rise: every peer derives that from the replicated
+## CastTower.build_progress (BuildReveal, ManafountBody), so the cast sends no FX.
 ## Ref: sacengine spellStatus (state.d:29534-29573), the structure cast (state.d:10072-10083, 15250-15274).
 
 const NO_FOUNT := Refusal.NO_FOUNT
 const FOUNT_TAKEN := Refusal.FOUNT_TAKEN
 ## The fount a click picks is the closest free one within this distance of the point.
 const POINT_FOUNT_RANGE_M := 20.0
-
-## The burst at the fount when the tower rises (at its SummonSpot).
-@export var rise_fx: ParticleType
 
 var _fount: ManafountBody
 var _tower: CastTower
@@ -86,8 +84,6 @@ func finish(_wizard_body: WizardBody, _spell: SpellType, _target: Node3D) -> Str
 	if tower == null or not is_instance_valid(tower) or tower.is_queued_for_deletion():
 		return NO_FOUNT
 	tower.complete()
-	if rise_fx != null:
-		FxBus.broadcast(rise_fx, fount.summon_point())
 	return ""
 
 

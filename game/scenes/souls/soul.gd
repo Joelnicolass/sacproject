@@ -62,6 +62,9 @@ const SPRITE_LIFT := 1.25 * 1.6
 ## Devour (state.d:14998: 3/updateFPS a tick).
 @export var devour_shrink_per_s := 3.0
 @export var fall_speed := 1.0
+## A soul that falls through a hole is gone this far under the last ground it had.
+## Ref: soulVanishDepth = mapDepth (sacmap.d:108).
+@export_range(0.0, 200.0, 1.0, "suffix:m") var vanish_depth_m := 50.0
 @export var collector_lift := 0.5
 ## sacengine turns the ring of a multi-soul 2π/8 rad/s.
 @export var ring_turn_per_s := TAU / 8.0
@@ -96,6 +99,8 @@ var _who := ""
 var _anim_t := 0.0
 var _facing := 0.0
 var _rise_t := 0.0
+## Server only: the height of the last ground under it (NAN until it has seen one).
+var _last_ground_y := NAN
 var _sprites: Array[MeshInstance3D] = []
 var _material: ShaderMaterial
 
@@ -293,16 +298,34 @@ func _follow_corpse() -> void:
 	global_position = (corpse as UnitBody).soul_anchor() if corpse is UnitBody else corpse.global_position
 
 
-## Without ground under it (terrain not built yet) it stays put; sacengine drops off-map souls.
+## A free soul comes down to the land under it. Over a hole (no land under it on the map) it keeps falling at `fall_speed` and is
+## gone once it is `vanish_depth_m` under the last ground it had. Without ground and without a hole (the terrain not built yet) it
+## stays put.
+## Ref: updateSoul (state.d:14912-14920), soulVanishDepth = mapDepth (sacmap.d:108).
 func _settle(delta: float) -> void:
 	var at := global_position
 	var ground := GroundRay.surface_y(self, at, ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
 	if is_nan(ground):
+		var terrain := Terrain.of(self)
+		if terrain == null or terrain.is_on_ground(at.x, at.z):
+			return
+		if is_nan(_last_ground_y):
+			_last_ground_y = at.y
+		global_position.y = at.y - fall_speed * delta
+		if global_position.y < _last_ground_y - vanish_depth_m:
+			_vanish()
 		return
+	_last_ground_y = ground
 	if at.y > ground:
 		global_position.y = maxf(at.y - fall_speed * delta, ground)
 	else:
 		global_position.y = ground
+
+
+## Server or solo: it fell through a hole and is gone, with nothing inside (no one collects it).
+func _vanish() -> void:
+	number = 0
+	queue_free()
 
 
 func _collect_step(delta: float) -> void:

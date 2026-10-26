@@ -44,7 +44,7 @@ Antes había pedido: «god rays, hacer el cielo un poco más llamativo, efectos 
 
 - Suelo con relieve: materiales PBR con normales, AO y rugosidad; mezcla por pendiente y altura; pasto, matas, flores y rocas instanciados.
 - Mapas de normales y AO en personajes, altar y estructuras, generados a partir de sus texturas originales.
-- **Cielo: se conserva la estética del original** (decisión del usuario, 2026-10-14: «era algo muy llamativo en el juego original»). Las nubes, colores y movimiento del cielo del juego se ven como en el original; nada de nubes nuevas ni saturación extra. Se puede construir un cielo nuevo por shader (técnicas de godotshaders/shadertoy) que reproduzca esa estética con más resolución e impacto, pero el cielo original queda siempre disponible como modo legacy.
+- **Cielo: se conserva la estética del original** (decisión del usuario, 2026-10-14: «era algo muy llamativo en el juego original»). Las nubes, colores y movimiento del cielo del juego se ven como en el original; nada de nubes nuevas ni saturación extra. Se puede construir un cielo nuevo por shader (técnicas de godotshaders/shadertoy) que reproduzca esa estética con más resolución e impacto, pero el cielo original queda siempre disponible como modo legacy. **Actualización 2026-10-26 (RFC-058):** el día/noche y el clima pueden cambiar el cielo (estrellas, luna, nubes de tormenta) mientras la estética se parezca a la del original; el modo legacy ya no es obligatorio. Sigue sin bloom fuerte.
 - Niebla volumétrica y de altura; polvo, brasas, luciérnagas y esporas en el aire según el bioma.
 - Bloom fuerte en el portal del altar, hechizos, manantiales y fuego.
 - Sombras suaves y relleno de luz: nunca negro puro sobre un personaje.

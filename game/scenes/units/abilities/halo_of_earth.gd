@@ -36,8 +36,8 @@ const GROUP := &"halo_of_earth"
 
 ## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that adds this node hands it over.
 @export var spawner: Node
-## ShotLook tag of a rock (data/shots/halo_rock.tscn).
-@export var rock_tag := "halo_rock"
+## A rock's look (data/shots/halo_rock.tscn): its mesh, hit box and bursts.
+@export var look: PackedScene
 @export_range(1, 12) var num_rocks := 6
 ## The Rhinok's box (BodyNudge.box) is scaled by this to place a newborn rock (haloRockSpawnPosition: 1.25 for an ability,
 ## 2.5 for the spell).
@@ -118,7 +118,7 @@ func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	_who = AbilityEffect.who(body)
 	_slot = int(body.get("owner_slot")) if "owner_slot" in body else 0
 	_rng = MatchSeed.rng(["halo", _who, _born])
-	_look = ShotLook.fit(self, _look, rock_tag)
+	_look = ShotLook.fit(self, _look, look)
 	name = "Halo%s_%d" % [_who, _born]
 
 
@@ -132,7 +132,7 @@ func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vecto
 	_who = AbilityEffect.who(caster)
 	_slot = int(caster.get("owner_slot")) if "owner_slot" in caster else 0
 	_rng = MatchSeed.rng(["halo", _who, _born])
-	_look = ShotLook.fit(self, _look, rock_tag)
+	_look = ShotLook.fit(self, _look, look)
 	name = "Halo%s_%d" % [_who, _born]
 	_armed = false
 	_cast_ticks = maxi(1, cast_ticks)
@@ -264,7 +264,7 @@ func _make_node(at: Vector3) -> Node3D:
 	var data := {
 		"x": at.x, "y": at.y, "z": at.z, "vx": 0.0, "vy": 0.0, "vz": 0.0,
 		"damage": _damage, "slot": _slot, "gravity": 0.0,
-		"max_distance": 1.0e9, "tag": rock_tag, "target": "",
+		"max_distance": 1.0e9, "look": FxWire.id_of(look), "target": "",
 		"shooter": str(user.get_path()) if user != null and user.is_inside_tree() else "",
 	}
 	return (spawner as ShotSpawner).spawn_shot(data)

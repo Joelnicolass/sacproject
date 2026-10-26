@@ -12,7 +12,7 @@ extends AbilityEffect
 ## The target: an enemy creature is aimed at by its center led by its pace (predictShotTargetPosition, like RangedWeapon);
 ## anything else is the point (the ground): an ally as the target is treated as the ground (checkAbility, 13451-13458).
 ## Range: the SPEL's cast_range, to the aimed point.
-## The shots are RangedShot of the shot container with the look data/shots/<tag>.tscn (gravity `falling`, sacspell.d:123:
+## The shots are RangedShot of the shot container with the look `look` (gravity `falling`, sacspell.d:123:
 ## 20 for blightMites, stickyBomb, oil, bombardment); what each does where it lands is that look's ShotImpact (StickImpact).
 ## They carry no intended target, so one of the shooter's own side is never hit.
 ## Divergences (declared): the shot leaves from ShotAim.origin (the body's front at shot_height, not the animation's hand); a
@@ -26,8 +26,8 @@ extends AbilityEffect
 @export var falling := 20.0
 ## The shot leaves from the body's front at this fraction of its height (as RangedWeapon.shot_height).
 @export var shot_height := 0.7
-## ShotLook tag of the shots; empty = the ability's own tag (data/shots/acia.tscn).
-@export var shot_tag := ""
+## The shots' look (data/shots/acia.tscn); empty = the ability's default (ShotSpawner.default_look).
+@export var look: PackedScene
 ## A shot that has not hit anything flies at most this far.
 @export var flight_limit := 300.0
 
@@ -44,7 +44,7 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not _has_authority() or ability == null or user == null:
 		return false
-	var spawner := user.get_tree().get_first_node_in_group("shot_spawner") as ShotSpawner
+	var spawner := ShotSpawner.of(user.get_tree())
 	if spawner == null:
 		push_warning("LobAbility: no hay ShotSpawner en el mundo.")
 		return false
@@ -53,7 +53,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	var tick := MatchClock.now()
 	var rng := MatchSeed.rng(["lob", who(user), tick])
 	var accuracy := _accuracy()
-	var tag := shot_tag if not shot_tag.is_empty() else ability.tag
+	var look_id := FxWire.id_of(look if look != null else ShotSpawner.default_look(ability))
 	for index in shots:
 		## getShotDirectionWithGravity: a zero offset stays a zero direction (offset.length == 0 ? offset : normalized).
 		var direction := offset.normalized() if offset.length_squared() > 0.0 else offset
@@ -62,7 +62,8 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		direction += spread * _uniform_direction(rng)
 		var velocity := direction * ability.speed_m_s
 		var shot := spawner.spawn_shot({
-			"tag": tag,
+			"tag": ability.tag,
+			"look": look_id,
 			"x": origin.x, "y": origin.y, "z": origin.z,
 			"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
 			"damage": float(ability.damage),
@@ -75,7 +76,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		})
 		if DebugLog.on(&"effects"):
 			print("lob %s %s tiro %d/%d %s v (%.4f, %.4f, %.4f) origen (%.4f, %.4f, %.4f) (tick %d)" % [
-				who(user), tag, index + 1, shots, shot.name if shot else "?", velocity.x, velocity.y, velocity.z,
+				who(user), ability.tag, index + 1, shots, shot.name if shot else "?", velocity.x, velocity.y, velocity.z,
 				origin.x, origin.y, origin.z, tick])
 	return true
 

@@ -1,14 +1,11 @@
 class_name ShotLook
 extends Node
 
-## How a creature's ranged shot looks and what it does in flight and on arrival: the scene res://data/shots/<ability tag>.tscn, whose
-## root is this node. Flight and damage come from the AbilityType; a tag without a scene flies as a plain ball with no particles.
+## How a creature's ranged shot looks and what it does in flight and on arrival: a scene of data/shots/ whose root is this node,
+## handed over as a PackedScene (`look` of the ability node, or ShotSpawner.default_look of a creature's attack). Flight and
+## damage come from the AbilityType; no scene flies as a plain ball with no particles.
 ## The shot (or the weapon, or the strike) that uses it holds it as a child, so it goes when they go.
-## Not: the flight itself (RangedShot) nor who is hit (ShotImpact).
-
-const LOOKS_DIR := "res://data/shots/"
-## The scene of each tag looked up so far (null = it has none): the lookup runs once per tag, not once per shot.
-static var _scenes: Dictionary = {}
+## Not: the flight itself (RangedShot), who is hit (ShotImpact), nor finding a look by text (ShotSpawner.default_look).
 
 ## The shot's mesh (scenes/props/meshes/<tag>.res); empty = a ball of fallback_radius.
 @export var mesh: Mesh
@@ -69,32 +66,25 @@ static var _scenes: Dictionary = {}
 @export var fallback_radius := 0.15
 
 
-## The ability tag this look was made for ("" for the plain ball).
-var tag := ""
+## The scene this look was made from (null for the plain ball).
+var source: PackedScene
 
 
-## A new look of the ability `tag` (res://data/shots/<tag>.tscn), or a plain ball. The caller owns it: add it as a child. The one
-## lookup for RangedShot, RangedWeapon and the abilities that throw their own shots.
-static func make(tag_name: String) -> ShotLook:
-	if not _scenes.has(tag_name):
-		var path := LOOKS_DIR + tag_name + ".tscn"
-		_scenes[tag_name] = load(path) as PackedScene if not tag_name.is_empty() and ResourceLoader.exists(path) else null
-	var scene: PackedScene = _scenes[tag_name]
+## A new look from `scene` (a data/shots/ scene), or a plain ball for null. The caller owns it: add it as a child.
+static func make(scene: PackedScene) -> ShotLook:
 	var made := scene.instantiate() as ShotLook if scene != null else null
 	if made == null:
 		made = ShotLook.new()
-	made.tag = tag_name
+	made.source = scene
 	return made
 
 
-## Keeps `current` as a child of `holder` when it is the look of `tag_name`; otherwise frees it and makes the right one ("" = none).
-static func fit(holder: Node, current: ShotLook, tag_name: String) -> ShotLook:
-	if current != null and current.tag == tag_name:
+## Keeps `current` as a child of `holder` when it was made from `scene`; otherwise frees it and makes that one (a plain ball for null).
+static func fit(holder: Node, current: ShotLook, scene: PackedScene) -> ShotLook:
+	if current != null and current.source == scene:
 		return current
 	if current != null:
 		current.queue_free()
-	if tag_name.is_empty():
-		return null
-	var made := make(tag_name)
+	var made := make(scene)
 	holder.add_child(made)
 	return made

@@ -3,7 +3,7 @@ extends Weapon
 
 ## A shot: the creature stops, turns until it faces the aim, spends mana and fires on the shoot ticks of its clip, then waits out
 ## the cooldown. What flies is the AbilityType in `attack_type` (or the creature's own); how it looks and what it does on arrival
-## is that ability's ShotLook (data/shots/<tag>.tscn): a breath is this weapon with a ShotLook whose in_flight is a wave.
+## is that ability's ShotLook (ShotSpawner.default_look: data/shots/<tag>.tscn): a breath is this weapon with a ShotLook whose in_flight is a wave.
 ## Not: the flight (RangedShot) nor who to shoot (the chase state).
 ## Ref: sacengine `attack`, `shoot`, `aim`, `shootOnTick` (state.d:12511-12855). Server (or solo) only.
 
@@ -43,7 +43,11 @@ func setup(unit: UnitBody, creature: CreatureType, stream: RandomNumberGenerator
 	attack = attack_type if attack_type != null else (creature.ranged_attack if creature else null)
 	if attack and attack.speed_m_s <= 0.0:
 		attack = null
-	look = ShotLook.fit(self, look, attack.tag if attack and unit.simulates() else "")
+	if attack and unit.simulates():
+		look = ShotLook.fit(self, look, ShotSpawner.default_look(attack))
+	elif look != null:
+		look.queue_free()
+		look = null
 
 
 ## A client counts it down too, but nothing there reads it: only the server starts a shot.

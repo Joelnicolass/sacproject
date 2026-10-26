@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://agent/perf/deform_shot.gd" id="1_shot"]
+[ext_resource type="PackedScene" path="res://debug/spells/cast_terrain.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/erupt_zone.tscn" id="3_erupt"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/volcano_zone.tscn" id="4_volcano"]
+
+[node name="DeformShot" type="Node" node_paths=PackedStringArray("camera")]
+script = ExtResource("1_shot")
+world_scene = ExtResource("2_world")
+erupt_zone = ExtResource("3_erupt")
+volcano_zone = ExtResource("4_volcano")
+camera = NodePath("Camera")
+
+[node name="Camera" type="Camera3D" parent="."]
+fov = 60.0
+far = 20000.0

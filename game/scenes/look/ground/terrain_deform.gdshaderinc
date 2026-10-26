@@ -1,7 +1,9 @@
 // The ground moved after the map was loaded (a spell raised it, dug it or took vertices away): the ground shaders move
 // the vertices of the mesh, which is never rebuilt. TerrainDeformTexture fills the global `terrain_deform_map`: one texel
-// per 10 m vertex of the map, R = how high the vertex is raised, G = 1 when the vertex was taken away. Until something
-// moves, `terrain_deform_on` is 0 and the ground costs nothing extra.
+// per 10 m vertex of the map, R = how high the vertex is raised, G = 1 when the vertex was taken away. Where stamps are
+// playing, the small `terrain_live_map` holds the same two floats for the vertices of `terrain_live_rect` (x, y: its first
+// vertex; z, w: how many; 0 when none plays) and wins over the map there, so the map is sent again only when what stays or
+// the holes change. Until something moves, `terrain_deform_on` is 0 and the ground costs nothing extra.
 //
 // In vertex():
 //   deform_hole = 0.0;
@@ -9,6 +11,8 @@
 // In fragment(): if (deform_hole > 0.0001) { discard; }
 
 global uniform sampler2D terrain_deform_map;
+global uniform sampler2D terrain_live_map;
+global uniform vec4 terrain_live_rect;
 global uniform float terrain_deform_on;
 // 0 on a piece of ground that carries its own heights and falls (FallingChunk): it must not take the shift of the map again.
 instance uniform float deform_follow = 1.0;
@@ -25,6 +29,11 @@ varying float deform_hole;
 // x: how far the vertex at the ground point xz is raised; y: 1 when it was taken away.
 vec2 deform_at(vec2 xz) {
 	ivec2 lattice = ivec2(clamp(round(xz / DEFORM_CELL), vec2(0.0), vec2(DEFORM_LAST)));
+	ivec4 live = ivec4(terrain_live_rect);
+	ivec2 local = lattice - live.xy;
+	if (all(greaterThanEqual(local, ivec2(0))) && all(lessThan(local, live.zw))) {
+		return texelFetch(terrain_live_map, local, 0).rg;
+	}
 	return texelFetch(terrain_deform_map, lattice, 0).rg;
 }
 

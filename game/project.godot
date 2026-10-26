@@ -456,6 +456,14 @@ terrain_deform_on={
 "type": "float",
 "value": 0.0
 }
+terrain_live_map={
+"type": "sampler2D",
+"value": ""
+}
+terrain_live_rect={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
 scar_index={
 "type": "sampler2D",
 "value": ""

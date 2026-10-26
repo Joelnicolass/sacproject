@@ -153,10 +153,11 @@ func can_be_collected_by(slot: int) -> bool:
 	return state == State.NORMAL and (not attached or color_for(slot) == SoulColor.BLUE)
 
 
-## A red soul in the open that no doctor of that side is already coming for (sacengine convertSideMask,
-## state.d:1588, 10184, 29547).
+## A red soul in the open, grown or still growing in, that no doctor of that side is already coming for. A soul that just
+## appeared can be converted right away, like the end of the cast and the carrier already allow.
+## Ref: sacengine convertSideMask and spellStatus (no soul state check), state.d:1588, 10184, 29547, 30822.
 func can_convert_by(slot: int) -> bool:
-	return state == State.NORMAL and color_for(slot) == SoulColor.RED and not is_reserved_for(slot)
+	return (state == State.NORMAL or state == State.EMERGING) and color_for(slot) == SoulColor.RED and not is_reserved_for(slot)
 
 
 ## Server or solo. A Convert cast of `slot` fixes this soul (castConvert clears the side's bit).

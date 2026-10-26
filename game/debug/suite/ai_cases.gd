@@ -352,7 +352,7 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
-	var terrain: TerrainMesh = Maps.land_from(MapCatalog.active().terrain, MapCatalog.active().tiles)
+	var terrain: Terrain = Maps.land_from(Maps.heights_of(MapCatalog.active()), MapCatalog.active().tiles)
 	terrain.name = "Terrain"
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
@@ -361,15 +361,15 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.add_child(structures)
 	var service := NavService.new()
 	service.name = "Nav"
-	service.terrain = terrain.shape
+	service.terrain = terrain
 	service.structures = structures
 	service.build_on_ready = false
 	root.add_child(service)
 	host.add_child(root)
 	terrain.add_child(Maps.collision_of(terrain))
-	if not terrain.shape.is_loaded():
+	if not terrain.is_loaded():
 		root.free()
-		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
+		return {"ok": false, "reason": "sin terreno (el heights.png del mapa activo)"}
 	service.build()
 	await _nav_settle(service, host)
 	var spot := Vector3(1037.7, 15.0, 1009.9)
@@ -385,7 +385,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	shape.shape = cylinder
 	shape.position = Vector3(0.0, 4.0, 0.0)
 	body.add_child(shape)
-	var ground: float = terrain.shape.height_at(spot.x, spot.z)
+	var ground: float = terrain.height_at(spot.x, spot.z)
 	body.position = spot if is_nan(ground) else Vector3(spot.x, ground, spot.z)
 	structures.add_child(body)
 	await _nav_settle(service, host)

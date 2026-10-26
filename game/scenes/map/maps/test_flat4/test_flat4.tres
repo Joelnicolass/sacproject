@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/test_flat4/map.tscn" id="2_scene"]
-[ext_resource type="Resource" path="res://scenes/map/maps/test_flat/terrain.res" id="3_terrain"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/test_flat4/nav.res" id="6_nav"]
 
 [resource]
@@ -10,7 +9,6 @@ script = ExtResource("1_def")
 tag = &"test_flat4"
 display_name = "Test flat 4"
 map_scene = ExtResource("2_scene")
-terrain = ExtResource("3_terrain")
 nav = ExtResource("6_nav")
 player_starts = 4
 room_selectable = false

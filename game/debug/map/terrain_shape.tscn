@@ -9,4 +9,4 @@
 
 [node name="Case" type="Node" parent="." node_paths=PackedStringArray("shape")]
 script = ExtResource("1_case")
-shape = NodePath("../Peaks/Terrain/Shape")
+shape = NodePath("../Peaks/Terrain")

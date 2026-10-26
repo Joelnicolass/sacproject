@@ -1,9 +1,9 @@
 extends SceneTree
 
 ## Dumps what the ground answers at 10 000 seeded points on each of the 9 maps, so the answers before and after a cut can be
-## compared bit by bit. It works on both sides of the 063D-2 rename: it loads terrain.gd (the Terrain) when it exists, ground_surface.gd
-## otherwise, and only calls height_at / is_on_ground / lowest. It reads the ground files straight (no autoloads, no scenes),
-## always quits, and gives up after 120 s.
+## compared bit by bit. It loads terrain.gd (the Terrain) and gives it each map's heights.png (imported as TerrainHeights: import
+## first), and only calls height_at / is_on_ground / lowest. It reads the ground files straight (no autoloads, no scenes),
+## always quits, and gives up after 120 s. (Before 063D S3b it read each map's saved triangles: a dump taken then compares the same.)
 ## Run: Godot --headless --path game --script res://debug/map/ground_dump.gd -- --label=before
 ##   --label=<name>    writes res://debug/map/ground_dump_<name>.json (default "before")
 ##   --out=<path>      writes there instead (res:// or absolute)
@@ -15,7 +15,6 @@ const SEED := 20261025
 const TIME_LIMIT_MS := 120000
 const MAPS_DIR := "res://scenes/map/maps/"
 const SURFACE_SCRIPT := "res://scenes/map/terrain/terrain.gd"
-const OLD_SCRIPT := "res://scenes/map/terrain/ground_surface.gd"
 ## The seeded points reach a little past the 2560 m map on every side, so the rim and off-map answers are covered too.
 const REACH_MIN := -60.0
 const REACH_MAX := 2620.0
@@ -85,23 +84,16 @@ func _output_path() -> String:
 
 
 func _surface_script() -> String:
-	return SURFACE_SCRIPT if FileAccess.file_exists(SURFACE_SCRIPT) else OLD_SCRIPT
-
-
-func _terrain_path(tag: String) -> String:
-	for path in ["res://assets/original/maps/%s/terrain.res" % tag, MAPS_DIR + "%s/terrain.res" % tag]:
-		if ResourceLoader.exists(path):
-			return path
-	return ""
+	return SURFACE_SCRIPT
 
 
 func _dump_map(tag: String, index: int) -> Dictionary:
-	var path := _terrain_path(tag)
-	var data: Resource = load(path) if not path.is_empty() else null
-	if data == null:
-		return {"ok": false, "error": "no terrain.res"}
+	var path := MAPS_DIR + "%s/heights.png" % tag
+	var heights: Resource = load(path) if ResourceLoader.exists(path) else null
+	if heights == null:
+		return {"ok": false, "error": "no heights.png (import first)"}
 	var surface := (load(_surface_script()) as GDScript).new() as Node
-	surface.set("data", data)
+	surface.set("heights", heights)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = SEED + index
 	var heights := PackedByteArray()

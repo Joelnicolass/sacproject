@@ -3,7 +3,7 @@ extends MeshInstance3D
 
 ## Lab ground (debug only): a flat-ish square patch cut from the real map's heights (so the grass has the same
 ## heights as in the map), at map coordinates, with the ground look given by the rig's `TerrainLayer` like the real
-## terrain. It offers the small part of TerrainMesh the look layers use: a `shape` (heights and tile ids, every cell the
+## terrain. It offers the small part of the map's ground the look layers use: a `shape` (heights and tile ids, every cell the
 ## same tile so the first layer paints it) and `set_ground_override`.
 
 @export var center := Vector2(1500.0, 1500.0)
@@ -23,7 +23,7 @@ var _material_classic := StandardMaterial3D.new()
 func _ready() -> void:
 	_material_classic.albedo_color = Color(0.25, 0.35, 0.12)
 	if shape == null or not shape.is_loaded():
-		push_error("Falta el terreno de High Noon (assets/original/maps/high_noon/terrain.res).")
+		push_error("Falta el terreno de High Noon (scenes/map/maps/high_noon/heights.png).")
 		return
 	_paint_tiles()
 	mesh = _build()

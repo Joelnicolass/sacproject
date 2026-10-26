@@ -22,7 +22,7 @@ Log lines (Firewalking.log_walk and AbilityEffect.log_effects on):
   habilidad Firewalk mana 500->250
   Warmonger3 Fuera de alcance
 The check compares each logged frame with the model horizontally (HORIZ_TOL_M), with the land's height from
-assets/original/maps/high_noon/terrain.res (flat when it is missing).
+scenes/map/maps/high_noon/heights.png (flat when it is missing).
 """
 import json
 import math
@@ -30,7 +30,7 @@ import os
 import sys as _sys
 
 _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads assets/original/maps/high_noon/terrain.res)
+import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads scenes/map/maps/high_noon/heights.png)
 import re
 import struct
 import sys
@@ -60,7 +60,7 @@ def map_file(name):
 
 
 def load_terrain():
-    """Vertices and indices of the ground (assets/original/maps/high_noon/terrain.res, RFC-033): (verts, idx), None without the file."""
+    """Vertices and indices of the ground (scenes/map/maps/high_noon/heights.png, RFC-033): (verts, idx), None without the file."""
     return terrain_asset.load()
 
 

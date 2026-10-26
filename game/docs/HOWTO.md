@@ -94,13 +94,11 @@ Un mapa es una carpeta `scenes/map/maps/<tag>/` con su `map.tscn` (raíz `MapRoo
 
 ```bash
 G="${GODOT_BIN:-godot}"   # ver «Configurar rutas» abajo
-python3 tools/import/import_map.py --map=<Nombre> --terrain-bin=/tmp/<tag>.bin   # tiles, luz, ntts, widgets + el bin del terreno
-python3 tools/import/scaffold_map.py --map=<Nombre>                              # MapDefinition, map.tscn (inicios con su WizardSpot), nav.res vacío
+python3 tools/import/import_map.py --map=<Nombre>                                # tiles, luz, ntts, widgets
+python3 tools/import/scaffold_map.py --map=<Nombre>                              # MapDefinition, map.tscn (inicios con su WizardSpot, una instancia de terrain.tscn), heights.png plano, nav.res vacío
 python3 tools/import/import_themes.py                                            # suma los ids de baldosa del mapa a los atlas de los otros dioses
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/import_terrain.gd -- --map=<tag> --bin=/tmp/<tag>.bin
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # importa tiles.png (lo lee el glb)
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/terrain_glb_export.gd -- --map=<tag> --force
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # una vez más: terrain.glb
+bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/terrain/heights_from_original.gd -- --map=<tag> --scp="<archivo .scp>"   # el suelo del original: heights.png + void.png
+bash agent/harness/godot_run.sh $G --headless --path . --import                  # importa tiles.png y heights.png
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # dos veces
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # asientos, objetos sobre tierra, bases a nivel, caminos altar->manantial (sin --map: todos)
@@ -109,11 +107,11 @@ bash agent/runs/run_050_maps.sh <tag>                                           
 
 Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es la verdad). Ojo con `--force`: pisa lo editado. Las plantas de un mapa que no es de James quedan vacías hasta tener los modelos de sus widgets. `room_selectable = false` en la definición lo saca de las salas.
 
-**Un mapa de la tierra de un dios con sus propias baldosas** (RFC-059: `tutorial_valley`, `alpine_meadow`, de Persephone). `import_map.py --native-tiles` escribe además `tiles_native.png` (los ids que guarda el `.scp`) y `atlas_native.png` (las baldosas de la tierra del mapa que usa, cada una en su id); `scaffold_map.py` los cuelga como `ground_native.tres` (`NativeGround`) de la definición (`native_ground`) y del `Look` del mapa: un bioma de ese dios (`LookProfile.god`) pinta el suelo con ellas; con otro bioma el suelo es el atlas del dios, como siempre. Un `.scp` fuera de la carpeta (el tutorial) se pasa con `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` deja `Npcs` vacío y `--not-playable` pone `playable = false` (ni salas ni menús lo ofrecen; `--map=<tag>` y las escenas de debug sí lo abren). Las plantas: `scaffold_map.py --map=<Nombre> --wire-flora` escribe un PNG de densidad por especie (`scenes/map/maps/<tag>/flora/`) y cuelga un `FloraLayer` por especie de un nodo `Vegetation` del map.tscn (importá el proyecto una vez después); los PNG se pintan a mano, o sumá un `VegetationPatch`. Los pasos de Godot que leen la definición (`import_terrain.gd`, `terrain_glb_export.gd`) necesitan que el mapa cargue: pasá `--out=` al primero y generá el `.glb` una primera vez con `export_data` antes de `--import`, o escribirían en High Noon.
+**Un mapa de la tierra de un dios con sus propias baldosas** (RFC-059: `tutorial_valley`, `alpine_meadow`, de Persephone). `import_map.py --native-tiles` escribe además `tiles_native.png` (los ids que guarda el `.scp`) y `atlas_native.png` (las baldosas de la tierra del mapa que usa, cada una en su id); `scaffold_map.py` los cuelga como `ground_native.tres` (`NativeGround`) de la definición (`native_ground`) y del `Look` del mapa: un bioma de ese dios (`LookProfile.god`) pinta el suelo con ellas; con otro bioma el suelo es el atlas del dios, como siempre. Un `.scp` fuera de la carpeta (el tutorial) se pasa con `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` deja `Npcs` vacío y `--not-playable` pone `playable = false` (ni salas ni menús lo ofrecen; `--map=<tag>` y las escenas de debug sí lo abren). Las plantas: `scaffold_map.py --map=<Nombre> --wire-flora` escribe un PNG de densidad por especie (`scenes/map/maps/<tag>/flora/`) y cuelga un `FloraLayer` por especie de un nodo `Vegetation` del map.tscn (importá el proyecto una vez después); los PNG se pintan a mano, o sumá un `VegetationPatch`.
 
 **Hacer uno a mano** (ejemplo: `test_flat4`, el mapa de prueba de 4 asientos, en `scenes/map/maps/test_flat4/`):
 
-1. Copiá la carpeta de un mapa parecido (`test_flat/` o `test_flat4/`) a `scenes/map/maps/<tag>/`. El terreno puede ser propio (`terrain.glb` de Blender) o una referencia al de otro mapa: `test_flat4` usa el `terrain.res` de `test_flat` sin copiarlo.
+1. Copiá la carpeta de un mapa parecido (`test_flat/` o `test_flat4/`) a `scenes/map/maps/<tag>/`. El suelo es el `heights.png` (16 bits, valor × 0,1 m) y el `void.png` (blanco = vacío) de la carpeta: pintalos en cualquier editor de imágenes o en Blender (`tools/README.md`); la instancia `Terrain` del `map.tscn` apunta a ese `heights.png`.
 2. En `map.tscn`, un `PlayerStart` por asiento bajo `MapProps/Starts` (`Start1`…`Start4`, con `slot` 1..N sin repetir) y su altar; mové el `WizardSpot` de cada inicio con el gizmo (ahí aparece el mago y hacia dónde mira); los manantiales bajo `MapProps/Founts`. Un edificio se arrastra bajo `Buildings`. En `test_flat4`, los asientos 1 y 2 están del mismo lado y 3 y 4 enfrente, porque el `2v2` junta 1+2 contra 3+4.
 3. Los bandos salen de los nodos: cada `PlayerStart` es un asiento (`slot`; `team` mayor que 0 aliada a los asientos que lo comparten, 0 = enemigo de todos) y cada `side` de un `NpcSpawn` un bando sin jugador. Los equipos de un modo los pone el modo.
 4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (y `tiles`/`light` si tiene) arrastrados desde el inspector, y `player_starts` (= cantidad de `PlayerStart`). `room_selectable = false` si es solo de prueba (las salas lo ofrecen con `--room-test-maps`).
@@ -204,7 +202,8 @@ Las rutas son relativas a `game/`.
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `MapDefinition`, `map.tscn`, `nav.res` vacío |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
-| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo | Escenas, `.tres` y navmesh |
+| `tools/terrain/heights_from_original.gd` | **Sí** (lee el `.scp`) | `scenes/map/maps/<tag>/heights.png` + `void.png`, el suelo de un mapa del original |
 | Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |
 
 Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».

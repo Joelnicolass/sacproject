@@ -9,10 +9,11 @@ The Godot side of an imported map (RFC-050): the files a map needs besides its a
   python3 tools/import/scaffold_map.py --map=Peaks --wire-flora   # the plants of widgets.json as FloraLayer nodes (a density PNG per species) in the existing map.tscn; then import once
 
 Run tools/import/import_map.py first (it writes ntts.json, tiles.png, ...). For `<tag>` it writes:
-  assets/original/maps/<tag>/terrain.glb.import    the post-import of the ground (tools/terrain_import.gd), so Godot reads the glb as a terrain
-  scenes/map/maps/<tag>/<tag>.tres                 MapDefinition (typed: scene, terrain, tiles, light, navmesh); MapCatalog finds it by scanning the folder
+  scenes/map/maps/<tag>/heights.png                a flat ground (16-bit grey, all 0, no void.png), only when there is none, so the scene
+                                                   loads; tools/terrain/heights_from_original.gd -- --map=<tag> writes the original's ground
+  scenes/map/maps/<tag>/<tag>.tres                 MapDefinition (typed: scene, tiles, light, navmesh); MapCatalog finds it by scanning the folder
   scenes/map/maps/<tag>/nav.res                    an empty navmesh, so the definition loads until the first bake
-  scenes/map/maps/<tag>/map.tscn                   MapRoot: sky, look, terrain, one PlayerStart (with its WizardSpot) per seat, the manafounts, Buildings, Npcs, navmesh, minimap
+  scenes/map/maps/<tag>/map.tscn                   MapRoot: sky, look, terrain (an instance of scenes/map/terrain/terrain.tscn), one PlayerStart (with its WizardSpot) per seat, the manafounts, Buildings, Npcs, navmesh, minimap
   assets/original/maps/<tag>/ground_native.tres    NativeGround (only when import_map.py --native-tiles wrote tiles_native.png): the map's own tiles, worn by the look of its land
 The PlayerStart and the manafounts are the altar and manafount rows of the NTTS, placed on the ground height the game would give
 them (sac_formats.terrain.ground_height_fn); the WizardSpot of seat k is 30 m toward the closest manafount, looking at it, as sacengine puts the wizard.
@@ -34,7 +35,9 @@ import zlib
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "blender"))
 import import_map  # noqa: E402
+import terrain_common  # noqa: E402  (tools/blender/terrain_common.py: the one Python copy of the map images)
 import land_themes  # noqa: E402
 from sac_formats import terrain  # noqa: E402
 
@@ -82,7 +85,6 @@ def definition_tres(seats: int) -> str:
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/{tag}/map.tscn" id="2_scene"]
-[ext_resource type="Resource" path="res://assets/original/maps/{tag}/terrain.res" id="3_terrain"]
 [ext_resource type="Image" path="res://assets/original/maps/{tag}/tiles.png" id="4_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="5_light"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="6_nav"]{native_res}
@@ -92,7 +94,6 @@ script = ExtResource("1_def")
 tag = &"{tag}"
 display_name = "{name}"
 map_scene = ExtResource("2_scene")
-terrain = ExtResource("3_terrain")
 tiles = ExtResource("4_tiles")
 light = ExtResource("5_light")
 nav = ExtResource("6_nav")
@@ -126,77 +127,26 @@ detail_ids = ExtResource("5_detail_ids")
 NAV_PLACEHOLDER_B64 = "UlNSQwAAAAAAAAAABAAAAAcAAAAGAAAADwAAAE5hdmlnYXRpb25NZXNoAAAAAAAAAAAAAwAAAP//////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAAGAAAAHJlc291cmNlX2xvY2FsX3RvX3NjZW5lAA4AAAByZXNvdXJjZV9uYW1lAAkAAAB2ZXJ0aWNlcwAJAAAAcG9seWdvbnMAFgAAAHNhbXBsZV9wYXJ0aXRpb25fdHlwZQAeAAAAZ2VvbWV0cnlfcGFyc2VkX2dlb21ldHJ5X3R5cGUAGAAAAGdlb21ldHJ5X2NvbGxpc2lvbl9tYXNrAB4AAABnZW9tZXRyeV9zb3VyY2VfZ2VvbWV0cnlfbW9kZQAKAAAAY2VsbF9zaXplAAwAAABjZWxsX2hlaWdodAAMAAAAYm9yZGVyX3NpemUADQAAAGFnZW50X2hlaWdodAANAAAAYWdlbnRfcmFkaXVzABAAAABhZ2VudF9tYXhfY2xpbWIAEAAAAGFnZW50X21heF9zbG9wZQAQAAAAcmVnaW9uX21pbl9zaXplABIAAAByZWdpb25fbWVyZ2Vfc2l6ZQAQAAAAZWRnZV9tYXhfbGVuZ3RoAA8AAABlZGdlX21heF9lcnJvcgAVAAAAdmVydGljZXNfcGVyX3BvbHlnb24AFwAAAGRldGFpbF9zYW1wbGVfZGlzdGFuY2UAGAAAAGRldGFpbF9zYW1wbGVfbWF4X2Vycm9yAB0AAABmaWx0ZXJfbG93X2hhbmdpbmdfb2JzdGFjbGVzABMAAABmaWx0ZXJfbGVkZ2Vfc3BhbnMAIQAAAGZpbHRlcl93YWxrYWJsZV9sb3dfaGVpZ2h0X3NwYW5zABMAAABmaWx0ZXJfYmFraW5nX2FhYmIAGgAAAGZpbHRlcl9iYWtpbmdfYWFiYl9vZmZzZXQABwAAAHNjcmlwdAAAAAAAAQAAAB0AAABsb2NhbDovL05hdmlnYXRpb25NZXNoXzhmMG8wABgDAAAAAAAADwAAAE5hdmlnYXRpb25NZXNoAAEAAAAbAAAAAQAAAFJTUkM="
 
 
-GLB_IMPORT = """[remap]
-
-importer="scene"
-importer_version=1
-type="PackedScene"
-
-[deps]
-
-source_file="res://assets/original/maps/{tag}/terrain.glb"
-
-[params]
-
-nodes/root_type=""
-nodes/root_name=""
-nodes/root_script=null
-mesh_library/use_node_names_as_mesh_names=false
-array_mesh/deduplicate_surfaces=true
-nodes/apply_root_scale=true
-nodes/root_scale=1.0
-nodes/import_as_skeleton_bones=false
-nodes/use_name_suffixes=true
-nodes/use_node_type_suffixes=true
-meshes/ensure_tangents=false
-meshes/generate_lods=false
-meshes/create_shadow_meshes=false
-meshes/light_baking=0
-meshes/lightmap_texel_size=0.2
-meshes/force_disable_compression=true
-skins/use_named_skins=true
-animation/import=false
-animation/fps=30
-animation/trimming=false
-animation/remove_immutable_tracks=true
-animation/import_rest_as_RESET=false
-import_script/path="res://tools/terrain_import.gd"
-materials/extract=0
-materials/extract_format=0
-materials/extract_path=""
-_subresources={{}}
-gltf/naming_version=2
-gltf/embedded_image_handling=1
-gltf/texture_map_mode=0
-"""
-
 MAP_HEAD = """[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_mesh.gd" id="2_terrain"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="shape_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_status.gd" id="s2_status"]
-[ext_resource type="Image" path="res://assets/original/maps/{tag}/tiles.png" id="s2_tiles"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_net.gd" id="net_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="2_terrain"]
+[ext_resource type="Resource" path="res://scenes/map/maps/{tag}/heights.png" id="2_heights"]
+[ext_resource type="Image" path="res://assets/original/maps/{tag}/tiles.png" id="2_tiles"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="2_light"]{roles_res}
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
 [ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
-[ext_resource type="Resource" path="res://assets/original/maps/{tag}/terrain.res" id="10_data"]
-[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
-[ext_resource type="PackedScene" path="res://assets/original/maps/{tag}/terrain.glb" id="12_glb"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="hole_walls"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
-terrain = NodePath("Terrain/Shape")
+terrain = NodePath("Terrain")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
@@ -207,47 +157,14 @@ props = NodePath("Props")
 
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain")
 tile_map = ExtResource("9_tiles")
 {native_look}
-[node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
+[node name="Terrain" parent="." instance=ExtResource("2_terrain")]
 unique_name_in_owner = true
-material_override = ExtResource("11_ground")
-script = ExtResource("2_terrain")
-shape = NodePath("Shape")
-missing = NodePath("Missing")
-
-[node name="Shape" type="Node3D" parent="Terrain" node_paths=PackedStringArray("mesh", "net")]
-script = ExtResource("shape_script")
-data = ExtResource("10_data")
-tiles = ExtResource("s2_tiles")
-mesh = NodePath("..")
-net = NodePath("../Net")
-
-[node name="Status" type="Node" parent="Terrain/Shape" node_paths=PackedStringArray("terrain")]
-script = ExtResource("s2_status")
-terrain = NodePath("..")
-
-[node name="Missing" type="Label3D" parent="Terrain"]
-visible = false
-text = "UI_MAP_MISSING"
-font_size = 48
-
-[node name="Net" type="Node" parent="Terrain"]
-script = ExtResource("net_script")
-
-[node name="Collision" parent="Terrain" index="0" node_paths=PackedStringArray("terrain")]
-script = ExtResource("collision_script")
-terrain = NodePath("../Shape")
-
-[node name="Shape" parent="Terrain/Collision" index="0"]
-disabled = true
-
-[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("terrain") instance=ExtResource("ground_scars")]
-terrain = NodePath("../Shape")
-
-[node name="HoleWalls" parent="Terrain" node_paths=PackedStringArray("terrain") instance=ExtResource("hole_walls")]
-terrain = NodePath("../Shape")
+heights = ExtResource("2_heights")
+tiles = ExtResource("2_tiles")
+light_map = ExtResource("2_light"){roles_line}
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")
@@ -264,7 +181,7 @@ bake_settings = ExtResource("14_bake")
 
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
-terrain = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain")
 """
 
 # Structure rows that are not props of the Buildings folder: the altar and the manafount are PlayerStart and Manafount nodes,
@@ -431,7 +348,10 @@ side = {side}
     if HAS_NATIVE:
         native_look = 'native_ground = ExtResource("native_ground")\n'
         resource("Resource", "res://assets/original/maps/%s/ground_native.tres" % TAG, "native_ground")
-    head = MAP_HEAD.format(tag=TAG, native_look=native_look)
+    has_roles = (SCENES / "ground_roles.png").exists()  # tools/import/bake_ground_roles.py writes it
+    head = MAP_HEAD.format(tag=TAG, native_look=native_look,
+                           roles_res='\n[ext_resource type="Texture2D" path="res://scenes/map/maps/%s/ground_roles.png" id="2_roles"]' % TAG if has_roles else "",
+                           roles_line='\nground_roles = ExtResource("2_roles")' if has_roles else "")
     cut = head.index("\n\n[node ")
     head = head[:cut] + "".join("\n" + line for line in ext) + head[cut:]
     return head + "".join(body)
@@ -537,13 +457,15 @@ def main() -> None:
     ntts = json.loads(ntts_path.read_text())
     seats = seats_of(ntts["sides"])
     wrote = []
-    write(ASSETS / "terrain.glb.import", GLB_IMPORT.format(tag=TAG), wrote)
+    if not (SCENES / terrain_common.HEIGHTS_PNG).exists():  # never over a ground that is there, not even with --force
+        write(SCENES / terrain_common.HEIGHTS_PNG, terrain_common.encode_heights([0] * terrain_common.COUNT), wrote)
     if HAS_NATIVE:
         write(ASSETS / "ground_native.tres", NATIVE_GROUND_TRES.format(tag=TAG, god=land_themes.map_god(SCP)), wrote)
     write(SCENES / (TAG + ".tres"), definition_tres(len(seats)), wrote)
     write(SCENES / "nav.res", base64.b64decode(NAV_PLACEHOLDER_B64), wrote)
     write(SCENES / "map.tscn", map_tscn(ntts, seats), wrote)
     print("scaffold_map: %s (%d seats): %s" % (TAG, len(seats), ", ".join(wrote) if wrote else "nothing new"))
+    print("next: the original's ground with tools/terrain/heights_from_original.gd -- --map=%s, then Godot --import" % TAG)
 
 
 if __name__ == "__main__":

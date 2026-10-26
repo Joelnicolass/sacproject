@@ -52,8 +52,6 @@ res://cache
 res://debug/rules/f111_bestiary_
 res://debug/….tscn
 res://other/models
-res://path/terrain.glb
-res://path/terrain.res
 res://rules.tres
 res://scenes/match/arena.tscn
 res://scenes/world/arena.tscn

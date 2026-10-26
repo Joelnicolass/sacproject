@@ -205,7 +205,7 @@ The port was built in stages. Each large change has its RFC in [`game/rfcs/`](ga
    Everything ends up in `game/assets/original/` and `game/data/catalog/`. The game does not depend on the WADs or on any cache.
 2. **Understand how it works.** The rules and numbers (damage, mana, souls, AI, orders) were read from sacengine, an open reimplementation in D, and compared against the original executable with reverse engineering. What gets copied from the original is what you notice while playing: numbers, spells and rules.
 3. **Build on standard Godot.** The first port also copied sacengine's physics, navigation and animation. Later everything moved to the engine's own tools (RFC-035 and RFC-036):
-   - the terrain is a `terrain.glb` editable in Blender;
+   - the terrain is a 256² grid of heights (`heights.png` + `void.png` per map), editable in any image editor or in Blender;
    - villages, buildings and plants are nodes of the scene;
    - the catalog (creatures, spells, wizards) is `.tres` files editable in the inspector;
    - navigation is Godot's navmesh;
@@ -268,12 +268,13 @@ Paths are relative to `game/`.
 | `tools/import/import_props.py` | **Yes** | `assets/original/props/*.glb` (buildings and plants) |
 | `tools/import/import_themes.py` | **Yes** | `assets/original/themes/<god>/` (ground, sky, light) |
 | `tools/import/import_ui.py` | **Yes** | `assets/original/ui/` and `assets/original/fx/` (HUD, icons, cursors, particles) |
-| `tools/import/import_map.py` (includes `--list`) | **Yes** | `assets/original/maps/<tag>/` (tiles, light, entities, terrain) |
+| `tools/import/import_map.py` (includes `--list`) | **Yes** | `assets/original/maps/<tag>/` (tiles, light, entities) |
 | `tools/import/import_audio.py` | **Yes** | `assets/original/audio/` (effects, voices and music) + `index.json`. Already in the repo (LFS) |
 | `tools/audit/check_original_assets.sh` | **Yes** | Parity of `assets/original/` with the original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: uses what `import_map.py` already left | `MapDefinition`, `map.tscn`, empty `nav.res` |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: they use `assets/original/` | `high_noon_tiles.tres`, proposed grass palette |
-| `tools/bake/*` (navmesh, catalog, `bake_body_scenes`, `new_creature`, terrain) | No: `bake_body_scenes` uses the repo's `.glb` files and `index.json`; `import_terrain.gd` reads the `.bin` written by `import_map.py` | Scenes, `.tres` and navmesh |
+| `tools/bake/*` (navmesh, catalog, `bake_body_scenes`, `new_creature`) | No: `bake_body_scenes` uses the repo's `.glb` files and `index.json` | Scenes, `.tres` and navmesh |
+| `tools/terrain/heights_from_original.gd` | **Yes** (it reads the `.scp`) | `scenes/map/maps/<tag>/heights.png` + `void.png`, the ground of a map of the original |
 | **Project > Tools > Sacrifice** menu | Only «Listar mapas del original» (List the original's maps) and «Importar audio del original» (Import the original's audio); they are marked «(requiere juego original)» (requires the original game) in the menu | Output in a dialog |
 
 These tools read the `.wad` and `.scp` files of the installed game; **the original is not in the repo** (it is the commercial game). If it is missing, they print a message in Spanish that explains which folder is needed and how to point to it, and exit with an error. All of them start their header and their `--help` with «Requiere el juego original instalado (SAC_INSTALL)» (requires the original game installed) or with «No necesita el juego original» (does not need the original game).

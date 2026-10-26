@@ -140,7 +140,7 @@ func _maps() -> Dictionary:
 		var kept := 0
 		var best := _fullest(flora, groups, 1)
 		if not best.is_empty():
-			for buffer in MeshPlanter.plan_cell(config, flora, groups, 1.0, best[0], land.shape.height_at, PackedVector4Array()):
+			for buffer in MeshPlanter.plan_cell(config, flora, groups, 1.0, best[0], land.height_at, PackedVector4Array()):
 				kept += buffer.size() / MeshPlanter.XFORM_STRIDE
 		land.free()
 		seen[tag] = {"total": flora.total(), "layers": layers.size(), "species": groups.size(), "fullest_cell_kept": kept}
@@ -157,7 +157,7 @@ func _guard() -> Dictionary:
 	var map := MapCatalog.shared().find(&"peaks")
 	var land := Maps.land_of(map)
 	var rig := LookRig.new()
-	rig.terrain = land.shape
+	rig.terrain = land
 	rig.quality_preset = load("res://data/look/quality_high.tres") as LookQuality
 	var host := _host_with_layers("peaks")
 	var field := FloraField.new()
@@ -214,7 +214,7 @@ func _plan() -> Dictionary:
 			for cx in MeshPlanter.MAP_CELLS:
 				var key := Vector2i(cx, cz)
 				var started := Time.get_ticks_usec()
-				var buffers := MeshPlanter.plan_cell(config, flora, groups, 1.0, key, land.shape.height_at, PackedVector4Array())
+				var buffers := MeshPlanter.plan_cell(config, flora, groups, 1.0, key, land.height_at, PackedVector4Array())
 				var took := Time.get_ticks_usec() - started
 				var in_cell := 0
 				for g in buffers.size():
@@ -233,8 +233,8 @@ func _plan() -> Dictionary:
 				most = maxi(most, in_cell)
 		var same := true
 		if first_full.x >= 0:
-			var a := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.shape.height_at, PackedVector4Array())
-			var b := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.shape.height_at, PackedVector4Array())
+			var a := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.height_at, PackedVector4Array())
+			var b := MeshPlanter.plan_cell(config, flora, groups, 1.0, first_full, land.height_at, PackedVector4Array())
 			same = a == b
 		var total := flora.total()
 		maps[tag] = {
@@ -249,14 +249,14 @@ func _plan() -> Dictionary:
 
 ## Instances of a buffer that do not stand on the ground (more than 1 cm from height_at; the pose may lift a model,
 ## so the check is that the instance origin before the pose is on the ground: the pose of the plants has no offset).
-static func _off_ground(buffer: PackedFloat32Array, key: Vector2i, land: TerrainMesh) -> int:
+static func _off_ground(buffer: PackedFloat32Array, key: Vector2i, land: Terrain) -> int:
 	var wrong := 0
 	var corner := Vector2(key) * MeshPlanter.CELL_M
 	for i in buffer.size() / MeshPlanter.XFORM_STRIDE:
 		var at := i * MeshPlanter.XFORM_STRIDE
 		var x := buffer[at + 3] + corner.x
 		var z := buffer[at + 11] + corner.y
-		var ground := land.shape.height_at(x, z)
+		var ground := land.height_at(x, z)
 		if is_nan(ground) or absf(ground - buffer[at + 7]) > 0.05:
 			wrong += 1
 	return wrong
@@ -272,9 +272,9 @@ func _clear() -> Dictionary:
 	var center := (Vector2(best) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
 	var hard := PackedVector4Array([Vector4(center.x, center.y, 10.0, 0.0)])
 	var soft := PackedVector4Array([Vector4(center.x, center.y, 10.0, 6.0)])
-	var none := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.shape.height_at, PackedVector4Array()), best)
-	var cut := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.shape.height_at, hard), best)
-	var thinned := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.shape.height_at, soft), best)
+	var none := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.height_at, PackedVector4Array()), best)
+	var cut := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.height_at, hard), best)
+	var thinned := _positions(MeshPlanter.plan_cell(config, flora, groups, 1.0, best, land.height_at, soft), best)
 	land.free()
 	var inside := 0
 	for at: Vector2 in cut:
@@ -336,7 +336,7 @@ func _worker() -> Dictionary:
 			job.flora = flora
 			job.groups = MeshPlanter.plan_groups(groups)
 			job.density = 1.0
-			job.height = land.shape.sampler()
+			job.height = land.sampler()
 			job.clears = clears
 			job.task_id = WorkerThreadPool.add_task(job.run, false, "flora case")
 			jobs.append(job)
@@ -344,7 +344,7 @@ func _worker() -> Dictionary:
 	var plants := 0
 	for job: MeshPlanter.PlanJob in jobs:
 		job.finish()
-		var sync := MeshPlanter.plan_cell(config, flora, groups, 1.0, job.key, land.shape.height_at, clears)
+		var sync := MeshPlanter.plan_cell(config, flora, groups, 1.0, job.key, land.height_at, clears)
 		if job.buffers != sync:
 			differ.append(job.key)
 		for buffer in sync:
@@ -358,14 +358,14 @@ func _worker() -> Dictionary:
 
 
 ## A threaded MeshPlanter over cell `key` until nothing is pending; then far away and back mid-plan.
-func _planter_run(config: VegetationLayerConfig, flora: FloraDensity, land: TerrainMesh, key: Vector2i) -> Dictionary:
+func _planter_run(config: VegetationLayerConfig, flora: FloraDensity, land: Terrain, key: Vector2i) -> Dictionary:
 	var quality := (load("res://data/look/quality_high.tres") as LookQuality).vegetation_for(config.id)
 	var host := Node3D.new()
 	tree.root.add_child(host)
-	var planter := MeshPlanter.new(config, quality, flora, land.shape, host)
+	var planter := MeshPlanter.new(config, quality, flora, land, host)
 	planter.threaded = true
 	var spot := (Vector2(key) + Vector2(0.5, 0.5)) * MeshPlanter.CELL_M
-	var ground := land.shape.height_at(spot.x, spot.y)
+	var ground := land.height_at(spot.x, spot.y)
 	var eye := planter.map_xform * Vector3(spot.x, (0.0 if is_nan(ground) else ground) + 6.0, spot.y)
 	var frames := 0
 	var worst_us := 0
@@ -382,7 +382,7 @@ func _planter_run(config: VegetationLayerConfig, flora: FloraDensity, land: Terr
 	# Every shown cell holds exactly the bytes of plan_cell (species with no instance have no node).
 	var wrong := []
 	for cell: Vector2i in planter._cells:
-		var sync := MeshPlanter.plan_cell(config, flora, planter.groups, quality.density_scale, cell, land.shape.height_at, PackedVector4Array())
+		var sync := MeshPlanter.plan_cell(config, flora, planter.groups, quality.density_scale, cell, land.height_at, PackedVector4Array())
 		var full: Array[PackedFloat32Array] = []
 		for buffer in sync:
 			if not buffer.is_empty():
@@ -430,11 +430,11 @@ func _patch() -> Dictionary:
 	var species := load(SPECIES_DIR + "persephone_fern_1.tres") as VegetationSpecies
 	var at := Transform3D(Basis.IDENTITY, Vector3(1325.0, 10.0, 1300.0))
 	var house := Vector4(1335.0, 1300.0, 14.65, 0.0)
-	var free := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array())
-	var again := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array())
-	var cleared := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array([house]))
-	var half := PatchPlanner.plan(species, 1, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 0.5, PackedVector4Array())
-	var other := PatchPlanner.plan(species, 2, 600, 30.0, at, land.shape, Transform3D.IDENTITY, 1.0, PackedVector4Array())
+	var free := PatchPlanner.plan(species, 1, 600, 30.0, at, land, Transform3D.IDENTITY, 1.0, PackedVector4Array())
+	var again := PatchPlanner.plan(species, 1, 600, 30.0, at, land, Transform3D.IDENTITY, 1.0, PackedVector4Array())
+	var cleared := PatchPlanner.plan(species, 1, 600, 30.0, at, land, Transform3D.IDENTITY, 1.0, PackedVector4Array([house]))
+	var half := PatchPlanner.plan(species, 1, 600, 30.0, at, land, Transform3D.IDENTITY, 0.5, PackedVector4Array())
+	var other := PatchPlanner.plan(species, 2, 600, 30.0, at, land, Transform3D.IDENTITY, 1.0, PackedVector4Array())
 	var inside := 0
 	var outside_disc := 0
 	var stride := MeshPlanter.XFORM_STRIDE
@@ -480,7 +480,7 @@ func _switch() -> Dictionary:
 	var map := MapCatalog.shared().find(&"roads")
 	var land := Maps.land_of(map)
 	var rig := LookRig.new()
-	rig.terrain = land.shape
+	rig.terrain = land
 	rig.quality_preset = load("res://data/look/quality_high.tres") as LookQuality
 	var host := _host_with_layers("roads")
 	var field := FloraField.new()

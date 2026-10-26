@@ -17,6 +17,7 @@ extends RefCounted
 ## its ostate and goal; CreatureBrain: the wizard's trip to a mana source). gap (MeleeReach.close_in: one line per tick of every melee
 ## approach; agent/tools/melee_gap_expect.py reads it, so f177 and the spit flow pass --log=gap or enable it). pace (PaceFactors: a «ritmo»
 ## line on every tick a speed factor changes, so every tick of a Speedup that decays; f129, f130, f133 and f156_expect.py read it: --log=pace).
+## terrain_load (TerrainShape and TerrainMesh: how long the ground's faces, index and mesh took to build; debug/terrain/load_time).
 
 ## Every category.
 const BENCH: Array[StringName] = [

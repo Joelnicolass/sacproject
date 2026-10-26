@@ -2,7 +2,7 @@ extends Node
 
 ## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Bakes the map's navmesh headless (RFC-035 035f): the static colliders of the `nav_source` nodes of the map scene (the
-## terrain trimesh, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into scenes/map/maps/<tag>/nav.res
+## terrain's collision, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into scenes/map/maps/<tag>/nav.res
 ## (the `nav` of its MapDefinition; the «Hornear navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).
 ## The navmesh carries the source hash (NavFingerprint.source_hash) in its metadata; MapNavRegion warns when it is stale.
 ## It runs as a scene (autoloads exist, the parse needs the nodes inside the tree):
@@ -99,13 +99,13 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	var bake_root := Node3D.new()
 	bake_root.name = "BakeRoot"
 	var map := world as MapRoot
-	if map == null or map.terrain == null or map.terrain.mesh == null:
+	if map == null or map.terrain == null:
 		_fail("the scene of '%s' is not a MapRoot with a terrain" % _map.tag)
 		bake_root.free()
 		world.free()
 		return null
 	# The terrain is required; the buildings and the founts are optional.
-	var parts: Array[Node] = [map.terrain.mesh]
+	var parts: Array[Node] = [map.terrain]
 	if map.buildings != null:
 		parts.append(map.buildings)
 	var founts := map.get_node_or_null(FOUNTS_PATH)

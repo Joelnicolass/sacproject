@@ -42,11 +42,11 @@ func snap() -> void:
 	if not enabled or body == null or not is_inside_tree():
 		return
 	var terrain := _terrain()
-	if terrain == null or terrain.shape == null:
+	if terrain == null:
 		return
-	# Mesh-local = map coordinates. In the editor the scene root is shifted (terrain_mesh.gd).
+	# Terrain-local = map coordinates. In the editor the map root is shifted (MapRoot.editor_recenter).
 	var at := terrain.to_local(body.global_position)
-	var height := terrain.shape.height_at(at.x, at.z)
+	var height := terrain.height_at(at.x, at.z)
 	if is_nan(height):
 		return
 	var rest := terrain.to_global(Vector3(at.x, height + offset, at.z))
@@ -60,10 +60,10 @@ func snap() -> void:
 
 
 ## The terrain of the same scene: the one that hangs from an ancestor of this node.
-func _terrain() -> TerrainMesh:
-	for node in get_tree().get_nodes_in_group(TerrainMesh.GROUP):
-		var terrain := node as TerrainMesh
-		if terrain and terrain.get_parent() and terrain.get_parent().is_ancestor_of(self):
+func _terrain() -> Terrain:
+	for node in get_tree().get_nodes_in_group(Terrain.GROUP):
+		var terrain := node as Terrain
+		if terrain and terrain.is_loaded() and terrain.get_parent() and terrain.get_parent().is_ancestor_of(self):
 			return terrain
 	return null
 

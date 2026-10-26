@@ -1,8 +1,8 @@
 class_name TerrainCollision
 extends StaticBody3D
 
-## The ground to stand on: the map's triangles (land and cliff walls) cut in chunks of `chunk_cells` x `chunk_cells` cells,
-## one collision shape each, all on this one body. When the ground moves (Terrain.changed) only the chunks it touched
+## The ground to stand on: the map's triangles (land and cliff walls, Terrain.data) cut in chunks of `chunk_cells` x
+## `chunk_cells` cells, one collision shape each, all on this one body. When the ground moves (Terrain.changed) only the chunks it touched
 ## are made again, at most every `refresh_s` (a hole at once), with the corners moved as the Terrain says; a triangle
 ## with a taken away corner is left out. So a ray from above (GroundRay) finds the same ground Terrain.height_at answers, a
 ## few ticks late. It does not decide how the ground moves (Terrain) and draws nothing.
@@ -33,10 +33,11 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func _ready() -> void:
 	set_physics_process(false)
-	if Engine.is_editor_hint() or terrain == null or terrain.data == null or not terrain.data.is_valid():
+	if Engine.is_editor_hint() or terrain == null or not terrain.data.is_valid():
 		return
 	_vertices = terrain.data.vertices
 	_indices = terrain.data.indices
+	_lattice = terrain.data.lattice
 	_split_in_chunks()
 	for chunk: Vector2i in _triangles:
 		_remake(chunk)
@@ -62,9 +63,6 @@ func flush() -> void:
 
 
 func _split_in_chunks() -> void:
-	_lattice.resize(_vertices.size())
-	for i in _vertices.size():
-		_lattice[i] = TerrainGrid.vertex_id(_vertices[i].x, _vertices[i].z)
 	for first in range(0, _indices.size(), 3):
 		var a := _vertices[_indices[first]]
 		var b := _vertices[_indices[first + 1]]

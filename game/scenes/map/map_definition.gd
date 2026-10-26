@@ -4,16 +4,14 @@ extends Resource
 
 ## Everything the game needs to know about one map, in one `.tres` next to the map scene
 ## (scenes/map/maps/<tag>/<tag>.tres). A new map is a folder with its scene and one of these: MapCatalog finds it by
-## scanning the folder, no list to edit. The references are typed (scene, ground, navmesh, pictures); the catalog loads a
-## definition only when its map is asked for.
+## scanning the folder, no list to edit. The references are typed (scene, navmesh, pictures; the ground is the scene's
+## Terrain); the catalog loads a definition only when its map is asked for.
 
 ## Short name used on the command line (`--map=high_noon`) and in room options. The folder and the file have the same name.
 @export var tag: StringName = &""
 @export var display_name := ""
 ## The map scene (a MapRoot): terrain, buildings, creature spawns, navmesh region, starts and founts, sky and look.
 @export var map_scene: PackedScene
-## The ground as the original stores it (MapTerrainData). Bake tools and the editor fallback read it.
-@export var terrain: MapTerrainData
 ## Tile index of the ground (256x256, tile id in R, imported as Image). Empty = the map has none.
 @export var tiles: Image
 ## The baked light map of the ground. Empty = none.

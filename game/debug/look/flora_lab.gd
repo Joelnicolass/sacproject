@@ -12,7 +12,7 @@ extends Node
 
 var _map: Node3D
 var _field: FloraField
-var _terrain: TerrainMesh
+var _terrain: Terrain
 var _pose := 0
 
 
@@ -26,7 +26,7 @@ func _ready() -> void:
 	_map = setup.map_scene.instantiate() as Node3D
 	add_child(_map)
 	var rig := _map.get_node_or_null("Look") as LookRig
-	_terrain = _map.get_node_or_null("Terrain") as TerrainMesh
+	_terrain = _map.get_node_or_null("Terrain") as Terrain
 	if rig:
 		_field = rig.get_node_or_null("Layers/Flora") as FloraField
 		if setup.quality:
@@ -53,7 +53,7 @@ func _go(index: int) -> void:
 
 
 func _on_ground(point: Vector3) -> Vector3:
-	var ground := _terrain.shape.height_at(point.x, point.z) if _terrain else NAN
+	var ground := _terrain.height_at(point.x, point.z) if _terrain else NAN
 	var local := Vector3(point.x, (0.0 if is_nan(ground) else ground) + point.y, point.z)
 	return _terrain.global_transform * local if _terrain else local
 

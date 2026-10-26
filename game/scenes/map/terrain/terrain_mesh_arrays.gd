@@ -1,14 +1,11 @@
 class_name TerrainMeshArrays
 extends RefCounted
 
-## The vertex arrays of the map's visible ground, built from its raw triangles: positions, one set of flat normals
-## (as the data stores them), one set of smooth normals (averaged per grid vertex, so slopes read as one surface), the
-## tile of each vertex in COLOR, the place of the cliff texture on the walls in UV (WallUvRules), and the indices.
-## What it does NOT do: hold a mesh node or answer heights.
+## The vertex arrays of the map's visible ground, built from its triangles (MapTerrainData): positions, one set of flat
+## normals (as the triangles come), one set of smooth normals (summed per lattice vertex, so slopes read as one
+## surface), the tile of each vertex in COLOR, the place of the cliff texture on the walls in UV (WallUvRules), and the
+## indices. What it does NOT do: hold a mesh node or answer heights.
 ## Ref: sacmap.d generateNormals, appendEdgeWall.
-
-## Bumped when the arrays change shape: an imported terrain.glb mesh of an older version is rebuilt (TerrainMesh).
-const VERSION := 2
 
 ## The arrays of a Mesh without the normals; `with_normals` completes them.
 var arrays := []
@@ -21,36 +18,30 @@ var smooth_normals := PackedVector3Array()
 static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMeshArrays:
 	if data == null or not data.is_valid():
 		return null
-	var vertices := data.vertices
-	var indices := data.indices
+	var land_vertices := data.land_triangles * 3
+	var lattice := data.lattice
+	var side := TerrainGrid.SIDE
 	var colors := PackedColorArray()
-	colors.resize(vertices.size())
-	var walls := PackedInt32Array()
-	for triangle in range(0, indices.size(), 3):
-		var ids := [indices[triangle], indices[triangle + 1], indices[triangle + 2]]
-		var corners := [vertices[ids[0]], vertices[ids[1]], vertices[ids[2]]]
-		var cell_x := clampi(mini(mini(int(round(corners[0].x / TerrainGrid.CELL_M)), int(round(corners[1].x / TerrainGrid.CELL_M))), int(round(corners[2].x / TerrainGrid.CELL_M))), 0, TerrainGrid.SIDE - 1)
-		var cell_z := clampi(mini(mini(int(round(corners[0].z / TerrainGrid.CELL_M)), int(round(corners[1].z / TerrainGrid.CELL_M))), int(round(corners[2].z / TerrainGrid.CELL_M))), 0, TerrainGrid.SIDE - 1)
-		var tile := 0 if tiles.is_empty() else tiles[TerrainGrid.id_of(Vector2i(cell_x, cell_z))]
-		if TerrainRules.is_wall(corners[0], corners[1], corners[2]):
-			for id in ids:
-				colors[id] = Color(float(tile) / 255.0, 0.0, 0.0, 0.0)  # alpha 0 marks a wall for the ground shader
-			walls.append(triangle)
-			continue
-		# The whole tile over the whole cell (0..1), so a tile meets its neighbour edge to edge; the shader keeps the
-		# lookup inside the tile. Ref: sacmap.d:888.
-		for id in ids:
-			var local_x := clampf(vertices[id].x / TerrainGrid.CELL_M - float(cell_x), 0.0, 1.0)
-			var local_z := clampf(vertices[id].z / TerrainGrid.CELL_M - float(cell_z), 0.0, 1.0)
-			colors[id] = Color(float(tile) / 255.0, local_x, local_z)
+	colors.resize(data.vertices.size())
+	for first in range(0, data.vertices.size(), 3):
+		# The cell of a triangle is the lowest column and row of its corners.
+		var column := mini(mini(lattice[first] % side, lattice[first + 1] % side), lattice[first + 2] % side)
+		var row := mini(mini(lattice[first] / side, lattice[first + 1] / side), lattice[first + 2] / side)
+		var tile := float(0 if tiles.is_empty() else tiles[row * side + column]) / 255.0
+		for k in 3:
+			# The whole tile over the whole cell (0..1), so a tile meets its neighbour edge to edge; the shader keeps the
+			# lookup inside the tile; alpha 0 marks a wall. Ref: sacmap.d:888.
+			var at := lattice[first + k]
+			colors[first + k] = Color(tile, at % side - column, at / side - row) if first < land_vertices else Color(tile, 0.0, 0.0, 0.0)
+	var walls := PackedInt32Array(range(land_vertices, data.indices.size(), 3))
 	var built := TerrainMeshArrays.new()
 	built.arrays.resize(Mesh.ARRAY_MAX)
-	built.arrays[Mesh.ARRAY_VERTEX] = vertices
+	built.arrays[Mesh.ARRAY_VERTEX] = data.vertices
 	built.arrays[Mesh.ARRAY_COLOR] = colors
-	built.arrays[Mesh.ARRAY_TEX_UV] = _wall_uvs(vertices, indices, walls)
-	built.arrays[Mesh.ARRAY_INDEX] = indices
+	built.arrays[Mesh.ARRAY_TEX_UV] = _wall_uvs(data.vertices, data.indices, walls)
+	built.arrays[Mesh.ARRAY_INDEX] = data.indices
 	built.flat_normals = data.normals
-	built.smooth_normals = _smooth_normals(vertices, indices, data.normals)
+	built.smooth_normals = _smooth_normals(data)
 	return built
 
 
@@ -61,39 +52,26 @@ func with_normals(smooth: bool) -> Array:
 	return result
 
 
-## Each ground position gets the sum of the unnormalized cross products of the triangles that touch it (bigger faces
-## weigh more), normalized. Walls (no area seen from above) and every vertex a wall touches keep the data normal, so
-## the cliff edge stays sharp.
-static func _smooth_normals(vertices: PackedVector3Array, indices: PackedInt32Array, flat: PackedVector3Array) -> PackedVector3Array:
-	var sums := {}
-	var wall_vertex := {}
-	for t in range(0, indices.size(), 3):
-		var a := indices[t]
-		var b := indices[t + 1]
-		var c := indices[t + 2]
-		if TerrainRules.is_wall(vertices[a], vertices[b], vertices[c]):
-			wall_vertex[a] = true
-			wall_vertex[b] = true
-			wall_vertex[c] = true
-			continue
-		var cross := (vertices[b] - vertices[a]).cross(vertices[c] - vertices[a])
+## Each land vertex gets the sum of the unnormalized cross products of the land triangles that share its lattice vertex
+## (bigger faces weigh more), normalized. The walls keep their flat normal, so the cliff edge stays sharp.
+static func _smooth_normals(data: MapTerrainData) -> PackedVector3Array:
+	var sums := PackedVector3Array()
+	sums.resize(TerrainGrid.COUNT)
+	var vertices := data.vertices
+	var lattice := data.lattice
+	var land_vertices := data.land_triangles * 3
+	for first in range(0, land_vertices, 3):
+		var cross := (vertices[first + 1] - vertices[first]).cross(vertices[first + 2] - vertices[first])
 		if cross.y < 0.0:
 			cross = -cross
-		for id in [a, b, c]:
-			var key := _position_key(vertices[id])
-			sums[key] = (sums[key] if sums.has(key) else Vector3.ZERO) + cross
-	var result := flat.duplicate()
-	for id in vertices.size():
-		if wall_vertex.has(id):
-			continue
-		var key := _position_key(vertices[id])
-		if sums.has(key) and (sums[key] as Vector3).length_squared() > 0.0:
-			result[id] = (sums[key] as Vector3).normalized()
+		for k in 3:
+			sums[lattice[first + k]] += cross
+	var result := data.normals.duplicate()
+	for id in land_vertices:
+		var sum := sums[lattice[id]]
+		if sum.length_squared() > 0.0:
+			result[id] = sum.normalized()
 	return result
-
-
-static func _position_key(v: Vector3) -> Vector3i:
-	return Vector3i(roundi(v.x * 100.0), roundi(v.y * 100.0), roundi(v.z * 100.0))
 
 
 ## UV of every vertex: on a wall, x = metres along the rim and y = 0 at the rim, 1 at the foot; (0, 0) on the land.

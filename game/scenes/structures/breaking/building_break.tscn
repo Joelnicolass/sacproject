@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/explosion_burst.tscn" id="1_burst"]
+
+[node name="BuildingBreak" instance=ExtResource("1_burst")]
+editor_description = "La caída de una parte de un edificio (StructureBreak): el mismo estallido de Explosion (dos esferas, 30 m a 40 m/s y 5 m a 10 m/s, el sonido fbxp) con 35 rocas y sin quemadura en el suelo. Las partículas (explosion_blast, explosion_blast2) las toca StructureBreak al lado. Otra caída para un edificio: duplicá esta escena y asignala en el StructureBreak de ese edificio."
+camera_trauma = 0.35
+scar = null
+pieces = 35
+
+[node name="Scar" parent="." index="2"]
+visible = false

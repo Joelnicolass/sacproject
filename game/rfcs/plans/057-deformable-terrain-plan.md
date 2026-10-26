@@ -1,4 +1,4 @@
-Estado: **propuesto**, espera el OK del usuario.
+Estado: **aprobado 2026-10-26** con todas las recomendaciones: 1b (bases a nivel con anillo suave), 2b (nav con agujeros y `kept`), 3b (flora viva cada 1 s; 057e va después de 066d), 4a (copia local del Quake), 5 sí, 6 sí.
 
 # Plan RFC-057: terreno deformable (cierre de fase 2)
 

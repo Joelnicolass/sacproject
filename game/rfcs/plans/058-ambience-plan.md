@@ -1,4 +1,8 @@
-Estado: **propuesto**, espera el OK del usuario ; la revisión 2 al final reemplaza las secciones del mismo número.
+Estado: **aprobado 2026-10-26**; la revisión 2 al final reemplaza las secciones del mismo número. Cambios del usuario (mandan):
+
+- P2: el clima es solo visual, **pero emite eventos** por si en el futuro afecta algo: señales claras (`hour_changed`/`night_changed`, `weather_changed(from, to)`, `strike(at)`) en `Atmosphere`/`Weather`, y el estado derivable con `AtmosphereRules` (semilla + t) en cualquier peer, también el servidor, para que un nodo de reglas futuro pueda suscribirse sin rediseño.
+- P5: **la nieve es igual para todos los dioses.** No se trata a Stratos distinto: los cinco dioses tienen el mismo plan de clima (clear, fog, rain, storm, snow) con los mismos pesos.
+- El resto de las preguntas: la recomendación.
 
 # Plan RFC-058: ambiente (día y noche, clima, rayos de tormenta, vida ambiental)
 

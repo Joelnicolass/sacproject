@@ -12,6 +12,9 @@ const NO_FOUNT := Refusal.NO_FOUNT
 ## The fount a click picks is the closest free one within this distance of the point.
 const POINT_FOUNT_RANGE_M := 20.0
 
+## The burst at the fount when the tower rises (at its SummonSpot).
+@export var rise_fx: ParticleType
+
 var _scene: PackedScene
 var _fount: ManafountBody
 
@@ -55,7 +58,8 @@ func finish(wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:
 	if fount == null or not is_instance_valid(fount) or not fount.is_free():
 		return NO_FOUNT
 	spawner.spawn_tower(scene, fount, wizard.owner_slot, wizard.rotation.y)
-	FxBus.broadcast("summon", fount.anchor() + Vector3.UP)
+	if rise_fx != null:
+		FxBus.broadcast(rise_fx, fount.summon_point())
 	return ""
 
 

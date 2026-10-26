@@ -69,7 +69,7 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	data["follow"] = aim.data.get("follow", "")
 	_zone = spawner.spawn_projectile(kind, data) as GroundZone
 	if cast_scene != null:
-		FxBus.broadcast_scene(cast_scene.resource_path, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
+		FxBus.broadcast_scene(cast_scene, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:

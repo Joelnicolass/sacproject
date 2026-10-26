@@ -181,8 +181,8 @@ func _check_gods(tags: Dictionary) -> void:
 		if god.display_name.is_empty():
 			_report("gods/%s: no display_name" % file)
 		_check_god_look(file, god)
-		if not god.cast_fx_path.is_empty() and not ResourceLoader.exists(god.cast_fx_path):
-			_report("gods/%s: cast_fx_path \"%s\" does not exist" % [file, god.cast_fx_path])
+		if god.cast_fx != null and god.cast_fx.resource_path.is_empty():
+			_report("gods/%s: cast_fx is embedded (it needs its own file in data/fx to travel)" % file)
 		if god.ai_profile == null:
 			_report("gods/%s: no ai_profile" % file)
 		elif str(god.ai_profile.god) != god.tag:

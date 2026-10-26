@@ -1,10 +1,14 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/teleport_action.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/fx/teleport_rings.tscn" id="2_rings"]
+[ext_resource type="Resource" path="res://data/fx/teleport_out.tres" id="fx_teleport_out"]
+[ext_resource type="Resource" path="res://data/fx/teleport_in.tres" id="fx_teleport_in"]
 
 [node name="Teleport" type="Node"]
 script = ExtResource("1_script")
 pick = 3
 prompt = "Elegí un edificio propio"
+out_fx = ExtResource("fx_teleport_out")
+in_fx = ExtResource("fx_teleport_in")
 rings_scene = ExtResource("2_rings")

@@ -3,7 +3,7 @@ class_name WizardSounds
 extends BodySounds
 
 ## Child of wizards/wizard_body.tscn. A wizard's sounds from replicated state:
-## - `incantation` when a cast starts (Caster.cast_fx_shown goes from "" to a name; it is replicated);
+## - `incantation` when a cast starts (Caster.cast_changed goes to casting, from its replicated `cast_fx_shown`);
 ## - `damaged` when Health.current goes down while alive (BodySounds limits it);
 ## - `death` when GhostForm.stage becomes DYING, `ghost` when it rises (RISING, or GHOST straight from another stage).
 ## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of his body scene). No set: silence.
@@ -26,7 +26,7 @@ extends BodySounds
 		update_configuration_warnings()
 
 var _last_health := 0.0
-var _last_fx := ""
+var _was_casting := false
 var _last_stage := GhostForm.Stage.ALIVE
 
 
@@ -35,10 +35,10 @@ func _ready() -> void:
 	if Engine.is_editor_hint() or not _open or body == null or health == null or caster == null or ghost == null:
 		return
 	_last_health = health.current
-	_last_fx = caster.cast_fx_shown
+	_was_casting = caster.is_casting()
 	_last_stage = ghost.stage
 	health.changed.connect(_on_health_changed)
-	caster.cast_fx_changed.connect(_on_cast_fx_changed)
+	caster.cast_changed.connect(_on_cast_changed)
 	ghost.stage_changed.connect(_on_stage_changed)
 
 
@@ -50,9 +50,9 @@ func anchor() -> Node3D:
 	return body
 
 
-func _on_cast_fx_changed(type_name: String) -> void:
-	var started := _last_fx.is_empty() and not type_name.is_empty()
-	_last_fx = type_name
+func _on_cast_changed(casting: bool, _fx: ParticleType) -> void:
+	var started := casting and not _was_casting
+	_was_casting = casting
 	if started:
 		play(SoundEvent.INCANTATION)
 

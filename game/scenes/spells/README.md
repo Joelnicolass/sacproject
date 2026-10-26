@@ -1,7 +1,7 @@
 # spells
 What: casting a spell: `Spellbook` (what the wizard knows, cooldowns), `Caster` (checks, mana, timing), one `SpellAction` per spell.
 Not: the wizard body (`scenes/wizards/`), the spell data (`data/catalog/spells/<tag>.tres`, a `SpellType`), what the AI wants to cast (`scenes/ai/`).
-Talks to: HUD/input call `Caster.request_cast/request_summon/request_structure`; the host runs `submit_*`; `Caster.feedback/cast_fx_changed` go up to the HUD.
+Talks to: HUD/input call `Caster.request_cast/request_summon/request_structure`; the host runs `submit_*`; `Caster.feedback` goes up to the HUD; `Caster.cast_changed(casting, fx)` (from the replicated `cast_fx_shown`, an FxWire id) drives HandFx, WizardSounds, Ward and the pose. Hands' particle: `SpellAction.cast_fx`, else `GodType.cast_fx`.
 Talks to: `Caster` calls down to a `SpellAction` (`check`, `begin`, `finish`), which spawns projectiles/effects through `SpellSpawner` and hits units via `Health`.
 Edit: `data/catalog/spells/<tag>.tres` (cost, range, cooldown, `action` scene) · `actions/<name>_action.tscn` (the behaviour) · projectile/effect scenes in this folder.
 Check: rules_suite `spell_field_cases`, `ability_field_cases` (abilities and book level + slot), `book_cases`, `spell_link_cases` (the 53 `action` scenes, `Caster/Actions` empty, `action_for`) · `debug/spells/cast_*.tscn` (F6; `cast_wards.tscn` for the level-2 wards, `cast_souls.tscn` for the soul spells, `cast_control.tscn` for control on one foe, `cast_walls.tscn` for the walls), `guardian_altar.tscn`, `wrath_splash.tscn` · rules_suite `ward_cases`, `control_cases`, `soul_cases`, `animate_dead_cases`, `wall_cases` · `match_shots --cast=niks|dlhs|mrfe|mrff|rwsp|zerf|eniv|rapf|htel|pmcd|deda|dnws` (`--views=foe_close` for control).

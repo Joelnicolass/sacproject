@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/soul_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/fx/soul_wind_cast.tres" id="fx_soul_wind_cast"]
 
 [node name="SoulWind" type="Node"]
 script = ExtResource("1_script")
 pick = 2
 prompt = "Elegí un alma"
-cast_fx = "soul_wind_cast"
+cast_fx = ExtResource("fx_soul_wind_cast")
 carrier_kind = "SoulWind"

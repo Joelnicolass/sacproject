@@ -8,8 +8,10 @@ extends Node
 ## Ref: sacengine ignite (fire on the victim and ign1, every 1/3 s) and the swarm's sting sound (state.d:17254-17261, 17397-17420).
 
 @export var aura: BodyAura
-## What is drawn on the victim. Must live under data/fx/ (FxBus finds it by its file name there).
+## What is drawn on the victim (its own file, so it can travel).
 @export var type: ParticleType
+## Where on the victim it is drawn.
+@export var victim_socket := BodyFacts.Socket.CENTER
 @export_range(0.05, 5.0, 0.0001, "suffix:s") var every_s := 0.3333
 
 ## Victim instance id -> MatchClock tick before which it is not marked again.
@@ -30,7 +32,7 @@ func _on_stung(victim: Node3D) -> void:
 	if not _next.has(id):
 		victim.tree_exited.connect(func() -> void: _next.erase(id), CONNECT_ONE_SHOT)
 	_next[id] = now + roundi(every_s * MatchClock.TICKS_PER_SECOND_F)
-	FxBus.broadcast(type.resource_path.trim_prefix(FxWire.PARTICLES_DIR).get_basename(), BodyNudge.center(victim))
+	FxBus.broadcast(type, BodyFacts.point(victim, victim_socket))
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -38,5 +40,5 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if aura == null:
 		warnings.append("Falta el BodyAura.")
 	if type == null:
-		warnings.append("Falta el ParticleType (en data/fx/).")
+		warnings.append("Falta el ParticleType.")
 	return warnings

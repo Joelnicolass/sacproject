@@ -8,8 +8,9 @@ extends SpellAction
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
-## BeamType of the strike (res://data/fx/beams/), RFC-029 029d.
-@export var beam := "lightning"
+## The bolt of the strike. Empty = it strikes unseen.
+## Ref: RFC-029 029d.
+@export var beam: BeamType
 ## Who may be struck (a living body of another player).
 @export var target: SpellTarget
 
@@ -31,7 +32,8 @@ func finish(wizard: WizardBody, spell: SpellType, body: Node3D) -> String:
 	## F130: DamageMod.lightning, which charges a Storm Giant (state.d:9017-9022).
 	var taken := (body.get_node("Health") as Health).damage_typed(float(spell.damage), _HEALTH.DIRECT_SPELL, wizard.owner_slot, false, false, _HEALTH.LIGHTNING)
 	_ROCK.report(body, taken, _HEALTH.DIRECT_SPELL)
-	FxBus.broadcast_beam(beam, _origin(wizard), _ROCK.body_center(body), body)
+	if beam != null:
+		FxBus.broadcast_beam(beam, _origin(wizard), _ROCK.body_center(body), body)
 	return ""
 
 

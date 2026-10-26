@@ -36,7 +36,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 
 func started(_wizard: WizardBody, _spell: SpellType, aim: Aim, frames: int) -> void:
 	if cast_scene != null and aim.target != null:
-		FxBus.broadcast_scene(cast_scene.resource_path, aim.target.global_position, {"ticks": frames, "target": str(aim.target.get_path())})
+		FxBus.broadcast_scene(cast_scene, aim.target.global_position, {"ticks": frames, "target": str(aim.target.get_path())})
 
 
 ## The casting time ended: the state goes on the body if it is still a valid one (dead or already protected = nothing).

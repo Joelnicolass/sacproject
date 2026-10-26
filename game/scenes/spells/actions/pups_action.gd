@@ -9,6 +9,9 @@ extends SpellAction
 @export var effect_scene: PackedScene
 ## Who may be sped up (own creature or the wizard himself; not only living ones).
 @export var target: SpellTarget
+## The burst on the body when it starts running faster, and where on the body.
+@export var start_fx: ParticleType
+@export var start_socket := BodyFacts.Socket.CENTER
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -31,4 +34,5 @@ func started(_wizard: WizardBody, spell: SpellType, aim: Aim, _frames: int) -> v
 	effect.name = SpeedupEffect.NODE_NAME
 	effect.start(seconds)
 	aim.target.add_child(effect)
-	FxBus.broadcast("speedup", aim.target.global_position + Vector3.UP)
+	if start_fx != null:
+		FxBus.broadcast(start_fx, BodyFacts.point(aim.target, start_socket))

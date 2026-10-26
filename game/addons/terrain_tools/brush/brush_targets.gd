@@ -8,6 +8,8 @@ extends RefCounted
 
 const Toolbar := preload("res://addons/terrain_tools/brush/brush_toolbar.gd")
 const TerrainHistory := preload("res://addons/terrain_tools/terrain_history.gd")
+## Each roles tool paints its channel of ground_roles.png (RolesCanvas: R open, G earth, B rock, A path).
+const ROLE_CHANNELS := {Toolbar.Tool.ROLE_OPEN: 0, Toolbar.Tool.ROLE_EARTH: 1, Toolbar.Tool.ROLE_ROCK: 2, Toolbar.Tool.ROLE_PATH: 3}
 
 
 ## One answer: paint `mode` on `canvas`, named `label` in the undo history.
@@ -30,7 +32,9 @@ static func resolve(history: TerrainHistory, node: Node, tool: Toolbar.Tool, shi
 				return _made(history.lattice(terrain), BrushStroke.Mode.FLATTEN if shift else BrushStroke.Mode.SMOOTH, false)
 			Toolbar.Tool.VOID:
 				return _made(history.lattice(terrain), BrushStroke.Mode.FILL if shift else BrushStroke.Mode.VOID, false)
-	# The roles (ROLE_*, on a Terrain) and flora (FLORA, on a FloraLayer) canvases come in 066c and 066d.
+		if ROLE_CHANNELS.has(tool):
+			return _role(history, terrain, tool)
+	# The flora canvas (FLORA, on a FloraLayer) comes in 066d.
 	return null
 
 
@@ -53,3 +57,10 @@ static func _made(canvas: BrushCanvas, mode: int, pinned: bool) -> Target:
 	target.label = canvas.label(mode)
 	target.pinned = pinned
 	return target
+
+
+## A roles tool on `terrain`: its channel on the ground_roles canvas; null when the Terrain has no ground_roles. Shift
+## does nothing different (painting «Pasto» is the eraser).
+static func _role(history: TerrainHistory, terrain: Terrain, tool: Toolbar.Tool) -> Target:
+	var canvas := history.roles(terrain)
+	return _made(canvas, ROLE_CHANNELS[tool], false) if canvas != null else null

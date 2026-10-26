@@ -18,11 +18,3 @@ speed_m_s = 30.0
 acceleration_m_s2 = 3.0
 effect_range_m = 75.0
 duration_s = 30.0
-flags1 = 8208
-flags2 = 9175040
-args = {
-"ffps": 7.0,
-"ihov": 15.0,
-"inum": 1.0,
-"ttex": "scri"
-}

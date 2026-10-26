@@ -14,10 +14,8 @@ cooldown_s = 8.0
 casting_time_s = 5.9259
 speed_m_s = 48.0
 damage = 150
-amount2 = 150
-flags = 16405
-flags1 = 2081
-flags2 = 16777216
-args = {
-"ttex": "gaze"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_worth = 150

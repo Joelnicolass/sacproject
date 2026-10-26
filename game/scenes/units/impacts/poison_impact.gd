@@ -40,8 +40,8 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, ability: AbilityType
 	LifeDrain.feed(shooter, target, float(ability.damage))
 	var per_second := float(ability.damage) / ability.duration_s / nerf_factor
 	var frames := int(ability.duration_s * MatchClock.TICKS_PER_SECOND)
-	var ires := ability.arg_int("ires", 0)
-	var freg := ability.arg_float("freg", 1.0)
+	var ires := ability.poison_resistance_debuff
+	var freg := ability.poison_regen_factor
 	if Poisoning.dose_body(target, per_second, frames, kind, from_slot, infectious, ires, freg, shooter.get_path() if shooter != null else NodePath()):
 		print("veneno %s a %s: %.3f/s, %d cuadros%s (vida %d)" % [ability.tag, target.name, per_second, frames,
 				", contagia" if infectious else "", roundi(float(target.get_node("Health").get("current")))])

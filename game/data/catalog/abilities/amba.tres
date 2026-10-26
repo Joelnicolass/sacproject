@@ -14,16 +14,9 @@ cooldown_s = 7.0
 casting_time_s = 5.1852
 speed_m_s = 60.0
 damage = 520
-amount2 = 520
-flags = 16405
-flags1 = 16417
-flags2 = 16777216
-args = {
-"fpsh": 8.0,
-"igap": 10.0,
-"thit": "push",
-"tmov": "norm",
-"tsnd": "flap",
-"ttex": "sqll",
-"ttyp": "tube"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 520

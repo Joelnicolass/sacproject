@@ -86,7 +86,7 @@ static func ability_acc(acc: PackedFloat32Array, amount2: float, range_m: float,
 
 
 ## shiny.d:265-281 `fillByTag` (the worth of a creature a wizard may summon): the stats, then every ability of the
-## CRE8 with the type's own mana. `abilities` are AbilityType (amount2, range, mana_cost). Port limit: export_stats.py
+## CRE8 with the type's own mana. `abilities` are AbilityType (ai_worth, range, mana_cost). Port limit: export_stats.py
 ## keeps 3 of the 8 ability slots of the CRE8 (92, 96, 124).
 static func fill_by_tag(type: CreatureType, abilities: Array) -> PackedFloat32Array:
 	var acc := new_acc()
@@ -95,12 +95,12 @@ static func fill_by_tag(type: CreatureType, abilities: Array) -> PackedFloat32Ar
 	acc[RATE_ABILITY] = 0.0
 	for ability: AbilityType in abilities:
 		if ability != null:
-			ability_acc(acc, float(ability.amount2), ability.cast_range_m, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), float(ts["mana"]), float(ts["fly"]))
+			ability_acc(acc, float(ability.ai_worth), ability.cast_range_m, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), float(ts["mana"]), float(ts["fly"]))
 	return acc
 
 
 ## shiny.d:283-306 `fillFromObject` (the worth of a body on the field, with its mana now): creatures use their abilities
-## that are attacks on creatures (flags1 & 0x4000 and flags & targetCreatures); a wizard adds its book (spells with
+## that are attacks on creatures (ai_attack and targets_creatures); a wizard adds its book (spells with
 ## an AI phase: ai_worth*range*(1-f)*0.04). `ts` from stats_of() or WIZARD_STATS.
 static func fill_from_object(ts: Dictionary, current_mana: int, abilities: Array, spells: Array) -> PackedFloat32Array:
 	var acc := new_acc()
@@ -108,9 +108,9 @@ static func fill_from_object(ts: Dictionary, current_mana: int, abilities: Array
 	acc[RATE_ABILITY] = 0.0
 	var mana_f := float(current_mana)
 	for ability: AbilityType in abilities:
-		if ability == null or (ability.flags1 & 0x4000) == 0 or (ability.flags & 4) == 0:
+		if ability == null or not ability.is_creature_attack():
 			continue
-		ability_acc(acc, float(ability.amount2), ability.cast_range_m, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), mana_f, float(ts["fly"]))
+		ability_acc(acc, float(ability.ai_worth), ability.cast_range_m, float(ability.mana_cost), float(ts["melee_accuracy"]), float(ts["ranged_accuracy"]), mana_f, float(ts["fly"]))
 	for spell: SpellType in spells:
 		if spell == null or spell.ai_phase == SpellType.AiPhase.NEVER:
 			continue

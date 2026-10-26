@@ -15,18 +15,11 @@ casting_time_s = 1.4815
 speed_m_s = 60.0
 acceleration_m_s2 = 12.0
 damage = 500
-amount2 = 450
 damage_range_m = 10.0
 effect_range_m = 10.0
-flags = 16405
-flags1 = 16417
-flags2 = 16777216
-args = {
-"fSPa": 255.0,
-"iSP+": 0.0,
-"iXS+": 2.0,
-"iadd": 0.0,
-"tSPK": "styx",
-"tptx": "firy",
-"ttex": "ltn2"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 450

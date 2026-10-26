@@ -10,6 +10,7 @@ const _SPELL_TYPE := preload("res://scenes/spells/spell_type.gd")
 const _ABILITY_TYPE := preload("res://scenes/units/abilities/ability_type.gd")
 const _WIZARD_TYPE := preload("res://scenes/wizards/wizard_type.gd")
 const _SPELL_BITS := preload("res://tools/bake/spell_bits.gd")
+const _ABILITY_BITS := preload("res://tools/bake/ability_bits.gd")
 
 const DATA_DIR := "res://assets/original/data/"
 
@@ -57,7 +58,7 @@ static func make_creature(row: Dictionary) -> Resource:
 	type.souls = int(row.get("souls", 0))
 	type.cooldown_s = float(row.get("cooldown_s", 0.0))
 	type.casting_time_s = float(row.get("casting_time_s", 0.0))
-	type.spell_order = int(row.get("spell_order", 0))
+	_set_book_order(type, int(row.get("spell_order", 0)))
 	return type
 
 
@@ -69,7 +70,7 @@ static func make_spell(row: Dictionary, structure: bool) -> Resource:
 	type.cast_range_m = float(row.get("range", 0.0))
 	type.cooldown_s = float(row.get("cooldown_s", 0.0))
 	type.casting_time_s = float(row.get("casting_time_s", 0.0))
-	type.spell_order = int(row.get("spell_order", 0))
+	_set_book_order(type, int(row.get("spell_order", 0)))
 	type.speed_m_s = float(row.get("speed", 0.0))
 	type.acceleration_m_s2 = float(row.get("acceleration", 0.0))
 	type.damage = int(row.get("amount", 0))
@@ -80,6 +81,13 @@ static func make_spell(row: Dictionary, structure: bool) -> Resource:
 	_SPELL_BITS.apply(type, row)
 	type.is_structure = structure
 	return type
+
+
+## The original's `spell_order` is level * 100 + position in the book; the types keep the two apart.
+static func _set_book_order(type: Resource, spell_order: int) -> void:
+	@warning_ignore("integer_division")
+	type.book_level = spell_order / 100
+	type.book_slot = spell_order % 100
 
 
 static func make_ability(row: Dictionary) -> Resource:
@@ -93,14 +101,10 @@ static func make_ability(row: Dictionary) -> Resource:
 	type.speed_m_s = float(row.get("speed", 0.0))
 	type.acceleration_m_s2 = float(row.get("acceleration", 0.0))
 	type.damage = int(row.get("amount", 0))
-	type.amount2 = int(row.get("amount2", 0))
 	type.damage_range_m = float(row.get("damage_range", 0.0))
 	type.effect_range_m = float(row.get("effect_range", 0.0))
 	type.duration_s = float(row.get("duration", 0.0))
-	type.flags = int(row.get("flags", 0))
-	type.flags1 = int(row.get("flags1", 0))
-	type.flags2 = int(row.get("flags2", 0))
-	type.args = row.get("args", {})
+	_ABILITY_BITS.apply(type, row)
 	return type
 
 

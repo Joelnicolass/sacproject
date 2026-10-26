@@ -29,5 +29,6 @@ mana_cost = 1100
 souls = 4
 cooldown_s = 7.0
 casting_time_s = 1.4815
-spell_order = 672
+book_level = 6
+book_slot = 72
 ranged_attack = ExtResource("typed_caba")

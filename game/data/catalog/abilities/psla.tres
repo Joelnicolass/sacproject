@@ -15,15 +15,5 @@ cast_range_m = 50.0
 cooldown_s = 6.0
 casting_time_s = 4.4444
 speed_m_s = 30.0
-flags = 8197
-flags1 = 6176
-flags2 = 8388608
-args = {
-"fSPa": 255.0,
-"fSPs": 4.0,
-"iSP#": 64.0,
-"iadd": 0.0,
-"tSPK": "gend",
-"ttex": "cord",
-"ttyp": "web!"
-}
+targets_wizards = true
+targets_creatures = true

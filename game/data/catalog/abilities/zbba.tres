@@ -14,13 +14,9 @@ cooldown_s = 2.5
 casting_time_s = 1.8519
 speed_m_s = 36.0
 damage = 200
-amount2 = 200
-flags = 16405
-flags1 = 16417
-flags2 = 16777216
-args = {
-"fdef": 0.5,
-"flif": 1.0,
-"tdef": "firy",
-"tlif": "blud"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 200

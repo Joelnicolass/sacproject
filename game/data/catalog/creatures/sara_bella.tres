@@ -30,5 +30,6 @@ mana_cost = 300
 souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.2469
-spell_order = 205
+book_level = 2
+book_slot = 5
 ranged_attack = ExtResource("typed_bsba")

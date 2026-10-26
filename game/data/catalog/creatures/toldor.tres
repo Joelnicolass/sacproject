@@ -30,5 +30,5 @@ mana_cost = 1300
 souls = 4
 cooldown_s = 8.0
 casting_time_s = 2.5926
-spell_order = 800
+book_level = 8
 active_ability = ExtResource("typed_HSba")

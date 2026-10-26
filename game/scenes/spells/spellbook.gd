@@ -2,7 +2,7 @@ class_name Spellbook
 extends Node
 
 ## Book of a wizard: the god's creatures and spells up to the wizard's level (getSpells, state.d:29512) in one
-## list sorted by spell_order, like sacengine Spellbook.sort. Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
+## list sorted by level and position (BookOrder), like sacengine Spellbook.sort. Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
 ## creature_2 (Shift+Q)…; spell entry 0 is spell_1 (X), 1 spell_2 (R)…
 ## Cooldowns are derived state (RFC-032 032b): each entry keeps the MatchClock tick it is ready again, and
 ## cooldown() = (ready − now) / 60. Nothing writes them per tick, so they follow the ticks of the match, not the render
@@ -16,7 +16,7 @@ signal cooldowns_changed
 ## The wizard whose book this is (the scene wires it to the root).
 @export var wizard: WizardBody
 
-## CreatureType or SpellType, sorted by spell_order.
+## CreatureType or SpellType, sorted by level and position (BookOrder).
 var _entries: Array[Resource] = []
 var _creature_rows := PackedInt32Array()
 var _spell_rows := PackedInt32Array()
@@ -224,7 +224,7 @@ func _rebuild() -> void:
 		sorted.append(spell)
 	for structure in rows.get("structures", []):
 		sorted.append(structure)
-	sorted.sort_custom(func(a: Resource, b: Resource) -> bool: return int(a.get("spell_order")) < int(b.get("spell_order")))
+	sorted.sort_custom(func(a: Resource, b: Resource) -> bool: return BookOrder.key(a) < BookOrder.key(b))
 	_entries = sorted
 	_creature_rows = PackedInt32Array()
 	_spell_rows = PackedInt32Array()

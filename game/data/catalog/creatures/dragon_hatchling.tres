@@ -32,5 +32,6 @@ mana_cost = 1900
 souls = 1
 cooldown_s = 10.0
 casting_time_s = 3.3333
-spell_order = 1008
+book_level = 10
+book_slot = 8
 active_ability = ExtResource("typed_filb")

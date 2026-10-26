@@ -18,7 +18,10 @@ enum AiPhase { NEVER, ATTACK, SUPPORT }
 @export var cast_range_m: float = 0.0
 @export var cooldown_s: float = 0.0
 @export var casting_time_s: float = 0.0
-@export var spell_order: int = 0
+## Wizard level it is meant for (0 to 9): casting it with a lower-level wizard is slower, with a higher one faster (CastTime).
+@export_range(0, 9) var book_level := 0
+## Place in the book among the entries of its level (0 to 99); the book lists entries by level, then by this number.
+@export_range(0, 99) var book_slot := 0
 ## Speed of what it sends (m/s).
 @export var speed_m_s: float = 0.0
 ## Acceleration of what it sends (m/s²).
@@ -57,3 +60,8 @@ enum AiPhase { NEVER, ATTACK, SUPPORT }
 @export_group("")
 ## How many bodies it takes before it is over (Death: 8). 0 = not limited.
 @export var max_targets := 0
+
+
+## Where the book lists it: by level first, then by position (the old spell_order, level * 100 + position).
+func order_key() -> int:
+	return book_level * 100 + book_slot

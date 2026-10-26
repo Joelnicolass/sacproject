@@ -7,11 +7,13 @@ script = ExtResource("1_mwwe2")
 tag = "goc@"
 display_name = "Steam Cloud"
 damage = 300
-amount2 = 300
 damage_range_m = 10.0
 effect_range_m = 10.0
 duration_s = 2.0
-flags = 16415
-args = {
-"ttex": "stem"
-}
+targets_wizards = true
+targets_souls = true
+targets_creatures = true
+targets_corpses = true
+targets_structures = true
+targets_ground = true
+ai_worth = 300

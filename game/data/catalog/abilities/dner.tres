@@ -16,19 +16,8 @@ cooldown_s = 10.0
 casting_time_s = 7.4074
 speed_m_s = 60.0
 damage = 2500
-amount2 = 1500
 damage_range_m = 40.0
 effect_range_m = 40.0
-flags = 4098
-flags1 = 16480
-flags2 = 8388608
-args = {
-"fSPa": 255.0,
-"fSPs": 5.0,
-"iSP+": 0.0,
-"iXS+": 2.0,
-"iadd": 0.0,
-"tSPK": "rend",
-"thit": "rend",
-"tptx": "firy"
-}
+targets_souls = true
+ai_attack = true
+ai_worth = 1500

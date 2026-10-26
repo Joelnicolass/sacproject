@@ -15,5 +15,3 @@ cooldown_s = 10.0
 casting_time_s = 7.4074
 speed_m_s = 30.0
 effect_range_m = 50.0
-flags1 = 4160
-flags2 = 8388608

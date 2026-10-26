@@ -21,4 +21,4 @@ ranged_accuracy = 1.0
 vision_m = 50.0
 melee_resistance = 1.5
 souls = 1
-spell_order = 11
+book_slot = 11

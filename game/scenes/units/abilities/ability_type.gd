@@ -1,6 +1,9 @@
 class_name AbilityType
 extends Resource
 
+## One active ability of a creature (Viscous Oil, Run Away...): what it costs, how far it reaches, who it aims at, and the scene that
+## does it. It does NOT run anything (the AbilityEffect scene does) and it never changes at run time.
+
 @export var tag: String = ""
 @export var display_name: String = ""
 ## What the ability does when a creature uses it on command: the scene of an AbilityEffect (scenes/units/abilities/). Empty = «No
@@ -18,25 +21,46 @@ extends Resource
 ## Acceleration of what it sends (m/s²).
 @export var acceleration_m_s2: float = 0.0
 @export var damage: int = 0
-## SPEL `amount2` (u32 at 96): what the AI's rater reads of an ability (shiny.d:175-180 `abilityAcc`).
-@export var amount2: int = 0
 ## Radius of its damage around where it hits (m).
 @export var damage_range_m: float = 0.0
 ## Reach of its effect (m).
 @export var effect_range_m: float = 0.0
 ## How long its effect lasts (s).
 @export var duration_s: float = 0.0
-@export var flags: int = 0
-@export var flags1: int = 0
-@export var flags2: int = 0
-## SPEL args (spells.d Spel.args, as sacspell.d spellArgInt / spellArgFloat): `ires` and `freg` of poison, `ttex` of a
-## particle… Read with the default sacengine passes (SacSpell.spellArgInt("ires", 0)).
-@export var args: Dictionary = {}
+@export_group("Who it aims at")
+## An ability with none of these on fires at once, without asking for a target; with any, the player picks one first.
+@export var targets_wizards := false
+## Breath of Life style: it looks for souls (after the living body under the cursor).
+@export var targets_souls := false
+@export var targets_creatures := false
+## Breath of Life style: it looks for corpses (after the souls).
+@export var targets_corpses := false
+@export var targets_structures := false
+@export var targets_ground := false
+
+@export_group("AI")
+## The AI rates it as an attack on creatures (only if it also targets creatures) when it sizes up a body.
+@export var ai_attack := false
+## What the AI's rater adds per ability, before range and mana: bigger is a better ability.
+@export var ai_worth := 0
+
+@export_group("Poison")
+## Thousandths of resistance a dose takes off the target (0 = none). Only poison abilities read it.
+@export var poison_resistance_debuff := 0
+## Multiplier of the target's regeneration while the dose lasts (1 = unchanged, 0 = none). Only poison abilities read it.
+@export var poison_regen_factor := 1.0
 
 
-func arg_int(key: String, fallback := 0) -> int:
-	return int(args.get(key, fallback))
+## True when the player must pick a target before the ability fires.
+func needs_target() -> bool:
+	return targets_wizards or targets_souls or targets_creatures or targets_corpses or targets_structures or targets_ground
 
 
-func arg_float(key: String, fallback := 0.0) -> float:
-	return float(args.get(key, fallback))
+## True when it looks for souls or corpses, not only for living bodies.
+func aims_at_dead() -> bool:
+	return targets_souls or targets_corpses
+
+
+## True when the AI counts it as an attack on creatures.
+func is_creature_attack() -> bool:
+	return ai_attack and targets_creatures

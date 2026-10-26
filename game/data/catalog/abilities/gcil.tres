@@ -10,7 +10,4 @@ display_name = "Lightning Charge"
 icon = ExtResource("icon_tex")
 cast_range_m = 30.0
 damage = 250
-amount2 = 250
-args = {
-"ttex": "cst0"
-}
+ai_worth = 250

@@ -14,11 +14,9 @@ cooldown_s = 2.5
 casting_time_s = 1.8519
 speed_m_s = 36.0
 damage = 125
-amount2 = 125
-flags = 16405
-flags1 = 16417
-flags2 = 16777216
-args = {
-"fang": 5.0,
-"ttex": "rock"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 125

@@ -14,10 +14,9 @@ cooldown_s = 1.5
 casting_time_s = 1.1111
 speed_m_s = 42.0
 damage = 120
-amount2 = 120
-flags = 16405
-flags1 = 16418
-flags2 = 16777216
-args = {
-"ttex": "ltn2"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 120

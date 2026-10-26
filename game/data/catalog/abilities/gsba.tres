@@ -11,5 +11,4 @@ tag = "gsba"
 display_name = "Call lightning"
 icon = ExtResource("icon_tex")
 mana_cost = 50
-flags1 = 24592
-flags2 = 8912896
+ai_attack = true

@@ -26,4 +26,5 @@ mana_cost = 300
 souls = 1
 cooldown_s = 2.0
 casting_time_s = 0.3704
-spell_order = 124
+book_level = 1
+book_slot = 24

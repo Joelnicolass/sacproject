@@ -14,14 +14,12 @@ cooldown_s = 6.6667
 casting_time_s = 4.9383
 speed_m_s = 42.0
 damage = 400
-amount2 = 400
 damage_range_m = 10.0
 effect_range_m = 20.0
 duration_s = 1.5
-flags = 16405
-flags1 = 16450
-flags2 = 16777216
-args = {
-"tsha": "shrd",
-"ttex": "iplt"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 400

@@ -28,7 +28,7 @@ func use() -> void:
 	var ability := _selection.ability()
 	if ability == null:
 		return
-	if ability.flags != 0:
+	if ability.needs_target():
 		armed.mode = "ability"
 		armed.ability = ability
 		_log.arm("ability", ability.icon, "Elegí el blanco", TargetProbe.ORDER_TARGETS)
@@ -56,9 +56,8 @@ func click_on(body: Node3D, ground: Variant) -> void:
 		feedback.show_ping(point)
 
 
-## spells.d:168-183: targetSouls (1 << 1) and targetCorpses (1 << 3).
 func _aims_at_dead(ability: AbilityType) -> bool:
-	return ability != null and (ability.flags & ((1 << 1) | (1 << 3))) != 0
+	return ability != null and ability.aims_at_dead()
 
 
 ## Every selected creature whose active ability is `ability` gets the order; the others skip it

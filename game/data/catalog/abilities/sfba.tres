@@ -14,14 +14,10 @@ cooldown_s = 8.0
 casting_time_s = 5.9259
 speed_m_s = 48.0
 damage = 237
-amount2 = 237
 duration_s = 1.0
-flags = 16405
-flags1 = 20513
-flags2 = 16777216
-args = {
-"fvig": 0.3,
-"thit": "heat",
-"ttex": "tube",
-"ttyp": "heat"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 237

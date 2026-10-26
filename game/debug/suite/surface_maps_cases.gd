@@ -1,10 +1,11 @@
 extends RefCounted
 
-## RFC-067 cases of rules_suite (C6): the relief generator of addons/surface_maps is deterministic and reads the right way.
+## RFC-067 cases of rules_suite (C6): the relief generator of addons/surface_maps (NormalMap-Online's Sobel / Scharr) is
+## deterministic and reads the right way.
 ## The same picture gives the same bytes twice; a flat picture gives a flat normal (128, 128, 255 within 1); a ramp that
 ## brightens to the right tilts the normal left (red below 128) and one that brightens downward tilts it up (green above
-## 128: OpenGL); the edge of a cutout leaves no halo; maps mirror textures/<owner>/ into surfaces/<owner>/. Pictures are
-## made here, nothing is written to disk, no tree.
+## 128: OpenGL); invert_height and invert_g flip them; Scharr reads like Sobel; the edge of a cutout leaves no halo; maps
+## mirror textures/<owner>/ into surfaces/<owner>/. Pictures are made here, nothing is written to disk, no tree.
 
 const SIZE := 32
 
@@ -30,15 +31,21 @@ func _baker() -> Dictionary:
 	checks["tiled_same_size"] = (ReliefBaker.bake(noise, tiled).normal as Image).get_size() == noise.get_size()
 	var flat: Image = ReliefBaker.bake(_filled(Color(0.4, 0.5, 0.3)), recipe).normal
 	checks["flat_is_flat"] = _all_flat(flat, Rect2i(0, 0, SIZE, SIZE))
-	var ramp := ReliefRecipe.new()
-	ramp.flatten_px = 0  # a high-pass takes a straight ramp away whole
+	var ramp := ReliefRecipe.new()  # no high-pass by default (it would take a straight ramp away whole)
 	var right: Image = ReliefBaker.bake(_ramp(true), ramp).normal
 	var down: Image = ReliefBaker.bake(_ramp(false), ramp).normal
 	checks["ramp_right_tilts_left"] = right.get_pixel(SIZE / 2, SIZE / 2).r8 < 120
 	checks["ramp_down_tilts_up"] = down.get_pixel(SIZE / 2, SIZE / 2).g8 > 136
 	var inverted := ramp.duplicate() as ReliefRecipe
-	inverted.invert = true
+	inverted.invert_height = true
 	checks["invert_flips"] = (ReliefBaker.bake(_ramp(true), inverted).normal as Image).get_pixel(SIZE / 2, SIZE / 2).r8 > 136
+	var green := ramp.duplicate() as ReliefRecipe
+	green.invert_g = true
+	checks["invert_g_flips"] = (ReliefBaker.bake(_ramp(false), green).normal as Image).get_pixel(SIZE / 2, SIZE / 2).g8 < 120
+	var scharr := ramp.duplicate() as ReliefRecipe
+	scharr.filter = ReliefRecipe.Filter.SCHARR
+	checks["scharr_same_sign"] = (ReliefBaker.bake(_ramp(true), scharr).normal as Image).get_pixel(SIZE / 2, SIZE / 2).r8 < 120
+	checks["scharr_flat_is_flat"] = _all_flat(ReliefBaker.bake(_filled(Color(0.4, 0.5, 0.3)), scharr).normal, Rect2i(0, 0, SIZE, SIZE))
 	checks["cutout_no_halo"] = _all_flat(ReliefBaker.bake(_cutout(), recipe).normal, Rect2i(0, 0, SIZE / 2, SIZE))
 	checks["cutout_without_fill_halos"] = not _all_flat(ReliefBaker.bake(_cutout_opaque(), recipe).normal, Rect2i(0, 0, SIZE / 2, SIZE))
 	return _verdict(checks)

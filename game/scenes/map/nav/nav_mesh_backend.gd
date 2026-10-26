@@ -215,15 +215,23 @@ static func _flat(a: Vector3, b: Vector3) -> float:
 	return Vector2(a.x - b.x, a.z - b.z).length()
 
 
-## map_get_path caps the search at 4096 polygons (NavigationPathQueryParameters3D default) and returns a partial path past that; the
-## map has ~10k, so long paths stopped short. The query has no cap.
 func _query(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if _params == null:
 		_params = NavigationPathQueryParameters3D.new()
-		_params.path_search_max_polygons = 0
 		_result = NavigationPathQueryResult3D.new()
-	_params.map = map
-	_params.start_position = from
-	_params.target_position = to
-	NavigationServer3D.query_path(_params, _result)
-	return _result.path
+	return query_path(map, from, to, _params, _result)
+
+
+## The path the units walk from `from` to `to` on `map`, through `params` and `result` (reused by the caller). The only place
+## that sets the search limits: map_get_path caps the search at 4096 polygons (NavigationPathQueryParameters3D default) and
+## returns a partial path past that; a map has ~10k, so long paths stopped short. Here there is no cap on polygons or distance.
+## tools/audit/map_path_checks.gd asks the same.
+static func query_path(on_map: RID, from: Vector3, to: Vector3, params: NavigationPathQueryParameters3D,
+		result: NavigationPathQueryResult3D) -> PackedVector3Array:
+	params.path_search_max_polygons = 0
+	params.path_search_max_distance = 0.0
+	params.map = on_map
+	params.start_position = from
+	params.target_position = to
+	NavigationServer3D.query_path(params, result)
+	return result.path

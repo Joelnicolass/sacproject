@@ -15,6 +15,8 @@ const LOCAL_SERVER_SCENE := "res://scenes/ui/local_server/local_server_screen.ts
 @export var vs_ai_seat: AiSeat
 ## The picks by slot (a child of this scene).
 @export var board: PickBoard
+## The story of each seat in the server's log, and the defeat of a seat that abandoned (a child of this scene).
+@export var presence: SeatPresence
 
 ## Local choice. Never null after `_ready`.
 var pick: WizardPick
@@ -168,6 +170,11 @@ func _forget_local_match() -> void:
 	solo_ai_seats = []
 
 
+## What a client turned away by the door of the match reads in the status line (the «Servidor local» texts).
+func rejection_text(reason: String) -> String:
+	return LocalServerText.rejection_text(reason)
+
+
 ## The way out of a match (pause menu, end, lost server): the room screens if it came from a room, else the menu.
 func _go_boot() -> void:
 	ActiveMatch.forget()
@@ -187,6 +194,8 @@ func _arm_ticket_glue() -> bool:
 	if glue.rejected:
 		return false
 	board.ticket_glue = glue
+	glue.presence = presence
+	presence.log_prefix = "partida %s: " % glue.agent.match_id
 	var plan := TicketPlan.read(glue, vs_ai_seat, pick, max_players)
 	max_players = plan.max_players
 	if not plan.ai_seats.is_empty():

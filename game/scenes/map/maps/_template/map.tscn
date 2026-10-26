@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
+[ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="2_props"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="3_start"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="4_fount"]
+[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="5_bake"]
+[ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="6_nav_region"]
+[ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="7_look"]
+[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="8_god"]
+[ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="9_quality"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="10_minimap"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="11_terrain"]
+[ext_resource type="Resource" uid="uid://be0blyxacvs30" path="res://scenes/map/maps/_template/heights.png" id="12_heights"]
+[ext_resource type="Texture2D" uid="uid://dwl0emcocdn1l" path="res://scenes/map/maps/_template/ground_roles.png" id="13_roles"]
+
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+script = ExtResource("1_root")
+terrain = NodePath("Terrain")
+nav_region = NodePath("NavRegion")
+starts = NodePath("MapProps/Starts")
+look = NodePath("Look")
+minimap_bake = NodePath("MinimapBake")
+buildings = NodePath("Buildings")
+npcs = NodePath("Npcs")
+props = NodePath("Props")
+
+[node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("7_look")]
+unique_name_in_owner = true
+terrain = NodePath("../Terrain")
+preview_god = ExtResource("8_god")
+preview_quality = ExtResource("9_quality")
+
+[node name="Terrain" parent="." instance=ExtResource("11_terrain")]
+unique_name_in_owner = true
+heights = ExtResource("12_heights")
+ground_roles = ExtResource("13_roles")
+
+[node name="MapProps" type="Node3D" parent="."]
+script = ExtResource("2_props")
+
+[node name="Starts" type="Node3D" parent="MapProps"]
+
+[node name="Start1" parent="MapProps/Starts" instance=ExtResource("3_start")]
+transform = Transform3D(-4.3711e-08, 0, 1, 0, 1, 0, -1, 0, -4.3711e-08, 1180, 10, 1300)
+
+[node name="Start2" parent="MapProps/Starts" instance=ExtResource("3_start")]
+transform = Transform3D(-4.3711e-08, 0, -1, 0, 1, 0, 1, 0, -4.3711e-08, 1420, 10, 1300)
+slot = 2
+
+[node name="Founts" type="Node3D" parent="MapProps"]
+
+[node name="FountMiddle" parent="MapProps/Founts" instance=ExtResource("4_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1300, 10, 1300)
+
+[node name="FountWest" parent="MapProps/Founts" instance=ExtResource("4_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 10, 1300)
+
+[node name="FountEast" parent="MapProps/Founts" instance=ExtResource("4_fount")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600, 10, 1300)
+
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="Npcs" type="Node3D" parent="."]
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="LifeSpots" type="Node3D" parent="."]
+
+[node name="NavRegion" type="NavigationRegion3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("6_nav_region")
+bake_settings = ExtResource("5_bake")
+
+[node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("10_minimap")]
+unique_name_in_owner = true
+terrain = NodePath("../Terrain")

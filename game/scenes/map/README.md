@@ -16,9 +16,13 @@ El mapa: edificios, spawns de NPC, terreno, navegacion (`nav/`), props (`props/`
 
 ## Agregar un mapa nuevo (sin tocar codigo)
 
-1. Carpeta `scenes/map/maps/<tag>/` con `map.tscn` (raiz `MapRoot`; copiar `test_flat/map.tscn` y editarla) y `<tag>.tres` (una `MapDefinition`); sin lista que editar.
-2. Hornear el navmesh: boton «Hornear navmesh» de `NavRegion`, o `bake_nav.tscn` de tools/bake con `-- --map=<tag>`.
-3. Jugarlo: `--map=<tag>` (por ejemplo `res://scenes/match/match.tscn -- --map=test_flat`).
+1. En el editor: Proyecto → Herramientas → «Mapa nuevo…», escribir el tag (`mi_mapa`, minusculas) y el nombre, y «Crear». Copia `maps/_template/` a `maps/<tag>/` (suelo plano, todo pasto, dos inicios y tres manantiales), escribe `<tag>.tres` y `nav.res`, hornea el navmesh, abre la escena y corre «Validar mapa» (tiene que dar PASS). El catalogo lo ve solo: sin lista que editar.
+2. Editarlo: pinceles del `Terrain`, arrastrar edificios, props y `NpcSpawn`, mover inicios y manantiales con el gizmo; despues, «Hornear navmesh» en `NavRegion` y «Validar mapa».
+3. Jugarlo: `--map=<tag>` (por ejemplo `res://scenes/match/match.tscn -- --map=mi_mapa`).
+
+Lo que todo mapa nuevo trae se cambia en `maps/_template/map.tscn` (ver su README). Copiar `test_flat` a mano ya no es el camino. Al versionar el mapa, `*.import` esta en `.gitignore`: sumá sus `.import` con `git add -f` (el de `ground_roles.png` lleva `fix_alpha_border=false`).
+
+Ojo: `tools/import/bake_ground_roles.py` pisa el `ground_roles.png` de los mapas importados; si ya pintaste sus roles a mano, no lo vuelvas a correr sobre ese mapa.
 
 Los mapas del original (High Noon, `peaks`, `peasantville`, `roads`, `winter_wonder`) se importan con `tools/import/import_map.py` y `scaffold_map.py`: el paso a paso está en `docs/HOWTO.md` («Un mapa») y la lista de los 31 en `rfcs/RFC-050-original-maps.md`.
 

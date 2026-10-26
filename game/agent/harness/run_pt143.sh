@@ -11,7 +11,7 @@ export PT_RES=1280x720
 OUT="$ROOT/agent/out/pt143"; mkdir -p "$OUT"; cd "$ROOT"
 if [ "${1:-}" = "--net" ]; then
   PORT="$2"; FLAGS="$3"
-  "$GODOT_BIN" --headless --max-fps 60 --path "$ROOT" -- --dedicated --mp-port="$PORT" $FLAGS > "$OUT/net_server.log" 2>&1 &
+  "$GODOT_BIN" --headless --max-fps 60 --path "$ROOT" -- --dedicated --start-seats="${START_SEATS:-1}" --mp-port="$PORT" $FLAGS > "$OUT/net_server.log" 2>&1 &
   SV=$!
   for _ in $(seq 1 160); do grep -q "listo puerto" "$OUT/net_server.log" && break; sleep 0.25; done
   "$ROOT/addons/agent_kit/cli.sh" "$ROOT" flow --flow="$ROOT/agent/flows/pt143dev_net.json" --out=res://agent/out/pt143 --fail-on-error --mp-port="$PORT" > "$OUT/pt143dev_net.log" 2>&1 &
@@ -39,4 +39,5 @@ for spec in "$@"; do
   wait "$P"; echo "$f exit $?"
 done
 # Net mode (F143 criterion 4/5): run_pt143.sh --net PORT "SERVER FLAGS" -- a headless dedicated (--max-fps 60) with those
-# flags, then the client flow pt143dev_net; the server stops when the client ends.
+# flags, then the client flow pt143dev_net; the server stops when the client ends. RFC-068: the match starts once START_SEATS (1)
+# seats loaded.

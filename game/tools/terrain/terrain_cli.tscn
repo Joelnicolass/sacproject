@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tools/terrain/terrain_cli.gd" id="1_cli"]
+
+[node name="TerrainCli" type="Node"]
+editor_description = "Las herramientas del suelo de un mapa sin editor (las mismas de los botones del inspector de Terrain): --to-blend, --from-blend, --flat=<m>, --flatten-bases, --validate. Corre como escena para que existan los autoloads."
+script = ExtResource("1_cli")

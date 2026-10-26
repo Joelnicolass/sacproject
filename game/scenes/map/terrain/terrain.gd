@@ -57,6 +57,7 @@ func _ready() -> void:
 		return
 	if live != null:
 		live.ticked.connect(_on_live_ticked)
+		live.pins = PinRules.of_tree(get_tree())
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -125,10 +126,12 @@ func unstamp(key: StringName) -> void:
 		live.drop(String(key))
 
 
-## Server (or alone): what the stamp reaches at its end stays, its live shift `key` goes in the same step; the clients get it.
+## Server (or alone): what the stamp reaches at its end stays (never under a base that pins its ground), its live shift `key` goes
+## in the same step; the clients get it.
 func keep_stamp(key: StringName, profile: StampProfile, center: Vector2, reach_m: float, peak_m: float, pattern := PackedFloat32Array()) -> void:
 	var rect := TerrainGrid.vertex_rect(center, reach_m)
 	var delta := StampRules.shift(profile, center, reach_m, peak_m, profile.duration_s() - 1e-4, rect, pattern)
+	PinRules.apply(delta, rect, live.pins if live != null else PackedFloat32Array())
 	if _may_edit("keep_stamp") and delta.size() == rect.get_area():
 		keep(_field.rev + 1, String(key), rect, delta)
 

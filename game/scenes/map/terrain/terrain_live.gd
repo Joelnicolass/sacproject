@@ -13,6 +13,9 @@ signal ticked(shifts: Array, ended: PackedStringArray)
 ## is not redrawn every tick).
 @export_range(0.0, 2.0, 0.01, "suffix:m") var min_step_m := 0.1
 
+## How much a stamp may move each lattice vertex (PinRules.weights: 0 under a base); empty = all of it. Terrain sets it once.
+var pins := PackedFloat32Array()
+
 
 ## One stamp's shift for this tick: `values` row by row over the lattice vertices of `rect`.
 class Shift:
@@ -109,6 +112,7 @@ func _shift_of(key: String, request: Request) -> Shift:
 	shift.values = StampRules.shift(profile, request.center, request.reach_m, request.peak_m, request.at_s, shift.rect, request.pattern)
 	if shift.values.size() != shift.rect.get_area():
 		return null
+	PinRules.apply(shift.values, shift.rect, pins)
 	request.shown_share = share
 	request.shown_ring = ring
 	request.shown_center = request.center

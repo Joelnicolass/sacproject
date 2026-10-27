@@ -6,8 +6,8 @@ extends Resource
 ## MapNavRegion read them; nothing else hardcodes a radius or a cell. Never mutated at runtime.
 ## Ref: RFC-035 035f.
 
-## Voxel size of the bake (m). The RFC asks 0.5; 1.0 keeps the headless bake of the 2.56 km map light (RFC-035 R12 note).
-@export var cell_size := 1.0
+## Voxel size of the bake (m): the same for every map (zones keep each bake small).
+@export var cell_size := 0.5
 @export var cell_height := 0.25
 ## The common body radius (0.5 m) plus the NavService box clearance (0.5 m), RFC-035 R7.
 @export var agent_radius := 1.0
@@ -20,10 +20,16 @@ extends Resource
 @export_range(0.0, 90.0) var agent_max_slope := 85.0
 @export var region_min_size := 8.0
 @export var region_merge_size := 20.0
-## The most voxel columns one bake may have. Godot's Recast crashes the process (signal 11) past about 26 M (a «Mapa nuevo» flat
-## map is land over its whole 2.55 km: 26 M at 0.5 m) and only warns at 30 M; 13 M bakes in 7 s. A bigger source bakes at a
-## coarser cell (`fit_to`), so every map can be baked; the maps of the original stay far below and keep `cell_size`.
-@export var max_grid_cells := 16000000
+## The side of a bake zone (m): the map is baked in a fixed grid of squares from (0, 0), so a change re-bakes only the zones it
+## touches (NavZones). A multiple of `cell_size`; MapNavRegion warns when it is not.
+@export var zone_m := 160.0
+## How far past its square a zone is baked (m), so the walls and ramps next to a zone line are seen from both sides and the
+## pieces meet exactly on the line. A multiple of `cell_size`.
+@export var zone_border_m := 8.0
+## The fixed height of every zone's bake box (m, world Y): the lowest ground and the highest roof a map has, with room (a crater
+## digs below the land; the land is metres above the lowest vertex). The same box for every zone is what keeps the seams exact.
+@export var floor_m := -50.0
+@export var ceiling_m := 400.0
 ## The scene that bakes (a tool, left out of the exported game): MapNavRegion's «Hornear navmesh» button runs it. Not a bake number.
 @export var bake_tool := ""
 
@@ -43,20 +49,15 @@ func apply_to(navmesh: NavigationMesh) -> void:
 	navmesh.geometry_source_group_name = NavFingerprint.GROUP
 
 
-## After the parse: when `geometry` spans more than `max_grid_cells` columns at `cell_size`, `navmesh` bakes at the finest
-## coarser cell that fits and still holds `agent_radius` in whole cells (Recast rounds the radius up to cells). The game's map
-## takes the cell of the navmesh (NavMeshBackend), so the stored bake and a re-bake agree.
-func fit_to(navmesh: NavigationMesh, geometry: NavigationMeshSourceGeometryData3D) -> void:
-	var size := geometry.get_bounds().size
-	if size.x * size.z <= max_grid_cells * cell_size * cell_size:
-		return
-	var needed := sqrt(size.x * size.z / max_grid_cells)
-	var cells_per_radius := floorf(agent_radius / needed)
-	var cell := agent_radius / cells_per_radius if cells_per_radius >= 1.0 else ceilf(needed / agent_radius) * agent_radius
-	navmesh.cell_size = maxf(cell, cell_size)
+## Fits `navmesh` to the zone `zone` (x, z in metres): its bake box is the zone grown by `zone_border_m` on x and z, with the
+## fixed height of every zone. The border keeps the engine from closing the box's edge, so the zone's piece reaches its own line.
+func apply_zone(navmesh: NavigationMesh, zone: Rect2) -> void:
+	navmesh.border_size = zone_border_m
+	var box := zone.grow(zone_border_m)
+	navmesh.filter_baking_aabb = AABB(Vector3(box.position.x, floor_m, box.position.y), Vector3(box.size.x, ceiling_m - floor_m, box.size.y))
 
 
 ## Every number that changes the bake, as text, for the source hash.
 func fingerprint() -> String:
-	return "%s|%s|%s|%s|%s|%s|%s|%s" % [cell_size, cell_height, agent_radius, agent_height, agent_max_climb,
-		agent_max_slope, region_min_size, region_merge_size]
+	return "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % [cell_size, cell_height, agent_radius, agent_height, agent_max_climb,
+		agent_max_slope, region_min_size, region_merge_size, zone_m, zone_border_m, floor_m, ceiling_m]

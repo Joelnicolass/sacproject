@@ -145,6 +145,7 @@ MAP_TAIL = """
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true
 navigation_mesh = ExtResource("15_navmesh")
+use_edge_connections = false
 script = ExtResource("16_nav_region")
 bake_settings = ExtResource("14_bake")
 

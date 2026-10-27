@@ -77,6 +77,7 @@ editor_description = "Lugares con vida ambiental (RFC-058). Arrastrá life_spot.
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true
+use_edge_connections = false
 script = ExtResource("6_nav_region")
 bake_settings = ExtResource("5_bake")
 

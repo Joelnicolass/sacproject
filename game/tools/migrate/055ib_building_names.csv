@@ -1,0 +1,217 @@
+old,new,tag,doubtful,evidence
+# 055i-b5: human names for the buildings that still carry their tag (plan 055i-b-rest section 3, rule <god>_<noun>[_n]).
+# One row per file: data/buildings/<name>.tres, scenes/structures/buildings/<name>.tscn and its _ruin.tscn.
+# doubtful: empty = safe, ? = probable (family of an existing name), ?? = no clear name (proposal from the render of
+# agent/out/055ib_buildings/contact_sheet.png). The `tag` (the wire id) does not change. Needs the user's OK before:
+#   python3 tools/migrate/rename_resources.py --csv tools/migrate/055ib_building_names.csv --apply
+# Not listed (already a word): james_cave, persephone_arch, persephone_silo.
+data/buildings/_cama.tres,data/buildings/charnel_manalith.tres,cama,,orbe sobre patas; Manalito; data/gods/charnel.tres; display_name Manalito
+scenes/structures/buildings/_cama.tscn,scenes/structures/buildings/charnel_manalith.tscn,cama,,orbe sobre patas; Manalito; data/gods/charnel.tres; display_name Manalito
+data/buildings/_casp.tres,data/buildings/charnel_shrine.tres,casp,,anillo; Santuario; data/gods/charnel.tres; display_name Santuario
+scenes/structures/buildings/_casp.tscn,scenes/structures/buildings/charnel_shrine.tscn,casp,,anillo; Santuario; data/gods/charnel.tres; display_name Santuario
+data/buildings/ether_ealt.tres,data/buildings/ether_altar.tres,ealt,,"disco con ojo, base + tapa (ea_b/ea_r)"
+scenes/structures/buildings/ether_ealt.tscn,scenes/structures/buildings/ether_altar.tscn,ealt,,"disco con ojo, base + tapa (ea_b/ea_r)"
+data/buildings/_jman.tres,data/buildings/james_manalith.tres,jman,,orbe entre cuernos; Manalito; data/gods/james.tres; display_name Manalito
+scenes/structures/buildings/_jman.tscn,scenes/structures/buildings/james_manalith.tscn,jman,,orbe entre cuernos; Manalito; data/gods/james.tres; display_name Manalito
+data/buildings/_jsac.tres,data/buildings/james_shrine.tres,jsac,,anillo de hueso; Santuario; data/gods/james.tres; display_name Santuario
+scenes/structures/buildings/_jsac.tscn,scenes/structures/buildings/james_shrine.tscn,jsac,,anillo de hueso; Santuario; data/gods/james.tres; display_name Santuario
+data/buildings/persephone_alt1.tres,data/buildings/persephone_altar.tres,alt1,,base + 4 pilares + tapa (como ca_a = charnel_altar)
+scenes/structures/buildings/persephone_alt1.tscn,scenes/structures/buildings/persephone_altar.tscn,alt1,,base + 4 pilares + tapa (como ca_a = charnel_altar)
+data/buildings/persephone_font.tres,data/buildings/persephone_fountain.tres,font,,pileta con agua (malla pcfn)
+scenes/structures/buildings/persephone_font.tscn,scenes/structures/buildings/persephone_fountain.tscn,font,,pileta con agua (malla pcfn)
+data/buildings/persephone_hut1.tres,data/buildings/persephone_hut.tres,hut1,,"casa con ventanas, refugio, hp 5000 (malla huta)"
+scenes/structures/buildings/persephone_hut1.tscn,scenes/structures/buildings/persephone_hut.tscn,hut1,,"casa con ventanas, refugio, hp 5000 (malla huta)"
+scenes/structures/buildings/persephone_hut1_ruin.tscn,scenes/structures/buildings/persephone_hut_ruin.tscn,hut1,,"casa con ventanas, refugio, hp 5000 (malla huta)"
+data/buildings/_mana.tres,data/buildings/persephone_manalith.tres,mana,,orbe sobre patas; Manalito; data/gods/persephone.tres; display_name Manalito
+scenes/structures/buildings/_mana.tscn,scenes/structures/buildings/persephone_manalith.tscn,mana,,orbe sobre patas; Manalito; data/gods/persephone.tres; display_name Manalito
+data/buildings/_pcsh.tres,data/buildings/persephone_shrine.tres,pcsh,,anillo verde; Santuario; data/gods/persephone.tres; display_name Santuario
+scenes/structures/buildings/_pcsh.tscn,scenes/structures/buildings/persephone_shrine.tscn,pcsh,,anillo verde; Santuario; data/gods/persephone.tres; display_name Santuario
+data/buildings/pyro_dyno.tres,data/buildings/pyro_dynamo.tres,dyno,,"cilindro con piston (dybd/dypt), hp 6000"
+scenes/structures/buildings/pyro_dyno.tscn,scenes/structures/buildings/pyro_dynamo.tscn,dyno,,"cilindro con piston (dybd/dypt), hp 6000"
+scenes/structures/buildings/pyro_dyno_ruin.tscn,scenes/structures/buildings/pyro_dynamo_ruin.tscn,dyno,,"cilindro con piston (dybd/dypt), hp 6000"
+data/buildings/pyro_pmag.tres,data/buildings/pyro_magnifryer.tres,pmag,,"mastil con lente (mpil/mbra/mgun), hp 6000"
+scenes/structures/buildings/pyro_pmag.tscn,scenes/structures/buildings/pyro_magnifryer.tscn,pmag,,"mastil con lente (mpil/mbra/mgun), hp 6000"
+scenes/structures/buildings/pyro_pmag_ruin.tscn,scenes/structures/buildings/pyro_magnifryer_ruin.tscn,pmag,,"mastil con lente (mpil/mbra/mgun), hp 6000"
+data/buildings/_pyma.tres,data/buildings/pyro_manalith.tres,pyma,,orbe sobre patas; Manalito; data/gods/pyro.tres; display_name Manalito
+scenes/structures/buildings/_pyma.tscn,scenes/structures/buildings/pyro_manalith.tscn,pyma,,orbe sobre patas; Manalito; data/gods/pyro.tres; display_name Manalito
+data/buildings/_pasp.tres,data/buildings/pyro_shrine.tres,pasp,,anillo de engranaje (malla pysh); Santuario; data/gods/pyro.tres; display_name Santuario
+scenes/structures/buildings/_pasp.tscn,scenes/structures/buildings/pyro_shrine.tscn,pasp,,anillo de engranaje (malla pysh); Santuario; data/gods/pyro.tres; display_name Santuario
+data/buildings/_stam.tres,data/buildings/stratos_manalith.tres,stam,,orbe sobre torbellino; Manalito; data/gods/stratos.tres; display_name Manalito
+scenes/structures/buildings/_stam.tscn,scenes/structures/buildings/stratos_manalith.tscn,stam,,orbe sobre torbellino; Manalito; data/gods/stratos.tres; display_name Manalito
+data/buildings/_stsp.tres,data/buildings/stratos_shrine.tres,stsp,,anillo de nube (malla sshr); Santuario; data/gods/stratos.tres; display_name Santuario
+scenes/structures/buildings/_stsp.tscn,scenes/structures/buildings/stratos_shrine.tscn,stsp,,anillo de nube (malla sshr); Santuario; data/gods/stratos.tres; display_name Santuario
+data/buildings/charnel_cua_.tres,data/buildings/charnel_altar_2.tres,cua_,?,base + 4 pilares + 4 tubos + tapa: segundo altar
+scenes/structures/buildings/charnel_cua_.tscn,scenes/structures/buildings/charnel_altar_2.tscn,cua_,?,base + 4 pilares + 4 tubos + tapa: segundo altar
+data/buildings/charnel_caa1.tres,data/buildings/charnel_arch.tres,caa1,?,medio arco como persephone_arch (tag arch)
+scenes/structures/buildings/charnel_caa1.tscn,scenes/structures/buildings/charnel_arch.tscn,caa1,?,medio arco como persephone_arch (tag arch)
+data/buildings/charnel_cht1.tres,data/buildings/charnel_hut_1.tres,cht1,?,"campana con puerta, refugio, hp 5000"
+scenes/structures/buildings/charnel_cht1.tscn,scenes/structures/buildings/charnel_hut_1.tscn,cht1,?,"campana con puerta, refugio, hp 5000"
+data/buildings/charnel_cht2.tres,data/buildings/charnel_hut_2.tres,cht2,?,"hongo con ventanas, refugio, hp 5000"
+scenes/structures/buildings/charnel_cht2.tscn,scenes/structures/buildings/charnel_hut_2.tscn,cht2,?,"hongo con ventanas, refugio, hp 5000"
+data/buildings/charnel_maus.tres,data/buildings/charnel_mausoleum.tres,maus,?,"campana negra con cruz, refugio, hp 5000"
+scenes/structures/buildings/charnel_maus.tscn,scenes/structures/buildings/charnel_mausoleum.tscn,maus,?,"campana negra con cruz, refugio, hp 5000"
+data/buildings/charnel_mas2.tres,data/buildings/charnel_mausoleum_2.tres,mas2,?,"campana con cupula y cruz, refugio, hp 5000"
+scenes/structures/buildings/charnel_mas2.tscn,scenes/structures/buildings/charnel_mausoleum_2.tscn,mas2,?,"campana con cupula y cruz, refugio, hp 5000"
+data/buildings/charnel_cat1.tres,data/buildings/charnel_plant_4.tres,cat1,?,"vaina sobre tallo, hp 1000, ruina; misma familia cat que charnel_plant_1..3 (cat3/5/7)"
+scenes/structures/buildings/charnel_cat1.tscn,scenes/structures/buildings/charnel_plant_4.tscn,cat1,?,"vaina sobre tallo, hp 1000, ruina; misma familia cat que charnel_plant_1..3 (cat3/5/7)"
+scenes/structures/buildings/charnel_cat1_ruin.tscn,scenes/structures/buildings/charnel_plant_4_ruin.tscn,cat1,?,"vaina sobre tallo, hp 1000, ruina; misma familia cat que charnel_plant_1..3 (cat3/5/7)"
+data/buildings/charnel_cat2.tres,data/buildings/charnel_plant_5.tres,cat2,?,"arbol hongo, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat2.tscn,scenes/structures/buildings/charnel_plant_5.tscn,cat2,?,"arbol hongo, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat2_ruin.tscn,scenes/structures/buildings/charnel_plant_5_ruin.tscn,cat2,?,"arbol hongo, hp 1000, ruina; familia cat"
+data/buildings/charnel_cat4.tres,data/buildings/charnel_plant_6.tres,cat4,?,"flor en jarron, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat4.tscn,scenes/structures/buildings/charnel_plant_6.tscn,cat4,?,"flor en jarron, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat4_ruin.tscn,scenes/structures/buildings/charnel_plant_6_ruin.tscn,cat4,?,"flor en jarron, hp 1000, ruina; familia cat"
+data/buildings/charnel_cat6.tres,data/buildings/charnel_plant_7.tres,cat6,?,"arbol paraguas, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat6.tscn,scenes/structures/buildings/charnel_plant_7.tscn,cat6,?,"arbol paraguas, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat6_ruin.tscn,scenes/structures/buildings/charnel_plant_7_ruin.tscn,cat6,?,"arbol paraguas, hp 1000, ruina; familia cat"
+data/buildings/charnel_cat8.tres,data/buildings/charnel_plant_8.tres,cat8,?,"arbol paraguas ancho, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat8.tscn,scenes/structures/buildings/charnel_plant_8.tscn,cat8,?,"arbol paraguas ancho, hp 1000, ruina; familia cat"
+scenes/structures/buildings/charnel_cat8_ruin.tscn,scenes/structures/buildings/charnel_plant_8_ruin.tscn,cat8,?,"arbol paraguas ancho, hp 1000, ruina; familia cat"
+data/buildings/charnel_car2.tres,data/buildings/charnel_spire_2.tres,car2,?,tallo curvo; car1 ya es charnel_spire
+scenes/structures/buildings/charnel_car2.tscn,scenes/structures/buildings/charnel_spire_2.tscn,car2,?,tallo curvo; car1 ya es charnel_spire
+data/buildings/charnel_cas2.tres,data/buildings/charnel_tendril_2.tres,cas2,?,pua fina; cash ya es charnel_tendril
+scenes/structures/buildings/charnel_cas2.tscn,scenes/structures/buildings/charnel_tendril_2.tscn,cas2,?,pua fina; cash ya es charnel_tendril
+data/buildings/ether_etfn.tres,data/buildings/ether_fountain.tres,etfn,?,"un plano azul (tarjeta), tag *fn como las fuentes"
+scenes/structures/buildings/ether_etfn.tscn,scenes/structures/buildings/ether_fountain.tscn,etfn,?,"un plano azul (tarjeta), tag *fn como las fuentes"
+data/buildings/ether_sta1.tres,data/buildings/ether_statue_1.tres,sta1,?,"estatua: base + cabeza (st1a/st1b), hp 1000, ruina"
+scenes/structures/buildings/ether_sta1.tscn,scenes/structures/buildings/ether_statue_1.tscn,sta1,?,"estatua: base + cabeza (st1a/st1b), hp 1000, ruina"
+scenes/structures/buildings/ether_sta1_ruin.tscn,scenes/structures/buildings/ether_statue_1_ruin.tscn,sta1,?,"estatua: base + cabeza (st1a/st1b), hp 1000, ruina"
+data/buildings/ether_sta2.tres,data/buildings/ether_statue_2.tres,sta2,?,"estatua: base + cabeza, hp 1000, ruina"
+scenes/structures/buildings/ether_sta2.tscn,scenes/structures/buildings/ether_statue_2.tscn,sta2,?,"estatua: base + cabeza, hp 1000, ruina"
+scenes/structures/buildings/ether_sta2_ruin.tscn,scenes/structures/buildings/ether_statue_2_ruin.tscn,sta2,?,"estatua: base + cabeza, hp 1000, ruina"
+data/buildings/ether_sta3.tres,data/buildings/ether_statue_3.tres,sta3,?,"estatua: base + cabeza, hp 1000, ruina"
+scenes/structures/buildings/ether_sta3.tscn,scenes/structures/buildings/ether_statue_3.tscn,sta3,?,"estatua: base + cabeza, hp 1000, ruina"
+scenes/structures/buildings/ether_sta3_ruin.tscn,scenes/structures/buildings/ether_statue_3_ruin.tscn,sta3,?,"estatua: base + cabeza, hp 1000, ruina"
+data/buildings/ether_sta4.tres,data/buildings/ether_statue_4.tres,sta4,?,"estatua con rostro, hp 1000, ruina"
+scenes/structures/buildings/ether_sta4.tscn,scenes/structures/buildings/ether_statue_4.tscn,sta4,?,"estatua con rostro, hp 1000, ruina"
+scenes/structures/buildings/ether_sta4_ruin.tscn,scenes/structures/buildings/ether_statue_4_ruin.tscn,sta4,?,"estatua con rostro, hp 1000, ruina"
+data/buildings/ether_sta5.tres,data/buildings/ether_statue_5.tres,sta5,?,"estatua sentada: base + cabeza, hp 1000, ruina"
+scenes/structures/buildings/ether_sta5.tscn,scenes/structures/buildings/ether_statue_5.tscn,sta5,?,"estatua sentada: base + cabeza, hp 1000, ruina"
+scenes/structures/buildings/ether_sta5_ruin.tscn,scenes/structures/buildings/ether_statue_5_ruin.tscn,sta5,?,"estatua sentada: base + cabeza, hp 1000, ruina"
+data/buildings/james_jaua.tres,data/buildings/james_altar_2.tres,jaua,?,base + 4 pilares + tapa de hueso: segundo altar
+scenes/structures/buildings/james_jaua.tscn,scenes/structures/buildings/james_altar_2.tscn,jaua,?,base + 4 pilares + tapa de hueso: segundo altar
+data/buildings/james_bon3.tres,data/buildings/james_bone_6.tres,bon3,?,hueso; bon1/2/4/5/6 ya son james_bone_1..5
+scenes/structures/buildings/james_bon3.tscn,scenes/structures/buildings/james_bone_6.tscn,bon3,?,hueso; bon1/2/4/5/6 ya son james_bone_1..5
+data/buildings/persephone_pua_.tres,data/buildings/persephone_altar_2.tres,pua_,?,anillo con lianas y 4 pilares: segundo altar
+scenes/structures/buildings/persephone_pua_.tscn,scenes/structures/buildings/persephone_altar_2.tscn,pua_,?,anillo con lianas y 4 pilares: segundo altar
+data/buildings/persephone_pch2.tres,data/buildings/persephone_hut_2.tres,pch2,?,"torre con cabeza, refugio, hp 5000"
+scenes/structures/buildings/persephone_pch2.tscn,scenes/structures/buildings/persephone_hut_2.tscn,pch2,?,"torre con cabeza, refugio, hp 5000"
+scenes/structures/buildings/persephone_pch2_ruin.tscn,scenes/structures/buildings/persephone_hut_2_ruin.tscn,pch2,?,"torre con cabeza, refugio, hp 5000"
+data/buildings/persephone_pch3.tres,data/buildings/persephone_hut_3.tres,pch3,?,"casa redonda con techo de paja, refugio, hp 5000"
+scenes/structures/buildings/persephone_pch3.tscn,scenes/structures/buildings/persephone_hut_3.tscn,pch3,?,"casa redonda con techo de paja, refugio, hp 5000"
+scenes/structures/buildings/persephone_pch3_ruin.tscn,scenes/structures/buildings/persephone_hut_3_ruin.tscn,pch3,?,"casa redonda con techo de paja, refugio, hp 5000"
+data/buildings/pyro_pyua.tres,data/buildings/pyro_altar_2.tres,pyua,?,anillo sobre 4 pilares: segundo altar
+scenes/structures/buildings/pyro_pyua.tscn,scenes/structures/buildings/pyro_altar_2.tscn,pyua,?,anillo sobre 4 pilares: segundo altar
+data/buildings/pyro_parc.tres,data/buildings/pyro_arch.tres,parc,?,arco entero (p-arc)
+scenes/structures/buildings/pyro_parc.tscn,scenes/structures/buildings/pyro_arch.tscn,parc,?,arco entero (p-arc)
+data/buildings/stratos_stua.tres,data/buildings/stratos_altar_2.tres,stua,?,anillo de nube sobre 4 pilares: segundo altar
+scenes/structures/buildings/stratos_stua.tscn,scenes/structures/buildings/stratos_altar_2.tscn,stua,?,anillo de nube sobre 4 pilares: segundo altar
+data/buildings/stratos_sarc.tres,data/buildings/stratos_arch.tres,sarc,?,arco entero trenzado (s-arc)
+scenes/structures/buildings/stratos_sarc.tscn,scenes/structures/buildings/stratos_arch.tscn,sarc,?,arco entero trenzado (s-arc)
+data/buildings/stratos_sht1.tres,data/buildings/stratos_hut.tres,sht1,?,"huevo con ventanas, refugio, hp 5000"
+scenes/structures/buildings/stratos_sht1.tscn,scenes/structures/buildings/stratos_hut.tscn,sht1,?,"huevo con ventanas, refugio, hp 5000"
+data/buildings/stratos_slp2.tres,data/buildings/stratos_spire_2.tres,slp2,?,obelisco; slp1 ya es stratos_spire
+scenes/structures/buildings/stratos_slp2.tscn,scenes/structures/buildings/stratos_spire_2.tscn,slp2,?,obelisco; slp1 ya es stratos_spire
+data/buildings/charnel_ctc_.tres,data/buildings/charnel_citadel.tres,ctc_,??,"torre central con 4 torrecitas, refugio, hp 50000, ruina"
+scenes/structures/buildings/charnel_ctc_.tscn,scenes/structures/buildings/charnel_citadel.tscn,ctc_,??,"torre central con 4 torrecitas, refugio, hp 50000, ruina"
+scenes/structures/buildings/charnel_ctc__ruin.tscn,scenes/structures/buildings/charnel_citadel_ruin.tscn,ctc_,??,"torre central con 4 torrecitas, refugio, hp 50000, ruina"
+data/buildings/charnel_cpw1.tres,data/buildings/charnel_dome.tres,cpw1,??,"cupula sobre campana (malla cpw1), hp 20000, ruina"
+scenes/structures/buildings/charnel_cpw1.tscn,scenes/structures/buildings/charnel_dome.tscn,cpw1,??,"cupula sobre campana (malla cpw1), hp 20000, ruina"
+scenes/structures/buildings/charnel_cpw1_ruin.tscn,scenes/structures/buildings/charnel_dome_ruin.tscn,cpw1,??,"cupula sobre campana (malla cpw1), hp 20000, ruina"
+data/buildings/charnel_cagw.tres,data/buildings/charnel_gateway.tres,cagw,??,arco entero (gw)
+scenes/structures/buildings/charnel_cagw.tscn,scenes/structures/buildings/charnel_gateway.tscn,cagw,??,arco entero (gw)
+data/buildings/charnel_chs1.tres,data/buildings/charnel_horn_1.tres,chs1,??,cuerno grueso
+scenes/structures/buildings/charnel_chs1.tscn,scenes/structures/buildings/charnel_horn_1.tscn,chs1,??,cuerno grueso
+data/buildings/charnel_chs2.tres,data/buildings/charnel_horn_2.tres,chs2,??,cuerno fino
+scenes/structures/buildings/charnel_chs2.tscn,scenes/structures/buildings/charnel_horn_2.tscn,chs2,??,cuerno fino
+data/buildings/charnel_e2u_.tres,data/buildings/charnel_lair.tres,e2u_,??,"capucha / cueva, hp 20000, ruina"
+scenes/structures/buildings/charnel_e2u_.tscn,scenes/structures/buildings/charnel_lair.tscn,e2u_,??,"capucha / cueva, hp 20000, ruina"
+scenes/structures/buildings/charnel_e2u__ruin.tscn,scenes/structures/buildings/charnel_lair_ruin.tscn,e2u_,??,"capucha / cueva, hp 20000, ruina"
+data/buildings/charnel_cabe.tres,data/buildings/charnel_leaf_wheel.tres,cabe,??,eje con 4 hojas que sostienen 4 paneles (BASE + 4 plt + 4 lef)
+scenes/structures/buildings/charnel_cabe.tscn,scenes/structures/buildings/charnel_leaf_wheel.tscn,cabe,??,eje con 4 hojas que sostienen 4 paneles (BASE + 4 plt + 4 lef)
+data/buildings/charnel_mar1.tres,data/buildings/charnel_monument.tres,mar1,??,"estatua sobre pedestal, hp 20000, ruina; mar1..5 = uno por dios"
+scenes/structures/buildings/charnel_mar1.tscn,scenes/structures/buildings/charnel_monument.tscn,mar1,??,"estatua sobre pedestal, hp 20000, ruina; mar1..5 = uno por dios"
+scenes/structures/buildings/charnel_mar1_ruin.tscn,scenes/structures/buildings/charnel_monument_ruin.tscn,mar1,??,"estatua sobre pedestal, hp 20000, ruina; mar1..5 = uno por dios"
+data/buildings/charnel_mard.tres,data/buildings/charnel_stronghold.tres,mard,??,"cuerpo sobre 4 patas (MAIN + 4 STR), hp 50000, ruina"
+scenes/structures/buildings/charnel_mard.tscn,scenes/structures/buildings/charnel_stronghold.tscn,mard,??,"cuerpo sobre 4 patas (MAIN + 4 STR), hp 50000, ruina"
+scenes/structures/buildings/charnel_mard_ruin.tscn,scenes/structures/buildings/charnel_stronghold_ruin.tscn,mard,??,"cuerpo sobre 4 patas (MAIN + 4 STR), hp 50000, ruina"
+data/buildings/charnel_cmf_.tres,data/buildings/charnel_turret.tres,cmf_,??,"esfera con ojos sobre pivote: base + GUN + PIVT, hp 20000, ruina"
+scenes/structures/buildings/charnel_cmf_.tscn,scenes/structures/buildings/charnel_turret.tscn,cmf_,??,"esfera con ojos sobre pivote: base + GUN + PIVT, hp 20000, ruina"
+scenes/structures/buildings/charnel_cmf__ruin.tscn,scenes/structures/buildings/charnel_turret_ruin.tscn,cmf_,??,"esfera con ojos sobre pivote: base + GUN + PIVT, hp 20000, ruina"
+data/buildings/ether_ear1.tres,data/buildings/ether_arch_1.tres,ear1,??,cuerno curvo blanco (medio arco)
+scenes/structures/buildings/ether_ear1.tscn,scenes/structures/buildings/ether_arch_1.tscn,ear1,??,cuerno curvo blanco (medio arco)
+data/buildings/ether_ear2.tres,data/buildings/ether_arch_2.tres,ear2,??,"cuerno curvo blanco, mas alto"
+scenes/structures/buildings/ether_ear2.tscn,scenes/structures/buildings/ether_arch_2.tscn,ear2,??,"cuerno curvo blanco, mas alto"
+data/buildings/ether_esb2.tres,data/buildings/ether_dome.tres,esb2,??,cupula oscura con vetas
+scenes/structures/buildings/ether_esb2.tscn,scenes/structures/buildings/ether_dome.tscn,esb2,??,cupula oscura con vetas
+data/buildings/ether_eis1.tres,data/buildings/ether_islet_1.tres,eis1,??,cilindro con liquido sobre roca
+scenes/structures/buildings/ether_eis1.tscn,scenes/structures/buildings/ether_islet_1.tscn,eis1,??,cilindro con liquido sobre roca
+data/buildings/ether_eis2.tres,data/buildings/ether_islet_2.tres,eis2,??,bola roja rugosa
+scenes/structures/buildings/ether_eis2.tscn,scenes/structures/buildings/ether_islet_2.tscn,eis2,??,bola roja rugosa
+data/buildings/ether_eis3.tres,data/buildings/ether_islet_3.tres,eis3,??,roca marron
+scenes/structures/buildings/ether_eis3.tscn,scenes/structures/buildings/ether_islet_3.tscn,eis3,??,roca marron
+data/buildings/ether_eis4.tres,data/buildings/ether_islet_4.tres,eis4,??,cristal celeste
+scenes/structures/buildings/ether_eis4.tscn,scenes/structures/buildings/ether_islet_4.tscn,eis4,??,cristal celeste
+data/buildings/ether_esb_.tres,data/buildings/ether_spike_bush.tres,esb_,??,puas blancas como persephone_pcsb
+scenes/structures/buildings/ether_esb_.tscn,scenes/structures/buildings/ether_spike_bush.tscn,esb_,??,puas blancas como persephone_pcsb
+data/buildings/ether_esb1.tres,data/buildings/ether_vortex.tres,esb1,??,disco plano con espiral verde
+scenes/structures/buildings/ether_esb1.tscn,scenes/structures/buildings/ether_vortex.tscn,esb1,??,disco plano con espiral verde
+data/buildings/james_jpw1.tres,data/buildings/james_dome.tres,jpw1,??,"la misma malla cpw1, hp 20000, ruina"
+scenes/structures/buildings/james_jpw1.tscn,scenes/structures/buildings/james_dome.tscn,jpw1,??,"la misma malla cpw1, hp 20000, ruina"
+scenes/structures/buildings/james_jpw1_ruin.tscn,scenes/structures/buildings/james_dome_ruin.tscn,jpw1,??,"la misma malla cpw1, hp 20000, ruina"
+data/buildings/james_mar2.tres,data/buildings/james_monument.tres,mar2,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/james_mar2.tscn,scenes/structures/buildings/james_monument.tscn,mar2,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/james_mar2_ruin.tscn,scenes/structures/buildings/james_monument_ruin.tscn,mar2,??,"estatua sobre pedestal, hp 20000, ruina"
+data/buildings/james_jtar.tres,data/buildings/james_tusk_arch.tres,jtar,??,arco de dos colmillos
+scenes/structures/buildings/james_jtar.tscn,scenes/structures/buildings/james_tusk_arch.tscn,jtar,??,arco de dos colmillos
+data/buildings/persephone_pcbs.tres,data/buildings/persephone_beanstalk.tres,pcbs,??,tallo largo con hojitas
+scenes/structures/buildings/persephone_pcbs.tscn,scenes/structures/buildings/persephone_beanstalk.tscn,pcbs,??,tallo largo con hojitas
+data/buildings/persephone_prt_.tres,data/buildings/persephone_castle.tres,prt_,??,"castillo con torrecitas (prt1 + 4 SAT), refugio"
+scenes/structures/buildings/persephone_prt_.tscn,scenes/structures/buildings/persephone_castle.tscn,prt_,??,"castillo con torrecitas (prt1 + 4 SAT), refugio"
+data/buildings/persephone_pcru.tres,data/buildings/persephone_chapel.tres,pcru,??,cupula baja con cruz
+scenes/structures/buildings/persephone_pcru.tscn,scenes/structures/buildings/persephone_chapel.tscn,pcru,??,cupula baja con cruz
+data/buildings/persephone_pcpw.tres,data/buildings/persephone_dome.tres,pcpw,??,"la misma malla cpw1, hp 20000, ruina"
+scenes/structures/buildings/persephone_pcpw.tscn,scenes/structures/buildings/persephone_dome.tscn,pcpw,??,"la misma malla cpw1, hp 20000, ruina"
+scenes/structures/buildings/persephone_pcpw_ruin.tscn,scenes/structures/buildings/persephone_dome_ruin.tscn,pcpw,??,"la misma malla cpw1, hp 20000, ruina"
+data/buildings/persephone_pcta.tres,data/buildings/persephone_gateway.tres,pcta,??,arco entero con musgo
+scenes/structures/buildings/persephone_pcta.tscn,scenes/structures/buildings/persephone_gateway.tscn,pcta,??,arco entero con musgo
+data/buildings/persephone_pcbe.tres,data/buildings/persephone_leaf_wheel.tres,pcbe,??,igual que charnel_cabe (pcb1/pcb2/pcb3)
+scenes/structures/buildings/persephone_pcbe.tscn,scenes/structures/buildings/persephone_leaf_wheel.tscn,pcbe,??,igual que charnel_cabe (pcb1/pcb2/pcb3)
+data/buildings/persephone_mar3.tres,data/buildings/persephone_monument.tres,mar3,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/persephone_mar3.tscn,scenes/structures/buildings/persephone_monument.tscn,mar3,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/persephone_mar3_ruin.tscn,scenes/structures/buildings/persephone_monument_ruin.tscn,mar3,??,"estatua sobre pedestal, hp 20000, ruina"
+data/buildings/persephone_pcsb.tres,data/buildings/persephone_spike_bush.tres,pcsb,??,puas blancas colgando de un disco
+scenes/structures/buildings/persephone_pcsb.tscn,scenes/structures/buildings/persephone_spike_bush.tscn,pcsb,??,puas blancas colgando de un disco
+data/buildings/persephone_pcwm.tres,data/buildings/persephone_windmill.tres,pcwm,??,"molino de viento, refugio, hp 10000, ruina"
+scenes/structures/buildings/persephone_pcwm.tscn,scenes/structures/buildings/persephone_windmill.tscn,pcwm,??,"molino de viento, refugio, hp 10000, ruina"
+scenes/structures/buildings/persephone_pcwm_ruin.tscn,scenes/structures/buildings/persephone_windmill_ruin.tscn,pcwm,??,"molino de viento, refugio, hp 10000, ruina"
+data/buildings/pyro_mar4.tres,data/buildings/pyro_monument.tres,mar4,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/pyro_mar4.tscn,scenes/structures/buildings/pyro_monument.tscn,mar4,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/pyro_mar4_ruin.tscn,scenes/structures/buildings/pyro_monument_ruin.tscn,mar4,??,"estatua sobre pedestal, hp 20000, ruina"
+data/buildings/stratos_sfir.tres,data/buildings/stratos_campfire.tres,sfir,??,fogata (malla jcmp de james_camp); fir = fire
+scenes/structures/buildings/stratos_sfir.tscn,scenes/structures/buildings/stratos_campfire.tscn,sfir,??,fogata (malla jcmp de james_camp); fir = fire
+data/buildings/stratos_stc1.tres,data/buildings/stratos_crystal_1.tres,stc1,??,cristales
+scenes/structures/buildings/stratos_stc1.tscn,scenes/structures/buildings/stratos_crystal_1.tscn,stc1,??,cristales
+data/buildings/stratos_stc2.tres,data/buildings/stratos_crystal_2.tres,stc2,??,cristales tumbados
+scenes/structures/buildings/stratos_stc2.tscn,scenes/structures/buildings/stratos_crystal_2.tscn,stc2,??,cristales tumbados
+data/buildings/stratos_stc3.tres,data/buildings/stratos_crystal_3.tres,stc3,??,cristales tumbados
+scenes/structures/buildings/stratos_stc3.tscn,scenes/structures/buildings/stratos_crystal_3.tscn,stc3,??,cristales tumbados
+data/buildings/stratos_sfor.tres,data/buildings/stratos_crystal_spire.tres,sfor,??,pie trenzado con cristales arriba
+scenes/structures/buildings/stratos_sfor.tscn,scenes/structures/buildings/stratos_crystal_spire.tscn,sfor,??,pie trenzado con cristales arriba
+data/buildings/stratos_sfc1.tres,data/buildings/stratos_fern_1.tres,sfc1,??,helecho
+scenes/structures/buildings/stratos_sfc1.tscn,scenes/structures/buildings/stratos_fern_1.tscn,sfc1,??,helecho
+data/buildings/stratos_sfc2.tres,data/buildings/stratos_fern_2.tres,sfc2,??,helecho
+scenes/structures/buildings/stratos_sfc2.tscn,scenes/structures/buildings/stratos_fern_2.tscn,sfc2,??,helecho
+data/buildings/stratos_spfl.tres,data/buildings/stratos_flower.tres,spfl,??,flores violetas
+scenes/structures/buildings/stratos_spfl.tscn,scenes/structures/buildings/stratos_flower.tscn,spfl,??,flores violetas
+data/buildings/stratos_mar5.tres,data/buildings/stratos_monument.tres,mar5,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/stratos_mar5.tscn,scenes/structures/buildings/stratos_monument.tscn,mar5,??,"estatua sobre pedestal, hp 20000, ruina"
+scenes/structures/buildings/stratos_mar5_ruin.tscn,scenes/structures/buildings/stratos_monument_ruin.tscn,mar5,??,"estatua sobre pedestal, hp 20000, ruina"
+data/buildings/stratos_stst.tres,data/buildings/stratos_tent.tres,stst,??,"techo con puas sobre 4 patas, refugio, hp 5000"
+scenes/structures/buildings/stratos_stst.tscn,scenes/structures/buildings/stratos_tent.tscn,stst,??,"techo con puas sobre 4 patas, refugio, hp 5000"
+data/buildings/stratos_stt1.tres,data/buildings/stratos_tree_1.tres,stt1,??,arbol de hojas blancas
+scenes/structures/buildings/stratos_stt1.tscn,scenes/structures/buildings/stratos_tree_1.tscn,stt1,??,arbol de hojas blancas
+data/buildings/stratos_stt2.tres,data/buildings/stratos_tree_2.tres,stt2,??,"arbol de hojas blancas, alto"
+scenes/structures/buildings/stratos_stt2.tscn,scenes/structures/buildings/stratos_tree_2.tscn,stt2,??,"arbol de hojas blancas, alto"
+data/buildings/stratos_stt3.tres,data/buildings/stratos_tree_3.tres,stt3,??,arbol de dos hojas largas
+scenes/structures/buildings/stratos_stt3.tscn,scenes/structures/buildings/stratos_tree_3.tscn,stt3,??,arbol de dos hojas largas

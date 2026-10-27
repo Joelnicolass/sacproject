@@ -20,7 +20,8 @@ extends Node
 @export var match_s := 60.0
 ## A frame longer than this after world_loaded is a hitch.
 @export var spike_ms := 50.0
-@export var max_over_median := 2.0
+## 2.5 = at most one missed vsync at 60 Hz (~42 ms): what is left is the CPU of a summon (unit.tscn), not shaders (069 fix).
+@export var max_over_median := 2.5
 ## Allowed VRAM growth after world_loaded (0.15 = 15 %).
 @export var vram_growth := 0.15
 ## Frames skipped right after world_loaded (the frame that reported it, and the one the gate unpauses on).

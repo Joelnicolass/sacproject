@@ -43,7 +43,7 @@ Raíces: el mapa instanciado, `ActiveMatch.warm_roots()` (dioses y magos), escen
 
 ## 4. Medición (`warmup_probe.gd`, solo contra IA, `test_flat4`, caché de pipelines borrada)
 1. Δ DRAW + SPECIALIZATION tras `world_loaded` = 0 (base > 0).
-2. Frames > 50 ms = 0; frame máximo ≤ 2× mediana.
+2. Frames > 50 ms = 0; frame máximo ≤ 2,5× mediana (un vsync perdido a 60 Hz; 2026-10-27: el resto es CPU de invocar una unidad, no shaders).
 3. Carga ≤ 8 s en frío, ≤ 3 s con caché.
 4. VRAM a 60 s ≤ base + 15 %.
 5. `run_068_gate.sh` verde; «slot N cargó» después del precalentado.

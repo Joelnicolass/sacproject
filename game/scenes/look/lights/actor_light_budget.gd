@@ -19,7 +19,11 @@ const GROUP := &"actor_light_budget"
 ## Closer than this to the camera counts as this distance in the score (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_distance_m: float = 4.0
 
+## The atmosphere whose `night` dims the lights (0 = day, 1 = full night); empty = they keep their energy.
+@export var atmosphere: Atmosphere
+
 var _max_lights := -1
+var _night := 0.0
 var _enabled := true
 var _clock := 0.0
 var _on := 0
@@ -38,6 +42,9 @@ func _ready() -> void:
 	if _max_lights < 0:
 		_max_lights = fallback_max_lights
 	visibility_changed.connect(rank)
+	if atmosphere != null:
+		_night = atmosphere.current().night
+		atmosphere.changed.connect(_on_atmosphere)
 	set_process(true)
 
 
@@ -55,6 +62,16 @@ func _process(delta: float) -> void:
 	_clock += delta
 	if _clock >= refresh_s:
 		rank()
+
+
+## The atmosphere's night now (0 when there is no atmosphere).
+func night() -> float:
+	return _night
+
+
+func _on_atmosphere(sample: AtmosphereSample) -> void:
+	_night = sample.night
+	rank()
 
 
 ## Lights on now.
@@ -76,6 +93,7 @@ func rank() -> void:
 	var entries: Array[_Entry] = []
 	for node in get_tree().get_nodes_in_group(ActorLight.GROUP):
 		var light := node as ActorLight
+		light.set_night(_night)
 		if light.always_on:
 			light.set_budget_on(true)
 			continue

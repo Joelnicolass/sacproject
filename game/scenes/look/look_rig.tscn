@@ -57,7 +57,8 @@ environment = ExtResource("7_env")
 [node name="Flora" parent="Layers" node_paths=PackedStringArray("rig") instance=ExtResource("10_flora")]
 rig = NodePath("../..")
 
-[node name="ActorLights" type="Node3D" parent="Layers"]
+[node name="ActorLights" type="Node3D" parent="Layers" node_paths=PackedStringArray("atmosphere")]
+atmosphere = NodePath("../Atmosphere")
 script = ExtResource("11_budget")
 
 [node name="TerrainDeform" type="Node3D" parent="Layers" node_paths=PackedStringArray("rig")]

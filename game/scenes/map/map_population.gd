@@ -41,14 +41,10 @@ func populate() -> void:
 		print("poblados: faltan buildings o npcs; el campo queda sin habitantes ni casas")
 		return
 	_count_buildings()
-	if spawn_creatures and _simulates():
+	if spawn_creatures and is_multiplayer_authority():
 		_place_creatures()
 	print(_line())
 	populated.emit(report)
-
-
-func _simulates() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
 
 
 func _count_buildings() -> void:

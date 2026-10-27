@@ -33,8 +33,6 @@ const FAR_START_FACTOR := 2.2
 ## would come back. The values are the `blend` where each transition tier starts; after the last one
 ## there is the far tier (the constant far density, 3-vertex blades).
 const TIER_BLEND := [0.0, 0.07, 0.18, 0.32, 0.48, 0.64, 0.8, 0.92]
-## Typical roughness of the PBR ground's textures (the fade of the blades ends in it; see _push_ground_light).
-const PBR_ROUGHNESS := 0.85
 
 @export_group("Follow")
 ## Editor only: the field follows the 3D viewport camera (turn off to freeze it).
@@ -172,9 +170,7 @@ func _refresh() -> void:
 	if _preset == null or not _preset.grass_enabled:
 		return
 	var terrain := _ground_mesh()
-	if terrain == null or Terrain.of(self) == null:
-		return
-	if _rig.tile_map == null or terrain.get("material_override") == null:
+	if terrain == null or Terrain.of(self) == null or Terrain.of(self).ground_roles == null or terrain.material_override == null:
 		return
 	if not _load_height(terrain):
 		return
@@ -194,16 +190,16 @@ func _refresh() -> void:
 
 ## Bakes, once, what the grass shader needs per blade and would otherwise compute per vertex, the
 ## same for every biome: the zone data (where it grows, how tall, hillsides: grass_bake.gdshader, from
-## the map's TileLayerMap and the height map) and the color of the ground, rendered from above from
+## the map's ground_roles.png and the height map) and the color of the ground, rendered from above from
 ## the terrain's own material with no light (so the roots have exactly the color the ground shows,
 ## whatever ground the biome has). Reads them back into plain textures and frees the viewports.
 ## Never saved.
-func _bake(terrain: Node) -> void:
+func _bake(terrain: MeshInstance3D) -> void:
 	_generation += 1
 	var generation := _generation
 	_bake_signature = _signature()
 	_paint_signature = _paint_signature_now()
-	var shown := terrain.get("material_override") as ShaderMaterial
+	var shown := terrain.material_override as ShaderMaterial
 	if shown == null:
 		return
 	# A copy of the ground that can be painted or not without the player seeing it.
@@ -240,19 +236,6 @@ func _bake(terrain: Node) -> void:
 	set_process(true)
 
 
-## The fade ends in the ground's own shading: its roughness and specular. The classic ground
-## (sacrifice_ground.gdshader) sets ROUGHNESS 1 and leaves SPECULAR at Godot's 0.5; the PBR ground
-## (ground_pbr.gdshader) sets SPECULAR 0.2 and its roughness comes from its textures (PBR_ROUGHNESS
-## is their typical value).
-func _push_ground_light(terrain: Node) -> void:
-	if _material == null or terrain == null:
-		return
-	var shown := terrain.get("material_override") as ShaderMaterial
-	var classic: bool = shown != null and terrain is TerrainMesh and (terrain as TerrainMesh).classic_material() == shown
-	_material.set_shader_parameter("fade_roughness", 1.0 if classic else PBR_ROUGHNESS)
-	_material.set_shader_parameter("fade_specular", 0.5 if classic else 0.2)
-
-
 ## The zone pass: a canvas shader over the map, 1024 px.
 func _zone_view(mode: int) -> SubViewport:
 	var view := SubViewport.new()
@@ -265,20 +248,19 @@ func _zone_view(mode: int) -> SubViewport:
 	var mat := ShaderMaterial.new()
 	mat.shader = BAKE_SHADER
 	mat.set_shader_parameter("mode", mode)
-	var ids := Terrain.of(self).tile_ids()
-	mat.set_shader_parameter("splat", GroundMaterial.splat_texture(_rig.tile_map, ids))
-	mat.set_shader_parameter("noise_tex", GroundMaterial.shared_noise())
+	mat.set_shader_parameter("ground_roles", Terrain.of(self).ground_roles)
+	mat.set_shader_parameter("ground_noise", GroundMaterial.shared_noise())
 	mat.set_shader_parameter("height_tex", _height_texture)
-	mat.set_shader_parameter("zone_map_size", _map_m)
+	mat.set_shader_parameter("roles_map_size", _map_m)
 	mat.set_shader_parameter("height_texel_m", _map_m / float(HEIGHT_TEXELS))
-	mat.set_shader_parameter("density_by_layer", _type.density_by_layer)
-	mat.set_shader_parameter("height_by_layer", _type.height_by_layer)
+	mat.set_shader_parameter("density_by_role", _type.density_by_role)
+	mat.set_shader_parameter("height_by_role", _type.height_by_role)
 	mat.set_shader_parameter("slope_range", Vector2(_type.slope_start_deg, _type.slope_full_deg))
 	mat.set_shader_parameter("slope_height_floor", _type.slope_height_floor)
 	mat.set_shader_parameter("hill_slope", Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg))
 	mat.set_shader_parameter("hill_density", _type.hill_density)
 	mat.set_shader_parameter("paint_amount", _type.paint_amount)
-	mat.set_shader_parameter("paint_by_layer", _type.paint_by_layer)
+	mat.set_shader_parameter("paint_by_role", _type.paint_by_role)
 	mat.set_shader_parameter("paint_slope", Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg))
 	rect.material = mat
 	view.add_child(rect)
@@ -289,7 +271,7 @@ func _zone_view(mode: int) -> SubViewport:
 ## The ground pass: the terrain mesh with `material` (the ground the biome shows) seen from straight
 ## above with an orthographic camera, unlit (albedo only), GROUND_TEXELS px over the map. Image row 0
 ## is z = 0 and column 0 is x = 0, like every map texture.
-func _ground_view(terrain: Node, material: ShaderMaterial) -> SubViewport:
+func _ground_view(terrain: MeshInstance3D, material: ShaderMaterial) -> SubViewport:
 	var view := SubViewport.new()
 	view.size = Vector2i(GROUND_TEXELS, GROUND_TEXELS)
 	view.own_world_3d = true
@@ -298,7 +280,7 @@ func _ground_view(terrain: Node, material: ShaderMaterial) -> SubViewport:
 	view.msaa_3d = Viewport.MSAA_DISABLED
 	view.render_target_update_mode = SubViewport.UPDATE_ONCE
 	var ground := MeshInstance3D.new()
-	ground.mesh = (terrain as MeshInstance3D).mesh
+	ground.mesh = terrain.mesh
 	ground.material_override = material
 	view.add_child(ground)
 	var camera := Camera3D.new()
@@ -342,28 +324,27 @@ func _ground_luminance(ground_full: Image, zone_full: Image) -> float:
 
 ## What the baked textures depend on: a change rebakes them.
 func _signature() -> String:
-	return "%s|%s|%s|%s|%s|%s|%s|%s" % [_type.density_by_layer, _type.height_by_layer, Vector2(_type.slope_start_deg, _type.slope_full_deg), _type.slope_height_floor, Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg), _type.paint_amount, _type.paint_by_layer, _type.hill_density]
+	return "%s|%s|%s|%s|%s|%s|%s|%s" % [_type.density_by_role, _type.height_by_role, Vector2(_type.slope_start_deg, _type.slope_full_deg), _type.slope_height_floor, Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg), _type.paint_amount, _type.paint_by_role, _type.hill_density]
 
 
 ## What the painted ground color of the roots depends on (a palette edit changes it).
 func _paint_signature_now() -> String:
-	return "%s|%s|%s" % [_type.average_color(), _type.paint_amount, _type.paint_by_layer]
+	return "%s|%s|%s" % [_type.average_color(), _type.paint_amount, _type.paint_by_role]
 
 
 ## The ground takes the average color of the blades in the grass zones (and the bands of wind).
 func _paint_into(mat: ShaderMaterial) -> void:
 	var color := _type.average_color().srgb_to_linear()
 	var wind := deg_to_rad(_type.wind_direction_deg)
-	GroundMaterial.set_grass_paint(mat, color, _type.paint_amount, _type.paint_by_layer, _reference, Vector2(cos(wind), sin(wind)),
+	GroundMaterial.set_grass_paint(mat, color, _type.paint_amount, _type.paint_by_role, _reference, Vector2(cos(wind), sin(wind)),
 		_type.wind_scale_m * 2.0, _type.wind_speed, _type.paint_waves, _type.paint_slope_start_deg, _type.paint_slope_end_deg)
 
 
-## Whatever ground the terrain shows (PBR or classic) takes the paint if its shader has it.
-func _push_paint(terrain: Node) -> void:
-	var mat := _paintable(terrain.get("material_override") if terrain else null)
+## The ground the terrain shows takes the paint if its shader has it (the plain «no look» one has not).
+func _push_paint(terrain: MeshInstance3D) -> void:
+	var mat := _paintable(terrain.material_override if terrain else null)
 	if mat:
 		_paint_into(mat)
-	_push_ground_light(terrain)
 
 
 func _paintable(material: Variant) -> ShaderMaterial:
@@ -376,18 +357,15 @@ func _paintable(material: Variant) -> ShaderMaterial:
 	return null
 
 
-## Back to no paint on every ground the terrain can show (a profile change, the layer hidden,
-## leaving the tree). A ground with amount 0 is the same as before the grass.
+## Back to no paint on the ground the terrain shows (a profile change, the layer hidden, leaving the tree). A ground
+## with amount 0 is the same as before the grass.
 func _clear_paint() -> void:
 	var terrain := _ground_mesh()
 	if terrain == null or not is_instance_valid(terrain):
 		return
-	var shown := _paintable(terrain.get("material_override"))
+	var shown := _paintable(terrain.material_override)
 	if shown:
 		shown.set_shader_parameter("grass_paint_amount", 0.0)
-	var classic := _paintable((terrain as TerrainMesh).classic_material()) if terrain is TerrainMesh else null
-	if classic:
-		classic.set_shader_parameter("grass_paint_amount", 0.0)
 
 
 func _preset_value(property: StringName, fallback: Variant) -> Variant:
@@ -399,8 +377,6 @@ func _preset_value(property: StringName, fallback: Variant) -> Variant:
 func _apply_type() -> void:
 	var m := _material
 	var t := _type
-	m.set_shader_parameter("density_by_layer", t.density_by_layer)
-	m.set_shader_parameter("height_by_layer", t.height_by_layer)
 	m.set_shader_parameter("width_m", t.width_m)
 	m.set_shader_parameter("tip_width", t.tip_width)
 	m.set_shader_parameter("far_width_scale", t.far_width_scale)

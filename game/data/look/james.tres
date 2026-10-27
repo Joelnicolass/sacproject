@@ -3,7 +3,6 @@
 [ext_resource type="Resource" path="res://data/look/glow/james_glow.tres" id="1_ehq6w"]
 [ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/light/james_light.tres" id="2_light"]
-[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="3_gfkoj"]
 [ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
 [ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/james/edge.png" id="22_edge"]
@@ -117,7 +116,6 @@ god = &"james"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_ehq6w")
-ground_classic = ExtResource("3_gfkoj")
 ground = SubResource("GodGround_james")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")

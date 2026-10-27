@@ -32,8 +32,8 @@ extends Resource
 ## Height in open meadow. The game camera must still see the units: keep it under a third of
 ## the smallest one.
 @export_range(0.05, 3.0, 0.01, "suffix:m") var tall_height_m := 0.7
-## Height multiplier per ground layer slot (x..w = layers 0..3 of the GroundSet): 1 = tall.
-@export var height_by_layer := Vector4(1.0, 0.0, 0.5, 0.0)
+## Height multiplier per kind of ground (x..w = open, earth, rock, path: the map's ground_roles.png): 1 = tall.
+@export var height_by_role := Vector4(1.0, 0.5, 0.0, 0.0)
 ## Size of the patches of taller and shorter grass in the open meadow.
 @export_range(5.0, 300.0, 1.0, "suffix:m") var open_scale_m := 70.0
 ## How far from a clearing's edge the grass takes to reach its full height.
@@ -47,10 +47,10 @@ extends Resource
 ## ground covered (see `far_coverage()`); what a preset saves is the radius.
 @export_range(1.0, 120.0, 0.5, "suffix:/m2") var density_near := 32.0
 @export_range(0.5, 60.0, 0.5, "suffix:/m2") var density_far := 12.0
-## Density multiplier per ground layer slot: 0 = nothing grows there. It thins the NEAR field only:
-## far away every zone where grass grows reaches the far density (see `zone_full_far`).
-@export var density_by_layer := Vector4(1.0, 0.0, 0.35, 0.3)
-## Layer density from which a zone gets the whole far density (thinner zones, a part of it).
+## Density multiplier per kind of ground (x..w = open, earth, rock, path): 0 = nothing grows there. It thins the NEAR field
+## only: far away every zone where grass grows reaches the far density (see `zone_full_far`).
+@export var density_by_role := Vector4(1.0, 0.35, 0.0, 0.3)
+## Density from which a zone gets the whole far density (thinner zones, a part of it).
 @export_range(0.01, 1.0, 0.01) var zone_full_far := 0.25
 
 @export_group("Color")
@@ -76,8 +76,8 @@ extends Resource
 @export_range(0.2, 1.0, 0.01) var slope_height_floor := 0.55
 ## Width of the blades on a steep slope, as a fraction of the flat ones (1 = the slope keeps its coverage).
 @export_range(0.2, 1.0, 0.01) var slope_width_scale := 1.0
-## Density on a full hillside, on every layer where grass grows at all (a thin layer, such as soil,
-## gets denser grass on its slopes: hillsides are covered, flat paths stay thin). 0 = the layer's own.
+## Density on a full hillside, on every kind of ground where grass grows at all (a thin one, such as earth,
+## gets denser grass on its slopes: hillsides are covered, flat paths stay thin). 0 = the ground's own.
 @export_range(0.0, 1.0, 0.01) var hill_density := 0.9
 ## Extra lean of the blades on a slope (less rigid).
 @export_range(0.0, 2.0, 0.01) var slope_lean_gain := 0.8
@@ -104,12 +104,12 @@ extends Resource
 @export_range(0.3, 1.5, 0.01) var paint_tone := 1.7
 ## Strength of the pale wind bands on the painted ground (the same waves as the blades).
 @export_range(0.0, 1.0, 0.01) var paint_waves := 0.12
-## Share of the paint per ground layer slot (x..w = layers 0..3). Soil and path partly painted so the
-## valley and its slopes keep one palette instead of a hard green/brown cut.
 ## Slope (degrees) where the paint starts to fade and where it is gone: the hills turn into soil gradually.
 @export_range(0.0, 60.0, 0.5, "suffix:deg") var paint_slope_start_deg := 10.0
 @export_range(1.0, 80.0, 0.5, "suffix:deg") var paint_slope_end_deg := 36.0
-@export var paint_by_layer := Vector4(1.0, 0.0, 0.75, 0.65)
+## Share of the paint per kind of ground (x..w = open, earth, rock, path). Earth and path partly painted so the
+## valley and its slopes keep one palette instead of a hard green/brown cut.
+@export var paint_by_role := Vector4(1.0, 0.75, 0.0, 0.65)
 
 @export_group("Light")
 ## 0 = each blade lit by its own normal, 1 = lit like the ground (soft, round).
@@ -151,8 +151,8 @@ const MIN_FAR_COVERAGE := 2.3
 
 
 ## Ground coverage of the far field: far density x far width x reference height x the blade shape.
-## It does not depend on the preset nor on the layer: far away every zone where grass grows at all
-## (layer density >= `zone_full_far`) gets the whole far density (thinner zones, the share of it).
+## It does not depend on the preset nor on the ground: far away every zone where grass grows at all
+## (density by role >= `zone_full_far`) gets the whole far density (thinner zones, the share of it).
 ## `GrassField` warns if it drops under `MIN_FAR_COVERAGE`.
 func far_coverage() -> float:
 	var height := lerpf(short_height_m, maxf(tall_height_m, short_height_m), FAR_REFERENCE_OPENNESS)

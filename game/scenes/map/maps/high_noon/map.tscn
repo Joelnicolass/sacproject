@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="8_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="9_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="f22_look"]
-[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="f200_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
 [ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
@@ -63,7 +62,6 @@ props = NodePath("Props")
 [node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("terrain") instance=ExtResource("f22_look")]
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
-tile_map = ExtResource("f22_tiles")
 
 [node name="Terrain" parent="." unique_id=1483961628 instance=ExtResource("t_terrain")]
 unique_name_in_owner = true

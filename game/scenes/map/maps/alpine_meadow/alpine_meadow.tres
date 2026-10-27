@@ -5,7 +5,6 @@
 [ext_resource type="Image" path="res://assets/original/maps/alpine_meadow/tiles.png" id="4_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/alpine_meadow/light.png" id="5_light"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/alpine_meadow/nav.res" id="6_nav"]
-[ext_resource type="Resource" path="res://assets/original/maps/alpine_meadow/ground_native.tres" id="7_native"]
 
 [resource]
 script = ExtResource("1_def")
@@ -16,4 +15,3 @@ tiles = ExtResource("4_tiles")
 light = ExtResource("5_light")
 nav = ExtResource("6_nav")
 player_starts = 2
-native_ground = ExtResource("7_native")

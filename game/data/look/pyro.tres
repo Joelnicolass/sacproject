@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/glow/pyro_glow.tres" id="1_pgdjj"]
 [ext_resource type="Resource" path="res://data/look/light/pyro_light.tres" id="2_light"]
-[ext_resource type="Material" path="res://assets/original/themes/pyro/ground_classic.tres" id="3_4ux6g"]
 [ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
 [ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/pyro/edge.png" id="22_edge"]
@@ -115,7 +114,6 @@ god = &"pyro"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_pgdjj")
-ground_classic = ExtResource("3_4ux6g")
 ground = SubResource("GodGround_pyro")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")

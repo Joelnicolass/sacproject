@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/glow/charnel_glow.tres" id="1_s0acu"]
 [ext_resource type="Resource" path="res://data/look/light/charnel_light.tres" id="2_light"]
-[ext_resource type="Material" path="res://assets/original/themes/charnel/ground_classic.tres" id="3_kafxn"]
 [ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
 [ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/charnel/edge.png" id="22_edge"]
@@ -80,7 +79,6 @@ god = &"charnel"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_s0acu")
-ground_classic = ExtResource("3_kafxn")
 ground = SubResource("GodGround_charnel")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")

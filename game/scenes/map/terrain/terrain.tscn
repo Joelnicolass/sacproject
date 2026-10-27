@@ -7,17 +7,22 @@
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_status.gd" id="5_status"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="6_walls"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="7_scars"]
-[ext_resource type="Material" uid="uid://b6pd04js5lq4t" path="res://assets/original/themes/james/ground_classic.tres" id="8_ground"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_live.gd" id="9_live"]
 
+[sub_resource type="StandardMaterial3D" id="Ground_no_look"]
+resource_name = "SinLook"
+cull_mode = 2
+albedo_color = Color(0.45, 0.45, 0.42, 1)
+roughness = 1.0
+
 [node name="Terrain" type="Node3D" node_paths=PackedStringArray("mesh", "live") groups=["nav_source"]]
-editor_description = "El suelo de un mapa. Un mapa instancia esta escena y solo pone sus datos: `heights` (su heights.png, con void.png al lado), `tiles` (tiles.png), `ground_roles` (ground_roles.png) y `light_map` (light.png). La malla, la colisión y el índice salen de las alturas al cargar; no se guardan. Remote → Status muestra rev, version, live_stamps y holes."
+editor_description = "El suelo de un mapa. Un mapa instancia esta escena y solo pone sus datos: `heights` (su heights.png, con void.png al lado), `tiles` (tiles.png), `ground_roles` (ground_roles.png) y `light_map` (light.png). Sin look el suelo se ve gris liso (el material de `Mesh`); el del dios lo pone `Look/Layers/Ground`. La malla, la colisión y el índice salen de las alturas al cargar; no se guardan. Remote → Status muestra rev, version, live_stamps y holes."
 script = ExtResource("1_terrain")
 mesh = NodePath("Mesh")
 live = NodePath("Live")
 
 [node name="Mesh" type="MeshInstance3D" parent="." node_paths=PackedStringArray("terrain", "missing")]
-material_override = ExtResource("8_ground")
+material_override = SubResource("Ground_no_look")
 script = ExtResource("2_mesh")
 terrain = NodePath("..")
 missing = NodePath("../Missing")

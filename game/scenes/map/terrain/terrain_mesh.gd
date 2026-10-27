@@ -5,7 +5,7 @@ extends MeshInstance3D
 ## The map's ground as something to see: a mesh built in memory from the triangles of its `terrain` (again when they are
 ## derived again in the editor), never saved and never built without a window (headless, the dedicated server).
 ## Not: the body to stand on (TerrainCollision), heights, holes, tiles and roles (its `terrain`), where the editor shows
-## the map (MapRoot). The material swap is TerrainGroundMaterial.
+## the map (MapRoot). The material swap is TerrainGroundMaterial; the look's ground comes from TerrainLayer.
 
 ## The ground as numbers: the Terrain this node hangs from.
 @export var terrain: Terrain
@@ -51,20 +51,14 @@ func _ready() -> void:
 	_build()
 
 
-func classic_material() -> ShaderMaterial:
-	return _material.classic()
+## The look's ground (TerrainLayer): shown until `clear_ground`; never saved into the scene.
+func set_ground(material: Material) -> void:
+	_material.wear(material)
 
 
-func set_classic_material(material: ShaderMaterial) -> void:
-	_material.set_classic(material)
-
-
-func set_ground_override(material: Material) -> void:
-	_material.set_override(material)
-
-
-func clear_ground_override() -> void:
-	_material.set_override(null)
+## Back to the terrain's own plain material («no look»).
+func clear_ground() -> void:
+	_material.wear(null)
 
 
 ## Builds the mesh from the terrain's triangles and tiles (none without a window or without heights).
@@ -73,9 +67,7 @@ func _build() -> void:
 	var loaded := terrain != null and terrain.is_loaded()
 	_arrays = TerrainMeshArrays.from_data(terrain.data, terrain.tile_ids()) if loaded and _draws() else null
 	mesh = _make_mesh() if _arrays != null else null
-	if loaded:
-		_material.adopt_scene_material()
-	elif not Engine.is_editor_hint():
+	if not loaded and not Engine.is_editor_hint():
 		push_error("TerrainMesh '%s' has no ground: its `terrain` needs `heights` (the map's heights.png)." % name)
 	if missing:
 		missing.visible = not loaded

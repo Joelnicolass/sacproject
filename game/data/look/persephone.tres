@@ -3,7 +3,6 @@
 [ext_resource type="Resource" path="res://data/look/glow/persephone_glow.tres" id="1_e3s6b"]
 [ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/light/persephone_light.tres" id="2_light"]
-[ext_resource type="Material" path="res://assets/original/themes/persephone/ground_classic.tres" id="3_04iut"]
 [ext_resource type="Resource" path="res://data/look/sky/persephone_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/persephone_grass.tres" id="10_grass"]
 [ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
@@ -117,7 +116,6 @@ god = &"persephone"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_e3s6b")
-ground_classic = ExtResource("3_04iut")
 ground = SubResource("GodGround_persephone")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")

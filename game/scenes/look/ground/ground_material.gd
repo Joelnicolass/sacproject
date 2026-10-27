@@ -67,12 +67,12 @@ static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) 
 
 
 ## Gives the ground the average colour of the grass where the grass grows (see `grass_paint.gdshaderinc`). amount 0 removes it.
-## Works on any ground material that includes it.
-static func set_grass_paint(mat: ShaderMaterial, color: Color, amount: float, layers: Vector4, reference: float, wave_dir: Vector2, wave_scale: float, wave_speed: float, wave_strength: float, slope_start := 10.0, slope_end := 36.0) -> void:
+## `roles`: the share of the paint per role (x..w = open, earth, rock, path).
+static func set_grass_paint(mat: ShaderMaterial, color: Color, amount: float, roles: Vector4, reference: float, wave_dir: Vector2, wave_scale: float, wave_speed: float, wave_strength: float, slope_start := 10.0, slope_end := 36.0) -> void:
 	mat.set_shader_parameter("grass_wave_noise", GroundTextures.noise())
 	mat.set_shader_parameter("grass_paint_color", Vector3(color.r, color.g, color.b))
 	mat.set_shader_parameter("grass_paint_amount", amount)
-	mat.set_shader_parameter("grass_paint_layers", layers)
+	mat.set_shader_parameter("grass_paint_roles", roles)
 	mat.set_shader_parameter("grass_paint_ref", reference)
 	mat.set_shader_parameter("grass_paint_slope", Vector2(slope_start, slope_end))
 	mat.set_shader_parameter("grass_wave_dir", wave_dir)
@@ -84,21 +84,6 @@ static func set_grass_paint(mat: ShaderMaterial, color: Color, amount: float, la
 ## The seamless noises shared by the ground and the grass (wind, patches).
 static func shared_noise() -> ImageTexture:
 	return GroundTextures.noise()
-
-
-## RGBA8, one slot per channel: tile id -> slot via a TileLayerMap, for the grass of the classic ground.
-## WORKAROUND: kept until the grass reads the map's ground_roles.png (plan 062, cut 3), then removed with TileLayerMap.
-static func splat_texture(tiles: TileLayerMap, tile_ids: PackedByteArray) -> ImageTexture:
-	var side := TerrainGrid.SIDE
-	var data := PackedByteArray()
-	data.resize(TerrainGrid.COUNT * 4)
-	data.fill(0)
-	if tiles != null and tile_ids.size() == TerrainGrid.COUNT:
-		for cell in tile_ids.size():
-			var slot := tiles.slot_of(tile_ids[cell])
-			if slot < 4:
-				data[cell * 4 + slot] = 255
-	return ImageTexture.create_from_image(Image.create_from_data(side, side, false, Image.FORMAT_RGBA8, data))
 
 
 static func _flag(on: bool) -> float:

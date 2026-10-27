@@ -27,8 +27,6 @@ extends Resource
 ## False for a map that is only there to look at: no room or menu offers it, not even with the test maps;
 ## `--map=<tag>` and the debug scenes still open it.
 @export var playable := true
-## The ground of the map in its own land (the same resource its Look rig holds in `native_ground`); empty = the map has none.
-@export var native_ground: NativeGround
 
 
 ## RFC-049 049d (F293): the map has a start for every seat of the mode (`player_starts >= seats`). A 2v2 does not fit High Noon.

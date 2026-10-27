@@ -170,7 +170,7 @@ func _maps() -> Dictionary:
 
 func _shaders() -> Dictionary:
 	var checks := {}
-	for path in ["res://scenes/look/ground/ground.gdshader", "res://scenes/look/ground/sacrifice_ground.gdshader", "res://scenes/look/ground/ground_pbr.gdshader"]:
+	for path in ["res://scenes/look/ground/ground.gdshader"]:
 		var text := FileAccess.get_file_as_string(path)
 		checks[path.get_file()] = text.contains("ground_scars.gdshaderinc") and text.contains("ground_scar_mix(")
 	var globals := FileAccess.get_file_as_string("res://project.godot")

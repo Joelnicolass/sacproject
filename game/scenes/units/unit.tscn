@@ -19,7 +19,7 @@
 [ext_resource type="Script" path="res://scenes/units/tipping_fall.gd" id="f055_tipping"]
 [ext_resource type="Script" path="res://scenes/bodies/ragdoll_driver.gd" id="f055_ragdoll"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="6_bar"]
-[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
+[ext_resource type="Script" uid="uid://blslmqr4jvulb" path="res://addons/mp_kit/nodes/mp_actor.gd" id="7_actor"]
 [ext_resource type="Script" path="res://scenes/units/unit_orders.gd" id="f27_orders"]
 [ext_resource type="Script" path="res://scenes/units/captive.gd" id="f59_captive"]
 [ext_resource type="Script" path="res://scenes/units/captive_ring.gd" id="g5_ring"]
@@ -133,16 +133,16 @@
 radius = 0.3
 height = 1.8
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_unit"]
-properties/0/path = NodePath(".:position")
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_mpsync"]
+properties/0/path = NodePath("MpActor:net_position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:rotation")
+properties/1/path = NodePath("MpActor:net_rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 properties/2/path = NodePath(".:owner_slot")
 properties/2/spawn = true
-properties/2/replication_mode = 0
+properties/2/replication_mode = 2
 properties/3/path = NodePath(".:creature_tag")
 properties/3/spawn = true
 properties/3/replication_mode = 2
@@ -206,6 +206,12 @@ properties/22/replication_mode = 2
 properties/23/path = NodePath("BloodFx:wound")
 properties/23/spawn = true
 properties/23/replication_mode = 2
+properties/24/path = NodePath("MpActor:net_stamp")
+properties/24/spawn = true
+properties/24/replication_mode = 1
+properties/25/path = NodePath("MpActor:owner_slot")
+properties/25/spawn = true
+properties/25/replication_mode = 0
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -692,16 +698,20 @@ tether_scene = ExtResource("f63_tether")
 [node name="HealthBar" parent="." instance=ExtResource("6_bar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
 
-[node name="Net" type="Node" parent="."]
-script = ExtResource("7_replicate")
-sync_properties = PackedStringArray()
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("7_actor")
+sync_extra = PackedStringArray("owner_slot", "creature_tag", "model", "mode", "Weapons:swings", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "Weapons:shots", "GuardianBond:post_path", "Flight:state", "Afflictions:shown", "Wards/LifeShield:shown", "Clinging:shown", "LightningCharge:shown", "DevourGrowth:shown", "Corpse:dissolving", "SpecialForms:stealth", "Wards/HealingAura:shown", "DevourGrowth:inflation", "BloodFx:wound")
+send_hz = 30
+lag_compensate = false
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
+replication_interval = 0.0333333
+replication_config = SubResource("SceneReplicationConfig_mpsync")
 
 [node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
 script = ExtResource("warp_snap")
-net = NodePath("../Net")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_unit")
+net = NodePath("../MpActor")
 
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
 body = NodePath("..")

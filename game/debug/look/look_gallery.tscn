@@ -22,7 +22,7 @@ far = 20000.0
 [node name="Cameras" type="Node3D" parent="."]
 
 [node name="ref" type="Marker3D" parent="Cameras"]
-transform = Transform3D(-1.0000, 0.0000, 0.0000, 0.0000, 0.9996, -0.0267, -0.0000, -0.0267, -0.9996, 1500, 22, 1495)
+transform = Transform3D(-1.0000, 0.0000, 0.0000, 0.0000, 0.9996, -0.0267, -0.0000, -0.0267, -0.9996, 1508, 22, 1495)
 metadata/fov = 60.0
 
 [node name="rts" type="Marker3D" parent="Cameras"]
@@ -30,7 +30,7 @@ transform = Transform3D(-1.0000, 0.0000, 0.0000, 0.0000, 0.7071, 0.7071, -0.0000
 metadata/fov = 75.0
 
 [node name="horizonte" type="Marker3D" parent="Cameras"]
-transform = Transform3D(-0.9060, -0.1095, -0.4080, 0.0000, 0.9652, -0.2590, 0.4226, -0.2347, -0.8750, 1500, 24, 1500)
+transform = Transform3D(-0.9060, -0.1095, -0.4080, 0.0000, 0.9652, -0.2590, 0.4226, -0.2347, -0.8750, 1508, 24, 1500)
 metadata/fov = 70.0
 
 [node name="Bodies" type="Node3D" parent="."]

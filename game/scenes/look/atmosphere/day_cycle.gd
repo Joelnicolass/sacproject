@@ -21,7 +21,8 @@ extends Resource
 @export var light_energy: Curve
 ## The sun's color at dusk and the moon's at night (multipliers).
 @export var light_dusk: Color = Color(1.0, 0.78, 0.58)
-@export var light_night: Color = Color(0.62, 0.72, 1.0)
+## Near white: the night darkens the land, it does not paint it blue (a pale ground would read as snow).
+@export var light_night: Color = Color(0.9, 0.93, 1.0)
 ## The moon light's compass angle, measured from the sun's azimuth, and its height.
 @export_range(-180.0, 180.0, 1.0, "degrees") var moon_azimuth_offset_deg: float = 150.0
 @export_range(5.0, 89.0, 1.0, "degrees") var moon_elevation_deg: float = 40.0
@@ -29,10 +30,10 @@ extends Resource
 @export_group("Ambient and sky")
 @export var ambient_energy: Curve
 @export var ambient_dusk: Color = Color(1.0, 0.9, 0.82)
-@export var ambient_night: Color = Color(0.72, 0.8, 1.0)
+@export var ambient_night: Color = Color(0.92, 0.93, 0.98)
 ## The whole sky and the fog color at dusk and at night (multipliers).
 @export var sky_dusk: Color = Color(0.9, 0.72, 0.62)
-@export var sky_night: Color = Color(0.3, 0.34, 0.48)
+@export var sky_night: Color = Color(0.34, 0.36, 0.44)
 ## 0 = day, 1 = dusk colors (the low sun).
 @export var dusk: Curve
 ## 0 = day, 1 = night: night colors, the night life and sounds.

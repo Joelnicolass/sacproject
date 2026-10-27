@@ -17,6 +17,8 @@ var moon := false
 ## Multipliers of the sun (or moon) light.
 var light_tint := Color.WHITE
 var light_energy := 1.0
+## Multiplier of how dark the sun's shadows are (1 = as approved; an overcast sky softens them).
+var shadow := 1.0
 ## Multipliers of the Environment's ambient light.
 var ambient_tint := Color.WHITE
 var ambient_energy := 1.0
@@ -27,6 +29,13 @@ var sky_grey := 0.0
 ## Multipliers of the fog's density and of its far end.
 var fog_density := 1.0
 var fog_end := 1.0
+## The fog starts no closer than this (0 = where the sky says): a mist that hides the far land, not the play.
+var fog_clear_m := 0.0
+## Multiplier of where the fog begins (below 1 the mist comes closer, never closer than `fog_clear_m`).
+var fog_begin := 1.0
+## 0..1: how far the fog color goes to the pale `mist_color` (a white mist over any biome's fog).
+var mist := 0.0
+var mist_color := Color.WHITE
 ## 0..1: how much it rains (drops and the sound bed).
 var rain := 0.0
 ## 0..1: the storm flash now (058-3).
@@ -55,12 +64,17 @@ static func mix(a: AtmosphereSample, b: AtmosphereSample) -> AtmosphereSample:
 	out.moon = a.moon or b.moon
 	out.light_tint = a.light_tint * b.light_tint
 	out.light_energy = a.light_energy * b.light_energy
+	out.shadow = a.shadow * b.shadow
 	out.ambient_tint = a.ambient_tint * b.ambient_tint
 	out.ambient_energy = a.ambient_energy * b.ambient_energy
 	out.sky_tint = a.sky_tint * b.sky_tint
 	out.sky_grey = maxf(a.sky_grey, b.sky_grey)
 	out.fog_density = a.fog_density * b.fog_density
 	out.fog_end = a.fog_end * b.fog_end
+	out.fog_clear_m = maxf(a.fog_clear_m, b.fog_clear_m)
+	out.fog_begin = a.fog_begin * b.fog_begin
+	out.mist = maxf(a.mist, b.mist)
+	out.mist_color = a.mist_color if a.mist >= b.mist else b.mist_color
 	out.rain = maxf(a.rain, b.rain)
 	out.flash = minf(a.flash + b.flash, 1.0)
 	out.stars = maxf(a.stars, b.stars)
@@ -111,6 +125,7 @@ func numbers() -> PackedFloat32Array:
 		hour, night, elevation_change_deg, light_tint.r, light_tint.g, light_tint.b, light_energy,
 		ambient_tint.r, ambient_tint.g, ambient_tint.b, ambient_energy, sky_tint.r, sky_tint.g, sky_tint.b, sky_grey,
 		fog_density, fog_end, rain, flash, stars, moon_intensity, cloud_cover, cloud_darken, cloud_speed_mul,
+		shadow, fog_clear_m, fog_begin, mist, mist_color.r, mist_color.g, mist_color.b,
 	])
 
 
@@ -121,6 +136,8 @@ func _take(n: PackedFloat32Array) -> void:
 	sky_tint = Color(n[11], n[12], n[13]); sky_grey = n[14]
 	fog_density = n[15]; fog_end = n[16]; rain = n[17]; flash = n[18]
 	stars = n[19]; moon_intensity = n[20]; cloud_cover = n[21]; cloud_darken = n[22]; cloud_speed_mul = n[23]
+	shadow = n[24]; fog_clear_m = n[25]; fog_begin = n[26]
+	mist = n[27]; mist_color = Color(n[28], n[29], n[30])
 
 
 ## The same moment with the look left as it is (hour and weather kept): Atmosphere snaps a sample within a hair of

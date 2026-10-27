@@ -109,14 +109,13 @@ func _write_sky(look: SkyLook) -> void:
 
 
 func _write_fog(look: SkyLook, sample: AtmosphereSample) -> void:
-	var luma := look.fog_color.get_luminance()
-	var color := look.fog_color.lerp(Color(luma, luma, luma), sample.sky_grey) if sample.sky_grey > 0.0 else look.fog_color
 	_env.fog_enabled = look.fog_enabled
 	_env.fog_mode = Environment.FOG_MODE_DEPTH
-	_env.fog_light_color = color * sample.sky_tint
+	_env.fog_light_color = AtmosphereRules.fog_color(look, sample)
 	_env.fog_density = look.fog_density * sample.fog_density
-	_env.fog_depth_begin = look.fog_begin_m
-	_env.fog_depth_end = look.fog_end_m * sample.fog_end
+	var span := AtmosphereRules.fog_range(look, sample)
+	_env.fog_depth_begin = span.x
+	_env.fog_depth_end = span.y
 	_env.fog_sky_affect = 0.0
 	_env.fog_aerial_perspective = look.fog_aerial_perspective
 	_env.volumetric_fog_albedo = look.haze_tint

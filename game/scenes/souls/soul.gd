@@ -132,7 +132,7 @@ func _ready() -> void:
 	## A soul that is already full grown (a late join) does not rise again.
 	if state != State.EMERGING:
 		_rise_t = rise_s
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

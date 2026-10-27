@@ -14,18 +14,18 @@ signal changed(count: int)
 
 
 func _ready() -> void:
-	if _has_authority() and rules:
+	if is_multiplayer_authority() and rules:
 		count = rules.starting_souls
 
 
 func add(amount: int = 1) -> void:
-	if not _has_authority() or amount <= 0:
+	if not is_multiplayer_authority() or amount <= 0:
 		return
 	count += amount
 
 
 func take(amount: int = 1) -> bool:
-	if not _has_authority() or amount < 0 or count < amount:
+	if not is_multiplayer_authority() or amount < 0 or count < amount:
 		return false
 	count -= amount
 	return true
@@ -34,7 +34,3 @@ func take(amount: int = 1) -> bool:
 ## Summons pay here (sacengine updateCreatureCasting: souls go when the cast ends).
 func spend(amount: int = 1) -> bool:
 	return take(amount)
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

@@ -36,7 +36,7 @@ var _serial := 0
 func _ready() -> void:
 	add_to_group("soul_system")
 	spawner.spawn_function = _make
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
 	get_tree().node_added.connect(_watch)
@@ -47,12 +47,12 @@ func _ready() -> void:
 
 ## `data`: x, y, z, number, owner_slot, attached, dropped, emerging. Server or solo only.
 func spawn_soul(data: Dictionary) -> Node3D:
+	if not is_multiplayer_authority():
+		return null
 	_serial += 1
 	data["name"] = "Soul%d" % _serial
 	var soul: Node3D
 	if MpKit.is_networked():
-		if not MpKit.is_server():
-			return null
 		soul = spawner.spawn(data) as Node3D
 	else:
 		soul = _make(data) as Node3D
@@ -261,7 +261,3 @@ func _make(data: Variant) -> Node:
 func _rules() -> MatchRules:
 	var rules: Variant = world.get("rules") if world else null
 	return rules if rules is MatchRules else null
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

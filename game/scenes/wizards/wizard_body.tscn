@@ -15,7 +15,7 @@
 [ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="5_mana"]
 [ext_resource type="Script" path="res://scenes/components/soul_purse.gd" id="6_souls"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="7_rules"]
-[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="8_replicate"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_actor.gd" id="8_actor"]
 [ext_resource type="Script" path="res://scenes/spells/spellbook.gd" id="9_book"]
 [ext_resource type="Script" path="res://scenes/spells/caster.gd" id="10_caster"]
 [ext_resource type="Script" path="res://scenes/spells/summoner.gd" id="11_summoner"]
@@ -87,15 +87,15 @@ radius = 0.35
 height = 1.8
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wizard"]
-properties/0/path = NodePath(".:position")
+properties/0/path = NodePath("MpActor:net_position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:rotation")
+properties/1/path = NodePath("MpActor:net_rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 properties/2/path = NodePath(".:owner_slot")
 properties/2/spawn = true
-properties/2/replication_mode = 0
+properties/2/replication_mode = 2
 properties/3/path = NodePath(".:wizard_tag")
 properties/3/spawn = true
 properties/3/replication_mode = 2
@@ -156,6 +156,12 @@ properties/21/replication_mode = 2
 properties/22/path = NodePath("BloodFx:wound")
 properties/22/spawn = true
 properties/22/replication_mode = 2
+properties/23/path = NodePath("MpActor:net_stamp")
+properties/23/spawn = true
+properties/23/replication_mode = 1
+properties/24/path = NodePath("MpActor:owner_slot")
+properties/24/spawn = true
+properties/24/replication_mode = 0
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -550,15 +556,17 @@ box_scale = 0.8
 script = ExtResource("f72_follower")
 body = NodePath("..")
 
-[node name="Net" type="Node" parent="."]
-script = ExtResource("8_replicate")
-sync_properties = PackedStringArray()
-
 [node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
 script = ExtResource("warp_snap")
-net = NodePath("../Net")
+net = NodePath("../MpActor")
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("8_actor")
+sync_extra = PackedStringArray("owner_slot", "wizard_tag", "model", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "SoulPurse:count", "GhostForm:under_ritual", "GhostForm:stage", "level", "Afflictions:shown", "Clinging:shown", "Caster:cast_fx_shown", "Wards/SkinOfStone:shown", "Wards/AirShield:shown", "Wards/EtherealForm:shown", "Wards/Fireform:shown", "Wards/ProtectiveSwarm:shown", "Wards/HealingAura:shown", "BloodFx:wound")
+lag_compensate = false
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
 replication_config = SubResource("SceneReplicationConfig_wizard")
 
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]

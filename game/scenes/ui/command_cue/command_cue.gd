@@ -2,7 +2,7 @@
 class_name CommandCue
 extends Control
 
-## What replaces the words of the old battle line (RFC-025c), drawn at the pointer:
+## What replaces the words of the old battle line, drawn at the pointer:
 ## `Aim` = the icon of the armed spell, structure, order or ability, a little below the cursor (`aim_offset_px`);
 ## `Invalid` = the `ncst` icon, flashed when something
 ## is refused (CommandLog.said with a refusal cue) and held while the armed icon cannot take what lies under the pointer
@@ -11,7 +11,7 @@ extends Control
 ## system cursor, so a flow turns it on to see it.
 ## Without a picture (a type with no `icon`, a CueSet with none) a plain circle / cross is drawn instead.
 ## Full screen, ignores the mouse. The icons are 38×38 canvas pixels, set in the scene; Godot's stretch scales them.
-## Ref: renderer.d:4113-4165 renderCursor (4/32 of the icon below the cursor).
+## Ref: RFC-025c; renderer.d:4113-4165 renderCursor (4/32 of the icon below the cursor).
 
 @export var command_log: CommandLog
 @export var cues: CueSet

@@ -80,6 +80,7 @@ func _refresh() -> void:
 	)
 
 
-## getRelativeHealth / getRelativeMana (renderer.d:4799-4806): 0 when the maximum is 0.
+## The filled fraction of a bar: 0 when the maximum is 0.
+## Ref: getRelativeHealth / getRelativeMana, renderer.d:4799-4806.
 static func _fraction(current: float, maximum: float) -> float:
 	return current / maximum if maximum > 0.0 else 0.0

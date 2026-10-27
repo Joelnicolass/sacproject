@@ -1,10 +1,11 @@
 class_name OptionsMenu
 extends CanvasLayer
 
-## RFC-031 031c (F142): the options overlay, a TabContainer (Gráficos, Jugabilidad since 031d, Sonido since RFC-052 052a) and «Cerrar».
+## The options overlay, a TabContainer (Gráficos, Jugabilidad, Sonido) and «Cerrar».
 ## It opens from the boot and from the pause menu. While open it is in `WorldInput.MODAL`, so the world input keeps
 ## quiet; the dim eats the clicks. `pause_menu` (Esc) closes it before the pause menu sees the key (this layer is a
 ## later node in the tree, so its `_input` runs first). process_mode ALWAYS: it works over a paused match.
+## Ref: RFC-031 031c (F142), 031d for Jugabilidad, RFC-052 052a for Sonido.
 
 signal opened
 signal closed

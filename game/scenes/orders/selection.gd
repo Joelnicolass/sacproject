@@ -1,22 +1,23 @@
 extends Node
 
-## The local player's creature selection and groups (sacengine SideData, state.d:30258).
-## Client-side: only own creatures (canSelect, state.d:1134: same side, not a wizard, not dead).
-## No limit by default (RFC-025, max_size 0). With max_size = 12 (numCreaturesInGroup) the classic
+## The local player's creature selection and groups.
+## Client-side: only own creatures (same side, not a wizard, not dead).
+## No limit by default (max_size 0). With max_size = 12 the classic
 ## mode returns: the newest goes first and pushes the last one out.
 ##
-## Click selects; Shift+click toggles; Ctrl+click selects that type within 50 m (selectAll,
-## state.d:29867), Ctrl+Shift adds them; a double click acts like Ctrl+click
-## (dagonBackend.d:1173-1198). A left drag of 3 px or more draws a rectangle (Shift adds).
+## Click selects; Shift+click toggles; Ctrl+click selects that type within 50 m, Ctrl+Shift adds them; a double click
+## acts like Ctrl+click. A left drag of 3 px or more draws a rectangle (Shift adds).
 ## Groups 1–0: Ctrl+N defines, N selects (an empty group changes nothing), Shift+N adds.
-## Summoned creatures join the selection and group 0 (newCreatureAddToSelection, state.d:29959).
-## Own creatures show their health bar only while selected (renderer.d:3890-3895).
+## Summoned creatures join the selection and group 0.
+## Own creatures show their health bar only while selected.
+## Ref: RFC-025; sacengine SideData (state.d:30258), canSelect (state.d:1134), numCreaturesInGroup, selectAll (state.d:29867), dagonBackend.d:1173-1198, newCreatureAddToSelection (state.d:29959), renderer.d:3890-3895.
 
 signal changed(units: Array)
 
 ## Who looks at this screen: only this seat's creatures can be selected.
 @export var seat: MpLocalSeat
-## Rectangle drawn while dragging (white frame, renderer.d:4030).
+## Rectangle drawn while dragging (white frame).
+## Ref: renderer.d:4030.
 @export var box: Control
 ## Only this ground blocks the camera's line of sight for the rectangle (terrainLineOfSight).
 @export var ground: Node3D
@@ -70,8 +71,9 @@ func has(unit: Variant) -> bool:
 
 
 ## The active ability the selection offers: the newest selected creature that has one wins
-## (sacengine renderedSelection ability; CRE8 priority is not exported). Null = none. MatchCommand
+## (the creature's CRE8 priority is not exported). Null = none. MatchCommand
 ## (Ctrl+Q) and the roster's ability icon both read it, so they never disagree.
+## Ref: sacengine renderedSelection ability.
 func ability() -> AbilityType:
 	for unit in units():
 		if not unit is UnitBody:
@@ -217,9 +219,10 @@ func select_group(index: int) -> bool:
 	return true
 
 
-## A creature that was tied to a building leaves the selection and every group (state.d:10408-10410:
-## unselect + removeFromGroups). GuardianBond calls it on every peer when its `post_path` fills; the
+## A creature that was tied to a building leaves the selection and every group (unselect + removeFromGroups).
+## GuardianBond calls it on every peer when its `post_path` fills; the
 ## creature can be selected again afterwards (canSelect does not exclude guardians).
+## Ref: state.d:10408-10410.
 func drop(unit: Node3D) -> void:
 	var was_selected := has(unit)
 	_units.erase(unit)
@@ -328,8 +331,8 @@ func _push_back(group: Array, unit: Node3D) -> Array:
 
 
 ## Own creatures within same_type_radius of `unit`, closest first: of the same type that are not
-## guardians; for a guardian, the guardians of the same building, whatever their type (selectAll,
-## state.d:29884-29896).
+## guardians; for a guardian, the guardians of the same building, whatever their type.
+## Ref: selectAll, state.d:29884-29896.
 func _same_type_near(unit: Node3D) -> Array:
 	var tag := str(unit.get("creature_tag"))
 	var bond := GuardianBond.of(unit)

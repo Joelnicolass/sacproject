@@ -1,11 +1,12 @@
 class_name CommandFeedback
 extends Node
 
-## What the player's commands answer with: the ping a cast or an order leaves at its point (sacengine's command cone,
-## local only), the line on %Battle (CommandLog, RFC-025c: the cue flashes `ncst` for a refusal) and the creatures that
-## join the selection when they are summoned. It decides no order and no cast.
+## What the player's commands answer with: the ping a cast or an order leaves at its point (a cone, local only), the
+## line on %Battle (CommandLog: the cue flashes `ncst` for a refusal) and the creatures that join the selection when
+## they are summoned. It decides no order and no cast.
+## Ref: RFC-025c; sacengine command cone, state.d:29261-29264.
 
-## state.d:29261-29264: the cone's color by order.
+## The cone's color by order.
 const ORDER_TONE := {
 	"attack": OrderMarker.Tone.RED,
 	"advance": OrderMarker.Tone.RED,
@@ -41,7 +42,7 @@ func _ready() -> void:
 
 
 ## The one entry for the mark an order (or a cast) leaves at `point`.
-## Orders tint it like sacengine (guard blue, attack and advance red, the rest white).
+## Orders tint it as in the original (guard blue, attack and advance red, the rest white).
 func show_ping(point: Vector3, tone: OrderMarker.Tone = OrderMarker.Tone.WHITE) -> void:
 	_ping.play(point, tone)
 
@@ -73,7 +74,8 @@ func _on_unit_entered(unit: Node) -> void:
 		(unit as UnitBody).summoned.connect(_on_unit_summoned.bind(unit), CONNECT_ONE_SHOT)
 
 
-## sacengine newCreatureAddToSelection: the owner's new creature joins the selection.
+## The owner's new creature joins the selection.
+## Ref: sacengine newCreatureAddToSelection.
 func _on_unit_summoned(unit: Node) -> void:
 	if seat != null and is_instance_valid(unit) and seat.is_mine((unit as UnitBody).owner_slot):
 		_selection.add_summoned(unit as UnitBody)

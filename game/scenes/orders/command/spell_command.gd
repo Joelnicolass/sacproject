@@ -35,7 +35,7 @@ func arm_by_key(index: int) -> void:
 		arm_spell(index)
 
 
-## sacengine: a creature has no target; it appears in front of the wizard at once.
+## A creature has no target; it appears in front of the wizard at once.
 func summon(index: int) -> void:
 	if _book != null:
 		_book.show_tab(_SPELL_BOOK.Tab.CREATURE)
@@ -54,7 +54,8 @@ func summon(index: int) -> void:
 	caster.request_summon(type.tag)
 
 
-## sacengine selectSpell: an unaffordable or cooling spell is not armed.
+## An unaffordable or cooling spell is not armed.
+## Ref: sacengine selectSpell.
 func arm_spell(index: int) -> void:
 	if _book != null:
 		_book.show_tab(_SPELL_BOOK.Tab.SPELL)

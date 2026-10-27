@@ -1,8 +1,9 @@
 class_name AiGodPicker
 extends OptionButton
 
-## RFC-049 049h (F297): the god an AI plays with: «Aleatorio» (drawn when the match starts) or one of the gods of the game. Used by the
+## The god an AI plays with: «Aleatorio» (drawn when the match starts) or one of the gods of the game. Used by the
 ## boot («Contra la IA») and by the host of a room when he adds a bot. It only lists: the choice goes out through `selected_god()`.
+## Ref: RFC-049 049h (F297).
 
 ## Item 0 (no god): the AI draws its god.
 @export var random_text := "UI_AI_GOD_RANDOM"

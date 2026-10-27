@@ -1,12 +1,13 @@
 class_name GameplayTab
 extends VBoxContainer
 
-## RFC-031 031d (F143): Options → Jugabilidad. Friendly fire, dropping souls with P and the starting souls.
+## Options → Jugabilidad. Friendly fire, dropping souls with P and the starting souls.
 ## - In the boot (no match in the tree) it edits the player's GameplayPrefs, saved at once; the next match the player
 ##   creates takes them (the boot's MatchSetup).
 ## - In a match it is read only: it shows the rules of this match from MatchState (the server's on a client, through the
 ##   snapshot) and says who decides them. It never reads the preferences there.
 ## CheckButton (like Gráficos) and SpinBox: AgentKit drives them with click / range.
+## Ref: RFC-031 031d (F143).
 ## RFC-053 053f (F375): below, the player's combat feel (FeelPrefs): «Sacudida de cámara» 0-100 % (0 = off), «Números de daño»
 ## «Info al pasar el puntero» and «Sangre» (blood, its marks and the hit flash). A local preference, so it is editable in a match too, and saved at once.
 

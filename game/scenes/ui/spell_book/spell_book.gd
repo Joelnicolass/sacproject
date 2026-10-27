@@ -62,7 +62,8 @@ func bind(wizard: Node) -> void:
 	_rebuild()
 
 
-## sacengine switchSpellbookTab.
+## Switches the spellbook tab.
+## Ref: sacengine switchSpellbookTab.
 func show_tab(next: int) -> void:
 	if next == tab:
 		return

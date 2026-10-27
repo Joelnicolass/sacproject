@@ -97,6 +97,8 @@ var _reserved_mask := 0
 var _remains: Node3D
 var _who := ""
 var _anim_t := 0.0
+## The seat that looks at this soul (the colour of its ring), asked once when it enters the tree.
+var _viewer_slot := 0
 var _facing := 0.0
 var _rise_t := 0.0
 ## Server only: the height of the last ground under it (NAN until it has seen one).
@@ -121,6 +123,7 @@ func setup(data: Dictionary) -> void:
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	_viewer_slot = MpLocalSeat.slot_of(self)
 	if _visual == null:
 		_visual = Node3D.new()
 		_visual.name = "Visual"
@@ -368,7 +371,7 @@ func _process(delta: float) -> void:
 		return
 	_anim_t += delta
 	_facing = wrapf(_facing + ring_turn_per_s * delta, -PI, PI)
-	var cell: int = FIRST_FRAME[color_for(MpKit.local_slot())] + int(_anim_t * ANIM_FPS) % ANIM_FRAMES
+	var cell: int = FIRST_FRAME[color_for(_viewer_slot)] + int(_anim_t * ANIM_FPS) % ANIM_FRAMES
 	var lift := Vector3.UP * SPRITE_LIFT * scaling
 	var count := _sprites.size()
 	if state == State.REVIVING:

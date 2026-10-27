@@ -75,7 +75,7 @@ func _ready() -> void:
 	_look.ghost_energy = GHOST_ENERGY
 	MatchSeed.seed_rng(_rng, ["ghost", int(_wizard.get("owner_slot"))])
 	_show_stage(false)
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
 	health.died.connect(_on_died)
@@ -296,5 +296,5 @@ func _process(_delta: float) -> void:
 
 
 func _seen_by_viewer() -> bool:
-	var viewer := MpKit.local_slot()
+	var viewer := MpLocalSeat.slot_of(self)
 	return viewer <= 0 or viewer == int(_wizard.get("owner_slot"))

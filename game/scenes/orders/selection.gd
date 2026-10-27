@@ -14,6 +14,8 @@ extends Node
 
 signal changed(units: Array)
 
+## Who looks at this screen: only this seat's creatures can be selected.
+@export var seat: MpLocalSeat
 ## Rectangle drawn while dragging (white frame, renderer.d:4030).
 @export var box: Control
 ## Only this ground blocks the camera's line of sight for the rectangle (terrainLineOfSight).
@@ -49,6 +51,8 @@ func _ready() -> void:
 	for i in group_count:
 		_groups.append([])
 	hide_box()
+	if seat == null:
+		push_warning("Selection: assign `seat` (the MpLocalSeat); nothing can be selected without it")
 
 
 func units() -> Array[Node3D]:
@@ -108,7 +112,7 @@ func can_select(unit: Variant) -> bool:
 		return false
 	if not (unit as Node).is_inside_tree() or not (unit as Node).is_in_group("unit"):
 		return false
-	if int(unit.get("owner_slot")) != MpKit.local_slot() or MpKit.local_slot() <= 0:
+	if seat == null or not seat.is_mine(int(unit.get("owner_slot"))):
 		return false
 	return unit is UnitBody and not (unit as UnitBody).is_dead()
 

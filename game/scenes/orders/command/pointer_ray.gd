@@ -13,6 +13,8 @@ const _CAMERA := preload("res://scenes/camera/world_camera.gd")
 @export var minimap_pick_units := 3.6
 ## The minimap a click is found on. Empty (the minimap was removed): there is no minimap pick.
 @export var minimap: Minimap
+## Who looks at this screen: what is not this seat's is an enemy to the pointer.
+@export var seat: MpLocalSeat
 
 @onready var _camera: _CAMERA = get_node_or_null("%Camera")
 
@@ -175,8 +177,9 @@ static func is_corpse(body: Node3D) -> bool:
 	return false
 
 
-static func is_enemy(body: Node3D) -> bool:
-	return owner_slot_of(body) != MpKit.local_slot()
+## True when the body is not this seat's (a corpse, a neutral and a stranger count; with no seat, everything does).
+func is_enemy(body: Node3D) -> bool:
+	return seat == null or owner_slot_of(body) != seat.slot
 
 
 ## The side a body belongs to (0 for anything that is not a creature, wizard, doctor or structure).

@@ -51,7 +51,7 @@ func _ready() -> void:
 	_noise.seed = noise_seed
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	_noise.frequency = 1.0
-	_active = not Engine.is_editor_hint() and (run_headless or not _presentation_off())
+	_active = not Engine.is_editor_hint() and (run_headless or ScreenGate.is_open())
 	set_process(_active)
 	if not _active:
 		return
@@ -142,6 +142,3 @@ func _on_wizard_health(current: float, maximum: float) -> void:
 	if lost > 0.0 and maximum > 0.0:
 		add_trauma(lost / maximum * wizard_hit_trauma_per_max)
 
-
-static func _presentation_off() -> bool:
-	return DisplayServer.get_name() == "headless" or MpKit.is_dedicated()

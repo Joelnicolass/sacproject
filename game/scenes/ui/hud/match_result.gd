@@ -8,6 +8,8 @@ extends Label
 ## «Ganó el equipo de A y B» with the wizards of the winning team.
 
 @export var match_state: MatchState
+## Who looks at this screen: the banner tells this seat's result.
+@export var seat: MpLocalSeat
 @export var victory_text := "UI_RESULT_VICTORY"
 @export var defeat_text := "UI_RESULT_DEFEAT"
 @export var draw_text := "UI_RESULT_DRAW"
@@ -23,10 +25,10 @@ extends Label
 
 func _ready() -> void:
 	visible = false
-	if Engine.is_editor_hint() or match_state == null:
+	if Engine.is_editor_hint() or match_state == null or seat == null:
 		return
 	match_state.result_changed.connect(_refresh)
-	MpKit.slot_assigned.connect(_on_slot_assigned)
+	seat.changed.connect(_on_seat_changed)
 	_refresh()
 
 
@@ -34,6 +36,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if match_state == null:
 		warnings.append("Asigná en `match_state` el MatchState.")
+	if seat == null:
+		warnings.append("Asigná en `seat` el MpLocalSeat.")
 	return warnings
 
 
@@ -66,7 +70,7 @@ func _name_of(slot: int) -> String:
 
 
 func _refresh() -> void:
-	var slot := MpKit.local_slot()
+	var slot := seat.slot
 	text = text_for(slot)
 	visible = not text.is_empty()
 	if team_label != null:
@@ -74,5 +78,5 @@ func _refresh() -> void:
 		team_label.visible = not team_label.text.is_empty()
 
 
-func _on_slot_assigned(_slot: int) -> void:
+func _on_seat_changed(_slot: int) -> void:
 	_refresh()

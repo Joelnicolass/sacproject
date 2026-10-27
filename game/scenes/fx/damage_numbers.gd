@@ -18,6 +18,8 @@ const GROUP := &"feel_presentation"
 @export var prefs: FeelPrefs
 ## The camera of the local player (WorldCamera).
 @export var camera: Camera3D
+## Who looks at this screen (own losses read in `own_color`); empty = no body is tinted as own.
+@export var seat: MpLocalSeat
 @export var number_scene: PackedScene = preload("res://scenes/fx/damage_number.tscn")
 @export var body_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "map_building", "doctor"])
 @export_range(1, 256) var pool_size := 48
@@ -53,7 +55,7 @@ var _base_color := Color.WHITE
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	_active = not Engine.is_editor_hint() and (run_headless or not _presentation_off())
+	_active = not Engine.is_editor_hint() and (run_headless or ScreenGate.is_open())
 	set_process(_active)
 	if not _active:
 		return
@@ -155,7 +157,7 @@ func _show(body: Node3D, amount: float) -> void:
 	_live[label] = {"body": body, "amount": amount, "age": 0.0, "base": base}
 	_merging[body] = label
 	label.text = str(roundi(amount))
-	var own := "owner_slot" in body and int(body.get("owner_slot")) == MpKit.local_slot()
+	var own := "owner_slot" in body and seat != null and seat.is_mine(int(body.get("owner_slot")))
 	label.modulate = own_color if own and own_color.a > 0.0 else _base_color
 	label.global_position = base
 	label.visible = true
@@ -203,6 +205,3 @@ func _mesh_top(body: Node3D) -> float:
 			return (shown.transform * shown.get_aabb()).end.y
 	return default_height_m
 
-
-static func _presentation_off() -> bool:
-	return DisplayServer.get_name() == "headless" or MpKit.is_dedicated()

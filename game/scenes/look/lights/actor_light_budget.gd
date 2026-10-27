@@ -1,3 +1,4 @@
+@tool
 class_name ActorLightBudget
 extends LookLayer
 
@@ -86,7 +87,7 @@ func max_lights() -> int:
 ## Re-ranks now (the tick calls it; the lab and quality changes call it too).
 func rank() -> void:
 	_clock = 0.0
-	if not is_inside_tree():
+	if Engine.is_editor_hint() or not is_inside_tree():
 		return
 	var cap := _max_lights if _enabled and is_visible_in_tree() else 0
 	var camera := get_viewport().get_camera_3d()

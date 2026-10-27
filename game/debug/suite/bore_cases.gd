@@ -256,11 +256,11 @@ func _nav() -> Dictionary:
 	checks["old_path_passes_over_the_place"] = not _crosses(start, before, shape) and _near(start, before, centre) < 7.1
 	checks["the_hole_is_there"] = shape.cut_hole(centre).size() == 1 and not shape.is_on_ground(centre.x, centre.y)
 	checks["old_path_would_cross_it"] = _crosses(start, before, shape)
-	var guard := 1800
-	while guard > 0 and (service.rebakes == 0 or service.is_rebaking()):
-		guard -= 1
+	## Real seconds, not frames: under --fixed-fps the frames outrun the worker that bakes.
+	var deadline := Time.get_ticks_msec() + 60000
+	while Time.get_ticks_msec() < deadline and (service.rebakes == 0 or service.is_rebaking()):
 		await _c._frames(1)
-	_c._note("rebakes / frames left", [service.rebakes, guard])
+	_c._note("rebakes / ms left", [service.rebakes, deadline - Time.get_ticks_msec()])
 	checks["navmesh_baked_again"] = service.rebakes >= 1
 	var after := service.find_path(start, goal)
 	checks["new_path_exists"] = after.size() >= 1

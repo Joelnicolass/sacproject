@@ -412,9 +412,9 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 func _nav_settle(service: NavService, host: Node3D) -> void:
 	for _frame in 5:
 		await host.get_tree().physics_frame
-	var guard := 900
-	while service.is_rebaking() and guard > 0:
-		guard -= 1
+	## Real seconds, not frames: under --fixed-fps the frames outrun the worker that bakes.
+	var deadline := Time.get_ticks_msec() + 60000
+	while service.is_rebaking() and Time.get_ticks_msec() < deadline:
 		await host.get_tree().physics_frame
 	for _frame in 3:
 		await host.get_tree().physics_frame

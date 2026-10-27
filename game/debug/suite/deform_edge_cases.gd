@@ -206,9 +206,9 @@ func _nav() -> Dictionary:
 
 ## Waits for the re-bake to be swapped in; true when the count is exactly `count` then.
 func _baked(service: NavService, count: int) -> bool:
-	var guard := 1800
-	while guard > 0 and (service.rebakes < count or service.is_rebaking()):
-		guard -= 1
+	## Real seconds, not frames: under --fixed-fps the frames outrun the worker that bakes.
+	var deadline := Time.get_ticks_msec() + 60000
+	while Time.get_ticks_msec() < deadline and (service.rebakes < count or service.is_rebaking()):
 		await _c._frames(1)
 	return service.rebakes == count
 

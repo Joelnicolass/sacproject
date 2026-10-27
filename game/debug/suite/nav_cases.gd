@@ -65,9 +65,9 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	for _frame in 3:
 		await host.get_tree().physics_frame
 	## The fount is not in the stored bake: wait for the re-bake that adds it to be swapped in (bounded, the swap is a count of ticks).
-	var guard := 900
-	while _service.is_rebaking() and guard > 0:
-		guard -= 1
+	## Real seconds, not frames: under --fixed-fps the frames outrun the worker that bakes.
+	var deadline := Time.get_ticks_msec() + 60000
+	while _service.is_rebaking() and Time.get_ticks_msec() < deadline:
 		await host.get_tree().physics_frame
 	for _frame in 3:
 		await host.get_tree().physics_frame

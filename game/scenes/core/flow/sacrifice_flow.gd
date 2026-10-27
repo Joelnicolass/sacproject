@@ -17,6 +17,8 @@ const LOCAL_SERVER_SCENE := "res://scenes/ui/local_server/local_server_screen.ts
 @export var board: PickBoard
 ## The story of each seat in the server's log, and the defeat of a seat that abandoned (a child of this scene).
 @export var presence: SeatPresence
+## The black screen while a match loads (a child of this scene). Empty = no screen; the load is the same.
+@export var loading_screen: LoadingScreen
 
 ## Local choice. Never null after `_ready`.
 var pick: WizardPick
@@ -56,6 +58,8 @@ func _ready() -> void:
 		start_when = StartWhen.MANUAL
 	if not _arm_ticket_glue():
 		return
+	if loading_screen != null:
+		world_load_progressed.connect(loading_screen.show_progress)
 	board.changed.connect(slot_picks_changed.emit)
 	board.complete.connect(start_match)
 	MpKit.slot_assigned.connect(func(_slot: int) -> void: board.announce(pick))
@@ -139,9 +143,13 @@ func _begin_match() -> void:
 	super._begin_match()
 
 
-func goto_world() -> void:
+func _before_world_load() -> void:
 	_apply_match_choice()
-	super.goto_world()
+
+
+## Read on the loading thread beside the world: what the match will spawn (the gods and wizards of its seats).
+func _extra_world_loads() -> PackedStringArray:
+	return ActiveMatch.load_paths()
 
 
 ## Joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the token.

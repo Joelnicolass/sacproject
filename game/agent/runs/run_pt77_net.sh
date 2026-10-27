@@ -6,7 +6,7 @@ export GODOT=$ROOT/agent/harness/godot60.sh
 PORT="${1:-7787}"
 OUT="$ROOT/agent/out/pt77/net"
 mkdir -p "$OUT"; cd "$ROOT"
-"$GODOT" --headless --fixed-fps 60 --path "$ROOT" -- --dedicated --log=ai_seat --mp-port="$PORT" --ai-slots=2 > "$OUT/server.log" 2>&1 &
+"$GODOT" --headless --fixed-fps 60 --path "$ROOT" -- --dedicated --start-seats=1 --log=ai_seat --mp-port="$PORT" --ai-slots=2 > "$OUT/server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 120); do grep -q "dedicated listo" "$OUT/server.log" && break; sleep 0.25; done
 addons/agent_kit/cli.sh "$ROOT" flow --flow=pt77_net_client.json --out=res://agent/out/pt77/net ${STRICT---fail-on-error} --mp-port="$PORT" > "$OUT/client.log" 2>&1

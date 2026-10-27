@@ -14,7 +14,7 @@ for i in $(seq 1 100); do
   [ $i -eq 100 ] && { echo "ABORT busy"; exit 2; }
   sleep 10
 done
-"$GODOT_BIN" --max-fps 60 --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" > "$OUT/$FLOW.server.log" 2>&1 &
+"$GODOT_BIN" --max-fps 60 --headless --path "$ROOT" -- --dedicated --start-seats=1 --mp-port="$PORT" > "$OUT/$FLOW.server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 120); do grep -q "listo puerto" "$OUT/$FLOW.server.log" && break; sleep 0.25; done
 addons/agent_kit/cli.sh "$ROOT" flow --flow="$ROOT/agent/flows/$FLOW.json" --out=res://agent/out/pt113play/net --mp-port="$PORT" --fail-on-error > "$OUT/$FLOW.client.log" 2>&1 &

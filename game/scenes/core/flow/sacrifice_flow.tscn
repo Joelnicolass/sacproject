@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" uid="uid://lfuoh6n1jq8h" path="res://scenes/core/flow/sacrifice_flow.gd" id="1_flow"]
 [ext_resource type="Script" path="res://scenes/core/flow/wizard_pick.gd" id="2_pick"]
@@ -7,23 +7,25 @@
 [ext_resource type="Resource" path="res://data/ai/seat_vs_ai.tres" id="5_seat"]
 [ext_resource type="Script" path="res://scenes/net/pick_board.gd" id="6_board"]
 [ext_resource type="Script" path="res://scenes/net/seat_presence.gd" id="7_presence"]
+[ext_resource type="PackedScene" path="res://scenes/ui/loading/loading_screen.tscn" id="8_loading"]
 
 [sub_resource type="Resource" id="Resource_pick"]
 script = ExtResource("2_pick")
 wizard = ExtResource("3_wizard")
 god = ExtResource("4_god")
 
-[node name="SacrificeFlow" type="Node" node_paths=PackedStringArray("board", "presence")]
-editor_description = "El autoload que lleva al jugador del menú a la partida (solo, contra la IA, sala, servidor local). default_pick es lo que está elegido al abrir el menú; vs_ai_seat es el rival de «Contra la IA». Los dos se cambian acá arrastrando un mago, un dios o un asiento. El grupo «Match start» es la puerta de la partida en red: gracia para volver, tiempo de carga, asientos para arrancar (0 = todos; el dedicado a mano arranca con dedicated_start_seats) y si los clientes esperan pausados."
+[node name="SacrificeFlow" type="Node" node_paths=PackedStringArray("board", "presence", "loading_screen")]
+editor_description = "El autoload que lleva al jugador del menú a la partida (solo, contra la IA, sala, servidor local). default_pick es lo que está elegido al abrir el menú; vs_ai_seat es el rival de «Contra la IA». Los dos se cambian acá arrastrando un mago, un dios o un asiento. El grupo «Match start» es la puerta de la partida en red: gracia para volver, tiempo de carga, asientos para arrancar (start_seats, en el host LAN y en el dedicado a mano: 0 = todos, o los que cargaron pasado load_timeout_s; las corridas con un cliente pasan --start-seats=1) y si los clientes esperan pausados. load_timeout_s queda en 60 s (el kit trae 15): el precalentado puede tardar hasta 20 s y el que todavía precalienta no tiene que quedar afuera. world_reports_loaded: la partida espera a que el mundo avise que está listo (precalentado), detrás de LoadingScreen; también en solo."
 script = ExtResource("1_flow")
 default_pick = SubResource("Resource_pick")
 vs_ai_seat = ExtResource("5_seat")
 board = NodePath("PickBoard")
 presence = NodePath("SeatPresence")
+loading_screen = NodePath("LoadingScreen")
+world_reports_loaded = true
 rejoin_grace_s = 60.0
 load_timeout_s = 60.0
 start_seats = 0
-dedicated_start_seats = 1
 pause_clients = true
 
 [node name="PickBoard" type="Node" parent="."]
@@ -33,3 +35,6 @@ script = ExtResource("6_board")
 [node name="SeatPresence" type="Node" parent="."]
 editor_description = "El relato de cada asiento en el log del servidor (adentro, cargó, arranca, se fue o volvió, rechazado, abandonó) y la derrota del que abandona. Sacarlo apaga la derrota por abandono en LAN."
 script = ExtResource("7_presence")
+
+[node name="LoadingScreen" parent="." instance=ExtResource("8_loading")]
+editor_description = "La pantalla negra mientras carga la partida (título, fase, barra fina). Escucha world_load_progressed del flow; se va con un fundido cuando el mundo avisa que está listo. Borrarla quita la pantalla; la carga sigue igual."

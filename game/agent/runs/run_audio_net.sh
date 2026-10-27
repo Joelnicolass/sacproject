@@ -23,7 +23,7 @@ kill_all() { kill_pids; }
 trap 'kill_all; net_stop' EXIT
 net_guard
 
-gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --mp-port="$PORT" --map=test_flat --world="$WORLD"
+gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --start-seats=1 --mp-port="$PORT" --map=test_flat --world="$WORLD"
 SERVER=$LAST_PID
 READY=0
 wait_line "$OUT/server.log" "dedicated listo" "$SERVER" 30 && READY=1

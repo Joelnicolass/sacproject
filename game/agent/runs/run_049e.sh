@@ -34,7 +34,7 @@ gd "$OUT/solo.log" "${FPS_FLAGS[@]}" res://debug/net/vs_ai_mode.tscn -- --log=ai
 SOLO=$LAST_PID
 
 # --- 1. the dedicated with three AI ----------------------------------------------------------------------------------
-gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --log=ai_seat --mp-port="$PORT" --map=test_flat4 --mode=2v2 --ai-slots=2,3,4 \
+gd "$OUT/server.log" "${FPS_FLAGS[@]}" -- --dedicated --start-seats=1 --log=ai_seat --mp-port="$PORT" --map=test_flat4 --mode=2v2 --ai-slots=2,3,4 \
   --world="$WORLD" --force-defeat-slot=3,4 --force-defeat-after-ticks="$FORCE_TICKS" ${E2E_AI_GOD:+--ai-god="$E2E_AI_GOD"}
 SERVER=$LAST_PID
 READY=0

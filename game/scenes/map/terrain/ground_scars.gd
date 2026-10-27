@@ -4,7 +4,7 @@ extends Node3D
 ## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one owner of `marks` (what was
 ## painted, in order) and of the tiles drawn from it. A mark is a picture painted INTO the ground, 0.15625 m per pixel, centered, never turned, over
 ## what is there; marks on a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago is cleaned (ground_scars.gdshaderinc reads it).
-## Presentation only: headless (dedicated) it holds nothing. ScarMark decides when; GroundScarsNet hands `marks` to a peer back from a drop.
+## Presentation only: headless (dedicated) it holds nothing. ScarMark decides when; GroundScarsNet merges a donor's `marks` into a peer back from a drop.
 
 const GROUP := &"ground_scars"
 const INDEX_PARAM := &"scar_index"
@@ -88,8 +88,15 @@ func painted_tiles() -> int:
 
 
 ## Paints `texture` centered at the world point `at`. `max_height_m`: not drawn when the ground under it is that far from
-## the point (0 = always). False when nothing was painted.
+## the point (0 = always). False when nothing was painted, or while catching up when the donor already gave it (`marks`).
 func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
+	if _pool == null or texture == null or (marks.merge != null and marks.merge.own_copies(texture.resource_path, at) == 0):
+		return false
+	return paint(texture, at, max_height_m)
+
+
+## `stamp` without asking `marks` first: the catch-up (GroundScarsNet, `marks.merge`) already decided how many times.
+func paint(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	if _pool == null or texture == null:
 		return false
 	var local := to_local(at)
@@ -109,15 +116,6 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	if not touched.is_empty():
 		marks.add(texture, at, max_height_m)
 	return not touched.is_empty()
-
-
-## Cleans every tile and forgets the marks (before painting the list of another peer again).
-func clear() -> void:
-	if _pool != null:
-		_pool = GroundScarRules.Pool.new(_pool.capacity)
-		_index.fill(Color(0.0, 0.0, 0.0, 0.0))
-		_index_texture.update(_index)
-	marks.clear()
 
 
 static func note(text: String) -> void:

@@ -37,6 +37,7 @@ func run(host: Node3D) -> Dictionary:
 		"scar_shaders": _shaders(),
 		"scar_effects": _effects(),
 		"scar_record": _record(),
+		"scar_catch_up": _catch_up(),
 	}
 
 
@@ -275,3 +276,63 @@ func _record() -> Dictionary:
 	record.clear()
 	checks["cleared"] = record.size() == 0
 	return {"ok": not checks.values().has(false), "checks": checks}
+
+
+## A peer back from a drop while rocks fly (the 060s bug: host 130 marks, the peer 65). The donor's list leaves, then rocks the
+## peer never saw land on the donor only and are passed on; rocks both of them see land in either order; two marks the donor
+## really has at one place stay two. At the end the peer holds what the donor holds, mark for mark.
+func _catch_up() -> Dictionary:
+	var scar := load(SCARS_DIR + "scar.png") as Texture2D
+	var crack := load(SCARS_DIR + "gscr.png") as Texture2D
+	var donor := GroundScarRecord.new()
+	var peer := GroundScarRecord.new()
+	var passed: Array[Dictionary] = []
+	donor.added.connect(func(path: String, at: Vector3, h: float, ordinal: int) -> void:
+		passed.append(GroundScarRecord.one(path, at, h, ordinal)))
+	donor.add(scar, Vector3(10.0, 0.0, 10.0), 0.0)
+	donor.add(crack, Vector3(12.0, 0.0, 10.0), 2.0)
+	donor.add(crack, Vector3(12.0, 0.0, 10.0), 2.0)  # two rocks on one spot: two marks
+	_own(peer, scar, Vector3(30.0, 0.0, 30.0))  # an effect the peer saw as its world got ready...
+	donor.add(scar, Vector3(30.0, 0.0, 30.0), 0.0)  # ...that the donor has too
+	var snapshot := donor.to_wire()
+	passed.clear()
+	var checks := {}
+	peer.begin_catch_up()
+	_give(peer, snapshot)
+	checks["list_merged"] = peer.size() == 4
+	donor.add(crack, Vector3(14.0, 0.0, 11.0), 2.0)  # a rock the peer never saw lands
+	_give(peer, passed.pop_front())
+	checks["late_rock_kept"] = peer.size() == 5
+	_own(peer, crack, Vector3(15.0, 0.0, 12.0))  # a rock both see: the peer's lands first
+	donor.add(crack, Vector3(15.0, 0.0, 12.0), 2.0)
+	_give(peer, passed.pop_front())
+	donor.add(crack, Vector3(16.0, 0.0, 13.0), 2.0)  # the donor's lands first
+	_give(peer, passed.pop_front())
+	_own(peer, crack, Vector3(16.0, 0.0, 13.0))
+	checks["shared_rocks_once"] = peer.size() == 7
+	peer.end_catch_up()
+	_own(peer, scar, Vector3(40.0, 0.0, 40.0))
+	donor.add(scar, Vector3(40.0, 0.0, 40.0), 0.0)
+	checks["after_done_own_only"] = passed.size() == 1 and peer.merge == null
+	checks["same_as_donor"] = peer.size() == donor.size() and _places(peer) == _places(donor)
+	return {"ok": not checks.values().has(false), "checks": checks, "donor": donor.size(), "peer": peer.size()}
+
+
+static func _own(record: GroundScarRecord, texture: Texture2D, at: Vector3) -> void:
+	if record.merge == null or record.merge.own_copies(texture.resource_path, at) > 0:
+		record.add(texture, at, 0.0)
+
+
+static func _give(record: GroundScarRecord, wire: Dictionary) -> void:
+	for entry: Array in GroundScarRecord.entries(wire):
+		var texture := entry[0] as Texture2D
+		for i in record.merge.given_copies(texture.resource_path, entry[1], entry[3]):
+			record.add(texture, entry[1], entry[2])
+
+
+static func _places(record: GroundScarRecord) -> Array:
+	var out: Array = []
+	for entry: Array in GroundScarRecord.entries(record.to_wire()):
+		out.append(GroundScarRecord.key_of((entry[0] as Texture2D).resource_path, entry[1]))
+	out.sort()
+	return out

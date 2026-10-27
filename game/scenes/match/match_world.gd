@@ -14,6 +14,9 @@ const MAP_NODE := "Map"
 
 ## The map of this match (set in _enter_tree).
 var map: MapRoot
+## The map and the mode this world plays, read once from ActiveMatch when it enters the tree; the systems get them from here.
+var definition: MapDefinition
+var mode: GameMode
 
 var _entered_ms := 0
 var _local_wizard: Node3D
@@ -29,12 +32,14 @@ func _enter_tree() -> void:
 		rules = SacrificeFlow.setup.apply_to(rules)
 	## Every peer seeds the match: online with the seed the server announced (RFC-060 060s), offline with the rules' or a drawn one.
 	MatchSeed.begin(rules, ActiveMatch.match_seed())
+	definition = ActiveMatch.map()
+	mode = ActiveMatch.mode()
+	SideRelations.use(definition, mode)
 	_attach_map()
 
 
 ## Puts the active map first among the children (it is ready before the systems that read it) and binds the systems.
 func _attach_map() -> void:
-	var definition := MapCatalog.active()
 	## One line for the logs and the runs (RFC-049 049a): which map this process loaded, and whether it simulates it.
 	print(("mapa %s" if not MpKit.is_networked() or MpKit.is_server() else "en mapa %s") % definition.tag)
 	map = get_node_or_null(MAP_NODE) as MapRoot
@@ -72,7 +77,6 @@ func _bind_map() -> void:
 
 
 func _ready() -> void:
-	var definition := MapCatalog.active()
 	var map_name := "?"
 	if definition:
 		map_name = definition.display_name if not definition.display_name.is_empty() else String(definition.tag)

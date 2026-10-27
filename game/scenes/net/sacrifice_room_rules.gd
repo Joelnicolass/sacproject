@@ -99,7 +99,8 @@ func clean_options(options: Dictionary) -> Dictionary:
 			out[key] = flag
 	## The land of the match: a god that brings a look (absent = drawn from the seed by the server that simulates).
 	var biome: Variant = options.get("biome")
-	if biome is String and BiomeRules.has_look(StringName(biome)):
+	var land: GodType = MatchWire.decode_god(biome) if biome is String else null
+	if land != null and land.look != null:
 		out["biome"] = biome
 	var souls: Variant = options.get("starting_souls")
 	if souls is int and souls >= SOULS_MIN and souls <= SOULS_MAX:

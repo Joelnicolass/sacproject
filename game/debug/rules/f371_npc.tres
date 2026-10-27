@@ -57,7 +57,7 @@ within_s = 15.0
 
 [resource]
 script = ExtResource("1_rules")
-biome_god = &"persephone"
+biome = ExtResource("seat_god_persephone")
 starting_souls = 0
 match_seed = 1
 groups = Array[ExtResource("2_group")]([SubResource("Group_farmers"), SubResource("Group_enemy")])

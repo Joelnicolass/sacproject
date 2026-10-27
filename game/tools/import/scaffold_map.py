@@ -12,8 +12,8 @@ Run tools/import/import_map.py first (it writes ntts.json, light.png, ...) and t
 ground_roles.png). For `<tag>` it writes:
   scenes/map/maps/<tag>/heights.png                a flat ground (16-bit grey, all 0, no void.png), only when there is none, so the scene
                                                    loads; tools/terrain/heights_from_original.gd -- --map=<tag> writes the original's ground
-  scenes/map/maps/<tag>/<tag>.tres                 MapDefinition (typed: scene, light, navmesh); MapCatalog finds it by scanning the folder
-  scenes/map/maps/<tag>/nav.res                    an empty navmesh, so the definition loads until the first bake
+  scenes/map/maps/<tag>/<tag>.tres                 MapDefinition (typed: scene, light); MapCatalog finds it by scanning the folder
+  scenes/map/maps/<tag>/nav.res                    an empty navmesh, so the scene's NavRegion loads until the first bake
   scenes/map/maps/<tag>/map.tscn                   MapRoot: sky, look, terrain (an instance of scenes/map/terrain/terrain.tscn), one PlayerStart (with its WizardSpot) per seat, the manafounts, Buildings, Npcs, navmesh, minimap
 The PlayerStart and the manafounts are the altar and manafount rows of the NTTS, placed on the ground height the game would give
 them (sac_formats.terrain.ground_height_fn); the WizardSpot of seat k is 30 m toward the closest manafount, looking at it, as sacengine puts the wizard.
@@ -83,7 +83,6 @@ def definition_tres(seats: int) -> str:
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/{tag}/map.tscn" id="2_scene"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="5_light"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="6_nav"]
 
 [resource]
 script = ExtResource("1_def")
@@ -91,7 +90,6 @@ tag = &"{tag}"
 display_name = "{name}"
 map_scene = ExtResource("2_scene")
 light = ExtResource("5_light")
-nav = ExtResource("6_nav")
 player_starts = {seats}
 {playable}""".format(
         tag=TAG, name=import_map.display_name(SCP), seats=seats,

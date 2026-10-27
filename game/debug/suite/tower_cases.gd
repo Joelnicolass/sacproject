@@ -51,7 +51,7 @@ func run(host: Node3D) -> Dictionary:
 	out["tower_convert"] = await _convert()
 	out["tower_guard_teleport"] = await _guard_teleport()
 	out["tower_cast"] = await _cast()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 

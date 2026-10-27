@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/peasantville/map.tscn" id="2_scene"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/peasantville/light.png" id="5_light"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/peasantville/nav.res" id="6_nav"]
 
 [resource]
 script = ExtResource("1_def")
@@ -11,5 +10,4 @@ tag = &"peasantville"
 display_name = "Peasantville"
 map_scene = ExtResource("2_scene")
 light = ExtResource("5_light")
-nav = ExtResource("6_nav")
 player_starts = 2

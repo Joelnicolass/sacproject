@@ -44,7 +44,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ward_shielded"] = await _shielded()
 	out["ward_cast"] = await _cast()
 	out["ward_ai"] = await _ai()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 
@@ -382,12 +382,12 @@ func _near(value: float, expected: float) -> bool:
 func _wizard(slot: int, at: Vector3, god: String, level := 1) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	wizard.level = level
 	wizard.position = at
 	_root.add_child(wizard)
 	## The wizard reads its seat's god when it enters; the case says it again.
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	(wizard.get_node("Health") as Health).setup(10000.0)
 	return wizard
 

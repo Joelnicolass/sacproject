@@ -153,7 +153,7 @@ func report() -> String:
 	var w2 := _wizard(2)
 	var w2_text := "Wizard2 no"
 	if w2 != null:
-		w2_text = "Wizard2 %s slot=%s god=%s at=%s" % [w2.name, w2.get("owner_slot"), w2.get("god"), str(w2.global_transform.origin.snapped(Vector3.ONE * 0.1))]
+		w2_text = "Wizard2 %s slot=%s god=%s at=%s" % [w2.name, w2.get("owner_slot"), w2.get("god_type").id() if w2.get("god_type") != null else "?", str(w2.global_transform.origin.snapped(Vector3.ONE * 0.1))]
 	var w1 := _wizard(1)
 	var own := _creature(1)
 	if w1 != null:

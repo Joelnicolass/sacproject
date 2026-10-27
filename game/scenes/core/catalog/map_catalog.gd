@@ -28,16 +28,6 @@ static func shared() -> MapCatalog:
 	return MapCatalog.new()
 
 
-## The map this process plays (a bridge to ActiveMatch for the readers of the world).
-static func active() -> MapDefinition:
-	return ActiveMatch.map()
-
-
-## The tag of the map this process plays.
-static func current_tag() -> StringName:
-	return ActiveMatch.map_tag()
-
-
 ## The file of the definition with that tag (it may not exist). Loads nothing.
 static func path_of(tag: StringName) -> String:
 	return "%s/%s/%s.tres" % [DIR, tag, tag]

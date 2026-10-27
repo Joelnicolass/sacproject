@@ -135,7 +135,7 @@ func _run() -> void:
 	if not arg("cast").is_empty():
 		await _cast_all(world, arg("cast").split(",", false))
 		await tree.create_timer(maxf(float(arg("cast-wait", "1.5")), 0.0)).timeout
-	var map_tag := String(MapCatalog.active().tag)
+	var map_tag := String(ActiveMatch.map().tag)
 	for round in rounds:
 		for view in views:
 			await _shoot(world, view, "%s/%s_%s_%s_t%06d.png" % [out, map_tag, god, view, roundi(elapsed_s * 1000.0)])
@@ -665,7 +665,7 @@ func _raise_structure(world: MatchWorld, tag: String) -> void:
 	var fount := TowerRules.closest_fount(get_tree(), wizard.global_position, INF)
 	var spawner := get_tree().get_first_node_in_group(StructureSpawner.GROUP) as StructureSpawner
 	if entry == null or fount == null or spawner == null:
-		push_warning("match_shots: cannot raise '%s' (god %s)." % [tag, wizard.god])
+		push_warning("match_shots: cannot raise '%s' (god %s)." % [tag, wizard.god_type.id() if wizard.god_type != null else "?"])
 		return
 	var tower := spawner.spawn_tower(entry.scene, fount, wizard.owner_slot, wizard.rotation.y)
 	print("match_shots: %s raised over %s" % [tower.name if tower != null else "nothing", fount.name])

@@ -43,12 +43,7 @@ func _ready() -> void:
 func current_book() -> GodBook:
 	if wizard.book != null:
 		return wizard.book
-	if wizard.god_type != null and (wizard.god.is_empty() or wizard.god_type.id() == wizard.god):
-		return wizard.god_type.book
-	# WORKAROUND: the `god` id travels on the network and benches set only it, so when it names another god than
-	# `god_type` the id wins, like before. Drop it when every bench sets `god_type` (055e e3).
-	var by_id: GodType = GameData.god(wizard.god) if not wizard.god.is_empty() else null
-	return by_id.book if by_id != null else null
+	return wizard.god_type.book if wizard.god_type != null else null
 
 
 func size() -> int:

@@ -1,8 +1,9 @@
-[gd_scene load_steps=45 format=3]
+[gd_scene load_steps=46 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
 [ext_resource type="Script" path="res://scenes/wizards/wizard_body.gd" id="1_body"]
+[ext_resource type="Resource" path="res://data/gods/james.tres" id="b2_god"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/clinging.tscn" id="f129_cling"]
@@ -101,63 +102,60 @@ properties/3/replication_mode = 2
 properties/4/path = NodePath(".:model")
 properties/4/spawn = true
 properties/4/replication_mode = 2
-properties/5/path = NodePath(".:god")
+properties/5/path = NodePath("Health:maximum")
 properties/5/spawn = true
 properties/5/replication_mode = 2
-properties/6/path = NodePath("Health:maximum")
+properties/6/path = NodePath("Health:current")
 properties/6/spawn = true
 properties/6/replication_mode = 2
-properties/7/path = NodePath("Health:current")
+properties/7/path = NodePath("ManaPool:maximum")
 properties/7/spawn = true
 properties/7/replication_mode = 2
-properties/8/path = NodePath("ManaPool:maximum")
+properties/8/path = NodePath("ManaPool:current")
 properties/8/spawn = true
 properties/8/replication_mode = 2
-properties/9/path = NodePath("ManaPool:current")
+properties/9/path = NodePath("SoulPurse:count")
 properties/9/spawn = true
 properties/9/replication_mode = 2
-properties/10/path = NodePath("SoulPurse:count")
+properties/10/path = NodePath("GhostForm:under_ritual")
 properties/10/spawn = true
 properties/10/replication_mode = 2
-properties/11/path = NodePath("GhostForm:under_ritual")
+properties/11/path = NodePath("GhostForm:stage")
 properties/11/spawn = true
 properties/11/replication_mode = 2
-properties/12/path = NodePath("GhostForm:stage")
+properties/12/path = NodePath(".:level")
 properties/12/spawn = true
 properties/12/replication_mode = 2
-properties/13/path = NodePath(".:level")
+properties/13/path = NodePath("Afflictions:shown")
 properties/13/spawn = true
 properties/13/replication_mode = 2
-properties/14/path = NodePath("Afflictions:shown")
+properties/14/path = NodePath("Clinging:shown")
 properties/14/spawn = true
 properties/14/replication_mode = 2
-properties/15/path = NodePath("Clinging:shown")
+properties/15/path = NodePath("Caster:cast_fx_shown")
 properties/15/spawn = true
 properties/15/replication_mode = 2
-properties/16/path = NodePath("Caster:cast_fx_shown")
+properties/16/path = NodePath("Wards/SkinOfStone:shown")
 properties/16/spawn = true
 properties/16/replication_mode = 2
-properties/17/path = NodePath("Wards/SkinOfStone:shown")
+properties/17/path = NodePath("Wards/AirShield:shown")
 properties/17/spawn = true
 properties/17/replication_mode = 2
-properties/18/path = NodePath("Wards/AirShield:shown")
+properties/18/path = NodePath("Wards/EtherealForm:shown")
 properties/18/spawn = true
 properties/18/replication_mode = 2
-properties/19/path = NodePath("Wards/EtherealForm:shown")
+properties/19/path = NodePath("Wards/Fireform:shown")
 properties/19/spawn = true
 properties/19/replication_mode = 2
-properties/20/path = NodePath("Wards/Fireform:shown")
+properties/20/path = NodePath("Wards/ProtectiveSwarm:shown")
 properties/20/spawn = true
 properties/20/replication_mode = 2
-properties/21/path = NodePath("Wards/ProtectiveSwarm:shown")
+properties/21/path = NodePath("Wards/HealingAura:shown")
 properties/21/spawn = true
 properties/21/replication_mode = 2
-properties/22/path = NodePath("Wards/HealingAura:shown")
+properties/22/path = NodePath("BloodFx:wound")
 properties/22/spawn = true
 properties/22/replication_mode = 2
-properties/23/path = NodePath("BloodFx:wound")
-properties/23/spawn = true
-properties/23/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -169,7 +167,7 @@ vision = NodePath("Vision")
 step = ExtResource("2_step")
 wizard_type = ExtResource("typed_cwa0")
 model = "jnwr"
-god = "james"
+god_type = ExtResource("b2_god")
 
 [node name="Tilt" type="Node3D" parent="."]
 

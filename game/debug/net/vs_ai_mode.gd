@@ -58,7 +58,7 @@ func _run() -> void:
 	for slot in range(2, seats + 1):
 		expected.append(slot)
 	_check(slots == expected, "the AI seats are the slots %s (got %s)" % [str(expected), str(slots)])
-	_check(GameModeCatalog.active().seats() == seats, "the mode has %d seats" % seats)
+	_check(ActiveMatch.mode().seats() == seats, "the mode has %d seats" % seats)
 	_check(await _until(func() -> bool: return _roster() != null and _roster().sides.size() == expected.size(), 60.0), "every AI seat is seated by the roster")
 	print("VS_AI_MODE slots=%s sides=%s" % [str(slots), str(_roster().sides.keys()) if _roster() != null else "[]"])
 	if seats == 4:

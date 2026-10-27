@@ -253,7 +253,7 @@ func _cast() -> Dictionary:
 func _wizard(at: Vector3) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = at
 	return wizard

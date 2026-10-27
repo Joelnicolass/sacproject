@@ -65,7 +65,7 @@ func begin(host: Node3D, world_name: String) -> void:
 
 func finish() -> void:
 	MatchSeed.current = _saved_seed
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 
 
@@ -89,11 +89,11 @@ func _zones() -> Array[GroundZone]:
 func _wizard(slot: int, at: Vector3, god: String, level := 1) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	wizard.level = level
 	wizard.position = at
 	_root.add_child(wizard)
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	(wizard.get_node("Health") as Health).setup(10000.0)
 	return wizard
 

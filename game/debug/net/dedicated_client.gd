@@ -111,7 +111,7 @@ func _run() -> void:
 	_check(await _until(func() -> bool: return _state() != null), "%s loaded the match world" % _name)
 	var mode_tag := MpBoot.user_value("e2e-expect-mode", "")
 	if not mode_tag.is_empty():
-		_check(String(GameModeCatalog.current_tag()) == mode_tag, "%s plays the mode %s (got %s)" % [_name, mode_tag, GameModeCatalog.current_tag()])
+		_check(String(ActiveMatch.mode_tag()) == mode_tag, "%s plays the mode %s (got %s)" % [_name, mode_tag, ActiveMatch.mode_tag()])
 	if MpBoot.user_flag("e2e-cut-watch"):
 		await _rejoin_after_cut()
 		await _wait_wall(float(MpBoot.user_value("e2e-linger-s", "0")))

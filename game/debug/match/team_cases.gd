@@ -355,7 +355,7 @@ func _unit(at: Vector3, slot: int) -> UnitBody:
 func _wizard(at: Vector3, slot: int) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = at
 	return wizard
@@ -400,12 +400,13 @@ func _until(condition: Callable, limit: int) -> void:
 
 func _use_mode(tag: StringName) -> void:
 	ActiveMatch.choose(MapCatalog.shared().find(&"test_flat4"), GameModeCatalog.shared().find(tag))
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	SideRelations.set_rows(_rows(), SEATS)
 
 
 func _restore() -> void:
 	ActiveMatch.forget()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 
 
 ## Four player sides, each an enemy of the other three and of the NPC side 4; the NPC side is enemy of all.

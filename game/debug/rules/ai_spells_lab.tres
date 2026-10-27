@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=21 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="5_structure"]
 [ext_resource type="Resource" path="res://debug/ai/ai_spells_lab_seat.tres" id="6_seat"]
 [ext_resource type="Script" path="res://debug/suite/bench_event.gd" id="7_event"]
+[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="b3_biome"]
 
 ; 055f f5: el laboratorio de hechizos de la IA (debug/ai/ai_spells_lab.tscn). El mago IA (slot 2, Persephone, libro mezclado) quieto
 ; junto a su Manalith del centro; 4 Troggs enemigos a 35 m; 2 Troggs propios con vida casi nula junto a ellos (al morir dejan cadaver
@@ -136,7 +137,7 @@ starting_souls = 20
 wizard_level = 9
 wizard_level_stats = true
 mana_per_level = 1000.0
-biome_god = &"persephone"
+biome = ExtResource("b3_biome")
 match_seed = 7
 groups = Array[ExtResource("2_group")]([SubResource("Group_foes"), SubResource("Group_victims")])
 start_paused = true

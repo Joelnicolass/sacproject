@@ -140,7 +140,7 @@ func _ghost_under_ritual() -> Dictionary:
 func _wizard(at: Vector3) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	wizard.position = at
 	_root.add_child(wizard)
 	return wizard

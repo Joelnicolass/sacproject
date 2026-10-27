@@ -159,7 +159,7 @@ func _check() -> Dictionary:
 	_root.add_child(souls)
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = Vector3(0.0, 0.0, 0.0)
 	var action := wizard.get_node("Caster").action_for("ccas") as ConvertAction
@@ -393,7 +393,7 @@ func _scenario() -> Dictionary:
 	_root.add_child(souls)
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = Vector3.ZERO
 	var altar := _altar(1, Vector3(0.0, 0.0, -70.0))

@@ -212,7 +212,7 @@ func _measure_flora() -> void:
 	ground = 0.0 if is_nan(ground) else ground
 	view_camera.global_position = Vector3(spot.x, ground + 6.0, spot.y - 30.0)
 	view_camera.look_at(Vector3(spot.x, ground, spot.y), Vector3.UP)
-	var map_tag := String(MapCatalog.active().tag)
+	var map_tag := String(ActiveMatch.map().tag)
 	for on in [false, true]:
 		field.visible = on
 		rig.apply_quality(high)

@@ -33,7 +33,7 @@ func begin(rules: BenchRules, bodies: Dictionary) -> void:
 			_probes.append(child as BenchProbe)
 			(child as BenchProbe).begin(bodies)
 	print("SIDES mapa %s · stance(1,0) %s · stance(2,0) %s · stance(1,3) %s · stance(2,3) %s" % [
-		MapCatalog.current_tag(), _stance(1, 0), _stance(2, 0), _stance(1, 3), _stance(2, 3)])
+		ActiveMatch.map_tag(), _stance(1, 0), _stance(2, 0), _stance(1, 3), _stance(2, 3)])
 	for label in rules.trace_labels:
 		for body: Node3D in _of(label):
 			var carrier := body as UnitBody

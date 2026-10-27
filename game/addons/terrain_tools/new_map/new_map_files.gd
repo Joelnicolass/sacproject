@@ -114,16 +114,15 @@ static func scene_for(heights: TerrainHeights, roles: Texture2D, nav: Navigation
 	return packed if error == OK else null
 
 
-## The MapDefinition `<tag>.tres` of the folder: its scene, navmesh and seats; no tiles or light (a new map reads nothing
+## The MapDefinition `<tag>.tres` of the folder: its scene and seats (the navmesh is the scene's NavRegion); no tiles or light (a new map reads nothing
 ## of the original). Written last: once it exists, the catalog lists the map.
 static func write_definition(folder: String, tag: StringName, display_name: String) -> String:
 	var definition := MapDefinition.new()
 	definition.tag = tag
 	definition.display_name = display_name.strip_edges()
 	definition.map_scene = load(folder.path_join(SCENE_FILE)) as PackedScene
-	definition.nav = load(folder.path_join(NAV_FILE)) as NavigationMesh
 	definition.player_starts = STARTS
-	if definition.map_scene == null or definition.nav == null:
-		return "%s: la escena o el navmesh no cargan." % folder
+	if definition.map_scene == null:
+		return "%s: la escena no carga." % folder
 	var path := folder.path_join("%s.tres" % tag)
 	return "" if ResourceSaver.save(definition, path) == OK else "no se pudo escribir %s." % path

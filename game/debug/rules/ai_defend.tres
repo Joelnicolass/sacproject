@@ -36,7 +36,7 @@ near_distance_m = 12.0
 
 [resource]
 script = ExtResource("1_rules")
-biome_god = &"james"
+biome = ExtResource("seat_god_james")
 starting_souls = 12
 match_seed = 1
 anchor = Vector3(1085, 0, 1066)

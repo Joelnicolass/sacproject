@@ -92,7 +92,6 @@ process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
 wizard_type = ExtResource("typed_w_cwa0")
 model = "jnwr"
-god = "james"
 
 [node name="Fountain" parent="." instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -6)

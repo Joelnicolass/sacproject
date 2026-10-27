@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=12 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
 [ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="5_structure"]
 [ext_resource type="Resource" path="res://debug/ai/ai_spells_lab_seat.tres" id="6_seat"]
+[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="b3_biome"]
 
 ; 055f f5: la variante con amenaza del laboratorio (misma escena, --rules=res://debug/rules/ai_spells_lab_threat.tres). 8 Troggs enemigos
 ; encima del mago IA, que esta a 20 m de su Manalith del centro (a 370 m de su altar); 2 Troggs propios junto a la Manalith, fuera del
@@ -68,7 +69,7 @@ script = ExtResource("1_rules")
 starting_souls = 20
 wizard_level = 8
 wizard_level_stats = true
-biome_god = &"persephone"
+biome = ExtResource("b3_biome")
 match_seed = 7
 groups = Array[ExtResource("2_group")]([SubResource("Group_swarm"), SubResource("Group_guards")])
 start_paused = true

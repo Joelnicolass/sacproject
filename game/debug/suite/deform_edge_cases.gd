@@ -172,6 +172,8 @@ func _nav() -> Dictionary:
 	service.name = "Nav"
 	service.terrain = shape
 	service.build_on_ready = false
+	service.region = preload("res://debug/look/flora_test_maps.gd").nav_region_of(ActiveMatch.map())
+	service.add_child(service.region)
 	_c._collision.add_to_group(NavFingerprint.GROUP)
 	_c._bed.add_child(service)
 	service.build()

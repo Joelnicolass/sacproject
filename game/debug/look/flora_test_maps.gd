@@ -64,6 +64,16 @@ static func heights_of(map: MapDefinition) -> TerrainHeights:
 	return load(path) as TerrainHeights if ResourceLoader.exists(path) else null
 
 
+## A NavigationRegion3D with the stored navmesh of the map (the nav.res beside its definition), as its NavRegion holds it: a
+## NavService needs one. Not in the tree.
+static func nav_region_of(map: MapDefinition) -> NavigationRegion3D:
+	var region := NavigationRegion3D.new()
+	region.name = "NavRegion"
+	var path := map.resource_path.get_base_dir().path_join("nav.res")
+	region.navigation_mesh = load(path) as NavigationMesh if ResourceLoader.exists(path) else null
+	return region
+
+
 ## A Terrain with `heights`, as a map scene sets them. Not in the tree.
 static func land_from(heights: TerrainHeights) -> Terrain:
 	var land := Terrain.new()

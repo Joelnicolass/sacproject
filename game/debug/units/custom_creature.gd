@@ -76,7 +76,7 @@ func _run() -> void:
 		_fail("no wizard in slot %d" % SLOT)
 		return
 	_add_to_book()
-	wizard.set("god", GOD)
+	wizard.set("god_type", GameData.god(String(GOD)))
 	await _frames(2)
 	var caster = wizard.get_node("Caster")
 	if caster.spellbook.creature_index_of(TAG) < 0:

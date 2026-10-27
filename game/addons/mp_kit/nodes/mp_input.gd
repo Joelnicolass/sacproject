@@ -35,6 +35,8 @@ var _current: MpInputFrame
 var _previous: MpInputFrame
 var _history: Array[MpInputFrame] = []
 var _queue := MpInputQueue.new()
+## Server: the connection whose frames this takes (0 = the seat has none: it dropped, or nobody sat yet).
+var _owner_peer: int = 0
 var _latest: MpInputFrame
 var _tick_frames: Array[MpInputFrame] = []
 var _since_sent: float = 0.0
@@ -52,9 +54,7 @@ var _extra_before: MpInputFrame
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	## The server's input buffer sizes itself to this owner's network (MpInputQueue.adaptive).
-	_queue.adaptive = true
-	_queue.depth = _queue.min_depth
+	_queue = _new_queue()
 	if actor == null:
 		actor = MpActor.of(get_parent())
 	if actor == null:
@@ -238,14 +238,22 @@ func _pace() -> void:
 
 ## Server: the owner's input for this tick (each frame once and in order with prediction, the newest without).
 func _advance_remote() -> void:
+	_follow_owner_peer(MpKit.peer_id_for(actor.owner_slot))
 	_previous = _current
+	if _owner_peer == 0:
+		## Nobody plays this seat now (dropped, within its grace): no keys held, and with prediction the server goes on
+		## simulating it, so gravity, a knockback or a stun run their course (as an engine with no input does).
+		_tick_frames = []
+		if actor.predict:
+			_tick_frames.append(_current)
+		return
 	if actor.predict:
 		_since_slack += get_physics_process_delta_time()
 		if _since_slack >= SLACK_S:
 			_since_slack = 0.0
-			var peer := MpKit.peer_id_for(actor.owner_slot)
-			if peer > 0:
-				rpc_slack.rpc_id(peer, _queue.slack())
+			## Only once the owner has this node (a rejoining owner is still loading its world).
+			if actor.reaches(_owner_peer):
+				rpc_slack.rpc_id(_owner_peer, _queue.slack())
 		_tick_frames = _queue.take_for_tick()
 		if not _tick_frames.is_empty():
 			_current = _tick_frames[_tick_frames.size() - 1]
@@ -261,8 +269,10 @@ func rpc_frames(packed: Array) -> void:
 	## REDUNDANCY frames, one more when the owner paced an extra frame in.
 	if not multiplayer.is_server() or actor == null or packed.size() > REDUNDANCY + 1:
 		return
-	if actor.owner_slot <= 0 or MpKit.slot_for_peer(multiplayer.get_remote_sender_id()) != actor.owner_slot:
+	var sender := multiplayer.get_remote_sender_id()
+	if actor.owner_slot <= 0 or MpKit.slot_for_peer(sender) != actor.owner_slot:
 		return
+	_follow_owner_peer(sender)
 	for data in packed:
 		if typeof(data) != TYPE_ARRAY:
 			return
@@ -273,6 +283,28 @@ func rpc_frames(packed: Array) -> void:
 			_queue.add(frame, Time.get_ticks_usec() / 1000000.0)
 		elif _latest == null or frame.seq > _latest.seq:
 			_latest = frame
+
+
+## Server: the seat's connection changed (a rejoin is a new one, whose frames count from 1 again; or it dropped):
+## start its input over, with no keys held. The kept actor then answers the new connection at once.
+func _follow_owner_peer(peer: int) -> void:
+	if peer == _owner_peer:
+		return
+	_owner_peer = peer
+	_queue = _new_queue()
+	_latest = null
+	_tick_frames = []
+	_current = MpInputFrame.sized(actions.size())
+	_previous = _current
+	acked_seq = 0
+
+
+## The server's input buffer sizes itself to this owner's network (MpInputQueue.adaptive).
+func _new_queue() -> MpInputQueue:
+	var queue := MpInputQueue.new()
+	queue.adaptive = true
+	queue.depth = queue.min_depth
+	return queue
 
 
 @rpc("authority", "call_remote", "unreliable")

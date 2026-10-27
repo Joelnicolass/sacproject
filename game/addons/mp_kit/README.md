@@ -498,6 +498,7 @@ Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md]
 | `core/mp_actor_sync.gd` | qué manda el synchronizer de un `MpActor` en cada modo: con suavizado o predicción la pose viaja en `MpActor.net_position` / `net_rotation` + `net_stamp`, nunca en la del nodo, así en el cliente solo `MpActor` mueve el nodo |
 | `core/mp_input_frame.gd` | el frame de input que viaja al servidor; valida tamaño y tipos; contadores de pulsación |
 | `core/mp_input_queue.gd` | servidor con predicción: frames del dueño en orden, cada uno una vez; buffer de jitter (`depth`), puesta al día suave y presupuesto (un cliente no puede ir más rápido mandando frames de más) |
+| `core/mp_correction_smoother.gd` | `MpCorrectionSmoother`: la corrección del dueño dibujada desvaneciéndose (solo la pose visible; la real vuelve antes de cada frame de física) |
 | `core/mp_prediction.gd` | predicción del dueño y reconciliación: el servidor corre `mp_move` por cada frame del dueño; el dueño vuelve al estado del servidor y repite los frames sin ack, dentro del tick de física |
 | `core/mp_proxy_motion.gd` / `mp_interpolator.gd` | dibujo de proxies: `BUFFERED` (en el pasado, entre dos estados reales) o `FOLLOW` |
 | `core/mp_net_clock.gd` | tiempo de simulación del servidor (ticks / tps, parejo) y su estimación en el cliente (sigue al paquete menos demorado) |

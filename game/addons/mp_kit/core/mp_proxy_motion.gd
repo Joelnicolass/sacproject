@@ -44,6 +44,8 @@ var _buffer := MpInterpolator.new()
 var _last_stamp: float = 0.0
 var _shown_pos := Vector3.ZERO
 var _shown_rot := Quaternion.IDENTITY
+## FOLLOW: the teleport count it already jumped to.
+var _followed_teleports: int = 0
 
 
 func _init(node: Node, buffered: bool) -> void:
@@ -51,13 +53,15 @@ func _init(node: Node, buffered: bool) -> void:
 	_buffered = buffered
 
 
-## `stamp` 0 = no state from the server yet: the node stays where the scene put it.
-func draw(delta: float, stamp: float, net_pos: Vector3, net_rot: Quaternion) -> void:
+## `stamp` 0 = no state from the server yet: the node stays where the scene put it. `teleports` = the node's teleport
+## count in that state (MpActor.net_teleports): never drawn sliding across a change of it.
+func draw(delta: float, stamp: float, net_pos: Vector3, net_rot: Quaternion, teleports: int = 0) -> void:
 	if stamp <= 0.0:
 		return
 	if _last_stamp <= 0.0:
 		_shown_pos = net_pos
 		_shown_rot = net_rot
+		_followed_teleports = teleports
 	if stamp != _last_stamp:
 		if _last_stamp > 0.0 and stamp > _last_stamp:
 			_gaps.append(stamp - _last_stamp)
@@ -70,13 +74,17 @@ func draw(delta: float, stamp: float, net_pos: Vector3, net_rot: Quaternion) -> 
 			_lates.remove_at(0)
 		_states += 1
 		_target = -1.0
-		_buffer.push(stamp, net_pos, net_rot)
+		_buffer.push(stamp, net_pos, net_rot, teleports)
 	if _buffered:
 		var delay := current_delay(delta)
 		MpNetClock.view_delay = delay
 		var pose := _buffer.sample(MpNetClock.server_time() - delay)
 		_shown_pos = pose[0]
 		_shown_rot = pose[1]
+	elif teleports != _followed_teleports:
+		_followed_teleports = teleports
+		_shown_pos = net_pos
+		_shown_rot = net_rot
 	else:
 		var alpha := 1.0 - exp(-follow_speed * delta)
 		_shown_pos = _shown_pos.lerp(net_pos, alpha)

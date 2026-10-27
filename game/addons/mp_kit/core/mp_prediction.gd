@@ -15,6 +15,10 @@ var last_correction: float = 0.0
 var max_resim_ticks: int = 32
 ## Owner: reconciliations skipped by the cap so far (a test can read it).
 var skipped_reconciles: int = 0
+## Owner: draws each correction's jump fading out instead of at once (null = at once).
+var smoother: MpCorrectionSmoother
+## Owner: the stamp of the last server state it went back to (0 = none yet).
+var reconciled_stamp: float = 0.0
 
 var _states_since_reconcile: int = 0
 
@@ -62,6 +66,7 @@ func owner_tick(delta: float, stamp: float, motion: MpProxyMotion, net_pos: Vect
 		if _states_since_reconcile >= every:
 			_states_since_reconcile = 0
 			_reconcile(delta, motion, net_pos, net_rot, 2 if not extra.is_empty() else 1)
+			reconciled_stamp = stamp
 		else:
 			skipped_reconciles += 1
 	if not extra.is_empty():
@@ -80,6 +85,8 @@ func owner_tick(delta: float, stamp: float, motion: MpProxyMotion, net_pos: Vect
 func _reconcile(delta: float, motion: MpProxyMotion, net_pos: Vector3, net_rot: Quaternion, this_tick: int = 1) -> void:
 	var keep := _input.current_frame()
 	var keep_before := _input.previous_frame()
+	var before_pos := MpProxyMotion.position_of(_root)
+	var before_rot := MpProxyMotion.rotation_of(_root)
 	motion.write(net_pos, net_rot)
 	var chain := _input.replay_chain()
 	for i in range(1, chain.size() - this_tick):
@@ -87,3 +94,5 @@ func _reconcile(delta: float, motion: MpProxyMotion, net_pos: Vector3, net_rot: 
 		_root.mp_move(_input, delta)
 	_input.use_frame(keep, keep_before, false)
 	last_correction = MpProxyMotion.position_of(_root).distance_to(_predicted)
+	if smoother:
+		smoother.absorb(before_pos, before_rot)

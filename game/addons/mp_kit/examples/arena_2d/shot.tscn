@@ -10,9 +10,12 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath("MpActor:net_stamp")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath("MpActor:owner_slot")
+properties/2/path = NodePath("MpActor:net_teleports")
 properties/2/spawn = true
-properties/2/replication_mode = 0
+properties/2/replication_mode = 1
+properties/3/path = NodePath("MpActor:owner_slot")
+properties/3/spawn = true
+properties/3/replication_mode = 0
 
 [node name="Shot" type="Node2D"]
 script = ExtResource("1")

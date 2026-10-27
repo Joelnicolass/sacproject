@@ -359,6 +359,8 @@ Las transformaciones (y `velocity`) viajan siempre, en el mismo paquete que la p
 |---|---|---|
 | `predict` | El dueño se mueve al instante. Necesita un `MpInput` al lado y `func mp_move(input, delta)` en el padre | off |
 | `max_resim_ticks` | Lo más que repite una corrección. Con mucho ping hay más ticks sin confirmar; pasado el tope corrige menos seguido, para no gastar CPU | 32 |
+| `correction_smoothing_s` | Cuánto tarda en desvanecerse en pantalla una corrección del dueño (su física se corrige al instante). 0 = se dibuja de golpe | 0.1 |
+| `correction_snap_distance` | Una corrección más larga que esto (px en 2D, m en 3D) se dibuja de golpe, como un teletransporte. 0 = todas se desvanecen | 0 |
 
 **Grupo Owner**:
 
@@ -373,7 +375,7 @@ Las transformaciones (y `velocity`) viajan siempre, en el mismo paquete que la p
 |---|---|---|
 | `lag_compensate` | El servidor guarda el último segundo de poses de este nodo, para que un disparo se valide contra donde lo vio el tirador (ver 6.8) | on |
 
-Con `smoothing` distinto de `NONE` o con `predict`, la posición no viaja en `position` sino en `MpActor:net_position` (y `net_rotation`, `net_stamp`). Si mirás el panel Replicación del `MpSync`, vas a ver eso: es normal. En el cliente, solo `MpActor` mueve el nodo.
+Con `smoothing` distinto de `NONE` o con `predict`, la posición no viaja en `position` sino en `MpActor:net_position` (y `net_rotation`, `net_stamp`, `net_teleports`). Si mirás el panel Replicación del `MpSync`, vas a ver eso: es normal. En el cliente, solo `MpActor` mueve el nodo.
 
 #### MpInput
 
@@ -461,6 +463,32 @@ func _physics_process(_delta: float) -> void:
 	velocity = input.get_vector(&"ui_left", &"ui_right", &"ui_up", &"ui_down") * SPEED
 	move_and_slide()
 ```
+
+**Lo que decide el servidor** (un stun, una ralentización, un empujón, un warp): el dueño no lo puede predecir, así que lo trae el estado del servidor y la reconciliación repite desde ahí. Para eso, escribilo en el servidor (en `_physics_process` detrás de `is_authority()`, o en un `mp_sv_*`) en un valor que `mp_move` lea, y poné ese valor en **Sync › sync_extra**:
+
+```gdscript
+var stun_ticks := 0          # sync_extra: stun_ticks, speed_mult, knock
+var speed_mult := 1.0
+var knock := Vector2.ZERO
+
+func mp_move(keys: MpInput, delta: float) -> void:
+	if stun_ticks > 0:
+		stun_ticks -= 1      # se cuenta dentro de mp_move: el servidor y la repetición cuentan igual
+		velocity = Vector2.ZERO
+	else:
+		velocity = keys.get_vector(&"ui_left", &"ui_right", &"ui_up", &"ui_down") * SPEED * speed_mult
+	velocity += knock
+	knock = knock.move_toward(Vector2.ZERO, KNOCK_DECAY * delta)
+	move_and_slide()
+
+func hit(from: Vector2) -> void:   # en el servidor
+	knock = (position - from).normalized() * 600.0
+	stun_ticks = 20
+```
+
+**Las correcciones en pantalla**: cuando el servidor decidió algo que el dueño no predijo, su nodo va a la pose corregida al instante (física, `mp_move`) y lo que se dibuja se desvanece desde donde estaba en `correction_smoothing_s` (0,1 s, como el `cl_smoothtime` de Source; Photon Fusion y Unity Netcode hacen lo mismo: solo se suaviza la pose visible). Un warp que hace el servidor no es una corrección para suavizar: llamá `net.snap()` en el servidor apenas movés el nodo (ver 6.8), o configurá `correction_snap_distance`. `net.correction_offset()` dice cuánto falta desvanecer.
+
+**Suave entre ticks de física**: el nodo predicho del dueño se mueve en ticks de física (60 por segundo). En una pantalla de 120 Hz o más, prendé **Project Settings › Physics › Common › Physics Interpolation**: el motor dibuja cada nodo entre sus dos últimos ticks (lo que Fusion usa por defecto para el jugador local). El kit está listo: los proxies la apagan para ellos (el kit los dibuja en cada frame) y la corrección se desvanece por tick.
 
 ### 6.3 ¿Dónde estoy? `is_authority` e `is_local`
 
@@ -555,7 +583,8 @@ func mp_all_flash() -> void:
 | Llamada | Qué hace |
 |---|---|
 | `net.despawn()` | Solo servidor, y solo en nodos que hizo un spawner: lo borra en todos (ver [7.3](#73-borrar-cosas)) |
-| `net.snap()` | Después de teletransportar: en el cliente salta a la pose del servidor en vez de deslizarse |
+| `net.snap()` | Después de teletransportar o respawnear, **en el servidor**, apenas movés el nodo: cada cliente salta ahí en vez de deslizarse (los demás cuando su tiempo dibujado llega, el dueño con predicción sin desvanecer). Viaja con la pose, así que no hace falta `to_all` |
+| `net.correction_offset()` | Con predicción, en el dueño: cuánto le falta a lo que se dibuja para llegar a la pose real mientras se desvanece una corrección (0 = nada) |
 | `net.last_correction()` | Con predicción, en el dueño: cuánto lo corrigió el servidor en el último estado (0 = la predicción acertó) |
 | `net.owner_slot` | El slot dueño (para mostrar "P1", elegir color...) |
 | `MpActor.of(nodo)` | El `MpActor` hijo de un nodo, o `null` |
@@ -570,11 +599,10 @@ Ejemplo de `snap` después de un respawn:
 ```gdscript
 func respawn(at: Vector2) -> void:   # en el servidor
 	position = at
-	net.to_all(&"respawned")
-
-func mp_all_respawned() -> void:
 	net.snap()
 ```
+
+El teletransporte viaja en el mismo paquete que la pose nueva (como el `EF_NOINTERP` de Source o el `Teleport()` de Photon Fusion), así que ningún cliente se desliza a través de él, lleguen los paquetes en el orden que lleguen. La compensación de lag también lo sabe: un disparo nunca se valida contra un punto intermedio.
 
 ### 6.9 La partida desde cualquier script: `Mp`
 
@@ -737,6 +765,7 @@ Un `MpMatch` en el mundo dice cuándo empieza la partida, quién se fue y quién
 - **Antes del arranque** los asientos libres están abiertos. El mundo queda **pausado en todos los peers** hasta que cargan los asientos que espera: todos por defecto (`start_seats` = 0, igual en Host LAN y en un dedicado a mano; en una partida de sala, todos los del ticket). `--start-seats=N` cambia ese número sin tocar la escena. Pasado `load_timeout_s` (15 s) desde el primero que entró, arranca con los que cargaron; mientras tanto el HUD dice que espera (`MpWaitingLabel`, `Hud/Waiting`: «Waiting for players (1/4)»). En Host LAN el host no tiene que esperar: el botón **Start now** del HUD (`MpStartButton`, en `Hud/Start` del `MpWorld`) arranca con los que ya cargaron.
 - **Después del arranque** solo vuelve un asiento que se fue, dentro de `rejoin_grace_s`, al mismo slot (*rejoin*), salvo que esté prendido **`late_join`** (inspector del `MpFlow` o `--late-join`; apagado por defecto): entonces un recién llegado todavía toma un asiento libre, y un asiento abandonado pasada la gracia queda libre otra vez. Una partida de sala nunca tiene late join (el ticket nombra cada asiento). En LAN el cliente vuelve solo con la credencial que el servidor le dio al sentarlo (en memoria, por `host:puerto`); en una sala, con su ticket. Si el servidor todavía no notó que el cliente se cayó, gana la credencial (o el ticket): se suelta la conexión vieja y el asiento vuelve como rejoin. Cualquier otro peer se rechaza con un motivo: `match_started`, `full`, `grace_over`, `slot_taken`. El cliente recibe `admission_rejected(motivo)` y el flow lo muestra con `rejection_text(motivo)` (pisalo para traducir).
 - Un asiento que no vuelve a tiempo, o que nunca cargó, **abandona** (`player_abandoned`). Si se fueron todos en un dedicado, nadie abandona: la puerta espera y, cuando pasó la gracia de todos, emite `all_gone`. En un listen host el host sigue jugando: cada asiento que pasa la gracia abandona y no hay `all_gone`.
+- **Mientras un asiento no está**, su peón queda si el spawner lo conserva (`MpSlotSpawner.despawn_on_leave` apagado; prendido por defecto, se borra y se vuelve a crear en el rejoin): no tiene teclas apretadas y, con predicción, el servidor lo sigue simulando sin ninguna (la gravedad o un empujón siguen). Al volver, las teclas de la conexión nueva lo mueven al instante.
 - **Un dedicado a mano sirve una partida tras otra** (una VPS arrancada con `--dedicated`): cuando su partida termina (`Mp.finish()`) y se va el último jugador, o todos quedaron afuera pasada la gracia (`all_gone`), carga un mundo nuevo (puntos y actores desde cero) y abre otra vez todos los asientos. Un juego con pantalla de revancha puede llamar él mismo a `MpFlow.next_open_match()` cuando se fueron sus jugadores. **Si tu juego termina la partida a su manera** (no con `Mp.finish()`), avisale al kit en el servidor con `MpKit.broadcast_session_ended(result)`, o llamá a `MpFlow.next_open_match()` cuando terminó y quedó vacío; si no, la partida siguiente recién se abre cuando pasó la gracia de todos, y el que llega antes se rechaza (`match_started`). Los clientes reciben el estado de la puerta al ser admitidos y se pausan apenas cargan su mundo, así que su `MatchClock` arranca en 0.
 
 Los knobs están en el inspector del `MpFlow`, grupo **Match start** (`rejoin_grace_s`, `load_timeout_s`, `start_seats`, `late_join`, `pause_clients`, `match_started_status`). En una partida de sala, la gracia y el tiempo de carga salen del `MpLobbyConfig`. En el Remote del editor, `/root/MpKit/Gate` muestra `phase`, `expected`, `loaded` y `away`. En Host LAN el host puede arrancar con los que ya cargaron: `MpStartButton`, o `Mp.gate().can_start_now()` / `Mp.gate().start_now()` desde un botón propio.
@@ -960,6 +989,7 @@ Toda la matriz de casos automáticos: `mpkit_lab/run/all.sh` (una hora con una c
 | `--world=id` | Mundo, si usás el catálogo `MpFlow.worlds` |
 | `--keep-match-files` | Servidor de salas: no borra la carpeta de cada partida |
 | `--lag-comp=off` | Servidor: sin compensación de lag (para comparar) |
+| `--correction-smoothing-s=0` | Cliente: las correcciones del jugador propio se dibujan de golpe (para comparar; u otro tiempo en segundos) |
 | `--relay-refused-grace-s=N` | Cuánto reintenta un host que el relay rechazó antes de darse por rechazado (3 s; las partidas de un servidor de salas usan 0.5 s) |
 | `--no-flow` | El `MpFlow` no hace nada (herramientas y pruebas) |
 
@@ -1699,7 +1729,7 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | aparecer balas o pickups | **MpSpawner** con la escena en **Extra Scenes** + `spawn_actor(escena, props, owner_slot)` |
 | borrar algo en todos | `net.despawn()` (servidor, nodos hechos por un spawner) |
 | ocultar un objeto del mundo | `sync_visible` + `visible = false` en el servidor |
-| teletransportar sin deslizar | `net.snap()` en los clientes |
+| teletransportar sin deslizar | `net.snap()` en el servidor, apenas lo movés |
 | puntaje, reloj, ronda | `Mp.state().set_value` / `.add`, señal `changed` |
 | terminar la partida | `Mp.finish({"winner": ...})`, señal `finished` en todos |
 | mostrar "esperando jugadores" | `MpMatch.waiting_changed` + nodo con Process Mode = Always |

@@ -13,6 +13,8 @@ signal client_world_ready(peer_id: int)
 signal load_world
 signal snapshot_received(data: Dictionary)
 signal session_ended(data: Dictionary)
+## Server: it told every peer the session ended (broadcast_session_ended, e.g. MpMatch.finish). Clients get session_ended.
+signal session_ended_sent(data: Dictionary)
 signal slot_assigned(slot: int)
 ## Client side: the server refused the ticket (reason is opaque, chosen by the server).
 signal admission_rejected(reason: String)
@@ -254,6 +256,16 @@ func request_world_ready() -> void:
 	rpc_world_ready.rpc_id(1)
 
 
+## The local world finished loading (MpFlow.world_loaded, when the world reports it). A client tells the server, and its seat
+## counts as loaded at the gate; the server itself (a listen host, a dedicated, solo) tells the gate it is in.
+func report_loaded() -> void:
+	if is_networked() and not multiplayer.is_server():
+		rpc_seat_loaded.rpc_id(1)
+		return
+	if gate:
+		gate.mark_host_loaded()
+
+
 func push_snapshot(data: Dictionary) -> void:
 	if not is_server():
 		return
@@ -288,6 +300,7 @@ func broadcast_session_ended(data: Dictionary) -> void:
 		return
 	for peer_id in _broadcast_peers():
 		rpc_session_ended.rpc_id(peer_id, data)
+	session_ended_sent.emit(data)
 
 
 func is_custom_channel_allowed(channel: StringName) -> bool:
@@ -508,6 +521,12 @@ func rpc_present_ticket(ticket: String) -> void:
 
 
 func _admit_at_gate(sender: int, credential: String) -> void:
+	## A client back after a drop the server has not noticed yet: its credential wins over the stale connection, which leaves
+	## the way a drop does (the seat is away), so the seat comes back as a rejoin.
+	var stale := gate.displaced_by(sender, credential)
+	if stale != 0:
+		_on_peer_disconnected(stale)
+		multiplayer.multiplayer_peer.disconnect_peer(stale)
 	var seat := gate.admit(sender, credential)
 	if seat.slot <= 0:
 		_reject_peer(sender, seat.reason)
@@ -558,8 +577,18 @@ func rpc_world_ready() -> void:
 		return
 	_world_ready[sender] = true
 	client_world_ready.emit(sender)
-	if gate.is_armed():
+	if gate.is_armed() and gate.loaded_on_world_ready:
 		gate.mark_loaded(ids.slot_for_peer(sender))
+
+
+## A seated client's world reported itself loaded (report_loaded): its seat counts at the gate.
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_seat_loaded() -> void:
+	if not multiplayer.is_server():
+		return
+	var slot := ids.slot_for_peer(multiplayer.get_remote_sender_id())
+	if slot != 0 and gate.is_armed():
+		gate.mark_loaded(slot)
 
 
 @rpc("authority", "call_remote", "reliable")

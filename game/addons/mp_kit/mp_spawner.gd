@@ -127,6 +127,17 @@ func spawn_actor(scene: PackedScene, props: Dictionary = {}, owner_slot: int = 0
 	return node
 
 
+## Every peer may call it: on the server (or solo) it runs spawn(data) through this spawner's spawn_function, so the node
+## appears on every peer; on a client it does nothing and returns null. No `if server` around it.
+func spawn_here(data: Variant = null) -> Node:
+	if not MpKit.is_authority():
+		return null
+	if not spawn_function.is_valid():
+		push_error("MpSpawner '%s': spawn_here() needs a spawn_function (set it in a _ready of the scene)" % name)
+		return null
+	return spawn(data)
+
+
 func _lists(path: String) -> bool:
 	for i in get_spawnable_scene_count():
 		if get_spawnable_scene(i) == path:

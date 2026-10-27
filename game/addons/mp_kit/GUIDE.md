@@ -168,7 +168,9 @@ World (Node2D o Node3D)
     ├── Match            (MpMatch)
     └── Hud
         ├── Leave        (MpLeaveButton: sale de la partida)
-        └── Invite       (MpInviteLabel: en una partida privada, el código para los amigos)
+        ├── Invite       (MpInviteLabel: en una partida privada, el código para los amigos)
+        ├── Start        (MpStartButton: el host arranca con los jugadores que ya entraron)
+        └── Waiting      (MpWaitingLabel: «Waiting for players (1/4)» mientras la partida espera)
 ```
 
 **`boot.tscn`**:
@@ -278,6 +280,8 @@ Qué hace el `MpFlow`: arranca la red con la config, arma la puerta de arranque,
 | `seats` | Cuántos marcadores arma en `SpawnPoints` (si hay más jugadores, vuelven a empezar) | 4 |
 | `leave_button` | Arma `Hud/Leave` | on |
 | `invite_label` | Arma `Hud/Invite`: en una partida privada de esta PC muestra el código para los amigos | on |
+| `start_button` | Arma `Hud/Start`: en Host LAN, mientras la partida espera asientos, el host arranca con los que ya cargaron | on |
+| `waiting_label` | Arma `Hud/Waiting`: mientras la partida espera sus asientos, lo dice en todos los peers | on |
 
 4. Mové los marcadores de `MpWorld/SpawnPoints` adonde querés que nazca cada jugador.
 5. **Guardá la escena** (Ctrl+S).
@@ -306,7 +310,7 @@ El `MpWorld` solo arma nodos que también podés poner vos. Sirve si tu mundo ya
 
 6. Opcional, para el puntaje: agregá un hijo **MpState** llamado `Score`.
 7. Opcional, para inicio y fin: agregá un hijo **MpMatch** llamado `Match`.
-8. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)), y un **MpInviteLabel** para las partidas privadas.
+8. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)), un **MpInviteLabel** para las partidas privadas un **MpStartButton** para que el host LAN pueda arrancar sin esperar todos los asientos y un **MpWaitingLabel** que dice que la partida espera.
 9. **Guardá la escena** (Ctrl+S). Al guardar, el `MpState` arma su hijo `MpSync` y queda guardado.
 
 Qué hace el `MpSlotSpawner`: crea un jugador por slot ocupado. En solo, el tuyo. En LAN, el del host al arrancar y el de cada cliente cuando termina de cargar el mundo. En dedicado, ninguno para el servidor. Los llama `Pawn_1`, `Pawn_2`... y les pone `MpActor.owner_slot` antes de que entren al árbol.
@@ -465,10 +469,12 @@ func _physics_process(_delta: float) -> void:
 | `net.is_authority()` | Solo, o en el servidor (LAN host o dedicado) | Las reglas del juego |
 | `net.is_local()` | En la máquina del jugador dueño de este nodo | Cámara, HUD propio, leer el mouse |
 | `MpKit.is_networked()` | Hay red (no es solo) | Textos tipo "Solo" / "Online" |
-| `MpKit.is_server()` | Este proceso es servidor con red | |
+| `MpKit.is_server()` | Este proceso es servidor con red (falso en solo) | Lo que solo existe en red: snapshots, el matchmaker, el túnel. Para las reglas, `is_authority()` |
 | `MpKit.is_listening()` | Servidor alcanzable por los clientes (con relay, recién cuando el relay lo aceptó) | Avisar "listo" |
 | `MpKit.is_dedicated()` | Servidor sin jugador | No reproducir sonidos, no esperar teclas |
 | `MpKit.local_slot()` | El slot de esta máquina (0 en un dedicado o antes de que el servidor asigne) | "Sos P2" |
+
+Dentro de cualquier nodo, `is_multiplayer_authority()` (el de Godot) dice lo mismo que `net.is_authority()`: el kit deja la autoridad de cada nodo en el servidor, así que es verdadero en solo, en el host LAN y en el dedicado, y falso en un cliente. `MpKit.is_authority()` (o `Mp.is_server()`) es la misma pregunta desde un script que no está en el mundo.
 
 En un host LAN, `is_authority()` **y** `is_local()` son verdaderos a la vez para su propio jugador.
 
@@ -658,6 +664,10 @@ Qué replica un spawner:
 - Un nodo que un script agrega a mano en `spawn_path` (`add_child` de algo que no está en la lista) **no** se replica: queda solo en el servidor. Sirve para un efecto solo del servidor.
 - Si usás `spawn_function`, asignala en un `_ready` de la escena (el del spawner, un hermano o el padre): el spawner la toma al final de ese frame, antes de que nada spawnee. Si la asignás más tarde, sale un warning y el primer nodo cuenta como agregado a mano.
 
+`spawner.spawn_here(data)` es un `spawn(data)` que podés llamar desde cualquier peer: en el servidor (o en solo) spawnea con tu `spawn_function`; en un cliente no hace nada y devuelve `null`. Sin `if servidor` alrededor.
+
+El spawner de jugadores (`MpSlotSpawner`, el `Players` del `MpWorld`) le da un jugador a cada asiento con el mundo listo: a los que lo avisan después, y a los que ya estaban listos cuando entra el spawner (un mundo cargado otra vez, un spawner en una escena que carga después).
+
 ### 7.3 Borrar cosas
 
 En la bala, cuando se acaba su vida:
@@ -688,6 +698,7 @@ Para lo que tienen que ver todos y no es de un actor: puntaje, reloj, ronda.
 | `state.get_value(&"clave", default)` | Lee, en cualquier peer |
 | `state.values` | El `Dictionary` completo (para leer). Valores iniciales: cargalos en el inspector |
 | señal `changed(key, value)` | En todos los peers, cada vez que cambia una clave |
+| `state.watch(&"clave", callback, default)` | En todos los peers: `callback(valor)` ya con el valor actual y después en cada cambio de esa clave. El que entra o vuelve recibe primero el valor actual, sin importar en qué orden arranca todo. `unwatch(handle)` lo corta |
 
 Un HUD que lo muestra (del ejemplo, `hud.gd`):
 
@@ -699,17 +710,34 @@ func _ready() -> void:
 	_refresh()
 ```
 
+O para una sola clave, `state.watch(&"round", _show_round, 1)`: muestra la ronda actual al instante y cada ronda nueva.
+
 No escribas `state.values["x"] = 3` a mano: no se sincroniza. Usá `set_value`.
+
+### Quién mira esta pantalla: `MpLocalSeat`
+
+El HUD, los sonidos, las órdenes, la pausa y el resultado muestran el lado de un jugador. Poné un **MpLocalSeat** en el mundo y pasáselo con `@export var seat: MpLocalSeat` (lo que nace en runtime lo encuentra con `MpLocalSeat.of(self)`):
+
+| | Qué dice |
+|---|---|
+| `seat.slot` | El asiento que juega esta PC (0 en un dedicado, o en un cliente todavía sin asiento) |
+| `seat.is_mine(slot)` | Si ese asiento es el de esta pantalla |
+| `seat.is_online()` | Si hay red |
+| señal `changed(slot)` | Cambió el asiento de esta pantalla (el servidor dio uno) |
+| `preview_slot` (inspector) | Solo en solo: mirar la partida como ese asiento, p.ej. el HUD del jugador 2, sin una segunda ventana |
+
+Quién simula es otra pregunta: `is_multiplayer_authority()` / `is_authority()` (6.3).
 
 ### 7.5 Inicio y fin: `MpMatch`
 
 Un `MpMatch` en el mundo dice cuándo empieza la partida, quién se fue y quién volvió, y la termina para todos. Lo que cuenta lo decide la **puerta de arranque** (`MpMatchGate`, en `/root/MpKit/Gate`, `Mp.gate()`), que el `MpFlow` arma en cada camino que hostea (Host LAN, dedicado a mano, dedicado de sala):
 
-- **Antes del arranque** los asientos libres están abiertos. El mundo queda **pausado en todos los peers** hasta que cargan los asientos que espera: todos en una partida de sala o en Host LAN (`start_seats` = 0), y uno en un dedicado a mano (`dedicated_start_seats` = 1). `--start-seats=N` cambia ese número sin tocar la escena. Pasado `load_timeout_s` desde el primero que entró, arranca con los que cargaron.
-- **Después del arranque** solo vuelve un asiento que se fue, dentro de `rejoin_grace_s`, al mismo slot (*rejoin*). En LAN el cliente vuelve solo con la credencial que el servidor le dio al sentarlo (en memoria, por `host:puerto`); en una sala, con su ticket. Cualquier otro peer se rechaza con un motivo: `match_started`, `full`, `grace_over`, `slot_taken`. El cliente recibe `admission_rejected(motivo)` y el flow lo muestra con `rejection_text(motivo)` (pisalo para traducir).
-- Un asiento que no vuelve a tiempo, o que nunca cargó, **abandona** (`player_abandoned`). Si se fueron todos en un dedicado, nadie abandona: la puerta espera y, cuando pasó la gracia de todos, emite `all_gone`. En un listen host el host sigue jugando: cada asiento que pasa la gracia abandona y no hay `all_gone`. Los clientes reciben el estado de la puerta al ser admitidos y se pausan apenas cargan su mundo, así que su `MatchClock` arranca en 0.
+- **Antes del arranque** los asientos libres están abiertos. El mundo queda **pausado en todos los peers** hasta que cargan los asientos que espera: todos por defecto (`start_seats` = 0, igual en Host LAN y en un dedicado a mano; en una partida de sala, todos los del ticket). `--start-seats=N` cambia ese número sin tocar la escena. Pasado `load_timeout_s` (15 s) desde el primero que entró, arranca con los que cargaron; mientras tanto el HUD dice que espera (`MpWaitingLabel`, `Hud/Waiting`: «Waiting for players (1/4)»). En Host LAN el host no tiene que esperar: el botón **Start now** del HUD (`MpStartButton`, en `Hud/Start` del `MpWorld`) arranca con los que ya cargaron.
+- **Después del arranque** solo vuelve un asiento que se fue, dentro de `rejoin_grace_s`, al mismo slot (*rejoin*), salvo que esté prendido **`late_join`** (inspector del `MpFlow` o `--late-join`; apagado por defecto): entonces un recién llegado todavía toma un asiento libre, y un asiento abandonado pasada la gracia queda libre otra vez. Una partida de sala nunca tiene late join (el ticket nombra cada asiento). En LAN el cliente vuelve solo con la credencial que el servidor le dio al sentarlo (en memoria, por `host:puerto`); en una sala, con su ticket. Si el servidor todavía no notó que el cliente se cayó, gana la credencial (o el ticket): se suelta la conexión vieja y el asiento vuelve como rejoin. Cualquier otro peer se rechaza con un motivo: `match_started`, `full`, `grace_over`, `slot_taken`. El cliente recibe `admission_rejected(motivo)` y el flow lo muestra con `rejection_text(motivo)` (pisalo para traducir).
+- Un asiento que no vuelve a tiempo, o que nunca cargó, **abandona** (`player_abandoned`). Si se fueron todos en un dedicado, nadie abandona: la puerta espera y, cuando pasó la gracia de todos, emite `all_gone`. En un listen host el host sigue jugando: cada asiento que pasa la gracia abandona y no hay `all_gone`.
+- **Un dedicado a mano sirve una partida tras otra** (una VPS arrancada con `--dedicated`): cuando su partida termina (`Mp.finish()`) y se va el último jugador, o todos quedaron afuera pasada la gracia (`all_gone`), carga un mundo nuevo (puntos y actores desde cero) y abre otra vez todos los asientos. Un juego con pantalla de revancha puede llamar él mismo a `MpFlow.next_open_match()` cuando se fueron sus jugadores. Los clientes reciben el estado de la puerta al ser admitidos y se pausan apenas cargan su mundo, así que su `MatchClock` arranca en 0.
 
-Los knobs están en el inspector del `MpFlow`, grupo **Match start** (`rejoin_grace_s`, `load_timeout_s`, `start_seats`, `dedicated_start_seats`, `pause_clients`, `match_started_status`). En una partida de sala, la gracia y el tiempo de carga salen del `MpLobbyConfig`. En el Remote del editor, `/root/MpKit/Gate` muestra `phase`, `expected`, `loaded` y `away`. En Host LAN el host puede arrancar con los que ya cargaron: `Mp.gate().can_start_now()` / `Mp.gate().start_now()` (para un botón «Empezar ya»).
+Los knobs están en el inspector del `MpFlow`, grupo **Match start** (`rejoin_grace_s`, `load_timeout_s`, `start_seats`, `late_join`, `pause_clients`, `match_started_status`). En una partida de sala, la gracia y el tiempo de carga salen del `MpLobbyConfig`. En el Remote del editor, `/root/MpKit/Gate` muestra `phase`, `expected`, `loaded` y `away`. En Host LAN el host puede arrancar con los que ya cargaron: `MpStartButton`, o `Mp.gate().can_start_now()` / `Mp.gate().start_now()` desde un botón propio.
 
 Señales:
 
@@ -791,6 +819,21 @@ Por código, lo mismo:
 Mp.leave()                                  # al lobby o al menú
 MpFlow.find_in_tree(self).return_to_boot()  # siempre al menú
 ```
+
+### 7.7 Pantalla de carga
+
+El `MpFlow` carga el mundo en un hilo (`MpWorldLoader`, hijo interno del flow y único dueño de la carga): primero lee la escena del mundo y los archivos que nombre tu juego, después cambia de escena y, si lo pediste, espera a que **el mundo avise que está listo** (por ejemplo, después de precalentar shaders detrás de una pantalla). Recién ahí ese peer cuenta como cargado en la puerta de arranque. Así nadie arranca la partida con el mundo a medio compilar.
+
+1. En tu flow (o su escena), tildá **`world_reports_loaded`**. Apagado (por defecto), «cargado» es «la escena del mundo entró», como siempre.
+2. En el mundo, cuando esté listo: `MpFlow.find_in_tree(self).report_world_loaded()`. Mientras tanto podés contar el avance con `report_world_progress(0..1)`. Si el mundo nunca avisa, el loader sigue solo a los `report_timeout_s` (30 s) y la puerta arranca igual pasado `load_timeout_s`.
+3. Para la pantalla, escuchá `world_load_progressed(ratio, phase)` del flow: `phase` es `MpWorldLoader.Phase` (`FILES` leyendo archivos, `WORLD` el mundo preparándose, `READY` listo, `IDLE` la carga se cortó porque la escena cambió por otro lado, por ejemplo se cayó el servidor). `ratio` va de 0 a 0,5 con los archivos y de 0,5 a 1 con el mundo. `world_loaded` avisa al final. La pantalla tiene que tener **Process › Mode = Always**: la puerta pausa el árbol mientras espera.
+4. Dos ganchos para pisar en tu subclase de `MpFlow`: `_before_world_load()` (justo antes de cargar, en cada peer: elegir el mapa) y `_extra_world_loads() -> PackedStringArray` (archivos que el mundo va a usar después, para leerlos en el mismo hilo y no trabarse al aparecer).
+
+Con `world_reports_loaded` prendido cambia quién cuenta:
+
+- **Cliente**: su asiento cuenta al `report_loaded` (RPC al servidor), no al `world_ready` de los spawners. El `world_ready` sigue igual para lo demás (revelar spawns, `client_world_ready`), así que el servidor le puede mandar lo que el cliente necesita para prepararse.
+- **Servidor** (host LAN, dedicado): la puerta espera también su propio mundo (`wait_host`, `mark_host_loaded`). Un dedicado sin pantalla avisa enseguida.
+- **Solo** («Jugar solo» o contra la IA): la puerta se arma también, sin asientos ni red (`arm([], 0)`), y solo espera al host. El árbol queda pausado hasta que el mundo avisa, así el reloj de la partida y la IA no corren detrás de la pantalla. Sin `world_reports_loaded` arranca enseguida, como antes.
 
 ## 8. Probar
 
@@ -1498,10 +1541,10 @@ Algún archivo de la carpeta ya existe (`[~]`) o la carpeta no empieza con `res:
 4. ¿Sin `predict`, movés detrás de `is_authority()`? Si movés detrás de `is_local()`, el cliente se mueve en su pantalla pero el servidor lo devuelve a su lugar.
 5. ¿`sync_position` está tildado? ¿Guardaste la escena del jugador después de tildarlo?
 6. ¿El `MpSlotSpawner` (el `Players` del `MpWorld`) tiene `spawn_path` y `pawn_scene`?
-7. ¿La partida espera asientos? El mundo está pausado hasta que cargan los que espera (`MpMatch.waiting`, `Mp.gate().is_waiting()`). Con un solo cliente en Host LAN o en un dedicado para varios, probá `--start-seats=1`.
+7. ¿La partida espera asientos? El mundo está pausado hasta que cargan los que espera (`MpMatch.waiting`, `Mp.gate().is_waiting()`). Arranca sola pasado `load_timeout_s`; en Host LAN tocá **Start now** (`MpStartButton`), o probá `--start-seats=1`.
 
 **Un segundo cliente no entra: «The match already started» (`match_started`).**
-La puerta ya arrancó la partida: después del arranque solo vuelve un asiento que se fue. Para que entren varios, que carguen antes del arranque: `--start-seats=N` en el servidor (o `dedicated_start_seats` / `start_seats` en el inspector del `MpFlow`).
+La puerta ya arrancó la partida: después del arranque solo vuelve un asiento que se fue. Para que entren varios, que carguen antes del arranque (`start_seats` = 0 espera todos los asientos, `--start-seats=N`), o prendé `late_join` (`--late-join`) para un juego de entrar y salir. En un dedicado a mano, la partida siguiente se abre sola cuando esta termina y se fueron todos.
 
 **Se mueve, pero los otros jugadores tironean.**
 Usá `smoothing = BUFFERED` con `adaptive_buffer` prendido; si sigue, bajá `late_tolerance` (0.01) o subí el tope `buffer_delay_s` (0.15, 0.2). Si bajaste `send_hz`, subilo o dejalo en 0.
@@ -1579,8 +1622,10 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | `MpFlow` | El nodo que maneja escenas y modos (solo, LAN, unirse, dedicado). Es dueño de la sesión |
 | `Mp` | La clase con los verbos de la partida: `play_solo`, `host`, `join`, `leave`, `is_server`, `me`, `state`, `finish`, `net_quality` |
 | `MpGame` | El juego en un `.tres`: la red (es un `MpNetConfig`) y las escenas (boot, mundo, lobby, salas) |
-| `MpWorld` | Un nodo en el mundo que arma puntos de aparición, actores, spawner, estado, partida, botón Leave e invitación |
+| `MpWorld` | Un nodo en el mundo que arma puntos de aparición, actores, spawner, estado, partida, botón Leave, invitación, botón Start now y aviso de espera |
 | `MpInviteLabel` | En el HUD: en una partida privada de esta PC, lo que escriben los amigos para entrar |
+| `MpStartButton` | En el HUD: en Host LAN, mientras la partida espera asientos, el host arranca con los que ya entraron |
+| `MpWaitingLabel` | En el HUD: mientras la partida espera sus asientos, «Waiting for players (1/4)» en todos los peers |
 | `MpNetQuality` | La calidad de la conexión (RTT, jitter, pérdida, nota); se lee con `Mp.net_quality()` |
 | `MpLagComp` | La compensación de lag: un segundo de poses en el servidor, para validar un disparo contra lo que vio el tirador |
 | `MpNetConfig` | Recurso `.tres` con la red del juego: transporte, puerto, jugadores, dirección pública, relay, TLS |
@@ -1624,6 +1669,7 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | toda la red y las escenas en un lugar | un **MpGame** (`game.tres`) en **Flow › Game** |
 | un mundo en red sin cablear nodos | un **MpWorld** con **Player Scene** |
 | jugar solo, hostear, unirse o salir desde mi propio menú | `Mp.play_solo()`, `Mp.host()`, `Mp.join(texto)`, `Mp.leave()` |
+| una pantalla de carga que espera al mundo (shaders) | **MpFlow › world_reports_loaded** + `report_world_loaded()` en el mundo; escuchá `world_load_progressed` ([7.7](#77-pantalla-de-carga)) |
 | que algo se vea igual en todos | **MpActor › Sync** (posición, rotación, visible, Extra) |
 | sincronizar una propiedad propia (`health`) | **MpActor › Sync › sync_extra** = `health` (o `Health:current`) |
 | que el jugador responda sin lag | **MpActor › Prediction › predict** + `func mp_move(keys, delta)` |
@@ -1651,7 +1697,9 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | volver a una partida de sala después de caerme | botón **Back to the match** (`MpLobbyScreen.rejoin_match()`) |
 | saber si soy servidor | `net.is_authority()` / `Mp.is_server()` |
 | saber si este nodo es mío | `net.is_local()` |
-| saber qué jugador soy | `Mp.me()` |
+| saber qué jugador soy | `Mp.me()`, o un **MpLocalSeat** pasado al HUD (`seat.slot`, `is_mine`, `preview_slot` en solo) |
+| un valor de la partida desde el inicio y en cada cambio | `state.watch(&"clave", callback)` |
+| spawnear desde cualquier peer sin preguntar quién soy | `spawner.spawn_here(data)` |
 | jugar en LAN | **Host LAN** + **Join** a la IP |
 | un servidor dedicado | `godot --headless --path . -- --dedicated` |
 | salas online | `lobby_scene` y `rooms_scene` en `game.tres`: `MpRoomServer` + `MpLobbyConfig` + `MpLobbyScreen` (el `MpMatch` viene en el `MpWorld`) |

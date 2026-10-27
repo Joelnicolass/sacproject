@@ -21,8 +21,11 @@ signal status_changed(text: String)
 @export var max_players: int = 4
 @export var room_name: String = "MpKit"
 @export var advertise_lan: bool = true
-## Without a flow (drive_kit): clients that must load before a hosted match starts (0 = every seat).
-@export var start_seats: int = 1
+## Without a flow (drive_kit): clients that must load before a hosted match starts; 0 = every seat, or whoever loaded once
+## the gate's load timeout passed. The host may start sooner (MpStartButton). Same default as MpFlow.start_seats.
+@export var start_seats: int = 0
+## Without a flow (drive_kit): after the start a newcomer still takes a free seat. Same as MpFlow.late_join.
+@export var late_join: bool = false
 
 @export var title_text: String = "MpKit"
 @export var play_solo_text: String = "Play solo"
@@ -184,6 +187,7 @@ func _on_host() -> void:
 			MpLan.advertise(MpKit, room_name, MpKit.port)
 		## The start gate decides who sits; every seat it lets in gets the world.
 		MpKit.gate.host_present = true
+		MpKit.gate.late_join = late_join
 		MpKit.gate.arm(MpKit.open_seats(), start_seats)
 		if world_scene != null and not MpKit.peer_joined.is_connected(MpBootMenu._send_world):
 			MpKit.peer_joined.connect(MpBootMenu._send_world)

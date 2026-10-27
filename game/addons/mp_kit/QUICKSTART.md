@@ -31,11 +31,13 @@ Escena con raíz `Node2D` o `Node3D` (tu nivel) y un nodo **MpWorld** con **Play
 |---|---|
 | `SpawnPoints` | un marcador por asiento: movelos adonde nace cada jugador |
 | `Actors` | ahí aparecen los jugadores (y lo que haga un spawner) |
-| `Players` | un jugador por asiento, en todos, también para el que entra tarde |
+| `Players` | un jugador por asiento, en todos, también para el que vuelve |
 | `State` | puntaje, reloj, ronda: lo ven todos (`Mp.state()`) |
 | `Match` | espera a que carguen todos, quién se va y quién vuelve, el final (`Mp.finish()`) |
 | `Hud/Leave` | botón para salir de la partida |
 | `Hud/Invite` | en una partida privada de esta PC, lo que escriben los amigos para entrar |
+| `Hud/Start` | en Host LAN, mientras la partida espera asientos: arrancar con los jugadores que ya entraron |
+| `Hud/Waiting` | mientras la partida espera sus asientos: «Waiting for players (1/4)» |
 
 Si borrás una pieza, se vuelve a armar al abrir la escena. No les cambies el nombre.
 

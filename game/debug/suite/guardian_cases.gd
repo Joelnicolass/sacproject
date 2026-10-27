@@ -6,7 +6,7 @@ extends RefCounted
 ## paths run as solo. `run(host)` adds its own floor and bodies under `host` and removes them at the end.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/james_manalith.tscn")
 const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const SELECTION := preload("res://scenes/orders/selection.gd")

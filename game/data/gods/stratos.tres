@@ -34,9 +34,9 @@
 [ext_resource type="Resource" path="res://data/catalog/spells/zerf.tres" id="33_s_zerf"]
 [ext_resource type="Resource" path="res://data/catalog/spells/zorf.tres" id="34_s_zorf"]
 [ext_resource type="Resource" path="res://data/look/stratos.tres" id="99_look"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stam.tscn" id="gs_mana"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_manalith.tscn" id="gs_mana"]
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stsp.tscn" id="gs_shrine"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_shrine.tscn" id="gs_shrine"]
 
 [sub_resource type="Resource" id="Unlock_0"]
 script = ExtResource("3_unl")

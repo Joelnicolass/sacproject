@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://data/buildings/charnel_lair.tres" id="2_type"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/e2u1.res" id="mesh_e2u1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(139.922, 138.357, 114.097)
+
+[node name="CharnelE2u" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_e2u1")
+
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
+position = Vector3(0.011001587, 0, 7.6064987)
+script = ExtResource("3_clear")
+radius_m = 91.27
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0.011001587, 53.965496, 7.6064987)
+shape = SubResource("BoxShape3D_body")

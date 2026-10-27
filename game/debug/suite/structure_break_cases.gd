@@ -6,9 +6,9 @@ extends RefCounted
 ## `arm_after_s` (a late join) shows the ruin and no burst; a probe child with only `building` and two connects hears `damaged`
 ## on every hit and `destroyed` once. Prints `structure_break_cases: falla <case>.<check>` for each failed check.
 
-const TOWER_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
+const TOWER_SCENE := preload("res://scenes/structures/buildings/james_manalith.tscn")
 const HUT_SCENE := preload("res://scenes/structures/buildings/james_hut.tscn")
-const STONE_SCENE := preload("res://scenes/structures/buildings/charnel_cabe.tscn")
+const STONE_SCENE := preload("res://scenes/structures/buildings/charnel_leaf_wheel.tscn")
 const FOUNT_SCENE := preload("res://scenes/map/props/manafount.tscn")
 const LINGER_TOLERANCE_TICKS := 1
 

@@ -1,0 +1,38 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBst.res" id="1_SBst"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBfl.res" id="2_SBfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBa1.res" id="3_SBa1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBa2.res" id="4_SBa2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBa3.res" id="5_SBa3"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBs1.res" id="6_SBs1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBs2.res" id="7_SBs2"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBd1.res" id="8_SBd1"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SB2t.res" id="9_SB2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBsc.res" id="10_SBsc"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBrz.res" id="11_SBrz"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBhv.res" id="12_SBhv"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBfg.res" id="13_SBfg"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBhf.res" id="14_SBhf"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/sara_bella_model_clips/SBi1.res" id="15_SBi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_SBst"),
+&"run": ExtResource("2_SBfl"),
+&"attack": ExtResource("3_SBa1"),
+&"attack2": ExtResource("4_SBa2"),
+&"attack3": ExtResource("5_SBa3"),
+&"shoot": ExtResource("6_SBs1"),
+&"shoot2": ExtResource("7_SBs2"),
+&"death": ExtResource("8_SBd1"),
+&"fly_death": ExtResource("8_SBd1"),
+&"held": ExtResource("9_SB2t"),
+&"thrash": ExtResource("10_SBsc"),
+&"rise": ExtResource("11_SBrz"),
+&"fly": ExtResource("2_SBfl"),
+&"hover": ExtResource("12_SBhv"),
+&"fly_damage": ExtResource("13_SBfg"),
+&"hit_floor": ExtResource("14_SBhf"),
+&"gesture": ExtResource("15_SBi1")
+}

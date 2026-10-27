@@ -24,9 +24,9 @@ func _ready() -> void:
 func _run() -> void:
 	var owners := AnimExpect.owners()
 	var models: Array = owners.keys()
-	for file in DirAccess.get_files_at(BodyModel.SCENE_DIR):
-		if file.ends_with(".tscn") and not models.has(BodyModel.tag_of_file(file)):
-			models.append(BodyModel.tag_of_file(file))
+	for file in DirAccess.get_files_at(ModelPaths.SCENE_DIR):
+		if file.ends_with(".tscn") and not models.has(ModelPaths.tag_of_file(file)):
+			models.append(ModelPaths.tag_of_file(file))
 	models.sort()
 	var rows: Array[Dictionary] = []
 	var unmapped: Array[Dictionary] = []
@@ -34,7 +34,7 @@ func _run() -> void:
 	var without_scene := PackedStringArray()
 	var without_owner := PackedStringArray()
 	for model: String in models:
-		if not BodyModel.exists(model):
+		if not ModelPaths.exists(model):
 			without_scene.append("%s (%s)" % [model, ", ".join(_who(owners[model]))])
 			continue
 		if not owners.has(model):

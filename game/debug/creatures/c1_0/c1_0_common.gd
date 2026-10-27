@@ -89,7 +89,7 @@ static func scan_all() -> Dictionary:
 		var frames := 0
 		for found in rx.search_all(text):
 			frames += int(found.get_string(1))
-		per[BodyModel.tag_of_file(file)] = {"clips": clips, "frames": frames}
+		per[ModelPaths.tag_of_file(file)] = {"clips": clips, "frames": frames}
 		total_clips += clips
 		total_frames += frames
 	return {"models": per.size(), "clips": total_clips, "frames": total_frames, "per": per}

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bw3j53xaogfx8" path="res://assets/original/ui/icons/usl_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gsba.tres" id="typed_gsba"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_gcil"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/surt_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/lord_surtur_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/lord_surtur.tscn" id="body_scene"]
 
 [resource]

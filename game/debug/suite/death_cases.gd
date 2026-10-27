@@ -191,7 +191,7 @@ func _ragdoll() -> Dictionary:
 
 ## The baked model of `tag` under the body's visual, in its idle pose and with its clips held (what the rig does at death).
 func _mount_model(unit: UnitBody, tag: String) -> BodyModel:
-	var model := (load(BodyModel.scene_path(tag)) as PackedScene).instantiate() as BodyModel
+	var model := (load(ModelPaths.scene_path(tag)) as PackedScene).instantiate() as BodyModel
 	unit.get_node("Tilt/Mesh").add_child(model)
 	model.preview("idle")
 	model.tree().advance(0.3)

@@ -84,12 +84,13 @@ static func decode_mode(id: String) -> GameMode:
 	return GameModeCatalog.shared().find(StringName(id)) if not id.is_empty() else null
 
 
-## {"map": id, "mode": id} of what this process plays: the part of the flow snapshot a late joiner needs before the world loads.
+## {"map": id, "mode": id, "seed": n} of what this process plays: the part of the flow snapshot a joiner needs before the world
+## loads (the seed: every peer draws the same marks and debris).
 static func encode_choice() -> Dictionary:
-	return {"map": String(ActiveMatch.map_tag()), "mode": String(ActiveMatch.mode_tag())}
+	return {"map": String(ActiveMatch.map_tag()), "mode": String(ActiveMatch.mode_tag()), "seed": ActiveMatch.match_seed()}
 
 
-## A client takes the map and the mode the server announced. One this client does not have is an error and the other one is
+## A client takes the map, the mode and the seed the server announced. One this client does not have is an error and the other one is
 ## kept (as is anything the message leaves out). By tag only: loading the map's definition here held the admission for seconds.
 static func decode_choice(data: Dictionary) -> void:
 	var chosen_mode: StringName = ActiveMatch.mode_tag()
@@ -109,6 +110,8 @@ static func decode_choice(data: Dictionary) -> void:
 			chosen_map = StringName(map_id)
 			print("mapa de la partida %s (del servidor)" % map_id)
 	ActiveMatch.choose_ids(chosen_map, chosen_mode)
+	if int(data.get("seed", 0)) > 0:
+		ActiveMatch.choose_seed(int(data["seed"]))
 
 
 ## The `options` of a room made from what a form chose: `mode`, `world`, `biome` (ids) and `level` (> 0), each only when set.

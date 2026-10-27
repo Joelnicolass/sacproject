@@ -297,6 +297,8 @@ func _world_text() -> String:
 	var corpses := get_tree().get_nodes_in_group("corpse").size()
 	var scars := get_tree().get_first_node_in_group("ground_scars")
 	var painted := (scars as GroundScars).painted_tiles() if scars is GroundScars else -1
+	## 060s: tiles count 10 m squares; `marks` counts every stamp kept (blood, burns, cracks), the number to compare between peers.
+	var stamped := (scars as GroundScars).marks.size() if scars is GroundScars else -1
 	var ruins := 0
 	for node in get_tree().current_scene.find_children("*", "Node3D", true, false) if get_tree().current_scene != null else []:
 		if node is BuildingRuin:
@@ -312,7 +314,7 @@ func _world_text() -> String:
 		var w_state: Variant = weather.get("state_now") if weather != null else null
 		sky = "sky t=%.1f hour=%.2f night=%.2f weather=%s" % [atmo.now_s(), sample.hour, sample.night,
 			(w_state as Resource).resource_path.get_file() if w_state is Resource else "?"]
-	return "souls=%d[%s] corpses=%d scars=%d ruins=%d defeated=%s ended=%s %s" % [souls_free, " ".join(souls_list), corpses, painted, ruins, defeated, ended, sky]
+	return "souls=%d[%s] corpses=%d scars=%d marks=%d ruins=%d defeated=%s ended=%s %s" % [souls_free, " ".join(souls_list), corpses, painted, stamped, ruins, defeated, ended, sky]
 
 
 func _atmosphere() -> Atmosphere:

@@ -2,6 +2,7 @@ class_name BloodRules
 extends RefCounted
 
 ## The sums of bleeding, with no tree: whether a drop of health bleeds (none, light or heavy) and where the marks of a spray land.
+## It also packs a wound for the wire (wound_of / index_of / is_heavy).
 ## What it does not do: touch nodes, FxBus or GroundScars, or use the global random generator (the caller hands its own).
 
 enum Kind { NONE, LIGHT, HEAVY }
@@ -30,3 +31,17 @@ static func mark_points(center: Vector3, count: int, radius_m: float, rng: Rando
 		var distance := sqrt(rng.randf()) * maxf(radius_m, 0.0)
 		points.append(center + Vector3(cos(angle) * distance, 0.0, sin(angle) * distance))
 	return points
+
+
+## A wound as the network carries it: xyz = the feet where it landed, w = 2 * index + heavy (exact in a float up to 2^23 wounds).
+static func wound_of(feet: Vector3, index: int, heavy: bool) -> Vector4:
+	return Vector4(feet.x, feet.y, feet.z, float(maxi(index, 0) * 2 + (1 if heavy else 0)))
+
+
+## Which wound of the body it is (1, 2, …); 0 = none yet.
+static func index_of(wound: Vector4) -> int:
+	return maxi(roundi(wound.w), 0) >> 1
+
+
+static func is_heavy(wound: Vector4) -> bool:
+	return (maxi(roundi(wound.w), 0) & 1) == 1

@@ -58,6 +58,9 @@ properties/6/replication_mode = 2
 properties/7/path = NodePath(".:carried")
 properties/7/spawn = true
 properties/7/replication_mode = 2
+properties/8/path = NodePath("BloodFx:wound")
+properties/8/spawn = true
+properties/8/replication_mode = 2
 
 [node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "collision", "mount", "health_bar", "states", "motor")]
 collision_layer = 2

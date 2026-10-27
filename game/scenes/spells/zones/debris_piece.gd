@@ -38,7 +38,7 @@ func launch(speed: Vector3, axis: Vector3, turn: float) -> void:
 	_turn = turn
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	_age += delta
 	if _age >= life_s:
 		queue_free()

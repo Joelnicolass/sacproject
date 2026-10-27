@@ -20,8 +20,10 @@ and host stalls + 1 %; else JITTER FAIL with the reasons.
   last_correction max <= 0.05 m walking straight (walk) and walking while turning (walk_turn)
   blips (frames with speed > 1.5 x or < 0.5 x the median, per 3 s window, straight + turn): own and rival mean <= 1 per window
     (host side, the creature and the camera are printed, not judged)
-  knock (the host casts Erupt on the client's wizard in the middle of walk_knock): corr_offset peak, and time from the peak
-    back under 1 cm <= 0.5 s
+  knock (the host casts Erupt on the client's wizard in the middle of walk_knock): the correction fades with tau 0.1 s, so the
+    criterion is 95 % of the corr_offset peak gone <= 0.35 s after it, and no drawn step > 3 x the mean walking step (the time
+    under 1 cm is printed as data). If last_correction > 2 m (correction_snap_distance) it is drawn at once: then corr_offset
+    under 1 cm <= 0.05 s after that frame
   warp (the client casts Teleport, warp_start..warp_end): the drawn wizard jumps in one frame: frames with a step > 3 x the
     median walking step other than the jump itself = 0
   guessed (host side, the client's MpInput queue): printed only.
@@ -137,11 +139,15 @@ def fmt(v, spec):
 
 
 def main():
+    global SNAP_DISTANCE
     ap = argparse.ArgumentParser()
     ap.add_argument("--host", required=True)
     ap.add_argument("--client", required=True)
     ap.add_argument("--step2", action="store_true")
+    ap.add_argument("--snap-distance", type=float, default=SNAP_DISTANCE,
+                    help="correction_snap_distance the client ran with (0 = off, to judge a run made before the snap)")
     args = ap.parse_args()
+    SNAP_DISTANCE = args.snap_distance
     host_rows, host_marks = read(args.host)
     cli_rows, cli_marks = read(args.client)
     ok = True
@@ -191,7 +197,11 @@ MAX_LAST_CORRECTION = 0.05
 KNOCK_SEEN_OFFSET = 0.05   # a push is seen when the drawn wizard was this far from the real one at some moment
 KNOCK_SEEN_CORRECTION = 0.25
 OFFSET_HOME = 0.01
-OFFSET_HOME_S = 0.5
+KNOCK_CLEAR_FRAC = 0.05   # 95 % of the peak gone
+KNOCK_CLEAR_S = 0.35
+KNOCK_STEP_FACTOR = 3.0
+SNAP_DISTANCE = 2.0       # MpActor.correction_snap_distance of the wizard (wizard_body.tscn)
+SNAP_HOME_S = 0.05
 WARP_MIN_JUMP = 5.0
 WARP_STEP_FACTOR = 3.0
 
@@ -246,7 +256,11 @@ def correction_max(own, marks, prefix):
 
 
 def knock_report(own, marks):
-    """(text, ok): the push of the host's Erupt in the middle of walk_knock, seen as the drawn wizard's offset from the real one."""
+    """(text, ok): the push of the host's Erupt in the middle of walk_knock, seen as the drawn wizard's offset from the real one.
+    Fade (the correction is exponential, tau 0.1 s): 95 % of the peak gone (corr_offset <= 5 % of it) within KNOCK_CLEAR_S of the
+    peak, and no drawn step bigger than KNOCK_STEP_FACTOR x the mean walking step. The time under 1 cm is printed as data.
+    Snap (the correction is longer than SNAP_DISTANCE: drawn at once): corr_offset under 1 cm within SNAP_HOME_S of that frame;
+    the jump of that frame is the correction itself and is not counted as a step."""
     seg = segment(marks, "walk_knock")
     if seg is None:
         return "knock: no walk_knock marks  FAIL", False
@@ -259,15 +273,37 @@ def knock_report(own, marks):
     if peak[6] < KNOCK_SEEN_OFFSET and corr_max < KNOCK_SEEN_CORRECTION:
         return ("knock: no push seen (corr_offset peak %.3f m, last_correction max %.3f m): the Erupt did not reach the wizard  FAIL"
                 % (peak[6], corr_max)), False
+    # Drawn steps inside the knock walk (the typical one is the mean walking step before the push is over).
+    inside = [s for s in own if seg[0] <= s[0] <= seg[1]]
+    steps = [(b[0], math.hypot(b[2] - a[2], b[3] - a[3])) for a, b in zip(inside, inside[1:])]
+    if not steps:
+        return "knock: no frames inside walk_knock  FAIL", False
+    typical = statistics.fmean(v for _, v in steps)
+    if SNAP_DISTANCE > 0 and corr_max > SNAP_DISTANCE:
+        hit = max((s for s in rows if s[4] is not None), key=lambda s: s[4])
+        home = next((s for s in rows if s[0] >= hit[0] and s[6] is not None and s[6] < OFFSET_HOME), None)
+        if home is None:
+            return "knock: correction %.2f m (> snap %.1f m) and corr_offset never got under 1 cm  FAIL" % (corr_max, SNAP_DISTANCE), False
+        back = home[0] - hit[0]
+        verdict = back <= SNAP_HOME_S
+        return ("knock (snap): last_correction max %.2f m > %.1f m, drawn at once; corr_offset under 1 cm %.3f s after it (<= %.2f)  %s"
+                % (corr_max, SNAP_DISTANCE, back, SNAP_HOME_S, "ok" if verdict else "FAIL")), verdict
     if peak[6] < KNOCK_SEEN_OFFSET:
         return ("knock: last_correction max %.2f m with no fade (corr_offset peak %.3f m): corrected in one step  ok" % (corr_max, peak[6])), True
-    home = next((s for s in rows if s[0] > peak[0] and s[6] < OFFSET_HOME), None)
-    if home is None:
-        return "knock: corr_offset peak %.2f m and it never got under 1 cm  FAIL" % peak[6], False
-    back = home[0] - peak[0]
-    verdict = back <= OFFSET_HOME_S
-    return ("knock: corr_offset peak %.2f m (%.2f s into walk_knock), under 1 cm %.2f s later (<= %.1f), last_correction max %.2f m  %s"
-            % (peak[6], peak[0] - seg[0], back, OFFSET_HOME_S, corr_max, "ok" if verdict else "FAIL")), verdict
+    clear = next((s for s in rows if s[0] > peak[0] and s[6] is not None and s[6] <= KNOCK_CLEAR_FRAC * peak[6]), None)
+    home = next((s for s in rows if s[0] > peak[0] and s[6] is not None and s[6] < OFFSET_HOME), None)
+    if clear is None:
+        return "knock: corr_offset peak %.2f m and 95 %% of it never went away  FAIL" % peak[6], False
+    back = clear[0] - peak[0]
+    big = max(v for _, v in steps)
+    fade_ok = back <= KNOCK_CLEAR_S
+    step_ok = big <= KNOCK_STEP_FACTOR * typical
+    verdict = fade_ok and step_ok
+    home_text = "%.2f s" % (home[0] - peak[0]) if home is not None else "never"
+    return ("knock: corr_offset peak %.2f m (%.2f s into walk_knock), 95 %% gone %.2f s later (<= %.2f) %s; under 1 cm %s (data); "
+            "largest drawn step %.2f m vs mean walking step %.2f m (<= %.0f x) %s; last_correction max %.2f m  %s"
+            % (peak[6], peak[0] - seg[0], back, KNOCK_CLEAR_S, "ok" if fade_ok else "FAIL", home_text, big, typical,
+               KNOCK_STEP_FACTOR, "ok" if step_ok else "FAIL", corr_max, "ok" if verdict else "FAIL")), verdict
 
 
 def warp_report(own, marks):

@@ -152,7 +152,7 @@
   {
    "call": {
     "harness": "ptnet_real_watch",
-    "method": "aim_tower",
+    "method": "aim_altar",
     "args": [
      2
     ]

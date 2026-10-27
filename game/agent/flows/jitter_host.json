@@ -1,0 +1,157 @@
+{
+ "wait_first": 0.5,
+ "steps": [
+  {
+   "wait": 3.0
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "started",
+    "timeout": 300,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 0.6
+   }
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "creature_ready",
+    "timeout": 60,
+    "equals": true
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_unit",
+    "args": [
+     1,
+     ""
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "aim_far",
+    "args": [
+     60
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "walk_go"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "mark_walk",
+    "args": [
+     "walk_start"
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 8.0
+   }
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "mark_walk",
+    "args": [
+     "walk_end"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "walked"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.walked"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 60,
+    "equals": true
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "flush",
+    "args": []
+   }
+  }
+ ]
+}

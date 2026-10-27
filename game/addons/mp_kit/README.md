@@ -496,8 +496,9 @@ Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md]
 | `nodes/mp_state.gd` | `MpState`: valores de partida (`set_value`, `add`, `get_value`, señal `changed`, `watch(key, cb)`: el valor actual y después cada cambio; `unwatch`). Lo escribe el servidor; lo reciben todos, también el que vuelve. `MpState.of(nodo)` |
 | `core/mp_sync_builder.gd` | lista del inspector → `SceneReplicationConfig` (transformaciones, sello y ack ALWAYS, el resto ON_CHANGE, `owner_slot` solo al nacer) |
 | `core/mp_actor_sync.gd` | qué manda el synchronizer de un `MpActor` en cada modo: con suavizado o predicción la pose viaja en `MpActor.net_position` / `net_rotation` + `net_stamp`, nunca en la del nodo, así en el cliente solo `MpActor` mueve el nodo |
-| `core/mp_input_frame.gd` | el frame de input que viaja al servidor; valida tamaño y tipos; contadores de pulsación |
-| `core/mp_input_queue.gd` | servidor con predicción: frames del dueño en orden, cada uno una vez; buffer de jitter (`depth`), puesta al día suave y presupuesto (un cliente no puede ir más rápido mandando frames de más) |
+| `core/mp_input_frame.gd` | el input de un tick; contadores de pulsación; fuerzas en los pasos de 1/255 con que viajan |
+| `core/mp_input_packet.gd` | `MpInputPacket`: una tira de frames en un paquete, codificada en delta (un frame que mantiene sus teclas ocupa 5 bytes), y los controles que un cliente hostil no pasa |
+| `core/mp_input_queue.gd` | servidor con predicción: frames del dueño en orden, cada uno una vez, uno por tick; un frame tardío se supone (el último otra vez) y se descarta cuando llega; buffer de jitter (`depth`) que el dueño mantiene lleno con su ritmo; presupuesto (un cliente no puede ir más rápido mandando frames de más) |
 | `core/mp_correction_smoother.gd` | `MpCorrectionSmoother`: la corrección del dueño dibujada desvaneciéndose (solo la pose visible; la real vuelve antes de cada frame de física) |
 | `core/mp_prediction.gd` | predicción del dueño y reconciliación: el servidor corre `mp_move` por cada frame del dueño; el dueño vuelve al estado del servidor y repite los frames sin ack, dentro del tick de física |
 | `core/mp_proxy_motion.gd` / `mp_interpolator.gd` | dibujo de proxies: `BUFFERED` (en el pasado, entre dos estados reales) o `FOLLOW` |

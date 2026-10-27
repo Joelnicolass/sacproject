@@ -12,15 +12,19 @@ extends Node
 
 ## Without prediction a frame is sent when the input changes, and at least this often.
 const KEEPALIVE_S := 0.1
-## With prediction every tick is sent, together with the frames before it (a lost packet is filled by the next).
+## With prediction every tick is sent, together with every frame the server has not confirmed yet (as Overwatch
+## does; delta-coded, MpInputPacket), and never fewer than this many: a burst of lost packets loses no frame.
 const REDUNDANCY := 3
 ## Frames the owner keeps to replay (2 s at 60 Hz).
 const HISTORY := 120
 ## Server, with prediction: how often it tells the owner how many of its frames are waiting beyond the buffer.
 const SLACK_S := 0.1
-## Owner: at most one extra frame every this many ticks while the server is short (about 6 % faster, as
-## Overwatch's client speeds up a little to refill the server's buffer).
+## Owner: at most one frame more (the server is short) or one less (it has more than one frame beyond its buffer)
+## every this many ticks: about 6 % faster or slower, as Overwatch's client speeds up or slows down to keep the
+## server's buffer just full. MpActor draws either without a hitch (the correction smoother takes the step).
 const PACE_EVERY := 16
+## Owner: the server's slack above which it sends a frame less.
+const SLACK_HIGH := 1
 
 ## The MpActor this input belongs to. Empty = the MpActor next to this node.
 @export var actor: MpActor
@@ -49,6 +53,8 @@ var _since_extra: int = 0
 ## Owner: a frame sampled this tick before the regular one (pacing), and the frame before it. MpActor runs it first.
 var _extra: MpInputFrame
 var _extra_before: MpInputFrame
+## Owner: no frame this tick (pacing down); MpActor simulates nothing new.
+var _skip: bool = false
 
 
 func _ready() -> void:
@@ -78,6 +84,13 @@ func _physics_process(delta: float) -> void:
 
 
 ## Owner, pacing: the extra frame to simulate before this tick's own (null almost always), taken once.
+## Owner, pacing: true when this tick sampled no frame (taken once).
+func take_skip() -> bool:
+	var skipped := _skip
+	_skip = false
+	return skipped
+
+
 func take_extra() -> Array:
 	if _extra == null:
 		return []
@@ -190,7 +203,14 @@ func previous_frame() -> MpInputFrame:
 func _sample_and_send(delta: float) -> void:
 	if actor.predict:
 		_pace()
+		if _skip:
+			_send_unconfirmed()
+			return
 	var frame := _current.next()
+	## Behind the server (this client froze or stalled and the server went on with guesses): carry on after the
+	## server's last frame, so these frames count again.
+	if actor.predict and frame.seq <= acked_seq:
+		frame.seq = acked_seq + 1
 	for i in actions.size():
 		var a := StringName(actions[i])
 		frame.record(i, Input.get_action_strength(a), Input.is_action_just_pressed(a), Input.is_action_just_released(a))
@@ -205,24 +225,41 @@ func _sample_and_send(delta: float) -> void:
 			_history.pop_front()
 	elif frame.same_as(_previous) and _since_sent < KEEPALIVE_S:
 		return
-	var packed: Array = []
-	var from := maxi(_history.size() - REDUNDANCY - (1 if _extra else 0), 0) if actor.predict else 0
 	if actor.predict:
-		for i in range(from, _history.size()):
-			packed.append(_history[i].pack())
-	else:
-		packed.append(frame.pack())
+		_send_unconfirmed()
+		return
 	_since_sent = 0.0
-	rpc_frames.rpc_id(MpAuthority.SERVER_PEER, packed)
+	var one: Array[MpInputFrame] = [frame]
+	rpc_frames.rpc_id(MpAuthority.SERVER_PEER, MpInputPacket.encode(one))
 
 
-## Owner: the server is short of frames: sample one more this tick (same keys), so its buffer refills without the
-## others seeing this player stall. The extra frame goes first; MpActor simulates both.
+## Owner with prediction: every frame the server has not confirmed, at least REDUNDANCY, consecutive (a seq jump
+## starts a new run).
+func _send_unconfirmed() -> void:
+	if _history.is_empty():
+		return
+	var from := _history.size() - 1
+	while from > 0 and _history[from - 1].seq == _history[from].seq - 1 \
+			and (_history.size() - from < REDUNDANCY or _history[from - 1].seq > acked_seq):
+		from -= 1
+	_since_sent = 0.0
+	rpc_frames.rpc_id(MpAuthority.SERVER_PEER, MpInputPacket.encode(_history.slice(from)))
+
+
+## Owner: keep the server's buffer just full. Short of frames: sample one more this tick (same keys, simulated before
+## this tick's own). More than SLACK_HIGH beyond it: sample none this tick. The others never see the player stall or
+## hurry; MpActor smooths the step on this screen.
 func _pace() -> void:
 	_since_extra += 1
-	if _server_slack >= 0 or _since_extra < PACE_EVERY:
+	if _since_extra < PACE_EVERY or (_server_slack >= 0 and _server_slack <= SLACK_HIGH):
 		return
 	_since_extra = 0
+	if _server_slack > SLACK_HIGH:
+		## The server holds more of this owner's frames than its buffer needs: one frame less, and its wait shortens
+		## without the others seeing the player hitch.
+		_server_slack -= 1
+		_skip = true
+		return
 	_server_slack += 1
 	var extra := _current.next()
 	for i in actions.size():
@@ -254,7 +291,7 @@ func _advance_remote() -> void:
 			## Only once the owner has this node (a rejoining owner is still loading its world).
 			if actor.reaches(_owner_peer):
 				rpc_slack.rpc_id(_owner_peer, _queue.slack())
-		_tick_frames = _queue.take_for_tick()
+		_tick_frames = _queue.take_for_tick(Time.get_ticks_usec() / 1000000.0)
 		if not _tick_frames.is_empty():
 			_current = _tick_frames[_tick_frames.size() - 1]
 			acked_seq = _current.seq
@@ -265,20 +302,14 @@ func _advance_remote() -> void:
 
 
 @rpc("any_peer", "call_remote", "unreliable_ordered")
-func rpc_frames(packed: Array) -> void:
-	## REDUNDANCY frames, one more when the owner paced an extra frame in.
-	if not multiplayer.is_server() or actor == null or packed.size() > REDUNDANCY + 1:
+func rpc_frames(packet: PackedByteArray) -> void:
+	if not multiplayer.is_server() or actor == null:
 		return
 	var sender := multiplayer.get_remote_sender_id()
 	if actor.owner_slot <= 0 or MpKit.slot_for_peer(sender) != actor.owner_slot:
 		return
 	_follow_owner_peer(sender)
-	for data in packed:
-		if typeof(data) != TYPE_ARRAY:
-			return
-		var frame := MpInputFrame.unpack(data, actions.size())
-		if frame == null:
-			return
+	for frame in MpInputPacket.decode(packet, actions.size()):
 		if actor.predict:
 			_queue.add(frame, Time.get_ticks_usec() / 1000000.0)
 		elif _latest == null or frame.seq > _latest.seq:

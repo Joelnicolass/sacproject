@@ -488,7 +488,7 @@ func hit(from: Vector2) -> void:   # en el servidor
 
 **Las correcciones en pantalla**: cuando el servidor decidió algo que el dueño no predijo, su nodo va a la pose corregida al instante (física, `mp_move`) y lo que se dibuja se desvanece desde donde estaba en `correction_smoothing_s` (0,1 s, como el `cl_smoothtime` de Source; Photon Fusion y Unity Netcode hacen lo mismo: solo se suaviza la pose visible). Un warp que hace el servidor no es una corrección para suavizar: llamá `net.snap()` en el servidor apenas movés el nodo (ver 6.8), o configurá `correction_snap_distance`. `net.correction_offset()` dice cuánto falta desvanecer.
 
-**Suave entre ticks de física**: el nodo predicho del dueño se mueve en ticks de física (60 por segundo). En una pantalla de 120 Hz o más, prendé **Project Settings › Physics › Common › Physics Interpolation**: el motor dibuja cada nodo entre sus dos últimos ticks (lo que Fusion usa por defecto para el jugador local). El kit está listo: los proxies la apagan para ellos (el kit los dibuja en cada frame) y la corrección se desvanece por tick.
+**Suave entre ticks de física**: el nodo predicho del dueño se mueve en ticks de física (60 por segundo). En una pantalla de 120 Hz o más, prendé **Project Settings › Physics › Common › Physics Interpolation**: el motor dibuja cada nodo entre sus dos últimos ticks (lo que Fusion usa por defecto para el jugador local). El kit está listo: los proxies la apagan para ellos (`MpActor` y `MpReplicate` los dibujan en cada frame) y la corrección se desvanece por tick. Lo que sigue a un nodo de red en `_process` (una cámara, una barra de vida) tiene que correr **después** de que el kit lo dibuja: `process_priority` mayor que 10000 (con physics interpolation, leé `get_global_transform_interpolated()` en 3D).
 
 ### 6.3 ¿Dónde estoy? `is_authority` e `is_local`
 
@@ -520,7 +520,13 @@ En un host LAN, `is_authority()` **y** `is_local()` son verdaderos a la vez para
 | `input.get_vector(&"l", &"r", &"u", &"d")` | `Input.get_vector` (largo máximo 1, zona muerta 0.2) |
 | `input.is_replaying()` | Verdadero mientras se repiten frames viejos |
 
-Una acción que no está en `MpInput.actions` siempre da 0 / falso en el servidor.
+Una acción que no está en `MpInput.actions` siempre da 0 / falso en el servidor. Las fuerzas viajan en pasos de 1/255; el dueño predice con ese mismo valor, así que el servidor coincide.
+
+**Cómo viajan las teclas** (con `predict`), sin nada que configurar:
+
+- En cada tick el dueño manda todos los frames que el servidor todavía no confirmó (como hace Overwatch), codificados en delta: un frame que mantiene las mismas teclas cuesta 5 bytes. Una ráfaga de paquetes perdidos no pierde ningún frame.
+- El servidor toma un frame por tick y nunca frena a un jugador: si el próximo frame llega tarde, repite el último (como Overwatch, Unity Netcode y Photon Fusion) y descarta ese frame cuando llega. El dueño mantuvo las mismas teclas casi siempre, así que la suposición suele acertar; si no, el dueño recibe una corrección, que se desvanece. Después de 0,25 s sin frames se sueltan las teclas.
+- El buffer del servidor sigue cuán tarde llegan los frames de este dueño. Para cambiarlo, el servidor nunca apura ni frena al jugador (los demás verían un tirón): el dueño muestrea de vez en cuando un frame de más o uno de menos, y ese paso también se suaviza en su pantalla.
 
 ### 6.5 Valores propios: `set_value` / `get_value`
 
@@ -537,7 +543,7 @@ var aim: Variant = input.get_value(&"aim", Vector2.RIGHT)
 var direction: Vector2 = (aim as Vector2).normalized() if aim is Vector2 and (aim as Vector2).length() > 0.01 else Vector2.RIGHT
 ```
 
-`set_value` fuera del dueño no hace nada. Hasta 16 valores por frame. Más en [14](#14-seguridad-y-límites).
+`set_value` fuera del dueño no hace nada. Hasta 16 valores por frame. Un valor viaja exacto, tal como se puso (un float, un `Vector2`, un ángulo en radianes: sin redondeo), y con predicción `mp_move` lee el mismo valor en el dueño y en el servidor; por eso una mira o un ángulo hacia donde mira el personaje van como valor, no como acción. Más en [14](#14-seguridad-y-límites).
 
 ### 6.6 Pedidos al servidor: `to_server` → `mp_sv_*`
 

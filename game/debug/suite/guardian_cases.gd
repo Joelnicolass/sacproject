@@ -376,7 +376,10 @@ func _action() -> Dictionary:
 ## double click groups guardians of the same building apart from free creatures of the same type.
 func _selection() -> Dictionary:
 	var checks := {}
+	var seat := MpLocalSeat.new()
+	_root.add_child(seat)
 	var selection := SELECTION.new()
+	selection.seat = seat
 	_root.add_child(selection)
 	var structure := _structure(Vector3.ZERO)
 	var other_structure := _structure(Vector3(200.0, 0.0, 0.0))
@@ -399,6 +402,7 @@ func _selection() -> Dictionary:
 	var of_d := selection._same_type_near(d)
 	checks["free_double_click_skips_guardians"] = of_d == [d]
 	selection.queue_free()
+	seat.queue_free()
 	structure.queue_free()
 	other_structure.queue_free()
 	for unit in [a, b, c, d]:

@@ -45,9 +45,10 @@ detect_3d/compress_to=0
 """
 
 
-## The editor's EditorFileSystem, or null when no editor runs (headless cases).
+## The editor's EditorFileSystem, or null when no editor runs (headless cases, the game). The singleton is registered
+## in every process, but outside the editor asking for it is an error: `is_editor_hint` tells which one this is.
 static func filesystem() -> Object:
-	if not Engine.has_singleton(&"EditorInterface"):
+	if not Engine.is_editor_hint() or not Engine.has_singleton(&"EditorInterface"):
 		return null
 	var editor: Object = Engine.get_singleton(&"EditorInterface")
 	return editor.get_resource_filesystem()

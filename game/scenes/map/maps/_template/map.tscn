@@ -83,3 +83,5 @@ bake_settings = ExtResource("5_bake")
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("10_minimap")]
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
+
+[editable path="Look"]

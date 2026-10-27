@@ -106,7 +106,7 @@ func _rebuild_times() -> void:
 		var started := Time.get_ticks_usec()
 		var faces := TerrainFaces.build(load(path) as TerrainHeights)
 		TerrainRules.index(faces)
-		TerrainMeshArrays.from_data(faces, PackedByteArray()).with_normals(true)
+		TerrainMeshArrays.from_data(faces).with_normals(true)
 		print("  rebuild %s: %.0f ms (%d triangles)" % [path.get_base_dir().get_file(), (Time.get_ticks_usec() - started) / 1000.0, faces.indices.size() / 3])
 
 

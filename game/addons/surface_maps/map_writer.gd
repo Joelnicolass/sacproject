@@ -146,7 +146,8 @@ static func _apply(target: Resource, changes: Dictionary, action: String, undo: 
 
 
 ## The first .import of a map: VRAM compressed with mipmaps; the normal one flagged as a normal map. Godot adds the rest.
+## `detect_3d/compress_to=0`: a map is 3D already, so the editor finds nothing to detect and never rewrites the file.
 static func _write_import(path: String, is_normal: bool) -> void:
 	var file := FileAccess.open(path + ".import", FileAccess.WRITE)
 	file.store_string("[remap]\n\nimporter=\"texture\"\ntype=\"CompressedTexture2D\"\n\n[params]\n\ncompress/mode=2\n"
-		+ "compress/normal_map=%d\nmipmaps/generate=true\n" % (1 if is_normal else 2))
+		+ "compress/normal_map=%d\nmipmaps/generate=true\ndetect_3d/compress_to=0\n" % (1 if is_normal else 2))

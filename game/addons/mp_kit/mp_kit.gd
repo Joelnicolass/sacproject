@@ -330,7 +330,23 @@ func send_custom(channel: StringName, data: Dictionary) -> void:
 ## Server → every client (and emit on the server). call_remote: clients only get the RPC.
 ## Re-entrant: glue must not `broadcast_custom` again from this emit without checking `from_peer`.
 ## A nested call is ignored so a naive `if is_server(): broadcast_custom` cannot recurse.
-func broadcast_custom(channel: StringName, data: Dictionary) -> void:
+## Server: the peers whose world is loaded (a slot and world_ready), the ones that can play a one-off effect of yours now. A peer
+## still loading would play it with no world and lose it. With your own @rpc: `for peer_id in MpKit.ready_peers(): node.fx.rpc_id(
+## peer_id, ...)`, and call the function here too if the server shows it (an rpc_id to another peer does not run it here, even
+## with call_local). What must last (marks, a score) goes in MpState / Sync / a spawned node: it reaches whoever loads later.
+func ready_peers() -> PackedInt32Array:
+	var out := PackedInt32Array()
+	if not is_server():
+		return out
+	for peer_id in multiplayer.get_peers():
+		if ids.slot_for_peer(peer_id) != 0 and is_peer_world_ready(peer_id):
+			out.append(peer_id)
+	return out
+
+
+## Server only: emits here (`from_peer` = 1) and sends to every client with a slot; `only_world_ready` sends to ready_peers()
+## only (a one-off effect a peer still loading would lose).
+func broadcast_custom(channel: StringName, data: Dictionary, only_world_ready: bool = false) -> void:
 	if not is_server():
 		return
 	if not is_custom_channel_allowed(channel):
@@ -340,7 +356,7 @@ func broadcast_custom(channel: StringName, data: Dictionary) -> void:
 	_broadcasting_custom = true
 	var payload: Dictionary = data.duplicate(true)
 	custom_received.emit(channel, payload, 1)
-	for peer_id in _broadcast_peers():
+	for peer_id in (ready_peers() if only_world_ready else _broadcast_peers()):
 		rpc_custom_from_server.rpc_id(peer_id, String(channel), payload)
 	_broadcasting_custom = false
 

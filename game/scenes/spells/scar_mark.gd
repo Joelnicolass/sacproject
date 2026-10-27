@@ -7,6 +7,9 @@ extends FxScene
 ## effect says when: its own script, a signal wired in the scene, or `play` when the node is the root of a scene played with
 ## FxBus.broadcast_scene (every peer paints when it sees the effect; whoever joins later does not see the earlier ones).
 ## Presentation only: with no window (headless, dedicated server) it does nothing. It never touches the game rules.
+## Every ScarMark in the tree is in GROUP: a mark that may still be painted (GroundScarsNet waits for them when a peer catches up).
+
+const GROUP := &"scar_marks"
 
 ## The picture, one of the imported SCAR files (a pixel is 0.15625 m): `scar` a burn, `gscr` / `tscr` rock cracks, `oils` oil...
 @export var texture: Texture2D
@@ -15,6 +18,11 @@ extends FxScene
 
 ## Where the last mark was painted (world; INF before any): the capture harness points its camera there.
 static var last_painted_at := Vector3.INF
+
+
+func _enter_tree() -> void:
+	if not Engine.is_editor_hint():
+		add_to_group(GROUP)
 
 
 ## Paints the mark where this node is. False when nothing was painted.

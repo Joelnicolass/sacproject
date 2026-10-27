@@ -2,7 +2,7 @@
 
 What: the match: rules, clock, defeat, biome and the `match.tscn` scene; the reaches of the places (a soul, a fount, an altar, the Manahoar aura, arming and leashing a Guardian) are shapes of `reach_places.tscn`.
 Not: who wins by what (Match state only holds the result) or the radius numbers (they are not in MatchRules any more).
-Talks to: MatchBiome draws the land (`rules.biome` or BiomeRules over the gods of the catalog), BiomeLink (scenes/net/) tells the clients, `applied(god)` -> music, ambience; MatchRules.reach_places -> ReachFacts (meters, cached per scene) -> SoulSystem, ManaSource, UnitManaSupport and the Guardian bond; ReachFrame lists the nodes.
+Talks to: MatchBiome draws the land (`rules.biome` or BiomeRules over the gods of the catalog), BiomeLink and MatchStateNet (scenes/net/) tell the clients (MatchState emits `snapshot_changed`/`finished`), `applied(god)` -> music, ambience; MatchRules.reach_places -> ReachFacts (meters, cached per scene) -> SoulSystem, ManaSource, UnitManaSupport and the Guardian bond; ReachFrame lists the nodes.
 Edit: move or resize a reach in `reach_places.tscn` (a variant is an inherited scene, e.g. debug/match/far_reach_places.tscn) · round numbers in `data/match_rules.tres`.
 Check: `bash tools/lint/conventions.sh` · rules_suite reach_places_cases · debug/match/far_reach_places.tscn (F6).
 

@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/fx/frog_cast.tres" id="fx_frog_cast"]
 
 [node name="RainOfFrogs" type="Node"]
 editor_description = "Rain of Frogs (grfr): la nube nace al empezar el lanzamiento y suelta ranas al terminar."
 script = ExtResource("1_script")
 prompt = "Elegí el punto"
-cast_fx = "frog_cast"
+cast_fx = ExtResource("fx_frog_cast")
 kind = "RainOfFrogs"

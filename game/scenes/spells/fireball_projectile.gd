@@ -1,7 +1,8 @@
 extends SpellProjectile
 
-## Pyro Fireball (sacengine castFireball/updateFireball, state.d:10519-10528, 16682-16700).
+## Pyro Fireball.
 ## Guided projectile with flying height 0.5 m and splash spell damage on impact.
+## Ref: sacengine castFireball/updateFireball, state.d:10519-10528, 16682-16700
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
@@ -42,11 +43,11 @@ func setup(data: Dictionary) -> void:
 	_attach_net()
 	## Its own trail (7 firy + 1 fbal per tick, scale 1.5), played locally on every peer.
 	for type in trail:
-		FxTrail.attach(self, type.bus_name(), TRAIL_INTERVAL_S)
+		FxTrail.attach(self, type, TRAIL_INTERVAL_S)
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 
@@ -125,9 +126,10 @@ func _explode(direct: Node3D) -> void:
 	else:
 		direct = null
 	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
-	## Its own explosion: xplo + exp2 + frck + smok (sacengine animateFireballExplosion, state.d:16631-16665).
+	## Its own explosion: xplo + exp2 + frck + smok.
+	## Ref: sacengine animateFireballExplosion, state.d:16631-16665
 	for type in explosion:
-		FxBus.broadcast(type.bus_name(), center)
+		FxBus.broadcast(type, center)
 	set_physics_process(false)
 	set_process(false)
 	queue_free()

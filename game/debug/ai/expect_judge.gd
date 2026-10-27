@@ -10,7 +10,7 @@ extends Node
 
 const PREFIX := "EXPECT "
 ## The kinds decided at the end (or once every other one is): they count what must not happen.
-const PASSIVE: Array[String] = ["spared", "uncast", "unharmed", "burst", "probe"]
+const PASSIVE: Array[String] = ["spared", "uncast", "unharmed", "burst", "probe", "refused"]
 
 var _rules: BenchRules
 var _bodies: Dictionary = {}
@@ -33,7 +33,7 @@ func begin(rules: BenchRules, bodies: Dictionary) -> void:
 			_probes.append(child as BenchProbe)
 			(child as BenchProbe).begin(bodies)
 	print("SIDES mapa %s · stance(1,0) %s · stance(2,0) %s · stance(1,3) %s · stance(2,3) %s" % [
-		MapCatalog.current_tag(), _stance(1, 0), _stance(2, 0), _stance(1, 3), _stance(2, 3)])
+		ActiveMatch.map_tag(), _stance(1, 0), _stance(2, 0), _stance(1, 3), _stance(2, 3)])
 	for label in rules.trace_labels:
 		for body: Node3D in _of(label):
 			var carrier := body as UnitBody
@@ -74,6 +74,7 @@ func _watching(row: Dictionary) -> bool:
 func listen_audit(audit: AiAudit) -> void:
 	if audit != null and not audit.cast_noted.is_connected(_on_cast):
 		audit.cast_noted.connect(_on_cast)
+		audit.refused_noted.connect(_on_refused)
 		for probe in _probes:
 			probe.listen_audit(audit)
 
@@ -245,7 +246,7 @@ func _poll(row: Dictionary) -> void:
 			elif _tick > window:
 				_decide(row, false, "nunca")
 			return
-		"spared", "uncast", "unharmed", "burst", "probe":
+		"spared", "uncast", "unharmed", "burst", "probe", "refused":
 			if is_done_except(row) and not _watching(row):
 				_decide_passive(row)
 			return
@@ -388,6 +389,19 @@ func _on_cast(slot: int, tag: String, target: Node) -> void:
 			row["first_tick"] = _tick
 
 
+## 055f f5: a request of the AI's port the Caster refused, for «refused».
+func _on_refused(slot: int, tag: String, reason: String) -> void:
+	if not _started or _finished:
+		return
+	print("EXPECT_NOTE refused slot %d %s: %s (tick %d)" % [slot, tag, reason, _tick])
+	for row in _rows:
+		var expect: BenchExpect = row["expect"]
+		if row["decided"] or expect.kind != "refused" or slot != _slot_of(expect.subject):
+			continue
+		if expect.spell.is_empty() or expect.spell == tag:
+			row["count"] = int(row["count"]) + 1
+
+
 func _on_unharmed_hit(amount: float, from_slot: int, row: Dictionary, slot: int, body: Node3D) -> void:
 	if row["decided"] or _finished or amount <= 0.0 or from_slot != slot:
 		return
@@ -396,7 +410,8 @@ func _on_unharmed_hit(amount: float, from_slot: int, row: Dictionary, slot: int,
 
 
 ## F371: an FX played somewhere; a «burst» row counts the ones of its `fx` near a body of its `object`.
-func _on_fx(_kind: StringName, fx_name: String, at: Vector3) -> void:
+func _on_fx(_kind: StringName, fx: Resource, at: Vector3) -> void:
+	var fx_name := FxWire.label_of(fx)
 	if not _started or _finished:
 		return
 	for row in _rows:

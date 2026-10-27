@@ -65,7 +65,8 @@ func _on_stage_changed(_stage: int) -> void:
 func _refresh() -> void:
 	if _wizard == null:
 		return
-	%Title.text = "%s · %s" % [_wizard.display_name(), str(_wizard.god).capitalize()]
+	var god_type: GodType = (_wizard as WizardBody).god_type
+	%Title.text = "%s · %s" % [_wizard.display_name(), god_type.display_name if god_type != null else "?"]
 	%Stats.text = tr(STATS_TEXT) % [
 		roundi(_wizard.health.current), roundi(_wizard.health.maximum),
 		roundi(_wizard.mana.current), roundi(_wizard.mana.maximum),
@@ -79,6 +80,7 @@ func _refresh() -> void:
 	)
 
 
-## getRelativeHealth / getRelativeMana (renderer.d:4799-4806): 0 when the maximum is 0.
+## The filled fraction of a bar: 0 when the maximum is 0.
+## Ref: getRelativeHealth / getRelativeMana, renderer.d:4799-4806.
 static func _fraction(current: float, maximum: float) -> float:
 	return current / maximum if maximum > 0.0 else 0.0

@@ -5,13 +5,14 @@ extends Node
 ## The ring drawn around a creature while a Sac Doctor holds it (UnitBody.mode HELD), centred on the body's `Center`
 ## (`mount.facts.center`). Local presentation on every peer, drawn from replicated state only: the server never creates it,
 ## and neither does the dedicated server (no meshes). It changes no simulation. Remove the node and the creature is held without a ring.
-## The radii are 0.65 * (1.1, 0.9) * the diagonal of the creature's box (sacengine renderer.d:1638-1677).
+## The radii are 0.65 * (1.1, 0.9) * the diagonal of the creature's box.
+## Ref: sacengine renderer.d:1638-1677.
 
 ## The creature that wears the ring.
 @export var body: UnitBody
 ## The disc (scenes/fx/portal_disc.tscn, blue). Empty = no ring.
 @export var portal_scene: PackedScene
-## sacengine: ring radii = 0.65 * (1.1, 0.9) * the diagonal of the creature's box.
+## The ring radii = 0.65 * (1.1, 0.9) * the diagonal of the creature's box.
 @export var portal_scale := Vector2(1.1, 0.9) * 0.65
 
 var _portal: PortalDisc

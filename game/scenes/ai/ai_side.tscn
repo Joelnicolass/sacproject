@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scenes/ai/ai_side.gd" id="1_ai_side"]
 [ext_resource type="Script" path="res://scenes/ai/perception/ai_perception.gd" id="2_perception"]
@@ -17,10 +17,17 @@
 [ext_resource type="Script" path="res://scenes/ai/tasks/capture_task.gd" id="15_capture"]
 [ext_resource type="Script" path="res://scenes/ai/brains/manahoar_brain.gd" id="16_maho"]
 [ext_resource type="Script" path="res://scenes/ai/tasks/focus_task.gd" id="17_focus"]
-[ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="99_profile"]
+[ext_resource type="Script" path="res://scenes/ai/ai_clock.gd" id="f4_clock"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="98_mana_source"]
+[ext_resource type="Script" path="res://scenes/ai/brains/wizard_casting.gd" id="f3_casting"]
+[ext_resource type="Script" path="res://scenes/ai/command/ai_orders_out.gd" id="f3_orders"]
+[ext_resource type="Script" path="res://scenes/ai/perception/ai_sight_intake.gd" id="f2_intake"]
+[ext_resource type="Script" path="res://scenes/ai/perception/ai_belief.gd" id="f2_belief"]
+[ext_resource type="Script" path="res://scenes/ai/perception/ai_souls.gd" id="f2_souls"]
 
-[node name="AiSide" type="Node" node_paths=PackedStringArray("perception", "stance", "groups", "board", "brain", "creature_brain", "port")]
+[node name="AiSide" type="Node" node_paths=PackedStringArray("clock", "perception", "stance", "groups", "board", "brain", "creature_brain", "port")]
 script = ExtResource("1_ai_side")
+clock = NodePath("Clock")
 perception = NodePath("Perception")
 stance = NodePath("Stance")
 groups = NodePath("Groups")
@@ -29,30 +36,31 @@ brain = NodePath("Brain")
 creature_brain = NodePath("CreatureBrain")
 port = NodePath("Port")
 
-[node name="Perception" type="Node" parent="."]
+[node name="Perception" type="Node" parent="." node_paths=PackedStringArray("intake", "belief", "souls")]
 script = ExtResource("2_perception")
-profile = ExtResource("99_profile")
+mana_source = ExtResource("98_mana_source")
+intake = NodePath("SightIntake")
+belief = NodePath("Belief")
+souls = NodePath("Souls")
 
 [node name="Groups" type="Node" parent="." node_paths=PackedStringArray("perception")]
 script = ExtResource("3_groups")
 perception = NodePath("../Perception")
-profile = ExtResource("99_profile")
 
 [node name="Stance" type="Node" parent="." node_paths=PackedStringArray("perception", "groups")]
 script = ExtResource("4_stance")
 perception = NodePath("../Perception")
 groups = NodePath("../Groups")
-profile = ExtResource("99_profile")
 
-[node name="Port" type="Node" parent="." node_paths=PackedStringArray("perception")]
+[node name="Port" type="Node" parent="." node_paths=PackedStringArray("perception", "orders")]
 script = ExtResource("5_port")
 perception = NodePath("../Perception")
+orders = NodePath("Orders")
 
 [node name="CreatureBrain" type="Node" parent="." node_paths=PackedStringArray("port", "perception")]
 script = ExtResource("6_creature")
 port = NodePath("../Port")
 perception = NodePath("../Perception")
-profile = ExtResource("99_profile")
 
 [node name="ManahoarBrain" type="Node" parent="." node_paths=PackedStringArray("perception", "groups", "creature_brain", "port")]
 script = ExtResource("16_maho")
@@ -61,14 +69,14 @@ groups = NodePath("../Groups")
 creature_brain = NodePath("../CreatureBrain")
 port = NodePath("../Port")
 
-[node name="Brain" type="Node" parent="." node_paths=PackedStringArray("perception", "stance", "groups", "port", "creature_brain")]
+[node name="Brain" type="Node" parent="." node_paths=PackedStringArray("perception", "stance", "groups", "port", "creature_brain", "casting")]
 script = ExtResource("7_brain")
 perception = NodePath("../Perception")
 stance = NodePath("../Stance")
 groups = NodePath("../Groups")
 port = NodePath("../Port")
 creature_brain = NodePath("../CreatureBrain")
-profile = ExtResource("99_profile")
+casting = NodePath("Casting")
 
 [node name="AttackPhase" type="Node" parent="Brain" node_paths=PackedStringArray("focus")]
 script = ExtResource("8_attack")
@@ -92,7 +100,6 @@ wizard_brain = NodePath("../Brain")
 creature_brain = NodePath("../CreatureBrain")
 maho_brain = NodePath("../ManahoarBrain")
 port = NodePath("../Port")
-profile = ExtResource("99_profile")
 
 [node name="FocusTask" type="Node" parent="Tasks"]
 script = ExtResource("17_focus")
@@ -106,3 +113,24 @@ script = ExtResource("11_guard")
 [node name="IdleTask" type="Node" parent="Tasks"]
 script = ExtResource("12_idle")
 
+[node name="Casting" type="Node" parent="Brain" node_paths=PackedStringArray("perception", "stance", "port")]
+script = ExtResource("f3_casting")
+perception = NodePath("../../Perception")
+stance = NodePath("../../Stance")
+port = NodePath("../../Port")
+
+[node name="Orders" type="Node" parent="Port" node_paths=PackedStringArray("perception")]
+script = ExtResource("f3_orders")
+perception = NodePath("../../Perception")
+
+[node name="SightIntake" type="Node" parent="Perception"]
+script = ExtResource("f2_intake")
+
+[node name="Belief" type="Node" parent="Perception"]
+script = ExtResource("f2_belief")
+
+[node name="Souls" type="Node" parent="Perception"]
+script = ExtResource("f2_souls")
+
+[node name="Clock" type="Node" parent="."]
+script = ExtResource("f4_clock")

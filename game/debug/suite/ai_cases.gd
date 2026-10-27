@@ -11,6 +11,7 @@ const ORDERS_SCRIPT := preload("res://scenes/orders/orders.gd")
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
 const TOL := 0.0005
+const Maps := preload("res://debug/look/flora_test_maps.gd")
 const AI_DIR := "res://scenes/ai"
 
 
@@ -24,7 +25,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ai_field_weights"] = _field_weights()
 	out["ai_field_groups"] = _field_groups()
 	out["ai_cast_queue"] = _cast_queue()
-	out["ai_profile_original"] = _profile()
+	out["ai_tactics_original"] = _original_numbers()
 	out["ai_port_only_exit"] = _only_exit()
 	out["ai_apply_for_owner"] = await _apply_for(host)
 	out["ai_guard_no_nan"] = _no_nan()
@@ -34,7 +35,6 @@ func run(host: Node3D) -> Dictionary:
 	out["doctor_carrier_follows_path"] = _doctor_wiring()
 	out["nav_box_blockers"] = _box_blockers()
 	out["ai_difficulty_files"] = _difficulties()
-	out["ai_profiles_by_god"] = _profiles_by_god()
 	out["ai_limited_information"] = await _limited_information(host)
 	out["ai_convert_reserved_soul"] = _reserved_soul()
 	out["ai_forget_checked"] = await _forget_checked(host)
@@ -175,24 +175,40 @@ func _field_ramp() -> Dictionary:
 	}, {"prob": prob})
 
 
-## weightTriple (shiny.d:2953-2966): ratio 0.5, aggression 1: cmd 0/1 -> o = [1/12 -> 0.0769231, 0.4615385, 0.4615385];
-## cmd 2 -> [0.2727273, 0.1818182, 0.5454546]; ratio 1.0 -> [1/7, 6/7, 0]; cmd 3 -> 0.3333 each.
-## wizAttack weight (3052-3072): d <= 10 -> 1; d=145, thr=280 -> 0.5; x0.5 without status bits 2/4; x1/3 without 0x1800; x10 Sac Doctor.
+## weightTriple (shiny.d:2953-2966): ratio 0.5, aggression 1: guard -> o = [1/12 -> 0.0769231, 0.4615385, 0.4615385];
+## capture -> [0.2727273, 0.1818182, 0.5454546]; ratio 1.0 -> [1/7, 6/7, 0]; focus (and idle) -> 0.3333 each.
+## wizAttack weight (3052-3072): d <= 10 -> 1; d=145, thr=280 -> 0.5; x0.5 not a wizard; x1/3 not ready; x10 Sac Doctor.
 func _field_weights() -> Dictionary:
-	var w0 := AiField.weight_triple(0, 0.5, 1.0)
-	var w2 := AiField.weight_triple(2, 0.5, 1.0)
-	var w1 := AiField.weight_triple(1, 1.0, 1.0)
-	var w3 := AiField.weight_triple(3, 0.5, 1.0)
+	var w0 := AiField.weight_triple(AiTask.Kind.GUARD, 0.5, 1.0)
+	var w2 := AiField.weight_triple(AiTask.Kind.CAPTURE, 0.5, 1.0)
+	var w1 := AiField.weight_triple(AiTask.Kind.GUARD, 1.0, 1.0)
+	var w3 := AiField.weight_triple(AiTask.Kind.FOCUS, 0.5, 1.0)
+	## a creature that fights, a wizard and a ready Manahoar that fights. 055f f5: the factors read `fights` and whether it can pay
+	## an ability (`able`), so a fighting creature with nothing to cast weighs x1/3 and a wizard with mana x1.
+	var tactics: AiTactics = AiTactics.or_normal(null)
+	var fighter := AiTrack.new()
+	fighter.kind = AiTrack.Kind.CREATURE
+	fighter.fights = true
+	var wizard := AiTrack.new()
+	wizard.kind = AiTrack.Kind.WIZARD
+	wizard.fights = true
+	var channeler := AiTrack.new()
+	channeler.kind = AiTrack.Kind.MANAHOAR
+	channeler.fights = true
+	channeler.ready = true
 	return _verdict({
 		"cmd0": _near(w0[0], 0.07692307978868484) and _near(w0[1], 0.4615384638309479) and _near(w0[2], 0.4615384638309479),
 		"cmd2": _near(w2[0], 0.27272728085517883) and _near(w2[1], 0.1818181872367859) and _near(w2[2], 0.5454545617103577),
 		"ratio1": _near(w1[0], 0.1428571492433548) and _near(w1[1], 0.8571428656578064) and _near(w1[2], 0.0),
 		"cmd3_default": _near(w3[0], 0.3333) and _near(w3[2], 0.3333),
-		"attack_near": _near(AiField.attack_weight(5.0, 280.0, 1, false), 0.1666666716337204),
-		"attack_wizard_status": _near(AiField.attack_weight(145.0, 280.0, 0x2000e, false), 0.1666666716337204),
-		"attack_creature": _near(AiField.attack_weight(145.0, 280.0, 1, false), 0.0833333358168602),
-		"attack_out": AiField.attack_weight(300.0, 280.0, 1, false) == 0.0,
-		"attack_doctor": _near(AiField.attack_weight(50.0, 280.0, 0x1001, true), 4.2592592592592595),
+		"attack_near": _near(AiField.attack_weight(5.0, 280.0, fighter, false, tactics), 0.3333333432674408),
+		"attack_wizard_able": _near(AiField.attack_weight(145.0, 280.0, wizard, true, tactics), 0.5),
+		"attack_wizard_no_mana": _near(AiField.attack_weight(145.0, 280.0, wizard, false, tactics), 0.1666666716337204),
+		"attack_creature": _near(AiField.attack_weight(145.0, 280.0, fighter, false, tactics), 0.1666666716337204),
+		"attack_creature_able": _near(AiField.attack_weight(145.0, 280.0, fighter, true, tactics), 0.5),
+		"attack_passive": _near(AiField.attack_weight(145.0, 280.0, AiTrack.new(), false, tactics), 0.0833333358168602),
+		"attack_out": AiField.attack_weight(300.0, 280.0, fighter, false, tactics) == 0.0,
+		"attack_doctor": _near(AiField.attack_weight(50.0, 280.0, channeler, true, tactics, true), 8.518518518518519),
 		"reach": _near(AiField.attack_reach(0.2, 280.0), 224.0),
 		"summon_pos": _near(AiField.summon_score(100.0, 300, 1000), 70.0),
 		"summon_neg": _near(AiField.summon_score(-100.0, 300, 1000), -30.0),
@@ -202,15 +218,16 @@ func _field_weights() -> Dictionary:
 
 ## canAccept (shiny.d:1702-1710): the radius is 30 * min(1 + 0.1n, 1.8): n=0 -> 30, 1 -> 33, 2 -> 36, 8 and beyond -> 54.
 func _field_groups() -> Dictionary:
+	var crowd := AiTactics.or_normal(null).crowd
 	return _verdict({
-		"r0": _near(AiField.group_radius(0), 30.0),
-		"r1": _near(AiField.group_radius(1), 33.0),
-		"r2": _near(AiField.group_radius(2), 36.0),
-		"r8": _near(AiField.group_radius(8), 54.0),
-		"r20": _near(AiField.group_radius(20), 54.0),
-		"accept_inside": AiField.can_accept(2, 35.9 * 35.9),
-		"accept_edge": AiField.can_accept(2, 36.0 * 36.0),
-		"reject_outside": not AiField.can_accept(2, 36.1 * 36.1),
+		"r0": _near(AiField.group_radius(0, crowd), 30.0),
+		"r1": _near(AiField.group_radius(1, crowd), 33.0),
+		"r2": _near(AiField.group_radius(2, crowd), 36.0),
+		"r8": _near(AiField.group_radius(8, crowd), 54.0),
+		"r20": _near(AiField.group_radius(20, crowd), 54.0),
+		"accept_inside": AiField.can_accept(2, 35.9 * 35.9, crowd),
+		"accept_edge": AiField.can_accept(2, 36.0 * 36.0, crowd),
+		"reject_outside": not AiField.can_accept(2, 36.1 * 36.1, crowd),
 	})
 
 
@@ -243,18 +260,18 @@ func _cast_queue() -> Dictionary:
 	}, {"order": order, "again": again})
 
 
-## The numbers of profile_original.tres are the ones of the commercial version (every beta* off): slots 12/60/6/6/60/12, aggression 1,
-## attack coefficient 280, summon cap 0.6, group radius 30.
-func _profile() -> Dictionary:
-	var profile: AiProfile = load("res://data/ai/profile_original.tres")
+## The numbers of tactics_normal.tres that came from the original (every beta* off): attack coefficient 280, summon cap 0.6,
+## Manahoar divisor 2 (retail), emergency ratio 1400; aggression 1 in Normal. Every field: ai_tactics_cases.
+func _original_numbers() -> Dictionary:
+	var normal := AiSeat.difficulty_of("normal")
+	var tactics := normal.tactics_or_normal() if normal != null else null
 	return _verdict({
-		"loaded": profile != null,
-		"periods": profile != null and profile.slot_periods == PackedInt32Array([12, 60, 6, 6, 60, 12]),
-		"aggression": profile != null and profile.aggression == 1.0,
-		"attack": profile != null and profile.attack_coefficient == 280.0,
-		"summon_cap": profile != null and profile.summon_threat_cap == 0.6,
-		"ready_divisor_retail": profile != null and profile.ready_divisor == 2,
-		"emergency_ratio": profile != null and profile.emergency_mana_ratio == 1400.0,
+		"loaded": tactics != null,
+		"aggression": normal != null and normal.aggression == 1.0,
+		"attack": tactics != null and tactics.attack_coefficient == 280.0,
+		"summon_cap": tactics != null and tactics.summon_threat_cap == 0.6,
+		"ready_divisor_retail": tactics != null and tactics.ready_divisor == 2,
+		"emergency_ratio": tactics != null and tactics.emergency_mana_ratio == 1400.0,
 	})
 
 
@@ -335,10 +352,8 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
-	var terrain := Terrain.new()
+	var terrain: Terrain = Maps.land_from(Maps.heights_of(ActiveMatch.map()))
 	terrain.name = "Terrain"
-	terrain.shape = GroundSurface.with_data(MapCatalog.active().terrain)
-	terrain.add_child(terrain.shape)
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
 	var structures := Node3D.new()
@@ -346,15 +361,17 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	root.add_child(structures)
 	var service := NavService.new()
 	service.name = "Nav"
-	service.ground = terrain.shape
+	service.terrain = terrain
 	service.structures = structures
 	service.build_on_ready = false
+	service.region = Maps.nav_region_of(ActiveMatch.map())
+	service.add_child(service.region)
 	root.add_child(service)
 	host.add_child(root)
-	terrain.add_child(terrain.make_collision_body())  # a Terrain from the script alone has no body
-	if not terrain.shape.is_loaded():
+	terrain.add_child(Maps.collision_of(terrain))
+	if not terrain.is_loaded():
 		root.free()
-		return {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
+		return {"ok": false, "reason": "sin terreno (el heights.png del mapa activo)"}
 	service.build()
 	await _nav_settle(service, host)
 	var spot := Vector3(1037.7, 15.0, 1009.9)
@@ -370,7 +387,7 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	shape.shape = cylinder
 	shape.position = Vector3(0.0, 4.0, 0.0)
 	body.add_child(shape)
-	var ground: float = terrain.shape.height_at(spot.x, spot.z)
+	var ground: float = terrain.height_at(spot.x, spot.z)
 	body.position = spot if is_nan(ground) else Vector3(spot.x, ground, spot.z)
 	structures.add_child(body)
 	await _nav_settle(service, host)
@@ -395,9 +412,9 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 func _nav_settle(service: NavService, host: Node3D) -> void:
 	for _frame in 5:
 		await host.get_tree().physics_frame
-	var guard := 900
-	while service.is_rebaking() and guard > 0:
-		guard -= 1
+	## Real seconds, not frames: under --fixed-fps the frames outrun the worker that bakes.
+	var deadline := Time.get_ticks_msec() + 60000
+	while service.is_rebaking() and Time.get_ticks_msec() < deadline:
 		await host.get_tree().physics_frame
 	for _frame in 3:
 		await host.get_tree().physics_frame
@@ -407,7 +424,7 @@ func _nav_settle(service: NavService, host: Node3D) -> void:
 ## score NaN and left the wizard with no escort).
 func _no_nan() -> Dictionary:
 	var board := AiTaskBoard.new()
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	var groups := AiGroups.new()
 	board.perception = perception
 	board.groups = groups
@@ -444,14 +461,15 @@ func _spell_eval() -> Dictionary:
 func _territory() -> Dictionary:
 	var task := CaptureTask.new()
 	var board := AiTaskBoard.new()
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	board.perception = perception
 	task.board = board
 	var checks := {}
 	var make := func(at: Vector3, manalith: bool) -> AiTrack:
 		var t := AiTrack.new()
 		t.cur_pos = at
-		t.status = AiTrack.MANALITH if manalith else 0
+		t.kind = AiTrack.Kind.STRUCTURE
+		t.site = AiTrack.Site.MANALITH if manalith else AiTrack.Site.ALTAR
 		return t
 	perception._structures[0].append(make.call(Vector3(500.0, 0.0, 0.0), true))
 	checks["one_at_500"] = _near(task.territorial_score(Vector3.ZERO, null), 0.50505 * 0.50505, 0.001)
@@ -498,25 +516,19 @@ func _box_blockers() -> Dictionary:
 	return _verdict(checks, {})
 
 
-## 024e: the three difficulties (RFC-024 §6 024e). Normal = the original (periods 12/60/6/6/60/12, aggression 1, no delay); Easy x2,
-## 0.6, 0.5 s; Hard x0.75 (rounded down), 1.0, perfect information. No difficulty has a bonus: resource_bonus is locked at 0 (setting
-## another value leaves 0). Normal applied to the original profile gives that same profile (nothing is copied).
+## 024e: the three difficulties (RFC-024 §6 024e). Normal = the original (aggression 1, no delay); Easy 0.6, 0.5 s; Hard 1.0, sight
+## and minimap (055f f6; their clock periods: ai_tactics_cases). No difficulty has a bonus: resource_bonus is locked at 0 (setting another
+## value leaves 0).
 func _difficulties() -> Dictionary:
-	var original: AiProfile = load("res://data/ai/profile_original.tres")
 	var easy: AiDifficulty = load("res://data/ai/difficulty_easy.tres")
 	var normal: AiDifficulty = load("res://data/ai/difficulty_normal.tres")
 	var hard: AiDifficulty = load("res://data/ai/difficulty_hard.tres")
-	var checks := {"loaded": original != null and easy != null and normal != null and hard != null}
+	var checks := {"loaded": easy != null and normal != null and hard != null}
 	if not checks["loaded"]:
 		return _verdict(checks)
-	var easy_profile := easy.apply_to(original)
-	var hard_profile := hard.apply_to(original)
-	checks["normal_is_original"] = normal.apply_to(original) == original and not normal.perfect_information and normal.delay_ticks(60) == 0
-	checks["easy_periods"] = easy_profile.slot_periods == PackedInt32Array([24, 120, 12, 12, 120, 24])
-	checks["easy_aggression"] = easy_profile.aggression == 0.6 and easy.delay_ticks(60) == 30 and not easy.perfect_information
-	checks["hard_periods"] = hard_profile.slot_periods == PackedInt32Array([9, 45, 4, 4, 45, 9])
-	checks["hard_aggression"] = hard_profile.aggression == 1.0 and hard.delay_ticks(60) == 0 and hard.perfect_information
-	checks["original_untouched"] = original.slot_periods == PackedInt32Array([12, 60, 6, 6, 60, 12]) and original.aggression == 1.0
+	checks["normal_is_original"] = normal.aggression == 1.0 and normal.period_scale == 1.0 and normal.knowledge == AiDifficulty.Knowledge.SIGHT and normal.delay_ticks(60) == 0
+	checks["easy_aggression"] = easy.aggression == 0.6 and easy.period_scale == 2.0 and easy.delay_ticks(60) == 30 and easy.knowledge == AiDifficulty.Knowledge.SIGHT
+	checks["hard_aggression"] = hard.aggression == 1.0 and hard.period_scale == 0.75 and hard.delay_ticks(60) == 0 and hard.knowledge == AiDifficulty.Knowledge.SIGHT_AND_MAP
 	## Adenda 1.3: only Easy paces its summons and keeps a reserve; Normal and Hard are the original (0 and 0).
 	checks["summon_pace"] = easy.summon_interval_s > 0.0 and easy.mana_reserve > 0.0 and normal.summon_interval_s == 0.0 \
 			and normal.mana_reserve == 0.0 and hard.summon_interval_s == 0.0 and hard.mana_reserve == 0.0 and normal.summon_interval_ticks(60) == 0
@@ -524,36 +536,16 @@ func _difficulties() -> Dictionary:
 	var probe := AiDifficulty.new()
 	probe.resource_bonus = 0.5
 	checks["bonus_locked"] = probe.resource_bonus == 0.0
-	return _verdict(checks, {"easy": easy_profile.slot_periods, "hard": hard_profile.slot_periods})
+	return _verdict(checks)
 
 
-## 024e: one profile per god with the numbers of the original (the original has no personality; the god changes only the book).
-func _profiles_by_god() -> Dictionary:
-	var original: AiProfile = load("res://data/ai/profile_original.tres")
-	var checks := {}
-	var differ := {}
-	for god in GameData.gods():
-		var profile := AiProfile.for_type(GameData.god(god))
-		checks[god] = profile != null and profile != original and profile.god == StringName(god)
-		if profile == null:
-			continue
-		for prop in profile.get_property_list():
-			if not (int(prop["usage"]) & PROPERTY_USAGE_SCRIPT_VARIABLE) or str(prop["name"]) == "god":
-				continue
-			if profile.get(prop["name"]) != original.get(prop["name"]):
-				differ["%s.%s" % [god, prop["name"]]] = [profile.get(prop["name"]), original.get(prop["name"])]
-	checks["same_numbers"] = differ.is_empty()
-	checks["five_gods"] = GameData.gods().size() == 5
-	return _verdict(checks, {"differ": differ})
-
-
-## 024e (N1/N2 of REVIEW-RFC-024c): without perfect information the AI keeps, of an enemy body its side does not see, the position,
-## health and mana it saw last, and cannot aim a cast at it; once the side sees it, the real ones. With perfect information it reads the
-## real state, and each such read of an unseen body is counted.
+## 024e (N1/N2 of REVIEW-RFC-024c), f6: the AI keeps, of an enemy body its side does not see, the position, health and mana it saw
+## last (none if it never saw it), and cannot aim a cast at it; once the side sees it, the real ones. What the minimap adds
+## (SIGHT_AND_MAP): ai_knowledge_cases.
 func _limited_information(host: Node3D) -> Dictionary:
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var port := AiCommandPort.new()
@@ -569,14 +561,14 @@ func _limited_information(host: Node3D) -> Dictionary:
 			node.queue_free()
 		return _verdict(checks)
 	var seen_at := t.cur_pos
-	var hp_seen := perception.health_of(t)
+	var hp_seen := AiBody.health_pair(foe)
 	foe.global_position = Vector3(760.0, 0.0, 700.0)
 	foe.get_node("Health").set("current", hp_seen.x * 0.5)
 	checks["unseen_keeps_position"] = perception.pos_of(t) == seen_at
-	checks["unseen_keeps_health"] = perception.health_of(t) == hp_seen
+	checks["never_seen_health_unknown"] = perception.health_of(t) == Vector2i.ZERO
 	checks["unseen_cannot_aim"] = not port.can_aim(t)
 	checks["no_reads"] = perception.unseen_reads == 0
-	t.flags |= AiTrack.SEEN
+	t.seen = true
 	perception._update_node(t, 1)
 	checks["frozen_track"] = t.frozen and t.cur_pos == seen_at
 	## A body of its side stands next to the foe and looks: the side sees it now.
@@ -589,14 +581,8 @@ func _limited_information(host: Node3D) -> Dictionary:
 	checks["seen_can_aim"] = port.can_aim(t)
 	perception._update_node(t, 1)
 	checks["followed_again"] = not t.frozen and t.cur_pos.distance_to(Vector3(760.0, 0.0, 700.0)) < 0.01
-	var other := _unit(host, 1, Vector3(720.0, 0.0, 720.0))
-	var u := perception.add_node(other, &"scan")
-	perception.perfect_information = true
-	other.global_position = Vector3(730.0, 0.0, 720.0)
-	checks["perfect_reads_real"] = u != null and perception.pos_of(u).distance_to(Vector3(730.0, 0.0, 720.0)) < 0.01
-	checks["perfect_read_counted"] = perception.unseen_reads == 1
-	checks["perfect_can_aim"] = u != null and port.can_aim(u)
-	for node: Node in [watcher, perception, port, foe, other]:
+	checks["still_no_reads"] = perception.unseen_reads == 0
+	for node: Node in [watcher, perception, port, foe]:
 		node.queue_free()
 	return _verdict(checks, {"seen_at": seen_at, "reads": perception.unseen_reads})
 
@@ -619,12 +605,12 @@ func _reserved_soul() -> Dictionary:
 	return _verdict(checks)
 
 
-## 024e, without perfect information: the side looks where it last knew a foe (an own body has the place in its sight) and the foe is
-## not seen: the AI forgets it; once its side sees it again it knows it again. With perfect information nothing is forgotten.
+## 024e, f6: the side looks where it last knew a foe (an own body has the place in its sight) and the foe is not seen: the AI forgets
+## it; once its side sees it again it knows it again. While the foe is on the minimap (SIGHT_AND_MAP) it is not forgotten.
 func _forget_checked(host: Node3D) -> Dictionary:
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception2"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var foe := _unit(host, 1, Vector3(900.0, 0.0, 900.0))
@@ -638,17 +624,17 @@ func _forget_checked(host: Node3D) -> Dictionary:
 	foe.global_position = Vector3(1300.0, 0.0, 900.0)
 	var sight := eyes.range_m()
 	checks["sight_covers"] = sight >= 60.0
-	perception.perfect_information = true
+	perception.belief.look_from(mine, AiDifficulty.Knowledge.SIGHT_AND_MAP, 500.0)
 	perception.update_nodes(1)
-	checks["perfect_keeps"] = perception.find(foe) != null and perception.forgotten == 0
-	perception.perfect_information = false
+	checks["map_keeps"] = perception.find(foe) != null and perception.forgotten == 0
+	perception.belief.look_from(mine, AiDifficulty.Knowledge.SIGHT, 500.0)
 	perception.update_nodes(1)
 	checks["forgotten"] = perception.find(foe) == null and perception.forgotten == 1
 	foe.global_position = Vector3(1000.0, 0.0, 900.0)
 	eyes.refresh()
 	perception.update_nodes(1)
 	var again := perception.find(foe)
-	checks["known_again"] = again != null and (again.flags & AiTrack.SEEN) != 0
+	checks["known_again"] = again != null and again.seen
 	for node: Node in [perception, foe, mine]:
 		node.queue_free()
 	return _verdict(checks, {"sight": sight, "tracked": t != null})
@@ -664,9 +650,9 @@ func _own_splash(host: Node3D) -> Dictionary:
 	host.add_child(state)
 	state.friendly_fire = true
 	state.ally_damage_factor = 0.5
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception3"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var type := GameData.creature("amuh")
@@ -680,18 +666,18 @@ func _own_splash(host: Node3D) -> Dictionary:
 	ranger.set("idle_aggro", false)
 	host.add_child(ranger)
 	await host.get_tree().process_frame
-	var eval := AiSpellEval.new(perception, null, null, perception.profile)
+	var eval := AiSpellEval.new(perception, null, null, perception.play.tactics)
 	var wrath := GameData.spell("oalf")
 	var checks := {"tracked": perception.add_node(ranger, &"event") != null}
 	var at := ranger.global_position
-	var near := eval.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath)
-	var far := eval.own_splash(at + Vector3(15.0, 0.0, 0.0), wrath)
+	var near := AiAreaRating.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath, null, perception, eval.tactics)
+	var far := AiAreaRating.own_splash(at + Vector3(15.0, 0.0, 0.0), wrath, null, perception, eval.tactics)
 	checks["one_state"] = host.get_tree().get_nodes_in_group(&"match_state").size() == 1
 	checks["near_over_threshold"] = near > eval.tactics.own_splash_max_ratio and near > 0.27
 	checks["far_zero"] = far == 0.0
-	checks["direct_whole"] = _near(AiSpellEval.splash_loss(ranger, at + Vector3(15.0, 0.0, 0.0), wrath, 2, true), 550.0 * 0.5 / 800.0)
+	checks["direct_whole"] = _near(AiAreaRating.splash_loss(ranger, at + Vector3(15.0, 0.0, 0.0), wrath, 2, true), 550.0 * 0.5 / 800.0)
 	state.friendly_fire = false
-	var off := eval.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath)
+	var off := AiAreaRating.own_splash(at + Vector3(1.0, 0.0, 0.0), wrath, null, perception, eval.tactics)
 	checks["friendly_fire_off_zero"] = off == 0.0
 	for node: Node in [state, perception, ranger]:
 		node.queue_free()
@@ -703,10 +689,12 @@ func _own_splash(host: Node3D) -> Dictionary:
 func _tactics() -> Dictionary:
 	var checks := {}
 	var expected := {
-		"easy": {"heal_below_ratio": 0.45, "healer_weight": 1.0, "commit_hold_s": 3.0, "focus_max_members": 3},
-		"normal": {"heal_below_ratio": 0.6, "healer_weight": 2.0, "commit_hold_s": 6.0, "focus_max_members": 6},
-		"hard": {"heal_below_ratio": 0.7, "healer_weight": 3.0, "commit_hold_s": 8.0, "focus_max_members": 8},
+		"easy": {"heal_below_ratio": 0.45, "healer_weight": 1.0, "commit_hold_s": 3.0},
+		"normal": {"heal_below_ratio": 0.6, "healer_weight": 2.0, "commit_hold_s": 6.0},
+		"hard": {"heal_below_ratio": 0.7, "healer_weight": 3.0, "commit_hold_s": 8.0},
 	}
+	## the focus of the creatures lives in the embedded crowd tactics
+	var members := {"easy": 3, "normal": 6, "hard": 8}
 	var seen := {}
 	for tag: String in expected:
 		var difficulty: AiDifficulty = load("res://data/ai/difficulty_%s.tres" % tag)
@@ -717,9 +705,9 @@ func _tactics() -> Dictionary:
 				ok = ok and _near(float(tactics.get(key)), float(expected[tag][key]))
 			ok = ok and tactics.los_check and _near(tactics.los_retry_factor, 0.5) and _near(tactics.own_splash_max_ratio, 0.1) \
 				and tactics.own_splash_counts_wizard and tactics.npc_passive_weight == 0.0 and tactics.heal_min_missing == 100.0 \
-				and _near(tactics.commit_weight, 1.5) and tactics.focus_kill_window_s == 20.0 and _near(tactics.focus_power_ratio, 1.2) \
-				and tactics.focus_radius_m == 60.0
-			seen[tag] = {"heal": tactics.heal_below_ratio, "healer": tactics.healer_weight, "hold": tactics.commit_hold_s, "members": tactics.focus_max_members}
+				and _near(tactics.commit_weight, 1.5) and tactics.crowd.focus_kill_window_s == 20.0 and _near(tactics.crowd.focus_power_ratio, 1.2) \
+				and tactics.crowd.focus_radius_m == 60.0 and tactics.crowd.focus_max_members == int(members[tag])
+			seen[tag] = {"heal": tactics.heal_below_ratio, "healer": tactics.healer_weight, "hold": tactics.commit_hold_s, "members": tactics.crowd.focus_max_members}
 		checks[tag] = ok
 	checks["null_is_normal"] = AiDifficulty.new().tactics_or_normal().resource_path == AiTactics.NORMAL
 	return _verdict(checks, seen)
@@ -728,9 +716,9 @@ func _tactics() -> Dictionary:
 ## RFC-053 053c (F372): Heal rates 0 on a body at or over heal_below_ratio (Normal 0.6) of its health, on one that misses less than
 ## heal_min_missing (100), on one being summoned and on one with a heal running; a Trogg (960) at 30 % rates over 0.
 func _heal_threshold(host: Node3D) -> Dictionary:
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "AiCasesPerception4"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 2
 	host.add_child(perception)
 	var trogg: UnitBody = UNIT_SCENE.instantiate()
@@ -742,7 +730,7 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 	trogg.idle_aggro = false
 	host.add_child(trogg)
 	await host.get_tree().process_frame
-	var eval := AiSpellEval.new(perception, null, null, perception.profile)
+	var eval := AiSpellEval.new(perception, null, null, perception.play.tactics)
 	var heal := GameData.spell("laeh") as SpellType
 	var track := perception.add_node(trogg, &"event")
 	var checks := {"tracked": track != null}
@@ -752,7 +740,7 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 		var health := trogg.get_node("Health") as Health
 		for fraction: float in [0.3, 0.55, 0.6, 0.95, 1.0]:
 			health.current = health.maximum * fraction
-			scores[str(fraction)] = eval._heal(heal, track)
+			scores[str(fraction)] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		checks["low_heals"] = float(scores["0.3"]) > 0.0 and float(scores["0.55"]) > 0.0
 		checks["at_threshold_zero"] = float(scores["0.6"]) == 0.0
 		checks["above_threshold_zero"] = float(scores["0.95"]) == 0.0 and float(scores["1.0"]) == 0.0
@@ -761,16 +749,16 @@ func _heal_threshold(host: Node3D) -> Dictionary:
 		loose.heal_below_ratio = 1.0
 		eval.tactics = loose
 		health.current = health.maximum - 50.0
-		scores["missing_50"] = eval._heal(heal, track)
+		scores["missing_50"] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		checks["min_missing_zero"] = float(scores["missing_50"]) == 0.0
 		eval.tactics = AiTactics.or_normal(null)
 		health.current = health.maximum * 0.3
 		trogg.begin_summon()
-		scores["summoning"] = eval._heal(heal, track)
+		scores["summoning"] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		trogg.finish_summon()
 		checks["summoning_zero"] = float(scores["summoning"]) == 0.0
 		HealEffect.on(trogg)
-		scores["healing"] = eval._heal(heal, track)
+		scores["healing"] = AiHealRating.heal(heal, track, perception, eval.tactics)
 		checks["heal_running_zero"] = float(scores["healing"]) == 0.0
 	for node: Node in [perception, trogg]:
 		node.queue_free()

@@ -4,8 +4,9 @@
 [ext_resource type="Script" uid="uid://dvl2wg4u7mur4" path="res://debug/look/grass_lab_ground.gd" id="2_ground"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="3_rig"]
 [ext_resource type="PackedScene" path="res://debug/bodies/gallery_body.tscn" id="4_body"]
-[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="5_shape"]
-[ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="6_data"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="5_shape"]
+[ext_resource type="Resource" uid="uid://cmpaot4pm4cus" path="res://scenes/map/maps/high_noon/heights.png" id="6_heights"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/test_flat/ground_roles.png" id="7_roles"]
 
 [node name="GrassLab" type="Node" unique_id=1022913190 node_paths=PackedStringArray("ground", "rig", "game_camera", "lab_camera", "info", "creatures")]
 script = ExtResource("1_lab")
@@ -21,12 +22,14 @@ creatures = NodePath("Creatures")
 script = ExtResource("2_ground")
 shape = NodePath("Shape")
 
-[node name="Shape" type="Node" parent="Ground"]
+[node name="Shape" type="Node3D" parent="Ground" node_paths=PackedStringArray("mesh")]
 script = ExtResource("5_shape")
-data = ExtResource("6_data")
+heights = ExtResource("6_heights")
+ground_roles = ExtResource("7_roles")
+mesh = NodePath("..")
 
-[node name="Look" parent="." unique_id=296819492 node_paths=PackedStringArray("ground") instance=ExtResource("3_rig")]
-ground = NodePath("../Ground/Shape")
+[node name="Look" parent="." unique_id=296819492 node_paths=PackedStringArray("terrain") instance=ExtResource("3_rig")]
+terrain = NodePath("../Ground/Shape")
 
 [node name="LabCamera" type="Camera3D" parent="." unique_id=182705118]
 current = true

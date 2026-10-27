@@ -1,13 +1,14 @@
 class_name AiKillEstimate
 extends RefCounted
 
-## RFC-053 053d (F373): how many seconds the side needs to kill a body, from what it knows (no cheat):
+## How many seconds the side needs to kill a body, from what it knows (no cheat):
 ##   seconds = known health / (sum of the members' DPS - the healing it sees on the target).
 ## A member's DPS comes from its CreatureType (its ranged attack's damage over its cadence, or its melee blow over its swing), times the
 ## catalog resistance of the target's type (a shot's cadence: shot_period). The healing seen is the target's own regeneration (catalog) plus the most of: the enemy
 ## healers the side sees within HEAL_SEEN_M of the target (a creature that shoots its wounded, WoundedAllyPolicy) and the heal effect that
-## shows on the target (HealEffect, the glow a human sees). The health is AiPerception.health_of: the last seen without perfect
-## information. Static: FocusTask and AttackPhase call it, the suite tests the pure parts.
+## shows on the target (HealEffect, the glow a human sees). The health is AiPerception.health_of: the last seen of a body the
+## side does not see now. Static: FocusTask and AttackPhase call it, the suite tests the pure parts.
+## Ref: RFC-053 053d (F373).
 
 ## Only healers this close to the target count (RFC-053 §9 053d).
 const HEAL_SEEN_M := 30.0
@@ -109,7 +110,7 @@ static func seen_healing(perception: AiPerception, target: AiTrack) -> float:
 	var at := perception.pos_of(target)
 	var maximum := float(perception.health_of(target).y)
 	var healers := 0.0
-	var side: Array = perception.bodies(target.category())
+	var side: Array = perception.bodies(target.relation)
 	for other: AiTrack in side:
 		if other == target:
 			## A healer never picks itself, but its web bursts on its patient and heals all of its side within effect_range: it
@@ -143,7 +144,7 @@ static func _wounded_near(perception: AiPerception, healer: AiTrack, side: Array
 
 ## `t` is a live healer the side sees within HEAL_SEEN_M of `at`.
 static func healer_near(perception: AiPerception, t: AiTrack, at: Vector3) -> bool:
-	if t == null or t.kind != AiTrack.Kind.CRE or not AiGroups.alive(t):
+	if t == null or t.kind != AiTrack.Kind.CREATURE or not AiGroups.alive(t):
 		return false
 	## the cached catalog test first: the vision query is the costly one
 	if not is_healer(t.node.get("type") as CreatureType) or not perception.knows_live(t):

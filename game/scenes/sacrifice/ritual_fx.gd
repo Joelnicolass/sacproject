@@ -13,7 +13,7 @@ extends Node3D
 ## - The blood of a completed ritual (`blood_fx`), when RitualPayoff asks for it.
 ## - The doctors' own ropes to the creature are drawn by their CarryRope (`doctor.carried`).
 ## Remove this node from ritual.tscn to switch all of it off; the brightness is the `energy_scale` of the ropes.
-## Ref: sacengine RedVortex.desecrateDistance / desecrateHeight (state.d:15878-15889, 15961-15973), altarBolts / desecrateBolts (renderer.d:1948-1958).
+## Ref: sacengine RedVortex.desecrateDistance / desecrateHeight (state.d:15878-15889, 15961-15973), altarBolts / desecrateBolts end at the `center` of the creature and the wizard (renderer.d:1948-1958).
 
 ## scenes/sacrifice/red_vortex.tscn
 @export var vortex_scene: PackedScene
@@ -27,7 +27,7 @@ extends Node3D
 @export var vortex_aim: Marker3D
 ## Moved to the creature's soul anchor while shooting: where the altar ropes end.
 @export var creature_aim: Marker3D
-## Moved to the drained wizard's chest while shooting: where the drain ropes end.
+## Moved to the drained wizard's center socket (BodyFacts) while shooting: where the drain ropes end.
 @export var wizard_aim: Marker3D
 @export_group("Ropes")
 ## Each one starts at its own marker child of `altar_top` / `vortex_aim`, so the bolts do not overlap.
@@ -56,7 +56,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 ## The creature turns to blood (every peer sees it: the server broadcasts).
 func splash_blood(at: Vector3) -> void:
 	if blood_fx != null:
-		FxBus.broadcast(FxBus.name_of(blood_fx), at)
+		FxBus.broadcast(blood_fx, at)
 
 
 func _process(delta: float) -> void:
@@ -104,7 +104,7 @@ func _ropes(shooting: bool, wizard: WizardBody) -> void:
 		creature_aim.global_position = creature.soul_anchor()
 	if shooting and wizard != null and _vortex != null and is_instance_valid(_vortex):
 		vortex_aim.global_position = _vortex.global_position
-		wizard_aim.global_position = wizard.global_position + Vector3.UP * 1.5
+		wizard_aim.global_position = BodyFacts.point(wizard, BodyFacts.Socket.CENTER)
 	for rope in altar_ropes:
 		rope.end = creature_aim if shooting and creature != null else null
 	for rope in drain_ropes:

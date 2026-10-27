@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/fklp/003.png" id="1_sw55x"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/fklp/003_normal.png" id="2_n1bu3"]
 
 [resource]
 resource_name = "fklp_003"
 albedo_texture = ExtResource("1_sw55x")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_n1bu3")

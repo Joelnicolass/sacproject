@@ -4,6 +4,7 @@ cache/
 !assets/cc0/**/*.import
 !assets/original/**/*.import
 !assets/custom/**/*.import
+!assets/surfaces/**/*.import
 
 # Capturas del juego original usadas como referencia: no se versionan.
 visual/refs/original/
@@ -20,3 +21,9 @@ agent/out/f84/*side_by_side*.png
 agent/out/*
 !agent/out/.gdignore
 __pycache__/
+
+# Plan 063D S4: the Blender working folder beside each map's heights.png (terrain.blend, manifest.json; also the edit bed's).
+# The truth is heights.png + void.png.
+terrain_work/
+# Godot rebuilds it from strings.csv on every import
+data/i18n/*.translation

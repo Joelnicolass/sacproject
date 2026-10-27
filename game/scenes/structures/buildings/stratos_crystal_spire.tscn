@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://data/buildings/stratos_crystal_spire.tres" id="2_type"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/sfor.res" id="mesh_sfor"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(59.164, 156.266, 57.564003)
+
+[node name="StratosSfor" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_sfor")
+
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
+position = Vector3(4.9900017, 0, 5.717001)
+script = ExtResource("3_clear")
+radius_m = 42.27
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(4.9900017, 71.604004, 5.717001)
+shape = SubResource("BoxShape3D_body")

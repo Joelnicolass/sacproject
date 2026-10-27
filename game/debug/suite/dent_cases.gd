@@ -10,6 +10,8 @@ const METEOR := preload("res://scenes/spells/drops/meteor.tscn")
 const CENTER := Vector2(1260.0, 1270.0)
 const DEPTH_M := 1.2
 const RADIUS_M := 15.0
+## The ground is put back over the vertices within this of the first impact (9 x 9: both dents and their rims).
+const PUT_BACK_M := 40.0
 
 var _c
 
@@ -30,13 +32,13 @@ func _rules() -> Dictionary:
 	var cylinder := (stamp.get_node("Reach") as CollisionShape3D).shape as CylinderShape3D
 	checks["radius_15_depth_1_2"] = is_equal_approx(cylinder.radius, RADIUS_M) and is_equal_approx(cylinder.height, DEPTH_M)
 	checks["manual_and_kept"] = stamp.manual and stamp.keep
-	var rect := GroundField.vertex_rect(CENTER, cylinder.radius)
+	var rect := TerrainGrid.vertex_rect(CENTER, cylinder.radius)
 	var values := StampRules.values(stamp.profile, CENTER, cylinder.radius, cylinder.height, stamp.profile.duration_s() - 1e-4, rect)
 	var worst := 0.0
 	var centre_value := 0.0
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var spot := Vector2(rect.position + Vector2i(column, row)) * TerrainRules.CELL
+			var spot := TerrainGrid.point_of(rect.position + Vector2i(column, row))
 			var wanted := _dent(spot.distance_to(CENTER))
 			var got := values[row * rect.size.x + column]
 			worst = maxf(worst, absf(got - wanted))
@@ -52,10 +54,10 @@ func _rules() -> Dictionary:
 ## Two meteorites end on the map: -1.2 m under the first, and the second one 10 m away adds its own dent to the vertex between them.
 func _impact() -> Dictionary:
 	var checks := {}
-	var shape: GroundSurface = _c._shape
+	var shape: Terrain = _c._shape
 	var ground := shape.field()
 	var near := CENTER + Vector2(10.0, 0.0)
-	var rect := Rect2i(Vector2i(CENTER / TerrainRules.CELL) - Vector2i(4, 4), Vector2i(9, 9))
+	var rect := TerrainGrid.vertex_rect(CENTER, PUT_BACK_M)
 	var before := ground.permanent.duplicate()
 	var rev_before := ground.rev
 	var base := shape.height_at(CENTER.x, CENTER.y)
@@ -82,9 +84,9 @@ func _impact() -> Dictionary:
 	restore.resize(rect.size.x * rect.size.y)
 	for row in rect.size.y:
 		for column in rect.size.x:
-			var id := (rect.position.y + row) * GroundField.SIDE + rect.position.x + column
+			var id := TerrainGrid.id_of(rect.position + Vector2i(column, row))
 			restore[row * rect.size.x + column] = before[id] - ground.permanent[id]
-	(_c._bed.get_node("Deformer") as TerrainDeformer).commit(rect, restore)
+	_c._keep(shape, CENTER, PUT_BACK_M, restore)
 	await _c._frames(2)
 	checks["ground_put_back"] = absf(shape.height_at(CENTER.x, CENTER.y) - base) < 1e-3
 	return _c._verdict("dent_impact", checks)

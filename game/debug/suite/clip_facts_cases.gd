@@ -35,7 +35,7 @@ func _types() -> Dictionary:
 				continue
 			count += 1
 			var type := load(dir + file) as Resource
-			var path := BodyModel.clips_path(BodyFacts.of(type.get("body") as PackedScene).model_id)
+			var path := ModelPaths.clips_path(BodyFacts.of(type.get("body") as PackedScene).model_id)
 			var library := type.get("clips") as AnimationLibrary
 			if library == null:
 				_note(bad, "%s: no clips (its library is %s)" % [file, path])
@@ -60,14 +60,14 @@ func _libraries() -> Dictionary:
 		if not file.ends_with("_clips.tres"):
 			continue
 		libs += 1
-		var model := BodyModel.tag_of_file(file)
+		var model := ModelPaths.tag_of_file(file)
 		var library := load(MODELS_DIR + file) as AnimationLibrary
 		if library == null:
 			_note(bad, file + ": does not load")
 			continue
 		var custom := ResourceLoader.exists("%s%s.glb" % [CUSTOM_MODELS_DIR, model])
 		var facts := ClipFacts.of(library)
-		if BodyModel.exists(model) and not library.has_animation(&"idle"):
+		if ModelPaths.exists(model) and not library.has_animation(&"idle"):
 			_note(bad, file + ": the model has a scene but the library has no idle")
 		for role in library.get_animation_list():
 			if role == &"RESET":

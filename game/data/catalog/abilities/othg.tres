@@ -12,8 +12,3 @@ mana_cost = 10
 cast_range_m = 100.0
 cooldown_s = 1.25
 casting_time_s = 0.0741
-args = {
-"iadd": 1.0,
-"tptx": "elec",
-"ttyp": "elec"
-}

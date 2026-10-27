@@ -45,7 +45,7 @@ func _process(delta: float) -> void:
 func _fit() -> void:
 	if body == null:
 		return
-	var box := BodyNudge.box(body)
+	var box := DrawnPose.box(body)
 	global_transform = Transform3D(Basis.from_scale(box.size * maxf(_grown, 0.001)), box.get_center())
 
 

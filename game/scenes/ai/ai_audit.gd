@@ -1,12 +1,13 @@
 class_name AiAudit
 extends Node
 
-## The record of a match (RFC-024 §5.2), the base of the bench report. It only watches: it never
+## The record of a match, the base of the bench report. It only watches: it never
 ## decides or changes the game. Everything it sees becomes one text line, hashed in order into `digest`
 ## (sha256), so two runs with the same seed must give the same one. Wall-clock times never enter it.
 ## 024a: events of bodies and souls, positions every `sample_every_ticks`, and the souls ledger of each
 ## side. 024c: the AI's columns: every request its port makes (summons with the mana and souls before and after, casts,
 ## the reasons the game refused one), the mana that comes in by source, the orders, what the perception knows.
+## Ref: RFC-024 §5.2.
 
 ## RFC-034 034k: the lines, the clock and the sha256 live in the kit's recorder (self_tick off: this node moves the clock
 ## in its own _physics_process, so the order of the physics step does not change). Without one in the scene it makes its own.
@@ -16,6 +17,8 @@ extends Node
 signal cast_noted(slot: int, tag: String, target: Node)
 ## Every request of the port the Caster started, summons included (diagnostic, for the bench probes).
 signal request_noted(slot: int, tag: String, target: Node, is_summon: bool)
+## 055f f5: a request the Caster refused (the `reject` line), for the bench's criteria.
+signal refused_noted(slot: int, tag: String, reason: String)
 
 ## Physics ticks since start(); the clock of every line.
 var tick: int:
@@ -279,6 +282,7 @@ func note_request(slot: int, tag: String, display: String, started: bool, answer
 		var table: Dictionary = side["rejections"]
 		table[reason] = int(table.get(reason, 0)) + 1
 		record("reject", "slot %d %s %s" % [slot, tag, reason])
+		refused_noted.emit(slot, tag, reason)
 		return
 	request_noted.emit(slot, tag, target, is_summon)
 	if is_summon:

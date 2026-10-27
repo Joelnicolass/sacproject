@@ -80,6 +80,17 @@ extends Resource
 ## Most lights of units, wizards and spells on at once (ActorLightBudget): shadowless OmniLight3D. 0 = none.
 @export_range(0, 64) var actor_max_lights: int = 12
 
+@export_group("Ambience (058)")
+## Multiplies the drops of the rain (and the snow) of every weather state.
+@export_range(0.0, 2.0, 0.05) var rain_density_scale: float = 1.0
+## Multiplies the particles of the ambient life (pollen, fireflies...). 0 = no ambient life at all.
+@export_range(0.0, 2.0, 0.05) var life_density_scale: float = 1.0
+
+@export_group("Relieve (067)")
+## The normal maps of the models (SurfaceReliefLayer). Off = every material draws as if it had none; the player's
+## «Relieve» option can only turn them off on top of this.
+@export var relief_maps: bool = true
+
 @export_group("Vegetación (RFC-054)")
 ## One entry per mesh vegetation layer (FloraField), by the layer's id. A layer without an entry is not drawn.
 @export var vegetation: Array[VegetationQuality] = []

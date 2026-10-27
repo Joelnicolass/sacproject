@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/xwiz/007.png" id="1_5o1yr"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/xwiz/007_normal.png" id="2_np2e7"]
 
 [resource]
 resource_name = "xwiz_007"
 albedo_texture = ExtResource("1_5o1yr")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_np2e7")

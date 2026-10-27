@@ -1,21 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="1_shape"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="2_deformer"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="3_collision"]
-[ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="4_data"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="1_terrain"]
+[ext_resource type="Resource" uid="uid://cmpaot4pm4cus" path="res://scenes/map/maps/high_noon/heights.png" id="2_heights"]
 
-[node name="Terrain" type="Node3D"]
-editor_description = "Un suelo sin malla para verificar el terreno deformable: la forma (GroundSurface) de High Noon, su Deformer y su Collision por trozos. Lo usan terrain_cases y terrain_late_join; no tiene look."
+[node name="TerrainBed" type="Node3D"]
+editor_description = "El suelo de High Noon solo, para verificar el terreno deformable: una instancia de scenes/map/terrain/terrain.tscn con sus alturas (heights.png), su Net y su Collision por trozos; sin look. Sin ventana no arma malla. Lo usan terrain_cases y terrain_late_join. Remote → Terrain/Status muestra rev, version, live_stamps y holes."
 
-[node name="Shape" type="Node" parent="."]
-script = ExtResource("1_shape")
-data = ExtResource("4_data")
-
-[node name="Deformer" type="Node" parent="." node_paths=PackedStringArray("shape")]
-script = ExtResource("2_deformer")
-shape = NodePath("../Shape")
-
-[node name="Collision" type="StaticBody3D" parent="." node_paths=PackedStringArray("shape")]
-script = ExtResource("3_collision")
-shape = NodePath("../Shape")
+[node name="Terrain" parent="." instance=ExtResource("1_terrain")]
+heights = ExtResource("2_heights")

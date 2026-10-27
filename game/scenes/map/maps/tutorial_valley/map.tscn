@@ -1,25 +1,17 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
-[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="shape_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="deformer_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
-[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
-[ext_resource type="Resource" path="res://assets/original/maps/tutorial_valley/terrain.res" id="10_data"]
-[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="11_ground"]
-[ext_resource type="PackedScene" path="res://assets/original/maps/tutorial_valley/terrain.glb" id="12_glb"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/tutorial_valley/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
-[ext_resource type="Resource" path="res://data/buildings/persephone_font.tres" id="fbldg_font"]
+[ext_resource type="Resource" path="res://data/buildings/persephone_fountain.tres" id="fbldg_font"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_arch.tscn" id="d2_persephone_arch"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_hut1.tscn" id="d2_persephone_hut1"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_hut.tscn" id="d2_persephone_hut1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_fence.tscn" id="d2_persephone_fence"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_1.tscn" id="d2_persephone_rock_1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_2.tscn" id="d2_persephone_rock_2"]
@@ -32,9 +24,8 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_pillar.tscn" id="d2_persephone_pillar"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_conifer.tscn" id="d2_persephone_conifer"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_tree_tall.tscn" id="d2_persephone_tree_tall"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_pcwm.tscn" id="d2_persephone_pcwm"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_windmill.tscn" id="d2_persephone_pcwm"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_silo.tscn" id="d2_persephone_silo"]
-[ext_resource type="Resource" path="res://assets/original/maps/tutorial_valley/ground_native.tres" id="native_ground"]
 [ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="flora_layer_script"]
 [ext_resource type="Resource" path="res://data/vegetation/species/persephone_clump_1.tres" id="sp_persephone_clump_1"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_clump_1.png" id="fd_persephone_clump_1"]
@@ -57,15 +48,15 @@
 [ext_resource type="PackedScene" path="res://scenes/props/persephone_rock.tscn" id="prop_rock"]
 [ext_resource type="Resource" path="res://data/vegetation/species/persephone_shrub_2.tres" id="sp_persephone_shrub_2"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/flora/persephone_shrub_2.png" id="fd_persephone_shrub_2"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="hole_walls"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/tutorial_valley/ground_roles.png" id="62_roles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/tutorial_valley/light.png" id="62_light"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
+[ext_resource type="Resource" uid="uid://b1x0tt2ggca6t" path="res://scenes/map/maps/tutorial_valley/heights.png" id="t_heights"]
+[ext_resource type="PackedScene" path="res://scenes/look/life/life_spot.tscn" id="58_spot"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "ground", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
-ground = NodePath("Terrain/Shape")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
@@ -74,47 +65,15 @@ buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
 props = NodePath("Props")
 
-[node name="Look" parent="." node_paths=PackedStringArray("ground") instance=ExtResource("8_look")]
+[node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
-ground = NodePath("../Terrain/Shape")
-tile_map = ExtResource("9_tiles")
-native_ground = ExtResource("native_ground")
+terrain = NodePath("../Terrain")
 
-[node name="Terrain" parent="." node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("12_glb")]
+[node name="Terrain" parent="." instance=ExtResource("t_terrain")]
 unique_name_in_owner = true
-material_override = ExtResource("11_ground")
-script = ExtResource("2_terrain")
-shape = NodePath("Shape")
-missing = NodePath("Missing")
+heights = ExtResource("t_heights")
 ground_roles = ExtResource("62_roles")
 light_map = ExtResource("62_light")
-
-[node name="Shape" type="Node" parent="Terrain"]
-script = ExtResource("shape_script")
-data = ExtResource("10_data")
-
-[node name="Missing" type="Label3D" parent="Terrain"]
-visible = false
-text = "UI_MAP_MISSING"
-font_size = 48
-
-[node name="Deformer" type="Node" parent="Terrain" node_paths=PackedStringArray("shape")]
-script = ExtResource("deformer_script")
-shape = NodePath("../Shape")
-
-[node name="Collision" parent="Terrain" index="0" node_paths=PackedStringArray("shape")]
-script = ExtResource("collision_script")
-shape = NodePath("../Shape")
-
-[node name="Shape" parent="Terrain/Collision" index="0"]
-disabled = true
-
-[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
-shape = NodePath("../Shape")
-
-[node name="HoleWalls" parent="Terrain" node_paths=PackedStringArray("shape", "terrain") instance=ExtResource("hole_walls")]
-shape = NodePath("../Shape")
-terrain = NodePath("..")
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")
@@ -128,7 +87,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 62.3, 1570)
 transform = Transform3D(-0.9261, 0, 0.3773, 0, 1, 0, -0.3773, 0, -0.9261, 11.3189, 0, -27.7828)
 
 [node name="Start2" parent="MapProps/Starts" instance=ExtResource("4_start")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 880, 73.6, 980)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 910, 67.3, 948)
 slot = 2
 
 [node name="WizardSpot" parent="MapProps/Starts/Start2" index="1"]
@@ -702,12 +661,13 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1670, 5.8, 240)
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true
 navigation_mesh = ExtResource("15_navmesh")
+use_edge_connections = false
 script = ExtResource("16_nav_region")
 bake_settings = ExtResource("14_bake")
 
-[node name="MinimapBake" parent="." node_paths=PackedStringArray("surface") instance=ExtResource("17_minimap")]
+[node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
-surface = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain")
 
 [node name="Vegetation" type="Node3D" parent="."]
 
@@ -764,3 +724,55 @@ script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_shrub_2")
 density = ExtResource("fd_persephone_shrub_2")
 max_per_cell = 5
+
+[node name="AmbientLife" parent="Look/Layers" node_paths=PackedStringArray("spots")]
+spots = NodePath("../../../LifeSpots")
+
+[node name="LifeSpots" type="Node3D" parent="."]
+editor_description = "Lugares con vida ambiental (RFC-058). Arrastrá life_spot.tscn acá, elegí el hábitat y escalá la caja."
+
+[node name="Water01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1244, 58.5, 1500)
+habitat = 1
+
+[node name="Water02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1788, 14.5, 388)
+habitat = 1
+
+[node name="Water03" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1404, 54.9, 1228)
+habitat = 1
+
+[node name="Woods01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1660, 32.4, 604)
+habitat = 2
+
+[node name="Woods02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1236, 54.2, 1124)
+habitat = 2
+
+[node name="Woods03" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1676, 6.4, 228)
+habitat = 2
+
+[node name="Meadow01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1492, 0.9, 436)
+
+[node name="Meadow02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1836, 37.9, 700)
+
+[node name="Meadow03" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 996, 54.5, 980)
+
+[node name="Meadow04" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1012, 54.9, 644)
+
+[node name="Rock01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1268, 84.5, 124)
+habitat = 3
+
+[node name="Rock02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1132, 83.2, 388)
+habitat = 3
+
+[editable path="Look"]

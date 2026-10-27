@@ -193,8 +193,11 @@ func _advisor_watch(host: Node) -> Dictionary:
 	var made := _advisor(host)
 	var advisor: AdvisorVoice = made[0]
 	var lines: Dictionary = made[2]
+	var seat := MpLocalSeat.new()
+	host.add_child(seat)
 	var watch := AdvisorWatch.new()
 	watch.advisor = advisor
+	watch.seat = seat
 	for line: AdvisorLine in lines.values():
 		if line.resource_name in WATCH_LINES:
 			watch.set(line.resource_name, line)
@@ -231,7 +234,7 @@ func _advisor_watch(host: Node) -> Dictionary:
 	watch.scan()
 	checks["complete"] = advisor.waiting() == [&"sacrifice_complete"]
 	advisor.reset()
-	for node: Node in [advisor, made[1], wizard, ours, theirs, ritual]:
+	for node: Node in [advisor, made[1], wizard, ours, theirs, ritual, seat]:
 		node.queue_free()
 	await host.get_tree().process_frame
 	return _verdict(checks)

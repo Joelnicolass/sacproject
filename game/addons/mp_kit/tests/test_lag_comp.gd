@@ -44,3 +44,16 @@ func test_old_poses_are_dropped() -> void:
 	check(oldest.x >= 199 - 61, "only about HISTORY_S of poses is kept (oldest x %.0f)" % oldest.x)
 	node.free()
 	MpLagComp.clear()
+
+
+func test_a_rewind_never_lands_between_a_teleport() -> void:
+	MpLagComp.clear()
+	var node := Node2D.new()
+	node.position = Vector2(0, 0)
+	MpLagComp.record(node, 1.0)
+	node.position = Vector2(800, 0)
+	MpLagComp.record(node, 1.0 + 1.0 / 60.0, true)
+	var seen: Vector2 = MpLagComp.position_at_like(node, 1.0 + 0.5 / 60.0)
+	check(seen == Vector2.ZERO, "half a tick before a teleport it was still at the old pose, as the shooter saw it: %s" % seen)
+	node.free()
+	MpLagComp.clear()

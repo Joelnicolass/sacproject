@@ -1,14 +1,16 @@
 class_name NavRegions
 extends RefCounted
 
-## The connected components of a navmesh (RFC-035 035g): which region two points are in. Two polygons that share an
-## edge are one component; the ids go up in the order of the polygons, so the same navmesh always gives the same ids (no hash order
+## The connected components of a navmesh: which region two points are in. Two polygons that share an
+## edge are one component, and so are two whose sides lie along each other within Godot's edge connection margin (NavEdgeJoins: a T
+## joint or a few millimetres of difference at a zone border); the ids go up in the order of the polygons, so the same navmesh always gives the same ids (no hash order
 ## decides anything). `component_at` finds the polygon under a point, or the nearest one within `snap_m` (NavMeshBackend.SNAP_M).
 ## Built once from the NavigationMesh resource; the server is not asked anything.
+## Ref: RFC-035 035g, plan 071 Z4.
 
 const CELL_M := 8.0
 ## Vertices are matched by position (a navmesh may repeat one), 1 cm apart is the same vertex.
-const KEY_SCALE := 100.0
+const SNAP_PER_M := 100.0
 
 var component_count := 0
 ## Polygons per component, by component id.
@@ -32,7 +34,7 @@ func build(navmesh: NavigationMesh) -> void:
 	var by_position := {}
 	for i in _vertices.size():
 		var v := _vertices[i]
-		var key := Vector3i(roundi(v.x * KEY_SCALE), roundi(v.y * KEY_SCALE), roundi(v.z * KEY_SCALE))
+		var key := Vector3i(roundi(v.x * SNAP_PER_M), roundi(v.y * SNAP_PER_M), roundi(v.z * SNAP_PER_M))
 		if not by_position.has(key):
 			by_position[key] = i
 		canon[i] = by_position[key]
@@ -41,6 +43,7 @@ func build(navmesh: NavigationMesh) -> void:
 	for p in polygon_count:
 		parent[p] = p
 	var edge_owner := {}
+	var matched := {}
 	for p in polygon_count:
 		var polygon := navmesh.get_polygon(p)
 		_polygons.append(polygon)
@@ -51,9 +54,13 @@ func build(navmesh: NavigationMesh) -> void:
 			var edge := (mini(a, b) << 32) | maxi(a, b)
 			if edge_owner.has(edge):
 				_union(parent, p, int(edge_owner[edge]))
+				matched[edge] = true
 			else:
 				edge_owner[edge] = p
 		_index(p, polygon)
+	var joined := NavEdgeJoins.pairs(_vertices, _polygons, canon, matched, CELL_M)
+	for i in range(0, joined.size(), 2):
+		_union(parent, joined[i], joined[i + 1])
 	_component.resize(polygon_count)
 	var ids := {}
 	component_count = 0

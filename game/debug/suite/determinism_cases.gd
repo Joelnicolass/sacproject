@@ -53,7 +53,7 @@ func run(host: Node3D) -> Dictionary:
 	_host.add_child(_root)
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	await _ticks(2)
 	var book: Node = wizard.get_node("Spellbook")

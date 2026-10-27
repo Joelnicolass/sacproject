@@ -1,0 +1,217 @@
+{
+ "scene": "res://debug/structures/structure_break.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait_until": {
+    "node": "%Stats",
+    "text_contains": "Vida",
+    "timeout": 20
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "fount_cam",
+    "method": "frame",
+    "args": [
+     1520,
+     16.1,
+     1450,
+     60,
+     30,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "f391_tower_01_before.png"
+  },
+  {
+   "press": {
+    "name": "debug_hit",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/BreakKey",
+    "prop": "report"
+   }
+  },
+  {
+   "press": {
+    "name": "debug_hit",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "f391_tower_02_burst.png"
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/BreakKey",
+    "prop": "report"
+   }
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/HighNoon/Camera/CameraShake",
+    "prop": "trauma"
+   }
+  },
+  {
+   "wait": 2.9
+  },
+  {
+   "shot": "f391_tower_03_after.png"
+  },
+  {
+   "call": {
+    "harness": "fount_cam",
+    "method": "frame",
+    "args": [
+     1555,
+     17.5,
+     1480,
+     60,
+     30,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "f391_hut_01_before.png"
+  },
+  {
+   "press": {
+    "name": "debug_hit",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/BreakKey",
+    "prop": "report"
+   }
+  },
+  {
+   "press": {
+    "name": "debug_hit",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "f391_hut_02_burst.png"
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/BreakKey",
+    "prop": "report"
+   }
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/HighNoon/Camera/CameraShake",
+    "prop": "trauma"
+   }
+  },
+  {
+   "wait": 2.9
+  },
+  {
+   "shot": "f391_hut_03_after.png"
+  },
+  {
+   "call": {
+    "harness": "fount_cam",
+    "method": "frame",
+    "args": [
+     1490,
+     15.5,
+     1490,
+     40,
+     30,
+     0
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "f391_cactus_01_before.png"
+  },
+  {
+   "press": {
+    "name": "debug_hit",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/BreakKey",
+    "prop": "report"
+   }
+  },
+  {
+   "press": {
+    "name": "debug_hit",
+    "hold": 0.05
+   }
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "shot": "f391_cactus_02_burst.png"
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/BreakKey",
+    "prop": "report"
+   }
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/HighNoon/Camera/CameraShake",
+    "prop": "trauma"
+   }
+  },
+  {
+   "wait": 2.9
+  },
+  {
+   "shot": "f391_cactus_03_after.png"
+  },
+  {
+   "print": {
+    "node": "/root/StructureBreak/BreakKey",
+    "prop": "broke"
+   }
+  }
+ ]
+}

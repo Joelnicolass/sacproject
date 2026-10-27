@@ -1,7 +1,7 @@
 extends Node3D
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/james_manalith.tscn")
 const RULES := preload("res://data/match_rules.tres")
 const DOCTOR_CASES := preload("res://debug/suite/doctor_cases.gd")  # 020b
 const MATCH_CASES := preload("res://debug/suite/match_cases.gd")  # 020a
@@ -15,6 +15,8 @@ const TARGET_CASES := preload("res://debug/suite/target_cases.gd")  # 024b
 const VISION_CASES := preload("res://debug/suite/vision_cases.gd")  # 055c2
 const WEAPON_CASES := preload("res://debug/suite/weapon_cases.gd")  # 055c3
 const NAV_CASES := preload("res://debug/suite/nav_cases.gd")  # 024b
+const NAV_REGIONS_CASES := preload("res://debug/suite/nav_regions_cases.gd")  # plan 071 Z4
+const NAV_ZONE_CASES := preload("res://debug/suite/nav_zone_cases.gd")  # plan 071 Z3
 const VILLAGE_CASES := preload("res://debug/suite/village_cases.gd")  # 024b2
 const AI_CASES := preload("res://debug/suite/ai_cases.gd")  # 024c
 const CROWD_CASES := preload("res://debug/suite/crowd_cases.gd")  # 027d
@@ -25,6 +27,8 @@ const HOVER_FRAME_CASES := preload("res://debug/suite/hover_frame_cases.gd")
 const DEATH_CASES := preload("res://debug/suite/death_cases.gd")  # 055a
 const CAPTIVE_LOOK_CASES := preload("res://debug/suite/captive_look_cases.gd")  # 055a-5
 const TOWER_CASES := preload("res://debug/suite/tower_cases.gd")  # 061a
+const BUILD_AREA_CASES := preload("res://debug/suite/build_area_cases.gd")  # 064 S1
+const STRUCTURE_BREAK_CASES := preload("res://debug/suite/structure_break_cases.gd")  # 056 S3
 const WARD_CASES := preload("res://debug/suite/ward_cases.gd")  # 061b
 const CHAIN_CASES := preload("res://debug/suite/chain_cases.gd")  # 061e
 const CONTROL_CASES := preload("res://debug/suite/control_cases.gd")  # 061c
@@ -53,8 +57,9 @@ const SACRIFICE_PLACES_CASES := preload("res://debug/suite/sacrifice_places_case
 const REACH_PLACES_CASES := preload("res://debug/suite/reach_places_cases.gd")  # 055r r2
 const RITUAL_PARTS_CASES := preload("res://debug/suite/ritual_parts_cases.gd")  # 055g g3
 const BOOK_CASES := preload("res://debug/suite/book_cases.gd")  # 055e e4
-const SPELL_FIELD_CASES := preload("res://debug/suite/spell_field_cases.gd")  # 055e e1
 const SPELL_LINK_CASES := preload("res://debug/suite/spell_link_cases.gd")  # 055e e3
+const FX_WIRE_CASES := preload("res://debug/suite/fx_wire_cases.gd")  # 055x x1
+const ATMOSPHERE_CASES := preload("res://debug/suite/atmosphere_cases.gd")  # 058
 const TEAM_CASES := preload("res://debug/match/team_cases.gd")  # 049b, 049c
 
 @export var auto_run := true
@@ -68,6 +73,8 @@ var _results: Dictionary = {}
 
 
 func _ready() -> void:
+	## No MatchWorld here: the suite tells the sides of the default map, as a world would.
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	if auto_run:
 		call_deferred("_run_suite")
 
@@ -92,6 +99,8 @@ func _run_suite() -> void:
 	_results.merge(await VISION_CASES.new().run(self))  # 055c2
 	_results.merge(await WEAPON_CASES.new().run(self))  # 055c3
 	_results.merge(await NAV_CASES.new().run(self))  # 024b
+	_results.merge(NAV_REGIONS_CASES.new().run(self))  # plan 071 Z4
+	_results.merge(await NAV_ZONE_CASES.new().run(self))  # plan 071 Z3
 	_results.merge(VILLAGE_CASES.new().run(self))  # 024b2
 	_results.merge(await AI_CASES.new().run(self))  # 024c
 	_results.merge(await CROWD_CASES.new().run(self))  # 027d
@@ -104,6 +113,8 @@ func _run_suite() -> void:
 	_results.merge(await CAPTIVE_LOOK_CASES.new().run(self))  # 055a-5
 	_results.merge(await TEAM_CASES.new().run(self))  # 049b, 049c
 	_results.merge(await TOWER_CASES.new().run(self))  # 061a
+	_results.merge(await BUILD_AREA_CASES.new().run(self))  # 064 S1
+	_results.merge(await STRUCTURE_BREAK_CASES.new().run(self))  # 056 S3
 	_results.merge(await WARD_CASES.new().run(self))  # 061b
 	_results.merge(await CHAIN_CASES.new().run(self))  # 061e
 	_results.merge(await CONTROL_CASES.new().run(self))  # 061c
@@ -112,6 +123,7 @@ func _run_suite() -> void:
 	_results.merge(await RIFT_CASES.new().run(self))  # 061f
 	_results.merge(await AURA_CASES.new().run(self))  # 061f
 	_results.merge(await TERRAIN_CASES.new().run(self))  # 061k
+	_results.merge(preload("res://debug/suite/grid_constants_cases.gd").new().run(self))  # 063D-2a
 	_results.merge(await STALK_CASES.new().run(self))  # 061j
 	_results.merge(await TORNADO_CASES.new().run(self))  # 061j
 	_results.merge(await CLOUD_CASES.new().run(self))  # 061h
@@ -128,12 +140,22 @@ func _run_suite() -> void:
 	_results.merge(PRESENTATION_REFS_CASES.new().run(self))  # 055s s2
 	_results.merge(WIRE_CONFIG_CASES.new().run(self))  # 055s
 	_results.merge(PROP_FACTS_CASES.new().run(self))  # 055s s5a
+	_results.merge(preload("res://debug/suite/surface_refs_cases.gd").new().run(self))  # 067 P3
 	_results.merge(SACRIFICE_PLACES_CASES.new().run(self))  # 055g g1
 	_results.merge(REACH_PLACES_CASES.new().run(self))  # 055r r2
 	_results.merge(await RITUAL_PARTS_CASES.new().run(self))  # 055g g3
 	_results.merge(await BOOK_CASES.new().run(self))  # 055e e4
-	_results.merge(SPELL_FIELD_CASES.new().run(self))  # 055e e1
+	_results.merge(preload("res://debug/suite/ai_names_cases.gd").new().run(self))  # 055f f1
+	_results.merge(await preload("res://debug/suite/ai_sight_cases.gd").new().run(self))  # 055f f2
+	_results.merge(preload("res://debug/suite/ai_tactics_cases.gd").new().run(self))  # 055f f4
+	_results.merge(await preload("res://debug/suite/ai_knowledge_cases.gd").new().run(self))  # 055f f6
+	_results.merge(await preload("res://debug/suite/ai_spell_use_cases.gd").new().run(self))  # 055f f5
 	_results.merge(await SPELL_LINK_CASES.new().run(self))  # 055e e3
+	_results.merge(FX_WIRE_CASES.new().run(self))  # 055x x1
+	_results.merge(ATMOSPHERE_CASES.new().run(self))  # 058
+	_results.merge(preload("res://debug/suite/surface_maps_cases.gd").new().run(self))  # 067 P1
+	_results.merge(preload("res://debug/suite/surface_switch_cases.gd").new().run(self))  # 067: global relief switch
+	_results.merge(await preload("res://debug/suite/tree_block_cases.gd").new().run(self))  # playtest 2026-10-26: trees block
 	_print_suite()
 
 

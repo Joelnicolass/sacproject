@@ -267,7 +267,7 @@ Reglas:
 
 - Todo mundo replicado necesita al menos un `MpSpawner` en la escena (un `MultiplayerSpawner` común solo sigue mandando a peers en el lobby). Los nodos estáticos con sync no necesitan nada más.
 - Los synchronizers van en la escena, o se agregan por código **antes** del `add_child`, o en el `_ready` del propio actor. Uno agregado después (diferido, un timer) falta en el paquete de spawn: el que entra tarde recibe `ERR_INVALID_DATA` para ese actor. El spawner igual lo retiene y lo reporta con `push_error`.
-- Un actor sin synchronizer recibe un synchronizer vacío `MpSpawnGate` en todos los peers al entrar a `spawn_path` (`gate_unsynced_spawns`). Sin él, Godot manda ese actor a todos los peers, lobby incluido, y la ruta fallida rompe el spawner para ellos. Apagalo solo si toda escena spawneada tiene synchronizer. En el servidor, un nodo que un script agrega a mano en `spawn_path` (un efecto solo del servidor, que el motor no replica) no recibe gate ni se retiene: el cliente nunca lo tiene. Se replica un nodo cuya escena está en la lista del spawner o que hizo `spawn(data)`; para eso asigná `spawn_function` antes de `super._ready()` (si la asignás después, el spawner avisa y la toma desde el nodo siguiente).
+- Un actor sin synchronizer recibe un synchronizer vacío `MpSpawnGate` en todos los peers al entrar a `spawn_path` (`gate_unsynced_spawns`). Sin él, Godot manda ese actor a todos los peers, lobby incluido, y la ruta fallida rompe el spawner para ellos. Apagalo solo si toda escena spawneada tiene synchronizer. En el servidor, un nodo que un script agrega a mano en `spawn_path` (un efecto solo del servidor, que el motor no replica) no recibe gate ni se retiene: el cliente nunca lo tiene. Se replica un nodo cuya escena está en la lista del spawner o que hizo `spawn(data)`; para eso asigná `spawn_function` en cualquier `_ready` de la escena (el del spawner, un hermano o el padre): el spawner la toma al final de ese frame. Si la asignás más tarde, avisa y la toma desde el nodo siguiente.
 - Costo: en el servidor, un recorrido de la escena por cada revelado o cambio de asiento, y un chequeo de tipo por nodo que entra al árbol. Nada por frame.
 
 ### 4. Pawn (actor replicado)
@@ -359,7 +359,7 @@ El kit **no lee** el dict. **No reenvía solo**. Si el servidor no hace `broadca
 | Quién | Método | Qué pasa |
 |-------|--------|----------|
 | Cliente, 1P, o el propio servidor | `MpKit.send_custom(channel, data)` | Cliente → RPC al servidor. 1P / servidor: emite `custom_received` **en local** (`from_peer` 1 o tu unique id). |
-| Solo servidor | `MpKit.broadcast_custom(channel, data)` | Emite en el servidor (`from_peer` = 1) **y** manda a todos los clientes. |
+| Solo servidor | `MpKit.broadcast_custom(channel, data)` | Emite en el servidor (`from_peer` = 1) **y** manda a todos los clientes. `broadcast_custom(channel, data, true)`: solo a los peers con el mundo cargado (`MpKit.ready_peers()`), para un efecto de un instante que un peer que todavía carga perdería. |
 | Solo servidor | `MpKit.push_custom_to(peer_id, channel, data)` | Un cliente. El servidor **no** emite en local. |
 | Todos | señal `MpKit.custom_received(channel, data, from_peer)` | Ahí recibís. |
 
@@ -493,32 +493,38 @@ Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md]
 |---------|-----|
 | `nodes/mp_actor.gd` | `MpActor`: hijo de lo que la red comparte. El servidor es su autoridad; la lista *Sync* arma en el editor un `MultiplayerSynchronizer` (`MpSync`) que se guarda en la escena; suaviza proxies; `owner_slot` (lo pone el spawner, viaja al nacer). `to_server(&"x", args)` corre `mp_sv_x(args)` en el servidor (solo el dueño puede pedirlo; `sender_slot()` dice quién); `to_all(&"x", args)` corre `mp_all_x(args)` en todos los peers que ya tienen el nodo (solo el servidor). `is_authority()`, `is_local()`, `MpActor.of(nodo)` |
 | `nodes/mp_input.gd` | `MpInput`: junto a un `MpActor`. El dueño manda sus acciones del InputMap (frames con secuencia, contadores de pulsación que no se pierden con un paquete); en el servidor se leen con la API de `Input` (`get_vector`, `is_action_just_pressed`...). `set_value` / `get_value` para valores propios (mira, cursor) |
-| `nodes/mp_state.gd` | `MpState`: valores de partida (`set_value`, `add`, `get_value`, señal `changed`). Lo escribe el servidor; lo reciben todos, también el que entra tarde. `MpState.of(nodo)` |
+| `nodes/mp_state.gd` | `MpState`: valores de partida (`set_value`, `add`, `get_value`, señal `changed`, `watch(key, cb)`: el valor actual y después cada cambio; `unwatch`). Lo escribe el servidor; lo reciben todos, también el que vuelve. `MpState.of(nodo)` |
 | `core/mp_sync_builder.gd` | lista del inspector → `SceneReplicationConfig` (transformaciones, sello y ack ALWAYS, el resto ON_CHANGE, `owner_slot` solo al nacer) |
 | `core/mp_actor_sync.gd` | qué manda el synchronizer de un `MpActor` en cada modo: con suavizado o predicción la pose viaja en `MpActor.net_position` / `net_rotation` + `net_stamp`, nunca en la del nodo, así en el cliente solo `MpActor` mueve el nodo |
-| `core/mp_input_frame.gd` | el frame de input que viaja al servidor; valida tamaño y tipos; contadores de pulsación |
-| `core/mp_input_queue.gd` | servidor con predicción: frames del dueño en orden, cada uno una vez; buffer de jitter (`depth`), puesta al día suave y presupuesto (un cliente no puede ir más rápido mandando frames de más) |
+| `core/mp_input_frame.gd` | el input de un tick; contadores de pulsación; fuerzas en los pasos de 1/255 con que viajan |
+| `core/mp_input_packet.gd` | `MpInputPacket`: una tira de frames en un paquete, codificada en delta (un frame que mantiene sus teclas ocupa 5 bytes), y los controles que un cliente hostil no pasa |
+| `core/mp_input_queue.gd` | servidor con predicción: frames del dueño en orden, cada uno una vez, uno por tick; un frame tardío se supone (el último otra vez) y se descarta cuando llega; buffer de jitter (`depth`) que el dueño mantiene lleno con su ritmo; presupuesto (un cliente no puede ir más rápido mandando frames de más) |
+| `core/mp_correction_smoother.gd` | `MpCorrectionSmoother`: la corrección del dueño dibujada desvaneciéndose (solo la pose visible; la real vuelve antes de cada frame de física) |
 | `core/mp_prediction.gd` | predicción del dueño y reconciliación: el servidor corre `mp_move` por cada frame del dueño; el dueño vuelve al estado del servidor y repite los frames sin ack, dentro del tick de física |
 | `core/mp_proxy_motion.gd` / `mp_interpolator.gd` | dibujo de proxies: `BUFFERED` (en el pasado, entre dos estados reales) o `FOLLOW` |
 | `core/mp_net_clock.gd` | tiempo de simulación del servidor (ticks / tps, parejo) y su estimación en el cliente (sigue al paquete menos demorado) |
 | `core/mp_lag_peer.gd` | red mala a propósito para probar: `--net-lag-ms`, `--net-jitter-ms`, `--net-loss` envuelven el peer (ENet o WS). Solo pruebas |
 | `mp.gd` | `Mp`: los verbos de la partida desde cualquier script (`play_solo`, `host`, `join`, `leave`, `open_rooms`, `is_server`, `is_online`, `me`, `player`, `state`, `current_match`, `finish`, `net_quality`); llama a los nodos que hacen el trabajo |
 | `mp_game.gd` | `MpGame` (`.tres`): un `MpNetConfig` con las escenas del juego; en `MpFlow.game` llena `net_config` y cada ruta vacía |
+| `nodes/mp_start_button.gd` | `MpStartButton`: en el HUD; en un listen host cuya partida espera asientos arranca con los jugadores que ya cargaron (`Mp.gate().start_now()`) y muestra `cargados/esperados`; oculto en otro caso |
+| `nodes/mp_waiting_label.gd` | `MpWaitingLabel`: en el HUD; mientras la partida espera sus asientos muestra `cargados/esperados` en todos los peers (los conteos de la puerta, válidos en el cliente); oculto en otro caso |
+| `nodes/mp_local_seat.gd` | `MpLocalSeat`: quién mira esta pantalla; `slot`, `is_mine(slot)`, `is_online()`, `changed(slot)`, `preview_slot` (en solo: mostrar la partida como otro asiento), `MpLocalSeat.of(node)` por grupo. HUD, audio, órdenes y resultado lo reciben por `@export` |
 | `nodes/mp_invite_label.gd` | `MpInviteLabel`: en el HUD; en una partida privada de esta PC (`MpLocalServer`) muestra lo que escriben los amigos (`ip:puerto#CÓDIGO`); oculto en otro caso. Lo busca por grupo, sin cargar los scripts de salas |
-| `nodes/mp_world.gd` | `MpWorld`: un nodo en el mundo; en el editor arma `SpawnPoints`, `Actors`, `Players` (`MpSlotSpawner`), `State` (`MpState`), `Match` (`MpMatch`) y `Hud/Leave` + `Hud/Invite`; `player_scene` es la escena de cada asiento |
+| `nodes/mp_world.gd` | `MpWorld`: un nodo en el mundo; en el editor arma `SpawnPoints`, `Actors`, `Players` (`MpSlotSpawner`), `State` (`MpState`), `Match` (`MpMatch`) y `Hud/Leave` + `Hud/Invite` + `Hud/Start` + `Hud/Waiting`; `player_scene` es la escena de cada asiento |
 | `core/mp_net_quality.gd` | `MpNetQuality` (hijo del autoload, `MpKit.net_quality`): pings 4 por segundo; RTT (mediana), jitter (percentil 97), pérdida y nota `GOOD` / `FAIR` / `BAD`; el servidor guarda la de cada jugador. `Mp.net_quality()` |
 | `core/mp_lag_comp.gd` | `MpLagComp`: compensación de lag en el servidor; un segundo de poses por actor (`MpActor.lag_compensate`), `position_at`, `rewind(stamp, callable)`; el momento que veía cada jugador viaja en `MpInputFrame.view` y en `to_server`; `--lag-comp=off` la apaga |
 | `core/mp_net_config.gd` | `MpNetConfig` (`.tres`): la red del juego en un lugar; `apply()` configura `MpKit`; en web usa WebSocket (o el relay) y `can_host()` es falso |
-| `nodes/mp_match.gd` | `MpMatch`: inicio y fin de una partida; en una partida de sala pausa hasta que cargan todos los asientos, avisa ausencias y abandonos (`rejoin_grace_s`), `finish(result)` escribe el resultado para la sala |
+| `nodes/mp_match.gd` | `MpMatch`: inicio y fin de una partida en el mundo; reemite lo que dice la puerta (arranque, ausencias, vueltas, abandonos), `finish(result)` escribe el resultado para la sala |
+| `mp_match_gate.gd` | `MpMatchGate` (`/root/MpKit/Gate`, `Mp.gate()`): la puerta de arranque. Fases `IDLE`/`FILLING`/`RUNNING`; admite o rechaza con motivo (`match_started`, `full`, `grace_over`, `slot_taken`, `rejected`); credencial por asiento en modo abierto, identidad por ticket en salas; cuenta los cargados, pausa y despausa (también a los clientes), `rejoin_grace_s`, `load_timeout_s`, `late_join`, `give_up`, `displaced_by` (una credencial que vuelve tras una caída gana sobre la conexión vieja); con `wait_host` espera también el mundo del servidor (`mark_host_loaded`, y en solo `arm([], 0)`); con `loaded_on_world_ready` apagado un asiento cuenta al `report_loaded` y no al `world_ready`. Señales `waiting_changed`, `seat_admitted`, `seat_loaded`, `started`, `seat_away`, `seat_abandoned`, `all_gone`, `turned_away` |
 | `rooms/mp_room_server.gd` | `MpRoomServer`: la escena del servidor de salas (lobby + `MpMatchLauncher` + reglas); `net_config` = el `MpNetConfig` del juego (vacío = el del flow, su `MpGame`); `match_scene` vacío = el `boot_scene` del `MpGame`; flags de `MpLobbyConfig`, `--lobby-config=`, `--match-args=`, `--match-engine-args=` y `--keep-match-files` |
 | `rooms/mp_room_rules.gd` | `MpRoomRules`: reglas de sala pisando funciones (`seats_for`, `accept_options`, `accept_pick`, `accept_bot`, `build_ticket`) |
 | `rooms/mp_local_server.gd` | `MpLocalServer`: un dedicado en la PC del jugador con códigos por asiento (`start_on(tree, seats)`, `server_ready(address, port, codes)`, `invites()`); se une con `ip:puerto#CÓDIGO` (`MpFlow.join_address`). Uno por proceso (un segundo `start_on` devuelve el que corre), con su carpeta de partidas por proceso |
-| `deploy/` | `deploy.sh usuario@vps build` (un comando: usuario, archivos, unidades systemd, instancias, firewall), `mp-rooms@.service` / `mp-dedicated@.service` (una instancia por puerto), presets de export de ejemplo y la guía |
+| `deploy/` | `deploy.sh usuario@vps build` (un comando: usuario, archivos, unidades systemd, instancias, firewall), `mp-rooms@.service` / `mp-dedicated@.service` (una instancia por puerto), presets de export de ejemplo y la guía; `fly.sh` + `fly/` (`Dockerfile`, `fly.toml`): el servidor en Fly.io detrás del relay, sin VPS ni export |
 | `rooms/mp_lobby_link.gd` | el stack `/root/MpLobby` (autoload o creado al vuelo) |
 | `rooms/ui/mp_lobby_screen.gd` / `mp_lobby_ui.gd` / `.tscn` | `MpLobbyScreen`: lobby drop-in (conectar, salas, crear, código, asientos, listo, chat) que se une a la partida por `MpFlow.join_match` |
 | `core/mp_address.gd` | `MpAddress`: lo que una persona escribe para llegar a un servidor (IP, nombre, `:puerto`, `#CÓDIGO`, URL), igual en el menú, el lobby y `MpFlow.join_address` |
 | `core/mp_relay_peer.gd` | `MpRelayPeer`: el transporte `relay` (WebSocket a un relay de MpKit; el host se conecta hacia afuera, sin IP pública). Cada puerto es la sala `<relay_room>-<puerto>`; una sala con host vivo está ocupada (4009) y el lanzador prueba otro puerto |
-| `relay/` | `server.mjs` (relay Node sin dependencias, para Railway, Render, Fly o un VPS), `package.json` y la guía |
+| `relay/` | `server.mjs` + `lib/` (relay Node sobre la librería `ws`, para Railway, Render, Fly o un VPS), `package.json`, sus pruebas (`npm test`) y la guía |
 | `nodes/mp_leave_button.gd` | `MpLeaveButton`: el botón Salir de un HUD (`MpFlow.leave_match()`: al lobby o al menú); anda con el mundo pausado |
 | `core/mp_rate_limit.gd` | `MpRateLimit`: cubeta de tokens por peer (túnel y `mp_sv_*`) |
 | `core/mp_calls.gd` | llamadas por nombre (`mp_sv_*`, `mp_all_*`) con chequeo de cantidad de argumentos |
@@ -538,12 +544,13 @@ Piezas de bajo nivel:
 | `mp_ids.gd` | slot ↔ peer |
 | `mp_room_directory.gd` | hub rooms (opt-in); asiento de sala ≠ slot del hub |
 | `mp_matchmaker.gd` | cola FIFO; arma una room al llenar `party_size` |
-| `mp_boot.gd` | detectar proceso dedicated |
+| `mp_boot.gd` | detectar proceso dedicated, flags de la línea de comandos, asientos del ticket (`ticket_seats`) |
 | `mp_flow.gd` | escenas, host/join/1P, catálogo de mundos |
+| `mp_world_loader.gd` | `MpWorldLoader`: único dueño de la carga del mundo (hilo, progreso, «el mundo avisa que está listo», lectura en el hilo principal si el hilo falla); hijo interno del `MpFlow` |
 | `mp_world_ref.gd` | un mundo del catálogo |
 | `mp_replicate.gd` | authority + freeze + lerp de proxy (el synchronizer vive en la escena) |
-| `mp_spawner.gd` | MultiplayerSpawner + hold por peer de su alcance + `room_id` |
-| `mp_slot_spawner.gd` | un pawn packed por slot ocupado |
+| `mp_spawner.gd` | MultiplayerSpawner + hold por peer de su alcance + `room_id`; `spawn_actor(scene, props, owner_slot)`, `spawn_here(data)` (spawnea en el servidor o en solo, `null` en un cliente) |
+| `mp_slot_spawner.gd` | un pawn packed por slot ocupado: en `client_world_ready`, y en `_ready` para los peers que ya tenían el mundo listo |
 | `mp_boot_menu.gd` / `.tscn` | lobby drop-in |
 | `mp_custom_pipe.gd` | un canal del túnel |
 | `mp_lan.gd` / `mp_lan_beacon.gd` | IPv4 + UDP advertise/browse |
@@ -551,8 +558,8 @@ Piezas de bajo nivel:
 | `mp_world_ready.gd` | legado (no-op si hay `MpSpawner`) |
 | `lobby/mp_lobby_config.gd` | `MpLobbyConfig` (`.tres`): límites y tiempos del servidor de salas; cada campo numérico se pisa con `--nombre-con-guiones=N` (`with_cli_overrides()`). `max_matches` por defecto 99 |
 | `lobby/mp_match_launcher.gd` | `MpMatchLauncher`: un dedicado por partida (`launch(id, ticket)`, puerto libre del rango, tope `ERR_BUSY`, registro de pids, mata latido viejo / huérfanos). Señales `match_listening`, `match_ended`, `match_failed` |
-| `lobby/mp_match_agent.gd` | `MpMatchAgent` (en el dedicado): lee `--match-ticket-file` y `--room-pid`, pone `MpKit.admission` con el hash del token, escribe `state.json` (latido) y `result.json` (`report_result(data)`), sale si muere el padre |
-| `lobby/mp_process_runner.gd` / `_stub.gd` | (pids e identidad por `ps`: validado en macOS y Linux; en Windows, mejor esfuerzo) `OS.create_process` / `is_process_running` / `kill`; el stub simula procesos sin Godot |
+| `lobby/mp_match_agent.gd` | `MpMatchAgent` (en el dedicado): lee `--match-ticket-file` y `--room-pid`, nombra el asiento de cada token (`seat_of`: sha256 y vencimiento) y arma la puerta con él (`arm_gate`), escribe `state.json` (latido) y `result.json` (`report_result(data)`), sale si muere el padre |
+| `lobby/mp_process_runner.gd` / `_stub.gd` | (pids e identidad: /proc en Linux, incluida la imagen mínima de un contenedor; `ps` en macOS; en Windows, mejor esfuerzo) `OS.create_process` / `is_process_running` / `kill`; el stub simula procesos sin Godot |
 | `lobby/mp_lobby_rooms.gd` | `MpLobbyRooms` (RefCounted, sin red): estados de sala `OPEN`/`COUNTDOWN`/`LAUNCHING`/`IN_MATCH`/`CLOSED`, asientos por `session_id` (`resume_grace_s`), pick opaco validado por Callable, cuenta regresiva con `tick(delta)`, lanza con `MpMatchLauncher`. Los comandos devuelven un código String ("" = ok); señales `room_changed`, `match_assigned`, `room_error`, `room_closed`. Asientos por sala: `seat_count_for(options)` (tope `max_seats_per_room`); el que crea es el anfitrión y pasa al siguiente sentado si se va; el anfitrión llena asientos libres con bots (`set_seat_bot` / `clear_seat_bot`, `bot_validator`): un bot ocupa el asiento, está siempre listo y en el ticket es una fila `{slot, bot: true, meta}` sin token, que el agente nunca admite |
 | `lobby/mp_lobby_server.gd` | `MpLobbyServer`: pone `MpLobbyRooms` en ENet o WebSocket (`lobby_port`, `MpLobbyConfig.transport`). Valida versión, nombre, tamaño de `options`/`meta`, ritmo de chat y `hello_timeout_s`; el cliente no elige slot, puerto ni semilla. `meta_validator`, `options_validator`, `ticket_builder`, `seat_count_for` y `bot_validator` los pone el juego antes de `start(config, launcher)`. Protocolo `proto_version` 2. Códigos de error estables (`version`, `bad_name`, `rate`, `bad_options`, `bad_meta`, `bad_bot`, `not_host` y los de `MpLobbyRooms`) |
 | `lobby/mp_lobby_client.gd` | `MpLobbyClient`: espejo (`rooms`, `room`, `chat_log`), comandos (`create_room`, `join_room`, `join_code`, `leave_room`, `choose_seat`, `set_pick`, `set_ready`, `send_chat`, `refresh_rooms`, `resume`) y señales en pasado (`room_updated`, `countdown_started`, `match_ready(host, port, token)`, `match_finished(result)`, `error_received`...). `host` vacío en `match_ready` = el del lobby (`MpLobbyConfig.public_host`). `auto_resume` (apagado por defecto, con `resume_window_s` = 120 y `resume_retry_s` = 2): si el enlace cae, el cliente reintenta con su ficha y no emite `lobby_lost` hasta agotar la ventana (`lobby_resuming(attempt)` en el medio, `lobby_lost("resume_window")` al final); la ventana debe coincidir con `MpLobbyConfig.resume_grace_s` del servidor |
@@ -603,7 +610,7 @@ El juego inyecta, sin tocar el kit: `meta_validator` (pick de cada asiento), `op
 ### `MpMatchLauncher`
 
 - `launch(id, ticket)`: elige un puerto libre del rango (`match_port_min`..`match_port_max`, probado con `MpTransport.port_is_free`), escribe el ticket y crea el proceso. Tope `max_matches`: devuelve `ERR_BUSY`.
-- Sigue `state.json` (latido cada `heartbeat_s`) y `result.json`. Mata la partida sin latido (`heartbeat_stale_s`), la que pasa de `match_max_s` y las que dejó una corrida anterior (`reap_on_ready`, con registro de pids y chequeo de identidad por `ps`).
+- Sigue `state.json` (latido cada `heartbeat_s`) y `result.json`. Mata la partida sin latido (`heartbeat_stale_s`), la que pasa de `match_max_s` y las que dejó una corrida anterior (`reap_on_ready`, con registro de pids y chequeo de identidad: /proc en Linux, `ps` en macOS).
 - Señales: `match_listening`, `match_ended(id, result)`, `match_failed(id, reason)`.
 - `executable`, `base_args` y `agent_args` los pone el juego (`--headless --path <dir> <escena> -- --dedicated`...). `agent_fields` del config son las cifras que el servidor reenvía al dedicado como `--campo=valor` (incluye `transport`).
 - `keep_files` conserva la carpeta de la partida (solo pruebas); por defecto se borra al terminar.
@@ -616,14 +623,27 @@ Un solo valor: `MpLobbyConfig.transport` o `--transport=enet|ws`. El servidor lo
 ### Reconexión y retomar
 
 - **Lobby**: la sesión tiene un token. Si el enlace cae, el servidor guarda el asiento `resume_grace_s`. `MpLobbyClient.resume()` vuelve con el mismo token (misma sesión y asiento). Con `auto_resume = true` el cliente reintenta solo cada `resume_retry_s` durante `resume_window_s` (igualala a `resume_grace_s`) y emite `lobby_resuming(attempt)`; `lobby_lost("resume_window")` solo al agotarse.
-- **Partida**: un jugador que se cayó vuelve al mismo dedicado con **el mismo ticket** dentro de `rejoin_grace_s` y recupera su slot (el juego decide qué conserva, p.ej. su pawn). Pasada la gracia, el asiento cuenta como abandono y el juego decide el resultado. Un segundo peer con el ticket de alguien que sigue conectado se rechaza.
+- **Partida**: un jugador que se cayó vuelve al mismo dedicado con **el mismo ticket** dentro de `rejoin_grace_s` y recupera su slot (el juego decide qué conserva, p.ej. su pawn). Pasada la gracia, el asiento cuenta como abandono y el juego decide el resultado. Si el servidor todavía no notó la caída, gana el ticket: se suelta la conexión vieja y el asiento vuelve como rejoin. Lo decide la puerta de arranque (abajo), igual que en LAN.
 - `load_timeout_s`: cuánto espera el dedicado a que cada asiento cargue el mundo; qué significa no cargar lo decide el juego.
+
+### Puerta de arranque (`MpMatchGate`)
+
+Un solo dueño decide quién se sienta y cuándo arranca la partida, en todos los caminos: Host LAN, dedicado a mano, dedicado de sala y el menú sin flow (`MpBootMenu` con `drive_kit`). Por defecto no hay *late join*: el que llega después del arranque se rechaza con `match_started`; solo vuelve (*rejoin*) un asiento que se fue, dentro de `rejoin_grace_s`. `late_join` (`MpFlow` / `MpBootMenu`, `--late-join`) deja abiertos los asientos libres después del arranque, en LAN y en un dedicado a mano. Un dedicado a mano sirve una partida tras otra: cuando su partida termina y se va el último jugador, o todos pasaron la gracia (`all_gone`), carga un mundo nuevo y vuelve a armar la puerta (`MpFlow.next_open_match()`).
+
+| Fase | Quién entra | El mundo |
+|---|---|---|
+| `IDLE` | nadie la armó: solo, o un servidor sin flow (modo de siempre, `admission` si la hay) | corre |
+| `FILLING` | el primer asiento libre (LAN: credencial nueva) o el que nombra el ticket; un asiento que se cae conserva su credencial durante la gracia | pausado en todos los peers (`pause_clients`) hasta que cargan los que espera (`start_seats`, 0 = todos los asientos; `--start-seats=N`), pasa `load_timeout_s` (15 s), o el host LAN toca Start now (`MpStartButton`) |
+| `RUNNING` | un asiento ausente dentro de la gracia (su credencial o ticket gana sobre una conexión vieja); con `late_join`, también un asiento libre; los demás: `match_started` / `grace_over` / `slot_taken` / `full` | corre |
+
+El cliente **siempre** se presenta al conectar (`rpc_present_ticket`): su ticket, la credencial que ese `host:puerto` le dio antes (en memoria, sobrevive a `leave()`; `forget_seat_credentials()` la borra) o `""`. Un servidor sin puerta ni `admission` lo ignora. Cambio de protocolo: un build viejo y uno nuevo no se entienden (subí la versión en los dos).
 
 ### Probar y desplegar
 
 - Local, headless y sin ventanas: `agent/run_034d.sh` (protocolo, con el runner stub), `run_034e.sh` (dos salas 1v1 en paralelo con dos dedicados reales), `run_034g.sh` (reconexión), `run_034_soak.sh [N]` (N corridas seguidas con ENet y WS, más chequeo de procesos huérfanos). `TRANSPORT=ws` en el entorno cambia el transporte.
 - Servidor de salas con un runner de procesos propio: `MpProcessRunner` (`OS.create_process`, `is_process_running`, `kill`); `MpProcessRunnerStub` simula procesos para pruebas sin Godot.
 - Despliegue en un VPS Linux: [deploy/README.md](deploy/README.md) (`deploy.sh`, unidades plantilla, varias instancias). `MpFlow.room_server_path` hace que `--room-server` abra la escena del servidor de salas.
+- Despliegue en Fly.io, sin VPS: `deploy/fly.sh` ([GUIDE 13.6](GUIDE.md#136-sin-vps-flyio)).
 - Para `wss://` (TLS) mirá la sección de transporte.
 
 ## Salas hub y cola (opcional)

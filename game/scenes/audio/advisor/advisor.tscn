@@ -185,6 +185,9 @@ refusal_lines = Dictionary[StringName, ExtResource("3_line")]({
 &"out_of_range": SubResource("Line_out_of_range"),
 &"bad_target": SubResource("Line_invalid_target"),
 &"no_target": SubResource("Line_invalid_target"),
+&"no_fount": SubResource("Line_invalid_target"),
+&"fount_taken": SubResource("Line_invalid_target"),
+&"occupied": SubResource("Line_invalid_target"),
 &"no_souls": SubResource("Line_need_souls"),
 &"far_from_altar": SubResource("Line_far_from_altar")
 })

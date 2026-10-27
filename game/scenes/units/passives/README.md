@@ -1,0 +1,6 @@
+# units/passives
+What: what a creature has all the time without being asked. The on-damage passive of its `CreatureType.on_damage` wakes exactly one child of `unit.tscn` (`FireShield`, `LightningCharge`, `DamagePassive`, the Manahoar's `ManaSupport`); the clouds it leaves and the effects its blows add are the Resources in `CreatureType.passives`.
+Not: the weapons (`weapons/`), what the creature casts on command (`abilities/`), the temporary shields a spell lays on it (`spells/wards/`).
+Talks to: every passive node asks `CreatureType.has_passive(its ability)`; the node that does not match sleeps. `Health` asks `DamagePassive` for the factors of every hit; `DeathCloudSpawner` listens to `Health.died`; `MeleeOnHit` listens to `MeleeWeapon.connected`.
+Edit: understand = open this README and the creature `.tres` (Abilities group) · change = tune the `.tres` of the passive (`data/passives/`) or the knobs of its node · add = a new `.tres` in `data/passives/` and drag it to the creature's `on_damage` or `passives` · remove = clear that field in the creature, or delete the node from `unit.tscn` · create = duplicate a passive scene and assign its `passive` ability · scale = one creature, one field; nothing lists creatures.
+Check: `debug/units/f163_phoenix_shield.tscn` · `debug/units/f130_lightning.tscn` (F6) · rules_suite `weapon_cases`, `ritual` timeline.

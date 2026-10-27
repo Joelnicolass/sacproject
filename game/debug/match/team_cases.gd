@@ -11,7 +11,7 @@ const RULES := preload("res://data/match_rules.tres")
 const SYSTEM_SCENE := preload("res://scenes/sacrifice/sacrifice_system.tscn")
 const SOUL_SYSTEM_SCENE := preload("res://scenes/souls/soul_system.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/james_manalith.tscn")
 const GOD := "james"
 const MANA_SUPPORT := preload("res://scenes/units/unit_mana_support.gd")
 
@@ -355,7 +355,7 @@ func _unit(at: Vector3, slot: int) -> UnitBody:
 func _wizard(at: Vector3, slot: int) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = at
 	return wizard
@@ -400,12 +400,13 @@ func _until(condition: Callable, limit: int) -> void:
 
 func _use_mode(tag: StringName) -> void:
 	ActiveMatch.choose(MapCatalog.shared().find(&"test_flat4"), GameModeCatalog.shared().find(tag))
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	SideRelations.set_rows(_rows(), SEATS)
 
 
 func _restore() -> void:
 	ActiveMatch.forget()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 
 
 ## Four player sides, each an enemy of the other three and of the NPC side 4; the NPC side is enemy of all.

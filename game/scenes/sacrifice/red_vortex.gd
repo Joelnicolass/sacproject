@@ -2,12 +2,13 @@
 class_name RedVortex
 extends Node3D
 
-## The red vortex the Sac Doctor falls out of (sacengine RedVortex, radius 2.5 m, state.d:15463-15543):
+## The red vortex the Sac Doctor falls out of (radius 2.5 m):
 ## a flat red ring with a glowing center that faces the camera (`disc`, vtx1 + vtx2, 2 s to open, 1 s
 ## to close) and drops that fall from under it (`effect`, vtx2). It exists from the start of the cast
 ## until the doctor comes out or the cast is interrupted; the SacrificeSystem spawns and frees it on
 ## the server and the spawner shows it on every peer. Only the drawing is here: the dedicated server
 ## draws nothing. When it is freed it leaves a closing copy of the ring behind (1 s).
+## Ref: sacengine RedVortex, state.d:15463-15543
 
 const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 
@@ -17,9 +18,11 @@ const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 @export var effect: ParticleType
 ## Seconds between bursts of `effect.count` drops. Original: 2 drops per tick (120/s).
 @export_range(0.01, 1.0, 0.0001, "suffix:s") var pulse_s := 0.0333
-## Drops start once the ring is this open (state.d:15465: scale > 0.3).
+## Drops start once the ring is this open.
+## Ref: state.d:15465: scale > 0.3
 @export_range(0.0, 1.0, 0.05) var drops_after := 0.3
-## Where the drops come out under the center, as a fraction of the radius (state.d:15471: -0.8).
+## Where the drops come out under the center, as a fraction of the radius.
+## Ref: state.d:15471: -0.8
 @export var drops_depth := 0.8
 ## The server frees it after this long if nobody did (a wizard freed mid-cast). 0 = never. Counted in ticks of the
 ## match (MatchClock.ticks_for, RFC-032 032d), not with the render delta.
@@ -50,7 +53,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## Simulation: the lifetime, on the server only.
 func _physics_process(_delta: float) -> void:
-	if Engine.is_editor_hint() or max_life_s <= 0.0 or (MpKit.is_networked() and not MpKit.is_server()):
+	if Engine.is_editor_hint() or max_life_s <= 0.0 or not is_multiplayer_authority():
 		return
 	_life_ticks += 1
 	if _life_ticks >= MatchClock.ticks_for(max_life_s):

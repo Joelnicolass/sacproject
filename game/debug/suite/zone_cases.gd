@@ -281,13 +281,13 @@ func _frozen_shatter() -> Dictionary:
 	return _verdict("zone_frozen_shatter", checks)
 
 
-## The AI rates the four with the evaluators their `ai_use` gives them (the three ground spells as area spells, Healing Aura as a heal), the
+## The AI rates the four with the evaluators their `ai_use` gives them (the three ground spells as area spells, Healing Aura as a heal on an area), the
 ## numbers are finite and nothing breaks.
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "ZoneCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 1
 	_root.add_child(perception)
 	var wizard := _wizard(1, Vector3(-400.0, 0.0, -400.0), "pyro", 6)
@@ -299,15 +299,14 @@ func _ai() -> Dictionary:
 	stance.recs[0].manaliths = 1
 	var groups := AiGroups.new()
 	groups.perception = perception
-	groups.profile = perception.profile
 	_root.add_child(groups)
-	var eval := AiSpellEval.new(perception, stance, groups, perception.profile)
+	var eval := AiSpellEval.new(perception, stance, groups, perception.play.tactics)
 	var track := perception.add_node(wizard, &"event")
 	var foe_track := perception.add_node(foe, &"event")
 	var hurt_track := perception.add_node(hurt, &"event")
 	groups.rebuild()
 	checks["tracked"] = track != null and foe_track != null and hurt_track != null
-	var wanted := {"pxef": AiSpellEval.FN_AREA, "zorf": AiSpellEval.FN_AREA, "tfir": AiSpellEval.FN_AREA, "ruah": AiSpellEval.FN_HEAL}
+	var wanted := {"pxef": AiSpellEval.FN_AREA, "zorf": AiSpellEval.FN_AREA, "tfir": AiSpellEval.FN_AREA, "ruah": AiSpellEval.FN_HEAL_AREA}
 	for tag in SPELLS:
 		var spell := GameData.spell(tag)
 		checks[tag + "_evaluator"] = AiSpellEval.rating_fn(spell) == wanted[tag]

@@ -8,16 +8,16 @@ extends FsmMachine
 ## Ref: sacengine updateCreatureAI (state.d:13732-13760).
 
 @export var senses: VillagerSenses
-## Decision of the port: sacengine decides on the turn of its AI queue; this is a fixed period.
+## Decision of the port: the original decides on the turn of its AI queue; this is a fixed period.
 @export_range(0.0166, 5.0, 0.0001, "suffix:s") var think_interval_s := 0.25
 @export_group("Run")
-## Decision of the port (sacengine runs at a point mirrored through the enemy every tick): how far ahead of the villager the point it runs
+## Decision of the port (the original runs at a point mirrored through the enemy every tick): how far ahead of the villager the point it runs
 ## to lies, straight away from the scare.
 @export var flee_leg_m := 30.0
 ## How far the panic leg reaches before it re-decides (longer than a calm flee: it is running for its life).
 @export var panic_leg_m := 40.0
 @export_group("Look")
-## «Working the fields» is in sacengine's villager FSM with no rule decompiled, so a calm villager (mode IDLE) plays `work_role` instead of
+## «Working the fields» is in the original's villager FSM with no rule decompiled, so a calm villager (mode IDLE) plays `work_role` instead of
 ## its idle clip. Off = the CRE8 idle. Presentation only, on every peer.
 @export var work_when_calm := true
 ## Clip role of the calm villager ("work" = dig).

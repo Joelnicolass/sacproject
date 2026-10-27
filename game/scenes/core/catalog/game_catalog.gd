@@ -21,7 +21,7 @@ var buildings: Array[BuildingType] = []
 var duplicate_building_tags := PackedStringArray()
 var _building_by_tag: Dictionary = {}
 var _creature_by_id: Dictionary = {}
-## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look, AI profile and typed book.
+## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look and typed book.
 var gods: Array[GodType] = []
 ## The game modes in the order the screens list them (data/modes/mode_catalog.tres).
 var modes: Array[GameMode] = []

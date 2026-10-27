@@ -39,19 +39,19 @@ static func color_of(node: Node, kind: StringName, soul_own: Color, soul_other: 
 	return SideColors.side_color(int(node.get("owner_slot")) if "owner_slot" in node else 0)
 
 
-## The 8 corners of the body's box in world space: the model box of a walking body, else every CollisionShape3D under it.
+## The 8 corners of the body's box in world space: the model box of a walking body, else every CollisionShape3D under it that is on (a GroundFootprint never counts).
 static func world_corners(node: Node) -> PackedVector3Array:
 	var out := PackedVector3Array()
 	if node is CharacterBody3D:
 		var body := node as CharacterBody3D
 		var box := BodyBox.box_of(body)
 		var local := AABB(Vector3(-box.x, 0.0, -box.x), Vector3(box.x * 2.0, box.y, box.x * 2.0))
-		_add_corners(out, body.global_transform, local)
+		_add_corners(out, body.get_global_transform_interpolated(), local)
 		return out
 	for found in node.find_children("*", "CollisionShape3D", true, false):
 		var shape := found as CollisionShape3D
-		if shape.shape != null:
-			_add_corners(out, shape.global_transform, shape.shape.get_debug_mesh().get_aabb())
+		if shape.shape != null and not shape.disabled:
+			_add_corners(out, shape.get_global_transform_interpolated(), shape.shape.get_debug_mesh().get_aabb())
 	return out
 
 

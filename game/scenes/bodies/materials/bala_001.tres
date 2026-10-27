@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/bala/001.png" id="1_2konc"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/bala/001_normal.png" id="2_mk3x5"]
 
 [resource]
 resource_name = "bala_001"
 albedo_texture = ExtResource("1_2konc")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_mk3x5")

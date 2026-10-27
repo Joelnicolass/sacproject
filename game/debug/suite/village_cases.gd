@@ -47,7 +47,7 @@ static func _verdict(checks: Dictionary, details: Dictionary) -> Dictionary:
 
 ## The SIDS of High Noon: players 1 and 2, Farmers 3, Taurocks 4, the houses' side 0 (neutral).
 func _sides() -> Dictionary:
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	var checks := {
 		"p1_p2": SideRelations.is_enemy(1, 2) and SideRelations.is_enemy(2, 1),
 		"players_vs_farmers": SideRelations.is_enemy(1, 3) and SideRelations.is_enemy(2, 3) and SideRelations.is_enemy(3, 1),
@@ -70,7 +70,7 @@ func _fallback() -> Dictionary:
 		"same_is_not": not SideRelations.is_enemy(2, 2),
 		"no_npc": not SideRelations.is_npc_slot(3),
 	}
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	checks["restored"] = SideRelations.is_enemy(1, 3) and not SideRelations.is_enemy(1, 0)
 	return _verdict(checks, {})
 

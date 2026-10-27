@@ -1,16 +1,16 @@
 class_name MeshPlanter
 extends RefCounted
 
-## RFC-054 054c (F382): draws one VegetationLayerConfig of FloraField as meshes. A CellRing of 32 m cells (4 x 4 cells of
+## Draws one VegetationLayerConfig of FloraField as meshes. A CellRing of 32 m cells (4 x 4 cells of
 ## the FloraLayer images, at 8 m a pixel) follows the camera; each cell is built once on the CPU and holds one MultiMeshInstance3D per species
 ## (an internal child of the host, never saved).
 ## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives the instances; they are
 ##   ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even sample of its 16 data cells; the height is
-##   GroundSurface.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
+##   Terrain.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
 ##   them by a hash). Final transform: T·R·S (the plant's mesh stands upright already). The meshes and materials are the species',
 ##   shared by every cell.
 ## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
-##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a GroundSurface.sampler
+##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a Terrain.sampler
 ##   snapshot) and touches no node. The main thread only makes the MultiMeshInstance3D from the finished buffers
 ##   (`multimesh.buffer`, no per-instance call), while the frame's deadline (FloraField.build_budget_ms) lasts; the rest
 ##   wait for the next frame. A result is applied in any order but its bytes depend only on the cell, so the order of
@@ -24,6 +24,7 @@ extends RefCounted
 ##   never touched) and `visibility_range_end` on the node, past which the whole cell is culled.
 ## - The ring radius is a camera distance: on the ground it is sqrt(radius² - height²), so a high camera keeps fewer cells.
 ## Presentation only: FloraField never makes one in a headless or dedicated process.
+## Ref: RFC-054 054c (F382).
 
 const CELL_M := 32.0
 const MAP_CELLS := 80
@@ -40,7 +41,7 @@ var config: VegetationLayerConfig
 var quality: VegetationQuality
 var flora: FloraDensity
 ## The land numbers (heights, lowest land, a thread-safe sampler) and where the map sits.
-var shape: GroundSurface
+var shape: Terrain
 var host: Node3D
 
 ## Per species drawn: {tag, tag_index, variation, cast_shadow, visibility_end_m, end_m, mesh, material, per_cell, texel_m}.
@@ -98,13 +99,19 @@ class PlanJob:
 			task_id = -1
 
 
-func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: GroundSurface, owner_node: Node3D) -> void:
+## Where the map is placed in the world: the transform of the mesh that draws `land` (identity without one).
+static func map_transform_of(land: Terrain) -> Transform3D:
+	var drawn := land.mesh
+	return Transform3D.IDENTITY if not is_instance_valid(drawn) else (drawn.global_transform if drawn.is_inside_tree() else drawn.transform)
+
+
+func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: Terrain, owner_node: Node3D) -> void:
 	config = layer
 	quality = preset
 	flora = map
 	shape = land
 	host = owner_node
-	map_xform = land.map_transform()
+	map_xform = map_transform_of(land)
 	_map_inverse = map_xform.affine_inverse()
 	var scale := quality.radius_scale
 	var starts := PackedFloat32Array()
@@ -281,6 +288,12 @@ func update(camera_global: Vector3, deadline_us: int) -> void:
 			_apply_tier(_cells[key], _ring.tier_of(key))
 	_apply_finished(deadline_us)
 	_start_plans(deadline_us)
+
+
+## The FloraLayers were painted: `map` has the same layers in the same order (FloraDensity.with_layer_bytes), only some
+## bytes differ. Cells planned from now on read it; which cells plan again is the caller's (`replan`).
+func set_flora(map: FloraDensity) -> void:
+	flora = map
 
 
 ## The clears changed (map coordinates): the cells they touched (before or after) are built again.

@@ -1,0 +1,6 @@
+{
+  "wait_first": 6.0,
+  "steps": [
+    { "shot": "grl_stratos.png" }
+  ]
+}

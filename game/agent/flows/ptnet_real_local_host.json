@@ -1,0 +1,528 @@
+{
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_james"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "repeat": {
+    "times": 20,
+    "until": {
+     "node": "%LocalServer",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "try_click": "%Play"
+     },
+     {
+      "wait": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "click": "%LocalServer"
+  },
+  {
+   "wait_until": {
+    "node": "%CreateLocal",
+    "visible_in_tree": true,
+    "timeout": 30
+   }
+  },
+  {
+   "click": "%CreateLocal"
+  },
+  {
+   "wait_until": {
+    "node": "%CreateServer",
+    "visible_in_tree": true,
+    "timeout": 30
+   }
+  },
+  {
+   "select": {
+    "node": "%HostMap",
+    "text": "Mapa: High Noon"
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "shot": "h00_form.png"
+  },
+  {
+   "click": "%CreateServer"
+  },
+  {
+   "wait_until": {
+    "node": "%HostInfo",
+    "visible_in_tree": true,
+    "timeout": 90
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "print": {
+    "node": "%HostAddress",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%HostPort",
+    "prop": "text"
+   }
+  },
+  {
+   "print": {
+    "node": "%HostCode",
+    "prop": "text"
+   }
+  },
+  {
+   "shot": "h01_address_port_code.png"
+  },
+  {
+   "click": "%EnterMatch"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "h02_waiting.png"
+  },
+  {
+   "print": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "banner_text"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "started",
+    "timeout": 240,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "shot": "h03_start.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "pointer_center",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "book",
+    "args": []
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 0.6
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "face_to",
+    "args": [
+     1496,
+     1500
+    ]
+   }
+  },
+  {
+   "repeat": {
+    "times": 300,
+    "until": {
+     "node": "AgentKit/ptnet_real_watch",
+     "prop": "face_err",
+     "lte": 9
+    },
+    "steps": [
+     {
+      "press": {
+       "name": "turn_left",
+       "hold": 0.05
+      }
+     }
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "watch_building",
+    "args": [
+     1496,
+     1500
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "h04_tipi.png"
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "troggs"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_unit",
+    "args": [
+     1,
+     "ycro"
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_point",
+    "args": [
+     1496,
+     1500
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "attack_tipi"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "attack_tipi"
+    ]
+   }
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "shot": "h05_troggs_on_tipi.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "repeat": {
+    "times": 30,
+    "until": {
+     "node": "AgentKit/ptnet_real_watch",
+     "prop": "bld_hp",
+     "lte": -1
+    },
+    "steps": [
+     {
+      "wait_until": {
+       "node": "AgentKit/ptnet_real_watch",
+       "prop": "alive",
+       "equals": true,
+       "timeout": 90
+      }
+     },
+     {
+      "click": "%SpellTab"
+     },
+     {
+      "wait_until": {
+       "node": "AgentKit/ptnet_real_watch",
+       "prop": "mana",
+       "timeout": 90,
+       "gte": 300
+      }
+     },
+     {
+      "call": {
+       "harness": "ptnet_real_watch",
+       "method": "aim_point",
+       "args": [
+        1496,
+        1500
+       ]
+      }
+     },
+     {
+      "press": "spell_2"
+     },
+     {
+      "wait": 0.3
+     },
+     {
+      "press": "select"
+     },
+     {
+      "wait": 1.2
+     },
+     {
+      "call": {
+       "harness": "ptnet_real_watch",
+       "method": "building",
+       "args": []
+      }
+     },
+     {
+      "wait": 7.5
+     }
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "h06_tipi_falls.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "h07_tipi_ruin.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "tipi_down"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "tipi_down"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.hut_down"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 400,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "watch_building",
+    "args": [
+     1070,
+     1075
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "hut_down_seen"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.left"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 120,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "a_away"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.back"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 180,
+    "equals": true
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "a_back"
+    ]
+   }
+  },
+  {
+   "shot": "h08_a_back.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.done"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 120,
+    "equals": true
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "end"
+    ]
+   }
+  },
+  {
+   "shot": "h09_end.png"
+  }
+ ]
+}

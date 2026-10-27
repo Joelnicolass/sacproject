@@ -8,8 +8,9 @@
 [ext_resource type="Resource" path="res://data/audio/cues/erupt_burst.tres" id="cue_erupt_burst"]
 
 [node name="EruptBurst" type="Node3D" node_paths=PackedStringArray("scar")]
-editor_description = "El estallido de Erupt (FxBus.broadcast_scene): 64 rocas que salen a 30 +- 7,5 m/s en todas direcciones. Su sonido es el nodo Sound (cue erupt_burst) y su sacudida de cámara la de shake_map.tres. Las partículas (rocas con luz naranja) las toca la zona al lado."
+editor_description = "El estallido de Erupt (FxBus.broadcast_scene): 64 rocas que salen a 30 +- 7,5 m/s en todas direcciones. Su sonido es el nodo Sound (cue erupt_burst) y su sacudida de cámara es el `camera_trauma` de esta raíz. Las partículas (rocas con luz naranja) las toca la zona al lado."
 script = ExtResource("1_script")
+camera_trauma = 0.8
 piece = ExtResource("2_piece")
 scar = NodePath("Scar")
 

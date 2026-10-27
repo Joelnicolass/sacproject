@@ -3,11 +3,109 @@
 [ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/glow/pyro_glow.tres" id="1_pgdjj"]
 [ext_resource type="Resource" path="res://data/look/light/pyro_light.tres" id="2_light"]
-[ext_resource type="Material" path="res://assets/original/themes/pyro/ground_classic.tres" id="3_4ux6g"]
+[ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
+[ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/edge.png" id="22_edge"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/open.png" uid="uid://lk1735ogftb4" id="23_open"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/open_detail.png" uid="uid://cwxnk7y2xgjvu" id="24_open_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/earth.png" uid="uid://cbbw35pvst6mh" id="25_earth"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/earth_detail.png" uid="uid://04we5k580uib" id="26_earth_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/rock.png" uid="uid://bo8cuth2d6vr7" id="27_rock"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/rock_detail.png" uid="uid://dys64aprel2ch" id="28_rock_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/path.png" uid="uid://jm6tih2xnou5" id="29_path"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/roles/path_detail.png" uid="uid://bg86h4qly0ryv" id="30_path_detail"]
 [ext_resource type="Resource" path="res://data/look/sky/pyro_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/pyro_grass.tres" id="10_grass"]
 [ext_resource type="Resource" path="res://data/audio/music/pyro.tres" id="gm_music"]
 [ext_resource type="Resource" path="res://data/audio/ambience/pyro.tres" id="gm_ambience"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
+[ext_resource type="Resource" path="res://data/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://data/look/life/ash.tres" id="58_ash"]
+[ext_resource type="Resource" path="res://data/look/life/embers.tres" id="58_embers"]
+
+[sub_resource type="Resource" id="Role_open"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("23_open")
+detail = ExtResource("24_open_detail")
+
+[sub_resource type="Resource" id="Role_earth"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("25_earth")
+detail = ExtResource("26_earth_detail")
+
+[sub_resource type="Resource" id="Role_rock"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("27_rock")
+detail = ExtResource("28_rock_detail")
+
+[sub_resource type="Resource" id="Role_path"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("29_path")
+detail = ExtResource("30_path_detail")
+
+[sub_resource type="Resource" id="GodGround_pyro"]
+script = ExtResource("20_god_ground")
+open = SubResource("Role_open")
+earth = SubResource("Role_earth")
+rock = SubResource("Role_rock")
+path = SubResource("Role_path")
+edge = ExtResource("22_edge")
+
+[sub_resource type="Curve" id="Day_pyro_elevation_change_deg"]
+_limits = [-120, 60, 0.0, 24.0]
+_data = [Vector2(0, -57.2), 0.0, 0.0, 0, 0, Vector2(2, -52.484094), 4.4, 4.4, 0, 0, Vector2(4, -39.6), 7.465808, 7.465808, 0, 0, Vector2(5, -31.11043), 8.8, 8.8, 0, 0, Vector2(6, -22), 10.30236, 10.30236, 0, 0, Vector2(6.434999, -17), 11.400262, 11.400262, 0, 0, Vector2(7, -10.611962), 10.959098, 10.959098, 0, 0, Vector2(8, 0), 9.86233, 9.86233, 0, 0, Vector2(9, 9.112698), 8.052559, 8.052559, 0, 0, Vector2(10, 16.105118), 5.694019, 5.694019, 0, 0, Vector2(11, 20.500736), 2.947441, 2.947441, 0, 0, Vector2(12, 22), 0.0, 0.0, 0, 0, Vector2(13, 20.500736), -2.947441, -2.947441, 0, 0, Vector2(14, 16.105118), -5.694019, -5.694019, 0, 0, Vector2(15, 9.112698), -8.052559, -8.052559, 0, 0, Vector2(16, 0), -9.86233, -9.86233, 0, 0, Vector2(17, -10.611962), -10.959098, -10.959098, 0, 0, Vector2(17.565001, -17), -11.400262, -11.400262, 0, 0, Vector2(18, -22), -10.30236, -10.30236, 0, 0, Vector2(19, -31.11043), -8.8, -8.8, 0, 0, Vector2(20, -39.6), -7.465808, -7.465808, 0, 0, Vector2(22, -52.484094), -4.4, -4.4, 0, 0, Vector2(24, -57.2), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_pyro_light_energy"]
+_limits = [0, 1.5, 0.0, 24.0]
+_data = [Vector2(0, 0.25), 0.0, 0.0, 0, 0, Vector2(2, 0.25), 0.0, 0.0, 0, 0, Vector2(4, 0.25), 0.0, 0.0, 0, 0, Vector2(5, 0.25), 0.0, 0.0, 0, 0, Vector2(6, 0.104167), -0.192649, -0.192649, 0, 0, Vector2(6.434999, 0), 0.0, 0.0, 0, 0, Vector2(7, 0.280152), 0.607846, 0.607846, 0, 0, Vector2(8, 1), 0.36, 0.36, 0, 0, Vector2(9, 1.12), 0.0, 0.0, 0, 0, Vector2(10, 1.12), 0.0, 0.0, 0, 0, Vector2(11, 1.12), 0.0, 0.0, 0, 0, Vector2(12, 1.12), 0.0, 0.0, 0, 0, Vector2(13, 1.12), 0.0, 0.0, 0, 0, Vector2(14, 1.12), 0.0, 0.0, 0, 0, Vector2(15, 1.12), 0.0, 0.0, 0, 0, Vector2(16, 1), -0.36, -0.36, 0, 0, Vector2(17, 0.280152), -0.607846, -0.607846, 0, 0, Vector2(17.565001, 0), 0.0, 0.0, 0, 0, Vector2(18, 0.104167), 0.192649, 0.192649, 0, 0, Vector2(19, 0.25), 0.0, 0.0, 0, 0, Vector2(20, 0.25), 0.0, 0.0, 0, 0, Vector2(22, 0.25), 0.0, 0.0, 0, 0, Vector2(24, 0.25), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_pyro_ambient_energy"]
+_limits = [0, 1.5, 0.0, 24.0]
+_data = [Vector2(0, 0.55), 0.0, 0.0, 0, 0, Vector2(2, 0.55), 0.0, 0.0, 0, 0, Vector2(4, 0.55), 0.0, 0.0, 0, 0, Vector2(5, 0.55), 0.0, 0.0, 0, 0, Vector2(6, 0.91), 0.283449, 0.283449, 0, 0, Vector2(6.434999, 1), 0.0, 0.0, 0, 0, Vector2(7, 1), 0.0, 0.0, 0, 0, Vector2(8, 1), 0.0, 0.0, 0, 0, Vector2(9, 1), 0.0, 0.0, 0, 0, Vector2(10, 1), 0.0, 0.0, 0, 0, Vector2(11, 1), 0.0, 0.0, 0, 0, Vector2(12, 1), 0.0, 0.0, 0, 0, Vector2(13, 1), 0.0, 0.0, 0, 0, Vector2(14, 1), 0.0, 0.0, 0, 0, Vector2(15, 1), 0.0, 0.0, 0, 0, Vector2(16, 1), 0.0, 0.0, 0, 0, Vector2(17, 1), 0.0, 0.0, 0, 0, Vector2(17.565001, 1), 0.0, 0.0, 0, 0, Vector2(18, 0.91), -0.283449, -0.283449, 0, 0, Vector2(19, 0.55), 0.0, 0.0, 0, 0, Vector2(20, 0.55), 0.0, 0.0, 0, 0, Vector2(22, 0.55), 0.0, 0.0, 0, 0, Vector2(24, 0.55), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_pyro_night"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 1), 0.0, 0.0, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.434999, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.565001, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 1), 0.0, 0.0, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_pyro_stars"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 0.638804), -0.5, -0.5, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.434999, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.565001, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 0.638804), 0.5, 0.5, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_pyro_moon_intensity"]
+_limits = [0, 4, 0.0, 24.0]
+_data = [Vector2(0, 2.5), 0.0, 0.0, 0, 0, Vector2(2, 2.5), 0.0, 0.0, 0, 0, Vector2(4, 2.5), 0.0, 0.0, 0, 0, Vector2(5, 2.5), 0.0, 0.0, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.434999, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.565001, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 2.5), 0.0, 0.0, 0, 0, Vector2(20, 2.5), 0.0, 0.0, 0, 0, Vector2(22, 2.5), 0.0, 0.0, 0, 0, Vector2(24, 2.5), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_pyro_dusk"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 1), 0.0, 0.0, 0, 0, Vector2(6, 1), 0.0, 0.0, 0, 0, Vector2(6.434999, 0.666667), -0.760017, -0.760017, 0, 0, Vector2(7, 0.240797), -0.497273, -0.497273, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0.240797), 0.497273, 0.497273, 0, 0, Vector2(17.565001, 0.666667), 0.760017, 0.760017, 0, 0, Vector2(18, 1), 0.0, 0.0, 0, 0, Vector2(19, 1), 0.0, 0.0, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Resource" id="Day_pyro"]
+script = ExtResource("58_day")
+start_hour = 16
+elevation_change_deg = SubResource("Day_pyro_elevation_change_deg")
+light_energy = SubResource("Day_pyro_light_energy")
+ambient_energy = SubResource("Day_pyro_ambient_energy")
+night = SubResource("Day_pyro_night")
+stars = SubResource("Day_pyro_stars")
+moon_intensity = SubResource("Day_pyro_moon_intensity")
+dusk = SubResource("Day_pyro_dusk")
+
+[sub_resource type="Resource" id="Life_pyro"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_embers"), ExtResource("58_ash")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_embers")])
+water = Array[ExtResource("58_swarm")]([])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_ash")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_embers")])
 
 [resource]
 script = ExtResource("1_p")
@@ -16,7 +114,10 @@ god = &"pyro"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_pgdjj")
-ground_classic = ExtResource("3_4ux6g")
+ground = SubResource("GodGround_pyro")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")
+day = SubResource("Day_pyro")
+weather = ExtResource("58_weather")
+life = SubResource("Life_pyro")

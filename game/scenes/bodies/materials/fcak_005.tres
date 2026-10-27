@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/fcak/005.png" id="1_pbdgf"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/fcak/005_normal.png" id="2_svymt"]
 
 [resource]
 resource_name = "fcak_005"
 albedo_texture = ExtResource("1_pbdgf")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_svymt")

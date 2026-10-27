@@ -2,11 +2,17 @@
 
 [ext_resource type="Script" path="res://scenes/map/terrain/ground_scars.gd" id="1_scars"]
 [ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="2_prefs"]
+[ext_resource type="Script" path="res://scenes/map/terrain/ground_scars_net.gd" id="3_net"]
 
 [sub_resource type="Texture2DArray" id="Tiles_scars"]
 
 [node name="GroundScars" type="Node3D"]
-editor_description = "Las marcas en el suelo del mapa (quemaduras, grietas, crateres): unico dueno de las baldosas pintadas. Hijo de Terrain; `shape` es el GroundSurface del mapa. Cantidad maxima de baldosas: la opcion «Cantidad de marcas» (prefs)."
+editor_description = "Las marcas en el suelo del mapa (quemaduras, grietas, crateres): unico dueno de las baldosas pintadas. Hijo de Terrain; `terrain` es el Terrain del mapa. Cantidad maxima de baldosas: la opcion «Cantidad de marcas» (prefs)."
 script = ExtResource("1_scars")
 prefs = ExtResource("2_prefs")
 tiles = SubResource("Tiles_scars")
+
+[node name="Net" type="Node" parent="." node_paths=PackedStringArray("scars")]
+editor_description = "Pone al dia las marcas del suelo de un jugador que vuelve tras una caida: el servidor le manda la lista de lo pintado (la suya si dibuja, o la de un jugador ya conectado). Nada viaja por marca."
+script = ExtResource("3_net")
+scars = NodePath("..")

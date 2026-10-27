@@ -1,0 +1,333 @@
+{
+ "scene": "res://agent/harness/pt_review/ambience/h07_clear.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h07_clear_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h07_clear_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h07_clear_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h12_clear.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h12_clear_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_clear_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_clear_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h18_clear.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h18_clear_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h18_clear_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h18_clear_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h23_clear.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h23_clear_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h23_clear_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h23_clear_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h12_fog.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h12_fog_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_fog_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_fog_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h12_rain.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h12_rain_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_rain_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_rain_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h12_storm.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h12_storm_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_storm_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_storm_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h12_snow.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h12_snow_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_snow_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h12_snow_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h23_storm.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h23_storm_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h23_storm_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h23_storm_horizon.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/h23_snow.tscn"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h23_snow_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h23_snow_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "h23_snow_horizon.png"
+  }
+ ]
+}

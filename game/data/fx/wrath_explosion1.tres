@@ -20,3 +20,4 @@ scale_min = 2.25
 scale_max = 2.25
 pool_max = 8
 light = ExtResource("9_light")
+camera_trauma = 0.45

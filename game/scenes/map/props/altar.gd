@@ -6,9 +6,10 @@ extends StaticBody3D
 ## its state (the server runs the clock, every peer applies the state locally).
 ## STANDING: model, collision and mana. COLLAPSING: the 11 s destruction plays (AltarCollapse);
 ## the altar still stands for mana and collision, but ghost_form and ritual sites no longer count
-## it as an altar in play (sacengine updateAltarDestruction, state.d:25999-26062).
+## it as an altar in play.
 ## DESTROYED: no model, no collision, no mana, out of the "altar" group. No manafount is left
-## where it stood (RFC-020, decision 4).
+## where it stood.
+## Ref: RFC-020 decision 4; sacengine updateAltarDestruction, state.d:25999-26062.
 
 enum State { STANDING, COLLAPSING, DESTROYED }
 

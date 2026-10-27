@@ -37,6 +37,10 @@ func _ready() -> void:
 		)
 	if freeze_rigid_if_proxy:
 		MpAuthority.freeze_rigid_proxy(_target)
+	if MpKit.is_networked() and not MpKit.is_server() and not _target.is_multiplayer_authority():
+		## A proxy's pose is written when packets arrive and by the smoother, both outside physics: the engine's physics
+		## interpolation would fight them (as MpActor does for the nodes it draws).
+		_target.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	set_process(interpolate)
 
 

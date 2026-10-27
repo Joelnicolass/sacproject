@@ -1,16 +1,17 @@
 class_name FireShield
 extends Node
 
-## F163 (RFC-030 030w-f): the Phoenix's Shield (rifl, its passiveOnDamage), sacengine runPhoenixPassive (state.d:13899-13919), called
-## every frame from updateCreatureStats (runPassive, 13921-13931). A body that can shield (canShield, 218-225: not dying, dead,
+## The Phoenix's Shield (rifl, its passiveOnDamage), called
+## every frame from updateCreatureStats. A body that can shield (canShield: not dying, dead,
 ## reviving or a ghost) and holds the mana the SPEL asks (rifl: 0) takes every moving body whose box meets its own box scaled ×1.5 from
 ## the center (the Phoenix itself apart). A body that is not an ally of the Phoenix's side burns: ignite(fireform.amount / 60) is
 ## dealFireDamage(0, amount / 60, …, peirceShield), i.e. a direct spell hit that skips the Life Shield / Rockform / petrified
 ## factors (Health.damage_typed, pierce_shield) plus three fire particles. If it burned someone it drains the mana cost
 ## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched (movingObjectById).
 ## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.on_damage is `passive`, so the other
-## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (FxBus `fire`
-## on the burned body every `fire_every_s`); the shield ticks only on a carrier (the node sleeps on the rest).
+## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (`fire_fx`
+## at the burned body's `fire_socket` every `fire_every_s`); the shield ticks only on a carrier (the node sleeps on the rest).
+## Ref: F163 (RFC-030 030w-f), sacengine runPhoenixPassive state.d:13899-13919, updateCreatureStats runPassive 13921-13931, canShield 218-225.
 
 
 const GROUPS: Array[StringName] = [&"unit", &"wizard"]
@@ -26,10 +27,11 @@ const GROUPS: Array[StringName] = [&"unit", &"wizard"]
 ## Scale of the body's box about its center (scaleBox(object.hitbox, 1.5f)).
 @export var box_scale := 1.5
 @export_group("Look")
-## FxBus fire puffed on a burned body every `fire_every_s` it burns (reserve look).
-@export var fire_fx := "fire"
+## The fire played on a burned body every `fire_every_s` it burns (reserve look). Empty = none.
+@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.0833
-@export var fire_height_m := 0.8
+## Where on the burned body the fire comes out.
+@export var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _carrier := false
 var _burn_ticks := {}
@@ -62,7 +64,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 ## Turns the tick on for a carrier of the passive and off for everyone else.
 func _refresh() -> void:
 	_carrier = _carries()
-	set_physics_process(_carrier and _has_authority())
+	set_physics_process(_carrier and is_multiplayer_authority())
 
 
 func _physics_process(_delta: float) -> void:
@@ -101,8 +103,8 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 	var count := int(_burn_ticks.get(key, 0))
 	_burn_ticks[key] = count + 1
 	var every := MatchClock.ticks_for(fire_every_s)
-	if not fire_fx.is_empty() and every > 0 and count % every == 0:
-		FxBus.broadcast(fire_fx, target.global_position + Vector3.UP * fire_height_m)
+	if fire_fx != null and every > 0 and count % every == 0:
+		FxBus.broadcast(fire_fx, BodyFacts.point(target, fire_socket))
 	if DebugLog.on(&"shield") and taken > 0.0:
 		var box := BodyBox.box_of(target)
 		var center: Vector3 = mine[0]
@@ -151,11 +153,12 @@ func _mana_cost() -> float:
 
 func _carries() -> bool:
 	var type: CreatureType = body.get("type") as CreatureType if body != null and "type" in body else null
-	return passive != null and type != null and type.on_damage == passive
+	return type != null and type.has_passive(passive)
 
 
-## canShield (state.d:218-225): stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,
+## canShield: stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,
 ## reviving and taken by a Doctor do not.
+## Ref: sacengine canShield state.d:218-225.
 func _can_shield() -> bool:
 	if health != null and health.is_dead():
 		return false
@@ -177,7 +180,3 @@ func _present(node: Node) -> bool:
 	if mode == UnitBody.Mode.DEAD or mode == UnitBody.Mode.SUMMONING or mode == UnitBody.Mode.REVIVING:
 		return false
 	return not (node is UnitBody and (node as UnitBody).is_taken())
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

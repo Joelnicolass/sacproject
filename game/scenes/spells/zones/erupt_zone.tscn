@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
 [ext_resource type="Resource" path="res://data/catalog/spells/tpre.tres" id="2_spell"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_dust.gd" id="9_dust"]
 [ext_resource type="Resource" path="res://data/fx/erupt_dust.tres" id="10_dust"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="11_ptype"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_stamp_stop.gd" id="12_stop"]
 
 [sub_resource type="Curve" id="Curve_mound_radial"]
 _limits = [0.0, 1.0, 0.0, 1.0]
@@ -118,6 +119,12 @@ start_s = 4.2
 
 [node name="Reach" type="CollisionShape3D" parent="Wave"]
 shape = SubResource("Reach_wave")
+
+[node name="Cut" type="Node" parent="." node_paths=PackedStringArray("zone", "stamps")]
+editor_description = "Si el lanzamiento se corta, el monte desaparece en el acto (los sellos se retiran en el momento, sin esperar a que la zona se libere)."
+script = ExtResource("12_stop")
+zone = NodePath("..")
+stamps = [NodePath("../Mound"), NodePath("../Rebound"), NodePath("../Wave")]
 
 [node name="Blast" type="Node" parent="." node_paths=PackedStringArray("zone", "burst_at")]
 script = ExtResource("5_erupt")

@@ -88,35 +88,33 @@ Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
 ## Un mapa
 
-Un mapa es una carpeta `scenes/map/maps/<tag>/` con su `map.tscn` (raíz `MapRoot`), su `MapDefinition` `<tag>.tres` (escena, terreno, tiles, luz y navmesh, tipados) y el `nav.res`; los edificios y los NPC son nodos de `map.tscn` (`Buildings`, `Npcs`); sus datos del original van en `assets/original/maps/<tag>/`. `MapCatalog` encuentra la carpeta sola y `--map=<tag>` la elige. Más en `scenes/map/README.md`.
+Un mapa es una carpeta `scenes/map/maps/<tag>/` con su `map.tscn` (raíz `MapRoot`), su `MapDefinition` `<tag>.tres` (escena, terreno, luz y navmesh, tipados) y el `nav.res`; los edificios y los NPC son nodos de `map.tscn` (`Buildings`, `Npcs`); sus datos del original van en `assets/original/maps/<tag>/`. `MapCatalog` encuentra la carpeta sola y `--map=<tag>` la elige. Más en `scenes/map/README.md`.
 
-**Importar uno del original** (RFC-050; la lista de los 31 con asientos y tamaño: `python3 tools/import/import_map.py --list`). Desde `game/`. **Requiere el juego original instalado** (`SAC_INSTALL`, ver «Configurar rutas» abajo): `import_map.py` e `import_themes.py` lo leen; `scaffold_map.py` no. `G` es el binario de Godot y `<Nombre>` el del `.scp` sin el `(N)`, por ejemplo `Peaks` o `WinterWonder` (el tag sale solo: `winter_wonder`).
+**Importar uno del original** (RFC-050; la lista de los 31 con asientos y tamaño: `python3 tools/import/import_map.py --list`). Desde `game/`. **Requiere el juego original instalado** (`SAC_INSTALL`, ver «Configurar rutas» abajo): `import_map.py` y `bake_ground_roles.py` lo leen; `scaffold_map.py` no. `G` es el binario de Godot y `<Nombre>` el del `.scp` sin el `(N)`, por ejemplo `Peaks` o `WinterWonder` (el tag sale solo: `winter_wonder`).
 
 ```bash
 G="${GODOT_BIN:-godot}"   # ver «Configurar rutas» abajo
-python3 tools/import/import_map.py --map=<Nombre> --terrain-bin=/tmp/<tag>.bin   # tiles, luz, ntts, widgets + el bin del terreno
-python3 tools/import/scaffold_map.py --map=<Nombre>                              # MapDefinition, map.tscn (inicios con su WizardSpot), nav.res vacío
-python3 tools/import/import_themes.py                                            # suma los ids de baldosa del mapa a los atlas de los otros dioses
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/import_terrain.gd -- --map=<tag> --bin=/tmp/<tag>.bin
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # importa tiles.png (lo lee el glb)
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/terrain_glb_export.gd -- --map=<tag> --force
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # una vez más: terrain.glb
+python3 tools/import/import_map.py --map=<Nombre>                                # luz, ntts, widgets
+python3 tools/import/scaffold_map.py --map=<Nombre>                              # MapDefinition, map.tscn (inicios con su WizardSpot, una instancia de terrain.tscn), heights.png plano, nav.res vacío
+python3 -I tools/import/bake_ground_roles.py                                     # ground_roles.png: qué suelo (abierto, tierra, roca, camino) hay en cada celda
+bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/terrain/heights_from_original.gd -- --map=<tag> --scp="<archivo .scp>"   # el suelo del original: heights.png + void.png
+bash agent/harness/godot_run.sh $G --headless --path . --import                  # importa heights.png, ground_roles.png y light.png
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
 bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # dos veces
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map_starts.tscn -- --map=<tag>  # los inicios caen en tierra y en una misma región
+bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # asientos, objetos sobre tierra, bases a nivel, caminos altar->manantial (sin --map: todos)
 bash agent/runs/run_050_maps.sh <tag>                                            # humo: IA contra IA 0,5 min
 ```
 
 Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es la verdad). Ojo con `--force`: pisa lo editado. Las plantas de un mapa que no es de James quedan vacías hasta tener los modelos de sus widgets. `room_selectable = false` en la definición lo saca de las salas.
 
-**Un mapa de la tierra de un dios con sus propias baldosas** (RFC-059: `tutorial_valley`, `alpine_meadow`, de Persephone). `import_map.py --native-tiles` escribe además `tiles_native.png` (los ids que guarda el `.scp`) y `atlas_native.png` (las baldosas de la tierra del mapa que usa, cada una en su id); `scaffold_map.py` los cuelga como `ground_native.tres` (`NativeGround`) de la definición (`native_ground`) y del `Look` del mapa: un bioma de ese dios (`LookProfile.god`) pinta el suelo con ellas; con otro bioma el suelo es el atlas del dios, como siempre. Un `.scp` fuera de la carpeta (el tutorial) se pasa con `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` deja `Npcs` vacío y `--not-playable` pone `playable = false` (ni salas ni menús lo ofrecen; `--map=<tag>` y las escenas de debug sí lo abren). Las plantas: `scaffold_map.py --map=<Nombre> --wire-flora` escribe un PNG de densidad por especie (`scenes/map/maps/<tag>/flora/`) y cuelga un `FloraLayer` por especie de un nodo `Vegetation` del map.tscn (importá el proyecto una vez después); los PNG se pintan a mano, o sumá un `VegetationPatch`. Los pasos de Godot que leen la definición (`import_terrain.gd`, `terrain_glb_export.gd`) necesitan que el mapa cargue: pasá `--out=` al primero y generá el `.glb` una primera vez con `export_data` antes de `--import`, o escribirían en High Noon.
+**El suelo de un mapa** (plan 062): `bake_ground_roles.py` lee las baldosas del `.scp` en la tierra del propio mapa y escribe `ground_roles.png` (R abierto, G tierra, B roca, A camino); cada dios lo viste con su `GodGround` (`data/look/<dios>.tres`), en cualquier mapa. Un `.scp` fuera de la carpeta (el tutorial) se pasa con `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` deja `Npcs` vacío y `--not-playable` pone `playable = false` (ni salas ni menús lo ofrecen; `--map=<tag>` y las escenas de debug sí lo abren). Las plantas: `scaffold_map.py --map=<Nombre> --wire-flora` escribe un PNG de densidad por especie (`scenes/map/maps/<tag>/flora/`) y cuelga un `FloraLayer` por especie de un nodo `Vegetation` del map.tscn (importá el proyecto una vez después); los PNG se pintan a mano, o sumá un `VegetationPatch`.
 
 **Hacer uno a mano** (ejemplo: `test_flat4`, el mapa de prueba de 4 asientos, en `scenes/map/maps/test_flat4/`):
 
-1. Copiá la carpeta de un mapa parecido (`test_flat/` o `test_flat4/`) a `scenes/map/maps/<tag>/`. El terreno puede ser propio (`terrain.glb` de Blender) o una referencia al de otro mapa: `test_flat4` usa el `terrain.res` de `test_flat` sin copiarlo.
+1. Copiá la carpeta de un mapa parecido (`test_flat/` o `test_flat4/`) a `scenes/map/maps/<tag>/`. El suelo es el `heights.png` (16 bits, valor × 0,1 m) y el `void.png` (blanco = vacío) de la carpeta: pintalos en cualquier editor de imágenes o en Blender (`tools/README.md`); la instancia `Terrain` del `map.tscn` apunta a ese `heights.png`.
 2. En `map.tscn`, un `PlayerStart` por asiento bajo `MapProps/Starts` (`Start1`…`Start4`, con `slot` 1..N sin repetir) y su altar; mové el `WizardSpot` de cada inicio con el gizmo (ahí aparece el mago y hacia dónde mira); los manantiales bajo `MapProps/Founts`. Un edificio se arrastra bajo `Buildings`. En `test_flat4`, los asientos 1 y 2 están del mismo lado y 3 y 4 enfrente, porque el `2v2` junta 1+2 contra 3+4.
 3. Los bandos salen de los nodos: cada `PlayerStart` es un asiento (`slot`; `team` mayor que 0 aliada a los asientos que lo comparten, 0 = enemigo de todos) y cada `side` de un `NpcSpawn` un bando sin jugador. Los equipos de un modo los pone el modo.
-4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (y `tiles`/`light` si tiene) arrastrados desde el inspector, y `player_starts` (= cantidad de `PlayerStart`). `room_selectable = false` si es solo de prueba (las salas lo ofrecen con `--room-test-maps`).
+4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (y `light` si tiene) arrastrados desde el inspector, y `player_starts` (= cantidad de `PlayerStart`). `room_selectable = false` si es solo de prueba (las salas lo ofrecen con `--room-test-maps`).
 5. No hay lista que editar (`MapCatalog` recorre la carpeta). Horneá el navmesh (botón «Hornear navmesh» de `NavRegion`) y corré el validador: falla si los `PlayerStart` no coinciden con `player_starts`.
 
 Un mapa solo aparece en un modo si tiene un inicio por asiento: High Noon (2) ofrece `1v1`; `winter_wonder` y `test_flat4` (4) ofrecen también `2v2`, `ffa3` y `ffa4`.
@@ -151,6 +149,30 @@ Hace falta un mapa de 4 asientos: `winter_wonder`, o `test_flat4` para probar.
 - **IA y dificultad:** `data/ai/`.
 - **Calidad gráfica:** `data/look/quality_*.tres`.
 - No se muta un `.tres` en runtime. Después de tocar números, el banco de determinismo va a cambiar de huella a propósito: `agent/det_baseline.txt` es la línea base: regrabala solo si el cambio de balance es lo que querías (`agent/README.md`).
+
+## Relieve (mapas PBR) de un modelo
+
+Cada textura de un modelo es un material en `scenes/bodies/materials/<owner>_<label>.tres` (un `StandardMaterial3D`, compartido por todos los modelos que la usan). Su relieve es un normal map en `assets/surfaces/<owner>/<file>_normal.png` (Git LFS), asignado en el slot **Normal Map** del material. Es opcional: un material sin normal map se ve como antes. Desde la RFC-067 todos los materiales lo tienen, salvo `pct6_M000_cutout`. La copia de piedra (StoneLook) y la de construcción (BuildReveal) conservan el relieve.
+
+- **Ver o ajustar uno.** Abrí el material en el inspector (o el override de superficie de la malla en `scenes/bodies/models/<modelo>.tscn`). `normal_scale` lo suaviza o lo invierte (valor negativo). Para sacarlo, limpiá el slot Normal Map, o usá el botón Quitar.
+- **Generar uno.** Arriba del inspector, en la sección «Relieve desde albedo», mové los knobs (la vista previa muestra el resultado), pulsá Generar y guardá con Ctrl+S. Escribe el PNG que falte, lo importa y lo asigna en un solo Ctrl+Z. Un PNG que ya existe se usa tal cual; «Sobrescribir» lo rehace y pierde lo que hayas retocado.
+- **Muchos a la vez.** Usá **Project > Tools > «Generar relieve…»** (carpeta o selección, con «Saltear existentes»). Por consola son dos pasos, porque un PNG nuevo se asigna recién después de importarlo:
+  ```bash
+  bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
+  bash agent/harness/godot_run.sh $G --headless --path . --import
+  bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
+  ```
+- **Recetas.** Hay dos en `addons/surface_maps/recipes/`. `default.tres` usa los valores de NormalMap-Online (strength 2,5, level 7, smoothing 0, sin paso alto, solo normal). `foliage.tres` agrega smoothing 1 para hojas finas, que con la receta por defecto se ven moteadas. Se usa en las plantas `<TAG>_plant*` y en los props de árboles y hojas (la lista está en `agent/harness/relief_batch_lists.py`). Para comparar recetas con números: `agent/harness/relief_recipe_probe.gd` y `python3 -I agent/harness/measure_mottle.py --albedo=<albedo.png> <normal.png>…`.
+- **Retocar.** El PNG es la fuente: editalo en Krita o en cualquier editor de imágenes y Godot lo reimporta. La receta con que se generó no se guarda.
+- **Verificar.** El `rules_suite` corre `surface_refs_cases` (ninguna referencia colgada y las mallas con normal map tienen tangentes) y `surface_maps_cases` (el generador). Con F6 en `debug/look/surface_lab.tscn` la luz orbita alrededor de los modelos (O pausa).
+
+## PBR desde Blender
+
+Un modelo propio no necesita el generador: el `.glb` trae sus mapas.
+
+1. En Blender conectá los mapas al **Principled BSDF**: Base Color, Normal (con un nodo *Normal Map*, espacio tangente), Roughness y Metallic (un ORM: R oclusión, G rugosidad, B metal), y Emission si hace falta. No pases el umbral de glow 1,0 (VISUAL: nada de brillo plástico).
+2. Exportá a `assets/custom/models/<tag>.glb` (glTF 2.0). Si el `.glb` no trae tangentes, Godot las genera al importar (`meshes/ensure_tangents=true`, lo revisa `surface_refs_cases`). Godot convierte cada material en un `StandardMaterial3D` con sus mapas, y `tools/bake/new_creature.gd` no los pisa.
+3. Si exportaste solo el color, generá el relieve sobre la textura extraída con la sección «Relieve desde albedo» del inspector. El mapa queda al lado del albedo, no en `assets/surfaces/`.
 
 ## Correr las pruebas y el validador
 
@@ -197,14 +219,16 @@ Las rutas son relativas a `game/`.
 | `tools/import/export_skeletal_reference.py` | **Sí** | OBJ de referencia en `agent/out/skeletal_ref/` (no se versiona) |
 | `tools/import/import_textures.py` | **Sí** | `assets/original/textures/*.png` |
 | `tools/import/import_props.py` | **Sí** | `assets/original/props/*.glb` (edificios y plantas) |
-| `tools/import/import_themes.py` | **Sí** | `assets/original/themes/<dios>/` (suelo, cielo, luz) |
+| `tools/import/import_themes.py` | **Sí** | `assets/original/themes/<dios>/` (cielo, sol, borde) |
+| `tools/import/bake_role_sheets.py` (`--measure`) | **Sí** | `assets/original/themes/<dios>/roles/` (las hojas de los 4 suelos del dios) |
 | `tools/import/import_ui.py` | **Sí** | `assets/original/ui/` y `assets/original/fx/` (HUD, iconos, cursores, partículas) |
-| `tools/import/import_map.py` (incluye `--list`) | **Sí** | `assets/original/maps/<tag>/` (tiles, luz, entidades, terreno) |
+| `tools/import/import_map.py` (incluye `--list`) | **Sí** | `assets/original/maps/<tag>/` (luz, entidades) |
 | `tools/import/import_audio.py` | **Sí** | `assets/original/audio/` (efectos WAV, voces Ogg o WAV sin ffmpeg, música MP3) + `index.json`. Ya está en el repo (LFS) |
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `MapDefinition`, `map.tscn`, `nav.res` vacío |
-| `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
-| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| `tools/import/sample_grass_palette.py` | No: usa `assets/original/themes/<dios>/roles/` | paleta de pasto propuesta |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo | Escenas, `.tres` y navmesh |
+| `tools/terrain/heights_from_original.gd` | **Sí** (lee el `.scp`) | `scenes/map/maps/<tag>/heights.png` + `void.png`, el suelo de un mapa del original |
 | Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |
 
 Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».

@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://debug/look/look_gallery.tscn" id="1_gallery"]
+[ext_resource type="Resource" path="res://agent/harness/058_fix/only_snow.tres" id="2_plan"]
+
+[node name="Gallery" instance=ExtResource("1_gallery")]
+editor_description = "058 fix capture (agent only): the gallery with the James look, a frozen sky, the hour pinned and one weather."
+start_god = &"james"
+classic = false
+freeze_sky = true
+hide_hud = true
+
+[node name="Atmosphere" parent="HighNoon/Map/Look/Layers"]
+frozen_hour = 7.0
+plan_override = ExtResource("2_plan")

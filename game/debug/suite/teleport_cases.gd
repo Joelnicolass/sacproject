@@ -5,7 +5,7 @@ extends RefCounted
 ## solo. `run(host)` adds its own floor and bodies under `host` and removes them at the end.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/james_manalith.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const UNIT_ORDERS := preload("res://scenes/units/unit_orders.gd")
 const RULES := preload("res://data/match_rules.tres")
@@ -253,7 +253,7 @@ func _cast() -> Dictionary:
 func _wizard(at: Vector3) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = at
 	return wizard

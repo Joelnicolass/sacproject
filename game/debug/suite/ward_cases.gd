@@ -44,7 +44,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ward_shielded"] = await _shielded()
 	out["ward_cast"] = await _cast()
 	out["ward_ai"] = await _ai()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 
@@ -297,9 +297,9 @@ func _cast() -> Dictionary:
 ## guard_threat_m and the ward off; nothing with one, with none far away, or with the ward on. The support phase picks it.
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "WardCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 1
 	_root.add_child(perception)
 	var wizard := _wizard(1, Vector3(-400.0, 0.0, -400.0), "james", 3)
@@ -309,7 +309,7 @@ func _ai() -> Dictionary:
 	await _frames(2)
 	var stance := AiStance.new()
 	stance.recs[0].manaliths = 1
-	var eval := AiSpellEval.new(perception, stance, null, perception.profile)
+	var eval := AiSpellEval.new(perception, stance, null, perception.play.tactics)
 	var spell := GameData.spell("niks")
 	var track := perception.add_node(wizard, &"event")
 	var a := perception.add_node(near_a, &"event")
@@ -382,12 +382,12 @@ func _near(value: float, expected: float) -> bool:
 func _wizard(slot: int, at: Vector3, god: String, level := 1) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	wizard.level = level
 	wizard.position = at
 	_root.add_child(wizard)
 	## The wizard reads its seat's god when it enters; the case says it again.
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	(wizard.get_node("Health") as Health).setup(10000.0)
 	return wizard
 

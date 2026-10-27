@@ -1,8 +1,9 @@
-[gd_scene load_steps=43 format=3]
+[gd_scene load_steps=48 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
 [ext_resource type="Script" path="res://scenes/wizards/wizard_body.gd" id="1_body"]
+[ext_resource type="Resource" path="res://data/gods/james.tres" id="b2_god"]
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/clinging.tscn" id="f129_cling"]
@@ -14,7 +15,7 @@
 [ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="5_mana"]
 [ext_resource type="Script" path="res://scenes/components/soul_purse.gd" id="6_souls"]
 [ext_resource type="Resource" path="res://data/match_rules.tres" id="7_rules"]
-[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="8_replicate"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_actor.gd" id="8_actor"]
 [ext_resource type="Script" path="res://scenes/spells/spellbook.gd" id="9_book"]
 [ext_resource type="Script" path="res://scenes/spells/caster.gd" id="10_caster"]
 [ext_resource type="Script" path="res://scenes/spells/summoner.gd" id="11_summoner"]
@@ -78,81 +79,106 @@
 [ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
 [ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="typed_cwa0"]
 [ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_input.gd" id="p72_input"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_drive.gd" id="p72_drive"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
 height = 1.8
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wizard"]
-properties/0/path = NodePath(".:position")
+properties/0/path = NodePath("MpActor:net_position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:rotation")
+properties/1/path = NodePath("MpActor:net_rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 properties/2/path = NodePath(".:owner_slot")
 properties/2/spawn = true
-properties/2/replication_mode = 0
+properties/2/replication_mode = 2
 properties/3/path = NodePath(".:wizard_tag")
 properties/3/spawn = true
 properties/3/replication_mode = 2
 properties/4/path = NodePath(".:model")
 properties/4/spawn = true
 properties/4/replication_mode = 2
-properties/5/path = NodePath(".:god")
+properties/5/path = NodePath("Health:maximum")
 properties/5/spawn = true
 properties/5/replication_mode = 2
-properties/6/path = NodePath("Health:maximum")
+properties/6/path = NodePath("Health:current")
 properties/6/spawn = true
 properties/6/replication_mode = 2
-properties/7/path = NodePath("Health:current")
+properties/7/path = NodePath("ManaPool:maximum")
 properties/7/spawn = true
 properties/7/replication_mode = 2
-properties/8/path = NodePath("ManaPool:maximum")
+properties/8/path = NodePath("ManaPool:current")
 properties/8/spawn = true
 properties/8/replication_mode = 2
-properties/9/path = NodePath("ManaPool:current")
+properties/9/path = NodePath("SoulPurse:count")
 properties/9/spawn = true
 properties/9/replication_mode = 2
-properties/10/path = NodePath("SoulPurse:count")
+properties/10/path = NodePath("GhostForm:under_ritual")
 properties/10/spawn = true
 properties/10/replication_mode = 2
-properties/11/path = NodePath("GhostForm:under_ritual")
+properties/11/path = NodePath("GhostForm:stage")
 properties/11/spawn = true
 properties/11/replication_mode = 2
-properties/12/path = NodePath("GhostForm:stage")
+properties/12/path = NodePath(".:level")
 properties/12/spawn = true
 properties/12/replication_mode = 2
-properties/13/path = NodePath(".:level")
+properties/13/path = NodePath("Afflictions:shown")
 properties/13/spawn = true
 properties/13/replication_mode = 2
-properties/14/path = NodePath("Afflictions:shown")
+properties/14/path = NodePath("Clinging:shown")
 properties/14/spawn = true
 properties/14/replication_mode = 2
-properties/15/path = NodePath("Clinging:shown")
+properties/15/path = NodePath("Caster:cast_fx_shown")
 properties/15/spawn = true
 properties/15/replication_mode = 2
-properties/16/path = NodePath("Caster:cast_fx_shown")
+properties/16/path = NodePath("Wards/SkinOfStone:shown")
 properties/16/spawn = true
 properties/16/replication_mode = 2
-properties/17/path = NodePath("Wards/SkinOfStone:shown")
+properties/17/path = NodePath("Wards/AirShield:shown")
 properties/17/spawn = true
 properties/17/replication_mode = 2
-properties/18/path = NodePath("Wards/AirShield:shown")
+properties/18/path = NodePath("Wards/EtherealForm:shown")
 properties/18/spawn = true
 properties/18/replication_mode = 2
-properties/19/path = NodePath("Wards/EtherealForm:shown")
+properties/19/path = NodePath("Wards/Fireform:shown")
 properties/19/spawn = true
 properties/19/replication_mode = 2
-properties/20/path = NodePath("Wards/Fireform:shown")
+properties/20/path = NodePath("Wards/ProtectiveSwarm:shown")
 properties/20/spawn = true
 properties/20/replication_mode = 2
-properties/21/path = NodePath("Wards/ProtectiveSwarm:shown")
+properties/21/path = NodePath("Wards/HealingAura:shown")
 properties/21/spawn = true
 properties/21/replication_mode = 2
-properties/22/path = NodePath("Wards/HealingAura:shown")
+properties/22/path = NodePath("BloodFx:wound")
 properties/22/spawn = true
 properties/22/replication_mode = 2
+properties/23/path = NodePath(".:velocity")
+properties/23/spawn = true
+properties/23/replication_mode = 1
+properties/24/path = NodePath(".:speed_factor")
+properties/24/spawn = true
+properties/24/replication_mode = 2
+properties/25/path = NodePath("Drive:locked")
+properties/25/spawn = true
+properties/25/replication_mode = 2
+properties/26/path = NodePath("MpActor:net_stamp")
+properties/26/spawn = true
+properties/26/replication_mode = 1
+properties/27/path = NodePath("MpActor:net_teleports")
+properties/27/spawn = true
+properties/27/replication_mode = 1
+properties/28/path = NodePath("MpInput:acked_seq")
+properties/28/spawn = true
+properties/28/replication_mode = 1
+properties/29/path = NodePath("MpActor:owner_slot")
+properties/29/spawn = true
+properties/29/replication_mode = 0
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -164,9 +190,34 @@ vision = NodePath("Vision")
 step = ExtResource("2_step")
 wizard_type = ExtResource("typed_cwa0")
 model = "jnwr"
-god = "james"
+god_type = ExtResource("b2_god")
+
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("8_actor")
+sync_extra = PackedStringArray("owner_slot", "wizard_tag", "model", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "SoulPurse:count", "GhostForm:under_ritual", "GhostForm:stage", "level", "Afflictions:shown", "Clinging:shown", "Caster:cast_fx_shown", "Wards/SkinOfStone:shown", "Wards/AirShield:shown", "Wards/EtherealForm:shown", "Wards/Fireform:shown", "Wards/ProtectiveSwarm:shown", "Wards/HealingAura:shown", "BloodFx:wound", "velocity", "speed_factor", "Drive:locked")
+predict = true
+lag_compensate = false
+correction_snap_distance = 2.0
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
+replication_config = SubResource("SceneReplicationConfig_wizard")
+
+[node name="MpInput" type="Node" parent="."]
+script = ExtResource("p72_input")
+actions = PackedStringArray()
+
+[node name="Drive" type="Node" parent="." node_paths=PackedStringArray("body", "locomotion", "afflictions", "caster", "ghost", "follower")]
+script = ExtResource("p72_drive")
+body = NodePath("..")
+locomotion = NodePath("../Locomotion")
+afflictions = NodePath("../Afflictions")
+caster = NodePath("../Caster")
+ghost = NodePath("../GhostForm")
+follower = NodePath("../PathFollower")
 
 [node name="Tilt" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 
 [node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig", "mount")]
 script = ExtResource("3_visual")
@@ -178,6 +229,7 @@ mount = NodePath("../../BodyMount")
 [node name="Light" parent="." instance=ExtResource("f055_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
 always_on = true
+night_energy = 0.4
 light_color = Color(1, 1, 1, 1)
 light_energy = 8.0
 light_specular = 0.0
@@ -209,6 +261,7 @@ afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
 
 [node name="Wards" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 script = ExtResource("w_wards")
 
 [node name="SkinOfStone" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_skin_of_stone")]
@@ -314,6 +367,7 @@ caster = NodePath("../Caster")
 rig = NodePath("../Tilt/Mesh/Rig")
 
 [node name="Afflictions" type="Node3D" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "wards")]
+physics_interpolation_mode = 2
 script = ExtResource("f120_afflictions")
 wards = NodePath("../Wards")
 body = NodePath("..")
@@ -330,11 +384,10 @@ tilt = NodePath("../../Tilt")
 visual = NodePath("../../Tilt/Mesh")
 corpse_lays_down = false
 
-[node name="Petrified" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned", "visual")]
+[node name="Petrified" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned")]
 script = ExtResource("f137_petrified")
 type = ExtResource("f137_petrified_type")
 stunned = NodePath("../Stunned")
-visual = NodePath("../../Tilt/Mesh")
 
 [node name="Look" type="Node" parent="Afflictions" node_paths=PackedStringArray("mesh")]
 script = ExtResource("f137_stone_look")
@@ -347,10 +400,9 @@ type = ExtResource("f121_tumbling_type")
 stunned = NodePath("../Stunned")
 tilt = NodePath("../../Tilt")
 
-[node name="Frozen" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("visual")]
+[node name="Frozen" type="Node3D" parent="Afflictions"]
 script = ExtResource("f149_frozen")
 type = ExtResource("f149_frozen_type")
-visual = NodePath("../../Tilt/Mesh")
 
 [node name="Cues" type="Node" parent="Afflictions/Frozen" node_paths=PackedStringArray("affliction", "on_start")]
 script = ExtResource("l161_cues")
@@ -548,16 +600,9 @@ box_scale = 0.8
 script = ExtResource("f72_follower")
 body = NodePath("..")
 
-[node name="Net" type="Node" parent="."]
-script = ExtResource("8_replicate")
-sync_properties = PackedStringArray()
-
 [node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
 script = ExtResource("warp_snap")
-net = NodePath("../Net")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_wizard")
+net = NodePath("../MpActor")
 
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
 body = NodePath("..")
@@ -572,6 +617,15 @@ caster = NodePath("../Caster")
 ghost = NodePath("../GhostForm")
 height_m = 1.6
 
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
+
 [node name="Locomotion" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "avoidance")]
 script = ExtResource("c4_locomotion")
 body = NodePath("..")
@@ -579,7 +633,6 @@ afflictions = NodePath("../Afflictions")
 avoidance = NodePath("../Avoidance")
 face_velocity = false
 
-[connection signal="solved" from="Avoidance" to="Locomotion" method="resume"]
 [connection signal="moved" from="Locomotion" to="." method="_on_moved"]
 [connection signal="fell" from="Locomotion" to="." method="_return_to_altar"]
 [connection signal="shown_changed" from="Wards/EtherealForm" to="GhostForm" method="set_ethereal"]

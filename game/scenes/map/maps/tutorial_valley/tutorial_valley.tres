@@ -2,21 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/tutorial_valley/map.tscn" id="2_scene"]
-[ext_resource type="Resource" path="res://assets/original/maps/tutorial_valley/terrain.res" id="3_terrain"]
-[ext_resource type="Image" path="res://assets/original/maps/tutorial_valley/tiles.png" id="4_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/tutorial_valley/light.png" id="5_light"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/tutorial_valley/nav.res" id="6_nav"]
-[ext_resource type="Resource" path="res://assets/original/maps/tutorial_valley/ground_native.tres" id="7_native"]
 
 [resource]
 script = ExtResource("1_def")
 tag = &"tutorial_valley"
 display_name = "(tu02)"
 map_scene = ExtResource("2_scene")
-terrain = ExtResource("3_terrain")
-tiles = ExtResource("4_tiles")
 light = ExtResource("5_light")
-nav = ExtResource("6_nav")
 player_starts = 2
 playable = true
-native_ground = ExtResource("7_native")

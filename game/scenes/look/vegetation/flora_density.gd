@@ -8,6 +8,8 @@ extends RefCounted
 ## Presentation data: the simulation never reads it.
 
 var tags := PackedStringArray()
+## The FloraLayer (get_instance_id) of each entry, so a painted layer swaps only its own bytes (`with_layer_bytes`).
+var layer_ids := PackedInt64Array()
 var species: Array[VegetationSpecies] = []
 var _cell_m := PackedFloat32Array()
 var _max := PackedInt32Array()
@@ -22,12 +24,10 @@ static func from_layers(layers: Array) -> FloraDensity:
 	for layer: FloraLayer in layers:
 		if layer.species == null or layer.density == null:
 			continue
-		var image := layer.density.get_image()
-		if image == null or image.is_empty():
+		var image := layer.density_image()
+		if image == null:
 			continue
-		if image.is_compressed():
-			image.decompress()
-		image.convert(Image.FORMAT_L8)
+		snapshot.layer_ids.append(layer.get_instance_id())
 		snapshot.tags.append(layer.species.density_tag())
 		snapshot.species.append(layer.species)
 		snapshot._cell_m.append(layer.cell_m)
@@ -45,6 +45,25 @@ static func gather(scope: Node) -> FloraDensity:
 		if node.is_inside_tree() and not node.is_queued_for_deletion() and scope.is_ancestor_of(node):
 			layers.append(node)
 	return from_layers(layers)
+
+
+## A new snapshot like this one with the bytes of the layer `layer_id` replaced (same size: the brush only repaints), so
+## the planters' tasks that still read this one see it unchanged. The same snapshot back when that layer is not here.
+func with_layer_bytes(layer_id: int, bytes: PackedByteArray) -> FloraDensity:
+	var index := layer_ids.find(layer_id)
+	if index < 0 or bytes.size() != _width[index] * _height[index]:
+		return self
+	var next := FloraDensity.new()
+	next.tags = tags
+	next.layer_ids = layer_ids
+	next.species = species
+	next._cell_m = _cell_m
+	next._max = _max
+	next._width = _width
+	next._height = _height
+	next._bytes = _bytes.duplicate()
+	next._bytes[index] = bytes
+	return next
 
 
 func entries() -> int:

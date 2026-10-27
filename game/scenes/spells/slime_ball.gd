@@ -1,5 +1,5 @@
 class_name SlimeBall
-extends Node3D
+extends FxScene
 
 ## The ball of slime that grows ten metres over a body while the wizard casts Slime and then falls on it. It is a presentation that FxBus
 ## plays on every peer (`play`), follows the body it was thrown at and frees itself when it lands (the state that lands is Slimed's). It does

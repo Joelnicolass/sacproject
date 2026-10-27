@@ -10,9 +10,9 @@ extends AbilityEffect
 @export var form := SpecialForms.Form.PLAYING_DEAD
 ## The shortest time the flag stays on, in seconds (the SPEL's duration when it is longer).
 @export var min_duration_s := 6.0
-## FxBus effect and its height over the body when the flag turns on.
-@export var fx: StringName = &"dirt"
-@export var fx_height := 0.3
+## The burst every peer sees when the flag turns on, and the socket of the body it leaves from (empty = none).
+@export var fx: ParticleType = preload("res://data/fx/dirt.tres")
+@export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.FEET
 
 ## MatchClock tick at which the flag ends (0 = off).
 var _until := 0
@@ -25,11 +25,12 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 
 
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	_until = MatchClock.now() + roundi(maxf(ability.duration_s, min_duration_s) * MatchClock.TICKS_PER_SECOND)
 	user.special_forms.set_form(form, true)
-	FxBus.broadcast(fx, user.global_position + Vector3.UP * fx_height)
+	if fx != null:
+		FxBus.broadcast(fx, BodyFacts.point(user, fx_socket))
 	set_physics_process(true)
 	return true
 

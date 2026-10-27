@@ -4,9 +4,17 @@ extends Node
 ## Optional session flow. Not gameplay: scenes, host/join/1P, when the world loads.
 ## Add as autoload (after MpKit) or instance in the boot scene.
 ## Override `snapshot_for_joiner()` in a subclass for game state.
+## Every path that hosts (Host LAN, a dedicated by hand, a room's dedicated) arms the match's start gate (MpKit.gate): free seats
+## are open until the match starts; after it only a seat that left comes back (rejoin), unless late_join. A dedicated by hand
+## serves one match after another: when its match is over and the server is empty, it loads a fresh world and opens the
+## seats again. Knobs: the "Match start" group.
 
 signal status_changed(text: String)
 signal world_loading
+## The world load moved on (MpWorldLoader): `ratio` 0..1, `phase` FILES/WORLD while loading, READY done, IDLE dropped.
+signal world_load_progressed(ratio: float, phase: MpWorldLoader.Phase)
+## The world is in and ready (it said so with report_world_loaded, or `world_reports_loaded` is off).
+signal world_loaded
 signal world_changed(id: StringName)
 ## The server ended the match (MpMatch.finish): every peer gets the result.
 signal match_finished(result: Dictionary)
@@ -43,6 +51,9 @@ enum StartWhen {
 @export var advertise_lan: bool = true
 @export var custom_channels: PackedStringArray = PackedStringArray()
 @export var start_when: StartWhen = StartWhen.LISTEN_IMMEDIATE
+## On: the world says when it is ready (report_world_loaded); only then is this peer loaded at the gate (solo too). Off: its scene is in.
+## `--world-reports-loaded` turns it on from the command line.
+@export var world_reports_loaded := false
 
 @export var host_fail_status: String = "Could not host (port busy?)"
 @export var join_fail_status: String = "Could not join"
@@ -51,6 +62,26 @@ enum StartWhen {
 @export var server_lost_status: String = "Lost the server"
 @export var dedicated_status: String = "Dedicated on port %d"
 @export var cannot_host_status: String = "This build cannot host (web): join a server"
+
+@export_group("Match start")
+## Seconds a seat that dropped keeps its place (`--rejoin-grace-s=`). A room's match takes its MpLobbyConfig instead.
+@export var rejoin_grace_s: float = 60.0
+## Seconds after the first player sat that the match waits for the rest to load (`--load-timeout-s=`); then it starts with
+## whoever loaded. The HUD says it waits (MpWaitingLabel). A room's match takes its MpLobbyConfig instead.
+@export var load_timeout_s: float = 15.0
+## Clients that must load before the match starts, in Host LAN and a dedicated by hand; 0 = every seat, or whoever loaded
+## once load_timeout_s passed (`--start-seats=`). A listen host may start sooner (MpStartButton, `Mp.gate().start_now()`).
+@export var start_seats: int = 0
+## After the start a newcomer still takes a free seat (`--late-join`). Off: only a seat that left comes back. Not for a room's
+## match (its ticket names every seat).
+@export var late_join: bool = false
+## The clients' world pauses too while the match waits for seats.
+@export var pause_clients: bool = true
+## Shown on a client the server turned away because the match already started.
+@export var match_started_status: String = "The match already started"
+## Shown for any other reason (`%s` = the reason code).
+@export var rejected_status: String = "The server turned this player away (%s)"
+@export_group("")
 
 const PORT_MIN := 1
 const PORT_MAX := 65535
@@ -61,11 +92,22 @@ const GROUP := &"mp_flow"
 var match_running: bool = false
 
 var _match_from_lobby: bool = false
+## A dedicated by hand: it loads the world at once (not with its first client), and its match ended (MpMatch.finish).
+var _dedicated_at_once: bool = false
+var _open_match_over: bool = false
 var _tree: SceneTree
 ## Where this flow came from (its scene, or an autoload): two flows of different origins is a setup mistake.
 var _origin: String = ""
 
 var _lan: MpLanBeacon
+var _loader := MpWorldLoader.new()
+
+
+func _init() -> void:
+	_loader.name = "WorldLoader"
+	add_child(_loader, false, Node.INTERNAL_MODE_BACK)
+	_loader.progressed.connect(world_load_progressed.emit)
+	_loader.finished.connect(_on_world_loaded)
 
 
 static func find_in_tree(from: Node) -> MpFlow:
@@ -107,16 +149,13 @@ func _ready() -> void:
 	## A browser can neither host nor advertise on the LAN.
 	if not MpNetConfig.can_host():
 		advertise_lan = false
-	MpKit.load_world.connect(goto_world)
-	MpKit.peer_joined.connect(_on_peer_joined)
-	MpKit.join_failed.connect(_on_join_failed)
-	MpKit.server_lost.connect(_on_server_lost)
-	MpKit.snapshot_received.connect(_on_flow_snapshot)
-	MpKit.session_ended.connect(_on_session_ended)
+	for link in _kit_links():
+		(link[0] as Signal).connect(link[1])
+	_apply_load_mode()
 	## A dedicated started by the room server: the ticket says who may join (unless the game armed its own agent),
 	## and how many seats the match has, before the port opens.
 	if not MpBoot.user_value("match-ticket-file", "").is_empty():
-		var seats := _ticket_seats()
+		var seats := MpBoot.ticket_seats()
 		if seats > MpKit.max_players:
 			max_players = seats
 			MpKit.configure(MpKit.port, seats, host_slot, custom_channels)
@@ -126,37 +165,38 @@ func _ready() -> void:
 		get_tree().change_scene_to_file.call_deferred(room_server_path)
 		return
 	if role == "server":
-		var err := MpKit.host_dedicated()
-		if err != OK:
-			push_error("MpKit.host_dedicated failed: %s" % err)
-			get_tree().quit(1)
-			return
-		match_running = true
-		_set_status(dedicated_status % MpKit.port)
-		call_deferred("goto_world")
-		_quit_if_refused()
+		if _host_dedicated():
+			_start_dedicated_world()
+			_quit_if_refused()
 		return
 	if role == "listen":
 		if host_lan() != OK:
 			get_tree().quit(1)
 		return
 	if role == "client1" or role == "client2":
-		var ip := MpBoot.user_value("join-ip", "127.0.0.1")
-		var err := join_lan(ip)
-		if err != OK:
+		if join_lan(MpBoot.user_value("join-ip", "127.0.0.1")) != OK:
 			get_tree().quit(1)
-			return
 		return
-	if MpBoot.is_dedicated_process():
-		var err := MpKit.host_dedicated()
-		if err != OK:
-			push_error("MpKit.host_dedicated failed: %s" % err)
-			get_tree().quit(1)
-			return
-		_set_status(dedicated_status % MpKit.port)
-		if start_when == StartWhen.LISTEN_IMMEDIATE:
-			match_running = true
-			call_deferred("goto_world")
+	if MpBoot.is_dedicated_process() and _host_dedicated() and start_when == StartWhen.LISTEN_IMMEDIATE:
+		_start_dedicated_world()
+
+
+## Opens the dedicated's port and arms its gate. False (and the process quits) when it cannot.
+func _host_dedicated() -> bool:
+	var err := MpKit.host_dedicated()
+	if err != OK:
+		push_error("MpKit.host_dedicated failed: %s" % err)
+		get_tree().quit(1)
+		return false
+	_arm_gate()
+	_set_status(dedicated_status % MpKit.port)
+	return true
+
+
+func _start_dedicated_world() -> void:
+	match_running = true
+	_dedicated_at_once = true
+	call_deferred("goto_world")
 
 
 ## The MpGame fills what was left empty; anything set by hand on this node wins.
@@ -211,23 +251,25 @@ func _adopt() -> void:
 
 
 func _exit_tree() -> void:
-	if MpKit.load_world.is_connected(goto_world):
-		MpKit.load_world.disconnect(goto_world)
-	if MpKit.peer_joined.is_connected(_on_peer_joined):
-		MpKit.peer_joined.disconnect(_on_peer_joined)
-	if MpKit.join_failed.is_connected(_on_join_failed):
-		MpKit.join_failed.disconnect(_on_join_failed)
-	if MpKit.server_lost.is_connected(_on_server_lost):
-		MpKit.server_lost.disconnect(_on_server_lost)
-	if MpKit.snapshot_received.is_connected(_on_flow_snapshot):
-		MpKit.snapshot_received.disconnect(_on_flow_snapshot)
-	if MpKit.session_ended.is_connected(_on_session_ended):
-		MpKit.session_ended.disconnect(_on_session_ended)
+	if MpKit.gate == null:
+		return
+	for link in _kit_links():
+		if (link[0] as Signal).is_connected(link[1]):
+			(link[0] as Signal).disconnect(link[1])
+
+
+## What the flow listens to on MpKit and its gate: [signal, handler].
+func _kit_links() -> Array:
+	return [[MpKit.load_world, goto_world], [MpKit.peer_joined, _on_peer_joined], [MpKit.join_failed, _on_join_failed],
+		[MpKit.server_lost, _on_server_lost], [MpKit.snapshot_received, _on_flow_snapshot], [MpKit.session_ended, _on_session_ended],
+		[MpKit.admission_rejected, _on_admission_rejected], [MpKit.peer_left, _on_peer_left],
+		[MpKit.session_ended_sent, _on_session_ended_sent], [MpKit.gate.all_gone, _on_all_gone]]
 
 
 func play_solo() -> void:
 	_stop_lan()
 	MpKit.leave()
+	_arm_gate()
 	match_running = true
 	goto_world()
 
@@ -240,21 +282,16 @@ func host_lan() -> Error:
 	if err != OK:
 		_set_status(host_fail_status)
 		return err
+	_arm_gate()
 	_begin_match()
 	return OK
 
 
 func join_lan(ip: String) -> Error:
-	var trimmed := ip.strip_edges()
-	if not MpLan.is_valid_ipv4(trimmed):
+	if not MpLan.is_valid_ipv4(ip.strip_edges()):
 		_set_status(bad_ip_status)
 		return ERR_INVALID_PARAMETER
-	var err := MpKit.join(trimmed)
-	if err != OK:
-		_set_status(join_fail_status)
-		return err
-	_set_status(joining_status % trimmed)
-	return OK
+	return join_endpoint(ip, MpKit.port)
 
 
 ## What a player types: "192.168.1.5", "play.example.com" or either with ":port" (default MpKit.port), and
@@ -285,10 +322,8 @@ func join_match(host: String, p_port: int, token: String) -> Error:
 ## Join a dedicated by host (IPv4 or name) and port; `ticket` is presented for admission.
 func join_endpoint(host: String, p_port: int, ticket: String = "") -> Error:
 	var trimmed := host.strip_edges()
-	if not MpLan.is_valid_ipv4(trimmed) and not MpLan.is_valid_hostname(trimmed):
-		_set_status(bad_ip_status)
-		return ERR_INVALID_PARAMETER
-	if p_port < PORT_MIN or p_port > PORT_MAX:
+	var named := MpLan.is_valid_ipv4(trimmed) or MpLan.is_valid_hostname(trimmed)
+	if not named or p_port < PORT_MIN or p_port > PORT_MAX:
 		_set_status(bad_ip_status)
 		return ERR_INVALID_PARAMETER
 	var err := MpKit.join(trimmed, p_port, ticket)
@@ -300,9 +335,7 @@ func join_endpoint(host: String, p_port: int, ticket: String = "") -> Error:
 
 
 func start_match() -> void:
-	if match_running:
-		return
-	if not MpKit.is_server():
+	if match_running or not MpKit.is_server():
 		return
 	_begin_match()
 
@@ -314,24 +347,55 @@ func return_to_boot() -> void:
 	_go_boot()
 
 
+## Loads the world on a thread (MpWorldLoader, world_load_progressed) with what _extra_world_loads() names; world_loaded at the end.
 func goto_world() -> void:
 	_adopt()
 	world_loading.emit()
+	_before_world_load()
 	var entry := _resolved_world()
-	if entry != null:
-		var entry_path := entry.resolve_path()
-		if not entry_path.is_empty():
-			get_tree().change_scene_to_file(entry_path)
-			return
-		if entry.scene != null:
-			get_tree().change_scene_to_packed(entry.scene)
-			return
-	var path := world_path.strip_edges()
-	if not path.is_empty():
-		get_tree().change_scene_to_file(path)
-		return
-	if world_scene != null:
-		get_tree().change_scene_to_packed(world_scene)
+	var path := entry.resolve_path() if entry != null else ""
+	var scene: PackedScene = entry.scene if entry != null else null
+	if path.is_empty() and scene == null:
+		path = world_path.strip_edges()
+		scene = world_scene
+	_loader.load_world(path, scene, _extra_world_loads(), _reports_loaded())
+
+
+## The world says how far it got getting ready (0..1), between the scene swap and report_world_loaded().
+func report_world_progress(ratio: float) -> void:
+	_loader.report_progress(ratio)
+
+
+## The world is ready (with `world_reports_loaded`): the load ends and this peer counts as loaded at the start gate.
+func report_world_loaded() -> void:
+	_loader.report_loaded()
+
+
+## Override: right before a world loads, on every peer (e.g. the game picks the map). Nothing by default.
+func _before_world_load() -> void:
+	pass
+
+
+## Override: files to read on the loading thread beside the world (what it will spawn). None by default.
+func _extra_world_loads() -> PackedStringArray:
+	return PackedStringArray()
+
+
+## world_reports_loaded, or `--world-reports-loaded`.
+func _reports_loaded() -> bool:
+	return world_reports_loaded or MpBoot.user_flag("world-reports-loaded")
+
+
+## How a peer counts as loaded at the gate (see world_reports_loaded), on every path that arms it.
+func _apply_load_mode() -> void:
+	MpKit.gate.wait_host = _reports_loaded()
+	MpKit.gate.loaded_on_world_ready = not _reports_loaded()
+
+
+func _on_world_loaded() -> void:
+	world_loaded.emit()
+	if _reports_loaded():
+		MpKit.report_loaded()
 
 
 func add_world(id: StringName, path: String, scene: PackedScene = null) -> MpWorldRef:
@@ -360,13 +424,80 @@ func select_world(id: StringName) -> bool:
 func world_ids() -> PackedStringArray:
 	var out := PackedStringArray()
 	for entry in worlds:
-		if entry == null or entry.id == &"":
-			continue
-		out.append(String(entry.id))
+		if entry != null and entry.id != &"":
+			out.append(String(entry.id))
 	return out
 
 
-## Override in a subclass to send extra game state to a late joiner.
+## What a client shows when the server turned it away. Override to translate (`reason`: MpMatchGate's codes, "timeout"...).
+func rejection_text(reason: String) -> String:
+	if reason == MpMatchGate.MATCH_STARTED:
+		return match_started_status
+	return rejected_status % reason
+
+
+## Server: opens the start gate of this match. A room's dedicated arms it through its MpMatchAgent (the ticket names the seats);
+## any other host opens every client seat; solo has no seats (it waits only for its own world). Idempotent.
+func _arm_gate() -> void:
+	if MpKit.gate.is_armed() or (MpKit.is_networked() and not MpKit.is_server()):
+		return
+	## Here and not only in _ready: play_solo / host_lan may run before it (a game that starts from its boot scene's _ready).
+	_apply_load_mode()
+	if not MpKit.is_networked():
+		MpKit.gate.load_timeout_s = float(MpBoot.user_value("load-timeout-s", str(load_timeout_s)))
+		MpKit.gate.arm([], 0)
+		return
+	MpKit.gate.pause_clients = pause_clients
+	var agents := get_tree().get_nodes_in_group(&"mp_match_agent")
+	if not agents.is_empty():
+		## Untyped: the flow must not load the lobby scripts.
+		agents[0].call(&"arm_gate")
+		return
+	## A ticket whose agent is not up yet: _ensure_match_agent arms it.
+	if not MpBoot.user_value("match-ticket-file", "").is_empty():
+		return
+	var gate := MpKit.gate
+	gate.rejoin_grace_s = float(MpBoot.user_value("rejoin-grace-s", str(rejoin_grace_s)))
+	gate.load_timeout_s = float(MpBoot.user_value("load-timeout-s", str(load_timeout_s)))
+	gate.host_present = MpKit.is_listen_host()
+	gate.late_join = late_join or MpBoot.user_flag("late-join")
+	gate.arm(MpKit.open_seats(), int(MpBoot.user_value("start-seats", str(start_seats))))
+
+
+## A dedicated by hand (no ticket): it serves one match after another, so there is a next one when a match ends.
+func _serves_open_matches() -> bool:
+	return MpKit.is_dedicated() and MpBoot.user_value("match-ticket-file", "").is_empty() \
+		and get_tree().get_nodes_in_group(&"mp_match_agent").is_empty()
+
+
+## Server, a dedicated by hand: the match is over and nobody is left. A fresh world (score and actors from zero) and every
+## seat open again. Public: a game with a rematch screen may call it once its players left.
+func next_open_match() -> void:
+	if not _serves_open_matches():
+		return
+	_open_match_over = false
+	MpKit.gate.reset()
+	_arm_gate()
+	if _dedicated_at_once:
+		match_running = true
+		goto_world.call_deferred()
+	else:
+		## Started without --dedicated (StartWhen): the world loads again with the next first client.
+		match_running = false
+
+
+## Server: every seat of the match is past the grace (the gate gave up on all of them).
+func _on_all_gone() -> void:
+	next_open_match()
+
+
+## Server: after a finished match, the last player that leaves opens the next one (no grace to wait for).
+func _on_peer_left(_peer_id: int, _slot: int) -> void:
+	if _open_match_over and MpKit.occupied_slots().is_empty():
+		next_open_match()
+
+
+## Sent to every seat the gate let in (a first time or a rejoin): the world, and what the joiner must know first.
 func snapshot_for_joiner() -> Dictionary:
 	var snap := {}
 	var id := _snapshot_world_id()
@@ -383,9 +514,13 @@ func _begin_match() -> void:
 		MpKit.push_snapshot(snap)
 	MpKit.broadcast_load_world()
 	_start_advertise()
-	goto_world()
+	## At the end of the frame: a caller inside a tree change (host_lan from _ready, while the root still adds the autoloads)
+	## cannot swap the scene then.
+	goto_world.call_deferred()
 
 
+## MpKit says joined only for a seat the gate let in, so the world goes to admitted seats only (a newcomer after the start was
+## turned away before this).
 func _on_peer_joined(peer_id: int, _slot: int) -> void:
 	if match_running:
 		var snap := snapshot_for_joiner()
@@ -395,6 +530,11 @@ func _on_peer_joined(peer_id: int, _slot: int) -> void:
 		return
 	if MpKit.is_dedicated() and start_when == StartWhen.DEDICATED_FIRST_CLIENT:
 		_begin_match()
+
+
+func _on_admission_rejected(reason: String) -> void:
+	match_running = false
+	_set_status(rejection_text(reason))
 
 
 func _on_join_failed() -> void:
@@ -416,6 +556,15 @@ func _on_session_ended(result: Dictionary) -> void:
 	match_finished.emit(result)
 
 
+## Server: the match ended (MpMatch.finish). A dedicated by hand opens the next one once its players left.
+func _on_session_ended_sent(_result: Dictionary) -> void:
+	if not _serves_open_matches():
+		return
+	_open_match_over = true
+	if MpKit.occupied_slots().is_empty():
+		next_open_match()
+
+
 ## A match from the lobby is over: the lobby screen again (it shows the result). False when there is none.
 func _back_to_lobby() -> bool:
 	if not _match_from_lobby or lobby_path.is_empty():
@@ -434,25 +583,15 @@ func leave_match() -> void:
 	return_to_boot()
 
 
-## The highest slot of the ticket this match process was started with (0 if none or unreadable).
-func _ticket_seats() -> int:
-	var text := FileAccess.get_file_as_string(MpBoot.user_value("match-ticket-file", ""))
-	var ticket: Variant = JSON.parse_string(text) if not text.is_empty() else null
-	var top := 0
-	if ticket is Dictionary:
-		for row in (ticket as Dictionary).get("seats", []):
-			if row is Dictionary:
-				top = maxi(top, int((row as Dictionary).get("slot", 0)))
-	return top
-
-
 func _ensure_match_agent() -> void:
 	## By path, not by class: the flow must not depend on the lobby scripts to load.
 	if MpKit.admission.is_valid() or not get_tree().get_nodes_in_group(&"mp_match_agent").is_empty():
+		_arm_gate()
 		return
 	var agent: Node = (load("res://addons/mp_kit/lobby/mp_match_agent.gd") as GDScript).new()
 	agent.name = "MatchAgent"
 	add_child(agent)
+	_arm_gate()
 
 
 func _go_boot() -> void:
@@ -507,18 +646,14 @@ func _snapshot_world_id() -> String:
 	if world_id != &"":
 		return String(world_id)
 	var entry := _resolved_world()
-	if entry != null:
-		return String(entry.id)
-	return ""
+	return String(entry.id) if entry != null else ""
 
 
 func _resolved_world() -> MpWorldRef:
 	if worlds.is_empty():
 		return null
-	var match := _world_entry(world_id)
-	if match != null:
-		return match
-	return worlds[0]
+	var found := _world_entry(world_id)
+	return found if found != null else worlds[0]
 
 
 func _world_entry(id: StringName) -> MpWorldRef:

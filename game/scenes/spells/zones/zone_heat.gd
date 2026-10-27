@@ -64,7 +64,7 @@ func _ignite(body: Node3D) -> void:
 	var burn_ticks := MatchClock.ticks_for(burn_s)
 	if burn_ticks > 0 and int(_lit_until.get(id, 0)) <= _ticks:
 		_lit_until[id] = _ticks + burn_ticks
-		Burning.ignite(body, 0.0, burn_ticks, Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look.bus_name() if burn_look != null else "")
+		Burning.ignite(body, 0.0, burn_ticks, Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

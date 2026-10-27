@@ -80,7 +80,7 @@ func frame(x: float, z: float, ox: float, oy: float, oz: float) -> String:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return "no camera"
-	var t := GroundSurface.of(self)
+	var t := Terrain.of(self)
 	var y := 0.0
 	if t != null:
 		var g: float = t.height_at(x, z)
@@ -119,7 +119,7 @@ func _process(_delta: float) -> void:
 func samples(key: String, cx: float, cz: float, radii: Array) -> String:
 	var cam := get_viewport().get_camera_3d()
 	var size := get_viewport().get_visible_rect().size
-	var t := GroundSurface.of(self)
+	var t := Terrain.of(self)
 	var out: Array = []
 	var k := 0
 	while k + 1 < radii.size():

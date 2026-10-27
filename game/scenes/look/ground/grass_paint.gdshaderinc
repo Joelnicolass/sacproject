@@ -1,13 +1,13 @@
 // Grass paint: in the zones where grass grows, the ground takes the average color of the blades,
 // so far from the camera the ground "is" the grass and the field fades into it with no edge.
-// Shared by the PBR ground (ground_common.gdshaderinc) and the classic ground (sacrifice_ground.gdshader). `GroundMaterial.set_grass_paint` fills the uniforms; amount 0 = no paint.
+// Included by the ground shader (ground.gdshader). `GroundMaterial.set_grass_paint` fills the uniforms; amount 0 = no paint.
 
 uniform sampler2D grass_wave_noise : filter_linear_mipmap, repeat_enable, hint_default_white;
 uniform vec3 grass_paint_color = vec3(0.3, 0.5, 0.1);
 uniform float grass_paint_amount = 0.0;
-// Share of the paint per layer slot (the grass layer 1, soils partly, rock 0).
-uniform vec4 grass_paint_layers = vec4(1.0, 0.0, 0.3, 0.3);
-// Luminance of the grass layer's own albedo, to keep its texture detail under the paint.
+// Share of the paint per role (x..w = open, earth, rock, path): open ground all of it, earth and path partly, rock none.
+uniform vec4 grass_paint_roles = vec4(1.0, 0.3, 0.0, 0.3);
+// Luminance of the open ground's own albedo, to keep its texture detail under the paint.
 uniform float grass_paint_ref = 0.15;
 // Slope (deg) where the paint starts to fade and where it is gone: the valley floor is painted, its
 // hills turn gradually into the soil's own color instead of a hard green/brown cut.
@@ -20,13 +20,13 @@ uniform float grass_wave_strength = 0.0;
 // >= 0 replaces the time of the wave bands (agent bench: frozen). The game never sets it.
 uniform float grass_time_override = -1.0;
 
-// `w` = the layer weights after the height blend (sum 1).
+// `w` = the role weights after the height blend (sum 1).
 float grass_paint_k(vec4 w, float slope_deg) {
 	float by_slope = 1.0 - smoothstep(grass_paint_slope.x, grass_paint_slope.y, slope_deg);
-	return clamp(grass_paint_amount * dot(w, grass_paint_layers) * by_slope, 0.0, 1.0);
+	return clamp(grass_paint_amount * dot(w, grass_paint_roles) * by_slope, 0.0, 1.0);
 }
 
-// Textured ground: the paint keeps the layer's relief in luminance and carries the wind bands.
+// Textured ground: the paint keeps the role's relief in luminance and carries the wind bands.
 vec3 grass_paint_textured(vec3 alb, vec4 w, vec2 xz, float time, float slope_deg) {
 	float k = grass_paint_k(w, slope_deg);
 	if (k <= 0.0) {

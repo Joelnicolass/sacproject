@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/terrain_tools/terrain_panel.gd" id="1_panel"]
+
+[node name="TerrainPanel" type="VBoxContainer"]
+editor_description = "Los botones del suelo en el inspector de un Terrain (addon terrain_tools). Las alturas se pintan con la barra «Terreno:» del 3D."
+script = ExtResource("1_panel")
+
+[node name="Title" type="Label" parent="."]
+text = "Suelo del mapa (heights.png + void.png)"
+
+[node name="Blender" type="HBoxContainer" parent="."]
+
+[node name="OpenBlender" type="Button" parent="Blender"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Guarda lo pendiente, arma terrain_work/terrain.blend con las imágenes del mapa y abre Blender. Necesita Blender en el PATH o la variable BLENDER."
+text = "Abrir en Blender"
+
+[node name="BringBlender" type="Button" parent="Blender"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Escribe heights.png y void.png desde terrain.blend (si cumple las reglas) y los importa de nuevo. No se deshace."
+text = "Traer de Blender"
+
+[node name="FlatRow" type="HBoxContainer" parent="."]
+
+[node name="FlatHeight" type="SpinBox" parent="FlatRow"]
+unique_name_in_owner = true
+tooltip_text = "Altura de la tierra plana nueva."
+max_value = 6553.5
+step = 0.1
+value = 50.0
+suffix = "m"
+
+[node name="Flat" type="Button" parent="FlatRow"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Reemplaza heights.png por tierra plana a esa altura y borra void.png. No se deshace."
+text = "Suelo plano nuevo"
+
+[node name="Bases" type="HBoxContainer" parent="."]
+
+[node name="LevelBases" type="Button" parent="Bases"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Deja a nivel la tierra bajo cada GroundFootprint (altares, manantiales) a la altura mediana de abajo. Ctrl+Z lo deshace."
+text = "Aplanar bases"
+
+[node name="Validate" type="Button" parent="Bases"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Revisa el mapa abierto como check_map: asientos, cosas sobre tierra, bases a nivel y que cada altar llegue a cada manantial."
+text = "Validar mapa"

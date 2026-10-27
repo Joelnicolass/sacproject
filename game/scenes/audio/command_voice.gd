@@ -30,7 +30,8 @@ extends Node
 @export_range(0.0, 5.0, 0.05, "suffix:s") var cooldown_s := 0.5
 ## Game seconds between two order voices.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var ack_cooldown_s := 0.3
-## The same creature selected more than this many times in a row says `annoyed` (sacengine: lastSelected > 3).
+## The same creature selected more than this many times in a row says `annoyed`.
+## Ref: sacengine lastSelected > 3.
 @export_range(1, 20) var annoy_after := 3
 ## Orders command -> the event the first creature answers with. A command that is not here says nothing (retreat, formation).
 @export var order_events: Dictionary[String, StringName] = {

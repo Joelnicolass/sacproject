@@ -1,17 +1,16 @@
 class_name SplashImpact
 extends ShotImpact
 
-## Splash of a creature's shot: sacengine dealSplashRangedDamageAt (state.d:9400) = dealDamageAt with
-## DamageMod.splash|ranged: every live body whose hit box is within the radius of the burst takes
-## amount·(1 − d/radius) as splash ranged damage (state.d:9055-9088, resistance pick 8952-8954). SplashDamage owns the walk.
+## Splash of a creature's shot: every live body whose hit box is within the radius of the burst takes
+## amount·(1 − d/radius) as splash ranged damage. SplashDamage owns the walk.
 ##
-## - Mutant babt / Abomination tugt (mutantProjectileExplosion state.d:24381-24387, abominationProjectileExplosion
-##   24432-24439): the body it hit takes the whole amount as ranged|splash (splash ranged resistance), and the rest
-##   of damageRange the falloff: `direct_hit` on, `radius_source` DAMAGE_RANGE.
-## - Flummox crba (flummoxProjectileExplosion 24059-24067): dealSplashRangedDamageAt(0, …, effectRange): nobody is
-##   hit whole, the body it hit included takes the falloff: `direct_hit` off, `radius_source` EFFECT_RANGE.
-## The side is Health's rule (Health._side_factor, F139): the shooter's own side takes 0 or ally_damage_factor by the
-## match's friendly fire, the shooter included if it stands in the radius (state.d:9077).
+## - Mutant babt / Abomination tugt: the body it hit takes the whole amount as ranged|splash (splash ranged resistance),
+##   and the rest of damageRange the falloff: `direct_hit` on, `radius_source` DAMAGE_RANGE.
+## - Flummox crba: nobody is hit whole, the body it hit included takes the falloff: `direct_hit` off,
+##   `radius_source` EFFECT_RANGE.
+## The side is Health's rule (Health._side_factor): the shooter's own side takes 0 or ally_damage_factor by the
+## match's friendly fire, the shooter included if it stands in the radius.
+## Ref: F139; sacengine dealSplashRangedDamageAt (state.d:9400) = dealDamageAt with DamageMod.splash|ranged, state.d:9055-9088, resistance 8952-8954, 9077, mutantProjectileExplosion 24381-24387, abominationProjectileExplosion 24432-24439, flummoxProjectileExplosion 24059-24067.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")

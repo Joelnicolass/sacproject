@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_0fo3b"]
 [ext_resource type="Texture2D" uid="uid://cirvrf5gk6dk2" path="res://assets/original/ui/icons/tshg.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/peas_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/peasant_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/ghost.tscn" id="body_scene"]
 
 [resource]
@@ -21,4 +21,4 @@ ranged_accuracy = 1.0
 vision_m = 50.0
 melee_resistance = 1.5
 souls = 1
-spell_order = 11
+book_slot = 11

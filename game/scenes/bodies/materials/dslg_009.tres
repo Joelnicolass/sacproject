@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/dslg/009.png" id="1_5hsug"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/dslg/009_normal.png" id="2_vcr86"]
 
 [resource]
 resource_name = "dslg_009"
 albedo_texture = ExtResource("1_5hsug")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_vcr86")

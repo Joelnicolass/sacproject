@@ -1,16 +1,17 @@
 class_name DivineSight
 extends AbilityEffect
 
-## F133 (RFC-030 030v-a) moved the Ranger's Divine Sight (eesd) here; F165 makes it faithful. sacengine divineSight (state.d:13102-13109,
-## called by useAbility, 13527-13528): no target and no preparation. The eye is born 2 m ahead of the user (along its facing), on the
+## The Ranger's Divine Sight: it sends an eye. No target and no preparation. The eye is born 2 m ahead of the user (along its facing), on the
 ## land (or a building top) there, with velocity speed · facing, and the ability applies (AbilitySlot spends the 50 mana and starts
-## the 25 s cooldown). What the eye does is DivineSightEye's (updateDivineSight, 25161-25214). The SPEL has flags 0, so the UI sends
+## the 25 s cooldown). What the eye does is DivineSightEye's. The spell has flags 0, so the UI sends
 ## the use at once, without arming a target (MatchCommand._use_ability).
 ## Divergence (declared): none in the rule; the original plays no sound at the cast either.
+## Ref: F133 (RFC-030 030v-a), F165; Ranger eesd, sacengine divineSight (state.d:13102-13109, called by useAbility 13527-13528), updateDivineSight 25161-25214.
 
 ## The eye (divine_sight_eye.tscn), put in the shot container through the ShotSpawner (replicated like a shot).
 @export var eye_scene: PackedScene
-## sacengine `object.position + 2.0f * direction`.
+## How far ahead of the user the eye is born (m).
+## Ref: sacengine `object.position + 2.0f * direction`.
 @export var spawn_ahead := 2.0
 
 
@@ -20,7 +21,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 
 
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority() or user == null or ability == null or eye_scene == null:
+	if not is_multiplayer_authority() or user == null or ability == null or eye_scene == null:
 		return false
 	var spawner := user.get_tree().get_first_node_in_group(&"shot_spawner") as ShotSpawner
 	if spawner == null:

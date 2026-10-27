@@ -30,6 +30,10 @@ extends Node3D
 var _size := 0.0
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	if layers == null or layers.multimesh == null:
 		return

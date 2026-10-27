@@ -1,13 +1,14 @@
 class_name Spellbook
 extends Node
 
-## Book of a wizard: the god's creatures and spells up to the wizard's level (getSpells, state.d:29512) in one
-## list sorted by spell_order, like sacengine Spellbook.sort. Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
+## Book of a wizard: the god's creatures and spells up to the wizard's level in one
+## list sorted by level and position (BookOrder). Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
 ## creature_2 (Shift+Q)…; spell entry 0 is spell_1 (X), 1 spell_2 (R)…
 ## Cooldowns are derived state (RFC-032 032b): each entry keeps the MatchClock tick it is ready again, and
 ## cooldown() = (ready − now) / 60. Nothing writes them per tick, so they follow the ticks of the match, not the render
 ## delta, and stand still while the game is paused. The server sets them (applyCooldown, over the whole book) and pushes
 ## the seconds left to the owner client, which turns them into ticks of its own clock.
+## Ref: getSpells, state.d:29512; sacengine Spellbook.sort
 
 signal book_changed
 signal cooldowns_changed
@@ -16,7 +17,7 @@ signal cooldowns_changed
 ## The wizard whose book this is (the scene wires it to the root).
 @export var wizard: WizardBody
 
-## CreatureType or SpellType, sorted by spell_order.
+## CreatureType or SpellType, sorted by level and position (BookOrder).
 var _entries: Array[Resource] = []
 var _creature_rows := PackedInt32Array()
 var _spell_rows := PackedInt32Array()
@@ -43,12 +44,7 @@ func _ready() -> void:
 func current_book() -> GodBook:
 	if wizard.book != null:
 		return wizard.book
-	if wizard.god_type != null and (wizard.god.is_empty() or wizard.god_type.id() == wizard.god):
-		return wizard.god_type.book
-	# WORKAROUND: the `god` id travels on the network and benches set only it, so when it names another god than
-	# `god_type` the id wins, like before. Drop it when every bench sets `god_type` (055e e3).
-	var by_id: GodType = GameData.god(wizard.god) if not wizard.god.is_empty() else null
-	return by_id.book if by_id != null else null
+	return wizard.god_type.book if wizard.god_type != null else null
 
 
 func size() -> int:
@@ -131,8 +127,9 @@ func creature_max_cooldown(index: int) -> float:
 	return _max_cooldown_at(_creature_rows, index)
 
 
-## sacengine applyCooldown: the cast entry waits castingTime(level) + cooldown + extra; every
+## The cast entry waits castingTime(level) + cooldown + extra; every
 ## other entry castingTime + generic + extra. A running cooldown is never shortened.
+## Ref: sacengine applyCooldown
 func apply_cooldown(tag: String) -> void:
 	var row := _row_of(tag)
 	if row < 0 or rules == null:
@@ -224,7 +221,7 @@ func _rebuild() -> void:
 		sorted.append(spell)
 	for structure in rows.get("structures", []):
 		sorted.append(structure)
-	sorted.sort_custom(func(a: Resource, b: Resource) -> bool: return int(a.get("spell_order")) < int(b.get("spell_order")))
+	sorted.sort_custom(func(a: Resource, b: Resource) -> bool: return BookOrder.key(a) < BookOrder.key(b))
 	_entries = sorted
 	_creature_rows = PackedInt32Array()
 	_spell_rows = PackedInt32Array()

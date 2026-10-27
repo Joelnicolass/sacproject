@@ -25,7 +25,7 @@ func _ready() -> void:
 
 ## Runs every check and returns {ok, checks}. The bodies stand still: the checks make the Brain think, they do not wait for its clock.
 func run_checks() -> Dictionary:
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	for body: UnitBody in [farmer, lone, hunter]:
 		body.set_physics_process(false)
 	var brain := farmer.get_node("Brain") as VillagerBrain

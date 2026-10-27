@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/cuar/M000.png" id="1_k4aag"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/cuar/M000_normal.png" id="2_oxru4"]
 
 [resource]
 resource_name = "cuar_M000"
 albedo_texture = ExtResource("1_k4aag")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_oxru4")

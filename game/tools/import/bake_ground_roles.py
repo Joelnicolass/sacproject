@@ -1,5 +1,8 @@
 """Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
 
+WARNING: re-baking OVERWRITES the ground roles painted by hand in the editor (the roles brush of addons/terrain_tools):
+once a map's ground_roles.png was painted, run it with --check first and leave that map alone.
+
 Bakes scenes/map/maps/<map>/ground_roles.png for the maps of assets/original/maps (and test_flat*, all open ground).
 
 Each map is read in its OWN land (the one its LEVL names): the TMAP tile ids index that land's MAPTs, so no translation to

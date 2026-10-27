@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3]
 
-[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://scenes/match/high_noon.tscn" id="1_world"]
+[ext_resource type="PackedScene" uid="uid://highnoonworld01" path="res://debug/match/high_noon.tscn" id="1_world"]
 [ext_resource type="Resource" path="res://debug/rules/biome_charnel.tres" id="2_rules"]
 [ext_resource type="Script" path="res://agent/fixtures/grass_bench.gd" id="3_bench"]
 [ext_resource type="Script" path="res://agent/fixtures/grass_bench_view.gd" id="10_script"]

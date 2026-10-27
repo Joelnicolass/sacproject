@@ -13,21 +13,23 @@ func run(_host: Node) -> Dictionary:
 	for type in catalog.gods:
 		if type.look != null:
 			with_look.append(StringName(type.tag))
+	var gods: Array[GodType] = catalog.gods
 	if with_look.size() < 2:
 		failures.append("the catalog needs at least two gods with a look")
 	for god in with_look:
 		for match_seed in SEEDS:
-			if BiomeRules.choose(god, match_seed) != god:
+			if BiomeRules.choose(catalog_god(god), match_seed, gods) != catalog_god(god):
 				failures.append("forced %s with seed %d must give %s" % [god, match_seed, god])
 		if catalog.god(String(god)).look == null:
 			failures.append("%s must bring its look profile" % god)
 	for match_seed in SEEDS:
 		var rng := RandomNumberGenerator.new()
 		rng.seed = match_seed
-		var expected := StringName(catalog.gods[rng.randi_range(0, catalog.gods.size() - 1)].tag)
-		if BiomeRules.choose(&"", match_seed) != expected or BiomeRules.pick_god(match_seed) != expected:
+		var expected: GodType = catalog.gods[rng.randi_range(0, catalog.gods.size() - 1)]
+		if BiomeRules.choose(null, match_seed, gods) != expected or BiomeRules.pick_god(match_seed, gods) != expected:
 			failures.append("empty choice with seed %d must draw %s like before" % [match_seed, expected])
-	if BiomeRules.choose(&"nobody", 7) != BiomeRules.pick_god(7):
+	var lookless := GodType.new()
+	if BiomeRules.choose(lookless, 7, gods) != BiomeRules.pick_god(7, gods):
 		failures.append("a god with no look must be drawn")
 	_check_setup(failures, with_look)
 	_check_ticket(failures, with_look)
@@ -50,7 +52,7 @@ func _check_setup(failures: PackedStringArray, with_look: Array[StringName]) -> 
 	if setup.is_empty():
 		failures.append("a setup with a biome is not empty")
 	var applied := setup.apply_to(rules) as MatchRules
-	if applied == rules or applied.biome_god != with_look[0] or rules.biome_god != &"":
+	if applied == rules or applied.biome != god or rules.biome != null:
 		failures.append("apply_to must copy the rules with the biome and leave the original alone")
 	var merged := MatchSetup.new().overlaid_by(setup)
 	if merged.biome != god or setup.copy().biome != god:

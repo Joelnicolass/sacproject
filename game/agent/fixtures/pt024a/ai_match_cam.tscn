@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://debug/ai/ai_match.gd" id="1_runner"]
-[ext_resource type="PackedScene" path="res://scenes/match/high_noon.tscn" id="2_world"]
+[ext_resource type="PackedScene" path="res://debug/match/high_noon.tscn" id="2_world"]
 [ext_resource type="Resource" path="res://debug/rules/ai_duel_seeded.tres" id="3_rules"]
 [ext_resource type="Script" path="res://scenes/ai/ai_audit.gd" id="4_audit"]
 [ext_resource type="Script" path="res://addons/agent_kit/determinism/det_recorder.gd" id="9_recorder"]

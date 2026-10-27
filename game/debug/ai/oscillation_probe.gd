@@ -21,6 +21,9 @@ extends BenchProbe
 ## `--osc-trace=<slot>[,<slot>...]` prints an OSC line per second for the bodies of that slot with the AI's view of them (order, task, threat):
 ## a diagnostic. It only reads: the digest of the bench does not change. Debug code.
 
+## The passive of the Manahoar (the AI's Perception.mana_source): the cheapest summon leaves it out.
+const MANA_SOURCE: AbilityType = preload("res://data/catalog/abilities/hmba.tres")
+
 @export var window_s := 10
 @export var min_path_m := 30.0
 @export var max_net_m := 5.0
@@ -155,8 +158,8 @@ func _rich_step(wizard: WizardBody) -> void:
 	var slot := wizard.owner_slot
 	var purse := wizard.get_node_or_null("SoulPurse")
 	var souls := int(purse.get("count")) if purse != null else 0
-	var max_mana := AiPerception._mana_max(wizard)
-	var mana := AiPerception._mana_now(wizard)
+	var max_mana := AiBody.mana_max(wizard)
+	var mana := AiBody.mana_now(wizard)
 	var rich := not wizard.is_ghost() and souls >= rich_souls and max_mana > 0.0 and mana >= rich_mana_ratio * max_mana
 	## for the summon streak: souls and the mana of the cheapest creature of his book he has the souls for
 	var can_summon := not wizard.is_ghost() and souls >= 1 and mana >= _cheapest_summon(wizard, souls)
@@ -173,7 +176,7 @@ static func _cheapest_summon(wizard: WizardBody, souls: int) -> float:
 		return best
 	for i in book.creature_count():
 		var type := book.creature_at(i)
-		if type != null and type.tag != AiPerception.MAHO_TAG and type.souls <= souls:
+		if type != null and not type.has_passive(MANA_SOURCE) and type.souls <= souls:
 			best = minf(best, maxf(1.0, float(type.mana_cost)))
 	return best
 
@@ -279,7 +282,7 @@ func _ai_view(body: Node3D) -> String:
 		text += " lider %s" % track.record.leader.node.name if track.record.leader.is_valid() else ""
 	if body is WizardBody:
 		var brain := side.brain
-		text += " amenaza %.2f ratio %.2f walks %d cola %d" % [track.threat, side.stance.enemy_ratio(), brain.line_walks, track.cast_queue.size()]
+		text += " amenaza %.2f ratio %.2f walks %d cola %d" % [track.threat, side.stance.enemy_ratio(), brain.casting.shots.line_walks, track.cast_queue.size()]
 		if not track.cast_queue.is_empty():
 			var e: Dictionary = track.cast_queue[0]
 			var spell: Resource = e["spell"]

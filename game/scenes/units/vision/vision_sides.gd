@@ -6,6 +6,8 @@ extends RefCounted
 ## It does not choose targets (TargetPicker) nor decide what the AI knows (AiPerception): both ask it.
 ## Ref: sacengine isVisibleToSide / markAsVisible (state.d:29658-29693).
 
+## Where the Visions announce what they learn (VisionMemory emits `learned`).
+static var events := VisionEvents.new()
 static var _visions: Array[Vision] = []
 ## Bumped whenever a Vision joins, leaves or marks something, so the cached union of the same tick is rebuilt.
 static var _version := 0
@@ -51,6 +53,20 @@ static func seen_by(side: int) -> Array[Node3D]:
 		if node != null and node.is_inside_tree():
 			found.append(node)
 	found.sort_custom(VisionRules.by_name)
+	return found
+
+
+## Every body some live Vision has in mind (lapsed or not) and every body some side saw strike, in no order: what a listener of
+## `events` that starts late has missed.
+static func remembered() -> Array[Node3D]:
+	var found: Array[Node3D] = []
+	for vision in _visions:
+		for id: int in vision.memory.held_ids():
+			var node := instance_from_id(id) as Node3D
+			if node != null:
+				found.append(node)
+		if vision.memory.has_exposures() and vision.body != null:
+			found.append(vision.body)
 	return found
 
 

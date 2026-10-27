@@ -91,6 +91,8 @@ func _revive() -> Dictionary:
 	checks["soul_dropped"] = first != null and first.owner_slot == 2 and first.attached
 	checks["red_for_slot_1"] = first != null and first.color_for(1) == Soul.SoulColor.RED
 	checks["blue_for_owner"] = first != null and first.color_for(2) == Soul.SoulColor.BLUE
+	## A soul still growing in can already be converted (the PTNET Convert on a fresh Cog soul answered bad_target).
+	checks["emerging_convertible_by_1"] = first != null and first.state == Soul.State.EMERGING and first.can_convert_by(1)
 	await _until(func() -> bool: return first != null and first.state == Soul.State.NORMAL, 400)
 	checks["convertible_by_1"] = first != null and first.can_convert_by(1)
 	first.reserve_for(1)
@@ -157,7 +159,7 @@ func _check() -> Dictionary:
 	_root.add_child(souls)
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = Vector3(0.0, 0.0, 0.0)
 	var action := wizard.get_node("Caster").action_for("ccas") as ConvertAction
@@ -391,7 +393,7 @@ func _scenario() -> Dictionary:
 	_root.add_child(souls)
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = Vector3.ZERO
 	var altar := _altar(1, Vector3(0.0, 0.0, -70.0))

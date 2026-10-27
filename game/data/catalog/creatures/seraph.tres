@@ -32,5 +32,6 @@ mana_cost = 1000
 souls = 3
 cooldown_s = 6.0
 casting_time_s = 1.2346
-spell_order = 565
+book_level = 5
+book_slot = 65
 active_ability = ExtResource("typed_psaa")

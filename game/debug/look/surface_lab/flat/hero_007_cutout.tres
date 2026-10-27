@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/hero/007.png" id="1_nqsro"]
+
+[resource]
+resource_name = "hero_007_cutout"
+transparency = 2
+alpha_scissor_threshold = 0.4
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("1_nqsro")
+roughness = 0.85

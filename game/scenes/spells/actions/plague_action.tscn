@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://data/fx/poison_cast.tres" id="fx_poison_cast"]
 
 [node name="Plague" type="Node"]
 editor_description = "Plague (galp): una nube de veneno que cae al terminar el lanzamiento."
 script = ExtResource("1_script")
 prompt = "Elegí el punto"
-cast_fx = "poison_cast"
+cast_fx = ExtResource("fx_poison_cast")
 kind = "Plague"

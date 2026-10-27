@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="3_light"]
 [ext_resource type="Script" path="res://scenes/spells/rock_projectile.gd" id="1_script"]
@@ -6,12 +6,22 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/rock_mark.tscn" id="4_mark"]
 [ext_resource type="Resource" path="res://data/audio/cues/rock_cast.tres" id="cue_rock_cast"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="fx_ptype"]
+[ext_resource type="Resource" path="res://data/fx/rock_trail.tres" id="fx_rock_trail"]
+[ext_resource type="Resource" path="res://data/fx/rock_emerge.tres" id="fx_rock_emerge"]
+[ext_resource type="Resource" path="res://data/fx/rock_dust.tres" id="fx_rock_dust"]
+[ext_resource type="Resource" path="res://data/fx/rock.tres" id="fx_rock"]
+[ext_resource type="Resource" path="res://data/fx/dirt.tres" id="fx_dirt"]
 
 [node name="RockProjectile" type="Node3D"]
 script = ExtResource("1_script")
+trail = ExtResource("fx_rock_trail")
+emerge = Array[ExtResource("fx_ptype")]([ExtResource("fx_rock_emerge"), ExtResource("fx_rock_dust")])
+explosion = Array[ExtResource("fx_ptype")]([ExtResource("fx_rock"), ExtResource("fx_dirt")])
 ground_mark = ExtResource("4_mark")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
+physics_interpolation_mode = 2
 unique_name_in_owner = true
 mesh = ExtResource("mesh_rock")
 

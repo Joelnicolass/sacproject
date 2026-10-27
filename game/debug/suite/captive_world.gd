@@ -93,7 +93,7 @@ func make_doctor(rules: MatchRules) -> DoctorBody:
 
 ## The baked model of MODEL_TAG under the body's visual, in its idle pose and with its clips held (what the rig does at death).
 func mount_model(body: UnitBody) -> BodyModel:
-	var model := (load(BodyModel.scene_path(MODEL_TAG)) as PackedScene).instantiate() as BodyModel
+	var model := (load(ModelPaths.scene_path(MODEL_TAG)) as PackedScene).instantiate() as BodyModel
 	body.get_node("Tilt/Mesh").add_child(model)
 	model.preview("idle")
 	model.tree().advance(0.3)

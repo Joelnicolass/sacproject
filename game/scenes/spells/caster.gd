@@ -1,7 +1,7 @@
 class_name Caster
 extends Node
 
-## Casts the wizard's book (sacengine startCasting). The owner calls request_cast() or
+## Casts the wizard's book. The owner calls request_cast() or
 ## request_summon(); in a networked match the server validates the slot and runs the cast.
 ## Spells check mana, target, range, then cooldown (a cooling spell answers «Enfriando» even
 ## without mana). Creatures check souls, mana, then cooldown, and need no target: the
@@ -10,16 +10,21 @@ extends Node
 ## Every spell of the book (combat or structure) is a SpellAction child of `actions`, instanced from `SpellType.action` and found by `spell` (RFC-041):
 ## Caster does the common part and asks the action to check, begin, start, finish and cancel. A creature needs
 ## no action: the Summoner puts it in front of the wizard when the cast starts and finishes it when it ends.
+## Ref: sacengine startCasting
 
 signal feedback(text: String)
-## The cast particle that is showing changed: "" when the wizard is not casting (RFC-023 023d). Every peer emits it.
-signal cast_fx_changed(type_name: String)
+## A cast began (`casting` true; `fx` is the particle of the hands, null for a god without one) or ended or was cut (false, null).
+## Every peer emits it, from the replicated `cast_fx_shown`: HandFx, WizardSounds, Ward and the pose follow it.
+signal cast_changed(casting: bool, fx: ParticleType)
 
-## sacengine updateFPS: casting and drain are counted in frames.
+## Casting and drain are counted in frames.
+## Ref: sacengine updateFPS
 const FPS := 60.0
-## sacengine manaEpsilon.
+## Mana tolerance.
+## Ref: sacengine manaEpsilon
 const MANA_EPSILON := 0.01
-## sacengine SacSpell: manaCost = max(1, manaCost).
+## Every spell costs at least this much: manaCost = max(1, manaCost).
+## Ref: sacengine SacSpell
 const MIN_MANA_COST := 1.0
 const NO_MANA := SpellAction.NO_MANA
 const NO_SOULS := Refusal.NO_SOULS
@@ -31,6 +36,8 @@ const BUSY := Refusal.CASTING
 const NO_ROOM := SpellAction.NO_ROOM
 ## RFC-036 036d: MatchRules.max_creatures_per_player reached.
 const CREATURE_LIMIT := Refusal.CREATURE_LIMIT
+## `cast_fx_shown` of a cast without a particle (a god without one): the pose and the incantation still follow it.
+const BARE := "-"
 
 @export var rules: MatchRules
 @export var spellbook: Spellbook
@@ -46,29 +53,42 @@ var _drain_left := 0
 var _drain_per_frame := 0.0
 ## The action whose cast is running, or null.
 var _active: SpellAction
+## What `cast_fx_shown` says while the cast in progress lasts (an FxWire id or BARE), taken when it starts.
+var _shown_id := ""
 
-## RFC-023 023d: the ParticleType name of the cast in progress ("" while idle). The server sets it and it is replicated, so
-## the wizard's hands (HandFx) play the god's casting particle and the body its spellcast pose on every peer. Presentation only.
+## The cast in progress as every peer sees it: the FxWire id of the hands' particle, BARE without one, "" while idle. The server
+## writes it and the body's synchronizer replicates it; nothing in the simulation reads it. Presentation only.
+## Ref: RFC-023 023d.
 @export var cast_fx_shown := "":
 	set(value):
 		if value == cast_fx_shown:
 			return
 		cast_fx_shown = value
-		cast_fx_changed.emit(value)
+		cast_changed.emit(not value.is_empty(), cast_fx())
 
 @onready var _wizard: WizardBody = get_parent()
 
 
+## A cast is in progress: the server knows the entry; a client reads the replicated `cast_fx_shown`.
 func is_casting() -> bool:
-	return _entry != null
+	return _entry != null or not cast_fx_shown.is_empty()
 
 
-## sacengine canCast (state.d:9520): only an idle or moving wizard, not a dying or ghost one.
+## The particle the hands throw now, or null (idle, or a cast without one). Every peer.
+func cast_fx() -> ParticleType:
+	if cast_fx_shown.is_empty() or cast_fx_shown == BARE:
+		return null
+	return FxWire.resource(cast_fx_shown) as ParticleType
+
+
+## Only an idle or moving wizard, not a dying or ghost one.
+## Ref: sacengine canCast (state.d:9520)
 func wizard_can_cast() -> bool:
 	return _wizard.can_cast()
 
 
-## Can the spell be armed? (sacengine selectSpell: mana, then cooldown.) "" = yes.
+## Can the spell be armed? "" = yes.
+## Ref: sacengine selectSpell: mana, then cooldown.
 func arm_status(index: int) -> String:
 	var spell := spellbook.spell_at(index)
 	if spell == null:
@@ -83,7 +103,8 @@ func arm_status(index: int) -> String:
 	return status
 
 
-## Can the creature be summoned now? (sacengine spellStatus: souls, mana, then cooldown.) "" = yes.
+## Can the creature be summoned now? "" = yes.
+## Ref: sacengine spellStatus: souls, mana, then cooldown.
 func summon_status(index: int) -> String:
 	var type := spellbook.creature_at(index)
 	if type == null:
@@ -158,19 +179,22 @@ func action_for(tag: String) -> SpellAction:
 	return made
 
 
-## Read only: what a cast of the spell `tag` that has an action (Manalith, Convert, Desecrate, Guardian, Teleport) would answer now at
-## `point` / `picked`, without casting: "" = it would start. The same steps as `_try_action` up to the start. RFC-024 024e: the AI
-## asks it before a request that waited its delay (Easy), so the delay never turns into a refusal.
-func action_status(tag: String, point: Vector3, picked: Node3D) -> String:
+## Read only: where a cast of the spell `tag` would land at `point` / `picked`, or why it would not start (`status`). The one answer
+## `_try_action`, the AI (RFC-024 024e) and the armed preview share: a preview and the server never disagree on the same state.
+func aim_for(tag: String, point: Vector3, picked: Node3D) -> SpellAction.Aim:
 	var action := action_for(tag)
 	var spell := _spell_of(tag)
-	if action == null or spell == null:
-		return BAD_TARGET
-	var wizard := _wizard as WizardBody
-	var status := action.arm_status(wizard, spell)
-	if not status.is_empty():
-		return status
-	return action.check(wizard, spell, point, picked, _funds(spell)).status
+	var aim := SpellAction.Aim.new()
+	aim.status = BAD_TARGET if action == null or spell == null else action.arm_status(_wizard as WizardBody, spell)
+	return aim if not aim.status.is_empty() else action.check(_wizard as WizardBody, spell, point, picked, _funds(spell))
+
+
+## Read only: aim_for(...).status ("" = it would start).
+func action_status(tag: String, point: Vector3, picked: Node3D) -> String: return aim_for(tag, point, picked).status
+
+
+## The cast in progress keeps the wizard standing (a structure): WizardBody neither walks nor turns while it is true. Server or solo.
+func holds_wizard() -> bool: return _active != null and _active.stationary
 
 
 ## The action of an entry of the structures tab, or null.
@@ -312,18 +336,14 @@ func _try_structure(index: int, point: Vector3) -> String:
 ## Server or solo. Runs the shared steps of a spell that has a SpellAction: it can be armed, it
 ## aims (the action's own checks), the cast starts. Returns the spell name or the reason.
 func _try_action(action: SpellAction, spell: SpellType, point: Vector3, path: NodePath) -> String:
-	var wizard := _wizard as WizardBody
-	var status := action.arm_status(wizard, spell)
-	if not status.is_empty():
-		return status
 	var picked := get_node_or_null(path) as Node3D if not path.is_empty() else null
-	var aim := action.check(wizard, spell, point, picked, _funds(spell))
+	var aim := aim_for(spell.tag, point, picked)
 	if not aim.status.is_empty():
 		return aim.status
-	action.begin(wizard, spell, aim)
+	action.begin(_wizard as WizardBody, spell, aim)
 	_active = action
 	var frames := _start(spell, aim.target)
-	action.started(wizard, spell, aim, frames)
+	action.started(_wizard as WizardBody, spell, aim, frames)
 	return spell.display_name
 
 
@@ -343,6 +363,7 @@ func _start(entry: Resource, target: Node3D) -> int:
 	_drain_left = mini(frames, ceili(cost * FPS / rules.cast_drain_per_s))
 	_drain_per_frame = cost / float(maxi(_drain_left, 1))
 	spellbook.apply_cooldown(str(entry.get("tag")))
+	_shown_id = _cast_fx_id()
 	var verb := "convoca" if entry is CreatureType else "lanza"
 	print("%s %s slot %d" % [verb, str(entry.get("display_name")), int(_wizard.get("owner_slot"))])
 	return frames
@@ -357,7 +378,7 @@ func _physics_process(_delta: float) -> void:
 	if _drain_left > 0:
 		_drain_left -= 1
 		_spend(_drain_per_frame)
-	cast_fx_shown = _cast_fx()
+	cast_fx_shown = _shown_id
 	_frames_left -= 1
 	if _frames_left <= 0:
 		_finish()
@@ -397,13 +418,15 @@ func _finish() -> void:
 			_tell_owner(text)
 
 
-## The cast particle of the action (Rock throws dirt, Wrath its own sparks: state.d:16386, 16707); the rest
-## use the casting particle of the wizard's god, a summon included (a creature only comes out of its god's book).
-func _cast_fx() -> String:
-	if _active != null and not _active.cast_fx.is_empty():
-		return _active.cast_fx
-	var god_type := _wizard.god_type
-	return god_type.cast_fx_name() if god_type != null else "cast_%s" % _wizard.god
+## The id of the hands' particle: the action's own (Rock throws dirt, Wrath its sparks), else the god's, a summon included (a
+## creature only comes out of its god's book). BARE when there is none.
+## Ref: state.d:16386, 16707.
+func _cast_fx_id() -> String:
+	var fx: ParticleType = _active.cast_fx if _active != null else null
+	if fx == null and _wizard.god_type != null:
+		fx = _wizard.god_type.cast_fx
+	var id := FxWire.id_of(fx) if fx != null else ""
+	return id if not id.is_empty() else BARE
 
 
 ## The spell of the book by tag, from either tab, or null.

@@ -190,7 +190,9 @@ func _run_step() -> void:
 		if not found.is_empty() and not stream_has.is_empty() and not stream.contains(stream_has):
 			_report(false, event, "sonó %s y no %s" % [stream, stream_has])
 		else:
-			_report(not found.is_empty(), event, stream if not found.is_empty() else "no sonó (%s)" % body.name)
+			var at_least := int(step.get("at_least")) if step.get("at_least") != null else 1
+			var played := _count_since(before, emitter, event)
+			_report(played >= at_least, event, ("%s (%d)" % [stream, played]) if not found.is_empty() else "no sonó (%s)" % body.name)
 	else:
 		_report(found.is_empty(), event, "-" if found.is_empty() else "sonó y no debía: %s" % found.get("stream"))
 	_busy = false
@@ -235,11 +237,11 @@ func _expected_cue(body: Node, action: StringName, arg: String, event: StringNam
 		&"select", &"order":
 			return command_voice.cue_for(body as UnitBody, event) if command_voice != null else false
 		&"fx":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BURST, FxWire.resource(arg) as ParticleType)
 		&"puff":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_PUFF, FxWire.resource(arg) as ParticleType)
 		&"beam":
-			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, arg)
+			return SoundBus.fx_sounds.cue_of(FxBus.KIND_BEAM, FxWire.resource(arg) as BeamType)
 		&"spawn":
 			return true
 		&"loop", &"occupy", &"release":
@@ -318,16 +320,16 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 		&"wait":
 			return true
 		&"fx":
-			FxBus.play(arg, spot + Vector3.UP)
+			FxBus.play(FxWire.resource(arg) as ParticleType, spot + Vector3.UP)
 			return true
 		&"puff":
-			FxBus.play_puff(arg, spot + Vector3.UP)
+			FxBus.puff(FxWire.resource(arg) as ParticleType, spot + Vector3.UP)
 			return true
 		&"beam":
-			FxBus.play_beam(arg, spot + Vector3.UP * 4.0, spot)
+			FxBus.play_beam(FxWire.resource(arg) as BeamType, spot + Vector3.UP * 4.0, spot)
 			return true
 		&"scene":
-			FxBus.play_scene(arg, spot, {})
+			FxBus.play_scene(FxWire.resource(arg) as PackedScene, spot, {})
 			return true
 		&"spawn":
 			return body is Node3D and _spawn(body as Node3D, arg)
@@ -426,6 +428,10 @@ func _act(body: Node, action: StringName, arg := "") -> bool:
 			&"cast":
 				caster.cast_fx_shown = ""
 				caster.cast_fx_shown = "cast_lab"
+				caster.cast_fx_shown = ""
+			&"chant":
+				caster.cast_fx_shown = "cast_lab"
+			&"end_cast":
 				caster.cast_fx_shown = ""
 			&"damaged":
 				_hurt(wizard.get_node("Health"))
@@ -558,6 +564,16 @@ func _played_since(before: int, emitter: StringName, event: StringName) -> Dicti
 		if entry.emitter == emitter and entry.event == event and bool(entry.played):
 			return entry
 	return {}
+
+
+func _count_since(before: int, emitter: StringName, event: StringName) -> int:
+	var entries: Array[Dictionary] = SoundBus.sound_log.entries()
+	var count := 0
+	for i in range(mini(before, entries.size()), entries.size()):
+		var entry: Dictionary = entries[i]
+		if entry.emitter == emitter and entry.event == event and bool(entry.played):
+			count += 1
+	return count
 
 
 func _report(ok: bool, event: StringName, detail: String) -> void:

@@ -1,18 +1,19 @@
 class_name StickImpact
 extends ShotImpact
 
-## F129 (RFC-030 030r-a): a shot that sticks to the creature it touches instead of hurting it: the Ikarus's Sticky bomb
-## (acia, ×0.75) and the Bilemites (×0.8). updateStickyBomb (state.d:25531-25578): the bomb that touches the ground or a
-## building (not a creature) vanishes; the one that touches a creature of another side that canBeStickyBombed
-## (= canBePoisoned, 25524-25529) sticks to it for ability.duration_s seconds: it is gone at `duration · 60 + 1` updates
-## (`++infectionTime <= updateFPS·duration`). No damage.
+## A shot that sticks to the creature it touches instead of hurting it: the Ikarus's Sticky bomb
+## (×0.75) and the Bilemites (×0.8). The bomb that touches the ground or a
+## building (not a creature) vanishes; the one that touches a creature of another side that can be stuck to
+## sticks to it for ability.duration_s seconds: it is gone at `duration · 60 + 1` updates. No damage.
 ## The pieces are Clinging's (the body's component): this node only asks it to stick one. The slowdown is PaceFactors'.
-## Divergence (declared): a creature that cannot be stuck to (dying, summoning) stops the bomb in the port; in sacengine
+## Divergence (declared): a creature that cannot be stuck to (dying, summoning) stops the bomb in the port; in the original
 ## the bomb flies through it.
+## Ref: F129 (RFC-030 030r-a); Ikarus acia, sacengine updateStickyBomb (state.d:25531-25578), canBeStickyBombed = canBePoisoned 25524-25529, `++infectionTime <= updateFPS·duration`.
 
 ## Which pile on the body it joins (Clinging.STICKY / Clinging.MITES).
 @export var kind: StringName = &"sticky"
-## What one piece multiplies the body's pace by (sacengine 0.75 ^ numStickyBombs, 0.8 ^ numBlightMites).
+## What one piece multiplies the body's pace by (0.75 ^ sticky bombs, 0.8 ^ blight mites).
+## Ref: sacengine numStickyBombs, numBlightMites.
 @export var factor := 0.75
 ## Seconds it lasts when the shot has no SPEL (ability.duration_s is the rule).
 @export var fallback_seconds := 10.0

@@ -68,7 +68,7 @@ func _reach(body: Node3D) -> void:
 	if not damage_foes:
 		return
 	if bolt != null and bolt_origin != null:
-		FxBus.broadcast_beam(FxBus.name_of(bolt), bolt_origin.global_position, BodyNudge.center(body), body)
+		FxBus.broadcast_beam(bolt, bolt_origin.global_position, BodyNudge.center(body), body)
 	SplashDamage.hurt(body, carrier.damage, carrier.from_slot, Health.DIRECT_SPELL)
 
 

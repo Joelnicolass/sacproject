@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_v1qwj"]
 [ext_resource type="Texture2D" uid="uid://diylvydsq1ii2" path="res://assets/original/ui/icons/_e_h_t_h.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/lffa.tres" id="typed_lffa"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/the2_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/faestus_pyro_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/faestus_pyro.tscn" id="body_scene"]
 
 [resource]
@@ -31,5 +31,6 @@ mana_cost = 1000
 souls = 2
 cooldown_s = 5.0
 casting_time_s = 1.4815
-spell_order = 498
+book_level = 4
+book_slot = 98
 ranged_attack = ExtResource("typed_lffa")

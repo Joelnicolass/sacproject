@@ -1,6 +1,7 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/PCC2/plant.png" id="1_yo748"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/PCC2/plant_normal.png" id="2_o1nap"]
 
 [resource]
 resource_name = "PCC2_plant_cutout"
@@ -9,3 +10,5 @@ alpha_scissor_threshold = 0.4
 alpha_antialiasing_mode = 0
 albedo_texture = ExtResource("1_yo748")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_o1nap")

@@ -49,7 +49,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 ## The hands throw the particle of the ward's own type, so every peer knows which spell is being cast (Ward.cast_type).
 func begin(wizard: WizardBody, spell: SpellType, aim: Aim) -> void:
 	var ward := _ward(aim.target if aim.target != null else wizard, spell)
-	cast_fx = ward.cast_fx_name() if ward != null else ""
+	cast_fx = ward.cast_type if ward != null else null
 
 
 func finish(wizard: WizardBody, spell: SpellType, carrier: Node3D) -> String:

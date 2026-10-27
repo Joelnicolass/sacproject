@@ -32,5 +32,6 @@ mana_cost = 1300
 souls = 4
 cooldown_s = 8.0
 casting_time_s = 1.7284
-spell_order = 779
+book_level = 7
+book_slot = 79
 passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])

@@ -45,7 +45,7 @@ func _push(body: CharacterBody3D, center: Vector3, rules: MatchRules, facts: Sac
 	var distance := (body.global_position + Vector3.UP - center).length()
 	if flat.length_squared() < 0.000001 or distance >= facts.push_m:
 		return
-	var speed := SacrificeMath.push_speed(distance, facts.push_core_m, facts.push_m, rules.ritual_push_speed, rules.ritual_push_edge_speed)
+	var speed := BodyNudge.push_speed(distance, facts.push_core_m, facts.push_m, rules.ritual_push_speed, rules.ritual_push_edge_speed)
 	var doctor := body as DoctorBody
 	if doctor != null and distance < facts.push_m - 0.1:
 		speed = 1.1 * doctor.pace()

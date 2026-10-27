@@ -2,13 +2,17 @@
 class_name PupsAction
 extends SpellAction
 
-## Speedup (pups): an ally or the wizard himself runs faster for a while (sacengine speedUp). The effect is
+## Speedup (pups): an ally or the wizard himself runs faster for a while. The effect is
 ## a SpeedupEffect child of the body, made as soon as the cast starts (it works at once). A body that
 ## already has one is not a valid target (the spell's exclusion).
+## Ref: sacengine speedUp
 
 @export var effect_scene: PackedScene
 ## Who may be sped up (own creature or the wizard himself; not only living ones).
 @export var target: SpellTarget
+## The burst on the body when it starts running faster, and where on the body.
+@export var start_fx: ParticleType
+@export var start_socket := BodyFacts.Socket.CENTER
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -31,4 +35,5 @@ func started(_wizard: WizardBody, spell: SpellType, aim: Aim, _frames: int) -> v
 	effect.name = SpeedupEffect.NODE_NAME
 	effect.start(seconds)
 	aim.target.add_child(effect)
-	FxBus.broadcast("speedup", aim.target.global_position + Vector3.UP)
+	if start_fx != null:
+		FxBus.broadcast(start_fx, BodyFacts.point(aim.target, start_socket))

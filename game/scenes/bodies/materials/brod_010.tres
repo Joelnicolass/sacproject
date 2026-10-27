@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/brod/010.png" id="1_js5rt"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/brod/010_normal.png" id="2_d6s4j"]
 
 [resource]
 resource_name = "brod_010"
 albedo_texture = ExtResource("1_js5rt")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_d6s4j")

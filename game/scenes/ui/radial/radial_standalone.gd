@@ -1,7 +1,7 @@
 class_name RadialStandalone
 extends Node
 
-## F6 on radial_menu.tscn: the menu opens in the middle of the window, follows the mouse, a release chooses and it reopens.
+## Run on its own, radial_menu.tscn opens the menu in the middle of the window, follows the mouse, a release chooses and it reopens.
 ## It logs (`--log=radial`, on by default here) what it hovers and chooses. Inert when the menu is part of a match.
 
 @export var menu: RadialMenu

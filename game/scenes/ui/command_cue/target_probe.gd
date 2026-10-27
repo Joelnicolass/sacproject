@@ -1,14 +1,15 @@
 class_name TargetProbe
 extends Node
 
-## Names what lies under the pointer, a few times a second (RFC-025c). CursorSkin and CommandCue
+## Names what lies under the pointer, a few times a second. CursorSkin and CommandCue
 ## read it; it decides nothing and draws nothing. The pointer is the camera's `debug_pointer` when a
-## flow set it (the same one the `select` action aims with), else the mouse. The classes follow
-## sacengine `cursor()` (state.d:30830): `none` (sky), `ground`, `corpse`, `own_unit`,
+## flow set it (the same one the `select` action aims with), else the mouse. The classes are
+## `none` (sky), `ground`, `corpse`, `own_unit`,
 ## `neutral_unit`, `enemy_unit`, `own_building`, `neutral_building`, `enemy_building`, `own_soul`,
 ## `soul`, plus `hud` when the pointer is over a control that is not the world view.
-## RFC-053 053e (F374): it is also the one owner of «which body is under the pointer» (`hovered`): the soul, the corpse, the
+## It is also the one owner of «which body is under the pointer» (`hovered`): the soul, the corpse, the
 ## building, the altar, the manafount or the creature the ray found, or null (sky, plain ground, HUD). TargetInfoPanel reads it.
+## Ref: RFC-025c; RFC-053 053e (F374); sacengine `cursor()` (state.d:30830).
 
 signal kind_changed(kind: StringName)
 ## The body under the pointer changed (null: none). Emitted on the sample that saw the change.

@@ -12,7 +12,8 @@ extends Node
 ## difficulties=easy,normal (the difficulty of each AI seat in order, 024e), souls=N (starting souls of every wizard: read by
 ## LaunchFlags, its one owner since RFC-031 031d, and applied by HighNoon to the world's copy of these rules),
 ## autostart (skip the pause with a window), quit (quit at the end with a window), watchdog-s=N (F370: quit with exit code 1 after N
-## seconds of wall clock, whatever the run is doing; 0 = none). Headless it starts
+## seconds of wall clock, whatever the run is doing; 0 = none), gods=pyro,charnel (the god of each AI seat in order, 055f),
+## decisions=<file> (055f: DecisionLog writes every decision of the AI sides there, for agent/runs/run_ai_decisions.sh). Headless it starts
 ## and quits by itself; with a window it waits in «Pendiente» for check_tick (Enter) and stays on screen.
 ## Determinism (RFC-032): the digest is indexed by audit.tick, but while it waits for Enter the world already runs,
 ## so a window run is comparable with headless only with --autostart (ventana comparable solo con --autostart).
@@ -30,6 +31,8 @@ const REPORT_TAG := "AI_REPORT "
 @export var ai_side_scene: PackedScene
 ## F370 (RFC-053 §4): measures BenchRules.expects and prints EXPECT lines. Optional: without it the criteria are not judged.
 @export var judge: ExpectJudge
+## 055f: the record of the AI's decisions (--decisions=). Optional.
+@export var decision_log: DecisionLog
 ## F370: the scene of a BenchBuilding (scenes/map/map_building.tscn).
 @export var default_minutes := 2.0
 @export var sample_every_s := 10.0
@@ -94,6 +97,8 @@ func _ready() -> void:
 	for minute in str(_args.get("checkpoints", "6,10")).split(",", false):
 		_checkpoint_ticks.append(int(round(float(minute) * 3600.0)))
 	audit.keep_lines = _args.has("events")
+	if _args.has("decisions") and decision_log != null:
+		decision_log.begin(str(_args["decisions"]))
 	_apply_human_god()
 	_world = world_scene.instantiate()
 	_world.set("rules", _rules)
@@ -135,13 +140,17 @@ func _load_rules() -> BenchRules:
 	if _args.has("seed"):
 		rules.match_seed = int(_args["seed"])
 	## --difficulties=easy,normal: the difficulty of each seat, in the order of the rules (024e; data/ai/difficulty_<name>.tres).
-	if _args.has("difficulties"):
-		var names := str(_args["difficulties"]).split(",")
+	## --gods=pyro,charnel: the god of each seat, in the same order (055f; data/gods/<name>.tres).
+	if _args.has("difficulties") or _args.has("gods"):
+		var names := str(_args.get("difficulties", "")).split(",")
+		var gods := str(_args.get("gods", "")).split(",")
 		var seats: Array[AiSeat] = []
 		for i in rules.ai_seats.size():
 			var seat := rules.ai_seats[i].duplicate() as AiSeat
 			if i < names.size() and not names[i].is_empty():
 				seat.difficulty = load("res://data/ai/difficulty_%s.tres" % names[i]) as AiDifficulty
+			if i < gods.size() and not gods[i].is_empty():
+				seat.god = load("res://data/gods/%s.tres" % gods[i]) as GodType
 			seats.append(seat)
 		rules.ai_seats = seats
 	return rules
@@ -161,7 +170,7 @@ func _prepare() -> void:
 	_prepared = true
 	for _frame in settle_frames:
 		await get_tree().physics_frame
-	var terrain := GroundSurface.of(_world)
+	var terrain := Terrain.of(_world)
 	var spawner := _world.get_node("UnitSpawner")
 	if not _rules.ai_seats.is_empty():
 		await _seat_ais()
@@ -296,32 +305,32 @@ func _finish(winner: int, reason: String) -> void:
 	audit.stop()
 	for slot in _sides:
 		var side: AiSide = _sides[slot]
-		audit.set_extra(int(slot), "ai_ms", side.ms_stats())
-		audit.set_extra(int(slot), "ai_slot_ms", side.slot_stats())
+		audit.set_extra(int(slot), "ai_ms", AiSideReport.ms_stats(side))
+		audit.set_extra(int(slot), "ai_slot_ms", AiSideReport.slot_stats(side))
 		audit.set_extra(int(slot), "ai_orders", side.port.orders_issued)
 		audit.set_extra(int(slot), "ai_order_stats", side.port.order_stats)
-		audit.set_extra(int(slot), "ai_casts_started", side.brain.casts_started)
+		audit.set_extra(int(slot), "ai_casts_started", side.brain.casting.casts_started)
 		## F371: casts held back for want of a clear line (walked closer) and for the burst on own bodies.
-		audit.set_extra(int(slot), "ai_line_walks", side.brain.line_walks)
-		audit.set_extra(int(slot), "ai_splash_vetoes", side.brain.splash_vetoes)
-		audit.set_extra(int(slot), "ai_heal_skips", side.brain.heal_skips)
+		audit.set_extra(int(slot), "ai_line_walks", side.brain.casting.shots.line_walks)
+		audit.set_extra(int(slot), "ai_splash_vetoes", side.brain.casting.shots.splash_vetoes)
+		audit.set_extra(int(slot), "ai_heal_skips", side.brain.casting.heal_skips)
 		## F373: the commitments of the focus (FocusTask) and the last one («name kill_s score»).
 		var focus := side.board.get_node_or_null("FocusTask") as FocusTask
 		if focus != null:
 			audit.set_extra(int(slot), "ai_focus", {"commits": focus.commits, "last": focus.last_commit})
-		## 024e: the difficulty and what the side read of bodies it did not see (0 without perfect information).
+		## 024e: the difficulty and what the side read of bodies it did not see (0 in every difficulty, 055f f6).
 		audit.set_extra(int(slot), "difficulty", {
-			"name": side.difficulty.display_name, "file": side.difficulty.resource_path,
-			"periods": Array(side.profile.slot_periods), "aggression": side.profile.aggression,
-			"delay_ticks": side.port.delay_ticks, "perfect_information": side.perception.perfect_information,
-			"resource_bonus": side.difficulty.resource_bonus})
+			"name": side.play.difficulty.display_name, "file": side.play.difficulty.resource_path,
+			"periods": _periods(side.clock), "aggression": side.play.aggression,
+			"delay_ticks": side.port.delay_ticks, "knowledge": AiDifficulty.Knowledge.keys()[side.play.difficulty.knowledge],
+			"resource_bonus": side.play.difficulty.resource_bonus})
 		audit.set_extra(int(slot), "unseen_target_reads", side.port.unseen_target_reads)
 		audit.set_extra(int(slot), "unseen_state_reads", side.perception.unseen_reads)
 		audit.set_extra(int(slot), "forgotten", side.perception.forgotten)
 		audit.set_extra(int(slot), "delayed_requests", side.port.delayed)
 		audit.set_extra(int(slot), "lapsed_requests", side.port.lapsed)
 		audit.set_extra(int(slot), "lapse_reasons", side.port.lapse_reasons)
-		var state := side.summary()
+		var state := AiSideReport.summary(side)
 		state["wizard"] = _wizard_info(side.perception.find(side.wizard))
 		audit.set_extra(int(slot), "ai_state", state)
 	var wall_s := float(Time.get_ticks_usec() - _started_usec) / 1e6
@@ -359,6 +368,8 @@ func _finish(winner: int, reason: String) -> void:
 	print(REPORT_TAG + text)
 	## The kit's recorder writes the JSON (--out=) and the lines (--events=); digest, events and end_tick are already in the report.
 	audit.recorder.write_outputs(_report)
+	if decision_log != null:
+		decision_log.write()
 	_set_status("Terminado · semilla %d" % MatchSeed.current)
 	var passed := judge.finish() if judge != null else true
 	if _headless or _args.has("quit"):
@@ -457,7 +468,7 @@ func _place_structures() -> void:
 
 
 ## F370: the BenchBuilding of the rules, on the ground at their offset from the anchor (a map building like the layout's).
-func _place_buildings(terrain: GroundSurface) -> void:
+func _place_buildings(terrain: Terrain) -> void:
 	for entry in _rules.buildings:
 		if entry.building == null or entry.building.scene() == null:
 			push_warning("ai_match: falta el BLDG o su escena en un BenchBuilding")
@@ -486,7 +497,7 @@ func _wizard_of(slot: int) -> Node3D:
 
 ## A spot `near_distance_m` from the wizard of `near_slot`, towards the other wizard turned `near_angle_deg`, the group in
 ## a row of its columns: (x, z, 0, yaw) in the components x, y, z, w.
-func _near_spot(group: BenchGroup, index: int, terrain: GroundSurface) -> Vector4:
+func _near_spot(group: BenchGroup, index: int, terrain: Terrain) -> Vector4:
 	var base := _wizard_of(group.near_slot)
 	var other: Node3D
 	for wizard in get_tree().get_nodes_in_group("wizard"):
@@ -514,7 +525,7 @@ func _order_advance(group: BenchGroup, units: Array[Node3D]) -> void:
 	if group.order == "move" or group.order == "guard_area":
 		## F370: walk to / hold `order_point` from the group's center (Orders.apply_for, like a click on the ground).
 		var center := Vector3(_rules.anchor.x + group.offset_m + group.order_point.x, 0.0, _rules.anchor.z + group.offset_z_m + group.order_point.y)
-		var ground := float(GroundSurface.of(_world).height_at(center.x, center.z))
+		var ground := float(Terrain.of(_world).height_at(center.x, center.z))
 		center.y = 0.0 if is_nan(ground) else ground
 		_world.get_node("%Orders").call("apply_for", group.slot, units, group.order, center, null, 0.0)
 		return
@@ -562,6 +573,14 @@ func _closest_unit_of(slot: int, from: Vector3, farthest := false) -> Node3D:
 	return best
 
 
+## The ticks between two runs of each job of a side's clock (12/60/6/6/60/12 at Normal).
+static func _periods(clock: AiClock) -> Array:
+	var out := []
+	for job in 6:
+		out.append(clock.ticks(job))
+	return out
+
+
 ## A side of the AI for each seat, started with the match (audit.start follows).
 func _start_ais() -> void:
 	for seat in _rules.ai_seats:
@@ -575,11 +594,13 @@ func _start_ais() -> void:
 		add_child(side)
 		side.setup(_world, wizard, seat)
 		_sides[seat.slot] = side
+		if decision_log != null:
+			decision_log.watch(side)
 		## a seat with its own side scene is the bench bot (debug/ai/ai_side_trivial.tscn): it has no difficulty to show
 		if seat.side_scene != null:
 			_seats_text += " · %d Bot trivial" % seat.slot
 		else:
-			_seats_text += " · IA %d %s" % [seat.slot, side.difficulty.display_name]
+			_seats_text += " · IA %d %s" % [seat.slot, side.play.difficulty.display_name]
 
 
 func _on_unit_entered(node: Node) -> void:
@@ -590,7 +611,7 @@ func _on_unit_entered(node: Node) -> void:
 func _frame_camera() -> void:
 	if camera == null or _headless:
 		return
-	var terrain := GroundSurface.of(_world)
+	var terrain := Terrain.of(_world)
 	var ground := float(terrain.height_at(_rules.anchor.x, _rules.anchor.z))
 	var center := Vector3(_rules.anchor.x, 0.0 if is_nan(ground) else ground, _rules.anchor.z) + camera_target_offset
 	camera.global_position = center + camera_offset
@@ -609,7 +630,7 @@ func _move_ai_wizards() -> void:
 		var health := _wizard_of(1).get_node("Health") as Health
 		health.current = health.maximum * _rules.human_health_fraction
 	if _rules.ai_start_at_anchor:
-		var terrain := GroundSurface.of(_world)
+		var terrain := Terrain.of(_world)
 		for seat in _rules.ai_seats:
 			var x := _rules.anchor.x + _rules.ai_start_offset.x
 			var z := _rules.anchor.z + _rules.ai_start_offset.y
@@ -630,7 +651,7 @@ func _warp_to_anchor(wizard: Node3D, offset: Vector2) -> void:
 		return
 	var x := _rules.anchor.x + offset.x
 	var z := _rules.anchor.z + offset.y
-	var ground := float(GroundSurface.of(_world).height_at(x, z))
+	var ground := float(Terrain.of(_world).height_at(x, z))
 	wizard.call("warp_to", Vector3(x, 0.0 if is_nan(ground) else ground, z))
 
 
@@ -676,7 +697,7 @@ static func _wizard_info(t: AiTrack) -> Dictionary:
 	return {
 		"near7": near, "slide": cols, "vel": str((t.node as CharacterBody3D).velocity) if t.node is CharacterBody3D else "",
 		"at": AiAudit.fmt(t.node.global_position), "walking": bool(t.node.call("is_walking")), "ord_state": t.ord_state, "ord_pos": AiAudit.fmt(t.ord_pos),
-		"queue_head": head, "queue": t.cast_queue.size(), "mana": snappedf(AiPerception._mana_now(t.node), 0.1),
+		"queue_head": head, "queue": t.cast_queue.size(), "mana": snappedf(AiBody.mana_now(t.node), 0.1),
 		"waypoints": str(follower.get("waypoints")) if follower != null else "", "follower_active": bool(follower.get("active")) if follower != null else false,
 		"record_target": str(t.record.target.node.name) if t.record != null and t.record.target != null and t.record.target.is_valid() else "-",
 		"next_reissue": t.next_reissue, "age": t.age,

@@ -25,5 +25,6 @@ splash_ranged_resistance = 0.75
 souls = 1
 cooldown_s = 1.0
 casting_time_s = 0.1235
-spell_order = 117
+book_level = 1
+book_slot = 17
 on_damage = ExtResource("typed_hmba")

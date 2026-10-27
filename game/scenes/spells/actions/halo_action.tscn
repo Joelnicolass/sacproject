@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/actions/launch_action.gd" id="1_script"]
 [ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="2_target"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/halo_of_earth_spell.tscn" id="3_launch"]
+[ext_resource type="Resource" path="res://data/fx/dirt_cast.tres" id="fx_dirt_cast"]
 
 [sub_resource type="Resource" id="Target_self"]
 script = ExtResource("2_target")
@@ -14,7 +15,7 @@ refuse_cc_protected = false
 script = ExtResource("1_script")
 pick = 4
 prompt = "Sobre vos"
-cast_fx = "dirt_cast"
+cast_fx = ExtResource("fx_dirt_cast")
 target = SubResource("Target_self")
 launch_scene = ExtResource("3_launch")
 one_at_a_time = true

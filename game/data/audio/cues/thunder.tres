@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/thn1.wav" id="2_thn1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/thn2.wav" id="3_thn2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/thn3.wav" id="4_thn3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/thn4.wav" id="5_thn4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/thn5.wav" id="6_thn5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/thn6.wav" id="7_thn6"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("2_thn1"), ExtResource("3_thn2"), ExtResource("4_thn3"), ExtResource("5_thn4"), ExtResource("6_thn5"), ExtResource("7_thn6")])
+volume_db = -2.0
+pitch_jitter = 0.05
+bus = &"Ambience"
+max_voices = 2
+priority = 40

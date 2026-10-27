@@ -1,5 +1,5 @@
 class_name IceShatter
-extends Node3D
+extends FxScene
 
 ## One step of the breaking of Frozen Ground's ice, played on every peer by FxBus.broadcast_scene: a burst of shards that rise from the
 ## ring of ground that broke, between the radius `inner` and the radius `outer` around this node (its sound is the one of this scene's name

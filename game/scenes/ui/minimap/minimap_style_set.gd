@@ -2,7 +2,8 @@
 class_name MinimapStyleSet
 extends Resource
 
-## The whole look of the minimap in one place (RFC-037). Editable in the inspector; the match never writes it.
+## The whole look of the minimap in one place. Editable in the inspector; the match never writes it.
+## Ref: RFC-037.
 
 @export_group("Icons")
 @export var wizard: MinimapMarkerStyle
@@ -17,9 +18,9 @@ extends Resource
 @export var soul_foe: MinimapMarkerStyle
 
 @export_group("Ground")
-## Under the baked terrain (sacengine 0, 65/255, 66/255).
+## Under the baked terrain (the original uses 0, 65/255, 66/255).
 @export var background_color := Color(0.0, 65.0 / 255.0, 66.0 / 255.0)
-## Multiplies the baked terrain. sacengine draws the terrain at 0.5 gray; the bake is already lit at ambient 0.7, so 0.5 / 0.7
+## Multiplies the baked terrain. The original draws the terrain at 0.5 gray; the bake is already lit at ambient 0.7, so 0.5 / 0.7
 ## lands on the same brightness. 1 leaves it as baked.
 @export var ground_tint := Color(0.714, 0.714, 0.714)
 

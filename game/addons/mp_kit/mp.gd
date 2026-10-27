@@ -4,7 +4,7 @@ extends Object
 ## The short way: the verbs a multiplayer game needs, from any script, with no node to find first.
 ##   Mp.play_solo()  Mp.host()  Mp.join("192.168.1.5")  Mp.join("1.2.3.4:7777#CODE")  Mp.leave()  Mp.open_rooms()
 ##   if Mp.is_server(): …     Mp.me()     Mp.state().add(&"score")     Mp.finish({"winner": Mp.me()})
-## Every call goes to the nodes that do the work (MpFlow, MpKit, MpWorld, MpState, MpMatch); use them directly for
+## Every call goes to the nodes that do the work (MpFlow, MpKit, MpWorld, MpState, MpMatch, MpMatchGate); use them directly for
 ## the rest. Not: the actor's own calls (MpActor: is_local, to_server, to_all), which belong to each actor.
 
 
@@ -88,6 +88,12 @@ static func current_match() -> MpMatch:
 		return null
 	var found := scene.find_children("*", "Node", true, false).filter(func(n: Node) -> bool: return n is MpMatch)
 	return found[0] as MpMatch if not found.is_empty() else null
+
+
+## The start gate of the match (who may sit, the wait for every seat, the rejoin grace): `Mp.gate().is_waiting()`,
+## `Mp.gate().can_start_now()`, its signals. Every peer has one; the server's decides.
+static func gate() -> MpMatchGate:
+	return MpKit.gate
 
 
 ## Server (or solo): ends the match for everyone with `result` (MpMatch.finish).

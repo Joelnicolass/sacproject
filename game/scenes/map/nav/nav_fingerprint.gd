@@ -2,8 +2,9 @@
 class_name NavFingerprint
 extends RefCounted
 
-## Hashes for the versioned navmesh (RFC-035 035f, R10). Pure functions; the editor warning (MapNavRegion) and
+## Hashes for the versioned navmesh. Pure functions; the editor warning (MapNavRegion) and
 ## tools/bake/bake_nav.gd call the same ones, so a bake and a check cannot disagree on what the source is.
+## Ref: RFC-035 035f, R10.
 
 ## Nodes of the map that feed the bake (their static colliders and children): the terrain, the buildings, the manafounts.
 const GROUP := &"nav_source"
@@ -12,8 +13,9 @@ const META_SOURCE := &"source_hash"
 
 
 ## SHA-256 of what the bake reads, taken from the nodes as the scene stores them (before any _ready, so the editor and the
-## tool see the same thing): the numbers, and per `nav_source` node its path, local transform (the turn is in it) and tag; the
-## terrain glb by its bytes. `root` is the map root (the parent of the NavigationRegion3D).
+## tool see the same thing): the numbers, and per `nav_source` node its path, local transform (the turn is in it) and tag; a
+## Terrain by its heights (TerrainHeights.checksum: the pixels of its heights.png and void.png as imported). `root` is the map
+## root (the parent of the NavigationRegion3D).
 ## It does not cover the box sizes the catalog gives a building: bake again after changing a model.
 static func source_hash(root: Node, settings: NavBakeSettings) -> String:
 	var lines := PackedStringArray()
@@ -36,9 +38,9 @@ static func _describe(node: Node, path: String) -> String:
 	if node3d != null:
 		parts.append(var_to_bytes(node3d.transform).hex_encode())
 	parts.append(str(node.get("tag")))
-	var source := node.scene_file_path
-	if source.ends_with(".glb") and FileAccess.file_exists(source):
-		parts.append(FileAccess.get_sha256(source))
+	var ground := node as Terrain
+	if ground != null:
+		parts.append(str(ground.heights.checksum()) if ground.heights != null else "no heights")
 	return "|".join(parts)
 
 

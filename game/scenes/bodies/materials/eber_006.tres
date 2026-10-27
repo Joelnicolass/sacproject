@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/eber/006.png" id="1_svpgh"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/eber/006_normal.png" id="2_ga2aj"]
 
 [resource]
 resource_name = "eber_006"
 albedo_texture = ExtResource("1_svpgh")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_ga2aj")

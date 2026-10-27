@@ -9,7 +9,8 @@ extends Node
 ## The server (or solo) runs it; the clients only get the position and rotation of the body.
 ## Ref: sacengine state.d:15480-15504 (the ground step), stats.d:104 (turn rate).
 
-## sacengine ground creatures turn at pi rad/s.
+## Ground creatures turn at pi rad/s.
+## Ref: sacengine
 @export_range(0.1, 12.0, 0.1, "suffix:rad/s") var turn_rate := PI
 ## The goal counts as reached this close (m).
 @export_range(0.0, 2.0, 0.01, "suffix:m") var arrive_distance_m := 0.25

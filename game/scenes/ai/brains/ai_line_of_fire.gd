@@ -1,7 +1,7 @@
 class_name AiLineOfFire
 extends RefCounted
 
-## Whether the AI's wizard has a clear shot at a body (RFC-053 053b, F371; executeBestCast's line of fire and sight, shiny.d:3246-3270).
+## Whether the AI's wizard has a clear shot at a body.
 ## One owner of the question: a ray from where the ball leaves (LaunchPoint.from_hand, the wizard turned to the target) to the
 ## center of the target.
 ##   A projectile (Rock, Wrath, Fireball, Swarm): the first body the ball would burst on that is not the target blocks it. The
@@ -10,6 +10,7 @@ extends RefCounted
 ##   Any other spell (Lightning): only the terrain and what is not a body block it.
 ## Rays, not the ball's box (0.1 m Wrath, 2 m Rock): «aprox.», the line the human sees and one under it. It reads the world as it is, like the
 ## human's eye; the AI only asks it about a body it can aim at (AiCommandPort.can_aim, checked before).
+## Ref: RFC-053 053b, F371; executeBestCast's line of fire and sight, shiny.d:3246-3270.
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
@@ -85,7 +86,7 @@ static func clear(wizard: WizardBody, target: Node3D, spell: SpellType) -> Node3
 ## How the spell of `wizard`'s book travels: a thrown ball that skips its own side (ThrownAction: Wrath, Fireball, Swarm), a
 ## projectile that does not (Rock), or nothing (Lightning, Heal).
 static func flight_of(wizard: WizardBody, spell: SpellType) -> int:
-	var caster := wizard.get_node_or_null("Caster") as Caster
+	var caster := AiBody.caster(wizard)
 	var action: SpellAction = caster.action_for(spell.tag) if caster != null else null
 	if action is ThrownAction:
 		return FLIGHT_THROWN

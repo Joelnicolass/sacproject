@@ -18,39 +18,52 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Asigná bake_settings (data/nav/nav_bake.tres).")
 	if navigation_mesh == null or navigation_mesh.get_polygon_count() == 0:
 		warnings.append("El navmesh está vacío: apretá «Hornear navmesh».")
-	elif bake_settings != null and get_parent() != null:
+	if bake_settings != null:
+		for number in [bake_settings.zone_m, bake_settings.zone_border_m]:
+			if not is_zero_approx(fmod(number, bake_settings.cell_size)):
+				warnings.append("zone_m y zone_border_m de nav_bake.tres tienen que ser múltiplos de cell_size.")
+				break
+	if use_edge_connections:
+		warnings.append("Apagá use_edge_connections: las zonas calzan exacto y prendido cada cambio cuesta ~850 ms en el hilo principal.")
+	if navigation_mesh != null and navigation_mesh.get_polygon_count() > 0 and bake_settings != null and get_parent() != null:
 		var stored := str(navigation_mesh.get_meta(NavFingerprint.META_SOURCE, ""))
 		if stored != NavFingerprint.source_hash(get_parent(), bake_settings):
 			warnings.append("El navmesh está viejo (el mapa o nav_bake.tres cambiaron): apretá «Hornear navmesh».")
 	return warnings
 
 
-## Editor button: bakes this map's navmesh in a headless Godot (the map must be saved first) and loads the new data.
-func _bake_map() -> void:
+## Editor: bakes this map's navmesh in a headless Godot (the map must be saved first) and loads the new data. The
+## «Hornear navmesh» button and «Mapa nuevo» call it; OK, or the error (the Output says why).
+func bake_now() -> Error:
 	var scene := owner.scene_file_path if owner != null else ""
 	if scene.is_empty():
 		push_warning("Hornear navmesh: guardá la escena del mapa primero.")
-		return
+		return ERR_UNCONFIGURED
 	var tag := scene.get_base_dir().get_file()
 	var output := []
 	if bake_settings == null or bake_settings.bake_tool.is_empty():
 		push_warning("Hornear navmesh: falta `bake_settings` (data/nav/nav_bake.tres) con `bake_tool`.")
-		return
+		return ERR_UNCONFIGURED
 	var args := ["--headless", "--path", ProjectSettings.globalize_path("res://"), bake_settings.bake_tool, "--", "--map=" + tag]
 	var code := OS.execute(OS.get_executable_path(), args, output, true)
 	var path := scene.get_base_dir().path_join("nav.res")
 	if code != OK:
 		push_error("Hornear navmesh: bake_nav terminó con código %d.\n%s" % [code, "\n".join(output)])
-		return
+		return FAILED
 	navigation_mesh = ResourceLoader.load(path, "NavigationMesh", ResourceLoader.CACHE_MODE_REPLACE) as NavigationMesh
 	update_configuration_warnings()
+	return OK if navigation_mesh != null else ERR_FILE_CANT_READ
+
+
+func _bake_map() -> void:
+	bake_now()
 
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	## A client loads the region but does not log it (it never asks for a path).
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return
 	var polygons := navigation_mesh.get_polygon_count() if navigation_mesh != null else 0
 	print("nav: navmesh %d polígonos" % polygons)

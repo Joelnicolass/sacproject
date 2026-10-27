@@ -1,0 +1,245 @@
+{
+ "wait_first": 0.5,
+ "steps": [
+  {
+   "wait": 3.0
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "started",
+    "timeout": 300,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 0.6
+   }
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "creature_ready",
+    "timeout": 60,
+    "equals": true
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_unit",
+    "args": [
+     1,
+     ""
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "aim_far",
+    "args": [
+     60
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "walk_go"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "hold",
+    "args": [
+     "move_forward",
+     8.0,
+     "walk"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "holding",
+    "equals": false,
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "hold",
+    "args": [
+     "move_forward,turn_right",
+     4.0,
+     "walk_turn"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "holding",
+    "equals": false,
+    "timeout": 30
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "walked"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.knock_go"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 240,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "click": "%SpellTab"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "mana",
+    "timeout": 90,
+    "gte": 800
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_wizard",
+    "args": [
+     2
+    ]
+   }
+  },
+  {
+   "press": "spell_6"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "select"
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "mark_walk",
+    "args": [
+     "knock_cast"
+    ]
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "pointer_center",
+    "args": []
+   }
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.walked"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 120,
+    "equals": true
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "flush",
+    "args": []
+   }
+  }
+ ]
+}

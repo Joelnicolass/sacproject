@@ -1,10 +1,12 @@
 class_name SummoningState
 extends UnitState
 
-## SUMMONING (sacengine preSpawning): translucent, no orders, no aggro and not a target until the wizard's cast ends
+## SUMMONING: translucent, no orders, no aggro and not a target until the wizard's cast ends
 ## (UnitBody.finish_summon). Leaving it emits `summoned`.
+## Ref: sacengine preSpawning.
 
-## sacengine startCasting: setAlpha(creature, 0.36) while the summon is cast.
+## The alpha is 0.36 while the summon is cast.
+## Ref: sacengine startCasting setAlpha.
 const SUMMONING_ALPHA := 0.36
 
 

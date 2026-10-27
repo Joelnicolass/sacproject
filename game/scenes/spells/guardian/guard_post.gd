@@ -2,16 +2,17 @@
 class_name GuardPost
 extends DamageDeflector
 
-## «This building accepts guardians» (RFC-021b). A child of a Manalith (structure.tscn) or an altar
+## «This building accepts guardians». A child of a Manalith (structure.tscn) or an altar
 ## (altar.tscn); a shrine would add its own. It knows its owner, where a guardian is tied (the attach
 ## point), whether it is still open and which creatures are tied to it, and it splits the damage the
 ## building would take among them. Take the child out and the building cannot be guarded.
 ## Only the server (or solo) keeps the list: Health.deflect runs where there is authority.
-## Damage split (damageGuardians, state.d:9098-9117): each valid guardian takes
+## Damage split: each valid guardian takes
 ## damage / min(n, 0.5 (n + 3)) with its own resistances and factors; with no valid guardian the
-## building takes the hit (the NaN of state.d:9117).
+## building takes the hit.
 ## Where the beam ends is the `attach_point` marker of the building: move it with the gizmo (15 m up on a Manalith, 2.5 m on
 ## an altar or a Shrine).
+## Ref: RFC-021b; damageGuardians, state.d:9098-9117; the NaN of state.d:9117
 
 const GROUP := &"guard_post"
 
@@ -27,13 +28,15 @@ const GROUP := &"guard_post"
 var _guards: Array[GuardianBond] = []
 
 
-## sacengine: n guardians each take damage / this (state.d:9101).
+## n guardians each take damage / this.
+## Ref: sacengine; state.d:9101
 static func split_divisor(count: int) -> float:
 	return minf(float(count), 0.5 * (float(count) + 3.0))
 
 
-## The open post of `slot` closest to `from` on the plane within `max_distance`, or null (findClosestBuilding,
-## state.d:10371-10396: nearest by distance on the plane, own side). Posts are found by group, never by path.
+## The open post of `slot` closest to `from` on the plane within `max_distance`, or null.
+## It is the nearest by distance on the plane, own side. Posts are found by group, never by path.
+## Ref: findClosestBuilding, state.d:10371-10396
 static func closest(tree: SceneTree, slot: int, from: Vector3, max_distance := INF) -> GuardPost:
 	var best: GuardPost = null
 	var best_d := INF

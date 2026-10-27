@@ -18,6 +18,8 @@ func test_builds_every_piece_once() -> void:
 	check(world.get_node_or_null("State/MpSync") != null, "the state has its synchronizer")
 	check(world.get_node_or_null("Hud/Leave") is MpLeaveButton, "a Leave button")
 	check(world.get_node_or_null("Hud/Invite") is MpInviteLabel, "an invite line for private matches")
+	check(world.get_node_or_null("Hud/Start") is MpStartButton, "a Start now button for a listen host")
+	check(world.get_node_or_null("Hud/Waiting") is MpWaitingLabel, "a line that says the match waits for players")
 	var count := world.get_child_count()
 	MpWorld.build(world, root, false)
 	check(world.get_child_count() == count, "building again adds nothing")
@@ -29,10 +31,12 @@ func test_player_scene_reaches_the_spawner() -> void:
 	var world := MpWorld.new()
 	world.leave_button = false
 	world.invite_label = false
+	world.start_button = false
+	world.waiting_label = false
 	root.add_child(world)
 	MpWorld.build(world, root, true)
 	check(world.get_node("SpawnPoints/P1") is Marker3D, "3D markers in a 3D world")
-	check(world.get_node_or_null("Hud") == null, "no Hud when Leave Button and Invite Label are off")
+	check(world.get_node_or_null("Hud") == null, "no Hud when every Hud piece is off")
 	var scene := PackedScene.new()
 	scene.pack(Node3D.new())
 	world.player_scene = scene

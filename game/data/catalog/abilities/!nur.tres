@@ -14,12 +14,3 @@ mana_cost = 50
 cooldown_s = 10.0
 casting_time_s = 7.4074
 duration_s = 10.0
-flags1 = 8208
-flags2 = 786432
-args = {
-"fmul": 2.25,
-"ialf": 128.0,
-"igap": 3.0,
-"inum": 2.0,
-"ttex": "glo2"
-}

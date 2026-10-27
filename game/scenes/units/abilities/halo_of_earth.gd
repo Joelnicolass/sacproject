@@ -1,34 +1,35 @@
 class_name HaloOfEarth
 extends SpellLaunch
 
-## F127 (RFC-030 030p-a): the Rhinok's Halo of Earth (HRba). sacengine haloOfEarth (state.d:13232-13236) adds the effect at
-## once; updateHaloOfEarth (19284-19321) runs it from the next tick: while the Rhinok can carry it (canCarryHaloOfEarth,
-## 202-209) it makes rocks until there are 6, and when it cannot it blows up the free ones (despawnHaloOfEarth, 19272-19282);
+## The Rhinok's Halo of Earth: rocks that orbit it and fly at foes. The effect is added at
+## once and runs from the next tick: while the Rhinok can carry it
+## it makes rocks until there are 6, and when it cannot it blows up the free ones;
 ## it ends when every rock it made is gone. This node is that coordinator and simulates the 6 rocks; each rock's body is a
 ## RangedShot of the shot container (ShotLook halo_rock: collides off), which only draws it and replicates its position.
 ## Server (or solo) only: a client never gets this node (HaloOfEarthAbility adds it on the server). Priority −1: it moves the
 ## rocks before the bodies move, like Protector.
 ##
-## Per rock and tick (updateHaloRock, 19212-19270; `isCasting` is false for an ability):
-## - free: Hermite interpolation (cintp2, util.d:554-560) between points of a ball of `orbit_radius` around the center
+## Per rock and tick (`isCasting` is false for an ability):
+## - free: Hermite interpolation between points of a ball of `orbit_radius` around the center
 ##   (the top of the Rhinok's box + `orbit_height`), `orbit_speed` per second; it is born buried inside the Rhinok's box
 ##   scaled by `spawn_box_scale`, so it rises into the orbit.
 ## - with a target: velocity += acceleration toward the target's center, capped at the SPEL's speed and at 60 · distance;
 ##   it blows up on the target when the distance (before the step) is under `arrive_distance`.
 ## - then, whatever it does: it blows up on the first live body not of its side its `ShotLook.hit_size` box touches, on the
 ##   land from `ground_grace_s` of life, and at `life_s` (the SPEL duration, 35 s) with no target.
-## - free ones look for a target (closestNonAllyInRange, 28825): the closest non-ally creature or wizard within
+## - free ones look for a target: the closest non-ally creature or wizard within
 ##   effectRange (50 m), alive, targetable, in sight, that no other rock chases.
-## Blowing up = the SPEL's amount as direct spell damage to the body it hit (haloRockExplosion, 19076-19100).
+## Blowing up = the SPEL's amount as direct spell damage to the body it hit.
 ##
 ## RFC-061e: the wizard's Halo of Earth (olah) is the same node. LaunchAction makes it when the cast starts (`begin_cast`: the numbers
 ## come from the SpellType): the rocks come out staggered while the wizard casts, floor((progress + 0.1) × 6) of them by the share of the
 ## casting that has gone, and only orbit until `release` (no target, no hit, no ground, no clock); `abort` blows the free ones up.
 ##
-## Divergences (declared): the line of sight is a ray to the target's center (sacengine: a box); an ally is the same slot;
+## Divergences (declared): the line of sight is a ray to the target's center (the original: a box); an ally is the same slot;
 ## the rocks use MatchSeed's stream, not the engine's; the dust trail is always there; no screen shake, no sound, no
 ## particles of its own (the look's FxBus types); a rock that blows up does not make the rock after it move twice in the
-## same tick (the swap of 19311-19313); buildings without Health do not stop a rock.
+## same tick; buildings without Health do not stop a rock.
+## Ref: F127 (RFC-030 030p-a), RFC-061e; Rhinok HRba, sacengine haloOfEarth (state.d:13232-13236), updateHaloOfEarth 19284-19321, canCarryHaloOfEarth 202-209, despawnHaloOfEarth 19272-19282, updateHaloRock 19212-19270, cintp2 util.d:554-560, closestNonAllyInRange 28825, haloRockExplosion 19076-19100, swap 19311-19313.
 
 
 
@@ -36,8 +37,8 @@ const GROUP := &"halo_of_earth"
 
 ## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that adds this node hands it over.
 @export var spawner: Node
-## ShotLook tag of a rock (data/shots/halo_rock.tscn).
-@export var rock_tag := "halo_rock"
+## A rock's look (data/shots/halo_rock.tscn): its mesh, hit box and bursts.
+@export var look: PackedScene
 @export_range(1, 12) var num_rocks := 6
 ## The Rhinok's box (BodyNudge.box) is scaled by this to place a newborn rock (haloRockSpawnPosition: 1.25 for an ability,
 ## 2.5 for the spell).
@@ -59,8 +60,8 @@ const GROUP := &"halo_of_earth"
 @export_range(0.0, 600.0, 0.0001, "suffix:s") var life_s := 35.0
 ## The line of sight starts at least this high over the land (a newborn rock is buried).
 @export var los_lift := 0.5
-## FxBus type played where a rock is born.
-@export var emerge_fx := "rock_emerge"
+## The burst played where a rock is born (empty = none).
+@export var emerge_fx: ParticleType = preload("res://data/fx/rock_emerge.tres")
 ## More types played where a rock is born (the wizard's halo throws dirt and dust up too).
 @export var emerge_extra: Array[ParticleType] = []
 ## Played where a rock picks its target (the sound `halo`). Optional.
@@ -118,7 +119,7 @@ func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	_who = AbilityEffect.who(body)
 	_slot = int(body.get("owner_slot")) if "owner_slot" in body else 0
 	_rng = MatchSeed.rng(["halo", _who, _born])
-	_look = ShotLook.fit(self, _look, rock_tag)
+	_look = ShotLook.fit(self, _look, look)
 	name = "Halo%s_%d" % [_who, _born]
 
 
@@ -132,7 +133,7 @@ func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vecto
 	_who = AbilityEffect.who(caster)
 	_slot = int(caster.get("owner_slot")) if "owner_slot" in caster else 0
 	_rng = MatchSeed.rng(["halo", _who, _born])
-	_look = ShotLook.fit(self, _look, rock_tag)
+	_look = ShotLook.fit(self, _look, look)
 	name = "Halo%s_%d" % [_who, _born]
 	_armed = false
 	_cast_ticks = maxi(1, cast_ticks)
@@ -161,7 +162,7 @@ func _set_numbers(damage: float, speed: float, acceleration: float, reach: float
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 
@@ -249,9 +250,10 @@ func _spawn() -> void:
 	rock.node = _make_node(at)
 	_active.append(rock)
 	_spawned += 1
-	FxBus.broadcast(emerge_fx, at)
-	for extra in emerge_extra:
-		FxBus.broadcast(extra.bus_name(), at)
+	if emerge_fx != null:
+		FxBus.broadcast(emerge_fx, at)
+	for extra: ParticleType in emerge_extra:
+		FxBus.broadcast(extra, at)
 	_say("halo %s roca %d nace en %s (tick %d)" % [_who, rock.index, _v(at), MatchClock.now()])
 
 
@@ -263,7 +265,7 @@ func _make_node(at: Vector3) -> Node3D:
 	var data := {
 		"x": at.x, "y": at.y, "z": at.z, "vx": 0.0, "vy": 0.0, "vz": 0.0,
 		"damage": _damage, "slot": _slot, "gravity": 0.0,
-		"max_distance": 1.0e9, "tag": rock_tag, "target": "",
+		"max_distance": 1.0e9, "look": FxWire.id_of(look), "target": "",
 		"shooter": str(user.get_path()) if user != null and user.is_inside_tree() else "",
 	}
 	return (spawner as ShotSpawner).spawn_shot(data)
@@ -364,7 +366,7 @@ func _touching(rock: Rock) -> Node3D:
 
 
 func _under_land(at: Vector3) -> bool:
-	var shape := GroundSurface.of(self)
+	var shape := Terrain.of(self)
 	return shape != null and shape.is_on_ground(at.x, at.z) and at.y < shape.height_at(at.x, at.z)
 
 
@@ -394,7 +396,7 @@ func _seek(rock: Rock) -> void:
 			rock.target = body
 			rock.target_center = BodyNudge.center(body)
 			if throw_burst != null:
-				FxBus.broadcast(throw_burst.bus_name(), rock.position)
+				FxBus.broadcast(throw_burst, rock.position)
 			var half := BodyNudge.box(body).size * 0.5
 			_say("halo %s roca %d blanco %s a %.4f m desde %s hacia %s caja %s (tick %d)" % [
 				_who, rock.index, body.name, entry[0], _v(rock.position), _v(rock.target_center), _v(half), MatchClock.now()])
@@ -428,7 +430,7 @@ func _explode(rock: Rock, hit: Node3D, why: String) -> void:
 		_who, rock.index, why, _v(rock.position), hit.name if hit != null and is_instance_valid(hit) else "nadie", MatchClock.now()])
 	if _valid(hit):
 		_hurt(hit)
-	for fx in _look.impact_fx:
+	for fx: ParticleType in _look.impact_fx:
 		FxBus.broadcast(fx, rock.position)
 	ScarMark.broadcast(_look.ground_mark, rock.position)
 	if rock.node != null and is_instance_valid(rock.node):

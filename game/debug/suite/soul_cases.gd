@@ -199,8 +199,8 @@ func _wind() -> Dictionary:
 	var bolts := [0]
 	var hits: Array[float] = []
 	foe_health.hit.connect(func(amount: float, _slot: int, _full: bool) -> void: hits.append(amount))
-	var count_bolt := func(kind: StringName, fx_name: String, _at: Vector3) -> void:
-		if kind == FxBus.KIND_BEAM and fx_name == "soul_wind_bolt":
+	var count_bolt := func(kind: StringName, fx: Resource, _at: Vector3) -> void:
+		if kind == FxBus.KIND_BEAM and FxWire.label_of(fx) == "soul_wind_bolt":
 			bolts[0] += 1
 	FxBus.played.connect(count_bolt)
 	var caster := wizard.get_node("Caster") as Caster
@@ -297,11 +297,13 @@ func _refusals() -> Dictionary:
 	return _w.verdict("soul_refusals", checks)
 
 
-## The AI has no use for these (the original has none either): they rate nothing and the other spells keep their evaluator.
+## 055f f5: the AI fetches souls with Soul Mole and Soul Wind and raises the dead with Animate Dead (the original has no use for
+## them); the other spells keep their evaluator.
 func _ai() -> Dictionary:
 	var checks := {}
+	var wanted := {"pmcd": AiSpellEval.FN_GATHER_SOULS, "dnws": AiSpellEval.FN_GATHER_SOULS, "deda": AiSpellEval.FN_RAISE_DEAD}
 	for tag in SOUL_SPELLS:
-		checks[tag + "_rates_nothing"] = AiSpellEval.rating_fn(GameData.spell(tag)) == AiSpellEval.FN_NONE
+		checks[tag + "_evaluator"] = AiSpellEval.rating_fn(GameData.spell(tag)) == wanted[tag]
 	checks["old_spells_unchanged"] = AiSpellEval.rating_fn(GameData.spell("kcor")) == AiSpellEval.FN_SINGLE
 	return _w.verdict("soul_ai", checks)
 

@@ -13,5 +13,3 @@ icon = ExtResource("icon_tex")
 mana_cost = 50
 cooldown_s = 5.0
 casting_time_s = 3.7037
-flags1 = 8208
-flags2 = 8912896

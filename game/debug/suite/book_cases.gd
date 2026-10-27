@@ -144,6 +144,6 @@ func _tags(types: Array) -> Array[String]:
 
 func _sorted_by_order(book: Spellbook) -> bool:
 	for i in range(1, book.size()):
-		if book.spell_at(i - 1).spell_order > book.spell_at(i).spell_order:
+		if book.spell_at(i - 1).order_key() > book.spell_at(i).order_key():
 			return false
 	return true

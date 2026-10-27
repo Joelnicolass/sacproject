@@ -1,9 +1,10 @@
 class_name ImplosionImpact
 extends ShotImpact
 
-## F121 (RFC-030j): the Flurry's caba (flurryProjectileImplosion, state.d:24577-24598): after the damage (its SplashImpact
-## sibling) an implosion of effectRange that shrinks over the SPEL's duration starts where the shot burst. It goes to
+## The Flurry's shot: after the damage (its SplashImpact
+## sibling) an implosion of effectRange that shrinks over the spell's duration starts where the shot burst. It goes to
 ## the shot's parent, so it outlives the shot.
+## Ref: F121 (RFC-030j); Flurry caba (flurryProjectileImplosion, state.d:24577-24598).
 
 @export var implosion_scene: PackedScene
 

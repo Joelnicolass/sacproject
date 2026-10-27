@@ -1,10 +1,11 @@
 extends Node
 
-## RTS orders, server-authoritative (sacengine Command → ObjectState.applyOrder, state.d:29140).
+## RTS orders, server-authoritative.
 ## The owner calls request(); a client sends submit_order and the server checks every unit's
-## owner_slot. The selection stands in the formation most of its creatures keep (RFC-038: Formation, getFormationOffsets
-## state.d:417; the default is the line) turned by the camera facing; units are matched to slots greedily by distance
-## (state.d:29205). The "formation" command stores a formation on each creature and moves nobody. Retreat orders every creature of the side, not the selection (state.d:29174).
+## owner_slot. The selection stands in the formation most of its creatures keep (the default is the line) turned by the
+## camera facing; units are matched to slots greedily by distance. The "formation" command stores a formation on each
+## creature and moves nobody. Retreat orders every creature of the side, not the selection.
+## Ref: RFC-038; sacengine Command → ObjectState.applyOrder (state.d:29140), Formation / getFormationOffsets (state.d:417), greedy slot matching (state.d:29205), retreat (state.d:29174).
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
@@ -32,8 +33,9 @@ const COMMANDS := {
 @export var spacing_per_size := 1.25
 @export var spacing_base := 0.85
 @export var max_spacing := 10.0
-## attackDistance (state.d:13609): an attack on a creature retargets each unit to the enemy
+## An attack on a creature retargets each unit to the enemy
 ## creature closest to its own slot within this range.
+## Ref: attackDistance, state.d:13609.
 @export var retarget_range := 100.0
 ## Print «orden <command> <n>» for every applied order (the network scripts grep it on the server). The AI's orders
 ## (`apply_for`) are printed only with `log_ai_orders`: thousands per match.
@@ -168,7 +170,8 @@ func _retreat(slot: int) -> void:
 			(unit.get_node("Orders") as UnitOrders).give(UnitOrders.Command.RETREAT, wizard, wizard.global_position, Vector2.ZERO, 0.0)
 
 
-## canOrder (state.d:1140) plus sacengine order(): pacifists refuse attack and advance.
+## Pacifists refuse attack and advance.
+## Ref: canOrder (state.d:1140), sacengine order().
 func _own_units(slot: int, unit_paths: PackedStringArray, target: Node3D, kind: int, unit_nodes: Array = []) -> Array[Node3D]:
 	var units: Array[Node3D] = []
 	var seen := {}
@@ -196,7 +199,8 @@ func _can_order(unit: Node, slot: int) -> bool:
 	return body != null and not body.is_dead() and not body.is_summoning() and body.has_node("Orders")
 
 
-## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes them (state.d:429).
+## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes them.
+## Ref: state.d:429.
 func _formation(formation: FormationType, units: Array[Node3D], kind: int, target: Node3D) -> Array[Vector2]:
 	var size := 0.0
 	for unit in units:
@@ -258,11 +262,12 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 	return result
 
 
-## The rows of a formation larger than one line (the port's extension, `RowFormation.row_size`): sacengine matches one line of at most
-## numCreaturesInGroup = 12 greedily (state.d:29205), and greedy over 150 bodies crossed the formation: the front of the
-## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots
-## (F88 round 3, debug/map/crowd_rock.tscn). Here the units furthest along `yaw` take the front row, the next ones the row
+## The rows of a formation larger than one line (the port's extension, `RowFormation.row_size`): the original matches one
+## line of at most 12 creatures greedily, and greedy over 150 bodies crossed the formation: the front of the
+## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots.
+## Here the units furthest along `yaw` take the front row, the next ones the row
 ## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
+## Ref: F88 round 3, debug/map/crowd_rock.tscn; sacengine numCreaturesInGroup = 12, state.d:29205.
 func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int) -> PackedInt32Array:
 	var n := units.size()
 	var result := PackedInt32Array()

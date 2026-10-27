@@ -2,14 +2,15 @@
 class_name BodyAvoidance
 extends NavigationAgent3D
 
-## Server side separation of a body (RFC-036 036f): the engine's avoidance (RVO) on a NavigationAgent3D, instead of the
-## boxes and pushes of sacengine positionAfterCollision. The body calls steer() with the flat velocity it wants; the
+## Server side separation of a body: the engine's avoidance (RVO) on a NavigationAgent3D, instead of the
+## boxes and pushes of the original. The body calls steer() with the flat velocity it wants; the
 ## server answers in the same physics step (after every _physics_process) through `solved`, and the body moves with that
 ## velocity (move_and_slide). The radius is the body's box (BodyBox); the bodies do not collide by physics, only steer.
 ## Who gives way is the priority: a body that walks is above one that stands (the settled units of a formation make way
 ## for the walkers) and a wizard is above his creatures (his own army never pushes him back: debug/orders/escort_jam.tscn).
 ## Deterministic: the avoidance runs in the physics step on one thread (project.godot [navigation]) and the agents
 ## are stepped in the order they were registered.
+## Ref: RFC-036 036f, sacengine positionAfterCollision.
 
 ## The safe velocity (flat, m/s) of this tick, or the wanted one for a fixed body (frozen, petrified, pinned: it is an
 ## obstacle that is never steered).
@@ -61,6 +62,17 @@ func steer(wanted: Vector3, fixed := false) -> bool:
 	return true
 
 
+## Server (or solo): the body moves by itself this step (a wizard predicted by its owner does not wait for `solved`) and only tells the
+## others its flat velocity, so they steer around it. No answer comes back: `solved` does not fire for it.
+func announce(flat_velocity: Vector3, fixed := false) -> void:
+	if not _active():
+		return
+	var flat := Vector3(flat_velocity.x, 0.0, flat_velocity.z)
+	_place(fixed, flat.length())
+	NavigationServer3D.agent_set_velocity(get_rid(), flat)
+	_steered = true
+
+
 ## The agent's own tick (it runs after the body's): a body that did not steer (it is being seated, say) is still an
 ## obstacle that stands; one that is not an obstacle leaves the avoidance.
 func _physics_process(_delta: float) -> void:
@@ -100,7 +112,7 @@ func _place(fixed: bool, speed: float) -> void:
 func _active() -> bool:
 	if body == null or not body.is_inside_tree():
 		return false
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return false
 	return BodyBox.is_obstacle(body)
 

@@ -1,18 +1,18 @@
 class_name Vined
 extends Affliction
 
-## F159 (RFC-030 030u-c): the Dragon's Grasping Vines (eniv, passiveOnHit of grdg), sacengine graspingVines (state.d:10795-10812) and
-## updateGraspingVines (17852-17876). The blow ties the body to the ground: while it lasts the body is `fixed` (cannot walk nor be moved
-## from outside), does not regenerate and is ccProtected (stats.d:73-94: vined → regenerationBlocked, ccProtected, fixed). The type
+## The Dragon's Grasping Vines. The blow ties the body to the ground: while it lasts the body is `fixed` (cannot walk nor be moved
+## from outside), does not regenerate and is ccProtected. The type
 ## (`vined.tres`: bit 8, coexists, holds = false, cc_protects, pins, blocks_regeneration) says all of that; this node owns the clock.
 ##
-## Each blow brings its own timer (numVines += 1, one GraspingVines effect with its own `timer`): `_ends` holds the tick every one
-## runs out on, and the bit is on while any is left. The duration of one is (wizard ? 0.25 : 1000 / max health) · the SPEL's 40 s in
-## float32 (Affliction.cc_ticks): a Jabberocky of 5600 hp is 429 ticks. A flier is never tied (isHitboxFlying, 10799), and a body that is
-## dead or dying loses every vine at once (canPersistCC: Afflictions ends the bit when it dies).
-## The body's xz velocity is 0 in steer(); the xy position of sacengine is the port's xz (the vertical follows the land by itself).
+## Each blow brings its own timer (one vines effect with its own `timer`): `_ends` holds the tick every one
+## runs out on, and the bit is on while any is left. The duration of one is (wizard ? 0.25 : 1000 / max health) · the spell's 40 s in
+## float32 (Affliction.cc_ticks): a Jabberocky of 5600 hp is 429 ticks. A flier is never tied, and a body that is
+## dead or dying loses every vine at once (Afflictions ends the bit when it dies).
+## The body's xz velocity is 0 in steer(); the original's xy position is the port's xz (the vertical follows the land by itself).
 ##
 ## Look (every peer, from the replicated bit): the VineLook child, sixteen skinned vines that grow and shrink in a second.
+## Ref: F159 (RFC-030 030u-c); sacengine graspingVines (eniv, passiveOnHit of grdg; state.d:10795-10812, isHitboxFlying 10799), updateGraspingVines 17852-17876, stats.d:73-94 (vined → regenerationBlocked, ccProtected, fixed), numVines, canPersistCC.
 
 ## Vine lifetime of a creature: creature_k / max health · the SPEL's duration (s); of a wizard: wizard_factor · duration.
 @export var creature_k := 1000.0
@@ -37,7 +37,8 @@ func inflict(spell: SpellType, _from_slot: int) -> bool:
 
 
 ## The Vinewall's grasp: its length is the usual share (wizard 0.25, creature 1000 / health) of `max_s`, the wall's remaining time, and never more
-## than `max_s` (sacengine vinewallGraspingVines, state.d:20370-20383).
+## than `max_s`.
+## Ref: sacengine vinewallGraspingVines, state.d:20370-20383.
 func lay_within(spell: SpellType, _from_slot: int, max_s: float) -> bool:
 	return grasp(spell, max_s)
 
@@ -47,11 +48,12 @@ func lay_ticks(spell: SpellType) -> int:
 	return cc_ticks(_body().is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor) if _body() != null else 0
 
 
-## Server (or solo): sacengine graspingVines(target, spell). True when the vines took hold (a flier refuses them).
+## Server (or solo): ties the body with the vines. True when the vines took hold (a flier refuses them).
+## Ref: sacengine graspingVines(target, spell).
 func grasp(spell: SpellType, max_s := INF) -> bool:
 	var body := _body()
 	var owner_node := _afflictions()
-	if body == null or spell == null or not _simulates() or BodyNudge.airborne(body):
+	if body == null or spell == null or not is_multiplayer_authority() or BodyNudge.airborne(body):
 		return false
 	if owner_node.health != null and owner_node.health.is_dead():
 		return false
@@ -100,7 +102,7 @@ func _say_end() -> void:
 
 ## The bit changed (every peer). On the server a bit turned off from outside (the body died) clears the clocks; VineLook draws the rest.
 func _shown(on: bool) -> void:
-	if not on and _simulates() and not _ends.is_empty():
+	if not on and is_multiplayer_authority() and not _ends.is_empty():
 		_ends = PackedInt32Array()
 		set_physics_process(false)
 		_say_end()

@@ -203,7 +203,7 @@ El port se armó por etapas. Cada cambio grande tiene su RFC en [`game/rfcs/`](g
    Todo queda en `game/assets/original/` y `game/data/catalog/`. El juego no depende de los WAD ni de ninguna caché.
 2. **Entender cómo funciona.** Las reglas y los números (daño, maná, almas, IA, órdenes) se leyeron de sacengine, una reimplementación abierta en D, y se compararon contra el ejecutable original con ingeniería inversa. Del original se copia lo que se nota al jugar: números, hechizos y reglas.
 3. **Construir sobre Godot estándar.** El primer port copiaba también la física, la navegación y la animación de sacengine. Después se pasó todo a las herramientas del motor (RFC-035 y RFC-036):
-   - el terreno es un `terrain.glb` editable en Blender;
+   - el terreno es una grilla 256² de alturas (`heights.png` + `void.png` por mapa), editable en cualquier editor de imágenes o en Blender;
    - aldeas, edificios y plantas son nodos de la escena;
    - el catálogo (criaturas, hechizos, magos) son `.tres` editables en el inspector;
    - la navegación es el navmesh de Godot;
@@ -271,7 +271,8 @@ Las rutas son relativas a `game/`.
 | `tools/audit/check_original_assets.sh` | **Sí** | Paridad de `assets/original/` con el original (`ASSETS PARITY PASS/FAIL`) |
 | `tools/import/scaffold_map.py` | No: usa lo que ya dejó `import_map.py` | `MapDefinition`, `map.tscn`, `nav.res` vacío |
 | `tools/import/classify_ground_tiles.py`, `sample_grass_palette.py` | No: usan `assets/original/` | `high_noon_tiles.tres`, paleta de pasto propuesta |
-| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`, terreno) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo; `import_terrain.gd` lee el `.bin` que escribe `import_map.py` | Escenas, `.tres` y navmesh |
+| `tools/bake/*` (navmesh, catálogo, `bake_body_scenes`, `new_creature`) | No: `bake_body_scenes` usa los `.glb` y `index.json` del repo | Escenas, `.tres` y navmesh |
+| `tools/terrain/heights_from_original.gd` | **Sí** (lee el `.scp`) | `scenes/map/maps/<tag>/heights.png` + `void.png`, el suelo de un mapa del original |
 | Menú **Project > Tools > Sacrifice** | Solo «Listar mapas del original» e «Importar audio del original» (llevan «(requiere juego original)» en el menú) | Salida en un diálogo |
 
 Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el original no viene en el repo** (es el juego comercial). Si falta, imprimen un mensaje en español que explica qué carpeta hace falta y cómo indicarla, y terminan con error. Todas empiezan su encabezado y su `--help` con «Requiere el juego original instalado (SAC_INSTALL)» o con «No necesita el juego original».

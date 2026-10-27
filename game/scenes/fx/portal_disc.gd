@@ -3,10 +3,11 @@ class_name PortalDisc
 extends MeshInstance3D
 
 ## A flat ring with a glowing center that always faces the camera: the portal around a creature carried
-## by a Sac Doctor (blue) and the red vortex the doctor falls out of (sacengine SacVortex, renderer.d:1616-1677).
+## by a Sac Doctor (blue) and the red vortex the doctor falls out of.
 ## Presentation only: it reads no simulation and the headless server draws nothing. Opens in `open_s`,
 ## closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to switch it off.
-## The mesh and the material are made here from the cache (they are not stored in the scene).
+## The mesh and the material are made here (they are not stored in the scene).
+## Ref: sacengine SacVortex, renderer.d:1616-1677.
 
 ## Finished closing (openness reached 0).
 signal closed
@@ -20,9 +21,11 @@ signal closed
 	set(value):
 		radius = value
 		_apply()
-## Seconds from closed to open. sacengine: vortexScale += 1/60 per tick (state.d:2697): 1 s.
+## Seconds from closed to open.
+## Ref: sacengine vortexScale += 1/60 per tick (state.d:2697): 1 s.
 @export_range(0.05, 10.0, 0.05) var open_s := 1.0
-## Seconds from open to closed. sacengine: 1/45 per tick (state.d:2698): 0.75 s.
+## Seconds from open to closed.
+## Ref: sacengine 1/45 per tick (state.d:2698): 0.75 s.
 @export_range(0.05, 10.0, 0.05) var close_s := 0.75
 ## 0 = closed, 1 = open. In the editor it is what you see.
 @export_range(0.0, 1.0, 0.01) var openness := 1.0:
@@ -57,7 +60,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if look == null:
 		warnings.append("Asigná en `look` el PortalLook (data/fx/portal_blue.tres o portal_red.tres).")
 	elif _missing:
-		warnings.append("Falta el atlas `%s.png` o `%s.png` en assets/original/fx/ (tools/import/import_ui.py): se dibuja un relleno." % [look.rim_tag, look.center_tag])
+		warnings.append("El PortalLook no tiene `rim` o `center` (las texturas del anillo y del centro): se dibuja un relleno.")
 	return warnings
 
 
@@ -102,8 +105,8 @@ func _refresh() -> void:
 	if look != null:
 		_material = ShaderMaterial.new()
 		_material.shader = preload("res://scenes/fx/portal_disc.gdshader")
-		var rim := FxAtlas.texture(look.rim_tag)
-		var center := FxAtlas.texture(look.center_tag)
+		var rim := look.rim
+		var center := look.center
 		_missing = rim == null or center == null
 		_material.set_shader_parameter("use_textures", not _missing)
 		_material.set_shader_parameter("rim_tex", rim)

@@ -28,5 +28,6 @@ mana_cost = 700
 souls = 2
 cooldown_s = 4.0
 casting_time_s = 1.1111
-spell_order = 349
+book_level = 3
+book_slot = 49
 on_damage = ExtResource("typed_ahtf")

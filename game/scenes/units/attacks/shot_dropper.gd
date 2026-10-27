@@ -1,22 +1,23 @@
 class_name ShotDropper
 extends ShotInFlight
 
-## F148 (RFC-030 030h3): the droplets an Abomination's gut drops while it flies. sacengine animateAbominationProjectile
-## (state.d:24441-24452): every frame of flight `numParticles = !!state.uniform(4)`, so with probability 3/4 one
-## AbominationDroplet (state.d:4838-4845) is added at the shot's new position (i = 0 of 1: oldPosition·0 + position·1),
+## The droplets an Abomination's gut drops while it flies: every
+## frame of flight `numParticles = !!state.uniform(4)`, so with probability 3/4 one
+## AbominationDroplet is added at the shot's new position (i = 0 of 1: oldPosition·0 + position·1),
 ## with velocity 0. The droplet's fall and hit belong to DropletRain (one pool in the world, server only).
 ##
 ## The scene is ShotLook.in_flight (a ShotInFlight, F149). RangedShot instances it on the server (or solo) only, as a
 ## child of the shot, and calls fly() once per physics tick, after it moved and before it checks its hit (the order of
-## updateAbominationProjectile, state.d:24454-24460). Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
+## the original's update). Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
+## Ref: F148 (RFC-030 030h3), sacengine animateAbominationProjectile state.d:24441-24452, AbominationDroplet 4838-4845, 4844, 24481, 24491, updateAbominationProjectile 24454-24460.
 
 ## state.uniform(4) != 0: a droplet unless the roll is 0, i.e. (one_in − 1) / one_in of the ticks.
 @export_range(1, 16) var one_in := 4
-## AbominationDroplet.amount (state.d:4844): direct ranged damage, not scaled by the shooter.
+## AbominationDroplet.amount: direct ranged damage, not scaled by the shooter.
 @export var amount := 50.0
-## updateAbominationDroplet: velocity.z −= 10/updateFPS (state.d:24491).
+## The droplet's fall: velocity.z −= 10/updateFPS.
 @export var gravity := 10.0
-## abominationDropletSize (state.d:24481): side of the droplet's hit box in meters.
+## Side of the droplet's hit box in meters (abominationDropletSize).
 @export var hit_size := 0.25
 
 ## Droplets it dropped (the ticks are ShotInFlight's).

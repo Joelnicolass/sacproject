@@ -21,14 +21,14 @@ var _axis := Vector3.UP
 var _turn := 0.0
 var _age := 0.0
 var _puff := 0.0
-var _land: GroundSurface
+var _land: Terrain
 
 
 func _ready() -> void:
 	if DisplayServer.get_name() == "headless":
 		queue_free()
 		return
-	_land = GroundSurface.of(self)
+	_land = Terrain.of(self)
 
 
 ## Throws it: velocity in m/s, spinning `turn` rad/s around `axis`.
@@ -38,7 +38,7 @@ func launch(speed: Vector3, axis: Vector3, turn: float) -> void:
 	_turn = turn
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	_age += delta
 	if _age >= life_s:
 		queue_free()
@@ -58,4 +58,4 @@ func _process(delta: float) -> void:
 	_puff += delta
 	if trail != null and _puff >= trail_every_s:
 		_puff = fmod(_puff, trail_every_s)
-		FxBus.play_puff(trail.bus_name(), global_position)
+		FxBus.puff(trail, global_position)

@@ -1,0 +1,18 @@
+# Decision log cases of 055f (plan §10.1): name|scene|args. One headless process per case, --fixed-fps 60, Godot one at a time.
+# agent/runs/run_ai_decisions.sh adds --decisions=<out> and --watchdog-s. The «AI duels» use ai_easy_vs_normal.tres with both seats
+# Normal: debug/rules/ai_duel_seeded.tres and ai_npc_load.tres have no AI seats (fights of creatures only), so the load case is
+# ai_perf60.tres (two AI sides, four groups of creatures, NPC, a Manalith each). Every case runs 4 minutes but the last two,
+# which run the time of their own scene (f372: 0.5 min; f373: 3 min or until its criteria are done).
+duel_s3|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_easy_vs_normal.tres --difficulties=normal,normal --gods=pyro,charnel --seed=3 --minutes=4
+duel_s7|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_easy_vs_normal.tres --difficulties=normal,normal --gods=persephone,stratos --seed=7 --minutes=4
+duel_s11|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_easy_vs_normal.tres --difficulties=normal,normal --gods=james,pyro --seed=11 --minutes=4
+easy_vs_normal_s7|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_easy_vs_normal.tres --seed=7 --minutes=4
+duel_hard_s5|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_easy_vs_normal.tres --difficulties=hard,normal --seed=5 --minutes=4
+convert|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_convert.tres --minutes=4
+guard|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_guard.tres --minutes=4
+defend|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_defend.tres --minutes=4
+2v2_flat4_s2|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_2v2_flat4.tres --map=test_flat4 --mode=2v2 --seed=2 --minutes=4
+ffa4_flat4_s4|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_ffa4_flat4.tres --map=test_flat4 --mode=ffa4 --seed=4 --minutes=4
+perf60_npc|res://debug/ai/ai_match.tscn|--rules=res://debug/rules/ai_perf60.tres --minutes=4
+f372_ai_heal|res://debug/ai/f372_ai_heal.tscn|--rules=res://debug/rules/f372_ai_heal.tres
+f373_ai_finish_normal|res://debug/ai/f373_ai_finish.tscn|--rules=res://debug/rules/f373_ai_finish_normal.tres

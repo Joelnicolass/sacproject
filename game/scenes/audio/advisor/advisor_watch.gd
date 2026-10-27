@@ -4,7 +4,7 @@ extends Node
 
 ## The game's warnings for the advisor (child of AdvisorVoice). It reads what every peer already has
 ## (replicated Health of the bodies, the Ritual nodes) and asks `advisor.say(line)`; the line carries its priority and quiet
-## time and the advisor decides the queue. Only the side of this process (MpKit.local_slot(); 0 on a dedicated: nothing).
+## time and the advisor decides the queue. Only the side of the seat that looks at this screen (0 on a dedicated: nothing).
 ## Remove the node and only the refusals speak.
 ## - The local wizard (MatchWorld.local_wizard_changed, or `wizard` set by hand): its health goes down -> `wizard_attacked`;
 ##   below `low_health_ratio` of its bar -> `wizard_low_health`.
@@ -23,6 +23,11 @@ extends Node
 ## Emits `local_wizard_changed(wizard)` and answers `local_wizard()` (MatchWorld). Optional: the lab sets `wizard`.
 @export var world: Node
 @export var wizard: Node3D
+## Who looks at this screen: only this seat's side is warned.
+@export var seat: MpLocalSeat:
+	set(value):
+		seat = value
+		update_configuration_warnings()
 @export_range(0.05, 5.0, 0.05, "suffix:s") var scan_every_s := 0.25
 ## The groups the creatures and the buildings to watch belong to.
 @export var unit_group: StringName = &"unit"
@@ -128,7 +133,7 @@ func _on_health(current: float, maximum: float, health: Health, body: Node3D, ki
 
 
 func _scan_rituals() -> void:
-	var slot := MpKit.local_slot()
+	var slot := _slot()
 	if slot <= 0:
 		return
 	for node in get_tree().get_nodes_in_group(Ritual.GROUP):
@@ -149,9 +154,17 @@ func _scan_rituals() -> void:
 
 
 func _is_ours(body: Node) -> bool:
-	var slot := MpKit.local_slot()
-	return slot > 0 and int(body.get("owner_slot")) == slot
+	return seat != null and seat.is_mine(int(body.get("owner_slot")))
+
+
+func _slot() -> int:
+	return seat.slot if seat != null else 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if advisor != null else PackedStringArray(["Asigná `advisor` (el AdvisorVoice padre)."])
+	var out := PackedStringArray()
+	if advisor == null:
+		out.append("Asigná `advisor` (el AdvisorVoice padre).")
+	if seat == null:
+		out.append("Asigná `seat` (el MpLocalSeat): sin él no avisa.")
+	return out

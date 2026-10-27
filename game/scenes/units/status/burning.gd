@@ -1,32 +1,35 @@
 class_name Burning
 extends DamageOverTime
 
-## F123 (RFC-030l): one fire on a body (sacengine Fire, state.d:2578-2587). setAblaze / setAblazeWithManaDrain
-## (27670-27676) make it with `damage / lifetime` per frame; updateFire (15112-15130) then, once per frame:
-##   deals that as ranged or spell damage (dealFireDamage, 9421-9427), with the fire's DamageMod (the Pyromaniac's
-##     peirceShield skips Life Shield, Rockform, petrified and Skin of Stone, 8962-8969);
-##   drains `mana_drain / lifetime` mana (drainMana, 8822-8825: never under 0; the Tickferno's heat ray);
+## One fire on a body. setAblaze / setAblazeWithManaDrain
+## make it with `damage / lifetime` per frame; updateFire then, once per frame:
+##   deals that as ranged or spell damage (dealFireDamage), with the fire's DamageMod (the Pyromaniac's
+##     peirceShield skips Life Shield, Rockform, petrified and Skin of Stone);
+##   drains `mana_drain / lifetime` mana (drainMana: never under 0; the Tickferno's heat ray);
 ##   puts 3 fire particles on a creature (not on a building);
 ##   ends after the update whose lifetime reached 0 (`return lifetime-- > 0`): lifetime + 1 updates, as DamageOverTime.
-## A fire of no damage on a building ends on its first update (updateFire 15117-15118: no damage and a building ->
-## `return false`, before any damage or particle): the Spitfire's wave and the Bombard's fire (24521-24527) make one on
+## A fire of no damage on a building ends on its first update (updateFire: no damage and a building ->
+## `return false`, before any damage or particle): the Spitfire's wave and the Bombard's fire make one on
 ## every building they touch (F162b). It is made, runs one update and goes: no health, no mana, no look.
-## F164c: the attacker feeds LifeDrain with what each update took (dealFireDamage -> dealDamage with the attacker, 9421-9427
-## -> 8940), as the poison does (DamageOverTime.attacker_path); the shooter's path comes from `attacker`.
+## F164c: the attacker feeds LifeDrain with what each update took (dealFireDamage -> dealDamage with the attacker),
+## as the poison does (DamageOverTime.attacker_path); the shooter's path comes from `attacker`.
 ##
-## A fire keeps no sum with the others (sacengine refreshAblaze is a spell's, 030r), so there is no owner of aggregates
+## A fire keeps no sum with the others (refreshAblaze is a spell's), so there is no owner of aggregates
 ## as Poisoning: each Burning is its own owner. It lives under the body it burns (freed with it), steps itself once per
 ## physics tick and frees itself when DamageOverTime.step() says it is over. Server (or solo) only: BurnImpact makes it
 ## there; the look goes through FxBus.
+## Ref: F123 (RFC-030l), sacengine Fire state.d:2578-2587, setAblaze 27670-27676, updateFire 15112-15130, 15117-15118, dealFireDamage 9421-9427, peirceShield 8962-8969, drainMana 8822-8825, Bombard fire 24521-24527, dealDamage 8940, refreshAblaze (030r).
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
-## Mana drained per update (sacengine manaDrainPerFrame).
+## Mana drained per update (manaDrainPerFrame).
 var mana_drain_per_tick := 0.0
-## FxBus fire puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only).
-var fire_fx := ""
+## The fire puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only), at
+## `fire_socket` (spawnFireParticles: inside the box). Null = none.
+## Ref: sacengine spawnFireParticles 15124-15127.
+var fire_fx: ParticleType = null
 var fire_every_ticks := 10
-var fire_height_m := 0.8
+var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 ## Mana this fire drained so far (for the log).
 var drained := 0.0
 
@@ -34,12 +37,12 @@ var _health: Health
 var _mana: ManaPool
 
 
-## sacengine setAblaze / setAblazeWithManaDrain: `damage` over `lifetime` frames (`damage / lifetime` per update) as
+## Set ablaze (setAblaze / setAblazeWithManaDrain): `damage` over `lifetime` frames (`damage / lifetime` per update) as
 ## `kind`, and `mana_drain` over the same frames. Null when the body is dead or has no Health. A building with no damage
 ## still gets its fire (it ends on its first update, see above). `attacker`: the creature that set it ablaze (null = nobody
 ## drains).
 static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringName, from_slot: int, mana_drain := 0.0,
-		pierce := false, fx := "", attacker: Node = null) -> Burning:
+		pierce := false, fx: ParticleType = null, attacker: Node = null) -> Burning:
 	if target == null or not is_instance_valid(target) or not _ROCK.is_live_body(target):
 		return null
 	var health := target.get_node_or_null("Health") as Health
@@ -54,10 +57,10 @@ static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringNam
 	fire.kind = kind
 	fire.from_slot = from_slot
 	fire.ignore_friendly = false
-	fire.fx_name = ""
+	fire.fx = null
 	fire.mana_drain_per_tick = maxf(0.0, mana_drain) / float(frames) if creature else 0.0
 	fire.pierce_shield = pierce
-	fire.fire_fx = fx if creature else ""
+	fire.fire_fx = fx if creature else null
 	if attacker != null and is_instance_valid(attacker) and attacker.is_inside_tree():
 		fire.attacker_path = attacker.get_path()
 	target.add_child(fire, true)
@@ -84,10 +87,10 @@ func step(health: Health) -> bool:
 	var going := super.step(health)
 	if mana_drain_per_tick > 0.0 and _mana:
 		drained += _mana.drain(mana_drain_per_tick)
-	if not fire_fx.is_empty() and fire_every_ticks > 0 and (updates - 1) % fire_every_ticks == 0:
+	if fire_fx != null and fire_every_ticks > 0 and (updates - 1) % fire_every_ticks == 0:
 		var on := get_parent() as Node3D
 		if on:
-			FxBus.broadcast(fire_fx, on.global_position + Vector3.UP * fire_height_m)
+			FxBus.broadcast(fire_fx, BodyFacts.point(on, fire_socket))
 	return going
 
 

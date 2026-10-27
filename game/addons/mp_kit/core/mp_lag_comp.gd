@@ -17,15 +17,16 @@ static var _flag_read: bool = false
 static var _tracks: Dictionary = {}
 
 
-## Server: the pose of `node` at simulation time `stamp` (this tick's).
-static func record(node: Node, stamp: float) -> void:
+## Server: the pose of `node` at simulation time `stamp` (this tick's). `teleported`: it got there by a teleport,
+## so a rewind between the last pose and this one holds the last (as the shooter saw it: proxies never slide across).
+static func record(node: Node, stamp: float, teleported: bool = false) -> void:
 	var id := node.get_instance_id()
 	var track: Track = _tracks.get(id)
 	if track == null:
 		track = Track.new()
 		track.node = node
 		_tracks[id] = track
-	track.add(stamp, MpProxyMotion.position_of(node), MpProxyMotion.rotation_of(node))
+	track.add(stamp, MpProxyMotion.position_of(node), MpProxyMotion.rotation_of(node), teleported)
 
 
 static func forget(node: Node) -> void:
@@ -113,17 +114,21 @@ class Track:
 	var stamps := PackedFloat64Array()
 	var positions := PackedVector3Array()
 	var rotations: Array[Quaternion] = []
+	## 1 where the pose was reached by a teleport.
+	var teleports := PackedByteArray()
 
-	func add(stamp: float, position: Vector3, rotation: Quaternion) -> void:
+	func add(stamp: float, position: Vector3, rotation: Quaternion, teleported: bool = false) -> void:
 		if not stamps.is_empty() and stamp <= stamps[stamps.size() - 1]:
 			return
 		stamps.append(stamp)
 		positions.append(position)
 		rotations.append(rotation)
+		teleports.append(1 if teleported else 0)
 		while stamps.size() > 1 and stamp - stamps[0] > MpLagComp.HISTORY_S:
 			stamps.remove_at(0)
 			positions.remove_at(0)
 			rotations.remove_at(0)
+			teleports.remove_at(0)
 
 	## [position, rotation] at `stamp`, between the two poses around it (the ends outside the history).
 	func sample(stamp: float) -> Array:
@@ -137,5 +142,7 @@ class Track:
 		var i := last - 1
 		while i > 0 and stamps[i] > stamp:
 			i -= 1
+		if teleports[i + 1] == 1:
+			return [positions[i], rotations[i]]
 		var t := (stamp - stamps[i]) / maxf(stamps[i + 1] - stamps[i], 0.0001)
 		return [positions[i].lerp(positions[i + 1], t), rotations[i].slerp(rotations[i + 1], t)]

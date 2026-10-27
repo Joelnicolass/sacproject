@@ -1,7 +1,8 @@
 extends Control
 
-## RFC-034 034m: join a friend's «Servidor local». Visible outside debug builds too (it is the only door to a direct address).
+## Join a friend's «Servidor local». Visible outside debug builds too (it is the only door to a direct address).
 ## The rival types `address:port`, the code the host gave him and the transport. The code is the ticket of his seat.
+## Ref: RFC-034 034m.
 
 signal back_requested
 

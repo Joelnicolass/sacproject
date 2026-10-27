@@ -6,7 +6,7 @@ extends RefCounted
 ## paths run as solo. `run(host)` adds its own floor and bodies under `host` and removes them at the end.
 
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/james_manalith.tscn")
 const ALTAR_SCENE := preload("res://scenes/map/props/altar.tscn")
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const SELECTION := preload("res://scenes/orders/selection.gd")
@@ -143,7 +143,7 @@ func _fire() -> Dictionary:
 	var feeder := scythe.get_node("Health") as Health
 	feeder.current = feeder.maximum * 0.5
 	var start := feeder.current
-	var burn := Burning.ignite(victim, 120.0, 60, Health.DIRECT_RANGED, 2, 0.0, false, "", scythe)
+	var burn := Burning.ignite(victim, 120.0, 60, Health.DIRECT_RANGED, 2, 0.0, false, null, scythe)
 	checks["fire_made"] = burn != null
 	if burn != null:
 		burn.set_physics_process(false)
@@ -160,7 +160,7 @@ func _fire() -> Dictionary:
 		anon.set_physics_process(false)
 		anon.step(victim.get_node("Health") as Health)
 	checks["fire_without_attacker_no_drain"] = anon != null and anon.attacker_path.is_empty() and is_equal_approx(feeder.current, mid)
-	var building := Burning.ignite(structure, 0.0, 30, Health.DIRECT_RANGED, 2, 0.0, false, "", scythe)
+	var building := Burning.ignite(structure, 0.0, 30, Health.DIRECT_RANGED, 2, 0.0, false, null, scythe)
 	checks["building_fire_made"] = building != null
 	if building != null:
 		building.set_physics_process(false)
@@ -310,7 +310,7 @@ func _action() -> Dictionary:
 	var checks := {}
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = Vector3(500.0, 0.0, 0.0)
 	var caster := wizard.get_node("Caster")
@@ -376,7 +376,10 @@ func _action() -> Dictionary:
 ## double click groups guardians of the same building apart from free creatures of the same type.
 func _selection() -> Dictionary:
 	var checks := {}
+	var seat := MpLocalSeat.new()
+	_root.add_child(seat)
 	var selection := SELECTION.new()
+	selection.seat = seat
 	_root.add_child(selection)
 	var structure := _structure(Vector3.ZERO)
 	var other_structure := _structure(Vector3(200.0, 0.0, 0.0))
@@ -399,6 +402,7 @@ func _selection() -> Dictionary:
 	var of_d := selection._same_type_near(d)
 	checks["free_double_click_skips_guardians"] = of_d == [d]
 	selection.queue_free()
+	seat.queue_free()
 	structure.queue_free()
 	other_structure.queue_free()
 	for unit in [a, b, c, d]:

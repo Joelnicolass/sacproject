@@ -1,6 +1,16 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://debug/fx/fx_gallery.gd" id="1_gallery"]
+[ext_resource type="Script" path="res://debug/fx/fx_slot.gd" id="2_slot"]
+[ext_resource type="Resource" path="res://data/fx/cast_james.tres" id="fx_cast_james"]
+[ext_resource type="Resource" path="res://data/fx/cast_persephone.tres" id="fx_cast_persephone"]
+[ext_resource type="Resource" path="res://data/fx/summon.tres" id="fx_summon"]
+[ext_resource type="Resource" path="res://data/fx/heal.tres" id="fx_heal"]
+[ext_resource type="Resource" path="res://data/fx/speedup.tres" id="fx_speedup"]
+[ext_resource type="Resource" path="res://data/fx/rock.tres" id="fx_rock"]
+[ext_resource type="Resource" path="res://data/fx/dirt.tres" id="fx_dirt"]
+[ext_resource type="Resource" path="res://data/fx/blood.tres" id="fx_blood"]
+[ext_resource type="Resource" path="res://data/fx/hover_blood.tres" id="fx_hover_blood"]
 
 [sub_resource type="Environment" id="Environment_fx"]
 background_mode = 1
@@ -38,6 +48,8 @@ unique_name_in_owner = true
 
 [node name="cast_james" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_cast_james")
 
 [node name="Label" type="Label3D" parent="Slots/cast_james"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.25, 2)
@@ -49,6 +61,8 @@ outline_size = 10
 
 [node name="cast_persephone" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1.5, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_cast_persephone")
 
 [node name="Label" type="Label3D" parent="Slots/cast_persephone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.25, 2)
@@ -60,6 +74,8 @@ outline_size = 10
 
 [node name="summon" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.3, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_summon")
 
 [node name="Label" type="Label3D" parent="Slots/summon"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 2)
@@ -71,6 +87,8 @@ outline_size = 10
 
 [node name="heal" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.3, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_heal")
 
 [node name="Label" type="Label3D" parent="Slots/heal"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 2)
@@ -82,6 +100,8 @@ outline_size = 10
 
 [node name="speedup" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_speedup")
 
 [node name="Label" type="Label3D" parent="Slots/speedup"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)
@@ -93,6 +113,8 @@ outline_size = 10
 
 [node name="rock" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_rock")
 
 [node name="Label" type="Label3D" parent="Slots/rock"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)
@@ -104,6 +126,8 @@ outline_size = 10
 
 [node name="dirt" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_dirt")
 
 [node name="Label" type="Label3D" parent="Slots/dirt"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 2)
@@ -115,6 +139,8 @@ outline_size = 10
 
 [node name="blood" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_blood")
 
 [node name="Label" type="Label3D" parent="Slots/blood"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)
@@ -126,6 +152,8 @@ outline_size = 10
 
 [node name="hover_blood" type="Marker3D" parent="Slots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 1, 0)
+script = ExtResource("2_slot")
+fx = ExtResource("fx_hover_blood")
 
 [node name="Label" type="Label3D" parent="Slots/hover_blood"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.75, 2)

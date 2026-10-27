@@ -8,6 +8,7 @@ extends RefCounted
 ## corner needs); `nav_rebake_ms` is the cost of baking the whole navmesh again (gate REBAKE_MS).
 
 const EDGE_CASES := preload("res://debug/suite/edge_cases.gd")  # 036h
+const Maps := preload("res://debug/look/flora_test_maps.gd")
 const FOUNT_AT := Vector3(1270.0, 10.0, 1270.0)
 const FOUNT_RADIUS := 3.6
 const START1 := Vector3(1504.9, 17.0, 1540.5)
@@ -26,10 +27,8 @@ var _terrain: Terrain
 func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frames
 	_root = Node3D.new()
 	_root.name = "NavCases"
-	_terrain = Terrain.new()
+	_terrain = Maps.land_from(Maps.heights_of(ActiveMatch.map()))
 	_terrain.name = "Terrain"
-	_terrain.shape = GroundSurface.with_data(MapCatalog.active().terrain)
-	_terrain.add_child(_terrain.shape)
 	_terrain.add_to_group(NavFingerprint.GROUP)
 	_root.add_child(_terrain)
 	var fount := StaticBody3D.new()
@@ -44,19 +43,21 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	shape.shape = cylinder
 	shape.position = Vector3(0.0, 4.0, 0.0)
 	fount.add_child(shape)
-	var ground: float = _terrain.shape.height_at(FOUNT_AT.x, FOUNT_AT.z)
+	var ground: float = _terrain.height_at(FOUNT_AT.x, FOUNT_AT.z)
 	fount.position = FOUNT_AT if is_nan(ground) else Vector3(FOUNT_AT.x, ground, FOUNT_AT.z)
 	_root.add_child(fount)
 	_service = NavService.new()
 	_service.name = "Nav"
-	_service.ground = _terrain.shape
+	_service.terrain = _terrain
 	_service.build_on_ready = false
+	_service.region = Maps.nav_region_of(ActiveMatch.map())
+	_service.add_child(_service.region)
 	_root.add_child(_service)
 	host.add_child(_root)
-	_terrain.add_child(_terrain.make_collision_body())  # a Terrain from the script alone has no body
+	_terrain.add_child(Maps.collision_of(_terrain))
 	var out := {}
-	if not _terrain.shape.is_loaded():
-		var missing := {"ok": false, "reason": "sin terreno (assets/original/maps/high_noon/terrain.res)"}
+	if not _terrain.is_loaded():
+		var missing := {"ok": false, "reason": "sin terreno (el heights.png del mapa activo)"}
 		_root.free()
 		return {"nav_build": missing}
 	_service.build()
@@ -64,9 +65,9 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	for _frame in 3:
 		await host.get_tree().physics_frame
 	## The fount is not in the stored bake: wait for the re-bake that adds it to be swapped in (bounded, the swap is a count of ticks).
-	var guard := 900
-	while _service.is_rebaking() and guard > 0:
-		guard -= 1
+	## Real seconds, not frames: under --fixed-fps the frames outrun the worker that bakes.
+	var deadline := Time.get_ticks_msec() + 60000
+	while _service.is_rebaking() and Time.get_ticks_msec() < deadline:
 		await host.get_tree().physics_frame
 	for _frame in 3:
 		await host.get_tree().physics_frame
@@ -78,7 +79,7 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	out["nav_goal_off_land"] = _off_land()
 	out["nav_line_clear"] = _line_clear()
 	out["nav_box_corner"] = _box_corner()
-	out.merge(await EDGE_CASES.new().run(_root, _terrain.shape, _service))  # 036h
+	out.merge(await EDGE_CASES.new().run(_root, _terrain, _service))  # 036h
 	out["nav_rebake_ms"] = _rebake()
 	_root.free()
 	return out
@@ -245,16 +246,21 @@ func _box_corner() -> Dictionary:
 
 
 ## RFC-035 035g: the whole navmesh baked again from the nav_source colliders (parse on this thread, bake on a worker thread, waited for).
-## The gate is REBAKE_MS; the report gives the parse and the total.
+## The gate is REBAKE_MS; the report gives the parse and the total. 063D F6: the components built on the worker are the ones this thread
+## builds from the same navmesh (same ids in the same order).
 func _rebake() -> Dictionary:
 	var rebake := NavRebake.new(load("res://data/nav/nav_bake.tres") as NavBakeSettings)
 	var started := Time.get_ticks_usec()
 	var baked := rebake.bake_now(_root)
 	var total_ms := float(Time.get_ticks_usec() - started) / 1000.0
 	var polygons := baked.get_polygon_count() if baked != null else 0
+	var here := NavRegions.new()
+	if baked != null:
+		here.build(baked)
 	var checks := {
 		"has_polygons": polygons > 0,
 		"under_limit": total_ms <= REBAKE_MS,
+		"worker_regions_match": rebake.regions != null and rebake.regions.sizes == here.sizes and rebake.regions.polygon_count == polygons,
 	}
 	return _verdict(checks, {"total_ms": snappedf(total_ms, 0.1), "parse_ms": snappedf(rebake.parse_ms, 0.1), "bake_ms": snappedf(rebake.bake_ms, 0.1), "polygons": polygons})
 

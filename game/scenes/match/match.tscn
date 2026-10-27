@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" uid="uid://chaq34qan04i8" path="res://scenes/match/match_world.gd" id="1_world"]
+[ext_resource type="Script" uid="uid://bgtcxpe3ofu2f" path="res://addons/mp_kit/nodes/mp_local_seat.gd" id="n6_seat"]
 [ext_resource type="Script" uid="uid://l3u0mgrbc72j" path="res://scenes/wizards/wizard_spawner.gd" id="4_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="5_wizard"]
 [ext_resource type="Script" uid="uid://cm4vcossqdpt5" path="res://scenes/orders/match_command.gd" id="7_match"]
@@ -13,23 +14,25 @@
 [ext_resource type="Script" path="res://scenes/orders/command/group_keys.gd" id="ef25_group_keys"]
 [ext_resource type="Script" path="res://scenes/orders/command/command_input.gd" id="ef25_command_input"]
 [ext_resource type="Script" path="res://scenes/orders/command/minimap_pointing.gd" id="ef25_minimap_pointing"]
+[ext_resource type="Script" path="res://scenes/orders/command/armed_preview.gd" id="f388_armed_preview"]
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/camera/world_camera.gd" id="11_camera"]
 [ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/match/match_biome.gd" id="13_biome"]
+[ext_resource type="Script" path="res://scenes/net/biome_link.gd" id="b3_biome_link"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud/hud.tscn" id="14_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/spell_book/spell_book.tscn" id="15_book"]
 [ext_resource type="Script" uid="uid://c8mumq6up5ajy" path="res://scenes/spells/spell_spawner.gd" id="16_spawner"]
 [ext_resource type="Script" uid="uid://k8nbg7yvigvf" path="res://scenes/structures/structure_spawner.gd" id="17_structure_spawner"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_mana.tscn" id="tw_mana"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_pyma.tscn" id="tw_pyma"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="tw_jman"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stam.tscn" id="tw_stam"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_cama.tscn" id="tw_cama"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_pcsh.tscn" id="tw_pcsh"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_pasp.tscn" id="tw_pasp"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jsac.tscn" id="tw_jsac"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_stsp.tscn" id="tw_stsp"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_casp.tscn" id="tw_casp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_manalith.tscn" id="tw_mana"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_manalith.tscn" id="tw_pyma"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_manalith.tscn" id="tw_jman"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_manalith.tscn" id="tw_stam"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_manalith.tscn" id="tw_cama"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_shrine.tscn" id="tw_pcsh"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/pyro_shrine.tscn" id="tw_pasp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_shrine.tscn" id="tw_jsac"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/stratos_shrine.tscn" id="tw_stsp"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_shrine.tscn" id="tw_casp"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="f25_unit"]
 [ext_resource type="Script" uid="uid://c3o4n6xmxkjph" path="res://scenes/units/unit_spawner.gd" id="f25_unit_spawner"]
 [ext_resource type="Script" uid="uid://dqkkafcm1xuke" path="res://scenes/orders/orders.gd" id="f27_orders"]
@@ -74,6 +77,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hover_frame/hover_frame.tscn" id="hover_frame"]
 [ext_resource type="PackedScene" path="res://scenes/camera/camera_shake.tscn" id="f375_shake"]
 [ext_resource type="PackedScene" path="res://scenes/fx/damage_numbers.tscn" id="f375_numbers"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/spray_marks.tscn" id="b060_spray_marks"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/explosion_zone.tscn" id="z61_explosion"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/frozen_ground.tscn" id="z61_frozen"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/demonic_rift.tscn" id="z61_rift"]
@@ -93,23 +97,31 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/stalks/meanstalks.tscn" id="z61_stalks"]
 [ext_resource type="PackedScene" path="res://scenes/spells/tornado/tornado.tscn" id="z61_tornado"]
 [ext_resource type="PackedScene" path="res://scenes/look/post/psx_screen.tscn" id="post_psx"]
+[ext_resource type="PackedScene" path="res://scenes/ui/match_wait/match_wait.tscn" id="g68_wait"]
+[ext_resource type="PackedScene" path="res://scenes/look/warmup/shader_warmup.tscn" id="w69_warmup"]
+[ext_resource type="Script" path="res://scenes/net/load_report.gd" id="w69_report"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
 
 
-[node name="HighNoon" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap")]
+[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap")]
 script = ExtResource("1_world")
 rules = ExtResource("12_rules")
 minimap = NodePath("Hud/Minimap")
 
+
+[node name="LocalSeat" type="Node" parent="."]
+editor_description = "070 N6: quién mira esta pantalla. Un solo dueño: Selection, PointerRay, CommandFeedback, DamageNumbers, MatchResult, PauseMenu, MusicDirector y AdvisorWatch lo tienen por @export seat. Solo, preview_slot > 0 muestra la partida como ese asiento."
+script = ExtResource("n6_seat")
 
 [node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("edge_area", "wheel_blockers", "shake")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.7, 0.7, 0, -0.7, 0.7, 0, 18, 18)
 far = 20000.0
 script = ExtResource("11_camera")
+process_priority = 15000
 edge_area = NodePath("../Hud/View")
 wheel_blockers = [NodePath("../Hud/Minimap")]
 shake = NodePath("CameraShake")
@@ -117,9 +129,27 @@ shake = NodePath("CameraShake")
 
 [node name="CameraShake" parent="Camera" instance=ExtResource("f375_shake")]
 
+[node name="WarmupStage" type="Marker3D" parent="Camera"]
+process_mode = 3
+editor_description = "069: donde el precalentado dibuja cada malla y efecto una vez, frente a la cámara y tapado por la pantalla de carga. Siempre procesa: la puerta pausa el árbol mientras carga y una partícula quieta no se dibuja."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
 
-[node name="DamageNumbers" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("f375_numbers")]
+[node name="Warmup" parent="." node_paths=PackedStringArray("world", "biome", "stage") instance=ExtResource("w69_warmup")]
+world = NodePath("..")
+biome = NodePath("../MatchBiome")
+stage = NodePath("../Camera/WarmupStage")
+
+[node name="LoadReport" type="Node" parent="."]
+process_mode = 3
+editor_description = "069: le cuenta al flujo cuánto cargó este mundo (el avance del precalentado) y cuándo terminó: el «cargué» de este asiento para la puerta."
+script = ExtResource("w69_report")
+
+
+[node name="DamageNumbers" parent="." node_paths=PackedStringArray("camera", "seat") instance=ExtResource("f375_numbers")]
 camera = NodePath("../Camera")
+seat = NodePath("../LocalSeat")
+
+[node name="SprayMarks" parent="." instance=ExtResource("b060_spray_marks")]
 
 
 [node name="Wizards" type="Node3D" parent="." unique_id=322085300]
@@ -131,11 +161,17 @@ spawn_path = NodePath("../Wizards")
 script = ExtResource("4_spawner")
 pawn_scene = ExtResource("5_wizard")
 actor_name_prefix = "Wizard"
+despawn_on_leave = false
 
 
 [node name="MatchBiome" type="Node" parent="." unique_id=1771451217 node_paths=PackedStringArray("world")]
 script = ExtResource("13_biome")
 world = NodePath("..")
+
+[node name="BiomeLink" type="Node" parent="." node_paths=PackedStringArray("biome")]
+editor_description = "055i-b3: el canal de red «biome». El servidor manda el dios de la tierra y el reloj del cielo a cada cliente con el mundo listo; el cliente se los da a MatchBiome. Va debajo de MatchBiome (que sortea primero)."
+script = ExtResource("b3_biome_link")
+biome = NodePath("../MatchBiome")
 
 
 [node name="Units" type="Node3D" parent="." unique_id=1921753883]
@@ -217,9 +253,10 @@ unique_name_in_owner = true
 world = NodePath("..")
 
 
-[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world") instance=ExtResource("f57_match")]
+[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world", "wizards") instance=ExtResource("f57_match")]
 unique_name_in_owner = true
 world = NodePath("..")
+wizards = NodePath("../Wizards")
 
 
 [node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("structures")]
@@ -228,10 +265,11 @@ script = ExtResource("f72_nav")
 structures = NodePath("../Structures")
 
 
-[node name="Selection" type="Node" parent="." unique_id=1294781756 node_paths=PackedStringArray("box")]
+[node name="Selection" type="Node" parent="." unique_id=1294781756 node_paths=PackedStringArray("box", "seat")]
 unique_name_in_owner = true
 script = ExtResource("f27_selection")
 box = NodePath("../Hud/SelectionBox")
+seat = NodePath("../LocalSeat")
 
 
 [node name="Orders" type="Node" parent="." unique_id=1688586003]
@@ -247,13 +285,15 @@ orders = NodePath("OrderCommand")
 abilities = NodePath("AbilityCommand")
 
 
-[node name="PointerRay" type="Node" parent="MatchCommand" unique_id=1625250101 node_paths=PackedStringArray("minimap")]
+[node name="PointerRay" type="Node" parent="MatchCommand" unique_id=1625250101 node_paths=PackedStringArray("minimap", "seat")]
 script = ExtResource("ef25_pointer_ray")
 minimap = NodePath("../../Hud/Minimap")
+seat = NodePath("../../LocalSeat")
 
 
-[node name="CommandFeedback" type="Node" parent="MatchCommand" unique_id=1625258020]
+[node name="CommandFeedback" type="Node" parent="MatchCommand" unique_id=1625258020 node_paths=PackedStringArray("seat")]
 script = ExtResource("ef25_command_feedback")
+seat = NodePath("../../LocalSeat")
 
 
 [node name="ArmedCommand" type="Node" parent="MatchCommand" unique_id=1625265939 node_paths=PackedStringArray("feedback")]
@@ -301,6 +341,13 @@ ray = NodePath("../PointerRay")
 spells = NodePath("../SpellCommand")
 abilities = NodePath("../AbilityCommand")
 orders = NodePath("../OrderCommand")
+
+[node name="ArmedPreview" type="Node" parent="MatchCommand" node_paths=PackedStringArray("armed", "ray", "probe")]
+editor_description = "F388: con una estructura armada, 15 veces por segundo pregunta al Caster local qué respondería un clic en el puntero (aim_for) y lo deja en %Battle (aim_status, aim_site); prende el anillo del manantial en verde o rojo. Local, sin RPC. Sacalo y queda solo el parpadeo después del clic."
+script = ExtResource("f388_armed_preview")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+probe = NodePath("../../Hud/TargetProbe")
 
 
 
@@ -393,14 +440,18 @@ offset_bottom = 336.0
 unique_name_in_owner = true
 
 
-[node name="MatchResult" parent="Hud" unique_id=1957000102 node_paths=PackedStringArray("match_state") instance=ExtResource("f57_result")]
+[node name="MatchResult" parent="Hud" unique_id=1957000102 node_paths=PackedStringArray("match_state", "seat") instance=ExtResource("f57_result")]
 unique_name_in_owner = true
 match_state = NodePath("../../Match")
+seat = NodePath("../../LocalSeat")
 
 
 [node name="LobbyReturn" parent="Hud" unique_id=803648076 node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
 unique_name_in_owner = true
 match_state = NodePath("../../Match")
+
+
+[node name="MatchWait" parent="Hud" instance=ExtResource("g68_wait")]
 
 
 [node name="RitualNotice" parent="Hud" unique_id=1957000103 instance=ExtResource("f60_notice")]
@@ -447,8 +498,9 @@ probe = NodePath("../TargetProbe")
 inspector = NodePath("../../Inspector")
 
 
-[node name="PauseMenu" parent="." unique_id=29936649 instance=ExtResource("f141_pause")]
+[node name="PauseMenu" parent="." unique_id=29936649 node_paths=PackedStringArray("seat") instance=ExtResource("f141_pause")]
 unique_name_in_owner = true
+seat = NodePath("../LocalSeat")
 
 
 [node name="GraphicsApplier" type="Node" parent="." unique_id=2135902278]
@@ -479,15 +531,17 @@ bus = &"Voice"
 [node name="AdvisorVoice" parent="." node_paths=PackedStringArray("command_log") instance=ExtResource("a055_advisor")]
 command_log = NodePath("../Hud/Battle")
 
-[node name="AdvisorWatch" parent="AdvisorVoice" index="1" node_paths=PackedStringArray("world")]
+[node name="AdvisorWatch" parent="AdvisorVoice" index="1" node_paths=PackedStringArray("world", "seat")]
 world = NodePath("../..")
+seat = NodePath("../../LocalSeat")
 
 [node name="CombatGauge" type="Node" parent="." node_paths=PackedStringArray("world")]
 editor_description = "RFC-052 052f: la intensidad del combate cerca del oyente (criaturas en ATTACK/SHOOT a menos de radius_m) con histéresis, más el daño al mago local en los últimos wizard_damage_s. Solo lee estado replicado."
 script = ExtResource("a052_gauge")
 world = NodePath("..")
 
-[node name="MusicDirector" parent="." node_paths=PackedStringArray("biome", "gauge", "match_state", "camera") instance=ExtResource("a052_music")]
+[node name="MusicDirector" parent="." node_paths=PackedStringArray("biome", "gauge", "match_state", "camera", "seat") instance=ExtResource("a052_music")]
+seat = NodePath("../LocalSeat")
 biome = NodePath("../MatchBiome")
 gauge = NodePath("../CombatGauge")
 match_state = NodePath("../Match")
@@ -503,3 +557,5 @@ biome = NodePath("../MatchBiome")
 [connection signal="local_wizard_changed" from="." to="Hud/Minimap" method="bind"]
 [connection signal="local_wizard_changed" from="." to="Hud/RitualNotice" method="bind"]
 [connection signal="local_wizard_changed" from="." to="Hud/TargetProbe" method="bind"]
+[connection signal="progressed" from="Warmup" to="LoadReport" method="report_progress"]
+[connection signal="finished" from="Warmup" to="LoadReport" method="report_loaded"]

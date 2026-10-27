@@ -1,23 +1,30 @@
 extends SpellProjectile
 
-## Persephone's Wrath (sacengine state.d:10493-10506, 16386-16581). A ball of light leaves the
+## Persephone's Wrath. A ball of light leaves the
 ## caster's hands and flies at its target (accelerateTowards, 0.5 m over the ground). It
 ## bursts on the first body of another side it touches, under the ground, or at the target.
 ## The body hit takes the full amount as splash spell damage; every other body within
-## damage_range takes amount·(1 − distance/range), also as splash spell damage
-## (wrathExplosion, state.d:16496-16501; dealDamage, state.d:9053-9088).
+## damage_range takes amount·(1 − distance/range), also as splash spell damage.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
+## Ref: sacengine state.d:10493-10506, 16386-16581; wrathExplosion, state.d:16496-16501; dealDamage, state.d:9053-9088
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 const FPS := 60.0
-## sacengine wrathFlyingHeight.
+## Flying height.
+## Ref: sacengine wrathFlyingHeight
 const FLYING_HEIGHT := 0.5
-## sacengine wrathSize 0.1: hit box of ±0.05 m.
+## Hit box of ±0.05 m.
+## Ref: sacengine wrathSize 0.1
 const SIZE := 0.1
 const ARRIVE_DISTANCE := 0.25
 ## Trail puffs on every peer, by time (FxTrail): one per 2/60 s.
 const TRAIL_INTERVAL_S := 2.0 / 60.0
+
+## Puffed behind it while it flies: the ball is only this trail. Empty = no trail.
+@export var trail: ParticleType
+## Bursts where it breaks, on every peer.
+@export var explosion: Array[ParticleType] = []
 
 var speed := 0.0
 var acceleration := 0.0
@@ -42,12 +49,13 @@ func setup(data: Dictionary) -> void:
 	damage_range = float(data.get("damage_range", 0.0))
 	from_slot = int(data.get("slot", 0))
 	_attach_net()
-	## sacengine animateWrath: the ball is only particles, its trail.
-	FxTrail.attach(self, "wrath_trail", TRAIL_INTERVAL_S)
+	## The ball is only particles, its trail.
+	## Ref: sacengine animateWrath
+	FxTrail.attach(self, trail, TRAIL_INTERVAL_S)
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 
@@ -63,8 +71,9 @@ func _attach_net() -> void:
 	add_child(net)
 
 
-## sacengine updateWrath (flying) with accelerateTowards (state.d:16528-16562). The target's
-## motion is not predicted (sacengine predictCenter): it aims at the current center.
+## Flight with accelerateTowards. The target's
+## motion is not predicted: it aims at the current center.
+## Ref: sacengine updateWrath (flying); state.d:16528-16562; sacengine predictCenter
 func _physics_process(_delta: float) -> void:
 	var target_center := _target_center()
 	var to_target := target_center - global_position
@@ -119,8 +128,9 @@ func _ground_height(at: Vector3) -> float:
 	return GroundRay.surface_y(self, at, 1, GroundRay.wizard_rids(get_tree()), -INF)
 
 
-## sacengine wrathExplosion: the direct hit gets the whole amount (DamageMod.splash), then
+## The direct hit gets the whole amount (DamageMod.splash), then
 ## dealSplashSpellDamageAt hurts the rest by the distance to their hit box.
+## Ref: sacengine wrathExplosion
 func _explode(direct: Node3D) -> void:
 	var center := global_position
 	if direct and is_instance_valid(direct) and _ROCK.is_live_body(direct):
@@ -128,9 +138,8 @@ func _explode(direct: Node3D) -> void:
 	else:
 		direct = null
 	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot)
-	FxBus.broadcast("wrath_explosion1", center)
-	FxBus.broadcast("wrath_explosion2", center)
-	FxBus.broadcast("wrath_particle", center)
+	for type in explosion:
+		FxBus.broadcast(type, center)
 	set_physics_process(false)
 	set_process(false)
 	queue_free()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://addons/mp_kit/mp_slot_spawner.gd" id="1"]
 [ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/player.tscn" id="2"]
@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" path="res://addons/mp_kit/examples/arena_2d/bell.tscn" id="9"]
 [ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_leave_button.gd" id="10"]
 [ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_invite_label.gd" id="11"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_start_button.gd" id="12"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_waiting_label.gd" id="13"]
 
 [sub_resource type="SceneReplicationConfig" id="state_sync"]
 properties/0/path = NodePath(".:values")
@@ -92,3 +94,18 @@ offset_left = 16.0
 offset_top = 500.0
 offset_right = 944.0
 offset_bottom = 528.0
+
+[node name="Start" type="Button" parent="Hud"]
+script = ExtResource("12")
+offset_left = 700.0
+offset_top = 12.0
+offset_right = 850.0
+offset_bottom = 44.0
+
+[node name="Waiting" type="Label" parent="Hud"]
+script = ExtResource("13")
+offset_left = 16.0
+offset_top = 260.0
+offset_right = 944.0
+offset_bottom = 288.0
+horizontal_alignment = 1

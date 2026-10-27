@@ -57,7 +57,7 @@ func _run() -> void:
 	var caster := _wizard.get_node("Caster")
 	await _ticks(20)
 	await _shot("1_rest", report)
-	caster.set("cast_fx_shown", _fx)
+	caster.set("cast_fx_shown", FxWire.PARTICLES_DIR + _fx + ".tres")
 	for i in 3:
 		await _ticks(24)
 		await _shot("2_cast_%d" % i, report)

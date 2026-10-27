@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/strikes/target_strike.gd" id="1_target"]
+[ext_resource type="Resource" path="res://data/fx/beams/styx.tres" id="fx_styx"]
 
 [node name="StyxStrike" type="Node3D"]
 process_physics_priority = -1
 editor_description = "F124 (RFC-030 030m-a). El golpe del Styx (dhga, StyxShoot state.d:11852-11855, 24154-24172): al tick siguiente cae en el centro del blanco vivo o en el punto apuntado, sin precisión. Beam styx desde el origen del disparo. Daño (salpicadura del Mutant) e impact_fx (styx_spark): ShotLook de dhga."
 script = ExtResource("1_target")
 land_tick = 1
-beam = "styx"
+beam = ExtResource("fx_styx")

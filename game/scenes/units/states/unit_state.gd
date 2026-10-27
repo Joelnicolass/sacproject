@@ -1,10 +1,11 @@
 class_name UnitState
 extends FsmState
 
-## One mode of a UnitBody (RFC-036 036j). `mode` is the replicated value this state stands for and the node name is the
+## One mode of a UnitBody. `mode` is the replicated value this state stands for and the node name is the
 ## transition key: a state asks for another with transition(&"Chase"). UnitBody.mode stays the only writer (it is replicated
 ## and many callers set it); its setter moves the machine, so enter/exit run on every peer (presentation only) while
 ## physics_update runs where the sim runs, called by UnitBody at the point of its physics step that used to be the `match`.
+## Ref: RFC-036 036j.
 
 @export var mode: UnitBody.Mode = UnitBody.Mode.IDLE
 

@@ -6,33 +6,30 @@ Import one multiplayer map of the installation to assets/original/maps/<tag>/ (H
 RFC-033 (033f, from the .scp in 033h); RFC-050 made the map a parameter. Writes only assets/original/maps/<tag>/. Deterministic and
 idempotent: a second run writes nothing, and an existing .png.import is never touched (it carries the UID).
 
-  python3 tools/import/import_map.py                    # High Noon: tiles.png, light.png, ntts.json, widgets.json
+  python3 tools/import/import_map.py                    # High Noon: light.png, ntts.json, widgets.json
   python3 tools/import/import_map.py --map=Peaks        # another map: the name of "(2) Peaks.scp"; the tag is "peaks"
   python3 tools/import/import_map.py --map=WinterWonder # tag "winter_wonder" (camel case is split); --tag=X overrides it
-  python3 tools/import/import_map.py --scp="Tutorial/(tu02).scp" --tag=tutorial_valley --native-tiles   # a .scp by path (relative to the maps folder, or absolute)
+  python3 tools/import/import_map.py --scp="Tutorial/(tu02).scp" --tag=tutorial_valley   # a .scp by path (relative to the maps folder, or absolute)
   python3 tools/import/import_map.py --list             # every .scp of the installation with its player seats, size and content
   python3 tools/import/import_map.py --check            # report what would change, write nothing
   python3 tools/import/import_map.py --out=DIR          # write there instead (to compare with the versioned ones)
-  python3 tools/import/import_map.py --terrain-bin=F    # also write the HNTR mesh bin to F (see below)
-  python3 tools/import/import_map.py --native-tiles     # also tiles_native.png and atlas_native.png: the map's own tile ids and the tiles it paints (RFC-059b)
 
 The Godot side of a new map (MapDefinition, map.tscn, catalog entry) is tools/import/scaffold_map.py; the whole sequence is in
 rfcs/RFC-050-original-maps.md.
 
 Source: "(N) <name>.scp" of the installation, read with tools/import/sac_formats:
-  TMAP   the map's tile index, 256x256, tile id in the R channel   -> tiles.png (in James's tile ids: land_themes.map_tiles)
-                                                                      -> tiles_native.png (--native-tiles: the ids as stored, of the map's own land)
-                                                                      -> atlas_native.png (--native-tiles: the land's MAPTs the map paints, each at its id)
+  TMAP   the map's tile index                                       -> not here: tools/import/bake_ground_roles.py reads it into the
+                                                                      map's ground_roles.png (which kind of ground lies where)
   LMAP   the baked light of the ground                              -> light.png
   NTTS   creatures, structures and widgets, SIDS the sides          -> ntts.json, widgets.json
-  HMAP   the height map and cliff walls                             -> HNTR bin -> terrain.res
-terrain.res is made in two steps because only Godot writes a Resource: this script builds the HNTR v1 bin (vertices, normals,
-indices) at --terrain-bin (a temporary file, not in the repo) and then
-  "$GODOT" --headless --path game --script res://tools/bake/import_terrain.gd -- [--map=<tag>] --bin=F
-turns it into a MapTerrainData. Run both once; the result is versioned.
+  HMAP   the height map                                             -> not here: the map's ground is its heights.png + void.png
+The ground (heights and voids, the heights under the voids included) is written by Godot, once per map, into
+scenes/map/maps/<tag>/heights.png and void.png (the one source of the ground; the game derives its triangles from them):
+  "$GODOT" --headless --path game --script res://tools/terrain/heights_from_original.gd -- --original=<game folder> --map=<tag>
+then `--import` once so the pictures become the map's TerrainHeights.
 
-tiles.png and light.png are imported as Image (importer="image": exact pixels, no sRGB, no mipmaps, no compression):
-tiles.png is an index and must not go through mipmaps or compression; the game reads both on the CPU.
+light.png is imported as a lossless texture (exact pixels, no mipmaps, no compression): the ground shader reads it as the
+map's baked light (Terrain.light_map).
 """
 
 import re
@@ -41,9 +38,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import land_themes  # noqa: E402
-from import_themes import IMAGE_TEMPLATE  # noqa: E402
 from import_ui import IMPORT_TEMPLATE  # noqa: E402
-from sac_formats import png, terrain, txtr  # noqa: E402
+from sac_formats import png, terrain  # noqa: E402
 from sac_formats.install import MAPS  # noqa: E402
 from sac_formats.ntts import ntts_json, read_entities, read_sides, widgets_json  # noqa: E402
 from sac_formats.wad import extract  # noqa: E402
@@ -102,28 +98,15 @@ def listing() -> None:
 
 def files() -> dict:
     """destination -> (bytes, import kind or None)."""
-    tmap, missed, _ = land_themes.map_tiles(SCP)
-    if missed:
-        print("import_map: %d cells have a tile with no James equivalent (kept as they are)" % missed, file=sys.stderr)
     lmap = extract(SCP, "", "LMAP")
-    tiles = bytearray(256 * 256 * 3)
     light = bytearray(256 * 256 * 3)
-    for i, tile in enumerate(tmap):
-        tiles[i * 3: i * 3 + 3] = bytes((tile, tile, tile))
     for i in range(256 * 256):
         light[i * 3: i * 3 + 3] = lmap[i * 4: i * 4 + 3]
     out = {
-        "tiles.png": (png.encode(256, 256, bytes(tiles), 3, 9), "image"),
         "light.png": (png.encode(256, 256, bytes(light), 3, 9), "lossless"),
         "ntts.json": (ntts_json(SCP).encode(), None),
         "widgets.json": (widgets_json(SCP).encode(), None),
     }
-    if "--native-tiles" in ARGS:
-        native = bytearray(256 * 256 * 3)
-        for i, tile in enumerate(land_themes.native_tiles(SCP)):
-            native[i * 3: i * 3 + 3] = bytes((tile, tile, tile))
-        out["tiles_native.png"] = (png.encode(256, 256, bytes(native), 3, 9), "lossless")  # a texture: the ground shader reads it
-        out["atlas_native.png"] = (txtr.png_bytes(*land_themes.native_atlas(land_themes.map_god(SCP), SCP)), "lossless")
     return out
 
 
@@ -142,18 +125,12 @@ def main() -> None:
             if not check:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(data)
-        if kind == "image":
-            imp = path.with_name(path.name + ".import")
-            if not imp.exists() and not check:
-                imp.write_text(IMAGE_TEMPLATE.format(rel=path.relative_to(OUT.parents[1]).as_posix()))
-        elif kind == "lossless":
+        if kind == "lossless":
             imp = path.with_name(path.name + ".import")
             if not imp.exists() and not check:
                 rel = path.relative_to(OUT.parents[1]).as_posix()
                 imp.write_text(IMPORT_TEMPLATE.format(rel=rel, mips="false").replace("compress_to=1", "compress_to=0"))
-    if "--terrain-bin" in ARGS:
-        Path(ARGS["--terrain-bin"]).write_bytes(terrain.hntr(SCP))
-        print("terrain bin written to", ARGS["--terrain-bin"], "(next: import_terrain.gd -- --bin=...)")
+    print("next, the ground: heights_from_original.gd -- --map=%s (writes scenes/map/maps/%s/heights.png and void.png)" % (TAG, TAG))
     print("map: %d written, %d unchanged%s" % (written, kept, " [check]" if check else ""))
 
 

@@ -38,9 +38,11 @@ Palabras simples primero; la columna de la derecha dice quién las controla.
 | C7 | Prohibido `.call("nombre")` y `has_method(` sobre tipos con `class_name`: se llama el método tipado. | lint (`C7`) |
 | C8 | Los Resources usan nombres humanos con unidad (`vision_m`, `cooldown_s`). Prohibidos en `*_type.gd`: `flags*`, `folder`, `components`, `Dictionary`, `Array[Dictionary]`, y Strings donde existe el tipo. | lint (`C8`) |
 | C9 | El doc cuenta primero qué pasa en el juego, en palabras simples. La cita al original va al final (`## Ref: state.d:…`) y nunca abre el comentario. | lint (`C9`) |
+| C24 | La cita al original va al final, en `## Ref:`; ningún otro comentario nombra `state.d`, `sacengine`, `shiny.d`, `dagonBackend` ni `archivo.d:línea`. | lint (`C24`) |
+| C25 | Los controles viven en el InputMap: sin `KEY_*` ni `MOUSE_BUTTON_*` en el código de `scenes/` (salvo `action_key_label.gd`, que muestra la tecla de una acción). | lint (`C25`) |
 | C10 | FSM solo con ≥3 estados; command/interactor solo con ≥2 llamadores. | reviewer |
 | C11 | Herencia propia de profundidad ≤1 (`A extends Node`, `B extends A` y listo). Para más, componé. | lint (`C11`) |
-| C12 | `MpKit.` solo vive en `scenes/net/`, en los dueños de `submit_*`/`@rpc` y en los que usan `MultiplayerSpawner`. | lint (`C12`) |
+| C12 | La red (`MpKit.` o la fachada `Mp.`) solo vive en `scenes/net/`, en las pantallas de red (`scenes/ui/lobby/`, `scenes/ui/local_server/`, `scenes/ui/match_wait/`), en los dueños de `submit_*`/`@rpc`, en los que usan `MultiplayerSpawner` y en las subclases de nodos del kit (`extends Mp…`). Un componente que simula pregunta `is_multiplayer_authority()`. Las líneas de comentario no cuentan. | lint (`C12`, un renglón por archivo) |
 | C13 | El producto no lee formatos del original: nada de `assets/original`, `OriginalAssets.` ni `res://tools` en `scenes/`. | lint (`C13`) |
 | C14 | Los logs van por `DebugLog`; sin `print(` en `scenes/`. | lint (`C14`) |
 
@@ -54,10 +56,10 @@ Regla del usuario: lo que se ve, se mueve o se mide en el juego es un nodo en un
 |---|---|---|---|
 | C15 | Un nodo de contenido vive en el `.tscn`, no nace con `.new()`. | `X3D/X2D/...Player/Timer/Light/Camera.new(` en `scenes/` (sin comentarios, sin Transform/Basis/Vector) | `fx_bus`, `sound_bus`, `fx_light_layer`, `mesh_planter`, `patch_planner`, `grass_field`, `npc_spawn` |
 | C16 | Una posición es un `Marker3D`, no `Vector3.UP * altura`. | `Vector3.UP *` con número o nombre `height/offset/lift/reach/spread/_h`, y `const [A-Z_]*(HEIGHT\|OFFSET\|LIFT\|REACH\|SPREAD)` | ninguna |
-| C17 | Un FX o sonido es un Resource tipado, no un texto. | `FxBus.<fn>("...")` y `@export` String/StringName con nombre fx/sfx/sound/effect | ninguna |
+| C17 | Un FX o sonido es un Resource tipado, no un texto. | `FxBus.<fn>("...")`, `@export`/`var` String/StringName con nombre fx/sfx/sound/effect/burst/puff, `.bus_name()`/`.fx_name()`, `FxTrail.attach(…, "…")` y campos `*fx*`/`*burst*`/`*puff*` con texto en `.tscn`/`.tres` | el id de red de la mano (`Caster.cast_fx_shown`) |
 | C18 | Gameplay no busca contenido por tag de texto: recibe el Resource por `@export`. | `GameData.(creature\|spell\|ability\|wizard\|god\|book)*(`, `MapCatalog.`, `GameModeCatalog.` | spawners (`*spawn*.gd`), `scenes/net/`, `scenes/core/catalog/` |
 | C18b | Lo mismo para las búsquedas por id que C18 no ve: la pantalla o el gameplay reciben el Resource, solo los catálogos y el cable convierten texto en Resource. | `GameCatalog.shared().god(`/`.building(`, `TypeRef.`, `AiProfile.for_god(`, `BiomeRules.has_look(`, `MatchWire.decode_` en `scenes/` | spawners, `scenes/net/`, `scenes/core/catalog/` |
-| C18c | Un componente recibe la habilidad, el hechizo o la pasiva como Resource, no como texto. | `@export` String/StringName/PackedStringArray con nombre `tag`, `*_tag`, `*_tags`, `*_spell`, `spell`, `passive_*` y `const …TAGS` en `scenes/units`, `ai`, `wizards` y `sacrifice` | el id de red (`tag` en `*_type.gd`, `creature_tag`, `wizard_tag`) y el FX por texto de 055x (`look_tag`, `rock_tag`, `texture_tag`, `shot_tag`) |
+| C18c | Un componente recibe la habilidad, el hechizo o la pasiva como Resource, no como texto. | `@export` String/StringName/PackedStringArray con nombre `tag`, `*_tag`, `*_tags`, `*_spell`, `spell`, `passive_*` y `const …TAGS` en `scenes/units`, `ai`, `wizards` y `sacrifice` | el id de red (`tag` en `*_type.gd`, `creature_tag`, `wizard_tag`) |
 | C19 | Un `.tres` de `data/` no guarda posiciones: eso es un nodo. | archivos `.tres` en `data/` con `*_offset/_position/_origin/_transform/_pos`, `position*`, `offsets`, `origin`, `transform`, `Transform3D(`. `debug/` se informa aparte (`info:`), no sube el listón | `roughness_offset` |
 | C20 | Un radio de lugar o de efecto es un `CollisionShape3D`, no un número de `MatchRules`. | `@export` `*_radius/_height/_distance` en `scenes/match/match_rules.gd` | ninguna |
 | C21 | Una referencia es un tipo (`PackedScene`, `Resource`), no una ruta en texto. | `@export_file` en `scenes/` | ninguna |

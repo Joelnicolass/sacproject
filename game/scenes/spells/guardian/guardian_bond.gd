@@ -2,20 +2,21 @@
 class_name GuardianBond
 extends Node
 
-## The creature tied to a building (RFC-021b, Guardian `ndrg`). A child of unit.tscn; free, it does
+## The creature tied to a building (Guardian `ndrg`). A child of unit.tscn; free, it does
 ## nothing. Tied, the server applies what a guardian gains and keeps the bond honest each frame; every
 ## peer draws the beam. Take the child out and the creature cannot be made a guardian.
 ##
-## What a guardian gains (sacengine, none verified against Sacrifice.exe): hits ×rules.guardian_attack_factor
-## (attackDamageFactor, state.d:8884); takes ×guardian_spell_factor of spell damage and ×guardian_ranged_factor
-## of ranged damage, melee unchanged (dealRawDamage, state.d:9007-9008); heals guardian_heal_per_s on top
-## of its regeneration (state.d:14408); loses its active ability (state.d:1414), stealth (state.d:25071) and
-## playing dead (state.d:14069); does not teleport (canTeleport, state.d:10309: group `rooted`). When tied it
-## leaves the selection and its orders (state.d:10408-10410); afterwards it can be selected and ordered again.
-## It is released when it dies, changes side, is taken by a doctor, or the post closes (isValidGuard,
-## state.d:15352-15355; the building gone, state.d:15362). Farther than the leash (ReachFacts) from the attach
-## point it gets a move order back to the return distance of the building (state.d:15366-15376).
+## What a guardian gains: hits ×rules.guardian_attack_factor
+## takes ×guardian_spell_factor of spell damage and ×guardian_ranged_factor
+## of ranged damage, melee unchanged; heals guardian_heal_per_s on top
+## of its regeneration; loses its active ability, stealth and
+## playing dead; does not teleport. When tied it
+## leaves the selection and its orders; afterwards it can be selected and ordered again.
+## It is released when it dies, changes side, is taken by a doctor, or the post closes.
+## Farther than the leash (ReachFacts) from the attach
+## point it gets a move order back to the return distance of the building.
 ## `post_path` is replicated: whoever joins late sees the bond and draws the beam.
+## Ref: sacengine, none verified against Sacrifice.exe; attackDamageFactor, state.d:8884; dealRawDamage, state.d:9007-9008; state.d:14408; state.d:1414; state.d:25071; state.d:14069; canTeleport, state.d:10309: group `rooted`; state.d:10408-10410; RFC-021b; isValidGuard, state.d:15352-15355; the building gone, state.d:15362; state.d:15366-15376
 
 ## Tied to `post`.
 signal bound(post: GuardPost)
@@ -100,7 +101,7 @@ func is_valid_guard() -> bool:
 ## Server or solo. Ties the creature to `target`. False if it is already tied, cannot be (dead, taken)
 ## or the post is closed.
 func bind(target: GuardPost) -> bool:
-	if not _has_authority() or target == null or not target.is_open() or is_bound():
+	if not is_multiplayer_authority() or target == null or not target.is_open() or is_bound():
 		return false
 	if body == null or health == null or body.is_dead() or body.is_taken():
 		return false
@@ -125,7 +126,7 @@ func release() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint() or post == null or not _has_authority():
+	if Engine.is_editor_hint() or post == null or not is_multiplayer_authority():
 		return
 	if not is_instance_valid(post) or not post.is_open() or not is_valid_guard():
 		release()
@@ -135,7 +136,8 @@ func _physics_process(delta: float) -> void:
 
 
 ## Farther than the leash from the attach point: a move order back to the return distance of the
-## building (state.d:15366-15376). An order that already goes there stays.
+## building. An order that already goes there stays.
+## Ref: state.d:15366-15376
 func _keep_near() -> void:
 	var reach := ReachFacts.of_rules(_rules())
 	var attach := post.attach_position()
@@ -202,7 +204,3 @@ func _apply_post() -> void:
 
 func _rules() -> MatchRules:
 	return rules if rules != null else MatchRules.new()
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

@@ -1,0 +1,16 @@
+[remap]
+
+importer="sacrifice.terrain_heights"
+importer_version=1
+type="Resource"
+uid="uid://cl5ibtkyy5lpx"
+path="res://.godot/imported/heights.png-3ea3e017a399a2895e2ab3b09c3d2722.res"
+
+[deps]
+
+source_file="res://scenes/map/maps/winter_wonder/heights.png"
+dest_files=["res://.godot/imported/heights.png-3ea3e017a399a2895e2ab3b09c3d2722.res"]
+
+[params]
+
+metres_per_unit=0.1

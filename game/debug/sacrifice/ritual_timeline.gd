@@ -461,7 +461,7 @@ func _secs(seconds: float) -> int:
 func _wizard(slot: int, at: Vector3) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	(wizard.get_node("Health") as Health).rules = _rules
 	(wizard.get_node("SoulPurse") as SoulPurse).rules = _rules
 	_root.add_child(wizard)

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AudioLabScript" load_steps=21 format=3]
+[gd_resource type="Resource" script_class="AudioLabScript" load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://debug/audio/audio_lab_script.gd" id="1_script"]
 [ext_resource type="Script" path="res://debug/audio/audio_lab_step.gd" id="2_step"]
@@ -90,6 +90,30 @@ target = NodePath("Wizard")
 action = &"cast"
 event = &"incantation"
 
+[sub_resource type="Resource" id="Step_12_chant"]
+script = ExtResource("2_step")
+target = NodePath("Wizard")
+action = &"chant"
+event = &"incantation"
+
+[sub_resource type="Resource" id="Step_12_chained"]
+script = ExtResource("2_step")
+target = NodePath("Wizard")
+action = &"end_cast"
+event = &"incantation"
+wait_s = 3.0
+from_wait = true
+at_least = 8
+
+[sub_resource type="Resource" id="Step_12_after"]
+script = ExtResource("2_step")
+target = NodePath("Wizard")
+action = &"end_cast"
+event = &"incantation"
+expect = 1
+wait_s = 2.0
+from_wait = true
+
 [sub_resource type="Resource" id="Step_13"]
 script = ExtResource("2_step")
 target = NodePath("Wizard")
@@ -121,4 +145,4 @@ script = ExtResource("1_script")
 cut = "052c"
 custom_set = ExtResource("3_body")
 wizard_set = ExtResource("3_body")
-steps = Array[ExtResource("2_step")]([SubResource("Step_00"), SubResource("Step_01"), SubResource("Step_02"), SubResource("Step_03"), SubResource("Step_04"), SubResource("Step_05"), SubResource("Step_06"), SubResource("Step_07"), SubResource("Step_08"), SubResource("Step_09"), SubResource("Step_10"), SubResource("Step_11"), SubResource("Step_12"), SubResource("Step_13"), SubResource("Step_14"), SubResource("Step_15"), SubResource("Step_16")])
+steps = Array[ExtResource("2_step")]([SubResource("Step_00"), SubResource("Step_01"), SubResource("Step_02"), SubResource("Step_03"), SubResource("Step_04"), SubResource("Step_05"), SubResource("Step_06"), SubResource("Step_07"), SubResource("Step_08"), SubResource("Step_09"), SubResource("Step_10"), SubResource("Step_11"), SubResource("Step_12"), SubResource("Step_12_chant"), SubResource("Step_12_chained"), SubResource("Step_12_after"), SubResource("Step_13"), SubResource("Step_14"), SubResource("Step_15"), SubResource("Step_16")])

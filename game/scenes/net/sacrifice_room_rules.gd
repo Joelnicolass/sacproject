@@ -1,10 +1,11 @@
 class_name SacrificeRoomRules
 extends Node
 
-## RFC-034 034e: what the room server needs to know about Sacrifice. The kit's lobby is generic; this node
+## What the room server needs to know about Sacrifice. The kit's lobby is generic; this node
 ## gives it the three Callables it calls: is a pick valid (`meta_validator`), are the room options valid
 ## (`options_validator`) and how the ticket of a match is built (`ticket_builder`). Nothing here opens a
 ## socket or starts a process.
+## Ref: RFC-034 034e.
 
 const LEVEL_MIN := 1
 const LEVEL_MAX := 9
@@ -51,14 +52,14 @@ func is_valid_pick(meta: Dictionary) -> bool:
 
 
 ## RFC-049 049f: a bot seat's `meta`: a god (empty = drawn when the match starts, else one the game has). 049h: and a `difficulty`
-## (AiSeat.DIFFICULTY_TAGS; empty or missing = Normal).
+## (AiSeat.difficulty_ids(); empty or missing = Normal).
 func is_valid_bot(meta: Dictionary) -> bool:
 	for key in meta.keys():
 		if not BOT_KEYS.has(str(key)):
 			return false
 	var god: Variant = meta.get("god", "")
 	var difficulty: Variant = meta.get("difficulty", "")
-	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.DIFFICULTY_TAGS.has(String(difficulty)))):
+	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.difficulty_ids().has(String(difficulty)))):
 		return false
 	return god is String and (String(god).is_empty() or MatchWire.decode_god(String(god), true) != null)
 
@@ -99,7 +100,8 @@ func clean_options(options: Dictionary) -> Dictionary:
 			out[key] = flag
 	## The land of the match: a god that brings a look (absent = drawn from the seed by the server that simulates).
 	var biome: Variant = options.get("biome")
-	if biome is String and BiomeRules.has_look(StringName(biome)):
+	var land: GodType = MatchWire.decode_god(biome) if biome is String else null
+	if land != null and land.look != null:
 		out["biome"] = biome
 	var souls: Variant = options.get("starting_souls")
 	if souls is int and souls >= SOULS_MIN and souls <= SOULS_MAX:

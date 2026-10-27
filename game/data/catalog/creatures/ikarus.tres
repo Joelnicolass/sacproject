@@ -33,5 +33,6 @@ mana_cost = 1000
 souls = 3
 cooldown_s = 6.0
 casting_time_s = 2.1605
-spell_order = 564
+book_level = 5
+book_slot = 64
 active_ability = ExtResource("typed_acia")

@@ -2,17 +2,18 @@
 class_name FxLightLayer
 extends LookLayer
 
-## Light layer of the effects (RFC-029 029c): a pool of shadowless OmniLight3D that the bursts of a
+## Light layer of the effects: a pool of shadowless OmniLight3D that the bursts of a
 ## ParticleType with a `light` (FxLightSpec) borrow through the group `fx_light_pool`. The cap is the
 ## preset's `fx_max_lights` (0 = no light). With the cap full, a new light takes the place of the
 ## weakest one (energy × range / distance to the camera, at its current point of the fade) or is dropped.
 ## A light that loses its place while still lit (stolen, or its emitter played again elsewhere) does not
 ## go out at once: its node fades out on its own for `fade_out_s` and the new light takes a spare node.
 ## Fading nodes do not count for the cap; at most `max_fading` at a time (beyond that it is cut).
-## RFC-053 053i (F379): a light the quality cap takes away fades out the same way instead of going dark at once, and no
+## A light the quality cap takes away fades out the same way instead of going dark at once, and no
 ## light falls faster than `min_decay_s`.
 ## Classic mode (null profile) and a hidden layer give no light. Presentation only: the rig, and this
 ## layer with it, is freed in a headless or dedicated process.
+## Ref: RFC-029 029c; RFC-053 053i (F379).
 
 const GROUP := &"fx_light_pool"
 

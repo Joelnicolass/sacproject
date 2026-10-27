@@ -1,0 +1,86 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://debug/suite/bench_group.gd" id="2_group"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="3_seat"]
+[ext_resource type="Script" path="res://debug/suite/bench_expect.gd" id="4_expect"]
+[ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="5_structure"]
+[ext_resource type="Resource" path="res://debug/ai/ai_spells_lab_seat.tres" id="6_seat"]
+[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="b3_biome"]
+
+; 055f f5: la variante con amenaza del laboratorio (misma escena, --rules=res://debug/rules/ai_spells_lab_threat.tres). 8 Troggs enemigos
+; encima del mago IA, que esta a 20 m de su Manalith del centro (a 370 m de su altar); 2 Troggs propios junto a la Manalith, fuera del
+; alcance del Teleport (30 m). Criterio: la IA lanza Teleport (al altar) y Guardian (un Trogg propio atado a un edificio presionado), y el
+; Caster no le rechaza nada. Nivel 8 con la vida y el mana del nivel (wizard_level_stats, 1800): con los 1000 sin nivel salta en el
+; segundo 2 y el Teleport lo deja sin mana para el Guardian (medido).
+
+[sub_resource type="Resource" id="Manalith_center"]
+script = ExtResource("5_structure")
+slot = 2
+spell_tag = "htlm"
+fount = "FountCenter"
+
+[sub_resource type="Resource" id="Group_swarm"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 1
+count = 8
+columns = 4
+offset_m = 4.0
+offset_z_m = 16.0
+facing_x = -1.0
+label = "swarm"
+
+[sub_resource type="Resource" id="Group_guards"]
+script = ExtResource("2_group")
+tag = "ycro"
+slot = 2
+count = 2
+columns = 2
+offset_m = -14.0
+offset_z_m = -10.0
+label = "guards"
+
+[sub_resource type="Resource" id="Expect_elet"]
+script = ExtResource("4_expect")
+check = "lanza_teleport"
+kind = "cast"
+subject = "ai2"
+within_s = 120.0
+spell = "elet"
+
+[sub_resource type="Resource" id="Expect_ndrg"]
+script = ExtResource("4_expect")
+check = "lanza_guardian"
+kind = "cast"
+subject = "ai2"
+within_s = 120.0
+spell = "ndrg"
+
+[sub_resource type="Resource" id="Expect_refused"]
+script = ExtResource("4_expect")
+check = "0_rechazos"
+kind = "refused"
+subject = "ai2"
+max_count = 0
+
+[resource]
+script = ExtResource("1_rules")
+starting_souls = 20
+wizard_level = 8
+wizard_level_stats = true
+biome = ExtResource("b3_biome")
+match_seed = 7
+groups = Array[ExtResource("2_group")]([SubResource("Group_swarm"), SubResource("Group_guards")])
+start_paused = true
+structures = Array[ExtResource("5_structure")]([SubResource("Manalith_center")])
+ignore_annihilation = true
+ai_seats = Array[ExtResource("3_seat")]([ExtResource("6_seat")])
+ai_start_at_anchor = true
+ai_start_offset = Vector2(0, 20)
+human_start_at_anchor = true
+human_start_offset = Vector2(60, 20)
+expects = Array[ExtResource("4_expect")]([SubResource("Expect_elet"), SubResource("Expect_ndrg"), SubResource("Expect_refused")])
+trace_labels = PackedStringArray("guards")
+trace_every_s = 5.0
+pending_text = "055f hechizos de la IA (amenaza)"

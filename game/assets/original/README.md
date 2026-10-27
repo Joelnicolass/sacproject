@@ -4,7 +4,7 @@ Assets extracted from the original game's installation, in Godot-native formats 
 
 Only the importers in `tools/` write here, one per family. The game never writes here. What is edited by hand lives in `data/`. Importers are idempotent (deterministic output, no timestamps) and never touch an existing `.import` (it carries the UID).
 
-The paths are owned by `scenes/core/catalog/original_assets.gd` (`OriginalAssets`). Nothing else spells `res://assets/original/`.
+Only the tools spell `res://assets/original/` (`tools/import/original_assets.gd`); the game never reads it.
 
 | Folder | What | Importer | Cut |
 |---|---|---|---|
@@ -16,7 +16,7 @@ The paths are owned by `scenes/core/catalog/original_assets.gd` (`OriginalAssets
 | `fx/<tag>.png`, `fx/fx.json` | Particle atlases (mipmaps only for the ones the catalog lists) and their catalog; `scri.png` is Divine Sight's eye (4x4 sheet, decoded from charlie.wad) | `python3 tools/import/import_ui.py` | 033d |
 | `scars/<tag>.png` | The 19 ground marks (burns, cracks, craters, blood, god emblems), RGBA, alpha already in 0..255; 0.15625 m per pixel. The game reads them from `ScarMark` nodes | `python3 tools/import/import_scars.py` | 061k-5 |
 | `themes/<god>/` | Tileset, sky, sun, `envi.tres` per god | `python3 tools/import/import_themes.py` | 033e |
-| `maps/high_noon/` | `terrain.res` (`MapTerrainData`: vertices, normals, indices), `tiles.png` and `light.png` (imported as `Image`, read on the CPU), `ntts.json`, `widgets.json`. The grass height is not stored: `GrassHeight.from_terrain` derives it | `python3 tools/import/import_map.py --terrain-bin=F` (png, json, and the HNTR bin in a temp file) then `godot --headless --script res://tools/bake/import_terrain.gd -- --bin=F` (`terrain.res`) | 033f |
+| `maps/high_noon/` | `tiles.png` and `light.png` (imported as `Image`, read on the CPU), `ntts.json`, `widgets.json`. The grass height is not stored: `GrassHeight.from_terrain` derives it | `python3 tools/import/import_map.py` (png, json); the ground is not here: `scenes/map/maps/<tag>/heights.png` + `void.png` (`tools/terrain/heights_from_original.gd`) | 033f |
 | `data/*.json` | Creatures, spells, abilities, wizards, books, buildings (game data the simulation reads; the dedicated server needs them) | `python3 tools/import/export_stats.py --out assets/original/data` (reads the WAD; with `--out` no `anim_*.json`, no models, no catalog) | 033g |
 
 Since 033h every importer reads the installation (the WAD files and High Noon's `.scp`, in `SAC_INSTALL`, default
@@ -24,12 +24,12 @@ Since 033h every importer reads the installation (the WAD files and High Noon's 
 terrain; there is no cache folder. Each importer takes `--out=DIR` to write somewhere
 else, so the result can be compared against this folder (`diff -r --exclude='*.import'`). The WAD files are never versioned.
 The ones that lived as exporters (`export_icons`, `export_particles`, `export_tilesets`, `export_high_noon_*`) are now
-`import_ui.py`, `fx_catalog.py` (the particle numbers), `land_themes.py` (the tileset logic) and `sac_formats/{ntts,terrain}.py`.
+`import_ui.py`, `fx_catalog.py` (the particle numbers), `land_themes.py` (the lands: tiles, groups, ENVI) and `sac_formats/{ntts,terrain}.py`.
 
 ## Editar el mapa (RFC-035)
 
 - **Terreno:** el origen es `maps/high_noon/terrain.glb`. Se puede abrir en Blender, pero solo se mueve la Y: si un vértice se sale de la grilla de 10 m en X/Z, la importación falla y nombra la celda. Al importar, `tools/terrain_import.gd` genera `terrain.res` (alturas y sim), la colisión y la malla visual. Si cambia solo el script de importación, hay que borrar `.godot/imported/terrain.glb-*` para forzar la reimportación.
-- **Material del suelo:** `themes/<dios>/ground_classic.tres`, con atlas, edge, light, `light_base` y `light_gain`.
+- **Suelo:** `themes/<dios>/roles/<rol>.png` (las hojas de abierto, tierra, roca y camino; `tools/import/bake_role_sheets.py`), que usa el `GodGround` de `data/look/<dios>.tres` junto con `themes/<dios>/edge.png`; la luz horneada es la `light.png` de cada mapa.
 - **Contenido:** edificios, plantas y NPC (`NpcSpawn`) están en `scenes/map/maps/high_noon/layout.tscn`. Los bandos están en `maps/high_noon/sides.tres`; la `MapDefinition` del mapa (`scenes/map/maps/high_noon/high_noon.tres`) nombra todos estos archivos. La y de un `NpcSpawn` hay que ajustarla a mano si se lo mueve.
 - **Navegación:** después de mover el terreno o los edificios, hay que correr `godot --headless --path game res://tools/bake/bake_nav.tscn` (con `-- --map=<tag>` para otro mapa). Con `-- --check` se verifica el resultado. El nodo `NavRegion` avisa en el editor si el navmesh quedó viejo. El botón «Bake» del editor no sirve, porque los edificios arman su colisión en partida.
-- **Catálogo:** criaturas, hechizos, magos, habilidades y edificios están en `data/catalog/*.tres`. Los regenera `tools/bake/bake_catalog.gd -- --force` a partir de los JSON.
+- **Catálogo:** criaturas, hechizos, magos, habilidades y edificios están en `data/catalog/*.tres`. Son la fuente: se editan en el inspector.

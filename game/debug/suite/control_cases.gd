@@ -49,7 +49,7 @@ func run(host: Node3D) -> Dictionary:
 	out["control_troll"] = await _troll()
 	out["control_late_join"] = await _late_join()
 	out["control_ai"] = await _ai()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 
@@ -436,9 +436,9 @@ func _vines_reach_up(look: VineLook, body: Node3D) -> bool:
 ## The AI rates a control spell on the foe it is worth most and never on a protected one, an ally or a structure.
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "ControlCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 1
 	_root.add_child(perception)
 	var wizard := _wizard(1, Vector3(-400.0, 0.0, -400.0), "stratos", 3)
@@ -449,7 +449,7 @@ func _ai() -> Dictionary:
 	LifeShield.of(guarded).start(100000)
 	var stance := AiStance.new()
 	stance.recs[0].manaliths = 1
-	var eval := AiSpellEval.new(perception, stance, null, perception.profile)
+	var eval := AiSpellEval.new(perception, stance, null, perception.play.tactics)
 	var spell := GameData.spell("zerf")
 	var track := perception.add_node(wizard, &"event")
 	var big_track := perception.add_node(big, &"event")
@@ -499,11 +499,11 @@ func _count_until_off(state: Affliction, limit: int) -> int:
 func _wizard(slot: int, at: Vector3, god: String, level := 1) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	wizard.level = level
 	wizard.position = at
 	_root.add_child(wizard)
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	(wizard.get_node("Health") as Health).setup(10000.0)
 	return wizard
 

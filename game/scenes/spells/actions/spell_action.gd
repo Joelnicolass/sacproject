@@ -2,7 +2,7 @@
 class_name SpellAction
 extends Node
 
-## Contract of a spell with its own procedure (RFC-021a). Instanced by Caster under the wizard's `Caster/Actions`
+## Contract of a spell with its own procedure. Instanced by Caster under the wizard's `Caster/Actions`
 ## from `SpellType.action`; Caster finds it by `spell`, runs the common part (mana, cooldown, casting frames, drain) and asks
 ## the action for the rest: whether it can be armed, where it lands, what happens when the casting
 ## time ends and what to undo if the wizard dies midway. `pick` tells the click handler what to
@@ -10,6 +10,7 @@ extends Node
 ## off: its icon answers «No implementado».
 ## Only the server (or solo) runs begin/finish/cancel. This base holds no game logic, so the editor
 ## can run it for the configuration warnings.
+## Ref: RFC-021a
 
 enum Pick { GROUND, OWN_UNIT, SOUL, OWN_BUILDING, SELF }
 
@@ -26,6 +27,8 @@ class Aim extends RefCounted:
 	var status := ""
 	var point := Vector3.ZERO
 	var target: Node3D
+	## Where the cast builds or lands when it is not `target` (a fount); previews draw there. Null = none.
+	var site: Node3D
 	## What `begin` needs from `check` (an action keeps its own keys).
 	var data := {}
 
@@ -40,8 +43,11 @@ var tag: String:
 @export var pick := Pick.GROUND
 ## What the battle line says while the spell is armed.
 @export var prompt := ""
-## Particle (FxBus name) the wizard throws while he casts this spell. Empty = the one of his god.
-@export var cast_fx := ""
+## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god (GodType.cast_fx).
+@export var cast_fx: ParticleType
+## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the end of the cast.
+## Ref: sacspell.d:201 (a structure always casts standing), state.d:62-63, 14672 (no step while stationaryCasting).
+@export var stationary := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:

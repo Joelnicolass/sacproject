@@ -5,3 +5,4 @@
 [node name="Structure" type="Node"]
 script = ExtResource("1_script")
 prompt = "Elegí el suelo"
+stationary = true

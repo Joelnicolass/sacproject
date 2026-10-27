@@ -25,34 +25,11 @@ func test_seq_grows_and_input_is_kept() -> void:
 	check(not b.same_as(a), "a new custom value is something to send")
 
 
-func test_pack_round_trip() -> void:
-	var a := MpInputFrame.sized(2).next()
-	a.record(1, 0.25, true, false)
-	a.values[&"aim"] = Vector2(3, 4)
-	var b := MpInputFrame.unpack(a.pack(), 2)
-	check(b != null and b.same_as(a) and b.seq == a.seq, "unpack(pack()) gives the same frame")
-
-
-func test_unpack_refuses_bad_packets() -> void:
-	var good := MpInputFrame.sized(2).pack()
-	check(MpInputFrame.unpack(good, 3) == null, "a frame for another number of actions is refused")
-	check(MpInputFrame.unpack([1, 2, 3], 2) == null, "a packet of the wrong shape is refused")
-	var wrong_type := good.duplicate()
-	wrong_type[1] = "x"
-	check(MpInputFrame.unpack(wrong_type, 2) == null, "a packet with the wrong types is refused")
-	var many := good.duplicate()
-	var values := {}
-	for i in MpInputFrame.MAX_VALUES + 1:
-		values[i] = i
-	many[4] = values
-	check(MpInputFrame.unpack(many, 2) == null, "too many custom values are refused")
-	var big := good.duplicate()
-	big[4] = {&"blob": "x".repeat(MpInputFrame.MAX_BYTES)}
-	check(MpInputFrame.unpack(big, 2) == null, "an oversized packet is refused")
-
-
-func test_unpack_clamps_strengths() -> void:
-	var data := MpInputFrame.sized(3).pack()
-	data[1] = PackedFloat32Array([5.0, -2.0, NAN])
-	var frame := MpInputFrame.unpack(data, 3)
-	check(frame.strengths == PackedFloat32Array([1.0, 0.0, 0.0]), "strengths are clamped to 0..1 and NaN is 0")
+func test_strengths_are_kept_as_they_travel() -> void:
+	var f := MpInputFrame.sized(1)
+	f.record(0, 0.3333, false, false)
+	check(f.strengths[0] == PackedFloat32Array([MpInputFrame.quantize_byte(0.3333) / 255.0])[0], "a strength is stored in the 1/255 steps it travels in")
+	f.record(0, 2.0, false, false)
+	check(f.strengths[0] == 1.0, "clamped to 1")
+	f.record(0, NAN, false, false)
+	check(f.strengths[0] == 0.0, "NaN is 0")

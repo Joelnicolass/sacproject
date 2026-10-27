@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://debug/look/ambience_lab.tscn" id="1_lab"]
+[ext_resource type="Resource" path="res://agent/harness/pt_review/ambience/only_snow.tres" id="2_plan"]
+
+[node name="PtAmbience" instance=ExtResource("1_lab")]
+editor_description = "Playtest fixture (agent only): ambience_lab with the hour pinned and one weather."
+
+[node name="Atmosphere" parent="HighNoon/Map/Look/Layers"]
+time_scale = 1.0
+frozen_hour = 12.0
+plan_override = ExtResource("2_plan")

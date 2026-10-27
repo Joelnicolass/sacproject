@@ -16,3 +16,4 @@ speed_max = 3.0
 scale_min = 1.5
 scale_max = 1.5
 pool_max = 8
+camera_trauma = 0.25

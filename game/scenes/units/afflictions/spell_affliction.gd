@@ -62,7 +62,7 @@ func lay(spell: SpellType, from_slot: int) -> bool:
 	var owner_node := _afflictions()
 	var ticks := lay_ticks(spell)
 	var dead := owner_node.health != null and owner_node.health.is_dead()
-	if ticks <= 0 or dead or not _simulates() or _left.size() >= max_stacks or not owner_node.admit(self):
+	if ticks <= 0 or dead or not is_multiplayer_authority() or _left.size() >= max_stacks or not owner_node.admit(self):
 		return false
 	_left.append(ticks)
 	_slots.append(from_slot)
@@ -109,7 +109,7 @@ func _physics_process(_delta: float) -> void:
 
 ## Every peer, when the bit changes. On the server a bit turned off from outside (the body died) clears the layers.
 func _shown(on: bool) -> void:
-	if on or not _simulates() or _left.is_empty():
+	if on or not is_multiplayer_authority() or _left.is_empty():
 		return
 	_left.clear()
 	_slots.clear()

@@ -1,18 +1,10 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/map/terrain/terrain.gd" id="2_terrain"]
-[ext_resource type="Script" path="res://scenes/map/terrain/ground_surface.gd" id="shape_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_deformer.gd" id="deformer_script"]
-[ext_resource type="Script" path="res://scenes/map/terrain/terrain_collision.gd" id="collision_script"]
 [ext_resource type="Script" uid="uid://bahus244cwp1m" path="res://scenes/map/props/map_props.gd" id="6_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="8_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="9_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="f22_look"]
-[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="f22_tiles"]
-[ext_resource type="Resource" path="res://assets/original/maps/high_noon/terrain.res" id="f172_terrain"]
-[ext_resource type="Material" uid="uid://b6pd04js5lq4t" path="res://assets/original/themes/james/ground_classic.tres" id="f194_ground"]
-[ext_resource type="PackedScene" uid="uid://c7w6ppe7anbdd" path="res://assets/original/maps/high_noon/terrain.glb" id="f195_terrain_glb"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="f200_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
 [ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
@@ -49,15 +41,15 @@
 [ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_4.png" id="fd_james_bush_4"]
 [ext_resource type="Resource" path="res://data/vegetation/species/james_bush_5.tres" id="sp_james_bush_5"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/flora/james_bush_5.png" id="fd_james_bush_5"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="ground_scars"]
-[ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="hole_walls"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/high_noon/ground_roles.png" id="62_roles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/high_noon/light.png" id="62_light"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
+[ext_resource type="Resource" uid="uid://cmpaot4pm4cus" path="res://scenes/map/maps/high_noon/heights.png" id="t_heights"]
+[ext_resource type="PackedScene" path="res://scenes/look/life/life_spot.tscn" id="58_spot"]
 
-[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "ground", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
-ground = NodePath("Terrain/Shape")
 nav_region = NodePath("NavRegion")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
@@ -66,46 +58,15 @@ buildings = NodePath("Buildings")
 npcs = NodePath("Npcs")
 props = NodePath("Props")
 
-[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("ground") instance=ExtResource("f22_look")]
+[node name="Look" parent="." unique_id=1022000001 node_paths=PackedStringArray("terrain") instance=ExtResource("f22_look")]
 unique_name_in_owner = true
-ground = NodePath("../Terrain/Shape")
-tile_map = ExtResource("f22_tiles")
+terrain = NodePath("../Terrain")
 
-[node name="Terrain" parent="." unique_id=1483961628 node_paths=PackedStringArray("shape", "missing") groups=["nav_source"] instance=ExtResource("f195_terrain_glb")]
+[node name="Terrain" parent="." unique_id=1483961628 instance=ExtResource("t_terrain")]
 unique_name_in_owner = true
-material_override = ExtResource("f194_ground")
-script = ExtResource("2_terrain")
-shape = NodePath("Shape")
-missing = NodePath("Missing")
+heights = ExtResource("t_heights")
 ground_roles = ExtResource("62_roles")
 light_map = ExtResource("62_light")
-
-[node name="Shape" type="Node" parent="Terrain"]
-script = ExtResource("shape_script")
-data = ExtResource("f172_terrain")
-
-[node name="Missing" type="Label3D" parent="Terrain" unique_id=430681053]
-visible = false
-text = "UI_MAP_MISSING"
-font_size = 48
-
-[node name="Deformer" type="Node" parent="Terrain" node_paths=PackedStringArray("shape")]
-script = ExtResource("deformer_script")
-shape = NodePath("../Shape")
-
-[node name="Collision" parent="Terrain" index="0" node_paths=PackedStringArray("shape")]
-script = ExtResource("collision_script")
-shape = NodePath("../Shape")
-
-[node name="Shape" parent="Terrain/Collision" index="0"]
-disabled = true
-
-[node name="GroundScars" parent="Terrain" node_paths=PackedStringArray("shape") instance=ExtResource("ground_scars")]
-shape = NodePath("../Shape")
-
-[node name="HoleWalls" parent="Terrain" node_paths=PackedStringArray("shape", "terrain") instance=ExtResource("hole_walls")]
-shape = NodePath("../Shape")
-terrain = NodePath("..")
 
 [node name="MapProps" type="Node3D" parent="." unique_id=693965675]
 script = ExtResource("6_props")
@@ -523,12 +484,13 @@ side = 2
 [node name="NavRegion" type="NavigationRegion3D" parent="." unique_id=1200200200]
 unique_name_in_owner = true
 navigation_mesh = ExtResource("f200_navmesh")
+use_edge_connections = false
 script = ExtResource("f200_nav_region")
 bake_settings = ExtResource("f200_bake")
 
-[node name="MinimapBake" parent="." unique_id=1037000020 node_paths=PackedStringArray("surface") instance=ExtResource("f212_bake")]
+[node name="MinimapBake" parent="." unique_id=1037000020 node_paths=PackedStringArray("terrain") instance=ExtResource("f212_bake")]
 unique_name_in_owner = true
-surface = NodePath("../Terrain/Shape")
+terrain = NodePath("../Terrain")
 
 [node name="Vegetation" type="Node3D" parent="."]
 
@@ -561,3 +523,38 @@ script = ExtResource("flora_layer_script")
 species = ExtResource("sp_james_bush_5")
 density = ExtResource("fd_james_bush_5")
 max_per_cell = 1
+
+[node name="AmbientLife" parent="Look/Layers" node_paths=PackedStringArray("spots")]
+spots = NodePath("../../../LifeSpots")
+
+[node name="LifeSpots" type="Node3D" parent="."]
+editor_description = "Lugares con vida ambiental (RFC-058). Arrastrá life_spot.tscn acá, elegí el hábitat y escalá la caja."
+
+[node name="Meadow01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1452, 30.5, 1468)
+
+[node name="Meadow02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1268, 15.1, 1156)
+
+[node name="Meadow03" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1108, 25.1, 1060)
+
+[node name="Meadow04" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1436, 14.4, 1020)
+
+[node name="Meadow05" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1244, 12.9, 1348)
+
+[node name="Rock01" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 948, 40.9, 1052)
+habitat = 3
+
+[node name="Rock02" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1052, 32.4, 1252)
+habitat = 3
+
+[node name="Rock03" parent="LifeSpots" instance=ExtResource("58_spot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1092, 37.5, 1412)
+habitat = 3
+
+[editable path="Look"]

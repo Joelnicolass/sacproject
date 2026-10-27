@@ -1,78 +1,66 @@
 class_name MatchBiome
 extends Node
 
-## The land of the match: the server (or solo) takes the god the setup chose (rules.biome_god) or draws one per match (BiomeRules) and sends it to each client on
-## the MpKit custom channel once that client's world is ready. Every peer with a screen then hands that god's look
-## to the map's LookRig, after the world's _ready (the rig exists).
+## The land of the match: the god whose look the map wears. The one who simulates (solo, host, dedicated) takes the god the
+## setup chose (rules.biome) or draws one per match (BiomeRules) and starts the sky's clock (MatchSky); a client is told both
+## by BiomeLink and calls `adopt`. Every peer with a screen then hands that god's look to the map's LookRig, after the world's
+## _ready (the rig exists). It does not talk to the network (BiomeLink does) and does not work out the hour or the weather
+## (AtmosphereRules, from MatchSky).
 
 ## The land is on the map's look rig: the GodType whose `look` (with its music and ambience) the match uses (MusicDirector and
 ## AmbienceDirector listen).
 signal applied(god: GodType)
 
-const CHANNEL := &"biome"
-
 @export var world: MatchWorld
 
-var god: StringName = &""
+## The god of the land; null until it is drawn (the authority) or adopted (a client), or when the draw gave a god with no look.
+var god: GodType
+## False on a process with no screen (the dedicated server, BiomeLink says): it keeps the god but shows no land.
+var shows_look := true
 var _world_ready := false
 
 
 func _ready() -> void:
-	MpKit.custom_received.connect(_on_custom_received)
-	if _is_authority():
+	MatchSky.reset()
+	if is_multiplayer_authority():
 		_draw()
-		if MpKit.is_networked():
-			MpKit.client_world_ready.connect(_send_to)
-			for peer in multiplayer.get_peers():
-				if MpKit.is_peer_world_ready(peer):
-					_send_to(peer)
-	call_deferred("_on_world_ready")
-
-
-func _exit_tree() -> void:
-	if MpKit.custom_received.is_connected(_on_custom_received):
-		MpKit.custom_received.disconnect(_on_custom_received)
-	if MpKit.client_world_ready.is_connected(_send_to):
-		MpKit.client_world_ready.disconnect(_send_to)
-
-
-func _is_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
+		_begin_sky()
+	_on_world_ready.call_deferred()
 
 
 func _draw() -> void:
 	var rules: MatchRules = world.rules if world else null
-	var forced: StringName = &""
+	var forced: GodType = null
 	var match_seed := 0
 	if rules:
-		forced = rules.biome_god
+		forced = rules.biome
 		match_seed = rules.biome_seed
 	if match_seed == 0:
 		match_seed = MatchSeed.rng(["biome"]).seed  # the biome stream of the match (randomized without one)
-	if forced != &"" and not BiomeRules.has_look(forced):
-		push_warning("MatchBiome: '%s' no tiene tierra; se sortea." % forced)
-	var picked := BiomeRules.choose(forced, match_seed)
-	if not BiomeRules.has_look(picked):
+	if forced != null and forced.look == null:
+		push_warning("MatchBiome: '%s' no tiene tierra; se sortea." % forced.id())
+	var picked := BiomeRules.choose(forced, match_seed, GameCatalog.shared().gods)
+	if picked == null or picked.look == null:
 		if DebugLog.on(&"biome"): print("bioma sin look")
 		return
 	god = picked
-	if DebugLog.on(&"biome"): print("bioma %s semilla %d" % [god, match_seed])
+	if DebugLog.on(&"biome"): print("bioma %s semilla %d" % [god.id(), match_seed])
 
 
-func _send_to(peer_id: int) -> void:
-	if god == &"":
-		return
-	MpKit.push_custom_to(peer_id, CHANNEL, {"god": String(god)})
+## The sky's seed is a hash of the match seed (it moves no stream); 0 is kept for «no match».
+func _begin_sky() -> void:
+	var sky_seed := MatchSeed.derive(["sky"]) & 0x7fffffff
+	MatchSky.begin(maxi(1, sky_seed))
+	if DebugLog.on(&"atmosphere"): print("atmosfera semilla %d" % MatchSky.sky_seed())
 
 
-func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) -> void:
-	if channel != CHANNEL or _is_authority() or from_peer != MpAuthority.SERVER_PEER:
-		return
-	var received := StringName(str(data.get("god", "")))
-	if not BiomeRules.has_look(received):
+## A client: the land the server sent (BiomeLink adopted the sky's clock first). A god with no look is ignored.
+func adopt(received: GodType) -> void:
+	if received == null or received.look == null:
 		return
 	god = received
-	if DebugLog.on(&"biome"): print("bioma %s" % god)
+	if DebugLog.on(&"biome"): print("bioma %s" % god.id())
+	if DebugLog.on(&"atmosphere"): print("atmosfera semilla %d" % MatchSky.sky_seed())
 	_apply()
 
 
@@ -82,10 +70,9 @@ func _on_world_ready() -> void:
 
 
 func _apply() -> void:
-	if not _world_ready or god == &"" or world == null or MpKit.is_dedicated():
+	if not _world_ready or god == null or world == null or not shows_look:
 		return
-	var type := GameCatalog.shared().god(String(god))
 	var rig := world.map.look if world.map else null
 	if is_instance_valid(rig) and not rig.is_queued_for_deletion():
-		rig.apply_profile(type.look)
-	applied.emit(type)
+		rig.apply_profile(god.look)
+	applied.emit(god)

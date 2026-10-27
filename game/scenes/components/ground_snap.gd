@@ -4,10 +4,8 @@ extends Node3D
 
 ## Rests its parent on the land. Remove this child to place the parent by hand.
 ## In the editor it follows every move of the parent; in a match it runs once in _ready.
-## The height comes from the terrain data (GroundSurface.height_at), not from a physics ray,
+## The height comes from the terrain data (Terrain.height_at), not from a physics ray,
 ## so the dedicated server and every client get the same number.
-
-const TERRAIN_GROUP := &"terrain"
 
 @export var enabled := true:
 	set(value):
@@ -44,11 +42,11 @@ func snap() -> void:
 	if not enabled or body == null or not is_inside_tree():
 		return
 	var terrain := _terrain()
-	if terrain == null or terrain.shape == null:
+	if terrain == null:
 		return
-	# Terrain-local = map coordinates. In the editor the scene root is shifted (terrain.gd).
+	# Terrain-local = map coordinates. In the editor the map root is shifted (MapRoot.editor_recenter).
 	var at := terrain.to_local(body.global_position)
-	var height := terrain.shape.height_at(at.x, at.z)
+	var height := terrain.height_at(at.x, at.z)
 	if is_nan(height):
 		return
 	var rest := terrain.to_global(Vector3(at.x, height + offset, at.z))
@@ -63,9 +61,9 @@ func snap() -> void:
 
 ## The terrain of the same scene: the one that hangs from an ancestor of this node.
 func _terrain() -> Terrain:
-	for node in get_tree().get_nodes_in_group(TERRAIN_GROUP):
+	for node in get_tree().get_nodes_in_group(Terrain.GROUP):
 		var terrain := node as Terrain
-		if terrain and terrain.get_parent() and terrain.get_parent().is_ancestor_of(self):
+		if terrain and terrain.is_loaded() and terrain.get_parent() and terrain.get_parent().is_ancestor_of(self):
 			return terrain
 	return null
 

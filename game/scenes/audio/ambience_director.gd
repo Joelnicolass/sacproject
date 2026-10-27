@@ -6,7 +6,8 @@ extends Node
 ## Ambience) and, every so often, a one-shot in 3D at a point around the listener (SoundBus.play_3d). When, which one-shot
 ## and where come from its own generator, never the global one.
 ## The set: `ambience` (a fixture in the lab), or the look's `ambience` of the GodType that `biome` applies (MatchBiome.applied(god)).
-## No set (a god without one): silence.
+## No set (a god without one): silence. By night (the god's DayCycle at the match's sky clock, AtmosphereRules: the same hour
+## the look shows) it plays the set's `night_one_shots` instead, when it has them.
 ## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated, room server, headless)
 ## its player stays idle and it plays nothing. No RPC, nothing written to the simulation.
 ## Ref: RFC-052 052g (F366).
@@ -26,8 +27,11 @@ var _open := false
 var _rng := RandomNumberGenerator.new()
 var _clock := 0.0
 var _next_at := INF
-## The resolved one-shot cues of the set.
+## The resolved one-shot cues of the set, by day and by night.
 var _one_shots: Array[SoundCue] = []
+var _night_shots: Array[SoundCue] = []
+## The god's day (null = always day).
+var _day: DayCycle
 
 
 func _ready() -> void:
@@ -53,6 +57,7 @@ func _process(delta: float) -> void:
 
 ## The god's ambience (MatchBiome.applied).
 func use_god(god: GodType) -> void:
+	_day = god.look.day if god != null and god.look != null else null
 	use_ambience(god.look.ambience if god != null and god.look != null else null)
 
 
@@ -62,6 +67,9 @@ func use_ambience(next_set: AmbienceSet) -> void:
 		return
 	ambience_set = next_set
 	_one_shots = one_shot_cues(ambience_set)
+	_night_shots.clear()
+	if ambience_set:
+		_night_shots = playable(ambience_set.night_one_shots)
 	restart_bed()
 	_schedule()
 
@@ -92,12 +100,13 @@ func has_one_shots() -> bool:
 ## One of the set's one-shots now, at a point around the listener; the next is scheduled. False when nothing played.
 func play_one_shot() -> bool:
 	_schedule()
-	if _one_shots.is_empty() or not SoundBus.can_play():
+	var shots: Array[SoundCue] = _night_shots if not _night_shots.is_empty() and is_night() else _one_shots
+	if shots.is_empty() or not SoundBus.can_play():
 		return false
 	var at: Vector3 = SoundBus.listener_position()
 	if at == Vector3.INF:
 		return false
-	var cue := _one_shots[_rng.randi_range(0, _one_shots.size() - 1)]
+	var cue := shots[_rng.randi_range(0, shots.size() - 1)]
 	var angle := _rng.randf_range(0.0, TAU)
 	var distance := _rng.randf_range(ambience_set.distance_m.x, maxf(ambience_set.distance_m.x, ambience_set.distance_m.y))
 	var height := _rng.randf_range(ambience_set.height_m.x, maxf(ambience_set.height_m.x, ambience_set.height_m.y))
@@ -105,19 +114,28 @@ func play_one_shot() -> bool:
 	return SoundBus.play_3d(cue, at + offset, EMITTER, SoundEvent.AMBIENT)
 
 
+## True while it is night on this land now.
+func is_night() -> bool:
+	return _day != null and AtmosphereRules.is_night(_day, MatchSky.now_s())
+
+
 ## The playable one-shots of `ambience_set` (the cues with a stream).
 static func one_shot_cues(ambience_set: AmbienceSet) -> Array[SoundCue]:
+	var none: Array[SoundCue] = []
+	return playable(ambience_set.one_shots) if ambience_set != null else none
+
+
+## The cues of `cues` that have a stream.
+static func playable(cues: Array[SoundCue]) -> Array[SoundCue]:
 	var out: Array[SoundCue] = []
-	if ambience_set == null:
-		return out
-	for cue in ambience_set.one_shots:
+	for cue in cues:
 		if cue != null and not cue.is_silent():
 			out.append(cue)
 	return out
 
 
 func _schedule() -> void:
-	if ambience_set == null or _one_shots.is_empty():
+	if ambience_set == null or (_one_shots.is_empty() and _night_shots.is_empty()):
 		_next_at = INF
 		return
 	var low := maxf(ambience_set.interval_s.x, 0.1)

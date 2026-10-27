@@ -1,11 +1,12 @@
 extends Control
 
-## RFC-034 034f: the room screens of Sacrifice. It owns no state: the views read `MpLobby.client` (the kit's mirror of
+## The room screens of Sacrifice. It owns no state: the views read `MpLobby.client` (the kit's mirror of
 ## the room server) and this node only decides which one shows (connect, list, create, room), turns the client's
 ## errors into one notice, and takes the player into the match when the server says it is ready
 ## (`SacrificeFlow.join_from_lobby`). The lobby link lives in the `MpLobby` autoload, so it survives the match: when the
 ## match ends the flow brings the player back here and the room is still there, with the result.
 ## Run alone (F6) it shows the connect view with «Sin conexión»; it never connects by itself.
+## Ref: RFC-034 034f.
 
 ## Where the room server is. `--lobby=host:port` wins over the saved values.
 @export var endpoint: MpLobbyEndpoint

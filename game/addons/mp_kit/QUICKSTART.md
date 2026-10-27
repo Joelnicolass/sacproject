@@ -31,11 +31,13 @@ Escena con raíz `Node2D` o `Node3D` (tu nivel) y un nodo **MpWorld** con **Play
 |---|---|
 | `SpawnPoints` | un marcador por asiento: movelos adonde nace cada jugador |
 | `Actors` | ahí aparecen los jugadores (y lo que haga un spawner) |
-| `Players` | un jugador por asiento, en todos, también para el que entra tarde |
+| `Players` | un jugador por asiento, en todos, también para el que vuelve |
 | `State` | puntaje, reloj, ronda: lo ven todos (`Mp.state()`) |
 | `Match` | espera a que carguen todos, quién se va y quién vuelve, el final (`Mp.finish()`) |
 | `Hud/Leave` | botón para salir de la partida |
 | `Hud/Invite` | en una partida privada de esta PC, lo que escriben los amigos para entrar |
+| `Hud/Start` | en Host LAN, mientras la partida espera asientos: arrancar con los jugadores que ya entraron |
+| `Hud/Waiting` | mientras la partida espera sus asientos: «Waiting for players (1/4)» |
 
 Si borrás una pieza, se vuelve a armar al abrir la escena. No les cambies el nombre.
 
@@ -138,6 +140,7 @@ Dos escenas más, y anotarlas en `game.tres` (`lobby_scene`, `rooms_scene`); el 
 | Servidor (VPS o tu PC) | **MpRoomServer** en una escena propia, con un **MpLobbyConfig** (`.tres`: puerto, salas, rango de puertos de partida, tiempos) y opcional un **MpRoomRules** | Abre el lobby. Cuando una sala está llena y todos listos, lanza **un proceso dedicado por partida** con un ticket: solo entran los sentados. Toma la red del juego. Correlo con `godot --headless --path . -- --room-server`. Varias partidas a la vez = varios procesos; el tope es `max_matches` |
 | Cliente | **MpLobbyScreen** (`rooms/ui/mp_lobby_screen.tscn`) en una escena. Con `lobby_scene` en el juego, el menú muestra *Online rooms* y el botón Back vuelve al boot | Conectar con un nombre, ver salas, crear (pública o con código), sentarse, *listo*, chat. Al arrancar la partida se une solo y al terminar vuelve con el resultado |
 | Mundo | **MpMatch** | En el servidor: `all_loaded`, `player_joined`, `player_left`, `player_back`, `player_abandoned`. `finish(resultado)` termina la partida para todos (`finished` en cada peer) y le avisa a la sala |
+| (kit) | **MpMatchGate** | La puerta de arranque (`Mp.gate()`): el mundo espera pausado hasta que cargan los asientos; después del arranque solo vuelve el que se fue (dentro de `rejoin_grace_s`), al resto lo rechaza con un motivo. Knobs: grupo **Match start** del `MpFlow` |
 
 El proceso de cada partida es tu mismo proyecto con `--dedicated` y un ticket: `MpFlow` arma solo el agente que valida el ticket. Reglas de sala propias (cuántos asientos según el modo, qué personajes valen):
 
@@ -153,7 +156,7 @@ func accept_pick(pick: Dictionary) -> bool:
 
 ### Sin IP pública: el relay (Railway u otro host)
 
-Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un dominio con TLS para la web, usá el relay: un servidor Node chico (`relay/server.mjs`, sin dependencias) que hace de túnel. El servidor Godot se conecta hacia afuera y los jugadores también. En `game.tres`: `transport = relay`, `relay_url = wss://tu-relay.up.railway.app`, `relay_room = mi-juego`; el servidor recibe el secreto por `MPKIT_RELAY_SECRET`. Salas, partidas y partida privada funcionan igual. Pasos para Railway: [relay/README.md](relay/README.md).
+Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un dominio con TLS para la web, usá el relay: un servidor Node chico (`relay/server.mjs`, `npm install` una vez) que hace de túnel. El servidor Godot se conecta hacia afuera y los jugadores también. En `game.tres`: `transport = relay`, `relay_url = wss://tu-relay.up.railway.app`, `relay_room = mi-juego`; el servidor recibe el secreto por `MPKIT_RELAY_SECRET`. Salas, partidas y partida privada funcionan igual. Pasos para Railway: [relay/README.md](relay/README.md).
 
 ### Partida privada en tu PC (con código)
 
@@ -161,10 +164,12 @@ Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un domi
 
 ### Web
 
-Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`transport = ws` en `game.tres`) o por el relay (`transport = relay`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: el servidor lleva certificado y clave (en su `game.tres`, o en el `MpLobbyConfig` para las salas, o con `deploy.sh --tls-cert … --tls-key …`) y el cliente prende `tls_client` en `game.tres`. Un navegador pausa una pestaña oculta: el jugador web que cambia de pestaña se frena para los demás hasta que vuelve, y si tarda más que `rejoin_grace_s` en una partida de sala cuenta como abandono.
+Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`transport = ws` en `game.tres`) o por el relay (`transport = relay`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: el servidor lleva certificado y clave (en su `game.tres`, o en el `MpLobbyConfig` para las salas, o con `deploy.sh --tls-cert … --tls-key …`) y el cliente prende `tls_client` en `game.tres`. Un navegador pausa una pestaña oculta: el jugador web que cambia de pestaña se frena para los demás hasta que vuelve, y si tarda más que `rejoin_grace_s` cuenta como abandono.
 
 ### Subirlo a un VPS
 
 Exportá el preset de Linux y corré `addons/mp_kit/deploy/deploy.sh usuario@vps build/server --rooms 7700 --open-firewall`. Guía completa, varias instancias y web por https: [deploy/README.md](deploy/README.md).
+
+Sin VPS: `addons/mp_kit/deploy/fly.sh --app mi-servidor-de-juego --relay-url wss://mi-relay.fly.dev` (con `MPKIT_RELAY_SECRET` puesta) sube el servidor a Fly.io detrás de tu relay, sin exportar: [GUIDE 13.6](GUIDE.md#136-sin-vps-flyio).
 
 Detalle de cada pieza: [README.md](README.md). Paso a paso, para una persona: [GUIDE.md](GUIDE.md).

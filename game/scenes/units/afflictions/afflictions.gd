@@ -2,34 +2,32 @@
 class_name Afflictions
 extends Node3D
 
-## F120 (RFC-030i): the one owner of «can this creature act?». Its Affliction children are the states (Stunned; later
-## Petrified, Frozen), each with its AfflictionType. The body and the rest ask here, never a child:
-## holds() (no AI, attack, turn or ability), immobilized() (not even pushed), drops_fliers(), damage_factor(),
+## The one owner of «can this creature act?». Its Affliction children are the states (Stunned; later Petrified, Frozen), each with its AfflictionType.
+## The body and the rest ask here, never a child: holds() (no AI, attack, turn or ability), immobilized() (not even pushed), drops_fliers(), damage_factor(),
 ## cc_protected() and clip_role(). Who wins between two states is the data's (`AfflictionType.cancels`), not the order of the children.
-##
 ## The server (or solo) decides; `shown` (one bit per type) is replicated, so on a client a state is on exactly when
 ## its bit is, and the children draw it from there. It is a Node3D (like its children) so the looks under a state follow the body.
+## Ref: F120 (RFC-030i).
 
-## The state that holds the body started (true) or the last one ended (false), or one that ends its special mode started
-## or ended (F155, REVIEW-030r-b B1: a Rockform already held by the oil that is petrified changes `holds()` not at all).
-## Idempotent for the listeners (the body cancels its attacks and closes Rockform). Every peer.
+## The state that holds the body started (true) or the last one ended (false), or one that ends its special mode started or ended (F155, REVIEW-030r-b B1:
+## a Rockform already held by the oil that is petrified changes `holds()` not at all). Idempotent for the listeners (the body cancels its attacks and closes Rockform). Every peer.
 signal held_changed(held: bool)
 
 ## What a layer of a spell state (SpellAffliction) multiplies in a fight: how long swings and shots take, how well the body hits.
 enum Stat { ATTACK_TIME, ACCURACY }
 
 @export var body: Node3D
-## On its death every state ends (sacengine: a dying creature leaves stunned).
+## On its death every state ends (a dying creature leaves stunned).
 @export var health: Health
 ## F149: the one owner of the frozen pose. While a state that immobilizes is on (petrified, frozen) the clip holds,
 ## on every peer from the replicated mask. Optional: empty = no pose to hold.
 @export var clip_pose: ClipPlayback
-## F149 (REVIEW-030k-b B1): the one owner of the mesh look. The tint of the state with a look (AfflictionType.has_look)
-## and the highest look_priority among the ones that are on (petrified over frozen); none = off. A ward that turns the skin to stone
-## (Skin of Stone) is plain stone when no state has a look. Every peer, from the
-## mask, so two states that change in the same tick cannot undress each other. Optional: empty = no look.
+## F149 (REVIEW-030k-b B1): the one owner of the mesh look. The tint of the state with a look (AfflictionType.has_look) and the highest look_priority
+## among the ones that are on (petrified over frozen); none = off. A ward that turns the skin to stone (Skin of Stone) is plain stone when no state has a look.
+## Every peer, from the mask, so two states that change in the same tick cannot undress each other. Optional: empty = no look.
 @export var look: StoneLook
-## F158: the body's wards. While one that counts as a shield is on the body is ccProtected (stats.d:86-90: shielded). Optional: empty = a shield does not protect.
+## The body's wards. While one that counts as a shield is on the body is ccProtected. Optional: empty = a shield does not protect.
+## Ref: F158; stats.d:86-90 (shielded).
 @export var wards: Wards
 ## The bits of the states that are on (AfflictionType.bit). Replicated by the unit's MultiplayerSynchronizer.
 @export var shown := 0:
@@ -53,7 +51,7 @@ func _ready() -> void:
 	AfflictionGlows.attach(self)
 	if wards != null:
 		wards.changed.connect(_show_look)
-	if health and (not MpKit.is_networked() or MpKit.is_server()):
+	if health and is_multiplayer_authority():
 		health.died.connect(_on_died)
 	if shown != 0:
 		_show(0)
@@ -96,18 +94,20 @@ func immobilized() -> bool:
 	return _any(&"immobilizes")
 
 
-## F159: a state that is on holds the body where it is (Vined: pins, sacengine effects.vined → fixed).
+## A state that is on holds the body where it is (Vined: pins).
+## Ref: F159; sacengine effects.vined → fixed.
 func pins() -> bool:
 	return _any(&"pins")
 
 
-## sacengine effects.fixed (state.d:8588-8590): a petrified, frozen or pinned body. The one answer to «can it be moved from outside?».
+## A petrified, frozen or pinned body. The one answer to «can it be moved from outside?».
+## Ref: sacengine effects.fixed (state.d:8588-8590).
 func fixed() -> bool:
 	return immobilized() or pins()
 
 
-## sacengine regenerationBlocked (stats.d:83): a body that is immobilized (petrified, frozen) or has a state that is on that stops it
-## (Vined, Rings of Fire, Slime). Health.regenerate asks.
+## A body that is immobilized (petrified, frozen) or has a state that is on that stops its regeneration (Vined, Rings of Fire, Slime). Health.regenerate asks.
+## Ref: sacengine regenerationBlocked (stats.d:83).
 func blocks_regeneration() -> bool:
 	return immobilized() or _any(&"blocks_regeneration")
 
@@ -124,7 +124,8 @@ func breaks_special_modes() -> bool:
 
 
 ## Product of the factors of the states that are on (1 with none). Health multiplies every hit by it, on both of its
-## paths (damage and damage_typed): petrified ×0.2 (state.d:8965), stunned ×1.
+## paths (damage and damage_typed): petrified ×0.2, stunned ×1.
+## Ref: state.d:8965.
 func damage_factor() -> float:
 	if shown == 0:
 		return 1.0
@@ -167,9 +168,9 @@ func cc_protected() -> bool:
 	return _any(&"cc_protects")
 
 
-## Server: the body's velocity for this tick, as the states that are on say (F121: a Tumbling body flies its ballistic
-## path, sacengine CreatureMovement.tumbling). With none, `velocity` as it came. The body calls it once per tick, after
-## its own gravity and before BodyAvoidance and move_and_slide.
+## Server: the body's velocity for this tick, as the states that are on say (a Tumbling body flies its ballistic path). With none, `velocity` as it came.
+## The body calls it once per tick, after its own gravity and before BodyAvoidance and move_and_slide.
+## Ref: F121; sacengine CreatureMovement.tumbling.
 func steer(velocity: Vector3, delta: float) -> Vector3:
 	if shown == 0:
 		return velocity
@@ -198,9 +199,9 @@ func pose_role(clip_pose: ClipPlayback) -> String:
 	return "idle"
 
 
-## Server: may `affliction` start? Every state that is on must be one it cancels (so a stunned body refuses a second
-## stun, sacengine canStun state.d:8546-8553). The ones it cancels end here. F155: a type that `coexists` (Oiled) skips the
-## states that are on, and a state that is on and coexists is skipped by the others (neither direction refuses or cancels).
+## Server: may `affliction` start? Every state that is on must be one it cancels (so a stunned body refuses a second stun). The ones it cancels end here.
+## A type that `coexists` (Oiled) skips the states that are on, and a state that is on and coexists is skipped by the others (neither direction refuses or cancels).
+## Ref: sacengine canStun state.d:8546-8553; F155.
 func admit(affliction: Affliction) -> bool:
 	if affliction.type == null or (body and not body.is_inside_tree()):
 		return false

@@ -1,5 +1,5 @@
 class_name ExplosionBurst
-extends Node3D
+extends FxScene
 
 ## The look of one blast, played on every peer by FxBus.broadcast_scene at each point of an Explosion: two spheres of fire that swell (a big one
 ## and a small one), and the rocks it throws. The sprites of the blast (xplo, exp2, ash, smoke) are bursts the zone plays beside it; the sound

@@ -9,7 +9,7 @@ OUT="$ROOT/agent/out/pt61"
 WORLD=res://debug/sacrifice/convert_ritual.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
-"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world=$WORLD > "$OUT/net_server.log" 2>&1 &
+"$GODOT" --headless --path "$ROOT" -- --dedicated --start-seats=1 --mp-port="$PORT" --world=$WORLD > "$OUT/net_server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 80); do grep -q "dedicated listo" "$OUT/net_server.log" && break; sleep 0.25; done
 addons/agent_kit/cli.sh "$ROOT" flow --flow=rfc020e_convert_a.json --out=res://agent/out/pt61 --fail-on-error --mp-port="$PORT" --world=$WORLD > "$OUT/net_a.log" 2>&1

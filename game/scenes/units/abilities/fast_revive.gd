@@ -1,9 +1,9 @@
 class_name FastRevive
 extends Node
 
-## F153 (RFC-030 030p-b): the fast revival of a corpse by the Dragon's breath. sacengine revive(fast) (state.d:8651-8664):
+## The fast revival of a corpse by the Dragon's breath:
 ## the corpse must be dead and its soul NORMAL or EMERGING; the soul turns REVIVING and the body gets its full health. The
-## creature then rises and turns for reviveTime/2 = 150 ticks (14101-14131): while timer < 75 it climbs reviveHeight/75 per
+## creature then rises and turns for reviveTime/2 = 150 ticks: while timer < 75 it climbs reviveHeight/75 per
 ## tick (74 ticks · 2/75 = 1.97 m), it turns 2π in all, and at timer 150 its soul is removed and it idles.
 ## Child of the body, server (or solo) only; the body is REVIVING (Captive: out of the group «unit», without collision, nobody's
 ## target) and UnitBody.physics skips a taken body, so this node writes its height and its facing. begin() before add_child.
@@ -12,6 +12,7 @@ extends Node
 ##
 ## Divergences (declared): the creature goes back to the ground by gravity (the original tumbles it down); it is not added to
 ## the selection again (newCreatureAddToSelection); the corpse stands up with Corpse.stand_up (0.9 s), not the revive clip.
+## Ref: F153 (RFC-030 030p-b); sacengine revive(fast) (state.d:8651-8664), reviveTime 14101-14131.
 
 
 
@@ -64,7 +65,7 @@ func begin(corpse: UnitBody, soul: Soul) -> bool:
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

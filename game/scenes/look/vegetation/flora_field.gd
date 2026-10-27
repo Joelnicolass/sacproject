@@ -2,7 +2,7 @@
 class_name FloraField
 extends LookLayer
 
-## RFC-054 054c (F382): the mesh vegetation of a map (Look/Layers/Flora). One MeshPlanter per VegetationLayerConfig of
+## The mesh vegetation of a map (Look/Layers/Flora). One MeshPlanter per VegetationLayerConfig of
 ## `configs` (original_plants.tres), each drawing the FloraLayer nodes of the map (the `Vegetation` node of its map.tscn;
 ## a snapshot, FloraDensity) around the camera: the 3D viewport's in the editor, the game's when playing.
 ## How much each layer draws comes from the quality preset (`LookQuality.vegetation_for(config.id)`; the editor uses
@@ -10,9 +10,10 @@ extends LookLayer
 ## hidden or a map without FloraLayers draws nothing. A FloraLayer that changes calls `layers_changed` (group `GROUP`).
 ## Presentation only: no collision, no RPC, no shared RNG. Every node it makes is an internal child, never saved. In a
 ## dedicated or headless process the rig is freed, and this never builds anything there either.
-## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`): only the cells it touches are rebuilt.
+## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`; FloraClears): only the cells it touches
+## are rebuilt. The map brush painting a layer calls `layer_painted`: only that area plans again, the planters stay.
+## Ref: RFC-054 054c (F382).
 
-const CLEAR_POLL_S := 1.0
 ## Group of the fields: FloraLayer calls `layers_changed` on it.
 const GROUP := &"flora_field"
 
@@ -38,12 +39,13 @@ const GROUP := &"flora_field"
 @export_range(0.1, 8.0, 0.1, "suffix:ms") var build_budget_ms := 1.0
 ## The ground moved (a spell raised it): the plants of that part are planned again at most this often.
 @export_range(0.05, 2.0, 0.05, "suffix:s") var replan_every_s := 0.25
+## RFC-057 057e: a stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 = only when settled.
+@export_range(0.0, 5.0, 0.05, "suffix:s") var live_replan_s := 1.0
 
 var _planters: Array[MeshPlanter] = []
 var _ground := FloraGroundWatch.new()
 var _signature := ""
-var _clears_dirty := true
-var _clear_timer := 0.0
+var _clears := FloraClears.new()
 var _watching: Array[Resource] = []
 var _bound_rig: LookRig
 ## What the FloraLayer nodes of the map say now (rebuilt when one changes) and how many times it was rebuilt.
@@ -91,7 +93,20 @@ func layers_changed() -> void:
 
 ## `VegetationClear` nodes call this (through the group) when one moves, resizes or leaves.
 func clears_changed() -> void:
-	_clears_dirty = true
+	_clears.mark()
+
+
+## The map brush painted `layer` over `area_m` (map x, z; FloraLayer.show_painting): a new snapshot with its bytes goes to
+## the same planters, which plan that area again under the ground's brake. A layer not drawn yet makes the full rebuild.
+func layer_painted(layer: FloraLayer, area_m: Rect2) -> void:
+	var id := layer.get_instance_id()
+	if _density == null or _density_dirty or not _density.layer_ids.has(id):
+		layers_changed()
+		return
+	_density = _density.with_layer_bytes(id, layer.density_image().get_data())
+	for planter in _planters:
+		planter.set_flora(_density)
+	_ground.mark(area_m)
 
 
 ## True in a process that draws nothing: headless or the dedicated server.
@@ -133,10 +148,10 @@ func _refresh() -> void:
 	var layers: Array[Dictionary] = []
 	if is_visible_in_tree() and not presentationless():
 		layers = active_layers()
-	var surface := rig.ground if rig else null
+	var surface := rig.terrain if rig else null
 	if surface == null or not surface.is_loaded():
 		layers.clear()
-	_ground.follow(surface if surface != null and not Engine.is_editor_hint() else null)
+	_ground.follow(surface)  # the editor too: a brush stroke settles the ground under the plants
 	var signature := _signature_of(layers, surface)
 	if signature == _signature:
 		return
@@ -149,7 +164,7 @@ func _refresh() -> void:
 		# The editor reloads tool scripts under a running task: plan on the main thread there.
 		planter.threaded = not Engine.is_editor_hint()
 		_planters.append(planter)
-	_clears_dirty = true
+	_clears.mark()
 	set_process(not _planters.is_empty())
 
 
@@ -168,7 +183,7 @@ func _on_vegetation_toggled(_enabled: bool) -> void:
 
 
 ## What the planters depend on: a change of it rebuilds them.
-func _signature_of(layers: Array[Dictionary], surface: GroundSurface) -> String:
+func _signature_of(layers: Array[Dictionary], surface: Terrain) -> String:
 	var parts := PackedStringArray()
 	parts.append(str(_density_version))
 	parts.append(str(surface.get_instance_id() if surface else 0))
@@ -184,7 +199,8 @@ func _process(delta: float) -> void:
 	var camera := CellRing.view_camera(self, follow_editor_camera)
 	if camera == null:
 		return
-	_update_clears(delta)
+	_clears.update(delta, _planters, get_tree())
+	_ground.live_every_s = live_replan_s
 	_ground.update(delta, replan_every_s, _planters, get_tree())
 	var started := Time.get_ticks_usec()
 	var deadline := started + int(build_budget_ms * 1000.0)
@@ -192,27 +208,6 @@ func _process(delta: float) -> void:
 		planter.update(camera.global_position, deadline)
 	_last_frame_us = Time.get_ticks_usec() - started
 	_worst_frame_us = maxi(_worst_frame_us, _last_frame_us)
-
-
-func _update_clears(delta: float) -> void:
-	_clear_timer -= delta
-	if _clear_timer <= 0.0:
-		_clear_timer = CLEAR_POLL_S
-		_clears_dirty = true
-	if not _clears_dirty:
-		return
-	_clears_dirty = false
-	for planter in _planters:
-		planter.set_clears(_gather_clears(planter.map_xform.affine_inverse()))
-
-
-## Every VegetationClear in map coordinates: x, z, radius, edge.
-func _gather_clears(to_map: Transform3D) -> PackedVector4Array:
-	var found := PackedVector4Array()
-	for row in VegetationClear.world_rows(get_tree()):
-		var local := to_map * Vector3(row.x, 0.0, row.y)
-		found.append(Vector4(local.x, local.z, row.z, row.w))
-	return found
 
 
 func _free_planters() -> void:

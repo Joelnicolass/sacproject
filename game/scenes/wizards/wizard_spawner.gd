@@ -5,44 +5,36 @@ extends MpSlotSpawner
 ## start), among the children of spawn_points (MapProps/Starts).
 
 
+## RFC-068: `despawn_on_leave` is off in match.tscn: a player who drops may come back to the same slot within the grace of the
+## door of the match (MpMatchGate), on every networked path. His wizard, creatures and altar stay in the world, the wizard standing
+## still; past the grace the slot loses (SeatPresence).
 func _ready() -> void:
-	## RFC-034 034g (F184): in a room's match (the dedicated has a ticket) a player who drops may come back to the same slot
-	## (`rejoin_grace_s`): his wizard, creatures and altar stay in the world, the wizard standing still. The match decides the
-	## rest: past the grace the slot loses (MatchTicketGlue).
-	if not MpBoot.user_value("match-ticket-file", "").is_empty():
-		despawn_on_leave = false
 	super._ready()
-	if not despawn_on_leave and MpKit.is_networked() and MpKit.is_server():
-		MpKit.peer_left.connect(_on_slot_peer_away)
-	if MpKit.is_networked() and MpKit.is_server():
-		_spawn_ready_peers()
+	var gate := Mp.gate()
+	if not despawn_on_leave and gate != null:
+		gate.seat_away.connect(_on_seat_away)
 
 
 func _exit_tree() -> void:
-	if MpKit.peer_left.is_connected(_on_slot_peer_away):
-		MpKit.peer_left.disconnect(_on_slot_peer_away)
+	var gate := Mp.gate()
+	if gate != null and gate.seat_away.is_connected(_on_seat_away):
+		gate.seat_away.disconnect(_on_seat_away)
 	super._exit_tree()
 
 
-func _on_slot_peer_away(_peer_id: int, slot: int) -> void:
+func _on_seat_away(slot: int) -> void:
 	var wizard := pawn_for(slot) as WizardBody
 	if is_instance_valid(wizard):
 		wizard.stand_still()
 
 
-func _spawn_ready_peers() -> void:
-	for peer in multiplayer.get_peers():
-		if MpKit.is_peer_world_ready(peer):
-			spawn_slot(MpKit.slot_for_peer(peer))
-
-
 func _place(pawn: Node, slot: int) -> void:
+	## MatchState seats the slot when the wizard enters `Wizards` (RFC-049 049b), so `owner_slot` goes before add_child.
 	pawn.set("owner_slot", slot)
-	## RFC-049 049b: a wizard sat in this seat; only the seated sides count for the victory (human or AI, on the authority).
-	if not MpKit.is_networked() or MpKit.is_server():
-		var match_state := get_tree().get_first_node_in_group(&"match_state") as MatchState
-		if match_state != null:
-			match_state.mark_seated(slot)
+	## An AI seat has no keys to predict from: it moves on the server (WizardBody steps Drive itself) and owns no MpInput frames.
+	var net := MpActor.of(pawn)
+	if net != null and SacrificeFlow.board.is_ai(slot):
+		net.predict = false
 	var rules: Variant = owner.get("rules") if owner else null
 	if rules is MatchRules:
 		var match_rules := rules as MatchRules
@@ -65,7 +57,7 @@ func _place(pawn: Node, slot: int) -> void:
 
 
 ## RFC-030 030d (F115): the level of this match. The level chosen in the boot or with --level is already in the world's
-## rules (MatchSetup.apply_to in HighNoon, RFC-031 031a2).
+## rules (MatchSetup.apply_to in MatchWorld, RFC-031 031a2).
 func _level(match_rules: MatchRules) -> int:
 	return match_rules.wizard_level
 

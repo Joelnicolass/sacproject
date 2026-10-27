@@ -1,31 +1,35 @@
 class_name Tumbling
 extends Affliction
 
-## F121 (RFC-030j): a body thrown through the air, sacengine catapult + CreatureMovement.tumbling. The Vortick's vortex
-## and the Flurry's implosion throw (catapult, state.d:8579-8599); Squall's Pushback adds to a body already thrown.
-## catapult refuses a flier in the air (it hangs, or falls with petrify) and a body that canCatapult says no to (dead,
+## A body thrown through the air. The Vortick's vortex
+## and the Flurry's implosion throw it; Squall's Pushback adds to a body already thrown.
+## The throw refuses a flier in the air (it hangs, or falls with petrify) and a body that cannot be thrown (dead,
 ## landing, being summoned, held by a doctor); the mode becomes stunned, so it ends a stun (the type's `cancels`).
 ##
-## While it lasts (the type holds the body) this state gives the body its velocity (steer, state.d:14781-14797): on the
+## While it lasts (the type holds the body) this state gives the body its velocity (steer): on the
 ## ground and going down, vz = 0; else vz −= fallingAcceleration/60 unless an effect lifted it this tick
 ## (antiGravityTime); then vxy ×0.99 and vz ×0.998 per tick. It lands when vz ≤ 0 and pos + vz/60 is under the ground,
-## or (REVIEW-F121 B1) when it rests on a building or another body (is_on_floor after move_and_slide)
-## (14175-14197): fall damage max(0, −vz − 3)·20 with no resistance (dealFallDamage, 9429-9438) and it lies hitFloor +
+## or (REVIEW-F121 B1) when it rests on a building or another body (is_on_floor after move_and_slide):
+## fall damage max(0, −vz − 3)·20 with no resistance and it lies hitFloor +
 ## getUp (Stunned.fall_down; the stun cooldown is not touched).
-## Deviation (declared): a hybrid flier leaves the tumble at the top of its arc (sacengine: it flies on, 14176-14181) but
+## Deviation (declared): a hybrid flier leaves the tumble at the top of its arc (the original: it flies on) but
 ## does not take off again; it comes down with the body's own gravity.
 ## Look: Tilt rolls while it flies (Tween), as Stunned does; the mesh clips tumble/falling/hitFloor are not exported.
 ## WORKAROUND: Tween on Tilt rotation:z in place of the tumble mesh clip (disk, same as RFC-030i-a).
+## Ref: F121 (RFC-030j); sacengine catapult + CreatureMovement.tumbling (state.d:8579-8599), steer 14781-14797, 14175-14197, dealFallDamage 9429-9438, 14176-14181.
 
 ## A body within this of the ground stands on it (the capsule rests a hair above the land).
 const REST_M := 0.02
 
-## sacengine CreatureStats.fallingAcceleration (stats.d:142-144), m/s².
+## Falling acceleration, m/s².
+## Ref: sacengine CreatureStats.fallingAcceleration (stats.d:142-144).
 @export var falling_acceleration := 9.81
-## sacengine dampFactorXY / dampFactorZ per tick at 60 fps (state.d:14783-14784).
+## Horizontal and vertical damping per tick at 60 fps.
+## Ref: sacengine dampFactorXY / dampFactorZ (state.d:14783-14784).
 @export var damp_xz := 0.99
 @export var damp_y := 0.998
-## sacengine fallDamageLimit / fallDamageFactor (state.d:9430-9433).
+## The speed under which a fall does no damage, and the damage per m/s over it.
+## Ref: sacengine fallDamageLimit / fallDamageFactor (state.d:9430-9433).
 @export var fall_damage_limit := 3.0
 @export var fall_damage_factor := 20.0
 ## It lies here after it lands. Optional: empty = it stands up at once.
@@ -36,9 +40,11 @@ const REST_M := 0.02
 @export_range(0.0, 180.0) var roll_deg := 60.0
 @export var roll_s := 0.3
 
-## sacengine fallingVelocity, m/s (port axes: y up).
+## The velocity of the fall, m/s (port axes: y up).
+## Ref: sacengine fallingVelocity.
 var velocity := Vector3.ZERO
-## sacengine tumbleAttackerSide: the slot that threw it (-1 nobody).
+## The slot that threw it (-1 nobody).
+## Ref: sacengine tumbleAttackerSide.
 var attacker_slot := -1
 var _lifted_tick := -1
 var _from := Vector3.ZERO
@@ -52,13 +58,15 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-## Server (or solo): sacengine `fallingVelocity = v` on a body already thrown (the pull sets it each tick of its window).
+## Server (or solo): sets the fall velocity `v` of a body already thrown (the pull sets it each tick of its window).
+## Ref: sacengine `fallingVelocity = v`.
 func drive(v: Vector3) -> void:
 	if is_on():
 		velocity = v
 
 
-## Server (or solo): sacengine catapult(side, velocity). True when it is (now or already) thrown.
+## Server (or solo): throws the body with `velocity`. True when it is (now or already) thrown.
+## Ref: sacengine catapult(side, velocity).
 func catapult(push: Vector3, side: int) -> bool:
 	var body := _body()
 	if body == null or BodyNudge.fixed(body):
@@ -84,18 +92,21 @@ func catapult(push: Vector3, side: int) -> bool:
 	return true
 
 
-## Server: sacengine fallingVelocity += v of a thrown body (Pushback on a tumbling body, state.d:24024-24026).
+## Server: adds `v` to the fall velocity of a thrown body (Pushback on a tumbling body).
+## Ref: sacengine fallingVelocity += v, state.d:24024-24026.
 func add_velocity(push: Vector3) -> void:
 	velocity += push
 
 
-## Server: the vortex holds it up this tick (sacengine antiGravityTime = frame, state.d:23955).
+## Server: the vortex holds it up this tick.
+## Ref: sacengine antiGravityTime = frame, state.d:23955.
 func lift() -> void:
 	_lifted_tick = MatchClock.now()
 
 
-## Server: sacengine `position += v` on a thrown body (the implosion, state.d:24663-24666). `clear_fall`: it was going
-## down while this moves it up, so vz = 0 (sacengine's own «hack»).
+## Server: moves a thrown body by `v` (the implosion). `clear_fall`: it was going
+## down while this moves it up, so vz = 0 (the original's own «hack»).
+## Ref: sacengine `position += v`, state.d:24663-24666.
 func shift(offset: Vector3, clear_fall: bool) -> void:
 	var body := _body()
 	if body:
@@ -104,8 +115,9 @@ func shift(offset: Vector3, clear_fall: bool) -> void:
 		velocity.y = 0.0
 
 
-## canCatapult (state.d:250-255, 8579-8584), with the port's names: not in the air on its own, alive, not being
+## Can it be thrown, with the port's names: not in the air on its own, alive, not being
 ## summoned, not held or revived by a doctor, not landing. Rockform and playing dead may be thrown.
+## Ref: canCatapult (state.d:250-255, 8579-8584).
 func _body_allows(body: Node3D) -> bool:
 	if BodyNudge.airborne(body):
 		return false
@@ -140,7 +152,7 @@ func _physics_process(_delta: float) -> void:
 	if not is_on():
 		set_physics_process(false)
 		return
-	if not _simulates():
+	if not is_multiplayer_authority():
 		return
 	var body := _body()
 	var at := body.global_position
@@ -156,8 +168,9 @@ func _physics_process(_delta: float) -> void:
 	if BodyNudge.on_land(body, at) and at.y + velocity.y / MatchClock.TICKS_PER_SECOND_F <= BodyNudge.ground_y(body, at) + REST_M:
 		_land(body, at, "suelo")
 	elif body is CharacterBody3D and (body as CharacterBody3D).is_on_floor():
-		## REVIEW-F121 B1: it rests on a building or on another body (sacengine positionAfterCollision stops it on top,
-		## state.d:14446-14564), not on the land: it lands there all the same.
+		## REVIEW-F121 B1: it rests on a building or on another body (the original stops it on top),
+		## not on the land: it lands there all the same.
+		## Ref: sacengine positionAfterCollision, state.d:14446-14564.
 		_land(body, at, _floor_name(body as CharacterBody3D))
 
 

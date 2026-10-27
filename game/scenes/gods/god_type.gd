@@ -2,10 +2,10 @@
 class_name GodType
 extends Resource
 
-## A god (RFC-042 042a): everything the game knows about one, in one file `data/gods/<tag>.tres`. Adding a god is adding
+## A god: everything the game knows about one, in one file `data/gods/<tag>.tres`. Adding a god is adding
 ## that file; no code lists the gods. Read-only at runtime, like the other types.
-## The book, the AI profile and the look sit in the file as references; the casting particle is a file path loaded when
-## a match needs it.
+## The book, the look and the casting particle sit in the file as references (how the AI plays is its seat's, not the god's).
+## Ref: RFC-042 042a.
 
 @export var tag: String = ""
 @export var display_name: String = ""
@@ -13,10 +13,9 @@ extends Resource
 @export var sort_order: int = 0
 ## The land the god brings to a match: sky, fog, light, glow, ground and grass (`data/look/<tag>.tres`).
 @export var look: LookProfile
-## The particle of its casting hand (a ParticleType, data/fx/cast_<tag>.tres). Empty: the god casts without one.
-@export_file("*.tres") var cast_fx_path: String = ""
-## The AI profile of a wizard of this god; empty: the original's profile.
-@export var ai_profile: AiProfile
+## The particle its wizard's hands throw while he casts (data/fx/cast_<tag>.tres). Empty: the god casts without one (the pose
+## still plays). A spell with its own (SpellAction.cast_fx) wins.
+@export var cast_fx: ParticleType
 @export var book: GodBook
 ## The towers this god raises: one row per structure spell (Manalith, Shrine) with the scene of its own model.
 @export var structures: Array[GodStructure] = []
@@ -27,13 +26,6 @@ extends Resource
 ## The id of this god on the network and in the catalog: its `tag`, or the file name when the tag is empty (new content).
 func id() -> String:
 	return tag if not tag.is_empty() else resource_path.get_file().get_basename()
-
-
-## Name FxBus plays for the casting hand. A god without a particle still names one (`cast_<tag>`): the wizard's pose follows it.
-func cast_fx_name() -> String:
-	if not cast_fx_path.is_empty():
-		return cast_fx_path.get_file().get_basename()
-	return "cast_%s" % tag
 
 
 ## The row of `spell` in this god's structures, or null when the god does not raise it.

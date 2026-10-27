@@ -25,6 +25,10 @@ var _axis := Vector3.UP
 var _turn := 0.0
 
 
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	set_process(false)
 	visible = false
@@ -44,7 +48,7 @@ func _on_phase(phase: int) -> void:
 		_from = global_position
 	elif phase == GroundZone.Phase.ACTIVE:
 		for type in shards:
-			FxBus.play(type.bus_name(), zone.points[0])
+			FxBus.play(type, zone.points[0])
 
 
 func _process(delta: float) -> void:
@@ -54,8 +58,8 @@ func _process(delta: float) -> void:
 	else:
 		_fly()
 	if trail != null and zone.phase == GroundZone.Phase.ARMING:
-		FxBus.play_puff(trail.bus_name(), global_position)
-		FxBus.play_puff(trail.bus_name(), global_position)
+		FxBus.puff(trail, global_position)
+		FxBus.puff(trail, global_position)
 
 
 ## In front of the wizard, rising from his feet to over his head as it grows from nothing to its size.
@@ -64,7 +68,7 @@ func _follow_wizard() -> void:
 	if wizard == null:
 		return
 	var progress := clampf(float(zone.phase_ticks) / float(maxi(zone.cast_ticks, 1)), 0.0, 1.0)
-	var box := BodyNudge.box(wizard)
+	var box := DrawnPose.box(wizard)
 	var front := wizard.facing_flat() * (maxf(box.size.x, box.size.z) * 0.5 + in_front_m)
 	global_position = Vector3(box.get_center().x, lerpf(box.position.y, box.end.y + over_head_m, progress), box.get_center().z) + front
 	ball.scale = Vector3.ONE * maxf(progress, 0.01)

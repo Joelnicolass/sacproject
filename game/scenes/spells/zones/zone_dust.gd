@@ -19,14 +19,14 @@ extends Node3D
 @export var to_phase := GroundZone.Phase.ARMING
 
 var _rng: RandomNumberGenerator
-var _land: GroundSurface
+var _land: Terrain
 
 
 func _ready() -> void:
 	process_physics_priority = 1
 	set_physics_process(not Engine.is_editor_hint() and zone != null and type != null and DisplayServer.get_name() != "headless")
 	_rng = MatchSeed.rng(["zone_dust", String(zone.name) if zone != null else ""])
-	_land = GroundSurface.of(self)
+	_land = Terrain.of(self)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -43,4 +43,4 @@ func _physics_process(_delta: float) -> void:
 		var ground := _land.height_at(spot.x, spot.z)
 		if not is_nan(ground):
 			spot.y = ground + global_position.y - zone.global_position.y
-			FxBus.play_puff(type.bus_name(), spot)
+			FxBus.puff(type, spot)

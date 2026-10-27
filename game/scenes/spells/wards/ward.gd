@@ -11,7 +11,7 @@ extends Node3D
 
 ## The ward went on (true) or off (false). Every peer, from `shown`.
 signal shown_changed(on: bool)
-## The cast of this ward's spell began (true) or ended or was cut (false). Every peer, from the Caster's replicated cast particle.
+## The cast of this ward's spell began (true) or ended or was cut (false). Every peer, from the Caster's `cast_changed`.
 signal casting_changed(on: bool)
 
 ## The body it protects: its box sizes the look; its name goes in the log.
@@ -30,8 +30,8 @@ signal casting_changed(on: bool)
 ## The body counts as shielded: Freeze, Petrify and Pull refuse it.
 @export var counts_as_shield := true
 @export_group("Casting")
-## The particle the hands throw while this spell is cast (HandFx plays it, from `data/fx/`). Every ward has its own, and that is how every peer
-## knows which spell is being cast: it is the one whose type is showing. Empty = the ward does not follow the cast.
+## The particle the hands throw while this spell is cast (WardAction hands it to the Caster; HandFx plays it). Every ward has its own, and
+## that is how every peer knows which spell is being cast: it is the one showing. Empty = the ward does not follow the cast.
 @export var cast_type: ParticleType
 @export_group("Look")
 ## What is drawn. Optional: empty = no look.
@@ -75,22 +75,17 @@ func _ready() -> void:
 			_show(true)
 
 
-## The FxBus name of `cast_type` (the file under data/fx/ without extension), "" without one. WardAction hands it to the Caster.
-func cast_fx_name() -> String:
-	return cast_type.resource_path.trim_prefix(FxBus.TYPES_DIR).get_basename() if cast_type != null else ""
-
-
 ## Listens to the wizard's cast particle: while it is this ward's own, the spell is being cast.
 func _follow_cast() -> void:
 	var caster := Caster.of(body)
 	if caster == null or cast_type == null:
 		return
-	caster.cast_fx_changed.connect(_on_cast_fx)
-	_on_cast_fx(caster.cast_fx_shown)
+	caster.cast_changed.connect(_on_cast_changed)
+	_on_cast_changed(caster.is_casting(), caster.cast_fx())
 
 
-func _on_cast_fx(type_name: String) -> void:
-	var on := not type_name.is_empty() and type_name == cast_fx_name()
+func _on_cast_changed(is_cast: bool, fx: ParticleType) -> void:
+	var on := is_cast and fx != null and fx == cast_type
 	if on != casting:
 		casting = on
 		casting_changed.emit(on)
@@ -169,7 +164,7 @@ func _show(on: bool) -> void:
 		return
 	var full := (BodyNudge.box(body).size if body else Vector3(0.6, 1.8, 0.6)) * look_scale
 	if on:
-		look.position = body.to_local(BodyNudge.center(body)) if body else Vector3.UP * 0.9
+		look.position = body.to_local(BodyNudge.center(body)) if body else BodyFacts.fallback().center
 		look.scale = Vector3.ONE * 0.01
 		look.visible = true
 	_tween = look.create_tween()
@@ -184,7 +179,7 @@ func _who() -> String:
 
 ## True on the server (or in a solo match): the only peer that decides.
 func has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
+	return is_multiplayer_authority()
 
 
 func _get_configuration_warnings() -> PackedStringArray:

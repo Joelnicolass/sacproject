@@ -4,7 +4,7 @@ extends Node
 
 ## Holds the look layers of a map: one line in the world scene (`%Look`). Each layer is a packed
 ## scene or a node under `Layers`; removing one removes that layer. It also holds the world's sun and
-## Environment inside their layers, and the empty slots time of day and weather will fill.
+## Environment inside their layers, and the atmosphere (hour and weather) the other layers read.
 ## The rig hands every `LookLayer` the profile and the quality preset; the layer works out its own
 ## object from them. Presentation only: a dedicated or headless process frees the whole rig. Runs in the editor too.
 
@@ -33,13 +33,8 @@ signal vegetation_toggled(enabled: bool)
 @export var quality: QualityApplier
 ## The sun layer, for tools that turn the sun by hand.
 @export var sun_layer: SunLayer
-## The map's ground numbers; the nodes that draw it (`ground.meshes`) are what the ground layer dresses.
-@export var ground: GroundSurface
-## Which `GroundSet` slot paints each of the map's tile ids. The classic ground (a biome without a
-## PBR `GroundSet`) uses it so the grass knows where it grows; it belongs to the map, not to a biome.
-@export var tile_map: TileLayerMap
-## The ground of a map made of one god's land (empty for the other maps): a look of that god wears it.
-@export var native_ground: NativeGround
+## The map's ground; the node that draws it (`terrain.mesh`) is what the ground layer dresses.
+@export var terrain: Terrain
 
 var profile: LookProfile
 ## Last preset handed to `apply_quality` (or the one the Quality socket holds).
@@ -142,6 +137,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if layers == null:
 		warnings.append("Falta el socket Layers.")
-	if ground == null:
-		warnings.append("Falta el socket Ground (el GroundSurface del mapa): la capa de suelo no actua sin el.")
+	if terrain == null:
+		warnings.append("Falta el socket Terrain (el Terrain del mapa): la capa de suelo no actua sin el.")
 	return warnings

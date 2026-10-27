@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/eslg/010.png" id="1_hymsx"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/eslg/010_normal.png" id="2_p65ev"]
 
 [resource]
 resource_name = "eslg_010"
 albedo_texture = ExtResource("1_hymsx")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_p65ev")

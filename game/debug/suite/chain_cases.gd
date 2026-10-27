@@ -48,7 +48,7 @@ func run(host: Node3D) -> Dictionary:
 	out["chain_dragon"] = await _dragon()
 	out["chain_dragon_alone"] = await _dragon_alone()
 	out["chain_ai"] = await _ai()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 
@@ -68,9 +68,11 @@ func _scenes() -> Dictionary:
 		checks[tag + "_no_warnings"] = action._get_configuration_warnings().is_empty()
 		checks[tag + "_pick"] = action.pick == pair[2]
 		action.free()
-	checks["rainbow_beam_is_arc"] = FxBus.beam_type("rainbow_arc") != null and FxBus.beam_type("rainbow_arc").path == BeamType.Path.ARC
-	checks["rainbow_arc_numbers"] = FxBus.beam_type("rainbow_arc").segments == 31 and absf(FxBus.beam_type("rainbow_arc").width_m - 0.7) < 0.001
-	checks["ltng_knob_exists"] = FxBus.beam_type("lightning_ltng") != null and FxBus.beam_type("lightning_ltng").atlas_tag == "ltng"
+	var rainbow := load("res://data/fx/beams/rainbow_arc.tres") as BeamType
+	var ltng := load("res://data/fx/beams/lightning_ltng.tres") as BeamType
+	checks["rainbow_beam_is_arc"] = rainbow != null and rainbow.path == BeamType.Path.ARC
+	checks["rainbow_arc_numbers"] = rainbow != null and rainbow.segments == 31 and absf(rainbow.width_m - 0.7) < 0.001
+	checks["ltng_knob_exists"] = ltng != null and ltng.atlas != null and ltng.atlas.resource_path.get_file() == "ltng.png"
 	checks["dragon_kind"] = (_spells.get_parent().get_node("SpellSpawner") as SpellSpawner).projectiles.has("Dragonfire")
 	var caster_wizard := _wizard(1, ORIGIN, "stratos", 5)
 	await _frames(2)
@@ -568,12 +570,12 @@ func _full(health: Health, amount: float) -> void:
 func _wizard(slot: int, at: Vector3, god: String, level := 1) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	wizard.level = level
 	wizard.position = at
 	_root.add_child(wizard)
 	## The wizard reads its seat's god when it enters; the case says it again.
-	wizard.god = god
+	wizard.god_type = GameData.god(String(god))
 	(wizard.get_node("Health") as Health).setup(10000.0)
 	return wizard
 

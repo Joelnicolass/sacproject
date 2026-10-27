@@ -1,19 +1,20 @@
 class_name DropletRain
 extends Node3D
 
-## F148 (RFC-030 030h3): every falling AbominationDroplet of the world, in one pool (packed arrays, no node per drop).
+## Every falling droplet of the Abomination's gut in the world, in one pool (packed arrays, no node per drop).
 ## Server (or solo) only; clients see the drops as the shot's trail (ShotLook.trail_fx), drawn locally by FxTrail.
-## ShotDropper adds them. Each physics tick, for each drop (updateAbominationDroplet, state.d:24488-24505):
+## ShotDropper adds them. Each physics tick, for each drop:
 ## - position += velocity/fps, then velocity.z −= gravity/fps (10 m/s², starting at rest);
-## - collision: the first live body whose collider touches the drop's box (abominationDropletSize 0.25 m,
-##   state.d:24481-24487). The filter is only isProjectileObstacle: any side, the shooter too. Several: a foe of the
-##   drop's side first, then neutral, then its own (collisionTarget's rank by stance, state.d:16442-16447 and 30033),
-##   then the closest. It deals `amount` as direct ranged damage (dealRangedDamage(target, amount, …, DamageMod.none),
-##   state.d:24494) through Health.damage_typed, so resistance, friendly fire (F139) and passives apply; the drop ends;
-## - below the ground it ends without damage (state.d:24497-24498, «TODO: scar»). Off the map (no ground under it,
+## - collision: the first live body whose collider touches the drop's box (abominationDropletSize 0.25 m).
+##   The filter is only isProjectileObstacle: any side, the shooter too. Several: a foe of the
+##   drop's side first, then neutral, then its own (collisionTarget's rank by stance),
+##   then the closest. It deals `amount` as direct ranged damage (dealRangedDamage(target, amount, …, DamageMod.none))
+##   through Health.damage_typed, so resistance, friendly fire (F139) and passives apply; the drop ends;
+## - below the ground it ends without damage («TODO: scar»). Off the map (no ground under it,
 ##   the fallLimit branch) it ends after `max_fall_s`.
 ## The drop falls straight down (velocity has only a vertical part), so the ground under it is measured once, when
 ## it is added: one shape query per drop per tick, no ray.
+## Ref: F148 (RFC-030 030h3), sacengine updateAbominationDroplet state.d:24488-24505, 24481-24487, 24494, 24497-24498, collisionTarget 16442-16447 and 30033.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
@@ -59,7 +60,7 @@ var _query := PhysicsShapeQueryParameters3D.new()
 func _ready() -> void:
 	add_to_group(GROUP)
 	_query.collision_mask = body_mask
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

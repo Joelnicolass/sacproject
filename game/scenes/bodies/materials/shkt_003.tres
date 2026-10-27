@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/shkt/003.png" id="1_8t4l0"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/shkt/003_normal.png" id="2_xg8sh"]
 
 [resource]
 resource_name = "shkt_003"
 albedo_texture = ExtResource("1_8t4l0")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_xg8sh")

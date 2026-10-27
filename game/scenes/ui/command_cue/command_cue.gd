@@ -2,16 +2,16 @@
 class_name CommandCue
 extends Control
 
-## What replaces the words of the old battle line (RFC-025c), drawn at the pointer:
+## What replaces the words of the old battle line, drawn at the pointer:
 ## `Aim` = the icon of the armed spell, structure, order or ability, a little below the cursor (`aim_offset_px`);
 ## `Invalid` = the `ncst` icon, flashed when something
-## is refused (CommandLog.said with a refusal cue) and held while the pointer is over a target the
-## armed icon cannot take (an order over the sky, a structure over the wrong body);
+## is refused (CommandLog.said with a refusal cue) and held while the armed icon cannot take what lies under the pointer
+## (an order over the sky) or would be refused there (CommandLog.aim_status: a fount too far); `Reason` = the words (RefusalReason);
 ## `Mirror` = a copy of the hardware cursor, off by default: a window capture does not include the
 ## system cursor, so a flow turns it on to see it.
 ## Without a picture (a type with no `icon`, a CueSet with none) a plain circle / cross is drawn instead.
 ## Full screen, ignores the mouse. The icons are 38×38 canvas pixels, set in the scene; Godot's stretch scales them.
-## Ref: renderer.d:4113-4165 renderCursor (4/32 of the icon below the cursor).
+## Ref: RFC-025c; renderer.d:4113-4165 renderCursor (4/32 of the icon below the cursor).
 
 @export var command_log: CommandLog
 @export var cues: CueSet
@@ -66,6 +66,8 @@ func _ready() -> void:
 	if command_log:
 		command_log.armed_changed.connect(_on_armed_changed)
 		command_log.said.connect(_on_said)
+		command_log.aim_changed.connect(_on_kind_changed.unbind(1))
+	%Reason.bind(command_log, probe)
 	if probe:
 		probe.kind_changed.connect(_on_kind_changed)
 	if skin:
@@ -121,15 +123,13 @@ func _on_cursor_changed(_cursor_name: String, texture: Texture2D) -> void:
 	_place()
 
 
-## The armed icon cannot take what lies under the pointer (an empty `accepts` takes anything).
+## The armed icon cannot take what lies under the pointer (empty `accepts` = anything) or would be refused there (aim_status).
 func _check_hover() -> void:
 	_hover_invalid = false
-	if command_log == null or probe == null or command_log.armed.is_empty():
+	if command_log == null or probe == null or command_log.armed.is_empty() or probe.kind == TargetProbe.HUD:
 		return
 	var accepts := command_log.armed_accepts
-	if accepts.is_empty() or probe.kind == TargetProbe.HUD:
-		return
-	_hover_invalid = not accepts.has(String(probe.kind))
+	_hover_invalid = not command_log.aim_status.is_empty() or not accepts.is_empty() and not accepts.has(String(probe.kind))
 
 
 func _update_invalid() -> void:

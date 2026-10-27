@@ -59,9 +59,9 @@ func _process(delta: float) -> void:
 		queue_free()
 		return
 	if is_instance_valid(_from):
-		_last_from = BodyNudge.center(_from)
+		_last_from = DrawnPose.center(_from)
 	if is_instance_valid(_to):
-		_last_to = BodyNudge.center(_to)
+		_last_to = DrawnPose.center(_to)
 	_draw()
 
 

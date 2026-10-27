@@ -30,8 +30,8 @@ Campaña, hechizos de nivel 2 en adelante y el Shrine (las criaturas completas p
 ## Modo solo contra la IA (CHANGE-REQUEST-001, 2026-10-14)
 
 - Un humano contra un mago controlado por la IA, en High Noon, con los 5 dioses. Es el modo «solo»: no abre servidor.
-- La IA es un jugador más: usa los mismos comandos, maná y almas que el humano. Sin trampa y sin bonificación de recursos. Se porta de la IA del original (`sacengine/source/bots/shiny.d`).
-- Dificultades Fácil, Normal y Difícil, todas sin trampa. Normal usa los números del original más las reglas de táctica de RFC-053 (`AiTactics`, CHANGE-REQUEST-005) y es la de por defecto.
+- La IA es un jugador más: usa los mismos comandos, maná y almas que el humano. Sin trampa y sin bonificación de recursos. La percepción y las tácticas tienen diseño propio; el original (`sacengine/source/bots/shiny.d`) es referencia.
+- Dificultades Fácil, Normal y Difícil, todas sin trampa. Normal parte de los números del original más las reglas de táctica de RFC-053 (`AiTactics`, CHANGE-REQUEST-005) y es la de por defecto.
 - Poblados y NPC del mapa: 26 Farmers pasivos y 6 Taurocks hostiles a todos, casas neutrales. Los NPC no reaparecen. Matarlos es parte de la economía de almas: sus almas quedan rojas y pegadas al cadáver y se obtienen con Convert (Sac Doctor). Destruir una casa no da almas. La IA no los caza a propósito: sus criaturas los atacan al verlos.
 - Victoria y derrota como hoy: profanar el altar enemigo y desvanecimiento.
 - Un dedicado puede alojar un humano contra la IA (`--ai-slots=2`), como prueba de humo. El modo online de dos humanos no cambia.

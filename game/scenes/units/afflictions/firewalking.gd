@@ -1,8 +1,8 @@
 class_name Firewalking
 extends Affliction
 
-## F152 (RFC-030 030o-b): the Warmonger's Firewalk walk, sacengine updateFirewalk (state.d:25802-25846). Mode `firewalk`:
-## not a target (141), not an obstacle (124, 135), takes no damage (8922), cannot be immobilized (193) and is invisible.
+## The Warmonger's Firewalk walk. Mode `firewalk`:
+## not a target, not an obstacle, takes no damage, cannot be immobilized and is invisible.
 ## The type says the first three (holds, hides); this state writes the position and draws the look.
 ##
 ## The walk (numFrames 60, animatedDistance 20): each tick the position is written from start to end, the body's
@@ -10,16 +10,18 @@ extends Affliction
 ##   d <= animated_distance: a straight line, p = frame/frames;
 ##   else p <= 0.5: from start to start + animated_distance/2 · dir (2p); p > 0.5: from end − animated_distance/2 · dir
 ##   to end (2(p − 0.5)). The jump between the halves is announced to the clients (WarpSnap).
-## At the last frame the body is at `end` and the state ends (sacengine startIdling). Whether `end` is land is decided
-## by Firewalk before it starts (isOnGround), so the final catapult (25838-25840) never happens here.
+## At the last frame the body is at `end` and the state ends. Whether `end` is land is decided
+## by Firewalk before it starts (isOnGround), so the final catapult never happens here.
 ## Look: Tilt (the mesh) hidden while it lasts and a `fire` trail at the body (every peer, from the replicated bit; the
 ## position is replicated). Declared: the health bar stays visible and the capsule stays on the units' layer.
+## Ref: F152 (RFC-030 030o-b); sacengine updateFirewalk (state.d:25802-25846; target 141, obstacle 124, 135, damage 8922, immobilize 193; catapult 25838-25840), startIdling.
 
 
 ## How long the walk lasts.
 ## Ref: sacengine Firewalk.numFrames (60 ticks).
 @export_range(0.0166, 10.0, 0.0001, "suffix:s") var walk_s := 1.0
-## sacengine Firewalk.animatedDistance (m).
+## The distance (m) under which the walk is a straight line.
+## Ref: sacengine Firewalk.animatedDistance.
 @export var animated_distance := 20.0
 ## A step longer than this (m) is a jump: the clients are told not to glide it.
 @export var snap_step := 2.0
@@ -29,14 +31,17 @@ var frames: int:
 	get: return MatchClock.ticks_for(walk_s)
 ## The mesh pivot that is hidden while it lasts.
 @export var tilt: Node3D
-## FxBus type of the trail (sacengine placeFirewalkParticles) and the height above the feet it is placed at (m).
-@export var trail_fx := "firewalk_trail"
-@export var trail_lift := 0.8
-## How often a trail flame is placed. sacengine places 6 flames every tick; the type's 14 every 2 ticks is the same density with
+## The trail of flames puffed while it walks, and the socket it leaves from: the muzzle, where the Warmonger's flame is.
+## Ref: sacengine placeFirewalkParticles at warmongerFlame (state.d:25761-25783, sacobject.d:389).
+@export var trail_fx: ParticleType = preload("res://data/fx/firewalk_trail.tres")
+@export var trail_socket: BodyFacts.Socket = BodyFacts.Socket.MUZZLE
+## How often a trail flame is placed. The original places 6 flames every tick; the type's 14 every 2 ticks is the same density with
 ## a quarter of the emitters.
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var trail_every_s := 0.0333
-## FxBus type of the burst at the start and at the end (sacengine animateFirewalk: 32 flames in the body's box).
-@export var burst_fx := "firewalk_burst"
+## The burst at the start and at the end (32 flames in the body's box), and its socket.
+## Ref: sacengine animateFirewalk.
+@export var burst_fx: ParticleType = preload("res://data/fx/firewalk_burst.tres")
+@export var burst_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _start := Vector3.ZERO
 var _end := Vector3.ZERO
@@ -53,7 +58,8 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-## Server (or solo): sacengine firewalk's Firewalk effect. True when the walk started (it ends a UsingAbility).
+## Server (or solo): starts the Firewalk effect. True when the walk started (it ends a UsingAbility).
+## Ref: sacengine firewalk.
 func walk(end: Vector3) -> bool:
 	var body := _body()
 	if body == null or frames <= 0 or is_on() or not _afflictions().admit(self):
@@ -122,9 +128,9 @@ func _physics_process(_delta: float) -> void:
 		return
 	var body := _body()
 	var every := MatchClock.ticks_for(trail_every_s)
-	if body and every > 0 and MatchClock.now() % every == 0:
-		FxBus.play_puff(trail_fx, body.global_position + Vector3.UP * trail_lift)
-	if _simulates() and _running and _frame >= frames:
+	if body and trail_fx != null and every > 0 and MatchClock.now() % every == 0:
+		FxBus.puff(trail_fx, BodyFacts.point(body, trail_socket))
+	if is_multiplayer_authority() and _running and _frame >= frames:
 		_running = false
 		_afflictions().mark(self, false)
 		if DebugLog.on(&"walk") and body:
@@ -133,8 +139,8 @@ func _physics_process(_delta: float) -> void:
 
 func _shown(on: bool) -> void:
 	var body := _body()
-	if body and burst_fx != "":
-		FxBus.play(burst_fx, body.global_position + Vector3.UP * trail_lift)
+	if body and burst_fx != null:
+		FxBus.play(burst_fx, BodyFacts.point(body, burst_socket))
 	if tilt:
 		tilt.visible = not on
 	set_physics_process(on)

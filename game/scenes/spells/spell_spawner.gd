@@ -54,11 +54,7 @@ func spawn_projectile(kind: String, data: Dictionary) -> Node:
 	_serial += 1
 	data["name"] = "%s%d" % [kind, _serial]
 	data["kind"] = kind
-	if MpKit.is_networked():
-		return spawn(data) if MpKit.is_server() else null
-	var made := _make(data)
-	get_node(spawn_path).add_child(made)
-	return made
+	return spawn_here(data)
 
 
 func _make(data: Variant) -> Node:

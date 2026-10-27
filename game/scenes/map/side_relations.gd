@@ -2,57 +2,57 @@
 class_name SideRelations
 extends RefCounted
 
-## Who is the enemy of whom (RFC-024 addendum 1, 024b2). The matrix is the SIDS of the map
-## (sids.d, state.d Sides.getStance): each side has a bit mask of allies and one of enemies, and the
+## Who is the enemy of whom. The matrix is the SIDS of the map:
+## each side has a bit mask of allies and one of enemies, and the
 ## stance is read from the first side towards the second; a side is its own ally. Slot = side + 1
 ## (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side 31, the owner of the map's houses,
 ## which has no relations and which nobody has as an enemy (High Noon: enemies 0xe and 0x7ffffffd… skip bit 31).
-## RFC-044 044c: that is the rule for High Noon, which has two seats. A seat (a player slot) and a side of the map are
+## That is the rule for High Noon, which has two seats. A seat (a player slot) and a side of the map are
 ## different things: the seats are the first `MapDefinition.player_starts` slots and take the sides players can take
 ## (assignment != 0) in order; the sides no player takes (NPCs) come after the seats. With two seats this is the old
 ## slot = side + 1, so a map with four seats puts its NPCs in slots 5 and up instead of on the seats of players 3 and 4.
-## RFC-049 049b (F291): on top of the SIDS goes the team overlay of the game mode, as sacengine stanceSettings does after seating the
+## On top of the SIDS goes the team overlay of the game mode, applied after seating the
 ## wizards: two seats of the mode are allies when they share a team and enemies when they do not; NPCs and houses keep the SIDS.
 ## The overlay is installed only when the mode has allies or more than two seats, so 1v1 follows the old path untouched.
 ## The map's rows come from its scene (MapSides.rows_of: the PlayerStart seats with their `team` and the sides its NpcSpawns
-## name). Without them, or for a side the map does not describe, «another slot is an enemy» (what the port did before). Static and @tool: the editor and a headless run read it
-## without autoloads, and the suite can load its own rows with set_rows().
+## name). Without them, or for a side the map does not describe, «another slot is an enemy» (what the port did before). The world
+## tells it which map and mode it plays (MatchWorld calls `use` once, before any of its systems is ready); nothing here asks which
+## match is active. Static and @tool: the editor and a headless run read it without autoloads, and the suite can load its own rows
+## with set_rows().
+## Ref: RFC-024 addendum 1, 024b2; RFC-044 044c; RFC-049 049b (F291); sacengine sids.d, Sides.getStance (state.d), stanceSettings.
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
 const NEUTRAL_SIDE := 31
 
 static var _loaded := false
+## A question came before any world called `use`: warned once.
+static var _warned := false
 static var _allies: Dictionary = {}
 static var _enemies: Dictionary = {}
 static var _assignment: Dictionary = {}
-## The tag of the map the rows come from; empty when they were set by hand (set_rows).
-static var _rows_tag: StringName = &""
 ## Side ids a player can take (assignment != 0), in order: seat k is `_seat_sides[k - 1]`.
 static var _seat_sides: Array[int] = []
 ## Side ids no player takes and that are not the neutral one, in order: NPC k is the slot `seats + k + 1`.
 static var _npc_sides: Array[int] = []
 ## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the time).
 static var _seat_count := 2
-## Team overlay (RFC-049 049b): the mode it was read for, and the team of each seat (seat 1 first). Empty = not installed.
-static var _mode_tag: StringName = &""
+## Team overlay (RFC-049 049b): the team of each seat (seat 1 first). Empty = not installed.
 static var _team_of_seat: PackedInt32Array = PackedInt32Array()
 
 
-## Forgets what was read; the next question reads the sides of the active map (MapSides.rows_of its scene) again.
-static func refresh() -> void:
-	var map := MapCatalog.active()
-	_seat_count = map.player_starts
-	set_rows(MapSides.rows_of(map.map_scene))
-	_rows_tag = map.tag
-	_install_mode()
+## The sides of `map` (MapSides.rows_of its scene, its seats) and the team overlay of `mode`, from now on. The world calls it once
+## when it starts; calling it again with the same map and mode changes nothing. A null map leaves no rows (every slot an enemy).
+static func use(map: MapDefinition, mode: GameMode) -> void:
+	set_rows(MapSides.rows_of(map.map_scene) if map != null else [], map.player_starts if map != null else 2)
+	_install_mode(mode)
 
 
 ## `rows`: [{id, allies, enemies, assignment}] as MapSides.rows_of gives them. `seats` >= 0 also sets the seat count (a suite
 ## that writes its own rows says how many are players); -1 keeps the one of the last map.
+## The team overlay `use` installed stays.
 static func set_rows(rows: Array, seats := -1) -> void:
 	_loaded = true
-	_rows_tag = &""
 	_allies = {}
 	_enemies = {}
 	_assignment = {}
@@ -71,12 +71,12 @@ static func set_rows(rows: Array, seats := -1) -> void:
 			_seat_sides.append(id)
 		else:
 			_npc_sides.append(id)
-	## sacengine multiplayerSide(i): the seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
+	## The seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
+	## Ref: sacengine multiplayerSide(i).
 	_seat_sides.sort_custom(_before_by_seat)
 	_npc_sides.sort()
 	if seats >= 0:
 		_seat_count = seats
-	_install_mode()
 
 
 static func _before_by_seat(a: int, b: int) -> bool:
@@ -85,11 +85,9 @@ static func _before_by_seat(a: int, b: int) -> bool:
 	return seat_a < seat_b if seat_a != seat_b else a < b
 
 
-## Reads the active mode and installs (or clears) the team overlay.
-static func _install_mode() -> void:
-	_mode_tag = GameModeCatalog.current_tag()
+## Installs (or clears) the team overlay of `mode`.
+static func _install_mode(mode: GameMode) -> void:
 	_team_of_seat = PackedInt32Array()
-	var mode := GameModeCatalog.active()
 	if mode != null and (mode.has_allies() or mode.seats() > 2):
 		_team_of_seat = mode.team_of_seat.duplicate()
 
@@ -186,9 +184,11 @@ static func is_npc_slot(slot: int) -> bool:
 	return slot > 0 and _assignment.has(side) and int(_assignment[side]) == 0
 
 
+## Asked before a world said which map it plays: no rows (every other slot an enemy), with one warning outside the editor.
 static func _ensure() -> void:
-	# The rows of the map are read again when the active map changes (MapCatalog.use); rows set by hand stay.
-	if not _loaded or (_rows_tag != &"" and _rows_tag != MapCatalog.current_tag()):
-		refresh()
-	elif _mode_tag != GameModeCatalog.current_tag():
-		_install_mode()
+	if _loaded:
+		return
+	if not _warned and not Engine.is_editor_hint():
+		_warned = true
+		push_warning("SideRelations: asked before a world called use(map, mode); every other slot is an enemy.")
+	set_rows([])

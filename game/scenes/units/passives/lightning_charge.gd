@@ -1,16 +1,16 @@
 class_name LightningCharge
 extends Node
 
-## F130 (RFC-030 030s-a): the Storm Giant's Lightning Charge (gcil, its passiveOnDamage). The one owner of how charged a body
+## The Storm Giant's Lightning Charge (gcil, its passiveOnDamage). The one owner of how charged a body
 ## is: the frames it still holds, the ramp of its discharges, what it multiplies (pace, blow, accuracy) and the bolts it throws.
 ## A child of unit.tscn; take it out and no body is charged. Not a DamagePassiveType: the passive has side effects (gcil is not of
 ## the shape of korq / ahtf, damage_passive_type.gd), so DamagePassive only asks it.
 ##
-## Charging (dealRawDamage, state.d:9017-9022): a hit with DamageMod.lightning charges `int(f · damage)` frames (f = 4 when the
+## Charging: a hit with DamageMod.lightning charges `int(f · damage)` frames (f = 4 when the
 ## attacker is an ally, 2 otherwise; the damage is the one already scaled by side, resistance and shields) and the body takes a
-## quarter of it. absorb() does both; add() is the bare `lightningCharge` (13131-13136): a new charge (it was off) starts its
+## quarter of it. absorb() does both; add() is the bare `lightningCharge`: a new charge (it was off) starts its
 ## ramp at 0.
-## updateLightningCharge (25342-25386), once per tick of a charged body, in this order:
+## updateLightningCharge, once per tick of a charged body, in this order:
 ##   frames −= 1; at 0 the charge is over. ramp += 1/60 (cap 1).
 ##   frames ≥ the SPEL's amount (250) and uniform < ramp / 60: a discharge. It picks with uniform(n + 4) among the n bodies whose
 ##   center is within the SPEL's range (30 m; creatures and wizards, not dead; the body itself among them) and the land (a random
@@ -18,12 +18,13 @@ extends Node
 ##   itself is nothing (no discharge, no cost). Otherwise frames −= amount >> 1 (125), ramp = 0 and a LightningStrike `gcil`
 ##   (the SPEL's 250) flies from its center to the pick, without bouncing.
 ##   Sparks over the body: probability 1 − e^(−2/60) per tick (presentation only).
-## While charged: pace ×1.5 (movementSpeed, stats.d:122), blow ×1.5 (attackDamageFactor, state.d:8885) and accuracy ×1.5
-## (dealMeleeDamage, 9237). The pace goes to PaceFactors under its own source; the other two are asked of melee_factor().
+## While charged: pace ×1.5 (movementSpeed), blow ×1.5 (attackDamageFactor) and accuracy ×1.5
+## (dealMeleeDamage). The pace goes to PaceFactors under its own source; the other two are asked of melee_factor().
 ## The simulation is MatchSeed's stream ["charge", body, tick] (drawn only on a tick that can discharge); the sparks have a stream
 ## of their own, so they never move it. `shown` is replicated (the unit's MultiplayerSynchronizer, "LightningCharge:shown").
-## Divergences (declared): the candidates go in the order of the groups (wizards, then units), not sacengine's proximity order; a
+## Divergences (declared): the candidates go in the order of the groups (wizards, then units), not the original's proximity order; a
 ## body that dies loses its charge at once; the sparks are a reserve look.
+## Ref: F130 (RFC-030 030s-a), sacengine dealRawDamage state.d:9017-9022, lightningCharge 13131-13136, updateLightningCharge 25342-25386, stats.d:122, state.d:8885, dealMeleeDamage 9237.
 
 
 ## The PaceFactors source of the charge.
@@ -51,9 +52,10 @@ const PACE_SOURCE := &"lightning_charge"
 ## The nearest the land strike falls from the body.
 @export var ground_min_m := 5.0
 @export_group("Look")
-## FxBus burst over the body while charged (reserve look).
-@export var spark_fx := "styx_spark"
-## sacengine LightningCharge.sparkRate (per second).
+## The burst over the body while charged (reserve look). Empty = none.
+@export var spark_fx: ParticleType = preload("res://data/fx/styx_spark.tres")
+## Sparks per second (sparkRate).
+## Ref: sacengine LightningCharge.sparkRate.
 @export var spark_rate := 2.0
 
 ## Replicated. Charged. The setter is the one place that turns the node's tick on and off.
@@ -85,7 +87,7 @@ func _ready() -> void:
 
 ## Server (or solo). `amount` frames more; a body that was not charged starts a new charge (ramp 0).
 func add(amount: int) -> void:
-	if not _has_authority() or amount <= 0:
+	if not is_multiplayer_authority() or amount <= 0:
 		return
 	if frames <= 0:
 		ramp = 0.0
@@ -102,7 +104,7 @@ func absorb(damage: float, ally: bool) -> float:
 
 
 func is_on() -> bool:
-	return frames > 0 if _has_authority() else shown
+	return frames > 0 if is_multiplayer_authority() else shown
 
 
 ## ×melee_boost while charged: the blow (attackDamageFactor) and the accuracy (dealMeleeDamage). 1 otherwise.
@@ -111,7 +113,7 @@ func melee_factor() -> float:
 
 
 func _physics_process(_delta: float) -> void:
-	if _has_authority():
+	if is_multiplayer_authority():
 		_simulate()
 		_trace_walk()
 	if shown:
@@ -170,7 +172,7 @@ func _discharge(rng: RandomNumberGenerator, spell: AbilityType) -> void:
 
 
 ## The bodies within `radius` of `center` (center to center) that a discharge can pick: creatures and wizards that are not
-## dead, the charged body itself among them (collect, 25353-25357). Group order.
+## dead, the charged body itself among them (collect). Group order.
 func _candidates(center: Vector3, radius: float) -> Array[Node3D]:
 	var found: Array[Node3D] = []
 	var seen := {}
@@ -209,7 +211,7 @@ func _wake() -> void:
 
 func _carries() -> bool:
 	var type: Variant = body.get("type") if body != null and "type" in body else null
-	return passive != null and type is CreatureType and (type as CreatureType).on_damage == passive
+	return type is CreatureType and (type as CreatureType).has_passive(passive)
 
 
 ## Bench only: `marcha body ×pace (x, y, z)` on every tick the carrier moved, for the replica to measure the step.
@@ -226,7 +228,7 @@ func _trace_walk() -> void:
 
 ## sparkAnimation!48 over the body's box at sparkProb per tick; the stream is the look's, not the simulation's.
 func _spark() -> void:
-	if body == null or spark_fx.is_empty():
+	if body == null or spark_fx == null:
 		return
 	var chance := 1.0 - exp(-spark_rate / MatchClock.TICKS_PER_SECOND_F)
 	if _look_rng.randf() > chance:
@@ -247,7 +249,3 @@ func _say(text: String) -> void:
 
 static func _v(v: Vector3) -> String:
 	return "(%.4f, %.4f, %.4f)" % [v.x, v.y, v.z]
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

@@ -17,13 +17,7 @@ casting_time_s = 4.4444
 speed_m_s = 30.0
 effect_range_m = 15.0
 duration_s = 10.0
-flags = 24597
-flags1 = 4194
-flags2 = 8388608
-args = {
-"fspd": 0.5,
-"iSPa": 0.0,
-"iadd": 0.0,
-"inum": 8.0,
-"ttex": "stky"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true

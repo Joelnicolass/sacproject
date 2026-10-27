@@ -53,7 +53,7 @@ func _go(index: int) -> void:
 
 
 func _on_ground(point: Vector3) -> Vector3:
-	var ground := _terrain.shape.height_at(point.x, point.z) if _terrain else NAN
+	var ground := _terrain.height_at(point.x, point.z) if _terrain else NAN
 	var local := Vector3(point.x, (0.0 if is_nan(ground) else ground) + point.y, point.z)
 	return _terrain.global_transform * local if _terrain else local
 

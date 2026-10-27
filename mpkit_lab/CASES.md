@@ -26,9 +26,9 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 | Sync de posición y propiedades extra, al nacer y en vivo | `arena.sh` **T** |
 | `to_server` del dueño (`mp_sv_*`) | `arena.sh` recolor **T** |
 | `to_all` (`mp_all_*`) | `arena.sh` flash **T** |
-| El servidor rechaza `mp_sv_*` de quien no es dueño (RPC directo) | `arena.sh` late **T** |
+| El servidor rechaza `mp_sv_*` de quien no es dueño (RPC directo) | `arena.sh` listen, rejoin **T** |
 | Actor sin dueño con `callers = ANYONE` y `sender_slot` | `arena.sh` bell **T** |
-| `spawn_actor` y `despawn` en todos; el tardío no ve restos | `arena.sh` shot **T** |
+| `spawn_actor` y `despawn` en todos; el que vuelve no ve restos | `arena.sh` shot, rejoin **T** |
 | Nodo solo del servidor en `spawn_path`: sin gate, sin romper clientes | `arena.sh` watch `--probe-server-node` **T** |
 | `MpInput.set_value` llega al servidor | `arena.sh` watch (aim) **T** |
 | Predicción: respuesta inmediata y corrección ~0 con lag, jitter y pérdida | `arena.sh` lag **T** |
@@ -45,7 +45,9 @@ Transportes: lo marcado **T** corre en ENet, WebSocket y relay (`TRANSPORT=enet|
 
 | Caso | Prueba |
 |---|---|
-| `MpState` y el que entra tarde | `arena.sh` late **T** |
+| `MpState` y el que vuelve: mismo slot con la credencial del asiento, puntos y campana siguen, `player_back` | `arena.sh` rejoin (LAN y dedicado) **T** |
+| Puerta de arranque: el que llega después del arranque se rechaza (`match_started`), sin slot ni mundo, y el flow muestra el motivo | `arena.sh` late **T** |
+| Reglas de la puerta (llenar, lleno, `need`, gracia, asiento vivo, ticket, `load_timeout`, `all_gone`, `reset`) | `tests/test_match_gate.gd` |
 | `MpMatch.finish` llega a todos y a la sala | `rooms.sh` public **T TLS** |
 | Volver a la partida (botón del lobby) dentro de la gracia | `rooms.sh` rejoin **T** |
 | Abandono pasada la gracia: gana el otro | `rooms.sh` abandon **T** |

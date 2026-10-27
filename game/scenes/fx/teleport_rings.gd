@@ -2,22 +2,26 @@
 class_name TeleportRings
 extends Node3D
 
-## The blue rings of a body that jumps (RFC-021c), at the origin (it goes up) or at the destination (it comes
-## down). sacengine TeleportEffect / TeleportRing (state.d:16074-16101, renderer.d:1749-1756): for `teleport_effect_s`
+## The blue rings of a body that jumps, at the origin (it goes up) or at the destination (it comes
+## down). For `teleport_effect_s`
 ## a ring is born each frame at a height that moves in steps along the body (up_steps / down_steps), lives
 ## `teleport_ring_s`, rises a little, shrinks with sqrt(1 - age) and glows with 20 * scale². One MultiMesh draws them all;
 ## it frees itself when the last ring is gone. Presentation: it is never created on the dedicated server.
 ## The atlas `brng` comes from the local install through tools/import/import_ui.py (assets/original/fx).
+## Ref: RFC-021c; sacengine TeleportEffect / TeleportRing, state.d:16074-16101, renderer.d:1749-1756.
 
 const TICKS_PER_S := 60.0
-## Where the ring height jumps, as (frame as a fraction of the effect, change in body heights): state.d:16078-16091.
+## Where the ring height jumps, as (frame as a fraction of the effect, change in body heights).
+## Ref: sacengine state.d:16078-16091.
 const UP_STEPS: Array[Vector2] = [Vector2(0.0, 0.8), Vector2(0.2, -0.6), Vector2(0.6, -0.8)]
 const DOWN_STEPS: Array[Vector2] = [Vector2(0.0, 0.4), Vector2(0.4, 0.8), Vector2(0.8, 0.6)]
-## makeSpriteMeshes(4, 4, 28, 28) scaled by 0.08 (renderer.d:1754): the mesh side of a ring of scale 1.
+## The mesh side of a ring of scale 1: makeSpriteMeshes(4, 4, 28, 28) scaled by 0.08.
+## Ref: sacengine renderer.d:1754.
 const MESH_SIDE := 28.0 * 0.08
 const RING_ENERGY := 20.0
 const ATLAS_FRAMES := 16
-## sacengine ringAnimationDelay * updateAnimFactor ticks per atlas frame (sacobject.d:2149).
+## Ticks per atlas frame.
+## Ref: sacengine ringAnimationDelay * updateAnimFactor, sacobject.d:2149.
 const TICKS_PER_ATLAS_FRAME := 8.0
 
 @export var rules: MatchRules
@@ -44,7 +48,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Height over the feet of the ring born at `frame`, in body heights (state.d:16074-16091, replayed from frame 0).
+## Height over the feet of the ring born at `frame`, in body heights (replayed from frame 0).
+## Ref: sacengine state.d:16074-16091.
 static func ring_height(going_out: bool, frame: int, steps: int) -> float:
 	var table := UP_STEPS if going_out else DOWN_STEPS
 	var z := 0.0

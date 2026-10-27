@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_x23l5"]
 [ext_resource type="Texture2D" uid="uid://bqea1vngr0jxs" path="res://assets/original/ui/icons/imaf.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/FAmr_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/familiar_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/familiar.tscn" id="body_scene"]
 
 [resource]

@@ -1,10 +1,10 @@
 class_name AbilityCommand
 extends Node
 
-## sacengine selectAbility (dagonBackend.d:152-178): the selection's active ability (renderedSelection ability,
-## state.d:30231). One that needs a target (requiresTarget = flags != 0) arms the next left click; any other is used at
-## once with no target. The click (screen or minimap) looks for a body, and for souls and corpses when the ability aims
-## at them (RFC-030 030p-b). Every selected creature whose active ability is the armed one gets the order.
+## The selection's active ability. One that needs a target (requiresTarget = flags != 0) arms the next left click; any
+## other is used at once with no target. The click (screen or minimap) looks for a body, and for souls and corpses when
+## the ability aims at them. Every selected creature whose active ability is the armed one gets the order.
+## Ref: RFC-030 030p-b; sacengine selectAbility (dagonBackend.d:152-178), renderedSelection ability (state.d:30231).
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
 
@@ -28,7 +28,7 @@ func use() -> void:
 	var ability := _selection.ability()
 	if ability == null:
 		return
-	if ability.flags != 0:
+	if ability.needs_target():
 		armed.mode = "ability"
 		armed.ability = ability
 		_log.arm("ability", ability.icon, "Elegí el blanco", TargetProbe.ORDER_TARGETS)
@@ -56,13 +56,13 @@ func click_on(body: Node3D, ground: Variant) -> void:
 		feedback.show_ping(point)
 
 
-## spells.d:168-183: targetSouls (1 << 1) and targetCorpses (1 << 3).
 func _aims_at_dead(ability: AbilityType) -> bool:
-	return ability != null and (ability.flags & ((1 << 1) | (1 << 3))) != 0
+	return ability != null and ability.aims_at_dead()
 
 
 ## Every selected creature whose active ability is `ability` gets the order; the others skip it
-## (applyOrder, state.d:29256). `point` null = no target (the creature's own spot).
+## `point` null = no target (the creature's own spot).
+## Ref: applyOrder, state.d:29256.
 func _apply(ability: AbilityType, point: Variant, body: Node3D) -> bool:
 	if ability == null:
 		return false

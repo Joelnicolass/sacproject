@@ -418,11 +418,9 @@ debug/wrath_splash_building.tscn,debug/spells/wrath_splash_building.tscn,i
 tools/audit_skeletal.gd,tools/audit/audit_skeletal.gd,j
 tools/audit_skeletal_center.gd,tools/audit/audit_skeletal_center.gd,j
 tools/bake_body_scenes.gd,tools/bake/bake_body_scenes.gd,j
-tools/bake_catalog.gd,tools/bake/bake_catalog.gd,j
 tools/bake_map_layout.gd,tools/bake/bake_map_layout.gd,j
 tools/bake_nav.gd,tools/bake/bake_nav.gd,j
 tools/bake_nav.tscn,tools/bake/bake_nav.tscn,j
-tools/catalog_builder.gd,tools/bake/catalog_builder.gd,j
 tools/check_icon_files.gd,tools/audit/check_icon_files.gd,j
 tools/check_layout_transforms.gd,tools/audit/check_layout_transforms.gd,j
 tools/check_layout_transforms.tscn,tools/audit/check_layout_transforms.tscn,j
@@ -434,7 +432,6 @@ tools/export_stats.py,tools/import/export_stats.py,j
 tools/fx_catalog.py,tools/import/fx_catalog.py,j
 tools/import_map.py,tools/import/import_map.py,j
 tools/import_props.py,tools/import/import_props.py,j
-tools/import_terrain.gd,tools/bake/import_terrain.gd,j
 tools/import_textures.py,tools/import/import_textures.py,j
 tools/import_themes.py,tools/import/import_themes.py,j
 tools/import_ui.py,tools/import/import_ui.py,j
@@ -447,7 +444,6 @@ tools/mm_export.sh,tools/material/mm_export.sh,j
 tools/mm_gen_grass.py,tools/material/mm_gen_grass.py,j
 tools/sac_formats/,tools/import/sac_formats/,j
 tools/sample_grass_palette.py,tools/import/sample_grass_palette.py,j
-tools/terrain_glb_export.gd,tools/bake/terrain_glb_export.gd,j
 # ---- cut k
 agent/editor_capture.sh,agent/scripts/editor_capture.sh,k
 agent/f037b/,agent/fixtures/f037b/,k

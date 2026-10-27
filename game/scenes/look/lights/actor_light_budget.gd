@@ -1,3 +1,4 @@
+@tool
 class_name ActorLightBudget
 extends LookLayer
 
@@ -19,7 +20,11 @@ const GROUP := &"actor_light_budget"
 ## Closer than this to the camera counts as this distance in the score (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_distance_m: float = 4.0
 
+## The atmosphere whose `night` dims the lights (0 = day, 1 = full night); empty = they keep their energy.
+@export var atmosphere: Atmosphere
+
 var _max_lights := -1
+var _night := 0.0
 var _enabled := true
 var _clock := 0.0
 var _on := 0
@@ -38,6 +43,9 @@ func _ready() -> void:
 	if _max_lights < 0:
 		_max_lights = fallback_max_lights
 	visibility_changed.connect(rank)
+	if atmosphere != null:
+		_night = atmosphere.current().night
+		atmosphere.changed.connect(_on_atmosphere)
 	set_process(true)
 
 
@@ -57,6 +65,16 @@ func _process(delta: float) -> void:
 		rank()
 
 
+## The atmosphere's night now (0 when there is no atmosphere).
+func night() -> float:
+	return _night
+
+
+func _on_atmosphere(sample: AtmosphereSample) -> void:
+	_night = sample.night
+	rank()
+
+
 ## Lights on now.
 func on_count() -> int:
 	return _on
@@ -69,13 +87,14 @@ func max_lights() -> int:
 ## Re-ranks now (the tick calls it; the lab and quality changes call it too).
 func rank() -> void:
 	_clock = 0.0
-	if not is_inside_tree():
+	if Engine.is_editor_hint() or not is_inside_tree():
 		return
 	var cap := _max_lights if _enabled and is_visible_in_tree() else 0
 	var camera := get_viewport().get_camera_3d()
 	var entries: Array[_Entry] = []
 	for node in get_tree().get_nodes_in_group(ActorLight.GROUP):
 		var light := node as ActorLight
+		light.set_night(_night)
 		if light.always_on:
 			light.set_budget_on(true)
 			continue

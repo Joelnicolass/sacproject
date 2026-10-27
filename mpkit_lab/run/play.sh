@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Play or watch the MpKit example in WINDOWS, with the server started the way production starts it.
-#   play.sh dedicated [--watch] [--relay]    a dedicated server (headless, `-- --dedicated`) + 2 windows
-#   play.sh listen [--watch]                 window 1 hosts (Host LAN), window 2 joins
+#   play.sh dedicated [--watch] [--relay]    a dedicated server (headless, `-- --dedicated`, starts when both loaded) + 2 windows
+#   play.sh listen [--watch]                 window 1 hosts (Host LAN, starts with one client), window 2 joins
 #   play.sh rooms [--watch] [--relay]        a room server (headless, `-- --room-server`) + 2 windows on the lobby
 # Without --watch you play: each window shows the menu (Join 127.0.0.1, Host LAN, Online roomsâ€¦). Arrows move,
 # Enter scores, Space shoots, Tab recolors, Escape rings the bell; the first to 3 wins.
@@ -28,15 +28,15 @@ echo "MpKit play: $MODE ($TRANSPORT$([ "$WATCH_MODE" = 1 ] && echo ', watch')) â
 W1=(); W2=(); SERVER=""
 case "$MODE" in
   dedicated)
-    gd "$OUT/server.log" -- --dedicated --transport="$TRANSPORT" --mp-port="$PORT"; SERVER=$LAST_PID
+    # the start gate: the match starts once both windows loaded (a third one would be turned away)
+    gd "$OUT/server.log" -- --dedicated --transport="$TRANSPORT" --mp-port="$PORT" --start-seats=2; SERVER=$LAST_PID
     sleep 1
-    [ "$WATCH_MODE" = 1 ] && W1=(--client1 --mp-port="$PORT" --probe=client --probe-linger-s=$LINGER) && W2=(--probe-join="127.0.0.1:$PORT" --probe=late --probe-linger-s=$LINGER)
+    [ "$WATCH_MODE" = 1 ] && W1=(--client1 --mp-port="$PORT" --probe=client --probe-rejoin --probe-linger-s=$LINGER) && W2=(--client2 --mp-port="$PORT" --probe=basic --probe-linger-s=$LINGER)
     gw "$OUT/window1.log" 40 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W1[@]}"; A=$LAST_PID
-    [ "$WATCH_MODE" = 1 ] && wait_line "$OUT/window1.log" "^PROBE client" "$A" 120
     gw "$OUT/window2.log" 700 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W2[@]}"; B=$LAST_PID ;;
   listen)
     [ "$WATCH_MODE" = 1 ] && W1=(--listen-host --probe=watch --probe-linger-s=$LINGER) && W2=(--client1 --probe=client --probe-linger-s=$LINGER)
-    gw "$OUT/window1.log" 40 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W1[@]}"; A=$LAST_PID
+    gw "$OUT/window1.log" 40 60 -- --transport="$TRANSPORT" --mp-port="$PORT" --start-seats=1 "${W1[@]}"; A=$LAST_PID
     sleep 1.5
     gw "$OUT/window2.log" 700 60 -- --transport="$TRANSPORT" --mp-port="$PORT" "${W2[@]}"; B=$LAST_PID ;;
   rooms)

@@ -3,7 +3,7 @@ class_name Minimap
 extends Control
 
 ## The circle at the bottom right of the HUD. It builds the frame's state (center, turn, zoom) and hands it to its children:
-## `Ground` draws the baked terrain, `Markers` the icons. It knows no unit type. Ref: renderMinimap (sacengine), RFC-037.
+## `Ground` draws the baked terrain, `Markers` the icons. It knows no unit type.
 ## Local presentation: nothing is replicated. Input (037c): the wheel over the circle zooms the map, `M` shows or hides it, and a
 ## click gives a ground point (`ground_pointed`); MatchCommand turns it into an order or an aim, so no order starts here.
 ##
@@ -14,9 +14,9 @@ extends Control
 
 ## `Minimap.zoom` changed (037c wheel).
 signal zoom_changed(zoom: float)
-## A mouse button was released over the circle on the ground at `point` (world; y is the ground height there).
+## `select` or `order_units` was released over the circle on the ground at `point` (world; y is the ground height there).
 ## The camera does not jump: in Sacrifice it always follows the wizard.
-signal ground_pointed(point: Vector3, button: int)
+signal ground_pointed(point: Vector3, action: StringName)
 
 ## Height the ground ray starts from (meters); the map is far lower.
 const GROUND_RAY_TOP := 1500.0
@@ -32,7 +32,8 @@ var local_slot := 0
 @export var structures_root: Node
 @export var ground: Control
 @export var markers: Control
-## Compass gem on the frame; it rides the edge at the map's north as the map turns (sacengine minimapCompass). Empty = none.
+## Compass gem on the frame; it rides the edge at the map's north as the map turns. Empty = none.
+## Ref: sacengine minimapCompass.
 @export var compass: Control
 @export_group("Resources")
 @export var style: MinimapStyleSet
@@ -103,11 +104,16 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 	elif event is InputEventMouseButton and not (event as InputEventMouseButton).pressed:
 		var button := event as InputEventMouseButton
-		if button.button_index != MOUSE_BUTTON_LEFT and button.button_index != MOUSE_BUTTON_RIGHT:
+		var action: StringName = &""
+		if button.is_action_released(&"select"):
+			action = &"select"
+		elif button.is_action_released(&"order_units"):
+			action = &"order_units"
+		else:
 			return
 		var ground: Variant = _ground_at(local_to_world(button.position))
 		if ground != null:
-			ground_pointed.emit(ground, button.button_index)
+			ground_pointed.emit(ground, action)
 		accept_event()
 
 

@@ -2,7 +2,7 @@
 class_name DamageNumbers
 extends Node3D
 
-## RFC-053 053f (F375): floating damage numbers. Presentation only: no RPC, no sim writes, no RNG; nothing in a headless or
+## Floating damage numbers. Presentation only: no RPC, no sim writes, no RNG; nothing in a headless or
 ## dedicated process (`run_headless` lets a check run it). FeelPrefs.damage_numbers turns them off.
 ## - It hears every Health that enters the tree (SceneTree.node_added) whose body is in `body_groups`, and reads its
 ##   `changed` signal (every peer has it): a drop in `current` is damage.
@@ -11,6 +11,7 @@ extends Node3D
 ##   none free is dropped.
 ## - A number rises `rise_m` over `life_s` and fades out over the last `fade_s`; then it goes back to the pool (hidden).
 ## The look of a number is the `number_scene` Label3D (scenes/fx/damage_number.tscn); `own_color` tints the local side's bodies.
+## Ref: RFC-053 053f (F375).
 
 ## Group a check counts (see `is_active`).
 const GROUP := &"feel_presentation"
@@ -18,6 +19,8 @@ const GROUP := &"feel_presentation"
 @export var prefs: FeelPrefs
 ## The camera of the local player (WorldCamera).
 @export var camera: Camera3D
+## Who looks at this screen (own losses read in `own_color`); empty = no body is tinted as own.
+@export var seat: MpLocalSeat
 @export var number_scene: PackedScene = preload("res://scenes/fx/damage_number.tscn")
 @export var body_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "map_building", "doctor"])
 @export_range(1, 256) var pool_size := 48
@@ -51,9 +54,13 @@ var _merging: Dictionary = {}
 var _base_color := Color.WHITE
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	add_to_group(GROUP)
-	_active = not Engine.is_editor_hint() and (run_headless or not _presentation_off())
+	_active = not Engine.is_editor_hint() and (run_headless or ScreenGate.is_open())
 	set_process(_active)
 	if not _active:
 		return
@@ -155,7 +162,7 @@ func _show(body: Node3D, amount: float) -> void:
 	_live[label] = {"body": body, "amount": amount, "age": 0.0, "base": base}
 	_merging[body] = label
 	label.text = str(roundi(amount))
-	var own := "owner_slot" in body and int(body.get("owner_slot")) == MpKit.local_slot()
+	var own := "owner_slot" in body and seat != null and seat.is_mine(int(body.get("owner_slot")))
 	label.modulate = own_color if own and own_color.a > 0.0 else _base_color
 	label.global_position = base
 	label.visible = true
@@ -203,6 +210,3 @@ func _mesh_top(body: Node3D) -> float:
 			return (shown.transform * shown.get_aabb()).end.y
 	return default_height_m
 
-
-static func _presentation_off() -> bool:
-	return DisplayServer.get_name() == "headless" or MpKit.is_dedicated()

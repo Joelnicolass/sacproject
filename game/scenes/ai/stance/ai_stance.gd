@@ -1,13 +1,13 @@
 class_name AiStance
 extends Node
 
-## The numbers that sum up the field (RFC-024 §3.1 `AiStance`; shiny.d:1220-1288 `updateStance`, 1061-1085 the
-## threat of the wizard, 2064-2082 `influenceGroups`). For each category (0 own, 1 ally, 2 neutral, 3 enemy) it keeps
+## The numbers that sum up the field. For each category (0 own, 1 ally, 2 neutral, 3 enemy) it keeps
 ## a record: mana and max mana of its groups, the soul worth of its creatures, its Manaliths, the sum of group
 ## ratings and, against the enemy, the share of souls. Every 60 ticks (k1).
 ## Quirks of the original that matter and are kept: u[2], u[3], u[4] start at 1; the `u[6]` the divisor of acc1 and acc2 is
-## the integer read of the float bits of the ratios (shiny.d:1284-1287, «thaum quirk»), so acc1 and acc2 are
+## the integer read of the float bits of the ratios, so acc1 and acc2 are
 ## tiny numbers: summoning compares each creature with almost nothing.
+## Ref: RFC-024 §3.1 `AiStance`; shiny.d:1220-1288 `updateStance`, 1061-1085 the threat of the wizard, 2064-2082 `influenceGroups`; shiny.d:1284-1287, «thaum quirk»
 
 class Rec extends RefCounted:
 	var mana := 0
@@ -23,9 +23,12 @@ class Rec extends RefCounted:
 	var acc := AiRater.new_acc()
 
 
+## After every run of update() (diagnostic: the bench's decision log listens; nothing in the game does).
+signal updated
+
 @export var perception: AiPerception
 @export var groups: AiGroups
-@export var profile: AiProfile
+var play: AiPlay  # what the side plays with (AiSide.setup)
 
 var recs: Array[Rec] = [Rec.new(), Rec.new(), Rec.new(), Rec.new()]
 var strength_ratio := 1.0
@@ -34,7 +37,8 @@ var acc2 := AiRater.new_acc()
 var enemy_wizards := 0
 
 
-## updateStance (shiny.d:1220-1288).
+## updateStance.
+## Ref: shiny.d:1220-1288
 func update() -> void:
 	for k in 4:
 		var rec := Rec.new()
@@ -48,7 +52,7 @@ func update() -> void:
 			rec.souls_b += pair.y
 			rec.souls_all += pair.x + pair.y
 		for t: AiTrack in perception.structures(k):
-			if t.status & AiTrack.MANALITH:
+			if t.site == AiTrack.Site.MANALITH:
 				rec.manaliths += 1
 		recs[k] = rec
 	for k in range(1, 4):
@@ -59,22 +63,23 @@ func update() -> void:
 		rec.ratio_c = _ratio(own.souls_all, rec.souls_all + own.souls_all)
 	enemy_wizards = 0
 	for t: AiTrack in perception.bodies(3):
-		if t.kind == AiTrack.Kind.WIZ:
+		if t.kind == AiTrack.Kind.WIZARD:
 			enemy_wizards += 1
-	## strengthRatio (shiny.d:1268-1280).
+	## strengthRatio.
+	## Ref: shiny.d:1268-1280
 	var ebx := 0
 	var ebp := 0
 	for t: AiTrack in perception.structures(3):
-		if t.flags & AiTrack.ALTAR:
+		if t.is_altar():
 			ebx += 1
-		if t.flags & AiTrack.SEEN:
+		if t.seen:
 			ebp += 1
 	var edx := 0
 	var edi := 0
 	for t: AiTrack in perception.structures(2):
-		if t.flags & AiTrack.CAPTURABLE:
+		if t.capturable():
 			edx += 1
-		if t.flags & AiTrack.SEEN:
+		if t.seen:
 			edi += 1
 	strength_ratio = 1.0 if (edi + ebp == 0 and edx + ebx == 0) else AiField.f32(AiField.safediv(float(edi + ebp), float(edx + ebx)))
 	acc1 = AiRater.new_acc()
@@ -84,34 +89,39 @@ func update() -> void:
 	acc2 = AiRater.new_acc()
 	AiRater.combine(acc2, 1.0, recs[3].acc, 1.0)
 	AiRater.divide(acc2, float(_bits(recs[3].ratio_a)))
+	updated.emit()
 
 
 static func _ratio(num: int, den: int) -> float:
 	return AiField.f32(AiField.safediv(float(num), float(den))) if den != 0 else 1.0
 
 
-## `cast(int)` of the raw word of a float (shiny.d:171 `si`): the quirk of the divisor.
+## `cast(int)` of the raw word of a float: the quirk of the divisor.
+## Ref: shiny.d:171 `si`
 static func _bits(x: float) -> int:
 	var raw := PackedFloat32Array([x]).to_byte_array()
 	return raw.decode_s32(0)
 
 
-## Souls ratio own/(own+enemy) the weights use: `sf(stanceRecs[3], 6)` (shiny.d:2955).
+## Souls ratio own/(own+enemy) the weights use: `sf(stanceRecs[3], 6)`.
+## Ref: shiny.d:2955
 func enemy_ratio() -> float:
 	return recs[3].ratio_a
 
 
-## Manaliths of the side plus its allies' (retail `GetManaSource`: own+ally, shiny.d:2926 / 3128).
+## Manaliths of the side plus its allies'.
+## Ref: retail `GetManaSource`: own+ally, shiny.d:2926 / 3128
 func manalith_count() -> int:
 	return recs[0].manaliths + recs[1].manaliths
 
 
-## influenceGroups (shiny.d:2064-2082): the groups of a category within `far` of `at`, weighted 1 up to `near` and
+## influenceGroups: the groups of a category within `far` of `at`, weighted 1 up to `near` and
 ## linearly to 0 at `far`, are added into `acc` (combine with weight w). Returns the weighted souls divided by u[4].
+## Ref: shiny.d:2064-2082
 func influence(category: int, at: Vector3, near: float, far: float, acc: PackedFloat32Array) -> float:
 	var souls_w := 0.0
 	for group: AiGroup in groups.list(category):
-		if not (group.status_or & 1):
+		if not group.has_fighter:
 			continue
 		var d := at.distance_to(group.center)
 		var w := 0.0
@@ -136,7 +146,7 @@ func local_strength(category: int, at: Vector3, radius: float) -> float:
 	var sum := 0.0
 	var radius_sq := radius * radius
 	for t: AiTrack in perception.bodies(category):
-		if t.kind == AiTrack.Kind.WIZ or not AiGroups.alive(t):
+		if t.kind == AiTrack.Kind.WIZARD or not AiGroups.alive(t):
 			continue
 		var pos := perception.pos_of(t)
 		var dx := pos.x - at.x
@@ -171,18 +181,20 @@ func npc_share(at: Vector3, radius: float) -> float:
 	return npc / all if all > 0.0 else 0.0
 
 
-## updateWiz (shiny.d:1061-1085): the threat of the wizard track, every 8 ticks of its age.
+## updateWiz: the threat of the wizard track, every 8 ticks of its age.
+## Ref: shiny.d:1061-1085
 func update_threat(wizard: AiTrack) -> void:
-	if wizard == null or not (wizard.flags & AiTrack.OWN) or wizard.age < wizard.threat_tick:
+	if wizard == null or wizard.relation != AiTrack.Relation.OWN or wizard.age < wizard.threat_tick:
 		return
-	wizard.threat_tick = wizard.age + profile.threat_age
+	var senses := play.tactics.senses
+	wizard.threat_tick = wizard.age + play.ages_for(senses.threat_s)
 	wizard.threat = 0.0
 	var acc0 := AiRater.new_acc()
 	var acc1_local := AiRater.new_acc()
 	var acc3 := AiRater.new_acc()
-	influence(0, wizard.extrap_pos, profile.threat_near, profile.threat_far, acc0)
-	influence(1, wizard.extrap_pos, profile.threat_near, profile.threat_far, acc1_local)
-	influence(3, wizard.extrap_pos, profile.threat_near, profile.threat_far, acc3)
+	influence(0, wizard.extrap_pos, senses.threat_near_m, senses.threat_far_m, acc0)
+	influence(1, wizard.extrap_pos, senses.threat_near_m, senses.threat_far_m, acc1_local)
+	influence(3, wizard.extrap_pos, senses.threat_near_m, senses.threat_far_m, acc3)
 	wizard.threat = AiRater.rate(acc3)
 	if wizard.threat != 0.0:
 		wizard.threat = AiField.f32(AiField.safediv(wizard.threat, wizard.threat + AiRater.rate(acc0) + AiRater.rate(acc1_local)))

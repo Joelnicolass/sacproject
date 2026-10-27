@@ -68,8 +68,8 @@ func _spells_tab_status(caster: Node, book: Node) -> bool:
 	return index >= 0 and caster.arm_status(index) != SpellAction.NOT_IMPLEMENTED
 
 
-## check(): fount near the point or the wizard, then mana, range and room, cooldown first.
-## begin + finish: one tower of the god over the fount; a stolen fount builds nothing.
+## check(): fount near the point or the wizard, then mana, range and a building on the BuildArea, cooldown first; a unit never blocks.
+## begin: one rising tower of the god over the fount; finish makes it stand; a lost tower says no fount; cancel frees it.
 func _manalith_action(host: Node3D) -> Dictionary:
 	var wizard := _wizard(host, Vector3(15.0, 0.0, 0.0))
 	var caster := wizard.get_node("Caster")
@@ -97,21 +97,31 @@ func _manalith_action(host: Node3D) -> Dictionary:
 	var nofount := action.check(wizard, spell, fount.global_position + Vector3(30.0, 0.0, 0.0), null, SpellAction.COOLING)
 	checks["no_fount_wins_over_cooling"] = nofount.status == StructureAction.NO_FOUNT
 	wizard.global_position = Vector3(15.0, 0.0, 0.0)
+	var unit := Node3D.new()
+	unit.add_to_group("unit")
+	host.add_child(unit)
+	checks["unit_does_not_block"] = action.check(wizard, spell, fount.global_position, null, "").status.is_empty()
+	unit.free()
 	var blocker := Node3D.new()
-	blocker.add_to_group("unit")
+	blocker.add_to_group("structure")
 	host.add_child(blocker)
+	blocker.global_position = fount.global_position + Vector3(0.0, 0.0, 8.0)
 	checks["no_room"] = action.check(wizard, spell, fount.global_position, null, "").status == SpellAction.NO_ROOM
 	blocker.free()
 	aim = action.check(wizard, spell, fount.global_position, null, "")
+	checks["aim_site_is_fount"] = aim.site == fount
 	action.begin(wizard, spell, aim)
+	var rising := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
+	checks["born_rising_on_begin"] = rising != null and rising.is_rising() and not fount.is_free()
 	checks["finish_quiet"] = action.finish(wizard, spell, wizard).is_empty()
 	var tower := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
-	checks["spawned_one"] = tower != null
+	checks["spawned_one"] = tower != null and tower == rising and not tower.is_rising()
 	checks["spawned_god_model"] = tower != null and tower.type.tag == "jman" and tower.type.role == BuildingType.Role.MANALITH
 	checks["spawned_slot"] = tower != null and tower.owner_slot == 1
 	checks["spawned_at_fount"] = tower != null and tower.global_position.is_equal_approx(fount.global_position)
 	checks["fount_taken"] = tower != null and not fount.is_free()
-	checks["occupied_no_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.NO_FOUNT
+	var taken := action.check(wizard, spell, fount.global_position, null, "")
+	checks["occupied_fount_taken"] = taken.status == StructureAction.FOUNT_TAKEN and taken.site == fount
 	checks["finish_twice_builds_once"] = action.finish(wizard, spell, wizard).is_empty() and towers.get_child_count() == 1
 	if tower != null:
 		towers.remove_child(tower)
@@ -119,17 +129,20 @@ func _manalith_action(host: Node3D) -> Dictionary:
 	checks["fount_free_again"] = fount.is_free()
 	aim = action.check(wizard, spell, fount.global_position, null, "")
 	action.begin(wizard, spell, aim)
-	var thief := Node3D.new()
-	thief.set_script(preload("res://debug/suite/slot_node.gd"))
-	host.add_child(thief)
-	fount.occupy(thief.get_path())
-	checks["stolen_says_no_fount"] = action.finish(wizard, spell, wizard) == StructureAction.NO_FOUNT and towers.get_child_count() == 0
-	fount.release(thief.get_path())
-	thief.free()
+	var lost := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
+	if lost != null:
+		towers.remove_child(lost)
+		lost.free()
+	checks["lost_tower_says_no_fount"] = action.finish(wizard, spell, wizard) == StructureAction.NO_FOUNT and towers.get_child_count() == 0
 	aim = action.check(wizard, spell, fount.global_position, null, "")
 	action.begin(wizard, spell, aim)
+	var cut := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
 	action.cancel()
-	checks["cancel_builds_nothing"] = action.finish(wizard, spell, wizard).is_empty() and towers.get_child_count() == 0
+	checks["cancel_frees_rising"] = cut != null and cut.is_queued_for_deletion()
+	checks["cancel_builds_nothing"] = action.finish(wizard, spell, wizard).is_empty()
+	if cut != null:
+		towers.remove_child(cut)
+		cut.free()
 	fount.free()
 	spawner.free()
 	towers.free()

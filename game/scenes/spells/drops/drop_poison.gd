@@ -38,12 +38,12 @@ func poison(body: Node3D, at: Vector3) -> void:
 	if live:
 		_dose(body, per_second, ticks)
 		if hit_burst != null:
-			FxBus.broadcast(hit_burst.bus_name(), BodyNudge.center(body))
+			FxBus.broadcast(hit_burst, BodyNudge.center(body))
 	for hit in SplashDamage.bodies_within(get_tree(), at, drop.damage_range, body if live else null, groups):
 		var near := 1.0 - SplashDamage.box_distance(hit, at) / drop.damage_range
 		_dose(hit, per_second * splash_share * near, ticks)
 	for type in bursts:
-		FxBus.broadcast(type.bus_name(), at)
+		FxBus.broadcast(type, at)
 
 
 func _dose(body: Node3D, per_second: float, ticks: int) -> void:

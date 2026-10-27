@@ -105,7 +105,7 @@ func type() -> RitualType:
 
 ## This peer runs the ritual: the server, or a solo game.
 func simulates() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
+	return is_multiplayer_authority()
 
 
 ## Server or solo. The site is already taken by this ritual and the doctors stand on the ring.
@@ -168,7 +168,8 @@ func complete() -> void:
 	_wind_down()
 
 
-## Cancelled: doctors die, the creature falls alive and free, the wizard is not under ritual any more (stopRitual, state.d:15817-15833).
+## Cancelled: doctors die, the creature falls alive and free, the wizard is not under ritual any more.
+## Ref: stopRitual, state.d:15817-15833
 func abort() -> void:
 	if outcome != Outcome.RUNNING:
 		return

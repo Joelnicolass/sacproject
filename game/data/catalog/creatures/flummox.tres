@@ -29,5 +29,6 @@ mana_cost = 1000
 souls = 3
 cooldown_s = 5.0
 casting_time_s = 1.7284
-spell_order = 457
+book_level = 4
+book_slot = 57
 ranged_attack = ExtResource("typed_crba")

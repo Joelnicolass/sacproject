@@ -17,7 +17,8 @@ extends Resource
 @export var regeneration_per_s: float = 0.0
 ## Regenerates in any mode that can heal, also walking, fighting and being hit (the Troll); the rest only at rest, once a hit is over.
 @export var regenerates_always := false
-## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration (shiny.d:241 `fillStats`).
+## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration.
+## Ref: shiny.d:241 fillStats.
 @export var drain: float = 0.0
 @export var run_speed_m_s: float = 0.0
 @export var fly_speed_m_s: float = 0.0
@@ -41,7 +42,10 @@ extends Resource
 @export var souls: int = 0
 @export var cooldown_s: float = 0.0
 @export var casting_time_s: float = 0.0
-@export var spell_order: int = 0
+## Wizard level it is meant for (0 to 9): casting it with a lower-level wizard is slower, with a higher one faster (CastTime).
+@export_range(0, 9) var book_level := 0
+## Place in the book among the entries of its level (0 to 99); the book lists entries by level, then by this number.
+@export_range(0, 99) var book_slot := 0
 ## Widens the box of its melee swing (the Druid is 1.3); 1 = the creature's own box.
 @export var melee_width_scale := 1.0
 ## A villager: gets the villager scene (it digs, cowers and holds a grudge) and never attacks (VillagerBrain).
@@ -70,6 +74,12 @@ func id() -> String:
 	return tag if not tag.is_empty() else resource_path.get_file().get_basename()
 
 
+## True when `passive` is the one this creature has (its `on_damage`). The only place that answers it: FireShield, LightningCharge,
+## DamagePassive and the Manahoar's ManaSupport ask here, so a passive node only wakes up on a creature that lists its ability.
+func has_passive(passive: AbilityType) -> bool:
+	return passive != null and on_damage == passive
+
+
 ## True when the creature has a ranged attack.
 func is_ranged() -> bool:
 	return ranged_attack != null
@@ -88,8 +98,9 @@ func is_flying() -> bool:
 	return run_speed_m_s <= 0.0 and fly_speed_m_s > 0.0
 
 
-## sacengine canFly && !mustFly (sacobject.d:81-83, 113-115): walks and flies (the hybrids). It flies when that arrives
+## Walks and flies (the hybrids: canFly && !mustFly). It flies when that arrives
 ## first (Flight). A creature that must fly (is_flying) is not a hybrid.
+## Ref: sacengine sacobject.d:81-83, 113-115.
 func is_hybrid_flier() -> bool:
 	return run_speed_m_s > 0.0 and fly_speed_m_s > 0.0 and clip_facts().has(&"fly")
 
@@ -112,8 +123,9 @@ func ranged_accuracy_milli() -> int:
 	return roundi(ranged_accuracy * 1000.0)
 
 
-func level() -> int:
-	return spell_order / 100
+## Where the book lists it: by level first, then by position (the old spell_order, level * 100 + position).
+func order_key() -> int:
+	return book_level * 100 + book_slot
 
 
 ## The icon of the type a creature body runs on (its `type`, as UnitBody and DoctorBody have), or null.

@@ -53,11 +53,10 @@ var _quality: LookQuality
 
 
 func _ready() -> void:
-	rig.ground = ground.shape
+	rig.terrain = ground.shape
 	sun = rig.sun_layer.sun
 	var profile := GameCatalog.shared().god("persephone").look
 	grass_set = profile.grass
-	ground.tiles = rig.tile_map
 	_read_args()
 	_apply_quality.call_deferred()
 	_settle.call_deferred()

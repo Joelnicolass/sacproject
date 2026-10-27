@@ -4,9 +4,8 @@ extends Node
 
 ## The state of the match: the state of every altar, the defeated sides and the winner. Single source
 ## for everyone (DefeatRule decides, the banner and the world read). The server (or solo) changes it
-## and pushes it as a snapshot; a client applies it. A peer that enters later gets it when its world is
-## ready (MpKit.client_world_ready), since the altars are fixed nodes of the map and do not go through
-## a spawner.
+## and says so (`snapshot_changed`, `finished`); MatchStateNet carries it to the clients, which apply the snapshot.
+## It knows nothing of the network.
 
 ## An altar changed state in this peer (the server's decision or an applied snapshot).
 signal altar_state_changed(altar: Altar, state: Altar.State)
@@ -15,16 +14,21 @@ signal side_defeated(slot: int)
 signal result_changed
 ## The rules of this match shown to the players changed: taken from the world (server, solo) or from a snapshot (client).
 signal rules_changed
+## The server (or solo) changed the state: whoever carries it (MatchStateNet) sends `to_snapshot()` to the clients.
+signal snapshot_changed
+## The match ended in this peer and `result()` is final; emitted after the last `snapshot_changed`.
+signal finished
 
 ## The group the match state joins; whoever needs it reads it from here.
 const GROUP := &"match_state"
-## Key of the dict in MpKit.push_snapshot (MpFlow ignores a snapshot with no world_id).
-const SNAPSHOT_KEY := "match"
 const FALLBACK_COLLAPSE_S := 11.0
 
 @export var rules: MatchRules
 ## Node whose subtree holds the altars of this match (the world).
 @export var world: Node
+## The node the wizards are spawned under (match.tscn: Wizards). On the authority every wizard that is or comes in there seats
+## its slot; empty (a bench with no wizards) = every owner of an altar counts.
+@export var wizards: Node
 
 ## 0 while the match has no winner. With teams (RFC-049 049b) it is the lowest slot of the winning team, kept for the room
 ## and the banner; `winner_slots` is the whole team and `won(slot)` the question to ask.
@@ -33,8 +37,9 @@ var winner_slot := 0
 var winner_slots: Array[int] = []
 ## The team (SideRelations.team_of) of the winners; 0 with no winner.
 var winner_team := 0
-## RFC-049 049b: the slots with a wizard seated (human or AI), marked by WizardSpawner on the authority. Only they count for the
-## victory (sacengine altarSides, state.d:31493); the altar of an empty seat stays in the map and does not count (P4).
+## The slots with a wizard seated (human or AI), derived on the authority from the children of `wizards`. Only they count for the
+## victory; the altar of an empty seat stays in the map and does not count (P4).
+## Ref: RFC-049 049b; sacengine altarSides, state.d:31493.
 var seated_slots: Array[int] = []
 var defeated_slots: Array[int] = []
 ## True once the match has a result, with or without a winner.
@@ -60,14 +65,9 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	if is_authority():
 		take_rules()
+		_seat_wizards()
 	for altar in altars():
 		altar.state_changed.connect(_on_altar_state_changed.bind(altar))
-	if not MpKit.is_networked():
-		return
-	if MpKit.is_server():
-		MpKit.client_world_ready.connect(_on_client_world_ready)
-	else:
-		MpKit.snapshot_received.connect(_on_snapshot_received)
 	set_physics_process(is_authority())
 
 
@@ -82,7 +82,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## The server decides; so does a game with no network (solo).
 func is_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
+	return is_multiplayer_authority()
 
 
 ## Every altar under `world`, destroyed ones too, in the same order on every peer.
@@ -120,8 +120,9 @@ func has_standing_altar(slot: int) -> bool:
 	return false
 
 
-## The slots that own an altar and have a wizard seated (sacengine altarSides, state.d:30494-30500, 31493-31514), in order. A world
+## The slots that own an altar and have a wizard seated, in order. A world
 ## where nobody was ever marked (a bench with no WizardSpawner) keeps every owner of an altar, as before 049b.
+## Ref: sacengine altarSides, state.d:30494-30500, 31493-31514.
 func sides() -> Array[int]:
 	var found: Array[int] = []
 	for altar in altars():
@@ -132,13 +133,28 @@ func sides() -> Array[int]:
 	return found
 
 
-## Authority: a wizard sat in `slot` (WizardSpawner._place). Idempotent.
+## Authority: a wizard sat in `slot` (a wizard under `wizards`; a bench may call it). Idempotent.
 func mark_seated(slot: int) -> void:
 	if slot <= 0 or seated_slots.has(slot):
 		return
 	seated_slots.append(slot)
 	seated_slots.sort()
 	publish()
+
+
+## Authority: the wizards already under `wizards` (the listen host and solo spawn theirs before this node is ready) and every
+## one that comes in later seat their slot. Derived from the tree, so the order of `_ready` does not matter.
+func _seat_wizards() -> void:
+	if wizards == null:
+		return
+	wizards.child_entered_tree.connect(_on_wizard_entered)
+	for child in wizards.get_children():
+		_on_wizard_entered(child)
+
+
+func _on_wizard_entered(node: Node) -> void:
+	if node is WizardBody:
+		mark_seated((node as WizardBody).owner_slot)
 
 
 func is_seated(slot: int) -> bool:
@@ -220,6 +236,7 @@ func end_match(winner: int) -> void:
 	print("partida terminada, gana el slot %d" % winner)
 	result_changed.emit()
 	publish()
+	_tell_kit_ended()
 
 
 ## Server (or solo): the match is over and the team of `slots` (the living ones that were left, plus the allies that fell before) won.
@@ -239,6 +256,21 @@ func end_match_team(slots: Array[int]) -> void:
 	print("partida terminada, gana el equipo %d: slots %s" % [winner_team, str(team)])
 	result_changed.emit()
 	publish()
+	_tell_kit_ended()
+
+
+## The result as the room and the kit read it: who won (the whole team) and who was defeated. Empty-ish while there is none.
+func result() -> Dictionary:
+	var winners: Array = []
+	winners.assign(winner_slots)
+	var defeated: Array = []
+	defeated.assign(defeated_slots)
+	return {"winner_slot": winner_slot, "winner_slots": winners, "defeated_slots": defeated, "reason": "result"}
+
+
+## Says the match is over (MatchStateNet tells the kit when this is a dedicated started by hand).
+func _tell_kit_ended() -> void:
+	finished.emit()
 
 
 ## Advances the altar clocks by `delta` seconds (the server's physics step; a test may call it).
@@ -328,14 +360,13 @@ func apply_snapshot(data: Dictionary) -> void:
 		result_changed.emit()
 
 
-## Server: tells every client the match as it is now.
+## Server: asks the carrier to tell every client the match as it is now.
 func publish() -> void:
-	if MpKit.is_networked() and MpKit.is_server():
-		MpKit.push_snapshot({SNAPSHOT_KEY: to_snapshot()})
+	snapshot_changed.emit()
 
 
 func _physics_process(delta: float) -> void:
-	## No match runs in the editor, and the MpKit autoload does not exist there.
+	## No match runs in the editor.
 	if Engine.is_editor_hint():
 		return
 	tick(delta)
@@ -360,13 +391,3 @@ func _before(a: Altar, b: Altar) -> bool:
 
 func _on_altar_state_changed(state: Altar.State, altar: Altar) -> void:
 	altar_state_changed.emit(altar, state)
-
-
-func _on_client_world_ready(peer_id: int) -> void:
-	MpKit.push_snapshot_to(peer_id, {SNAPSHOT_KEY: to_snapshot()})
-
-
-func _on_snapshot_received(data: Dictionary) -> void:
-	var mine: Variant = data.get(SNAPSHOT_KEY)
-	if mine is Dictionary:
-		apply_snapshot(mine)

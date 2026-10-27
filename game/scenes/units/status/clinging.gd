@@ -1,18 +1,19 @@
 class_name Clinging
 extends Node3D
 
-## F129 (RFC-030 030r-a): the things stuck to a body that slow it down (sacengine effects.numStickyBombs / numBlightMites,
-## stats.d:122): the Ikarus's Sticky bombs (×0.75 each, 10 s) and the Bilemites (×0.8 each). The one owner of how many
+## The things stuck to a body that slow it down (numStickyBombs / numBlightMites in the original):
+## the Ikarus's Sticky bombs (×0.75 each, 10 s) and the Bilemites (×0.8 each). The one owner of how many
 ## there are and when each lets go. stick() adds one piece of a kind for a number of MatchClock ticks; each piece lets go at
-## its own tick (sacengine updateStickyBomb: `++infectionTime <= updateFPS·duration` keeps it, so it is gone at duration·60 + 1
+## its own tick (updateStickyBomb: `++infectionTime <= updateFPS·duration` keeps it, so it is gone at duration·60 + 1
 ## updates after it stuck); every piece of every body lets go at once when the body can no longer be poisoned
-## (canBeStickyBombed = canBePoisoned, state.d:186): it dies, is being summoned…
+## (canBeStickyBombed = canBePoisoned): it dies, is being summoned…
 ## The slowdown is not written here: for each kind Clinging gives PaceFactors the factor `factor ^ count` under its own source
 ## (&"cling_sticky", &"cling_mites"), and PaceFactors writes speed_factor. It is derived from the lists on every change, so a
 ## piece that lets go in the same tick as another one is the same as the two one after the other.
 ## `shown` is replicated (the unit's MultiplayerSynchronizer, "Clinging:shown"): x = bombs, y = mites, z = frogs. Every peer draws that
-## many of the look scenes at fixed places on the body (declared: sacengine keeps where each one hit).
+## many of the look scenes at fixed places on the body (declared: the original keeps where each one hit).
 ## Server (or solo) only for stick(); the look runs on every peer.
+## Ref: F129 (RFC-030 030r-a), sacengine effects.numStickyBombs / numBlightMites stats.d:122, updateStickyBomb, canBeStickyBombed state.d:186.
 
 const STICKY := &"sticky"
 const MITES := &"mites"
@@ -70,7 +71,7 @@ func _ready() -> void:
 ## Server (or solo). One more piece of `kind` that lets go `ticks` after now, each slowing the body ×`factor`. False when it
 ## is not the server or the arguments mean nothing.
 func stick(kind: StringName, ticks: int, factor: float) -> bool:
-	if not _has_authority() or ticks <= 0 or not KINDS.has(kind):
+	if not is_multiplayer_authority() or ticks <= 0 or not KINDS.has(kind):
 		return false
 	var ends: Array = _ends.get(kind, [])
 	ends.append(MatchClock.now() + ticks)
@@ -85,7 +86,7 @@ func stick(kind: StringName, ticks: int, factor: float) -> bool:
 
 ## How many pieces of `kind` are on (the server's lists; on a client what it was told).
 func count_of(kind: StringName) -> int:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return shown.x if kind == STICKY else (shown.y if kind == MITES else (shown.z if kind == FROGS else 0))
 	return (_ends.get(kind, []) as Array).size()
 
@@ -181,7 +182,3 @@ func _place(kind_index: int, index: int) -> Vector3:
 
 func _who() -> String:
 	return str(body.name) if body else "?"
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

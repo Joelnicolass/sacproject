@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/fdzy/003.png" id="1_a64ta"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/fdzy/003_normal.png" id="2_wutdm"]
 
 [resource]
 resource_name = "fdzy_003"
 albedo_texture = ExtResource("1_a64ta")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_wutdm")

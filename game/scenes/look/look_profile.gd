@@ -7,7 +7,7 @@ extends Resource
 ## its layer simply has nothing to show.
 
 @export var display_name: String = ""
-## The god of this biome (`data/gods/<god>.tres`): a map made of its land wears its own ground (NativeGround).
+## The god of this biome (`data/gods/<god>.tres`).
 @export var god: StringName = &""
 
 @export_group("Sky and light")
@@ -20,10 +20,16 @@ extends Resource
 ## Color correction, one gradient per god.
 @export var grade: GradientTexture1D
 
+@export_group("Ambience (058)")
+## How the day goes by over the approved light (night, moon, stars). Empty = no cycle: always the approved light.
+@export var day: DayCycle
+## How the weather goes (the five gods share `data/look/weather/plan.tres`). Empty = always clear.
+@export var weather: WeatherPlan
+## Pollen, fireflies, embers...: in the air around the camera and in the map's LifeSpots. Empty = no ambient life.
+@export var life: AmbientLifeSet
+
 @export_group("Ground and plants")
-## The original's flat ground (atlas, edge and light map): what the terrain wears when `ground` is empty.
-@export var ground_classic: ShaderMaterial
-## The god's four kinds of ground (open, earth, rock, path), laid on each map's ground roles.
+## The god's four kinds of ground (open, earth, rock, path), laid on each map's ground roles. Empty = the plain «no look» ground.
 @export var ground: GodGround
 ## The stylized grass around the camera.
 @export var grass: GrassSet

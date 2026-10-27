@@ -1,20 +1,18 @@
 class_name FocusTask
 extends AiTask
 
-## RFC-053 053d (F373), «kill X» (not in the original: its AI only escorts the wizard or follows him, so every creature fought what it
-## met, each from where it stood). On every replan it looks at the enemy bodies the side sees within AiTactics.focus_radius_m of an
+## «Kill X» (not in the original: its AI only escorts the wizard or follows him, so every creature fought what it
+## met, each from where it stood). On every replan it looks at the enemy bodies the side sees within AiCrowdTactics.focus_radius_m of an
 ## own group; for each it takes the free own creatures that can fight within that radius of it (the nearest first, at most
 ## focus_max_members) and estimates how long they need to kill it (AiKillEstimate: known health over their DPS less the healing the
 ## side sees). Score = worth (souls of a creature, focus_wizard_worth of a wizard) · healer_weight if it heals / kill seconds. The
 ## best one with kill seconds <= focus_kill_window_s and a local strength (AiStance influence of the own and allied groups over the
 ## enemy ones around it) >= focus_power_ratio becomes the commitment: it lasts commit_hold_s, or until the target dies, is no
 ## longer seen or leaves the radius of every own group; meanwhile no other one is picked. Its record claims those creatures first
-## (the first child of the board) and each gets the same order a human's right click gives: attack it (ostate 6, CreatureBrain).
+## (the first child of the board) and each gets the same order a human's right click gives: attack it (AiOrder.ATTACK, CreatureBrain).
 ## AttackPhase reads `committed()`: the wizard's spells go to the same target. Uses only what the side knows (AiPerception).
 ## Take this node out and the side never commits.
-
-## The board's command for the members of a focus record (CreatureBrain: attack the target).
-const COMMAND := 3
+## Ref: RFC-053 053d (F373).
 
 ## Diagnostic for the report: commitments made and the last one («name kill_s score»).
 var commits := 0
@@ -26,10 +24,6 @@ var _until_tick := 0
 
 func kind() -> Kind:
 	return Kind.FOCUS
-
-
-func command() -> int:
-	return COMMAND
 
 
 ## The target the side is committed to now, or null.
@@ -71,7 +65,7 @@ func claim(free: Array[AiTrack]) -> float:
 
 
 func _tactics() -> AiTactics:
-	return board.wizard_brain.tactics if board.wizard_brain != null and board.wizard_brain.tactics != null else AiTactics.or_normal(null)
+	return board.play.tactics
 
 
 ## The commitment holds: in time, the target alive, seen and within the radius of an own group.
@@ -105,20 +99,18 @@ func _pick() -> AiTrack:
 		if members.is_empty():
 			continue
 		var kill_s := AiKillEstimate.kill_seconds(perception, foe, members)
-		if DebugLog.on(&"ai_focus"):
-			print("ai_focus slot %d candidato %s miembros %d muere en %.2f s" % [perception.slot, foe.node.name, members.size(), kill_s])
-		if kill_s > tactics.focus_kill_window_s:
+		if DebugLog.on(&"ai_focus"): print("ai_focus slot %d candidato %s miembros %d muere en %.2f s" % [perception.slot, foe.node.name, members.size(), kill_s])
+		if kill_s > tactics.crowd.focus_kill_window_s:
 			continue
 		var score := worth / maxf(kill_s, 0.1)
-		if foe.kind == AiTrack.Kind.CRE and AiKillEstimate.is_healer(foe.node.get("type") as CreatureType):
+		if foe.kind == AiTrack.Kind.CREATURE and AiKillEstimate.is_healer(foe.node.get("type") as CreatureType):
 			score *= tactics.healer_weight
 		if score <= best_score or not _strong_enough(at, tactics):
 			continue
 		best_score = score
 		best = foe
 		last_commit = "%s %.2f %.3f" % [foe.node.name, kill_s, score]
-	if DebugLog.on(&"ai_focus") and best != null:
-		print("ai_focus slot %d compromiso %s" % [perception.slot, last_commit])
+	if DebugLog.on(&"ai_focus") and best != null: print("ai_focus slot %d compromiso %s" % [perception.slot, last_commit])
 	return best
 
 
@@ -129,8 +121,8 @@ func _fightable(t: AiTrack) -> bool:
 
 ## What `foe` is worth as a focus: a creature its souls (at least 1), a wizard focus_wizard_worth; a passive NPC times npc_passive_weight.
 func _worth(foe: AiTrack, tactics: AiTactics) -> float:
-	var worth := tactics.focus_wizard_worth
-	if foe.kind != AiTrack.Kind.WIZ:
+	var worth := tactics.crowd.focus_wizard_worth
+	if foe.kind != AiTrack.Kind.WIZARD:
 		worth = maxf(1.0, float(AiGroups.souls_pair(foe).x))
 	if TargetRules.is_passive_npc(foe.node):
 		worth *= tactics.npc_passive_weight
@@ -139,7 +131,7 @@ func _worth(foe: AiTrack, tactics: AiTactics) -> float:
 
 ## An own creature that can fight (status bit 1, not a pacifist).
 static func fighter(t: AiTrack) -> bool:
-	if t.kind != AiTrack.Kind.CRE or not (t.status & AiTrack.ACTIVE):
+	if t.kind != AiTrack.Kind.CREATURE or not t.fights:
 		return false
 	var type := t.node.get("type") as CreatureType
 	return type != null and type.aggressiveness > 0 and AiKillEstimate.dps_of(type) > 0.0
@@ -148,7 +140,7 @@ static func fighter(t: AiTrack) -> bool:
 ## The fighters of `pool` within focus_radius_m of `at`, nearest first (ties in the order of `pool`), at most focus_max_members.
 func _members_near(at: Vector3, pool: Array[AiTrack]) -> Array[AiTrack]:
 	var tactics := _tactics()
-	var radius_sq := tactics.focus_radius_m * tactics.focus_radius_m
+	var radius_sq := tactics.crowd.focus_radius_m * tactics.crowd.focus_radius_m
 	var near: Array = []
 	for i in pool.size():
 		var t := pool[i]
@@ -160,14 +152,14 @@ func _members_near(at: Vector3, pool: Array[AiTrack]) -> Array[AiTrack]:
 	near.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0] or (a[0] == b[0] and a[1] < b[1]))
 	var out: Array[AiTrack] = []
 	for row in near:
-		if out.size() >= tactics.focus_max_members:
+		if out.size() >= tactics.crowd.focus_max_members:
 			break
 		out.append(row[2])
 	return out
 
 
 func _near_own_group(at: Vector3) -> bool:
-	var radius := _tactics().focus_radius_m
+	var radius := _tactics().crowd.focus_radius_m
 	for group: AiGroup in board.groups.list(0):
 		if group.count > 0 and group.center.distance_to(at) <= radius:
 			return true
@@ -177,10 +169,9 @@ func _near_own_group(at: Vector3) -> bool:
 ## The own and allied bodies around `at` outweigh the enemy ones by focus_power_ratio (AiStance.local_strength: the rates of the
 ## bodies within focus_radius_m, each by the health the side knows it has).
 func _strong_enough(at: Vector3, tactics: AiTactics) -> bool:
-	var ratio := power_ratio(board.stance, at, tactics.focus_radius_m)
-	if DebugLog.on(&"ai_focus"):
-		print("ai_focus slot %d fuerza local %.2f (minimo %.2f)" % [board.perception.slot, ratio, tactics.focus_power_ratio])
-	return ratio >= tactics.focus_power_ratio
+	var ratio := power_ratio(board.stance, at, tactics.crowd.focus_radius_m)
+	if DebugLog.on(&"ai_focus"): print("ai_focus slot %d fuerza local %.2f (minimo %.2f)" % [board.perception.slot, ratio, tactics.crowd.focus_power_ratio])
+	return ratio >= tactics.crowd.focus_power_ratio
 
 
 ## Own and allied strength over the enemy's around `at` (INF with no enemy there).

@@ -28,7 +28,8 @@ func status(target_pos: Vector3, foe: Node3D = null) -> String:
 	return slot.status(target_pos, foe)
 
 
-## Server or solo: sacengine useAbility. "" = used.
+## Server or solo: uses the ability. "" = used.
+## Ref: sacengine useAbility.
 func use(target_pos: Vector3, foe: Node3D = null) -> String:
 	if _refused():
 		return Refusal.BAD_TARGET

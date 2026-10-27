@@ -49,7 +49,7 @@ import os
 import sys as _sys
 
 _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads assets/original/maps/high_noon/terrain.res)
+import terrain_asset  # noqa: E402  (agent/tools/terrain_asset.py: reads scenes/map/maps/high_noon/heights.png)
 import re
 import struct
 import sys
@@ -113,7 +113,7 @@ def map_file(name):
 
 
 class Terrain:
-    """terrain.res: vertices, indices; a 10 m grid of triangles."""
+    """The land of heights.png: vertices, indices; a 10 m grid of triangles."""
     CELL = 10.0
 
     def __init__(self, verts, idx):

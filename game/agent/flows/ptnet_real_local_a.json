@@ -1,0 +1,623 @@
+{
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_pyro"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "repeat": {
+    "times": 20,
+    "until": {
+     "node": "%LocalServer",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "try_click": "%Play"
+     },
+     {
+      "wait": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "click": "%LocalServer"
+  },
+  {
+   "wait_until": {
+    "node": "%JoinLocal",
+    "visible_in_tree": true,
+    "timeout": 30
+   }
+  },
+  {
+   "click": "%JoinLocal"
+  },
+  {
+   "wait_until": {
+    "node": "%JoinServer",
+    "visible_in_tree": true,
+    "timeout": 30
+   }
+  },
+  {
+   "shot": "a00_join_form.png"
+  },
+  {
+   "type": {
+    "node": "%JoinAddress",
+    "text": "@ADDRESS@"
+   }
+  },
+  {
+   "type": {
+    "node": "%JoinCode",
+    "text": "@CODE@"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "started",
+    "timeout": 240,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "shot": "a01_start.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "pointer_center",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "book",
+    "args": []
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 0.6
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "face_to",
+    "args": [
+     1070,
+     1075
+    ]
+   }
+  },
+  {
+   "repeat": {
+    "times": 300,
+    "until": {
+     "node": "AgentKit/ptnet_real_watch",
+     "prop": "face_err",
+     "lte": 9
+    },
+    "steps": [
+     {
+      "press": {
+       "name": "turn_left",
+       "hold": 0.05
+      }
+     }
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "gap_to",
+    "args": [
+     1070,
+     1075
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "watch_building",
+    "args": [
+     1070,
+     1075
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "a04_hut.png"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "alive",
+    "equals": true,
+    "timeout": 90
+   }
+  },
+  {
+   "click": "%SpellTab"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "mana",
+    "timeout": 120,
+    "gte": 1800
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_point",
+    "args": [
+     1070,
+     1075
+    ]
+   }
+  },
+  {
+   "press": "spell_11"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "press": "select"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "volcano"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "volcano_cast"
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "a05_volcano_a.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "wait": 5.0
+  },
+  {
+   "shot": "a06_volcano_b.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "volcano_b"
+    ]
+   }
+  },
+  {
+   "repeat": {
+    "times": 25,
+    "until": {
+     "node": "AgentKit/ptnet_real_watch",
+     "prop": "bld_hp",
+     "lte": -1
+    },
+    "steps": [
+     {
+      "wait_until": {
+       "node": "AgentKit/ptnet_real_watch",
+       "prop": "alive",
+       "equals": true,
+       "timeout": 90
+      }
+     },
+     {
+      "click": "%SpellTab"
+     },
+     {
+      "wait_until": {
+       "node": "AgentKit/ptnet_real_watch",
+       "prop": "mana",
+       "timeout": 90,
+       "gte": 300
+      }
+     },
+     {
+      "call": {
+       "harness": "ptnet_real_watch",
+       "method": "aim_point",
+       "args": [
+        1070,
+        1075
+       ]
+      }
+     },
+     {
+      "press": "spell_2"
+     },
+     {
+      "wait": 0.3
+     },
+     {
+      "press": "select"
+     },
+     {
+      "wait": 1.0
+     },
+     {
+      "call": {
+       "harness": "ptnet_real_watch",
+       "method": "building",
+       "args": []
+      }
+     },
+     {
+      "wait": 9.5
+     }
+    ]
+   }
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "shot": "a07_hut_falls.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "wait": 2.5
+  },
+  {
+   "shot": "a08_hut_ruin.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "hut_down"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "hut_down"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "host.tipi_down"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 300,
+    "equals": true
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "watch_building",
+    "args": [
+     1496,
+     1500
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "tipi_seen"
+    ]
+   }
+  },
+  {
+   "press": "pause_menu"
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "click": "%Quit"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "click": "%ConfirmQuit"
+  },
+  {
+   "wait_until": {
+    "node": "%Play",
+    "visible_in_tree": true,
+    "timeout": 30
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "left"
+    ]
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "repeat": {
+    "times": 20,
+    "until": {
+     "node": "%LocalServer",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "try_click": "%Play"
+     },
+     {
+      "wait": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "click": "%LocalServer"
+  },
+  {
+   "wait_until": {
+    "node": "%JoinLocal",
+    "visible_in_tree": true,
+    "timeout": 30
+   }
+  },
+  {
+   "click": "%JoinLocal"
+  },
+  {
+   "wait_until": {
+    "node": "%JoinServer",
+    "visible_in_tree": true,
+    "timeout": 30
+   }
+  },
+  {
+   "type": {
+    "node": "%JoinAddress",
+    "text": "@ADDRESS@"
+   }
+  },
+  {
+   "type": {
+    "node": "%JoinCode",
+    "text": "@CODE@"
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "started",
+    "timeout": 120,
+    "equals": true
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "back"
+    ]
+   }
+  },
+  {
+   "shot": "a09_back.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "back"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "pointer_center",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "watch_building",
+    "args": [
+     1070,
+     1075
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 0.6
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "face_to",
+    "args": [
+     1070,
+     1075
+    ]
+   }
+  },
+  {
+   "repeat": {
+    "times": 300,
+    "until": {
+     "node": "AgentKit/ptnet_real_watch",
+     "prop": "face_err",
+     "lte": 9
+    },
+    "steps": [
+     {
+      "press": {
+       "name": "turn_left",
+       "hold": 0.05
+      }
+     }
+    ]
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "a10_back_hut.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "watch_building",
+    "args": [
+     1496,
+     1500
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "building",
+    "args": []
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "end"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "done"
+    ]
+   }
+  },
+  {
+   "wait": 2.0
+  }
+ ]
+}

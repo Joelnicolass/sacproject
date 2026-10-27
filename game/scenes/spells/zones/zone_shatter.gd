@@ -17,7 +17,7 @@ func _fire(step: int) -> void:
 	var inner := ZoneRules.ring_radius(step, count, max_m)
 	var outer := ZoneRules.ring_radius(step + 1, count, max_m)
 	if shards != null:
-		FxBus.broadcast_scene(shards.resource_path, center, {"inner": inner, "outer": outer})
+		FxBus.broadcast_scene(shards, center, {"inner": inner, "outer": outer})
 	for body in bodies_near(center, outer + CANDIDATE_MARGIN_M):
 		var id := body.get_instance_id()
 		if BodyNudge.airborne(body) or _hit.has(id) or ZoneRules.flat_gap(BodyNudge.box(body), center) > outer:

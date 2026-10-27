@@ -19,10 +19,10 @@ var idle: int:
 var cap: int:
 	get:
 		return _sum().z
-## Children of FxBus (emitters and anything else).
+## Children of FxBus's pools (emitters and beams).
 var children: int:
 	get:
-		return FxBus.get_child_count()
+		return FxBus.get_node("%Bursts").get_child_count() + FxBus.get_node("%Beams").get_child_count()
 ## Emitters beyond their type's cap, summed over types: 0 = no pool grew past its cap.
 var excess: int:
 	get:

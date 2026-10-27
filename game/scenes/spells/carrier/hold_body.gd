@@ -9,7 +9,8 @@ extends Node
 ## Ref: sacengine updateIntestinalVaporization vaporizing (state.d:21471-21489).
 
 @export var carrier: SpellCarrier
-## The stun's own cooldown for the body, in seconds (sacengine 3 s).
+## The stun's own cooldown for the body, in seconds.
+## Ref: sacengine 3 s
 @export_range(0.0, 20.0, 0.1, "suffix:s") var stun_cooldown_s := 3.0
 @export var stunned_path := NodePath("Afflictions/Stunned")
 

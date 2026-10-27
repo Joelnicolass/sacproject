@@ -1,10 +1,11 @@
 class_name Affliction
 extends Node3D
 
-## F120 (RFC-030i): one state that takes the creature out of the fight (Stunned; later Petrified, Frozen). A child of
+## One state that takes the creature out of the fight (Stunned; later Petrified, Frozen). A child of
 ## Afflictions, which owns the questions the body asks and the replicated mask. Whether it is on is that mask's bit
 ## (`type.bit`), the same on the server and on the clients. Variants start themselves (stun_with_cooldown, petrify…)
 ## through Afflictions.admit/mark and draw themselves in _shown().
+## Ref: F120 (RFC-030i).
 
 ## The state went on (true) or off (false). Every peer, from the replicated mask: whoever draws it (a look, an emitter) listens here.
 signal shown_changed(on: bool)
@@ -17,8 +18,9 @@ func is_on() -> bool:
 	return owner_node != null and type != null and owner_node.is_on(type)
 
 
-## F158: an on-hit passive (MeleeOnHit) or a spell lays this state on the body with `spell` from the side `from_slot`. True when it
+## An on-hit passive (MeleeOnHit) or a spell lays this state on the body with `spell` from the side `from_slot`. True when it
 ## took hold. Default: this state is not laid that way.
+## Ref: F158.
 func inflict(_spell: SpellType, _from_slot: int) -> bool:
 	return false
 
@@ -40,9 +42,10 @@ func lay_ticks(_spell: SpellType) -> int:
 	return 0
 
 
-## sacengine's crowd-control lifetime (Freeze 10701-10702, Grasping Vines 10806): cast(int)ceil(updateFPS · duration), duration =
-## (wizard ? 0.25 : 1000 / max health) · the SPEL's duration. Plain GDScript floats (RFC-036e): a tick of difference from
-## sacengine's float32 is accepted. 0 for a creature with no health.
+## How many ticks a crowd-control state lasts: ceil(ticks per second · duration), duration =
+## (wizard ? 0.25 : 1000 / max health) · the spell's duration. Plain GDScript floats: a tick of difference from
+## the original's float32 is accepted. 0 for a creature with no health.
+## Ref: sacengine Freeze 10701-10702, Grasping Vines 10806; RFC-036e.
 static func cc_ticks(wizard: bool, max_health: float, spell_duration: float, creature_k := 1000.0, wizard_factor := 0.25) -> int:
 	var seconds := wizard_factor * spell_duration
 	if not wizard:
@@ -80,7 +83,3 @@ func _body() -> Node3D:
 ## The body's name for the log.
 func _body_name() -> String:
 	return str(_body().call("display_name"))  # dynamic: the body is a unit or a wizard
-
-
-func _simulates() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

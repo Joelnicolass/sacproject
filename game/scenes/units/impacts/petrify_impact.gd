@@ -1,12 +1,14 @@
 class_name PetrifyImpact
 extends ShotImpact
 
-## F137 (RFC-030i-b): the Basilisk's gaze (dpsf). updateBasiliskProjectile (state.d:23686-23725) calls petrify on the
-## creature it touched and nothing else: no damage, no splash. petrify (11641-11645) lasts 2,5 s on a wizard and
+## The Basilisk's gaze. It petrifies the
+## creature it touched and nothing else: no damage, no splash. The stone lasts 2,5 s on a wizard and
 ## min(10, 10000 / max health) s on a creature; the body's Afflictions/Petrified decides whether it takes it.
-## A wizard has its Petrified since F138 (RFC-030i-c).
+## A wizard has its Petrified too.
+## Ref: F137 (RFC-030i-b), F138 (RFC-030i-c); Basilisk dpsf, updateBasiliskProjectile (state.d:23686-23725), petrify 11641-11645.
 
-## sacengine petrify: a creature's lifetime is min(cap_s, k / max health) seconds.
+## A creature's stone lasts min(cap_s, k / max health) seconds.
+## Ref: sacengine petrify.
 @export var cap_s := 10.0
 @export var k := 10000.0
 @export var wizard_s := 2.5
@@ -19,12 +21,12 @@ func _affect(_shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityTy
 		return
 	var petrified := target.get_node_or_null(petrified_path) as Petrified
 	if petrified == null:
-		## A building takes nothing (sacengine terminates on it).
+		## A building takes nothing (the original terminates on it).
 		return
 	petrified.petrify(lifetime_ticks(target))
 
 
-## The lifetime in physics ticks: cast(int)(duration · updateFPS), as sacengine truncates it.
+## The lifetime in physics ticks: int(duration · ticks per second), truncated as the original does.
 func lifetime_ticks(body: Node3D) -> int:
 	var seconds := wizard_s
 	if not body.is_in_group(&"wizard"):

@@ -2,7 +2,7 @@
 class_name Captive
 extends Node
 
-## A creature taken by a Sac Doctor (RFC-020c). While it is held it is not a creature of the match:
+## A creature taken by a Sac Doctor. While it is held it is not a creature of the match:
 ## out of the group «unit» (so it cannot be selected, ordered, targeted or separated from), without
 ## collision, hanging behind the doctor. The ring around it is `CaptiveRing`. Let go, it is the same creature again, alive and with its owner.
 ## `UnitBody.mode = HELD` is what every peer sees (it is replicated); this node reacts to it. Only the
@@ -10,8 +10,9 @@ extends Node
 ## cannot be taken: the Desecrate cast answers «Blanco inválido».
 ## RFC-020e: a Convert doctor also revives a corpse with it (revive(), mode REVIVING: stood up, still
 ## taken, nobody's target) and, if the doctor dies then, release(CARRIER_DIED) kills it again.
-## Numbers: SacrificeFacts.carry_up_m / carry_back_m (the Carry/Hang marker of the places scene), rules.carry_speed_factor (sacengine state.d:15759-15766).
-## The creature does not use move_and_slide: like sacengine it follows a point without colliding.
+## Numbers: SacrificeFacts.carry_up_m / carry_back_m (the Carry/Hang marker of the places scene), rules.carry_speed_factor.
+## The creature does not use move_and_slide: like the original it follows a point without colliding.
+## Ref: RFC-020c, sacengine state.d:15759-15766.
 
 ## The doctor took it.
 signal taken(holder: DoctorBody)
@@ -112,9 +113,10 @@ func release(reason := Release.LET_GO) -> void:
 
 
 ## Server or solo (RFC-020e). A Convert doctor starts to pump the corpse: it stands up with
-## min(max(min_health, fraction * max health), max health) (convertRevive, state.d:8679) and is not
+## min(max(min_health, fraction * max health), max health) and is not
 ## a target, nobody's creature and without collision until the doctor takes it (take()) or it dies again.
 ## False if it is not a corpse.
+## Ref: sacengine convertRevive state.d:8679.
 func revive(min_health: float, fraction: float) -> bool:
 	if body == null or not body.is_dead():
 		return false
@@ -161,7 +163,7 @@ static func hang_point(at: Vector3, facing_flat: Vector3, height: float, behind:
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint() or body == null or holder == null:
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return
 	if not is_held():
 		holder = null
@@ -176,7 +178,7 @@ func _physics_process(delta: float) -> void:
 	var distance := gap.length()
 	if distance <= 0.75:
 		return
-	## sacengine only steps while farther than 0.75 m, at 1.1 times the doctor's ground speed.
+	## The original only steps while farther than 0.75 m, at 1.1 times the doctor's ground speed.
 	var step := (rules.carry_speed_factor if rules else 1.1) * holder.pace() * delta
 	body.global_position = want if distance < step else body.global_position + gap / distance * step
 

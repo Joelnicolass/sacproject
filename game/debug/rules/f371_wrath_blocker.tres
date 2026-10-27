@@ -83,7 +83,7 @@ within_s = 20.0
 
 [resource]
 script = ExtResource("1_rules")
-biome_god = &"persephone"
+biome = ExtResource("seat_god_persephone")
 starting_souls = 0
 friendly_fire = true
 ally_damage_factor = 0.5

@@ -4,7 +4,7 @@ extends Node
 ## Whom a creature is committed to: its `target`, and the commands that begin or end a commitment (engage a foe, walk somewhere, stand
 ## still, cower, follow a leader). It asks the TargetPicker who is worth fighting and keeps the Vision of the body on only while it can look.
 ## Not: how to hit (Weapons), what each mode does (States) nor the orders of the player (UnitOrders).
-## Ref: sacengine updateTarget (state.d:12924), isValidAttackTarget (state.d:12442), isValidEnemyAttackTarget, startCowering (state.d:13760).
+## Ref: sacengine updateTarget (state.d:12924), isValidAttackTarget (state.d:12442), isValidEnemyAttackTarget, startCowering (state.d:13760), teleport (state.d:10260-10269), RFC-021c.
 
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
@@ -78,7 +78,7 @@ func follow(leader: Node3D) -> void:
 
 
 ## Teleport: the body is at `point` (a spot on the land) in one step, at the height it had over the ground if it flies, with no goal,
-## target or velocity; it keeps its order only if it is guard or retreat. Ref: sacengine teleport (state.d:10260-10269), RFC-021c.
+## target or velocity; it keeps its order only if it is guard or retreat.
 func warp(point: Vector3) -> void:
 	var above := maxf(0.0, body.global_position.y - body.air.ground_height(body.global_position)) if body.is_flying() else 0.0
 	body.global_position = Vector3(point.x, point.y + above, point.z)

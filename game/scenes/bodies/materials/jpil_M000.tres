@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/jpil/M000.png" id="1_56d2j"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/jpil/M000_normal.png" id="2_2mkw7"]
 
 [resource]
 resource_name = "jpil_M000"
 albedo_texture = ExtResource("1_56d2j")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_2mkw7")

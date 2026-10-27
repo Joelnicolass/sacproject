@@ -67,6 +67,7 @@ where = 1
 rate = 40.0
 
 [node name="Sprites" parent="LeftSparks" instance=ExtResource("10_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("11_sparks")
 
 [node name="RightSparks" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
@@ -77,6 +78,7 @@ where = 2
 rate = 40.0
 
 [node name="Sprites" parent="RightSparks" instance=ExtResource("10_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("11_sparks")
 
 [node name="LeftCast" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
@@ -87,6 +89,7 @@ where = 1
 rate = 110.0
 
 [node name="Sprites" parent="LeftCast" instance=ExtResource("10_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("12_cast")
 
 [node name="RightCast" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
@@ -97,6 +100,7 @@ where = 2
 rate = 110.0
 
 [node name="Sprites" parent="RightCast" instance=ExtResource("10_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("12_cast")
 
 [node name="Raise" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("13_sound")]
@@ -112,6 +116,7 @@ wall = NodePath("..")
 when = 1
 
 [node name="Light" parent="." instance=ExtResource("15_light")]
+physics_interpolation_mode = 2
 light_color = Color(0.5, 0.72, 0.25, 1)
 light_energy = 1.2
 omni_range = 14.0

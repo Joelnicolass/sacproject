@@ -14,12 +14,11 @@ cooldown_s = 8.0
 casting_time_s = 5.9259
 speed_m_s = 48.0
 damage = 150
-amount2 = 150
 damage_range_m = 2.0
 effect_range_m = 2.0
-flags = 16405
-flags1 = 20513
-flags2 = 16777216
-args = {
-"ttex": "tube"
-}
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 150

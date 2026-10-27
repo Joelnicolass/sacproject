@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://debug/map/structure_siege.tscn" id="1_siege"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="2_unit"]
+[ext_resource type="Resource" path="res://data/catalog/creatures/ranger.tres" id="3_ranger"]
+
+[node name="ManalithBuildArea" instance=ExtResource("1_siege")]
+editor_description = "F388 (plan 064). Hereda structure_siege.tscn (High Noon, FountEast libre en 1520, 16.1, 1450; sin Manalith). El mago arranca a 30 m del manantial, sin nada armado; un Ranger propio (Loiterer) a 5 m y uno enemigo (Sieger) a 8 m, quietos (idle_aggro apagado). Prueba: pestaña Estructuras, Structure1 (o spell_1), pasar el puntero por el manantial: anillo rojo, cursor Tnon, icono ncst y «Muy lejos». Caminar hasta 12 m: anillo verde, cursor Tntr. Clic: las unidades se corren mientras la torre sube (dissolve) y aparece Structure1. Inspector remoto: Hud/Battle aim_status y aim_site; FountEast/BuildArea/Ring state."
+
+[node name="WizardSpot" parent="HighNoon/Map/MapProps/Starts/Start1" index="1"]
+transform = Transform3D(-0.986393929, 0, 0.164398983, 0, 1, 0, -0.164398983, 0, -0.986393929, 20, 0, -90)
+
+[node name="Sieger" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1528, 30, 1450)
+idle_aggro = false
+
+[node name="Loiterer" parent="." instance=ExtResource("2_unit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 30, 1455)
+type = ExtResource("3_ranger")
+owner_slot = 1
+idle_aggro = false
+rng_seed = 388

@@ -1,4 +1,4 @@
-[gd_scene load_steps=128 format=3]
+[gd_scene load_steps=130 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -19,7 +19,7 @@
 [ext_resource type="Script" path="res://scenes/units/tipping_fall.gd" id="f055_tipping"]
 [ext_resource type="Script" path="res://scenes/bodies/ragdoll_driver.gd" id="f055_ragdoll"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="6_bar"]
-[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="7_replicate"]
+[ext_resource type="Script" uid="uid://blslmqr4jvulb" path="res://addons/mp_kit/nodes/mp_actor.gd" id="7_actor"]
 [ext_resource type="Script" path="res://scenes/units/unit_orders.gd" id="f27_orders"]
 [ext_resource type="Script" path="res://scenes/units/captive.gd" id="f59_captive"]
 [ext_resource type="Script" path="res://scenes/units/captive_ring.gd" id="g5_ring"]
@@ -98,6 +98,8 @@
 [ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="f159_vined_type"]
 [ext_resource type="Resource" path="res://data/afflictions/oiled.tres" id="f155_oiled_type"]
 [ext_resource type="Script" path="res://scenes/audio/unit_sounds.gd" id="a052_sounds"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/spell_affliction.gd" id="f161_spell_affliction"]
 [ext_resource type="Resource" path="res://data/afflictions/rings_of_fire.tres" id="f161_rings_type"]
 [ext_resource type="Resource" path="res://data/afflictions/slimed.tres" id="f161_slimed_type"]
@@ -131,16 +133,16 @@
 radius = 0.3
 height = 1.8
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_unit"]
-properties/0/path = NodePath(".:position")
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_mpsync"]
+properties/0/path = NodePath("MpActor:net_position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:rotation")
+properties/1/path = NodePath("MpActor:net_rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 properties/2/path = NodePath(".:owner_slot")
 properties/2/spawn = true
-properties/2/replication_mode = 0
+properties/2/replication_mode = 2
 properties/3/path = NodePath(".:creature_tag")
 properties/3/spawn = true
 properties/3/replication_mode = 2
@@ -201,6 +203,18 @@ properties/21/replication_mode = 2
 properties/22/path = NodePath("DevourGrowth:inflation")
 properties/22/spawn = true
 properties/22/replication_mode = 2
+properties/23/path = NodePath("BloodFx:wound")
+properties/23/spawn = true
+properties/23/replication_mode = 2
+properties/24/path = NodePath("MpActor:net_stamp")
+properties/24/spawn = true
+properties/24/replication_mode = 1
+properties/25/path = NodePath("MpActor:net_teleports")
+properties/25/spawn = true
+properties/25/replication_mode = 1
+properties/26/path = NodePath("MpActor:owner_slot")
+properties/26/spawn = true
+properties/26/replication_mode = 0
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -223,6 +237,7 @@ states = NodePath("States")
 health_bar = NodePath("HealthBar")
 
 [node name="Tilt" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 
 [node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig", "mount")]
 script = ExtResource("2_visual")
@@ -245,6 +260,7 @@ poisoning = NodePath("../Poisoning")
 wards = NodePath("../Wards")
 
 [node name="Wards" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 script = ExtResource("w_wards")
 
 [node name="LifeShield" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("f126_shield")]
@@ -332,6 +348,7 @@ script = ExtResource("f41_mana_support")
 source = ExtResource("typed_hmba")
 
 [node name="CreatureFx" type="Node3D" parent="." node_paths=PackedStringArray("body", "rig", "mana_support")]
+physics_interpolation_mode = 2
 script = ExtResource("f055_cfx")
 body = NodePath("..")
 rig = NodePath("../Tilt/Mesh/Rig")
@@ -342,6 +359,7 @@ script = ExtResource("f36_clip")
 visual = NodePath("../Tilt/Mesh")
 
 [node name="Afflictions" type="Node3D" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "wards")]
+physics_interpolation_mode = 2
 script = ExtResource("f120_afflictions")
 body = NodePath("..")
 health = NodePath("../Health")
@@ -357,11 +375,10 @@ clip_pose = NodePath("../../ClipPose")
 tilt = NodePath("../../Tilt")
 visual = NodePath("../../Tilt/Mesh")
 
-[node name="Petrified" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned", "visual")]
+[node name="Petrified" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned")]
 script = ExtResource("f137_petrified")
 type = ExtResource("f137_petrified_type")
 stunned = NodePath("../Stunned")
-visual = NodePath("../../Tilt/Mesh")
 
 [node name="Look" type="Node" parent="Afflictions" node_paths=PackedStringArray("mesh")]
 script = ExtResource("f137_stone_look")
@@ -374,10 +391,9 @@ type = ExtResource("f121_tumbling_type")
 stunned = NodePath("../Stunned")
 tilt = NodePath("../../Tilt")
 
-[node name="Frozen" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("visual")]
+[node name="Frozen" type="Node3D" parent="Afflictions"]
 script = ExtResource("f149_frozen")
 type = ExtResource("f149_frozen_type")
-visual = NodePath("../../Tilt/Mesh")
 
 [node name="Cues" type="Node" parent="Afflictions/Frozen" node_paths=PackedStringArray("affliction", "on_start")]
 script = ExtResource("l161_cues")
@@ -689,16 +705,20 @@ tether_scene = ExtResource("f63_tether")
 [node name="HealthBar" parent="." instance=ExtResource("6_bar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
 
-[node name="Net" type="Node" parent="."]
-script = ExtResource("7_replicate")
-sync_properties = PackedStringArray()
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("7_actor")
+sync_extra = PackedStringArray("owner_slot", "creature_tag", "model", "mode", "Weapons:swings", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "Weapons:shots", "GuardianBond:post_path", "Flight:state", "Afflictions:shown", "Wards/LifeShield:shown", "Clinging:shown", "LightningCharge:shown", "DevourGrowth:shown", "Corpse:dissolving", "SpecialForms:stealth", "Wards/HealingAura:shown", "DevourGrowth:inflation", "BloodFx:wound")
+send_hz = 30
+lag_compensate = false
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
+replication_interval = 0.0333333
+replication_config = SubResource("SceneReplicationConfig_mpsync")
 
 [node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
 script = ExtResource("warp_snap")
-net = NodePath("../Net")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_unit")
+net = NodePath("../MpActor")
 
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
 body = NodePath("..")
@@ -771,6 +791,15 @@ script = ExtResource("a052_sounds")
 body = NodePath("..")
 health = NodePath("../Health")
 summon = ExtResource("a055_summon")
+
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
 
 [node name="CaptiveRing" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("g5_ring")

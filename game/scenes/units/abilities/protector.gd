@@ -1,19 +1,21 @@
 class_name Protector
 extends AbilityEffect
 
-## F126 (RFC-030 030o-a): the Ent's Protector (HSba). sacengine protector (state.d:13196-13202): refused while the Ent
-## already has a life shield (nothing spent); else the Ent takes lifeShield(hsba) and a Protector effect is added.
-## updateProtector (25698-25713) runs once, on the next tick: every creature whose center is within effectRange (30 m,
+## The Ent's Protector: a life shield for the Ent and the allies around it. It is refused while the Ent
+## already has a life shield (nothing spent); else the Ent takes the life shield and a Protector effect is added.
+## The effect runs once, on the next tick: every creature whose center is within effectRange (30 m,
 ## 3D, center to center) of the Ent's, of its side, not itself, valid (alive, on the field) and not a wizard, takes
-## lifeShield(hsba), which refuses one that already has a shield (13092-13100). Statics (buildings) are not creatures.
+## the life shield, which refuses one that already has a shield. Statics (buildings) are not creatures.
 ## The pending tick is MatchClock's (fire tick + 1), processed in _physics_process (priority −1, before the bodies).
-## The shield is each body's LifeShield; its time is the hsba SPEL's duration · 60.
+## The shield is each body's LifeShield; its time is the hsba spell's duration · 60.
+## Ref: F126 (RFC-030 030o-a); Ent HSba, sacengine protector (state.d:13196-13202), lifeShield(hsba) 13092-13100, updateProtector 25698-25713.
 
 static var TICKS_PER_SECOND := MatchClock.TICKS_PER_SECOND
 
 ## The shield it gives (data/catalog/abilities/hsba.tres, Life Shield): its duration is the shield's.
 @export var life_shield: AbilityType
-## Ticks after fire() at which the allies are shielded (sacengine: the effect's first update).
+## Ticks after fire() at which the allies are shielded (the effect's first update).
+## Ref: sacengine.
 @export var allies_delay_ticks := 1
 ## The bench log also lists the same-side bodies up to this many times effectRange, as «fuera».
 @export var log_radius_factor := 2.0
@@ -30,7 +32,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 
 
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	var own := LifeShield.of(user)
 	if own == null or not own.start(shield_ticks()):
@@ -81,7 +83,8 @@ func _shield_allies() -> void:
 		print("protector %s: %s (tick %d)" % [who(user), "; ".join(parts) if not parts.is_empty() else "nadie", MatchClock.now()])
 
 
-## sacengine isValidTarget(creature): alive and on the field (not dead, not being summoned, not taken by a Sac Doctor).
+## Alive and on the field (not dead, not being summoned, not taken by a Sac Doctor).
+## Ref: sacengine isValidTarget(creature).
 func _valid(body: Node3D) -> bool:
 	if body == null or not is_instance_valid(body) or not body is UnitBody:
 		return false

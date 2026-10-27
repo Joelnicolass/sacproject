@@ -523,7 +523,7 @@ func _marker(root: Node3D, parent: Node, node_name: String, at: Vector3) -> Mark
 func _save_look(tag: String, set_path: String) -> bool:
 	var root := BodyLook.new()
 	root.name = tag.capitalize().replace(" ", "") + "Look"
-	var scene := ResourceLoader.load(BodyModel.scene_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+	var scene := ResourceLoader.load(ModelPaths.scene_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
 	var model := scene.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE)
 	model.name = "Model"
 	root.add_child(model)
@@ -745,7 +745,7 @@ func _visible_track(anim: Animation, hand_name: String, shown: bool) -> void:
 
 ## `--sync`: copies the bone tracks of the .glb again into the Animations of the library and keeps the markers and the method track.
 func _refresh_library(tag: String) -> int:
-	var library := ResourceLoader.load(BodyModel.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
+	var library := ResourceLoader.load(ModelPaths.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
 	var glb := ResourceLoader.load(MODEL_DIR + tag + ".glb", "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
 	var instance := glb.instantiate() if glb != null else null
 	var players := instance.find_children("*", "AnimationPlayer", true, false) if instance != null else []
@@ -780,7 +780,7 @@ func _refresh_library(tag: String) -> int:
 # --- clip facts for the rules ------------------------------------------------------------------------------------------
 
 func _sync_creature(tag: String) -> int:
-	if not FileAccess.file_exists(TypeRef.creature_path(tag)) or not BodyModel.exists(tag):
+	if not FileAccess.file_exists(TypeRef.creature_path(tag)) or not ModelPaths.exists(tag):
 		push_error("new_creature --sync: %s.tres or its model scene %s.tscn do not exist" % [tag, tag])
 		return 1
 	var code := _refresh_library(tag)
@@ -801,7 +801,7 @@ func _sync_creature(tag: String) -> int:
 ## when it was not already pointing at it.
 func _link_clips(tag: String) -> int:
 	var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
-	var library := ResourceLoader.load(BodyModel.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
+	var library := ResourceLoader.load(ModelPaths.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
 	if type == null or library == null:
 		push_error("new_creature: cannot read the creature or the library of %s" % tag)
 		return 1

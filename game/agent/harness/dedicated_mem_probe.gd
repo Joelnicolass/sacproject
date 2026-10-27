@@ -19,6 +19,9 @@ var _by_class: Dictionary = {}
 
 
 func _ready() -> void:
+	## AgentKit mounts every harness script under its autoload in every flow: only the probe run (`--dedicated --no-flow`) measures.
+	if not OS.get_cmdline_user_args().has("--no-flow"):
+		return
 	if has_meta(RUNNER_META):
 		_run.call_deferred()
 		return

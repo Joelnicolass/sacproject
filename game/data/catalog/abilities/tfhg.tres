@@ -6,7 +6,3 @@
 script = ExtResource("1_h7wmf")
 tag = "tfhg"
 display_name = "tfhg"
-args = {
-"tptx": "firy",
-"ttyp": "flam"
-}

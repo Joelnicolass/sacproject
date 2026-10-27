@@ -3,7 +3,7 @@ extends Node
 ## RFC-022 gallery: the product map, six bodies (three in the sun, three in the altar's shade),
 ## a looping emitter and three fixed cameras. With `classic` on no profile is handed to the rig.
 ## Debug-only actions are registered here (not in project.godot): F1 next biome, F2 next camera,
-## F3 next quality, KP1..KP8 toggle layer N. Prints `look <god> cam <n> capas <mask> calidad <q>`.
+## F3 next quality, KP1..KP9 toggle layer N, KP0 layer 10 (Atmosphere). Prints `look <god> cam <n> capas <mask> calidad <q>`.
 
 const QUALITY_DIR := "res://data/look"
 const QUALITY_IDS: Array[StringName] = [&"low", &"medium", &"high"]
@@ -19,6 +19,8 @@ const ACTIONS := {
 	&"debug_toggle_layer_6": KEY_KP_6,
 	&"debug_toggle_layer_7": KEY_KP_7,
 	&"debug_toggle_layer_8": KEY_KP_8,
+	&"debug_toggle_layer_9": KEY_KP_9,
+	&"debug_toggle_layer_10": KEY_KP_0,
 }
 
 @export var world: Node3D
@@ -67,7 +69,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_quality_index = (_quality_index + 1) % QUALITY_IDS.size()
 		_show_quality()
 	else:
-		for n in range(1, 9):
+		for n in range(1, 11):
 			if event.is_action_pressed(StringName("debug_toggle_layer_%d" % n)):
 				_toggle_layer(n - 1)
 
@@ -141,7 +143,7 @@ func _rig() -> LookRig:
 
 ## Feet on the terrain: the scene sets x and z, the terrain gives y.
 func _place_bodies() -> void:
-	var terrain := GroundSurface.of(self)
+	var terrain := Terrain.of(self)
 	if terrain == null:
 		return
 	for body in bodies.get_children():

@@ -3,9 +3,8 @@
 
 Proposes a biome's GrassPalette from the color of its original ground (RFC-022e §11, 022e4b).
 
-Ground color = mean of the slot-0 tiles (grass tiles of data/look/ground/high_noon_tiles.tres) of the
-god's atlas (assets/original/themes/<god>/atlas.png), weighted by how often each tile is used on the map
-(R channel of assets/original/maps/high_noon/tiles.png). The palette is that color moved by the same HSV transfer that
+Ground color = mean of the god's open-ground role sheet (assets/original/themes/<god>/roles/open.png, the grass the
+GodGround lays where the map's ground_roles.png is red). The palette is that color moved by the same HSV transfer that
 takes Persephone's ground to meadow.tres (hue offset, saturation and value gains), with a saturation
 cap. Self-check: on Persephone the proposal must equal meadow within 0.02 per channel.
 
@@ -31,29 +30,11 @@ from PIL import Image
 
 MEADOW_MID = (0.28, 0.55, 0.08)  # data/look/grass/types/meadow.tres (Persephone's look, approved)
 MEADOW_TIP = (0.55, 0.8, 0.2)
-GRASS_SLOT = 0
 
 
-def grass_slot_tiles() -> list:
-    text = open("data/look/ground/high_noon_tiles.tres").read()
-    slots = [int(s) for s in re.search(r"PackedByteArray\(([^)]*)\)", text).group(1).split(",")]
-    return [tile for tile, slot in enumerate(slots) if slot == GRASS_SLOT]
-
-
-def ground_color(god: str, tiles: list) -> tuple:
-    atlas = np.asarray(Image.open(f"assets/original/themes/{god}/atlas.png").convert("RGB"), dtype=float) / 255.0
-    cell = atlas.shape[0] // 16
-    use = np.bincount(np.asarray(Image.open("assets/original/maps/high_noon/tiles.png").convert("RGB"))[..., 0].ravel(), minlength=256)
-    total = np.zeros(3)
-    weight = 0.0
-    for tile in tiles:
-        if use[tile] == 0:
-            continue
-        row, col = divmod(tile, 16)
-        mean = atlas[row * cell:(row + 1) * cell, col * cell:(col + 1) * cell].reshape(-1, 3).mean(0)
-        total += mean * use[tile]
-        weight += use[tile]
-    return tuple(total / weight)
+def ground_color(god: str) -> tuple:
+    sheet = np.asarray(Image.open(f"assets/original/themes/{god}/roles/open.png").convert("RGB"), dtype=float) / 255.0
+    return tuple(sheet.reshape(-1, 3).mean(0))
 
 
 def transfer(ground: tuple, ref_ground: tuple, ref: tuple, sat_cap: float) -> tuple:
@@ -91,8 +72,7 @@ def main() -> None:
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--sat-cap", type=float, default=0.9)
     args = parser.parse_args()
-    tiles = grass_slot_tiles()
-    ref_ground = ground_color("persephone", tiles)
+    ref_ground = ground_color("persephone")
     check_mid = transfer(ref_ground, ref_ground, MEADOW_MID, args.sat_cap)
     check_tip = transfer(ref_ground, ref_ground, MEADOW_TIP, args.sat_cap)
     err = max(abs(a - b) for a, b in zip(check_mid + check_tip, MEADOW_MID + MEADOW_TIP))
@@ -100,7 +80,7 @@ def main() -> None:
     if err > 0.02:
         raise SystemExit(1)
     for god in args.gods:
-        ground = ground_color(god, tiles)
+        ground = ground_color(god)
         mid = transfer(ground, ref_ground, MEADOW_MID, args.sat_cap)
         tip = transfer(ground, ref_ground, MEADOW_TIP, args.sat_cap)
         hexc = "#%02x%02x%02x" % tuple(int(round(x * 255)) for x in ground)

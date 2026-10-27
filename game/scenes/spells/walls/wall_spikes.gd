@@ -3,7 +3,8 @@ extends MultiMeshInstance3D
 
 ## The spikes of a Wall of Spikes: `count` of them are born one after another while the wall's ends grow, each near an end that is still
 ## moving and somewhere across the thickness, grow in half a second, stand leaning every which way and sink in a second when the wall does.
-## They are the mesh of the Rhinok's spikes (SpikeField) with the same texture. Presentation only, on every peer, from the wall's age
+## They are the mesh of the Rhinok's spikes (SpikeField); their skin is the `material_override` of this node in the scene (the texture is a
+## Texture2D dragged onto that material). Presentation only, on every peer, from the wall's age
 ## and ends; it does not hurt anybody (WallTouch) and its dice are its own. The wall must be the parent.
 ## Ref: sacengine WallOfSpikes, makeWallOfSpikesSpike (state.d:3898-3937, 20504-20538, 20608-20662; renderer.d:2626-2655).
 
@@ -18,7 +19,6 @@ extends MultiMeshInstance3D
 @export_range(0.05, 5.0, 0.05, "suffix:s") var grow_s := 0.5
 @export_range(0.05, 5.0, 0.05, "suffix:s") var vanish_s := 1.0
 @export var sides := 12
-@export var texture_tag := "jspk"
 
 var _born := PackedInt32Array()
 var _bases := PackedVector3Array()
@@ -36,7 +36,6 @@ func _ready() -> void:
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.mesh = SpikeField.spike_mesh(sides, 0.3, 0.25, 0.75)
 	multimesh.instance_count = count
-	material_override = SpikeField.spike_material(texture_tag, Color(0.4, 0.3, 0.2))
 	custom_aabb = AABB(Vector3(-wall.reach_m() - 5.0, -5.0, -10.0), Vector3(2.0 * wall.reach_m() + 10.0, 20.0, 20.0))
 	_born.resize(count)
 	_born.fill(-1)

@@ -1,0 +1,84 @@
+{
+ "scene": "res://agent/harness/pt_review/ambience/match_h23_clear.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait": 10.0
+  },
+  {
+   "shot": "match_h23_clear_a.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 1.5
+   }
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 1.2
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "match_h23_clear_b.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/match_h12_rain.tscn"
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "shot": "match_h12_rain_a.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 1.5
+   }
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 1.2
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "match_h12_rain_b.png"
+  },
+  {
+   "scene": "res://agent/harness/pt_review/ambience/match_h07_snow.tscn"
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "shot": "match_h07_snow_a.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 1.5
+   }
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 1.2
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "match_h07_snow_b.png"
+  }
+ ]
+}

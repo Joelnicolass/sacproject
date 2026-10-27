@@ -2,10 +2,10 @@ class_name UnitManaSupport
 extends Node3D
 
 ## Server-authoritative mana support aura for units like Manahoar (hmba).
-## Mirrors sacengine addManahoar shape (state.d): aura radius 40 and rate derived from
+## Aura radius 40 and rate derived from
 ## allied manalith distance (50..1000) with a triangular ramp peaking at 20 mana/s.
 ## The aura radius and the ramp distances come from ReachFacts.of_rules(rules), read at every use (rules may be set without setup()).
-## Ref: res://scenes/match/reach_facts.gd (manahoar_aura_m, manahoar_peak_m, manahoar_end_m).
+## Ref: res://scenes/match/reach_facts.gd (manahoar_aura_m, manahoar_peak_m, manahoar_end_m); sacengine addManahoar (state.d).
 
 @export var rules: MatchRules
 @export var owner_slot := 0
@@ -21,11 +21,11 @@ func setup(body: UnitBody, creature: CreatureType, slot: int, match_rules: Match
 	_body = body
 	owner_slot = slot
 	rules = match_rules
-	enabled = creature != null and source != null and creature.abilities().has(source)
+	enabled = creature != null and creature.has_passive(source)
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 
@@ -56,9 +56,10 @@ func _physics_process(delta: float) -> void:
 				pool.add(rate * delta, &"manahoar")
 
 
-## Particles per second of the Manahoar's flame: sacengine draws one flame particle per mana point per second it gives
-## (state.d animateManahoar takes the rate addManahoar returns), so it is 0 when no allied manalith is around. Every peer
+## Particles per second of the Manahoar's flame: the original draws one flame particle per mana point per second it gives
+## (animateManahoar takes the rate addManahoar returns), so it is 0 when no allied manalith is around. Every peer
 ## can ask (it only reads the structures); a body that gives no mana (dead, or not a Manahoar) answers 0.
+## Ref: sacengine animateManahoar, addManahoar (state.d).
 func flame_rate() -> float:
 	if not enabled or _body == null or _body.is_dead():
 		return 0.0

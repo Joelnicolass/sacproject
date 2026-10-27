@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
@@ -16,8 +16,14 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="scar_mark"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_scars.gd" id="scar_script"]
 [ext_resource type="Texture2D" path="res://assets/original/scars/gscr.png" id="scar_tex"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/jspk.png" id="spike_tex"]
 [ext_resource type="Resource" path="res://data/audio/cues/wall_spikes_up.tres" id="cue_wall_spikes_up"]
 [ext_resource type="Resource" path="res://data/audio/cues/wall_spikes_down.tres" id="cue_wall_spikes_down"]
+[sub_resource type="StandardMaterial3D" id="Spike_skin"]
+cull_mode = 2
+albedo_texture = ExtResource("spike_tex")
+roughness = 1.0
+
 [sub_resource type="BoxShape3D" id="Box_body"]
 size = Vector3(110, 5, 5)
 
@@ -54,6 +60,7 @@ hit_params = {
 
 [node name="Spikes" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("wall")]
 script = ExtResource("5_spikes")
+material_override = SubResource("Spike_skin")
 wall = NodePath("..")
 
 [node name="LeftDust" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
@@ -64,6 +71,7 @@ where = 1
 rate = 110.0
 
 [node name="Sprites" parent="LeftDust" instance=ExtResource("7_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("8_dirt")
 
 [node name="RightDust" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
@@ -74,6 +82,7 @@ where = 2
 rate = 110.0
 
 [node name="Sprites" parent="RightDust" instance=ExtResource("7_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("8_dirt")
 
 [node name="Rise" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("9_sound")]
@@ -89,6 +98,7 @@ wall = NodePath("..")
 when = 1
 
 [node name="Light" parent="." instance=ExtResource("11_light")]
+physics_interpolation_mode = 2
 light_color = Color(0.75, 0.55, 0.35, 1)
 light_energy = 1.2
 omni_range = 12.0

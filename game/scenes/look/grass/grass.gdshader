@@ -13,7 +13,7 @@ render_mode cull_disabled, diffuse_lambert_wrap;
 // the blend the density is constant; the field disappears only by HEIGHT (every blade gets shorter
 // together, measured from near the eye: `fade_center`) while each blade turns into the ground it
 // stands on: its albedo, normal, roughness, specular and diffuse model (light() below). The root has the exact color of the ground below (baked by
-// grass_bake.gdshader with the ground's own rules, ground_common.gdshaderinc).
+// grass_bake.gdshader with the ground's own rules, ground_roles.gdshaderinc).
 //
 // Technique notes (ideas only, no code copied): Nintendo CEDEC 2017 (BotW grass: geometry blades
 // around the camera, density falling with distance, ground of the same color, wind waves that
@@ -107,8 +107,8 @@ uniform float wind_strength = 0.22;
 uniform float wind_speed = 2.2;
 uniform float wind_scale_m = 55.0;
 uniform float gust_lighten = 0.45;
-// The ground the field fades into (GrassField fills them from the ground the terrain shows): its
-// roughness and specular, and the strength of the pale wind bands of its grass paint. In the fade the
+// The ground the field fades into: its roughness and specular (the ground shader's: ROUGHNESS 1 without
+// ORM maps, Godot's SPECULAR 0.5), and the strength of the pale wind bands of its grass paint. In the fade the
 // blade is shaded with exactly the ground's model (burley, its normal, roughness and specular), so
 // what is left of a blade is the ground's own pixel, never a loose dot.
 uniform float fade_roughness = 1.0;
@@ -249,7 +249,7 @@ Grown grow(vec3 base_vertex, vec2 uv, vec4 custom, vec3 origin, vec3 camera_worl
 	}
 	float ground_y = hl.r;
 
-	// Zone: baked from the ground's own layer rules; then the clearings.
+	// Zone: baked from the ground's own role rules; then the clearings.
 	vec4 zone = textureLod(ground_data, huv, 0.0);
 	vec4 zone_info = textureLod(zone_data, huv, 0.0);
 	float zone_density = zone_info.b;

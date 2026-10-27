@@ -6,8 +6,3 @@
 script = ExtResource("1_5b8cu")
 tag = "tdhg"
 display_name = "tdhg"
-args = {
-"iadd": 0.0,
-"tptx": "firy",
-"ttyp": "flam"
-}

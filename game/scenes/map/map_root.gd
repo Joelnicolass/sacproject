@@ -7,10 +7,14 @@ extends Node3D
 ## (scenes/match/match.tscn) instances it and binds its own systems to these sockets. A map you make in the editor
 ## fills the sockets it has; the required ones warn.
 
-## The ground as numbers: heights, holes, size (the child `Shape` of `terrain`). Everyone asks it.
-@export var ground: GroundSurface
-## The ground as a mesh (a grid map; goes away when the surface lists its own meshes).
+## The map's ground: heights, holes, size, and the mesh that draws it (`terrain.mesh`). Everyone asks it.
 @export var terrain: Terrain
+## The map lies far from where the editor camera opens: in the editor only, the root is shifted so the map's centre shows
+## at the origin (the shift is taken off while saving).
+@export var editor_recenter := true:
+	set(value):
+		editor_recenter = value
+		_recenter()
 @export var nav_region: NavigationRegion3D
 ## The PlayerStart nodes, one per seat.
 @export var starts: Node3D
@@ -27,9 +31,26 @@ extends Node3D
 @export var props: Node3D
 
 
+func _ready() -> void:
+	_recenter()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EDITOR_PRE_SAVE and Engine.is_editor_hint():
+		position = Vector3.ZERO
+	elif what == NOTIFICATION_EDITOR_POST_SAVE:
+		_recenter()
+
+
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	for pair in [["terrain", terrain], ["ground", ground], ["nav_region", nav_region], ["starts", starts]]:
+	for pair in [["terrain", terrain], ["nav_region", nav_region], ["starts", starts]]:
 		if pair[1] == null:
 			warnings.append("Asigná `%s`." % pair[0])
 	return warnings
+
+
+func _recenter() -> void:
+	if Engine.is_editor_hint() and is_node_ready():
+		var center := terrain.bounds().get_center() if editor_recenter and terrain != null else Vector2.ZERO
+		position = Vector3(-center.x, 0.0, -center.y)

@@ -164,7 +164,7 @@ func book() -> String:
 		tags.append(str(spellbook.creature_at(i).tag))
 	var hud := get_tree().current_scene.find_child("SpellBook", true, false)
 	var cells := hud.get_node("Slots").get_child_count() if hud else -1
-	return "nivel %s dios %s: libro %d [%s] · casillas HUD %d" % [wizard.get("level"), wizard.get("god"), tags.size(), ",".join(tags), cells]
+	return "nivel %s dios %s: libro %d [%s] · casillas HUD %d" % [wizard.get("level"), wizard.get("god_type").id() if wizard.get("god_type") != null else "?", tags.size(), ",".join(tags), cells]
 
 
 func set_mode(next: String) -> String:

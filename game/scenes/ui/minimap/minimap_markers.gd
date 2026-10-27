@@ -1,10 +1,11 @@
 extends Control
 
-## RFC-037: one icon per thing on the map, in one `_draw` per frame (no node per creature). It reads the groups the
+## One icon per thing on the map, in one `_draw` per frame (no node per creature). It reads the groups the
 ## game already keeps (wizard, unit, altar, structure, manafount, soul) and each kind's look from `minimap.style`.
-## Like sacengine: dead or hidden foes are left out (is_targetable), your own things always show, souls take the
+## As in the original: dead or hidden foes are left out (is_targetable), your own things always show, souls take the
 ## viewer's color. What lies beyond the circle shows as an arrow at the edge only for your things and for wizards.
 ## Presentation only: the fog of war does not exist in the port, so everything shows.
+## Ref: RFC-037; sacengine minimap.
 
 @export var minimap: Minimap
 
@@ -35,7 +36,7 @@ func _draw() -> void:
 	vision_direction = Vector2.ZERO
 	_arrows.clear()
 	_side_colors.clear()
-	# sacengine draws the wedge under the icons: the apex does not paint over the wizard's own icon.
+	# The wedge is drawn under the icons: the apex does not paint over the wizard's own icon.
 	_draw_vision()
 	var tree := get_tree()
 	for node in tree.get_nodes_in_group(&"soul"):
@@ -71,8 +72,9 @@ func _draw() -> void:
 	draw_us = Time.get_ticks_usec() - started
 
 
-## RFC-049 049c: the local slot and its allies (allied vision: sacengine minimapVisibleToSide shows what the allies see; the port has no
-## fog, so what changes is that an ally is shown always, with the arrow at the edge for its buildings, renderer.d:4641-4643).
+## The local slot and its allies (allied vision: the original shows what the allies see; the port has no
+## fog, so what changes is that an ally is shown always, with the arrow at the edge for its buildings).
+## Ref: RFC-049 049c; sacengine minimapVisibleToSide, renderer.d:4641-4643.
 func _is_mine(owner_slot: int, slot: int) -> bool:
 	return owner_slot == slot or (owner_slot > 0 and slot > 0 and SideRelations.stance(slot, owner_slot) == SideRelations.Stance.ALLY)
 

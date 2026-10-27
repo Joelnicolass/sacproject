@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="MatchRules" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="MatchRules" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/match/match_rules.gd" id="1_rules"]
+[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="b3_biome"]
 
 [resource]
 script = ExtResource("1_rules")
@@ -13,4 +14,4 @@ cast_drain_per_s = 500.0
 extra_cooldown_s = 1.5
 other_spell_cooldown_s = 1.0
 wizard_level = 9
-biome_god = &"persephone"
+biome = ExtResource("b3_biome")

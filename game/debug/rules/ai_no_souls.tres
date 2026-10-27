@@ -1,9 +1,8 @@
-[gd_resource type="Resource" script_class="BenchRules" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="BenchRules" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="2_seat"]
 [ext_resource type="Script" path="res://debug/suite/bench_structure.gd" id="3_structure"]
-[ext_resource type="Resource" path="res://data/ai/profile_original.tres" id="4_profile"]
 [ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="seat_wizard_jadugarr"]
 [ext_resource type="Resource" uid="uid://dxr20hx8hlmpf" path="res://data/gods/james.tres" id="seat_god_james"]
 
@@ -12,7 +11,6 @@ script = ExtResource("2_seat")
 slot = 2
 wizard = ExtResource("seat_wizard_jadugarr")
 god = ExtResource("seat_god_james")
-profile = ExtResource("4_profile")
 
 [sub_resource type="Resource" id="Manalith_west"]
 script = ExtResource("3_structure")
@@ -22,7 +20,7 @@ fount = "FountWest"
 
 [resource]
 script = ExtResource("1_rules")
-biome_god = &"james"
+biome = ExtResource("seat_god_james")
 starting_souls = 0
 match_seed = 1
 anchor = Vector3(1270, 0, 1270)

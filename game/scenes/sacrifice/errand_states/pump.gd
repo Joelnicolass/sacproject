@@ -9,6 +9,8 @@ extends ErrandStep
 
 ## The burst over the corpse when it stands up (data/fx/heal.tres).
 @export var heal_fx: ParticleType
+## Where on the corpse it bursts (a socket of its BodyFrame: move the marker there with the gizmo).
+@export var heal_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _left := 0.0
 ## The corpse really stood up: only then there is something to undo if the doctor dies.
@@ -26,7 +28,8 @@ func enter() -> void:
 	if captive == null or not captive.revive(
 			rules.convert_revive_min_health if rules else 400.0,
 			rules.convert_revive_fraction if rules else 0.5):
-		## sacengine: convertRevive failed -> the soul is freed and the doctor dies.
+		## If the revive fails, the soul is freed and the doctor dies.
+		## Ref: sacengine convertRevive
 		errand.release_soul()
 		body.kill()
 		return
@@ -37,7 +40,7 @@ func enter() -> void:
 	_left = SacrificeMath.pump_seconds(soul.number, rules.convert_pump_s_per_soul if rules else 5.0)
 	body.begin_work(DoctorBody.Work.PUMP)
 	if heal_fx != null:
-		FxBus.broadcast(FxBus.name_of(heal_fx), corpse.global_position + Vector3.UP)
+		FxBus.broadcast(heal_fx, BodyFacts.point(corpse, heal_socket))
 
 
 func physics_update(delta: float) -> void:
@@ -58,7 +61,8 @@ func physics_update(delta: float) -> void:
 	transition(&"Haul")
 
 
-## The creature keeps its soul from now on (state.d:15668-15672); the one on the map goes.
+## The creature keeps its soul from now on; the one on the map goes.
+## Ref: state.d:15668-15672
 func _drop_soul() -> void:
 	var soul := errand.soul
 	errand.soul = null

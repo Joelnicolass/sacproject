@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/fx_bus.gd" id="1_bus"]
+[ext_resource type="Script" path="res://scenes/fx/burst_pool.gd" id="2_bursts"]
+[ext_resource type="Script" path="res://scenes/fx/beam_pool.gd" id="3_beams"]
+[ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="4_warm"]
+
+[node name="FxBus" type="Node"]
+editor_description = "El autoload de todos los efectos visuales: ráfagas (ParticleType), rayos (BeamType) y escenas (raíz FxScene). Los pools viven en los hijos Bursts y Beams; `prewarm` los arma al cargar el cliente. Nunca instancia nada en un proceso headless."
+script = ExtResource("1_bus")
+
+[node name="Bursts" type="Node" parent="."]
+unique_name_in_owner = true
+editor_description = "Un pool de emisores por ParticleType, precalentado con todo data/fx y sus carpetas. `max_per_type` es el tope cuando el tipo no trae pool_max."
+script = ExtResource("2_bursts")
+
+[node name="Beams" type="Node" parent="."]
+unique_name_in_owner = true
+editor_description = "Un pool de rayos por BeamType (su pool_max), precalentado con data/fx/beams."
+script = ExtResource("3_beams")
+
+[node name="WarmHook" type="Node" parent="."]
+editor_description = "069: el precalentado de la pantalla de carga pide una ráfaga de cada ParticleType y un rayo de cada BeamType por un frame, frente a la cámara, sin played (sin sonido ni temblor)."
+script = ExtResource("4_warm")
+
+[connection signal="asked" from="WarmHook" to="Bursts" method="flash_all"]
+[connection signal="asked" from="WarmHook" to="Beams" method="flash_all"]

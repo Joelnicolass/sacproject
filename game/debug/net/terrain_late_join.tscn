@@ -3,5 +3,5 @@
 [ext_resource type="Script" path="res://debug/net/terrain_late_join.gd" id="1_net"]
 
 [node name="TerrainLateJoin" type="Node3D"]
-editor_description = "Red del terreno deformable (RFC-057), en un solo proceso: el Deformer del servidor y los de dos clientes (uno temprano, uno tardío que recibe el snapshot) con los mismos argumentos que el RPC; imprime TERRAIN NET PASS si los tres terminan con el mismo suelo. El transporte (ENet) no se prueba acá."
+editor_description = "Red del terreno deformable (RFC-057), en un solo proceso: el Terrain del servidor y el Net de clientes con los mismos argumentos que el RPC. Casos: net (uno temprano, uno que recibe el snapshot), net_inflight (un cambio en vuelo antes del snapshot: mismo checksum), net_rejoin_mid_volcano (un asiento que se reconecta a los 20 s de un Volcano: ticks a <= resync_ticks del servidor y el centro igual) y net_quake_client (el cliente ve las 2 claves del Quake). Nadie entra a mitad de partida: el snapshot es para el asiento que vuelve dentro de rejoin_grace_s. Imprime TERRAIN NET PASS si pasan todos. El transporte (ENet) no se prueba acá."
 script = ExtResource("1_net")

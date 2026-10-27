@@ -14,6 +14,9 @@ Los `run_*.sh` del banco. Se corren con `bash agent/runs/run_X.sh` (no hace falt
 | | `run_049a.sh` | ~6 s | mapa elegido por la sala (como quick, mas `bad_ticket` de un dedicated a mano) |
 | | `run_049e.sh` | ~8 s | dedicated a mano 2v2 con 3 IA, tercer humano afuera, «Contra la IA» con modo |
 | | `run_049g.sh` | ~21 s | 2v2 de punta a punta: cuatro humanos (rejoin, abandono de un lado) y dos humanos + dos bots |
+| | `run_068_gate.sh` | ~30 s | puerta de arranque LAN: host `--listen-host` ffa3 espera pausado a 2 clientes (arranca en el tick 0), un tercero tarde rechazado (`match_started`), A se va y vuelve a su asiento, B vuelve pasada la gracia (`grace_over`). `GATE_WINDOW=1` muestra el host |
+
+Un dedicated a mano (sin ticket) arranca cuando cargan `--start-seats=N` asientos (1 por defecto). Las corridas con dos clientes a la vez pasan `--start-seats=2`; las que antes probaban un «late join» ahora prueban un rejoin (el mismo cliente sale por la pausa y vuelve a su asiento).
 
 Las duraciones son de pared en esta Mac (sin cola). Los viejos tardaban 20-120 s.
 
@@ -27,6 +30,13 @@ Las duraciones son de pared en esta Mac (sin cola). Los viejos tardaban 20-120 s
 - **Derrota forzada**: `--force-defeat-slot=N --force-defeat-after-ticks=T` (o `--force-defeat-when-file=PATH` en `034m`: cuando el intruso termina), en `--match-args`.
 
 Un e2e nuevo de red: `. "$(dirname "$0")/../harness/net_e2e.sh"; net_group N "$@"`, y despues `gd`, `net_guard`, `wait_line`, `wait_gone`, `kill_pids` (ver `run_net_quick.sh` como plantilla). Para ver donde se va el tiempo: `NET_TS=1 bash agent/runs/run_net_quick.sh` prefija cada linea de log con los segundos desde el arranque.
+
+## Suavizado de red (072)
+
+Dos ventanas 1v1 en `test_flat` (`agent/harness/ptnet_real_run.sh`, grupo de 3 procesos); cada lado camina 8 s hacia adelante (el host ademas manda a su criatura lejos), `agent/harness/jitter_watch.gd` escribe un CSV por cuadro y `agent/tools/jitter_stats.py` imprime `JITTER PASS` / `JITTER FAIL`. `JITTER_STEP2=1` suma los criterios de la prediccion.
+
+- `JITTER_RELAY_SECRET_FILE=<archivo con el secreto del host> bash agent/harness/ptnet_real_run.sh jitter`: por el relay real (`wss://relay-godot.fly.dev`, sala `sacrifice-test`); el secreto va solo al entorno del proceso host.
+- `bash agent/harness/ptnet_real_run.sh jitter_lan`: ENet en loopback con lag simulado (`JITTER_LAG_MS` 34, `JITTER_JITTER_MS` 10). Salida en `agent/out/ptnet_real/jitter_lan/`.
 
 ## Otros
 

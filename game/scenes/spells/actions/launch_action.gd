@@ -56,7 +56,7 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	container.add_child(_launch)
 	_launch.begin_cast(wizard, spell, aim.target, aim.point, frames)
 	if cast_scene != null:
-		FxBus.broadcast_scene(cast_scene.resource_path, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
+		FxBus.broadcast_scene(cast_scene, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, picked: Node3D) -> String:

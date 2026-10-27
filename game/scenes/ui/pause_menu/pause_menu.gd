@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-## RFC-031 031b (F141): the pause menu. `pause_menu` (Esc) opens and closes it.
+## The pause menu. `pause_menu` (Esc) opens and closes it.
 ## - Alone the tree pauses (this layer runs with process_mode ALWAYS); online the match goes on and only the overlay
 ##   shows (the server and the other player are not stopped by one player's menu).
 ## - While open the node is in the group `WorldInput.MODAL`: the world input readers ask `WorldInput.blocked` and keep
@@ -8,7 +8,8 @@ extends CanvasLayer
 ## - «Salir al menú» asks first, inside the same panel (Salir / Volver); then it unpauses and asks the session flow
 ##   (MpFlow.return_to_boot) to go back to the boot. A client leaves the server cleanly there (MpKit.leave), and the
 ##   server sees peer_left.
-## «Opciones» (RFC-031 031c) opens the OptionsMenu child over this panel; Esc closes it first, then this menu.
+## «Opciones» opens the OptionsMenu child over this panel; Esc closes it first, then this menu.
+## Ref: RFC-031 031b (F141), 031c.
 
 signal opened
 signal closed
@@ -18,6 +19,8 @@ const OPEN_GROUP := WorldInput.MODAL
 ## Title alone (the match is paused) and online (it is not).
 @export var paused_title := "UI_PAUSE_MENU_PAUSED"
 @export var online_title := "UI_PAUSE_MENU_ONLINE"
+## Who looks at this screen: online the match goes on under the menu. Empty: it pauses as if alone.
+@export var seat: MpLocalSeat
 
 ## True when this menu paused the tree, so only it unpauses it.
 var _paused_here := false
@@ -47,7 +50,7 @@ func open() -> void:
 	if is_open():
 		return
 	add_to_group(OPEN_GROUP)
-	var online := MpKit.is_networked()
+	var online := seat != null and seat.is_online()
 	%PauseTitle.text = tr(online_title if online else paused_title)
 	_show_confirm(false)
 	%Dim.visible = true

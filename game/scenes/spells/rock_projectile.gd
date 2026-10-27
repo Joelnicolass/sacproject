@@ -1,33 +1,44 @@
 extends SpellProjectile
 
-## James' Rock (sacengine state.d:10541-10561, 16707-16855). While the wizard casts it rises
+## James' Rock. While the wizard casts it rises
 ## out of the ground ahead of him (rockCastingPosition, buried 1 m). Then it flies at its
 ## target, homing on the target's center: each frame the velocity gains `acceleration` toward
 ## it, capped at `speed`, floating up to 7 m over the ground. It bursts on the first body it
 ## touches (enemies first), on the ground, or at the target, and deals its damage to the body
-## it hit as direct spell damage (rockExplosion, state.d:16784).
+## it hit as direct spell damage.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
+## Ref: sacengine state.d:10541-10561, 16707-16855; rockExplosion, state.d:16784
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 
-## sacengine rockWarmupTime = updateFPS / 4.
+## Warm-up time = updateFPS / 4.
+## Ref: sacengine rockWarmupTime
 const WARMUP_FRAMES := 15
 const FLOAT_HEIGHT := 7.0
 const FPS := 60.0
-## sacengine rockSize 2: hit box of ±1 m.
+## Hit box of ±1 m.
+## Ref: sacengine rockSize 2
 const HALF_SIZE := 1.0
 const ARRIVE_DISTANCE := 0.25
-## sacengine rockBuryDepth.
+## Depth the rock starts buried.
+## Ref: sacengine rockBuryDepth
 const BURY_DEPTH := 1.0
-## sacengine rockCastingPosition: 1.5 m past the front of the caster's hit box.
+## 1.5 m past the front of the caster's hit box.
+## Ref: sacengine rockCastingPosition
 const CAST_AHEAD := 1.5
-## sacengine makeRock: spins 2π·[0.2, 0.8] rad/s around a random axis.
+## Spins 2π·[0.2, 0.8] rad/s around a random axis.
+## Ref: sacengine makeRock
 const SPIN_MIN := 0.2
 const SPIN_MAX := 0.8
 ## Trail puffs (animateRock) on every peer, by time (FxTrail): one per 2/60 s.
-const TRAIL_FX := "rock_trail"
 const TRAIL_INTERVAL_S := 2.0 / 60.0
 
+## Puffed behind it while it flies (FxTrail, one per TRAIL_INTERVAL_S). Empty = no trail.
+@export var trail: ParticleType
+## Bursts where it leaves the ground, on every peer.
+@export var emerge: Array[ParticleType] = []
+## Bursts where it breaks, on every peer.
+@export var explosion: Array[ParticleType] = []
 ## 061k-5: the crack it leaves where it bursts (spells/marks/rock_mark.tscn), played on every peer.
 @export var ground_mark: PackedScene
 
@@ -68,11 +79,11 @@ func setup(data: Dictionary) -> void:
 	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
 	_spin_rate = TAU * rng.randf_range(SPIN_MIN, SPIN_MAX)
 	_attach_net()
-	_trail = FxTrail.attach(self, TRAIL_FX, TRAIL_INTERVAL_S)
+	_trail = FxTrail.attach(self, trail, TRAIL_INTERVAL_S)
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 
@@ -103,7 +114,8 @@ func _physics_process(_delta: float) -> void:
 	_fly_step()
 
 
-## sacengine updateRockCasting: glued ahead of the caster, rising out of the ground.
+## Glued ahead of the caster, rising out of the ground.
+## Ref: sacengine updateRockCasting
 func _cast_step() -> void:
 	var caster := _caster()
 	if caster:
@@ -116,11 +128,12 @@ func _cast_step() -> void:
 		return
 	global_position.y = maxf(global_position.y, _ground_height(global_position))
 	flying = true
-	FxBus.broadcast("rock_emerge", global_position)
-	FxBus.broadcast("rock_dust", global_position)
+	for type in emerge:
+		FxBus.broadcast(type, global_position)
 
 
-## sacengine rockCastingPosition: ahead of the caster, past the front of its hit box.
+## Ahead of the caster, past the front of its hit box.
+## Ref: sacengine rockCastingPosition
 static func cast_position(caster: Node3D) -> Vector3:
 	var ahead := Vector3(0.0, 0.0, 1.0)
 	if caster.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
@@ -193,8 +206,9 @@ func _ground_height(at: Vector3) -> float:
 	return GroundRay.surface_y(self, at, 1, GroundRay.wizard_rids(get_tree()), -INF)
 
 
-## sacengine rockCollisionTarget / collisionTarget (state.d:16431, 16777): every living body in
+## Every living body in
 ## the ±1 m box except the caster; enemies first, then neutrals, then allies; closest wins.
+## Ref: sacengine rockCollisionTarget / collisionTarget (state.d:16431, 16777)
 func _collision_target() -> Node3D:
 	var shape := BoxShape3D.new()
 	shape.size = Vector3.ONE * HALF_SIZE * 2.0
@@ -233,14 +247,15 @@ static func is_live_body(body: Node) -> bool:
 	return health != null and not health.is_dead()
 
 
-## sacengine rockExplosion: dealSpellDamage(target, …, DamageMod.none) = direct spell damage.
+## dealSpellDamage(target, …, DamageMod.none) = direct spell damage.
+## Ref: sacengine rockExplosion
 func _burst(target: Node3D) -> void:
 	if target and is_instance_valid(target) and is_live_body(target):
 		var health := target.get_node("Health") as Health
 		var taken := health.damage_typed(damage, _HEALTH.DIRECT_SPELL, from_slot)
 		report(target, taken, _HEALTH.DIRECT_SPELL)
-	FxBus.broadcast("rock", global_position)
-	FxBus.broadcast("dirt", global_position)
+	for type in explosion:
+		FxBus.broadcast(type, global_position)
 	ScarMark.broadcast(ground_mark, global_position)
 	set_physics_process(false)
 	queue_free()

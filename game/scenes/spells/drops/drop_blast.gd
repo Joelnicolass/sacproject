@@ -41,12 +41,12 @@ func blast(body: Node3D, at: Vector3) -> void:
 	SplashDamage.deal(get_tree(), at, drop.damage, drop.damage_range, body if live else null, slot, Health.SPLASH_SPELL, mods)
 	for hit in SplashDamage.bodies_within(get_tree(), at, drop.damage_range):
 		if ignites:
-			Burning.ignite(hit, 0.0, MatchClock.ticks_for(burn_s), Health.DIRECT_SPELL, slot, 0.0, false, burn_look.bus_name() if burn_look != null else "")
+			Burning.ignite(hit, 0.0, MatchClock.ticks_for(burn_s), Health.DIRECT_SPELL, slot, 0.0, false, burn_look)
 		var stunned := hit.get_node_or_null(stunned_path) as Stunned if stun_s > 0.0 and hit != body else null
 		if stunned != null:
 			stunned.stun_with_cooldown(MatchClock.ticks_for(stun_s))
 	for type in bursts:
-		FxBus.broadcast(type.bus_name(), at)
+		FxBus.broadcast(type, at)
 	for mark in ground_marks:
 		ScarMark.broadcast(mark, at)
 

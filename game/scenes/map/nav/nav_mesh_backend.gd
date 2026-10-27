@@ -1,11 +1,12 @@
 class_name NavMeshBackend
 extends RefCounted
 
-## The navmesh side of NavService (RFC-035 035g): the map's NavigationRegion3D (its baked NavigationMesh, data/nav/high_noon_nav.res)
+## The navmesh side of NavService: the map's NavigationRegion3D (its baked NavigationMesh, data/nav/high_noon_nav.res)
 ## queried through the engine: NavigationServer3D.map_get_path on the region's own navigation map. Standard Godot: the region is a node,
 ## the engine syncs the map each physics frame, and what changes at runtime (altars, structures, a fallen building) is a re-bake that
 ## swaps the region's navigation_mesh (NavRebake, driven by NavService). Nothing hand-made blocks a path here.
 ## The map is empty until the engine has synced the region (one physics frame after it is in the tree): `is_synced` tells.
+## Ref: RFC-035 035g.
 
 ## Reach (6 nodes of 5 m, as the old grid) for «the nearest walkable thing».
 const SNAP_M := 30.0
@@ -24,6 +25,8 @@ const ISLAND_POLYGONS := 100
 
 var built := false
 var build_ms := 0.0
+## Main-thread milliseconds of the last swap (reports only).
+var swap_ms := 0.0
 var polygon_count := 0
 var regions := NavRegions.new()
 var box_blockers := NavBoxBlockers.new()
@@ -44,6 +47,8 @@ func build(nav_region: NavigationRegion3D, box_entries: Array, box_clearance_m: 
 	var started := Time.get_ticks_usec()
 	region = nav_region
 	_resolve_map()
+	regions = NavRegions.new()
+	regions.build(region.navigation_mesh)
 	_index(region.navigation_mesh)
 	_synced = false
 	_checks = 0
@@ -52,10 +57,19 @@ func build(nav_region: NavigationRegion3D, box_entries: Array, box_clearance_m: 
 	build_ms = float(Time.get_ticks_usec() - started) / 1000.0
 
 
-## Puts a re-baked navmesh in the region; the engine syncs it on its next physics frame (the old one answers until then).
-func swap(navmesh: NavigationMesh) -> void:
+## Puts a re-baked navmesh and its components (built with it off the main thread, NavRebake.regions) in the region; the engine
+## syncs it on its next physics frame (the old one answers until then). Only references change hands here: the index it replaced
+## is returned, so the caller frees it off the main thread (freeing ~11k polygons costs a millisecond or more, NavRebake.retire).
+## The engine's own sync of the new region stays on the next physics step (synchronous on purpose, so the swap tick is the same on
+## every machine: project.godot navigation/world/*_async_iterations=false); on High Noon it is about 8-11 ms.
+func swap(navmesh: NavigationMesh, components: NavRegions) -> NavRegions:
+	var started := Time.get_ticks_usec()
+	var replaced := regions
 	region.navigation_mesh = navmesh
+	regions = components
 	_index(navmesh)
+	swap_ms = float(Time.get_ticks_usec() - started) / 1000.0
+	return replaced
 
 
 func set_boxes(box_entries: Array, box_clearance_m: float) -> void:
@@ -185,9 +199,9 @@ func _near_land(point: Vector3, within: float) -> bool:
 	return not is_nan(land.x)
 
 
+## The polygon count and the probe of `navmesh` (the middle of its first polygon).
 func _index(navmesh: NavigationMesh) -> void:
 	polygon_count = navmesh.get_polygon_count()
-	regions.build(navmesh)
 	var vertices := navmesh.get_vertices()
 	if navmesh.get_polygon_count() > 0:
 		## The middle of the first polygon: a point that is surely on the mesh (a corner may be shaved by the server's merge).
@@ -202,15 +216,23 @@ static func _flat(a: Vector3, b: Vector3) -> float:
 	return Vector2(a.x - b.x, a.z - b.z).length()
 
 
-## map_get_path caps the search at 4096 polygons (NavigationPathQueryParameters3D default) and returns a partial path past that; the
-## map has ~10k, so long paths stopped short. The query has no cap.
 func _query(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if _params == null:
 		_params = NavigationPathQueryParameters3D.new()
-		_params.path_search_max_polygons = 0
 		_result = NavigationPathQueryResult3D.new()
-	_params.map = map
-	_params.start_position = from
-	_params.target_position = to
-	NavigationServer3D.query_path(_params, _result)
-	return _result.path
+	return query_path(map, from, to, _params, _result)
+
+
+## The path the units walk from `from` to `to` on `map`, through `params` and `result` (reused by the caller). The only place
+## that sets the search limits: map_get_path caps the search at 4096 polygons (NavigationPathQueryParameters3D default) and
+## returns a partial path past that; a map has ~10k, so long paths stopped short. Here there is no cap on polygons or distance.
+## tools/audit/map_path_checks.gd asks the same.
+static func query_path(on_map: RID, from: Vector3, to: Vector3, params: NavigationPathQueryParameters3D,
+		result: NavigationPathQueryResult3D) -> PackedVector3Array:
+	params.path_search_max_polygons = 0
+	params.path_search_max_distance = 0.0
+	params.map = on_map
+	params.start_position = from
+	params.target_position = to
+	NavigationServer3D.query_path(params, result)
+	return result.path

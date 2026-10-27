@@ -68,7 +68,7 @@ func report() -> String:
 ## The FxBus beams on screen now (read-only): name, visible, start → end, age.
 func beams() -> String:
 	var parts: PackedStringArray = []
-	for child in FxBus.get_children():
+	for child in FxBus.get_node("%Beams").get_children():
 		if child is BeamFx:
 			var b := child as BeamFx
 			parts.append("%s vis %s %s→%s t %.3f" % [b.name, b.visible, b.get("_from"), b.get("_to"), float(b.get("_t"))])
@@ -81,7 +81,7 @@ func frame(x: float, z: float, ox: float, oy: float, oz: float) -> String:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return "no camera"
-	var t := GroundSurface.of(self)
+	var t := Terrain.of(self)
 	var y := 0.0
 	if t != null:
 		var g: float = t.height_at(x, z)

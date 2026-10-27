@@ -1,14 +1,15 @@
 class_name PaceFactors
 extends Node
 
-## F129 (RFC-030 030r-a): the one owner of a body's `speed_factor`. Everything that speeds a creature or a wizard up or
+## The one owner of a body's `speed_factor`. Everything that speeds a creature or a wizard up or
 ## slows it down (Speedup ×1.75, Sticky bombs ×0.75ⁿ, Blight mites ×0.8ⁿ…) gives its factor here under the name of its
-## source; the body's speed_factor is the product of all of them (sacengine movementSpeed effectFactor, stats.d:122), derived
+## source; the body's speed_factor is the product of all of them, derived
 ## and written only when it changes. Nobody else writes speed_factor on a body that has this component (the Sac Doctor has
 ## none and keeps its own writer).
 ## The product walks the sources in name order, so it does not depend on the order they came in (idempotent: asking twice, or
 ## in another order, gives the same number). A factor of exactly 1 is the same as no factor.
 ## Server (or solo): speed_factor is simulated there; on a client the component does nothing.
+## Ref: F129 (RFC-030 030r-a), sacengine movementSpeed effectFactor stats.d:122.
 
 
 ## The body whose speed_factor it owns. Empty = the parent.
@@ -31,7 +32,7 @@ func _ready() -> void:
 
 ## Server (or solo). `source` pushes `factor` (replacing its previous one). 1.0 takes it away.
 func set_factor(source: StringName, factor: float) -> void:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return
 	if factor == 1.0:
 		_factors.erase(source)
@@ -42,7 +43,7 @@ func set_factor(source: StringName, factor: float) -> void:
 
 ## Server (or solo). `source` no longer changes the pace.
 func clear(source: StringName) -> void:
-	if not _has_authority() or not _factors.has(source):
+	if not is_multiplayer_authority() or not _factors.has(source):
 		return
 	_factors.erase(source)
 	_apply()
@@ -80,7 +81,3 @@ func _apply() -> void:
 	body.set("speed_factor", now)
 	if DebugLog.on(&"pace"):
 		print("ritmo %s ×%.4f %s (tick %d)" % [str(body.name), now, str(sources()), MatchClock.now()])
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

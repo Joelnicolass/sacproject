@@ -39,7 +39,7 @@ func start(type_name: String = "lightning") -> String:
 ## The BeamFx of the type that FxBus shows now, found among its children (no product API).
 func _visible_beams() -> Array:
 	var out := []
-	for child in FxBus.get_children():
+	for child in FxBus.get_node("%Beams").get_children():
 		if child is BeamFx and (child as Node3D).visible and child.get("type") != null \
 				and String((child.get("type") as Resource).resource_path).get_file().get_basename() == _type:
 			out.append(child)

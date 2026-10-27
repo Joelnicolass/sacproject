@@ -2,7 +2,7 @@ extends Node3D
 
 const WIZARD_SCENE := preload("res://scenes/wizards/wizard_body.tscn")
 const UNIT_SCENE := preload("res://scenes/units/unit.tscn")
-const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/_jman.tscn")
+const STRUCTURE_SCENE := preload("res://scenes/structures/buildings/james_manalith.tscn")
 const RULES := preload("res://data/match_rules.tres")
 
 @export var wizard_tags: PackedStringArray = ["cwa0", "cwa1", "cwa2", "cwa3", "cwa4", "cwa5"]
@@ -91,7 +91,7 @@ func _spawn_wizards() -> void:
 		wizard.set("owner_slot", 1)
 		wizard.set("wizard_type", GameData.wizard(tag))
 		wizard.set("model", wiz.get("model", ""))
-		wizard.set("god", wiz.get("god", "james"))
+		wizard.set("god_type", GameData.god(String(wiz.get("god", "james"))))
 		wizard.position = _grid_pos(index, row)
 		_actors.add_child(wizard)
 		_wizards.append(wizard)

@@ -15,19 +15,17 @@ func _ready() -> void:
 		FxBus.played.connect(_on_played)
 
 
-## The sound of an FX of `kind` named `fx_name` (a ParticleType or BeamType name of FxBus), or null when it has none.
-func cue_of(kind: StringName, fx_name: String) -> SoundCue:
+## The sound of an FX of `kind` (the `sound` of its ParticleType or BeamType), or null when it has none.
+func cue_of(kind: StringName, fx: Resource) -> SoundCue:
 	var found: SoundCue = null
-	if kind == FxBus.KIND_BURST:
-		var particle := FxBus.particle_type(fx_name)
-		found = particle.sound if particle != null else null
-	elif kind == FxBus.KIND_BEAM:
-		var beam := FxBus.beam_type(fx_name)
-		found = beam.sound if beam != null else null
+	if kind == FxBus.KIND_BURST and fx is ParticleType:
+		found = (fx as ParticleType).sound
+	elif kind == FxBus.KIND_BEAM and fx is BeamType:
+		found = (fx as BeamType).sound
 	return found if found != null and not found.is_silent() else null
 
 
-func _on_played(kind: StringName, fx_name: String, at: Vector3) -> void:
-	var found := cue_of(kind, fx_name)
+func _on_played(kind: StringName, fx: Resource, at: Vector3) -> void:
+	var found := cue_of(kind, fx)
 	if found != null:
-		SoundBus.play_3d(found, at, StringName(fx_name), SoundEvent.FX)
+		SoundBus.play_3d(found, at, StringName(FxWire.label_of(fx)), SoundEvent.FX)

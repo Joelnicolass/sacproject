@@ -1,12 +1,13 @@
 class_name BeamFx
 extends MeshInstance3D
 
-## A bolt between two points (RFC-029 029d), drawn like sacengine's Lightning (renderer.d:1873-1905):
+## A bolt between two points, drawn like the original's lightning:
 ## `type.bolts` ribbons of 3 fins at 120°, each following its own LightningBolt, that change shape every
 ## `change_s`, travel in from the start, pulse in brightness and leave from the start before dying.
-## The end can follow a node (the target's center moves while it burns, state.d:16372 `end.center`).
+## The end can follow a node (the target's center moves while it burns).
 ## Presentation only: FxBus plays it, it moves nothing, and the shape comes from a generator of its own.
 ## Frees itself at the end of its life, unless FxBus pools it (then it hides and says `finished`).
+## Ref: RFC-029 029d; sacengine Lightning renderer.d:1873-1905; end.center state.d:16372.
 
 signal finished
 ## The bolt reached its end (once per play), at that point: a ScarMark of the scene can burn the ground there.
@@ -96,6 +97,12 @@ func _process(delta: float) -> void:
 	_draw()
 
 
+## Ends the bolt now, as if its life were over (the warm-up's flash). Nothing when it is not playing.
+func stop() -> void:
+	if _live:
+		_stop()
+
+
 func _stop() -> void:
 	_live = false
 	_follow = null
@@ -122,11 +129,12 @@ func _sparkle_tip(delta: float) -> void:
 	while _tip_left <= 0.0:
 		_tip_left += 1.0 / type.tip_per_s
 		var around := Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0))
-		FxBus.play_puff(type.tip_type.bus_name(), tip + around.limit_length(1.0) * type.tip_spread_m)
+		FxBus.puff(type.tip_type, tip + around.limit_length(1.0) * type.tip_spread_m)
 
 
 ## The point at `t` (0 = start, 1 = end) of a vertical half circle from `a` to `b`: the ground track runs along the chord with the
-## speed of a half circle, the height is the arc over the straight mix of the ends' heights (sacengine RainbowEffect).
+## speed of a half circle, the height is the arc over the straight mix of the ends' heights.
+## Ref: sacengine RainbowEffect.
 func _arc_point(a: Vector3, b: Vector3, t: float) -> Vector3:
 	var angle := PI * clampf(t, 0.0, 1.0)
 	var along := 0.5 * (1.0 - cos(angle))
@@ -168,8 +176,9 @@ func _draw() -> void:
 	_imesh.surface_end()
 
 
-## sacengine makeLineMesh (sacobject.d:2189-2227): per segment and fin a quad from the axis to the fin's
+## Builds the ribbon: per segment and fin a quad from the axis to the fin's
 ## edge, pointed at both ends; u flips every segment, v = 1 on the axis (the bright row of the cell).
+## Ref: sacengine makeLineMesh, sacobject.d:2189-2227.
 func _add_ribbon(points: PackedVector3Array, fins: Array[Vector3], n: int) -> void:
 	for i in n:
 		for j in 3:
@@ -196,9 +205,8 @@ static func material_for(beam: BeamType) -> ShaderMaterial:
 		material = ShaderMaterial.new()
 		_materials[beam] = material
 	material.shader = SHADER_MIX if beam.blend == BeamType.Blend.MIX else SHADER
-	var texture := FxAtlas.texture(beam.atlas_tag)
-	material.set_shader_parameter("use_textures", texture != null)
-	material.set_shader_parameter("atlas", texture)
+	material.set_shader_parameter("use_textures", beam.atlas != null)
+	material.set_shader_parameter("atlas", beam.atlas)
 	material.set_shader_parameter("h_frames", beam.h_frames)
 	material.set_shader_parameter("v_frames", beam.v_frames)
 	material.set_shader_parameter("soft_distance_m", beam.soft_distance_m)

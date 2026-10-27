@@ -1,9 +1,10 @@
 class_name AiPhase
 extends Node
 
-## A phase of the wizard's replan (RFC-024 §3.1; shiny.d:3333-3340): attack, support, convert, summon. The brain runs the
+## A phase of the wizard's replan: attack, support, convert, summon. The brain runs the
 ## phases that are its children, in order, every 16 ticks; each puts entries in the wizard's cast queue. Take a phase out and
 ## the wizard no longer does that: without AttackPhase he is a pacifist.
+## Ref: RFC-024 §3.1; shiny.d:3333-3340.
 
 @export var brain: AiWizardBrain
 

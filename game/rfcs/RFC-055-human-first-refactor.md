@@ -323,6 +323,7 @@ debug/units/death_carrier_rules.tres   [+] the doctor is killed mid-haul at tick
 Flujo: con `DROP_DEAD` el cuerpo pasa a `DEAD` en el aire, el gate de gravedad de 055a lo baja en ticks hasta `is_on_floor()`, `Corpse.settled` avisa y `SoulSystem` crea el alma en `soul_anchor()`, donde aterrizó. Sin RPC nuevas: `mode` ya se replica.
 
 ### 12.5 Terreno deformable (RFC-057, boceto)
+**Reemplazado por 063D + RFC-057** (2026-10-26): lo construido es `Terrain` (único escritor) + `GroundField` + `TerrainLive` + `TerrainStamp`/`StampProfile` + `HoleCutter`/`HoleRules` + `TerrainNet`; ver `rfcs/RFC-057-deformable-terrain.md` y `scenes/map/terrain/README.md`. El boceto de abajo queda como historia.
 ```
 Map
 ├── Terrain : Node3D                 [~] only assembles
@@ -376,10 +377,10 @@ Actualizado el 2026-10-24 con la auditoría `research/055R-legacy-audit.md`, que
 | `FloraMap` | Borrado (`28b3b6a3`) | — | `FloraLayer` + `VegetationPatch` | 055d-d3 | **Hecho** |
 | Terreno con 5 representaciones | `TerrainShape` único dueño, `GroundRay` única copia del rayo | — | — | 055d-t1/t2 | **Hecho**; la grilla sigue (ver §13.2b B1) |
 | `SpellType.flags*`, `AimedAction` | `flags/flags1/flags2` en `spell_type.gd:24-26` y 107 `.tres` con `flags*` ≠ 0; `ai_spell_eval.gd` lee bits (`0xfc00`, `0x781f`, `1<<11`); 5 `extends AimedAction`; 15 de 53 sin `action` | Un hechizo nuevo toca 13 archivos. **Convive duplicado:** `ai_use` (061b) junto a los bits | Campos con nombre, `ai_use` como única entrada de la IA, `Aim` como hijo | 055e · L · 061 cerrado, 055c | Pendiente (creció con 061) |
-| `AiPerception`, cerebros por tag | 700 líneas, 32 citas; `wizard_brain.gd:240` compara `spell.tag == "ccas"` | La IA no se ajusta sin leer sacengine | Percepción que escucha `Vision`; tácticas en `.tres` | 055f · L · 055c2, 055e | Pendiente |
+| `AiPerception`, cerebros por tag | 700 líneas, 32 citas; `wizard_brain.gd:240` compara `spell.tag == "ccas"` | La IA no se ajusta sin leer sacengine | Percepción que escucha `Vision`; tácticas en `.tres` | 055f · L · 055c2, 055e | **Hecho en código (f0–f7), falta la pasada final**: import; lint; rules_suite (`ai_cases`, `ai_tactics_cases`, `ai_knowledge_cases`, `ai_sight_cases`, `ai_spell_use_cases`, `spell_field_cases`); diff del log de decisiones de f1–f4 (idéntico); `ai_match` y `ai_spells_lab` (f5/f6 cambian conducta a propósito); NET QUICK PASS y `run_049e.sh` (`ia slot N lista` con `--log=ai_seat`) |
 | Ritual y doctor | `sacrifice_system.gd` 494, `ritual.gd` 311, `doctor_body.gd` 418 | Calcados | Ritual como FSM con nodos y `.tres` | 055g · L | **Hecho** (g0-g6: lugares en `sacrifice_places.tscn`, `ritual.gd` 223 y `doctor_body.gd` 195, aguja y anillo como nodos; línea de tiempo idéntica en 8/8) |
 | Herramientas de bake del original | Se borraron `bake_map_layout` y `bake_flora_map`. Siguen `bake_catalog.gd` + `catalog_builder.gd`, `import_terrain.gd`, `terrain_glb_export.gd`, `make_flat_terrain.gd` | Re-correrlas pisa ediciones humanas | Congelar `bake_catalog` (055i); borrar las de terreno | 055i · 063-4 · S | A medias |
-| `MpKit.` fuera de la allowlist | 85 archivos (units 29, ui 15) | La red está en todas partes | Wrapper de casos de uso. **Mantener** el diseño host autoritativo con dedicado | Fase 3 · L | Pendiente |
+| `MpKit.`/`Mp.` fuera de la allowlist | 85 archivos (units 29, ui 15); C12 ampliado en 070 N0 (cuenta también `Mp.`, sin comentarios; allowlist suma `extends Mp…`, `ui/lobby`, `ui/local_server`, `ui/match_wait`): 70 → 57 | La red está en todas partes | Wrapper de casos de uso (plan 070). **Mantener** el diseño host autoritativo con dedicado | Fase 3 · L | En curso (N0 hecho) |
 
 ### 13.2b Registro, segunda parte (auditoría 055R, 2026-10-24)
 
@@ -411,7 +412,7 @@ Actualizado el 2026-10-24 con la auditoría `research/055R-legacy-audit.md`, que
 | C-8c | IA traducida de `shiny.d` | 237 citas en `scenes/ai`; `AiTrack` con bits (`ENEMY 4`, `SEEN 0x80`, status `0x40000`) y `Kind {WIZ, CRE, MAHO, STR}`; `AiProfile` «every `beta*` switch» (41 `@export`) | Sin nombres de diseño | Campos y enums con nombre, `AiProfile` con knobs de diseño, percepción sobre `Vision` | 055f (se amplía) |
 | C-8d | Audio por tag y por ruta | `SoundLibrary.find(rel)`, `creature(tag)`, `wizard(tag)`; `FxSoundMap` (nombre del FX → sonido) | Texto en lugar de recursos | `CreatureType.sounds: SoundSet`; el sonido dentro del recurso o escena del FX. **Mantener** `SoundBus`, el pool y `SoundSet` | 055i-b · 055x |
 | C-8e | Animación con nombres del WAD y duplicada | 74 modelos con `AnimationTree` por rol (nativo), pero clips `AAa1`/`FGst` y `BodyModel.clips: Dictionary` repetido en los tipos | Dos fuentes y nombres ilegibles | `AnimationLibrary` del modelo con nombres de rol, marcadores `hit`, `hands` como `BoneAttachment3D` | 055c1 · 055s |
-| C-8f | FX buscados por nombre | C17 26 (spells 17); `FxBus` busca `data/fx/<nombre>.tres` (128). `ParticleType` sobre atlas de sprites | Errores de tipeo silenciosos | `@export var fx: ParticleType` + socket. **Mantener** los sprites aditivos sobre atlas (son el look del original); lo nuevo puede ser `GPUParticles3D` | 055x · M · 061 cerrado |
+| C-8f | FX buscados por nombre | C17 26 (spells 17); `FxBus` busca `data/fx/<nombre>.tres` (128). `ParticleType` sobre atlas de sprites | Errores de tipeo silenciosos | `@export var fx: ParticleType` + socket. **Mantener** los sprites aditivos sobre atlas (son el look del original); lo nuevo puede ser `GPUParticles3D` | 055x · M · 061 cerrado. **Hecho en código (x1–x7, 2026-10-25; falta la pasada final de pruebas):** `FxBus` solo acepta `ParticleType`/`BeamType`/`PackedScene` (fuera `FxWire.as_*`, `bus_name`, `fx_name`, `FxAtlas.texture`); el id de red es la ruta (`FxWire`); los FX de cuerpos salen de `BodyFacts.Socket`; atlas como `Texture2D` (`BeamType.atlas`, tethers, hilo del Pull); C17 ampliado 146 → 0 (allowlist: `Caster.cast_fx_shown`, el id de red de la mano); C18c sin la allowlist de FX |
 
 **Decisiones razonables que se mantienen** (no son corte):
 - Sim a 60 Hz en ticks enteros (`MatchClock = physics_ticks_per_second`).
@@ -471,11 +472,12 @@ Verificado: el formato de ambiente del original solo trae niebla por mapa (`sace
 Verificado: sacengine no tiene luces dinámicas puntuales (`renderer.d`: no hay `PointLight` ni equivalente). El brillo del original sale de partículas aditivas (`dagonBackend.d:2677`). El maná brilla con el **color del bando**: `manaColor(side)` y `manaEnergy(side)` (`state.d:30104-30112`) tiñen las partículas del Manalith, del Shrine y la **llama del Manahoar** (`sacobject.d:1408-1412`, emitida en su punto de enganche, `state.d:28325`). Corrección en curso: bloom sutil, emisión de vuelta a valores sobrios, mago y unidades sin charco de luz por defecto, llama del Manahoar y partículas de maná con el color del bando.
 
 ### 14.2 Sangre (nuevo: RFC-060)
-Hoy el port solo tiene sangre al desintegrar un cuerpo (`unit_body.gd:608`) y en el ritual (`ritual.gd:186`). En los videos del original se ven manchas rojas en el suelo donde hubo combate y salpicaduras al golpear. sacengine solo emite partículas `blood`/`hoverBlood` al desintegrar y en la plaga (`state.d:8313-8324`, `21019`): las manchas en el suelo no están en sacengine y se toman de los videos.
+Hoy el port solo tiene sangre al desintegrar un cuerpo (`Gib.burst`, `scenes/units/gib.gd`) y en el ritual (`ritual.gd:186`). En los videos del original se ven manchas rojas en el suelo donde hubo combate y salpicaduras al golpear. sacengine solo emite partículas `blood`/`hoverBlood` al desintegrar y en la plaga (`state.d:8313-8324`, `21019`): las manchas en el suelo no están en sacengine y se toman de los videos.
 **RFC-060 Sangre y feedback de golpe** (presentación, fase 2, después de 055c porque escucha `Weapons.struck`):
 - `BloodFx` (nodo hijo de la unidad): al recibir daño emite salpicadura (`GPUParticles3D` o el sistema de partículas existente) con el color de sangre del tipo de criatura (`CreatureType.blood_color`: rojo por defecto; verde, negro o nada para no-muertos y elementales).
 - `BloodDecals` (capa del `LookRig`): `Decal` de Godot en el suelo con pool y tope por calidad, se desvanecen en `fade_s`; nunca entran a la sim.
 - Escena de prueba `debug/fx/blood_lab.tscn`.
+- Nota (2026-10-26): este boceto lo reemplaza `rfcs/RFC-060-blood-hit-feedback.md` (escucha `Health.changed`, `BodyLook.blood`, manchas en `GroundScars`; todo sangra rojo).
 
 ## 15. Regla «todo en el editor, movible con gizmo» (aprobada 2026-10-23)
 Auditoría: `research/055R-editor-gizmo-audit.md`. El usuario aprobó los 5 cortes nuevos, el orden y los cambios a decisiones previas.

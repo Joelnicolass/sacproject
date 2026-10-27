@@ -17,7 +17,8 @@ const RAMP_POINTS := 25
 ## Ref: delay * 2 / 60 in sacengine.
 @export var frame_s: float = 0.0333
 @export var lifetime_s: float = 1.0
-## Downward acceleration in m/s². sacengine uses 15 when gravity is on.
+## Downward acceleration in m/s².
+## Ref: sacengine uses 15 when gravity is on.
 @export var gravity: float = 0.0
 @export var count: int = 16
 @export var speed_min: float = 0.0
@@ -27,6 +28,8 @@ const RAMP_POINTS := 25
 @export var scale_min: float = 1.0
 @export var scale_max: float = 1.0
 @export var emission_radius: float = 0.0
+## Height of the band the particles are born in, centred on the emitter (SpriteEmitter): rings along a rising edge.
+@export_range(0.0, 20.0, 0.1, "suffix:m") var emission_height_m := 0.0
 ## Play direction (the cone of `spread` is around it). UP by default; the Sac Doctor's vortex drops drops down.
 @export var direction: Vector3 = Vector3.UP
 ## Start each particle on a random frame of the cycle.
@@ -35,12 +38,16 @@ const RAMP_POINTS := 25
 @export var rate_per_s: float = 0.0
 ## 0 = every particle lives `lifetime_s`; 1 = lifetime uniform in (0, lifetime_s].
 @export_range(0.0, 1.0) var lifetime_randomness: float = 0.0
-## Alpha follows min(alpha_max, (time_left / fade_s)^2) like sacengine getAlpha. 0 = no fade.
+## Alpha follows min(alpha_max, (time_left / fade_s)^2). 0 = no fade.
+## Ref: sacengine getAlpha.
 @export var fade_s: float = 0.0
 @export_range(0.0, 1.0) var alpha_max: float = 1.0
-## Scale follows min(1, time_left / scale_fade_s) like sacengine getScale. 0 = constant.
+## Scale follows min(1, time_left / scale_fade_s). 0 = constant.
+## Ref: sacengine getScale.
 @export var scale_fade_s: float = 0.0
 @export var billboard: bool = true
+## Lies flat facing up instead of facing the camera (rings around a tower, seen as ellipses from above). Turn `billboard` off with it.
+@export var flat := false
 @export var additive: bool = true
 
 @export_group("Modern look (029a)")
@@ -59,7 +66,7 @@ const RAMP_POINTS := 25
 ## Emitters FxBus keeps for this type: puffs per second × lifetime_s × bursts alive at once, plus
 ## ~25 % because an emitter frees a little after its life (e.g. a trail of 30 puffs/s living 0.517 s on
 ## 4 projectiles: 30 × 0.517 × 4 × 1.25 ≈ 80).
-## 0 = FxBus.max_pooled_per_type.
+## 0 = BurstPool.max_per_type.
 @export_range(0, 512) var pool_max: int = 0
 
 @export_group("Light (029c)")
@@ -71,10 +78,15 @@ const RAMP_POINTS := 25
 ## What each burst of this type sounds like (a SoundCue from data/audio/cues/). Empty = silent. A trail's puffs never sound.
 @export var sound: SoundCue
 
+@export_group("Camera")
+## How hard the camera shakes near each burst of this type, 0 to 1 (full inside ShakeMap.full_within_m, fading with distance). 0 = none.
+@export_range(0.0, 1.0, 0.01) var camera_trauma := 0.0
 
-## sacengine getAlpha over the normalised life (RFC-053 053i shares it between SpriteEmitter and SpriteParticles):
+
+## The alpha over the normalised life (shared between SpriteEmitter and SpriteParticles):
 ## min(`cap`, (time_left / fade)^2), fade = `fade_s`, or `fallback_fade_s` (at most half the life) when the type has none
 ## (0 = no fade: the sprite keeps `cap` to its last frame and vanishes).
+## Ref: RFC-053 053i; sacengine getAlpha.
 func alpha_ramp(cap: float, fallback_fade_s := 0.0) -> Gradient:
 	var fade := fade_s if fade_s > 0.0 else minf(fallback_fade_s, lifetime_s * 0.5)
 	var ramp := Gradient.new()
@@ -93,7 +105,8 @@ func alpha_ramp(cap: float, fallback_fade_s := 0.0) -> Gradient:
 	return ramp
 
 
-## sacengine getScale: min(1, time_left / scale_fade_s). Null when the type keeps its size.
+## Min(1, time_left / scale_fade_s). Null when the type keeps its size.
+## Ref: sacengine getScale.
 func scale_curve() -> Curve:
 	if scale_fade_s <= 0.0:
 		return null
@@ -104,11 +117,6 @@ func scale_curve() -> Curve:
 		curve.add_point(Vector2(knee, 1.0))
 	curve.add_point(Vector2(1.0, 0.0))
 	return curve
-
-
-## The name FxBus plays this type by: its file under data/fx/ without the extension. "" for a type that is not a file there.
-func bus_name() -> String:
-	return resource_path.trim_prefix("res://data/fx/").get_basename() if resource_path.begins_with("res://data/fx/") else ""
 
 
 func cycle_s() -> float:

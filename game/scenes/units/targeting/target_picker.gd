@@ -1,43 +1,50 @@
 class_name TargetPicker
 extends Node
 
-## Chooses a creature's target by score (RFC-024 §1.2, 024b), as sacengine updateTarget (state.d:12924-12980)
+## Chooses a creature's target by score,
 ## instead of "the closest". Child of unit.tscn; UnitBody.closest_foe delegates here when it exists, and
 ## without it the body keeps picking the closest.
 ##
 ## score(entry) = s*s  with  s = 1 - 0.75*d/ref        when d < ref
-##                           s = 0.25*ref/d            when d >= ref            (targetScore, 12926-12929)
-## a building keeps that score (12930); anything else is x1.25 (12931), x1.2 if it was the last to hit us
-## (12932) and x1.3 if it is the current target (12933). The foe must be visible to the side
-## (visibleFilter, 12936: VisionSides) and score above `threshold` (0.25 patrol). The query radius is
-## |center - body| + the distance where the best possible score (x1.25x1.2x1.3) falls to the threshold
-## (12961-12963), not the sight range. Deviation from sacengine: with `within` (a guard or an escort) the
+##                           s = 0.25*ref/d            when d >= ref
+## a building keeps that score; anything else is x1.25, x1.2 if it was the last to hit us
+## and x1.3 if it is the current target. The foe must be visible to the side
+## (VisionSides) and score above `threshold` (0.25 patrol). The query radius is
+## |center - body| + the distance where the best possible score (x1.25x1.2x1.3) falls to the threshold,
+## not the sight range. Deviation from the original: with `within` (a guard or an escort) the
 ## candidates must also lie within that distance of the anchor, because patrolAround's threshold is ~0 at
 ## the anchor and would otherwise take any foe the side has seen at any range, making the unit leave and
 ## come back over and over. Missing («aprox.»): the DangerGrid factor (needs area spells to
 ## paint danger) and the raging case. The scarab is a TargetPolicy (F136).
-## RFC-053 053a (F370): a passive body (TargetRules.is_passive: aggressiveness 0 or a peasant) weighs `passive_weight` (a deviation: the original weighs
+## A passive body (TargetRules.is_passive: aggressiveness 0 or a peasant) weighs `passive_weight` (a deviation: the original weighs
 ## them as any foe, and creatures stuck on villagers read as «they do not attack»); a melee-only walker skips flyers above its
-## swing (maxTargetHeight, state.d:12879, 28774); a target TargetFutility banned is skipped.
+## swing (maxTargetHeight); a target TargetFutility banned is skipped.
+## Ref: RFC-024 §1.2 (024b), RFC-053 053a (F370), sacengine updateTarget state.d:12924-12980, targetScore 12926-12933, visibleFilter 12936, scoreCutoff 12961-12963, maxTargetHeight 12879, 28774.
 
 signal picked(target: Node3D)
 
 ## The body that fights (a UnitBody).
 @export var body: UnitBody
 @export_group("Score (updateTarget)")
-## 1 - near_slope * d/ref (state.d:12927).
+## 1 - near_slope * d/ref.
+## Ref: sacengine state.d:12927.
 @export var near_slope := 0.75
-## far_factor * ref/d beyond ref (state.d:12927).
+## far_factor * ref/d beyond ref.
+## Ref: sacengine state.d:12927.
 @export var far_factor := 0.25
-## Not a building (state.d:12931).
+## Not a building.
+## Ref: sacengine state.d:12931.
 @export var creature_weight := 1.25
-## It hit us last (state.d:12932).
+## It hit us last.
+## Ref: sacengine state.d:12932.
 @export var last_attacker_weight := 1.2
-## It is the current target (state.d:12933).
+## It is the current target.
+## Ref: sacengine state.d:12933.
 @export var current_weight := 1.3
-## enum maxDist (state.d:12964).
+## enum maxDist.
+## Ref: sacengine state.d:12964.
 @export var max_query_m := 5120.0
-## F370: a passive body (aggressiveness 0) is worth this much (not in sacengine). 1 = as any foe.
+## F370: a passive body (aggressiveness 0) is worth this much (not in the original). 1 = as any foe.
 @export var passive_weight := 0.5
 ## F370: maxTargetHeight: a creature with no ranged attack that walks skips bodies whose feet are higher over the ground than
 ## the top of its swing (MeleeWeapon.height).
@@ -76,7 +83,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## targetScore (state.d:12925-12935) without the danger factor. Pure: the suite calls it.
+## The score without the danger factor. Pure: the suite calls it.
+## Ref: sacengine targetScore state.d:12925-12935.
 static func score(distance: float, ref_range: float, building: bool, last_attacker: bool, current: bool, near_slope := 0.75, far_factor := 0.25, creature_weight := 1.25, last_attacker_weight := 1.2, current_weight := 1.3) -> float:
 	var s := 0.0
 	if distance < ref_range:
@@ -94,7 +102,8 @@ static func score(distance: float, ref_range: float, building: bool, last_attack
 	return s
 
 
-## scoreCutoff (state.d:12961-12963): the distance at which the best weight still reaches `threshold`.
+## The distance at which the best weight still reaches `threshold`.
+## Ref: sacengine scoreCutoff state.d:12961-12963.
 static func score_cutoff(threshold: float, ref_range: float, max_weight := 1.25 * 1.2 * 1.3) -> float:
 	var root := sqrt(maxf(threshold, 0.0) / max_weight)
 	if root <= 0.0:
@@ -172,7 +181,8 @@ func is_banned(node: Variant) -> bool:
 	return futility != null and futility.is_banned(node)
 
 
-## maxTargetHeight (state.d:12879): INF for a flyer or a body with a ranged attack, else the top of its swing.
+## INF for a flyer or a body with a ranged attack, else the top of its swing.
+## Ref: sacengine maxTargetHeight state.d:12879.
 func _max_target_height() -> float:
 	if not melee_height_filter or body.type == null or body.type.ranged_attack != null or body.is_flying():
 		return INF
@@ -200,7 +210,8 @@ func active() -> TargetPolicy:
 	return null
 
 
-## Something hit this body: it weighs x1.2 until the next hit (state.d:8905-8906, a creature only).
+## Something hit this body: it weighs x1.2 until the next hit (a creature only).
+## Ref: sacengine state.d:8905-8906.
 func note_attacker(attacker: Node3D) -> void:
 	last_attacker_id = attacker.get_instance_id() if attacker != null else 0
 

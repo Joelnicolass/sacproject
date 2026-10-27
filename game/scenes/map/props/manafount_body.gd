@@ -2,15 +2,12 @@
 class_name ManafountBody
 extends StaticBody3D
 
-## One map manafount. While free it feeds mana to everyone in range and shows the jet; once a
-## Manalith occupies it, the source is disabled and the Manalith column (tinted with the
-## occupant's slot) replaces the jet, until that structure is removed. The Manalith is spawned on
-## every peer with its manafount_path, so occupy()/release() run on clients and a late joiner sees
-## the right state. The dedicated process draws nothing (SpriteEmitter.set_active is a no-op there).
-## The column also lights the ground with the mana colour of its side (ManalithLight, a StateLight that fades in and out with it).
-## RFC-052 052d: the jet loops `fountain_loop` and the Manalith `manalith_loop` (SoundEmitter3D, silent with the gate closed).
-## The mesh is the first part of `building`, the BLDG the map's NTTS row names (jfnt James, cafn Charnel, pfon Pyro,
-## stmf Stratos, font Persephone = pcfn). Visual only: the collision and the source are the same for every land.
+## One map manafount. Free, it feeds mana to everyone in range and shows the jet and its loop (`fountain_loop`). Taken by a tower,
+## the source stops and the jet goes; while that tower rises the fount shows nothing, and once it stands the column (tinted with
+## the occupant's side), its ManalithLight and its hum (`manalith_loop`) show, until the tower is removed. The look is derived from
+## (occupant, rising) in one place (_show), so a late joiner or a client sees the same. The dedicated process draws nothing.
+## The mesh is the first part of `building` (the land's fountain BLDG); collision and source are the same for every land.
+## Does not decide who builds (StructureAction) nor mark the start or the end of a rise (BuildCues).
 
 ## The group every manafount joins.
 const GROUP := &"manafount"
@@ -25,6 +22,8 @@ const GROUP := &"manafount"
 @export var visual: MeshInstance3D
 ## Drawn when `building` is empty or has no parts: the Persephone fountain.
 @export var fallback_mesh: Mesh
+## The ground a tower cast here clears (and the ring of the armed preview). Empty: no push, no ring, no building check.
+@export var build_area: BuildArea
 
 var _occupied_by := NodePath()
 var _source_rate := 0.0
@@ -45,10 +44,7 @@ func _ready() -> void:
 	var source := _source()
 	if source:
 		_source_rate = float(source.get("rate"))
-	_free_fx.set_active(true)
-	_manalith_fx.set_active(false)
-	_fount_sound.set_active(true)
-	_manalith_sound.set_active(false)
+	_show()
 
 
 ## The mesh of this fountain: the first part of its BLDG, else `fallback_mesh`.
@@ -66,9 +62,12 @@ func _show_mesh() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
 	if visual == null:
-		return PackedStringArray(["Asigná `visual` (el MeshInstance3D de la fuente)."])
-	return PackedStringArray()
+		warnings.append("Asigná `visual` (el MeshInstance3D de la fuente).")
+	if build_area == null:
+		warnings.append("Asigná `build_area` (el BuildArea que despeja la torre al lanzarla).")
+	return warnings
 
 
 func is_free() -> bool:
@@ -84,7 +83,11 @@ func occupy(by: NodePath) -> bool:
 	if not is_free() and _occupied_by != by:
 		return false
 	_occupied_by = by
-	_set_active(false)
+	# The look changes the tick a rising tower stands. A stale listener after release is harmless: _show reads the occupant.
+	var tower := get_node_or_null(by) as CastTower
+	if tower != null and not tower.build_progress_changed.is_connected(_on_occupant_progress):
+		tower.build_progress_changed.connect(_on_occupant_progress)
+	_show()
 	return true
 
 
@@ -92,28 +95,45 @@ func release(by: NodePath = NodePath()) -> void:
 	if by != NodePath() and not _occupied_by.is_empty() and _occupied_by != by:
 		return
 	_occupied_by = NodePath()
-	_set_active(true)
+	_show()
 
 
 func anchor() -> Vector3:
 	return global_position
 
 
-func _set_active(active: bool) -> void:
+## Occupied by a tower that stands: the column, its light and its hum are on. An occupant that is not a CastTower (a structure
+## placed by hand, a probe) counts as standing.
+func shows_tower() -> bool:
+	if is_free():
+		return false
+	var tower := get_node_or_null(_occupied_by) as CastTower
+	return tower == null or not tower.is_rising()
+
+
+## The whole look from (occupant, rising): free = source, jet and its loop; taken = none of them; standing = column, light, hum.
+func _show() -> void:
+	var free := is_free()
+	var standing := shows_tower()
 	var source := _source()
 	if source:
-		source.set("rate", _source_rate if active else 0.0)
-	if not active:
+		source.set("rate", _source_rate if free else 0.0)
+	if standing:
 		var slot := _occupant_slot()
 		_manalith_fx.set_tint(SideColors.mana_color(slot), SideColors.mana_energy_scale(slot))
 		if is_instance_valid(_manalith_light):
 			_manalith_light.light_color = SideColors.mana_color(slot)
 	if is_instance_valid(_manalith_light):
-		_manalith_light.show_lit(not active)
-	_free_fx.set_active(active)
-	_manalith_fx.set_active(not active)
-	_fount_sound.set_active(active)
-	_manalith_sound.set_active(not active)
+		_manalith_light.show_lit(standing)
+	_free_fx.set_active(free)
+	_manalith_fx.set_active(standing)
+	_fount_sound.set_active(free)
+	_manalith_sound.set_active(standing)
+
+
+func _on_occupant_progress(progress: float) -> void:
+	if progress >= 1.0:
+		_show()
 
 
 func _occupant_slot() -> int:

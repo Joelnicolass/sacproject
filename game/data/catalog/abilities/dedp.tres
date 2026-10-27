@@ -10,8 +10,3 @@ effect = ExtResource("effect_scene")
 tag = "dedp"
 display_name = "Play Dead"
 icon = ExtResource("icon_tex")
-flags1 = 3088
-flags2 = 9175040
-args = {
-"irgn": 500.0
-}

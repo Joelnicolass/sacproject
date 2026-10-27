@@ -2,28 +2,30 @@
 class_name TeleportAction
 extends SpellAction
 
-## Teleport (elet): the wizard and the creatures of his side near him jump to an own building (RFC-021c).
+## Teleport (elet): the wizard and the creatures of his side near him jump to an own building.
 ## The click is a standing building of his own (OWN_BUILDING: Manalith, altar, shrine) at any distance
 ## (flags 4112 = targetStructures | onlyAlly, range 5000). When the casting ends, he and every creature of
 ## his within `effect_range` (30) of him go to `effect_range` from the building, on the side he came from,
-## keeping their formation (sacengine teleport / getTeleportPosition, state.d:10213-10228, 10313-10327).
-## Not carried: the dead, Sac Doctors, guardians (canTeleport, state.d:10306-10311) and, a port decision
+## keeping their formation.
+## Not carried: the dead, Sac Doctors, guardians and, a port decision
 ## (RFC-021 risk 3), any creature in group «rooted» or held by a doctor. The destination follows the
-## building until the casting ends; if it falls meanwhile, the last one is used (updateTeleportCasting,
-## state.d:16056-16072). A wizard who dies in the middle moves nobody (the Caster calls cancel()).
+## building until the casting ends; if it falls meanwhile, the last one is used.
+## A wizard who dies in the middle moves nobody (the Caster calls cancel()).
 ## The arithmetic is TeleportMath; the body moves itself (warp_to). Here only the rules, and the cosmetic
 ## burst, which is local presentation on every peer (nothing is drawn on the dedicated server).
+## Ref: RFC-021c; sacengine teleport / getTeleportPosition, state.d:10213-10228, 10313-10327; canTeleport, state.d:10306-10311; updateTeleportCasting, state.d:16056-16072
 
 ## A body in this group does not travel (the guardian, the captive; GuardianBond adds it).
 const NOT_CARRIED := &"rooted"
-## sacengine canTeleport excludes the Sac Doctor (state.d:10308).
+## The Sac Doctor is never carried.
+## Ref: sacengine canTeleport; state.d:10308
 const DOCTOR_GROUP := &"doctor"
 
 ## Groups a building can be in to be aimed at. A shrine would add its own.
 @export var target_groups: PackedStringArray = PackedStringArray(["structure", "altar"])
-## Particle (FxBus name, res://data/fx/<name>.tres) at the origin and at the destination of each body.
-@export var out_fx := "teleport_out"
-@export var in_fx := "teleport_in"
+## The burst at the origin and at the destination of each body (at its Center). Empty = none.
+@export var out_fx: ParticleType
+@export var in_fx: ParticleType
 ## The rings of blue light of each body (TeleportRings). Empty = no rings.
 @export var rings_scene: PackedScene
 
@@ -59,7 +61,7 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	var destination := _destination
 	_has_destination = false
 	var radius := spell.effect_range_m
-	var shape := GroundSurface.of(wizard)
+	var shape := Terrain.of(wizard)
 	var on_ground := _on_ground_of(shape)
 	var froms := PackedVector3Array()
 	var tos := PackedVector3Array()
@@ -86,7 +88,8 @@ func cancel() -> void:
 
 
 ## A standing building of `slot` that can be aimed at. Altars count while they stand; any other building,
-## while it has life (state.d:30786-30790). `picked` comes from the client.
+## while it has life. `picked` comes from the client.
+## Ref: state.d:30786-30790
 func is_building_of(slot: int, picked: Node3D) -> bool:
 	if picked == null or not is_instance_valid(picked) or not picked.is_inside_tree() or picked.is_queued_for_deletion():
 		return false
@@ -119,7 +122,7 @@ func travelers(wizard: WizardBody, radius: float) -> Array[Node3D]:
 
 
 func _landing(start: Vector3, building: Node3D, radius: float) -> Vector3:
-	var shape := GroundSurface.of(building)
+	var shape := Terrain.of(building)
 	var spot := TeleportMath.landing(start, building.global_position, radius, _on_ground_of(shape))
 	spot.y = _land_y(shape, spot, building.global_position.y)
 	return spot
@@ -127,14 +130,14 @@ func _landing(start: Vector3, building: Node3D, radius: float) -> Vector3:
 
 ## The land under a spot (the terrain, never the first collision from above: that is a pillar or a roof),
 ## or `fallback` where there is no terrain data.
-func _land_y(shape: GroundSurface, spot: Vector3, fallback: float) -> float:
+func _land_y(shape: Terrain, spot: Vector3, fallback: float) -> float:
 	if shape == null:
 		return fallback
 	var height := shape.height_at(spot.x, spot.z)
 	return fallback if is_nan(height) else height
 
 
-func _on_ground_of(shape: GroundSurface) -> Callable:
+func _on_ground_of(shape: Terrain) -> Callable:
 	if shape == null:
 		return Callable()
 	return shape.is_on_ground
@@ -164,8 +167,8 @@ func _show_jump(froms: PackedVector3Array, tos: PackedVector3Array, widths: Pack
 		_burst(in_fx, false, tos[i], widths[i], heights[i], centers[i])
 
 
-func _burst(fx: String, going_out: bool, feet: Vector3, width: float, height: float, center_y: float) -> void:
-	if not fx.is_empty():
+func _burst(fx: ParticleType, going_out: bool, feet: Vector3, width: float, height: float, center_y: float) -> void:
+	if fx != null:
 		FxBus.play(fx, feet + Vector3(0.0, center_y, 0.0))
 	if rings_scene == null:
 		return

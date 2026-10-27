@@ -9,13 +9,11 @@ existing .png.import is never touched (it carries the UID).
   python3 tools/import/import_themes.py            # write
   python3 tools/import/import_themes.py --check    # report what would change, write nothing
 
-Source: the god WADs (prsc, pyro_a, james_a, strato_a, char) and High Noon's .scp, read with tools/import/sac_formats; tools/import/land_themes.py
-holds the tileset logic (LAND/MAPG, the remap of High Noon's tile ids onto every land) and the ENVI colours. Run it once; the
-result is versioned.
+Source: the god WADs (prsc, pyro_a, james_a, strato_a, char), read with tools/import/sac_formats; tools/import/land_themes.py
+finds the textures the ENVI names. Run it once; the result is versioned. The ground of each god is not here: its role sheets
+(themes/<god>/roles/) come from tools/import/bake_role_sheets.py.
 
-Per god: atlas.png and edge.png (lossless textures: exact pixels, no mipmaps, no compression; ground_classic.tres uses them),
-detail.png (the land's DT grain layers side by side, imported as a Texture2DArray with mipmaps) with detail_ids.png (16x16, the
-layer of each atlas tile) and detail_ids_native.png (the same for a NativeGround atlas, each id its own MAPT),
+Per god: edge.png (lossless texture: exact pixels, no mipmaps, no compression; the cliff walls of the GodGround),
 skyt.png / skyb.png / sky.png (mipmapped textures: the sky sampled them with Image.generate_mipmaps()), sun.png and
 undr.png (textures without mipmaps; no consumer yet). The ENVI colours (background, fog) are no longer written: they were copied once into
 data/look/sky/<god>_sky.tres (055b-2), which the game and the inspector own from then on.
@@ -35,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "themes"))
 # file -> "lossless" (texture, exact pixels, no mipmaps, never VRAM-compressed; RFC-035b), "mips" (texture with mipmaps) or "plain" (texture without)
-KINDS = {"atlas": "lossless", "edge": "lossless", "detail": "layers", "detail_ids": "lossless", "detail_ids_native": "lossless", "skyt": "mips", "skyb": "mips", "sky": "mips", "sun": "plain", "undr": "plain"}
+KINDS = {"edge": "lossless", "skyt": "mips", "skyb": "mips", "sky": "mips", "sun": "plain", "undr": "plain"}
 
 IMAGE_TEMPLATE = """[remap]
 
@@ -49,31 +47,6 @@ source_file="res://assets/original/{rel}"
 [params]
 
 """
-
-# The detail strip (DT00..DTnn, 256 px each side by side) as a Texture2DArray: one layer per slice, lossless, with mipmaps
-# (the shader reads the layer's mean from its last mip).
-LAYERS_TEMPLATE = """[remap]
-
-importer="2d_array_texture"
-type="CompressedTexture2DArray"
-
-[deps]
-
-source_file="res://assets/original/{rel}"
-
-[params]
-
-compress/mode=0
-compress/high_quality=false
-compress/lossy_quality=0.7
-compress/hdr_compression=1
-compress/channel_pack=0
-mipmaps/generate=true
-mipmaps/limit=-1
-slices/horizontal={slices}
-slices/vertical=1
-"""
-
 
 class Writer:
     def __init__(self, check: bool):
@@ -93,9 +66,7 @@ class Writer:
             imp = path.with_name(path.name + ".import")
             if not imp.exists() and not self.check:
                 rel = path.relative_to(OUT.parent).as_posix()
-                if kind == "layers":
-                    imp.write_text(LAYERS_TEMPLATE.format(rel=rel, slices=int.from_bytes(data[16:20], "big") // 256))
-                elif kind == "image":
+                if kind == "image":
                     imp.write_text(IMAGE_TEMPLATE.format(rel=rel))
                 elif kind == "lossless":
                     text = IMPORT_TEMPLATE.format(rel=rel, mips="false")

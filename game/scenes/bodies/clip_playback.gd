@@ -2,16 +2,18 @@
 class_name ClipPlayback
 extends Node
 
-## The contract of the node that plays the clips of a body by ROLE (idle, run, attack...): BodyAnimator (RFC-023 023c, RFC-036 036g).
+## The contract of the node that plays the clips of a body by ROLE (idle, run, attack...): BodyAnimator.
 ## Afflictions, Stunned and the bodies talk to this and not to the animator, so a body can swap it. Presentation only:
 ## the simulation never reads it.
+## Ref: RFC-023 023c, RFC-036 036g.
 
 ## The active clip went past its last frame and started again (RFC-028c). Emitted on the physics tick that wraps, on a
 ## client (the dedicated server plays no clips); the body picks the next variant from it.
 signal clip_looped(role: String)
 
-## F137 (RFC-030i-b): the pose holds (sacengine petrified, bone.d / state.d:11631-11640): the pose stops, play() does not
+## The pose holds: the pose stops, play() does not
 ## switch the clip and the frame on the body stays. Set by its owner (Petrified) on every peer; off resumes from it.
+## Ref: F137 (RFC-030i-b); sacengine petrified, bone.d / state.d:11631-11640.
 var frozen := false:
 	set(value):
 		frozen = value

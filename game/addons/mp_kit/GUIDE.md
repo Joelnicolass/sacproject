@@ -168,7 +168,9 @@ World (Node2D o Node3D)
     ├── Match            (MpMatch)
     └── Hud
         ├── Leave        (MpLeaveButton: sale de la partida)
-        └── Invite       (MpInviteLabel: en una partida privada, el código para los amigos)
+        ├── Invite       (MpInviteLabel: en una partida privada, el código para los amigos)
+        ├── Start        (MpStartButton: el host arranca con los jugadores que ya entraron)
+        └── Waiting      (MpWaitingLabel: «Waiting for players (1/4)» mientras la partida espera)
 ```
 
 **`boot.tscn`**:
@@ -264,7 +266,7 @@ Qué tiene el menú: **Play solo**, **Host LAN**, **Private server** (opcional),
 
 El campo de dirección acepta: `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, `#CÓDIGO` al final (partida privada) o una URL `ws://…` / `wss://…`. Lo mismo acepta la pantalla de lobby y `MpFlow.join_address` (los tres usan `MpAddress.parse`).
 
-Qué hace el `MpFlow`: arranca la red con la config, cambia de escena (boot ↔ mundo), le manda el mundo al que entra tarde y vuelve al boot si se cae el servidor. Se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload.
+Qué hace el `MpFlow`: arranca la red con la config, arma la puerta de arranque, cambia de escena (boot ↔ mundo), le manda el mundo a cada asiento admitido (también al que vuelve) y vuelve al boot si se cae el servidor. Se muda solo a la raíz del árbol y sobrevive a los cambios de escena. No hace falta autoload.
 
 ### 5.3 Escena del mundo
 
@@ -278,6 +280,8 @@ Qué hace el `MpFlow`: arranca la red con la config, cambia de escena (boot ↔ 
 | `seats` | Cuántos marcadores arma en `SpawnPoints` (si hay más jugadores, vuelven a empezar) | 4 |
 | `leave_button` | Arma `Hud/Leave` | on |
 | `invite_label` | Arma `Hud/Invite`: en una partida privada de esta PC muestra el código para los amigos | on |
+| `start_button` | Arma `Hud/Start`: en Host LAN, mientras la partida espera asientos, el host arranca con los que ya cargaron | on |
+| `waiting_label` | Arma `Hud/Waiting`: mientras la partida espera sus asientos, lo dice en todos los peers | on |
 
 4. Mové los marcadores de `MpWorld/SpawnPoints` adonde querés que nazca cada jugador.
 5. **Guardá la escena** (Ctrl+S).
@@ -306,7 +310,7 @@ El `MpWorld` solo arma nodos que también podés poner vos. Sirve si tu mundo ya
 
 6. Opcional, para el puntaje: agregá un hijo **MpState** llamado `Score`.
 7. Opcional, para inicio y fin: agregá un hijo **MpMatch** llamado `Match`.
-8. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)), y un **MpInviteLabel** para las partidas privadas.
+8. Para salir: agregá un `CanvasLayer` llamado `Hud` y, adentro, un **MpLeaveButton** llamado `Leave` (ver [7.6](#76-salir-de-la-partida)), un **MpInviteLabel** para las partidas privadas un **MpStartButton** para que el host LAN pueda arrancar sin esperar todos los asientos y un **MpWaitingLabel** que dice que la partida espera.
 9. **Guardá la escena** (Ctrl+S). Al guardar, el `MpState` arma su hijo `MpSync` y queda guardado.
 
 Qué hace el `MpSlotSpawner`: crea un jugador por slot ocupado. En solo, el tuyo. En LAN, el del host al arrancar y el de cada cliente cuando termina de cargar el mundo. En dedicado, ninguno para el servidor. Los llama `Pawn_1`, `Pawn_2`... y les pone `MpActor.owner_slot` antes de que entren al árbol.
@@ -355,6 +359,8 @@ Las transformaciones (y `velocity`) viajan siempre, en el mismo paquete que la p
 |---|---|---|
 | `predict` | El dueño se mueve al instante. Necesita un `MpInput` al lado y `func mp_move(input, delta)` en el padre | off |
 | `max_resim_ticks` | Lo más que repite una corrección. Con mucho ping hay más ticks sin confirmar; pasado el tope corrige menos seguido, para no gastar CPU | 32 |
+| `correction_smoothing_s` | Cuánto tarda en desvanecerse en pantalla una corrección del dueño (su física se corrige al instante). 0 = se dibuja de golpe | 0.1 |
+| `correction_snap_distance` | Una corrección más larga que esto (px en 2D, m en 3D) se dibuja de golpe, como un teletransporte. 0 = todas se desvanecen | 0 |
 
 **Grupo Owner**:
 
@@ -369,7 +375,7 @@ Las transformaciones (y `velocity`) viajan siempre, en el mismo paquete que la p
 |---|---|---|
 | `lag_compensate` | El servidor guarda el último segundo de poses de este nodo, para que un disparo se valide contra donde lo vio el tirador (ver 6.8) | on |
 
-Con `smoothing` distinto de `NONE` o con `predict`, la posición no viaja en `position` sino en `MpActor:net_position` (y `net_rotation`, `net_stamp`). Si mirás el panel Replicación del `MpSync`, vas a ver eso: es normal. En el cliente, solo `MpActor` mueve el nodo.
+Con `smoothing` distinto de `NONE` o con `predict`, la posición no viaja en `position` sino en `MpActor:net_position` (y `net_rotation`, `net_stamp`, `net_teleports`). Si mirás el panel Replicación del `MpSync`, vas a ver eso: es normal. En el cliente, solo `MpActor` mueve el nodo.
 
 #### MpInput
 
@@ -458,6 +464,32 @@ func _physics_process(_delta: float) -> void:
 	move_and_slide()
 ```
 
+**Lo que decide el servidor** (un stun, una ralentización, un empujón, un warp): el dueño no lo puede predecir, así que lo trae el estado del servidor y la reconciliación repite desde ahí. Para eso, escribilo en el servidor (en `_physics_process` detrás de `is_authority()`, o en un `mp_sv_*`) en un valor que `mp_move` lea, y poné ese valor en **Sync › sync_extra**:
+
+```gdscript
+var stun_ticks := 0          # sync_extra: stun_ticks, speed_mult, knock
+var speed_mult := 1.0
+var knock := Vector2.ZERO
+
+func mp_move(keys: MpInput, delta: float) -> void:
+	if stun_ticks > 0:
+		stun_ticks -= 1      # se cuenta dentro de mp_move: el servidor y la repetición cuentan igual
+		velocity = Vector2.ZERO
+	else:
+		velocity = keys.get_vector(&"ui_left", &"ui_right", &"ui_up", &"ui_down") * SPEED * speed_mult
+	velocity += knock
+	knock = knock.move_toward(Vector2.ZERO, KNOCK_DECAY * delta)
+	move_and_slide()
+
+func hit(from: Vector2) -> void:   # en el servidor
+	knock = (position - from).normalized() * 600.0
+	stun_ticks = 20
+```
+
+**Las correcciones en pantalla**: cuando el servidor decidió algo que el dueño no predijo, su nodo va a la pose corregida al instante (física, `mp_move`) y lo que se dibuja se desvanece desde donde estaba en `correction_smoothing_s` (0,1 s, como el `cl_smoothtime` de Source; Photon Fusion y Unity Netcode hacen lo mismo: solo se suaviza la pose visible). Un warp que hace el servidor no es una corrección para suavizar: llamá `net.snap()` en el servidor apenas movés el nodo (ver 6.8), o configurá `correction_snap_distance`. `net.correction_offset()` dice cuánto falta desvanecer.
+
+**Suave entre ticks de física**: el nodo predicho del dueño se mueve en ticks de física (60 por segundo). En una pantalla de 120 Hz o más, prendé **Project Settings › Physics › Common › Physics Interpolation**: el motor dibuja cada nodo entre sus dos últimos ticks (lo que Fusion usa por defecto para el jugador local). El kit está listo: los proxies la apagan para ellos (`MpActor` y `MpReplicate` los dibujan en cada frame) y la corrección se desvanece por tick. Lo que sigue a un nodo de red en `_process` (una cámara, una barra de vida) tiene que correr **después** de que el kit lo dibuja: `process_priority` mayor que 10000 (con physics interpolation, leé `get_global_transform_interpolated()` en 3D).
+
 ### 6.3 ¿Dónde estoy? `is_authority` e `is_local`
 
 | Llamada | Verdadero cuando | Para qué |
@@ -465,10 +497,12 @@ func _physics_process(_delta: float) -> void:
 | `net.is_authority()` | Solo, o en el servidor (LAN host o dedicado) | Las reglas del juego |
 | `net.is_local()` | En la máquina del jugador dueño de este nodo | Cámara, HUD propio, leer el mouse |
 | `MpKit.is_networked()` | Hay red (no es solo) | Textos tipo "Solo" / "Online" |
-| `MpKit.is_server()` | Este proceso es servidor con red | |
+| `MpKit.is_server()` | Este proceso es servidor con red (falso en solo) | Lo que solo existe en red: snapshots, el matchmaker, el túnel. Para las reglas, `is_authority()` |
 | `MpKit.is_listening()` | Servidor alcanzable por los clientes (con relay, recién cuando el relay lo aceptó) | Avisar "listo" |
 | `MpKit.is_dedicated()` | Servidor sin jugador | No reproducir sonidos, no esperar teclas |
 | `MpKit.local_slot()` | El slot de esta máquina (0 en un dedicado o antes de que el servidor asigne) | "Sos P2" |
+
+Dentro de cualquier nodo, `is_multiplayer_authority()` (el de Godot) dice lo mismo que `net.is_authority()`: el kit deja la autoridad de cada nodo en el servidor, así que es verdadero en solo, en el host LAN y en el dedicado, y falso en un cliente. `MpKit.is_authority()` (o `Mp.is_server()`) es la misma pregunta desde un script que no está en el mundo.
 
 En un host LAN, `is_authority()` **y** `is_local()` son verdaderos a la vez para su propio jugador.
 
@@ -486,7 +520,13 @@ En un host LAN, `is_authority()` **y** `is_local()` son verdaderos a la vez para
 | `input.get_vector(&"l", &"r", &"u", &"d")` | `Input.get_vector` (largo máximo 1, zona muerta 0.2) |
 | `input.is_replaying()` | Verdadero mientras se repiten frames viejos |
 
-Una acción que no está en `MpInput.actions` siempre da 0 / falso en el servidor.
+Una acción que no está en `MpInput.actions` siempre da 0 / falso en el servidor. Las fuerzas viajan en pasos de 1/255; el dueño predice con ese mismo valor, así que el servidor coincide.
+
+**Cómo viajan las teclas** (con `predict`), sin nada que configurar:
+
+- En cada tick el dueño manda todos los frames que el servidor todavía no confirmó (como hace Overwatch), codificados en delta: un frame que mantiene las mismas teclas cuesta 5 bytes. Una ráfaga de paquetes perdidos no pierde ningún frame.
+- El servidor toma un frame por tick y nunca frena a un jugador: si el próximo frame llega tarde, repite el último (como Overwatch, Unity Netcode y Photon Fusion) y descarta ese frame cuando llega. El dueño mantuvo las mismas teclas casi siempre, así que la suposición suele acertar; si no, el dueño recibe una corrección, que se desvanece. Después de 0,25 s sin frames se sueltan las teclas.
+- El buffer del servidor sigue cuán tarde llegan los frames de este dueño. Para cambiarlo, el servidor nunca apura ni frena al jugador (los demás verían un tirón): el dueño muestrea de vez en cuando un frame de más o uno de menos, y ese paso también se suaviza en su pantalla.
 
 ### 6.5 Valores propios: `set_value` / `get_value`
 
@@ -503,7 +543,7 @@ var aim: Variant = input.get_value(&"aim", Vector2.RIGHT)
 var direction: Vector2 = (aim as Vector2).normalized() if aim is Vector2 and (aim as Vector2).length() > 0.01 else Vector2.RIGHT
 ```
 
-`set_value` fuera del dueño no hace nada. Hasta 16 valores por frame. Más en [14](#14-seguridad-y-límites).
+`set_value` fuera del dueño no hace nada. Hasta 16 valores por frame. Un valor viaja exacto, tal como se puso (un float, un `Vector2`, un ángulo en radianes: sin redondeo), y con predicción `mp_move` lee el mismo valor en el dueño y en el servidor; por eso una mira o un ángulo hacia donde mira el personaje van como valor, no como acción. Más en [14](#14-seguridad-y-límites).
 
 ### 6.6 Pedidos al servidor: `to_server` → `mp_sv_*`
 
@@ -542,12 +582,15 @@ func mp_all_flash() -> void:
 - Solo el servidor puede llamar `to_all`. Corre ahí y en cada peer que ya tiene el nodo.
 - El que entra después **no** lo recibe. Para algo que tiene que quedar (un color, una puerta abierta), usá **Sync** o `MpState`.
 
+**¿Un efecto o un estado?** Un efecto es un momento: un destello, un sonido, una sacudida. Va por `to_all` (o por un `@rpc` tuyo), y el que no estaba se lo pierde, y está bien. Un estado es lo que queda: una marca en el piso, una puerta abierta, un puntaje. Va en **Sync**, en `MpState` (una lista de marcas en una clave) o como un nodo que crea un spawner: el que entra o vuelve lo recibe al cargar, sin que nadie lo mande de nuevo. Si mandás efectos con un `@rpc` tuyo, mandalos a `MpKit.ready_peers()` (los peers con el mundo cargado) con `rpc_id`, y reproducilo también en el servidor si se ve ahí: un peer que todavía carga lo jugaría sin mundo. `MpKit.broadcast_custom(channel, data, true)` hace lo mismo para el túnel.
+
 ### 6.8 Más del `MpActor`
 
 | Llamada | Qué hace |
 |---|---|
 | `net.despawn()` | Solo servidor, y solo en nodos que hizo un spawner: lo borra en todos (ver [7.3](#73-borrar-cosas)) |
-| `net.snap()` | Después de teletransportar: en el cliente salta a la pose del servidor en vez de deslizarse |
+| `net.snap()` | Después de teletransportar o respawnear, **en el servidor**, apenas movés el nodo: cada cliente salta ahí en vez de deslizarse (los demás cuando su tiempo dibujado llega, el dueño con predicción sin desvanecer). Viaja con la pose, así que no hace falta `to_all` |
+| `net.correction_offset()` | Con predicción, en el dueño: cuánto le falta a lo que se dibuja para llegar a la pose real mientras se desvanece una corrección (0 = nada) |
 | `net.last_correction()` | Con predicción, en el dueño: cuánto lo corrigió el servidor en el último estado (0 = la predicción acertó) |
 | `net.owner_slot` | El slot dueño (para mostrar "P1", elegir color...) |
 | `MpActor.of(nodo)` | El `MpActor` hijo de un nodo, o `null` |
@@ -562,11 +605,10 @@ Ejemplo de `snap` después de un respawn:
 ```gdscript
 func respawn(at: Vector2) -> void:   # en el servidor
 	position = at
-	net.to_all(&"respawned")
-
-func mp_all_respawned() -> void:
 	net.snap()
 ```
+
+El teletransporte viaja en el mismo paquete que la pose nueva (como el `EF_NOINTERP` de Source o el `Teleport()` de Photon Fusion), así que ningún cliente se desliza a través de él, lleguen los paquetes en el orden que lleguen. La compensación de lag también lo sabe: un disparo nunca se valida contra un punto intermedio.
 
 ### 6.9 La partida desde cualquier script: `Mp`
 
@@ -656,7 +698,11 @@ Qué replica un spawner:
 
 - Un nodo de una escena de su lista (**Extra Scenes**), o uno hecho por `spawn(data)` con tu `spawn_function`.
 - Un nodo que un script agrega a mano en `spawn_path` (`add_child` de algo que no está en la lista) **no** se replica: queda solo en el servidor. Sirve para un efecto solo del servidor.
-- Si usás `spawn_function`, asignala **antes** de `super._ready()` en tu script del spawner. Si la asignás después, sale un warning y el primer nodo cuenta como agregado a mano.
+- Si usás `spawn_function`, asignala en un `_ready` de la escena (el del spawner, un hermano o el padre): el spawner la toma al final de ese frame, antes de que nada spawnee. Si la asignás más tarde, sale un warning y el primer nodo cuenta como agregado a mano.
+
+`spawner.spawn_here(data)` es un `spawn(data)` que podés llamar desde cualquier peer: en el servidor (o en solo) spawnea con tu `spawn_function`; en un cliente no hace nada y devuelve `null`. Sin `if servidor` alrededor.
+
+El spawner de jugadores (`MpSlotSpawner`, el `Players` del `MpWorld`) le da un jugador a cada asiento con el mundo listo: a los que lo avisan después, y a los que ya estaban listos cuando entra el spawner (un mundo cargado otra vez, un spawner en una escena que carga después).
 
 ### 7.3 Borrar cosas
 
@@ -688,6 +734,7 @@ Para lo que tienen que ver todos y no es de un actor: puntaje, reloj, ronda.
 | `state.get_value(&"clave", default)` | Lee, en cualquier peer |
 | `state.values` | El `Dictionary` completo (para leer). Valores iniciales: cargalos en el inspector |
 | señal `changed(key, value)` | En todos los peers, cada vez que cambia una clave |
+| `state.watch(&"clave", callback, default)` | En todos los peers: `callback(valor)` ya con el valor actual y después en cada cambio de esa clave. El que entra o vuelve recibe primero el valor actual, sin importar en qué orden arranca todo. `unwatch(handle)` lo corta |
 
 Un HUD que lo muestra (del ejemplo, `hud.gd`):
 
@@ -699,21 +746,45 @@ func _ready() -> void:
 	_refresh()
 ```
 
+O para una sola clave, `state.watch(&"round", _show_round, 1)`: muestra la ronda actual al instante y cada ronda nueva.
+
 No escribas `state.values["x"] = 3` a mano: no se sincroniza. Usá `set_value`.
+
+### Quién mira esta pantalla: `MpLocalSeat`
+
+El HUD, los sonidos, las órdenes, la pausa y el resultado muestran el lado de un jugador. Poné un **MpLocalSeat** en el mundo y pasáselo con `@export var seat: MpLocalSeat` (lo que nace en runtime lo encuentra con `MpLocalSeat.of(self)`; si solo pregunta quién mira, `MpLocalSeat.slot_of(self)`, que da `MpKit.local_slot()` en una escena sin asiento, como una escena corrida sola o un test):
+
+| | Qué dice |
+|---|---|
+| `seat.slot` | El asiento que juega esta PC (0 en un dedicado, o en un cliente todavía sin asiento) |
+| `seat.is_mine(slot)` | Si ese asiento es el de esta pantalla |
+| `seat.is_online()` | Si hay red |
+| señal `changed(slot)` | Cambió el asiento de esta pantalla (el servidor dio uno) |
+| `preview_slot` (inspector) | Solo en solo: mirar la partida como ese asiento, p.ej. el HUD del jugador 2, sin una segunda ventana |
+
+Quién simula es otra pregunta: `is_multiplayer_authority()` / `is_authority()` (6.3).
 
 ### 7.5 Inicio y fin: `MpMatch`
 
-Un `MpMatch` en el mundo dice cuándo empieza la partida, quién se fue y quién volvió, y la termina para todos.
+Un `MpMatch` en el mundo dice cuándo empieza la partida, quién se fue y quién volvió, y la termina para todos. Lo que cuenta lo decide la **puerta de arranque** (`MpMatchGate`, en `/root/MpKit/Gate`, `Mp.gate()`), que el `MpFlow` arma en cada camino que hostea (Host LAN, dedicado a mano, dedicado de sala):
+
+- **Antes del arranque** los asientos libres están abiertos. El mundo queda **pausado en todos los peers** hasta que cargan los asientos que espera: todos por defecto (`start_seats` = 0, igual en Host LAN y en un dedicado a mano; en una partida de sala, todos los del ticket). `--start-seats=N` cambia ese número sin tocar la escena. Pasado `load_timeout_s` (15 s) desde el primero que entró, arranca con los que cargaron; mientras tanto el HUD dice que espera (`MpWaitingLabel`, `Hud/Waiting`: «Waiting for players (1/4)»). En Host LAN el host no tiene que esperar: el botón **Start now** del HUD (`MpStartButton`, en `Hud/Start` del `MpWorld`) arranca con los que ya cargaron.
+- **Después del arranque** solo vuelve un asiento que se fue, dentro de `rejoin_grace_s`, al mismo slot (*rejoin*), salvo que esté prendido **`late_join`** (inspector del `MpFlow` o `--late-join`; apagado por defecto): entonces un recién llegado todavía toma un asiento libre, y un asiento abandonado pasada la gracia queda libre otra vez. Una partida de sala nunca tiene late join (el ticket nombra cada asiento). En LAN el cliente vuelve solo con la credencial que el servidor le dio al sentarlo (en memoria, por `host:puerto`); en una sala, con su ticket. Si el servidor todavía no notó que el cliente se cayó, gana la credencial (o el ticket): se suelta la conexión vieja y el asiento vuelve como rejoin. Cualquier otro peer se rechaza con un motivo: `match_started`, `full`, `grace_over`, `slot_taken`. El cliente recibe `admission_rejected(motivo)` y el flow lo muestra con `rejection_text(motivo)` (pisalo para traducir).
+- Un asiento que no vuelve a tiempo, o que nunca cargó, **abandona** (`player_abandoned`). Si se fueron todos en un dedicado, nadie abandona: la puerta espera y, cuando pasó la gracia de todos, emite `all_gone`. En un listen host el host sigue jugando: cada asiento que pasa la gracia abandona y no hay `all_gone`.
+- **Mientras un asiento no está**, su peón queda si el spawner lo conserva (`MpSlotSpawner.despawn_on_leave` apagado; prendido por defecto, se borra y se vuelve a crear en el rejoin): no tiene teclas apretadas y, con predicción, el servidor lo sigue simulando sin ninguna (la gravedad o un empujón siguen). Al volver, las teclas de la conexión nueva lo mueven al instante.
+- **Un dedicado a mano sirve una partida tras otra** (una VPS arrancada con `--dedicated`): cuando su partida termina (`Mp.finish()`) y se va el último jugador, o todos quedaron afuera pasada la gracia (`all_gone`), carga un mundo nuevo (puntos y actores desde cero) y abre otra vez todos los asientos. Un juego con pantalla de revancha puede llamar él mismo a `MpFlow.next_open_match()` cuando se fueron sus jugadores. **Si tu juego termina la partida a su manera** (no con `Mp.finish()`), avisale al kit en el servidor con `MpKit.broadcast_session_ended(result)`, o llamá a `MpFlow.next_open_match()` cuando terminó y quedó vacío; si no, la partida siguiente recién se abre cuando pasó la gracia de todos, y el que llega antes se rechaza (`match_started`). Los clientes reciben el estado de la puerta al ser admitidos y se pausan apenas cargan su mundo, así que su `MatchClock` arranca en 0.
+
+Los knobs están en el inspector del `MpFlow`, grupo **Match start** (`rejoin_grace_s`, `load_timeout_s`, `start_seats`, `late_join`, `pause_clients`, `match_started_status`). En una partida de sala, la gracia y el tiempo de carga salen del `MpLobbyConfig`. En el Remote del editor, `/root/MpKit/Gate` muestra `phase`, `expected`, `loaded` y `away`. En Host LAN el host puede arrancar con los que ya cargaron: `MpStartButton`, o `Mp.gate().can_start_now()` / `Mp.gate().start_now()` desde un botón propio.
 
 Señales:
 
 | Señal | Dónde | Cuándo |
 |---|---|---|
-| `all_loaded` | servidor | Están todos (partida de sala) o el mundo está listo (LAN, dedicado, solo) |
+| `all_loaded` | servidor | La partida arranca (cargaron los asientos que esperaba) o el mundo está listo (solo) |
 | `player_joined(slot)` | servidor | Entró un jugador por primera vez |
 | `player_left(slot)` | servidor | Se fue un jugador |
-| `player_back(slot)` | servidor | Solo partida de sala: volvió dentro de la gracia, mismo slot |
-| `player_abandoned(slot)` | servidor | Solo partida de sala: no volvió a tiempo, o nunca cargó |
+| `player_back(slot)` | servidor | Volvió dentro de la gracia, mismo slot |
+| `player_abandoned(slot)` | servidor | No volvió a tiempo, o nunca cargó |
 | `waiting_changed(waiting)` | **todos** | La partida empieza o deja de esperar asientos |
 | `finished(result)` | **todos** | El servidor llamó `finish` |
 
@@ -722,9 +793,8 @@ Métodos y propiedades:
 | Nombre | Qué hace |
 |---|---|
 | `finish(result)` | Solo servidor: termina la partida. Todos reciben `finished(result)`. En una partida de sala, además escribe el resultado para la sala |
-| `seats()` | Los slots del ticket de sala (vacío fuera de una partida de sala) |
+| `seats()` | Los slots de la partida (los de la puerta; vacío en solo) |
 | `waiting` | Verdadero mientras espera asientos, en todos los peers |
-| `pause_until_loaded` | (on) En una partida de sala, el mundo queda **pausado en todos los peers** hasta que cargan todos o pasa `load_timeout_s`. Así nadie camina antes que los demás |
 
 Mientras espera, el árbol está pausado. La red del kit sigue andando (MpKit, el lobby, el agente, el lanzador, el beacon LAN corren igual), y también el botón Leave y la línea de invitación. Lo tuyo no: si querés mostrar "Esperando jugadores…", poné ese nodo del HUD con **Process › Mode = Always** y escuchá `waiting_changed`.
 
@@ -787,6 +857,23 @@ Mp.leave()                                  # al lobby o al menú
 MpFlow.find_in_tree(self).return_to_boot()  # siempre al menú
 ```
 
+### 7.7 Pantalla de carga
+
+El `MpFlow` carga el mundo en un hilo (`MpWorldLoader`, hijo interno del flow y único dueño de la carga): primero lee la escena del mundo y los archivos que nombre tu juego, después cambia de escena y, si lo pediste, espera a que **el mundo avise que está listo** (por ejemplo, después de precalentar shaders detrás de una pantalla). Recién ahí ese peer cuenta como cargado en la puerta de arranque. Así nadie arranca la partida con el mundo a medio compilar.
+
+1. En tu flow (o su escena), tildá **`world_reports_loaded`** (o arrancá con `--world-reports-loaded`). Apagado (por defecto), «cargado» es «la escena del mundo entró», como siempre.
+2. En el mundo, cuando esté listo: `MpFlow.find_in_tree(self).report_world_loaded()`. Mientras tanto podés contar el avance con `report_world_progress(0..1)`. Si el mundo nunca avisa, el loader sigue solo a los `report_timeout_s` (30 s) y la puerta arranca igual pasado `load_timeout_s`.
+3. Para la pantalla, escuchá `world_load_progressed(ratio, phase)` del flow: `phase` es `MpWorldLoader.Phase` (`FILES` leyendo archivos, `WORLD` el mundo preparándose, `READY` listo, `IDLE` la carga se cortó porque la escena cambió por otro lado, por ejemplo se cayó el servidor). `ratio` va de 0 a 0,5 con los archivos y de 0,5 a 1 con el mundo. `world_loaded` avisa al final. La pantalla, y lo que precalienta el mundo, tienen que tener **Process › Mode = Always**: la puerta pausa el árbol mientras espera.
+4. Dos ganchos para pisar en tu subclase de `MpFlow`: `_before_world_load()` (justo antes de cargar, en cada peer: elegir el mapa) y `_extra_world_loads() -> PackedStringArray` (archivos que el mundo va a usar después, para leerlos en el mismo hilo y no trabarse al aparecer).
+
+Con `world_reports_loaded` prendido cambia quién cuenta:
+
+- **Cliente**: su asiento cuenta al `report_loaded` (RPC al servidor), no al `world_ready` de los spawners. El `world_ready` sigue igual para lo demás (revelar spawns, `client_world_ready`), así que el servidor le puede mandar lo que el cliente necesita para prepararse.
+- **Servidor** (host LAN, dedicado): la puerta espera también su propio mundo (`wait_host`, `mark_host_loaded`). Un dedicado sin pantalla avisa enseguida.
+- **Solo** («Jugar solo» o contra la IA): la puerta se arma también, sin asientos ni red (`arm([], 0)`), y solo espera al host. El árbol queda pausado hasta que el mundo avisa, así el reloj de la partida y la IA no corren detrás de la pantalla. Sin `world_reports_loaded` arranca enseguida, como antes.
+
+Si leer el mundo en el hilo falla (un arranque en frío justo después de importar, un pedido que el motor rechaza), el loader lo lee en el hilo principal en vez de quedarse sin mundo.
+
 ## 8. Probar
 
 ### 8.1 Solo
@@ -814,6 +901,8 @@ godot --headless --path . -- --dedicated
 ```
 
 Después abrí clientes (F5, o varias instancias) y uní cada uno a `127.0.0.1`. El servidor no tiene jugador: el primer cliente es P1.
+
+La partida arranca cuando cargaron todos los asientos, o `load_timeout_s` (15 s) después de que entró el primero. Para probarlo con un solo cliente y sin esperar: `godot --headless --path . -- --dedicated --start-seats=1`.
 
 Desde el editor: en el diálogo de personalizar instancias del menú **Depurar**, poné `--headless -- --dedicated` en los argumentos de una instancia (marcá que anule los argumentos).
 
@@ -906,6 +995,7 @@ Toda la matriz de casos automáticos: `mpkit_lab/run/all.sh` (una hora con una c
 | `--world=id` | Mundo, si usás el catálogo `MpFlow.worlds` |
 | `--keep-match-files` | Servidor de salas: no borra la carpeta de cada partida |
 | `--lag-comp=off` | Servidor: sin compensación de lag (para comparar) |
+| `--correction-smoothing-s=0` | Cliente: las correcciones del jugador propio se dibujan de golpe (para comparar; u otro tiempo en segundos) |
 | `--relay-refused-grace-s=N` | Cuánto reintenta un host que el relay rechazó antes de darse por rechazado (3 s; las partidas de un servidor de salas usan 0.5 s) |
 | `--no-flow` | El `MpFlow` no hace nada (herramientas y pruebas) |
 
@@ -1188,7 +1278,7 @@ Un navegador pausa una pestaña oculta. El jugador web que cambia de pestaña se
 
 ## 12. Relay (túnel por Railway u otro host)
 
-El relay es un servidor Node chico (`relay/server.mjs`, sin dependencias, Node 18+) que hace de túnel. Tu servidor Godot se conecta **hacia afuera** al relay, así que no necesita IP pública ni puertos abiertos: puede correr en tu PC detrás del router. Los jugadores se conectan al mismo relay.
+El relay es un servidor Node chico (`relay/server.mjs`, Node 18+ y la librería `ws`: `npm install` una vez) que hace de túnel. Tu servidor Godot se conecta **hacia afuera** al relay, así que no necesita IP pública ni puertos abiertos: puede correr en tu PC detrás del router. Los jugadores se conectan al mismo relay.
 
 ```
 jugador ─┐
@@ -1200,8 +1290,8 @@ Cada "puerto" del kit es una sala del relay: `<relay_room>-<puerto>`. Así el lo
 
 ### 12.1 Subir el relay a Railway
 
-1. Creá un repo (o una carpeta en el tuyo) con `server.mjs` y `package.json` de `addons/mp_kit/relay/`.
-2. En Railway: **New Project › Deploy from GitHub repo** y elegí ese repo. Railway corre `npm start`.
+1. Creá un repo (o una carpeta en el tuyo) con `server.mjs`, `lib/`, `package.json` y `package-lock.json` de `addons/mp_kit/relay/`.
+2. En Railway: **New Project › Deploy from GitHub repo** y elegí ese repo. Railway instala la dependencia y corre `npm start`.
 3. En **Variables**: `RELAY_HOST_SECRET` = una clave larga al azar. Sin ella el relay no deja hostear a nadie (`RELAY_OPEN=1` lo abre, solo para pruebas locales).
 4. En **Settings › Networking**: **Generate Domain**. Te queda `tu-relay.up.railway.app`, con TLS: la dirección es `wss://tu-relay.up.railway.app`.
 5. Opcional: healthcheck en la ruta `/health`.
@@ -1209,9 +1299,12 @@ Cada "puerto" del kit es una sala del relay: `<relay_room>-<puerto>`. Así el lo
 Probalo local antes:
 
 ```bash
+npm install --prefix addons/mp_kit/relay   # una vez
 PORT=8080 RELAY_HOST_SECRET=prueba node addons/mp_kit/relay/server.mjs
 # dirección: ws://127.0.0.1:8080
 ```
+
+O en **Fly.io**, con una región cerca de tus jugadores (`gru` = São Paulo; Railway no tiene ninguna en Sudamérica): los pasos, el `Dockerfile` + `fly.toml` y todos los comandos útiles (desplegar, logs, secretos, apagar) están en [relay/README.md](relay/README.md).
 
 ### 12.2 Configurar el juego
 
@@ -1253,7 +1346,7 @@ Protocolo y detalles: [relay/README.md](relay/README.md).
 
 ## 13. Subir a un VPS
 
-Un solo binario de Linux hace todo: cliente, servidor de salas (`--room-server`) y cada partida (`--dedicated`). Si preferís no abrir puertos, el servidor puede correr en cualquier lado detrás del relay ([12](#12-relay-túnel-por-railway-u-otro-host)).
+Un solo binario de Linux hace todo: cliente, servidor de salas (`--room-server`) y cada partida (`--dedicated`). Si preferís no abrir puertos, el servidor puede correr en cualquier lado detrás del relay ([12](#12-relay-túnel-por-railway-u-otro-host)). Sin ningún VPS, en Fly.io: [13.6](#136-sin-vps-flyio).
 
 ### 13.1 Lo que necesitás
 
@@ -1349,6 +1442,176 @@ En los clientes, poné la dirección del VPS en `public_host` de `game.tres` (po
 
 Más detalle: [deploy/README.md](deploy/README.md).
 
+### 13.6 Sin VPS: Fly.io
+
+Fly.io corre el servidor de tu juego en una máquina chica en la que nunca entrás: sin VPS que mantener, sin plantillas de export, sin puertos que abrir. El servidor se conecta **hacia afuera** a tu relay ([12](#12-relay-túnel-por-railway-u-otro-host)), así que los jugadores llegan a él por el relay como siempre. Tu juego se distribuye sin ninguna clave adentro: solo el servidor tiene el secreto del relay.
+
+```
+jugadores ──── wss://mi-relay.fly.dev ──── el servidor de tu juego en Fly
+                (el relay, sección 12)      (un servidor de salas: lobby + sus partidas)
+```
+
+**Lo que necesitás**
+
+- El relay andando (sección 12), su dirección (`wss://mi-relay.fly.dev`) y su secreto de host (`RELAY_HOST_SECRET`).
+- Una cuenta de Fly.io y `flyctl` instalado: `brew install flyctl` en macOS, o la línea de tu sistema en fly.io/docs/flyctl/install. Después iniciá sesión una vez: `fly auth login`.
+- Tu proyecto con las salas configuradas (sección 9): `game.tres` con `rooms_scene`. Para un dedicado simple, nada más.
+
+**1. Desplegar (un comando, desde la carpeta de tu proyecto)**
+
+```bash
+MPKIT_RELAY_SECRET=<el secreto del relay> addons/mp_kit/deploy/fly.sh --app mi-servidor-de-juego --relay-url wss://mi-relay.fly.dev
+```
+
+Qué hace, en orden:
+
+1. Escribe `fly.toml` en la carpeta de tu proyecto (a partir de `addons/mp_kit/deploy/fly/fly.toml`) con el nombre de tu app, la región (`gru`, São Paulo, salvo `--region`), la versión de Godot (la del `godot` de tu PATH, o `--godot 4.7.2`) y los flags del servidor. Commitealo con tu juego; si querés, después lo editás a mano.
+2. Crea la app en Fly si todavía no existe (los nombres de app son globales en Fly: elegí uno tuyo).
+3. Guarda el secreto como secreto de Fly, `MPKIT_RELAY_SECRET`, por stdin: nunca queda en una línea de comandos, en `fly.toml` ni en la imagen.
+4. Construye la imagen en los builders de Fly (`addons/mp_kit/deploy/fly/Dockerfile`): baja el Godot oficial para Linux de esa versión, lo verifica contra el `SHA512-SUMS.txt` de la release, copia tu proyecto y lo importa una vez.
+5. Arranca una máquina, siempre prendida, que corre `godot --headless --path /app -- --room-server …`.
+
+Probalo primero con `--dry-run`: imprime cada comando y no cambia nada.
+
+| Opción | Qué hace | Por defecto |
+|---|---|---|
+| `--app NOMBRE` | La app de Fly (minúsculas, dígitos, `-`) | obligatoria |
+| `--relay-url URL` | El relay. Sin esto, tu `game.tres` ya tiene que decir `transport = relay` con su `relay_url` | — |
+| `--relay-room NOMBRE` | El prefijo de las salas del relay, si no es el de tu `game.tres` | el del juego |
+| `--region CÓDIGO` | Dónde corre la máquina; la más cercana a tus jugadores y a tu relay (`fly platform regions`) | `gru` |
+| `--rooms PUERTO` | Un servidor de salas (lobby + partidas) en este puerto del kit | `7700` |
+| `--dedicated PUERTO` | En cambio, un dedicado simple (una partida; los jugadores entran con el puerto) | — |
+| `--godot X.Y.Z` | La versión de Godot de la imagen: la que usa tu proyecto | la del `godot` del PATH |
+| `--memory TAMAÑO` | La memoria de la máquina. Un servidor de salas corre un proceso por partida: más partidas a la vez, más memoria | `1gb` |
+| `--dry-run` | Solo imprime los comandos | apagado |
+
+**2. Verificar que anda**
+
+```bash
+fly logs --app mi-servidor-de-juego        # buscá: rooms ready port 7700 (relay)
+fly status --app mi-servidor-de-juego      # una máquina, started, en tu región
+fly logs --app mi-relay                    # el relay muestra: host mi-juego-7700
+```
+
+**3. Los jugadores**
+
+No tienen que hacer nada: con `transport = relay` en `game.tres`, el botón **Online** del juego va al lobby por el relay. Salas, salas privadas con código y partidas funcionan como en la sección 9.
+
+**4. Actualizar**
+
+Corré el mismo comando de nuevo después de cambiar el juego: construye una imagen nueva y reemplaza la máquina (las partidas que corren en ese momento terminan; los jugadores vuelven al lobby). Si no tenés `MPKIT_RELAY_SECRET` puesta, el secreto en Fly queda como estaba.
+
+**Costo**
+
+Una máquina siempre prendida: con `--memory 1gb` unos USD 6 por mes (fly.io/pricing tiene el precio de cada región), más el tráfico saliente (el ejemplo arena mueve unos 0,15 GB por jugador por hora; el tráfico de las partidas sale por el relay, que se cobra aparte).
+
+`512mb` alcanza para un dedicado o un servidor de salas con pocas partidas chicas.
+
+**Comandos útiles**
+
+```bash
+fly logs --app mi-servidor-de-juego                 # log en vivo: salas, partidas, resultados
+fly status --app mi-servidor-de-juego               # la máquina y su estado
+fly apps restart mi-servidor-de-juego               # reiniciarla (las partidas terminan, el lobby vuelve)
+fly secrets set --app mi-servidor-de-juego MPKIT_RELAY_SECRET=<nuevo>   # después de cambiar el secreto del relay
+fly scale memory 2048 --app mi-servidor-de-juego    # más memoria para más partidas a la vez
+fly scale count 0 --app mi-servidor-de-juego        # apagarla (no se cobra la máquina); count 1 la vuelve a prender
+fly apps destroy mi-servidor-de-juego               # borrarla para siempre
+```
+
+**Si algo falla**
+
+- `lobby port 7700 is in use on the relay`: otro servidor de salas del mismo juego tiene esa sala del relay (tu PC, una app vieja). Apagalo, o usá otro puerto `--rooms` u otro `--relay-room`.
+- El log del relay (`fly logs --app mi-relay`) dice `host refused for mi-juego-7700: wrong secret`: el secreto en Fly no es el del relay. Volvé a ponerlo (`fly secrets set …`).
+- La máquina se reinicia con `out of memory`: más `--memory` (o menos `max_matches`).
+- `no godot in PATH`: pasá `--godot 4.7.2` (la versión exacta que usa tu proyecto; Fly baja esa).
+
+**Probá todo en tu PC antes** (con Docker): [13.7](#137-tu-servidor-en-docker-en-tu-pc-de-punta-a-punta), la misma imagen con un relay local y dos ventanas.
+
+### 13.7 Tu servidor en Docker en tu PC, de punta a punta
+
+Antes de subir el servidor a Fly (13.6), o para reproducir un problema, corré todo el camino en tu propia PC: un relay, el servidor de tu juego en un contenedor (la misma imagen que corre Fly) y dos ventanas del juego que juegan a través de ellos. Cuatro terminales, todas abiertas en la carpeta de tu proyecto.
+
+```
+ventana 1 ─┐                                          ┌── contenedor: el servidor de tu juego
+ventana 2 ─┴── ws://127.0.0.1:8080 (relay, tu PC) ────┘   (llega al relay como ws://host.docker.internal:8080)
+```
+
+**Lo que necesitás**
+
+- Docker andando: Docker Desktop en macOS o Windows (abrilo una vez), Docker Engine en Linux. `docker info` tiene que responder sin errores.
+- Node 18 o más nuevo (para el relay): `node --version`.
+- Godot en tu PC, la misma versión que tu proyecto (`godot --version`; en macOS el binario es `/Applications/Godot.app/Contents/MacOS/Godot`).
+- Tu proyecto con salas (sección 9), o un dedicado simple (paso 6).
+
+**1. El relay (terminal 1)**
+
+```bash
+npm install --prefix addons/mp_kit/relay      # solo la primera vez
+PORT=8080 RELAY_HOST_SECRET=prueba-local node addons/mp_kit/relay/server.mjs
+```
+
+Ves `[relay] ready port 8080`. Dejala abierta: muestra cada host y cada jugador que entra. `prueba-local` es el secreto de host solo para esta prueba.
+
+**2. Construir la imagen del servidor (terminal 2)**
+
+```bash
+docker build -f addons/mp_kit/deploy/fly/Dockerfile --build-arg GODOT_VERSION=4.7.2 -t mi-servidor-de-juego .
+```
+
+Usá la versión de Godot de tu proyecto. La primera vez tarda uno o dos minutos: baja el Godot oficial para Linux, lo verifica contra las sumas SHA-512 de la release, copia tu proyecto y lo importa. Termina con `naming to docker.io/library/mi-servidor-de-juego`. Volvé a correrlo después de cada cambio del juego.
+
+**3. Arrancar el servidor (terminal 2)**
+
+```bash
+docker run --rm --name mi-servidor-de-juego --add-host=host.docker.internal:host-gateway \
+  -e MPKIT_RELAY_SECRET=prueba-local \
+  -e GAME_ARGS="--room-server --lobby-port=7700 --match-port-min=7800 --match-port-max=7899 --matches-root=/home/game/matches --transport=relay --relay-url=ws://host.docker.internal:8080 --relay-room=mi-juego" \
+  mi-servidor-de-juego
+```
+
+- `host.docker.internal` es tu PC vista desde adentro del contenedor; `--add-host` hace que funcione también en Linux.
+- `MPKIT_RELAY_SECRET` tiene que ser el `RELAY_HOST_SECRET` del relay.
+- `GAME_ARGS` son los flags del kit, los mismos que usa `fly.toml`.
+
+Ves `rooms ready port 7700 (relay)`, y la terminal 1 muestra `[relay] host mi-juego-7700`: el servidor entró.
+
+**4. Dos jugadores (terminales 3 y 4)**
+
+```bash
+godot --path . -- --transport=relay --relay-url=ws://127.0.0.1:8080 --relay-room=mi-juego
+```
+
+Corré esa línea en dos terminales: dos ventanas. En cada una, **Online rooms** abre la pantalla del lobby; conectá (la dirección puede quedar como está: por el relay el puerto, 7700, elige la sala). En una ventana **Create room**; en la otra, elegí la sala en la lista y entrá. Las dos aprietan **Ready**: el servidor de salas arranca la partida **dentro del contenedor** (la terminal 2 muestra `match for room "…" on port 78xx`) y las dos ventanas entran. Cuando termina, las dos vuelven al lobby con el resultado.
+
+Desde el editor, en cambio: poné `transport = relay`, `relay_url = ws://127.0.0.1:8080` y `relay_room = mi-juego` en `game.tres` (solo mientras probás), **Debug › Run Multiple Instances › 2** y F5.
+
+**5. Apagar**
+
+`Ctrl+C` en cada terminal. El contenedor se borra solo (`--rm`); si lo arrancaste en segundo plano (`docker run -d …`), `docker stop mi-servidor-de-juego`. Cuando termines, cerrá Docker Desktop (o `docker desktop stop`).
+
+**6. Un dedicado simple en vez de salas**
+
+En el paso 3, `GAME_ARGS="--dedicated --mp-port=7777 --transport=relay --relay-url=ws://host.docker.internal:8080 --relay-room=mi-juego"`. La terminal 1 muestra `[relay] host mi-juego-7777`. En cada ventana escribí `127.0.0.1:7777` en el campo de dirección del menú y **Join** (por el relay el puerto elige la sala).
+
+**7. Después, en Fly**
+
+La misma imagen, construida por Fly: `addons/mp_kit/deploy/fly.sh --app … --relay-url wss://…` (13.6). En local usaste `ws://` al relay de tu PC; en Fly es la dirección `wss://` de tu relay.
+
+**Si algo falla**
+
+| Lo que ves | Qué hacer |
+|---|---|
+| `Cannot connect to the Docker daemon` | Docker no está andando: abrí Docker Desktop (o `sudo systemctl start docker` en Linux) |
+| El build se corta en `the project did not import` | Los errores de arriba dicen por qué: casi siempre un error de script. Tu proyecto tiene que correr primero con `godot --headless --path .` en tu PC |
+| La terminal 1 nunca muestra `[relay] host mi-juego-7700` | El contenedor no llega a tu PC: dejá `--add-host=host.docker.internal:host-gateway` y el mismo puerto (8080) en `--relay-url` |
+| La terminal 1 muestra `host refused for mi-juego-7700: wrong secret` | `MPKIT_RELAY_SECRET` (contenedor) no es `RELAY_HOST_SECRET` (relay) |
+| Las ventanas nunca llegan al lobby | El mismo `--relay-room` (`mi-juego`) en las ventanas y en el servidor; las ventanas usan `ws://127.0.0.1:8080`, el contenedor `ws://host.docker.internal:8080` |
+| `lobby port 7700 is in use on the relay` | Otro servidor de salas de `mi-juego` está en ese relay (un contenedor viejo, el editor): apagalo, o usá otro `--relay-room` |
+| El servidor corrió en segundo plano y querés su log | `docker logs -f mi-servidor-de-juego` |
+
+Para el repo del kit hay una versión automática de todo esto: `bash mpkit_lab/run/docker.sh` construye la imagen con el lab, corre un dedicado y un servidor de salas en contenedores detrás de un relay local, juega a través de los dos e imprime `MPKIT DOCKER PASS` (o `SKIP` sin Docker).
+
 ## 14. Seguridad y límites
 
 ### 14.1 Lo que el kit ya pone
@@ -1437,8 +1700,8 @@ Agregá esa escena a **Extra Scenes** del spawner, en el editor.
 **"MpSpawner 'X': set spawn_path to the parent of replicated actors"** / **"spawn_path does not resolve"**
 Poné `spawn_path` en el nodo vacío donde aparecen las cosas (`../Actors`, `../Projectiles`).
 
-**"MpSpawner 'X': spawn_function was set after _ready; set it before super._ready()"**
-En tu script del spawner, asigná `spawn_function` antes de llamar `super._ready()`.
+**"MpSpawner 'X': spawn_function was set after the scene was set up; set it in a _ready"**
+Asigná `spawn_function` en un `_ready` de la escena (el del spawner, un hermano o el padre), no más tarde.
 
 **"MpSlotSpawner 'X': assign pawn_scene"**
 Asigná la escena del jugador.
@@ -1493,7 +1756,13 @@ Algún archivo de la carpeta ya existe (`[~]`) o la carpeta no empieza con `res:
 4. ¿Sin `predict`, movés detrás de `is_authority()`? Si movés detrás de `is_local()`, el cliente se mueve en su pantalla pero el servidor lo devuelve a su lugar.
 5. ¿`sync_position` está tildado? ¿Guardaste la escena del jugador después de tildarlo?
 6. ¿El `MpSlotSpawner` (el `Players` del `MpWorld`) tiene `spawn_path` y `pawn_scene`?
-7. ¿Es una partida de sala esperando asientos? El mundo está pausado hasta que cargan todos (`MpMatch.waiting`).
+7. ¿La partida espera asientos? El mundo está pausado hasta que cargan los que espera (`MpMatch.waiting`, `Mp.gate().is_waiting()`). Arranca sola pasado `load_timeout_s`; en Host LAN tocá **Start now** (`MpStartButton`), o probá `--start-seats=1`.
+
+**Un cliente se rechaza enseguida con `timeout`, solo contra un servidor o relay remoto.**
+El log del servidor dice `MpKit: the server turned peer N away (timeout)`: su ticket no llegó en `admission_timeout_s`. Los timeouts de red del kit cuentan tiempo real, así que un servidor lejos no es problema. Si el servidor corre temporizadores tuyos para cosas de red, usá `MpKit.after_real(segundos, callable)`, no `create_timer`: con `--fixed-fps` (deja de sincronizar con el reloj y puede correr miles de cuadros por segundo) o `Engine.time_scale`, el tiempo de juego no es tiempo real.
+
+**Un segundo cliente no entra: «The match already started» (`match_started`).**
+La puerta ya arrancó la partida: después del arranque solo vuelve un asiento que se fue. Para que entren varios, que carguen antes del arranque (`start_seats` = 0 espera todos los asientos, `--start-seats=N`), o prendé `late_join` (`--late-join`) para un juego de entrar y salir. En un dedicado a mano, la partida siguiente se abre sola cuando esta termina y se fueron todos.
 
 **Se mueve, pero los otros jugadores tironean.**
 Usá `smoothing = BUFFERED` con `adaptive_buffer` prendido; si sigue, bajá `late_tolerance` (0.01) o subí el tope `buffer_delay_s` (0.15, 0.2). Si bajaste `send_hz`, subilo o dejalo en 0.
@@ -1571,8 +1840,10 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | `MpFlow` | El nodo que maneja escenas y modos (solo, LAN, unirse, dedicado). Es dueño de la sesión |
 | `Mp` | La clase con los verbos de la partida: `play_solo`, `host`, `join`, `leave`, `is_server`, `me`, `state`, `finish`, `net_quality` |
 | `MpGame` | El juego en un `.tres`: la red (es un `MpNetConfig`) y las escenas (boot, mundo, lobby, salas) |
-| `MpWorld` | Un nodo en el mundo que arma puntos de aparición, actores, spawner, estado, partida, botón Leave e invitación |
+| `MpWorld` | Un nodo en el mundo que arma puntos de aparición, actores, spawner, estado, partida, botón Leave, invitación, botón Start now y aviso de espera |
 | `MpInviteLabel` | En el HUD: en una partida privada de esta PC, lo que escriben los amigos para entrar |
+| `MpStartButton` | En el HUD: en Host LAN, mientras la partida espera asientos, el host arranca con los que ya entraron |
+| `MpWaitingLabel` | En el HUD: mientras la partida espera sus asientos, «Waiting for players (1/4)» en todos los peers |
 | `MpNetQuality` | La calidad de la conexión (RTT, jitter, pérdida, nota); se lee con `Mp.net_quality()` |
 | `MpLagComp` | La compensación de lag: un segundo de poses en el servidor, para validar un disparo contra lo que vio el tirador |
 | `MpNetConfig` | Recurso `.tres` con la red del juego: transporte, puerto, jugadores, dirección pública, relay, TLS |
@@ -1616,6 +1887,7 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | toda la red y las escenas en un lugar | un **MpGame** (`game.tres`) en **Flow › Game** |
 | un mundo en red sin cablear nodos | un **MpWorld** con **Player Scene** |
 | jugar solo, hostear, unirse o salir desde mi propio menú | `Mp.play_solo()`, `Mp.host()`, `Mp.join(texto)`, `Mp.leave()` |
+| una pantalla de carga que espera al mundo (shaders) | **MpFlow › world_reports_loaded** + `report_world_loaded()` en el mundo; escuchá `world_load_progressed` ([7.7](#77-pantalla-de-carga)) |
 | que algo se vea igual en todos | **MpActor › Sync** (posición, rotación, visible, Extra) |
 | sincronizar una propiedad propia (`health`) | **MpActor › Sync › sync_extra** = `health` (o `Health:current`) |
 | que el jugador responda sin lag | **MpActor › Prediction › predict** + `func mp_move(keys, delta)` |
@@ -1633,7 +1905,7 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | aparecer balas o pickups | **MpSpawner** con la escena en **Extra Scenes** + `spawn_actor(escena, props, owner_slot)` |
 | borrar algo en todos | `net.despawn()` (servidor, nodos hechos por un spawner) |
 | ocultar un objeto del mundo | `sync_visible` + `visible = false` en el servidor |
-| teletransportar sin deslizar | `net.snap()` en los clientes |
+| teletransportar sin deslizar | `net.snap()` en el servidor, apenas lo movés |
 | puntaje, reloj, ronda | `Mp.state().set_value` / `.add`, señal `changed` |
 | terminar la partida | `Mp.finish({"winner": ...})`, señal `finished` en todos |
 | mostrar "esperando jugadores" | `MpMatch.waiting_changed` + nodo con Process Mode = Always |
@@ -1643,7 +1915,9 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | volver a una partida de sala después de caerme | botón **Back to the match** (`MpLobbyScreen.rejoin_match()`) |
 | saber si soy servidor | `net.is_authority()` / `Mp.is_server()` |
 | saber si este nodo es mío | `net.is_local()` |
-| saber qué jugador soy | `Mp.me()` |
+| saber qué jugador soy | `Mp.me()`, o un **MpLocalSeat** pasado al HUD (`seat.slot`, `is_mine`, `preview_slot` en solo) |
+| un valor de la partida desde el inicio y en cada cambio | `state.watch(&"clave", callback)` |
+| spawnear desde cualquier peer sin preguntar quién soy | `spawner.spawn_here(data)` |
 | jugar en LAN | **Host LAN** + **Join** a la IP |
 | un servidor dedicado | `godot --headless --path . -- --dedicated` |
 | salas online | `lobby_scene` y `rooms_scene` en `game.tres`: `MpRoomServer` + `MpLobbyConfig` + `MpLobbyScreen` (el `MpMatch` viene en el `MpWorld`) |
@@ -1664,6 +1938,6 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 - [QUICKSTART.md](QUICKSTART.md): la versión corta.
 - [README.md](README.md): referencia de cada pieza, transporte, túnel `Dictionary`, salas hub y bajo nivel.
 - [deploy/README.md](deploy/README.md): despliegue en un VPS en detalle.
-- [relay/README.md](relay/README.md): el relay, Railway y su protocolo.
+- [relay/README.md](relay/README.md): el relay, Railway, Fly.io, comandos útiles y su protocolo.
 - [examples/arena_2d/](examples/arena_2d/): el ejemplo completo. Abrí `boot.tscn` y apretá F6.
 - `mpkit_lab/` (en la raíz del repo): `run/play.sh` para jugar o mirar en ventanas, `run/all.sh` para toda la matriz, y `CASES.md` con qué cubre cada prueba.

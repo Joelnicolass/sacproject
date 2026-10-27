@@ -1,12 +1,13 @@
 class_name MatchClock
 extends RefCounted
 
-## The ticks of the match in this process (RFC-032 §3.1). The one owner of simulation time: whatever falls due
+## The ticks of the match in this process. The one owner of simulation time: whatever falls due
 ## (cooldowns, deadlines, lifetimes) is measured against now(), never against the render delta.
-## HighNoon calls begin() from _enter_tree on every peer, before MatchSeed.begin. SceneTree.physics_frame is emitted
+## MatchWorld (the root of match.tscn) calls begin() from _enter_tree on every peer, before MatchSeed.begin. SceneTree.physics_frame is emitted
 ## once per physics step before any _physics_process (and also while the tree is paused), so the count does not depend
-## on the order of the nodes; it only advances when the tree is not paused. Without HighNoon (debug scenes) now()
+## on the order of the nodes; it only advances when the tree is not paused. Without MatchWorld (debug scenes) now()
 ## hooks itself lazily on the first read.
+## Ref: RFC-032 §3.1.
 
 ## Ticks per second of the simulation: the project's physics/common/physics_ticks_per_second (read once at class load).
 static var TICKS_PER_SECOND: int = Engine.physics_ticks_per_second
@@ -30,7 +31,8 @@ static func now() -> int:
 	return _ticks
 
 
-## Whole ticks that cover `seconds` (state.d counts frames of 1/60 s). 0.5 s → 30; 0.501 s → 31.
+## Whole ticks that cover `seconds` (frames of 1/60 s). 0.5 s → 30; 0.501 s → 31.
+## Ref: sacengine state.d counts frames of 1/60 s.
 static func ticks_for(seconds: float) -> int:
 	return maxi(0, ceili(seconds * TICKS_PER_SECOND - 1e-4))
 

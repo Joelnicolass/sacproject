@@ -3,13 +3,13 @@ extends Weapon
 
 ## A shot: the creature stops, turns until it faces the aim, spends mana and fires on the shoot ticks of its clip, then waits out
 ## the cooldown. What flies is the AbilityType in `attack_type` (or the creature's own); how it looks and what it does on arrival
-## is that ability's ShotLook (data/shots/<tag>.tscn): a breath is this weapon with a ShotLook whose in_flight is a wave.
+## is that ability's ShotLook (ShotSpawner.default_look: data/shots/<tag>.tscn): a breath is this weapon with a ShotLook whose in_flight is a wave.
 ## Not: the flight (RangedShot) nor who to shoot (the chase state).
 ## Ref: sacengine `attack`, `shoot`, `aim`, `shootOnTick` (state.d:12511-12855). Server (or solo) only.
 
 ## The ranged attack this weapon fires. Empty = the creature's own (CreatureType.ranged_attack).
 @export var attack_type: AbilityType
-## It shoots unless the foe is in melee contact: its box within this many metres of ours (sacengine rangedMeleeAttackDistance).
+## It shoots unless the foe is in melee contact: its box within this many metres of ours (rangedMeleeAttackDistance).
 @export var melee_distance := 0.5
 ## It stops to shoot at max(range_factor·range, range − range_margin) from the body to the target's box.
 @export var range_factor := 0.8
@@ -18,7 +18,7 @@ extends Weapon
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var facing_s := 0.0666
 ## The shot leaves from the body's front at this fraction of its height (the baked bodies have no hand bones).
 @export var shot_height := 0.7
-## The line to the target is checked this far under both ends (sacengine hasClearShot).
+## The line to the target is checked this far under both ends (hasClearShot).
 @export var clear_shot_drop := 0.2
 @export_flags_3d_physics var ground_mask := 1
 
@@ -43,7 +43,11 @@ func setup(unit: UnitBody, creature: CreatureType, stream: RandomNumberGenerator
 	attack = attack_type if attack_type != null else (creature.ranged_attack if creature else null)
 	if attack and attack.speed_m_s <= 0.0:
 		attack = null
-	look = ShotLook.fit(self, look, attack.tag if attack and unit.simulates() else "")
+	if attack and unit.simulates():
+		look = ShotLook.fit(self, look, ShotSpawner.default_look(attack))
+	elif look != null:
+		look.queue_free()
+		look = null
 
 
 ## A client counts it down too, but nothing there reads it: only the server starts a shot.
@@ -101,7 +105,8 @@ func start(foe: Node3D) -> void:
 func advance(delta: float) -> bool:
 	if not _clip.active:
 		return false
-	## Each layer of Slime makes the shot take 5x as long (sacengine hasShootTick, state.d:1405-1408).
+	## Each layer of Slime makes the shot take 5x as long (hasShootTick).
+	## Ref: sacengine state.d:1405-1408.
 	for _shot in _clip.advance(delta / Afflictions.stat_factor_of(body, Afflictions.Stat.ATTACK_TIME)):
 		RangedFire.tick(self, _clip.shots.size())
 	if _clip.ended():

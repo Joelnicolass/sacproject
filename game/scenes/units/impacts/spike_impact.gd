@@ -1,11 +1,9 @@
 class_name SpikeImpact
 extends ShotImpact
 
-## F151 (RFC-030 030n-b): where the Rhinok's Spikey Death (hrba) stops, sacengine updateRhinokProjectile, phase moving
-## (state.d:24961-24983):
+## Where the Rhinok's Spikey Death stops:
 ## - on a body (its 5 m box met one: the target, or a body not of the shooter's side): that body takes the whole amount
-##   as splash ranged damage (dealRangedDamage, DamageMod.splash) and the rings start under its center
-##   (centerTarget, then position.z = getHeight);
+##   as splash ranged damage and the rings start under its center;
 ## - at the end of its range (ShotLook.burst_at_range_end): if the shot's target is still a valid target it takes the
 ##   whole amount the same way, wherever it is; the rings start where the shot stopped.
 ## The rings (SpikeWave) go to the shot's parent, so they outlive the shot; they leave out the body hurt here.
@@ -13,8 +11,9 @@ extends ShotImpact
 ## GroundHug the shot never bursts on the ground (holds_height), and a burst with no body before its range ends (none
 ## today) would hurt nobody.
 ## Declared (review m3): the target takes the damage through Health like any hit, so a target of the shooter's own side
-## (an order on an ally) takes 0 or ally_damage_factor by the match's friendly fire (Health._side_factor); sacengine's
-## dealRangedDamage applies its own friendly-fire rule there too (state.d:8961).
+## (an order on an ally) takes 0 or ally_damage_factor by the match's friendly fire (Health._side_factor); the original
+## applies its own friendly-fire rule there too.
+## Ref: F151 (RFC-030 030n-b); Rhinok hrba, sacengine updateRhinokProjectile phase moving (state.d:24961-24983), dealRangedDamage DamageMod.splash, centerTarget, getHeight, state.d:8961.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")

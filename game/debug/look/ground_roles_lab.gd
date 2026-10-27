@@ -13,7 +13,7 @@ const MAP_TAG := &"high_noon"
 
 
 func _init() -> void:
-	# The plants ask the active map for its tiles: it has to be this one before they are built.
+	# The plants ask the active map for its ground: it has to be this one before they are built.
 	ActiveMatch.choose(MapCatalog.shared().find(MAP_TAG), null)
 
 

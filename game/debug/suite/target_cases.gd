@@ -339,7 +339,7 @@ func _passive_weight() -> Dictionary:
 ## F372: one owner of «a passive NPC» (TargetRules): a Farmer of the map (peasant scene, slot 3 of High Noon) is one even with an
 ## aggressiveness of 1000 (its VillagerBrain never attacks); a pacifist of a player slot is passive but no NPC; a Trogg is neither.
 func _peasant_passive() -> Dictionary:
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	var farmer: UnitBody = PEASANT_SCENE.instantiate()
 	farmer.name = "Farmer3"
 	farmer.type = GameData.creature("zepe")

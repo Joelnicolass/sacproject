@@ -34,7 +34,7 @@ func reload(from_disk := false) -> void:
 	_god_tags = PackedStringArray()
 	var catalog := GameCatalog.shared(from_disk)
 	if catalog.creatures.is_empty() or catalog.spells.is_empty() or catalog.wizards.is_empty() or catalog.gods.is_empty():
-		print("GameData: data/catalog/ está vacío o incompleto. Corré tools/bake/bake_catalog.gd.")
+		print("GameData: data/catalog/ está vacío o incompleto. Revisá los .tres bajo data/catalog/.")
 		return
 	for type in catalog.creatures:
 		_creatures[type.id()] = type
@@ -88,8 +88,9 @@ func god(tag: String) -> GodType:
 	return _gods_by_tag.get(tag)
 
 
-## The god's book up to a wizard level, like sacengine `getSpells` (state.d:29512): entries of a higher
-## level are left out. The default 1 is the book the game has used so far (F112).
+## The god's book up to a wizard level: entries of a higher
+## level are left out. The default 1 is the book the game has used so far.
+## Ref: F112; sacengine `getSpells`, state.d:29512.
 func book(god_tag: String, max_level := 1) -> Dictionary:
 	var type: GodType = _gods_by_tag.get(god_tag)
 	if type == null or type.book == null:

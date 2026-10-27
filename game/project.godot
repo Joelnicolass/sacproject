@@ -14,10 +14,6 @@ config/name="Sacrifice"
 run/main_scene="res://scenes/core/boot.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
-[audio]
-
-buses/default_bus_layout="res://default_bus_layout.tres"
-
 [autoload]
 
 MpKit="*res://addons/mp_kit/mp_kit.gd"
@@ -25,7 +21,7 @@ MpLobby="*res://addons/mp_kit/lobby/mp_lobby.gd"
 GameData="*res://scenes/core/catalog/game_data.gd"
 SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.tscn"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"
-FxBus="*res://scenes/fx/fx_bus.gd"
+FxBus="*res://scenes/fx/fx_bus.tscn"
 SoundBus="*res://scenes/audio/sound_bus.tscn"
 
 [display]
@@ -37,7 +33,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg")
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg", "res://addons/terrain_tools/plugin.cfg", "res://addons/surface_maps/plugin.cfg")
 
 [gui]
 
@@ -60,9 +56,34 @@ debug_hit={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":75,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+debug_hit_heavy={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":true,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":75,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+debug_gib={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":76,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
 debug_anim_cycle={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":71,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+debug_light_turn={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":85,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+debug_light_tilt={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":73,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+debug_light_orbit={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":79,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 move_forward={
@@ -412,11 +433,31 @@ pause_menu={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194305,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+camera_orbit={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":3,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
+camera_orbit_modifier={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194326,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+camera_wheel_in={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":4,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
+camera_wheel_out={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":5,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
 
 [internationalization]
 
-locale/fallback="es"
 locale/translations=PackedStringArray("res://data/i18n/strings.es.translation")
+locale/fallback="es"
 
 [navigation]
 
@@ -425,6 +466,11 @@ world/region_use_async_iterations=false
 avoidance/thread_model/avoidance_use_multiple_threads=false
 avoidance/thread_model/avoidance_use_high_priority_threads=false
 3d/default_cell_size=0.5
+
+[physics]
+
+common/physics_jitter_fix=0.0
+common/physics_interpolation=true
 
 [shader_globals]
 
@@ -455,6 +501,14 @@ terrain_deform_map={
 terrain_deform_on={
 "type": "float",
 "value": 0.0
+}
+terrain_live_map={
+"type": "sampler2D",
+"value": ""
+}
+terrain_live_rect={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
 }
 scar_index={
 "type": "sampler2D",

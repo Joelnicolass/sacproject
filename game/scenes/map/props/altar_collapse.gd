@@ -3,13 +3,14 @@ class_name AltarCollapse
 extends Node
 
 ## The visible destruction of an altar, the same on every peer: the pillars and the top sink
-## for 4 s, the base rises and shrinks for 4 s and bursts for 3 s (AltarDestruction: disappearDuration,
-## floatDuration, explodeDuration, state.d:5289-5291). It only plays: when the altar is gone
+## for 4 s, the base rises and shrinks for 4 s and bursts for 3 s. It only plays: when the altar is gone
 ## is decided by MatchState's clock on the server.
+## Ref: sacengine AltarDestruction disappearDuration, floatDuration, explodeDuration, state.d:5289-5291.
 
 signal finished
 
-## sacengine 4 + 4 + 3 s (state.d:5289-5291); MatchRules.altar_collapse_s is the server's clock.
+## The original's 4 + 4 + 3 s; MatchRules.altar_collapse_s is the server's clock.
+## Ref: sacengine state.d:5289-5291.
 @export var duration_s := 11.0
 ## Share of the duration spent sinking (4/11) and floating (4/11); the rest is the burst.
 @export_range(0.0, 1.0) var sink_fraction := 0.3636
@@ -18,8 +19,10 @@ signal finished
 @export var sink_depth := 26.0
 ## Meters the base rises while it shrinks.
 @export var float_height := 60.0
-## ParticleType of FxBus played where the base bursts (wrath_explosion2).
-@export var burst_fx := "wrath_explosion2"
+## What is seen where the base bursts (data/fx/wrath_explosion2.tres). Empty = no burst.
+@export var burst_fx: ParticleType
+## Where the base bursts: a Marker3D of altar.tscn at the top of the rise (move it with the gizmo).
+@export var burst_spot: Marker3D
 ## Models that sink and the one that rises: both are children of `visuals`.
 @export var visuals: Node3D
 @export var ring: Node3D
@@ -40,6 +43,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Asigná en `visuals` el nodo con los modelos del altar.")
 	if ring == null:
 		warnings.append("Asigná en `ring` el modelo de la base, que sube y se achica.")
+	if burst_spot == null:
+		warnings.append("Asigná en `burst_spot` el Marker3D donde estalla la base (BurstSpot).")
 	return warnings
 
 
@@ -107,9 +112,6 @@ func _show() -> void:
 
 
 func _burst() -> void:
-	if Engine.is_editor_hint() or MpKit.is_dedicated() or ring == null:
+	if Engine.is_editor_hint() or burst_fx == null or burst_spot == null:
 		return
-	var rest: Transform3D = _rest.get(ring, ring.transform)
-	var parent := ring.get_parent() as Node3D
-	var at := (parent.global_transform * rest.origin) if parent else ring.global_position
-	FxBus.play(burst_fx, at + Vector3.UP * float_height)
+	FxBus.play(burst_fx, burst_spot.global_position)

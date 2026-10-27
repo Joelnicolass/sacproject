@@ -1,12 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
 [ext_resource type="PackedScene" path="res://scenes/units/impacts/heal_impact.tscn" id="2_impact"]
+[ext_resource type="Resource" path="res://data/fx/heal.tres" id="fx_heal"]
 
 [node name="Slba" type="Node"]
 script = ExtResource("1_look")
 hit_size = 0.15
-trail_fx = "heal"
+trail_fx = ExtResource("fx_heal")
 trail_every = 3
 impact = ExtResource("2_impact")
 hits_allies = true

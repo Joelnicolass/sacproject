@@ -83,7 +83,8 @@ func is_active() -> bool:
 	return _active
 
 
-## `energy_scale` > 1 brightens dark tints like sacengine's manaEnergy.
+## `energy_scale` > 1 brightens dark tints.
+## Ref: sacengine manaEnergy.
 func set_tint(base: Color, energy_scale := 1.0) -> void:
 	tint = Color(base.r * energy_scale, base.g * energy_scale, base.b * energy_scale, base.a)
 
@@ -126,10 +127,10 @@ func _apply() -> void:
 	gravity = Vector3(0.0, -type.gravity, 0.0)
 	scale_amount_min = type.scale_min
 	scale_amount_max = type.scale_max
-	if type.emission_radius > 0.0:
+	if type.emission_radius > 0.0 or type.emission_height_m > 0.0:
 		emission_shape = EMISSION_SHAPE_RING
 		emission_ring_axis = Vector3.UP
-		emission_ring_height = 0.0
+		emission_ring_height = type.emission_height_m
 		emission_ring_radius = type.emission_radius
 		emission_ring_inner_radius = 0.0
 	else:

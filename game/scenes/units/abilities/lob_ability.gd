@@ -1,33 +1,37 @@
 class_name LobAbility
 extends AbilityEffect
 
-## F129 (RFC-030 030r-a): an ability that lobs `shots` ballistic shots at the target: the Ikarus's Sticky bomb (acia, 10 bombs,
-## spread 0.2), the Pyrodactyl's Viscous oil (kcfa, 1 shot, spread 0) and the Bilemites (030 later). sacengine useAbility →
-## shoot!true (state.d:13463-13493): the body prepares (startUsingAbility, shoot1, AbilitySlot's windup()) and at the shoot tick
-## shootOnTick calls stickyBombShoot / oilShoot (13179-13194) and drains the mana (12746-12748; the cooldown if it was 0).
-## Each shot: direction = getShotDirectionWithGravity (11506-11510: the way to the target, plus 0.5·g·d/speed² up) with
+## An ability that lobs `shots` ballistic shots at the target: the Ikarus's Sticky bomb (10 bombs,
+## spread 0.2), the Pyrodactyl's Viscous oil (1 shot, spread 0) and the Bilemites (030 later).
+## The body prepares (AbilitySlot's windup()) and at the shoot tick
+## the shots fly and the mana is drained (the cooldown if it was 0).
+## Each shot: direction = the way to the target, plus 0.5·g·d/speed² up, with
 ## the ranged accuracy (ShotAim.scatter: 2 draws), plus `spread · uniformDirection` (3 draws; a point of the cube [−1, 1]³,
-## normalized, state.d:29106-29111); v = direction · speed, NOT normalized (the bomb flies a little faster or slower than
-## the SPEL's speed). The stream is MatchSeed.rng(["lob", user, tick]): the same match and tick give the same volley.
-## The target: an enemy creature is aimed at by its center led by its pace (predictShotTargetPosition, like RangedWeapon);
-## anything else is the point (the ground): an ally as the target is treated as the ground (checkAbility, 13451-13458).
-## Range: the SPEL's cast_range, to the aimed point.
-## The shots are RangedShot of the shot container with the look data/shots/<tag>.tscn (gravity `falling`, sacspell.d:123:
+## normalized); v = direction · speed, NOT normalized (the bomb flies a little faster or slower than
+## the spell's speed). The stream is MatchSeed.rng(["lob", user, tick]): the same match and tick give the same volley.
+## The target: an enemy creature is aimed at by its center led by its pace (like RangedWeapon);
+## anything else is the point (the ground): an ally as the target is treated as the ground.
+## Range: the spell's cast_range, to the aimed point.
+## The shots are RangedShot of the shot container with the look `look` (gravity `falling`:
 ## 20 for blightMites, stickyBomb, oil, bombardment); what each does where it lands is that look's ShotImpact (StickImpact).
 ## They carry no intended target, so one of the shooter's own side is never hit.
 ## Divergences (declared): the shot leaves from ShotAim.origin (the body's front at shot_height, not the animation's hand); a
 ## shot that flies off the map ends at flight_limit meters.
+## Ref: F129 (RFC-030 030r-a); Ikarus acia, Pyrodactyl kcfa, sacengine useAbility → shoot!true (state.d:13463-13493), stickyBombShoot / oilShoot 13179-13194, 12746-12748, getShotDirectionWithGravity 11506-11510, uniformDirection 29106-29111, predictShotTargetPosition, checkAbility 13451-13458, sacspell.d:123.
 
-## Shots per use (sacengine foreach(i;0..10) in stickyBombShoot; oilShoot fires one).
+## Shots per use (the Sticky bomb fires 10, the oil one).
+## Ref: sacengine foreach(i;0..10) in stickyBombShoot.
 @export var shots := 10
-## Scale of the random push added to each direction (sacengine 0.2·uniformDirection).
+## Scale of the random push added to each direction (0.2·a random direction).
+## Ref: sacengine 0.2·uniformDirection.
 @export var spread := 0.2
-## The shots' gravity in m/s² (sacspell.d:123). Also what the aim lifts the direction by.
+## The shots' gravity in m/s². Also what the aim lifts the direction by.
+## Ref: sacspell.d:123.
 @export var falling := 20.0
 ## The shot leaves from the body's front at this fraction of its height (as RangedWeapon.shot_height).
 @export var shot_height := 0.7
-## ShotLook tag of the shots; empty = the ability's own tag (data/shots/acia.tscn).
-@export var shot_tag := ""
+## The shots' look (data/shots/acia.tscn); empty = the ability's default (ShotSpawner.default_look).
+@export var look: PackedScene
 ## A shot that has not hit anything flies at most this far.
 @export var flight_limit := 300.0
 
@@ -42,9 +46,9 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 
 ## True once the volley left (the mana is spent even if every shot misses). False when there is nothing to shoot with.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority() or ability == null or user == null:
+	if not is_multiplayer_authority() or ability == null or user == null:
 		return false
-	var spawner := user.get_tree().get_first_node_in_group("shot_spawner") as ShotSpawner
+	var spawner := ShotSpawner.of(user.get_tree())
 	if spawner == null:
 		push_warning("LobAbility: no hay ShotSpawner en el mundo.")
 		return false
@@ -53,7 +57,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	var tick := MatchClock.now()
 	var rng := MatchSeed.rng(["lob", who(user), tick])
 	var accuracy := _accuracy()
-	var tag := shot_tag if not shot_tag.is_empty() else ability.tag
+	var look_id := FxWire.id_of(look if look != null else ShotSpawner.default_look(ability))
 	for index in shots:
 		## getShotDirectionWithGravity: a zero offset stays a zero direction (offset.length == 0 ? offset : normalized).
 		var direction := offset.normalized() if offset.length_squared() > 0.0 else offset
@@ -62,7 +66,8 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		direction += spread * _uniform_direction(rng)
 		var velocity := direction * ability.speed_m_s
 		var shot := spawner.spawn_shot({
-			"tag": tag,
+			"tag": ability.tag,
+			"look": look_id,
 			"x": origin.x, "y": origin.y, "z": origin.z,
 			"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
 			"damage": float(ability.damage),
@@ -75,7 +80,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		})
 		if DebugLog.on(&"effects"):
 			print("lob %s %s tiro %d/%d %s v (%.4f, %.4f, %.4f) origen (%.4f, %.4f, %.4f) (tick %d)" % [
-				who(user), tag, index + 1, shots, shot.name if shot else "?", velocity.x, velocity.y, velocity.z,
+				who(user), ability.tag, index + 1, shots, shot.name if shot else "?", velocity.x, velocity.y, velocity.z,
 				origin.x, origin.y, origin.z, tick])
 	return true
 

@@ -1,7 +1,7 @@
 class_name PathFollower
 extends Node
 
-## Turns "walk to this point" into waypoints (RFC-024 §3.1, 024b). A child of unit.tscn and wizard_body.tscn,
+## Turns "walk to this point" into waypoints. A child of unit.tscn and wizard_body.tscn,
 ## it asks the world's NavService for the way around blockers and hands each leg to the body's
 ## begin_walk; the body still moves itself (CharacterBody3D, move_and_slide, collision). Take the node
 ## away and the body walks in a straight line, as before.
@@ -10,10 +10,11 @@ extends Node
 ## steer_point(goal) a pursuit: the point a chasing body heads for this tick (the goal, or the next
 ##                   waypoint when the line to it is blocked). The caller moves.
 ##
-## Waypoints are taken when the body comes within `advance_m` of them (sacengine pops a node within
-## sqrt(2)*5 m, state.d:607), so the body never stops between legs. A path is rebuilt every `repath_s`
-## when the line to the next waypoint is blocked or the body made no progress (sacengine repaths every
-## 2 s, state.d:593). Runs where the body is simulated; all counts are physics ticks, so it is reproducible.
+## Waypoints are taken when the body comes within `advance_m` of them, so the body never stops between legs.
+## A path is rebuilt every `repath_s`
+## when the line to the next waypoint is blocked or the body made no progress.
+## Runs where the body is simulated; all counts are physics ticks, so it is reproducible.
+## Ref: RFC-024 §3.1, 024b; sacengine pops a node within sqrt(2)*5 m, state.d:607, and repaths every 2 s, state.d:593.
 
 signal path_set(points: PackedVector3Array)
 signal arrived
@@ -23,7 +24,8 @@ const REPATH_GOAL_M := 10.0
 
 ## The body to move: a UnitBody or a WizardBody (begin_walk / is_walking / walk_to).
 @export var body: Node3D
-## Seconds between checks of the way and the progress (sacengine: 2 s).
+## Seconds between checks of the way and the progress.
+## Ref: sacengine 2 s.
 @export var repath_s := 2.0
 ## The final goal counts as reached this close (the body itself stops inside a step of it).
 @export var arrive_m := 1.0
@@ -59,7 +61,7 @@ var _steer_age := 0.0
 func _ready() -> void:
 	if body == null:
 		body = get_parent() as Node3D
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

@@ -1,12 +1,13 @@
-[gd_resource type="Resource" script_class="MatchRules" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MatchRules" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/match/match_rules.gd" id="1_rules"]
 
 [ext_resource type="PackedScene" path="res://debug/sacrifice/barrier_places.tscn" id="2_places"]
+[ext_resource type="Resource" path="res://data/gods/james.tres" id="b3_biome"]
 
 [resource]
 script = ExtResource("1_rules")
-biome_god = &"james"
+biome = ExtResource("b3_biome")
 start_health = 150.0
 sacrifice_places = ExtResource("2_places")
 ritual_push_edge_speed = 15.0

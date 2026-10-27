@@ -24,6 +24,9 @@ var facts: BodyFacts = BodyFacts.fallback()
 ## The look being worn: its model, sounds and carried effect. Null on a server and until something is worn.
 var look: BodyLook
 
+var _sounds_of: PackedScene
+var _saved_sounds: SoundSet
+
 
 ## Dresses the body in `body`. The same scene again is ignored; an empty one keeps what is worn.
 func wear(body: PackedScene) -> void:
@@ -40,9 +43,18 @@ func is_worn() -> bool:
 	return scene != null
 
 
-## The sounds of the look being worn; null without one (a server, a silent creature).
+## The sounds of the look being worn; null without one (a silent creature). A body that draws nothing (a headless client with
+## audio, such as the audio probe) reads them from the saved look without building it. Only the sound nodes ask, and the server
+## has none playing, so it never loads a look.
 func sounds() -> SoundSet:
-	return look.sounds if look != null else null
+	if look != null:
+		return look.sounds
+	if scene == null:
+		return null
+	if _sounds_of != scene:
+		_sounds_of = scene
+		_saved_sounds = BodyLook.sounds_in(BodyLook.of_body(scene))
+	return _saved_sounds
 
 
 ## Builds the look of the worn scene and gives it to the rig. A client only: the server and the room server draw nothing.

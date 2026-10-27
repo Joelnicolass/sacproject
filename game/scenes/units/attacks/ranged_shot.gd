@@ -1,11 +1,11 @@
 class_name RangedShot
 extends Node3D
 
-## A creature's ranged shot. sacengine updateEarthflingProjectile (state.d:23178-23198): each frame
+## A creature's ranged shot. Each frame
 ## position += velocity/fps and, for ballistic shots, velocity.z −= fallingAcceleration/fps. It bursts
 ## on the first body in its hit box that is the intended target or not of the shooter's side
-## (earthflingProjectileCollisionTarget, state.d:23145), or under the ground, and deals the ability's
-## amount as direct ranged damage (earthflingProjectileExplosion, state.d:23152-23154). Straight shots
+## (earthflingProjectileCollisionTarget), or under the ground, and deals the ability's
+## amount as direct ranged damage (earthflingProjectileExplosion). Straight shots
 ## (getShotDirection) fly their ability range and vanish.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
 ## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
@@ -15,6 +15,7 @@ extends Node3D
 ## body nor the ground and flies its whole range.
 ## F151: an in_flight that holds the shot's height (GroundHug, ShotInFlight.holds_height) takes the ground check away: the
 ## Rhinok's shot ends on a body or at the end of its range only.
+## Ref: sacengine updateEarthflingProjectile state.d:23178-23198, earthflingProjectileCollisionTarget 23145, earthflingProjectileExplosion 23152-23154.
 
 const TRAIL_FPS := 60.0
 
@@ -41,8 +42,9 @@ var _spin_rate := 0.0
 var _in_flight: ShotInFlight
 
 
-## `shot_ability`: the ability the packet's `tag` names (ShotSpawner turns the text into it), or null for a shot that is not one.
-func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
+## `shot_ability`: the ability the packet's `tag` names, or null for a shot that is not one; `look_scene`: the scene its `look`
+## names (null = a plain ball). ShotSpawner turns both texts into them.
+func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: PackedScene = null) -> void:
 	name = str(data["name"])
 	spawn_data = data
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
@@ -53,7 +55,7 @@ func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
 	max_distance = float(data.get("max_distance", INF))
 	target_path = NodePath(str(data.get("target", "")))
 	shooter_path = NodePath(str(data.get("shooter", "")))
-	look = ShotLook.make(str(data.get("tag", "")))
+	look = ShotLook.make(look_scene)
 	add_child(look)
 	ability = shot_ability
 	mods = Health.IGNITE if look.ignites else 0
@@ -63,7 +65,6 @@ func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
 	_spin_rate = TAU * rng.randf_range(look.spin_min, look.spin_max)
 	_add_visual()
 	_attach_net()
-	_add_in_flight()
 	## ShotLook.trail_every counts 60 fps frames; the trail now goes by time (FxTrail, RFC-029 029b).
 	var trail := FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
 	if trail != null:
@@ -73,6 +74,7 @@ func setup(data: Dictionary, shot_ability: AbilityType = null) -> void:
 func _add_visual() -> void:
 	var visual := MeshInstance3D.new()
 	visual.name = "Mesh"
+	visual.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	visual.mesh = look.mesh
 	if visual.mesh == null:
 		var ball := SphereMesh.new()
@@ -88,9 +90,10 @@ func _add_visual() -> void:
 	add_child(visual)
 
 
-## Server (or solo) only, like the impact: what it does in flight is simulation (ShotLook.in_flight).
+## Server (or solo) only, like the impact: what it does in flight is simulation (ShotLook.in_flight). Added once the shot is in
+## the tree, where it knows whether it is the authority.
 func _add_in_flight() -> void:
-	if look.in_flight == null or (MpKit.is_networked() and not MpKit.is_server()):
+	if look == null or look.in_flight == null:
 		return
 	var node := look.in_flight.instantiate()
 	_in_flight = node as ShotInFlight
@@ -102,8 +105,10 @@ func _add_in_flight() -> void:
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
+		return
+	_add_in_flight()
 
 
 ## Before entering the tree: the spawn packet lists the synchronizers that exist when it is sent,
@@ -227,8 +232,9 @@ static func _is_live_body(body: Node) -> bool:
 	return health != null and not health.is_dead()
 
 
-## sacengine getHeight: the top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
+## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
 ## left out; -INF off the map. The ground check of the flight, and GroundHug's height (F151).
+## Ref: sacengine getHeight.
 func ground_height(at: Vector3) -> float:
 	return RangedShot.land_height(self, at)
 
@@ -238,7 +244,7 @@ static func land_height(from: Node3D, at: Vector3) -> float:
 	return GroundRay.surface_y(from, at, 1, GroundRay.wizard_rids(from.get_tree()), -INF)
 
 
-## F151: the shot flew its whole range (sacengine remainingDistance <= 0). SpikeImpact asks it before it hurts the target.
+## F151: the shot flew its whole range (remainingDistance <= 0). SpikeImpact asks it before it hurts the target.
 func range_spent() -> bool:
 	return _traveled >= max_distance
 

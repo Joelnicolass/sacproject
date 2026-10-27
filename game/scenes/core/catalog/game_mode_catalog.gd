@@ -19,16 +19,6 @@ static func shared() -> GameModeCatalog:
 	return catalog
 
 
-## The mode this process plays (a bridge to ActiveMatch for the readers of the world).
-static func active() -> GameMode:
-	return ActiveMatch.mode()
-
-
-## The tag of the mode this process plays.
-static func current_tag() -> StringName:
-	return ActiveMatch.mode_tag()
-
-
 ## RFC-049 049f: seats of the mode with that tag (empty = the default mode); 0 if there is no such mode. Plain ints and bools, for
 ## callers that must not name GameMode (autoloads, the room glue).
 static func seats_of(tag: StringName) -> int:

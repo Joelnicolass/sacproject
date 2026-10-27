@@ -4,6 +4,9 @@ extends MpSpawner
 ## Spawns creatures (unit_scene) under spawn_path: on the server (replicated) or in solo.
 ## Names are the creature name plus a count per name: Trogg1, Trogg2, Manahoar1…
 
+## The spawner of the match (one per world): the AI and the summons find it here.
+const GROUP := &"unit_spawner"
+
 @export var unit_scene: PackedScene
 ## The scene of the map's villagers: unit.tscn plus a Brain (flee, cower, work) and the grudges.
 @export var villager_scene: PackedScene
@@ -13,7 +16,7 @@ var _serials: Dictionary = {}
 
 
 func _ready() -> void:
-	add_to_group("unit_spawner")
+	add_to_group(GROUP)
 	spawn_function = _make
 	super._ready()
 
@@ -24,13 +27,7 @@ func spawn_unit(data: Dictionary) -> Node3D:
 	var label := str(data.get("label", data.get("tag", "Unit"))).replace(" ", "")
 	_serials[label] = int(_serials.get(label, 0)) + 1
 	data["name"] = "%s%d" % [label, _serials[label]]
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			return spawn(data) as Node3D
-		return null
-	var unit := _make(data)
-	get_node(spawn_path).add_child(unit)
-	return unit
+	return spawn_here(data) as Node3D
 
 
 ## A creature the map puts on the field (MapPopulation): a type with `peasant` gets villager_scene, and every one

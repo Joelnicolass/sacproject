@@ -21,3 +21,4 @@ fade_s = 0.3
 additive = false
 lit = true
 pool_max = 16
+camera_trauma = 0.25

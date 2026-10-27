@@ -1,25 +1,26 @@
 class_name Pull
 extends AbilityEffect
 
-## F128 (RFC-030 030q-a), F154 (030q-b): the Gremlin's Web pull (psla) and the Seraph's Cage pull (psaa); the same mechanic
-## (`pull!(PullType.webPull | cagePull)`), two scenes (web_pull.tscn, cage_pull.tscn) that only change the look. sacengine
-## useAbility → shoot (state.d:13470-13493): the body prepares (startUsingAbility, shoot1: LSs1 / SPs1) up to the load tick
-## `liba` of its clip, frame 27, i.e. 2 · 27 = 54 ticks; there loadOnTick (12592-12605) calls webPull / cagePull and drains
-## the mana. The case returns before the cooldown is set (12738-12739): the pull has none (`starts_cooldown` off).
+## The Gremlin's Web pull and the Seraph's Cage pull: they drag a foe to the caster. The same mechanic,
+## two scenes (web_pull.tscn, cage_pull.tscn) that only change the look. The body prepares up to the load tick
+## `liba` of its clip, frame 27, i.e. 2 · 27 = 54 ticks; there the pull starts and drains
+## the mana. The pull has no cooldown (`starts_cooldown` off).
 ## This effect judges the target and starts the pull; the simulation of the pull is Pulling's (the user's state).
 ##
-## Target (abilityStatus + isApplicable, 29582-29604, sacspell.d:43-66, 171; flags 8197 = creatures, wizards, no ally): a live
-## creature or wizard that is not an ally, within the SPEL's range (50 m, feet to feet), and not shielded: the crowd control
+## Target (flags: creatures, wizards, no ally): a live
+## creature or wizard that is not an ally, within the spell's range (50 m, feet to feet), and not shielded: the crowd control
 ## flag refuses a ccProtected body that is shielded (Life Shield); a petrified or frozen one, ccProtected but not shielded, is
-## pulled all the same (sacspell.d:171 `tflags&shielded||!tag.among(webPull, cagePull)`).
-## fire() (pull, 13166-13175): a ray from the shot origin to the target's center; the first valid body on the way, of any
+## pulled all the same.
+## fire(): a ray from the shot origin to the target's center; the first valid body on the way, of any
 ## side, becomes the target. A body, not a structure or a soul (declared in Pulling).
+## Ref: F128 (RFC-030 030q-a), F154 (030q-b); Gremlin psla, Seraph psaa, `pull!(PullType.webPull | cagePull)`, sacengine useAbility → shoot (state.d:13470-13493; LSs1 / SPs1), loadOnTick 12592-12605, 12738-12739, abilityStatus + isApplicable 29582-29604, sacspell.d:43-66, 171 (`tflags&shielded||!tag.among(webPull, cagePull)`; flags 8197), pull 13166-13175.
 
 ## The frame of the clip where the pull is loaded (`liba`, not exported: SPs1 and LSs1 have it at 27).
 @export var load_frame := 27
 ## Which of the creature's shoot clips it plays (AbilityEffect.SHOOT_ROLES): 0 = `shoot`, 1 = `shoot2`.
 @export var clip_index := 0
-## sacengine Pull.pullSpeed (m/s).
+## How fast the target is pulled (m/s).
+## Ref: sacengine Pull.pullSpeed.
 @export var pull_speed := 16.5
 ## The window after a pull in which the target is pulled along.
 ## Ref: sacengine Pull.numPullFrames (25 ticks).
@@ -27,14 +28,18 @@ extends AbilityEffect
 ## The stun cooldown of the first pull.
 ## Ref: sacengine stunCooldownFrames (480 ticks).
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var stun_s := 8.0
-## sacengine Pull.minThreadLength: it ends when the target's box is this close to the user's center.
+## It ends when the target's box is this close to the user's center.
+## Ref: sacengine Pull.minThreadLength.
 @export var min_thread := 3.0
-## sacengine: with this many pulls done it ends at the end of the clip loop.
+## With this many pulls done it ends at the end of the clip loop.
+## Ref: sacengine.
 @export var max_pulls := 4
 ## The thread (pull_thread.tscn / cage_thread.tscn), played by Pulling with FxBus.broadcast_scene.
 @export var thread_scene: PackedScene
-## FxBus type played at the target when it ends (sacengine animateWebPullBreaking / animateCagePullBreaking, 64 particles).
-@export var break_fx := ""
+## The burst played at the target when it ends (64 particles), and the socket of the target it leaves from. Empty = none.
+## Ref: sacengine animateWebPullBreaking / animateCagePullBreaking.
+@export var break_fx: ParticleType
+@export var break_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 
 ## 2 ticks per frame up to the load frame. The one owner of the preparation of a pull (AbilitySlot asks).
@@ -52,9 +57,9 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## True even if the target is gone by the load tick: sacengine drains the mana there all the same (AbilitySlot spends).
+## True even if the target is gone by the load tick: the original drains the mana there all the same (AbilitySlot spends).
 func fire(_target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	var pulling := Pulling.of(user)
 	if pulling == null or frames() <= 0 or not is_live(target):
@@ -78,8 +83,9 @@ func applicable(target: Node3D) -> bool:
 	return wards == null or not wards.shielded()
 
 
-## sacengine collideRay from the shot origin to the target's center: the nearest valid body (any side, not the user) whose
+## A ray from the shot origin to the target's center: the nearest valid body (any side, not the user) whose
 ## box the segment crosses. The target itself is one of them, so the ray only changes it for a body in front of it.
+## Ref: sacengine collideRay.
 func first_body_on_path(target: Node3D) -> Node3D:
 	var from := _origin()
 	var to := BodyNudge.center(target)
@@ -108,7 +114,8 @@ func frames() -> int:
 	return type.clip_facts().frames(SHOOT_ROLES[clip_index])
 
 
-## The loop of the clip in ticks, and the tick of the loop where it pulls (its last frame, sacengine: no `lrba`).
+## The loop of the clip in ticks, and the tick of the loop where it pulls (its last frame; no `lrba`).
+## Ref: sacengine.
 func loop_ticks() -> int:
 	return FRAME_TICKS * frames()
 
@@ -117,7 +124,8 @@ func pull_frame() -> int:
 	return FRAME_TICKS * (frames() - 1)
 
 
-## A live creature or wizard on the field: what a pull can hold (sacengine isValidTarget + isValidAttackTarget).
+## A live creature or wizard on the field: what a pull can hold.
+## Ref: sacengine isValidTarget + isValidAttackTarget.
 static func is_live(node: Node) -> bool:
 	if node == null or not is_instance_valid(node) or not node.is_inside_tree() or node.is_in_group(&"corpse"):
 		return false
@@ -129,7 +137,8 @@ static func is_live(node: Node) -> bool:
 	return health == null or not health.is_dead()
 
 
-## Where the thread leaves: the user's shot origin (sacengine shotPosition), else its center.
+## Where the thread leaves: the user's shot origin, else its center.
+## Ref: sacengine shotPosition.
 func _origin() -> Vector3:
 	var ranged := user.weapons.ranged
 	if ranged != null:

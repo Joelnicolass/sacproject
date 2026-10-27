@@ -1,12 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
 [ext_resource type="PackedScene" path="res://scenes/units/attacks/gargoyle_wave.tscn" id="2_wave"]
+[ext_resource type="Resource" path="res://data/fx/rock_trail.tres" id="fx_rock_trail"]
 
 [node name="Ehba" type="Node"]
 script = ExtResource("1_look")
 hit_size = 0.5
-trail_fx = "rock_trail"
+trail_fx = ExtResource("fx_rock_trail")
 trail_every = 1
 in_flight = ExtResource("2_wave")
 collides = false

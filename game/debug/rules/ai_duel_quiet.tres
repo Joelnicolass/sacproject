@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="BenchRules" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://debug/suite/bench_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_seat.gd" id="2_seat"]
+[ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="3_normal"]
+[ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="seat_wizard_jadugarr"]
+[ext_resource type="Resource" uid="uid://dxr20hx8hlmpf" path="res://data/gods/james.tres" id="seat_god_james"]
+
+; IA Normal contra IA Normal, sin NPC: una partida tranquila en cualquier mapa (`-- --map=<tag>`). Con debug/map/fall_watch.gd
+; mide que nadie cae del suelo (FallCheck = 0).
+
+[sub_resource type="Resource" id="Seat_one"]
+script = ExtResource("2_seat")
+slot = 1
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
+difficulty = ExtResource("3_normal")
+
+[sub_resource type="Resource" id="Seat_two"]
+script = ExtResource("2_seat")
+slot = 2
+wizard = ExtResource("seat_wizard_jadugarr")
+god = ExtResource("seat_god_james")
+difficulty = ExtResource("3_normal")
+
+[resource]
+script = ExtResource("1_rules")
+starting_souls = 12
+biome = ExtResource("seat_god_james")
+match_seed = 1
+anchor = Vector3(600, 0, 250)
+start_paused = true
+ai_seats = Array[ExtResource("2_seat")]([SubResource("Seat_one"), SubResource("Seat_two")])
+pending_text = "IA contra IA sin NPC"
+ignore_annihilation = true

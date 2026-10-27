@@ -1,18 +1,19 @@
 class_name RendSoulAbility
 extends AbilityEffect
 
-## F157 (RFC-030 030t-b): the Styx's Rend Soul (dner). sacengine useAbility → shoot0 (state.d:13463-13561): the body prepares its
-## attack clip (windup_clip 0: 100 ticks) and at the shoot tick shootOnTick calls rendShoot (12750, 13226-13230), which adds the
-## effect only if canRend (13219-13225): a soul that is NORMAL or EMERGING, free or of the user's side, not dropped. The mana
+## The Styx's Rend Soul: it tears a soul apart. The body prepares its
+## attack clip (windup_clip 0: 100 ticks) and at the shoot tick the effect is added
+## only if the soul can be rent: a soul that is NORMAL or EMERGING, free or of the user's side, not dropped. The mana
 ## and the cooldown are paid at the shoot tick whether or not the soul is still there (AbilitySlot does it).
 ## This effect only judges the soul and throws the SoulStrike; what happens the tick after is the strike's.
-## Range: the SPEL's cast_range (90) in 3D, to the soul's center.
+## Range: the spell's cast_range (90) in 3D, to the soul's center.
 ## Divergence (declared): the body does not walk closer or turn; out of range is refused.
+## Ref: F157 (RFC-030 030t-b); Styx dner, sacengine useAbility → shoot0 (state.d:13463-13561), rendShoot 12750, 13226-13230, canRend 13219-13225.
 
 ## The strike (strikes/soul_strike.tscn), a child of the user's RangedWeapon.
 @export var strike_scene: PackedScene
-## The shot's look: res://data/shots/<tag>.tscn (the blast at the soul and its sparks).
-@export var look_tag := "rend_soul"
+## The shot's look (data/shots/rend_soul.tscn: the blast at the soul and its sparks). Empty = a plain look with no blast.
+@export var look: PackedScene
 
 
 func status(_target_pos: Vector3, target: Node3D) -> String:
@@ -35,7 +36,7 @@ static func can_rend(soul: Soul, slot: int) -> bool:
 
 ## rendShoot. False = the soul is gone by the shoot tick: nothing flies; the mana is spent all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority() or user == null or strike_scene == null:
+	if not is_multiplayer_authority() or user == null or strike_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):
@@ -65,7 +66,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		"max_distance": ability.cast_range_m,
 		"target": "",
 		"shooter": str(user.get_path()),
-	}, ShotLook.make(look_tag), ability, parent)
+	}, ShotLook.make(look), ability, parent)
 	return true
 
 

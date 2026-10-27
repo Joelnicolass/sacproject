@@ -1,8 +1,8 @@
 class_name DivineSightEye
 extends Node3D
 
-## F165 (RFC-030): the eye of the Ranger's Divine Sight (eesd), sacengine DivineSight (state.d:5058-5067) and
-## updateDivineSight (25159-25214). DivineSight (the AbilityEffect) spawns it through the ShotSpawner; this node flies it.
+## The eye of the Ranger's Divine Sight that flies and watches the foes.
+## DivineSight (the AbilityEffect) spawns it through the ShotSpawner; this node flies it.
 ## The server (or solo) simulates, the clients get position and scale (MpReplicate) and only draw.
 ##
 ## Each tick (frame counts from the tick it was born, the first update is frame 1):
@@ -12,7 +12,7 @@ extends Node3D
 ##   over the land (or a building top).
 ##   Then, while it has no target: it flies straight at the SPEL's speed (30 m/s) for range / speed seconds (250 m → 500 ticks) and
 ##   stops there; every tick it looks for the closest enemy creature within the SPEL's range (250 m) of the eye.
-##   With a target: acceleration (3 m/s added per TICK, not per second: sacengine does not divide it) towards the center of its
+##   With a target: acceleration (3 m/s added per TICK, not per second: the original does not divide it) towards the center of its
 ##   box, velocity capped at the speed and at «the distance to the center · 60» (so it settles on it); the flying height becomes
 ##   the target's top over the land + half flying_height. A target that is gone (dead, freed) is dropped for good: the eye keeps the
 ##   velocity it had and never looks again (target = −1).
@@ -20,20 +20,22 @@ extends Node3D
 ##   After the rise its Vision (a child) sees, for its side, every foe within the SPEL's effectRange (75 m) of the eye: it looks every
 ##   refresh_s and the side keeps in mind what it saw for twice that long.
 ## Ends at the lifetime. It survives the death of the one who cast it.
-## Divergences (declared): (1) frontOfAIQueue: sacengine looks for the target only on the ticks its creature is at the front of the
+## Divergences (declared): (1) frontOfAIQueue: the original looks for the target only on the ticks its creature is at the front of the
 ## side's AI queue; the eye looks every tick. (2) The target is a valid foe by TargetRules.is_valid_foe_of (no stealth, no rock, no
 ## corpse), the port's one definition. (3) The sight has no terrain line of sight and it marks foes, not a grid of terrain cells (the port has no fog
 ## of war): it looks on the tick of its own cycle, not at (id + frame) % 30.
-## Look (SacDivineSight, renderer.d:882-891 and 3517-3530): the sprite `scri` (4x4 sheet, 16 frames) on a 2.5 x 2.25 m billboard,
-## shadeless, energy 3 (the material's albedo_color), alpha blended with alpha = scale². One cell per animationDelay (4) x
-## updateAnimFactor (2) = 8 ticks, so a cycle is 128 ticks. Each copy runs its own clock from the tick it appears (presentation only:
+## Look: the sprite `scri` (4x4 sheet, 16 frames) on a 2.5 x 2.25 m billboard,
+## shadeless, energy 3 (the material's albedo_color), alpha blended with alpha = scale². One cell per 8 ticks (4 x 2), so a cycle is
+## 128 ticks. Each copy runs its own clock from the tick it appears (presentation only:
 ## a client has no frame count, so it counts physics ticks itself).
+## Ref: F165 (RFC-030); Ranger eesd, sacengine DivineSight (state.d:5058-5067), updateDivineSight 25159-25214, SacDivineSight renderer.d:882-891 and 3517-3530, animationDelay, updateAnimFactor.
 
 signal ended
 
 const GROUP := &"divine_sight_eye"
 
-## sacengine divineSightFlyingHeight.
+## How high over the land the eye flies (m).
+## Ref: sacengine divineSightFlyingHeight.
 @export var flying_height := 4.0
 ## How long the eye rises before it flies.
 ## Ref: sacengine divineSightNumRisingFrames (45 ticks).
@@ -41,13 +43,15 @@ const GROUP := &"divine_sight_eye"
 ## How often the eye looks again; the side keeps what it saw twice as long.
 ## Ref: sacengine updateVision `refresh` = updateFPS / 2.
 @export_range(0.0166, 5.0, 0.0001, "suffix:s") var refresh_s := 0.5
-## Who may be the target: the moving bodies of sacengine's creature type.
+## Who may be the target: the moving bodies of the creature type.
+## Ref: sacengine.
 @export var target_groups: Array[StringName] = [&"wizard", &"unit"]
 ## The sprite (a MeshInstance3D with its own StandardMaterial3D whose uv1_scale is one cell); its alpha follows scale².
 @export var glow: MeshInstance3D
 ## What the eye sees for the side of the Ranger who sent it (its radius is the SPEL's effectRange).
 @export var vision: Vision
-## Cells of the sprite sheet (scri.png) and how long each one stays (sacengine animationDelay 4 x updateAnimFactor 2 ticks).
+## Cells of the sprite sheet (scri.png) and how long each one stays (4 x 2 ticks).
+## Ref: sacengine animationDelay, updateAnimFactor.
 @export var frames_h := 4
 @export var frames_v := 4
 @export_range(0.0166, 1.0, 0.0001, "suffix:s") var frame_s := 0.1333
@@ -102,7 +106,7 @@ func _ready() -> void:
 		_material = (glow.material_override as StandardMaterial3D).duplicate()
 		glow.material_override = _material
 	_first_tick = Engine.get_physics_frames()
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
 	_born = MatchClock.now()
@@ -213,7 +217,8 @@ func _alive(body: Node3D) -> bool:
 	return health != null and not health.is_dead()
 
 
-## sacengine getHeight: the top of the land or a building under `at`. Over a hole (no collider) the last height found.
+## The top of the land or a building under `at`. Over a hole (no collider) the last height found.
+## Ref: sacengine getHeight.
 func _height(at: Vector3) -> float:
 	var land := RangedShot.land_height(self, at)
 	if land > -INF:

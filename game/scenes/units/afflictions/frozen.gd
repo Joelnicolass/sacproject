@@ -1,26 +1,28 @@
 class_name Frozen
 extends Affliction
 
-## F149 (RFC-030 030k-b): sacengine frozen, the Silverback's Icy Breath (rdba) and the Freeze spell (zerf).
-## tryFreezeWithCooldown (state.d:10710-10725) refuses a ccProtected body (a frozen or petrified one among them,
-## stats.d:89) and one whose mode cannot take crowd control (canCC, 226-234: dead…); while its own freeze cooldown runs
+## A creature turned into ice: the Silverback's Icy Breath and the Freeze spell.
+## A try refuses a ccProtected body (a frozen or petrified one among them)
+## and one whose mode cannot take crowd control (dead…); while its own freeze cooldown runs
 ## it freezes only when cooldown ≤ uniform(600) (one stream per body, MatchSeed ["freeze", body name]); once
-## the roll lets it try, frozen or not, it leaves the cooldown at 600, which counts down every tick (13935).
-## freeze (10693-10708) refuses a frozen body and one that canBeFrozen = canBeImmobilized says no to (189-198); a
-## stunned body is frozen all the same (the type's `cancels`), a thrown one is not (declared: sacengine sets the mode
+## the roll lets it try, frozen or not, it leaves the cooldown at 600, which counts down every tick.
+## The freeze itself refuses a frozen body and one that cannot be immobilized; a
+## stunned body is frozen all the same (the type's `cancels`), a thrown one is not (declared: the original sets the mode
 ## stunned over the tumble). It lasts ceil(60 · 1000 / max health · duration) ticks on a creature and
-## ceil(60 · 0.25 · duration) on a wizard. While it lasts the type's flags say the rest: held, not pushed, a flier falls
-## (startTumbling), no regeneration (the body does not regenerate while held), refuses crowd control.
-## The end (updateFreeze, 17579-17614): its timer runs out, or a hit breaks the ice (dealRawDamage, 9034-9037,
-## unfreezes on any damage that is not a fall, even 0, and on a fall that takes more than 0). Then dealSpellDamage(zerf): the SPEL amount as direct spell damage from the
+## ceil(60 · 0.25 · duration) on a wizard. While it lasts the type's flags say the rest: held, not pushed, a flier falls,
+## no regeneration (the body does not regenerate while held), refuses crowd control.
+## The end: its timer runs out, or a hit breaks the ice (any damage that is not a fall, even 0, and a fall that takes
+## more than 0). Then the spell's amount lands as direct spell damage from the
 ## side that froze it, and 30 shards burst from its box; it goes back to idle with no knock-down.
 ## Deviations (declared): a hit of 0 does not break the ice (Health.hit only reports what was taken; a fall of more than
-## 0 does, as in sacengine); a broken ice shatters on the next tick (sacengine: in the same frame when the Freeze effect
+## 0 does, as in the original); a broken ice shatters on the next tick (the original: in the same frame when the Freeze effect
 ## updates after the hit). The ice is the translucent block of its child IceBlock (`icec`; the exe loads it for the spell), the
 ## same for the spell and for the Yeti's and the Silverback's breath.
+## Ref: F149 (RFC-030 030k-b); sacengine frozen (rdba, zerf), tryFreezeWithCooldown state.d:10710-10725, stats.d:89, canCC 226-234, 13935, freeze 10693-10708, canBeFrozen 189-198, startTumbling, updateFreeze 17579-17614, dealRawDamage 9034-9037, dealSpellDamage(zerf).
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-## The duration uses plain floats (RFC-036e): it may differ by one tick from sacengine (a Trogg 1251, not 1250).
+## The duration uses plain floats: it may differ by one tick from the original (a Trogg 1251, not 1250).
+## Ref: RFC-036e.
 
 ## The longest time a frozen body cannot be frozen again.
 ## Ref: sacengine maxFreezeCooldown = 10·updateFPS (state.d:10709).
@@ -29,17 +31,18 @@ const _HEALTH := preload("res://scenes/components/health.gd")
 @export var creature_k := 1000.0
 ## freeze: a wizard lasts wizard_factor · the SPEL duration (s).
 @export var wizard_factor := 0.25
-## Its body_height() puts the shards at the middle of the body.
-@export var visual: Node3D
-## FxBus type of the shards broadcast when it ends (sacengine ParticleType.shard ×30, 17596-17609).
-@export var shards_fx := "freeze_shards"
+## The shards broadcast when it ends (×30), and the socket of the body they leave from.
+## Ref: sacengine ParticleType.shard, 17596-17609.
+@export var shards_fx: ParticleType = preload("res://data/fx/freeze_shards.tres")
+@export var shards_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _cooldown := 0
 ## Simulation ticks it has lived (counted in _physics_process, so a paused tree does not count).
 var _elapsed := 0
 var _lifetime := 0
-## The physics frame it started on: that tick is not one of its updates (sacengine updates the freezes before the
-## Silverback's breath, state.d:26445 and 27399, so a Freeze added this frame first counts down on the next).
+## The physics frame it started on: that tick is not one of its updates (the original updates the freezes before the
+## Silverback's breath, so a Freeze added this frame first counts down on the next).
+## Ref: sacengine state.d:26445 and 27399.
 var _start_frame := -1
 ## Server: the freeze this node started is on.
 var _running := false
@@ -56,7 +59,7 @@ var _rng: RandomNumberGenerator
 func _ready() -> void:
 	set_physics_process(false)
 	var owner_node := _afflictions()
-	if owner_node and owner_node.health and _simulates():
+	if owner_node and owner_node.health and is_multiplayer_authority():
 		owner_node.health.hit.connect(_on_hit)
 
 
@@ -71,12 +74,14 @@ static func is_frozen(node: Node) -> bool:
 	return frozen != null and frozen.is_on()
 
 
-## F158: the on-hit freeze (Yeti zerf). Same as try_freeze_with_cooldown, and it logs the cooldown and the one roll it drew.
+## The on-hit freeze (Yeti). Same as try_freeze_with_cooldown, and it logs the cooldown and the one roll it drew.
+## Ref: F158; zerf.
 func inflict(spell: SpellType, from_slot: int) -> bool:
 	return _try(spell, from_slot, true)
 
 
-## The Freeze spell: sacengine castFreeze already refused a ccProtected body, and freeze() takes no Yeti cooldown (state.d:10687-10708).
+## The Freeze spell: the cast already refused a ccProtected body, and freeze() takes no Yeti cooldown.
+## Ref: sacengine castFreeze (state.d:10687-10708).
 func lay(spell: SpellType, from_slot: int) -> bool:
 	return freeze(spell, from_slot)
 
@@ -85,7 +90,8 @@ func lay_ticks(spell: SpellType) -> int:
 	return lifetime_ticks(_body(), spell) if _body() != null else 0
 
 
-## Server (or solo): sacengine tryFreezeWithCooldown(wizard, side, target, spell). True when it froze.
+## Server (or solo): tries to freeze with the Yeti cooldown rule. True when it froze.
+## Ref: sacengine tryFreezeWithCooldown(wizard, side, target, spell).
 func try_freeze_with_cooldown(spell: SpellType, from_slot: int) -> bool:
 	return _try(spell, from_slot, false)
 
@@ -95,7 +101,7 @@ func _try(spell: SpellType, from_slot: int, log_roll: bool) -> bool:
 	if body == null or not _can_cc() or _afflictions().cc_protected():
 		return false
 	if _cooldown > 0:
-		## One roll, as sacengine's `cooldown<=0||cooldown<=uniform`: with no cooldown there is none.
+		## One roll, as the original's `cooldown<=0||cooldown<=uniform`: with no cooldown there is none.
 		var roll := _roll()
 		var passes := _cooldown <= roll
 		if log_roll:
@@ -110,7 +116,8 @@ func _try(spell: SpellType, from_slot: int, log_roll: bool) -> bool:
 	return done
 
 
-## Server (or solo): sacengine freeze(wizard, side, target, spell). True when it froze.
+## Server (or solo): freezes the body. True when it froze.
+## Ref: sacengine freeze(wizard, side, target, spell).
 func freeze(spell: SpellType, from_slot: int) -> bool:
 	var body := _body()
 	if body == null or spell == null or is_on() or not can_be_frozen(body):
@@ -134,25 +141,29 @@ func freeze(spell: SpellType, from_slot: int) -> bool:
 	return true
 
 
-## The lifetime in physics ticks: cast(int)ceil(updateFPS · duration), duration = (wizard ? 0.25 : 1000 / max health)
-## · SPEL duration (state.d:10701-10702).
+## The lifetime in physics ticks: ceil(ticks per second · duration), duration = (wizard ? 0.25 : 1000 / max health)
+## · the spell's duration.
+## Ref: state.d:10701-10702.
 func lifetime_ticks(body: Node3D, spell: SpellType) -> int:
 	var health := _afflictions().health
 	return cc_ticks(body.is_in_group(&"wizard"), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor)
 
 
-## canBeFrozen = canBeImmobilized (state.d:189-198, 204): Petrified's.
+## Can it be frozen? The same answer as Petrified's can-be-immobilized.
+## Ref: canBeFrozen = canBeImmobilized (state.d:189-198, 204).
 static func can_be_frozen(body: Node3D) -> bool:
 	return Petrified.can_be_immobilized(body)
 
 
-## canCC (state.d:226-234): every mode but dead (and the ones the port has no body for).
+## Can it take crowd control: every mode but dead (and the ones the port has no body for).
+## Ref: canCC (state.d:226-234).
 func _can_cc() -> bool:
 	var health := _afflictions().health
 	return health == null or not health.is_dead()
 
 
-## state.uniform(maxFreezeCooldown): one stream per body, made on the first roll (the body's name is set by then).
+## The cooldown roll: one stream per body, made on the first roll (the body's name is set by then).
+## Ref: state.uniform(maxFreezeCooldown).
 func _roll() -> int:
 	if _rng == null:
 		_rng = MatchSeed.rng(["freeze", String(_body().name)])
@@ -183,7 +194,8 @@ func _end_by_time() -> void:
 	_shatter()
 
 
-## dealRawDamage: a hit that took health breaks the ice (sacengine unfreeze, state.d:9013).
+## A hit that took health breaks the ice.
+## Ref: dealRawDamage; sacengine unfreeze, state.d:9013.
 func _on_hit(amount: float, _from: int, _was_full: bool) -> void:
 	if not _running or not is_on() or amount <= 0.0:
 		return
@@ -191,8 +203,9 @@ func _on_hit(amount: float, _from: int, _was_full: bool) -> void:
 	_afflictions().mark(self, false)
 
 
-## The thaw: the SPEL amount as direct spell damage from the side that froze it (dealSpellDamage, DamageMod.none), and
+## The thaw: the spell's amount as direct spell damage from the side that froze it, and
 ## the shards. A dead body takes nothing; the shards fly all the same.
+## Ref: dealSpellDamage, DamageMod.none.
 func _shatter() -> void:
 	_thaw_at = -1
 	var body := _body()
@@ -205,12 +218,12 @@ func _shatter() -> void:
 	var immune := health != null and taken <= 0.0 and health.resistance(_HEALTH.DIRECT_SPELL) <= 0.0
 	print("deshielo %s %d de hechizo vida %d%s (cuadro %d)" % [str(body.name), roundi(taken),
 		roundi(health.current) if health else 0, " (inmune)" if immune else "", MatchClock.now()])
-	var height := (visual as BodyVisual).body_height() if visual is BodyVisual else 1.0
-	FxBus.broadcast(shards_fx, body.global_position + Vector3.UP * height * 0.5)
+	if shards_fx != null:
+		FxBus.broadcast(shards_fx, BodyFacts.point(body, shards_socket))
 
 
 func _shown(on: bool) -> void:
-	if on or not _simulates() or not _running or _ending:
+	if on or not is_multiplayer_authority() or not _running or _ending:
 		return
 	## Ended from outside while the server still ran it (a hit broke the ice, or the body died): it shatters next tick.
 	_running = false

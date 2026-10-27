@@ -17,10 +17,18 @@ var picks: Dictionary[int, WizardPick] = {}
 ## Only in the dedicated a room server launched (`--match-ticket-file`).
 var ticket_glue: MatchTicketGlue
 
+## Slots an AI plays (solo or server; set_ai fills it). No player's keys come for them.
+var _ai_slots: Dictionary[int, bool] = {}
+
 
 func _ready() -> void:
 	MpKit.custom_received.connect(_on_custom_received)
 	MpKit.peer_left.connect(_on_peer_left)
+
+
+## True when an AI plays `slot` (known where the game is simulated).
+func is_ai(slot: int) -> bool:
+	return _ai_slots.has(slot)
 
 
 ## A client tells the server its pick when it gets its slot.
@@ -33,6 +41,7 @@ func announce(local_pick: WizardPick) -> void:
 func set_ai(slot: int, chosen: WizardPick) -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
+	_ai_slots[slot] = true
 	picks[slot] = chosen
 	if MpKit.is_networked():
 		_publish()

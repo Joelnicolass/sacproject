@@ -1,33 +1,39 @@
 class_name QuakeWave
 extends Node3D
 
-## F132 (RFC-030 030u-a): the Jabberocky's Quake (mtse, SPEL kauq): sacengine Quake (state.d:5187-5225) updated by
-## updateQuake (25737-25759). QuakeAbility puts it in the shot container at the user's feet on the tick the shot fires
-## (quake, 13204-13207), server (or solo) only: a client never gets this node. Priority −1: effects update before
-## creatures (29331 against 29345).
+## The Jabberocky's Quake (and the burst of Bovine Intervention's cow): a wave of earth that goes out 50 m from the user's feet
+## in half a second, stuns the bodies it crosses near the center and bends the land while it lasts. QuakeAbility puts it in the
+## shot container at the user's feet on the tick the shot fires, server (or solo) only: a client never gets this node. It does
+## not hurt, and it does not draw the ring (QuakeRing) nor shape the ground (its child Ground, quake_ground.tscn).
 ##
 ## Its frame is MatchClock.now() − the tick it was born; the birth tick is discarded (the first update is the next one,
 ## frame 1). On every frame:
-## - frame 1: quakeExplosion (64 dirt particles and the shake: the look, FxBus);
-## - the wave is at waveLoc = wave_range · (frame / 60) / wave_s (1,667 m per frame, float32 as sacengine);
-## - while stun_min < waveLoc < stun_max (frames 1 to 5), every moving body of `groups`, any side (wizards too, the user
-##   if it stood there), whose hit box is within waveLoc + 0,1 and whose feet are, seen from above, farther than stun_min
+## - frame 1: the explosion (64 dirt particles and the shake: the look, FxBus);
+## - the wave is at wave_range · (frame / 60) / wave_s (1,667 m per frame, float32 as the original);
+## - while stun_min < wave < stun_max (frames 1 to 5), every moving body of `groups`, any side (wizards too, the user
+##   if it stood there), whose hit box is within wave + 0,1 and whose feet are, seen from above, farther than stun_min
 ##   and within `band`·wave_range / (wave_s · 60) (2,5 m) of the wave takes Stunned.stun_with_cooldown(cooldown_s).
 ##   No damage;
-## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31.
+## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31 (and Ground with it).
 ## The stun is each body's Afflictions/Stunned (canStun, its own cooldown): a stunned one is skipped by it.
+## The land: Ground's two TerrainStamps (the sinking and the wave) play here on the server, so the bodies follow the ground;
+## a client sees the copy in quake_ring.tscn (on_clients_only). Priority −1: effects update before creatures.
 ##
-## Deviations (declared): the land does not bend (sacengine Quake.displacement is a render effect); the look is
-## quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
+## Deviations (declared): the look is quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
+## Ref: sacengine Quake (state.d:5187-5225, displacement 5204-5222, part of Displacement 28929-28931), updateQuake
+## (25737-25759), quake (13204-13207); effects before creatures (29331 against 29345). F132 (RFC-030 030u-a), RFC-057 057a.
 
 
-## sacengine Quake.waveRange (m) and waveDur (s).
+## How far the wave goes (m) and how long it takes (s).
+## Ref: sacengine Quake.waveRange, waveDur.
 @export var wave_range := 50.0
 @export var wave_s := 0.5
-## sacengine stunMinRange / stunMaxRange (m): the wave stuns only between them.
+## The wave stuns only between these two distances (m).
+## Ref: sacengine stunMinRange / stunMaxRange.
 @export var stun_min := 0.5
 @export var stun_max := 10.0
-## The band the wave stuns, in frames of travel: 1,5 (sacengine 1.5·waveRange/(waveDur·updateFPS) = 2,5 m).
+## The band the wave stuns, in frames of travel: 1,5 (1.5·waveRange/(waveDur·ticks per second) = 2,5 m).
+## Ref: sacengine.
 @export var band := 1.5
 ## How long a stunned body cannot be stunned again.
 ## Ref: sacengine stunCooldownFrames = 8·updateFPS.
@@ -35,13 +41,14 @@ extends Node3D
 ## How long the wave lasts.
 ## Ref: sacengine totalFrames = int(waveDur·updateFPS + 0.5).
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var life_s := 0.5
-## sacengine movingObjects: creatures and wizards (buildings are not stunned).
+## Moving bodies: creatures and wizards (buildings are not stunned).
+## Ref: sacengine movingObjects.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")
-## The ring of earth (QuakeRing, FxBus.broadcast_scene) and the dust of the explosion (FxBus type; empty: none).
-@export_file("*.tscn") var ring_scene := "res://scenes/fx/quake_ring.tscn"
-@export var dust_fx := "dirt"
+## The ring of earth (quake_ring.tscn, an FxScene played on every peer) and the dust of the explosion. Empty: none.
+@export var ring_scene: PackedScene
+@export var dust_fx: ParticleType
 
 ## For the log: the user's name and the SPEL tag (kauq).
 var label := ""
@@ -129,7 +136,8 @@ func _step(f: int) -> void:
 				SplashDamage.box_distance(body, center), result, MatchClock.now()])
 
 
-## sacengine stunWithCooldown on a body of the band; what happened, for the log.
+## Stuns a body of the band with the cooldown rule; what happened, for the log.
+## Ref: sacengine stunWithCooldown.
 func _stun(body: Node3D) -> String:
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
 	if stunned == null:
@@ -141,9 +149,9 @@ func _stun(body: Node3D) -> String:
 
 ## quakeExplosion (frame 1): the look. Presentation, every peer.
 func _explode() -> void:
-	if not dust_fx.is_empty():
+	if dust_fx != null:
 		FxBus.broadcast(dust_fx, global_position)
-	if not ring_scene.is_empty():
+	if ring_scene != null:
 		FxBus.broadcast_scene(ring_scene, global_position, {"range": wave_range, "seconds": wave_s})
 
 

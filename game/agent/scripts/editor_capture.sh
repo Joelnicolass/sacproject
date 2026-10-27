@@ -10,7 +10,7 @@ set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GODOT="${GODOT_BIN:-/Applications/Godot.app/Contents/MacOS/Godot}"
 NAME="${1:-035}"
-SCENE="${SCENE:-res://scenes/match/high_noon.tscn}"
+SCENE="${SCENE:-res://debug/match/high_noon.tscn}"
 OUT="$ROOT/agent/out/$NAME"; mkdir -p "$OUT"
 LOG="$OUT/editor_capture.log"
 LIMIT_S="${PROBE_LIMIT_S:-120}"

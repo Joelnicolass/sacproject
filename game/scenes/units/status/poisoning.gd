@@ -1,21 +1,22 @@
 class_name Poisoning
 extends Node
 
-## F122 (RFC-030k-a): the one owner of the poison on a body (creature or wizard). Its children are the doses (Poisoned);
+## The one owner of the poison on a body (creature or wizard). Its children are the doses (Poisoned);
 ## it runs them once per physics tick in the order they came, frees the ones that end, and is the only one that answers
-## what they add up to (sacengine Effects, stats.d:50-55):
-##   resistance_bonus()     1e-3 · Σ ires, added inside max(0, resistance + bonus) for every kind of damage (state.d:8950-8957)
-##   regeneration_factor()  Π freg of the live doses (poison(), 11604; restorePoisonRegeneration, 26103-26112)
-##   mana_blocked()         a dose past its 2 s blocks giveMana (state.d:8829, 23556-23558)
+## what they add up to:
+##   resistance_bonus()     1e-3 · Σ ires, added inside max(0, resistance + bonus) for every kind of damage
+##   regeneration_factor()  Π freg of the live doses
+##   mana_blocked()         a dose past its 2 s blocks giveMana
 ##   damage_sum()           Σ int(per second) (poisonDamage, what an infection passes on)
 ## Health, ManaPool and MeleeWeapon ask it, never a dose. Server (or solo) only: on a client it does nothing.
 ##
-## Infection (updatePoison, state.d:23537-23552): every tick, each infectious dose touches every live creature and wizard
+## Infection (updatePoison): every tick, each infectious dose touches every live creature and wizard
 ## whose box meets the body's box grown `infection_margin_m`, of any side, the body excepted. One with no infection
 ## cooldown gets a dose of damage_sum() per second for the frames this dose has left, infectious, with its debuffs, its kind
 ## and its attacker, and keeps an infection cooldown of those frames + `infection_cooldown_extra_s` (ticks of
 ## MatchClock). The body that infected it has no cooldown of its own, so the first victim is infected back once.
-## Divergence (declared): checked on every tick, without sacengine's AI-queue gate.
+## Divergence (declared): checked on every tick, without the original's AI-queue gate.
+## Ref: F122 (RFC-030k-a), sacengine Effects stats.d:50-55, resistance state.d:8950-8957, poison() 11604, restorePoisonRegeneration 26103-26112, giveMana 8829, 23556-23558, updatePoison 23537-23552.
 
 ## The body the doses act on (its Health, its box). Empty = the parent.
 @export var body: Node3D
@@ -23,17 +24,20 @@ extends Node
 ## How long a dose blocks the body's mana.
 ## Ref: sacengine Poison.manaBlockDelay = 2·updateFPS.
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var mana_block_s := 2.0
-## sacengine updatePoison: hitbox[0] -= 2, hitbox[1] += 2.
+## The margin the infection grows the body's box by: hitbox[0] -= 2, hitbox[1] += 2.
+## Ref: sacengine updatePoison.
 @export var infection_margin_m := 2.0
 ## A body just infected cannot be infected again for the dose's life plus this.
 ## Ref: sacengine infectionCooldown = lifetime + 3·updateFPS.
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var infection_cooldown_extra_s := 3.0
-## sacengine movingObjects: who an infection may touch.
+## Who an infection may touch (movingObjects).
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")
-## FxBus puff on the body while a dose takes health (relativePoison, state.d:23565-23575: one particle every 2 frames;
-## a puff every 30 ticks is the same rate).
-@export var fx_name := "poison_dose"
+## The puff on the body while a dose takes health, and its socket (relativePoison: one particle every 2
+## frames inside the box; a puff every 30 ticks is the same rate). Empty = none.
+## Ref: sacengine state.d:23565-23575.
+@export var dose_fx: ParticleType = preload("res://data/fx/poison_dose.tres")
+@export var dose_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var fx_every_s := 0.5
 
 ## MatchClock tick until which no infection reaches this body.
@@ -67,14 +71,15 @@ func _ready() -> void:
 		body = get_parent() as Node3D
 	if health == null and body:
 		health = body.get_node_or_null("Health") as Health
-	set_physics_process(_has_authority())
+	set_physics_process(is_multiplayer_authority())
 
 
-## sacengine poison() (state.d:11601-11607): adds one dose of `per_second` for `lifetime` frames (lifetime + 1 updates).
+## Adds one dose of `per_second` for `lifetime` frames (lifetime + 1 updates).
 ## `resistance_debuff` is the SPEL's `ires`, `regen_factor` its `freg`. Server (or solo) only; null elsewhere.
+## Ref: sacengine poison() state.d:11601-11607.
 func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, infectious := false, resistance_debuff := 0,
 		regen_factor := 1.0, attacker_path := NodePath()) -> Poisoned:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return null
 	var regen_before := regeneration_factor()
 	var added := Poisoned.new()
@@ -89,7 +94,8 @@ func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, in
 	added.resistance_debuff = resistance_debuff
 	added.regeneration_factor = regen_factor
 	added.mana_block_frame = MatchClock.ticks_for(mana_block_s)
-	added.fx_name = fx_name
+	added.fx = dose_fx
+	added.fx_socket = dose_socket
 	added.fx_every_ticks = MatchClock.ticks_for(fx_every_s)
 	add_child(added, true)
 	_log_regeneration(regen_before)
@@ -128,12 +134,12 @@ func damage_sum() -> int:
 	return sum
 
 
-## True while an infection may not reach this body (sacengine infectionCooldown != 0).
+## True while an infection may not reach this body (infectionCooldown != 0).
 func infection_cooling() -> bool:
 	return MatchClock.now() < _infection_until
 
 
-## sacengine infect(): infectionCooldown = lifetime + 3·updateFPS on the body just infected.
+## infect(): infectionCooldown = lifetime + 3·updateFPS on the body just infected.
 func start_infection_cooldown(lifetime: int) -> void:
 	_infection_until = MatchClock.now() + lifetime + MatchClock.ticks_for(infection_cooldown_extra_s)
 
@@ -155,8 +161,9 @@ func _physics_process(_delta: float) -> void:
 	_log_mana()
 
 
-## sacengine canBePoisoned (state.d:177-184): not dead or dying, not being summoned, not a ghost. A body a Sac Doctor has
+## Not dead or dying, not being summoned, not a ghost. A body a Sac Doctor has
 ## taken is off the field too (as for BodyNudge).
+## Ref: sacengine canBePoisoned state.d:177-184.
 func can_be_poisoned() -> bool:
 	if body == null or health == null or health.is_dead():
 		return false
@@ -216,7 +223,3 @@ func _log_mana() -> void:
 ## The node's name (Druid1, Druid2…): the log must tell apart bodies of the same kind.
 static func _who(node: Node) -> String:
 	return str(node.name) if node else "?"
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

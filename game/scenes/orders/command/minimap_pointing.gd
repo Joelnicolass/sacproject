@@ -1,10 +1,10 @@
 class_name MinimapPointing
 extends Node
 
-## RFC-037 037c: the minimap is another surface to point at. It only gives a ground point (no ray): a right click orders
-## the selection there (or drops an armed icon), a left click with an icon armed aims it there (a body near the point, else
-## the spot). A left click with nothing armed does nothing (P2): the original keeps the camera on the wizard and has no
-## box here.
+## The minimap is another surface to point at. It only gives a ground point (no ray): `order_units` orders the selection
+## there (or drops an armed icon), `select` with an icon armed aims it there (a body near the point, else the spot).
+## `select` with nothing armed does nothing: the camera stays on the wizard and there is no box here.
+## Ref: RFC-037 037c (P2).
 
 ## The minimap that gives the points. Empty (the minimap was removed): this does nothing.
 @export var minimap: Minimap
@@ -20,14 +20,14 @@ func _ready() -> void:
 		minimap.ground_pointed.connect(_on_pointed)
 
 
-func _on_pointed(point: Vector3, button: int) -> void:
+func _on_pointed(point: Vector3, action: StringName) -> void:
 	if CommandInput.blocked(self):
 		return
-	if button == MOUSE_BUTTON_RIGHT:
+	if action == &"order_units":
 		if not armed.cancel():
 			orders.order("move", point, null)
 		return
-	if button != MOUSE_BUTTON_LEFT:
+	if action != &"select":
 		return
 	match armed.mode:
 		"spell":

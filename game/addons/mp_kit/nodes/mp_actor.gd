@@ -79,6 +79,11 @@ static var server_calls := MpRateLimit.new(60.0, 120.0)
 		_editor_rebuild()
 ## Most ticks one correction replays (a high ping replays more); past it, fewer corrections are made.
 @export_range(4, 240) var max_resim_ticks: int = 32
+## How long a server correction of the owner takes to fade on screen (about; the node's physics is corrected at
+## once). 0 = drawn at once. `--correction-smoothing-s=` overrides it.
+@export_range(0.0, 0.5, 0.01) var correction_smoothing_s: float = 0.1
+## A correction longer than this (pixels in 2D, meters in 3D) is drawn at once, as a teleport. 0 = every one fades.
+@export var correction_snap_distance: float = 0.0
 @export_group("Owner")
 ## The player slot that owns this node (0 = the server). Spawners set it before the node enters the tree.
 @export var owner_slot: int = 0
@@ -95,6 +100,10 @@ var net_stamp: float = 0.0
 ## predicting, so on a client only this node writes the parent's pose).
 var net_position: Vector3 = Vector3.ZERO
 var net_rotation: Quaternion = Quaternion.IDENTITY
+## How many times the server teleported the node (snap()), in the same packet as the pose: no client slides between
+## two states where it changed. Proxies jump when their drawn time gets there, the owner when it reconciles to it
+## (as Source's EF_NOINTERP or Photon Fusion's Teleport).
+var net_teleports: int = 0
 
 var _root: Node
 ## Loaded as part of a saved scene (it had an owner when it entered); a node a spawner or script made has none then.
@@ -102,6 +111,16 @@ var _from_saved_scene: bool = false
 var _calls: MpCalls
 var _motion: MpProxyMotion
 var _prediction: MpPrediction
+var _smoother: MpCorrectionSmoother
+## Server: teleports so far; the next published state carries them (so never with an older pose).
+var _teleports: int = 0
+## Server: the teleports the lag compensation history already has.
+var _recorded_teleports: int = 0
+## Owner: the teleports it already drew at once, and the last reconciliation it looked at.
+var _owner_teleports: int = 0
+var _owner_reconciled: float = 0.0
+## Scenes whose saved MpSync was already compared with what this kit sends (scene path -> true).
+static var _checked_scenes: Dictionary = {}
 var _sender_slot: int = -1
 ## Inside an mp_sv_* call from a client: the server time that client was seeing (0 = unknown).
 var _call_view: float = 0.0
@@ -138,6 +157,8 @@ func _ready() -> void:
 	MpAuthority.claim_server(_root)
 	if get_node_or_null(SYNC_NAME) == null and not sync_entries().is_empty():
 		push_error("MpActor on '%s': no %s child. Open the scene in the editor and save it (the editor builds it)." % [_root.name, SYNC_NAME])
+	else:
+		_check_saved_sync()
 	if freeze_rigid_if_proxy:
 		MpAuthority.freeze_rigid_proxy(_root)
 	if predict and (not _root.has_method(&"mp_move") or input() == null):
@@ -146,6 +167,16 @@ func _ready() -> void:
 	if predict:
 		_prediction = MpPrediction.new(_root, input())
 		_prediction.max_resim_ticks = max_resim_ticks
+		var smoothing_s := float(MpBoot.user_value("correction-smoothing-s", str(correction_smoothing_s)))
+		if smoothing_s > 0.0 and not is_authority():
+			_smoother = MpCorrectionSmoother.new(_root)
+			_smoother.time_s = smoothing_s
+			_smoother.snap_distance = correction_snap_distance
+			_smoother.move_position = sync_position
+			_smoother.move_rotation = sync_rotation
+			_prediction.smoother = _smoother
+			## The drawn pose is put back to the real one before any node's _physics_process.
+			get_tree().physics_frame.connect(_smoother.restore)
 	_motion = MpProxyMotion.new(_root, smoothing == Smoothing.BUFFERED)
 	_motion.delay_s = buffer_delay_s
 	_motion.adaptive = adaptive_buffer
@@ -155,10 +186,15 @@ func _ready() -> void:
 	_motion.move_rotation = sync_rotation
 	if is_authority():
 		_publish_pose()
-	elif uses_net_pose() and net_stamp > 0.0:
+	elif uses_net_pose() and not (predict and is_local()):
+		## A proxy is drawn every frame here (MpProxyMotion, in _process): the engine's physics interpolation would
+		## fight it. The owner's predicted node moves in physics ticks and keeps it (see GUIDE 6.2).
+		_root.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	if not is_authority() and uses_net_pose() and net_stamp > 0.0:
 		_motion.snap(net_position, net_rotation)
 		if _prediction:
 			_prediction.start_at(net_position)
+	_owner_teleports = net_teleports
 
 
 func _physics_process(delta: float) -> void:
@@ -168,13 +204,27 @@ func _physics_process(delta: float) -> void:
 		_publish_pose()
 	elif _prediction and is_local():
 		_prediction.owner_tick(delta, net_stamp, _motion, net_position, net_rotation)
+		## It went back to a state the server teleported it in: drawn there at once.
+		if _prediction.reconciled_stamp != _owner_reconciled:
+			_owner_reconciled = _prediction.reconciled_stamp
+			if net_teleports != _owner_teleports:
+				_owner_teleports = net_teleports
+				_draw_owner_jump()
+		if _smoother:
+			_smoother.mark_tick()
+			## With the engine's physics interpolation the node is drawn between ticks: the fading correction goes
+			## in each tick's pose (put back before the next tick). Without it, every frame in _process.
+			if _root.is_physics_interpolated_and_enabled():
+				_smoother.draw(delta)
 
 
 func _process(delta: float) -> void:
 	if not MpKit.is_networked() or MpKit.is_server() or not uses_net_pose():
 		return
 	if not (predict and is_local()):
-		_motion.draw(delta, net_stamp, net_position, net_rotation)
+		_motion.draw(delta, net_stamp, net_position, net_rotation, net_teleports)
+	elif _smoother and not _root.is_physics_interpolated_and_enabled():
+		_smoother.draw(delta)
 
 
 ## True when the pose travels in net_position / net_rotation (smoothing or prediction) instead of the parent's own.
@@ -185,6 +235,11 @@ func uses_net_pose() -> bool:
 ## True where the rules of this node run: solo or the server.
 func is_authority() -> bool:
 	return MpKit.is_authority()
+
+
+## Owner with prediction: how far the drawn node still is from the real one, while a correction fades (0 = none).
+func correction_offset() -> float:
+	return _smoother.offset() if _smoother else 0.0
 
 
 ## Owner with prediction: how far the last server correction moved this node (0 = the prediction was right).
@@ -255,9 +310,20 @@ func despawn() -> void:
 	_root.queue_free()
 
 
-## After a teleport or respawn: on a client, jump to the server's pose instead of sliding there.
+## After a teleport or respawn. On the server, right after moving the node: the teleport travels with the state,
+## so every client jumps there instead of sliding (proxies when their drawn time gets there, the owner when it
+## reconciles to it). On a client (from an mp_all_* call): jump to the server's latest pose now.
 func snap() -> void:
-	if _motion and not is_authority():
+	if is_authority():
+		## Counted now, sent with the next published pose (the moved one).
+		_teleports += 1
+		if _root and _root.is_physics_interpolated_and_enabled():
+			_root.reset_physics_interpolation()
+	elif _prediction and is_local():
+		_draw_owner_jump()
+		if _smoother:
+			_smoother.jump_next()
+	elif _motion:
 		_motion.snap(net_position, net_rotation)
 
 
@@ -281,10 +347,18 @@ func to_all(action: StringName, ...args: Array) -> void:
 	_calls.run(ALL_PREFIX, action, args)
 	if not MpKit.is_networked():
 		return
-	var sync := get_node_or_null(SYNC_NAME) as MultiplayerSynchronizer
 	for peer_id in multiplayer.get_peers():
-		if sync == null or sync.public_visibility or sync.get_visibility_for(peer_id):
+		if reaches(peer_id):
 			rpc_all_call.rpc_id(peer_id, action, args)
+
+
+## Server: true when `peer_id` has this node now, so a call to it lands: shown to it by the spawner (per-peer
+## visibility), or, for a node every peer has (public visibility), once that peer's world is loaded.
+func reaches(peer_id: int) -> bool:
+	var sync := get_node_or_null(SYNC_NAME) as MultiplayerSynchronizer
+	if sync and not sync.public_visibility:
+		return sync.get_visibility_for(peer_id)
+	return MpKit.is_peer_world_ready(peer_id)
 
 
 ## What the synchronizer sends, from the inspector (MpActorSync builds it).
@@ -328,8 +402,30 @@ func _publish_pose() -> void:
 	net_stamp = MpNetClock.stamp()
 	net_position = MpProxyMotion.position_of(_root)
 	net_rotation = MpProxyMotion.rotation_of(_root)
+	net_teleports = _teleports
 	if lag_compensate and MpKit.is_networked() and sync_position:
-		MpLagComp.record(_root, net_stamp)
+		MpLagComp.record(_root, net_stamp, _recorded_teleports != _teleports)
+		_recorded_teleports = _teleports
+
+
+## Owner: draw the node where it really is now (a teleport), with no correction fading and no engine interpolation.
+func _draw_owner_jump() -> void:
+	if _smoother:
+		_smoother.jump()
+	elif _root.is_physics_interpolated_and_enabled():
+		_root.reset_physics_interpolation()
+
+
+## Once per scene: a saved MpSync that no longer matches what this kit sends (an older kit, or the inspector changed
+## outside the editor) still runs, but without what is missing; say how to fix it.
+func _check_saved_sync() -> void:
+	var scene := _root.scene_file_path if _root.scene_file_path != "" else (owner.scene_file_path if owner else "")
+	if scene == "" or _checked_scenes.has(scene):
+		return
+	_checked_scenes[scene] = true
+	var sync := get_node_or_null(SYNC_NAME) as MultiplayerSynchronizer
+	if sync and not MpSyncBuilder.matches(sync.replication_config, sync_entries(), MpActorSync.spawn_only(self)):
+		push_warning("MpActor on '%s' (%s): its saved %s is out of date for this MpKit. Open the scene in the editor and save it." % [_root.name, scene, SYNC_NAME])
 
 
 func _editor_rebuild() -> void:

@@ -9,7 +9,8 @@ extends Node
 ## Server (or solo) only.
 ## Ref: sacengine updateBovineIntervention (state.d:21788-21819), BovineIntervention.travelTime / maxHeight (state.d:4162-4174).
 
-## sacengine gibDepth: below this under the void it is gone.
+## Below this under the void it is gone.
+## Ref: sacengine gibDepth
 const _VOID_DEPTH_M := 25.0
 
 @export var carrier: SpellCarrier

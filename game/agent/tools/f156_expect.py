@@ -26,7 +26,7 @@ sacengine:
   0.8 ^ numBlightMites (stats.d:122). No damage. The shooter never takes one (declared divergence: sacengine allows it after 30 ticks).
 - The replica takes each mite's origin and velocity from the `lob` line and, since Python does not reproduce Godot's RNG, restarts every
   segment from the post-hop state the port logs (`salto`): it integrates it with g = 20 (move, then gravity: RangedShot) against the real
-  terrain (assets/original/maps/high_noon/terrain.res) and the bodies of lane M as still capsules, and says on which tick the ground is touched and which
+  terrain (scenes/map/maps/high_noon/heights.png) and the bodies of lane M as still capsules, and says on which tick the ground is touched and which
   body is hit. It also checks that each hop's velocity is inside what the formulas allow and that the body it aims at is the closest one
   within 15 m (or the target it was thrown at, Druid1, when it is in range).
 Lane M (anchor 1270, 1270): Blight1 -25/-20 (slot 1, looks to +x), Druid1 0/-20 (slot 2, 25 m, the target), Druid2 +3/-17 (slot 2),

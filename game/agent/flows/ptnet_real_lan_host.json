@@ -1,0 +1,736 @@
+{
+ "wait_first": 0.5,
+ "steps": [
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "h00_wait_0of2.png"
+  },
+  {
+   "print": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "banner_text"
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "waiting"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "roots",
+    "args": []
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "banner_text",
+    "timeout": 300,
+    "contains": "1/2"
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "h01_wait_1of2.png"
+  },
+  {
+   "print": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "banner_text"
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "one_loaded"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "banner",
+    "timeout": 300,
+    "equals": false
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "shot": "h02_start.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "start"
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "zoom_out",
+    "hold": 0.6
+   }
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "gap_to",
+    "args": [
+     1300,
+     1180
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 3.0
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "gap_to",
+    "args": [
+     1300,
+     1180
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.5
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "gap_to",
+    "args": [
+     1300,
+     1180
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "host_walk"
+    ]
+   }
+  },
+  {
+   "shot": "h02b_turned_view.png"
+  },
+  {
+   "repeat": {
+    "times": 80,
+    "until": {
+     "node": "AgentKit/ptnet_real_watch",
+     "prop": "cam_fx",
+     "gte": 0.97
+    },
+    "steps": [
+     {
+      "press": {
+       "name": "turn_right",
+       "hold": 0.08
+      }
+     }
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "gap_to",
+    "args": [
+     1300,
+     1180
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "move_backward",
+    "hold": 3.0
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "gap_to",
+    "args": [
+     1300,
+     1180
+    ]
+   }
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "press": "creature_2"
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "troggs"
+    ]
+   }
+  },
+  {
+   "shot": "h03_troggs.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.attack"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 150,
+    "equals": true
+   }
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h04_incoming.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "incoming"
+    ]
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "h05_fight_a.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "fight_a"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_unit",
+    "args": [
+     1,
+     "ycro"
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.1
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_unit",
+    "args": [
+     2,
+     "zidf"
+    ]
+   }
+  },
+  {
+   "press": "order_units"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "attack"
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "h06_fight_b.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "fight_b"
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "h07_fight_c.png"
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "h08_fight_d.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "fight_d"
+    ]
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "h09_fight_e.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "fight_e"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "enemy_soul_gap",
+    "timeout": 60,
+    "lte": 19
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "mana",
+    "timeout": 60,
+    "gte": 800
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "alive",
+    "equals": true,
+    "timeout": 90
+   }
+  },
+  {
+   "click": "%StructureTab"
+  },
+  {
+   "press": "spell_3"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_soul",
+    "args": [
+     1
+    ]
+   }
+  },
+  {
+   "press": "select"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "convert"
+    ]
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "h10_convert_a.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "convert_a"
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "shot": "h11_convert_b.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "convert_b"
+    ]
+   }
+  },
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "h12_convert_c.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "convert_c"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.tower_cast"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 240,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "shot": "h13_rise_a.png"
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "h14_rise_b.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "rise"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.tower_done"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 120,
+    "equals": true
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "h15_tower_done.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "tower_done"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "alive",
+    "equals": true,
+    "timeout": 90
+   }
+  },
+  {
+   "click": "%SpellTab"
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "mana",
+    "timeout": 90,
+    "gte": 800
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_tower",
+    "args": [
+     2
+    ]
+   }
+  },
+  {
+   "press": "spell_6"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "select"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "erupt"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "erupt_cast"
+    ]
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "shot": "h16_erupt_a.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "erupt_a"
+    ]
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "h17_erupt_b.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "erupt_b"
+    ]
+   }
+  },
+  {
+   "wait": 10.0
+  },
+  {
+   "shot": "h18_erupt_after.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "erupt_after"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "erupt_after"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.volcano"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 300,
+    "equals": true
+   }
+  },
+  {
+   "wait": 2.0
+  },
+  {
+   "shot": "h19_volcano_a.png"
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "shot": "h20_volcano_b.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "volcano_b"
+    ]
+   }
+  },
+  {
+   "wait": 14.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "volcano_after"
+    ]
+   }
+  },
+  {
+   "shot": "h21_volcano_after.png"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "volcano_after"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "A.done"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 90,
+    "equals": true
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "end"
+    ]
+   }
+  },
+  {
+   "shot": "h22_end.png"
+  }
+ ]
+}

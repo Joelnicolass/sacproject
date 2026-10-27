@@ -13,6 +13,10 @@
 [ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="10_flora"]
 [ext_resource type="Script" path="res://scenes/look/ground/terrain_deform_texture.gd" id="12_deform"]
 [ext_resource type="PackedScene" path="res://scenes/look/sky/sky_underside.tscn" id="13_underside"]
+[ext_resource type="PackedScene" path="res://scenes/look/atmosphere/atmosphere.tscn" id="14_atmosphere"]
+[ext_resource type="PackedScene" path="res://scenes/look/life/ambient_life.tscn" id="15_life"]
+[ext_resource type="Script" path="res://scenes/look/surface_relief_layer.gd" id="16_relief"]
+[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="17_prefs"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")
@@ -22,10 +26,11 @@ sun_layer = NodePath("Layers/Sun")
 
 [node name="Layers" type="Node" parent="."]
 
-[node name="Sun" type="Node3D" parent="Layers" node_paths=PackedStringArray("sun", "fill")]
+[node name="Sun" type="Node3D" parent="Layers" node_paths=PackedStringArray("sun", "fill", "atmosphere")]
 script = ExtResource("3_sun_layer")
 sun = NodePath("Sun")
 fill = NodePath("Fill")
+atmosphere = NodePath("../Atmosphere")
 
 [node name="Sun" type="DirectionalLight3D" parent="Layers/Sun"]
 unique_name_in_owner = true
@@ -36,9 +41,10 @@ unique_name_in_owner = true
 
 [node name="Ground" parent="Layers" instance=ExtResource("5_ground")]
 
-[node name="Environment" type="Node3D" parent="Layers" node_paths=PackedStringArray("world_environment")]
+[node name="Environment" type="Node3D" parent="Layers" node_paths=PackedStringArray("world_environment", "atmosphere")]
 script = ExtResource("6_environment_layer")
 world_environment = NodePath("WorldEnvironment")
+atmosphere = NodePath("../Atmosphere")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Layers/Environment"]
 unique_name_in_owner = true
@@ -51,7 +57,8 @@ environment = ExtResource("7_env")
 [node name="Flora" parent="Layers" node_paths=PackedStringArray("rig") instance=ExtResource("10_flora")]
 rig = NodePath("../..")
 
-[node name="ActorLights" type="Node3D" parent="Layers"]
+[node name="ActorLights" type="Node3D" parent="Layers" node_paths=PackedStringArray("atmosphere")]
+atmosphere = NodePath("../Atmosphere")
 script = ExtResource("11_budget")
 
 [node name="TerrainDeform" type="Node3D" parent="Layers" node_paths=PackedStringArray("rig")]
@@ -61,9 +68,15 @@ rig = NodePath("../..")
 
 [node name="Underside" parent="Layers" instance=ExtResource("13_underside")]
 
-[node name="TimeOfDay" type="Node" parent="."]
+[node name="Atmosphere" parent="Layers" instance=ExtResource("14_atmosphere")]
 
-[node name="Weather" type="Node" parent="."]
+[node name="AmbientLife" parent="Layers" node_paths=PackedStringArray("atmosphere") instance=ExtResource("15_life")]
+atmosphere = NodePath("../Atmosphere")
+
+[node name="SurfaceRelief" type="Node3D" parent="Layers"]
+editor_description = "RFC-067: el interruptor global de los mapas de normales (preset relief_maps y la opción «Relieve»). Apagado, los apaga en memoria; nunca guarda."
+script = ExtResource("16_relief")
+prefs = ExtResource("17_prefs")
 
 [node name="Quality" type="Node" parent="."]
 script = ExtResource("2_quality")

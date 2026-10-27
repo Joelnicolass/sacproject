@@ -1,5 +1,5 @@
 class_name CastBolts
-extends Node3D
+extends FxScene
 
 ## The little bolts that climb around a wizard while he casts Chain Lightning: at each tick, half the time, a short bolt is born at a
 ## random point of his box (a bit larger than it) and rises a few metres. FxBus plays it on this peer only; the scene frees itself when
@@ -43,4 +43,4 @@ func _physics_process(_delta: float) -> void:
 	var size := box.size * box_scale
 	var low := box.get_center() - size * 0.5
 	var start := low + Vector3(_rng.randf() * size.x, _rng.randf() * size.y, _rng.randf() * size.z)
-	FxBus.play_beam(beam.fx_name(), start, start + Vector3(0.0, _rng.randf_range(rise_min_m, rise_max_m), 0.0))
+	FxBus.play_beam(beam, start, start + Vector3(0.0, _rng.randf_range(rise_min_m, rise_max_m), 0.0))

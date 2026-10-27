@@ -1,8 +1,11 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/original/textures/bugz/002.png" id="1_futeo"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/bugz/002_normal.png" id="2_avy5l"]
 
 [resource]
 resource_name = "bugz_002"
 albedo_texture = ExtResource("1_futeo")
 roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_avy5l")

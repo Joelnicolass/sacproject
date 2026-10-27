@@ -5,7 +5,6 @@
 [ext_resource type="Script" uid="uid://t8d2xnuluikt" path="res://scenes/gods/book_unlock.gd" id="3_unl"]
 [ext_resource type="Script" uid="uid://c1ofxm0qeyvup" path="res://scenes/units/creature_type.gd" id="4_cre"]
 [ext_resource type="Script" uid="uid://cambxdcyiebpa" path="res://scenes/spells/spell_type.gd" id="5_spe"]
-[ext_resource type="Resource" path="res://data/ai/profile_charnel.tres" id="6_ai"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/manahoar.tres" id="7_c_oham"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/scythe.tres" id="8_c_dzid"]
 [ext_resource type="Resource" path="res://data/catalog/creatures/fallen.tres" id="9_c_dplk"]
@@ -34,9 +33,9 @@
 [ext_resource type="Resource" path="res://data/catalog/spells/rwsp.tres" id="32_s_rwsp"]
 [ext_resource type="Resource" path="res://data/catalog/spells/taed.tres" id="33_s_taed"]
 [ext_resource type="Resource" path="res://data/catalog/spells/tfir.tres" id="34_s_tfir"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_cama.tscn" id="gs_mana"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_manalith.tscn" id="gs_mana"]
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_casp.tscn" id="gs_shrine"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_shrine.tscn" id="gs_shrine"]
 [ext_resource type="Resource" path="res://data/look/charnel.tres" id="99_look"]
 
 [sub_resource type="Resource" id="Unlock_0"]
@@ -193,7 +192,6 @@ script = ExtResource("1_gtype")
 tag = "charnel"
 display_name = "Charnel"
 sort_order = 4
-ai_profile = ExtResource("6_ai")
 book = SubResource("Book_1")
 structures = Array[ExtResource("gs_script")]([SubResource("Structure_0"), SubResource("Structure_1")])
 look = ExtResource("99_look")

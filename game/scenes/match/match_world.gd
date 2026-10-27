@@ -3,9 +3,10 @@ extends Node3D
 
 signal local_wizard_changed(wizard: Node3D)
 
-## RFC-044: the match is map-agnostic. The map is the child `Map` (a MapRoot): the one the scene already holds
-## (scenes/match/high_noon.tscn) or, when there is none or `--map=<tag>` asks for another, the scene of the active
+## The match is map-agnostic. The map is the child `Map` (a MapRoot): the one the scene already holds
+## (debug/match/high_noon.tscn) or, when there is none or `--map=<tag>` asks for another, the scene of the active
 ## MapDefinition. The systems below are bound to its sockets before any of them is ready.
+## Ref: RFC-044.
 const MAP_NODE := "Map"
 
 @export var rules: MatchRules
@@ -14,6 +15,9 @@ const MAP_NODE := "Map"
 
 ## The map of this match (set in _enter_tree).
 var map: MapRoot
+## The map and the mode this world plays, read once from ActiveMatch when it enters the tree; the systems get them from here.
+var definition: MapDefinition
+var mode: GameMode
 
 var _entered_ms := 0
 var _local_wizard: Node3D
@@ -23,17 +27,20 @@ func _enter_tree() -> void:
 	_entered_ms = Time.get_ticks_msec()
 	## RFC-032 032b: the ticks of the match start at 0 on every peer (the client counts its own for the cooldowns).
 	MatchClock.begin(get_tree())
-	## The one who simulates applies the match setup (level, friendly fire, drop soul, starting souls; RFC-031 031a2/031d) and draws (or takes) the match
-	## seed before any child is ready (RFC-024 §5.1). The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
+	## The one who simulates applies the match setup (level, friendly fire, drop soul, starting souls; RFC-031 031a2/031d)
+	## before any child is ready (RFC-024 §5.1). The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
 	if not MpKit.is_networked() or MpKit.is_server():
 		rules = SacrificeFlow.setup.apply_to(rules)
-		MatchSeed.begin(rules)
+	## Every peer seeds the match: online with the seed the server announced (RFC-060 060s), offline with the rules' or a drawn one.
+	MatchSeed.begin(rules, ActiveMatch.match_seed())
+	definition = ActiveMatch.map()
+	mode = ActiveMatch.mode()
+	SideRelations.use(definition, mode)
 	_attach_map()
 
 
 ## Puts the active map first among the children (it is ready before the systems that read it) and binds the systems.
 func _attach_map() -> void:
-	var definition := MapCatalog.active()
 	## One line for the logs and the runs (RFC-049 049a): which map this process loaded, and whether it simulates it.
 	print(("mapa %s" if not MpKit.is_networked() or MpKit.is_server() else "en mapa %s") % definition.tag)
 	map = get_node_or_null(MAP_NODE) as MapRoot
@@ -55,9 +62,10 @@ func _attach_map() -> void:
 
 ## The sockets of the map into the exports of the systems that need its parts.
 func _bind_map() -> void:
-	%Camera.set("ground", map.terrain)
-	%Selection.set("ground", map.terrain)
-	%Nav.set("ground", map.ground)
+	var drawn := map.terrain.mesh if map.terrain != null else null
+	%Camera.set("ground", drawn)
+	%Selection.set("ground", drawn)
+	%Nav.set("terrain", map.terrain)
 	%Nav.set("region", map.nav_region)
 	var spawner := $WizardSpawner as MultiplayerSpawner
 	spawner.set("spawn_points", spawner.get_path_to(map.starts))
@@ -70,7 +78,6 @@ func _bind_map() -> void:
 
 
 func _ready() -> void:
-	var definition := MapCatalog.active()
 	var map_name := "?"
 	if definition:
 		map_name = definition.display_name if not definition.display_name.is_empty() else String(definition.tag)
@@ -82,6 +89,15 @@ func _ready() -> void:
 	for wizard in %Wizards.get_children():
 		_check_local(wizard)
 	print("mundo listo %d ms" % (Time.get_ticks_msec() - _entered_ms))
+
+
+## Where the shader warm-up starts its walk (WarmCollect): this match's map and every god and wizard a seat can pick (any of them can show up).
+func warm_roots() -> Array[Resource]:
+	var roots: Array[Resource] = [definition]
+	var catalog := GameCatalog.shared()
+	roots.append_array(catalog.offered_gods())
+	roots.append_array(catalog.offered_wizards())
+	return roots
 
 
 ## The wizard of this process's player; null on the dedicated server or before the spawn arrives.

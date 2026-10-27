@@ -44,7 +44,7 @@ Antes había pedido: «god rays, hacer el cielo un poco más llamativo, efectos 
 
 - Suelo con relieve: materiales PBR con normales, AO y rugosidad; mezcla por pendiente y altura; pasto, matas, flores y rocas instanciados.
 - Mapas de normales y AO en personajes, altar y estructuras, generados a partir de sus texturas originales.
-- **Cielo: se conserva la estética del original** (decisión del usuario, 2026-10-14: «era algo muy llamativo en el juego original»). Las nubes, colores y movimiento del cielo del juego se ven como en el original; nada de nubes nuevas ni saturación extra. Se puede construir un cielo nuevo por shader (técnicas de godotshaders/shadertoy) que reproduzca esa estética con más resolución e impacto, pero el cielo original queda siempre disponible como modo legacy.
+- **Cielo: se conserva la estética del original** (decisión del usuario, 2026-10-14: «era algo muy llamativo en el juego original»). Las nubes, colores y movimiento del cielo del juego se ven como en el original; nada de nubes nuevas ni saturación extra. Se puede construir un cielo nuevo por shader (técnicas de godotshaders/shadertoy) que reproduzca esa estética con más resolución e impacto, pero el cielo original queda siempre disponible como modo legacy. **Actualización 2026-10-26 (RFC-058):** el día/noche y el clima pueden cambiar el cielo (estrellas, luna, nubes de tormenta) mientras la estética se parezca a la del original; el modo legacy ya no es obligatorio. Sigue sin bloom fuerte.
 - Niebla volumétrica y de altura; polvo, brasas, luciérnagas y esporas en el aire según el bioma.
 - Bloom fuerte en el portal del altar, hechizos, manantiales y fuego.
 - Sombras suaves y relleno de luz: nunca negro puro sobre un personaje.
@@ -60,7 +60,7 @@ Antes había pedido: «god rays, hacer el cielo un poco más llamativo, efectos 
 ## Assets
 
 - **Suelo, pasto, rocas y cielo:** bibliotecas libres CC0 (ambientCG, Poly Haven u otras con la misma licencia). Se commitean por Git LFS, a 2K–4K, con su procedencia anotada.
-- **Normales y AO de personajes y edificios:** generados desde las texturas del original. Van al caché, no a git.
+- **Normales y AO de personajes y edificios:** opcionales, por material. Se generan desde las texturas del original con `addons/surface_maps` (RFC-067) y van a `assets/surfaces/<owner>/` por Git LFS. El PNG es la fuente y se puede retocar. Un material sin mapa se ve como el original.
 - **Escalable:** el sistema de materiales tiene que aceptar texturas nuevas que el usuario quiera sumar más adelante, por bioma o por pieza, sin tocar código.
 - Nada del juego original se commitea.
 

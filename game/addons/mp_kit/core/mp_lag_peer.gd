@@ -139,6 +139,12 @@ func _disconnect_peer(peer: int, force: bool) -> void:
 	_inner.disconnect_peer(peer, force)
 
 
+## The relay's kick reason, passed to the wrapped peer (MpRelayPeer.set_kick_reason).
+func set_kick_reason(peer: int, reason: String) -> void:
+	if _inner.has_method(&"set_kick_reason"):
+		_inner.call(&"set_kick_reason", peer, reason)
+
+
 func _set_refuse_new_connections(enable: bool) -> void:
 	_inner.refuse_new_connections = enable
 

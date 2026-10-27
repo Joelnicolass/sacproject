@@ -1,9 +1,10 @@
 class_name AiField
 extends RefCounted
 
-## The scalar fields of the original AI as pure functions (RFC-024 §3.1 `AiField`): how much a distance
+## The scalar fields of the AI as pure functions: how much a distance
 ## weighs, how groups influence a point, how the three casting weights split. Each line names the
-## `shiny.d` line it was ported from. Floats the engine stores as `float` go through f32().
+## original line it was ported from. Floats the engine stores as `float` go through f32().
+## Ref: RFC-024 §3.1 `AiField`.
 
 ## A float32 round trip (the engine keeps most of these in float).
 static func f32(x: float) -> float:
@@ -11,19 +12,21 @@ static func f32(x: float) -> float:
 	return a[0]
 
 
-## safediv (shiny.d:199-206): a NaN answer becomes the canonical NaN; infinities pass.
+## safediv: a NaN answer becomes the canonical NaN; infinities pass.
+## Ref: shiny.d:199-206
 static func safediv(a: float, b: float) -> float:
 	var r := a / b
 	return NAN if is_nan(r) else r
 
 
-## lerp(a, w, b) = a + (b - a) * w (shiny.d:2011 `lerp`, 0x48abe0).
+## lerp(a, w, b) = a + (b - a) * w.
+## Ref: shiny.d:2011 `lerp`, 0x48abe0
 static func lerp_w(a: float, w: float, b: float) -> float:
 	return f32(a + (b - a) * w)
 
 
 ## The linear falloff every scan uses: 1 up to `near`, 0 from `far`, (far - d) / (far - near) between
-## (shiny.d:2012-2040 probOr, 2042-2062 densityGroups, 2064-2082 influenceGroups).
+## Ref: shiny.d:2012-2040 probOr, 2042-2062 densityGroups, 2064-2082 influenceGroups
 static func ramp(distance: float, near: float, far: float) -> float:
 	if distance <= near:
 		return 1.0
@@ -32,7 +35,8 @@ static func ramp(distance: float, near: float, far: float) -> float:
 	return f32(safediv(far - distance, far - near))
 
 
-## probOr (shiny.d:2012-2022): acc += w*w*(1-acc) for each distance.
+## probOr: acc += w*w*(1-acc) for each distance.
+## Ref: shiny.d:2012-2022
 static func prob_or(distances: PackedFloat32Array, near: float, far: float) -> float:
 	var acc := 0.0
 	for d in distances:
@@ -41,31 +45,36 @@ static func prob_or(distances: PackedFloat32Array, near: float, far: float) -> f
 	return acc
 
 
-## canAccept (shiny.d:1702-1710): a group of `count` takes a body within 30*min(1+0.1*count, 1.8) m of its center.
-static func group_radius(count: int) -> float:
-	var r := float(count) * 0.1 + 1.0
-	if not (r < 1.7999999523162842):
-		r = 1.7999999523162842
-	return r * 30.0
+## A group of `count` takes a body within group_radius_m * min(1 + group_growth * count, group_cap) of its center (the crowd
+## tactics; the cap goes through float32 like the original's 1.8).
+## Ref: shiny.d:1702-1710 canAccept
+static func group_radius(count: int, crowd: AiCrowdTactics) -> float:
+	var r := float(count) * crowd.group_growth + 1.0
+	var cap := f32(crowd.group_cap)
+	if not (r < cap):
+		r = cap
+	return r * crowd.group_radius_m
 
 
-static func can_accept(count: int, distance_sq: float) -> bool:
-	var r := group_radius(count)
+static func can_accept(count: int, distance_sq: float, crowd: AiCrowdTactics) -> bool:
+	var r := group_radius(count, crowd)
 	return not (r * r < distance_sq)
 
 
-## weightTriple (shiny.d:2953-2966, 0x48cc70): the weights of attacking, supporting and converting.
-## `ratio` is stanceRecs[3] u[6] (own souls / (own + enemy)), `command` 0..2 the record's task command.
-static func weight_triple(command: int, ratio: float, aggression: float) -> Array[float]:
+## weightTriple: the weights of attacking, supporting and converting.
+## `ratio` is stanceRecs[3] u[6] (own souls / (own + enemy)), `task` the kind of the record's task: guard and capture have their
+## own split; idle and focus (the original's idle number, which neither branch takes) split evenly.
+## Ref: shiny.d:2953-2966, 0x48cc70
+static func weight_triple(task: AiTask.Kind, ratio: float, aggression: float) -> Array[float]:
 	var m := 1.0 - ratio
 	var o0 := 0.0
 	var o1 := 0.0
 	var o2 := 0.0
-	if command <= 1:
+	if task == AiTask.Kind.GUARD:
 		o0 = f32(aggression * (1.0 - m) * (1.0 / 6.0))
 		o1 = f32(1.0 - m)
 		o2 = m * aggression
-	elif command == 2:
+	elif task == AiTask.Kind.CAPTURE:
 		o0 = f32(aggression * (1.0 - m) * 0.5)
 		o1 = f32((1.0 - m) * (1.0 / 3.0))
 		o2 = m * aggression
@@ -75,10 +84,12 @@ static func weight_triple(command: int, ratio: float, aggression: float) -> Arra
 	return [f32(safediv(o0, total)), f32(safediv(o1, total)), f32(safediv(o2, total))]
 
 
-## The weight a foe has for wizAttack (shiny.d:3052-3071, 0x48d640): 1 within 10 m; (thr-d)/(thr-10) up to `thr`;
-## halved when it is not aggressive/wizard-like (status & 6 == 0), a third when it has no ready ability
-## (status & 0x1800 == 0), x10 for a Sac Doctor. 0 when the foe is out of reach.
-static func attack_weight(distance: float, thr: float, status: int, sac_doctor: bool) -> float:
+## The weight a foe has for the wizard's attack: 1 within 10 m; (thr-d)/(thr-10) up to `thr`; times the tactics' weight_passive
+## when it does not fight, weight_no_ability when it has no ability it can pay now (`able`: AiBody.ability_ready), weight_sac_doctor
+## for a Sac Doctor. 0 when the foe is out of reach. 055f f5: the original read bits only a wizard or a ready Manahoar carried, so
+## every creature weighed x0.5 and x1/3 whatever it could do.
+## Ref: shiny.d:3052-3071 (0x48d640)
+static func attack_weight(distance: float, thr: float, foe: AiTrack, able: bool, tactics: AiTactics, sac_doctor := false) -> float:
 	var w := 0.0
 	if distance <= 10.0:
 		w = 1.0
@@ -88,28 +99,31 @@ static func attack_weight(distance: float, thr: float, status: int, sac_doctor: 
 		w = safediv(thr - distance, thr - 10.0)
 		if w == 0.0:
 			return 0.0
-	if (status & 0x6) == 0:
-		w *= 0.5
-	if (status & 0x1800) == 0:
-		w *= 0.3333333432674408
+	if not foe.fights:
+		w *= tactics.weight_passive
+	if not able:
+		w *= tactics.weight_no_ability
 	if sac_doctor:
-		w *= 10.0
+		w *= tactics.weight_sac_doctor
 	return w
 
 
-## `thr` of wizAttack: (1 - threat) * 280 (retail coefficient 280, shiny.d:3055; 180 is the beta).
+## `thr` of wizAttack: (1 - threat) * 280.
+## Ref: retail coefficient 280, shiny.d:3055; 180 is the beta
 static func attack_reach(threat: float, coefficient: float) -> float:
 	return f32((1.0 - threat) * coefficient)
 
 
-## The score of a spell once the cost is paid out of the pool (findBestSpell, shiny.d:2938-2943): (1 - cost/pool)*s.
+## The score of a spell once the cost is paid out of the pool: (1 - cost/pool)*s.
+## Ref: findBestSpell, shiny.d:2938-2943
 static func spell_cost_scaled(score: float, mana_cost: int, pool: float) -> float:
 	if pool > 0.0:
 		return (1.0 - safediv(float(mana_cost), pool)) * score
 	return score
 
 
-## wizSacrifice BLOCK2 (shiny.d:3155-3162): (1 - cost/pool)*s for a positive rating, cost/pool*s otherwise.
+## wizSacrifice BLOCK2: (1 - cost/pool)*s for a positive rating, cost/pool*s otherwise.
+## Ref: shiny.d:3155-3162
 static func summon_score(rating: float, mana_cost: int, pool: int) -> float:
 	var cost := safediv(float(mana_cost), float(pool))
 	return (1.0 - cost) * rating if rating > 0.0 else cost * rating

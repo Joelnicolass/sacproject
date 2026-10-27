@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TerrainBrush" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/terrain_tools/brush/terrain_brush.gd" id="1_brush"]
+
+[resource]
+script = ExtResource("1_brush")
+size_m = 50.0
+falloff = 0.5
+shape = 0
+strength_m = 0.1
+flow = 0.5
+density = 1.0

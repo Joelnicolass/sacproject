@@ -1,5 +1,5 @@
 class_name CastEmitters
-extends Node3D
+extends FxScene
 
 ## The sprites a spell throws at a place while the wizard casts it (the earth that rises where Bovine Intervention's cow will come out), played on
 ## every peer by FxBus.broadcast_scene: its SpriteEmitter children are on for as many ticks as the cast lasts, then off, and the node frees itself

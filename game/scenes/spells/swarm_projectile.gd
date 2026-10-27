@@ -1,7 +1,8 @@
 extends SpellProjectile
 
-## Charnel Insect Swarm (sacengine castSwarm/updateSwarm, state.d:10576, 17011).
+## Charnel Insect Swarm.
 ## Guided projectile with smaller hit box, higher cruise height and splash spell damage.
+## Ref: sacengine castSwarm/updateSwarm, state.d:10576, 17011
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
@@ -11,6 +12,11 @@ const SIZE := 0.3
 const ARRIVE_DISTANCE := 0.25
 ## Trail puffs on every peer, by time (FxTrail): one per 2/60 s.
 const TRAIL_INTERVAL_S := 2.0 / 60.0
+
+## Puffed behind it while it flies (Wrath's trail). Empty = no trail.
+@export var trail: ParticleType
+## Bursts where it breaks, on every peer.
+@export var explosion: Array[ParticleType] = []
 
 var speed := 0.0
 var acceleration := 0.0
@@ -36,11 +42,11 @@ func setup(data: Dictionary) -> void:
 	from_slot = int(data.get("slot", 0))
 	_attach_net()
 	## Wrath's trail, played locally on every peer.
-	FxTrail.attach(self, "wrath_trail", TRAIL_INTERVAL_S)
+	FxTrail.attach(self, trail, TRAIL_INTERVAL_S)
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 
@@ -119,8 +125,8 @@ func _explode(direct: Node3D) -> void:
 	else:
 		direct = null
 	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot)
-	FxBus.broadcast("wrath_explosion1", center)
-	FxBus.broadcast("wrath_explosion2", center)
+	for type in explosion:
+		FxBus.broadcast(type, center)
 	set_physics_process(false)
 	set_process(false)
 	queue_free()

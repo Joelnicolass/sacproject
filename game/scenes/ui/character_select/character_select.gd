@@ -5,7 +5,8 @@ const _PREVIEW := preload("res://scenes/ui/character_select/wizard_preview.gd")
 signal confirmed
 
 @export var pick_button: PackedScene
-## RFC-034 034f: the confirm button says «Jugar» in the menu; the room screen says «Elegir».
+## The confirm button says «Jugar» in the menu; the room screen says «Elegir».
+## Ref: RFC-034 034f.
 @export var confirm_text: String = "UI_CHARACTER_SELECT_PLAY"
 
 @onready var _wizard_grid: GridContainer = %WizardGrid

@@ -1,0 +1,12 @@
+{
+ "scene": "res://agent/harness/058_fix/m_persephone_h12_rain.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait": 10.0
+  },
+  {
+   "shot": "m_persephone_h12_rain.png"
+  }
+ ]
+}

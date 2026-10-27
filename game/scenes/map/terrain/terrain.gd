@@ -1,170 +1,231 @@
 @tool
 class_name Terrain
-extends MeshInstance3D
+extends Node3D
 
-## The map's ground as something to see: the mesh (the instanced terrain.glb, or one built from the data) and the editor
-## preview. The body to stand on is a saved child of the map (`Collision`: the glb brings one, a map without glb saves its
-## own with ConcavePolygonShape3D `terrain_collision.res`). Heights, holes and tiles are not here: ask the child GroundSurface.
-## The material swap is TerrainGroundMaterial.
+## The ground of a map: the one place that says how high the land is, where it has holes and how it moved in the match.
+## Everyone asks it; whatever moves the ground asks it to (stamp, keep_stamp, cut_hole, fill_hole) and it tells `changed` after.
+## The only writer: the server decides what stays and tells `kept`/`hole_set`, the child `Net` carries them to the clients and
+## hands them back here; the state shows in `Status`.
+## Not: the look (TerrainMesh), the body to stand on (TerrainCollision), the network transport (TerrainNet), what a spell is.
 
+signal changed(rect: Rect2)  ## x, z in metres; every peer. The stamps that play: once per physics tick, all of them together
+signal settled(rect: Rect2)  ## what stays moved (commit, unstamp, holes): flora, nav and scars follow this, never a live stamp
+signal holes_changed(rect: Rect2)  ## a vertex came or went (the collision flushes now, NavService bakes again)
+signal derived  ## the triangles were derived again from `heights` (on load; editor: after a reimport or a brush stroke)
+signal kept(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array)  ## `delta` over `rect` stays as change `rev` (Net sends it)
+signal hole_set(rev: int, id: int, removed: bool)  ## the lattice vertex `id` went or came back as change `rev` (Net sends it)
 const GROUP := &"terrain"
 
-## The ground as numbers: its `Shape` child.
-@export var shape: GroundSurface
-## The label that says the map has no ground (shown only when it could not be built).
-@export var missing: Label3D
-## Which kind of ground lies where: 256x256, one pixel per 10 m cell, R open, G earth, B rock, A path (the map's
-## ground_roles.png; paint it in any image editor). The god's look says what each kind looks like.
+## The shape of the map's ground: its heights.png and void.png, imported as TerrainHeights. Everything else is derived.
+@export var heights: TerrainHeights:
+	set(value):
+		heights = value
+		_shape.follow(heights, self)
+## Which kind of ground lies where (the map's ground_roles.png, 1 px per 10 m cell: R open, G earth, B rock, A path).
 @export var ground_roles: Texture2D
 ## The map's own baked light on the ground (the map's light.png). Empty = the ground reads evenly lit.
 @export var light_map: Texture2D
-## The map sits far from where the editor camera opens: in the editor only, the parent is shifted so the map shows
-## at the origin (the shift is taken off while saving).
-@export var editor_preview_recenter := true:
-	set(value):
-		editor_preview_recenter = value
-		_apply_preview_offset()
-## Normals averaged per grid vertex so the slopes read as one surface; off: one flat normal per triangle. Changing it
-## swaps the normals only: collision and heights come from the positions.
-@export var smooth_ground := true:
-	set(value):
-		smooth_ground = value
-		if mesh != null and _prepare() != null:
-			mesh = _make_mesh()
+## The node that draws this ground (the child `Mesh`): the look layer dresses it, the minimap bakes it.
+@export var mesh: MeshInstance3D
+## The stamps that play, gathered per tick (the child `Live`). Empty = a stamp shows nothing.
+@export var live: TerrainLive
 
-var _arrays: TerrainMeshArrays
-var _material: TerrainGroundMaterial
+## The triangles derived from `heights` (land first, then the cliff walls), in memory only: Mesh and Collision read them.
+var data := MapTerrainData.new()
+## The land triangles per cell (read only: the walls of the holes, the falling piece and HoleRules read them).
+var index := TerrainRules.Index.new()
+var _shape := TerrainShape.new()
+var _field := GroundField.new()
+
+
+## The ground of the map `node` is in; null when it is not in the tree or no ground is loaded.
+static func of(node: Node) -> Terrain:
+	var found := node.get_tree().get_first_node_in_group(GROUP) as Terrain if node != null and node.is_inside_tree() else null
+	return found if found != null and found.is_loaded() else null
 
 
 func _init() -> void:
-	_material = TerrainGroundMaterial.new(self)
-
-## A mesh built in memory is rebuilt on load and never written into the scene (only the instanced terrain.glb is).
-func _validate_property(property: Dictionary) -> void:
-	if property.name == "mesh" and not _mesh_is_file():
-		property.usage &= ~PROPERTY_USAGE_STORAGE
-		property.usage |= PROPERTY_USAGE_READ_ONLY
-
-
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if shape == null:
-		warnings.append("Falta el hijo Shape (GroundSurface) en `shape`.")
-	if ground_roles == null:
-		warnings.append("Falta `ground_roles` (el ground_roles.png del mapa): el suelo del dios no sabe qué va dónde.")
-	return warnings
-
-
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_EDITOR_PRE_SAVE:
-		_set_preview_offset(Vector3.ZERO)
-		_material.before_save()
-	elif what == NOTIFICATION_EDITOR_POST_SAVE:
-		_apply_preview_offset()
-		_material.after_save()
-
-
-func _enter_tree() -> void:
-	if shape != null:  # the surface lists who draws it; before any _ready, so the look layer and the minimap find it
-		shape.meshes.assign([self])
+	_shape.derived.connect(_on_derived)
 
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	var built := _load_mesh()
-	_apply_preview_offset()
-	if missing:
-		missing.visible = not built
+	if Engine.is_editor_hint():
+		return
+	if live != null:
+		live.ticked.connect(_on_live_ticked)
+		live.pins = PinRules.of_tree(get_tree())
 
 
-## The mesh arrays as Terrain builds them at runtime (for the bake tools); empty without usable data.
-func bake_arrays() -> Array:
-	var built := _prepare()
-	return built.with_normals(smooth_ground) if built != null else []
+func _get_configuration_warnings() -> PackedStringArray:
+	var wired := heights != null and ground_roles != null and mesh != null and live != null
+	return PackedStringArray() if wired else PackedStringArray(["Faltan `heights` (heights.png), `ground_roles` (ground_roles.png), `mesh` (el hijo Mesh) o `live` (el hijo Live)."])
 
 
-func classic_material() -> ShaderMaterial:
-	return _material.classic()
+func is_loaded() -> bool:
+	return not index.ground.is_empty()
 
 
-func set_classic_material(material: ShaderMaterial) -> void:
-	_material.set_classic(material)
+## Land height under (x, z) in metres, NAN over a hole or off the map.
+func height_at(x: float, z: float) -> float:
+	return TerrainRules.height_in(x, z, index.ground, index.cells, _field.texels, index.corners)
 
 
-func set_ground_override(material: Material) -> void:
-	_material.set_override(material)
+## Unit normal (pointing up) of the land under (x, z); straight up over a hole or off the land.
+func normal_at(x: float, z: float) -> Vector3:
+	return TerrainRules.normal_in(x, z, index.ground, index.cells, _field.texels, index.corners)
 
 
-func clear_ground_override() -> void:
-	_material.set_override(null)
+## True when a land triangle lies under (x, z). Holes and the map rim have none.
+func is_on_ground(x: float, z: float) -> bool:
+	return TerrainRules.triangle_in(x, z, index.ground, index.cells, _field.texels, index.corners) >= 0
 
 
-func _mesh_is_file() -> bool:
-	return mesh != null and not mesh.resource_path.is_empty()
+## The map's footprint on the ground (x, z in metres; the map lives at x, z >= 0).
+func bounds() -> Rect2:
+	return Rect2(Vector2.ZERO, Vector2(_field.size) * _field.cell_m)
 
 
-func _apply_preview_offset() -> void:
-	if Engine.is_editor_hint() and is_node_ready():
-		var center := mesh.get_aabb().get_center() if editor_preview_recenter and mesh else Vector3.ZERO
-		_set_preview_offset(Vector3(-center.x, 0.0, -center.z))
+## The lowest land vertex (0 without land).
+func lowest() -> float:
+	return index.lowest
 
 
-func _set_preview_offset(offset: Vector3) -> void:
-	if Engine.is_editor_hint() and get_parent() is Node3D:
-		(get_parent() as Node3D).position = offset
+## A Callable(x, z) -> float like height_at, on a copy of the ground as it was at its last `settled`: WorkerThreadPool-safe.
+func sampler() -> Callable:
+	return TerrainRules.height_in.bind(index.ground, index.cells, _field.snapshot(), index.corners)
 
 
-func _load_mesh() -> bool:
-	if shape == null or shape.data == null:
-		push_error("Terrain '%s' has no ground: its `shape` needs a GroundSurface with data (MapTerrainData)." % name)
+## The next `sampler` copies the ground as it is now, playing stamps included: what follows a stamp that plays for long (the
+## flora's live replan) asks it before reading; one copy per ask, never per tick.
+func refresh_sampler() -> void:
+	_field.drop_snapshot()
+
+
+## True on the server (and alone): the only peer that decides what stays.
+func is_authority() -> bool:
+	return not is_inside_tree() or multiplayer.is_server()
+
+
+## How far the ground has moved from the file. Read only: only Terrain writes it.
+func field() -> GroundField:
+	return _field
+
+
+## Every peer, from its own clock: stamp `key` shows its shift at `at_s` s at the next physics tick, in place of its last one.
+func stamp(key: StringName, profile: StampProfile, center: Vector2, reach_m: float, peak_m: float, at_s: float, pattern := PackedFloat32Array()) -> void:
+	if live != null:
+		live.put(String(key), profile, center, reach_m, peak_m, at_s, pattern)
+
+
+## The playing stamp `key` is over: at the next physics tick the ground goes back to what stays.
+func unstamp(key: StringName) -> void:
+	if live != null:
+		live.drop(String(key))
+
+
+## Server (or alone): what the stamp reaches at its end stays (never under a base that pins its ground), its live shift `key` goes
+## in the same step; the clients get it.
+func keep_stamp(key: StringName, profile: StampProfile, center: Vector2, reach_m: float, peak_m: float, pattern := PackedFloat32Array()) -> void:
+	var rect := TerrainGrid.vertex_rect(center, reach_m)
+	var delta := StampRules.shift(profile, center, reach_m, peak_m, profile.duration_s() - 1e-4, rect, pattern)
+	PinRules.apply(delta, rect, live.pins if live != null else PackedFloat32Array())
+	if _may_edit("keep_stamp") and delta.size() == rect.get_area():
+		keep(_field.rev + 1, String(key), rect, delta)
+
+
+## Server (or alone): takes away the vertex nearest to `center` (or all within `radius_m`) HoleRules lets go; returns where (never NAN).
+func cut_hole(center: Vector2, radius_m := 0.0) -> PackedVector3Array:
+	var taken := PackedVector3Array()
+	if _may_edit("cut_hole"):
+		for vertex in HoleRules.removable(self, center, radius_m):
+			taken.append(HoleRules.point_on(self, vertex))
+			set_hole(_field.rev + 1, TerrainGrid.id_of(vertex), true)
+	return taken
+
+
+## Server (or alone): gives back the vertex nearest to `center` (or all within `radius_m`) taken in this match, never a void of the map.
+func fill_hole(center: Vector2, radius_m := 0.0) -> PackedVector3Array:
+	var filled := PackedVector3Array()
+	if _may_edit("fill_hole"):
+		for vertex in HoleRules.around(center, radius_m):
+			if set_hole(_field.rev + 1, TerrainGrid.id_of(vertex), false):
+				filled.append(HoleRules.point_on(self, vertex))
+	return filled
+
+
+func _may_edit(what: String) -> bool:
+	if not is_authority():
+		push_warning("Terrain.%s: only the server changes the ground for good." % what)
+	return is_authority()
+
+
+## Keeps `delta` over `rect` as change number `rev` and takes the live stamp `key` away in the same step (keep_stamp, and
+## Net on a client). A change this peer already has is ignored.
+func keep(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array) -> void:
+	if rev <= _field.rev:
+		return
+	if live != null:
+		live.forget(key)
+	var standing := StampCarry.standing(self, rect)
+	var moved := _field.commit(rect, delta, key if not key.is_empty() else null)
+	_field.rev = rev
+	StampCarry.follow(standing, self)
+	_tell(moved, true)
+	kept.emit(rev, key, rect, delta)
+
+
+## Takes the vertex `id` away or gives it back as change number `rev` (cut_hole, fill_hole, and Net on a client). True when
+## that changed something; a change this peer already has is ignored.
+func set_hole(rev: int, id: int, removed: bool) -> bool:
+	if rev <= _field.rev or not _field.set_removed(id, removed):
 		return false
-	if not shape.data.is_valid():
-		push_error("Terrain '%s': data is not a valid MapTerrainData (vertices, normals, indices)." % name)
-		return false
-	if not _saved_mesh_matches():
-		if _prepare() == null:
-			return false
-		mesh = _make_mesh()
-	_material.adopt_scene_material()
+	_field.rev = rev
+	var around := Rect2i(TerrainGrid.vertex_of(id) - Vector2i.ONE, Vector2i(3, 3))
+	_tell(around, true)
+	holes_changed.emit(TerrainGrid.area_of(around))
+	hole_set.emit(rev, id, removed)
 	return true
 
 
-## The mesh the scene holds (the instanced terrain.glb) is shown as it is when it still matches the data and smooth_ground;
-## otherwise it is rebuilt from the data (with a warning when a file is stale, e.g. imported before TerrainMeshArrays.VERSION).
-func _saved_mesh_matches() -> bool:
-	if not _mesh_is_file() or not (mesh is ArrayMesh) or mesh.get_surface_count() != 1:
-		return false
-	var fits: bool = mesh.surface_get_array_len(0) == shape.data.vertices.size() \
-			and bool(mesh.get_meta("smooth_ground", true)) == smooth_ground \
-			and int(mesh.get_meta("arrays_version", 1)) == TerrainMeshArrays.VERSION
-	if not fits:
-		push_warning("Terrain '%s': %s is stale (vertices, smooth_ground or the arrays' version differ; reimport it); rebuilding it in memory." % [name, mesh.resource_path])
-	return fits
+## Tells that the ground moved over `rect` and, when `settles`, that what stays moved there too.
+func _tell(rect: Rect2i, settles: bool) -> void:
+	if rect.has_area():
+		changed.emit(TerrainGrid.area_of(rect))
+		if settles:
+			settled.emit(TerrainGrid.area_of(rect))
 
 
-## Builds (once) both normal sets from the shape's data and tiles. Null when there is no usable data.
-func _prepare() -> TerrainMeshArrays:
-	if _arrays == null and shape != null:
-		_arrays = TerrainMeshArrays.from_data(shape.data, shape.tile_ids())
-	return _arrays
+## One physics tick of the stamps that play: the bodies their rects cover are found once, the shifts written, `changed` told once.
+func _on_live_ticked(shifts: Array, ended: PackedStringArray) -> void:
+	var gone := Rect2i()
+	for key in ended:
+		gone = TerrainGrid.union(gone, _field.drop_live(key))
+	var risen := Rect2i()
+	for shift: TerrainLive.Shift in shifts:
+		risen = TerrainGrid.union(risen, shift.rect)
+	var standing := StampCarry.standing(self, risen)
+	var moved := gone
+	for shift: TerrainLive.Shift in shifts:
+		moved = TerrainGrid.union(moved, _field.set_live(shift.key, shift.rect, shift.values))
+	StampCarry.follow(standing, self)
+	_tell(moved, false)
+	if gone.has_area():
+		settled.emit(TerrainGrid.area_of(gone))
 
 
-func _make_mesh() -> ArrayMesh:
-	var built := ArrayMesh.new()
-	built.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, _arrays.with_normals(smooth_ground))
-	return built
+## Net on a client that joined late: the whole ground the server had; an older one than this peer has is ignored.
+func load_snapshot(snapshot: Dictionary) -> void:
+	if int(snapshot["rev"]) >= _field.rev:
+		_field.apply_snapshot(snapshot)
+		_tell(Rect2i(Vector2i.ZERO, _field.size), true)
 
 
-## The ground trimesh of the current mesh (Mesh.create_trimesh_shape): what a saved `Collision` holds. Null without a mesh.
-func ground_shape() -> ConcavePolygonShape3D:
-	return mesh.create_trimesh_shape() if mesh != null else null
-
-
-## A StaticBody3D with `ground_shape()`, for code that builds a Terrain from the script alone (the suites): a map saves its own.
-func make_collision_body() -> StaticBody3D:
-	var body := StaticBody3D.new()
-	body.name = "Collision"
-	var shape_node := CollisionShape3D.new()
-	shape_node.shape = ground_shape()
-	body.add_child(shape_node)
-	return body
+## New triangles from the heights: the match starts over; the vertices `moved` since the last derive (a brush stroke) settle.
+func _on_derived(moved: Rect2i) -> void:
+	data = _shape.faces
+	index = _shape.index
+	_field = GroundField.new()
+	derived.emit()
+	if moved.has_area():
+		settled.emit(TerrainGrid.area_of(moved))

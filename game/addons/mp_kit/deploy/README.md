@@ -61,6 +61,20 @@ MPKIT_RELAY_SECRET=la-clave addons/mp_kit/deploy/deploy.sh usuario@vps build/ser
 
 `--relay-room NOMBRE` cambia el prefijo de las salas del relay si no querés el del juego. Cómo subir el relay: [../relay/README.md](../relay/README.md).
 
+## Sin VPS: Fly.io
+
+El mismo servidor en una máquina de Fly.io en la que nunca entrás: sin VPS, sin plantillas de export, sin puertos abiertos (se conecta hacia afuera al relay). Un comando desde la carpeta de tu proyecto:
+
+```bash
+MPKIT_RELAY_SECRET=<el secreto del relay> addons/mp_kit/deploy/fly.sh --app mi-servidor-de-juego --relay-url wss://mi-relay.fly.dev
+```
+
+Escribe `fly.toml` en tu proyecto (a partir de [fly/fly.toml](fly/fly.toml)), crea la app, guarda el secreto como secreto de Fly por stdin y despliega: Fly construye [fly/Dockerfile](fly/Dockerfile), que baja el Godot headless oficial de tu versión (verificado contra las sumas SHA-512 de la release), copia tu proyecto, lo importa una vez y corre `godot --headless --path /app -- --room-server …`. `--dedicated PUERTO` para un dedicado simple, `--region`, `--memory`, `--godot X.Y.Z`, `--dry-run`. El paso a paso completo (qué necesitás, verificar, actualizar, costo, comandos útiles, problemas): [GUIDE 13.6](../GUIDE.md#136-sin-vps-flyio).
+
+Para probar todo en tu PC antes (Docker): el paso a paso con un relay local, el contenedor y dos ventanas está en [GUIDE 13.7](../GUIDE.md#137-tu-servidor-en-docker-en-tu-pc-de-punta-a-punta); en el repo del kit, `mpkit_lab/run/docker.sh` lo hace solo con el lab.
+
 ## Verificado y no verificado
 
 Verificado en una Mac: varias instancias de `--room-server` lado a lado con sus rangos (e2e `run_mpkit_instances.sh` del laboratorio), salas, partidas privadas y web. No verificado: el export de Linux (faltan las plantillas en esa Mac) y un VPS real.
+
+Verificado para Fly.io (`fly.sh`): la imagen en Docker en esa Mac (`mpkit_lab/run/docker.sh`: un dedicado y un servidor de salas, con sus partidas dentro del contenedor, jugados a través de un relay local), y un despliegue real en `gru` detrás de un relay en Fly: dos jugadores desde Argentina se encontraron en el lobby del servidor de salas, la partida arrancó en la máquina de Fly, la jugaron y volvieron al lobby con el resultado.

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BuildAreaLook" format=3]
+
+[ext_resource type="Script" path="res://scenes/map/props/build_area_look.gd" id="1_look"]
+
+[resource]
+script = ExtResource("1_look")
+ok_color = Color(0.35, 0.95, 0.45, 0.85)
+blocked_color = Color(0.95, 0.22, 0.16, 0.85)
+width_m = 0.8

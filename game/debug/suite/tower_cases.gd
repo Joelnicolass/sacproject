@@ -12,8 +12,16 @@ const FOUNT_SCENE := preload("res://scenes/map/props/manafount.tscn")
 const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
 const SYSTEM_SCENE := preload("res://scenes/sacrifice/sacrifice_system.tscn")
 const RULES := preload("res://data/match_rules.tres")
+const MANAHOAR: CreatureType = preload("res://data/catalog/creatures/manahoar.tres")
 const MANALITHS: Array[String] = ["mana", "pyma", "jman", "stam", "cama"]
 const SHRINES: Array[String] = ["pcsh", "pasp", "jsac", "stsp", "casp"]
+## Tag (the wire id) -> the building scene, named for humans since 055i-b5.
+const SCENE_BY_TAG := {
+	"mana": "persephone_manalith", "pyma": "pyro_manalith", "jman": "james_manalith",
+	"stam": "stratos_manalith", "cama": "charnel_manalith",
+	"pcsh": "persephone_shrine", "pasp": "pyro_shrine", "jsac": "james_shrine",
+	"stsp": "stratos_shrine", "casp": "charnel_shrine",
+}
 const MANA_TOLERANCE := 0.01
 
 var _host: Node3D
@@ -43,7 +51,7 @@ func run(host: Node3D) -> Dictionary:
 	out["tower_convert"] = await _convert()
 	out["tower_guard_teleport"] = await _guard_teleport()
 	out["tower_cast"] = await _cast()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 
@@ -190,8 +198,9 @@ func _guard_teleport() -> Dictionary:
 	return _verdict("tower_guard_teleport", checks)
 
 
-## pcas is no longer «not implemented»: it raises the god's Shrine over a free fount (Persephone pcsh, James jsac); an occupied fount is
-## NO_FOUNT; when the tower falls the fount is free on its own.
+## pcas is no longer «not implemented»: it raises the god's Shrine over a free fount (Persephone pcsh, James jsac), born rising (no body
+## stops on it, no mana) and standing at the finish, with the dead and the living moved out of its box; an occupied fount is
+## FOUNT_TAKEN; when the tower falls the fount is free on its own.
 func _cast() -> Dictionary:
 	var checks := {}
 	var towers := Node3D.new()
@@ -222,25 +231,36 @@ func _cast() -> Dictionary:
 		var soul := SOUL_SCENE.instantiate() as Soul
 		soul.position = fount.global_position + Vector3(-0.5, 0.0, 1.0)
 		_root.add_child(soul)
+		var unit := _unit(fount.global_position + Vector3(0.0, 0.0, -2.0), 2)
+		await _frames(2)
 		var aim := action.check(wizard, spell, fount.global_position, null, "")
 		checks[god + "_aim_ok"] = aim.status.is_empty()
 		action.begin(wizard, spell, aim)
+		var rising := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
+		checks[god + "_born_rising"] = rising != null and rising.is_rising() and rising.collision_layer == 0
+		checks[god + "_rising_no_mana"] = rising != null and rising.mana_source.process_mode == Node.PROCESS_MODE_DISABLED
 		checks[god + "_finish_quiet"] = action.finish(wizard, spell, wizard).is_empty()
 		var tower := towers.get_child(0) as CastTower if towers.get_child_count() == 1 else null
+		checks[god + "_stands"] = tower != null and not tower.is_rising() and tower.collision_layer != 0
 		results[god] = tower.type.tag if tower != null else ""
 		checks[god + "_fount_taken"] = tower != null and not fount.is_free()
 		## The dead on the fount go out of the footprint (a doctor could never reach them inside the box), onto the ground.
 		var ring := (tower.footprint_m() + TowerRules.MARGIN_M - 0.01) if tower != null else INF
-		for body: Node3D in [dead, soul]:
+		for body: Node3D in [dead, soul, unit]:
 			var flat := Vector2(body.global_position.x - fount.global_position.x, body.global_position.z - fount.global_position.z)
 			checks[god + "_%s_pushed_out" % body.name] = flat.length() >= ring and absf(body.global_position.y) < 0.05
 		dead.queue_free()
 		soul.queue_free()
-		checks[god + "_busy_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.NO_FOUNT
+		unit.queue_free()
+		checks[god + "_busy_fount"] = action.check(wizard, spell, fount.global_position, null, "").status == StructureAction.FOUNT_TAKEN
+		## RFC-056: the fount is free the tick it falls; the ruin stays `linger_s` (so every peer sees it fall) and then goes.
+		var linger := MatchClock.ticks_for(tower.linger_s) if tower != null else 0
 		if tower != null:
 			tower.health.damage(99999.0, 2)
-		await _frames(3)
-		checks[god + "_fount_free_after_fall"] = fount.is_free() and towers.get_child_count() == 0
+		await _frames(1)
+		var free_at_once := fount.is_free()
+		await _frames(linger + 3)
+		checks[god + "_fount_free_after_fall"] = free_at_once and fount.is_free() and towers.get_child_count() == 0
 		wizard.queue_free()
 	checks["shrine_models"] = results.get("persephone", "") == "pcsh" and results.get("james", "") == "jsac"
 	fount.queue_free()
@@ -250,7 +270,7 @@ func _cast() -> Dictionary:
 
 
 func _packed(tag: String) -> PackedScene:
-	return load("res://scenes/structures/buildings/_%s.tscn" % tag)
+	return load("res://scenes/structures/buildings/%s.tscn" % SCENE_BY_TAG[tag])
 
 
 func _tower(tag: String, slot: int, at: Vector3) -> CastTower:
@@ -274,11 +294,10 @@ func _wizard(slot: int, at: Vector3, god := "james", level := 1) -> WizardBody:
 
 
 func _unit(at: Vector3, slot: int) -> UnitBody:
-	var tag := AiPerception.MAHO_TAG
-	var type := GameData.creature(tag)
+	var type := MANAHOAR
 	var unit := UNIT_SCENE.instantiate() as UnitBody
 	unit.owner_slot = slot
-	unit.type = GameData.creature(tag)
+	unit.type = MANAHOAR
 	unit.model = type.model_id() if type else ""
 	unit.rules = RULES
 	unit.idle_aggro = false

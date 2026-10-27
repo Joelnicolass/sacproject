@@ -87,7 +87,7 @@ func _scenes() -> Dictionary:
 	var book := GameData.book("persephone", 9)["spells"] as Array
 	checks["in_persephones_book"] = book.any(func(type: SpellType) -> bool: return type.tag == TAG)
 	checks["not_before_level_8"] = not (GameData.book("persephone", 7)["spells"] as Array).any(func(type: SpellType) -> bool: return type.tag == TAG)
-	checks["ai_heal"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_HEAL
+	checks["ai_area"] = AiSpellEval.rating_fn(spell) == AiSpellEval.FN_AREA  # 055f f5: an attack on an area, no longer a heal
 	return _verdict("stalk_scenes", checks)
 
 
@@ -205,9 +205,9 @@ func _cut() -> Dictionary:
 
 func _ai() -> Dictionary:
 	var checks := {}
-	var perception := AiPerception.new()
+	var perception: AiPerception = preload("res://debug/suite/ai_perception_rig.tscn").instantiate()
 	perception.name = "StalkCasesPerception"
-	perception.profile = load("res://data/ai/profile_original.tres")
+	perception.play = AiPlay.normal()
 	perception.slot = 1
 	_root.add_child(perception)
 	var wizard := _wizard(1, Vector3(-400.0, 0.0, -400.0), "persephone", 8)
@@ -217,9 +217,8 @@ func _ai() -> Dictionary:
 	stance.recs[0].manaliths = 1
 	var groups := AiGroups.new()
 	groups.perception = perception
-	groups.profile = perception.profile
 	_root.add_child(groups)
-	var eval := AiSpellEval.new(perception, stance, groups, perception.profile)
+	var eval := AiSpellEval.new(perception, stance, groups, perception.play.tactics)
 	var track := perception.add_node(wizard, &"event")
 	var foe_track := perception.add_node(foe, &"event")
 	groups.rebuild()

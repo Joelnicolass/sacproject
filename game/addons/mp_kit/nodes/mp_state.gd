@@ -3,7 +3,8 @@ class_name MpState
 extends Node
 
 ## Drop one in the world for the values every player must see: score, timer, round. The server writes them with
-## set_value / add; every peer gets `changed(key, value)`, and a player who joins late gets the current ones.
+## set_value / add; every peer gets `changed(key, value)` (or `watch(key, callback)`: the current value, then each change), and a
+## player who joins or comes back gets the current ones.
 ## Find it from anywhere in the world with `MpState.of(self)`. In solo it is a plain Dictionary.
 ## Not: per-actor data (MpActor sync), one-off effects (MpActor.to_all), game rules.
 
@@ -45,6 +46,24 @@ func _enter_tree() -> void:
 
 func get_value(key: StringName, default: Variant = null) -> Variant:
 	return values.get(key, default)
+
+
+## Every peer: calls `on_value(value)` now with the current value of `key` (`default` while it has none), then on every change
+## of that key. Whoever joins or comes back gets the current value first, whatever order the nodes start in. Returns a
+## handle for unwatch(); the watch also ends with this node.
+func watch(key: StringName, on_value: Callable, default: Variant = null) -> Callable:
+	var relay := func(changed_key: StringName, value: Variant) -> void:
+		if changed_key == key and on_value.is_valid():
+			on_value.call(default if value == null else value)
+	changed.connect(relay)
+	on_value.call(values.get(key, default))
+	return relay
+
+
+## Stops a watch (the handle watch() returned).
+func unwatch(handle: Callable) -> void:
+	if changed.is_connected(handle):
+		changed.disconnect(handle)
 
 
 ## Server (or solo) only. Every peer gets `changed`.

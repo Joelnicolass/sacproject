@@ -165,7 +165,7 @@ func is_obstacle() -> bool: return mode != Mode.DEAD and mode != Mode.SUMMONING 
 func is_targetable() -> bool: return is_obstacle() and not special_forms.playing_dead and not special_forms.stealth
 func is_flying() -> bool: return (type != null and type.is_flying()) or (flight != null and flight.is_airborne())
 func can_take_mana() -> bool: return mode != Mode.DEAD and mode != Mode.SUMMONING
-func simulates() -> bool: return not MpKit.is_networked() or MpKit.is_server()
+func simulates() -> bool: return is_multiplayer_authority()
 
 
 func facing_flat() -> Vector3:
@@ -188,7 +188,8 @@ func melee_profile() -> Dictionary:
 	return {"evasion": float(type.melee_evasion_milli()) if type else 0.0, "resistance": type.melee_resistance if type else 1.0, "reach": mount.facts.reach_m, "height": mount.facts.height_m}
 
 
-## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright). Ref: sacengine soulPosition.
+## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright).
+## Ref: sacengine soulPosition.
 func soul_anchor() -> Vector3:
 	var pivot := get_node_or_null("Tilt") as Node3D
 	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual

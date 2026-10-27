@@ -51,13 +51,47 @@ static func layer_copies(map_tag: String) -> Array[FloraLayer]:
 	return copies
 
 
-## A Terrain whose `shape` holds the map's ground index, to ask is_on_ground and height_at as the game does. Not in the
-## tree: the caller frees it. Null when the map has no valid terrain.
+## A Terrain holding the map's ground (its heights.png, imported as TerrainHeights), to ask is_on_ground and
+## height_at as the game does. Not in the tree: the caller frees it. Null when the map has no valid heights.
 static func land_of(map: MapDefinition) -> Terrain:
-	var data := map.terrain
-	if data == null or not data.is_valid():
-		return null
+	var heights := heights_of(map)
+	return land_from(heights) if heights != null and heights.is_valid() else null
+
+
+## The TerrainHeights of the map (the heights.png beside its definition), null without one.
+static func heights_of(map: MapDefinition) -> TerrainHeights:
+	var path := map.resource_path.get_base_dir().path_join("heights.png")
+	return load(path) as TerrainHeights if ResourceLoader.exists(path) else null
+
+
+## A NavigationRegion3D with the stored navmesh of the map (the nav.res beside its definition), as its NavRegion holds it: a
+## NavService needs one. Not in the tree.
+static func nav_region_of(map: MapDefinition) -> NavigationRegion3D:
+	var region := NavigationRegion3D.new()
+	region.name = "NavRegion"
+	var path := map.resource_path.get_base_dir().path_join("nav.res")
+	region.navigation_mesh = load(path) as NavigationMesh if ResourceLoader.exists(path) else null
+	return region
+
+
+## A Terrain with `heights`, as a map scene sets them. Not in the tree.
+static func land_from(heights: TerrainHeights) -> Terrain:
 	var land := Terrain.new()
-	land.shape = GroundSurface.with_data(data)
-	land.add_child(land.shape)
+	land.heights = heights
 	return land
+
+
+## A body with every triangle of `land` (land and walls) as one shape: a Terrain built from the script alone has no
+## Collision child (a map scene has its TerrainCollision).
+static func collision_of(land: Terrain) -> StaticBody3D:
+	var body := StaticBody3D.new()
+	body.name = "Collision"
+	var faces := PackedVector3Array()
+	for id in land.data.indices:
+		faces.append(land.data.vertices[id])
+	var shape := ConcavePolygonShape3D.new()
+	shape.set_faces(faces)
+	var shape_node := CollisionShape3D.new()
+	shape_node.shape = shape
+	body.add_child(shape_node)
+	return body

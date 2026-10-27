@@ -1,0 +1,135 @@
+{
+ "wait_first": 1.5,
+ "steps": [
+  {
+   "click": "%God_pyro"
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "repeat": {
+    "times": 20,
+    "until": {
+     "node": "%Join",
+     "visible_in_tree": true
+    },
+    "steps": [
+     {
+      "try_click": "%Play"
+     },
+     {
+      "wait": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "repeat": {
+    "times": 6,
+    "until": {
+     "node": "AgentKit/ptnet_real_watch",
+     "prop": "at_boot",
+     "equals": false
+    },
+    "steps": [
+     {
+      "try_click": "%Join"
+     },
+     {
+      "wait": 5.0
+     }
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "started",
+    "timeout": 120,
+    "equals": true
+   }
+  },
+  {
+   "wait": 1.0
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "in_match"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "expect",
+    "args": [
+     "host.walk_go"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "seen",
+    "timeout": 240,
+    "equals": true
+   }
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "mark_walk",
+    "args": [
+     "walk_start"
+    ]
+   }
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 8.0
+   }
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "mark_walk",
+    "args": [
+     "walk_end"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "snap",
+    "args": [
+     "walked"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "walked"
+    ]
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "flush",
+    "args": []
+   }
+  }
+ ]
+}

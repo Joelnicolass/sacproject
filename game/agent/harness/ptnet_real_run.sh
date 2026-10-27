@@ -8,6 +8,7 @@
 #           A drops by the pause menu and comes back within the grace, B drops and stays away past it (abandon), then C
 #           (headless, after B's process ended) tries to join mid-match.
 #   intr    scenario 2 with a screenshot: host headless listen 1v1 + A headless + C window that clicks Join after the start.
+#   jitter / jitter_lan   072 1d: render-frame jitter of two windows (real relay / ENet with lag); see the case below.
 #   local   scenario 5: «Servidor local» (a dedicated with a ticket, launched by the host window) + a rival window that types
 #           the address and the code it read on the host's screen; play, a drop and a rejoin.
 # Limits (user, 2026-10-26): at most 2 windows + 1 headless at once, all inside ONE reservation of the Godot queue
@@ -16,7 +17,7 @@
 # The observer/pointer is agent/harness/ptnet_real_watch.gd (idle without --ptnet-name).
 . "$(dirname "$0")/net_e2e.sh"
 net_group 3 "$@"
-SC="${1:?usage: ptnet_real_run.sh <cal|lan|intr|local>}"
+SC="${1:?usage: ptnet_real_run.sh <cal|lan|intr|local|jitter|jitter_lan>}"
 TAG="PTNET $SC"
 LIMIT_S="${PROBE_LIMIT_S:-1200}"
 PROC_MAX=3
@@ -158,6 +159,38 @@ case "$SC" in
     fi
     wait "$HOST"; echo "host exit $?"
     rm -f "$ROOT/agent/flows/ptnet_real_local_a_typed.json"
+    ;;
+  jitter|jitter_lan)
+    # 072 1d: render-frame jitter, 1v1 test_flat, host (window, listen) + A (window); both walk forward 8 s, the host's creature
+    # walks away too. Each side writes <who>.csv (agent/harness/jitter_watch.gd); agent/tools/jitter_stats.py prints JITTER PASS/FAIL.
+    #   jitter      the real relay: needs JITTER_RELAY_SECRET_FILE=<file with the host secret>; the secret goes ONLY into the
+    #               host process environment (never to a file, a log or an argument).
+    #   jitter_lan  ENet on loopback with simulated lag (JITTER_LAG_MS 34, JITTER_JITTER_MS 10, both processes).
+    # JITTER_STEP2=1 adds the prediction criteria (latency, last_correction).
+    JIT_HOST=(--listen-host --mp-port="$PORT" --rejoin-grace-s="$GRACE_S" --level="$LEVEL" --match-seed=71 --mode=1v1 --map=test_flat)
+    JIT_NET=()
+    HOST_SECRET=""
+    if [ "$SC" = jitter ]; then
+      JIT_NET=(--transport=relay --relay-url="${JITTER_RELAY_URL:-wss://relay-godot.fly.dev}" --relay-room="${JITTER_RELAY_ROOM:-sacrifice-test}")
+      [ -r "${JITTER_RELAY_SECRET_FILE:-}" ] || { echo "jitter: set JITTER_RELAY_SECRET_FILE to the file with the relay host secret"; exit 2; }
+      HOST_SECRET="$(cat "$JITTER_RELAY_SECRET_FILE")"
+    else
+      JIT_NET=(--net-lag-ms="${JITTER_LAG_MS:-34}" --net-jitter-ms="${JITTER_JITTER_MS:-10}")
+    fi
+    unset MPKIT_RELAY_SECRET
+    MPKIT_RELAY_SECRET="$HOST_SECRET" win host 0,40 jitter_host.json "${JIT_HOST[@]}" "${JIT_NET[@]}" --jitter-out="$OUT/host.csv"
+    HOST=$LAST_PID
+    HOST_SECRET=""
+    wait_line "$OUT/host.log" "^mapa test_flat" "$HOST" 120
+    win A 700,300 jitter_a.json "${JIT_NET[@]}" --mp-port="$PORT" --jitter-out="$OUT/A.csv"
+    A=$LAST_PID
+    wait "$A"; echo "A exit $?"
+    wait "$HOST"; echo "host exit $?"
+    if [ -s "$OUT/host.csv" ] && [ -s "$OUT/A.csv" ]; then
+      python3 "$ROOT/agent/tools/jitter_stats.py" --host "$OUT/host.csv" --client "$OUT/A.csv" ${JITTER_STEP2:+--step2} | tee "$OUT/jitter_stats.txt"
+    else
+      echo "JITTER FAIL (no CSV: see $OUT/host.log and $OUT/A.log)"
+    fi
     ;;
   *) echo "unknown scenario $SC"; exit 2 ;;
 esac

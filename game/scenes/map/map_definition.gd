@@ -12,8 +12,6 @@ extends Resource
 @export var display_name := ""
 ## The map scene (a MapRoot): terrain, buildings, creature spawns, navmesh region, starts and founts, sky and look.
 @export var map_scene: PackedScene
-## Tile index of the ground (256x256, tile id in R, imported as Image). Empty = the map has none.
-@export var tiles: Image
 ## The baked light map of the ground. Empty = none.
 @export var light: Texture2D
 ## The versioned navmesh of the map: the «Hornear navmesh» button of its NavRegion (or tools/bake/bake_nav.gd) writes it.

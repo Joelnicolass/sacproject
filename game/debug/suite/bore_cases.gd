@@ -90,9 +90,9 @@ func _walls() -> Dictionary:
 	var pair_id := TerrainGrid.id_of(pair)
 	checks["two_neighbours_eight_walls"] = HoleWallRules.boundary(index, PackedInt32Array([pair_id, pair_id + 1])).size() == 8
 	checks["no_hole_no_walls"] = HoleWallRules.arrays(index, PackedInt32Array()).is_empty()
-	var chunk := FallingChunkRules.arrays(index, shape.field().texels, shape.tile_ids(), id)
+	var chunk := FallingChunkRules.arrays(index, shape.field().texels, id)
 	checks["chunk_six_triangles_and_six_skirts"] = chunk.size() == 13 and (chunk[0] as PackedVector3Array).size() == 6 * 3 + 6 * 4
-	checks["chunk_off_the_rim_is_nothing"] = FallingChunkRules.arrays(index, shape.field().texels, shape.tile_ids(), 5).is_empty()
+	checks["chunk_off_the_rim_is_nothing"] = FallingChunkRules.arrays(index, shape.field().texels, 5).is_empty()
 	return _c._verdict("bore_walls", checks)
 
 
@@ -303,10 +303,20 @@ func _ticks_of(spiral: BoreSpiral) -> int:
 	return ticks
 
 
+## Land triangles per 10 m cell from the index `cells` (two ids per cell, -1 for none).
+static func _land_counts(cells: PackedInt32Array) -> PackedByteArray:
+	var out := PackedByteArray()
+	out.resize(TerrainGrid.COUNT)
+	if cells.size() == TerrainGrid.COUNT * 2:
+		for cell in out.size():
+			out[cell] = int(cells[cell * 2] >= 0) + int(cells[cell * 2 + 1] >= 0)
+	return out
+
+
 ## A lattice vertex near the click whose surroundings (`margin` cells each way) are all full land cells; `with_next` also wants
 ## the vertex to its east to be like that.
 func _full_vertex(shape: Terrain, margin: int, with_next := false) -> Vector2i:
-	var counts := GroundTiles.counts(shape.index.cells)
+	var counts := _land_counts(shape.index.cells)
 	for dz in range(-12, 13):
 		for dx in range(-12, 13):
 			var vertex := Vector2i(int(CENTER.x / TerrainGrid.CELL_M) + dx, int(CENTER.y / TerrainGrid.CELL_M) + dz)

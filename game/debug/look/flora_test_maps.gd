@@ -51,11 +51,11 @@ static func layer_copies(map_tag: String) -> Array[FloraLayer]:
 	return copies
 
 
-## A Terrain holding the map's ground (its heights.png, imported as TerrainHeights) and tiles, to ask is_on_ground and
+## A Terrain holding the map's ground (its heights.png, imported as TerrainHeights), to ask is_on_ground and
 ## height_at as the game does. Not in the tree: the caller frees it. Null when the map has no valid heights.
 static func land_of(map: MapDefinition) -> Terrain:
 	var heights := heights_of(map)
-	return land_from(heights, map.tiles) if heights != null and heights.is_valid() else null
+	return land_from(heights) if heights != null and heights.is_valid() else null
 
 
 ## The TerrainHeights of the map (the heights.png beside its definition), null without one.
@@ -64,10 +64,9 @@ static func heights_of(map: MapDefinition) -> TerrainHeights:
 	return load(path) as TerrainHeights if ResourceLoader.exists(path) else null
 
 
-## A Terrain with `heights` and `tiles`, as a map scene sets them. Not in the tree.
-static func land_from(heights: TerrainHeights, tiles: Image = null) -> Terrain:
+## A Terrain with `heights`, as a map scene sets them. Not in the tree.
+static func land_from(heights: TerrainHeights) -> Terrain:
 	var land := Terrain.new()
-	land.tiles = tiles
 	land.heights = heights
 	return land
 

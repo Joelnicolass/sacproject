@@ -2,7 +2,7 @@ class_name FallingChunkRules
 extends RefCounted
 
 ## The shape of the piece of ground that drops when a vertex is taken away: the land triangles that touched the vertex (heights
-## with the shift the ground had), painted with their own tile, plus a skirt of cliff hanging from the edges that border the
+## with the shift the ground had), plus a skirt of cliff hanging from the edges that border the
 ## rest of the land. Pure and static (the arrays of a mesh): FallingChunk draws and drops it. It does not remove the vertex.
 ## Ref: sacengine makeFallingLandChunkMesh (sacmap.d:388-480).
 
@@ -11,7 +11,7 @@ const SKIRT_M := 50.0
 
 
 ## The arrays (positions, normals, COLOR, UV, indices) of the piece around lattice vertex `id`; [] when the vertex touches no land.
-static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles: PackedByteArray, id: int) -> Array:
+static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, id: int) -> Array:
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
 	var colors := PackedColorArray()
@@ -30,7 +30,6 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles:
 				var triangle := index.cells[cell * 2 + k]
 				if triangle < 0 or not _touches(index, triangle, id):
 					continue
-				var tile := 0 if tiles.is_empty() else tiles[cell]
 				var corners: Array[Vector3] = []
 				for corner in 3:
 					var at := index.ground[triangle * 3 + corner]
@@ -40,8 +39,7 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, tiles:
 					count += 1
 					indices.append(vertices.size())
 					vertices.append(at)
-					var inside := Vector2(at.x / TerrainGrid.CELL_M - float(cell_column), at.z / TerrainGrid.CELL_M - float(cell_row))
-					colors.append(Color(float(tile) / 255.0, clampf(inside.x, 0.0, 1.0), clampf(inside.y, 0.0, 1.0)))
+					colors.append(Color.WHITE)
 					normals.append(Vector3.UP)
 					uvs.append(Vector2.ZERO)
 				for corner in 3:

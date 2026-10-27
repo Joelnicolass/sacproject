@@ -1,7 +1,6 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Image" path="res://assets/original/maps/roads/tiles.png" id="s2_tiles"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
@@ -72,7 +71,6 @@ terrain = NodePath("../Terrain")
 [node name="Terrain" parent="." instance=ExtResource("t_terrain")]
 unique_name_in_owner = true
 heights = ExtResource("t_heights")
-tiles = ExtResource("s2_tiles")
 ground_roles = ExtResource("62_roles")
 light_map = ExtResource("62_light")
 

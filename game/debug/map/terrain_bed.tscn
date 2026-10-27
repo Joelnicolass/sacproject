@@ -2,11 +2,9 @@
 
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="1_terrain"]
 [ext_resource type="Resource" uid="uid://cmpaot4pm4cus" path="res://scenes/map/maps/high_noon/heights.png" id="2_heights"]
-[ext_resource type="Image" path="res://assets/original/maps/high_noon/tiles.png" id="3_tiles"]
 
 [node name="TerrainBed" type="Node3D"]
 editor_description = "El suelo de High Noon solo, para verificar el terreno deformable: una instancia de scenes/map/terrain/terrain.tscn con sus alturas (heights.png), su Net y su Collision por trozos; sin look. Sin ventana no arma malla. Lo usan terrain_cases y terrain_late_join. Remote → Terrain/Status muestra rev, version, live_stamps y holes."
 
 [node name="Terrain" parent="." instance=ExtResource("1_terrain")]
 heights = ExtResource("2_heights")
-tiles = ExtResource("3_tiles")

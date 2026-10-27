@@ -4,7 +4,7 @@ extends MeshInstance3D
 
 ## The map's ground as something to see: a mesh built in memory from the triangles of its `terrain` (again when they are
 ## derived again in the editor), never saved and never built without a window (headless, the dedicated server).
-## Not: the body to stand on (TerrainCollision), heights, holes, tiles and roles (its `terrain`), where the editor shows
+## Not: the body to stand on (TerrainCollision), heights, holes and roles (its `terrain`), where the editor shows
 ## the map (MapRoot). The material swap is TerrainGroundMaterial; the look's ground comes from TerrainLayer.
 
 ## The ground as numbers: the Terrain this node hangs from.
@@ -61,11 +61,11 @@ func clear_ground() -> void:
 	_material.wear(null)
 
 
-## Builds the mesh from the terrain's triangles and tiles (none without a window or without heights).
+## Builds the mesh from the terrain's triangles (none without a window or without heights).
 func _build() -> void:
 	var started := Time.get_ticks_usec()
 	var loaded := terrain != null and terrain.is_loaded()
-	_arrays = TerrainMeshArrays.from_data(terrain.data, terrain.tile_ids()) if loaded and _draws() else null
+	_arrays = TerrainMeshArrays.from_data(terrain.data) if loaded and _draws() else null
 	mesh = _make_mesh() if _arrays != null else null
 	if not loaded and not Engine.is_editor_hint():
 		push_error("TerrainMesh '%s' has no ground: its `terrain` needs `heights` (the map's heights.png)." % name)

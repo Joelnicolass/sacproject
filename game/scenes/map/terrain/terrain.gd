@@ -21,8 +21,6 @@ const GROUP := &"terrain"
 	set(value):
 		heights = value
 		_shape.follow(heights, self)
-## The map's tile index: its tiles.png imported as Image (256x256, the original tile id in R). Empty = tile 0 everywhere.
-@export var tiles: Image
 ## Which kind of ground lies where (the map's ground_roles.png, 1 px per 10 m cell: R open, G earth, B rock, A path).
 @export var ground_roles: Texture2D
 ## The map's own baked light on the ground (the map's light.png). Empty = the ground reads evenly lit.
@@ -38,7 +36,6 @@ var data := MapTerrainData.new()
 var index := TerrainRules.Index.new()
 var _shape := TerrainShape.new()
 var _field := GroundField.new()
-var _tiles := GroundTiles.new()
 
 
 ## The ground of the map `node` is in; null when it is not in the tree or no ground is loaded.
@@ -113,11 +110,6 @@ func is_authority() -> bool:
 ## How far the ground has moved from the file. Read only: only Terrain writes it.
 func field() -> GroundField:
 	return _field
-
-
-## The original tile id of each 10 m cell, 256x256 row-major (empty without `tiles`).
-func tile_ids() -> PackedByteArray:
-	return _tiles.ids(tiles)
 
 
 ## Every peer, from its own clock: stamp `key` shows its shift at `at_s` s at the next physics tick, in place of its last one.

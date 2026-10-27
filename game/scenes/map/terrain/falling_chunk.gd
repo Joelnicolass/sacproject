@@ -29,7 +29,7 @@ func play(params: Dictionary) -> void:
 		queue_free()
 		return
 	var at: Vector3 = params["at"]
-	var built := FallingChunkRules.arrays(terrain.index, terrain.field().texels, terrain.tile_ids(), TerrainGrid.vertex_id(at.x, at.z))
+	var built := FallingChunkRules.arrays(terrain.index, terrain.field().texels, TerrainGrid.vertex_id(at.x, at.z))
 	if built.is_empty():
 		queue_free()
 		return

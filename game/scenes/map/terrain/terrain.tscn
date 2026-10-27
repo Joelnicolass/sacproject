@@ -16,7 +16,7 @@ albedo_color = Color(0.45, 0.45, 0.42, 1)
 roughness = 1.0
 
 [node name="Terrain" type="Node3D" node_paths=PackedStringArray("mesh", "live") groups=["nav_source"]]
-editor_description = "El suelo de un mapa. Un mapa instancia esta escena y solo pone sus datos: `heights` (su heights.png, con void.png al lado), `tiles` (tiles.png), `ground_roles` (ground_roles.png) y `light_map` (light.png). Sin look el suelo se ve gris liso (el material de `Mesh`); el del dios lo pone `Look/Layers/Ground`. La malla, la colisión y el índice salen de las alturas al cargar; no se guardan. Remote → Status muestra rev, version, live_stamps y holes."
+editor_description = "El suelo de un mapa. Un mapa instancia esta escena y solo pone sus datos: `heights` (su heights.png, con void.png al lado), `ground_roles` (ground_roles.png) y `light_map` (light.png). Sin look el suelo se ve gris liso (el material de `Mesh`); el del dios lo pone `Look/Layers/Ground`. La malla, la colisión y el índice salen de las alturas al cargar; no se guardan. Remote → Status muestra rev, version, live_stamps y holes."
 script = ExtResource("1_terrain")
 mesh = NodePath("Mesh")
 live = NodePath("Live")

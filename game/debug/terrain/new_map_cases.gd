@@ -8,7 +8,7 @@ extends SceneTree
 ##  - the scene rebuilt in memory from the template (with test_flat's imported pictures): one terrain.tscn, two
 ##    player_start.tscn and three manafount.tscn instances, nothing of _template left, each WizardSpot 30 m ± 0.1 from its
 ##    altar and turned (+Z) toward the nearest fount;
-##  - the MapDefinition it writes: tag, name, scene, navmesh, two seats, no tiles or light.
+##  - the MapDefinition it writes: tag, name, scene, navmesh, two seats, no light.
 ## Prints NEW MAP CASES PASS or FAIL. Needs the project imported once (test_flat's pictures). Not: importing, baking,
 ## opening or validating in the editor (agent/scripts/new_map_probe.sh does that).
 ## "$GODOT" --headless --path game --script res://debug/terrain/new_map_cases.gd
@@ -153,5 +153,5 @@ func _definition() -> void:
 		return
 	_check("definition tag and name", definition.tag == &"cases_map" and definition.display_name == "Mapa de prueba")
 	_check("definition scene and navmesh", definition.map_scene != null and definition.nav != null)
-	_check("definition: two seats, no tiles or light", definition.player_starts == 2 and definition.tiles == null and definition.light == null)
+	_check("definition: two seats, no light", definition.player_starts == 2 and definition.light == null)
 	_check("definition: offered in rooms", definition.room_selectable and definition.playable)

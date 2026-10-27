@@ -13,6 +13,8 @@ static var _map_id: StringName = &""
 static var _mode_id: StringName = &""
 ## The seed of the match the server announced (or chose); 0 = none (the world draws its own, offline).
 static var _seed := 0
+## Whether the missing default map or mode was already reported (the question is asked every frame; the error once).
+static var _reported_missing := false
 
 
 ## The map this process plays. An unknown `--map` is an error and the default plays.
@@ -20,10 +22,12 @@ static func map() -> MapDefinition:
 	if _map_id == &"":
 		_map_id = _flag("map", MapCatalog.DEFAULT_TAG)
 	var found := MapCatalog.shared().find(_map_id)
-	if found == null:
+	if found == null and _map_id != MapCatalog.DEFAULT_TAG:
 		push_error("ActiveMatch: no map '%s' in %s; playing '%s'." % [_map_id, MapCatalog.DIR, MapCatalog.DEFAULT_TAG])
 		_map_id = MapCatalog.DEFAULT_TAG
 		found = MapCatalog.shared().find(_map_id)
+	if found == null:
+		_report_missing("map '%s' in %s" % [_map_id, MapCatalog.DIR])
 	return found
 
 
@@ -32,10 +36,12 @@ static func mode() -> GameMode:
 	if _mode_id == &"":
 		_mode_id = _flag("mode", GameModeCatalog.DEFAULT_TAG)
 	var found := GameModeCatalog.shared().find(_mode_id)
-	if found == null:
+	if found == null and _mode_id != GameModeCatalog.DEFAULT_TAG:
 		push_error("ActiveMatch: no mode '%s' in %s; playing '%s'." % [_mode_id, GameModeCatalog.PATH, GameModeCatalog.DEFAULT_TAG])
 		_mode_id = GameModeCatalog.DEFAULT_TAG
 		found = GameModeCatalog.shared().find(_mode_id)
+	if found == null:
+		_report_missing("mode '%s' in %s" % [_mode_id, GameModeCatalog.PATH])
 	return found
 
 
@@ -97,6 +103,7 @@ static func forget() -> void:
 	_map_id = &""
 	_mode_id = &""
 	_seed = 0
+	_reported_missing = false
 
 
 ## The files the loading screen loads on a thread before the world: the definition of the map (it brings its scene, ground and navmesh)
@@ -109,6 +116,12 @@ static func load_paths() -> PackedStringArray:
 		paths.append_array(WarmCollect.look_paths([catalog.offered_gods(), catalog.offered_wizards()]))
 	return paths
 
+
+## Says once that not even the default exists (null is returned from then on, silently).
+static func _report_missing(what: String) -> void:
+	if not _reported_missing:
+		_reported_missing = true
+		push_error("ActiveMatch: not even the default %s; nothing to play." % what)
 
 
 ## `--<name>=<tag>` of the command line (not read in the editor), else `fallback`.

@@ -14,6 +14,7 @@ extends Node
 const MapImages := preload("res://addons/terrain_tools/map_images.gd")
 const TerrainEdits := preload("res://addons/terrain_tools/terrain_edits.gd")
 const MapChecks := preload("res://tools/audit/map_checks.gd")
+const MapGroundChecks := preload("res://tools/audit/map_ground_checks.gd")
 const TerrainCli := preload("res://tools/terrain/terrain_cli.gd")
 const RoundtripPictures := preload("res://debug/terrain/roundtrip_pictures.gd")
 const BlenderRefusals := preload("res://debug/terrain/roundtrip_blender.gd")
@@ -73,7 +74,7 @@ func _bed() -> void:
 	var vertex := TerrainGrid.vertex_near(Vector2(fount.global_position.x, fount.global_position.z))
 	var bumped := _copy(terrain.heights)
 	var heights := bumped.heights_m.duplicate()
-	heights[TerrainGrid.id_of(vertex)] += 3.0
+	heights[TerrainGrid.id_of(vertex)] += MapGroundChecks.MAX_SPREAD_M + 2.0  # past the most the checks allow, so they must name the fount
 	bumped.heights_m = heights
 	terrain.heights = bumped
 	var problems: Array[String] = await MapChecks.check(bed, null)

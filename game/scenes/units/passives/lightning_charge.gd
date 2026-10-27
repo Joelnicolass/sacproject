@@ -85,7 +85,7 @@ func _ready() -> void:
 
 ## Server (or solo). `amount` frames more; a body that was not charged starts a new charge (ramp 0).
 func add(amount: int) -> void:
-	if not _has_authority() or amount <= 0:
+	if not is_multiplayer_authority() or amount <= 0:
 		return
 	if frames <= 0:
 		ramp = 0.0
@@ -102,7 +102,7 @@ func absorb(damage: float, ally: bool) -> float:
 
 
 func is_on() -> bool:
-	return frames > 0 if _has_authority() else shown
+	return frames > 0 if is_multiplayer_authority() else shown
 
 
 ## ×melee_boost while charged: the blow (attackDamageFactor) and the accuracy (dealMeleeDamage). 1 otherwise.
@@ -111,7 +111,7 @@ func melee_factor() -> float:
 
 
 func _physics_process(_delta: float) -> void:
-	if _has_authority():
+	if is_multiplayer_authority():
 		_simulate()
 		_trace_walk()
 	if shown:
@@ -247,7 +247,3 @@ func _say(text: String) -> void:
 
 static func _v(v: Vector3) -> String:
 	return "(%.4f, %.4f, %.4f)" % [v.x, v.y, v.z]
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

@@ -20,7 +20,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 
 
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	if user.get_node_or_null(SpeedupEffect.NODE_NAME) != null:
 		return true

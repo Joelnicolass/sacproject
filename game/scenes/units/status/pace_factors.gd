@@ -31,7 +31,7 @@ func _ready() -> void:
 
 ## Server (or solo). `source` pushes `factor` (replacing its previous one). 1.0 takes it away.
 func set_factor(source: StringName, factor: float) -> void:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return
 	if factor == 1.0:
 		_factors.erase(source)
@@ -42,7 +42,7 @@ func set_factor(source: StringName, factor: float) -> void:
 
 ## Server (or solo). `source` no longer changes the pace.
 func clear(source: StringName) -> void:
-	if not _has_authority() or not _factors.has(source):
+	if not is_multiplayer_authority() or not _factors.has(source):
 		return
 	_factors.erase(source)
 	_apply()
@@ -80,7 +80,3 @@ func _apply() -> void:
 	body.set("speed_factor", now)
 	if DebugLog.on(&"pace"):
 		print("ritmo %s ×%.4f %s (tick %d)" % [str(body.name), now, str(sources()), MatchClock.now()])
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

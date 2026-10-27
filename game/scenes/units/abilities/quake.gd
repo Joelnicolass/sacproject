@@ -16,7 +16,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 
 ## quake: server (or solo) only. The wave is born on the shoot tick.
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority() or user == null or wave_scene == null:
+	if not is_multiplayer_authority() or user == null or wave_scene == null:
 		return false
 	if DebugLog.on(&"effects"):
 		print("sacudida %s (tick %d)" % [who(user), MatchClock.now()])

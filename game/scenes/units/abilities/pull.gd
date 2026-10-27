@@ -56,7 +56,7 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 
 ## True even if the target is gone by the load tick: sacengine drains the mana there all the same (AbilitySlot spends).
 func fire(_target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	var pulling := Pulling.of(user)
 	if pulling == null or frames() <= 0 or not is_live(target):

@@ -48,7 +48,7 @@ func setup(body: Node3D, type: AbilityType, shot_spawner: ShotSpawner, target: U
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
 	_shot = _make_shot()

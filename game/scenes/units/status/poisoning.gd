@@ -68,14 +68,14 @@ func _ready() -> void:
 		body = get_parent() as Node3D
 	if health == null and body:
 		health = body.get_node_or_null("Health") as Health
-	set_physics_process(_has_authority())
+	set_physics_process(is_multiplayer_authority())
 
 
 ## sacengine poison() (state.d:11601-11607): adds one dose of `per_second` for `lifetime` frames (lifetime + 1 updates).
 ## `resistance_debuff` is the SPEL's `ires`, `regen_factor` its `freg`. Server (or solo) only; null elsewhere.
 func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, infectious := false, resistance_debuff := 0,
 		regen_factor := 1.0, attacker_path := NodePath()) -> Poisoned:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return null
 	var regen_before := regeneration_factor()
 	var added := Poisoned.new()
@@ -218,7 +218,3 @@ func _log_mana() -> void:
 ## The node's name (Druid1, Druid2…): the log must tell apart bodies of the same kind.
 static func _who(node: Node) -> String:
 	return str(node.name) if node else "?"
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

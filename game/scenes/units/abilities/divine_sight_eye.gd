@@ -102,7 +102,7 @@ func _ready() -> void:
 		_material = (glow.material_override as StandardMaterial3D).duplicate()
 		glow.material_override = _material
 	_first_tick = Engine.get_physics_frames()
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
 	_born = MatchClock.now()

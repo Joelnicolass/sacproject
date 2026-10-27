@@ -161,7 +161,7 @@ static func hang_point(at: Vector3, facing_flat: Vector3, height: float, behind:
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint() or body == null or holder == null:
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return
 	if not is_held():
 		holder = null

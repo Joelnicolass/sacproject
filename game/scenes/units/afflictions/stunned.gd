@@ -105,7 +105,7 @@ func _physics_process(_delta: float) -> void:
 		_cooldown -= 1
 	if is_on():
 		_elapsed += 1
-		if _simulates() and _elapsed >= _total:
+		if is_multiplayer_authority() and _elapsed >= _total:
 			print("%s se levanta (cuadro %d)" % [_body_name(), MatchClock.now()])
 			_afflictions().mark(self, false)
 	if _cooldown <= 0 and not is_on():
@@ -114,7 +114,7 @@ func _physics_process(_delta: float) -> void:
 
 func _shown(on: bool) -> void:
 	if on:
-		if not _simulates():
+		if not is_multiplayer_authority():
 			_from_fall = fall_type != null and _afflictions().previous & (1 << fall_type.bit) != 0
 		_measure()
 		_elapsed = 0

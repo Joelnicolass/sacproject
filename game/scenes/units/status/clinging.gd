@@ -70,7 +70,7 @@ func _ready() -> void:
 ## Server (or solo). One more piece of `kind` that lets go `ticks` after now, each slowing the body ×`factor`. False when it
 ## is not the server or the arguments mean nothing.
 func stick(kind: StringName, ticks: int, factor: float) -> bool:
-	if not _has_authority() or ticks <= 0 or not KINDS.has(kind):
+	if not is_multiplayer_authority() or ticks <= 0 or not KINDS.has(kind):
 		return false
 	var ends: Array = _ends.get(kind, [])
 	ends.append(MatchClock.now() + ticks)
@@ -85,7 +85,7 @@ func stick(kind: StringName, ticks: int, factor: float) -> bool:
 
 ## How many pieces of `kind` are on (the server's lists; on a client what it was told).
 func count_of(kind: StringName) -> int:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return shown.x if kind == STICKY else (shown.y if kind == MITES else (shown.z if kind == FROGS else 0))
 	return (_ends.get(kind, []) as Array).size()
 
@@ -181,7 +181,3 @@ func _place(kind_index: int, index: int) -> Vector3:
 
 func _who() -> String:
 	return str(body.name) if body else "?"
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

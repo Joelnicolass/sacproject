@@ -51,7 +51,7 @@ func lay_ticks(spell: SpellType) -> int:
 func grasp(spell: SpellType, max_s := INF) -> bool:
 	var body := _body()
 	var owner_node := _afflictions()
-	if body == null or spell == null or not _simulates() or BodyNudge.airborne(body):
+	if body == null or spell == null or not is_multiplayer_authority() or BodyNudge.airborne(body):
 		return false
 	if owner_node.health != null and owner_node.health.is_dead():
 		return false
@@ -100,7 +100,7 @@ func _say_end() -> void:
 
 ## The bit changed (every peer). On the server a bit turned off from outside (the body died) clears the clocks; VineLook draws the rest.
 func _shown(on: bool) -> void:
-	if not on and _simulates() and not _ends.is_empty():
+	if not on and is_multiplayer_authority() and not _ends.is_empty():
 		_ends = PackedInt32Array()
 		set_physics_process(false)
 		_say_end()

@@ -64,7 +64,6 @@ func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: Packe
 	_spin_rate = TAU * rng.randf_range(look.spin_min, look.spin_max)
 	_add_visual()
 	_attach_net()
-	_add_in_flight()
 	## ShotLook.trail_every counts 60 fps frames; the trail now goes by time (FxTrail, RFC-029 029b).
 	var trail := FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
 	if trail != null:
@@ -89,9 +88,10 @@ func _add_visual() -> void:
 	add_child(visual)
 
 
-## Server (or solo) only, like the impact: what it does in flight is simulation (ShotLook.in_flight).
+## Server (or solo) only, like the impact: what it does in flight is simulation (ShotLook.in_flight). Added once the shot is in
+## the tree, where it knows whether it is the authority.
 func _add_in_flight() -> void:
-	if look.in_flight == null or (MpKit.is_networked() and not MpKit.is_server()):
+	if look == null or look.in_flight == null:
 		return
 	var node := look.in_flight.instantiate()
 	_in_flight = node as ShotInFlight
@@ -103,8 +103,10 @@ func _add_in_flight() -> void:
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
+		return
+	_add_in_flight()
 
 
 ## Before entering the tree: the spawn packet lists the synchronizers that exist when it is sent,

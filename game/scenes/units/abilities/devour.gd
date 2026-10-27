@@ -32,7 +32,7 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 
 ## devourSoul. False = nothing happened (the soul is gone by the shoot tick): the cost is 0 all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):

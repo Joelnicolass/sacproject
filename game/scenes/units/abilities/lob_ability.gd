@@ -42,7 +42,7 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 
 ## True once the volley left (the mana is spent even if every shot misses). False when there is nothing to shoot with.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority() or ability == null or user == null:
+	if not is_multiplayer_authority() or ability == null or user == null:
 		return false
 	var spawner := ShotSpawner.of(user.get_tree())
 	if spawner == null:

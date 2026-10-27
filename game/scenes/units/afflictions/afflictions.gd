@@ -53,7 +53,7 @@ func _ready() -> void:
 	AfflictionGlows.attach(self)
 	if wards != null:
 		wards.changed.connect(_show_look)
-	if health and (not MpKit.is_networked() or MpKit.is_server()):
+	if health and is_multiplayer_authority():
 		health.died.connect(_on_died)
 	if shown != 0:
 		_show(0)

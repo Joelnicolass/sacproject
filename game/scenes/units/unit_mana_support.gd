@@ -25,7 +25,7 @@ func setup(body: UnitBody, creature: CreatureType, slot: int, match_rules: Match
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

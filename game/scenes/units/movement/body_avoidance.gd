@@ -100,7 +100,7 @@ func _place(fixed: bool, speed: float) -> void:
 func _active() -> bool:
 	if body == null or not body.is_inside_tree():
 		return false
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return false
 	return BodyBox.is_obstacle(body)
 

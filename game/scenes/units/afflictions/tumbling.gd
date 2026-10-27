@@ -140,7 +140,7 @@ func _physics_process(_delta: float) -> void:
 	if not is_on():
 		set_physics_process(false)
 		return
-	if not _simulates():
+	if not is_multiplayer_authority():
 		return
 	var body := _body()
 	var at := body.global_position

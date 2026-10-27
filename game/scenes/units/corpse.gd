@@ -96,7 +96,7 @@ func stand_up(body: UnitBody) -> void:
 
 ## Server or solo. The spawner removes it on clients.
 func dissolve(body: Node) -> void:
-	if dissolving or (MpKit.is_networked() and not MpKit.is_server()):
+	if dissolving or not is_multiplayer_authority():
 		return
 	dissolving = true
 	get_tree().create_timer(dissolve_s, false, true).timeout.connect(func() -> void:

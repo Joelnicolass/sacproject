@@ -135,7 +135,6 @@ func _on_admission_rejected(_reason: String) -> void:
 func _on_menu() -> void:
 	SacrificeFlow.from_lobby = false
 	MpLobby.client.close_connection()
-	online.restore()
 	## By path: the menu points to this screen, so the screen cannot hold the menu as a resource (cyclic).
 	get_tree().change_scene_to_file(SacrificeFlow.boot_path)
 

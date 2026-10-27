@@ -33,6 +33,5 @@ func _on_status(text: String) -> void:
 
 
 func _on_menu() -> void:
-	_network.restore()
 	## By path, like the other network screens: the menu points to this screen.
 	get_tree().change_scene_to_file(SacrificeFlow.boot_path)

@@ -9,7 +9,8 @@ extends RefCounted
 ## `--relay-url=` / `--relay-room=` or an MpNetConfig / MpLobbyConfig; the host secret from `--relay-secret=` or the
 ## MPKIT_RELAY_SECRET environment variable (never in a .tres the clients get).
 ## A room a player hosts (MpOnline, through the MpKit issuer) is not `<prefix>-<port>` but `p-<code>`, and takes a
-## one-time token instead of the secret: `use_relay_room()` sets both for the next relay connection.
+## one-time token instead of the secret: `use_relay_room()` sets both for the next connection, which then goes through
+## the relay whatever MpKit.transport says (the game's own transport stays for LAN and private servers).
 ## `wss://` (TLS): pass `TLSOptions` to `create_server` / `create_client`, or terminate TLS in a reverse proxy
 ## (see the README). `--net-lag-ms` / `--net-jitter-ms` / `--net-loss` wrap the peer in MpLagPeer (tests only).
 
@@ -46,8 +47,9 @@ static func relay_from_flags() -> void:
 			use_relay_room(str(relay.get("room", "")), str(relay.get("token", "")), str(relay.get("url", "")))
 
 
-## The next relay connection (host or client) goes to exactly `room` with the issuer's one-time `token` (and to
-## `url` when given), instead of `<relay_room>-<port>` with the secret. That connection spends both.
+## The next connection (host or client) goes through the relay to exactly `room` with the issuer's one-time `token`
+## (and to `url` when given), instead of `<relay_room>-<port>` with the secret, whatever transport it was asked for.
+## That connection spends both.
 static func use_relay_room(room: String, token: String, url: String = "") -> void:
 	_next_room = room
 	_next_token = token
@@ -125,7 +127,7 @@ static func client_tls_from_flags() -> TLSOptions:
 
 ## `{error, peer}`. `max_clients` only applies to ENet (the WebSocket peer has no cap of its own).
 static func create_server(kind: String, port: int, max_clients: int, tls: TLSOptions = null) -> Dictionary:
-	if normalize(kind) == RELAY:
+	if normalize(kind) == RELAY or has_relay_room():
 		## The host is a client of the relay: the client TLS flags apply to it (null = the system's CAs).
 		return _relay(relay_room_for(port), true, "", client_tls_from_flags())
 	if normalize(kind) == WS:
@@ -140,7 +142,7 @@ static func create_server(kind: String, port: int, max_clients: int, tls: TLSOpt
 ## `{error, peer}`. WebSocket builds `ws://host:port` (or `wss://` with `tls`); a `host` that already has a
 ## scheme (`wss://play.example.com/x`) is used as is.
 static func create_client(kind: String, host: String, port: int, tls: TLSOptions = null) -> Dictionary:
-	if normalize(kind) == RELAY:
+	if normalize(kind) == RELAY or has_relay_room():
 		## A full URL as the host is the relay itself (a link someone shared); otherwise the configured relay.
 		return _relay(relay_room_for(port), false, host if host.contains("://") else "", tls)
 	if normalize(kind) == WS:

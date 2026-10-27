@@ -7,7 +7,7 @@ extends Node
 
 ## The kit's version (plugin.cfg says the same; a test checks it). An exported game has no plugin.cfg: this is what the
 ## MpKit issuer is told.
-const VERSION := "0.18.0"
+const VERSION := "0.18.1"
 
 signal peer_joined(peer_id: int, slot: int)
 signal peer_left(peer_id: int, slot: int)

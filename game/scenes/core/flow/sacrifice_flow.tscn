@@ -32,7 +32,6 @@ online_working_status = "UI_ONLINE_WORKING"
 online_ready_status = "UI_ONLINE_READY"
 online_texts = {
 "banned": "UI_ONLINE_BANNED",
-"kit_too_old": "UI_ONLINE_KIT_TOO_OLD",
 "network": "UI_ONLINE_NETWORK",
 "no_issuer": "UI_ONLINE_NO_ISSUER",
 "no_such_room": "UI_ONLINE_NO_SUCH_ROOM",

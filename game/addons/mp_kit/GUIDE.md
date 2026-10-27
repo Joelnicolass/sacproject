@@ -1263,7 +1263,9 @@ Probalo todo antes en tu PC: `bash mpkit_lab/run/online.sh` en el repo del kit l
 var flow := MpFlow.find_in_tree(self)
 
 ## Host: una sala para 4 (vos contás), en la lista para todos. El estado dice el código cuando está lista.
-var online := flow.host_online(4, "Viernes a la noche")
+## El último argumento es tu ticket de partida, como en una partida privada (mundo, modo, opciones, seed, meta por asiento).
+var online := flow.host_online(4, "Viernes a la noche", true, {"mode": "2v2", "options": {"map": "bosque"},
+	"seats": [{"slot": 1, "meta": {"pick": "mago"}}]})
 online.room_ready.connect(func(code: String) -> void: code_label.text = code)
 online.failed.connect(func(reason: String) -> void: print("no se pudo abrir: ", reason))
 
@@ -1277,7 +1279,7 @@ for row in await flow.online_rooms():
 
 | Pieza | Qué es |
 |---|---|
-| `flow.host_online(players, name, listed)` | Abre una sala (un `MpOnline` bajo la raíz). `listed = false`: privada, se entra solo con el código. Una segunda llamada devuelve la que ya corre |
+| `flow.host_online(players, name, listed, ticket)` | Abre una sala (un `MpOnline` bajo la raíz). `listed = false`: privada, se entra solo con el código. Una segunda llamada devuelve la que ya corre. `ticket`: tu ticket de partida (mundo, modo, opciones, seed, picks…, `seats: [{slot, meta}]` con la meta del host en el slot 1): en escritorio el proceso de partida lo recibe como su ticket (el kit solo agrega el token de cada asiento y la sala del relay: `MpLocalServer.merge_ticket`); en un navegador tu juego es la partida y lo lee de `MpOnline.ticket` |
 | `MpOnline.room_ready(code)` / `failed(reason)` / `ended` | Ya pueden entrar / el emisor la rechazó o la partida no pudo arrancar / la sala se cerró |
 | `MpOnline.code`, `mode` | El código; `dedicated` (escritorio) o `listen` (navegador). `--online-mode=listen` fuerza la forma del navegador en escritorio (tests) |
 | `flow.join_online(code)` | Un asiento del emisor y después la conexión al relay. Si la sala todavía está arrancando, vuelve a pedir unos segundos |
@@ -1287,6 +1289,8 @@ for row in await flow.online_rooms():
 | `MpNetConfig.can_host_online()` | Verdadero cuando `issuer_url` está puesto (cualquier build puede hospedar, también un navegador) |
 
 La sala vive mientras vive el host: cada 10 s le dice al emisor quién está, y la cierra cuando termina la partida o se va. Un host cuyo juego se cierra sin avisar (una pestaña cerrada) el emisor lo olvida a los 30 s.
+
+El transporte de tu juego no cambia: la conexión de la sala online va por el relay por su cuenta (`MpTransport.use_relay_room`), así que una partida LAN o un servidor local después usan ENet (o lo que diga tu `game.tres`) como antes.
 
 ### 10.6 Un navegador hospeda
 

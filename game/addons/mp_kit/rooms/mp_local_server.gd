@@ -47,14 +47,14 @@ static func running(tree: SceneTree) -> MpLocalServer:
 
 ## Creates the node under the root and starts a match with `seats` seats (slot 1 is this player). One already
 ## running is returned as it is (nothing new starts).
-static func start_on(tree: SceneTree, seats: int = 2, options: Dictionary = {}, join_host: bool = true, online: Dictionary = {}) -> MpLocalServer:
+static func start_on(tree: SceneTree, seats: int = 2, options: Dictionary = {}, join_host: bool = true, online: Dictionary = {}, ticket: Dictionary = {}) -> MpLocalServer:
 	var already := MpLocalServer.running(tree)
 	if already:
 		return already
 	var server := MpLocalServer.new()
 	server.name = "MpLocalServer"
 	tree.root.add_child(server)
-	server.start(seats, options, join_host, online)
+	server.start(seats, options, join_host, online, ticket)
 	return server
 
 
@@ -89,7 +89,9 @@ func invite_text() -> String:
 
 ## `online` (MpOnline): {code, room, token, url, host_seat, seats}: the issuer's room code, relay room and host
 ## token (they go in the match's ticket) and the admission tickets the issuer hands out (one per seat but slot 1).
-func start(seats: int = 2, options: Dictionary = {}, join_host: bool = true, online: Dictionary = {}) -> Error:
+## `ticket`: the game's match ticket (world, mode, options, seed, picks…, and `seats: [{slot, meta}]` with each seat's
+## meta, the host's in slot 1), merged by merge_ticket(): the kit only adds the seats' tokens and the relay block.
+func start(seats: int = 2, options: Dictionary = {}, join_host: bool = true, online: Dictionary = {}, ticket: Dictionary = {}) -> Error:
 	_join_host = join_host
 	online_code = str(online.get("code", ""))
 	_forget_dead_servers()
@@ -105,6 +107,11 @@ func start(seats: int = 2, options: Dictionary = {}, join_host: bool = true, onl
 			config.relay_url = MpTransport.relay_url
 		if config.relay_room.is_empty():
 			config.relay_room = MpTransport.relay_room
+	## An online room is always hosted through the relay (its match hosts the issuer's room).
+	if online.has("room"):
+		config.transport = MpTransport.RELAY
+		if not str(online.get("url", "")).is_empty():
+			config.relay_url = str(online["url"])
 	_launcher = MpMatchLauncher.new()
 	_launcher.name = "Launcher"
 	_launcher.config = config
@@ -120,19 +127,19 @@ func start(seats: int = 2, options: Dictionary = {}, join_host: bool = true, onl
 	_launcher.match_listening.connect(_on_listening)
 	_launcher.match_failed.connect(func(_id: String, reason: String) -> void: _fail(reason))
 	_launcher.match_ended.connect(_on_ended)
-	var rows: Array = []
+	var tokens := {}
 	var given: Array = Array(online.get("seats", PackedStringArray()))
 	_host_token = str(online.get("host_seat", "")) if online.has("host_seat") else MpMatchFiles.new_token()
-	rows.append({"slot": 1, "token": _host_token, "meta": {}})
+	tokens[1] = _host_token
 	for slot in range(2, seats + 1):
 		var code := str(given[slot - 2]) if slot - 2 < given.size() else MpLocalServer.new_code()
 		codes[slot] = code
-		rows.append({"slot": slot, "token": code, "meta": {}})
+		tokens[slot] = code
 	_match_id = "local_%d" % (Time.get_unix_time_from_system() as int)
-	var ticket := {"options": options, "seats": rows}
+	var relay := {}
 	if online.has("room"):
-		ticket["relay"] = {"room": online["room"], "token": online.get("token", ""), "url": online.get("url", "")}
-	var err := _launcher.launch(_match_id, ticket)
+		relay = {"room": online["room"], "token": online.get("token", ""), "url": online.get("url", "")}
+	var err := _launcher.launch(_match_id, MpLocalServer.merge_ticket(ticket, options, tokens, relay))
 	if err != OK:
 		_fail("launch_%s" % error_string(err))
 	return err
@@ -143,6 +150,29 @@ func stop() -> void:
 	if _launcher and not _match_id.is_empty():
 		_launcher.abort(_match_id, "stopped")
 	queue_free()
+
+
+## The match ticket: the game's `ticket` as it is (world, mode, options, seed, picks…), `options` when given, one seat
+## per `tokens` entry (slot -> admission token) with the game's meta for that slot, and the `relay` block (online).
+## The kit's keys win: a game's own seat tokens or relay block are replaced.
+static func merge_ticket(ticket: Dictionary, options: Dictionary, tokens: Dictionary, relay: Dictionary = {}) -> Dictionary:
+	var out := ticket.duplicate(true)
+	var meta := {}
+	for row in out.get("seats", []):
+		if row is Dictionary and (row as Dictionary).get("meta") is Dictionary:
+			meta[int((row as Dictionary).get("slot", 0))] = (row as Dictionary)["meta"]
+	if not options.is_empty() or not out.has("options"):
+		out["options"] = options if not options.is_empty() else out.get("options", {})
+	var slots := tokens.keys()
+	slots.sort()
+	var rows: Array = []
+	for slot in slots:
+		rows.append({"slot": int(slot), "token": str(tokens[slot]), "meta": meta.get(int(slot), {})})
+	out["seats"] = rows
+	out.erase("relay")
+	if not relay.is_empty():
+		out["relay"] = relay
+	return out
 
 
 ## A seat code: an admission ticket, so from the system's secure random (online it crosses the internet).

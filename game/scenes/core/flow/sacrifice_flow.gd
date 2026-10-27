@@ -175,20 +175,7 @@ func host_online_room(options: Dictionary, room: String, listed: bool) -> MpOnli
 		_set_status(tr("UI_ONLINE_BAD_OPTIONS"))
 		return null
 	_forget_local_match()
-	return _host_online_with_ticket(OnlineTicket.players_of(ticket), room, listed, ticket)
-
-
-## The one call to MpFlow.host_online. Needs the MpKit release whose host_online takes the game's ticket as a 4th argument (it
-## merges it into its MpLocalServer ticket); MpKit 0.18.0 takes three.
-## WORKAROUND: called through an untyped receiver so this script parses on 0.18.0; once the kit has the argument, call
-## `host_online(players, room, listed, ticket)` directly and drop the guard.
-func _host_online_with_ticket(players: int, room: String, listed: bool, ticket: Dictionary) -> MpOnline:
-	if get_method_argument_count(&"host_online") < 4:
-		push_error("SacrificeFlow: este MpKit no recibe el ticket en host_online (hace falta la versión que lo agrega)")
-		_set_status(online_text("kit_too_old"))
-		return null
-	var kit_flow: Object = self
-	return kit_flow.host_online(players, room, listed, ticket)
+	return host_online(OnlineTicket.players_of(ticket), room, listed, ticket)
 
 
 ## Joins an online room by its code: nothing of a local match stays (picks, AI seats, the room mark).

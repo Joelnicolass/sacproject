@@ -307,8 +307,8 @@ func host_lan() -> Error:
 	return host_here()
 
 
-## This game hosts the match and plays it (a listen server) on whatever MpKit.transport is: Host LAN, and through the
-## relay an online room in a browser (MpOnline). Unlike host_lan(), a browser may: the relay listens for it.
+## This game hosts the match and plays it (a listen server) on whatever MpKit.transport is: Host LAN; with an issuer
+## room pending (MpTransport.use_relay_room) it hosts that room through the relay: an online room in a browser (MpOnline). Unlike host_lan(), a browser may: the relay listens for it.
 func host_here() -> Error:
 	var err := MpKit.host()
 	if err != OK:
@@ -321,13 +321,15 @@ func host_here() -> Error:
 
 ## Opens an online room this player hosts (MpOnline through the issuer): `players` seats (this one counts), shown in
 ## the issuer's list unless `listed` is off (then friends need the code). The status says the code once it is up.
-func host_online(players: int = 0, online_room_name: String = "", listed: bool = true) -> MpOnline:
+## `ticket`: the game's match ticket (world, mode, options, seed, picks…, `seats: [{slot, meta}]`), as for a private
+## match: a desktop's match process gets it; in a browser this game is the match and reads MpOnline.ticket.
+func host_online(players: int = 0, online_room_name: String = "", listed: bool = true, ticket: Dictionary = {}) -> MpOnline:
 	if not MpIssuer.is_configured():
 		_set_status(online_text("no_issuer"))
 		return null
 	_set_status(online_working_status)
 	var online := MpOnline.start_on(get_tree(), players if players > 1 else max(2, MpKit.max_players),
-		online_room_name if not online_room_name.is_empty() else room_name, listed)
+		online_room_name if not online_room_name.is_empty() else room_name, listed, ticket)
 	if not online.room_ready.is_connected(_on_online_ready):
 		online.room_ready.connect(_on_online_ready)
 		online.failed.connect(func(reason: String) -> void: _set_status(online_text(reason)))
@@ -351,7 +353,7 @@ func join_online(code: String) -> Error:
 		_set_status(online_text(str(seat["error"]), seat["data"]))
 		return ERR_UNAVAILABLE
 	var data: Dictionary = seat["data"]
-	MpKit.transport = MpTransport.RELAY
+	## The relay for this connection only (use_relay_room): MpKit.transport stays the game's, for LAN afterwards.
 	MpTransport.use_relay_room(str(data.get("room", "")), str(data.get("token", "")), str(data.get("relay_url", "")))
 	var ticket: Variant = data.get("ticket", null)
 	var err := MpKit.join(str(data.get("code", code)), MpKit.port, str(ticket) if ticket != null else "")

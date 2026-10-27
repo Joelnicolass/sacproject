@@ -99,3 +99,41 @@ func test_online_mode_and_keepalive_off_the_web() -> void:
 	MpWebKeepAlive.enable()
 	check(MpWebKeepAlive.is_enabled() == OS.has_feature("web"), "the keep-alive only exists in a browser")
 	MpWebKeepAlive.disable()
+
+
+func test_match_ticket_merge() -> void:
+	var game := {"world": "forest", "mode": "2v2", "options": {"rounds": 3}, "seed": 7, "open_picks": true,
+		"seats": [{"slot": 1, "meta": {"pick": "mage"}}, {"slot": 3, "meta": {"pick": "god"}}, {"slot": 2, "token": "MINE"}],
+		"relay": {"room": "not-the-game's"}}
+	var tokens := {1: "HOST", 3: "BBBBBB", 2: "AAAAAA"}
+	var relay := {"room": "p-ROOM22", "token": "t", "url": "ws://127.0.0.1:9"}
+	var out := MpLocalServer.merge_ticket(game, {}, tokens, relay)
+	check(out["world"] == "forest" and out["mode"] == "2v2" and out["seed"] == 7 and out["open_picks"] == true, "the game's keys go as they are")
+	check(out["options"] == {"rounds": 3}, "the game's options when none are passed")
+	check(out["seats"] == [{"slot": 1, "token": "HOST", "meta": {"pick": "mage"}}, {"slot": 2, "token": "AAAAAA", "meta": {}},
+		{"slot": 3, "token": "BBBBBB", "meta": {"pick": "god"}}], "one seat per token, the game's meta by slot, the kit's tokens: %s" % [out["seats"]])
+	check(out["relay"] == relay, "the kit's relay block replaces the game's")
+	check(game["seats"].size() == 3 and game["relay"]["room"] == "not-the-game's", "the game's ticket is not changed")
+	var plain := MpLocalServer.merge_ticket({}, {"map": "x"}, {1: "H", 2: "C"})
+	check(plain["options"] == {"map": "x"} and not plain.has("relay") and plain["seats"].size() == 2, "no game ticket: options and seats only")
+	check(MpLocalServer.merge_ticket({"options": {"a": 1}}, {"b": 2}, {1: "H"})["options"] == {"b": 2}, "passed options win")
+
+
+func test_an_issuer_room_goes_through_the_relay_whatever_the_transport() -> void:
+	var before := MpKit.transport
+	MpKit.transport = MpTransport.ENET
+	MpTransport.use_relay_room("p-ENET44", "tok", "ws://127.0.0.1:9")
+	var client := _relay_peer(MpTransport.create_client(MpKit.transport, "ENET44", 7777))
+	check(client != null and client._url.contains("room=p-ENET44&token=tok"), "a client on ENet joins the issuer room through the relay")
+	check(MpKit.transport == MpTransport.ENET, "MpKit.transport is not touched")
+	var lan: Variant = MpTransport.create_client(MpKit.transport, "127.0.0.1", 7777)["peer"]
+	check(not (lan is MpRelayPeer) and not (lan is MpLagPeer and (lan as MpLagPeer).inner() is MpRelayPeer), "the next connection is ENet again (LAN after an online room)")
+	MpTransport.use_relay_room("p-ENET55", "tok2", "ws://127.0.0.1:9")
+	var host := _relay_peer(MpTransport.create_server(MpKit.transport, 7777, 8))
+	check(host != null and host._url.contains("role=host&room=p-ENET55"), "a listen host on ENet hosts the issuer room through the relay")
+	for p in [client, host]:
+		if p:
+			p.close()
+	if lan is MultiplayerPeer:
+		(lan as MultiplayerPeer).close()
+	MpKit.transport = before

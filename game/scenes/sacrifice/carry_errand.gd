@@ -2,10 +2,10 @@
 class_name CarryErrand
 extends Node
 
-## The errand of a carrier doctor (sacengine SacDocCarry): which creature it came for and which site
-## it takes it to. The body is the DoctorBody (it only walks and dies); the errand is what makes this
-## doctor a carrier, and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor
-## has no errand. Server only: the clients get the doctor and the creature through their synchronizers. 020e adds Convert and Pump.
+## The errand of a carrier doctor: which creature it came for and which site it takes it to. The body is the DoctorBody (it only walks and dies);
+## the errand is what makes this doctor a carrier, and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor has no errand.
+## Server only: the clients get the doctor and the creature through their synchronizers. 020e adds Convert and Pump.
+## Ref: sacengine SacDocCarry; sacengine `soul.state.among(normal, emerging)`, state.d:15681; freeSoulImpl, state.d:15617
 
 ## The carrier reached the site and holds the creature there. The ritual starts from here (RFC-020d).
 signal reached_site
@@ -70,7 +70,7 @@ func creature_is_free() -> bool:
 
 
 ## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse is
-## too (sacengine `soul.state.among(normal, emerging)`, state.d:15681).
+## too.
 func soul_is_waiting() -> bool:
 	if soul == null or not is_instance_valid(soul) or not soul.is_inside_tree():
 		return false
@@ -80,7 +80,7 @@ func soul_is_waiting() -> bool:
 	return corpse != null and is_instance_valid(corpse) and corpse.is_inside_tree() and corpse.is_dead() and Captive.of(corpse) != null
 
 
-## Convert: the soul goes back to being convertible by the caster (freeSoulImpl, state.d:15617).
+## Convert: the soul goes back to being convertible by the caster.
 func release_soul() -> void:
 	if soul != null and is_instance_valid(soul):
 		soul.release_for(caster_slot)

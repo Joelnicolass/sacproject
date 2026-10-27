@@ -59,19 +59,22 @@ signal book_changed
 			return
 		level = value
 		pick_changed.emit()
-## RFC-030 030c: added to the WIZD health and mana when the server sets the stats up (makeWizard, state.d:2307-2311).
+## RFC-030 030c: added to the WIZD health and mana when the server sets the stats up.
 ## WizardSpawner fills them from MatchRules (wizard_level_stats); 0 keeps the WIZD numbers.
+## Ref: makeWizard, state.d:2307-2311
 @export var level_health_bonus := 0.0
 @export var level_mana_bonus := 0.0
 ## Ray mask used to seat the body on the ground after spawning.
 @export_flags_3d_physics var ground_mask := 1
 @export var seat_attempts := 12
-## sacengine regenerates only in idle and not during a damage animation (state.d:1429).
+## It regenerates only in idle and not during a damage animation.
+## Ref: sacengine; state.d:1429
 @export var regen_pause_s := 0.5
 
 const REST_FACING := Vector3(0.0, 0.0, 1.0)
 const TURN_RATE := PI
-## RFC-023 (023d): 1 rest loop in GESTURE_EVERY ends in the idle0 gesture (sacengine rolls 1 in 5), like the units.
+## RFC-023 (023d): 1 rest loop in GESTURE_EVERY ends in the idle0 gesture, like the units.
+## Ref: sacengine rolls 1 in 5
 const GESTURE_EVERY := 5
 
 var move_speed: float = 0.0
@@ -154,12 +157,14 @@ func is_guard_target() -> bool:
 	return ghost.is_guard_target()
 
 
-## A ghost still steers around the others and they around it (state.d:117, 125).
+## A ghost still steers around the others and they around it.
+## Ref: state.d:117, 125
 func is_obstacle() -> bool:
 	return ghost.is_obstacle()
 
 
-## sacengine canCast: idle or moving; a stunned or petrified wizard is neither (Caster cuts a cast in progress).
+## Idle or moving; a stunned or petrified wizard is neither (Caster cuts a cast in progress).
+## Ref: sacengine canCast
 func can_cast() -> bool:
 	return ghost.can_cast() and not _afflictions.holds()
 
@@ -327,8 +332,9 @@ func begin_walk(goal: Vector3) -> void:
 
 
 ## Teleport (RFC-021c). The server puts the wizard at `point`, a spot on the land (its Y is the land's), in
-## one step: no walk goal, no velocity. sacengine keeps the height over the ground (state.d:10262); a wizard
+## one step: no walk goal, no velocity. the original keeps the height over the ground; a wizard
 ## stands on it. The clients are told not to glide.
+## Ref: state.d:10262
 func warp_to(point: Vector3) -> void:
 	if _walking:
 		_walking = false
@@ -384,7 +390,8 @@ func _physics_process(delta: float) -> void:
 	elif MpKit.is_networked():
 		forward = _net_forward
 		yaw = _net_yaw
-	## Held (F138) or casting a structure (Caster.holds_wizard): it neither walks nor turns, and a walk order waits for it (state.d:93-145, 1140-1142).
+	## Held (F138) or casting a structure (Caster.holds_wizard): it neither walks nor turns, and a walk order waits for it.
+	## Ref: state.d:93-145, 1140-1142
 	var held := _afflictions.holds() or _caster.holds_wizard()
 	if held or not ghost.can_move():
 		forward = 0.0
@@ -421,8 +428,9 @@ func _on_moved() -> void:
 	_update_clip_state(Vector2(velocity.x, velocity.z).length())
 
 
-## sacengine updateCreatureStats (state.d:14400-14403): regeneration · mana/maxMana per second,
-## only while standing (idle, not casting) and not just hit (isRegenerating, state.d:1429).
+## Regeneration · mana/maxMana per second,
+## only while standing (idle, not casting) and not just hit.
+## Ref: sacengine updateCreatureStats (state.d:14400-14403); isRegenerating, state.d:1429
 func _regenerate(delta: float) -> void:
 	if not can_cast() or _since_damage < regen_pause_s or health.is_full():
 		return
@@ -444,7 +452,8 @@ func _on_health_changed(current: float, _maximum: float) -> void:
 	_last_health = current
 
 
-## sacengine sends a wizard that fell through the map to its closest altar (state.d:14802-14815).
+## A wizard that fell through the map is sent to its closest altar.
+## Ref: sacengine; state.d:14802-14815
 func _return_to_altar() -> void:
 	var best: Node3D = null
 	for source in get_tree().get_nodes_in_group("mana_source"):
@@ -509,7 +518,7 @@ func _update_clip_state(flat_speed: float) -> void:
 	_clip_pose.play("run" if moving else "idle")
 
 
-## A rest loop ended: sacengine rolls a gesture after each stance loop; here (hash(name) + loops) % 5, the same on every peer
+## A rest loop ended: the original rolls a gesture after each stance loop; here (hash(name) + loops) % 5, the same on every peer
 ## and every run. The gesture ends and the body goes back to the rest pose.
 func _on_clip_looped(role: String) -> void:
 	if role != "idle" and role != "gesture":

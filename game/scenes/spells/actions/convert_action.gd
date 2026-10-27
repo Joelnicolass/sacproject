@@ -7,8 +7,9 @@ extends SpellAction
 ## starts; when it ends a carrier doctor drops by the corpse, pumps it back to life and takes it to the
 ## own altar closest to the wizard, where a ritual of Convert turns it into souls for him. If the cast is
 ## interrupted there is no doctor and the soul stays red and convertible. All the rules live in
-## SacrificeSystem (sacengine castConvert, state.d:10181-10196); this action is only the contract with
+## SacrificeSystem; this action is only the contract with
 ## the Caster (RFC-021a). The ritual itself is Ritual.Kind.CONVERT (RFC-020e).
+## Ref: sacengine castConvert, state.d:10181-10196
 
 var _system: SacrificeSystem
 var _cast: SacrificeSystem.Cast

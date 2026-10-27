@@ -2,9 +2,10 @@
 class_name PupsAction
 extends SpellAction
 
-## Speedup (pups): an ally or the wizard himself runs faster for a while (sacengine speedUp). The effect is
+## Speedup (pups): an ally or the wizard himself runs faster for a while. The effect is
 ## a SpeedupEffect child of the body, made as soon as the cast starts (it works at once). A body that
 ## already has one is not a valid target (the spell's exclusion).
+## Ref: sacengine speedUp
 
 @export var effect_scene: PackedScene
 ## Who may be sped up (own creature or the wizard himself; not only living ones).

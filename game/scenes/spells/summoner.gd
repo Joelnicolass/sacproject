@@ -1,14 +1,16 @@
 class_name Summoner
 extends Node
 
-## Creature summons of a wizard (sacengine spawn / updateCreatureCasting). begin() puts the
+## Creature summons of a wizard. begin() puts the
 ## creature in front of the wizard, translucent, when the cast starts; finish() spends the
 ## souls and lets it act, or removes it when the souls are gone. Server or solo only.
+## Ref: sacengine spawn / updateCreatureCasting
 
 const NO_SOULS := Refusal.NO_SOULS
 
-## sacengine spawnPosition: first try ahead_m in front of the wizard, then these
+## First try ahead_m in front of the wizard, then these
 ## (side, ahead) offsets, then a ring of fallback_radius around it.
+## Ref: sacengine spawnPosition
 @export var ahead_m := 6.0
 @export var offsets: PackedVector2Array = PackedVector2Array([
 	Vector2(-3, 6), Vector2(3, 6),
@@ -19,7 +21,8 @@ const NO_SOULS := Refusal.NO_SOULS
 ])
 @export var fallback_radius := 15.0
 @export var fallback_tries := 24
-## sacengine isValidSpawnPosition: nothing within this half-width (m) of the spot.
+## Nothing within this half-width (m) of the spot.
+## Ref: sacengine isValidSpawnPosition
 @export var clear_half_width := 1.0
 @export var clear_half_height := 10.0
 @export var blocker_groups: PackedStringArray = PackedStringArray(["unit", "wizard"])

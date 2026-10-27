@@ -4,8 +4,7 @@ extends RefCounted
 ## How the AI keeps its tracks over time: whether a body is worth following (in the wizard's region, alive), what tells the index
 ## that a tracked body died or fell, the periodic re-rating and status of each body, the side's soul and fount stats, and the order
 ## of the lists (best worth first). Static and read-only on the game: AiPerception owns the tracks and calls it.
-## Ref: shiny.d:754-775 shouldTrack, 1289-1297 updateNtts (the soul snapshot of updateWiz, 1080-1083, is read for the own wizard
-## only: sacengine reads the enemy wizard's too, without seeing him), 1243-1262 updateStats, 1651-1672 sortFam1.
+## Ref: shiny.d:754-775 shouldTrack, 1289-1297 updateNtts (the soul snapshot of updateWiz, 1080-1083, is read for the own wizard only: sacengine reads the enemy wizard's too, without seeing him), 1243-1262 updateStats, 1651-1672 sortFam1
 
 
 ## The body lies in the wizard's pathfinder region (when there is a wizard and a ready pathfinder) and is not dead.

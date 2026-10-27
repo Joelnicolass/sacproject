@@ -4,7 +4,7 @@ extends RefCounted
 ## What a body is for the AI, worked out once when the side takes it in: its kind (wizard, creature, Manahoar, structure), its site
 ## (altar, fount, Manalith, shrine), whether it fights, what it is worth (`rate`). Static: it never follows a body in time (that is
 ## AiPerception) and never writes into the game. The Manahoar is the creature whose passive is the side's `mana_source` (hmba).
-## Ref: shiny.d:46 NodeKind, 884-1100 setupT4oBody/setupMaho/setupBldg, 926-931 the BLDG words of 055f's table (§8.1).
+## Ref: shiny.d:46 NodeKind, 884-1100 setupT4oBody/setupMaho/setupBldg, 926-931 the BLDG words of 055f's table (§8.1).; shiny.d:891-894; shiny.d:392-405 tagAcc; shiny.d:739-745 relation
 
 
 ## The kind of `node` for the AI (NONE: the AI does not track it).
@@ -42,15 +42,15 @@ static func fights_of(type: CreatureType) -> bool:
 	return type != null and (ability_count(type) > 0 or type.aggressiveness != 0)
 
 
-## The abilities the creature really has: an empty slot does not count. ## Ref: shiny.d:891-894.
+## The abilities the creature really has: an empty slot does not count.
 static func ability_count(type: CreatureType) -> int:
 	return type.abilities().size()
 
 
-## What summoning a creature of `type` is worth, worked out once per type (it depends on the type only). ## Ref: shiny.d:392-405 tagAcc.
+## What summoning a creature of `type` is worth, worked out once per type (it depends on the type only).
 static var _tag_accs: Dictionary = {}
 
-## What side `other` is to side `side`: own, ally, enemy or neutral. ## Ref: shiny.d:739-745 relation.
+## What side `other` is to side `side`: own, ally, enemy or neutral.
 static func relation(side: int, other: int) -> AiTrack.Relation:
 	if other == side:
 		return AiTrack.Relation.OWN

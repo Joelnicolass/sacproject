@@ -5,9 +5,9 @@ extends AiTask
 ## and so does every own mana structure that is ready (its altar only while a ritual runs against it, with score 1.0). The score of a structure mixes the
 ## support of the other altars (probOr), the enemy's (probOr) and the influence of the enemy groups; the creatures
 ## that fit best (rateWithBase against the target) are claimed up to `score * souls` of worth. A guard creature gets an
-## order to stay by the structure and fight what comes (t4oBrain with the guard task, shiny.d:2557-2570).
-## Not ported: the guardian-bound creatures of the first pass (shiny.d:2292-2300).
-## Ref: shiny.d:2195-2229 `replanGuard`, 2288-2336 `claimGuard`.
+## order to stay by the structure and fight what comes.
+## Not ported: the guardian-bound creatures of the first pass.
+## Ref: shiny.d:2195-2229 `replanGuard`, 2288-2336 `claimGuard`; t4oBrain with the guard task, shiny.d:2557-2570; shiny.d:2292-2300
 
 func kind() -> Kind:
 	return Kind.GUARD
@@ -20,7 +20,8 @@ func replan() -> void:
 	for target: AiTrack in board.perception.tracks_of(0):
 		var score := 0.0
 		if target.is_wizard():
-			## The wizard: its creatures escort it (the status bits 4/8 of the original, shiny.d:2200-2202).
+			## The wizard: its creatures escort it.
+			## Ref: the status bits 4/8 of the original, shiny.d:2200-2202
 			score = AiField.f32(target.value_6c() * aggression * 0.6 + 0.4)
 		else:
 			if target.kind != AiTrack.Kind.STRUCTURE or not target.ready:
@@ -34,7 +35,8 @@ func replan() -> void:
 				var own_altars := board.distances_to_altars(target, AiTrack.Relation.OWN)
 				var enemy_altars := board.distances_to_altars(target, AiTrack.Relation.ENEMY)
 				var s := AiField.lerp_w(0.4, 0.5, AiField.prob_or(own_altars, 10.0, 3620.0))
-				## thaum quirk (shiny.d:2211): the accumulator `total` is overwritten here, in the middle of the loop.
+				## thaum quirk: the accumulator `total` is overwritten here, in the middle of the loop.
+				## Ref: shiny.d:2211
 				total = AiField.lerp_w(s, 0.2, AiField.prob_or(enemy_altars, 10.0, 3620.0))
 				score = AiField.lerp_w(s, 0.2, board.density(target.cur_pos, 10.0, 160.0))
 		var record := board.new_record(target)
@@ -80,8 +82,9 @@ func claim(free: Array[AiTrack]) -> float:
 	return total
 
 
-## The weight of `t` for `record` in claimGuard (shiny.d): rateWithBase against the target, by the square of the fall with distance
+## The weight of `t` for `record` in claimGuard: rateWithBase against the target, by the square of the fall with distance
 ## (1 within 40 m, 0 at 3620 m); null when it cannot be claimed.
+## Ref: shiny.d
 static func _claim_value(t: AiTrack, record: AiRecord) -> Variant:
 	if t == record.target or not t.fights:
 		return null

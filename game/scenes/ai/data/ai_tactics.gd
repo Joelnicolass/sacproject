@@ -5,7 +5,8 @@ extends Resource
 ## wards, when he summons, converts, builds or takes souls, and how often he replans. `crowd` says how his creatures move and
 ## `senses` how often the side looks again at what it knows; both are embedded in the same file. One file per difficulty
 ## (data/ai/tactics_*.tres); a seat can bring its own (AiSeat.tactics). Nothing here gives the AI more than a human has, and it is
-## never changed while playing. The numbers without a mark are the original's (sacengine shiny.d, «según [S]»).
+## never changed while playing. The numbers without a mark are the original's.
+## Ref: sacengine shiny.d, «según [S]»
 
 const NORMAL := "res://data/ai/tactics_normal.tres"
 

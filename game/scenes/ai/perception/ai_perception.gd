@@ -6,7 +6,7 @@ extends Node
 ## it takes in every structure and wizard, its own and allied creatures and, with SIGHT_AND_MAP, the others on its minimap; then its
 ## own bodies as they appear, a foe once its side sees it (SightIntake), and it drops what dies. What it believes of an unseen body
 ## is Belief's, the souls Souls', the rituals AiRituals'. It takes no decisions.
-## Ref: shiny.d:1129-1200 scanGlobal (0x10, 1158), 575-584, 563-566, 1289-1300, 1373-1400, 975, 536.
+## Ref: shiny.d:1129-1200 scanGlobal (0x10, 1158), 575-584, 563-566, 1289-1300, 1373-1400, 975, 536.; shiny.d:1243-1262
 
 signal forced(bits: int)
 signal tracked(track: AiTrack)
@@ -23,7 +23,7 @@ var slot := 0
 var wizard: Node3D  ## the AI's own wizard (set by AiSide)
 var tracks: Dictionary = {}
 var scanned := false
-## What the side has seen of souls and of free founts (the stance and the capture task read them). ## Ref: shiny.d:1243-1262.
+## What the side has seen of souls and of free founts (the stance and the capture task read them).
 var neutral_founts := 0
 var max_souls_seen := 0
 var unseen_reads: int:

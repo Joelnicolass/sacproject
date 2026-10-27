@@ -1,7 +1,8 @@
 extends SpellProjectile
 
-## Charnel Insect Swarm (sacengine castSwarm/updateSwarm, state.d:10576, 17011).
+## Charnel Insect Swarm.
 ## Guided projectile with smaller hit box, higher cruise height and splash spell damage.
+## Ref: sacengine castSwarm/updateSwarm, state.d:10576, 17011
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 

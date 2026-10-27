@@ -3,7 +3,8 @@ extends RefCounted
 
 ## The call a human's click makes, for the AI's wizard: Caster.request_cast / request_summon / request_structure, and what the
 ## Caster answered, to the audit. A body of another side the side does not see now is never clicked. It does not decide when
-## (AiCommandPort: delay, timing) and it never touches a body. Ref: shiny.d:3247-3254 startCasting.
+## (AiCommandPort: delay, timing) and it never touches a body.
+## Ref: shiny.d:3247-3254 startCasting
 
 var slot := 0
 var wizard: WizardBody

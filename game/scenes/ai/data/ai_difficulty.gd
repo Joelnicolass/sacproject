@@ -15,8 +15,9 @@ extends Resource
 ## Each period is rounded down and never under 1 tick. The ages of the tracks count runs of the perception job, so the replans of
 ## the wizard scale with it.
 @export_range(0.25, 4.0, 0.05) var period_scale := 1.0
-## How bold the side plays (AiPlay.aggression; fixed 1.0 in the original, shiny.d:380). It scales the reach of Convert, the
+## How bold the side plays. It scales the reach of Convert, the
 ## weights of attacking and the claims of the capture task.
+## Ref: AiPlay.aggression; fixed 1.0 in the original, shiny.d:380
 @export_range(0.0, 1.0, 0.05) var aggression := 1.0
 ## Seconds between the decision and the request that leaves the port (a cast, a summon, an order, a walk): a human's reaction.
 ## While a cast waits the wizard counts as busy (he asks for nothing else), and the request goes out only if it still could be paid.

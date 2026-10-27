@@ -2,7 +2,8 @@ class_name AiHealRating
 extends RefCounted
 
 ## How much a Heal or a Speedup on an own body is worth, and whether a queued Heal still is. It does not pick the spell
-## (AiSpellEval) and it does not cast. Static. Ref: shiny.d:2873-2884 f489af0 (Heal), 2893-2916 f489c40 (Speedup).
+## (AiSpellEval) and it does not cast. Static.
+## Ref: shiny.d:2873-2884 f489af0 (Heal), 2893-2916 f489c40 (Speedup)
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 

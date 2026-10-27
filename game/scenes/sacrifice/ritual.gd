@@ -168,7 +168,8 @@ func complete() -> void:
 	_wind_down()
 
 
-## Cancelled: doctors die, the creature falls alive and free, the wizard is not under ritual any more (stopRitual, state.d:15817-15833).
+## Cancelled: doctors die, the creature falls alive and free, the wizard is not under ritual any more.
+## Ref: stopRitual, state.d:15817-15833
 func abort() -> void:
 	if outcome != Outcome.RUNNING:
 		return

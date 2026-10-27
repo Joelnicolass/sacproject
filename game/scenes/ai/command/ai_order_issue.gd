@@ -10,20 +10,23 @@ extends RefCounted
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 ## orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/orders/orders.gd")
-## Two positions are «the same order» within this squared distance. sacengine compares them exactly (shiny.d:2398); in the port a
+## Two positions are «the same order» within this squared distance. The engine compares them exactly; in the port a
 ## body rests with a jitter of centimeters (BodyAvoidance, the ground), so the exact test would re-issue the order of every
 ## follower every 12 ticks. 1 m² = 1 m («aprox.»).
+## Ref: shiny.d:2398
 const SAME_POS_SQ := 1.0
 
 
 ## Why `t` gets this order now, for the diagnostic table, or "" when it is the order it already has. «changed»: another ostate or
 ## target; «moved<3/<10/…»: the same order to a spot that moved (meters; «hold»: the body's own spot; «walking»/«still»: the body
-## when it got it); «ended»: the same order again because the live one ended (sacengine re-issues it too).
+## when it got it); «ended»: the same order again because the live one ended.
+## Ref: sacengine re-issues it too
 static func reason(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, pos: Variant) -> String:
 	var why := "changed"
 	if t.ord_state == ostate and (target == null or t.ord_target == target.id):
 		if pos == null or t.ord_pos.distance_squared_to(pos as Vector3) <= SAME_POS_SQ:
-			## completed orders are retained: fixed-position orders are not re-issued once the body has arrived (shiny.d:2400-2409)
+			## completed orders are retained: fixed-position orders are not re-issued once the body has arrived
+			## Ref: shiny.d:2400-2409
 			if (ostate == AiCommandPort.AiOrder.MOVE or ostate == AiCommandPort.AiOrder.ADVANCE) and t.cur_pos.distance_squared_to(t.ord_pos) <= 0.25:
 				return ""
 			if has_live_order(out, t):
@@ -39,7 +42,8 @@ static func reason(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, p
 	return why
 
 
-## A unit with an order in progress, or a wizard walking (the live order sacengine compares with, shiny.d:2398).
+## A unit with an order in progress, or a wizard walking.
+## Ref: the live order sacengine compares with, shiny.d:2398
 static func has_live_order(out: AiOrdersOut, t: AiTrack) -> bool:
 	if out.is_waiting(t.id):
 		return true
@@ -58,7 +62,8 @@ static func issue(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, po
 		if pos == null and target != null and (ostate == AiCommandPort.AiOrder.GUARD or ostate == AiCommandPort.AiOrder.REFILL):
 			var back := t.cur_pos - target.cur_pos
 			back.y = 0.0
-			## the wizard on guard stops this far from the body (AiTactics.wizard_stop_m; shiny.d:2376 `ntt+0x2e4 + 10.0`)
+			## the wizard on guard stops this far from the body
+			## Ref: AiTactics.wizard_stop_m; shiny.d:2376 `ntt+0x2e4 + 10.0`
 			var stop_m := out.play.tactics.wizard_stop_m
 			if back.length() > stop_m:
 				goal = target.cur_pos + back.normalized() * stop_m
@@ -85,8 +90,9 @@ static func issue(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, po
 			command = "guard" if target != null else "guard_area"
 		_:
 			return t.cur_pos
-	## The game refuses «advance» and «attack» to a pacifist (Orders._own_units, sacengine order()): the original AI keeps asking
+	## The game refuses «advance» and «attack» to a pacifist (Orders._own_units): the original AI keeps asking
 	## and is refused every time; the port does not call, so the Manahoars wait where they were summoned.
+	## Ref: sacengine order()
 	var type: Variant = t.node.get("type")
 	if (ostate == AiCommandPort.AiOrder.ATTACK or ostate == AiCommandPort.AiOrder.ADVANCE) and type != null and (type as CreatureType).aggressiveness <= 0:
 		return t.cur_pos

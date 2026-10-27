@@ -2,32 +2,37 @@
 class_name GuardianTether
 extends Node3D
 
-## The beam between a guardian and its building (RFC-021b), drawn on every peer with a window; the
+## The beam between a guardian and its building, drawn on every peer with a window; the
 ## dedicated server never instantiates it. GuardianBond creates it when `post_path` changes and calls
-## retire() when it empties. Port of sacengine's: 19 segments, a wobbly line of 5 control points that
-## reshapes every second (updateGuardianShape, state.d:15326-15340), it grows from the creature to the
-## building in a second (cubic, state.d:15400-15402), pulses at 0.75-1 of its width (renderer.d:1716)
+## retire() when it empties. Port of the original beam: 19 segments, a wobbly line of 5 control points that
+## reshapes every second, it grows from the creature to the
+## building in a second, pulses at 0.75-1 of its width
 ## and withdraws in a second, toward the building if the creature is gone or toward the creature if the
-## building is (state.d:15404-15417).
-## Look: the tube of 3 planes with pointed ends that sacengine draws (makeLineMeshes(19, 4, 4, 1.5, 1.0,
-## pointy), sacobject.d:4466-4472), additive and shadeless with energy 5 (renderer.d:253-261), from the
-## `grdn` atlas (charlie.wad, sacobject.d:4466) that tools/import/import_ui.py puts in assets/original/fx/. One
+## building is.
+## Look: the tube of 3 planes with pointed ends that the original draws (makeLineMeshes(19, 4, 4, 1.5, 1.0,
+## pointy)), additive and shadeless with energy 5, from the
+## `grdn` atlas that tools/import/import_ui.py puts in assets/original/fx/. One
 ## cell of the 4x4 per 2 ticks (16 cells). Without the atlas it falls back to a flat soft color.
 ## The beam waits for the building while `post_path` is set and the building has not arrived on this peer
 ## (a late client); it only withdraws when the bond ends (retire()).
 ## Only presentation: nothing here reads or writes game state.
+## Ref: updateGuardianShape, state.d:15326-15340; cubic, state.d:15400-15402; renderer.d:1716; state.d:15404-15417; sacobject.d:4466-4472; renderer.d:253-261; charlie.wad, sacobject.d:4466; RFC-021b
 
 enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE }
 
-## Segments of the line (SacGuardianTether.numSegments, sacobject.d:4462).
+## Segments of the line.
+## Ref: SacGuardianTether.numSegments, sacobject.d:4462
 @export var segments := 19
-## Edge of the box the control points wobble in (Guardian.locRadius, state.d:2780); the ends move a quarter of that.
+## Edge of the box the control points wobble in; the ends move a quarter of that.
+## Ref: Guardian.locRadius, state.d:2780
 @export var jitter_radius := 0.75
-## Distance from the axis to each of the 3 planes, meters (the 1.0 passed to makeLineMeshes, sacobject.d:4472).
+## Distance from the axis to each of the 3 planes, meters.
+## Ref: the 1.0 passed to makeLineMeshes, sacobject.d:4472
 @export var width := 1.0
 ## The atlas of the beam (grdn.png in guardian_tether.tscn). Empty = the flat `color`.
 @export var atlas: Texture2D
-## Brightness (SacGuardianTether material energy, renderer.d:257).
+## Brightness.
+## Ref: SacGuardianTether material energy, renderer.d:257
 @export var energy := 5.0
 ## Seconds per atlas cell.
 ## Ref: 2 ticks of the original's 60 per second.
@@ -186,7 +191,8 @@ func _draw(from: Vector3, to: Vector3) -> void:
 		var t := float(i) / float(segments)
 		var wobble := _spline(locs, t)
 		points.append(from + line * t + side_a * wobble.x + side_b * wobble.y + along * wobble.z)
-	## 3 planes at 120 degrees (makeLineMesh offsets, sacobject.d:2192), pointed at both ends.
+	## 3 planes at 120 degrees, pointed at both ends.
+	## Ref: makeLineMesh offsets, sacobject.d:2192
 	var root := sqrt(0.75)
 	var offsets: Array[Vector3] = [-side_b, side_a * root + side_b * 0.5, -side_a * root + side_b * 0.5]
 	var inset := 0.5 / 64.0
@@ -210,7 +216,8 @@ func _draw(from: Vector3, to: Vector3) -> void:
 	mesh.surface_end()
 
 
-## The 5 control points (state.d:15326-15340), mixed between the last shape and the next.
+## The 5 control points, mixed between the last shape and the next.
+## Ref: state.d:15326-15340
 func _control_points() -> Array[Vector3]:
 	if _next.is_empty():
 		_next = _random_shape()

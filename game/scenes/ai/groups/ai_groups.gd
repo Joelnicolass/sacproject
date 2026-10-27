@@ -3,10 +3,10 @@ extends Node
 
 ## Groups of nearby bodies per category. Every replan (k4) the groups are thrown away and made again:
 ## the bodies of a category sorted by worth (best first), the first starts a group and takes in each next one that lies
-## within 30*min(1+0.1n, 1.8) m of the center, until none does (shiny.d:1711-1735, 1740-1778). Every 6 ticks (k3) each
+## within 30*min(1+0.1n, 1.8) m of the center, until none does. Every 6 ticks (k3) each
 ## group refreshes its center, its aggregates and drops its dead. Wizards and creatures go in; souls (slot-5 groups)
 ## are not tracked in 024c («aprox.»).
-## Ref: RFC-024 §3.1 `AiGroups`; shiny.d:1479-1580 slot-4 groups, 1563-1621 `groupRefresh4`, 1702-1760 `canAccept`/`formGroups4`.
+## Ref: RFC-024 §3.1 `AiGroups`; shiny.d:1479-1580 slot-4 groups, 1563-1621 `groupRefresh4`, 1702-1760 `canAccept`/`formGroups4`; shiny.d:1711-1735, 1740-1778
 
 @export var perception: AiPerception
 
@@ -18,7 +18,8 @@ func list(category: int) -> Array:
 	return groups[category]
 
 
-## recycleGroups + formGroups4 of every category (shiny.d:1305-1330); the bodies come sorted by AiPerception.sort_bodies().
+## recycleGroups + formGroups4 of every category; the bodies come sorted by AiPerception.sort_bodies().
+## Ref: shiny.d:1305-1330
 func rebuild() -> void:
 	for k in 4:
 		groups[k] = _form(perception.bodies(k))
@@ -73,14 +74,16 @@ func _add(group: AiGroup, t: AiTrack) -> void:
 	t.group = group
 
 
-## updateGroups (shiny.d:1300-1303): every group refreshes.
+## updateGroups: every group refreshes.
+## Ref: shiny.d:1300-1303
 func refresh() -> void:
 	for k in 4:
 		for group: AiGroup in groups[k]:
 			refresh_group(group)
 
 
-## groupRefresh4 (shiny.d:1563-1621).
+## groupRefresh4.
+## Ref: shiny.d:1563-1621
 func refresh_group(group: AiGroup) -> void:
 	group.avg_vel = Vector3.ZERO
 	group.prev_center = group.center
@@ -114,7 +117,8 @@ func refresh_group(group: AiGroup) -> void:
 			sqrt(absf(sum_sq.y * inv - group.center.y * group.center.y)),
 			sqrt(absf(sum_sq.z * inv - group.center.z * group.center.z)))
 	group.predicted = group.center + group.avg_vel
-	## the aggregates of the slot-4 tail (shiny.d:1604-1620): members with a status only.
+	## the aggregates of the slot-4 tail: members with a status only.
+	## Ref: shiny.d:1604-1620
 	group.acc = AiRater.new_acc()
 	group.mana_sum = 0
 	group.max_mana_sum = 0
@@ -146,7 +150,8 @@ static func alive(t: AiTrack) -> bool:
 	return true
 
 
-## node vtbl[21] (shiny.d:1465-1474): (soul worth, 0) of a creature; a wizard's snapshot (mana 0, souls).
+## node vtbl[21]: (soul worth, 0) of a creature; a wizard's snapshot (mana 0, souls).
+## Ref: shiny.d:1465-1474
 static func souls_pair(t: AiTrack) -> Vector2i:
 	match t.kind:
 		AiTrack.Kind.CREATURE, AiTrack.Kind.MANAHOAR:

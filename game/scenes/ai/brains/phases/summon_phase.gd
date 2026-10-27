@@ -3,10 +3,10 @@ extends AiPhase
 
 ## What the wizard summons. With no souls it does nothing, the Manahoar
 ## included (a creature costs its souls when the cast ends). Otherwise:
-## BLOCK1 (shiny.d:3123-3137): when rand >= threat * 1.3, a Manahoar is forced if there is a Manalith (own or ally, retail), a
+## BLOCK1: when rand >= threat * 1.3, a Manahoar is forced if there is a Manalith (own or ally, retail), a
 ## Manahoar spell, and fewer ready Manahoars than souls/2; and either none is ready or the mana deficit per Manalith and ready
 ## Manahoar is above 1400. A forced Manahoar is the only thing queued this replan.
-## BLOCK2 (shiny.d:3139-3171): with threat < 0.6 and a pool of mana (maxMana x Manaliths) > 0, the creature of the book (not
+## BLOCK2: with threat < 0.6 and a pool of mana (maxMana x Manaliths) > 0, the creature of the book (not
 ## the Manahoar) the wizard can pay in souls with the best score `rateWithBase(creature, field) x (1 - cost/pool)` is
 ## forced. The Manaliths count because the pool is maxMana x Manaliths: with none, the original summons nothing (so a
 ## match starts with its Manalith, see debug/ai_summon). The «field» is the quirky mix of acc1 and acc2 (see AiStance).
@@ -15,7 +15,7 @@ extends AiPhase
 ## 0.64-0.86 for minutes, so he never summoned again while his souls piled up («se queda quieta con muchas almas»). And the pool
 ## counts at least AiTactics.summon_min_manaliths Manaliths (1): in the same match the Taurocks broke both Manaliths and neither side
 ## could summon again (BLOCK1, the Manahoar, still needs a Manalith to channel: unchanged).
-## Ref: wizSacrifice, shiny.d:3115-3172, 0x48d8b0.
+## Ref: wizSacrifice, shiny.d:3115-3172, 0x48d8b0; shiny.d:3123-3137; shiny.d:3139-3171
 
 
 func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:

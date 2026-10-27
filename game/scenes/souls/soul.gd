@@ -1,7 +1,7 @@
 class_name Soul
 extends Node3D
 
-## sacengine Soul (state.d:1580, updateSoul 14904). The server (or solo) moves it; clients get
+## A soul of a dead creature. The server (or solo) moves it; clients get
 ## position, scaling and state from the MultiplayerSynchronizer and only draw it.
 ##
 ## While `attached` it sits on its corpse (soulPosition = corpse center). A free soul (dropped,
@@ -11,8 +11,9 @@ extends Node3D
 ## Convert (RFC-020e): a red soul can be converted by the other side; while a Sac Doctor revives its
 ## corpse the soul is REVIVING (nobody collects or converts it, it is not drawn).
 ## F131 (RFC-030 030t-a): a creature with Devour eats it (DEVOURING): it shrinks at 3/s toward the eater's shot origin and
-## the corpse dissolves (sacengine devourSoul, severSoul, updateSoul: state.d:13138, 17925, 14991). This script owns what a soul
+## the corpse dissolves. This script owns what a soul
 ## is and what can be done to it: the corpse it leaves (`sever`), who may eat it, which soul waits on a corpse.
+## Ref: sacengine Soul, state.d:1580, updateSoul 14904; sacengine devourSoul, severSoul, updateSoul: state.d:13138, 17925, 14991
 
 ## REVIVING and DEVOURING go last: `state` is replicated as an integer.
 enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
@@ -24,14 +25,17 @@ const GROUP := &"soul"
 ## The state changed (every peer: the setter runs on the replicated value too). RFC-052 052h: SoulSounds listens.
 signal state_changed(was: State, now: State)
 
-## SacSoul.getMesh(color, frame/2) with frame at 30 fps: 8 cells at 15 fps (sacobject.d:1174).
+## SacSoul.getMesh(color, frame/2) with frame at 30 fps: 8 cells at 15 fps.
+## Ref: sacobject.d:1174
 const ANIM_FPS := 15.0
 const ANIM_FRAMES := 8
 const FIRST_FRAME := { SoulColor.BLUE: 0, SoulColor.RED: 8 }
-## SacSoul soulWidth 1, soulHeight 1.6, soulRadius 0.3 (sacobject.d:1163).
+## SacSoul soulWidth 1, soulHeight 1.6, soulRadius 0.3.
+## Ref: sacobject.d:1163
 const SPRITE_SIZE := Vector2(1.0, 1.6)
 const RING_RADIUS := 0.3
-## renderer.d:1533: the sprite is drawn 1.25·soulHeight over the soul position.
+## The sprite is drawn 1.25·soulHeight over the soul position.
+## Ref: renderer.d:1533
 const SPRITE_LIFT := 1.25 * 1.6
 
 ## Souls inside (Cre8.souls of the creature, 1 when dropped).
@@ -41,11 +45,13 @@ const SPRITE_LIFT := 1.25 * 1.6
 		_rebuild_sprites()
 ## Slot of the creature or of the wizard that dropped it (0 = nobody).
 @export var owner_slot := 0
-## Still on its corpse (sacengine creatureId != 0).
+## Still on its corpse.
+## Ref: sacengine creatureId != 0
 @export var attached := false
 ## Slot of the wizard taking it, while COLLECTING.
 @export var collector_slot := 0
-## Dropped with P: creature orders will not target it (sacengine `dropped`).
+## Dropped with P: creature orders will not target it.
+## Ref: sacengine `dropped`
 @export var dropped := false
 @export var state: State = State.NORMAL:
 	set(value):
@@ -59,14 +65,16 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export_group("Motion")
 @export var emerge_s := 3.0
 @export var collect_shrink_per_s := 4.0
-## Devour (state.d:14998: 3/updateFPS a tick).
+## Devour: 3/updateFPS a tick.
+## Ref: state.d:14998
 @export var devour_shrink_per_s := 3.0
 @export var fall_speed := 1.0
 ## A soul that falls through a hole is gone this far under the last ground it had.
 ## Ref: soulVanishDepth = mapDepth (sacmap.d:108).
 @export_range(0.0, 200.0, 1.0, "suffix:m") var vanish_depth_m := 50.0
 @export var collector_lift := 0.5
-## sacengine turns the ring of a multi-soul 2π/8 rad/s.
+## The ring of a multi-soul turns 2π/8 rad/s.
+## Ref: sacengine
 @export var ring_turn_per_s := TAU / 8.0
 @export_flags_3d_physics var ground_mask := 1
 
@@ -80,7 +88,7 @@ const SPRITE_LIFT := 1.25 * 1.6
 ## Soul sprite sheet (`spir`, 4x4 frames).
 @export var atlas: Texture2D
 @export var shader: Shader = preload("res://scenes/souls/soul.gdshader")
-## sacengine uses 20 with its own tonemap; under High Noon's ACES that clips the soul to white.
+## The original uses 20 with its own tonemap; under High Noon's ACES that clips the soul to white.
 @export var energy := 2.0
 
 
@@ -139,7 +147,8 @@ func _ready() -> void:
 		set_physics_process(false)
 
 
-## sacengine Soul.side: a soul off its corpse and not being taken has no side.
+## A soul off its corpse and not being taken has no side.
+## Ref: sacengine Soul.side
 func side() -> int:
 	if not attached and collector_slot == 0:
 		return 0
@@ -151,7 +160,8 @@ func color_for(slot: int) -> SoulColor:
 	return SoulColor.BLUE if soul_side == 0 or soul_side == slot else SoulColor.RED
 
 
-## A red soul still on its corpse needs Convert first (state.d:14951).
+## A red soul still on its corpse needs Convert first.
+## Ref: state.d:14951
 func can_be_collected_by(slot: int) -> bool:
 	return state == State.NORMAL and (not attached or color_for(slot) == SoulColor.BLUE)
 
@@ -189,13 +199,15 @@ func begin_collect(by: Node3D, slot: int) -> void:
 	state = State.COLLECTING
 
 
-## Blue for `slot`: no side (free, dropped) or its own (isApplicable of Devour, state.d:30820-30825).
+## Blue for `slot`: no side (free, dropped) or its own.
+## Ref: isApplicable of Devour, state.d:30820-30825
 func is_free_or_own(slot: int) -> bool:
 	return color_for(slot) == SoulColor.BLUE
 
 
-## Server or solo. `by` eats the soul (devourSoul, state.d:13138-13148): it leaves the corpse, takes the eater's side and
+## Server or solo. `by` eats the soul: it leaves the corpse, takes the eater's side and
 ## shrinks toward its shot origin; the corpse dissolves. What the eater gains is DevourGrowth's.
+## Ref: devourSoul, state.d:13138-13148
 func begin_devour(by: Node3D) -> void:
 	collector = by
 	collector_slot = int(by.get("owner_slot")) if "owner_slot" in by else 0
@@ -209,7 +221,8 @@ func begin_devour(by: Node3D) -> void:
 	sever()
 
 
-## Server or solo. The soul no longer holds its corpse: it dissolves (severSoul, state.d:17925-17935). The one place that does.
+## Server or solo. The soul no longer holds its corpse: it dissolves. The one place that does.
+## Ref: severSoul, state.d:17925-17935
 func sever() -> void:
 	var dead := _remains
 	_remains = null
@@ -240,8 +253,9 @@ func release_to(slot: int, by: Node3D) -> void:
 	carrier = by
 
 
-## Server or solo. Rend Soul (updateRendShoot, state.d:25867-25890): the soul explodes. It lets go of its corpse (severSoul dissolves
+## Server or solo. Rend Soul: the soul explodes. It lets go of its corpse (severSoul dissolves
 ## it), has nothing inside and goes. What the blast does is the strike's.
+## Ref: updateRendShoot, state.d:25867-25890
 func burst() -> void:
 	_who = label()
 	if _remains == null:
@@ -343,7 +357,8 @@ func _collect_step(delta: float) -> void:
 		queue_free()
 
 
-## updateSoul (state.d:14991-15006): it shrinks toward the eater's shot origin and goes at nothing.
+## updateSoul: it shrinks toward the eater's shot origin and goes at nothing.
+## Ref: state.d:14991-15006
 func _devour_step(delta: float) -> void:
 	var previous := scaling
 	scaling = maxf(scaling - devour_shrink_per_s * delta, 0.0)

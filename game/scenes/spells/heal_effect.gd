@@ -1,24 +1,28 @@
 class_name HealEffect
 extends Node
 
-## sacengine heal(): `amount` health at healSpeed per second, spread over
+## Heal over time: `amount` health at healSpeed per second, spread over
 ## ceil(amount / healSpeed * 60) frames. Stops early when the bar is full. A second Heal
 ## adds its frames and keeps the higher rate. Server (or solo) only; Health is replicated.
+## Ref: sacengine heal()
 
 ## Loaded when needed: the scene holds this script, so a preload would be cyclic.
 const _SCENE_PATH := "res://scenes/spells/heal_effect.tscn"
 const NODE_NAME := "HealEffect"
-## sacengine healSpeed.
+## Heal speed.
+## Ref: sacengine healSpeed
 const HEAL_SPEED := 240.0
 const FPS := 60.0
-## sacengine int.max (32 bits): satAdd caps the frames of heals that add up there (state.d:10455).
+## satAdd caps the frames of heals that add up there.
+## Ref: sacengine int.max (32 bits); state.d:10455
 const FRAMES_CAP := 2147483647
 
 ## Played on the target every `fx_interval_s`. Empty = no bursts.
 @export var heal_fx: ParticleType
 ## Where on the target's body the burst plays.
 @export var heal_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
-## Seconds between `heal_fx` bursts on the target (sacengine spawns particles every frame).
+## Seconds between `heal_fx` bursts on the target.
+## Ref: sacengine spawns particles every frame
 @export var fx_interval_s := 0.5
 
 ## Prints «cura <who> total N vida V» when it ends (the Healing Shower's log, F118). Off for the Heal spell.
@@ -32,7 +36,8 @@ var _health: Health
 var _fx_left := 0.0
 
 
-## sacengine canHeal: alive and not full.
+## Alive and not full.
+## Ref: sacengine canHeal
 static func can_heal(body: Node) -> bool:
 	var health := body.get_node_or_null("Health") as Health
 	return health != null and not health.is_dead() and not health.is_full()
@@ -48,9 +53,10 @@ static func on(target: Node) -> HealEffect:
 	return effect
 
 
-## sacengine heal() with an infinite amount (Healing Shower tum@, Scarab slba; sacspell.d:211, state.d:10446-10449): the body's
+## Heal with an infinite amount (Healing Shower tum@, Scarab slba): the body's
 ## maxHealth in total. Skips a body that cannot heal (canHeal) and returns null; else the HealEffect it added to.
 ## `report_end` prints «cura <who> total N vida V» when that heal ends.
+## Ref: sacengine heal(); sacspell.d:211, state.d:10446-10449
 static func heal_full(body: Node, report_end := false) -> Node:
 	if not can_heal(body):
 		return null
@@ -63,13 +69,15 @@ static func heal_full(body: Node, report_end := false) -> Node:
 
 func add(amount: float) -> void:
 	var frames := ceili(amount / HEAL_SPEED * FPS)
-	## A heal already running gets the new frames on top, saturated (satAdd, state.d:10455).
+	## A heal already running gets the new frames on top, saturated.
+	## Ref: satAdd, state.d:10455
 	frames_left = mini(frames_left + frames, FRAMES_CAP)
 	per_frame = maxf(per_frame, amount / float(frames))
 
 
-## sacengine HealingAura's doHeal: the timer goes back to `frames` and the rate to the better of the two; nothing is added. A body that
+## The timer goes back to `frames` and the rate to the better of the two; nothing is added. A body that
 ## is carried by the aura calls it every tick.
+## Ref: sacengine HealingAura's doHeal
 func renew(rate_per_frame: float, frames: int) -> void:
 	frames_left = maxi(frames_left, frames)
 	per_frame = maxf(per_frame, rate_per_frame)

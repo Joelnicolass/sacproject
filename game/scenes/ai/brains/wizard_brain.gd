@@ -6,7 +6,8 @@ extends Node
 ## again. Then, in order: the souls he can take by touching them (within (1 - threat) * 100 + 80 m), the capture branch of a
 ## record of the capture task (AiCaptureCasts), the best cast he can pay (the child Casting), else he thinks like a creature.
 ## A ghost waits for his Manahoars or goes to the nearest mana building. It does not rate spells (AiSpellEval) nor talk to the
-## game (the port). Ref: shiny.d:3303-3387 wizBrain, 3330-3337 souls; RFC-024 §3.1.
+## game (the port).
+## Ref: shiny.d:3303-3387 wizBrain, 3330-3337 souls; RFC-024 §3.1; shiny.d:3303-3387; shiny.d:3306-3326; sacengine; shiny.d:2610-2636
 
 ## After a replan of the wizard: the cast queue the phases left (diagnostic: the bench's decision log listens; nothing in the game does).
 signal replanned(wizard: AiTrack, queue: Array)
@@ -43,7 +44,7 @@ func prepare() -> void:
 	capture = AiCaptureCasts.new(perception, port, play, casting)
 
 
-## wizBrain (shiny.d:3303-3387). Returns 1 when it gave an order or cast, 2 when it started a capture cast, 0 when it had nothing to do.
+## wizBrain. Returns 1 when it gave an order or cast, 2 when it started a capture cast, 0 when it had nothing to do.
 func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 	if not wizard.is_valid():
 		return 0
@@ -84,8 +85,8 @@ func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 	return creature_brain.think(wizard, task_kind, record)
 
 
-## The ghost (shiny.d:3306-3326): his own Manahoars within ghost_wait_m will channel him back, so he waits; with none near he goes to the
-## nearest mana building of his side (altar, Manalith). That last part is a deliberate deviation of sacengine, not of thaum.
+## The ghost: his own Manahoars within ghost_wait_m will channel him back, so he waits; with none near he goes to the
+## nearest mana building of his side (altar, Manalith). That last part is a deliberate deviation of the engine, not of thaum.
 func _ghost(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 	var wait_m := play.tactics.ghost_wait_m
 	for t: AiTrack in perception.bodies(0):
@@ -113,7 +114,7 @@ static func target_alive(t: AiTrack) -> bool:
 	return not AiBody.is_dead(t.node)
 
 
-## wizSpellRebuild (shiny.d:2610-2636): the book of the wizard in the lists the phases read.
+## wizSpellRebuild: the book of the wizard in the lists the phases read.
 func rebuild_spells(wizard: AiTrack) -> void:
 	wizard.summons = []
 	wizard.spell_accs = []

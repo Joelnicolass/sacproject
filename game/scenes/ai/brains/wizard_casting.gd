@@ -5,7 +5,7 @@ extends Node
 ## How the AI's wizard casts what his phases queued: the best entry he can pay that the Caster would accept (its answer to that click,
 ## for every spell); out of reach he walks toward it, else the entry is skipped (a forced one he cannot afford waits). It also keeps
 ## the difficulty's summon pace (`pace`). It does not rate spells (AiSpellEval) nor fill the queue (the phases).
-## Ref: shiny.d:3201-3280 executeBestCast, 3174-3199 lightCanCast.
+## Ref: shiny.d:3201-3280 executeBestCast, 3174-3199 lightCanCast.; shiny.d:3290 (0x48d080); shiny.d:3216-3224; shiny.d:3254-3270
 
 @export var perception: AiPerception
 @export var stance: AiStance
@@ -68,7 +68,7 @@ func cast_refusal(wizard: AiTrack, spell: Resource, target: AiTrack, point: Vect
 	return port.casts.status(spell, target, point)
 
 
-## enqueueForcedExecute: score 0, forced, and straight to the execution. Ref: shiny.d:3290 (0x48d080).
+## enqueueForcedExecute: score 0, forced, and straight to the execution.
 func enqueue_forced_execute(wizard: AiTrack, target: AiTrack, spell: Resource, range_m: float, obj: AiTrack) -> int:
 	AiCastQueue.enqueue(wizard.cast_queue, AiCastQueue.make(AiCastQueue.FORCED, 0.0, target, spell, range_m, obj))
 	return execute_best_cast(wizard, false)
@@ -87,7 +87,7 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 		if spell == null or (forced and target != null and check_only):
 			i += 1
 			continue
-		## No Manalith: only what the wizard can pay now (shiny.d:3216-3224).
+		## No Manalith: only what the wizard can pay now.
 		if stance.manalith_count() == 0:
 			var cost := maxf(CASTER.MIN_MANA_COST, float(spell.get("mana_cost")))
 			if cost > AiBody.mana_now(wizard.node) + CASTER.MANA_EPSILON:
@@ -129,7 +129,7 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> int:
 		if target != null and not port.can_aim(target):
 			i += 1
 			continue
-		## F371: the line of fire and sight (shiny.d:3254-3270) and the burst on his own bodies.
+		## F371: the line of fire and sight and the burst on his own bodies.
 		var shot := shots.check(wizard, target, spell, check_only)
 		if shot == AiShotCheck.Shot.WALKED and not check_only:
 			return 1

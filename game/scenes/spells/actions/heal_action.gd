@@ -2,8 +2,9 @@
 class_name HealAction
 extends SpellAction
 
-## Heal (laeh): an ally or the wizard is healed over time when the casting ends (sacengine heal). The
+## Heal (laeh): an ally or the wizard is healed over time when the casting ends. The
 ## body needs a Health; HealEffect adds up when the body is healed twice.
+## Ref: sacengine heal
 
 ## Who may be healed (own creature or the wizard himself; not only living ones).
 @export var target: SpellTarget

@@ -4,7 +4,8 @@ extends RefCounted
 ## How a record of the board moves every 12 ticks: its center, spread and movement are refreshed, then the brains of its members
 ## think (a clustered record) or, with a wizard as leader, the rest follow the wizard; a spread capture record first sends its
 ## members to the center. Each brain gets the kind of the task whose record it is in. It does not make records nor claim
-## creatures (the tasks do). Ref: shiny.d:3380-3447 recordUpdate and proximityTrigger, 1915-1952 recordRefresh, 2471-2491 node vtbl.
+## creatures (the tasks do).
+## Ref: shiny.d:3380-3447 recordUpdate and proximityTrigger, 1915-1952 recordRefresh, 2471-2491 node vtbl
 
 ## The board whose brains, port and play it uses (read at every call).
 var board: AiTaskBoard
@@ -15,7 +16,8 @@ func _init(p_board: AiTaskBoard) -> void:
 	board = p_board
 
 
-## recordRefresh (shiny.d:1915-1952): center, spread and movement of the members.
+## recordRefresh: center, spread and movement of the members.
+## Ref: shiny.d:1915-1952
 func refresh_record(record: AiRecord) -> void:
 	record.vel_acc = Vector3.ZERO
 	record.prev_center = record.center
@@ -48,7 +50,8 @@ func refresh_record(record: AiRecord) -> void:
 	record.predicted = record.center + record.vel_acc
 
 
-## recordUpdate (shiny.d:3408-3447).
+## recordUpdate.
+## Ref: shiny.d:3408-3447
 func record_update(record: AiRecord, task_kind: AiTask.Kind) -> void:
 	if record.count == 0 and record.members.is_empty():
 		return
@@ -82,7 +85,8 @@ func record_update(record: AiRecord, task_kind: AiTask.Kind) -> void:
 		node_brain(m, task_kind, record)
 
 
-## proximityTrigger (shiny.d:3389-3406): a spread record sends each member to the center; a clustered one thinks alone.
+## proximityTrigger: a spread record sends each member to the center; a clustered one thinks alone.
+## Ref: shiny.d:3389-3406
 func _proximity_trigger(record: AiRecord, task_kind: AiTask.Kind) -> bool:
 	if record.count == 1:
 		return false
@@ -98,7 +102,8 @@ func _proximity_trigger(record: AiRecord, task_kind: AiTask.Kind) -> bool:
 	return true
 
 
-## node vtbl[3] (shiny.d:2483-2491): the brain of the body's kind thinks.
+## node vtbl[3]: the brain of the body's kind thinks.
+## Ref: shiny.d:2483-2491
 func node_brain(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> void:
 	match t.kind:
 		AiTrack.Kind.MANAHOAR:
@@ -112,8 +117,9 @@ func node_brain(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> void:
 			board.wizard_brain.think(t, task_kind, record)
 
 
-## node vtbl[19] (shiny.d:2471-2481): a body that is already heading somewhere by its own brain keeps thinking; the
+## node vtbl[19]: a body that is already heading somewhere by its own brain keeps thinking; the
 ## others walk to the center of the record.
+## Ref: shiny.d:2471-2481
 func node_slot19(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord, pos: Vector3) -> void:
 	if t.kind == AiTrack.Kind.NONE or t.kind == AiTrack.Kind.STRUCTURE:
 		return

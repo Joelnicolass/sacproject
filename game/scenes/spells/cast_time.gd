@@ -1,12 +1,14 @@
 class_name CastTime
 extends RefCounted
 
-## Casting time of a book entry for a wizard level, like sacengine `castingTime(level)` (sacspell.d:93-102):
+## Casting time of a book entry for a wizard level:
 ## the entry's frames (counted at 1.35 x 60 per second) lose 10 % per level the wizard has over the entry's level
 ## (book_level), at most 5 levels, with integer division. The Basilisk casts in 19/20 of its frames.
 ## With no bonus (and not the Basilisk) it is the exported casting_time_s untouched.
+## Ref: sacengine `castingTime(level)`, sacspell.d:93-102
 
-## sacengine `frames/(1.35f*60.0f)`; tools/import/export_stats.py CAST_FRAMES_PER_SECOND.
+## Cast frames per second: `frames/(1.35f*60.0f)`; tools/import/export_stats.py CAST_FRAMES_PER_SECOND.
+## Ref: sacengine
 const FRAMES_PER_SECOND := 1.35 * 60.0
 const MAX_BONUS := 5
 const BASILISK := "guls"

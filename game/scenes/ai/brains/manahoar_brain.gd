@@ -14,7 +14,8 @@ extends Node
 @export var creature_brain: CreatureBrain
 @export var port: AiCommandPort
 
-## Retail cutoff and scale (shiny.d:2581-2582): 3620 m, 0.00027700831.
+## Retail cutoff and scale: 3620 m, 0.00027700831.
+## Ref: shiny.d:2581-2582
 const CUTOFF_M := 3620.0
 const SCALE := 0.00027700831
 

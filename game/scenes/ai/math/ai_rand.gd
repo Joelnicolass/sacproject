@@ -4,14 +4,15 @@ extends RefCounted
 ## The random numbers of an AI side: a 32-bit linear congruential
 ## generator, state = state * 214013 + 2531011, and the answer is bits 16..30 of the new state (0..32767).
 ## One per AI side, seeded from the match seed (MatchSeed.derive) so a match repeats. Only wizSacrifice uses
-## it (shiny.d:3123), to decide whether this replan may think of the emergency Manahoar.
-## Ref: the `rand()` of MSVC, shiny.d:31-38 `ShinyRand`.
+## it, to decide whether this replan may think of the emergency Manahoar.
+## Ref: the `rand()` of MSVC, shiny.d:31-38 `ShinyRand`; shiny.d:3123
 
 const MULTIPLIER := 214013
 const INCREMENT := 2531011
 const MASK := 0xFFFFFFFF
 
-## `ShinyRand.state=1` in the engine (shiny.d:32).
+## `ShinyRand.state=1` in the engine.
+## Ref: shiny.d:32
 var state := 1
 
 
@@ -23,12 +24,14 @@ static func with_seed(seed_value: int) -> AiRand:
 	return rng
 
 
-## shiny.d:34-37.
+## Next value of the sequence.
+## Ref: shiny.d:34-37
 func next() -> int:
 	state = (state * MULTIPLIER + INCREMENT) & MASK
 	return (state >> 16) & 0x7fff
 
 
-## `rand() * 3.0518509447574615e-05f` (shiny.d:3123): 0 <= value < 1.
+## `rand() * 3.0518509447574615e-05f`: 0 <= value < 1.
+## Ref: shiny.d:3123
 func unit() -> float:
 	return float(next()) * 3.0518509447574615e-05

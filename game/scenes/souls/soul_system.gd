@@ -2,9 +2,10 @@ class_name SoulSystem
 extends Node
 
 ## Souls of the match. The server (or solo) spawns one soul on each creature corpse once it has
-## fallen (sacengine spawnSoul when dying ends, state.d:14016), hands each soul to the wizard
-## that passes over it (updateSoul, state.d:14925) and drops one on P (dropSoul, state.d:9501).
+## fallen, hands each soul to the wizard
+## that passes over it and drops one on P.
 ## Clients only send the drop and show the answer (`message`: MatchCommand says it on %Battle, RFC-025c).
+## Ref: sacengine spawnSoul when dying ends, state.d:14016; updateSoul, state.d:14925; dropSoul, state.d:9501
 
 signal message(text: String)
 signal soul_spawned(soul: Node3D)
@@ -13,7 +14,8 @@ signal soul_spawned(soul: Node3D)
 ## on SacrificeSystem.souls_converted.
 signal soul_collected(slot: int, count: int, origin: StringName)
 
-## Collect priority (state.d:14926, CollectStance): own side first, then an ally's (RFC-049 049c), then souls with no side, then the enemy's.
+## Collect priority: own side first, then an ally's (RFC-049 049c), then souls with no side, then the enemy's.
+## Ref: state.d:14926, CollectStance
 enum Stance { OWN, ALLY, NEUTRAL, ENEMY }
 
 const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
@@ -67,15 +69,17 @@ func request_drop() -> void:
 		_say(NO_SOULS)
 
 
-## The match lets P drop a soul (MatchRules.enable_drop_soul of the world's rules, options.d:106; RFC-031 031d sets it
+## The match lets P drop a soul (MatchRules.enable_drop_soul of the world's rules, set
 ## from the boot or --[no-]drop-soul). Server or solo: a client's world keeps the product rules.
+## Ref: options.d:106; RFC-031 031d
 func drop_allowed() -> bool:
 	var rules := _rules()
 	return rules == null or rules.enable_drop_soul
 
 
-## sacengine dropSoul: one soul off the purse, emerging at the wizard's feet with its side. Nothing (and no answer)
+## Drops a soul: one soul off the purse, emerging at the wizard's feet with its side. Nothing (and no answer)
 ## when the match does not allow it.
+## Ref: sacengine dropSoul
 func drop_soul(slot: int) -> bool:
 	if not drop_allowed():
 		print("soltar almas desactivado: el slot %d no suelta" % slot)
@@ -178,7 +182,8 @@ func _stance(soul: Node3D, slot: int) -> Stance:
 	return Stance.ALLY if SideRelations.stance(soul_slot, slot) == SideRelations.Stance.ALLY else Stance.ENEMY
 
 
-## Dying and ghost wizards do not collect (canCollectSouls, state.d:243).
+## Dying and ghost wizards do not collect.
+## Ref: canCollectSouls, state.d:243
 func _can_collect(wizard: Node3D) -> bool:
 	if wizard.get_node_or_null("SoulPurse") == null:
 		return false
@@ -244,7 +249,8 @@ func _spawn_on_corpse(unit: Node3D, slot: int, count: int) -> void:
 		soul.set("corpse", unit)
 
 
-## A creature that burst (Gib): its soul rises where it stood, off any corpse (sacengine gib, state.d:8341-8365).
+## A creature that burst (Gib): its soul rises where it stood, off any corpse.
+## Ref: sacengine gib, state.d:8341-8365
 func _spawn_free(unit: Node3D, slot: int, count: int) -> void:
 	var at := (unit as UnitBody).soul_anchor()
 	spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": count, "owner_slot": slot, "attached": false, "origin": String(origin_of(unit))})

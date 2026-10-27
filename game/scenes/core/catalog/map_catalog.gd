@@ -38,15 +38,20 @@ static func current_tag() -> StringName:
 	return ActiveMatch.map_tag()
 
 
+## The file of the definition with that tag (it may not exist). Loads nothing.
+static func path_of(tag: StringName) -> String:
+	return "%s/%s/%s.tres" % [DIR, tag, tag]
+
+
 ## True when the folder has a definition with that tag. Loads nothing (a definition brings its scene, ground and navmesh: seconds).
 func has(tag: StringName) -> bool:
-	return ResourceLoader.exists("%s/%s/%s.tres" % [DIR, tag, tag])
+	return ResourceLoader.exists(path_of(tag))
 
 
 ## The definition with that tag, loaded once. Null when the folder has none.
 func find(tag: StringName) -> MapDefinition:
 	if not _loaded.has(tag) or Engine.is_editor_hint():
-		var path := "%s/%s/%s.tres" % [DIR, tag, tag]
+		var path := path_of(tag)
 		_loaded[tag] = load(path) as MapDefinition if ResourceLoader.exists(path) else null
 	return _loaded[tag]
 

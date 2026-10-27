@@ -40,6 +40,18 @@ func set_density(scale: float) -> void:
 		_apply(true)
 
 
+## Warm-up: `look` falls at full for one drawn frame, silent, then what fell before falls again.
+func flash(look: PrecipitationLook) -> void:
+	if drops == null or look == null:
+		return
+	drops.process_material = look.process_material
+	drops.draw_pass_1 = look.mesh
+	drops.amount_ratio = 1.0
+	drops.emitting = true
+	await RenderingServer.frame_post_draw
+	_apply(true)
+
+
 func _apply(rebuild: bool) -> void:
 	if drops:
 		var count := roundi(_look.amount * _density) if _look else 0

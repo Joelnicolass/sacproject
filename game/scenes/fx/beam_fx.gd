@@ -96,6 +96,12 @@ func _process(delta: float) -> void:
 	_draw()
 
 
+## Ends the bolt now, as if its life were over (the warm-up's flash). Nothing when it is not playing.
+func stop() -> void:
+	if _live:
+		_stop()
+
+
 func _stop() -> void:
 	_live = false
 	_follow = null

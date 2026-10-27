@@ -9,6 +9,7 @@
 [ext_resource type="Resource" path="res://data/fx/beams/storm_bolt.tres" id="7_bolt"]
 [ext_resource type="Resource" path="res://data/fx/storm_flash.tres" id="8_flash"]
 [ext_resource type="Resource" path="res://data/audio/cues/thunder.tres" id="9_thunder"]
+[ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="10_warm"]
 
 [node name="Atmosphere" type="Node3D"]
 editor_description = "La hora y el clima de ahora: el sol, el entorno y la vida los leen (señal changed). Oculto = la luz aprobada, exacta."
@@ -49,3 +50,9 @@ script = ExtResource("6_storm")
 bolt = ExtResource("7_bolt")
 flash = ExtResource("8_flash")
 thunder = ExtResource("9_thunder")
+
+[node name="WarmHook" type="Node" parent="Weather"]
+editor_description = "069: el precalentado de la pantalla de carga hace caer un instante cada lluvia o nieve del plan, sin sonido (Weather.warm). El rayo lo precalienta el gancho de FxBus."
+script = ExtResource("10_warm")
+
+[connection signal="asked" from="Weather/WarmHook" to="Weather" method="warm"]

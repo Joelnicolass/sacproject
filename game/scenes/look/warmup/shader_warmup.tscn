@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/warmup/shader_warmup.gd" id="1_warmup"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_probe"]
+size = Vector2(0.5, 0.5)
+
+[node name="ShaderWarmup" type="Node"]
+process_mode = 3
+editor_description = "Detrás de la pantalla de carga dibuja una vez cada malla, material y escena de look que la partida puede mostrar (frente a la cámara, en Stage) y pide a cada WarmHook lo suyo; termina cuando los contadores de compilación de pipelines quedan quietos settle_s. En un proceso headless termina al instante."
+script = ExtResource("1_warmup")
+probe_mesh = SubResource("QuadMesh_probe")

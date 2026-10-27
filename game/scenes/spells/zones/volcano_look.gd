@@ -38,6 +38,10 @@ var _texture: ImageTexture
 var _next_angle := 0
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	set_process(not Engine.is_editor_hint() and zone != null and eruption != null and not LookRig.is_presentationless())
 	if not is_processing():

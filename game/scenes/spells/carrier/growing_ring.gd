@@ -24,6 +24,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	visible = false
 	set_process(false)

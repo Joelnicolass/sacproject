@@ -54,6 +54,10 @@ var _merging: Dictionary = {}
 var _base_color := Color.WHITE
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	add_to_group(GROUP)
 	_active = not Engine.is_editor_hint() and (run_headless or ScreenGate.is_open())

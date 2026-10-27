@@ -37,6 +37,13 @@ static func slide(body: Node3D, offset: Vector3) -> bool:
 	return true
 
 
+## The one place that puts a body somewhere else in one go (the server, or solo) without a WarpSnap: it writes the pose and tells
+## physics interpolation not to slide the picture from the old place to the new one.
+static func place(body: Node3D, to: Vector3) -> void:
+	body.global_position = to
+	body.reset_physics_interpolation()
+
+
 ## A petrified, frozen or vined body (push and catapult do nothing). The one answer
 ## to «can this body be moved from outside?», asked of its Afflictions.
 ## Ref: sacengine effects.fixed state.d:8588-8590.

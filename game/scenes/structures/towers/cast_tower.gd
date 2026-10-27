@@ -124,7 +124,7 @@ func _push_out(body: Node3D, reach: float, exclude: Array[RID]) -> void:
 	var to := global_position + out * reach
 	to.y = body.global_position.y if BodyNudge.airborne(body) \
 			else GroundRay.surface_y(self, to, ground_mask, exclude, body.global_position.y)
-	body.global_position = to
+	BodyNudge.place(body, to)
 
 
 ## Rising or fallen: no body stops on it and its ManaSource gives nothing; standing: both as the scene says.

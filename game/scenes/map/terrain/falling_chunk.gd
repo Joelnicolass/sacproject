@@ -19,6 +19,10 @@ var _gone_at := 0.0
 @onready var _mesh: MeshInstance3D = %Mesh
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	set_process(false)
 

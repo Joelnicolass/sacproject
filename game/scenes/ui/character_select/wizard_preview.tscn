@@ -32,4 +32,5 @@ position = Vector3(0, 1.05, 4.4)
 fov = 40.0
 
 [node name="Pivot" type="Node3D" parent="Viewport"]
+physics_interpolation_mode = 2
 unique_name_in_owner = true

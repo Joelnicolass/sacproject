@@ -74,6 +74,7 @@ func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: Packe
 func _add_visual() -> void:
 	var visual := MeshInstance3D.new()
 	visual.name = "Mesh"
+	visual.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	visual.mesh = look.mesh
 	if visual.mesh == null:
 		var ball := SphereMesh.new()

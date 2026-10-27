@@ -1,8 +1,8 @@
 @tool
 extends RefCounted
 
-## The files of a new map, made from the template folder scenes/map/maps/_template/: its two pictures (flat ground, all
-## grass) with their .import (the template's uid taken out, so Godot gives the copy its own), an empty navmesh, the map scene
+## The files of a new map, made from the template folder scenes/map/maps/_template/: its three pictures (flat ground, all
+## grass, an even grey baked light) with their .import (the template's uid taken out, so Godot gives the copy its own), an empty navmesh, the map scene
 ## (the template's tree with its Terrain and NavRegion pointed at the new folder) and the MapDefinition the catalog finds.
 ## Each step returns "" or what failed. Not: importing, baking, opening or checking the map (NewMapAction), the dialog.
 
@@ -10,7 +10,7 @@ const MAPS_DIR := "res://scenes/map/maps"
 const TEMPLATE_DIR := "res://scenes/map/maps/_template"
 const SCENE_FILE := "map.tscn"
 const NAV_FILE := "nav.res"
-const PICTURES: PackedStringArray = ["heights.png", "ground_roles.png"]
+const PICTURES: PackedStringArray = ["heights.png", "ground_roles.png", "light.png"]
 const STARTS := 2
 const TAG_PATTERN := "^[a-z][a-z0-9_]*$"
 
@@ -80,18 +80,20 @@ static func write_nav(folder: String) -> String:
 static func write_scene(folder: String) -> String:
 	var heights := load(folder.path_join(PICTURES[0])) as TerrainHeights
 	var roles := load(folder.path_join(PICTURES[1])) as Texture2D
+	var light := load(folder.path_join(PICTURES[2])) as Texture2D
 	var nav := load(folder.path_join(NAV_FILE)) as NavigationMesh
-	if heights == null or roles == null or nav == null:
+	if heights == null or roles == null or light == null or nav == null:
 		return "%s: las imágenes o el navmesh no cargan (¿se importaron?)." % folder
-	var packed := scene_for(heights, roles, nav)
+	var packed := scene_for(heights, roles, nav, light)
 	if packed == null:
 		return "no se pudo armar la escena desde %s." % TEMPLATE_DIR.path_join(SCENE_FILE)
 	var path := folder.path_join(SCENE_FILE)
 	return "" if ResourceSaver.save(packed, path) == OK else "no se pudo escribir %s." % path
 
 
-## The template's tree, packed again with its Terrain and NavRegion holding these resources (nothing is written).
-static func scene_for(heights: TerrainHeights, roles: Texture2D, nav: NavigationMesh) -> PackedScene:
+## The template's tree, packed again with its Terrain and NavRegion holding these resources (nothing is written). A null
+## `light` keeps the template's own grey light.
+static func scene_for(heights: TerrainHeights, roles: Texture2D, nav: NavigationMesh, light: Texture2D = null) -> PackedScene:
 	var template := load(TEMPLATE_DIR.path_join(SCENE_FILE)) as PackedScene
 	if template == null:
 		return null
@@ -103,6 +105,8 @@ static func scene_for(heights: TerrainHeights, roles: Texture2D, nav: Navigation
 	root.scene_file_path = ""  # the new scene is its own, not an instance of the template
 	root.terrain.heights = heights
 	root.terrain.ground_roles = roles
+	if light != null:
+		root.terrain.light_map = light
 	root.nav_region.navigation_mesh = nav
 	var packed := PackedScene.new()
 	var error := packed.pack(root)

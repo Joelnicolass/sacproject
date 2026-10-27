@@ -69,7 +69,7 @@ func _template_pictures() -> void:
 func _copied_pictures() -> void:
 	var folder := WORK_DIR.path_join("pictures")
 	var written := NewMapFiles.write_pictures(folder)
-	_check("write_pictures writes 2 pictures and 2 .import", written.size() == 4)
+	_check("write_pictures writes 3 pictures and 3 .import", written.size() == 6)
 	for file in NewMapFiles.PICTURES:
 		var source := NewMapFiles.TEMPLATE_DIR.path_join(file)
 		var target := folder.path_join(file)

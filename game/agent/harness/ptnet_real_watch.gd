@@ -7,7 +7,8 @@ extends Node
 ##   aim_ground(x, z)        cursor on the ground point (x, z).
 ##   aim_wizard(slot)        cursor on the wizard of that slot (+1 m).
 ##   aim_unit(slot, tag)     cursor on the live unit of that slot (and creature tag, "" = any) nearest to the local wizard.
-##   aim_tower(slot)         cursor on the tower (Manalith / Shrine) of that slot.
+##   aim_tower(slot)         cursor on the CastTower of that slot.
+##   aim_altar(slot)         cursor on the standing altar (Manalith) of that slot (Teleport's own-building click).
 ##   aim_fount(x, z)         cursor on the free manafount nearest to (x, z).
 ##   aim_soul(not_slot)      cursor on the free soul nearest to the local wizard that is not of `not_slot` (0 = any).
 ##   aim_corpse_or_unit(slot) cursor on the own unit nearest to the local wizard (a sacrifice target).
@@ -488,6 +489,15 @@ func aim_tower(slot: int) -> String:
 		if int(t.get("owner_slot")) == slot and not t.is_destroyed():
 			return _point_at(_at(t) + Vector3.UP * 4.0, "tower %s#%d" % [t.name, slot], t)
 	return "aim tower %d: none" % slot
+
+
+## Cursor on the standing altar (Manalith) of `slot`: the click a Teleport (own building) accepts. aim_tower only finds
+## CastTowers, which a plain match does not have.
+func aim_altar(slot: int) -> String:
+	for node in get_tree().get_nodes_in_group("altar"):
+		if _valid(node) and node is Altar and int(node.get("owner_slot")) == slot and not (node as Altar).is_destroyed():
+			return _point_at(_at(node) + Vector3.UP * 2.0, "altar %s#%d" % [node.name, slot], node)
+	return "aim altar %d: none" % slot
 
 
 func aim_fount(x: float, z: float) -> String:

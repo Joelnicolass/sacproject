@@ -197,6 +197,7 @@ script = ExtResource("8_actor")
 sync_extra = PackedStringArray("owner_slot", "wizard_tag", "model", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "SoulPurse:count", "GhostForm:under_ritual", "GhostForm:stage", "level", "Afflictions:shown", "Clinging:shown", "Caster:cast_fx_shown", "Wards/SkinOfStone:shown", "Wards/AirShield:shown", "Wards/EtherealForm:shown", "Wards/Fireform:shown", "Wards/ProtectiveSwarm:shown", "Wards/HealingAura:shown", "BloodFx:wound", "velocity", "speed_factor", "Drive:locked")
 predict = true
 lag_compensate = false
+correction_snap_distance = 2.0
 
 [node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
 root_path = NodePath("../..")

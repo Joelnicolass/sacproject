@@ -86,6 +86,7 @@ var speed_factor := 1.0
 var look_yaw := 0.0
 var _sent_yaw := NAN
 var _seat_left := 0
+var _seated_frame := -1
 var _stats_ready := false
 var _since_damage := INF
 var _last_health := 0.0
@@ -361,8 +362,9 @@ func _should_simulate() -> bool:
 
 
 ## The seating is not over: the body waits on the air for the land under it (Drive does not step meanwhile).
+## The tick that finds the land seats and nothing else (as before the kit stepped him): Drive comes after this body in the same tick.
 func is_seating() -> bool:
-	return _seat_left > 0
+	return _seat_left > 0 or _seated_frame == Engine.get_physics_frames()
 
 
 func _seat() -> void:
@@ -375,6 +377,7 @@ func _seat() -> void:
 	reset_physics_interpolation()
 	velocity = Vector3.ZERO
 	_seat_left = 0
+	_seated_frame = Engine.get_physics_frames()
 
 
 func _physics_process(delta: float) -> void:

@@ -203,6 +203,9 @@ properties/21/replication_mode = 2
 properties/22/path = NodePath("DevourGrowth:inflation")
 properties/22/spawn = true
 properties/22/replication_mode = 2
+properties/23/path = NodePath("BloodFx:wound")
+properties/23/spawn = true
+properties/23/replication_mode = 2
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 

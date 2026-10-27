@@ -74,6 +74,12 @@ func run() -> void:
 		hit(stone, 0.1)
 		await wait(0.3)
 	check("none bleeds nothing", s.sprays == 0 and s.marks == 0 and _played_near(SPRAY, BodyFacts.point(stone, BodyFacts.Socket.CENTER), 0.5) == false)
+	# 6. A wound as a client receives it (060s): a new index paints once; the same one again paints nothing.
+	var next := BloodRules.wound_of(BodyFacts.point(trogg_a, BodyFacts.Socket.FEET), BloodRules.index_of(a.wound) + 1, false)
+	var shown := a.sprays
+	a.wound = next
+	a.wound = next
+	check("received wound paints once", a.sprays == shown + 1)
 	if more != null:
 		await more.run(self)
 	_finish()
@@ -88,6 +94,7 @@ func run_headless() -> void:
 		any_active = any_active or blood_of(body).is_active()
 	await wait(0.1)
 	check("headless: no BloodFx active", not any_active and blood_of(trogg_a).sprays == 0)
+	check("headless: the server still decides the wound", BloodRules.index_of(blood_of(trogg_a).wound) == 1)
 	check("headless: no ground marks", GroundScars.of(self) == null)
 	_finish()
 
@@ -130,7 +137,7 @@ func _on_timeout() -> void:
 	get_tree().quit(1)
 
 
-## Waits `seconds` of real time (BloodFx counts real time, not game time).
+## Waits `seconds` of real time (about the same match seconds: BloodFx counts MatchClock ticks).
 func wait(seconds: float) -> void:
 	var until := Time.get_ticks_msec() + int(seconds * 1000.0)
 	while Time.get_ticks_msec() < until:

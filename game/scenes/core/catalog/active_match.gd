@@ -2,7 +2,7 @@
 class_name ActiveMatch
 extends RefCounted
 
-## The map and the mode this process plays. The one place that knows which they are: the flow chooses them when a match
+## The map, the mode and the seed this process plays. The one place that knows which they are: the flow chooses them when a match
 ## starts, a client takes the ones the server announces, and the world, the sides and the screens only read them.
 ## With nothing chosen it plays what `--map=<tag>` / `--mode=<tag>` say, else High Noon in 1v1.
 ## It does not decide what a screen offers (the catalogs list that) and it does not travel on the wire (MatchWire does).
@@ -11,6 +11,8 @@ extends RefCounted
 ## always sees the file as it is on disk and no static holds a Resource.
 static var _map_id: StringName = &""
 static var _mode_id: StringName = &""
+## The seed of the match the server announced (or chose); 0 = none (the world draws its own, offline).
+static var _seed := 0
 
 
 ## The map this process plays. An unknown `--map` is an error and the default plays.
@@ -59,6 +61,16 @@ static func choose_ids(map_id: StringName, mode_id: StringName) -> void:
 	_mode_id = mode_id
 
 
+## The seed of this match on every peer: the one the server chose (SacrificeFlow) or announced (MatchWire); 0 = none.
+static func match_seed() -> int:
+	return _seed
+
+
+## Plays this seed (the server chose it, or it came in the snapshot). 0 forgets it.
+static func choose_seed(value: int) -> void:
+	_seed = maxi(value, 0)
+
+
 ## How many seats the match has (those of the mode).
 static func seats() -> int:
 	var found := mode()
@@ -84,6 +96,7 @@ static func choose(map_choice: MapDefinition, mode_choice: GameMode) -> void:
 static func forget() -> void:
 	_map_id = &""
 	_mode_id = &""
+	_seed = 0
 
 
 ## `--<name>=<tag>` of the command line (not read in the editor), else `fallback`.

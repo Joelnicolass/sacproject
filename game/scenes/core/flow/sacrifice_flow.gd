@@ -115,12 +115,16 @@ func return_to_boot() -> void:
 	super.return_to_boot()
 
 
-## The place where a match gets its map and its mode: right before the world loads, in the process that simulates. A client does
-## not choose: the dedicated tells it (snapshot).
+## The place where a match gets its map, its mode and its seed: right before the world loads, in the process that simulates. A
+## client does not choose: the dedicated tells it (snapshot). Online the seed is drawn here once per match (`setup` keeps it until
+## the next reset), so the snapshot carries the same one to every peer.
 func _apply_match_choice() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
 	ActiveMatch.choose(setup.map, setup.mode)
+	if MpKit.is_networked() and setup.match_seed <= 0:
+		setup.match_seed = MatchSeed.draw()
+	ActiveMatch.choose_seed(setup.match_seed)
 
 
 ## The map and the mode reach the clients before the order to load the world.

@@ -3,12 +3,12 @@ class_name BloodFx
 extends Node
 
 ## A body bleeds when it loses health: a red spray from its center and a mark of blood on the ground at its feet. Every drop of
-## `Health.current` counts (a blow, a shot, a spell, a wall, poison, a fall), on every peer, because `current` is replicated. A
-## blow always bleeds; drops close together (poison) bleed now and then (BloodRules). The blood is the `blood` of the look the body
-## wears (BodyMount.look) or `fallback` (red).
-## Presentation only: it never writes the simulation, sends nothing and draws nothing headless (the dedicated server). It is quiet
-## with «Sangre» off (FeelPrefs.blood), while the body is hidden (a gib throws its own blood) and, on a networked client, during its first `quiet_s` (the first value
-## that reaches a peer that joins late is not a hit).
+## `Health.current` counts (a blow, a shot, a spell, a wall, poison, a fall). A blow always bleeds; drops close together (poison)
+## bleed now and then (BloodRules). The blood is the `blood` of the look the body wears (BodyMount.look) or `fallback` (red).
+## One owner: the server decides each wound (in match seconds) and writes `wound`, replicated to every peer; every peer paints the
+## wound it has not shown yet, its marks drawn from the match seed around the server's feet, so all of them see the same blood.
+## Presentation only: it never writes the simulation and sends no RPC. Headless (the dedicated server) it decides but draws nothing;
+## it is quiet with «Sangre» off (FeelPrefs.blood) and while the body is hidden (a gib throws its own blood).
 ## What it does not do: bleed buildings, choose the spray's look (BloodType, ParticleType) or own the marks (GroundScars).
 
 signal bled(at: Vector3, heavy: bool)
@@ -37,32 +37,35 @@ signal bled(at: Vector3, heavy: bool)
 	set(value):
 		prefs = value
 		update_configuration_warnings()
-## Seconds after entering the tree in which a networked client does not bleed.
-@export_range(0.0, 5.0, 0.05, "suffix:s") var quiet_s := 0.5
+## The last wound the server decided (BloodRules.wound_of: the feet where it landed, its index and whether it was heavy). The body's
+## MultiplayerSynchronizer replicates it (spawn, on change); each new index is painted once, and the one a peer gets on spawn (a
+## rejoin) counts as already shown.
+@export var wound := Vector4.ZERO:
+	set(value):
+		wound = value
+		if is_node_ready() and not Engine.is_editor_hint():
+			_show(value)
 
-## How many sprays and painted marks this body made (the inspector's Remote tab and the checks read them).
+## How many sprays and painted marks this body made on this peer (the inspector's Remote tab and the checks read them).
 var sprays := 0
 var marks := 0
 
 var _active := false
+var _shown := 0
 var _last := 0.0
 var _lost := 0.0
-var _born_s := 0.0
 var _last_spray_s := -INF
 var _last_drop_s := -INF
-var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
 	if Engine.is_editor_hint() or body == null or health == null:
 		return
 	_active = BodyLook.loads_meshes()
-	if not _active:
-		return
-	_rng.seed = get_instance_id()
-	_last = health.current
-	_born_s = _now()
-	health.changed.connect(_on_health_changed)
+	_shown = BloodRules.index_of(wound)
+	if not multiplayer.has_multiplayer_peer() or multiplayer.is_server():
+		_last = health.current
+		health.changed.connect(_on_health_changed)
 
 
 ## False headless, or with «Sangre» off.
@@ -76,27 +79,37 @@ func blood_type() -> BloodType:
 	return look.blood if look != null and look.blood != null else fallback
 
 
+## The server only: whether this drop is a wound, and which.
 func _on_health_changed(current: float, maximum: float) -> void:
 	var drop := _last - current
 	_last = current
 	if drop <= 0.0 or maximum <= 0.0:
 		return
-	var now := _now()
+	var now := float(MatchClock.now()) / MatchClock.TICKS_PER_SECOND_F
 	var since_drop := now - _last_drop_s
 	_last_drop_s = now
-	if not is_active() or not body.is_visible_in_tree() or _quiet(now):
-		return
 	_lost += drop / maximum
-	var type := blood_type()
-	var kind := BloodRules.kind_for(drop / maximum, _lost, now - _last_spray_s, since_drop, type)
+	var kind := BloodRules.kind_for(drop / maximum, _lost, now - _last_spray_s, since_drop, blood_type())
 	if kind == BloodRules.Kind.NONE:
 		return
 	_lost = 0.0
 	_last_spray_s = now
-	_bleed(type, kind == BloodRules.Kind.HEAVY)
+	var feet := BodyFacts.point(body, BodyFacts.Socket.FEET)
+	wound = BloodRules.wound_of(feet, BloodRules.index_of(wound) + 1, kind == BloodRules.Kind.HEAVY)
 
 
-func _bleed(type: BloodType, heavy: bool) -> void:
+## Every peer: paints `value` if it is a wound this peer has not shown.
+func _show(value: Vector4) -> void:
+	var index := BloodRules.index_of(value)
+	if index <= _shown:
+		return
+	_shown = index
+	if not is_active() or body == null or not body.is_visible_in_tree():
+		return
+	var type := blood_type()
+	if type == null or not type.bleeds():
+		return
+	var heavy := BloodRules.is_heavy(value)
 	var center := BodyFacts.point(body, BodyFacts.Socket.CENTER)
 	var spray := type.spray_for(heavy)
 	if spray != null:
@@ -104,20 +117,12 @@ func _bleed(type: BloodType, heavy: bool) -> void:
 	sprays += 1
 	var scars := GroundScars.of(self)
 	if scars != null and type.mark != null:
-		var feet := BodyFacts.point(body, BodyFacts.Socket.FEET)
-		for point in BloodRules.mark_points(feet, type.marks_for(heavy), type.mark_radius_m, _rng):
+		var rng := MatchSeed.rng(["blood", String(body.name), index])
+		var feet := Vector3(value.x, value.y, value.z)
+		for point in BloodRules.mark_points(feet, type.marks_for(heavy), type.mark_radius_m, rng):
 			if scars.stamp(type.mark, point, type.mark_max_height_m):
 				marks += 1
 	bled.emit(center, heavy)
-
-
-func _quiet(now: float) -> bool:
-	var remote := multiplayer.has_multiplayer_peer() and not multiplayer.is_server()
-	return remote and now - _born_s < quiet_s
-
-
-static func _now() -> float:
-	return float(Time.get_ticks_msec()) / 1000.0
 
 
 func _get_configuration_warnings() -> PackedStringArray:

@@ -4,6 +4,7 @@ extends Node
 
 ## A creature that bursts leaves a pool of blood: when one of `sprays` plays (the gib's spray, on every peer), `marks` marks of
 ## `blood.mark` are painted on the ground within `radius_m` of it. One per match, next to DamageNumbers.
+## The marks are drawn from the match seed and the burst's place, so every peer paints the same pool.
 ## Presentation only: nothing headless (the dedicated server), never a write to the simulation.
 ## What it does not do: decide who bursts (Gib), throw the spray (FxBus) or own the marks (GroundScars).
 
@@ -28,7 +29,6 @@ extends Node
 var painted := 0
 
 var _active := false
-var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
@@ -37,7 +37,6 @@ func _ready() -> void:
 	_active = BodyLook.loads_meshes()
 	if not _active:
 		return
-	_rng.seed = get_instance_id()
 	FxBus.played.connect(_on_played)
 
 
@@ -54,7 +53,7 @@ func _on_played(kind: StringName, fx: Resource, at: Vector3) -> void:
 	var scars := GroundScars.of(self)
 	if scars == null:
 		return
-	for point in BloodRules.mark_points(at, marks, radius_m, _rng):
+	for point in BloodRules.mark_points(at, marks, radius_m, MatchSeed.rng(["spray_marks", at])):
 		if scars.stamp(blood.mark, point, max_height_m):
 			painted += 1
 

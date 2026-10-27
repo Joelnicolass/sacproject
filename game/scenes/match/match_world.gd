@@ -23,11 +23,12 @@ func _enter_tree() -> void:
 	_entered_ms = Time.get_ticks_msec()
 	## RFC-032 032b: the ticks of the match start at 0 on every peer (the client counts its own for the cooldowns).
 	MatchClock.begin(get_tree())
-	## The one who simulates applies the match setup (level, friendly fire, drop soul, starting souls; RFC-031 031a2/031d) and draws (or takes) the match
-	## seed before any child is ready (RFC-024 §5.1). The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
+	## The one who simulates applies the match setup (level, friendly fire, drop soul, starting souls; RFC-031 031a2/031d)
+	## before any child is ready (RFC-024 §5.1). The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
 	if not MpKit.is_networked() or MpKit.is_server():
 		rules = SacrificeFlow.setup.apply_to(rules)
-		MatchSeed.begin(rules)
+	## Every peer seeds the match: online with the seed the server announced (RFC-060 060s), offline with the rules' or a drawn one.
+	MatchSeed.begin(rules, ActiveMatch.match_seed())
 	_attach_map()
 
 

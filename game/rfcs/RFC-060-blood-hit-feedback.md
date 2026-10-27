@@ -24,6 +24,10 @@ Estado: implementado (060a, 060c, 060b, 060d, 060z) el 2026-10-26; falta la pasa
 
 Solo presentación: ningún nodo escribe la simulación, no hay RPC ni RNG global, y nada corre sin ventana.
 
+## 060s: la misma sangre en todos los peers (decisión del usuario, 2026-10-26)
+
+Plan `rfcs/plans/060s-blood-sync-plan.md`. Reemplaza «en cada peer, porque `current` se replica» y el `quiet_s` de arriba: el servidor decide la herida (`BloodRules.kind_for` en segundos de `MatchClock`) y la escribe en `BloodFx.wound` (pies del servidor, índice y si es fuerte), replicada por el sincronizador del cuerpo (spawn, al cambiar). Cada peer pinta una vez cada índice nuevo, con las manchas sacadas de `MatchSeed.rng(["blood", cuerpo, índice])`; la herida que llega al aparecer (rejoin) cuenta como ya mostrada. La semilla de la partida la fija el servidor en `SacrificeFlow._apply_match_choice`, la guarda `ActiveMatch` y la lleva `MatchWire` (`"seed"`) a todos; `MatchWorld` siembra en todos los peers. `SprayMarks` saca sus manchas de la semilla y el lugar del chorro; `DebrisPiece` integra en `_physics_process`. Sin RPC nuevo.
+
 ## Criterios (los chequea `debug/fx/blood_lab.tscn`)
 
 `-- --blood-script` (con ventana): salpicadura liviana y fuerte en el centro, 1 y 3 manchas, sin mancha en el aire, ≤ 3 salpicaduras con diez golpes del 1 % en 1 s, `none.tres` no muestra nada, pico y fin del destello, sin destello en sigilo, la opción apagada no muestra nada y el gib deja ≥ 8 manchas. `-- --blood-headless`: nada activo sin ventana. Captura medible pendiente (plan §2.8, `f390_01`/`f390_03`).

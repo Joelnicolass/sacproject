@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3]
+[gd_scene load_steps=48 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -79,6 +79,8 @@
 [ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
 [ext_resource type="Resource" path="res://data/catalog/wizards/jadugarr.tres" id="typed_cwa0"]
 [ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_input.gd" id="p72_input"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_drive.gd" id="p72_drive"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 
@@ -156,15 +158,27 @@ properties/21/replication_mode = 2
 properties/22/path = NodePath("BloodFx:wound")
 properties/22/spawn = true
 properties/22/replication_mode = 2
-properties/23/path = NodePath("MpActor:net_stamp")
+properties/23/path = NodePath(".:velocity")
 properties/23/spawn = true
 properties/23/replication_mode = 1
-properties/24/path = NodePath("MpActor:net_teleports")
+properties/24/path = NodePath(".:speed_factor")
 properties/24/spawn = true
-properties/24/replication_mode = 1
-properties/25/path = NodePath("MpActor:owner_slot")
+properties/24/replication_mode = 2
+properties/25/path = NodePath("Drive:locked")
 properties/25/spawn = true
-properties/25/replication_mode = 0
+properties/25/replication_mode = 2
+properties/26/path = NodePath("MpActor:net_stamp")
+properties/26/spawn = true
+properties/26/replication_mode = 1
+properties/27/path = NodePath("MpActor:net_teleports")
+properties/27/spawn = true
+properties/27/replication_mode = 1
+properties/28/path = NodePath("MpInput:acked_seq")
+properties/28/spawn = true
+properties/28/replication_mode = 1
+properties/29/path = NodePath("MpActor:owner_slot")
+properties/29/spawn = true
+properties/29/replication_mode = 0
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 
@@ -177,6 +191,29 @@ step = ExtResource("2_step")
 wizard_type = ExtResource("typed_cwa0")
 model = "jnwr"
 god_type = ExtResource("b2_god")
+
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("8_actor")
+sync_extra = PackedStringArray("owner_slot", "wizard_tag", "model", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "SoulPurse:count", "GhostForm:under_ritual", "GhostForm:stage", "level", "Afflictions:shown", "Clinging:shown", "Caster:cast_fx_shown", "Wards/SkinOfStone:shown", "Wards/AirShield:shown", "Wards/EtherealForm:shown", "Wards/Fireform:shown", "Wards/ProtectiveSwarm:shown", "Wards/HealingAura:shown", "BloodFx:wound", "velocity", "speed_factor", "Drive:locked")
+predict = true
+lag_compensate = false
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
+replication_config = SubResource("SceneReplicationConfig_wizard")
+
+[node name="MpInput" type="Node" parent="."]
+script = ExtResource("p72_input")
+actions = PackedStringArray()
+
+[node name="Drive" type="Node" parent="." node_paths=PackedStringArray("body", "locomotion", "afflictions", "caster", "ghost", "follower")]
+script = ExtResource("p72_drive")
+body = NodePath("..")
+locomotion = NodePath("../Locomotion")
+afflictions = NodePath("../Afflictions")
+caster = NodePath("../Caster")
+ghost = NodePath("../GhostForm")
+follower = NodePath("../PathFollower")
 
 [node name="Tilt" type="Node3D" parent="."]
 physics_interpolation_mode = 2
@@ -566,15 +603,6 @@ body = NodePath("..")
 script = ExtResource("warp_snap")
 net = NodePath("../MpActor")
 
-[node name="MpActor" type="Node" parent="."]
-script = ExtResource("8_actor")
-sync_extra = PackedStringArray("owner_slot", "wizard_tag", "model", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "SoulPurse:count", "GhostForm:under_ritual", "GhostForm:stage", "level", "Afflictions:shown", "Clinging:shown", "Caster:cast_fx_shown", "Wards/SkinOfStone:shown", "Wards/AirShield:shown", "Wards/EtherealForm:shown", "Wards/Fireform:shown", "Wards/ProtectiveSwarm:shown", "Wards/HealingAura:shown", "BloodFx:wound")
-lag_compensate = false
-
-[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
-root_path = NodePath("../..")
-replication_config = SubResource("SceneReplicationConfig_wizard")
-
 [node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
 body = NodePath("..")
 moving_priority = 0.9
@@ -604,7 +632,6 @@ afflictions = NodePath("../Afflictions")
 avoidance = NodePath("../Avoidance")
 face_velocity = false
 
-[connection signal="solved" from="Avoidance" to="Locomotion" method="resume"]
 [connection signal="moved" from="Locomotion" to="." method="_on_moved"]
 [connection signal="fell" from="Locomotion" to="." method="_return_to_altar"]
 [connection signal="shown_changed" from="Wards/EtherealForm" to="GhostForm" method="set_ethereal"]

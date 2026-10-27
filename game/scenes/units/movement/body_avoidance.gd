@@ -62,6 +62,17 @@ func steer(wanted: Vector3, fixed := false) -> bool:
 	return true
 
 
+## Server (or solo): the body moves by itself this step (a wizard predicted by its owner does not wait for `solved`) and only tells the
+## others its flat velocity, so they steer around it. No answer comes back: `solved` does not fire for it.
+func announce(flat_velocity: Vector3, fixed := false) -> void:
+	if not _active():
+		return
+	var flat := Vector3(flat_velocity.x, 0.0, flat_velocity.z)
+	_place(fixed, flat.length())
+	NavigationServer3D.agent_set_velocity(get_rid(), flat)
+	_steered = true
+
+
 ## The agent's own tick (it runs after the body's): a body that did not steer (it is being seated, say) is still an
 ## obstacle that stands; one that is not an obstacle leaves the avoidance.
 func _physics_process(_delta: float) -> void:

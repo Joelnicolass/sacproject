@@ -54,13 +54,26 @@ func begin(delta: float, walking := false) -> void:
 ## The rest of the step with the flat velocity the caller chose: afflictions, then the avoidance (the step ends in `resume`), else the
 ## slide at once. `may_walk` false: it does not face its velocity this step. `is_obstacle` is asked after the afflictions steered.
 func finish(delta: float, may_walk: bool, is_obstacle: Callable) -> void:
+	_steer(delta, may_walk)
+	if is_obstacle.call() and avoidance.steer(body.velocity, afflictions.fixed()):
+		return
+	_slide()
+
+
+## The same step as `finish` but the slide happens right here, for a body that moves inside the kit's `mp_move` (it runs again on the
+## owner when it reconciles, so it cannot wait for the avoidance's answer). The others still steer around it: its velocity is announced.
+func finish_now(delta: float, is_obstacle: Callable) -> void:
+	_steer(delta, false)
+	if is_obstacle.call():
+		avoidance.announce(body.velocity, afflictions.fixed())
+	_slide()
+
+
+func _steer(delta: float, may_walk: bool) -> void:
 	if air != null:
 		air.hold_still()
 	body.velocity = afflictions.steer(body.velocity, delta)
 	_walk_intent = face_velocity and may_walk and not airborne_step and not afflictions.holds() and _flat_speed() > face_min_speed
-	if is_obstacle.call() and avoidance.steer(body.velocity, afflictions.fixed()):
-		return
-	_slide()
 
 
 ## The velocity (x, z) the avoidance gave back: the second half of the step.

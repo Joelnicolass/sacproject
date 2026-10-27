@@ -5,7 +5,7 @@ extends CharacterBody3D
 ## A Sac Doctor: falls out of a vortex, walks to a point, stands working and dies. Not a UnitBody: no orders, attack, corpse or soul;
 ## creatures, shots and spells can still attack it (group «doctor»). It keeps the pose, the work and the health and offers the verbs;
 ## it does not walk (its `motor`, DoctorMotor) or draw (DoctorLook listens to `pose_changed`); `errand` is what a carrier came for.
-## The server (or solo) runs the States machine; clients get position, pose, work and Health from doctor.tscn's synchronizer and only present them.
+## The server (or solo) runs the States machine; clients get the pose (drawn smoothly by its MpActor, BUFFERED), `pose`, `work`, `carried` and Health from the MpActor's MpSync (doctor.tscn) and only present them.
 ## Ref: sacengine CRE8 `dcas`, model `sacd`.
 
 ## Server only: the drop is over (the bounce included) / walk_to reached its goal / it died (no corpse, no soul) / the StuckGuard gave up.

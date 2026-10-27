@@ -2,10 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://t1nnqalhh4rk"
+path="res://.godot/imported/ground_roles.png-d7c34ea8e0989bcd6ad1394a5fc383d0.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://debug/terrain/paint_bed/ground_roles.png"
+dest_files=["res://.godot/imported/ground_roles.png-d7c34ea8e0989bcd6ad1394a5fc383d0.ctex"]
 
 [params]
 

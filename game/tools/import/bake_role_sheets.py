@@ -6,7 +6,11 @@ A role sheet is what one ground role (open, earth, rock, path) of the god looks 
 play that role (tools/import/ground_roles_table.json, verified rows only; a land with no group for a role names the groups its
 sheet borrows in `sheet_borrow`), laid out as a 4x4 grid of 64x64 tiles (256x256 px,
 64 px = one 10 m cell). A group with fewer than 16 tiles repeats them in order, so a tile used twice weighs twice; a role with
-more than 16 gives each tile its share of the cells its land's maps paint with it (fit_cells). The ground
+more than 16 gives each tile its share of the cells its land's maps paint with it (fit_cells). A role made of several groups
+draws its sheet from the group its land's maps paint most plus the groups that look like it (one_look: plan 062's colour
+criterion against that group); a group that looks different keeps its role on the map but gets no cells of its own, because
+the shader picks a cell at random and a different-looking tile would show as loose squares (Charnel's pale spawn pockets
+MG03 among its brown open ground, Pyro's pale upper earth MG02 among MG01). The ground
 shader (scenes/look/ground/ground.gdshader) picks one of the 16 cells per 10 m map cell. The detail sheet is the grey grain
 layer (DTnn) the group lays over its tiles in the original, 256x256, stretched over one cell.
 
@@ -53,6 +57,19 @@ def role_groups(god: str) -> dict:
         if not out[role]:
             out[role] = list(borrow["groups"])
     return out
+
+
+def one_look(numbers: list, groups: dict, present: set, use: np.ndarray, folder: dict, palt: bytes) -> list:
+    """The groups of a role that look like its most painted group (see the module doc), in group order."""
+    def tiles_of(n):
+        return [t for t in groups.get(n, {}).get("tiles", []) if t in present] if "band" in groups.get(n, {}) else []
+    def look(n):
+        return measure_ground.hsv_of(np.mean([tile_rgb(folder, palt, t).reshape(-1, 3).mean(0) for t in tiles_of(n)], axis=0))
+    numbers = [n for n in numbers if tiles_of(n)]
+    if len(numbers) < 2:
+        return numbers
+    main = max(numbers, key=lambda n: (use[tiles_of(n)].sum(), -n))
+    return [n for n in numbers if n == main or measure_ground.same_look(look(n), look(main))]
 
 
 def tile_rgb(folder: dict, palt: bytes, index: int) -> np.ndarray:
@@ -136,6 +153,7 @@ def main() -> int:
     out_dir = THEMES / god / "roles"
     use = land_use(god)
     for role, numbers in role_groups(god).items():
+        numbers = one_look(numbers, groups, present, use, folder, palt)
         tiles = fit_cells([t for n in numbers if "band" in groups.get(n, {}) for t in groups[n]["tiles"] if t in present], use)
         if not tiles:
             sys.exit("bake_role_sheets: %s has no verified base tile for the role '%s'" % (god, role))

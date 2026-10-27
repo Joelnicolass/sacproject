@@ -522,7 +522,7 @@ Nodos de alto nivel (lo que usa un humano; detalle y ejemplos en [QUICKSTART.md]
 | `rooms/ui/mp_lobby_screen.gd` / `mp_lobby_ui.gd` / `.tscn` | `MpLobbyScreen`: lobby drop-in (conectar, salas, crear, código, asientos, listo, chat) que se une a la partida por `MpFlow.join_match` |
 | `core/mp_address.gd` | `MpAddress`: lo que una persona escribe para llegar a un servidor (IP, nombre, `:puerto`, `#CÓDIGO`, URL), igual en el menú, el lobby y `MpFlow.join_address` |
 | `core/mp_relay_peer.gd` | `MpRelayPeer`: el transporte `relay` (WebSocket a un relay de MpKit; el host se conecta hacia afuera, sin IP pública). Cada puerto es la sala `<relay_room>-<puerto>`; una sala con host vivo está ocupada (4009) y el lanzador prueba otro puerto |
-| `relay/` | `server.mjs` (relay Node sin dependencias, para Railway, Render, Fly o un VPS), `package.json` y la guía |
+| `relay/` | `server.mjs` + `lib/` (relay Node sobre la librería `ws`, para Railway, Render, Fly o un VPS), `package.json`, sus pruebas (`npm test`) y la guía |
 | `nodes/mp_leave_button.gd` | `MpLeaveButton`: el botón Salir de un HUD (`MpFlow.leave_match()`: al lobby o al menú); anda con el mundo pausado |
 | `core/mp_rate_limit.gd` | `MpRateLimit`: cubeta de tokens por peer (túnel y `mp_sv_*`) |
 | `core/mp_calls.gd` | llamadas por nombre (`mp_sv_*`, `mp_all_*`) con chequeo de cantidad de argumentos |

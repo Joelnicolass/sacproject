@@ -1242,7 +1242,7 @@ Un navegador pausa una pestaña oculta. El jugador web que cambia de pestaña se
 
 ## 12. Relay (túnel por Railway u otro host)
 
-El relay es un servidor Node chico (`relay/server.mjs`, sin dependencias, Node 18+) que hace de túnel. Tu servidor Godot se conecta **hacia afuera** al relay, así que no necesita IP pública ni puertos abiertos: puede correr en tu PC detrás del router. Los jugadores se conectan al mismo relay.
+El relay es un servidor Node chico (`relay/server.mjs`, Node 18+ y la librería `ws`: `npm install` una vez) que hace de túnel. Tu servidor Godot se conecta **hacia afuera** al relay, así que no necesita IP pública ni puertos abiertos: puede correr en tu PC detrás del router. Los jugadores se conectan al mismo relay.
 
 ```
 jugador ─┐
@@ -1254,8 +1254,8 @@ Cada "puerto" del kit es una sala del relay: `<relay_room>-<puerto>`. Así el lo
 
 ### 12.1 Subir el relay a Railway
 
-1. Creá un repo (o una carpeta en el tuyo) con `server.mjs` y `package.json` de `addons/mp_kit/relay/`.
-2. En Railway: **New Project › Deploy from GitHub repo** y elegí ese repo. Railway corre `npm start`.
+1. Creá un repo (o una carpeta en el tuyo) con `server.mjs`, `lib/`, `package.json` y `package-lock.json` de `addons/mp_kit/relay/`.
+2. En Railway: **New Project › Deploy from GitHub repo** y elegí ese repo. Railway instala la dependencia y corre `npm start`.
 3. En **Variables**: `RELAY_HOST_SECRET` = una clave larga al azar. Sin ella el relay no deja hostear a nadie (`RELAY_OPEN=1` lo abre, solo para pruebas locales).
 4. En **Settings › Networking**: **Generate Domain**. Te queda `tu-relay.up.railway.app`, con TLS: la dirección es `wss://tu-relay.up.railway.app`.
 5. Opcional: healthcheck en la ruta `/health`.
@@ -1263,6 +1263,7 @@ Cada "puerto" del kit es una sala del relay: `<relay_room>-<puerto>`. Así el lo
 Probalo local antes:
 
 ```bash
+npm install --prefix addons/mp_kit/relay   # una vez
 PORT=8080 RELAY_HOST_SECRET=prueba node addons/mp_kit/relay/server.mjs
 # dirección: ws://127.0.0.1:8080
 ```

@@ -156,7 +156,7 @@ func accept_pick(pick: Dictionary) -> bool:
 
 ### Sin IP pública: el relay (Railway u otro host)
 
-Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un dominio con TLS para la web, usá el relay: un servidor Node chico (`relay/server.mjs`, sin dependencias) que hace de túnel. El servidor Godot se conecta hacia afuera y los jugadores también. En `game.tres`: `transport = relay`, `relay_url = wss://tu-relay.up.railway.app`, `relay_room = mi-juego`; el servidor recibe el secreto por `MPKIT_RELAY_SECRET`. Salas, partidas y partida privada funcionan igual. Pasos para Railway: [relay/README.md](relay/README.md).
+Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un dominio con TLS para la web, usá el relay: un servidor Node chico (`relay/server.mjs`, `npm install` una vez) que hace de túnel. El servidor Godot se conecta hacia afuera y los jugadores también. En `game.tres`: `transport = relay`, `relay_url = wss://tu-relay.up.railway.app`, `relay_room = mi-juego`; el servidor recibe el secreto por `MPKIT_RELAY_SECRET`. Salas, partidas y partida privada funcionan igual. Pasos para Railway: [relay/README.md](relay/README.md).
 
 ### Partida privada en tu PC (con código)
 

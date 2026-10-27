@@ -32,7 +32,7 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 ## breathOfLifeShoot: the breath leaves the shot origin toward the corpse. False = nothing launched (the target is gone by the
 ## shoot tick): AbilitySlot spends the mana all the same, like the original.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority() or breath_scene == null:
+	if not is_multiplayer_authority() or breath_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):

@@ -93,7 +93,7 @@ func extra_regeneration() -> float:
 
 ## Server (or solo). The body eats `souls` souls (the soul.number of what it devoured). `from` is what the log calls them.
 func grow(souls: int, from := "") -> void:
-	if not _has_authority() or souls <= 0 or health == null:
+	if not is_multiplayer_authority() or souls <= 0 or health == null:
 		return
 	var life := health.current
 	var most := health.maximum
@@ -125,7 +125,3 @@ func _show_bulk() -> void:
 
 func _bulk_moving() -> bool:
 	return shown > 0 and absf(_bulk - (2.0 - pow(bulk_step, float(shown)))) >= 0.0005
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

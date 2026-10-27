@@ -71,10 +71,6 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	return false
 
 
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
-
-
 ## The node's name (Ent1, Druid2…): the log must tell apart bodies of the same kind.
 static func who(node: Node) -> String:
 	return str(node.name) if node else "?"

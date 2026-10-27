@@ -35,7 +35,7 @@ static func can_rend(soul: Soul, slot: int) -> bool:
 
 ## rendShoot. False = the soul is gone by the shoot tick: nothing flies; the mana is spent all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
-	if not _has_authority() or user == null or strike_scene == null:
+	if not is_multiplayer_authority() or user == null or strike_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):

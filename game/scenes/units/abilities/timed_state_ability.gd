@@ -25,7 +25,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 
 
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	_until = MatchClock.now() + roundi(maxf(ability.duration_s, min_duration_s) * MatchClock.TICKS_PER_SECOND)
 	user.special_forms.set_form(form, true)

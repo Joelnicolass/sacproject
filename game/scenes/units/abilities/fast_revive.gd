@@ -64,7 +64,7 @@ func begin(corpse: UnitBody, soul: Soul) -> bool:
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

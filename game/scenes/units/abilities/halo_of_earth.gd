@@ -161,7 +161,7 @@ func _set_numbers(damage: float, speed: float, acceleration: float, reach: float
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

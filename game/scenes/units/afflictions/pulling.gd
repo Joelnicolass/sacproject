@@ -71,7 +71,7 @@ func _ready() -> void:
 ## at the fire tick − effect.windup() + pull_frame. True when it started (it ends a UsingAbility, the type's `cancels`).
 func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bool:
 	var body := _body()
-	if not _simulates() or body == null or effect == null or target == null or loop_ticks <= 0 or is_on():
+	if not is_multiplayer_authority() or body == null or effect == null or target == null or loop_ticks <= 0 or is_on():
 		return false
 	if not _afflictions().admit(self):
 		return false
@@ -103,13 +103,13 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 
 
 func _shown(on: bool) -> void:
-	set_physics_process(on and _simulates())
-	if not on and _running and _simulates():
+	set_physics_process(on and is_multiplayer_authority())
+	if not on and _running and is_multiplayer_authority():
 		_finish("cortado")
 
 
 func _physics_process(_delta: float) -> void:
-	if not _running or not _simulates():
+	if not _running or not is_multiplayer_authority():
 		return
 	var body := _body()
 	var now := MatchClock.now()

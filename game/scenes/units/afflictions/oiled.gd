@@ -61,7 +61,7 @@ func _ready() -> void:
 ## got smeared; false if it already is, cannot be, or this is a client.
 func start(ticks: int, slot: int, ability: AbilityType) -> bool:
 	var body := _body()
-	if not _simulates() or body == null or ticks <= 0 or is_on() or not can_be_oiled():
+	if not is_multiplayer_authority() or body == null or ticks <= 0 or is_on() or not can_be_oiled():
 		return false
 	if not _afflictions().admit(self):
 		return false
@@ -95,7 +95,7 @@ func ignite() -> bool:
 
 
 func _physics_process(_delta: float) -> void:
-	if not _running or not _simulates():
+	if not _running or not is_multiplayer_authority():
 		return
 	var body := _body()
 	if body == null or not is_on():
@@ -117,7 +117,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func _shown(on: bool) -> void:
-	if not on and _running and _simulates():
+	if not on and _running and is_multiplayer_authority():
 		_finish("cortado")
 
 

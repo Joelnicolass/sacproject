@@ -22,7 +22,7 @@ extends AbilityEffect
 
 
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority() or user == null or not is_instance_valid(user):
+	if not is_multiplayer_authority() or user == null or not is_instance_valid(user):
 		return false
 	if spell == null:
 		push_warning("CallLightning: falta el hechizo (spell).")

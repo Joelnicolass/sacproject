@@ -126,7 +126,7 @@ func _physics_process(_delta: float) -> void:
 	var every := MatchClock.ticks_for(trail_every_s)
 	if body and trail_fx != null and every > 0 and MatchClock.now() % every == 0:
 		FxBus.puff(trail_fx, BodyFacts.point(body, trail_socket))
-	if _simulates() and _running and _frame >= frames:
+	if is_multiplayer_authority() and _running and _frame >= frames:
 		_running = false
 		_afflictions().mark(self, false)
 		if DebugLog.on(&"walk") and body:

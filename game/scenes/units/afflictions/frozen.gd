@@ -55,7 +55,7 @@ var _rng: RandomNumberGenerator
 func _ready() -> void:
 	set_physics_process(false)
 	var owner_node := _afflictions()
-	if owner_node and owner_node.health and _simulates():
+	if owner_node and owner_node.health and is_multiplayer_authority():
 		owner_node.health.hit.connect(_on_hit)
 
 
@@ -209,7 +209,7 @@ func _shatter() -> void:
 
 
 func _shown(on: bool) -> void:
-	if on or not _simulates() or not _running or _ending:
+	if on or not is_multiplayer_authority() or not _running or _ending:
 		return
 	## Ended from outside while the server still ran it (a hit broke the ice, or the body died): it shatters next tick.
 	_running = false

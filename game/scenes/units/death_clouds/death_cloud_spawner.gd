@@ -22,7 +22,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _ready() -> void:
 	if Engine.is_editor_hint() or health == null:
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return
 	health.died.connect(_on_died)
 

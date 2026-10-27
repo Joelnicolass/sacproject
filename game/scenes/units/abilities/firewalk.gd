@@ -23,7 +23,7 @@ func status(target_pos: Vector3, _target: Node3D) -> String:
 
 ## True even when the land refuses (no walk): sacengine spends the mana at the shoot tick all the same.
 func fire(target_pos: Vector3, _target: Node3D) -> bool:
-	if not _has_authority():
+	if not is_multiplayer_authority():
 		return false
 	var walker := Firewalking.of(user)
 	var done := walker != null and BodyNudge.on_land(user, target_pos) and walker.walk(target_pos)

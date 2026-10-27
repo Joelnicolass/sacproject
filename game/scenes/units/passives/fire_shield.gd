@@ -63,7 +63,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 ## Turns the tick on for a carrier of the passive and off for everyone else.
 func _refresh() -> void:
 	_carrier = _carries()
-	set_physics_process(_carrier and _has_authority())
+	set_physics_process(_carrier and is_multiplayer_authority())
 
 
 func _physics_process(_delta: float) -> void:
@@ -178,7 +178,3 @@ func _present(node: Node) -> bool:
 	if mode == UnitBody.Mode.DEAD or mode == UnitBody.Mode.SUMMONING or mode == UnitBody.Mode.REVIVING:
 		return false
 	return not (node is UnitBody and (node as UnitBody).is_taken())
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

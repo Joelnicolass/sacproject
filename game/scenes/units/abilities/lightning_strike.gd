@@ -107,7 +107,7 @@ func setup(shooting: Node3D, from_point: Vector3, target: Node3D, ground_point: 
 
 
 func _ready() -> void:
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
 	var first := end_body

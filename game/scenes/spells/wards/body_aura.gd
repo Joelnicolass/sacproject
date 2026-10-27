@@ -111,7 +111,8 @@ func _sting(body: Node3D, other: Node3D, delta: float) -> float:
 	return took
 
 
-## sacengine pushAll: away from the owner's centre, full strength inside the owner's own radius, none at the reach.
+## Away from the owner's centre, full strength inside the owner's own radius, none at the reach.
+## Ref: sacengine pushAll
 func _push(body: Node3D, other: Node3D, mine: AABB, radius: float, delta: float) -> void:
 	if push_force <= 0.0:
 		return

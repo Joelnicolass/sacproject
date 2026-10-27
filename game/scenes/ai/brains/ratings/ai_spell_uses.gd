@@ -57,7 +57,8 @@ static func aim(eval: AiSpellEval, caster: AiTrack, spell: SpellType, target: Ai
 
 
 ## A spell on one enemy body (a wizard, a creature or a structure): its worth times the part of its health the spell takes
-## (`ai_worth` against the health the side knows). Ref: shiny.d:2830-2842 f489780.
+## (`ai_worth` against the health the side knows).
+## Ref: shiny.d:2830-2842 f489780
 static func single(perception: AiPerception, spell: SpellType, target: AiTrack) -> float:
 	if target.kind == AiTrack.Kind.NONE or target.relation != AiTrack.Relation.ENEMY:
 		return 0.0

@@ -17,7 +17,8 @@ enum Site { NONE, ALTAR, FOUNT, MANALITH, SHRINE }
 var kind := Kind.NONE
 var relation := Relation.NEUTRAL
 var site := Site.NONE
-## Its side has seen it at some point: only own and seen bodies follow the real position. ## Ref: shiny.d:1025.
+## Its side has seen it at some point: only own and seen bodies follow the real position.
+## Ref: shiny.d:1025
 var seen := false
 ## A body that fights: it has abilities or is not a pacifist (always, for a wizard).
 var fights := false
@@ -39,10 +40,12 @@ var velocity := Vector3.ZERO
 var frozen := false
 var seen_health := Vector2i.ZERO
 var seen_mana := Vector2i.ZERO
-## AiRater accumulator (5 floats) and its cached `rate` (the sort key, shiny.d:1432-1437).
+## AiRater accumulator (5 floats) and its cached `rate`.
+## Ref: the sort key, shiny.d:1432-1437
 var acc := AiRater.new_acc()
 var cached_rate := 0.0
-## Threat of a wizard (shiny.d:1061-1085).
+## Threat of a wizard.
+## Ref: shiny.d:1061-1085
 var threat := 0.0
 var min_mana_cost := 0.0
 var rerate_tick := 0
@@ -55,7 +58,8 @@ var mana_snap := 0
 var origin := &"scan"
 var group: AiGroup
 var record: AiRecord
-## Last order given by the brain (an AiCommandPort.AiOrder), its target track and position. ## Ref: shiny.d:2393-2420 orderIfChanged.
+## Last order given by the brain (an AiCommandPort.AiOrder), its target track and position.
+## Ref: shiny.d:2393-2420 orderIfChanged
 var ord_state := 0
 var ord_target := 0
 var ord_pos := Vector3.ZERO
@@ -63,7 +67,8 @@ var ord_pos := Vector3.ZERO
 ## AiTactics.mana_refill_ratio of its pool: without it the wizard left the altar the tick he had enough for one spell, cast it on the
 ## way and walked back (the back and forth on the same spot).
 var refilling := false
-## Wizard only: the creatures it may summon, rated against the field (wizSpellRebuild, shiny.d:2610), and the cast queue.
+## Wizard only: the creatures it may summon, rated against the field, and the cast queue.
+## Ref: wizSpellRebuild, shiny.d:2610
 var summons: Array = []
 var spell_accs: Array = []
 var cast_queue: Array = []
@@ -76,7 +81,8 @@ var convert_spell: Resource
 var desecrate_spell: Resource
 
 
-## The relation as a number (0 own, 1 ally, 2 neutral, 3 enemy): the index of the per-side lists. ## Ref: shiny.d:750-753 categoryFromFlags.
+## The relation as a number (0 own, 1 ally, 2 neutral, 3 enemy): the index of the per-side lists.
+## Ref: shiny.d:750-753 categoryFromFlags
 func category() -> int:
 	return relation
 
@@ -118,7 +124,8 @@ func is_valid() -> bool:
 	return node != null and is_instance_valid(node) and not node.is_queued_for_deletion()
 
 
-## A creature bound to a building by the Guardian spell. ## Ref: shiny.d:2995 isGuardianEnt.
+## A creature bound to a building by the Guardian spell.
+## Ref: shiny.d:2995 isGuardianEnt
 func is_guardian_bound() -> bool:
 	if (kind != Kind.CREATURE and kind != Kind.MANAHOAR) or not is_valid():
 		return false
@@ -126,12 +133,14 @@ func is_guardian_bound() -> bool:
 	return bond != null and bond.is_bound()
 
 
-## The key groups and ratings sort by. ## Ref: shiny.d:1432-1437 node vtbl[7].
+## The key groups and ratings sort by.
+## Ref: shiny.d:1432-1437 node vtbl[7]
 func sort_key() -> float:
 	return cached_rate if kind != Kind.NONE else 0.0
 
 
-## A wizard's threat, a structure's rate. ## Ref: shiny.d:1439-1447 nodeValue6c.
+## A wizard's threat, a structure's rate.
+## Ref: shiny.d:1439-1447 nodeValue6c
 func value_6c() -> float:
 	if kind == Kind.WIZARD:
 		return threat

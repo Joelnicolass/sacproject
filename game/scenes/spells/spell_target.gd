@@ -22,7 +22,8 @@ enum Who { SELF, ALLY_OR_SELF, ENEMY, ANY, OWN_OR_SELF, NOT_OWN }
 @export var refuse_cc_protected := false
 ## Refuses a wizard (the level-8 spells aim at creatures: SPEL flags have no «wizards» bit).
 @export var refuse_wizards := false
-## Off: refuses a body of no player (owner_slot 0: the creatures of the map, which have no wizard). Charm's rule (sacengine charmNeutralCreatures).
+## Off: refuses a body of no player (owner_slot 0: the creatures of the map, which have no wizard). Charm's rule.
+## Ref: sacengine charmNeutralCreatures
 @export var neutral_allowed := true
 
 

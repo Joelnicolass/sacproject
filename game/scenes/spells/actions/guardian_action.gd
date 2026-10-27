@@ -2,14 +2,15 @@
 class_name GuardianAction
 extends SpellAction
 
-## Guardian (ndrg): the wizard ties one of his own creatures to a building (RFC-021b). The click is
+## Guardian (ndrg): the wizard ties one of his own creatures to a building. The click is
 ## the creature (OWN_UNIT). To arm it he needs a standing building of his own (altar, shrine, Manalith)
-## within ReachFacts guardian_arm_m on the plane (mustBeNearBuilding, sacengine state.d:29561, 28082); the
+## within ReachFacts guardian_arm_m on the plane; the
 ## creature has to be free, alive, his and within the cast range. When the casting ends it is tied to
-## the open post closest to the CREATURE, whatever the distance (guardian / findClosestBuilding,
-## state.d:10398-10414); who sets the bond is GuardianBond. Not the wizard, a hero, a familiar, a Sac
+## the open post closest to the CREATURE, whatever the distance;
+## who sets the bond is GuardianBond. Not the wizard, a hero, a familiar, a Sac
 ## Doctor, one that is already a guardian (exclusion_tags «ndrg») nor a captive. The beam, the damage
 ## split and the factors live in GuardianTether, GuardPost and GuardianBond, not here.
+## Ref: mustBeNearBuilding, sacengine state.d:29561, 28082; RFC-021b; guardian / findClosestBuilding, state.d:10398-10414
 
 const FAR_FROM_BUILDING := Refusal.FAR_FROM_BUILDING
 
@@ -63,7 +64,8 @@ func finish(wizard: WizardBody, _spell: SpellType, target: Node3D) -> String:
 
 
 ## A creature of `slot` that can be tied: his, free, alive, not taken, with a bond to tie and none
-## in place (sacspell.d:168, state.d:10401-10402, isApplicable sacspell.d:63).
+## in place.
+## Ref: sacspell.d:168, state.d:10401-10402, isApplicable sacspell.d:63
 static func can_guard(slot: int, picked: Node3D) -> bool:
 	var unit := picked as UnitBody
 	if unit == null or not is_instance_valid(unit) or not unit.is_inside_tree() or unit.is_queued_for_deletion():

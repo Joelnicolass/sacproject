@@ -5,7 +5,8 @@ extends Node
 ## One AI side: its seat becomes what it plays with (AiPlay), every child gets it once, and each physics tick the child Clock says
 ## which of the six jobs run (status, stance, perception, groups, replan, tasks). The decisions are in the children and all that
 ## leaves goes through the port. Runs only where the game is simulated (solo or the server); the bench starts it paused (`active`
-## off). Take away a child and that behaviour is gone. What a human reads of it is AiSideReport. Ref: shiny.d:459-500 run.
+## off). Take away a child and that behaviour is gone. What a human reads of it is AiSideReport.
+## Ref: shiny.d:459-500 run; shiny.d:1129-1172 updateStatus, 1305-1346 updateReplan; shiny.d:575-584 botSpawned
 
 signal started
 
@@ -114,7 +115,7 @@ func _physics_process(_delta: float) -> void:
 	clock.note_tick(Time.get_ticks_usec() - began, port.game_us - game_before)
 
 
-## What each job of the clock does, in the children. Ref: shiny.d:1129-1172 updateStatus, 1305-1346 updateReplan.
+## What each job of the clock does, in the children.
 func _run_job(job: int) -> void:
 	match job:
 		AiClock.Job.STATUS:
@@ -142,7 +143,7 @@ func _run_job(job: int) -> void:
 		AiClock.Job.TASKS: board.update_tasks()
 
 
-## A creature (or a structure) of the side appeared: summoned, built, or put by the scene. Ref: shiny.d:575-584 botSpawned.
+## A creature (or a structure) of the side appeared: summoned, built, or put by the scene.
 func _on_unit_entered(node: Node) -> void:
 	if int(node.get("owner_slot")) != slot:
 		return

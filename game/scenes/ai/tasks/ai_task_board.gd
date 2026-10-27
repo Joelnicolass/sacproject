@@ -37,7 +37,8 @@ func _ready() -> void:
 			tasks.append(child)
 
 
-## replanTasks (shiny.d:2096-2116): every task makes its records again.
+## replanTasks: every task makes its records again.
+## Ref: shiny.d:2096-2116
 func replan_tasks() -> void:
 	for t: AiTrack in perception.tracks.values():
 		t.record = null
@@ -45,7 +46,8 @@ func replan_tasks() -> void:
 		task.replan()
 
 
-## claimPass (shiny.d:2240-2260).
+## claimPass.
+## Ref: shiny.d:2240-2260
 func claim_pass() -> void:
 	var free: Array[AiTrack] = []
 	for t: AiTrack in perception.bodies(0):
@@ -56,8 +58,9 @@ func claim_pass() -> void:
 	replanned.emit(tasks)
 
 
-## ntt vtbl[19] (shiny.d:1475-1478): any own body but a Sac Doctor or a dying one. The port also leaves out a creature being
+## ntt vtbl[19]: any own body but a Sac Doctor or a dying one. The port also leaves out a creature being
 ## summoned (it cannot take orders yet) and one a Sac Doctor holds.
+## Ref: shiny.d:1475-1478
 static func claimable(t: AiTrack) -> bool:
 	if not t.is_valid() or t.node.is_in_group(&"doctor"):
 		return false
@@ -70,7 +73,8 @@ static func claimable(t: AiTrack) -> bool:
 	return true
 
 
-## updateTasks (shiny.d:1402-1411).
+## updateTasks.
+## Ref: shiny.d:1402-1411
 func update_tasks() -> void:
 	for task in tasks:
 		var task_kind := task.kind()
@@ -78,7 +82,8 @@ func update_tasks() -> void:
 			runner.record_update(record, task_kind)
 
 
-## recordSetup (shiny.d:1938-1951). `capture`: a capture record (its members go to the anchor, see record_update).
+## recordSetup. `capture`: a capture record (its members go to the anchor, see record_update).
+## Ref: shiny.d:1938-1951
 func new_record(target: AiTrack, capture := false) -> AiRecord:
 	var record := AiRecord.new()
 	record.target = target
@@ -87,7 +92,8 @@ func new_record(target: AiTrack, capture := false) -> AiRecord:
 	return record
 
 
-## claim (shiny.d:1964-1977): the track leaves the free list and joins the record. Returns its soul worth.
+## claim: the track leaves the free list and joins the record. Returns its soul worth.
+## Ref: shiny.d:1964-1977
 func claim_member(record: AiRecord, free: Array[AiTrack], t: AiTrack) -> float:
 	free.erase(t)
 	AiRater.combine(record.members_acc, 1.0, t.acc, 1.0)
@@ -100,7 +106,8 @@ func claim_member(record: AiRecord, free: Array[AiTrack], t: AiTrack) -> float:
 	return float(pair.x + pair.y)
 
 
-## Distances from `from` to the altars of `relation` (probOr, shiny.d:2012-2022).
+## Distances from `from` to the altars of `relation`.
+## Ref: probOr, shiny.d:2012-2022
 func distances_to_altars(from: AiTrack, relation: AiTrack.Relation) -> PackedFloat32Array:
 	var out := PackedFloat32Array()
 	for t: AiTrack in perception.structures(relation):
@@ -110,8 +117,9 @@ func distances_to_altars(from: AiTrack, relation: AiTrack.Relation) -> PackedFlo
 	return out
 
 
-## densityGroups (shiny.d:2042-2062) without the soul groups (slot 5): the soul worth of the enemy and neutral body groups
+## densityGroups without the soul groups (slot 5): the soul worth of the enemy and neutral body groups
 ## near `pos`, over the most souls the side has seen.
+## Ref: shiny.d:2042-2062
 func density(pos: Vector3, near: float, far: float) -> float:
 	var acc := 0.0
 	for category in [2, 3]:
@@ -119,8 +127,9 @@ func density(pos: Vector3, near: float, far: float) -> float:
 			if group.souls_sum == 0:
 				continue
 			acc += AiField.ramp(pos.distance_to(group.center), near, far) * float(group.souls_sum)
-	## Deviation: with no souls seen (max 0) sacengine divides 0/0 and every guard score becomes NaN, so nobody is escorted
-	## (shiny.d:2062). Here it is 0.
+	## Deviation: with no souls seen (max 0) the engine divides 0/0 and every guard score becomes NaN, so nobody is escorted.
+	## Here it is 0.
+	## Ref: shiny.d:2062
 	if perception.max_souls_seen <= 0:
 		return 0.0
 	return AiField.f32(AiField.safediv(acc, float(perception.max_souls_seen)))

@@ -28,7 +28,8 @@ func enter() -> void:
 	if captive == null or not captive.revive(
 			rules.convert_revive_min_health if rules else 400.0,
 			rules.convert_revive_fraction if rules else 0.5):
-		## sacengine: convertRevive failed -> the soul is freed and the doctor dies.
+		## If the revive fails, the soul is freed and the doctor dies.
+		## Ref: sacengine convertRevive
 		errand.release_soul()
 		body.kill()
 		return
@@ -60,7 +61,8 @@ func physics_update(delta: float) -> void:
 	transition(&"Haul")
 
 
-## The creature keeps its soul from now on (state.d:15668-15672); the one on the map goes.
+## The creature keeps its soul from now on; the one on the map goes.
+## Ref: state.d:15668-15672
 func _drop_soul() -> void:
 	var soul := errand.soul
 	errand.soul = null

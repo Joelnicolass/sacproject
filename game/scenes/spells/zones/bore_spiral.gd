@@ -9,7 +9,8 @@ extends RefCounted
 
 ## The inner end of the spiral.
 const START_RADIUS_M := 5.0
-## Turns per metre of radius (sacengine: 0.2 pi of angle for each metre past the start).
+## Turns per metre of radius.
+## Ref: sacengine: 0.2 pi of angle for each metre past the start
 const ANGLE_PER_M := 0.2 * PI
 
 var center := Vector2.ZERO

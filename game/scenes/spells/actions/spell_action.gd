@@ -2,7 +2,7 @@
 class_name SpellAction
 extends Node
 
-## Contract of a spell with its own procedure (RFC-021a). Instanced by Caster under the wizard's `Caster/Actions`
+## Contract of a spell with its own procedure. Instanced by Caster under the wizard's `Caster/Actions`
 ## from `SpellType.action`; Caster finds it by `spell`, runs the common part (mana, cooldown, casting frames, drain) and asks
 ## the action for the rest: whether it can be armed, where it lands, what happens when the casting
 ## time ends and what to undo if the wizard dies midway. `pick` tells the click handler what to
@@ -10,6 +10,7 @@ extends Node
 ## off: its icon answers «No implementado».
 ## Only the server (or solo) runs begin/finish/cancel. This base holds no game logic, so the editor
 ## can run it for the configuration warnings.
+## Ref: RFC-021a
 
 enum Pick { GROUND, OWN_UNIT, SOUL, OWN_BUILDING, SELF }
 

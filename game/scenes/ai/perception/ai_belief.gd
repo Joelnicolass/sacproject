@@ -29,7 +29,8 @@ func look_from(center: Node3D, p_knowledge: AiDifficulty.Knowledge, sight_m: flo
 
 ## The side `side` sees `t` now: its own and its allies' bodies, structures and souls always (structures stand still and are marked
 ## for good once seen; souls are not gated either); a body of another side while the side's Vision keeps it in mind (the rule the
-## creatures pick their targets by). ## Ref: shiny.d:583.
+## creatures pick their targets by).
+## Ref: shiny.d:583
 static func sees(t: AiTrack, side: int) -> bool:
 	if t == null or t.relation == AiTrack.Relation.OWN or t.relation == AiTrack.Relation.ALLY or not t.is_body():
 		return true
@@ -90,7 +91,8 @@ func snapshot(t: AiTrack, side: int) -> void:
 
 ## Own and seen bodies follow the real position, `dt` ticks after the last run, while the AI knows where they are (seen, or on the
 ## minimap). A seen body it does not know where is now stays where it was seen last, one step of its last velocity ahead; known
-## again, it does not jump from there. ## Ref: shiny.d:1024-1038 updateBase (it follows own bodies and the ones flagged «seen», 1025).
+## again, it does not jump from there.
+## Ref: shiny.d:1024-1038 updateBase (it follows own bodies and the ones flagged «seen», 1025)
 func follow(t: AiTrack, dt: int, side: int) -> void:
 	if t.relation != AiTrack.Relation.OWN and not t.seen:
 		return

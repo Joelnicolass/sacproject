@@ -3,8 +3,8 @@ extends RefCounted
 
 ## What the wizard casts at the target of his capture record: Desecrate on an enemy altar (with the own creature of most souls
 ## brought next to him) or Manalith on a free fount. It does not choose the record (CaptureTask does) and it does not pay or
-## check the cast (Casting does). Ref: shiny.d:3354-3382 (capture block of wizBrain), 3026-3050 pickGuardCreature,
-## 3285-3301 castCachedInRange.
+## check the cast (Casting does).
+## Ref: shiny.d:3354-3382 (capture block of wizBrain), 3026-3050 pickGuardCreature, 3285-3301 castCachedInRange
 
 var perception: AiPerception
 var port: AiCommandPort
@@ -48,8 +48,8 @@ func run(wizard: AiTrack, record: AiRecord) -> int:
 ## guard_pick_far_m; the scale is 1/(far - near) rounded to float32, as the original's constant 0.00027700831)
 ## times its souls; a strict argmax from 0, so a creature of 0 souls is never picked. Deviation: the game's own test
 ## `sacrifice_status` (alive, free, not held, a Captive) filters the candidates first, so the AI never asks Desecrate for a creature
-## that would answer «Blanco inválido» (sacengine tests the mode after picking). A creature bound by the Guardian spell is skipped.
-## Ref: shiny.d:3026-3050 (0x485700), 3032 isGuardianEnt.
+## that would answer «Blanco inválido». A creature bound by the Guardian spell is skipped.
+## Ref: shiny.d:3026-3050 (0x485700), 3032 isGuardianEnt; sacengine tests the mode after picking
 func pick_guard_creature(target: AiTrack) -> AiTrack:
 	var best := 0.0
 	var best_track: AiTrack
@@ -83,7 +83,8 @@ func pick_guard_creature(target: AiTrack) -> AiTrack:
 
 
 ## The Manalith spell, forced, when the wizard is within range * sqrt(build_range_slack) * build_reach_factor of the fount and the
-## threat is under build_threat_cap. The fount must still be free (canCastSpellOn's onlyManafounts reads it live). Ref: shiny.d:3285-3301 (0x48dce0).
+## threat is under build_threat_cap. The fount must still be free (canCastSpellOn's onlyManafounts reads it live).
+## Ref: shiny.d:3285-3301 (0x48dce0)
 func cast_cached_in_range(wizard: AiTrack, fount: AiTrack) -> int:
 	var shrine: SpellType = wizard.shrine_spell
 	var tactics := play.tactics

@@ -7,8 +7,9 @@ extends SpellAction
 ## of the wizard; the creature must be his own, alive and within the cast range. The red vortex opens when
 ## the casting starts; when it ends, a carrier doctor drops by the creature, lifts it and takes it to the
 ## altar. If the cast is interrupted there is no doctor and the creature stays free. All the rules live
-## in SacrificeSystem (sacengine castDesecrate, state.d:10198-10213); this action is only the
+## in SacrificeSystem; this action is only the
 ## contract with the Caster (RFC-021a). The ritual itself is RFC-020d.
+## Ref: sacengine castDesecrate, state.d:10198-10213
 
 var _system: SacrificeSystem
 var _cast: SacrificeSystem.Cast

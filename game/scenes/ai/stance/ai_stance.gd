@@ -5,9 +5,9 @@ extends Node
 ## a record: mana and max mana of its groups, the soul worth of its creatures, its Manaliths, the sum of group
 ## ratings and, against the enemy, the share of souls. Every 60 ticks (k1).
 ## Quirks of the original that matter and are kept: u[2], u[3], u[4] start at 1; the `u[6]` the divisor of acc1 and acc2 is
-## the integer read of the float bits of the ratios (shiny.d:1284-1287, «thaum quirk»), so acc1 and acc2 are
+## the integer read of the float bits of the ratios, so acc1 and acc2 are
 ## tiny numbers: summoning compares each creature with almost nothing.
-## Ref: RFC-024 §3.1 `AiStance`; shiny.d:1220-1288 `updateStance`, 1061-1085 the threat of the wizard, 2064-2082 `influenceGroups`.
+## Ref: RFC-024 §3.1 `AiStance`; shiny.d:1220-1288 `updateStance`, 1061-1085 the threat of the wizard, 2064-2082 `influenceGroups`; shiny.d:1284-1287, «thaum quirk»
 
 class Rec extends RefCounted:
 	var mana := 0
@@ -37,7 +37,8 @@ var acc2 := AiRater.new_acc()
 var enemy_wizards := 0
 
 
-## updateStance (shiny.d:1220-1288).
+## updateStance.
+## Ref: shiny.d:1220-1288
 func update() -> void:
 	for k in 4:
 		var rec := Rec.new()
@@ -64,7 +65,8 @@ func update() -> void:
 	for t: AiTrack in perception.bodies(3):
 		if t.kind == AiTrack.Kind.WIZARD:
 			enemy_wizards += 1
-	## strengthRatio (shiny.d:1268-1280).
+	## strengthRatio.
+	## Ref: shiny.d:1268-1280
 	var ebx := 0
 	var ebp := 0
 	for t: AiTrack in perception.structures(3):
@@ -94,24 +96,28 @@ static func _ratio(num: int, den: int) -> float:
 	return AiField.f32(AiField.safediv(float(num), float(den))) if den != 0 else 1.0
 
 
-## `cast(int)` of the raw word of a float (shiny.d:171 `si`): the quirk of the divisor.
+## `cast(int)` of the raw word of a float: the quirk of the divisor.
+## Ref: shiny.d:171 `si`
 static func _bits(x: float) -> int:
 	var raw := PackedFloat32Array([x]).to_byte_array()
 	return raw.decode_s32(0)
 
 
-## Souls ratio own/(own+enemy) the weights use: `sf(stanceRecs[3], 6)` (shiny.d:2955).
+## Souls ratio own/(own+enemy) the weights use: `sf(stanceRecs[3], 6)`.
+## Ref: shiny.d:2955
 func enemy_ratio() -> float:
 	return recs[3].ratio_a
 
 
-## Manaliths of the side plus its allies' (retail `GetManaSource`: own+ally, shiny.d:2926 / 3128).
+## Manaliths of the side plus its allies'.
+## Ref: retail `GetManaSource`: own+ally, shiny.d:2926 / 3128
 func manalith_count() -> int:
 	return recs[0].manaliths + recs[1].manaliths
 
 
-## influenceGroups (shiny.d:2064-2082): the groups of a category within `far` of `at`, weighted 1 up to `near` and
+## influenceGroups: the groups of a category within `far` of `at`, weighted 1 up to `near` and
 ## linearly to 0 at `far`, are added into `acc` (combine with weight w). Returns the weighted souls divided by u[4].
+## Ref: shiny.d:2064-2082
 func influence(category: int, at: Vector3, near: float, far: float, acc: PackedFloat32Array) -> float:
 	var souls_w := 0.0
 	for group: AiGroup in groups.list(category):
@@ -175,7 +181,8 @@ func npc_share(at: Vector3, radius: float) -> float:
 	return npc / all if all > 0.0 else 0.0
 
 
-## updateWiz (shiny.d:1061-1085): the threat of the wizard track, every 8 ticks of its age.
+## updateWiz: the threat of the wizard track, every 8 ticks of its age.
+## Ref: shiny.d:1061-1085
 func update_threat(wizard: AiTrack) -> void:
 	if wizard == null or wizard.relation != AiTrack.Relation.OWN or wizard.age < wizard.threat_tick:
 		return

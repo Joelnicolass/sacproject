@@ -1,7 +1,7 @@
 class_name Caster
 extends Node
 
-## Casts the wizard's book (sacengine startCasting). The owner calls request_cast() or
+## Casts the wizard's book. The owner calls request_cast() or
 ## request_summon(); in a networked match the server validates the slot and runs the cast.
 ## Spells check mana, target, range, then cooldown (a cooling spell answers «Enfriando» even
 ## without mana). Creatures check souls, mana, then cooldown, and need no target: the
@@ -10,17 +10,21 @@ extends Node
 ## Every spell of the book (combat or structure) is a SpellAction child of `actions`, instanced from `SpellType.action` and found by `spell` (RFC-041):
 ## Caster does the common part and asks the action to check, begin, start, finish and cancel. A creature needs
 ## no action: the Summoner puts it in front of the wizard when the cast starts and finishes it when it ends.
+## Ref: sacengine startCasting
 
 signal feedback(text: String)
 ## A cast began (`casting` true; `fx` is the particle of the hands, null for a god without one) or ended or was cut (false, null).
 ## Every peer emits it, from the replicated `cast_fx_shown`: HandFx, WizardSounds, Ward and the pose follow it.
 signal cast_changed(casting: bool, fx: ParticleType)
 
-## sacengine updateFPS: casting and drain are counted in frames.
+## Casting and drain are counted in frames.
+## Ref: sacengine updateFPS
 const FPS := 60.0
-## sacengine manaEpsilon.
+## Mana tolerance.
+## Ref: sacengine manaEpsilon
 const MANA_EPSILON := 0.01
-## sacengine SacSpell: manaCost = max(1, manaCost).
+## Every spell costs at least this much: manaCost = max(1, manaCost).
+## Ref: sacengine SacSpell
 const MIN_MANA_COST := 1.0
 const NO_MANA := SpellAction.NO_MANA
 const NO_SOULS := Refusal.NO_SOULS
@@ -77,12 +81,14 @@ func cast_fx() -> ParticleType:
 	return FxWire.resource(cast_fx_shown) as ParticleType
 
 
-## sacengine canCast (state.d:9520): only an idle or moving wizard, not a dying or ghost one.
+## Only an idle or moving wizard, not a dying or ghost one.
+## Ref: sacengine canCast (state.d:9520)
 func wizard_can_cast() -> bool:
 	return _wizard.can_cast()
 
 
-## Can the spell be armed? (sacengine selectSpell: mana, then cooldown.) "" = yes.
+## Can the spell be armed? "" = yes.
+## Ref: sacengine selectSpell: mana, then cooldown.
 func arm_status(index: int) -> String:
 	var spell := spellbook.spell_at(index)
 	if spell == null:
@@ -97,7 +103,8 @@ func arm_status(index: int) -> String:
 	return status
 
 
-## Can the creature be summoned now? (sacengine spellStatus: souls, mana, then cooldown.) "" = yes.
+## Can the creature be summoned now? "" = yes.
+## Ref: sacengine spellStatus: souls, mana, then cooldown.
 func summon_status(index: int) -> String:
 	var type := spellbook.creature_at(index)
 	if type == null:

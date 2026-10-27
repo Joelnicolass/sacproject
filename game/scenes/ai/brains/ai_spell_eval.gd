@@ -1,9 +1,9 @@
 class_name AiSpellEval
 extends RefCounted
 
-## How the AI's wizard rates a spell on a target and picks the best of his book, from the SpellType's named fields only (`ai_use`,
-## `ai_phase`, the «who it may land on» ticks, `ai_worth`); it does not cast nor look at tags. One evaluator per use (FN_*), never per
-## spell: AiSpellUses says which and on what body the cast lands. Ref: shiny.d:2799-2923 rateSpellAcc, 2925-2951 findBestSpell.
+## How the AI's wizard rates a spell on a target and picks the best of his book, from the SpellType's named fields only (`ai_use`, `ai_phase`, the «who it may land on»
+## ticks, `ai_worth`); it does not cast nor look at tags. One evaluator per use (FN_*), never per spell: AiSpellUses says which and on what body the cast lands.
+## Ref: shiny.d:2799-2923 rateSpellAcc, 2925-2951 findBestSpell, 2930-2934
 const FN_NONE := 0
 const FN_SINGLE := 1
 const FN_AREA := 2
@@ -95,7 +95,7 @@ static func _names_a_kind(spell: SpellType) -> bool:
 
 
 ## What `spell` cast on `target` is worth. `looked_at`: the body the phase weighs when the cast lands elsewhere (a burst around him,
-## a soul, a building); a spell «only on himself» counts when either is him. `dist_scaled`: findBestSpell's (shiny.d:2930-2934).
+## a soul, a building); a spell «only on himself» counts when either is him. `dist_scaled`: findBestSpell's.
 func rate(caster: AiTrack, spell: SpellType, target: AiTrack, dist_scaled: float, looked_at: AiTrack = null) -> float:
 	if not lands_on(spell, target):
 		return 0.0
@@ -114,7 +114,7 @@ func still_worth(spell: Resource, target: AiTrack) -> bool:
 
 
 ## findBestSpell: the best spell against `target`, its cost paid out of the pool ((1 - cost/pool) * s). `target` in the answer is the
-## body the best one lands on (AiSpellUses.aim: the target itself, him, a soul or a building). Ref: shiny.d:2925-2951.
+## body the best one lands on (AiSpellUses.aim: the target itself, him, a soul or a building).
 func find_best(caster: AiTrack, target: AiTrack, phase: SpellType.AiPhase) -> Dictionary:
 	var pool := float(AiRater.ftol(AiBody.mana_max(caster.node)) * stance.manalith_count())
 	var dist_scaled := _dist_scaled(caster, target)
@@ -139,7 +139,7 @@ func find_best(caster: AiTrack, target: AiTrack, phase: SpellType.AiPhase) -> Di
 	return {"score": best, "spell": best_spell, "range": best_spell.cast_range_m, "obj": null, "target": best_aim}
 
 
-## The squared distance findBestSpell rates by: distance² * range_distance_scale, 0 under near_distance_sq. Ref: shiny.d:2930-2934.
+## The squared distance findBestSpell rates by: distance² * range_distance_scale, 0 under near_distance_sq.
 func _dist_scaled(caster: AiTrack, target: AiTrack) -> float:
 	var dist_scaled := 0.0
 	if target != null:

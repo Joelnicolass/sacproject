@@ -5,7 +5,8 @@ extends Node
 ## The orders the AI gives its bodies. An order is issued only when it changes; the radius variants hold a position when the body
 ## is already close. With a delay (Easy) an order waits `delay_ticks`, and a newer decision for the same body replaces it and keeps
 ## its time. AiOrderIssue turns it into the call a human's order makes. It does not cast (the port does) and it never touches a
-## body. Child `Orders` of the port, which binds it and gives it its clock. Ref: shiny.d:2393-2478.
+## body. Child `Orders` of the port, which binds it and gives it its clock.
+## Ref: shiny.d:2393-2478; shiny.d:2433-2445; shiny.d:2441-2452
 
 @export var perception: AiPerception
 ## What the side plays with (AiSide.setup): the wizard's stop distance on guard.
@@ -101,7 +102,7 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 	t.ord_pos = goal
 
 
-## orderTargetRadius (shiny.d:2433-2445): inside `radius` of the target the body holds where it stands.
+## orderTargetRadius: inside `radius` of the target the body holds where it stands.
 func order_target_radius(t: AiTrack, ostate: int, target: AiTrack, radius: float) -> int:
 	if radius > 0.0 and not (radius * radius < t.cur_pos.distance_squared_to(target.cur_pos)):
 		order_if_changed(t, ostate, null, t.cur_pos)
@@ -110,7 +111,7 @@ func order_target_radius(t: AiTrack, ostate: int, target: AiTrack, radius: float
 	return 0
 
 
-## orderPosRadius (shiny.d:2441-2452).
+## orderPosRadius.
 func order_pos_radius(t: AiTrack, ostate: int, pos: Vector3, radius: float) -> int:
 	if radius * radius < t.cur_pos.distance_squared_to(pos):
 		order_if_changed(t, ostate, null, pos)
@@ -119,9 +120,10 @@ func order_pos_radius(t: AiTrack, ostate: int, pos: Vector3, radius: float) -> i
 	return 1
 
 
-## orderInteract (shiny.d:2452-2478, 0x487550): too far from `anchor` (more than `radius`): go there (MOVE). Near: at a structure
+## orderInteract: too far from `anchor` (more than `radius`): go there (MOVE). Near: at a structure
 ## stay by it and fight what comes (REFILL), at an enemy Manalith attack it (ATTACK; ADVANCE with more than one guardian, which the
 ## port does not count), else advance to the anchor (ADVANCE). Returns 1 when it is near.
+## Ref: shiny.d:2452-2478, 0x487550
 func order_interact(t: AiTrack, anchor: Vector3, target: AiTrack, radius: float) -> int:
 	if radius * radius < t.cur_pos.distance_squared_to(anchor):
 		order_if_changed(t, AiCommandPort.AiOrder.MOVE, null, anchor)

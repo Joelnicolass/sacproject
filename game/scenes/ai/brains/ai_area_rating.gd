@@ -3,7 +3,8 @@ extends RefCounted
 
 ## How much an area spell is worth where it bursts, and how much of an own body its burst would take. The worth is the target's,
 ## plus the enemy groups the area would hit and minus the own and ally ones. It does not pick the spell (AiSpellEval) and it does
-## not hold the cast back (AiShotCheck asks `own_splash`). Static. Ref: shiny.d:2843-2847 f489860, 2742-2754 aoeSpellBase.
+## not hold the cast back (AiShotCheck asks `own_splash`). Static.
+## Ref: shiny.d:2843-2847 f489860, 2742-2754 aoeSpellBase
 
 
 ## The worth of the area of `spell` bursting at `point` on `target`. RFC-053 053b: an own or ally group counts by its members within

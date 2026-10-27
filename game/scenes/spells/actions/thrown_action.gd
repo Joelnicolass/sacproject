@@ -3,9 +3,10 @@ class_name ThrownAction
 extends SpellAction
 
 ## A guided ball that leaves the wizard's hands (Wrath, Fireball, Insect Swarm). `projectile_kind` names its
-## scene in SpellSpawner; `launch_at_finish` says whether it leaves when the casting ends (Wrath,
-## sacengine updateWrathCasting) or as soon as the cast starts (Fireball, Swarm). It explodes with
+## scene in SpellSpawner; `launch_at_finish` says whether it leaves when the casting ends (Wrath)
+## or as soon as the cast starts (Fireball, Swarm). It explodes with
 ## `damage_range` splash around the body it hits.
+## Ref: sacengine updateWrathCasting
 
 ## Kind of the projectile scene in SpellSpawner.
 @export var projectile_kind := ""

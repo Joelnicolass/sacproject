@@ -4,7 +4,8 @@ extends Node
 ## When each of the six jobs of an AI side runs: every `*_every_s` (times the difficulty's period_scale), always in the same order,
 ## and earlier when something wakes it (a body appeared, a structure changed hands). It does not know what a job does: it says
 ## `job_due` and the side runs it. It also keeps how long each tick and each job took (diagnostic, never read by the simulation).
-## Child `Clock` of ai_side.tscn. Ref: shiny.d:459-488 run, 468 periods, 469 force masks, 504-514 scheduler, 517-546 forceFlags.
+## Child `Clock` of ai_side.tscn.
+## Ref: shiny.d:459-488 run, 468 periods, 469 force masks, 504-514 scheduler, 517-546 forceFlags
 
 ## A job's time came (or something woke it): the side runs it now, before the next job is looked at.
 signal job_due(job: int)

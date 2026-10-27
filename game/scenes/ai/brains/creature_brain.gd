@@ -18,7 +18,8 @@ extends Node
 var play: AiPlay
 
 
-## t4oBrain (shiny.d:2557-2570). Returns 1 when it handled the case.
+## t4oBrain. Returns 1 when it handled the case.
+## Ref: shiny.d:2557-2570
 func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 	if auto_capture(t) != 0:
 		return 1
@@ -44,9 +45,10 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 	return 1
 
 
-## autoCapture (shiny.d:2546-2555, 0x487600): a body with a mana pool whose mana is not above its minimum (`minManaCost`; a wizard
+## autoCapture: a body with a mana pool whose mana is not above its minimum (`minManaCost`; a wizard
 ## with a creature to summon at the head of his queue: 5/4 of its cost) looks for the best source of mana within 3620 m of itself and,
 ## if it is not already within the radius of it (50 m a building, 40 m a Manahoar), guards it.
+## Ref: shiny.d:2546-2555, 0x487600
 func auto_capture(t: AiTrack) -> int:
 	if perception == null or t.kind == AiTrack.Kind.MANAHOAR or t.kind == AiTrack.Kind.NONE or t.kind == AiTrack.Kind.STRUCTURE:
 		return 0
@@ -71,7 +73,8 @@ func auto_capture(t: AiTrack) -> int:
 	return 1
 
 
-## nodeSlot22 (shiny.d:2498-2512): the mana a body must be above to stay where it is.
+## nodeSlot22: the mana a body must be above to stay where it is.
+## Ref: shiny.d:2498-2512
 func _min_mana(t: AiTrack) -> int:
 	if t.kind == AiTrack.Kind.WIZARD and not t.cast_queue.is_empty():
 		if perception.own_desecration():
@@ -96,10 +99,11 @@ static func _respawning(t: AiTrack) -> bool:
 	return t.kind == AiTrack.Kind.WIZARD and (t.node as WizardBody).is_ghost()
 
 
-## findBestCaptureTarget (shiny.d:2518-2545, 0x485a40): among the own and ally bodies and structures that are READY (a Manahoar that
+## findBestCaptureTarget: among the own and ally bodies and structures that are READY (a Manahoar that
 ## works, a standing mana building with nothing on top) in the region of `pos`, the one that weighs most: 1 within 1 m, falling to 0
 ## at `radius`; x1000 a Manahoar (a building: x its mana yield, which the port does not export: 1, «aprox.»). Returns {node, radius}
 ## or {} (50 m for a building, 40 m for a Manahoar).
+## Ref: shiny.d:2518-2545, 0x485a40
 func find_best_capture_target(pos: Vector3, radius: float) -> Dictionary:
 	var best := 0.0
 	var found: AiTrack

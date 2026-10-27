@@ -2,11 +2,12 @@
 class_name WarpSnap
 extends Node
 
-## Makes a jump look like a jump on the clients (RFC-021c). The server moves a body in one step (Teleport)
+## Makes a jump look like a jump on the clients. The server moves a body in one step (Teleport)
 ## and the position reaches the clients through the synchronizer; the MpReplicate of the body would glide
 ## it across the map. The server calls announce() after the move: every client lets that body follow the
 ## net position with no smoothing for `window_s`, then goes back to the normal. Only the public knob
 ## `interpolate_speed` of the addon is used. Take the child out and the body glides (a joke, not a bug).
+## Ref: RFC-021c.
 
 ## The addon node that smooths the body. Obligatory.
 @export var net: MpReplicate

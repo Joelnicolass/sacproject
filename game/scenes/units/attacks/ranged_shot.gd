@@ -1,11 +1,11 @@
 class_name RangedShot
 extends Node3D
 
-## A creature's ranged shot. sacengine updateEarthflingProjectile (state.d:23178-23198): each frame
+## A creature's ranged shot. Each frame
 ## position += velocity/fps and, for ballistic shots, velocity.z −= fallingAcceleration/fps. It bursts
 ## on the first body in its hit box that is the intended target or not of the shooter's side
-## (earthflingProjectileCollisionTarget, state.d:23145), or under the ground, and deals the ability's
-## amount as direct ranged damage (earthflingProjectileExplosion, state.d:23152-23154). Straight shots
+## (earthflingProjectileCollisionTarget), or under the ground, and deals the ability's
+## amount as direct ranged damage (earthflingProjectileExplosion). Straight shots
 ## (getShotDirection) fly their ability range and vanish.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
 ## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
@@ -15,6 +15,7 @@ extends Node3D
 ## body nor the ground and flies its whole range.
 ## F151: an in_flight that holds the shot's height (GroundHug, ShotInFlight.holds_height) takes the ground check away: the
 ## Rhinok's shot ends on a body or at the end of its range only.
+## Ref: sacengine updateEarthflingProjectile state.d:23178-23198, earthflingProjectileCollisionTarget 23145, earthflingProjectileExplosion 23152-23154.
 
 const TRAIL_FPS := 60.0
 
@@ -230,8 +231,9 @@ static func _is_live_body(body: Node) -> bool:
 	return health != null and not health.is_dead()
 
 
-## sacengine getHeight: the top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
+## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
 ## left out; -INF off the map. The ground check of the flight, and GroundHug's height (F151).
+## Ref: sacengine getHeight.
 func ground_height(at: Vector3) -> float:
 	return RangedShot.land_height(self, at)
 
@@ -241,7 +243,7 @@ static func land_height(from: Node3D, at: Vector3) -> float:
 	return GroundRay.surface_y(from, at, 1, GroundRay.wizard_rids(from.get_tree()), -INF)
 
 
-## F151: the shot flew its whole range (sacengine remainingDistance <= 0). SpikeImpact asks it before it hurts the target.
+## F151: the shot flew its whole range (remainingDistance <= 0). SpikeImpact asks it before it hurts the target.
 func range_spent() -> bool:
 	return _traveled >= max_distance
 

@@ -1,12 +1,13 @@
 class_name ShotInFlight
 extends Node
 
-## F149 (RFC-030 030k-b): what a creature's ranged shot does on every tick of its flight, besides moving. The scene is
+## What a creature's ranged shot does on every tick of its flight, besides moving. The scene is
 ## ShotLook.in_flight; RangedShot instances it on the server (or solo) only, as a child of the shot, and calls fly()
-## once per physics tick, after it moved and before it checks its hit (sacengine updates the projectile's effect in
-## the same frame as its move: animateAbominationProjectile, state.d:24454-24460; updateSilverbackProjectile, 24760-24831).
+## once per physics tick, after it moved and before it checks its hit (the original updates the projectile's effect in
+## the same frame as its move).
 ## Variants: ShotDropper (the Abomination's droplets, F148) and GrowingWave (the Silverback's breath, F149). They
 ## override _fly(); the count of ticks is this node's.
+## Ref: F149 (RFC-030 030k-b), sacengine animateAbominationProjectile state.d:24454-24460, updateSilverbackProjectile 24760-24831.
 
 ## Ticks the shot flew with this node (1 on the first call of fly()).
 var ticks := 0
@@ -24,7 +25,7 @@ func _fly(_shot: RangedShot, _at: Vector3) -> void:
 	pass
 
 
-## True when this node owns the shot's height (F151: GroundHug, sacengine position.z = getHeight): RangedShot then skips its
+## True when this node owns the shot's height (F151: GroundHug): RangedShot then skips its
 ## ground check, and the shot ends on a body or at the end of its range only. Default: false.
 func holds_height() -> bool:
 	return false

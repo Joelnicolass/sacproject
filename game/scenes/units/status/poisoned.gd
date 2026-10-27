@@ -1,23 +1,24 @@
 class_name Poisoned
 extends DamageOverTime
 
-## F118 (RFC-030g), F122 (RFC-030k-a): one dose of poison, a child of the body's Poisoning (the one owner of what the doses
-## add up to, and of their order). sacengine poison() (state.d:11601-11614) adds a Poison effect per dose; updatePoison
-## (state.d:23535-23590) deals poisonDamage/60 per frame through dealPoisonDamage (state.d:9415-9419), which always passes
+## One dose of poison, a child of the body's Poisoning (the one owner of what the doses
+## add up to, and of their order). The original adds a Poison effect per dose; updatePoison
+## deals poisonDamage/60 per frame through dealPoisonDamage, which always passes
 ## ignoreFriendly, and ends after the update whose frame reached `lifetime`: lifetime + 1 updates (DamageOverTime.step).
 ##
-## What a dose carries besides the damage (sacengine Poison): it may be `infectious` (the Necryl's Disease), it adds
-## `resistance_debuff` to the body's poisonResistance (×1e-3 to every resistance, state.d:8950) and multiplies its
-## regeneration by `regeneration_factor` (state.d:14403). From its update at frame `mana_block_frame` (Poison.manaBlockDelay,
-## 2 s) until it ends it blocks the body's mana (numManaBlocks, state.d:23556-23558; giveMana, 8829). Poisoning reads these
+## What a dose carries besides the damage (the original's Poison): it may be `infectious` (the Necryl's Disease), it adds
+## `resistance_debuff` to the body's poisonResistance (×1e-3 to every resistance) and multiplies its
+## regeneration by `regeneration_factor`. From its update at frame `mana_block_frame` (Poison.manaBlockDelay,
+## 2 s) until it ends it blocks the body's mana (numManaBlocks). Poisoning reads these
 ## to answer Health, ManaPool and MeleeWeapon; the dose itself only deals its damage.
+## Ref: F118 (RFC-030g), F122 (RFC-030k-a), sacengine poison() state.d:11601-11614, updatePoison 23535-23590, dealPoisonDamage 9415-9419, resistance 8950, regeneration 14403, numManaBlocks 23556-23558, giveMana 8829.
 
 var infectious := false
-## sacengine Poison.resistanceDebuff (SPEL `ires`): poisonResistance += it while the dose lasts.
+## Resistance debuff (SPEL `ires`): poisonResistance += it while the dose lasts.
 var resistance_debuff := 0
-## sacengine Poison.regenerationFactor (SPEL `freg`): poisonRegeneration *= it while the dose lasts.
+## Regeneration factor (SPEL `freg`): poisonRegeneration *= it while the dose lasts.
 var regeneration_factor := 1.0
-## sacengine Poison.manaBlockDelay = 2·updateFPS.
+## Frames after which the dose blocks the mana: 2 s (manaBlockDelay).
 var mana_block_frame := 120
 ## Set on the update whose frame is mana_block_frame; the block lasts until the dose ends.
 var blocks_mana := false

@@ -1,11 +1,12 @@
 class_name BodyNudge
 extends RefCounted
 
-## F121 (RFC-030j): what the effects that move a creature or a wizard from outside share (Squall's Pushback, the Flurry's
-## implosion, Tumbling). sacengine `push` (state.d:8604-8612): a body on the ground slides on the land (a step that
+## What the effects that move a creature or a wizard from outside share (Squall's Pushback, the Flurry's
+## implosion, Tumbling). A body on the ground slides on the land (a step that
 ## leaves the land is not taken, and the height is the ground's); one in the air takes the step as it is. The server
 ## (or solo) calls it; the clients get the position. Without terrain data (a bare debug scene) the land is everywhere
 ## and the ground is where the body stands.
+## Ref: F121 (RFC-030j), sacengine push state.d:8604-8612.
 
 
 ## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in a line to `edge` at `radius`, 0 from
@@ -18,12 +19,12 @@ static func push_speed(distance: float, inner: float, radius: float, speed: floa
 	return lerpf(speed, edge, (maxf(distance, 0.0) - inner) / (radius - inner))
 
 
-## sacengine push(velocity): one tick of `velocity` (m/s). True when the body moved.
+## One tick of `velocity` (m/s). True when the body moved.
 static func push(body: Node3D, velocity: Vector3) -> bool:
 	return slide(body, velocity / MatchClock.TICKS_PER_SECOND_F)
 
 
-## The step `offset` of sacengine push / the implosion's slide. True when the body moved.
+## The step `offset` of a push / the implosion's slide. True when the body moved.
 static func slide(body: Node3D, offset: Vector3) -> bool:
 	if fixed(body):
 		return false
@@ -36,8 +37,9 @@ static func slide(body: Node3D, offset: Vector3) -> bool:
 	return true
 
 
-## sacengine effects.fixed (push and catapult do nothing, state.d:8588-8590): a petrified, frozen or vined body. The one answer
+## A petrified, frozen or vined body (push and catapult do nothing). The one answer
 ## to «can this body be moved from outside?», asked of its Afflictions.
+## Ref: sacengine effects.fixed state.d:8588-8590.
 static func fixed(body: Node) -> bool:
 	var afflictions := body.get_node_or_null("Afflictions") as Afflictions
 	return afflictions != null and afflictions.fixed()
@@ -63,7 +65,7 @@ static func ground_y(body: Node3D, at: Vector3) -> float:
 
 
 ## The height a body on the ground stands at near `at`: the land's, or (REVIEW-F121) the body's own when it rests on a
-## building or another body above the land (sacengine getHeight counts building tops). Off its edge, move_and_slide and
+## building or another body above the land (getHeight counts building tops). Off its edge, move_and_slide and
 ## gravity take it down.
 static func floor_y(body: Node3D, at: Vector3) -> float:
 	var land := ground_y(body, at)
@@ -73,13 +75,13 @@ static func floor_y(body: Node3D, at: Vector3) -> float:
 	return land
 
 
-## sacengine obj.center: the middle of the body's box (its collision shape).
+## The middle of the body's box (its collision shape).
 static func center(body: Node3D) -> Vector3:
 	var col := body.get_node_or_null("Collision") as Node3D
 	return col.global_position if col else body.global_position
 
 
-## The body's box in world space (sacengine hitbox): the axis-aligned box of its collision capsule.
+## The body's box in world space: the axis-aligned box of its collision capsule.
 static func box(body: Node3D) -> AABB:
 	var half := Vector3(0.3, 0.9, 0.3)
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
@@ -94,7 +96,7 @@ static func box(body: Node3D) -> AABB:
 	return AABB(center(body) - half, half * 2.0)
 
 
-## Every live creature and wizard (sacengine movingObjects) whose box meets `area`, in group order (wizards first, as
+## Every live creature and wizard whose box meets `area`, in group order (wizards first, as
 ## SplashDamage walks them), so the result does not depend on the scene tree.
 static func bodies_in(tree: SceneTree, area: AABB, groups: Array[StringName] = [&"wizard", &"unit"]) -> Array[Node3D]:
 	var found: Array[Node3D] = []

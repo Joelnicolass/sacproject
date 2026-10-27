@@ -65,8 +65,9 @@ static func roll(weapon: MeleeWeapon, target: Node3D) -> Dictionary:
 		"facing": facing, "pending": pending, "resistance": resistance}
 
 
-## sacengine attackDamageFactor (state.d:8882-8892): a guardian hits harder, and the passive scales melee by the attacker's health
+## A guardian hits harder, and the passive scales melee by the attacker's health
 ## (Firefist).
+## Ref: sacengine attackDamageFactor state.d:8882-8892.
 static func attack_factor(weapon: MeleeWeapon) -> float:
 	var result := maxf(0.0, weapon.body.attack_factor)
 	var own: Health = weapon.weapons.health if weapon.weapons != null else null

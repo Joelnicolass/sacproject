@@ -102,7 +102,8 @@ func clip_role() -> String:
 	return "attack"
 
 
-## Starts the swing the target calls for (sacengine startMeleeAttacking, state.d:8725).
+## Starts the swing the target calls for.
+## Ref: sacengine startMeleeAttacking state.d:8725.
 func start(target: Node3D) -> void:
 	_target = target
 	swing.begin(_facts, MeleeSwing.pick(_facts, body, target, height, downward_threshold, rng))
@@ -111,7 +112,8 @@ func start(target: Node3D) -> void:
 func advance(delta: float) -> bool:
 	if not swing.active:
 		return false
-	## Each layer of Slime makes the swing take 5x as long (sacengine slowdownFactor, state.d:1381-1388).
+	## Each layer of Slime makes the swing take 5x as long (slowdownFactor).
+	## Ref: sacengine state.d:1381-1388.
 	swing.elapsed += delta / Afflictions.stat_factor_of(body, Afflictions.Stat.ATTACK_TIME)
 	while swing.blow_due():
 		swing.next_tick += 1
@@ -131,7 +133,8 @@ func _land() -> void:
 		return
 	var was_frozen := Frozen.is_frozen(target)
 	var result := roll_damage(target)
-	## dealDamage scales melee by rockForm and the other shields too (state.d:8962-8969).
+	## dealDamage scales melee by rockForm and the other shields too.
+	## Ref: sacengine state.d:8962-8969.
 	var factor := health.shield_factor() * MeleeRules.attack_factor(self)
 	var amount := float(result["amount"]) * factor
 	if DebugLog.on(&"melee"):

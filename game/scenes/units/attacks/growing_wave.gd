@@ -1,9 +1,8 @@
 class_name GrowingWave
 extends ShotInFlight
 
-## F149 (RFC-030 030k-b), generalised by F162 (030w-c): a creature's wave that grows while it flies. The Silverback's
-## Icy Breath (rdba, sacengine updateSilverbackProjectile, state.d:24758-24831), the Spitfire's fire wave (fhba,
-## updateSpitfireProjectile, 23025-23069) and the Gargoyle's wave (ehba, updateGargoyleProjectile, 23079-23113) are the
+## A creature's wave that grows while it flies. The Silverback's
+## Icy Breath (rdba), the Spitfire's fire wave (fhba) and the Gargoyle's wave (ehba) are the
 ## same walk; only what a touched body takes besides the damage changes, and that is a WaveTouch child.
 ## The wave flies straight through everything (ShotLook.collides off: no body, no ground) for its range and grows:
 ## on its update number n (frame = n − 1) its radius is final_radius · frame / (60 · range / speed). Every update it
@@ -16,14 +15,15 @@ extends ShotInFlight
 ## settled() at the end of the update (FreezeTouch: Silverback, IgniteTouch: Spitfire; the Gargoyle's wave has none).
 ## The wave's mist is presentation: ShotLook.trail_fx on every peer.
 ## Deviation (declared): on its first update the radius is 0 and the port's walk (SplashDamage.bodies_within) takes
-## nobody; sacengine takes a body whose box holds the point.
+## nobody; the original takes a body whose box holds the point.
+## Ref: F149 (RFC-030 030k-b), F162 (030w-c), sacengine updateSilverbackProjectile state.d:24758-24831, updateSpitfireProjectile 23025-23069, updateGargoyleProjectile 23079-23113.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
-## sacengine final*ProjectileSize: the radius at the end of the range (m). Silverback and Spitfire 7,5, Gargoyle 6.
+## The radius at the end of the range (m) (final*ProjectileSize). Silverback and Spitfire 7,5, Gargoyle 6.
 @export var final_radius := 7.5
-## A body in one of these groups takes the damage only (sacengine TargetType.building).
+## A body in one of these groups takes the damage only (TargetType.building).
 @export var building_groups: Array[StringName] = [&"structure"]
 
 ## The bodies already taken (damagedTargets): each one once in the whole flight.
@@ -84,7 +84,7 @@ func _intended(shot: RangedShot) -> Node:
 	return null if shot.target_path.is_empty() else shot.get_node_or_null(shot.target_path)
 
 
-## True when the body is a building (sacengine TargetType.building): a touch may skip it.
+## True when the body is a building (TargetType.building): a touch may skip it.
 func is_building(body: Node) -> bool:
 	for group in building_groups:
 		if body.is_in_group(group):

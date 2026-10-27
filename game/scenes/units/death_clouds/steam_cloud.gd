@@ -1,8 +1,9 @@
 extends DeathCloud
 
-## Steam Cloud (goc@, Cog and Phoenix). sacengine updateSteamCloud (state.d:25216-25233): dealSplashSpellDamageAt with the
-## SPEL amount over damageRange, from the dead body's center, once (amount·(1 − d/r), splash spell, state.d:9053-9056).
+## Steam Cloud (goc@, Cog and Phoenix). It is a dealSplashSpellDamageAt with the
+## SPEL amount over damageRange, from the dead body's center, once (amount·(1 − d/r), splash spell).
 ## SplashDamage is that same call (it also hits buildings). It carries DamageMod.ignite (F155): it only matters on oiled bodies.
+## Ref: sacengine updateSteamCloud state.d:25216-25233, 9053-9056.
 
 
 func _affect(center: Vector3) -> void:

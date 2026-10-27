@@ -1,7 +1,7 @@
 extends Node
 
-## The creature's current order (sacengine creatureAI.order) and its AI (updateCreatureAI,
-## state.d:13684). Runs where the body is simulated (server or solo) and drives UnitBody with
+## The creature's current order and its AI (updateCreatureAI).
+## Runs where the body is simulated (server or solo) and drives UnitBody with
 ## begin_walk / engage / halt.
 ##
 ## MOVE walks to the spot and ignores enemies until it arrives (moveTo), then the order ends.
@@ -9,28 +9,34 @@ extends Node
 ## sees (patrol) or walks to where the target stood, then the order ends.
 ## GUARD follows a friendly body, GUARD_AREA holds a spot and RETREAT stays near the wizard:
 ## all three fight foes in sight of their anchor while within guard_range of it
-## (patrolAround, state.d:13003) and never end on their own. ADVANCE fights foes in sight of
-## its destination on the way and keeps that spot (state.d:13725).
+## (patrolAround) and never end on their own. ADVANCE fights foes in sight of
+## its destination on the way and keeps that spot.
+## Ref: sacengine creatureAI.order, updateCreatureAI state.d:13684, patrolAround 13003, advance 13725.
 
 enum Command { NONE, MOVE, ATTACK, GUARD, GUARD_AREA, ADVANCE, RETREAT }
 
-## sacobject.d:103 guardDistance.
+## How far (m) a guard stays from its anchor.
+## Ref: sacobject.d:103 guardDistance.
 @export var guard_range := 50.0
-## state.d:13608 retreatDistance, added to the wizard's radius.
+## How far (m) a retreating body stays from the wizard, added to the wizard's radius.
+## Ref: sacengine retreatDistance state.d:13608.
 @export var retreat_distance := 10.0
-## moveTo stops inside 0.5 m (state.d:12386).
+## moveTo stops inside this distance (0.5 m).
+## Ref: sacengine moveTo state.d:12386.
 @export var arrive_distance := 0.5
 @export var think_interval_s := 0.25
 ## The same order again (same command and target, GUARD / GUARD_AREA / ADVANCE): the unit takes the new point and thinks at its
 ## next physics tick (once), not at once and again on the next tick. The AI repeats the order of a follower each time its leader
-## moves (shiny.d orderIfChanged): each repeat cost two target searches, one inside the AI's tick. Off = every order thinks at once.
+## moves (orderIfChanged): each repeat cost two target searches, one inside the AI's tick. Off = every order thinks at once.
+## Ref: shiny.d orderIfChanged.
 @export var defer_repeat_think := true
 
 var command: Command = Command.NONE
 var target: Node3D
 ## Where the order points (ground spot, or where the target stood).
 var point := Vector3.ZERO
-## Formation slot (right, forward) in meters, turned by `facing` (getTargetPosition, state.d:391).
+## Formation slot (right, forward) in meters, turned by `facing` (getTargetPosition).
+## Ref: sacengine getTargetPosition state.d:391.
 var offset := Vector2.ZERO
 var facing := 0.0
 ## The formation this creature keeps (RFC-038); the group's next order uses the one most of its creatures have. Server only,
@@ -82,8 +88,9 @@ func clear() -> void:
 	_body.ordered = false
 
 
-## Teleport (sacengine teleport, state.d:10260-10261): the creature loses its orders unless it is
+## Teleport: the creature loses its orders unless it is
 ## on guard or retreating. The body already stopped (warp_to), so a kept order thinks again at once.
+## Ref: sacengine teleport state.d:10260-10261.
 func warped() -> void:
 	if command == Command.GUARD or command == Command.RETREAT:
 		_think_left = 0.0
@@ -152,7 +159,7 @@ func _think() -> void:
 			_hold(target.global_position, guard_range, _radius_of(target) + retreat_distance)
 
 
-## sacengine attack/guard with a dead target: fight what is in sight, else walk to the last
+## An attack/guard order with a dead target: fight what is in sight, else walk to the last
 ## spot and drop the order (`goto case CommandType.move`).
 func _lost_target() -> void:
 	target = null
@@ -169,8 +176,9 @@ func _lost_target() -> void:
 
 
 ## patrolAround, then moveTo / moveWithinRange: defend `center` while within `leash` of it. F370: the picker is asked again
-## every think (patrolAround calls updateTarget each turn, state.d:13007); the current target weighs x1.3 there, so it is
+## every think (patrolAround calls updateTarget each turn); the current target weighs x1.3 there, so it is
 ## kept unless something better (or nothing: a futile target) comes up. Before, a target in sight was held blindly.
+## Ref: sacengine patrolAround state.d:13007.
 func _hold(center: Vector3, leash: float, stop_within: float) -> void:
 	if _flat(_body.global_position, center) <= leash:
 		var foe: Node3D = _acquire(center, leash)
@@ -184,10 +192,11 @@ func _hold(center: Vector3, leash: float, stop_within: float) -> void:
 	_walk(center)
 
 
-## updateTarget as patrolAround calls it (threshold min(100, distance to the anchor)*0.01, state.d:13007) or,
-## for ADVANCE (no leash), as advance does (reference 150, threshold 0.25, state.d:13039). With a leash the
+## updateTarget as patrolAround calls it (threshold min(100, distance to the anchor)*0.01) or,
+## for ADVANCE (no leash), as advance does (reference 150, threshold 0.25). With a leash the
 ## foe must also be within the body's sight range of the anchor (a deviation: at the anchor the threshold
 ## is ~0 and any foe the side has seen would be taken, then dropped as the threshold rises: jitter).
+## Ref: sacengine patrolAround state.d:13007, advance 13039.
 func _acquire(center: Vector3, leash: float) -> Node3D:
 	if is_inf(leash):
 		return _body.engagement.closest_foe(center, 0.25, 150.0)
@@ -219,8 +228,9 @@ func _alive(node: Variant) -> bool:
 	return health == null or not health.is_dead()
 
 
-## sacengine isValidGuardTarget (state.d:145-151, used by guard 13016 and retreat 13687): a dying
+## A dying
 ## wizard is dropped, a ghost (health 0 while it rises) is still guarded.
+## Ref: sacengine isValidGuardTarget state.d:145-151, guard 13016, retreat 13687.
 func _guardable(node: Variant) -> bool:
 	var live := _live(node)
 	if live == null:

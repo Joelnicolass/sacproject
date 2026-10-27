@@ -1,18 +1,19 @@
 class_name Clinging
 extends Node3D
 
-## F129 (RFC-030 030r-a): the things stuck to a body that slow it down (sacengine effects.numStickyBombs / numBlightMites,
-## stats.d:122): the Ikarus's Sticky bombs (×0.75 each, 10 s) and the Bilemites (×0.8 each). The one owner of how many
+## The things stuck to a body that slow it down (numStickyBombs / numBlightMites in the original):
+## the Ikarus's Sticky bombs (×0.75 each, 10 s) and the Bilemites (×0.8 each). The one owner of how many
 ## there are and when each lets go. stick() adds one piece of a kind for a number of MatchClock ticks; each piece lets go at
-## its own tick (sacengine updateStickyBomb: `++infectionTime <= updateFPS·duration` keeps it, so it is gone at duration·60 + 1
+## its own tick (updateStickyBomb: `++infectionTime <= updateFPS·duration` keeps it, so it is gone at duration·60 + 1
 ## updates after it stuck); every piece of every body lets go at once when the body can no longer be poisoned
-## (canBeStickyBombed = canBePoisoned, state.d:186): it dies, is being summoned…
+## (canBeStickyBombed = canBePoisoned): it dies, is being summoned…
 ## The slowdown is not written here: for each kind Clinging gives PaceFactors the factor `factor ^ count` under its own source
 ## (&"cling_sticky", &"cling_mites"), and PaceFactors writes speed_factor. It is derived from the lists on every change, so a
 ## piece that lets go in the same tick as another one is the same as the two one after the other.
 ## `shown` is replicated (the unit's MultiplayerSynchronizer, "Clinging:shown"): x = bombs, y = mites, z = frogs. Every peer draws that
-## many of the look scenes at fixed places on the body (declared: sacengine keeps where each one hit).
+## many of the look scenes at fixed places on the body (declared: the original keeps where each one hit).
 ## Server (or solo) only for stick(); the look runs on every peer.
+## Ref: F129 (RFC-030 030r-a), sacengine effects.numStickyBombs / numBlightMites stats.d:122, updateStickyBomb, canBeStickyBombed state.d:186.
 
 const STICKY := &"sticky"
 const MITES := &"mites"

@@ -1,17 +1,18 @@
 class_name ShotStrike
 extends Node3D
 
-## F124 (RFC-030 030m): a creature's ranged attack with no flight, in place of a RangedShot: the Gnome's ray (plfa,
-## gnomeShoot state.d:11724-11735), the Styx's bolt at the next tick (dhga, StyxShoot 11852-11855, 24154-24172) and the
+## A creature's ranged attack with no flight, in place of a RangedShot: the Gnome's ray (plfa),
+## the Styx's bolt at the next tick (dhga) and the
 ## Warmonger's gun (fhga, 030m-b). The scene is ShotLook.strike; RangedFire instances it on the server (or solo) only,
 ## as its own child, and calls launch() once. The strike is not replicated: what peers see goes through FxBus.
 ##
 ## Ticks: launch() runs tick 0 in the tick of the shot; then every physics tick runs the ticks MatchClock advanced
-## since (1, 2, …). The scene's process_physics_priority is −1: sacengine updates its effects before its creatures
-## (state.d:29331 vs 29345). Variants override _strike_tick() and call finish() when done.
+## since (1, 2, …). The scene's process_physics_priority is −1: the original updates its effects before its creatures.
+## Variants override _strike_tick() and call finish() when done.
 ##
 ## Same names as RangedShot, so a ShotImpact reads either: damage, from_slot, velocity, ability, target_path,
 ## shooter_path.
+## Ref: F124 (RFC-030 030m), sacengine gnomeShoot state.d:11724-11735, StyxShoot 11852-11855, 24154-24172, effects before creatures 29331 vs 29345.
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
@@ -26,7 +27,7 @@ var shooter_path := NodePath()
 var look: ShotLook
 ## Where the shot leaves (RangedWeapon.shot_origin at the shot tick).
 var origin := Vector3.ZERO
-## The predicted target center, without accuracy (sacengine `target` of the *Shoot functions).
+## The predicted target center, without accuracy (`target` of the *Shoot functions).
 var aim := Vector3.ZERO
 ## The shooter's ranged accuracy (CreatureType.ranged_accuracy), for the strikes that draw it again.
 var accuracy := 0.0
@@ -120,6 +121,6 @@ func _land(target: Node3D, point: Vector3) -> float:
 	return ShotImpact.land(self, look, target, point, ability)
 
 
-## A body's center (sacengine obj.center): ShotAim.center.
+## A body's center: ShotAim.center.
 static func center_of(body: Node3D) -> Vector3:
 	return ShotAim.center(body)

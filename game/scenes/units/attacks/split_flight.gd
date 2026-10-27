@@ -1,21 +1,21 @@
 class_name ShotSplit
 extends ShotInFlight
 
-## F125 (RFC-030 030n-a): the Boulderdash's fan of three rocks (emba), sacengine boulderdashShoot (state.d:11793-11813)
-## and updateBoulderdashProjectile (24729-24755).
+## The Boulderdash's fan of three rocks (emba).
 ## RangedWeapon fires ShotLook.volley shots with the same direction (one accuracy roll) and writes in each spawn packet
 ## its `volley_index` (−1, 0, +1) and `aim_distance` (|aim point − origin|). This node counts
 ## distanceUntilSplit = max(0, aim_distance − before_target_m) down by speed/60 on every tick of the flight; on the tick
-## it goes under 0 the side rocks turn volley_index · angle_deg around `axis` (sacengine: the shooter's «up»), after the
+## it goes under 0 the side rocks turn volley_index · angle_deg around `axis` (the original: the shooter's «up»), after the
 ## move of that tick, so the new direction counts from the next move (the order of updateBoulderdashProjectile).
 ## The middle rock (index 0) never turns. Without `aim_distance` in the packet nothing splits.
 ## Deviation (declared): the turn is around Vector3.UP, not the shooter's own up (a ground shooter stands upright); with
 ## the port's axes it may come out mirrored, and the fan is symmetric.
+## Ref: F125 (RFC-030 030n-a), sacengine boulderdashShoot state.d:11793-11813, 11794, updateBoulderdashProjectile 24729-24755, θ 24740.
 
 
-## sacengine θ = 3.5° (state.d:24740).
+## The turn of each side rock (θ = 3.5°).
 @export var angle_deg := 3.5
-## sacengine boulderdashSplitDistance (state.d:11794): the rocks split this far before the aim point.
+## The rocks split this far before the aim point (boulderdashSplitDistance).
 @export var before_target_m := 60.0
 ## The axis the side rocks turn around.
 @export var axis := Vector3.UP
@@ -49,7 +49,7 @@ func _begin(shot: RangedShot, at: Vector3) -> void:
 		_log_start(shot, at, aim)
 
 
-## sacengine: velocity = rotate(rotationQuaternion(upwards, which·θ), velocity) for which ≠ 0.
+## velocity = rotate(rotationQuaternion(upwards, which·θ), velocity) for which ≠ 0.
 func _split(shot: RangedShot) -> void:
 	_split_tick = ticks
 	var before := shot.velocity
@@ -62,7 +62,7 @@ func _split(shot: RangedShot) -> void:
 			direction.x, direction.y, direction.z, MatchClock.now()])
 
 
-## sacengine decrements distanceUntilSplit by rangedAttack.speed/updateFPS; without a SPEL, by the shot's own speed.
+## It decrements distanceUntilSplit by rangedAttack.speed/updateFPS; without a SPEL, by the shot's own speed.
 func _step_m(shot: RangedShot) -> float:
 	var speed := shot.ability.speed_m_s if shot.ability else shot.velocity.length()
 	return speed / MatchClock.TICKS_PER_SECOND_F

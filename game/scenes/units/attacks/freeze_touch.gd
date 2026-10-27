@@ -1,10 +1,11 @@
 class_name FreezeTouch
 extends WaveTouch
 
-## F149 (RFC-030 030k-b): the freeze of the Silverback's breath (updateSilverbackProjectile, state.d:24758-24831). The
+## The freeze of the Silverback's breath. The
 ## shot's target tries to freeze right after the blow (tryFreezeWithCooldown); any other body that was not frozen when
 ## the wave touched it tries at the end of the update (toFreeze). A building has no Frozen. The freeze is the body's own
 ## Afflictions/Frozen with the SPEL `zerf`.
+## Ref: F149 (RFC-030 030k-b), sacengine updateSilverbackProjectile state.d:24758-24831.
 
 ## The spell of the freeze a touched body may take (data/catalog/spells/zerf.tres: 20 s, 150 of spell damage when it thaws).
 @export var freeze: SpellType

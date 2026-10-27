@@ -2,12 +2,13 @@
 class_name DamagePassive
 extends Node
 
-## F117 (RFC-030f): the only owner of the damage multipliers of a creature's passiveOnDamage (sacobject.d:426). Health asks
+## The only owner of the damage multipliers of a creature's passiveOnDamage. Health asks
 ## incoming_factor() for every hit the body takes; MeleeWeapon asks outgoing_melee_factor() for every blow it lands. The
 ## formula lives in the DamagePassiveType of the creature's `on_damage`; a creature without one (or an ability with no resource here) is ×1.
 ## A child of unit.tscn; take it out and no passive applies.
 ## F130: gcil (the Storm Giant's Lightning Charge) has side effects and is not a DamagePassiveType: its LightningCharge is the
 ## `charge` socket, and this node only asks it (a lightning hit charges, a charged body blows and aims ×1.5).
+## Ref: F117 (RFC-030f), sacobject.d:426.
 
 ## The body whose CreatureType.on_damage picks the resource. Read on every query: a body that changes its type changes its
 ## passive with it.
@@ -30,7 +31,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## Multiplier on the damage the body takes at relative health `health_fraction` (before the hit). F130: `mods` are the hit's
 ## DamageMod bits, `before` the damage that reached the passive and `ally` whether the attacker is of the body's side: a lightning
-## hit on a Lightning Charge body charges it f · before frames and leaves a quarter (state.d:9017-9022).
+## hit on a Lightning Charge body charges it f · before frames and leaves a quarter.
+## Ref: sacengine state.d:9017-9022.
 func incoming_factor(health_fraction: float, mods := 0, before := 0.0, ally := false) -> float:
 	var passive := active()
 	var factor := passive.incoming(health_fraction) if passive else 1.0
@@ -47,7 +49,8 @@ func outgoing_melee_factor(health_fraction: float) -> float:
 	return (passive.outgoing_melee(health_fraction) if passive else 1.0) * (lightning.melee_factor() if lightning else 1.0)
 
 
-## F130: ×1.5 on the body's melee accuracy while its Lightning Charge is on (dealMeleeDamage, state.d:9237).
+## F130: ×1.5 on the body's melee accuracy while its Lightning Charge is on (dealMeleeDamage).
+## Ref: sacengine state.d:9237.
 func melee_accuracy_factor() -> float:
 	var lightning := _charge()
 	return lightning.melee_factor() if lightning else 1.0

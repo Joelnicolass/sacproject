@@ -42,6 +42,8 @@ var _hosting: bool = false
 var _next_beat_ms: int = 0
 var _beating: bool = false
 var _closed: bool = false
+## stop() was called: what it stops (the match process) is not a failure.
+var _stopping: bool = false
 
 
 ## The online room this process hosts, or null.
@@ -114,13 +116,15 @@ func start(players: int, room_name: String, listed: bool = true, match_ticket: D
 		_start_listen(data)
 
 
-## Closes the room on the issuer and stops hosting it (the match process, or this game's server).
+## Stops hosting the room (the match process, or this game's server) and closes it on the issuer. Deliberate: `failed`
+## does not fire, `ended` does.
 func stop() -> void:
-	await _close()
+	_stopping = true
 	if _local and is_instance_valid(_local):
 		_local.stop()
 	elif mode == LISTEN and MpKit.is_server():
 		MpKit.leave()
+	await _close()
 
 
 func _start_dedicated(players: int, data: Dictionary, host_seat: String, seats: PackedStringArray) -> void:
@@ -222,6 +226,8 @@ func _close() -> void:
 
 
 func _fail(reason: String) -> void:
+	if _closed or _stopping:
+		return
 	push_warning("MpOnline: %s" % reason)
 	failed.emit(reason)
 	if _local and is_instance_valid(_local):

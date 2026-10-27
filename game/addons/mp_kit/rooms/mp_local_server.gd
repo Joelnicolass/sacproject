@@ -33,6 +33,8 @@ var _launcher: MpMatchLauncher
 var _match_id: String = ""
 var _host_token: String = ""
 var _join_host: bool = true
+## stop() was called: the match it aborts is not a failure (no server_failed).
+var _stopping: bool = false
 ## The online room's code (MpOnline): what friends type instead of address:port#code.
 var online_code: String = ""
 
@@ -146,7 +148,9 @@ func start(seats: int = 2, options: Dictionary = {}, join_host: bool = true, onl
 
 
 ## Kills the match process and frees this node.
+## Kills the match and frees this node. A deliberate stop: server_failed does not fire.
 func stop() -> void:
+	_stopping = true
 	if _launcher and not _match_id.is_empty():
 		_launcher.abort(_match_id, "stopped")
 	queue_free()
@@ -214,8 +218,9 @@ func _on_ended(_id: String, result: Dictionary) -> void:
 
 
 func _fail(reason: String) -> void:
-	push_warning("MpLocalServer: %s" % reason)
-	server_failed.emit(reason)
+	if not _stopping:
+		push_warning("MpLocalServer: %s" % reason)
+		server_failed.emit(reason)
 	queue_free()
 
 

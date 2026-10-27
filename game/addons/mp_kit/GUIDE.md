@@ -1281,6 +1281,7 @@ for row in await flow.online_rooms():
 |---|---|
 | `flow.host_online(players, name, listed, ticket)` | Abre una sala (un `MpOnline` bajo la raíz). `listed = false`: privada, se entra solo con el código. Una segunda llamada devuelve la que ya corre. `ticket`: tu ticket de partida (mundo, modo, opciones, seed, picks…, `seats: [{slot, meta}]` con la meta del host en el slot 1): en escritorio el proceso de partida lo recibe como su ticket (el kit solo agrega el token de cada asiento y la sala del relay: `MpLocalServer.merge_ticket`); en un navegador tu juego es la partida y lo lee de `MpOnline.ticket` |
 | `MpOnline.room_ready(code)` / `failed(reason)` / `ended` | Ya pueden entrar / el emisor la rechazó o la partida no pudo arrancar / la sala se cerró |
+| `MpOnline.stop()` | Cierra la sala a propósito (un botón Cerrar): para la partida y avisa al emisor; emite `ended`, nunca `failed` |
 | `MpOnline.code`, `mode` | El código; `dedicated` (escritorio) o `listen` (navegador). `--online-mode=listen` fuerza la forma del navegador en escritorio (tests) |
 | `flow.join_online(code)` | Un asiento del emisor y después la conexión al relay. Si la sala todavía está arrancando, vuelve a pedir unos segundos |
 | `flow.online_rooms()` | `[{code, name, players, max_players, state, platform, age_s}]` |

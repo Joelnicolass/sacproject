@@ -137,3 +137,29 @@ func test_an_issuer_room_goes_through_the_relay_whatever_the_transport() -> void
 	if lan is MultiplayerPeer:
 		(lan as MultiplayerPeer).close()
 	MpKit.transport = before
+
+
+func test_a_deliberate_stop_is_not_a_failure() -> void:
+	var server := MpLocalServer.new()
+	var failed: Array = []
+	server.server_failed.connect(func(reason: String) -> void: failed.append(reason))
+	tree.root.add_child(server)
+	server.stop()
+	server._fail("stopped")
+	check(failed.is_empty(), "MpLocalServer.stop(): the match it aborts fires no server_failed")
+	var other := MpLocalServer.new()
+	other.server_failed.connect(func(reason: String) -> void: failed.append(reason))
+	tree.root.add_child(other)
+	other._fail("spawn_timeout")
+	check(failed == ["spawn_timeout"], "a real failure still fires server_failed")
+	var online := MpOnline.new()
+	var said: Array = []
+	online.failed.connect(func(reason: String) -> void: said.append(reason))
+	online._stopping = true
+	online._fail("stopped")
+	online._stopping = false
+	online._closed = true
+	online._fail("late")
+	check(said.is_empty(), "MpOnline: nothing fails once it is stopping or closed")
+	online.free()
+	await tree.process_frame

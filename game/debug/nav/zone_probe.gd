@@ -23,6 +23,7 @@ var _settings: NavBakeSettings
 var _params := NavigationPathQueryParameters3D.new()
 var _result := NavigationPathQueryResult3D.new()
 var _results: Array = []
+var _max_dt := 0.0
 var _tag := ""
 var _pillars := 0
 var _geometry_shared: NavigationMeshSourceGeometryData3D
@@ -32,12 +33,20 @@ func _ready() -> void:
 	_run()
 
 
+func _process(delta: float) -> void:
+	_max_dt = maxf(_max_dt, delta)
+
+
 func _say(text: String) -> void:
 	print("ZONE_PROBE [", _tag, "] ", text)
 
 
 func _run() -> void:
 	_settings = load("res://data/nav/nav_bake.tres") as NavBakeSettings
+	if "sync" in OS.get_cmdline_user_args():
+		await _sync_study()
+		get_tree().quit()
+		return
 	for scenario in [["flat", 0], ["pillars", PILLARS]]:
 		_tag = scenario[0]
 		_pillars = scenario[1]
@@ -473,7 +482,7 @@ func _paths(label: String, navmesh: NavigationMesh, short := false, only: Array 
 	var region := NavigationRegion3D.new()
 	region.navigation_mesh = navmesh
 	add_child(region)
-	var map := region.get_world_3d().navigation_map
+	var map := region.get_viewport().world_3d.navigation_map
 	NavigationServer3D.map_set_cell_size(map, navmesh.cell_size)
 	NavigationServer3D.map_set_cell_height(map, navmesh.cell_height)
 	var frames: Array = []
@@ -528,3 +537,184 @@ func _empty(geometry: NavigationMeshSourceGeometryData3D) -> void:
 	printerr("ZONE_PROBE empty_begin zone_outside_geometry_bounds")
 	var navmesh3 := _bake_zone(geometry, 40, 40)
 	printerr("ZONE_PROBE empty_end zone_outside_geometry_bounds polygons=%d" % navmesh3.get_polygon_count())
+
+
+## ---- Sync study (run with `-- sync`): what the server's map sync costs on a swap, one region vs one region per zone.
+
+const HOLE_ZONES := [Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2), Vector2i(2, 2)]
+
+
+func _bake_all(geometry: NavigationMeshSourceGeometryData3D) -> Array:
+	_geometry_shared = geometry
+	_results = []
+	_results.resize(ZONES * ZONES)
+	WorkerThreadPool.wait_for_group_task_completion(WorkerThreadPool.add_group_task(_bake_index, ZONES * ZONES, -1, true, "bake_all"))
+	var out := _results
+	_results = []
+	return out
+
+
+func _sync_study() -> void:
+	_tag = "sync"
+	_pillars = PILLARS
+	var geometry := _parse([NO_RECT])
+	var hole_geometry := _parse([HOLE])
+	var solid := _bake_all(geometry)
+	var partial := solid.duplicate()
+	for zone in HOLE_ZONES:
+		partial[zone.y * ZONES + zone.x] = _bake_zone(hole_geometry, zone.x, zone.y)
+	var merged := _merge(solid)
+	var merged_hole := _merge(partial)
+	var map := get_viewport().world_3d.navigation_map
+	NavigationServer3D.map_set_cell_size(map, 0.5)
+	NavigationServer3D.map_set_cell_height(map, 0.25)
+	_say("settings project map_async=%s region_async=%s | server map_async=%s default_iteration=%d" % [
+		ProjectSettings.get_setting("navigation/world/map_use_async_iterations", "unset"),
+		ProjectSettings.get_setting("navigation/world/region_use_async_iterations", "unset"),
+		NavigationServer3D.map_get_use_async_iterations(map), NavigationServer3D.map_get_iteration_id(map)])
+	## (a) one region, merged mesh
+	var region := NavigationRegion3D.new()
+	add_child(region)
+	_say("(a) one region, mesh polygons=%d" % merged.get_polygon_count())
+	await _experiment("a first assign", map, func() -> void: region.navigation_mesh = merged, 8)
+	await _experiment("a swap to hole mesh (sync default)", map, func() -> void: region.navigation_mesh = merged_hole, 8, true)
+	ProjectSettings.set_setting("navigation/world/map_use_async_iterations", true)
+	await _experiment("a swap, ProjectSettings changed at runtime", map, func() -> void: region.navigation_mesh = merged.duplicate(), 8, true)
+	ProjectSettings.set_setting("navigation/world/map_use_async_iterations", false)
+	region.free()
+	await _settle()
+	## (b) one region per zone
+	var holder := Node3D.new()
+	add_child(holder)
+	var regions: Array[NavigationRegion3D] = []
+	var t := Time.get_ticks_usec()
+	for zid in ZONES * ZONES:
+		var r := NavigationRegion3D.new()
+		r.navigation_mesh = solid[zid]
+		holder.add_child(r)
+		regions.append(r)
+	_say("(b) 256 regions added in %.0f ms" % (float(Time.get_ticks_usec() - t) / 1000.0))
+	await _experiment("b first sync 256 regions", map, func() -> void: pass, 8)
+	await _settle()
+	_say("(b) union of the 256 zone meshes: %s" % _components_of(merged))
+	await _query_cases(map, "b edge_connections=on", ["horizontal_3_borders", "diagonal_5_borders", "long_cross_map", "through_hole"])
+	await _experiment("b swap 4 regions to hole meshes", map, func() -> void:
+		for zone in HOLE_ZONES:
+			regions[zone.y * ZONES + zone.x].navigation_mesh = partial[zone.y * ZONES + zone.x], 8, true)
+	await _settle()
+	await _query_cases(map, "b edge_connections=on after swap", ["horizontal_3_borders", "diagonal_5_borders", "long_cross_map", "through_hole"])
+	for r in regions:
+		r.use_edge_connections = false
+	await _experiment("b edge_connections turned off on all", map, func() -> void: pass, 6)
+	await _settle()
+	await _query_cases(map, "b edge_connections=off", ["horizontal_3_borders", "diagonal_5_borders", "long_cross_map", "through_hole"])
+	holder.free()
+	await _settle()
+	## (c) the real High Noon navmesh
+	var real := load("res://scenes/map/maps/high_noon/nav.res") as NavigationMesh
+	NavigationServer3D.map_set_cell_size(map, real.cell_size)
+	NavigationServer3D.map_set_cell_height(map, real.cell_height)
+	var one := NavigationRegion3D.new()
+	add_child(one)
+	_say("(c) high_noon nav.res polygons=%d cell=%s" % [real.get_polygon_count(), real.cell_size])
+	await _experiment("c first assign", map, func() -> void: one.navigation_mesh = real, 6)
+	await _experiment("c reassign a copy (same content)", map, func() -> void: one.navigation_mesh = real.duplicate(), 6)
+	await _experiment("c reassign a copy again", map, func() -> void: one.navigation_mesh = real.duplicate(), 6)
+	one.free()
+	await _settle()
+	## (d) why is the 30 k polygon map slow? edge connections of the region off (a single region needs none).
+	var plain := NavigationRegion3D.new()
+	plain.use_edge_connections = false
+	add_child(plain)
+	NavigationServer3D.map_set_cell_size(map, 0.5)
+	NavigationServer3D.map_set_cell_height(map, 0.25)
+	await _experiment("d pillars mesh, use_edge_connections=false: first assign", map, func() -> void: plain.navigation_mesh = merged, 8)
+	await _experiment("d swap to hole mesh, edge_connections=false", map, func() -> void: plain.navigation_mesh = merged_hole.duplicate(), 8, true)
+	plain.free()
+	await _settle()
+	## (a2) async iterations through the server setters, last because it leaves the map in another mode.
+	NavigationServer3D.map_set_cell_size(map, 0.5)
+	NavigationServer3D.map_set_cell_height(map, 0.25)
+	var again := NavigationRegion3D.new()
+	again.navigation_mesh = merged
+	add_child(again)
+	await _settle()
+	await _settle()
+	NavigationServer3D.map_set_use_async_iterations(map, true)
+	NavigationServer3D.region_set_use_async_iterations(again.get_rid(), true)
+	_say("(a2) server map_async=%s region_async=%s" % [NavigationServer3D.map_get_use_async_iterations(map),
+		NavigationServer3D.region_get_use_async_iterations(again.get_rid())])
+	await _experiment("a2 swap to hole mesh, async via setters", map, func() -> void: again.navigation_mesh = merged_hole.duplicate(), 8, true)
+	await _experiment("a2 swap back, async via setters", map, func() -> void: again.navigation_mesh = merged.duplicate(), 8)
+	var back := NavMeshBackend.query_path(map, Vector3(240, GROUND_Y, 320), Vector3(400, GROUND_Y, 320), _params, _result)
+	_say("a2 after swap back and 8 frames: path points=%d (4 = through the middle)" % back.size())
+
+
+func _settle() -> void:
+	for _i in 4:
+		await get_tree().physics_frame
+
+
+## Runs `apply`, then waits physics frames printing the wall ms of each, the map iteration id, the largest process delta and, when
+## `watch_hole`, the frame (and ms) at which a path through the hole already goes around it (longer than the 160 m straight line).
+func _experiment(label: String, map: RID, apply: Callable, frames: int, watch_hole := false) -> void:
+	var id_before := NavigationServer3D.map_get_iteration_id(map)
+	var hole_from := Vector3(240, GROUND_Y, 320)
+	var hole_to := Vector3(400, GROUND_Y, 320)
+	_max_dt = 0.0
+	var t0 := Time.get_ticks_usec()
+	apply.call()
+	var apply_ms := float(Time.get_ticks_usec() - t0) / 1000.0
+	var times: Array = []
+	var ids: Array = []
+	var avoided_at := -1
+	var avoided_ms := 0.0
+	var total := frames
+	if watch_hole:
+		total = maxi(frames, 240)
+	for i in total:
+		var tf := Time.get_ticks_usec()
+		await get_tree().physics_frame
+		if i < frames:
+			times.append("%.0f" % (float(Time.get_ticks_usec() - tf) / 1000.0))
+			ids.append(NavigationServer3D.map_get_iteration_id(map))
+		if watch_hole and avoided_at < 0:
+			var path := NavMeshBackend.query_path(map, hole_from, hole_to, _params, _result)
+			var length := 0.0
+			for k in range(1, path.size()):
+				length += path[k - 1].distance_to(path[k])
+			if length > 161.0:
+				avoided_at = i + 1
+				avoided_ms = float(Time.get_ticks_usec() - t0) / 1000.0
+		if i + 1 >= frames and (not watch_hole or avoided_at >= 0):
+			break
+	_say("%s: apply_ms=%.1f frame_ms=%s iteration_id %d -> %s max_process_delta_ms=%.0f%s" % [label, apply_ms, times, id_before, ids,
+		_max_dt * 1000.0, (" hole_avoided_at_frame=%d (after %.0f ms)" % [avoided_at, avoided_ms]) if watch_hole else ""])
+
+
+func _components_of(navmesh: NavigationMesh) -> String:
+	var index := NavRegions.new()
+	index.build(navmesh)
+	return "components=%d polygons=%d" % [index.component_count, navmesh.get_polygon_count()]
+
+
+func _query_cases(map: RID, label: String, names: Array) -> void:
+	var cases := {
+		"horizontal_3_borders": [Vector3(20, GROUND_Y, 80), Vector3(500, GROUND_Y, 80)],
+		"diagonal_5_borders": [Vector3(20, GROUND_Y, 20), Vector3(500, GROUND_Y, 420)],
+		"long_cross_map": [Vector3(20, GROUND_Y, 40), Vector3(2500, GROUND_Y, 1900)],
+		"through_hole": [Vector3(240, GROUND_Y, 320), Vector3(400, GROUND_Y, 320)],
+	}
+	for case_name in names:
+		var from: Vector3 = cases[case_name][0]
+		var to: Vector3 = cases[case_name][1]
+		var path := NavMeshBackend.query_path(map, from, to, _params, _result)
+		var length := 0.0
+		for k in range(1, path.size()):
+			length += path[k - 1].distance_to(path[k])
+		var gap := -1.0
+		if path.size() > 0:
+			gap = Vector2(path[path.size() - 1].x - to.x, path[path.size() - 1].z - to.z).length()
+		_say("%s path %s points=%d length=%.2f ratio=%.4f end_gap_to_goal=%.1f" % [label, case_name, path.size(), length,
+			length / from.distance_to(to), gap])
+	await get_tree().physics_frame

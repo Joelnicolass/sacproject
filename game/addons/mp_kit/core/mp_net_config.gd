@@ -26,6 +26,13 @@ extends Resource
 ## Room prefix on the relay: each port is the room `<prefix>-<port>`. Use your game's name.
 @export var relay_room: String = "mpkit"
 
+@export_group("Online rooms (issuer)")
+## The MpKit issuer that hands out the rooms players host online (https://your-issuer.fly.dev). Empty = off.
+## It also says which relay those rooms use, so relay_url is not needed for them.
+@export var issuer_url: String = ""
+## This game's id on the issuer (a key of its ISSUER_GAMES). Empty = relay_room.
+@export var game_id: String = ""
+
 @export_group("TLS (wss://)")
 ## Server side: certificate and key. Both set = the WebSocket server speaks wss:// itself (no reverse proxy).
 @export var tls_certificate: X509Certificate
@@ -58,6 +65,11 @@ func effective_max_players() -> int:
 ## A browser cannot open a server or listen for LAN rooms.
 static func can_host() -> bool:
 	return not OS.has_feature("web")
+
+
+## Online rooms through the issuer: every build may host one (a browser hosts through the relay) once issuer_url is set.
+static func can_host_online() -> bool:
+	return MpIssuer.is_configured()
 
 
 func server_tls() -> TLSOptions:
@@ -111,6 +123,11 @@ func apply(host_slot: int = 1) -> void:
 		MpTransport.relay_url = relay_url
 	if MpBoot.user_value("relay-room", "").is_empty() and not relay_room.is_empty():
 		MpTransport.relay_room = relay_room
+	if not issuer_url.is_empty():
+		MpIssuer.url = issuer_url
+	if not game_id.is_empty():
+		MpIssuer.game = game_id
+	MpIssuer.from_flags()
 	## What this .tres sets wins; otherwise the TLS flags MpKit read at startup stay.
 	var server := server_tls()
 	if server:

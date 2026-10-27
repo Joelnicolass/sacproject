@@ -5,6 +5,10 @@ extends Node
 ## Dedicated: host_dedicated() — peer 1 is not a player; same project as clients (VPS / --dedicated).
 ## Who may sit and when the match starts is the Gate's (MpMatchGate, `/root/MpKit/Gate`), once a flow armed it.
 
+## The kit's version (plugin.cfg says the same; a test checks it). An exported game has no plugin.cfg: this is what the
+## MpKit issuer is told.
+const VERSION := "0.18.0"
+
 signal peer_joined(peer_id: int, slot: int)
 signal peer_left(peer_id: int, slot: int)
 signal join_failed
@@ -18,6 +22,10 @@ signal session_ended_sent(data: Dictionary)
 signal slot_assigned(slot: int)
 ## Client side: the server refused the ticket (reason is opaque, chosen by the server).
 signal admission_rejected(reason: String)
+## Client: the server sent nothing for host_silent_after_s (it beats 4 times a second): its game froze, its tab went
+## to the background in a mobile browser, or the link stalls. `host_back` when it beats again.
+signal host_silent(seconds: float)
+signal host_back
 ## Opaque Dictionary pipe. Kit does not interpret `data`. from_peer is 1 when the server pushed.
 signal custom_received(channel: StringName, data: Dictionary, from_peer: int)
 
@@ -51,6 +59,8 @@ var gate: MpMatchGate
 ## `MpTransport.ENET` (default) or `MpTransport.WS`. Read from `--transport=` at startup; glue may set it
 ## before `host()` / `join()`. Same API and RPCs with both.
 var transport: String = MpTransport.ENET
+## Client: seconds without the server's beat before host_silent.
+var host_silent_after_s: float = 1.5
 ## WebSocket TLS (wss://). Server: certificate + key; client: TLSOptions.client(). Null = plain. MpNetConfig sets them.
 var tls_server: TLSOptions
 var tls_client: TLSOptions
@@ -67,6 +77,11 @@ var _endpoint: String = ""
 ## [due msec, Callable] for after_real.
 var _real_due: Array = []
 var _seat_credentials: Dictionary = {}
+## The server's beat: when it sends the next one; on a client, when the last one came (0 = none yet) and since when
+## it is silent (0 = it is not).
+var _next_beat_ms: int = 0
+var _last_beat_ms: int = 0
+var _silent_since_ms: int = 0
 
 
 func _ready() -> void:
@@ -93,9 +108,10 @@ func after_real(seconds: float, callable: Callable) -> void:
 
 
 func _process(_delta: float) -> void:
+	var now := Time.get_ticks_msec()
+	_beat(now)
 	if _real_due.is_empty():
 		return
-	var now := Time.get_ticks_msec()
 	var due: Array = []
 	var later: Array = []
 	for item in _real_due:
@@ -104,6 +120,41 @@ func _process(_delta: float) -> void:
 	for item in due:
 		if (item[1] as Callable).is_valid():
 			(item[1] as Callable).call()
+
+
+## The server beats every BEAT_MS (unreliable, a few bytes) so a client can tell a silent host from a quiet match.
+const BEAT_MS := 250
+
+
+func _beat(now: int) -> void:
+	if not is_networked():
+		return
+	if multiplayer.is_server():
+		if now >= _next_beat_ms and not multiplayer.get_peers().is_empty():
+			_next_beat_ms = now + BEAT_MS
+			rpc_beat.rpc()
+		return
+	if _last_beat_ms > 0 and _silent_since_ms == 0 and now - _last_beat_ms > int(host_silent_after_s * 1000.0):
+		_silent_since_ms = now
+		host_silent.emit((now - _last_beat_ms) / 1000.0)
+
+
+@rpc("authority", "call_remote", "unreliable")
+func rpc_beat() -> void:
+	_last_beat_ms = Time.get_ticks_msec()
+	if _silent_since_ms != 0:
+		_silent_since_ms = 0
+		host_back.emit()
+
+
+## Client: the server is silent now (host_silent fired and no beat came since).
+func is_host_silent() -> bool:
+	return _silent_since_ms != 0
+
+
+## When the current silence started (Time.get_ticks_msec), 0 when the server beats.
+func host_silent_since_ms() -> int:
+	return _silent_since_ms
 
 
 func configure(
@@ -246,6 +297,8 @@ func open_seats() -> Array[int]:
 
 
 func leave() -> void:
+	_last_beat_ms = 0
+	_silent_since_ms = 0
 	if rooms:
 		rooms.reset()
 	if matchmaker:

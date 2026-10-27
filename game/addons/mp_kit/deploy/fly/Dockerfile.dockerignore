@@ -7,14 +7,3 @@ dist
 **/.DS_Store
 *.tmp
 fly.toml
-
-# Sacrifice: what the room server never loads (checked: nothing in scenes/, data/, assets/, addons/ or project.godot
-# references these folders, and no class_name defined in them is used outside them).
-# Kept on purpose: tools/ (data/nav/nav_bake.tres and the terrain_tools / sacrifice_tools addons preload scripts there).
-agent
-rfcs
-docs
-reviews
-changes
-visual
-/*.md

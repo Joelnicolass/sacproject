@@ -15,7 +15,7 @@ Los nombres de código (`MpActor`, `to_server`, `owner_slot`...) quedan en ingl�
 7. [Cosas del mundo: objetos, apariciones, puntaje, inicio y fin](#7-cosas-del-mundo-objetos-apariciones-puntaje-inicio-y-fin)
 8. [Probar](#8-probar)
 9. [Online con salas](#9-online-con-salas)
-10. [Partida privada con código](#10-partida-privada-con-código)
+10. [Partida privada con código](#10-partida-privada-con-código), y [salas online que hospedan tus jugadores](#103-salas-online-que-hospedan-tus-jugadores-sin-servidor-tuyo) (sin servidor tuyo)
 11. [Web](#11-web)
 12. [Relay (túnel por Railway u otro host)](#12-relay-túnel-por-railway-u-otro-host)
 13. [Subir a un VPS](#13-subir-a-un-vps)
@@ -1223,6 +1223,93 @@ server.server_failed.connect(func(reason: String) -> void: print("falló: ", rea
 
 Usa los tiempos y puertos de un `MpLobbyConfig` por defecto (partidas en 7800-7899) y la red de tu `game.tres` (transporte, relay, TLS). Con relay, busca puerto desde uno al azar del rango, y si el relay lo rechaza porque otro lo usa, prueba el siguiente.
 
+### 10.3 Salas online que hospedan tus jugadores (sin servidor tuyo)
+
+La misma partida privada, por internet, sin nada tuyo corriendo las partidas: el juego de un jugador hospeda cada una. Lo hacen posible dos servidores Node chicos, y los dos entran en las máquinas más baratas:
+
+- el **relay** (sección 12): el túnel, así nadie necesita IP pública ni puertos abiertos;
+- el **emisor** (`addons/mp_kit/issuer`): reparte los códigos de sala, le da un asiento a cada jugador, lista las salas públicas, controla límites y versiones, y firma los tokens cortos que pide el relay.
+
+```
+juego del host ── crear sala ─► emisor ── código K7F3QX + token de host (1 minuto, sirve una vez)
+               └─ hospeda la sala p-K7F3QX en el relay con ese token
+juego del amigo ── entrar a K7F3QX ─► emisor ── un asiento + un token de cliente
+                └─ entra a la sala p-K7F3QX del relay con ese token
+```
+
+El secreto del relay nunca sale de los servidores: el emisor firma con su clave **privada** y el relay solo tiene la **pública** (puede chequear tokens, no fabricarlos). Un token sirve una vez y muere en un minuto: si se filtra, no le sirve a nadie.
+
+Cómo hospeda cada build:
+
+| Host | Cómo | Si se minimiza o se oculta la pestaña |
+|---|---|---|
+| Escritorio | Un proceso de partida en su PC (`MpLocalServer`, el mismo código que en un VPS); el host se une como cualquier jugador | Nada: el proceso de partida no tiene ventana |
+| Navegador | Su propio juego hospeda y juega (un navegador no puede lanzar procesos) | Sigue simulando: `MpWebKeepAlive` (10.6) |
+
+Cuándo conviene: amigos, cooperativo, salas casuales y privadas. Cuándo no: partidas competitivas entre desconocidos (el juego del host es la autoridad: podría hacer trampa, y si se va la partida termina). Para eso, un servidor dedicado (secciones 9 y 13).
+
+### 10.4 Montarlo
+
+1. El relay con la clave pública del emisor, y el emisor con su clave privada: [issuer/README.md](issuer/README.md) tiene las dos cosas, en tu PC y en Fly (`node keys.mjs` hace el par).
+2. En tu `game.tres` (`MpNetConfig`), grupo **Online rooms (issuer)**: `issuer_url` = `https://<tu-emisor>.fly.dev`, `game_id` = la clave de tu juego en el `ISSUER_GAMES` del emisor. La dirección del relay la da el emisor.
+3. **Project Settings › Application › Config › Version**: la versión de tu juego. Cada jugador entra solo a salas de su misma versión, y el emisor puede rechazar versiones más viejas que `min_version` ("Actualizá el juego").
+4. Para la versión web: el `ISSUER_ORIGINS` del emisor = desde dónde se sirve tu página (`https://mi-juego.itch.io`).
+
+Probalo todo antes en tu PC: `bash mpkit_lab/run/online.sh` en el repo del kit levanta un emisor y un relay locales y juega a través de ellos con un host de escritorio, un host dentro de su juego (congelado 3 s en mitad de la partida) y un host en un navegador.
+
+### 10.5 En tu juego
+
+```gdscript
+var flow := MpFlow.find_in_tree(self)
+
+## Host: una sala para 4 (vos contás), en la lista para todos. El estado dice el código cuando está lista.
+var online := flow.host_online(4, "Viernes a la noche")
+online.room_ready.connect(func(code: String) -> void: code_label.text = code)
+online.failed.connect(func(reason: String) -> void: print("no se pudo abrir: ", reason))
+
+## Un amigo con el código (como lo escriba: "k7f-3qx" funciona).
+var err: Error = await flow.join_online(code_field.text)
+
+## La lista de salas públicas de este juego y versión con lugar.
+for row in await flow.online_rooms():
+	print(row.name, " ", row.players, "/", row.max_players, " ", row.code)
+```
+
+| Pieza | Qué es |
+|---|---|
+| `flow.host_online(players, name, listed)` | Abre una sala (un `MpOnline` bajo la raíz). `listed = false`: privada, se entra solo con el código. Una segunda llamada devuelve la que ya corre |
+| `MpOnline.room_ready(code)` / `failed(reason)` / `ended` | Ya pueden entrar / el emisor la rechazó o la partida no pudo arrancar / la sala se cerró |
+| `MpOnline.code`, `mode` | El código; `dedicated` (escritorio) o `listen` (navegador). `--online-mode=listen` fuerza la forma del navegador en escritorio (tests) |
+| `flow.join_online(code)` | Un asiento del emisor y después la conexión al relay. Si la sala todavía está arrancando, vuelve a pedir unos segundos |
+| `flow.online_rooms()` | `[{code, name, players, max_players, state, platform, age_s}]` |
+| `MpFlow.online_texts` | Lo que dice el estado para cada rechazo (`room_full`, `version_mismatch`, `version_too_old`, `too_many_rooms`, `network`…): traducilos en el Inspector |
+| `MpInviteLabel` | En el HUD de la partida del host muestra el código |
+| `MpNetConfig.can_host_online()` | Verdadero cuando `issuer_url` está puesto (cualquier build puede hospedar, también un navegador) |
+
+La sala vive mientras vive el host: cada 10 s le dice al emisor quién está, y la cierra cuando termina la partida o se va. Un host cuyo juego se cierra sin avisar (una pestaña cerrada) el emisor lo olvida a los 30 s.
+
+### 10.6 Un navegador hospeda
+
+Un navegador frena los frames de una pestaña oculta (otra pestaña al frente, la ventana minimizada, o tapada en Chrome), y un juego web de Godot corre sobre esos frames: un host en un navegador congelaría toda su partida. Mientras un navegador hospeda, `MpWebKeepAlive` responde esos frames desde el timer de un Web Worker, que el navegador no frena, y apaga el dibujado hasta que la pestaña se ve de nuevo. Medido en Chromium: 60 ticks por segundo con la pestaña oculta más de 8 minutos. No hacés nada: `host_online()` lo prende y lo apaga.
+
+Los navegadores de celular congelan del todo las pestañas en segundo plano; ahí nada mantiene al host corriendo. Para eso, y para cualquier host que se congele o cuya conexión se trabe, los clientes tienen una red de seguridad: el servidor late 4 veces por segundo, y tras 1,5 s sin latido un cliente emite `MpKit.host_silent(seconds)` (y `host_back` cuando vuelve a latir); `MpFlow` dice "Waiting for the host…" (`host_silent_status`) y se rinde tras `host_silent_timeout_s` (30). Si querés tu propio cartel, usá esas señales.
+
+### 10.7 Si algo falla
+
+| Lo que ves | Qué hacer |
+|---|---|
+| "This game has no online server (MpNetConfig.issuer_url)" | Poné `issuer_url` en tu `game.tres` (o `--issuer-url=`) |
+| "Online error (unknown_game)" | `game_id` (o, vacío, `relay_room`) no es una clave del `ISSUER_GAMES` del emisor |
+| "That room runs version X of the game" | El host tiene otra versión: los dos necesitan la misma **Application › Config › Version** |
+| "Update the game (version X or newer)" | El `min_version` de tu juego en el emisor es más nuevo que este build |
+| "You already host a room" | Una sala por instalación (`ISSUER_ROOMS_PER_INSTALL`): cerrala, o esperá 30 s después de un cierre inesperado |
+| "Cannot reach the online server" | La dirección del emisor, o (web) su `ISSUER_ORIGINS` no incluye el origen de la página: el navegador bloquea la llamada |
+| La sala nunca aparece en la lista | Todavía está arrancando (el host aún no está en el relay), es privada, o está llena |
+| El log del relay dice `refused for p-…: no RELAY_TOKEN_KEYS set` | El relay no tiene la clave pública del emisor: poné `RELAY_TOKEN_KEYS` y redesplegalo |
+| El log del relay dice `… bad token` | La clave pública del relay no es la del emisor (la hizo otra corrida de `keys.mjs`) |
+
+Los textos entre comillas son los que trae el kit (en inglés); cambialos en `MpFlow.online_texts`.
+
 ## 11. Web
 
 ### 11.1 Qué cambia
@@ -1627,6 +1714,7 @@ Para el repo del kit hay una versión automática de todo esto: `bash mpkit_lab/
 | Slots | Los asigna el servidor. El cliente nunca dice "soy el 2" |
 | Compensación de lag | Nunca rebobina más de un segundo (como `sv_maxunlag` de Valve): un momento visto más atrás, o adelante de ahora, se recorta |
 | Relay | Solo hostea quien tiene el secreto (`RELAY_HOST_SECRET`); viaja en un header, nunca en la URL. El secreto nunca va en el `.tres`. Una sala con host vivo no se puede tomar |
+| Salas que hospedan los jugadores (emisor) | Hospedar y entrar a la sala de un jugador piden cada uno un token del emisor para esa sala y ese rol: firmado con la clave privada del emisor (Ed25519), chequeado por el relay con la pública, válido una vez y por un minuto. El emisor limita salas por IP e instalación, pedidos por minuto, versiones del juego y orígenes web; la IP sale de la conexión (en Fly, `Fly-Client-IP`), nunca del cliente |
 
 ### 14.2 Lo que tiene que validar tu juego
 
@@ -1894,6 +1982,8 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 | gravedad o inercia con predicción | `velocity` en **Sync › sync_extra** |
 | que los otros se vean parejos | **MpActor › Smoothing** = `BUFFERED` (con `adaptive_buffer`), y `late_tolerance` o el tope `buffer_delay_s` |
 | mostrar el ping o la calidad de la conexión | `Mp.net_quality()` |
+| que los jugadores hospeden partidas online sin servidor mío (también web) | `flow.host_online()` / `join_online(code)` / `online_rooms()` con el emisor y el relay ([10.3](#103-salas-online-que-hospedan-tus-jugadores-sin-servidor-tuyo)) |
+| saber que el host se congeló o se le trabó la conexión | `MpKit.host_silent(seconds)` / `MpKit.host_back` |
 | que un disparo acierte lo que vio el tirador | `net.rewound(func)`, `net.seen_position_of(nodo)` o `net.view_lag()` (compensación de lag) |
 | gastar menos ancho de banda | **MpActor › Sync › send_hz** (por ejemplo 20) |
 | leer las teclas del jugador en el servidor | `input.get_vector`, `input.is_action_just_pressed`… |

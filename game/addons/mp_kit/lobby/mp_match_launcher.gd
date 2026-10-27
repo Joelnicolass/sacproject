@@ -76,6 +76,11 @@ func port_of(match_id: String) -> int:
 	return int(_matches.get(match_id, {}).get("port", 0))
 
 
+## The match's last state.json ({} before it wrote one): `slots` says which seats are connected.
+func state_of(match_id: String) -> Dictionary:
+	return MpMatchFiles.read_json(MpMatchFiles.path_of(config.matches_root, match_id, MpMatchFiles.STATE))
+
+
 func is_listening(match_id: String) -> bool:
 	return bool(_matches.get(match_id, {}).get("listening", false))
 

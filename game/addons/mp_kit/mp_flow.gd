@@ -63,6 +63,31 @@ enum StartWhen {
 @export var dedicated_status: String = "Dedicated on port %d"
 @export var cannot_host_status: String = "This build cannot host (web): join a server"
 
+@export_group("Online (issuer)")
+## Shown while the issuer opens the room (host_online) or finds a seat (join_online).
+@export var online_working_status: String = "Asking the server…"
+## Shown once the room is up: `%s` is the code friends type.
+@export var online_ready_status: String = "Room %s: friends join with this code"
+## The issuer's refusals and errors, by its word; `%s` in version_too_old is the oldest version allowed and in
+## version_mismatch the host's. Any other word goes through online_error_status.
+@export var online_texts: Dictionary = {
+	"room_full": "That room is full",
+	"room_starting": "That room is still starting: try again",
+	"no_such_room": "No room with that code",
+	"version_mismatch": "That room runs version %s of the game: update to join",
+	"version_too_old": "Update the game (version %s or newer)",
+	"too_many_rooms": "You already host a room: close it first",
+	"rate_limited": "Too many tries: wait a minute",
+	"banned": "This player cannot play online",
+	"network": "Cannot reach the online server",
+	"no_issuer": "This game has no online server (MpNetConfig.issuer_url)",
+}
+@export var online_error_status: String = "Online error (%s)"
+## Shown on a client while the host sends nothing (its game froze, its tab is hidden in a mobile browser, its link
+## stalls). After host_silent_timeout_s the client gives up: server_lost_status.
+@export var host_silent_status: String = "Waiting for the host…"
+@export var host_silent_timeout_s: float = 30.0
+
 @export_group("Match start")
 ## Seconds a seat that dropped keeps its place (`--rejoin-grace-s=`). A room's match takes its MpLobbyConfig instead.
 @export var rejoin_grace_s: float = 60.0
@@ -263,7 +288,8 @@ func _kit_links() -> Array:
 	return [[MpKit.load_world, goto_world], [MpKit.peer_joined, _on_peer_joined], [MpKit.join_failed, _on_join_failed],
 		[MpKit.server_lost, _on_server_lost], [MpKit.snapshot_received, _on_flow_snapshot], [MpKit.session_ended, _on_session_ended],
 		[MpKit.admission_rejected, _on_admission_rejected], [MpKit.peer_left, _on_peer_left],
-		[MpKit.session_ended_sent, _on_session_ended_sent], [MpKit.gate.all_gone, _on_all_gone]]
+		[MpKit.session_ended_sent, _on_session_ended_sent], [MpKit.gate.all_gone, _on_all_gone],
+		[MpKit.host_silent, _on_host_silent], [MpKit.host_back, _on_host_back]]
 
 
 func play_solo() -> void:
@@ -278,6 +304,12 @@ func host_lan() -> Error:
 	if not MpNetConfig.can_host():
 		_set_status(cannot_host_status)
 		return ERR_UNAVAILABLE
+	return host_here()
+
+
+## This game hosts the match and plays it (a listen server) on whatever MpKit.transport is: Host LAN, and through the
+## relay an online room in a browser (MpOnline). Unlike host_lan(), a browser may: the relay listens for it.
+func host_here() -> Error:
 	var err := MpKit.host()
 	if err != OK:
 		_set_status(host_fail_status)
@@ -285,6 +317,73 @@ func host_lan() -> Error:
 	_arm_gate()
 	_begin_match()
 	return OK
+
+
+## Opens an online room this player hosts (MpOnline through the issuer): `players` seats (this one counts), shown in
+## the issuer's list unless `listed` is off (then friends need the code). The status says the code once it is up.
+func host_online(players: int = 0, online_room_name: String = "", listed: bool = true) -> MpOnline:
+	if not MpIssuer.is_configured():
+		_set_status(online_text("no_issuer"))
+		return null
+	_set_status(online_working_status)
+	var online := MpOnline.start_on(get_tree(), players if players > 1 else max(2, MpKit.max_players),
+		online_room_name if not online_room_name.is_empty() else room_name, listed)
+	if not online.room_ready.is_connected(_on_online_ready):
+		online.room_ready.connect(_on_online_ready)
+		online.failed.connect(func(reason: String) -> void: _set_status(online_text(reason)))
+	return online
+
+
+## Joins the online room `code` (as the player typed it): the issuer gives a seat, then the relay connects.
+func join_online(code: String) -> Error:
+	if not MpIssuer.is_configured():
+		_set_status(online_text("no_issuer"))
+		return ERR_UNCONFIGURED
+	_set_status(online_working_status)
+	## A room whose host is still getting on the relay answers room_starting: ask again for a few seconds.
+	var seat: Dictionary = await MpIssuer.join_room(get_tree(), code)
+	var tries := 0
+	while not seat["ok"] and str(seat["error"]) == "room_starting" and tries < 30:
+		tries += 1
+		await get_tree().create_timer(0.5, true).timeout
+		seat = await MpIssuer.join_room(get_tree(), code)
+	if not seat["ok"]:
+		_set_status(online_text(str(seat["error"]), seat["data"]))
+		return ERR_UNAVAILABLE
+	var data: Dictionary = seat["data"]
+	MpKit.transport = MpTransport.RELAY
+	MpTransport.use_relay_room(str(data.get("room", "")), str(data.get("token", "")), str(data.get("relay_url", "")))
+	var ticket: Variant = data.get("ticket", null)
+	var err := MpKit.join(str(data.get("code", code)), MpKit.port, str(ticket) if ticket != null else "")
+	_set_status(join_fail_status if err != OK else joining_status % str(data.get("code", code)))
+	return err
+
+
+## The public online rooms of this game and version with a free seat: [{code, name, players, max_players, state,
+## platform, age_s}]. [] (and a status) when the issuer cannot answer.
+func online_rooms() -> Array:
+	if not MpIssuer.is_configured():
+		_set_status(online_text("no_issuer"))
+		return []
+	var listed: Dictionary = await MpIssuer.list_rooms(get_tree())
+	if not listed["ok"]:
+		_set_status(online_text(str(listed["error"]), listed["data"]))
+		return []
+	return listed["data"].get("rooms", [])
+
+
+## The status for an issuer word (online_texts), with the version the issuer sent when it names one.
+func online_text(word: String, data: Dictionary = {}) -> String:
+	var text := str(online_texts.get(word, ""))
+	if text.is_empty():
+		return online_error_status % word
+	if text.contains("%s"):
+		return text % str(data.get("min_version", data.get("host_version", "?")))
+	return text
+
+
+func _on_online_ready(code: String) -> void:
+	_set_status(online_ready_status % code)
 
 
 func join_lan(ip: String) -> Error:
@@ -540,6 +639,20 @@ func _on_admission_rejected(reason: String) -> void:
 func _on_join_failed() -> void:
 	match_running = false
 	_set_status(join_fail_status)
+
+
+## The host stopped sending: say so, and give up after host_silent_timeout_s unless it comes back.
+func _on_host_silent(_seconds: float) -> void:
+	_set_status(host_silent_status)
+	var since := Time.get_ticks_msec()
+	MpKit.after_real(maxf(host_silent_timeout_s - MpKit.host_silent_after_s, 0.0), func() -> void:
+		if MpKit.is_host_silent() and MpKit.host_silent_since_ms() <= since:
+			MpKit.leave()
+			_on_server_lost())
+
+
+func _on_host_back() -> void:
+	_set_status("")
 
 
 func _on_server_lost() -> void:

@@ -8,6 +8,8 @@ extends RefCounted
 ## Relay settings: `relay_url` (wss://…), `relay_room` (room prefix; each port is the room `<prefix>-<port>`) from
 ## `--relay-url=` / `--relay-room=` or an MpNetConfig / MpLobbyConfig; the host secret from `--relay-secret=` or the
 ## MPKIT_RELAY_SECRET environment variable (never in a .tres the clients get).
+## A room a player hosts (MpOnline, through the MpKit issuer) is not `<prefix>-<port>` but `p-<code>`, and takes a
+## one-time token instead of the secret: `use_relay_room()` sets both for the next relay connection.
 ## `wss://` (TLS): pass `TLSOptions` to `create_server` / `create_client`, or terminate TLS in a reverse proxy
 ## (see the README). `--net-lag-ms` / `--net-jitter-ms` / `--net-loss` wrap the peer in MpLagPeer (tests only).
 
@@ -18,6 +20,9 @@ const RELAY := "relay"
 static var relay_url: String = ""
 static var relay_room: String = "mpkit"
 static var _relay_read: bool = false
+## The next relay connection's exact room and token (an issuer room); spent by that connection.
+static var _next_room: String = ""
+static var _next_token: String = ""
 
 
 ## The relay settings from the flags and the environment (once); a config may override them afterwards.
@@ -32,6 +37,27 @@ static func relay_from_flags() -> void:
 		relay_url = url
 	if not room.is_empty():
 		relay_room = room
+	## A match process of an online room (MpLocalServer through the issuer): its ticket says the room and the token.
+	var ticket_path := MpBoot.user_value("match-ticket-file", "")
+	if not ticket_path.is_empty():
+		var ticket: Variant = JSON.parse_string(FileAccess.get_file_as_string(ticket_path))
+		var relay: Variant = (ticket as Dictionary).get("relay", null) if ticket is Dictionary else null
+		if relay is Dictionary:
+			use_relay_room(str(relay.get("room", "")), str(relay.get("token", "")), str(relay.get("url", "")))
+
+
+## The next relay connection (host or client) goes to exactly `room` with the issuer's one-time `token` (and to
+## `url` when given), instead of `<relay_room>-<port>` with the secret. That connection spends both.
+static func use_relay_room(room: String, token: String, url: String = "") -> void:
+	_next_room = room
+	_next_token = token
+	if not url.is_empty():
+		relay_url = url
+
+
+## True while an issuer room waits for its connection (use_relay_room() was called and nothing used it yet).
+static func has_relay_room() -> bool:
+	return not _next_room.is_empty()
 
 
 static func relay_secret() -> String:
@@ -134,8 +160,15 @@ static func _relay(room: String, host: bool, url_override: String, tls: TLSOptio
 	if url.is_empty():
 		push_error("MpTransport: the relay transport needs a relay URL (--relay-url=wss://… or MpNetConfig.relay_url)")
 		return {"error": ERR_UNCONFIGURED, "peer": null}
+	## An issuer room: its own name and token, no secret. Spent here, so a later connection is a server room again.
+	var token := _next_token
+	if not _next_room.is_empty():
+		room = _next_room
+	_next_room = ""
+	_next_token = ""
 	var peer := MpRelayPeer.new()
-	var err := peer.start(url, room, host, relay_secret() if host else "", tls)
+	var secret := relay_secret() if host and token.is_empty() else ""
+	var err := peer.start(url, room, host, secret, tls, token)
 	return {"error": err, "peer": MpLagPeer.wrap_from_flags(peer)}
 
 

@@ -27,7 +27,7 @@ var _terrain: Terrain
 func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frames
 	_root = Node3D.new()
 	_root.name = "NavCases"
-	_terrain = Maps.land_from(Maps.heights_of(MapCatalog.active()))
+	_terrain = Maps.land_from(Maps.heights_of(ActiveMatch.map()))
 	_terrain.name = "Terrain"
 	_terrain.add_to_group(NavFingerprint.GROUP)
 	_root.add_child(_terrain)
@@ -50,6 +50,8 @@ func run(host: Node3D) -> Dictionary:  # a coroutine: it waits for physics frame
 	_service.name = "Nav"
 	_service.terrain = _terrain
 	_service.build_on_ready = false
+	_service.region = Maps.nav_region_of(ActiveMatch.map())
+	_service.add_child(_service.region)
 	_root.add_child(_service)
 	host.add_child(_root)
 	_terrain.add_child(Maps.collision_of(_terrain))

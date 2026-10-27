@@ -28,16 +28,6 @@ static func shared() -> MapCatalog:
 	return MapCatalog.new()
 
 
-## The map this process plays (a bridge to ActiveMatch for the readers of the world).
-static func active() -> MapDefinition:
-	return ActiveMatch.map()
-
-
-## The tag of the map this process plays.
-static func current_tag() -> StringName:
-	return ActiveMatch.map_tag()
-
-
 ## True when the folder has a definition with that tag. Loads nothing (a definition brings its scene, ground and navmesh: seconds).
 func has(tag: StringName) -> bool:
 	return ResourceLoader.exists("%s/%s/%s.tres" % [DIR, tag, tag])

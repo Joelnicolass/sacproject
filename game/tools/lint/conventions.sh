@@ -139,6 +139,11 @@ mv "$OUT/C17.sorted" "$OUT/C17.txt"
 xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18.txt" || true
+# C18 widened (055i-b1): which match this process plays is read once, by the world (MatchWorld hands the map and the mode to its
+# systems), the flow and the screens; a system that asks ActiveMatch itself is a bridge again.
+xargs grep -nE '(^|[^A-Za-z0-9_])ActiveMatch\.' < "$OUT/all.txt" 2>/dev/null \
+	| grep -vE '^scenes/(core|net|ui)/|^scenes/match/match_world\.gd:' \
+	| grep -vE ':[0-9]+:[ 	]*#' >> "$OUT/C18.txt" || true
 
 # C18b: lookups by id that C18 does not see (catalog god/building by tag, TypeRef, AI difficulty by id, biome look by god, wire decode).
 # Same allowlist as C18. Screens and gameplay receive the Resource; only the catalogs and the wire turn text back into one.

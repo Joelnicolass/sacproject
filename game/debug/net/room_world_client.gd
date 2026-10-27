@@ -152,8 +152,8 @@ func _run() -> void:
 	_check(loaded, "%s loaded the match world" % _name)
 	var definition := MapCatalog.shared().find(StringName(expect))
 	var scene_path := _map_scene_of_world()
-	print("E2E_MAP %s tag=%s scene=%s" % [_name, MapCatalog.current_tag(), scene_path])
-	_check(MapCatalog.current_tag() == StringName(expect), "%s plays the map %s (got %s)" % [_name, expect, MapCatalog.current_tag()])
+	print("E2E_MAP %s tag=%s scene=%s" % [_name, ActiveMatch.map_tag(), scene_path])
+	_check(ActiveMatch.map_tag() == StringName(expect), "%s plays the map %s (got %s)" % [_name, expect, ActiveMatch.map_tag()])
 	_check(definition != null and scene_path == definition.map_scene.resource_path, "%s world holds the scene of %s (%s)" % [_name, expect, scene_path])
 	if not biome.is_empty():
 		var got := await _until(func() -> bool: return _biome_of_world() != &"")

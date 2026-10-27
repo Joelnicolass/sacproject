@@ -48,7 +48,7 @@ func run(host: Node3D) -> Dictionary:
 	out["chain_dragon"] = await _dragon()
 	out["chain_dragon_alone"] = await _dragon_alone()
 	out["chain_ai"] = await _ai()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 

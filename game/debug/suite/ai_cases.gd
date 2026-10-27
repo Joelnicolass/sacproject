@@ -352,7 +352,7 @@ func _unit(host: Node3D, slot: int, at: Vector3) -> Node3D:
 func _nav_rebuild(host: Node3D) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "NavRebuildCases"
-	var terrain: Terrain = Maps.land_from(Maps.heights_of(MapCatalog.active()))
+	var terrain: Terrain = Maps.land_from(Maps.heights_of(ActiveMatch.map()))
 	terrain.name = "Terrain"
 	terrain.add_to_group(NavFingerprint.GROUP)
 	root.add_child(terrain)
@@ -364,6 +364,8 @@ func _nav_rebuild(host: Node3D) -> Dictionary:
 	service.terrain = terrain
 	service.structures = structures
 	service.build_on_ready = false
+	service.region = Maps.nav_region_of(ActiveMatch.map())
+	service.add_child(service.region)
 	root.add_child(service)
 	host.add_child(root)
 	terrain.add_child(Maps.collision_of(terrain))

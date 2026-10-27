@@ -49,7 +49,7 @@ func run(host: Node3D) -> Dictionary:
 	out["control_troll"] = await _troll()
 	out["control_late_join"] = await _late_join()
 	out["control_ai"] = await _ai()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 

@@ -21,7 +21,8 @@ const SEARCH_LOG_MAX := 200000
 
 ## The map's ground (MapRoot.terrain): the path points take the land height from it.
 @export var terrain: Terrain
-## The map's NavigationRegion3D (MapRoot.nav_region). Empty: the service puts one under itself with the navmesh of the active map.
+## The map's NavigationRegion3D (MapRoot.nav_region; MatchWorld binds it when the map is attached). Required: without it the
+## service stays not ready, with a warning.
 @export var region: NavigationRegion3D
 ## Time between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
 ## is not done by then the swap waits for it). Counted in physics ticks, never a clock.
@@ -169,8 +170,8 @@ func _on_building_destroyed(_building: MapBuilding) -> void:
 	build.call_deferred()
 
 
-## First time: takes the region (or makes one with the stored navmesh) and bakes at once if something the stored bake lacks stands on the
-## map. After: a change of blockers asks for a new bake. False when there is no navmesh to load.
+## First time: takes the region and bakes at once if something the stored bake lacks stands on the map. After: a change of blockers
+## asks for a new bake. False when there is no region or it has no navmesh.
 func _build_navmesh() -> bool:
 	var entries := _blockers()
 	if mesh.built:
@@ -179,16 +180,9 @@ func _build_navmesh() -> bool:
 		return true
 	var nav_region := region
 	if nav_region == null:
-		var map := MapCatalog.active()
-		var stored := map.nav
-		if stored == null or stored.get_polygon_count() == 0:
-			push_warning("nav: the map '%s' has no navmesh" % map.tag)
-			return false
-		nav_region = NavigationRegion3D.new()
-		nav_region.name = "NavRegion"
-		nav_region.navigation_mesh = stored
-		add_child(nav_region)
-	elif nav_region.navigation_mesh == null or nav_region.navigation_mesh.get_polygon_count() == 0:
+		push_warning("nav: no `region` assigned (the map's NavRegion); the pathfinder is off")
+		return false
+	if nav_region.navigation_mesh == null or nav_region.navigation_mesh.get_polygon_count() == 0:
 		push_warning("nav: the region has no navmesh (run tools/bake/bake_nav.tscn)")
 		return false
 	var settings: NavBakeSettings = nav_region.get("bake_settings") if nav_region.get("bake_settings") != null else load(BAKE_SETTINGS) as NavBakeSettings

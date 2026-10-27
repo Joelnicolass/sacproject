@@ -3,7 +3,7 @@ extends Node
 ## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
 ## Bakes the map's navmesh headless (RFC-035 035f): the static colliders of the `nav_source` nodes of the map scene (the
 ## terrain's collision, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into scenes/map/maps/<tag>/nav.res
-## (the `nav` of its MapDefinition; the «Hornear navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).
+## (the navmesh of the map's NavRegion; the «Hornear navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).
 ## The navmesh carries the source hash (NavFingerprint.source_hash) in its metadata; MapNavRegion warns when it is stale.
 ## It runs as a scene (autoloads exist, the parse needs the nodes inside the tree):
 ## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn [-- --map=test_flat]           bakes and saves
@@ -29,7 +29,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	var check := OS.get_cmdline_user_args().has("--check")
-	_map = MapCatalog.active()
+	_map = ActiveMatch.map()
 	if _map == null or _map.map_scene == null:
 		_fail("no map scene to bake")
 		return

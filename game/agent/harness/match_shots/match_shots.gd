@@ -135,7 +135,7 @@ func _run() -> void:
 	if not arg("cast").is_empty():
 		await _cast_all(world, arg("cast").split(",", false))
 		await tree.create_timer(maxf(float(arg("cast-wait", "1.5")), 0.0)).timeout
-	var map_tag := String(MapCatalog.active().tag)
+	var map_tag := String(ActiveMatch.map().tag)
 	for round in rounds:
 		for view in views:
 			await _shoot(world, view, "%s/%s_%s_%s_t%06d.png" % [out, map_tag, god, view, roundi(elapsed_s * 1000.0)])

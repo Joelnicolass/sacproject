@@ -152,6 +152,6 @@ func _definition() -> void:
 	if definition == null:
 		return
 	_check("definition tag and name", definition.tag == &"cases_map" and definition.display_name == "Mapa de prueba")
-	_check("definition scene and navmesh", definition.map_scene != null and definition.nav != null)
+	_check("definition scene", definition.map_scene != null)
 	_check("definition: two seats, no light", definition.player_starts == 2 and definition.light == null)
 	_check("definition: offered in rooms", definition.room_selectable and definition.playable)

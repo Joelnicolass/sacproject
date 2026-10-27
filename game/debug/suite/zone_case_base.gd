@@ -65,7 +65,7 @@ func begin(host: Node3D, world_name: String) -> void:
 
 func finish() -> void:
 	MatchSeed.current = _saved_seed
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 
 

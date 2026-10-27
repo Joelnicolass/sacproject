@@ -44,7 +44,7 @@ func build(for_host: Node3D, name: String) -> void:
 
 
 func clear() -> void:
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	root.queue_free()
 
 

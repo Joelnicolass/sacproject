@@ -73,6 +73,8 @@ var _results: Dictionary = {}
 
 
 func _ready() -> void:
+	## No MatchWorld here: the suite tells the sides of the default map, as a world would.
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	if auto_run:
 		call_deferred("_run_suite")
 

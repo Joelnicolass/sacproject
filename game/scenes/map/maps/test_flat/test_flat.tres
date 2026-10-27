@@ -2,13 +2,11 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/test_flat/map.tscn" id="2_scene"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/test_flat/nav.res" id="6_nav"]
 
 [resource]
 script = ExtResource("1_def")
 tag = &"test_flat"
 display_name = "Test flat"
 map_scene = ExtResource("2_scene")
-nav = ExtResource("6_nav")
 player_starts = 2
 room_selectable = false

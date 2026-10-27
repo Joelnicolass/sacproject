@@ -400,12 +400,13 @@ func _until(condition: Callable, limit: int) -> void:
 
 func _use_mode(tag: StringName) -> void:
 	ActiveMatch.choose(MapCatalog.shared().find(&"test_flat4"), GameModeCatalog.shared().find(tag))
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	SideRelations.set_rows(_rows(), SEATS)
 
 
 func _restore() -> void:
 	ActiveMatch.forget()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 
 
 ## Four player sides, each an enemy of the other three and of the NPC side 4; the NPC side is enemy of all.

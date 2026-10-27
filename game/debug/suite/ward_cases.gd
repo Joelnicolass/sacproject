@@ -44,7 +44,7 @@ func run(host: Node3D) -> Dictionary:
 	out["ward_shielded"] = await _shielded()
 	out["ward_cast"] = await _cast()
 	out["ward_ai"] = await _ai()
-	SideRelations.refresh()
+	SideRelations.use(ActiveMatch.map(), ActiveMatch.mode())
 	_root.queue_free()
 	return out
 

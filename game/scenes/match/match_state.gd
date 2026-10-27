@@ -4,9 +4,8 @@ extends Node
 
 ## The state of the match: the state of every altar, the defeated sides and the winner. Single source
 ## for everyone (DefeatRule decides, the banner and the world read). The server (or solo) changes it
-## and pushes it as a snapshot; a client applies it. A peer that enters later gets it when its world is
-## ready (MpKit.client_world_ready), since the altars are fixed nodes of the map and do not go through
-## a spawner.
+## and says so (`snapshot_changed`, `finished`); MatchStateNet carries it to the clients, which apply the snapshot.
+## It knows nothing of the network.
 
 ## An altar changed state in this peer (the server's decision or an applied snapshot).
 signal altar_state_changed(altar: Altar, state: Altar.State)
@@ -15,11 +14,13 @@ signal side_defeated(slot: int)
 signal result_changed
 ## The rules of this match shown to the players changed: taken from the world (server, solo) or from a snapshot (client).
 signal rules_changed
+## The server (or solo) changed the state: whoever carries it (MatchStateNet) sends `to_snapshot()` to the clients.
+signal snapshot_changed
+## The match ended in this peer and `result()` is final; emitted after the last `snapshot_changed`.
+signal finished
 
 ## The group the match state joins; whoever needs it reads it from here.
 const GROUP := &"match_state"
-## Key of the dict in MpKit.push_snapshot (MpFlow ignores a snapshot with no world_id).
-const SNAPSHOT_KEY := "match"
 const FALLBACK_COLLAPSE_S := 11.0
 
 @export var rules: MatchRules
@@ -66,12 +67,6 @@ func _ready() -> void:
 		_seat_wizards()
 	for altar in altars():
 		altar.state_changed.connect(_on_altar_state_changed.bind(altar))
-	if not MpKit.is_networked():
-		return
-	if MpKit.is_server():
-		MpKit.client_world_ready.connect(_on_client_world_ready)
-	else:
-		MpKit.snapshot_received.connect(_on_snapshot_received)
 	set_physics_process(is_authority())
 
 
@@ -86,7 +81,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## The server decides; so does a game with no network (solo).
 func is_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
+	return is_multiplayer_authority()
 
 
 ## Every altar under `world`, destroyed ones too, in the same order on every peer.
@@ -271,12 +266,9 @@ func result() -> Dictionary:
 	return {"winner_slot": winner_slot, "winner_slots": winners, "defeated_slots": defeated, "reason": "result"}
 
 
-## A dedicated started by hand: tells MpKit the match is over, so it opens the next one as soon as the last player leaves
-## (not past the grace). A room's match reports through its MatchTicketGlue (the agent tells the kit); a listen host and solo
-## do not serve a next match, so nothing changes there.
+## Says the match is over (MatchStateNet tells the kit when this is a dedicated started by hand).
 func _tell_kit_ended() -> void:
-	if MpKit.is_dedicated() and get_tree().get_nodes_in_group(MpMatchAgent.GROUP).is_empty():
-		MpKit.broadcast_session_ended(result())
+	finished.emit()
 
 
 ## Advances the altar clocks by `delta` seconds (the server's physics step; a test may call it).
@@ -366,14 +358,13 @@ func apply_snapshot(data: Dictionary) -> void:
 		result_changed.emit()
 
 
-## Server: tells every client the match as it is now.
+## Server: asks the carrier to tell every client the match as it is now.
 func publish() -> void:
-	if MpKit.is_networked() and MpKit.is_server():
-		MpKit.push_snapshot({SNAPSHOT_KEY: to_snapshot()})
+	snapshot_changed.emit()
 
 
 func _physics_process(delta: float) -> void:
-	## No match runs in the editor, and the MpKit autoload does not exist there.
+	## No match runs in the editor.
 	if Engine.is_editor_hint():
 		return
 	tick(delta)
@@ -398,13 +389,3 @@ func _before(a: Altar, b: Altar) -> bool:
 
 func _on_altar_state_changed(state: Altar.State, altar: Altar) -> void:
 	altar_state_changed.emit(altar, state)
-
-
-func _on_client_world_ready(peer_id: int) -> void:
-	MpKit.push_snapshot_to(peer_id, {SNAPSHOT_KEY: to_snapshot()})
-
-
-func _on_snapshot_received(data: Dictionary) -> void:
-	var mine: Variant = data.get(SNAPSHOT_KEY)
-	if mine is Dictionary:
-		apply_snapshot(mine)

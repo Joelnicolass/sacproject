@@ -46,6 +46,7 @@ func start(root: Node) -> bool:
 	parse_ms = float(Time.get_ticks_usec() - started) / 1000.0
 	if not geometry.has_data():
 		return false
+	settings.fit_to(navmesh, geometry)  # the same cell as the stored bake of a big map
 	_navmesh = navmesh
 	_task = WorkerThreadPool.add_task(_work.bind(navmesh, geometry), false, "NavRebake")
 	return true

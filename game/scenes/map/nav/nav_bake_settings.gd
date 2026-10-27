@@ -19,6 +19,10 @@ extends Resource
 @export_range(0.0, 90.0) var agent_max_slope := 85.0
 @export var region_min_size := 8.0
 @export var region_merge_size := 20.0
+## The most voxel columns one bake may have. Godot's Recast crashes the process (signal 11) past about 26 M (a «Mapa nuevo» flat
+## map is land over its whole 2.55 km: 26 M at 0.5 m) and only warns at 30 M; 13 M bakes in 7 s. A bigger source bakes at a
+## coarser cell (`fit_to`), so every map can be baked; the maps of the original stay far below and keep `cell_size`.
+@export var max_grid_cells := 16000000
 ## The scene that bakes (a tool, left out of the exported game): MapNavRegion's «Hornear navmesh» button runs it. Not a bake number.
 @export var bake_tool := ""
 
@@ -36,6 +40,19 @@ func apply_to(navmesh: NavigationMesh) -> void:
 	navmesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
 	navmesh.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_GROUPS_WITH_CHILDREN
 	navmesh.geometry_source_group_name = NavFingerprint.GROUP
+
+
+## After the parse: when `geometry` spans more than `max_grid_cells` columns at `cell_size`, `navmesh` bakes at the finest
+## coarser cell that fits and still holds `agent_radius` in whole cells (Recast rounds the radius up to cells). The game's map
+## takes the cell of the navmesh (NavMeshBackend), so the stored bake and a re-bake agree.
+func fit_to(navmesh: NavigationMesh, geometry: NavigationMeshSourceGeometryData3D) -> void:
+	var size := geometry.get_bounds().size
+	if size.x * size.z <= max_grid_cells * cell_size * cell_size:
+		return
+	var needed := sqrt(size.x * size.z / max_grid_cells)
+	var cells_per_radius := floorf(agent_radius / needed)
+	var cell := agent_radius / cells_per_radius if cells_per_radius >= 1.0 else ceilf(needed / agent_radius) * agent_radius
+	navmesh.cell_size = maxf(cell, cell_size)
 
 
 ## Every number that changes the bake, as text, for the source hash.

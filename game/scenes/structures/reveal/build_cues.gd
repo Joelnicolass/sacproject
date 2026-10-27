@@ -28,6 +28,8 @@ signal cut_shown(at: Vector3)
 
 var _seen_rising := false
 var _done := false
+## Where a cut would be born, kept while the tower is in the tree: when it leaves, its parts are out of the tree already.
+var _cut_at := Vector3.ZERO
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -55,6 +57,7 @@ func _process(_delta: float) -> void:
 	set_process(false)
 	if tower.is_rising():
 		_seen_rising = true
+		_keep_cut_spot()
 		if tower.build_progress <= start_max_progress:
 			_play(start_fx, spot.global_position)
 			start_shown.emit(spot.global_position)
@@ -63,6 +66,7 @@ func _process(_delta: float) -> void:
 func _on_progress(progress: float) -> void:
 	if progress < 1.0:
 		_seen_rising = true
+		_keep_cut_spot()
 	elif _seen_rising and not _done:
 		_done = true
 		_play(done_fx, spot.global_position)
@@ -72,16 +76,25 @@ func _on_progress(progress: float) -> void:
 func _on_tower_leaving() -> void:
 	if not _seen_rising or _done or not tower.is_rising():
 		return
-	var at := spot.global_position
-	at.y = maxf(at.y, reveal.line_y())
-	cut_shown.emit(at)
-	# This node leaves with the tower: the check runs on the script, a frame later, when a despawn and a scene going away differ.
-	Callable(BuildCues, &"_play_if_alive").call_deferred(cut_fx, at, tower.get_parent())
+	cut_shown.emit(_cut_at)
+	# This node leaves with the tower: the check runs on the script, a frame later, when a despawn and a scene going away
+	# differ. The home goes by id: a scene going away frees it before the call.
+	var home := tower.get_parent()
+	Callable(BuildCues, &"_play_if_alive").call_deferred(cut_fx, _cut_at, home.get_instance_id() if home != null else 0)
+
+
+## The spot of the base, raised to the cut line of the rise now.
+func _keep_cut_spot() -> void:
+	if not spot.is_inside_tree():
+		return
+	_cut_at = spot.global_position
+	_cut_at.y = maxf(_cut_at.y, reveal.line_y())
 
 
 ## The cut plays only if the place the tower lived in is still in the tree (it was despawned, the match goes on).
-static func _play_if_alive(effects: Array[ParticleType], at: Vector3, home: Node) -> void:
-	if is_instance_valid(home) and home.is_inside_tree():
+static func _play_if_alive(effects: Array[ParticleType], at: Vector3, home_id: int) -> void:
+	var home := instance_from_id(home_id) as Node
+	if home != null and home.is_inside_tree():
 		_play(effects, at)
 
 

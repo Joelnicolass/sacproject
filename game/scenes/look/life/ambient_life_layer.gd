@@ -74,19 +74,25 @@ func _choice(sample: AtmosphereSample) -> Array[AmbientSwarm]:
 	return out
 
 
+## A slot is set up stopped and only then started: changing the material or the amount of an emitter that already runs
+## left its particles without a uniform set (`Parameter "uniform_set" is null` every frame until the next restart).
 func _show_air(slot: GPUParticles3D, swarm: AmbientSwarm) -> void:
 	if slot == null:
 		return
-	slot.emitting = swarm != null
 	slot.visible = swarm != null
 	if swarm == null:
+		slot.emitting = false
 		return
-	slot.process_material = swarm.process_material
-	slot.draw_pass_1 = swarm.mesh
-	slot.lifetime = swarm.lifetime_s
 	var count := maxi(1, roundi(swarm.amount * _density))
-	if slot.amount != count:
+	if slot.process_material != swarm.process_material or slot.draw_pass_1 != swarm.mesh \
+			or slot.lifetime != swarm.lifetime_s or slot.amount != count:
+		slot.emitting = false
+		slot.process_material = swarm.process_material
+		slot.draw_pass_1 = swarm.mesh
+		slot.lifetime = swarm.lifetime_s
 		slot.amount = count
+		slot.restart()
+	slot.emitting = true
 
 
 func _spot_nodes() -> Array[LifeSpot]:

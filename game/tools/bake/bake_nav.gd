@@ -127,6 +127,7 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	if not geometry.has_data():
 		_fail("no source geometry: no static collider in the group %s" % NavFingerprint.GROUP)
 		return null
+	settings.fit_to(navmesh, geometry)  # a map with land over its whole grid bakes at a coarser cell, not a crash
 	NavigationServer3D.bake_from_source_geometry_data(navmesh, geometry)
 	if navmesh.get_polygon_count() == 0:
 		_fail("the bake produced no polygons")

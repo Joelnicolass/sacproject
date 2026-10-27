@@ -28,19 +28,20 @@ func _ready() -> void:
 func show_swarm(swarm: AmbientSwarm, density: float) -> void:
 	if swarm_particles == null:
 		return
-	if swarm != _swarm:
-		_swarm = swarm
-		if swarm:
+	var count := maxi(1, roundi(swarm.amount * density)) if swarm else swarm_particles.amount
+	# Set up stopped, then restarted: a running emitter given another material or amount kept no uniform set.
+	if swarm != _swarm or count != swarm_particles.amount:
+		swarm_particles.emitting = false
+		if swarm != _swarm and swarm:
 			swarm_particles.process_material = _fitted(swarm.process_material)
 			swarm_particles.draw_pass_1 = swarm.mesh
 			swarm_particles.lifetime = swarm.lifetime_s
 			if on_screen:
 				swarm_particles.visibility_aabb = on_screen.aabb
+		_swarm = swarm
+		swarm_particles.amount = count
+		swarm_particles.restart()
 	_wanted = swarm != null and density > 0.0
-	if _wanted:
-		var count := maxi(1, roundi(swarm.amount * density))
-		if swarm_particles.amount != count:
-			swarm_particles.amount = count
 	_update()
 
 

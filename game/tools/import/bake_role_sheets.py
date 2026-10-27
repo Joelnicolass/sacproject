@@ -16,7 +16,7 @@ layer (DTnn) the group lays over its tiles in the original, 256x256, stretched o
 
   SAC_INSTALL=/path/to/Sacrifice/data python3 -I tools/import/bake_role_sheets.py [--god=persephone] [--check] [--measure]
 
---check writes nothing and prints what it would write. Prints, per role, the groups, the tiles and the mean RGB of the sheet.
+--check writes nothing and prints what it would write, and warns «hoja sin .import versionado» for a sheet whose .import is missing or not in git (import once in the editor and commit the .import). Prints, per role, the groups, the tiles and the mean RGB of the sheet.
 --measure writes nothing: for every imported map of the god's own land, the mean colour of the saved sheets weighted by the map's
 ground_roles.png against the mean of the tiles the original paints there (its own ids on its own land; id 0, the void, skipped),
 PASS or FAIL per criterion of plan 062 (saturation and value within 0.03, hue within 4 degrees); exit 1 on a FAIL.
@@ -24,6 +24,7 @@ Ref: sacmap.d:196-206 (DT layer per MAPG group), maps.d:65 loadDTIndex (byte 55 
 """
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -141,6 +142,15 @@ def measure(god: str, folder: dict, palt: bytes) -> int:
     return failed
 
 
+def versioned_import(sheet_path: Path) -> bool:
+    """True when the sheet's .import exists and git tracks it."""
+    import_path = sheet_path.with_name(sheet_path.name + ".import")
+    if not import_path.exists():
+        return False
+    tracked = subprocess.run(["git", "ls-files", "--error-unmatch", str(import_path)], capture_output=True, cwd=import_path.parent)
+    return tracked.returncode == 0
+
+
 def main() -> int:
     god = str(ARGS.get("--god", "persephone"))
     wad_name, land, _ = lands.GODS[god]
@@ -162,6 +172,9 @@ def main() -> int:
         print("%-6s groups %s  tiles %d %s  DT%02d  mean RGB %s" % (role, numbers, len(tiles), tiles, groups[numbers[0]]["detail"],
               [round(float(c), 1) for c in albedo.reshape(-1, 3).mean(0)]))
         if "--check" in ARGS:
+            for sheet_path in (out_dir / ("%s.png" % role), out_dir / ("%s_detail.png" % role)):
+                if not versioned_import(sheet_path):
+                    print("bake_role_sheets: hoja sin .import versionado: %s" % sheet_path)
             continue
         out_dir.mkdir(parents=True, exist_ok=True)
         Image.fromarray(albedo, "RGB").save(out_dir / ("%s.png" % role))

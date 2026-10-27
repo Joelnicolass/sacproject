@@ -144,7 +144,8 @@ func _run() -> void:
 		"2 frames: %d over %.0f ms, longest %.1f ms <= %.1f x median %.1f ms" % [spikes, spike_ms, longest, max_over_median, median])
 	_check(load_s <= limit_s, "3 load %.2f s <= %.1f s" % [load_s, limit_s])
 	_check(vram_end <= vram_loaded * (1.0 + vram_growth),
-		"4 VRAM %.1f MB at the end <= %.1f MB at world_loaded + %d %%" % [vram_end, vram_loaded, int(vram_growth * 100.0)])
+		"4 VRAM %.1f MB at the end <= %.1f MB (%.1f at world_loaded + %d %%)" % [
+			vram_end, vram_loaded * (1.0 + vram_growth), vram_loaded, int(vram_growth * 100.0)])
 	print("WARMUP PASS" if _fails == 0 else "WARMUP FAIL (%d)" % _fails)
 	get_tree().quit(0 if _fails == 0 else 1)
 

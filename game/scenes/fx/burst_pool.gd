@@ -42,18 +42,22 @@ func prewarm_all() -> void:
 
 
 ## Warm-up (WarmHook in fx_bus.tscn): one burst of every type at `stage` for one drawn frame, then hidden. FxBus says nothing (no
-## `played`: no sound, no shake); its own seed, so the global RNG is not drawn.
+## `played`: no sound, no shake); its own seed, so the global RNG is not drawn. The start gate pauses the tree while the world loads
+## and a paused emitter never places its sprites (they stay at the world's origin, out of view, and nothing is drawn): the flashed
+## emitters process meanwhile.
 func flash_all(stage: Node3D) -> void:
 	var shown: Array[SpriteParticles] = []
 	for found: Resource in FxWire.all_in(FxWire.PARTICLES_DIR):
 		var emitter := _take(found as ParticleType)
 		if emitter != null:
+			emitter.process_mode = Node.PROCESS_MODE_ALWAYS
 			emitter.replay(stage.global_position, 0)
 			shown.append(emitter)
 	await RenderingServer.frame_post_draw
 	for emitter in shown:
 		emitter.emitting = false
 		emitter.hide()
+		emitter.process_mode = Node.PROCESS_MODE_INHERIT
 
 
 func _take(type: ParticleType) -> SpriteParticles:

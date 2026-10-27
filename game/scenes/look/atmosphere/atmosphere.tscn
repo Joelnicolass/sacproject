@@ -31,6 +31,8 @@ drops = NodePath("Follow/Drops")
 bed = NodePath("Bed")
 
 [node name="Follow" type="Node3D" parent="Weather/Precipitation"]
+process_mode = 3
+editor_description = "Sigue a la cámara también con el árbol en pausa (la puerta de inicio pausa mientras carga y espera jugadores): lo que cae rodea siempre lo que se ve."
 script = ExtResource("5_follow")
 
 [node name="Drops" type="GPUParticles3D" parent="Weather/Precipitation/Follow"]

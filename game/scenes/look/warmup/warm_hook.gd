@@ -2,7 +2,7 @@ class_name WarmHook
 extends Node
 
 ## A plug for the warm-up: while the loading screen is up, ShaderWarmup asks every hook (`asked`) to draw for a moment what only its
-## owner can show (pooled bursts and bolts, the rain and the snow). Drop one in the owner's scene and connect `asked` to the owner's
+## owner can show (pooled bursts and bolts, the rain and the snow, the swarms of the air, a body's blink). Drop one in the owner's scene and connect `asked` to the owner's
 ## method there; the owner draws at `stage` (in front of the match camera), plays no sound, shakes nothing and tells nobody.
 ## What it does not do: draw anything itself, know who asks, or run when no warm-up asks (the dedicated server never does).
 

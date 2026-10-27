@@ -124,7 +124,8 @@ shake = NodePath("CameraShake")
 [node name="CameraShake" parent="Camera" instance=ExtResource("f375_shake")]
 
 [node name="WarmupStage" type="Marker3D" parent="Camera"]
-editor_description = "069: donde el precalentado dibuja cada malla y efecto una vez, frente a la cámara y tapado por la pantalla de carga."
+process_mode = 3
+editor_description = "069: donde el precalentado dibuja cada malla y efecto una vez, frente a la cámara y tapado por la pantalla de carga. Siempre procesa: la puerta pausa el árbol mientras carga y una partícula quieta no se dibuja."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
 
 [node name="Warmup" parent="." node_paths=PackedStringArray("world", "biome", "stage") instance=ExtResource("w69_warmup")]

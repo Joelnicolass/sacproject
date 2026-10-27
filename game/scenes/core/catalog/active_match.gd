@@ -99,10 +99,15 @@ static func forget() -> void:
 	_seed = 0
 
 
-## The files the loading screen loads on a thread before the world: the definition of the map (it brings its scene, ground and navmesh).
-## Reads only the tag: nothing is loaded here.
+## The files the loading screen loads on a thread before the world: the definition of the map (it brings its scene, ground and navmesh)
+## and, on a peer that draws, the looks of every body an offered god or wizard can field (the warm-up draws them all; WarmCollect
+## finds them in the catalog, which is already loaded). Reads only the map's tag: no file is loaded here.
 static func load_paths() -> PackedStringArray:
-	return PackedStringArray([MapCatalog.path_of(map_tag())])
+	var paths := PackedStringArray([MapCatalog.path_of(map_tag())])
+	if BodyLook.loads_meshes() and not Engine.is_editor_hint():
+		var catalog := GameCatalog.shared()
+		paths.append_array(WarmCollect.look_paths([catalog.offered_gods(), catalog.offered_wizards()]))
+	return paths
 
 
 

@@ -79,17 +79,28 @@ func _on_health_changed(current: float, maximum: float) -> void:
 
 
 func _flash() -> void:
+	if _lay():
+		flashes += 1
+		_tween = create_tween()
+		_tween.tween_method(_set_amount, peak, 0.0, flash_s)
+		_tween.tween_callback(_clear)
+
+
+## Warm-up (the WarmHook child): the overlay over this body for one drawn frame, so the first hit compiles nothing (not counted).
+func warm(_stage: Node3D) -> void:
+	if is_active() and visual.is_visible_in_tree() and _lay():
+		await RenderingServer.frame_post_draw
+		_clear()
+
+
+## The overlay over the body's meshes at `peak`. False when there is no mesh to lay it on.
+func _lay() -> bool:
 	_clear()
 	_meshes = _targets()
-	if _meshes.is_empty():
-		return
 	for mesh in _meshes:
 		mesh.material_overlay = material
-	flashes += 1
 	_set_amount(peak)
-	_tween = create_tween()
-	_tween.tween_method(_set_amount, peak, 0.0, flash_s)
-	_tween.tween_callback(_clear)
+	return not _meshes.is_empty()
 
 
 func _targets() -> Array[GeometryInstance3D]:

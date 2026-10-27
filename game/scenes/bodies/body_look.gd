@@ -35,10 +35,16 @@ func has_model() -> bool:
 ## The look scene that goes with the body scene `body`: the `<name>_look.tscn` next to it (loaded now, so a client or a tool only; the
 ## server never calls it and never instances the body scene). Null for no body or no look.
 static func of_body(body: PackedScene) -> PackedScene:
+	var path := path_of_body(body)
+	return load(path) as PackedScene if not path.is_empty() else null
+
+
+## Where the look of the body scene `body` is saved (nothing is loaded): "" for no body or no look. The warm-up reads them all at once.
+static func path_of_body(body: PackedScene) -> String:
 	if body == null or body.resource_path.is_empty():
-		return null
+		return ""
 	var path := body.resource_path.trim_suffix(".tscn") + "_look.tscn"
-	return load(path) as PackedScene if ResourceLoader.exists(path) else null
+	return path if ResourceLoader.exists(path) else ""
 
 
 ## The set of sounds of the look `scene` (a `<name>_look.tscn`) without building it: read from the saved root. Null when it has none.

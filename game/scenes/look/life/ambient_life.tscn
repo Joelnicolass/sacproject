@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/look/life/ambient_life_layer.gd" id="1_life"]
 [ext_resource type="Script" path="res://scenes/look/follow_camera.gd" id="2_follow"]
+[ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="3_warm"]
 
 [node name="AmbientLife" type="Node3D" node_paths=PackedStringArray("air_slots")]
 editor_description = "La vida ambiental del bioma: enjambres de aire alrededor de la cámara (Air1..Air3) y en los LifeSpots del mapa (socket spots, lo pone el map.tscn). Oculto = nada."
@@ -9,6 +10,8 @@ script = ExtResource("1_life")
 air_slots = [NodePath("Follow/Air1"), NodePath("Follow/Air2"), NodePath("Follow/Air3")]
 
 [node name="Follow" type="Node3D" parent="."]
+process_mode = 3
+editor_description = "Sigue a la cámara también con el árbol en pausa (la puerta de inicio pausa mientras carga y espera jugadores): los enjambres de aire rodean siempre lo que se ve."
 script = ExtResource("2_follow")
 ahead_m = 15.0
 
@@ -32,3 +35,9 @@ visible = false
 amount = 100
 local_coords = false
 visibility_aabb = AABB(-30, -10, -30, 60, 20, 60)
+
+[node name="WarmHook" type="Node" parent="."]
+editor_description = "069: detrás de la pantalla de carga cada enjambre del bioma vuela un frame en los slots de aire (AmbientLifeLayer.warm)."
+script = ExtResource("3_warm")
+
+[connection signal="asked" from="WarmHook" to="." method="warm"]

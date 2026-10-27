@@ -170,4 +170,6 @@ Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se un
 
 Exportá el preset de Linux y corré `addons/mp_kit/deploy/deploy.sh usuario@vps build/server --rooms 7700 --open-firewall`. Guía completa, varias instancias y web por https: [deploy/README.md](deploy/README.md).
 
+Sin VPS: `addons/mp_kit/deploy/fly.sh --app mi-servidor-de-juego --relay-url wss://mi-relay.fly.dev` (con `MPKIT_RELAY_SECRET` puesta) sube el servidor a Fly.io detrás de tu relay, sin exportar: [GUIDE 13.6](GUIDE.md#136-sin-vps-flyio).
+
 Detalle de cada pieza: [README.md](README.md). Paso a paso, para una persona: [GUIDE.md](GUIDE.md).

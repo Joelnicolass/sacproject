@@ -1,0 +1,24 @@
+# MpKit game server on Fly.io. deploy/fly.sh writes a copy of this to your project folder (fly.toml) with your app,
+# region and flags; edit it there. The host secret is a Fly secret (MPKIT_RELAY_SECRET), never here.
+
+app = "my-game-server"
+primary_region = "gru"
+
+[build]
+  dockerfile = "addons/mp_kit/deploy/fly/Dockerfile"
+  [build.args]
+    GODOT_VERSION = "4.7.2"
+
+[env]
+  # The kit's flags after `--`: a room server (lobby + matches) or a plain dedicated, through the relay.
+  GAME_ARGS = "--room-server --lobby-port=7700 --match-port-min=7800 --match-port-max=7899 --matches-root=/home/game/matches --transport=relay --relay-url=wss://my-relay.fly.dev"
+
+# No [http_service]: the server connects out to the relay and listens on no public port. One machine, always on
+# (rooms and matches live in its memory).
+[[restart]]
+  policy = "always"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

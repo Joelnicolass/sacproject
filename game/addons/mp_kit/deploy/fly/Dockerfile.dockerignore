@@ -1,0 +1,9 @@
+# What the server image leaves out of the game's project folder (read next to the Dockerfile).
+.git
+.godot
+build
+dist
+**/node_modules
+**/.DS_Store
+*.tmp
+fly.toml

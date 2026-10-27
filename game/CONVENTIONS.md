@@ -40,7 +40,7 @@ Palabras simples primero; la columna de la derecha dice quién las controla.
 | C9 | El doc cuenta primero qué pasa en el juego, en palabras simples. La cita al original va al final (`## Ref: state.d:…`) y nunca abre el comentario. | lint (`C9`) |
 | C10 | FSM solo con ≥3 estados; command/interactor solo con ≥2 llamadores. | reviewer |
 | C11 | Herencia propia de profundidad ≤1 (`A extends Node`, `B extends A` y listo). Para más, componé. | lint (`C11`) |
-| C12 | `MpKit.` solo vive en `scenes/net/`, en los dueños de `submit_*`/`@rpc` y en los que usan `MultiplayerSpawner`. | lint (`C12`) |
+| C12 | La red (`MpKit.` o la fachada `Mp.`) solo vive en `scenes/net/`, en las pantallas de red (`scenes/ui/lobby/`, `scenes/ui/local_server/`, `scenes/ui/match_wait/`), en los dueños de `submit_*`/`@rpc`, en los que usan `MultiplayerSpawner` y en las subclases de nodos del kit (`extends Mp…`). Un componente que simula pregunta `is_multiplayer_authority()`. Las líneas de comentario no cuentan. | lint (`C12`, un renglón por archivo) |
 | C13 | El producto no lee formatos del original: nada de `assets/original`, `OriginalAssets.` ni `res://tools` en `scenes/`. | lint (`C13`) |
 | C14 | Los logs van por `DebugLog`; sin `print(` en `scenes/`. | lint (`C14`) |
 

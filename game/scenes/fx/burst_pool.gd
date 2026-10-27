@@ -41,6 +41,21 @@ func prewarm_all() -> void:
 				_idle[type].push_back(emitter)
 
 
+## Warm-up (WarmHook in fx_bus.tscn): one burst of every type at `stage` for one drawn frame, then hidden. FxBus says nothing (no
+## `played`: no sound, no shake); its own seed, so the global RNG is not drawn.
+func flash_all(stage: Node3D) -> void:
+	var shown: Array[SpriteParticles] = []
+	for found: Resource in FxWire.all_in(FxWire.PARTICLES_DIR):
+		var emitter := _take(found as ParticleType)
+		if emitter != null:
+			emitter.replay(stage.global_position, 0)
+			shown.append(emitter)
+	await RenderingServer.frame_post_draw
+	for emitter in shown:
+		emitter.emitting = false
+		emitter.hide()
+
+
 func _take(type: ParticleType) -> SpriteParticles:
 	if not _playing.has(type) and not _open(type):
 		return null

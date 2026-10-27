@@ -6,6 +6,9 @@ extends Node
 ## of its `light` at the end. Never in a headless process.
 ## What it does not do: pick the effect or the place (FxBus), talk to the network, or sound.
 
+## How long the warm-up's bolts are (`flash_all`): short enough to stay inside the camera's view.
+@export_range(0.5, 20.0, 0.5, "suffix:m") var warm_span_m: float = 2.0
+
 ## type -> Array[BeamFx] idle (hidden) / playing (oldest first).
 var _idle: Dictionary[BeamType, Array] = {}
 var _playing: Dictionary[BeamType, Array] = {}
@@ -33,6 +36,23 @@ func prewarm_all() -> void:
 				if beam == null:
 					break
 				_idle[type].push_back(beam)
+
+
+## Warm-up (WarmHook in fx_bus.tscn): one bolt of every type, from `stage` along its X for `warm_span_m`, for one drawn frame, then
+## stopped. FxBus says nothing (no `played`: no sound, no shake) and the bolt never reaches its end (no strike, no scar).
+func flash_all(stage: Node3D) -> void:
+	var from := stage.global_position
+	var to := from + stage.global_basis.x * warm_span_m
+	var shown: Array[BeamFx] = []
+	for found: Resource in FxWire.all_in(FxWire.BEAMS_DIR):
+		var type := found as BeamType
+		var beam := _take(type) if type != null and type.scene != null else null
+		if beam != null:
+			beam.play(from, to, 0)
+			shown.append(beam)
+	await RenderingServer.frame_post_draw
+	for beam in shown:
+		beam.stop()
 
 
 func _take(type: BeamType) -> BeamFx:

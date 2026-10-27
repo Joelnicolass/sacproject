@@ -20,14 +20,33 @@ signal strike(at: Vector3)
 ## The ruling weather now (null before a plan).
 var state_now: WeatherState
 
+## The plan of the last `advance` (Atmosphere's, read again only by `warm`).
+var _plan: WeatherPlan
+
 
 func _ready() -> void:
 	if storm:
 		storm.struck.connect(func(at: Vector3) -> void: strike.emit(at))
 
 
+## Warm-up (the WarmHook child): everything that can fall in this plan falls for a moment, one after the other. The lightning's
+## bolt and flash are warmed by FxBus's own hook.
+func warm(_stage: Node3D) -> void:
+	if precipitation == null or _plan == null:
+		return
+	var states: Array[WeatherState] = [_plan.first]
+	for chance in _plan.chances:
+		states.append(chance.state if chance else null)
+	var shown: Array[PrecipitationLook] = []
+	for state in states:
+		if state != null and state.precipitation != null and not state.precipitation in shown:
+			shown.append(state.precipitation)
+			await precipitation.flash(state.precipitation)
+
+
 ## The weather at `t_s` with `plan` and `sky_seed`; `preview` (editor) shows that state alone, fully.
 func advance(plan: WeatherPlan, sky_seed: int, t_s: float, preview: WeatherState) -> AtmosphereSample:
+	_plan = plan
 	var now: Array = [preview, preview, 1.0] if preview else AtmosphereRules.states_at(plan, sky_seed, t_s)
 	var sample := AtmosphereRules.state_sample(preview) if preview else AtmosphereRules.weather_at(plan, sky_seed, t_s)
 	_rule(sample.weather)

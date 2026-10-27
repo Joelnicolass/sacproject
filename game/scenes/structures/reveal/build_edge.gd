@@ -41,6 +41,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	var on := not Engine.is_editor_hint() and not LookRig.is_presentationless() \
 			and tower != null and reveal != null and rings != null and light != null

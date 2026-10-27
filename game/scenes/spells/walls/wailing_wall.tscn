@@ -119,6 +119,7 @@ wall = NodePath("..")
 when = 0
 
 [node name="Light" parent="." instance=ExtResource("12_light")]
+physics_interpolation_mode = 2
 light_color = Color(0.8, 0.4, 0.28, 1)
 light_energy = 1.2
 omni_range = 14.0

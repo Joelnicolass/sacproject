@@ -372,6 +372,7 @@ func _seat() -> void:
 	if is_nan(ground):
 		return
 	global_position.y = ground - feet_drop()
+	reset_physics_interpolation()
 	velocity = Vector3.ZERO
 	_seat_left = 0
 

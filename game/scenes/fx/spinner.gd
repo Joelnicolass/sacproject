@@ -10,6 +10,10 @@ var _axis := Vector3.UP
 var _rate := 0.0
 
 
+## This moves by itself every frame, so physics interpolation must leave it alone.
+func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()

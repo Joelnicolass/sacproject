@@ -71,6 +71,7 @@ where = 1
 rate = 110.0
 
 [node name="Sprites" parent="LeftDust" instance=ExtResource("7_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("8_dirt")
 
 [node name="RightDust" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
@@ -81,6 +82,7 @@ where = 2
 rate = 110.0
 
 [node name="Sprites" parent="RightDust" instance=ExtResource("7_sprites")]
+physics_interpolation_mode = 2
 type = ExtResource("8_dirt")
 
 [node name="Rise" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("9_sound")]
@@ -96,6 +98,7 @@ wall = NodePath("..")
 when = 1
 
 [node name="Light" parent="." instance=ExtResource("11_light")]
+physics_interpolation_mode = 2
 light_color = Color(0.75, 0.55, 0.35, 1)
 light_energy = 1.2
 omni_range = 12.0

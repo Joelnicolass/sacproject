@@ -21,6 +21,7 @@ explosion = Array[ExtResource("fx_ptype")]([ExtResource("fx_rock"), ExtResource(
 ground_mark = ExtResource("4_mark")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
+physics_interpolation_mode = 2
 unique_name_in_owner = true
 mesh = ExtResource("mesh_rock")
 

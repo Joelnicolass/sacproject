@@ -48,7 +48,7 @@ func _process(delta: float) -> void:
 	if _fx == null:
 		return
 	if is_instance_valid(_socket) and _socket.is_inside_tree():
-		_fx.global_position = _socket.global_position + _wobble()
+		_fx.global_position = DrawnPose.point(body, _socket.global_position) + _wobble()
 	else:
 		_fx.position = offset + _wobble()
 	_rate_left -= delta

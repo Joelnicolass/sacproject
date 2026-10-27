@@ -89,7 +89,7 @@ func _process(_delta: float) -> void:
 		return
 	var start := _origin()
 	var reach := clampf(float(now - _born) / maxf(1.0, float(_grow_ticks)), 0.0, 1.0)
-	var end := start.lerp(BodyNudge.center(_target), reach)
+	var end := start.lerp(DrawnPose.center(_target), reach)
 	var ramp := clampf(float(now - _born) / maxf(1.0, float(MatchClock.ticks_for(ramp_s))), 0.0, 1.0)
 	var reshape := maxi(1, MatchClock.ticks_for(reshape_s))
 	if _bolt != null and now / reshape != _shape_slot:
@@ -104,8 +104,8 @@ func _origin() -> Vector3:
 	var unit := _user as UnitBody
 	var ranged := unit.weapons.ranged if unit != null else null
 	if ranged != null:
-		return ranged.shot_origin()
-	return BodyFacts.point(_user, BodyFacts.Socket.MUZZLE)
+		return DrawnPose.point(_user, ranged.shot_origin())
+	return DrawnPose.point(_user, BodyFacts.point(_user, BodyFacts.Socket.MUZZLE))
 
 
 func _rebuild(start: Vector3, end: Vector3, ramp: float) -> void:

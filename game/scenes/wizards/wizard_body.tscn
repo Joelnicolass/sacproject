@@ -179,6 +179,7 @@ model = "jnwr"
 god_type = ExtResource("b2_god")
 
 [node name="Tilt" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 
 [node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig", "mount")]
 script = ExtResource("3_visual")
@@ -222,6 +223,7 @@ afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
 
 [node name="Wards" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 script = ExtResource("w_wards")
 
 [node name="SkinOfStone" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_skin_of_stone")]
@@ -327,6 +329,7 @@ caster = NodePath("../Caster")
 rig = NodePath("../Tilt/Mesh/Rig")
 
 [node name="Afflictions" type="Node3D" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "wards")]
+physics_interpolation_mode = 2
 script = ExtResource("f120_afflictions")
 wards = NodePath("../Wards")
 body = NodePath("..")

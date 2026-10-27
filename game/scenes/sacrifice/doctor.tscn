@@ -86,6 +86,7 @@ states = NodePath("States")
 motor = NodePath("Motor")
 
 [node name="Pivot" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 
 [node name="Mesh" type="MeshInstance3D" parent="Pivot" node_paths=PackedStringArray("rig", "mount")]
 script = ExtResource("2_visual")
@@ -168,6 +169,7 @@ clip_player = NodePath("../ClipPose")
 visual = NodePath("../Pivot/Mesh")
 
 [node name="CarryRope" type="Node3D" parent="." node_paths=PackedStringArray("doctor", "rig", "tether")]
+physics_interpolation_mode = 2
 script = ExtResource("15_rope")
 doctor = NodePath("..")
 rig = NodePath("../Pivot/Mesh/Rig")

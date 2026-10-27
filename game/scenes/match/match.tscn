@@ -121,6 +121,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.7, 0.7, 0, -0.7, 0.7, 0, 18, 18)
 far = 20000.0
 script = ExtResource("11_camera")
+process_priority = 15000
 edge_area = NodePath("../Hud/View")
 wheel_blockers = [NodePath("../Hud/Minimap")]
 shake = NodePath("CameraShake")

@@ -77,6 +77,10 @@ var _pointer := Vector2(-1.0, -1.0)
 var _terrain: Terrain
 
 
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _ready() -> void:
 	zoom = start_zoom
 	target_zoom = start_zoom
@@ -231,7 +235,8 @@ func _place() -> void:
 		focus_factor = focus_min_factor + (1.0 - focus_min_factor) * zoom / focus_full_zoom
 	var distance := base_distance * (distance_zoom_base + distance_zoom_scale * zoom)
 	var height := floating * (height_zoom_base + height_zoom_scale * zoom)
-	var origin := follow.global_position
+	# The drawn place of the body (DrawnPose), not the tick it simulates in: the camera runs from _process, after the kit.
+	var origin := DrawnPose.origin(follow)
 	var ahead := Vector3(sin(yaw), 0.0, cos(yaw))
 	var spot := origin - ahead * distance
 	spot.y = origin.y - _ground_y(origin, origin.y) + _ground_y(spot, origin.y) + height

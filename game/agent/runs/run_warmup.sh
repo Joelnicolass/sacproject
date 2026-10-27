@@ -6,7 +6,7 @@
 # Each run checks: compilations DRAW+SPECIALIZATION > 0 while loading and = 0 after world_loaded; no frame > 50 ms and the longest
 # <= 2x the median; VRAM at the end <= VRAM at world_loaded + 15 %. Criterion 5 (the gate) is agent/runs/run_068_gate.sh.
 # The user folder is shared by every worktree of this project (same config/name): the cold run makes the others' next start
-# slower, nothing else. MATCH_S (default 60) = seconds of play measured. Logs: agent/out/warmup/{cold,cached}.log.
+# slower, nothing else. MATCH_S (default 60) = seconds of play measured. QUALITY=low|medium|high (default high). Logs: agent/out/warmup/{cold,cached}.log.
 # EXPLAIN=1: warmup_probe.gd --explain also prints WARMUP_LOAD / WARMUP_STALL (what held the load) and WARMUP_EXPLAIN /
 # WARMUP_FRAME (what appeared when the counters moved or a frame hitched after world_loaded): the owner to fix.
 # Needs `--import` once first. Prints WARMUP RUN PASS / WARMUP RUN FAIL (exit 0 / 1).
@@ -16,6 +16,8 @@ OUT="$ROOT/agent/out/warmup"
 MODE="${MODE:-2v2}"
 MAP="${MAP:-test_flat4}"
 MATCH_S="${MATCH_S:-60}"
+# The probe never reads the player's user://settings.cfg: its own preferences file and QUALITY (default high) for the preset.
+QUALITY="${QUALITY:-high}"
 mkdir -p "$OUT"
 
 NAME="$(sed -n 's/^config\/name="\(.*\)"$/\1/p' "$ROOT/project.godot" | head -1)"
@@ -26,7 +28,7 @@ esac
 
 probe() { # <label> <load limit s>
   bash "$ROOT/agent/harness/godot_run.sh" "$GODOT_BIN" --path "$ROOT" res://agent/perf/warmup_probe.tscn -- \
-    --map="$MAP" --mode="$MODE" --load-limit-s="$2" --match-s="$MATCH_S" ${EXPLAIN:+--explain=1} > "$OUT/$1.log" 2>&1
+    --map="$MAP" --mode="$MODE" --load-limit-s="$2" --match-s="$MATCH_S" --user-settings=user://warmup_probe.cfg --quality="$QUALITY" ${EXPLAIN:+--explain=1} > "$OUT/$1.log" 2>&1
   local code=$?
   echo "== $1 (exit $code)"
   grep -E "^(WARMUP_PROBE|PASS|FAIL|WARMUP )" "$OUT/$1.log"

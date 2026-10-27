@@ -110,7 +110,8 @@ func report_result(data: Dictionary) -> void:
 	if delay <= 0.0:
 		get_tree().quit()
 	else:
-		get_tree().create_timer(delay).timeout.connect(func() -> void: get_tree().quit())
+		## Real time: the result must reach the room server and the players before the process goes.
+		MpKit.after_real(delay, func() -> void: get_tree().quit())
 
 
 ## Arms MpKit.gate with the ticket's human seats: identity = seat_of, the grace and the load timeout of `config`. `--no-load-hold`

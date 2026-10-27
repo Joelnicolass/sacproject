@@ -64,6 +64,8 @@ var _pending_ticket: String = ""
 var _awaiting_ticket: Dictionary = {}
 ## Client: "host:port" of the server it joins, and the seat credential each server gave (memory only; kept across leave()).
 var _endpoint: String = ""
+## [due msec, Callable] for after_real.
+var _real_due: Array = []
 var _seat_credentials: Dictionary = {}
 
 
@@ -82,6 +84,26 @@ func _ready() -> void:
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
+
+
+## Runs `callable` once `seconds` of REAL time passed. For network timeouts: packets arrive in real time, while game time
+## runs faster or slower with `--fixed-fps` (it stops syncing to the clock) or `Engine.time_scale`.
+func after_real(seconds: float, callable: Callable) -> void:
+	_real_due.append([Time.get_ticks_msec() + int(maxf(seconds, 0.0) * 1000.0), callable])
+
+
+func _process(_delta: float) -> void:
+	if _real_due.is_empty():
+		return
+	var now := Time.get_ticks_msec()
+	var due: Array = []
+	var later: Array = []
+	for item in _real_due:
+		(due if now >= int(item[0]) else later).append(item)
+	_real_due = later
+	for item in due:
+		if (item[1] as Callable).is_valid():
+			(item[1] as Callable).call()
 
 
 func configure(
@@ -424,7 +446,7 @@ func _on_peer_connected(id: int) -> void:
 			_cut_peer(multiplayer.multiplayer_peer, id, "too_many_pending")
 			return
 		_awaiting_ticket[id] = true
-		get_tree().create_timer(admission_timeout_s).timeout.connect(_on_admission_timeout.bind(id))
+		after_real(admission_timeout_s, _on_admission_timeout.bind(id))
 		return
 	if exceeds_max_players(_connected_player_count()):
 		_reject_peer(id, MpMatchGate.FULL)
@@ -469,7 +491,7 @@ func _reject_peer(id: int, reason: String) -> void:
 	rpc_admission_rejected.rpc_id(id, reason)
 	## Let the reliable RPC leave before the disconnect command.
 	var closing := multiplayer.multiplayer_peer
-	get_tree().create_timer(REJECT_FLUSH_S).timeout.connect(func() -> void:
+	after_real(REJECT_FLUSH_S, func() -> void:
 		if closing != null and multiplayer.multiplayer_peer == closing and multiplayer.get_peers().has(id):
 			_cut_peer(closing, id, reason))
 

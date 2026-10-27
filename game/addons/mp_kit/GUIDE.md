@@ -1551,6 +1551,9 @@ Algún archivo de la carpeta ya existe (`[~]`) o la carpeta no empieza con `res:
 6. ¿El `MpSlotSpawner` (el `Players` del `MpWorld`) tiene `spawn_path` y `pawn_scene`?
 7. ¿La partida espera asientos? El mundo está pausado hasta que cargan los que espera (`MpMatch.waiting`, `Mp.gate().is_waiting()`). Arranca sola pasado `load_timeout_s`; en Host LAN tocá **Start now** (`MpStartButton`), o probá `--start-seats=1`.
 
+**Un cliente se rechaza enseguida con `timeout`, solo contra un servidor o relay remoto.**
+El log del servidor dice `MpKit: the server turned peer N away (timeout)`: su ticket no llegó en `admission_timeout_s`. Los timeouts de red del kit cuentan tiempo real, así que un servidor lejos no es problema. Si el servidor corre temporizadores tuyos para cosas de red, usá `MpKit.after_real(segundos, callable)`, no `create_timer`: con `--fixed-fps` (deja de sincronizar con el reloj y puede correr miles de cuadros por segundo) o `Engine.time_scale`, el tiempo de juego no es tiempo real.
+
 **Un segundo cliente no entra: «The match already started» (`match_started`).**
 La puerta ya arrancó la partida: después del arranque solo vuelve un asiento que se fue. Para que entren varios, que carguen antes del arranque (`start_seats` = 0 espera todos los asientos, `--start-seats=N`), o prendé `late_join` (`--late-join`) para un juego de entrar y salir. En un dedicado a mano, la partida siguiente se abre sola cuando esta termina y se fueron todos.
 

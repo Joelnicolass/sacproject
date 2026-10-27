@@ -183,7 +183,7 @@ func _on_peer_disconnected(peer_id: int) -> void:
 func _reject(peer_id: int, code: String) -> void:
 	_to_client(peer_id, &"rpc_rejected", [code])
 	var closing := _peer
-	get_tree().create_timer(config.reject_flush_s).timeout.connect(func() -> void:
+	MpKit.after_real(config.reject_flush_s, func() -> void:
 		if closing != null and _peer == closing and multiplayer.get_peers().has(peer_id):
 			closing.disconnect_peer(peer_id))
 

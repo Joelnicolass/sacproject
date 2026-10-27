@@ -24,6 +24,15 @@ func test_state_watch_gives_the_current_value_then_changes() -> void:
 	state.free()
 
 
+func test_after_real_uses_the_clock() -> void:
+	var ran: Array[String] = []
+	MpKit.after_real(0.0, func() -> void: ran.append("now"))
+	MpKit.after_real(30.0, func() -> void: ran.append("later"))
+	MpKit._process(1000.0)
+	check(ran == ["now"], "after_real: a due call runs on the next frame; one 30 s away does not, whatever the frame's delta: %s" % [ran])
+	MpKit._real_due.clear()
+
+
 func test_ready_peers_solo() -> void:
 	check(MpKit.ready_peers().is_empty(), "solo: no peer to play a one-off effect for")
 

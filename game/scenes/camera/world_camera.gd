@@ -1,6 +1,9 @@
 extends Camera3D
 
-## Third-person camera of sacengine (dagonBackend.d positionCamera / cameraControl). Units 1:1 sac → m.
+## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the keys, the screen edges and
+## free look, and zooms with the wheel (except over `wheel_blockers`). Controls are InputMap actions: `camera_orbit` (middle
+## button, or Ctrl + left) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are the keys.
+## Ref: sacengine dagonBackend.d positionCamera / cameraControl. Units 1:1 sac → m.
 
 @export var follow: Node3D
 ## Only this ground counts for the ray under the camera (props on layer 1 are skipped). The live land (Terrain.height_at,
@@ -47,8 +50,8 @@ extends Camera3D
 @export_group("Free look")
 ## Degrees per pixel. Negative = the original "grab the world" feel.
 @export var look_deg_per_px := -0.25
-## Absolute limits of view_pitch_deg. sacengine only wraps the pitch at ±180° (dagonBackend.d:425);
-## Basis.looking_at degenerates at ±90°, so the view stops short of vertical.
+## Absolute limits of view_pitch_deg. Basis.looking_at degenerates at ±90°, so the view stops short of vertical.
+## Ref: sacengine only wraps the pitch at ±180° (dagonBackend.d:425).
 @export var look_down_max_deg := 85.0
 @export var look_up_max_deg := 80.0
 @export var drag_px := 3.0
@@ -60,7 +63,7 @@ extends Camera3D
 var yaw := 0.0
 var zoom := 0.125
 var target_zoom := 0.125
-## Free-look pitch on top of the follow angle (sacengine camera.pitch over pitchOffset). Negative looks up.
+## Free-look pitch on top of the follow angle. Negative looks up. Ref: sacengine camera.pitch over pitchOffset.
 var free_pitch_deg := 0.0
 ## Resulting view pitch below the horizon, in [-look_up_max_deg, look_down_max_deg]. Negative looks up.
 var view_pitch_deg := 0.0
@@ -109,20 +112,22 @@ func _input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseButton:
 		var button := event as InputEventMouseButton
-		if button.pressed and button.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+		var wheel_in := button.is_action_pressed(&"camera_wheel_in")
+		var wheel_out := button.is_action_pressed(&"camera_wheel_out")
+		if button.is_action_pressed(&"select") or button.is_action_pressed(&"order_units") or button.is_action_pressed(&"camera_orbit"):
 			_dragged = false
 			_drag_travel = 0.0
-		elif button.pressed and button.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and _wheel_blocked(button.position):
+		elif (wheel_in or wheel_out) and _wheel_blocked(button.position):
 			pass
-		elif button.pressed and button.button_index == MOUSE_BUTTON_WHEEL_UP:
+		elif wheel_in:
 			_nudge_zoom(-wheel_step * _wheel_factor(button))
-		elif button.pressed and button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		elif wheel_out:
 			_nudge_zoom(wheel_step * _wheel_factor(button))
 	elif event is InputEventMouseMotion:
 		var motion := event as InputEventMouseMotion
-		var held := motion.button_mask & (MOUSE_BUTTON_MASK_RIGHT | MOUSE_BUTTON_MASK_MIDDLE)
-		if _free_look(motion):
-			held = 1
+		var held := Input.is_action_pressed(&"order_units")
+		if _free_look():
+			held = true
 			yaw -= deg_to_rad(motion.relative.x * look_deg_per_px)
 			free_pitch_deg += motion.relative.y * look_deg_per_px
 		if held:
@@ -147,10 +152,9 @@ func _wheel_factor(button: InputEventMouseButton) -> float:
 	return button.factor if button.factor > 0.0 else 1.0
 
 
-func _free_look(motion: InputEventMouseMotion) -> bool:
-	if motion.button_mask & MOUSE_BUTTON_MASK_MIDDLE:
-		return true
-	return bool(motion.button_mask & MOUSE_BUTTON_MASK_LEFT) and motion.ctrl_pressed
+## True while the orbit gesture is held (middle button, or Ctrl + left).
+func _free_look() -> bool:
+	return Input.is_action_pressed(&"camera_orbit")
 
 
 func _process(delta: float) -> void:
@@ -191,9 +195,7 @@ func _edge_pointer() -> Variant:
 		return debug_pointer
 	if not _mouse_inside or not get_window().has_focus():
 		return null
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
-		return null
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and Input.is_key_pressed(KEY_CTRL):
+	if _free_look():
 		return null
 	if _pointer.x < 0.0:
 		return null

@@ -1,7 +1,7 @@
 class_name CommandInput
 extends Node
 
-## Routes the player's input in the world to the command that owns it (sacengine dagonBackend.d:947-1300). Keys: creature
+## Routes the player's input in the world to the command that owns it. Keys: creature
 ## and spell keys (SpellCommand), group keys (GroupKeys), Ctrl+R / Ctrl+A arm attack / guard, Ctrl+Space retreats,
 ## Ctrl+Q / Shift+B uses the ability, the order and select actions work through the crosshair. Left button on %View: a spell,
 ## ability or order icon waiting for its target takes the click; otherwise it selects (click, or a box past
@@ -12,7 +12,7 @@ const _SELECTION := preload("res://scenes/orders/selection.gd")
 const CREATURE_KEYS := 11
 const SPELL_KEYS := 11
 
-## sacengine rectangleThreshold.
+## Pixels the pointer must travel before a left press becomes a selection box.
 @export var rect_threshold_px := 3.0
 @export var armed: ArmedCommand
 @export var ray: PointerRay
@@ -88,7 +88,7 @@ func left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 				_inspector.inspect(building)
 			elif not shift and not ctrl and ray.is_empty_at(screen):
 				# RFC-025 3.2: a plain left click on the ground or on nothing drops the selection
-				# (an armed icon never gets here; the original keeps it: dagonBackend.d:1171-1198).
+				# (an armed icon never gets here: the original keeps it).
 				_selection.clear()
 				_inspector.clear()
 
@@ -96,7 +96,7 @@ func left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 func _on_view_event(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var button := event as InputEventMouseButton
-		if button.button_index == MOUSE_BUTTON_LEFT:
+		if button.is_action(&"select"):
 			if button.pressed:
 				_left_down = true
 				_press_at = button.position

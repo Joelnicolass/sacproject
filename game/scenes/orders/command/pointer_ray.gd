@@ -19,6 +19,11 @@ const _CAMERA := preload("res://scenes/camera/world_camera.gd")
 @onready var _camera: _CAMERA = get_node_or_null("%Camera")
 
 
+func _ready() -> void:
+	if seat == null:
+		push_warning("PointerRay: assign `seat` (the MpLocalSeat); every body counts as an enemy without it")
+
+
 ## True while the world camera counts the pointer as dragged (a click that ends it is not an order).
 func camera_dragged() -> bool:
 	return _camera != null and _camera.is_dragging()

@@ -36,16 +36,13 @@ signal book_changed
 	set(value):
 		model = value
 		pick_changed.emit()
-## The god whose book the wizard casts (data/gods/). Taken from the pick on every peer; a bench without a flow sets it by hand.
+## The god whose book the wizard casts (data/gods/). Taken from the seat's pick on every peer (it does not travel in the
+## synchronizer); a bench without a flow sets it by hand.
 @export var god_type: GodType:
 	set(value):
+		if value == god_type:
+			return
 		god_type = value
-		if value != null and god != value.id():
-			god = value.id()
-## The id of `god_type` on the network (it travels in the synchronizer). Derived from the type; the spellbook reads it.
-@export var god := "":
-	set(value):
-		god = value
 		pick_changed.emit()
 ## Book of THIS wizard (a bench, a solo game, the server). Empty: the book of `god_type`. It does not travel on the network.
 @export var book: GodBook:
@@ -55,7 +52,7 @@ signal book_changed
 		book = value
 		book_changed.emit()
 ## Wizard level (RFC-030 030b): the Spellbook keeps the entries up to it. The server sets it from
-## MatchRules.wizard_level (WizardSpawner) and replicates it like `god`.
+## MatchRules.wizard_level (WizardSpawner) and replicates it like `model`.
 @export_range(1, 9) var level := 1:
 	set(value):
 		if value == level:
@@ -202,7 +199,7 @@ func _refresh_owner() -> void:
 func _apply_pick() -> void:
 	var chosen: WizardPick = SacrificeFlow.pick_for(owner_slot)
 	if chosen != null and chosen.is_complete():
-		## The replicated ids (`wizard_tag`, `model`, `god`) stay the wire until the body is a scene of its own (055s).
+		## The replicated ids (`wizard_tag`, `model`) stay the wire until the body is a scene of its own (055s).
 		if chosen.wizard != wizard_type:
 			wizard_type = chosen.wizard
 		if chosen.wizard.model_id() != model:
@@ -212,7 +209,7 @@ func _apply_pick() -> void:
 	_apply_type()
 
 
-## A client: only the type comes from the pick; the ids (`wizard_tag`, `model`, `god`) are the server's and reach it by replication.
+## A client: the wizard and god types come from the pick; the ids (`wizard_tag`, `model`) are the server's and reach it by replication.
 func _take_pick_type() -> void:
 	var chosen: WizardPick = SacrificeFlow.pick_for(owner_slot)
 	if chosen == null or not chosen.is_complete():

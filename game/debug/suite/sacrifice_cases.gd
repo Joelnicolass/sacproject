@@ -146,7 +146,7 @@ func _desecrate_check() -> Dictionary:
 	_root.add_child(system)
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = Vector3.ZERO
 	var action := wizard.get_node("Caster").action_for("ucas") as DesecrateAction

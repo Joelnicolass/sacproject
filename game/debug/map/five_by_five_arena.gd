@@ -98,7 +98,7 @@ func _spawn_wizard_side(parent: Node3D, slot: int, position: Vector3, facing: Ve
 	wizard.set("owner_slot", slot)
 	wizard.set("wizard_type", GameData.wizard("cwa0"))
 	wizard.set("model", "jnwr")
-	wizard.set("god", "james")
+	wizard.set("god_type", GameData.god(String("james")))
 	wizard.position = position
 	wizard.rotation.y = atan2(facing.x, facing.z)
 	wizard.get_node_or_null("Health").set("rules", MATCH_RULES)

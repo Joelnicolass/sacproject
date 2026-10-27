@@ -61,11 +61,11 @@ func _rows() -> Array:
 func wizard(slot: int, at: Vector3, god: String, level := 5) -> WizardBody:
 	var body := WIZARD_SCENE.instantiate() as WizardBody
 	body.owner_slot = slot
-	body.god = god
+	body.god_type = GameData.god(String(god))
 	body.level = level
 	body.position = at
 	root.add_child(body)
-	body.god = god
+	body.god_type = GameData.god(String(god))
 	(body.get_node("Health") as Health).setup(10000.0)
 	var pool := body.get_node("ManaPool") as ManaPool
 	pool.maximum = 10000.0

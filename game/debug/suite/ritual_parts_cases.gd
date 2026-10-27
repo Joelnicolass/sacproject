@@ -224,7 +224,7 @@ func _ritual(kind: Ritual.Kind, at := Vector3.ZERO) -> Ritual:
 func _wizard(slot: int, at: Vector3) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	wizard.position = at
 	_root.add_child(wizard)
 	return wizard

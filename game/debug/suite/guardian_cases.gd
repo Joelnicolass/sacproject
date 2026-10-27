@@ -310,7 +310,7 @@ func _action() -> Dictionary:
 	var checks := {}
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = 1
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = Vector3(500.0, 0.0, 0.0)
 	var caster := wizard.get_node("Caster")

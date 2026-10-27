@@ -355,7 +355,7 @@ func _unit(at: Vector3, slot: int) -> UnitBody:
 func _wizard(at: Vector3, slot: int) -> WizardBody:
 	var wizard := WIZARD_SCENE.instantiate() as WizardBody
 	wizard.owner_slot = slot
-	wizard.god = GOD
+	wizard.god_type = GameData.god(String(GOD))
 	_root.add_child(wizard)
 	wizard.global_position = at
 	return wizard

@@ -102,7 +102,7 @@ func _ready() -> void:
 	creature.adopt()
 	creature.adopt_model()
 	creature.equip()
-	states.start(mode)
+	states.begin(mode)
 	if special_forms.stealth:
 		special_forms.present()
 	clips.update()

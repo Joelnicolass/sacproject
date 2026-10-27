@@ -47,11 +47,3 @@ func pose_scale() -> Vector3:
 ## A clip of this mode looped (BodyAnimator.clip_looped). True when the clip must be chosen again.
 func on_clip_looped(_role: String) -> bool:
 	return false
-
-
-func transition(state_name: StringName) -> void:
-	var next := machine.get_node_or_null(NodePath(state_name)) as UnitState if machine != null else null
-	if next == null:
-		push_warning("UnitState '%s': no state '%s'" % [name, state_name])
-		return
-	body.mode = next.mode

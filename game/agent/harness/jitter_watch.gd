@@ -20,7 +20,7 @@ var rows := 0
 var _file: FileAccess
 var _creature_name := ""
 var _creature: Node3D
-var _actor: Node
+var _actor: MpActor
 var _actor_next := 0.0
 var _rtt := ""
 var _rtt_next := 0.0
@@ -60,10 +60,10 @@ func _process(_delta: float) -> void:
 	if _actor == null and secs >= _actor_next:
 		_actor_next = secs + 1.0
 		var found := me.find_children("*", "MpActor", true, false)
-		_actor = found[0] if not found.is_empty() else null
+		_actor = found[0] as MpActor if not found.is_empty() else null
 	var correction := ""
 	if _actor != null and is_instance_valid(_actor):
-		correction = "%.5f" % float(_actor.call("last_correction"))
+		correction = "%.5f" % _actor.last_correction()
 	_row(now, frame, "own", me, _rtt, correction)
 	if rival != null:
 		_row(now, frame, "rival", rival, _rtt, "")

@@ -159,9 +159,12 @@ properties/22/replication_mode = 2
 properties/23/path = NodePath("MpActor:net_stamp")
 properties/23/spawn = true
 properties/23/replication_mode = 1
-properties/24/path = NodePath("MpActor:owner_slot")
+properties/24/path = NodePath("MpActor:net_teleports")
 properties/24/spawn = true
-properties/24/replication_mode = 0
+properties/24/replication_mode = 1
+properties/25/path = NodePath("MpActor:owner_slot")
+properties/25/spawn = true
+properties/25/replication_mode = 0
 
 [sub_resource type="BoxMesh" id="Box_unit"]
 

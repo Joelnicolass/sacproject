@@ -45,7 +45,9 @@ func _ready() -> void:
 		return
 	_name = MpBoot.user_value("e2e-name", "?")
 	MpKit.slot_assigned.connect(func(slot: int) -> void: _slot = slot)
-	MpKit.admission_rejected.connect(func(reason: String) -> void: _rejected = reason)
+	MpKit.admission_rejected.connect(func(reason: String) -> void:
+		_rejected = reason
+		print("E2E %s rejected: %s" % [_name, reason]))
 	SacrificeFlow.status_changed.connect(func(text: String) -> void: _statuses.append(text))
 	Mp.gate().waiting_changed.connect(_on_waiting_changed)
 	_run.call_deferred()

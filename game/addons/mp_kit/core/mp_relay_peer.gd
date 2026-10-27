@@ -61,6 +61,15 @@ func start(url: String, room: String, host: bool, secret: String = "", tls: TLSO
 
 ## Relay close codes the kit acts on.
 const CLOSE_ROOM_IN_USE := 4009
+## What each relay close code means, for the log of a peer the relay closed.
+const CLOSE_REASONS := {
+	4004: "no host in this room (wrong relay_room or port, or the server is not up)",
+	4005: "the host left the room",
+	4006: "the room is full (RELAY_MAX_CLIENTS)",
+	4007: "the host closed this client (the server turned it away: see admission_rejected)",
+	4009: "the room has another live host",
+	4010: "the host was silent too long",
+}
 
 ## True when the relay refused this host because its room has a live host (a port in use: pick another), after the
 ## grace a quick restart needs.
@@ -99,6 +108,9 @@ func _poll() -> void:
 				push_warning("MpRelayPeer: the relay room is in use by another host (like a port in use)")
 			elif _host:
 				push_error("MpRelayPeer: the relay closed the host (%d %s)" % [_ws.get_close_code(), _ws.get_close_reason()])
+			else:
+				var code := _ws.get_close_code()
+				push_warning("MpRelayPeer: the relay closed this client (%d): %s" % [code, CLOSE_REASONS.get(code, _ws.get_close_reason())])
 			_drop_all()
 		return
 	while _ws.get_available_packet_count() > 0:

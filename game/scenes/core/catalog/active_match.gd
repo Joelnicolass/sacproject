@@ -105,14 +105,6 @@ static func load_paths() -> PackedStringArray:
 	return PackedStringArray([MapCatalog.path_of(map_tag())])
 
 
-## Where the shader warm-up starts its walk (WarmCollect): the map and every god and wizard a seat can pick (any of them can show up).
-static func warm_roots() -> Array[Resource]:
-	var roots: Array[Resource] = [map()]
-	var catalog := GameCatalog.shared()
-	roots.append_array(catalog.offered_gods())
-	roots.append_array(catalog.offered_wizards())
-	return roots
-
 
 ## `--<name>=<tag>` of the command line (not read in the editor), else `fallback`.
 static func _flag(flag_name: String, fallback: StringName) -> StringName:

@@ -3,7 +3,7 @@ class_name ShaderWarmup
 extends Node
 
 ## Behind the loading screen, draws once every mesh, material and look scene the match can show (WarmCollect finds them under the
-## match scene, `ActiveMatch.warm_roots()` and the biome's look), a batch a frame at `stage` in front of the camera; then asks each
+## match scene, `world.warm_roots()` and the biome's look), a batch a frame at `stage` in front of the camera; then asks each
 ## WarmHook to draw its own and waits until the pipeline counters stay still for `settle_s`. So the first fireball does not stall.
 ## Says `progressed` (0..1) on the way and `finished` once. A headless process (the dedicated server) finishes as soon as the world
 ## is ready. What it does not do: load files (the flow), know the network (LoadReport tells it), or name what it warms.
@@ -49,7 +49,7 @@ func _on_biome_applied(god: GodType) -> void:
 	var roots: Array = [god.look]
 	if not world.scene_file_path.is_empty():
 		roots.append(load(world.scene_file_path))
-	roots.append_array(ActiveMatch.warm_roots())
+	roots.append_array(world.warm_roots())
 	var items := WarmCollect.from_roots(roots).items()
 	var steps := items.size() + 1
 	for start in range(0, items.size(), batch_size):

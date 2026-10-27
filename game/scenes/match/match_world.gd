@@ -90,6 +90,15 @@ func _ready() -> void:
 	print("mundo listo %d ms" % (Time.get_ticks_msec() - _entered_ms))
 
 
+## Where the shader warm-up starts its walk (WarmCollect): this match's map and every god and wizard a seat can pick (any of them can show up).
+func warm_roots() -> Array[Resource]:
+	var roots: Array[Resource] = [definition]
+	var catalog := GameCatalog.shared()
+	roots.append_array(catalog.offered_gods())
+	roots.append_array(catalog.offered_wizards())
+	return roots
+
+
 ## The wizard of this process's player; null on the dedicated server or before the spawn arrives.
 func local_wizard() -> Node3D:
 	if _local_wizard and is_instance_valid(_local_wizard):

@@ -120,7 +120,7 @@ def measure(god: str, folder: dict, palt: bytes) -> int:
         means = [np.asarray(Image.open(THEMES / god / "roles" / ("%s.png" % r)).convert("RGB"), dtype=np.float64).reshape(-1, 3).mean(0) for r in ROLES]
         roles = measure_ground.hsv_of(sum(m * w for m, w in zip(means, weights)) / weights.sum())
         print("%s: roles %s original %s" % (ntts.parent.name, roles["rgb"], original["rgb"]))
-        failed |= measure_ground.compare_roles(roles, original)
+        failed |= measure_ground.compare_roles(roles, original, "original")
     return failed
 
 

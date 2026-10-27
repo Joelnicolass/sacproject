@@ -30,7 +30,7 @@
     },
     "charnel": {
       "source": "land_themes.JAMES_ROLES {4:0, 0:0, 1:1, 2:3, 3:0, 5:0} (James open/earth/rock)",
-      "sheet_borrow": {"path": {"groups": [2], "why": "Charnel's land has no path group; a Charnel look worn on a map with paths shows MG02 there, the group the former classic atlas (land_remap of High Noon) gave James's path MG02 (062-3a)"}},
+      "sheet_borrow": {"path": {"groups": [2], "why": "Charnel's land has no path group; a Charnel look worn on a map with paths shows MG02 there, the group the former classic atlas gave James's path MG02 (062-3a)"}},
       "groups": {
         "0": {"role": "open", "verified": true, "why": "rim of Peaks"},
         "1": {"role": "earth", "verified": true, "why": "the heights"},

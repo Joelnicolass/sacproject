@@ -75,7 +75,8 @@ func _process(_delta: float) -> void:
 
 
 func _row(now: int, frame: int, who: String, node: Node3D, rtt: String, correction: String) -> void:
-	var at := node.global_transform.origin
+	# What is drawn: with physics interpolation on, the node's transform is the tick's pose, not the drawn one (kit 0.15).
+	var at := node.get_global_transform_interpolated().origin
 	_file.store_line("%d,%d,%s,%s,%.5f,%.5f,%s,%s" % [now, frame, who, node.name, at.x, at.z, rtt, correction])
 	rows += 1
 	if rows % FLUSH_EVERY == 0:

@@ -4,11 +4,12 @@
   python3 agent/tools/jitter_stats.py --host host.csv --client A.csv [--step2]
 
 CSV columns: t_usec,frame,who,name,x,z,rtt_ms,last_correction. who = own | rival | creature | mark (walk_start / walk_end in `name`).
-Per body and per side: the flat displacement per rendered frame, only while the body walks (speed over a 0.25 s window above
+Per body and per side: the flat SPEED per rendered frame (displacement / that frame's dt: the step alone mixes frame time with
+the network; same metric as the kit's lab, agreed with the kit session 2026-10-27), only while the body walks (speed over a 0.25 s window above
 MIN_SPEED, 0.5 s trimmed off each edge of every walk, and only inside the walk_start..walk_end marks + TAIL_S when they exist):
-  CV           std / mean of the step
-  p95/median   95th percentile of the step over its median
-  stalls       share of frames with a step under 1 % of the median (the body stopped while it walks)
+  CV           std / mean of the speed
+  p95/median   95th percentile of the speed over its median
+  stalls       share of frames with a speed under 1 % of the median (the body stopped while it walks)
 JITTER PASS when, for every body and on BOTH sides (absolute, not relative to the host: the host judders too), CV <= MAX_CV,
 p95/median <= MAX_P95M and stalls <= STALL_MAX, and each side renders steadily (p95 frame time <= MAX_FRAME_MS; above it the
 machine is loaded and the run says so); else JITTER FAIL with the reasons.
@@ -75,7 +76,9 @@ def walk_steps(series, marks):
         t0, t1 = series[i][0] + TRIM_S, series[k][0] - TRIM_S
         for n in range(max(i, 1), k + 1):
             if t0 <= series[n][0] <= t1:
-                steps.append(math.hypot(series[n][2] - series[n - 1][2], series[n][3] - series[n - 1][3]))
+                dt = series[n][0] - series[n - 1][0]
+                if dt > 0:
+                    steps.append(math.hypot(series[n][2] - series[n - 1][2], series[n][3] - series[n - 1][3]) / dt)
         i = k + 1
     return steps
 

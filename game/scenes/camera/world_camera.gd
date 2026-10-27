@@ -2,7 +2,7 @@ extends Camera3D
 
 ## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the keys, the screen edges and
 ## free look, and zooms with the wheel (except over `wheel_blockers`). Controls are InputMap actions: `camera_orbit` (middle
-## button, or Ctrl + left) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are the keys.
+## button, or `camera_orbit_modifier` Ctrl + `select`) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are the keys.
 ## Ref: sacengine dagonBackend.d positionCamera / cameraControl. Units 1:1 sac → m.
 
 @export var follow: Node3D
@@ -152,9 +152,10 @@ func _wheel_factor(button: InputEventMouseButton) -> float:
 	return button.factor if button.factor > 0.0 else 1.0
 
 
-## True while the orbit gesture is held (middle button, or Ctrl + left).
+## True while the orbit gesture is held (`camera_orbit`, or `camera_orbit_modifier` + `select`).
 func _free_look() -> bool:
-	return Input.is_action_pressed(&"camera_orbit")
+	return Input.is_action_pressed(&"camera_orbit") \
+			or (Input.is_action_pressed(&"camera_orbit_modifier") and Input.is_action_pressed(&"select"))
 
 
 func _process(delta: float) -> void:

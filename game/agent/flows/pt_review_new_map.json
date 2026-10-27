@@ -1,0 +1,45 @@
+{
+ "scene": "res://scenes/match/match.tscn",
+ "wait_first": 12.0,
+ "steps": [
+  {
+   "shot": "new_map_start.png"
+  },
+  {
+   "press": {
+    "name": "move_forward",
+    "hold": 2.0
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "new_map_forward.png"
+  },
+  {
+   "press": {
+    "name": "turn_left",
+    "hold": 0.8
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "new_map_left.png"
+  },
+  {
+   "press": {
+    "name": "turn_right",
+    "hold": 1.6
+   }
+  },
+  {
+   "wait": 0.5
+  },
+  {
+   "shot": "new_map_right.png"
+  }
+ ]
+}

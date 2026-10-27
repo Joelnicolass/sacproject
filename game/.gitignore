@@ -25,3 +25,5 @@ __pycache__/
 # Plan 063D S4: the Blender working folder beside each map's heights.png (terrain.blend, manifest.json; also the edit bed's).
 # The truth is heights.png + void.png.
 terrain_work/
+# Godot rebuilds it from strings.csv on every import
+data/i18n/*.translation

@@ -1,9 +1,10 @@
 class_name FxLightSpec
 extends Resource
 
-## The light a ParticleType burst gives off (RFC-029 029c): an OmniLight3D without shadow that rises
+## The light a ParticleType burst gives off: an OmniLight3D without shadow that rises
 ## over `attack_s` and dies over `decay_s`. A template shared by every type that points to it: never
 ## edited at runtime. The rig's FxLightLayer owns the lights; without that layer nothing lights up.
+## Ref: RFC-029 029c.
 
 ## Usually the brightness-weighted mean of the type's atlas, so the light keeps the sprite's palette.
 @export var color: Color = Color.WHITE

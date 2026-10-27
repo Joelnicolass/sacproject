@@ -1,20 +1,21 @@
 class_name StoneLook
 extends Node
 
-## F137 (RFC-030i-b): a body turned to stone (sacengine effects.stoneEffect = petrified || skinOfStone, stats.d:91;
-## the bone shader's grey, dagon bone.d:189-192). Presentation only, on every peer: while `stone` is on, every surface
+## A body turned to stone, in the bone shader's grey. Presentation only, on every peer: while `stone` is on, every surface
 ## of `mesh` gets a stone override built from that surface's own material (its texture and alpha scissor), so the
 ## textures still show through as grey. Reusable: Skin of Stone is one more owner with its own StoneLook.
 ##
 ## The mesh may be swapped under it (a clip frame, a model set up late on a client): it re-dresses whatever mesh is
 ## there each frame it is on, so it does not matter whether the clip froze before or after the stone came on.
-## F149 (REVIEW-030k-b B1): one StoneLook per body, owned by Afflictions (its `look`), which sets `tint` and `stone`
+## One StoneLook per body, owned by Afflictions (its `look`), which sets `tint` and `stone`
 ## from the states that are on (petrified grey; the ice is a block of its own, IceBlock). Skin of Stone will
 ## be one more state with a look there, not a second StoneLook on the same mesh.
+## Ref: F137 (RFC-030i-b); F149 (REVIEW-030k-b B1); sacengine effects.stoneEffect = petrified || skinOfStone, stats.d:91; dagon bone.d:189-192.
 
 @export var mesh: MeshInstance3D
 @export var shader: Shader
-## The shader's stone_tint: the stone's (1, 1, 0.8, dagon bone.d:189-192) or the ice's; Afflictions sets it from the type that is on.
+## The shader's stone_tint: the stone's (1, 1, 0.8) or the ice's; Afflictions sets it from the type that is on.
+## Ref: dagon bone.d:189-192.
 @export var tint := Color(1.0, 1.0, 0.8):
 	set(value):
 		if value == tint:
@@ -91,7 +92,7 @@ func apply(new_tint: Color, new_base: float, new_gain: float, new_roughness: flo
 		_dress()
 
 
-## The look of plain stone (sacengine's bone shader grey): what Skin of Stone and a petrified body wear.
+## The look of plain stone (the original's bone shader grey): what Skin of Stone and a petrified body wear.
 func apply_stone() -> void:
 	apply(Color(1.0, 1.0, 0.8), 0.3, 0.7, 0.5, 0.5)
 

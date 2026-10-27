@@ -6,7 +6,8 @@ extends Node
 
 signal changed(current: float, maximum: float)
 ## add() was called: `amount` is what the source gave, before the clamp to maximum
-## (sacengine giveMana heals a ghost by it even with a full pool, state.d:8828-8832).
+## (a ghost heals by it even with a full pool).
+## Ref: sacengine giveMana, state.d:8828-8832.
 signal given(amount: float)
 ## add() said where the mana came from (`source`: fount, altar, manalith, manahoar; empty = nobody said).
 ## The AI's audit adds these up to show that all the mana of a side comes from sources (RFC-024 024c).
@@ -22,8 +23,9 @@ signal fed(amount: float, source: StringName)
 	set(value):
 		current = value
 		changed.emit(current, maximum)
-## F122: the body's poison (Poisoning). While a dose blocks the mana, add() gives nothing (sacengine giveMana,
-## state.d:8829). Optional: empty = never blocked.
+## The body's poison (Poisoning). While a dose blocks the mana, add() gives nothing.
+## Optional: empty = never blocked.
+## Ref: F122; sacengine giveMana, state.d:8829.
 @export var poisoning: Poisoning
 
 
@@ -60,8 +62,9 @@ func add(amount: float, source: StringName = &"") -> void:
 
 
 
-## sacengine drainMana (state.d:8822-8825): mana − amount, never under 0. Poison does not block it (F123: the
+## Mana − amount, never under 0. Poison does not block it (F123: the
 ## Tickferno's heat ray). Returns what it took.
+## Ref: sacengine drainMana, state.d:8822-8825.
 func drain(amount: float) -> float:
 	if not is_multiplayer_authority() or amount <= 0.0:
 		return 0.0

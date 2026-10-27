@@ -1,7 +1,7 @@
 class_name CellRing
 extends RefCounted
 
-## RFC-054 054b (F381): which cells of a square grid exist around the camera and in which tier (level of detail), shared
+## Which cells of a square grid exist around the camera and in which tier (level of detail), shared
 ## by the vegetation layers (GrassField now; FloraField later). Moved from GrassField with the same arithmetic (the
 ## golden debug/look/cell_ring_golden.txt was recorded before the move).
 ## - A cell appears when its rect is within `radius + 1` of the eye (the fade center) and goes away past
@@ -10,6 +10,7 @@ extends RefCounted
 ##   `tier_hysteresis_m` past it, so a cell does not flip back and forth.
 ## The ring owns only keys and tiers: `update` says what changed and the layer makes, moves or frees its own nodes.
 ## `field_center`, `fade_center` and `view_camera` are the centers and the camera (the editor viewport's or the game's).
+## Ref: RFC-054 054b (F381).
 
 ## Side of a cell in meters.
 var cell_m := 16.0

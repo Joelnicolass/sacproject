@@ -8,7 +8,8 @@ extends RefCounted
 ## with the rest of the vertices.
 ## Ref: sacengine appendEdgeWall, dynamicEdgeMesh (sacmap.d:343-366, 780-813).
 
-## How far a wall goes down (sacengine mapDepth).
+## How far a wall goes down.
+## Ref: sacengine mapDepth.
 const DEPTH_M := 50.0
 
 

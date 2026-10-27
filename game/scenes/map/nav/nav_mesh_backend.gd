@@ -1,11 +1,12 @@
 class_name NavMeshBackend
 extends RefCounted
 
-## The navmesh side of NavService (RFC-035 035g): the map's NavigationRegion3D (its baked NavigationMesh, data/nav/high_noon_nav.res)
+## The navmesh side of NavService: the map's NavigationRegion3D (its baked NavigationMesh, data/nav/high_noon_nav.res)
 ## queried through the engine: NavigationServer3D.map_get_path on the region's own navigation map. Standard Godot: the region is a node,
 ## the engine syncs the map each physics frame, and what changes at runtime (altars, structures, a fallen building) is a re-bake that
 ## swaps the region's navigation_mesh (NavRebake, driven by NavService). Nothing hand-made blocks a path here.
 ## The map is empty until the engine has synced the region (one physics frame after it is in the tree): `is_synced` tells.
+## Ref: RFC-035 035g.
 
 ## Reach (6 nodes of 5 m, as the old grid) for «the nearest walkable thing».
 const SNAP_M := 30.0

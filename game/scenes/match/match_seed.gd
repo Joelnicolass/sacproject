@@ -1,7 +1,7 @@
 class_name MatchSeed
 extends RefCounted
 
-## The seed of the match in this process (RFC-024 §5.1) and the one owner of chance in the simulation (RFC-032 §3.3).
+## The seed of the match in this process and the one owner of chance in the simulation.
 ## MatchWorld (the root of match.tscn) calls begin() from _enter_tree on every peer, before any child is ready; online they all
 ## take the seed the server announced, so the marks and the debris draw the same on every peer. Every source of chance then asks for a stream
 ## of its own by name: rng([system, stable id]) or seed_rng(rng, [system, stable id]); derive([...]) =
@@ -10,6 +10,7 @@ extends RefCounted
 ## presentation only: begin seeds it from its own stream, so no simulation stream moves when an effect draws from it
 ## (debug/suite/determinism_cases.gd sim_rng_lint). Reproducible with the same binary on the same machine; not across
 ## architectures.
+## Ref: RFC-024 §5.1; RFC-032 §3.3.
 
 ## 0 until a match begins: rng() and seed_rng() then randomize (the one place with that fallback).
 static var current := 0

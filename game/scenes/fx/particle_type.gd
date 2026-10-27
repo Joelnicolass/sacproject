@@ -17,7 +17,8 @@ const RAMP_POINTS := 25
 ## Ref: delay * 2 / 60 in sacengine.
 @export var frame_s: float = 0.0333
 @export var lifetime_s: float = 1.0
-## Downward acceleration in m/s². sacengine uses 15 when gravity is on.
+## Downward acceleration in m/s².
+## Ref: sacengine uses 15 when gravity is on.
 @export var gravity: float = 0.0
 @export var count: int = 16
 @export var speed_min: float = 0.0
@@ -37,10 +38,12 @@ const RAMP_POINTS := 25
 @export var rate_per_s: float = 0.0
 ## 0 = every particle lives `lifetime_s`; 1 = lifetime uniform in (0, lifetime_s].
 @export_range(0.0, 1.0) var lifetime_randomness: float = 0.0
-## Alpha follows min(alpha_max, (time_left / fade_s)^2) like sacengine getAlpha. 0 = no fade.
+## Alpha follows min(alpha_max, (time_left / fade_s)^2). 0 = no fade.
+## Ref: sacengine getAlpha.
 @export var fade_s: float = 0.0
 @export_range(0.0, 1.0) var alpha_max: float = 1.0
-## Scale follows min(1, time_left / scale_fade_s) like sacengine getScale. 0 = constant.
+## Scale follows min(1, time_left / scale_fade_s). 0 = constant.
+## Ref: sacengine getScale.
 @export var scale_fade_s: float = 0.0
 @export var billboard: bool = true
 ## Lies flat facing up instead of facing the camera (rings around a tower, seen as ellipses from above). Turn `billboard` off with it.
@@ -80,9 +83,10 @@ const RAMP_POINTS := 25
 @export_range(0.0, 1.0, 0.01) var camera_trauma := 0.0
 
 
-## sacengine getAlpha over the normalised life (RFC-053 053i shares it between SpriteEmitter and SpriteParticles):
+## The alpha over the normalised life (shared between SpriteEmitter and SpriteParticles):
 ## min(`cap`, (time_left / fade)^2), fade = `fade_s`, or `fallback_fade_s` (at most half the life) when the type has none
 ## (0 = no fade: the sprite keeps `cap` to its last frame and vanishes).
+## Ref: RFC-053 053i; sacengine getAlpha.
 func alpha_ramp(cap: float, fallback_fade_s := 0.0) -> Gradient:
 	var fade := fade_s if fade_s > 0.0 else minf(fallback_fade_s, lifetime_s * 0.5)
 	var ramp := Gradient.new()
@@ -101,7 +105,8 @@ func alpha_ramp(cap: float, fallback_fade_s := 0.0) -> Gradient:
 	return ramp
 
 
-## sacengine getScale: min(1, time_left / scale_fade_s). Null when the type keeps its size.
+## Min(1, time_left / scale_fade_s). Null when the type keeps its size.
+## Ref: sacengine getScale.
 func scale_curve() -> Curve:
 	if scale_fade_s <= 0.0:
 		return null

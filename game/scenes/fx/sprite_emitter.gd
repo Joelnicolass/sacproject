@@ -83,7 +83,8 @@ func is_active() -> bool:
 	return _active
 
 
-## `energy_scale` > 1 brightens dark tints like sacengine's manaEnergy.
+## `energy_scale` > 1 brightens dark tints.
+## Ref: sacengine manaEnergy.
 func set_tint(base: Color, energy_scale := 1.0) -> void:
 	tint = Color(base.r * energy_scale, base.g * energy_scale, base.b * energy_scale, base.a)
 

@@ -1,9 +1,10 @@
 class_name FxTrail
 extends Node3D
 
-## A projectile's trail (RFC-029 029b): plays an FxBus type every `interval_s` of time where its
+## A projectile's trail: plays an FxBus type every `interval_s` of time where its
 ## parent flies, so it leaves as many puffs per second at 30 fps as at 120. Puffs owed in a long
 ## frame are spread along the path flown during it. Presentation only: never runs headless.
+## Ref: RFC-029 029b.
 
 ## Played once per puff.
 signal puffed(at: Vector3)

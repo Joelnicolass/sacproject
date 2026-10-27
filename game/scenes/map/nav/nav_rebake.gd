@@ -1,7 +1,7 @@
 class_name NavRebake
 extends RefCounted
 
-## Re-bakes the whole map's navmesh when something that blocks changes (RFC-035 035g): an altar or a structure came or went, a building
+## Re-bakes the whole map's navmesh when something that blocks changes: an altar or a structure came or went, a building
 ## fell. The engine does the work: the static colliders of the `nav_source` nodes under `root` are parsed on the main thread
 ## (NavigationServer3D.parse_source_geometry_data, a fallen building has its collision off and is not parsed), and the bake
 ## (bake_from_source_geometry_data) runs on a worker thread, and so does the index of its components (NavRegions.build, pure data:
@@ -11,6 +11,7 @@ extends RefCounted
 ## Not: when to bake (NavService), the swap itself (NavMeshBackend.swap).
 ## Tile by tile re-baking was dropped: the full bake of High Noon is a couple of seconds on a worker thread, and a lone tile leaves a
 ## seam against the neighbours baked in one piece.
+## Ref: RFC-035 035g.
 
 var settings: NavBakeSettings
 var parse_ms := 0.0

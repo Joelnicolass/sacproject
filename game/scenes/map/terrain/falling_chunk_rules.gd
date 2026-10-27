@@ -6,7 +6,8 @@ extends RefCounted
 ## rest of the land. Pure and static (the arrays of a mesh): FallingChunk draws and drops it. It does not remove the vertex.
 ## Ref: sacengine makeFallingLandChunkMesh (sacmap.d:388-480).
 
-## How far the skirt hangs (sacengine mapDepth).
+## How far the skirt hangs.
+## Ref: sacengine mapDepth.
 const SKIRT_M := 50.0
 
 

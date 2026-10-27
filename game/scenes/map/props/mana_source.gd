@@ -4,10 +4,10 @@ extends Node3D
 ## Gives mana to bodies within reach (3D distance). A source with an owner feeds that side and its allies.
 ## Sources add up. The server (or solo) feeds ManaPool.add(); clients only see the replicated value.
 ## FOUNT and ALTAR read rate and radius from `rules`; CUSTOM keeps the exported values.
-## sacengine feeds every creature this way, not only wizards (updateCreatureStats, state.d:14409);
+## Every creature is fed this way, not only wizards;
 ## a body with can_take_mana() false (dead, being summoned) gets nothing (canRegenerateMana).
 ## The reach of a FOUNT and an ALTAR comes from ReachFacts.of_rules(rules), the rate from `rules`.
-## Ref: res://scenes/match/reach_facts.gd (fount_m, altar_m).
+## Ref: res://scenes/match/reach_facts.gd (fount_m, altar_m); sacengine updateCreatureStats state.d:14409, canRegenerateMana.
 
 enum Kind { FOUNT, ALTAR, CUSTOM }
 

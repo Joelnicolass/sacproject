@@ -1,7 +1,7 @@
 class_name MapPopulation
 extends Node3D
 
-## What the map puts on the field besides the player starts and the founts (RFC-024 addendum 1, 024b2): the neutral
+## What the map puts on the field besides the player starts and the founts: the neutral
 ## buildings (houses, fences, decorations) and the creatures of the sides the players do not take (26 Farmers of side 2 =
 ## slot 3 and 6 Taurocks of side 3 = slot 4). They are nodes of the map scene: every MapBuilding
 ## under `buildings` and every NpcSpawn under `npcs`. This node counts the buildings, which every peer has
@@ -9,6 +9,7 @@ extends Node3D
 ## UnitSpawner, in tree order, on the server or a solo game only (they replicate). Nothing respawns.
 ## The map comes before this node in the tree, so the buildings are ready (and in their groups) when this runs.
 ## Prints one line: `npc farmer 26 slot 3 · taurock 6 slot 4 · edificios 69 · refugios 11`.
+## Ref: RFC-024 addendum 1, 024b2.
 
 signal populated(report: Dictionary)
 

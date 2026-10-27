@@ -9,7 +9,8 @@ extends RefCounted
 
 ## A vertex this close (m, on the ground plane) to a building part is never taken away.
 const BUILDING_CLEARANCE_M := 11.0
-## A building part this far above or below the vertex is out of the way (sacengine mapDepth).
+## A building part this far above or below the vertex is out of the way.
+## Ref: sacengine mapDepth.
 const DEPTH_BAND_M := 50.0
 
 

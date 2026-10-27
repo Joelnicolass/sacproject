@@ -1,7 +1,7 @@
 class_name LocalServerHost
 extends Node
 
-## RFC-034 034m: «Servidor local». The player's own PC runs ONE dedicated match with the same code as the VPS
+## «Servidor local». The player's own PC runs ONE dedicated match with the same code as the VPS
 ## (`MpMatchLauncher` + `MatchTicketGlue` in the dedicated), without a room server: no list, no UPnP, no fallback.
 ## The ticket has two seats. The host seat's token stays here (the host joins as a normal client with it); the other
 ## token is the rival's CODE, shown to the host to pass along with the address and the port. The dedicated only keeps
@@ -13,6 +13,7 @@ extends Node
 ## RFC-049 049h (F297): the options carry the map (`world`) and the mode (`mode`); the ticket has one seat per seat of the mode. The host
 ## is seat 1; each other seat is an AI (`ai_seats` of `start`, {slot: {god, difficulty}}) or a person with a code of its own
 ## (`codes`, {slot: code}). `rival_code` is the code of the lowest seat for a person (the only one in a 1v1).
+## Ref: RFC-034 034m.
 
 signal server_ready(address: String, port: int, code: String)
 signal server_failed(reason: String)

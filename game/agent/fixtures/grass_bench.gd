@@ -148,9 +148,6 @@ func _freeze() -> void:
 	var ground := drawn.material_override as ShaderMaterial if drawn else null
 	if ground:
 		ground.set_shader_parameter("grass_time_override", 1.0)
-	var classic: Variant = drawn.call("classic_material") if drawn and drawn.has_method("classic_material") else null
-	if classic:
-		(classic as ShaderMaterial).set_shader_parameter("grass_time_override", 1.0)
 	if _no_ssao:
 		var env := get_viewport().find_world_3d().environment
 		if env == null and get_viewport().get_camera_3d():

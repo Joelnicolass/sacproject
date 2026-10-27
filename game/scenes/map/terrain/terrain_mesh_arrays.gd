@@ -3,8 +3,8 @@ extends RefCounted
 
 ## The vertex arrays of the map's visible ground, built from its triangles (MapTerrainData): positions, one set of flat
 ## normals (as the triangles come), one set of smooth normals (summed per lattice vertex, so slopes read as one
-## surface), the tile of each vertex in COLOR, the place of the cliff texture on the walls in UV (WallUvRules), and the
-## indices. What it does NOT do: hold a mesh node or answer heights.
+## surface), COLOR (white on the land, alpha 0 on a wall: the ground shader's cliff texture), the place of the cliff texture
+## on the walls in UV (WallUvRules), and the indices. What it does NOT do: hold a mesh node or answer heights.
 ## Ref: sacmap.d generateNormals, appendEdgeWall.
 
 ## The arrays of a Mesh without the normals; `with_normals` completes them.
@@ -13,26 +13,16 @@ var flat_normals := PackedVector3Array()
 var smooth_normals := PackedVector3Array()
 
 
-## `tiles` is the 256x256 tile index of the map (Terrain.tile_ids), empty for tile 0 everywhere.
 ## Null when `data` is not usable.
-static func from_data(data: MapTerrainData, tiles: PackedByteArray) -> TerrainMeshArrays:
+static func from_data(data: MapTerrainData) -> TerrainMeshArrays:
 	if data == null or not data.is_valid():
 		return null
 	var land_vertices := data.land_triangles * 3
-	var lattice := data.lattice
-	var side := TerrainGrid.SIDE
 	var colors := PackedColorArray()
 	colors.resize(data.vertices.size())
-	for first in range(0, data.vertices.size(), 3):
-		# The cell of a triangle is the lowest column and row of its corners.
-		var column := mini(mini(lattice[first] % side, lattice[first + 1] % side), lattice[first + 2] % side)
-		var row := mini(mini(lattice[first] / side, lattice[first + 1] / side), lattice[first + 2] / side)
-		var tile := float(0 if tiles.is_empty() else tiles[row * side + column]) / 255.0
-		for k in 3:
-			# The whole tile over the whole cell (0..1), so a tile meets its neighbour edge to edge; the shader keeps the
-			# lookup inside the tile; alpha 0 marks a wall. Ref: sacmap.d:888.
-			var at := lattice[first + k]
-			colors[first + k] = Color(tile, at % side - column, at / side - row) if first < land_vertices else Color(tile, 0.0, 0.0, 0.0)
+	colors.fill(Color(0.0, 0.0, 0.0, 0.0))
+	for i in land_vertices:
+		colors[i] = Color.WHITE
 	var walls := PackedInt32Array(range(land_vertices, data.indices.size(), 3))
 	var built := TerrainMeshArrays.new()
 	built.arrays.resize(Mesh.ARRAY_MAX)

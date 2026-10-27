@@ -3,7 +3,17 @@
 [ext_resource type="Resource" path="res://data/look/glow/james_glow.tres" id="1_ehq6w"]
 [ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/light/james_light.tres" id="2_light"]
-[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="3_gfkoj"]
+[ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
+[ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/edge.png" id="22_edge"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/open.png" id="23_open"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/open_detail.png" id="24_open_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/earth.png" id="25_earth"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/earth_detail.png" id="26_earth_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/rock.png" id="27_rock"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/rock_detail.png" id="28_rock_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/path.png" id="29_path"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/path_detail.png" id="30_path_detail"]
 [ext_resource type="Resource" path="res://data/look/sky/james_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/james_grass.tres" id="10_grass"]
 [ext_resource type="Resource" path="res://data/audio/music/james.tres" id="gm_music"]
@@ -15,6 +25,35 @@
 [ext_resource type="Resource" path="res://data/look/life/dust.tres" id="58_dust"]
 [ext_resource type="Resource" path="res://data/look/life/fireflies.tres" id="58_fireflies"]
 [ext_resource type="Resource" path="res://data/look/life/gnats.tres" id="58_gnats"]
+
+[sub_resource type="Resource" id="Role_open"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("23_open")
+detail = ExtResource("24_open_detail")
+
+[sub_resource type="Resource" id="Role_earth"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("25_earth")
+detail = ExtResource("26_earth_detail")
+
+[sub_resource type="Resource" id="Role_rock"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("27_rock")
+detail = ExtResource("28_rock_detail")
+
+[sub_resource type="Resource" id="Role_path"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("29_path")
+detail = ExtResource("30_path_detail")
+
+[sub_resource type="Resource" id="GodGround_james"]
+script = ExtResource("20_god_ground")
+open = SubResource("Role_open")
+earth = SubResource("Role_earth")
+rock = SubResource("Role_rock")
+path = SubResource("Role_path")
+edge = ExtResource("22_edge")
+light_gain = 1.1
 
 [sub_resource type="Curve" id="Day_james_elevation_change_deg"]
 _limits = [-120, 60, 0.0, 24.0]
@@ -77,7 +116,7 @@ god = &"james"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_ehq6w")
-ground_classic = ExtResource("3_gfkoj")
+ground = SubResource("GodGround_james")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")

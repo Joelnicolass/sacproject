@@ -10,7 +10,7 @@ Known debt: 5 representations of the ground with no single owner (055d-t `Terrai
 ---
 El mapa: edificios, spawns de NPC, terreno, navegacion (`nav/`), props (`props/`) y los mapas mismos (`maps/`). El mapa se edita en Godot; la navegacion se hornea con el boton «Hornear navmesh» de `NavRegion` (corre `tools/bake/bake_nav.tscn`).
 
-- `MapDefinition` (`map_definition.gd`) reune lo que el juego sabe de un mapa: escena, terreno, tiles, luz, navmesh (todos tipados), asientos de jugador e imagen. `MapCatalog` las encuentra recorriendo `scenes/map/maps/`; `MapCatalog.active()` es la del proceso (`--map=<tag>`). Los bandos salen de los nodos del mapa (`MapSides`): cada `PlayerStart` es un asiento (`slot`, `team`) y cada `side` de un `NpcSpawn` es un bando sin jugador.
+- `MapDefinition` (`map_definition.gd`) reune lo que el juego sabe de un mapa: escena, terreno, luz, navmesh (todos tipados), asientos de jugador e imagen. `MapCatalog` las encuentra recorriendo `scenes/map/maps/`; `MapCatalog.active()` es la del proceso (`--map=<tag>`). Los bandos salen de los nodos del mapa (`MapSides`): cada `PlayerStart` es un asiento (`slot`, `team`) y cada `side` de un `NpcSpawn` es un bando sin jugador.
 - `MapRoot` (`map_root.gd`) es la raiz de una escena de mapa: terreno, region de navegacion, `Starts`, look, bake del minimapa, `Buildings` y `Npcs`. La partida se conecta a esos enchufes.
 - `SideRelations` separa asiento (slot de jugador) de bando del mapa: los asientos son los primeros `player_starts` slots y los bandos sin jugador (NPC) vienen despues.
 

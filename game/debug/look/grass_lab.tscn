@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://debug/bodies/gallery_body.tscn" id="4_body"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain.gd" id="5_shape"]
 [ext_resource type="Resource" uid="uid://cmpaot4pm4cus" path="res://scenes/map/maps/high_noon/heights.png" id="6_heights"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/test_flat/ground_roles.png" id="7_roles"]
 
 [node name="GrassLab" type="Node" unique_id=1022913190 node_paths=PackedStringArray("ground", "rig", "game_camera", "lab_camera", "info", "creatures")]
 script = ExtResource("1_lab")
@@ -24,6 +25,7 @@ shape = NodePath("Shape")
 [node name="Shape" type="Node3D" parent="Ground" node_paths=PackedStringArray("mesh")]
 script = ExtResource("5_shape")
 heights = ExtResource("6_heights")
+ground_roles = ExtResource("7_roles")
 mesh = NodePath("..")
 
 [node name="Look" parent="." unique_id=296819492 node_paths=PackedStringArray("terrain") instance=ExtResource("3_rig")]

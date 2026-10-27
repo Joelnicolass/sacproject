@@ -3,7 +3,17 @@
 [ext_resource type="Resource" path="res://data/look/glow/stratos_glow.tres" id="1_dp2kx"]
 [ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
 [ext_resource type="Resource" path="res://data/look/light/stratos_light.tres" id="2_light"]
-[ext_resource type="Material" path="res://assets/original/themes/stratos/ground_classic.tres" id="3_lojgr"]
+[ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
+[ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/edge.png" id="22_edge"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/open.png" id="23_open"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/open_detail.png" id="24_open_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/earth.png" id="25_earth"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/earth_detail.png" id="26_earth_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/rock.png" id="27_rock"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/rock_detail.png" id="28_rock_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/path.png" id="29_path"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/path_detail.png" id="30_path_detail"]
 [ext_resource type="Resource" path="res://data/look/sky/stratos_sky.tres" id="9_sky"]
 [ext_resource type="Resource" path="res://data/look/grass/stratos_grass.tres" id="10_grass"]
 [ext_resource type="Resource" path="res://data/audio/music/stratos.tres" id="gm_music"]
@@ -16,6 +26,34 @@
 [ext_resource type="Resource" path="res://data/look/life/fireflies.tres" id="58_fireflies"]
 [ext_resource type="Resource" path="res://data/look/life/gnats.tres" id="58_gnats"]
 [ext_resource type="Resource" path="res://data/look/life/pollen.tres" id="58_pollen"]
+
+[sub_resource type="Resource" id="Role_open"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("23_open")
+detail = ExtResource("24_open_detail")
+
+[sub_resource type="Resource" id="Role_earth"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("25_earth")
+detail = ExtResource("26_earth_detail")
+
+[sub_resource type="Resource" id="Role_rock"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("27_rock")
+detail = ExtResource("28_rock_detail")
+
+[sub_resource type="Resource" id="Role_path"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("29_path")
+detail = ExtResource("30_path_detail")
+
+[sub_resource type="Resource" id="GodGround_stratos"]
+script = ExtResource("20_god_ground")
+open = SubResource("Role_open")
+earth = SubResource("Role_earth")
+rock = SubResource("Role_rock")
+path = SubResource("Role_path")
+edge = ExtResource("22_edge")
 
 [sub_resource type="Curve" id="Day_stratos_elevation_change_deg"]
 _limits = [-120, 60, 0.0, 24.0]
@@ -78,7 +116,7 @@ god = &"stratos"
 sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_dp2kx")
-ground_classic = ExtResource("3_lojgr")
+ground = SubResource("GodGround_stratos")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")

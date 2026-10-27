@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="11_terrain"]
 [ext_resource type="Resource" uid="uid://be0blyxacvs30" path="res://scenes/map/maps/_template/heights.png" id="12_heights"]
 [ext_resource type="Texture2D" uid="uid://dwl0emcocdn1l" path="res://scenes/map/maps/_template/ground_roles.png" id="13_roles"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/_template/light.png" id="14_light"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -35,6 +36,7 @@ preview_quality = ExtResource("9_quality")
 unique_name_in_owner = true
 heights = ExtResource("12_heights")
 ground_roles = ExtResource("13_roles")
+light_map = ExtResource("14_light")
 
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("2_props")

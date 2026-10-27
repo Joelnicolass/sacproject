@@ -14,11 +14,14 @@ extends Node
 ## The texture is ready (or was drawn again).
 signal baked
 
-## Optional: the map's ground; its mesh is drawn instead of the one in `ground`.
+## Optional: the map's ground; its mesh is drawn instead of the one in `ground`, on its ground roles and baked light.
 @export var terrain: Terrain
+## The god whose ground the minimap shows on every map, whatever the match's biome (James's: the land reads the same in every
+## match). Empty = the mesh keeps the material `ground` has.
+@export var look: LookProfile
 @export_group("Parts")
 @export var viewport: SubViewport
-## The mesh drawn: the map's terrain mesh (`terrain.mesh`) with the classic ground material (the minimap never shows a biome's PBR ground).
+## The mesh drawn: the map's terrain mesh (`terrain.mesh`) wearing `look`'s ground.
 @export var ground: MeshInstance3D
 @export var camera: Camera3D
 ## Shown only when this scene runs alone.
@@ -93,6 +96,8 @@ func bake() -> void:
 	if drawn != null and drawn.mesh != null:
 		ground.mesh = drawn.mesh
 		ground.transform = drawn.global_transform
+		if look != null and look.ground != null:
+			ground.material_override = GroundMaterial.build(look.ground, terrain.ground_roles, terrain.light_map, null)
 	if ground.mesh == null:
 		push_warning("MinimapTerrainBake: no hay malla de terreno que hornear.")
 		return

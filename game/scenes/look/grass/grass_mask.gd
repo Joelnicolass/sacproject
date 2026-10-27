@@ -3,8 +3,8 @@ extends RefCounted
 
 ## Where the grass does not grow: the clearings. Gathers every `VegetationClear` node and the
 ## default clearings of the `GrassSet` (altar and fountain groups) into the array the shader reads,
-## in map coordinates (the grass layer's local space). The layer weights, slope and path rules are
-## not here: the shader evaluates them with the ground's own rules (`ground_common.gdshaderinc`),
+## in map coordinates (the grass layer's local space). The role weights, slope and path rules are
+## not here: the shader evaluates them with the ground's own rules (`ground_roles.gdshaderinc`),
 ## so the grass follows the ground exactly. Nothing built here is saved.
 
 const MAX_CLEARS := 48

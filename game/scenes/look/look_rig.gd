@@ -35,11 +35,6 @@ signal vegetation_toggled(enabled: bool)
 @export var sun_layer: SunLayer
 ## The map's ground; the node that draws it (`terrain.mesh`) is what the ground layer dresses.
 @export var terrain: Terrain
-## Which `GroundSet` slot paints each of the map's tile ids. The classic ground (a biome without a
-## PBR `GroundSet`) uses it so the grass knows where it grows; it belongs to the map, not to a biome.
-@export var tile_map: TileLayerMap
-## The ground of a map made of one god's land (empty for the other maps): a look of that god wears it.
-@export var native_ground: NativeGround
 
 var profile: LookProfile
 ## Last preset handed to `apply_quality` (or the one the Quality socket holds).

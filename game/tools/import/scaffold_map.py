@@ -8,13 +8,13 @@ The Godot side of an imported map (RFC-050): the files a map needs besides its a
   python3 tools/import/scaffold_map.py --scp="Tutorial/(tu02).scp" --tag=tutorial_valley --not-playable --no-npcs   # a map to look at, without inhabitants
   python3 tools/import/scaffold_map.py --map=Peaks --wire-flora   # the plants of widgets.json as FloraLayer nodes (a density PNG per species) in the existing map.tscn; then import once
 
-Run tools/import/import_map.py first (it writes ntts.json, tiles.png, ...). For `<tag>` it writes:
+Run tools/import/import_map.py first (it writes ntts.json, light.png, ...) and tools/import/bake_ground_roles.py (the map's
+ground_roles.png). For `<tag>` it writes:
   scenes/map/maps/<tag>/heights.png                a flat ground (16-bit grey, all 0, no void.png), only when there is none, so the scene
                                                    loads; tools/terrain/heights_from_original.gd -- --map=<tag> writes the original's ground
-  scenes/map/maps/<tag>/<tag>.tres                 MapDefinition (typed: scene, tiles, light, navmesh); MapCatalog finds it by scanning the folder
+  scenes/map/maps/<tag>/<tag>.tres                 MapDefinition (typed: scene, light, navmesh); MapCatalog finds it by scanning the folder
   scenes/map/maps/<tag>/nav.res                    an empty navmesh, so the definition loads until the first bake
   scenes/map/maps/<tag>/map.tscn                   MapRoot: sky, look, terrain (an instance of scenes/map/terrain/terrain.tscn), one PlayerStart (with its WizardSpot) per seat, the manafounts, Buildings, Npcs, navmesh, minimap
-  assets/original/maps/<tag>/ground_native.tres    NativeGround (only when import_map.py --native-tiles wrote tiles_native.png): the map's own tiles, worn by the look of its land
 The PlayerStart and the manafounts are the altar and manafount rows of the NTTS, placed on the ground height the game would give
 them (sac_formats.terrain.ground_height_fn); the WizardSpot of seat k is 30 m toward the closest manafount, looking at it, as sacengine puts the wizard.
 Buildings: every other structure row that has a BuildingType in data/buildings/ becomes an instance of its scene
@@ -38,7 +38,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "blender"))
 import import_map  # noqa: E402
 import terrain_common  # noqa: E402  (tools/blender/terrain_common.py: the one Python copy of the map images)
-import land_themes  # noqa: E402
 from sac_formats import terrain  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -48,7 +47,6 @@ TAG = import_map.TAG
 ASSETS = ROOT / "assets" / "original" / "maps" / TAG
 SCENES = ROOT / "scenes" / "map" / "maps" / TAG
 FORCE = "--force" in ARGS
-HAS_NATIVE = (ASSETS / "tiles_native.png").exists()
 
 # The altar and the manafount of each land (flags 0x80001407 and 0x80002810 in data/buildings/). Same lists as
 # the plant clearings of --wire-flora: those rows are PlayerStart and Manafount nodes of the map scene, not buildings.
@@ -80,47 +78,24 @@ def seats_of(sides: list) -> list:
 
 
 def definition_tres(seats: int) -> str:
-    native = HAS_NATIVE
     return """[gd_resource type="Resource" script_class="MapDefinition" format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/map/maps/{tag}/map.tscn" id="2_scene"]
-[ext_resource type="Image" path="res://assets/original/maps/{tag}/tiles.png" id="4_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="5_light"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="6_nav"]{native_res}
+[ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="6_nav"]
 
 [resource]
 script = ExtResource("1_def")
 tag = &"{tag}"
 display_name = "{name}"
 map_scene = ExtResource("2_scene")
-tiles = ExtResource("4_tiles")
 light = ExtResource("5_light")
 nav = ExtResource("6_nav")
 player_starts = {seats}
-{playable}{native_line}""".format(
+{playable}""".format(
         tag=TAG, name=import_map.display_name(SCP), seats=seats,
-        native_res='\n[ext_resource type="Resource" path="res://assets/original/maps/%s/ground_native.tres" id="7_native"]' % TAG if native else "",
-        playable="playable = false\n" if "--not-playable" in ARGS else "",
-        native_line='native_ground = ExtResource("7_native")\n' if native else "")
-
-
-NATIVE_GROUND_TRES = """[gd_resource type="Resource" script_class="NativeGround" format=3]
-
-[ext_resource type="Script" path="res://scenes/look/ground/native_ground.gd" id="1_native"]
-[ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/atlas_native.png" id="2_atlas"]
-[ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/tiles_native.png" id="3_tiles"]
-[ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="4_light"]
-[ext_resource type="Texture2D" path="res://assets/original/themes/{god}/detail_ids_native.png" id="5_detail_ids"]
-
-[resource]
-script = ExtResource("1_native")
-god = &"{god}"
-atlas = ExtResource("2_atlas")
-tiles = ExtResource("3_tiles")
-light = ExtResource("4_light")
-detail_ids = ExtResource("5_detail_ids")
-"""
+        playable="playable = false\n" if "--not-playable" in ARGS else "")
 
 
 # An empty NavigationMesh saved by Godot as a binary .res (ResourceSaver.save(NavigationMesh.new(), "x.res")), base64.
@@ -132,13 +107,11 @@ MAP_HEAD = """[gd_scene format=3]
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="2_terrain"]
 [ext_resource type="Resource" path="res://scenes/map/maps/{tag}/heights.png" id="2_heights"]
-[ext_resource type="Image" path="res://assets/original/maps/{tag}/tiles.png" id="2_tiles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/{tag}/light.png" id="2_light"]{roles_res}
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
-[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
@@ -158,12 +131,10 @@ props = NodePath("Props")
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
-tile_map = ExtResource("9_tiles")
-{native_look}
+
 [node name="Terrain" parent="." instance=ExtResource("2_terrain")]
 unique_name_in_owner = true
 heights = ExtResource("2_heights")
-tiles = ExtResource("2_tiles")
 light_map = ExtResource("2_light"){roles_line}
 
 [node name="MapProps" type="Node3D" parent="."]
@@ -344,12 +315,8 @@ side = {side}
     body.append(MAP_TAIL)
     if left_out:
         print("scaffold_map: left out: %s" % ", ".join("%s x%d" % kv for kv in sorted(left_out.items())))
-    native_look = ""
-    if HAS_NATIVE:
-        native_look = 'native_ground = ExtResource("native_ground")\n'
-        resource("Resource", "res://assets/original/maps/%s/ground_native.tres" % TAG, "native_ground")
     has_roles = (SCENES / "ground_roles.png").exists()  # tools/import/bake_ground_roles.py writes it
-    head = MAP_HEAD.format(tag=TAG, native_look=native_look,
+    head = MAP_HEAD.format(tag=TAG,
                            roles_res='\n[ext_resource type="Texture2D" path="res://scenes/map/maps/%s/ground_roles.png" id="2_roles"]' % TAG if has_roles else "",
                            roles_line='\nground_roles = ExtResource("2_roles")' if has_roles else "")
     cut = head.index("\n\n[node ")
@@ -459,8 +426,6 @@ def main() -> None:
     wrote = []
     if not (SCENES / terrain_common.HEIGHTS_PNG).exists():  # never over a ground that is there, not even with --force
         write(SCENES / terrain_common.HEIGHTS_PNG, terrain_common.encode_heights([0] * terrain_common.COUNT), wrote)
-    if HAS_NATIVE:
-        write(ASSETS / "ground_native.tres", NATIVE_GROUND_TRES.format(tag=TAG, god=land_themes.map_god(SCP)), wrote)
     write(SCENES / (TAG + ".tres"), definition_tres(len(seats)), wrote)
     write(SCENES / "nav.res", base64.b64decode(NAV_PLACEHOLDER_B64), wrote)
     write(SCENES / "map.tscn", map_tscn(ntts, seats), wrote)

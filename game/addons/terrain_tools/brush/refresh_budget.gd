@@ -26,8 +26,7 @@ func cost_ms(terrain: Terrain) -> float:
 		var copy := TerrainHeights.new()
 		copy.heights_m = heights.heights_m.duplicate()
 		copy.void_mask = heights.void_mask.duplicate()
-		var tiles := terrain.tile_ids()
-		_tasks.append(WorkerThreadPool.add_task(_measure.bind(heights, copy, tiles), false, "Medir el rearmado del terreno"))
+		_tasks.append(WorkerThreadPool.add_task(_measure.bind(heights, copy), false, "Medir el rearmado del terreno"))
 	return _ms[heights]
 
 
@@ -44,12 +43,12 @@ func is_light(terrain: Terrain) -> bool:
 	return ms >= 0.0 and ms <= LIMIT_MS
 
 
-func _measure(heights: TerrainHeights, copy: TerrainHeights, tiles: PackedByteArray) -> void:
+func _measure(heights: TerrainHeights, copy: TerrainHeights) -> void:
 	var started := Time.get_ticks_usec()
 	var faces := TerrainFaces.build(copy)
 	if faces.is_valid():
 		TerrainRules.index(faces)
-		TerrainMeshArrays.from_data(faces, tiles).with_normals(true)
+		TerrainMeshArrays.from_data(faces).with_normals(true)
 	_done.call_deferred(heights, (Time.get_ticks_usec() - started) / 1000.0)
 
 

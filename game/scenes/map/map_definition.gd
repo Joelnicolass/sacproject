@@ -12,8 +12,6 @@ extends Resource
 @export var display_name := ""
 ## The map scene (a MapRoot): terrain, buildings, creature spawns, navmesh region, starts and founts, sky and look.
 @export var map_scene: PackedScene
-## Tile index of the ground (256x256, tile id in R, imported as Image). Empty = the map has none.
-@export var tiles: Image
 ## The baked light map of the ground. Empty = none.
 @export var light: Texture2D
 ## The versioned navmesh of the map: the «Hornear navmesh» button of its NavRegion (or tools/bake/bake_nav.gd) writes it.
@@ -27,8 +25,6 @@ extends Resource
 ## False for a map that is only there to look at: no room or menu offers it, not even with the test maps;
 ## `--map=<tag>` and the debug scenes still open it.
 @export var playable := true
-## The ground of the map in its own land (the same resource its Look rig holds in `native_ground`); empty = the map has none.
-@export var native_ground: NativeGround
 
 
 ## RFC-049 049d (F293): the map has a start for every seat of the mode (`player_starts >= seats`). A 2v2 does not fit High Noon.

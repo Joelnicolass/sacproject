@@ -1,12 +1,10 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
-[ext_resource type="Image" path="res://assets/original/maps/winter_wonder/tiles.png" id="s2_tiles"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
-[ext_resource type="Resource" path="res://data/look/ground/high_noon_tiles.tres" id="9_tiles"]
 [ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/winter_wonder/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
@@ -57,12 +55,10 @@ props = NodePath("Props")
 [node name="Look" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("8_look")]
 unique_name_in_owner = true
 terrain = NodePath("../Terrain")
-tile_map = ExtResource("9_tiles")
 
 [node name="Terrain" parent="." instance=ExtResource("t_terrain")]
 unique_name_in_owner = true
 heights = ExtResource("t_heights")
-tiles = ExtResource("s2_tiles")
 ground_roles = ExtResource("62_roles")
 light_map = ExtResource("62_light")
 

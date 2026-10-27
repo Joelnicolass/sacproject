@@ -174,7 +174,8 @@ func _run() -> void:
 func _biome_of_world() -> StringName:
 	var scene := get_tree().current_scene
 	var node := scene.get_node_or_null("MatchBiome") if scene != null else null
-	return (node as MatchBiome).god if node is MatchBiome else &""
+	var god: GodType = (node as MatchBiome).god if node is MatchBiome else null
+	return StringName(god.id()) if god != null else &""
 
 
 ## The scene file of the map the match scene holds, or "" while the match scene is not up.

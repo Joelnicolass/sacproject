@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/camera/world_camera.gd" id="11_camera"]
 [ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/match/match_biome.gd" id="13_biome"]
+[ext_resource type="Script" path="res://scenes/net/biome_link.gd" id="b3_biome_link"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud/hud.tscn" id="14_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/spell_book/spell_book.tscn" id="15_book"]
 [ext_resource type="Script" uid="uid://c8mumq6up5ajy" path="res://scenes/spells/spell_spawner.gd" id="16_spawner"]
@@ -142,6 +143,11 @@ despawn_on_leave = false
 [node name="MatchBiome" type="Node" parent="." unique_id=1771451217 node_paths=PackedStringArray("world")]
 script = ExtResource("13_biome")
 world = NodePath("..")
+
+[node name="BiomeLink" type="Node" parent="." node_paths=PackedStringArray("biome")]
+editor_description = "055i-b3: el canal de red «biome». El servidor manda el dios de la tierra y el reloj del cielo a cada cliente con el mundo listo; el cliente se los da a MatchBiome. Va debajo de MatchBiome (que sortea primero)."
+script = ExtResource("b3_biome_link")
+biome = NodePath("../MatchBiome")
 
 
 [node name="Units" type="Node3D" parent="." unique_id=1921753883]

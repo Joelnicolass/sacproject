@@ -59,7 +59,7 @@ watch = "untracked"
 [resource]
 script = ExtResource("1_rules")
 starting_souls = 12
-biome_god = &"james"
+biome = ExtResource("seat_god_james")
 match_seed = 1
 anchor = Vector3(1036, 0, 1008)
 start_paused = true

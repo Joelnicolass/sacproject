@@ -78,7 +78,7 @@ watch_s = 240.0
 [resource]
 script = ExtResource("1_rules")
 starting_souls = 12
-biome_god = &"james"
+biome = ExtResource("seat_god_james")
 match_seed = 7
 anchor = Vector3(1270, 0, 1270)
 start_paused = true

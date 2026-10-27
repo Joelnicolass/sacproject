@@ -22,7 +22,7 @@ var map: MapDefinition
 ## The game mode of the match; null = the one of `--mode` or 1v1. Like `map`, it is not a rule of the round.
 var mode: GameMode
 ## The land of the match (the god whose look the map wears); null = drawn from the seed. Unlike `map` it IS a rule of the round for
-## `apply_to`: the copy of the rules carries its id (`biome_god`) and MatchBiome on the authority sends the result to the clients.
+## `apply_to`: the copy of the rules carries it (`biome`) and MatchBiome on the authority sends the result to the clients.
 var biome: GodType
 
 
@@ -84,5 +84,5 @@ func apply_to(rules: Variant) -> Variant:
 	if match_seed > 0:
 		copy.match_seed = match_seed
 	if biome != null:
-		copy.biome_god = StringName(biome.id())
+		copy.biome = biome
 	return copy

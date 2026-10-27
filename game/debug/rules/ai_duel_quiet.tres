@@ -26,7 +26,7 @@ difficulty = ExtResource("3_normal")
 [resource]
 script = ExtResource("1_rules")
 starting_souls = 12
-biome_god = &"james"
+biome = ExtResource("seat_god_james")
 match_seed = 1
 anchor = Vector3(600, 0, 250)
 start_paused = true

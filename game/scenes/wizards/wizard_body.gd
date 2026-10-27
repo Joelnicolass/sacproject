@@ -1,8 +1,9 @@
 class_name WizardBody
 extends CharacterBody3D
 
-## One per player slot (WizardSpawner). The server (or solo) simulates the body; the owning client sends drive/walk
-## commands, the listen host's own wizard reads its keys right there.
+## One per player slot (WizardSpawner). The server (or solo) simulates the body. The player's keys travel as the values `forward` and
+## `yaw` of the MpInput child; `mp_move` (the kit runs it on the server, on the owner and when the owner reconciles) hands them to
+## `Drive`, the one writer of the movement. An AI seat has no predict: `_physics_process` steps `Drive` with no keys.
 
 signal walk_changed(walking: bool)
 signal pick_changed
@@ -73,6 +74,8 @@ signal book_changed
 
 const REST_FACING := Vector3(0.0, 0.0, 1.0)
 const TURN_RATE := PI
+## The yaw is sent again when the camera turned this much (radians, about 0.25 degrees): a value per frame would cost three times the bytes.
+const YAW_STEP := 0.0044
 ## RFC-023 (023d): 1 rest loop in GESTURE_EVERY ends in the idle0 gesture, like the units.
 ## Ref: sacengine rolls 1 in 5
 const GESTURE_EVERY := 5
@@ -81,10 +84,7 @@ var move_speed: float = 0.0
 ## Speedup sets it on the server (or solo); the pace is multiplied by it.
 var speed_factor := 1.0
 var look_yaw := 0.0
-var _goal := Vector3.ZERO
-var _walking := false
-var _net_forward := 0.0
-var _net_yaw := 0.0
+var _sent_yaw := NAN
 var _seat_left := 0
 var _stats_ready := false
 var _since_damage := INF
@@ -107,7 +107,9 @@ var _clip_flat_speed := 0.0
 @onready var _caster: Caster = $Caster
 ## F138 (RFC-030i-c): the one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
-@onready var _locomotion: Locomotion = $Locomotion
+@onready var drive: WizardDrive = $Drive
+@onready var _net: MpActor = $MpActor
+@onready var _keys: MpInput = $MpInput
 
 
 func _ready() -> void:
@@ -115,7 +117,9 @@ func _ready() -> void:
 	_refresh_owner()
 	floor_snap_length = 0.5
 	look_yaw = rotation.y
-	_net_yaw = rotation.y
+	## A body placed in a scene (a bench) has the slot here and not in its MpActor: the keys are read where the owner is.
+	if _net.owner_slot != owner_slot:
+		_net.owner_slot = owner_slot
 	_wear_body()
 	if _clip_pose.has_signal("clip_looped"):
 		_clip_pose.connect("clip_looped", _on_clip_looped)
@@ -262,9 +266,16 @@ func facing_flat() -> Vector3:
 func _process(delta: float) -> void:
 	if not _should_simulate():
 		_present_pose(delta)
-	if not MpAuthority.should_send_command() or not is_local():
-		return
-	submit_drive.rpc_id(MpAuthority.SERVER_PEER, _read_forward(), look_yaw)
+	if is_local():
+		_send_keys()
+
+
+## The owner's keys, as the values of its MpInput (they travel exactly): the stride every frame, the heading when it changed.
+func _send_keys() -> void:
+	_keys.set_value(&"forward", _read_forward())
+	if is_nan(_sent_yaw) or absf(angle_difference(_sent_yaw, look_yaw)) > YAW_STEP:
+		_sent_yaw = look_yaw
+		_keys.set_value(&"yaw", look_yaw)
 
 
 ## Exact match: Shift+W is creature_3 and must not walk. A modal UI (WorldInput, RFC-031 031c) stops it.
@@ -279,15 +290,11 @@ func _read_forward() -> float:
 	return clampf(forward, -1.0, 1.0)
 
 
-@rpc("any_peer", "call_remote", "unreliable")
-func submit_drive(forward: float, yaw: float) -> void:
-	if not MpAuthority.accept_command(self, owner_slot):
-		return
-	var was_moving := not is_zero_approx(_net_forward)
-	_net_forward = clampf(forward, -1.0, 1.0)
-	_net_yaw = yaw
-	if was_moving != (not is_zero_approx(_net_forward)):
-		print("mago %d %s en %.1f %.1f" % [owner_slot, "para" if was_moving else "arranca", position.x, position.z])
+## The kit's movement hook: the server runs it for each frame of the owner's keys, the owner right away and again when it reconciles.
+func mp_move(keys: MpInput, delta: float) -> void:
+	## A bench that freezes the body (set_physics_process(false)) freezes it here too.
+	if is_physics_processing():
+		drive.step(keys, delta)
 
 
 func request_walk(goal: Vector3) -> void:
@@ -308,27 +315,17 @@ func walk_to(goal: Vector3) -> void:
 
 
 func is_walking() -> bool:
-	return _walking
+	return drive.walking
 
 
-## RFC-034 034g (F184): the player's link dropped. The wizard keeps its place, health and creatures but takes no step: no held
-## key (`_net_forward`) and no walk order go on without a player. It answers to the player again when he comes back.
+## RFC-034 034g (F184): the player's link dropped. The wizard keeps its place, health and creatures but takes no step: the kit
+## simulates the seat with no keys held, and no walk order goes on without a player. It answers to the player again when he comes back.
 func stand_still() -> void:
-	_net_forward = 0.0
-	var follower := get_node_or_null("PathFollower") as PathFollower
-	if follower != null:
-		follower.cancel()
-	if _walking:
-		_walking = false
-		walk_changed.emit(false)
+	drive.cancel_orders()
 
 
 func begin_walk(goal: Vector3) -> void:
-	_goal = goal
-	if _walking:
-		return
-	_walking = true
-	walk_changed.emit(true)
+	drive.begin_walk(goal)
 
 
 ## Teleport (RFC-021c). The server puts the wizard at `point`, a spot on the land (its Y is the land's), in
@@ -336,9 +333,7 @@ func begin_walk(goal: Vector3) -> void:
 ## stands on it. The clients are told not to glide.
 ## Ref: state.d:10262
 func warp_to(point: Vector3) -> void:
-	if _walking:
-		_walking = false
-		walk_changed.emit(false)
+	drive.stop_walk()
 	velocity = Vector3.ZERO
 	global_position = Vector3(point.x, point.y - feet_drop(), point.z)
 	_announce_jump()
@@ -365,6 +360,11 @@ func _should_simulate() -> bool:
 	return MpKit.is_server()
 
 
+## The seating is not over: the body waits on the air for the land under it (Drive does not step meanwhile).
+func is_seating() -> bool:
+	return _seat_left > 0
+
+
 func _seat() -> void:
 	var at := global_position
 	var ground := GroundRay.surface_y(self, at, ground_mask, [get_rid()], NAN)
@@ -384,55 +384,17 @@ func _physics_process(delta: float) -> void:
 	if _seat_left > 0:
 		_seat()
 		return
-	_locomotion.begin(delta)
-	var pace := move_speed
-	if pace <= 0.0 and step:
-		pace = step.speed()
-	pace *= speed_factor * ghost.speed_factor()
-	## The player at this machine (solo or the listen host) drives with his own keys and camera; a remote player, by submit_drive.
-	var forward := 0.0
-	var yaw := look_yaw
-	if is_local():
-		forward = _read_forward()
-	elif MpKit.is_networked():
-		forward = _net_forward
-		yaw = _net_yaw
-	## Held (F138) or casting a structure (Caster.holds_wizard): it neither walks nor turns, and a walk order waits for it.
-	## Ref: state.d:93-145, 1140-1142
-	var held := _afflictions.holds() or _caster.holds_wizard()
-	if held or not ghost.can_move():
-		forward = 0.0
-		_walking = _walking and held
-		yaw = rotation.y
-	rotation.y = yaw
-	if absf(forward) > 0.001 and pace > 0.0:
-		_walking = false
-		var ahead := facing_flat()
-		velocity.x = ahead.x * pace * forward
-		velocity.z = ahead.z * pace * forward
-	elif _walking and pace > 0.0 and not held:
-		var flat := Vector3(_goal.x - global_position.x, 0.0, _goal.z - global_position.z)
-		if flat.length() <= pace * delta:
-			_walking = false
-			velocity.x = 0.0
-			velocity.z = 0.0
-			walk_changed.emit(false)
-		else:
-			var direction := flat.normalized()
-			velocity.x = direction.x * pace
-			velocity.z = direction.z * pace
-	else:
-		velocity.x = 0.0
-		velocity.z = 0.0
+	## A seat that predicts is stepped by the kit (mp_move), with its player's keys or with none; an AI seat is stepped here.
+	if not _net.predict:
+		drive.step(null, delta)
 	_since_damage += delta
 	_regenerate(delta)
-	## Locomotion: the afflictions steer (a thrown wizard flies its own path), the engine's avoidance moves him around the others (a wizard is
-	## above his creatures) and the step ends in its `resume`, this same physics step; then `moved` (the pose) or `fell` (back to the altar).
-	_locomotion.finish(delta, false, is_obstacle)
 
 
+## Server or solo: the step ended. A client (the owner predicts, and replays) draws its pose from `_present_pose`.
 func _on_moved() -> void:
-	_update_clip_state(Vector2(velocity.x, velocity.z).length())
+	if _should_simulate():
+		_update_clip_state(Vector2(velocity.x, velocity.z).length())
 
 
 ## Regeneration · mana/maxMana per second,
@@ -441,7 +403,7 @@ func _on_moved() -> void:
 func _regenerate(delta: float) -> void:
 	if not can_cast() or _since_damage < regen_pause_s or health.is_full():
 		return
-	if not is_zero_approx(velocity.x) or not is_zero_approx(velocity.z):
+	if drive.moving:
 		return
 	var caster := get_node_or_null("Caster") as Caster
 	if caster and caster.is_casting():
@@ -462,6 +424,8 @@ func _on_health_changed(current: float, _maximum: float) -> void:
 ## A wizard that fell through the map is sent to its closest altar.
 ## Ref: sacengine; state.d:14802-14815
 func _return_to_altar() -> void:
+	if not is_multiplayer_authority():
+		return
 	var best: Node3D = null
 	for source in get_tree().get_nodes_in_group("mana_source"):
 		if int(source.get("kind")) != ManaSource.Kind.ALTAR or int(source.get("owner_slot")) != owner_slot:
@@ -471,7 +435,7 @@ func _return_to_altar() -> void:
 			best = altar
 	if best == null:
 		return
-	_walking = false
+	drive.stop_walk()
 	velocity = Vector3.ZERO
 	global_position = FallCheck.altar_return_spot(self, best.global_position) - Vector3.UP * feet_drop()
 	_announce_jump()

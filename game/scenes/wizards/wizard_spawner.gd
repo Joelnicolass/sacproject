@@ -31,6 +31,10 @@ func _on_seat_away(slot: int) -> void:
 func _place(pawn: Node, slot: int) -> void:
 	## MatchState seats the slot when the wizard enters `Wizards` (RFC-049 049b), so `owner_slot` goes before add_child.
 	pawn.set("owner_slot", slot)
+	## An AI seat has no keys to predict from: it moves on the server (WizardBody steps Drive itself) and owns no MpInput frames.
+	var net := MpActor.of(pawn)
+	if net != null and SacrificeFlow.board.is_ai(slot):
+		net.predict = false
 	var rules: Variant = owner.get("rules") if owner else null
 	if rules is MatchRules:
 		var match_rules := rules as MatchRules

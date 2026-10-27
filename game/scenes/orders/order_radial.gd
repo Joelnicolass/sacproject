@@ -1,13 +1,14 @@
 class_name OrderRadial
 extends Node
 
-## RFC-038 038d: the one owner of the right mouse button in the world, and of the keys that open the radial menu.
+## The one owner of the `order_units` button in the world, and of the keys that open the radial menu.
 ## A short tap on `view` is the order of always (`MatchCommand.right_at`). Holding the button still for `layout.hold_s`
-## (0.25 s, as sacengine's xmenuTime) opens the radial menu where it was pressed; the entry the pointer is on when it is
+## (0.25 s) opens the radial menu where it was pressed; the entry the pointer is on when it is
 ## released runs AT THE PRESS POINT: an order entry gives that order there, a formation entry gives the right click of that point in
 ## that formation, in one submit. Releasing in the center cancels. Holding `order_menu` (Tab) the same time opens it at the pointer and releasing it runs the entry. `formation_1`..`formation_8`
 ## (Alt+1..8) store a formation of the catalog on the selection without the menu.
 ## The menu draws and picks; this node turns an entry into a call to MatchCommand. It knows no order rule.
+## Ref: RFC-038 038d; sacengine xmenuTime.
 
 enum Source { NONE, MOUSE, KEY }
 
@@ -95,7 +96,7 @@ func _on_view_event(event: InputEvent) -> void:
 	if not event is InputEventMouseButton:
 		return
 	var button := event as InputEventMouseButton
-	if button.button_index != MOUSE_BUTTON_RIGHT:
+	if not button.is_action(&"order_units"):
 		return
 	if button.pressed:
 		if _source == Source.KEY:

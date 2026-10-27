@@ -3,7 +3,8 @@
 
   python3 agent/tools/jitter_stats.py --host host.csv --client A.csv [--step2]
 
-CSV columns: t_usec,frame,who,name,x,z,rtt_ms,last_correction. who = own | rival | creature | mark (walk_start / walk_end in `name`).
+CSV columns: t_usec,frame,who,name,x,z,rtt_ms,last_correction[,tick,corr_offset,guessed]. who = own | rival | creature | camera | mark
+(the marks walk_start/walk_end, walk_turn_*, warp_*, walk_knock_*, knock_cast in `name`).
 Per body and per side: the flat SPEED per rendered frame (displacement / that frame's dt: the step alone mixes frame time with
 the network; same metric as the kit's lab, agreed with the kit session 2026-10-27), only while the body walks (speed over a 0.25 s window above
 MIN_SPEED, 0.5 s trimmed off each edge of every walk, and only inside the walk_start..walk_end marks + TAIL_S when they exist):
@@ -14,8 +15,16 @@ JITTER PASS when, for every body and on BOTH sides (absolute, not relative to th
 p95/median <= MAX_P95M and stalls <= STALL_MAX, and each side renders steadily (p95 frame time <= MAX_FRAME_MS; above it the
 machine is loaded and the run says so); a creature (RELATIVE_BODIES) only on the client, against max(MAX_CV, 1.10 x host CV)
 and host stalls + 1 %; else JITTER FAIL with the reasons.
---step2 adds the prediction criteria of the own wizard on the client: key -> first step <= 2 frames (walk_start mark to the first
-frame that moved) and last_correction p95 <= 0.05 m, max <= 0.25 m.
+--step2 adds the section "paso 2 (kit)" (072, asked by the kit session), all on the client except `guessed`, with these criteria:
+  key -> first step <= 2 physics ticks (the walk_start mark to the first drawn frame that moved; frames printed too)
+  last_correction max <= 0.05 m walking straight (walk) and walking while turning (walk_turn)
+  blips (frames with speed > 1.5 x or < 0.5 x the median, per 3 s window, straight + turn): own and rival mean <= 1 per window
+    (host side, the creature and the camera are printed, not judged)
+  knock (the host casts Erupt on the client's wizard in the middle of walk_knock): corr_offset peak, and time from the peak
+    back under 1 cm <= 0.5 s
+  warp (the client casts Teleport, warp_start..warp_end): the drawn wizard jumps in one frame: frames with a step > 3 x the
+    median walking step other than the jump itself = 0
+  guessed (host side, the client's MpInput queue): printed only.
 Exit code 0 = pass, 1 = fail.
 """
 import argparse
@@ -48,17 +57,25 @@ def read(path):
         for r in csv.DictReader(f):
             t = int(r["t_usec"]) / 1e6
             if r["who"] == "mark":
-                marks[r["name"]] = (t, int(r["frame"]))
+                marks[r["name"]] = (t, int(r["frame"]), int(r["tick"]) if r.get("tick") else None)
             elif r["who"] in rows:
                 corr = float(r["last_correction"]) if r["last_correction"] else None
-                rows[r["who"]].append((t, int(r["frame"]), float(r["x"]), float(r["z"]), corr))
+                tick = int(r["tick"]) if r.get("tick") else None
+                off = float(r["corr_offset"]) if r.get("corr_offset") else None
+                guessed = int(r["guessed"]) if r.get("guessed") else None
+                rows[r["who"]].append((t, int(r["frame"]), float(r["x"]), float(r["z"]), corr, tick, off, guessed))
     return rows, marks
 
 
-def walk_steps(series, marks):
-    """The per-frame steps inside the trimmed walking runs of one body."""
-    lo = marks["walk_start"][0] if "walk_start" in marks else -math.inf
-    hi = (marks["walk_end"][0] + TAIL_S) if "walk_end" in marks else math.inf
+def walk_steps(series, marks, prefix="walk"):
+    """The per-frame speeds inside the trimmed walking runs of one body."""
+    return [v for _, v in walk_steps_t(series, marks, prefix)]
+
+
+def walk_steps_t(series, marks, prefix="walk"):
+    """(time, speed) per frame inside the trimmed walking runs of one body, between <prefix>_start and <prefix>_end + TAIL_S."""
+    lo = marks[prefix + "_start"][0] if prefix + "_start" in marks else -math.inf
+    hi = (marks[prefix + "_end"][0] + TAIL_S) if prefix + "_end" in marks else math.inf
     series = [s for s in series if lo <= s[0] <= hi]
     walking = []
     j = 0
@@ -82,7 +99,7 @@ def walk_steps(series, marks):
             if t0 <= series[n][0] <= t1:
                 dt = series[n][0] - series[n - 1][0]
                 if dt > 0:
-                    steps.append(math.hypot(series[n][2] - series[n - 1][2], series[n][3] - series[n - 1][3]) / dt)
+                    steps.append((series[n][0], math.hypot(series[n][2] - series[n - 1][2], series[n][3] - series[n - 1][3]) / dt))
         i = k + 1
     return steps
 
@@ -160,37 +177,189 @@ def main():
             body, h["n"], h["cv"], h["p95m"], 100 * h["stall"], c["n"], c["cv"], c["p95m"], 100 * c["stall"],
             "ok" if not reasons else "FAIL " + "; ".join(reasons)))
     if args.step2:
-        ok = step2(cli_rows["own"], cli_marks) and ok
+        ok = step2(host_rows, host_marks, cli_rows, cli_marks) and ok
     print("JITTER PASS" if ok else "JITTER FAIL")
     return 0 if ok else 1
 
 
-def step2(own, marks):
+BLIP_WINDOW_S = 3.0
+BLIP_HIGH = 1.5
+BLIP_LOW = 0.5
+BLIP_MEAN_MAX = 1.0
+MAX_KEY_TICKS = 2
+MAX_LAST_CORRECTION = 0.05
+KNOCK_SEEN_OFFSET = 0.05   # a push is seen when the drawn wizard was this far from the real one at some moment
+KNOCK_SEEN_CORRECTION = 0.25
+OFFSET_HOME = 0.01
+OFFSET_HOME_S = 0.5
+WARP_MIN_JUMP = 5.0
+WARP_STEP_FACTOR = 3.0
+
+
+def segment(marks, prefix):
+    a, b = marks.get(prefix + "_start"), marks.get(prefix + "_end")
+    return (a[0], b[0]) if a and b else None
+
+
+def blips(series, marks):
+    """Frames with a speed above BLIP_HIGH x or under BLIP_LOW x the median, per BLIP_WINDOW_S window, over the straight and the
+    turning walks (each against its own median; a window shorter than 2 s at the end of a walk is dropped). (mean, max, windows)."""
+    counts = []
+    for prefix in ("walk", "walk_turn"):
+        steps = walk_steps_t(series, marks, prefix)
+        if len(steps) < MIN_STEPS:
+            continue
+        med = statistics.median(v for _, v in steps)
+        t0, t1 = steps[0][0], steps[-1][0]
+        w = t0
+        while w < t1:
+            if min(t1, w + BLIP_WINDOW_S) - w >= 2.0:
+                counts.append(sum(1 for t, v in steps if w <= t < w + BLIP_WINDOW_S and (v > BLIP_HIGH * med or v < BLIP_LOW * med)))
+            w += BLIP_WINDOW_S
+    if not counts:
+        return None
+    return statistics.fmean(counts), max(counts), len(counts)
+
+
+def key_to_step(own, marks):
+    """(frames, ticks) from the walk_start mark to the first drawn frame that moved; None when it never moved."""
+    t0, f0, k0 = marks["walk_start"]
+    before = [s for s in own if s[0] <= t0]
+    if not before:
+        return None
+    ref = before[-1]
+    first = next((s for s in own if s[0] > t0 and math.hypot(s[2] - ref[2], s[3] - ref[3]) > 0.01), None)
+    if first is None:
+        return None
+    ticks = first[5] - k0 if first[5] is not None and k0 is not None else None
+    return first[1] - f0, ticks
+
+
+def correction_max(own, marks, prefix):
+    seg = segment(marks, prefix)
+    if seg is None:
+        return None
+    values = sorted(s[4] for s in own if s[4] is not None and seg[0] <= s[0] <= seg[1])
+    if len(values) < MIN_STEPS:
+        return None
+    return pct(values, 0.95), values[-1]
+
+
+def knock_report(own, marks):
+    """(text, ok): the push of the host's Erupt in the middle of walk_knock, seen as the drawn wizard's offset from the real one."""
+    seg = segment(marks, "walk_knock")
+    if seg is None:
+        return "knock: no walk_knock marks  FAIL", False
+    rows = [s for s in own if seg[0] <= s[0] <= seg[1] + 3.0]
+    offs = [s for s in rows if s[6] is not None]
+    if not offs:
+        return "knock: no corr_offset samples (the own wizard has no MpActor)  FAIL", False
+    peak = max(offs, key=lambda s: s[6])
+    corr_max = max((s[4] for s in rows if s[4] is not None), default=0.0)
+    if peak[6] < KNOCK_SEEN_OFFSET and corr_max < KNOCK_SEEN_CORRECTION:
+        return ("knock: no push seen (corr_offset peak %.3f m, last_correction max %.3f m): the Erupt did not reach the wizard  FAIL"
+                % (peak[6], corr_max)), False
+    if peak[6] < KNOCK_SEEN_OFFSET:
+        return ("knock: last_correction max %.2f m with no fade (corr_offset peak %.3f m): corrected in one step  ok" % (corr_max, peak[6])), True
+    home = next((s for s in rows if s[0] > peak[0] and s[6] < OFFSET_HOME), None)
+    if home is None:
+        return "knock: corr_offset peak %.2f m and it never got under 1 cm  FAIL" % peak[6], False
+    back = home[0] - peak[0]
+    verdict = back <= OFFSET_HOME_S
+    return ("knock: corr_offset peak %.2f m (%.2f s into walk_knock), under 1 cm %.2f s later (<= %.1f), last_correction max %.2f m  %s"
+            % (peak[6], peak[0] - seg[0], back, OFFSET_HOME_S, corr_max, "ok" if verdict else "FAIL")), verdict
+
+
+def warp_report(own, marks):
+    """(text, ok): the drawn wizard jumps in ONE frame when Teleport lands (warp_start..warp_end)."""
+    seg = segment(marks, "warp")
+    start = segment(marks, "walk")
+    if seg is None or start is None:
+        return "warp: no warp/walk marks  FAIL", False
+    walking = [s for s in own if start[0] + 1.0 <= s[0] <= start[1] - 1.0]
+    walk_steps_m = sorted(math.hypot(b[2] - a[2], b[3] - a[3]) for a, b in zip(walking, walking[1:]))
+    if not walk_steps_m:
+        return "warp: no walking frames to compare with  FAIL", False
+    typical = statistics.median(walk_steps_m)
+    rows = [s for s in own if seg[0] <= s[0] <= seg[1]]
+    steps = [math.hypot(b[2] - a[2], b[3] - a[3]) for a, b in zip(rows, rows[1:])]
+    if not steps:
+        return "warp: no frames between the marks  FAIL", False
+    jump = max(steps)
+    at = steps.index(jump)
+    if jump < WARP_MIN_JUMP:
+        return "warp: no warp seen (largest step %.2f m between warp_start and warp_end)  FAIL" % jump, False
+    between = [v for k, v in enumerate(steps) if k != at and v > WARP_STEP_FACTOR * typical]
+    verdict = not between
+    after = [s[6] for s in rows[at + 1:] if s[6] is not None]
+    return ("warp: jump %.1f m in one frame (%.3f s dt); frames with a step > %.0f x the walking step (%.2f m) besides it: %d (0)%s  %s"
+            % (jump, rows[at + 1][0] - rows[at][0], WARP_STEP_FACTOR, typical, len(between),
+               ", intermediate steps %s m" % ", ".join("%.2f" % v for v in between[:6]) if between else "",
+               "ok" if verdict else "FAIL")
+            + ("  corr_offset after it max %.3f m" % max(after) if after else "")), verdict
+
+
+def guessed_report(rival_rows):
+    values = [(s[0], s[7]) for s in rival_rows if s[7] is not None]
+    if not values:
+        return "guessed (host, the client's MpInput): no samples"
+    seconds = sorted({round(t) for t, _ in values})
+    per_second = {}
+    for t, g in values:
+        per_second[int(t)] = g
+    keys = sorted(per_second)
+    jumps = [per_second[b] - per_second[a] for a, b in zip(keys, keys[1:])]
+    return ("guessed (host, the client's MpInput): %d -> %d over %d s, most in one second +%d, seconds with a guess %d"
+            % (values[0][1], values[-1][1], len(seconds), max(jumps, default=0), sum(1 for j in jumps if j > 0)))
+
+
+def step2(host_rows, host_marks, cli_rows, cli_marks):
+    print("--- paso 2 (kit) ---")
+    own = cli_rows["own"]
     good = True
-    if "walk_start" in marks and own:
-        t0, f0 = marks["walk_start"]
-        before = [s for s in own if s[0] <= t0]
-        if before:
-            ref = before[-1]
-            first = next((s for s in own if s[0] > t0 and math.hypot(s[2] - ref[2], s[3] - ref[3]) > 0.01), None)
-            if first is None:
-                print("step2: key -> first step: the own wizard never moved  FAIL")
-                good = False
+    if "walk_start" in cli_marks and own:
+        got = key_to_step(own, cli_marks)
+        if got is None:
+            print("key -> first step: the own wizard never moved  FAIL")
+            good = False
+        else:
+            frames, ticks = got
+            if ticks is None:
+                verdict = frames <= MAX_KEY_TICKS
+                print("key -> first step: %d frames (no tick column; <= %d)  %s" % (frames, MAX_KEY_TICKS, "ok" if verdict else "FAIL"))
             else:
-                frames = first[1] - f0
-                verdict = frames <= 2
+                verdict = ticks <= MAX_KEY_TICKS
+                print("key -> first step: %d ticks, %d frames (<= %d ticks)  %s" % (ticks, frames, MAX_KEY_TICKS, "ok" if verdict else "FAIL"))
+            good = good and verdict
+    for prefix, label in (("walk", "straight"), ("walk_turn", "turning")):
+        got = correction_max(own, cli_marks, prefix)
+        if got is None:
+            print("last_correction walking %s: no samples (marks or MpActor missing)  FAIL" % label)
+            good = False
+            continue
+        verdict = got[1] <= MAX_LAST_CORRECTION
+        good = good and verdict
+        print("last_correction walking %s: p95 %.3f m, max %.3f m (<= %.2f)  %s" % (label, got[0], got[1], MAX_LAST_CORRECTION, "ok" if verdict else "FAIL"))
+    print("blips per %.0f s window (speed > %.1f x or < %.1f x the median), straight + turning walks: mean / max (windows)" % (BLIP_WINDOW_S, BLIP_HIGH, BLIP_LOW))
+    for side, rows, marks in (("client", cli_rows, cli_marks), ("host  ", host_rows, host_marks)):
+        for body in BODIES:
+            got = blips(rows[body], marks)
+            if got is None:
+                print("  %s %-8s -" % (side, body))
+                continue
+            judged = side == "client" and body in ("own", "rival")
+            verdict = got[0] <= BLIP_MEAN_MAX
+            if judged:
                 good = good and verdict
-                print("step2: key -> first step %d frames (<= 2)  %s" % (frames, "ok" if verdict else "FAIL"))
-    lo = marks["walk_start"][0] if "walk_start" in marks else -math.inf
-    hi = marks["walk_end"][0] if "walk_end" in marks else math.inf
-    corr = sorted(s[4] for s in own if s[4] is not None and lo <= s[0] <= hi)
-    if len(corr) < MIN_STEPS:
-        print("step2: last_correction: no samples (the own wizard has no MpActor)  FAIL")
-        return False
-    p95, mx = pct(corr, 0.95), corr[-1]
-    verdict = p95 <= 0.05 and mx <= 0.25
-    print("step2: last_correction p95 %.3f m (<= 0.05), max %.3f m (<= 0.25)  %s" % (p95, mx, "ok" if verdict else "FAIL"))
-    return good and verdict
+            print("  %s %-8s %.2f / %d (%d)%s" % (side, body, got[0], got[1], got[2], ("  " + ("ok" if verdict else "FAIL (mean > %.0f)" % BLIP_MEAN_MAX)) if judged else ""))
+    text, verdict = knock_report(own, cli_marks)
+    good = good and verdict
+    print(text)
+    text, verdict = warp_report(own, cli_marks)
+    good = good and verdict
+    print(text)
+    print(guessed_report(host_rows["rival"]))
+    return good
 
 
 if __name__ == "__main__":

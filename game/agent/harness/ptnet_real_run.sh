@@ -166,7 +166,8 @@ case "$SC" in
     #   jitter      the real relay: needs JITTER_RELAY_SECRET_FILE=<file with the host secret>; the secret goes ONLY into the
     #               host process environment (never to a file, a log or an argument).
     #   jitter_lan  ENet on loopback with simulated lag (JITTER_LAG_MS 34, JITTER_JITTER_MS 10, both processes).
-    # JITTER_STEP2=1 adds the prediction criteria (latency, last_correction).
+    # The flows walk straight, walk turning, warp (Teleport) and take a push (the host casts Erupt on A): the section "paso 2 (kit)" of
+    # the stats (072) is on unless JITTER_STEP2=0. The host is James (the default pick), A is Pyro; both at level 9 (mana for the spells).
     JIT_HOST=(--listen-host --mp-port="$PORT" --rejoin-grace-s="$GRACE_S" --level="$LEVEL" --match-seed=71 --mode=1v1 --map=test_flat)
     JIT_NET=()
     HOST_SECRET=""
@@ -187,7 +188,7 @@ case "$SC" in
     wait "$A"; echo "A exit $?"
     wait "$HOST"; echo "host exit $?"
     if [ -s "$OUT/host.csv" ] && [ -s "$OUT/A.csv" ]; then
-      python3 "$ROOT/agent/tools/jitter_stats.py" --host "$OUT/host.csv" --client "$OUT/A.csv" ${JITTER_STEP2:+--step2} | tee "$OUT/jitter_stats.txt"
+      python3 "$ROOT/agent/tools/jitter_stats.py" --host "$OUT/host.csv" --client "$OUT/A.csv" $([ "${JITTER_STEP2:-1}" = 1 ] && echo --step2) | tee "$OUT/jitter_stats.txt"
     else
       echo "JITTER FAIL (no CSV: see $OUT/host.log and $OUT/A.log)"
     fi

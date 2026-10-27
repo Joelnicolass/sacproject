@@ -23,12 +23,17 @@ const ORDER_TEXT := {
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
 
+## Who looks at this screen: only this seat's new creatures join the selection.
+@export var seat: MpLocalSeat
+
 @onready var _log: CommandLog = %Battle
 @onready var _ping: OrderMarker = %Ping
 @onready var _selection: _SELECTION = %Selection
 
 
 func _ready() -> void:
+	if seat == null:
+		push_warning("CommandFeedback: assign `seat` (the MpLocalSeat); summoned creatures will not join the selection")
 	_log.say("Mago")
 	%Units.child_entered_tree.connect(_on_unit_entered)
 	_selection.changed.connect(on_selection_changed)
@@ -70,5 +75,5 @@ func _on_unit_entered(unit: Node) -> void:
 
 ## sacengine newCreatureAddToSelection: the owner's new creature joins the selection.
 func _on_unit_summoned(unit: Node) -> void:
-	if is_instance_valid(unit) and (unit as UnitBody).owner_slot == MpKit.local_slot():
+	if seat != null and is_instance_valid(unit) and seat.is_mine((unit as UnitBody).owner_slot):
 		_selection.add_summoned(unit as UnitBody)

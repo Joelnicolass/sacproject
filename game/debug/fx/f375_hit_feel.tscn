@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://debug/fx/f375_hit_feel.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://bgtcxpe3ofu2f" path="res://addons/mp_kit/nodes/mp_local_seat.gd" id="n6_seat"]
 [ext_resource type="Script" path="res://scenes/camera/world_camera.gd" id="2_camera"]
 [ext_resource type="PackedScene" path="res://scenes/camera/camera_shake.tscn" id="3_shake"]
 [ext_resource type="PackedScene" path="res://scenes/fx/damage_numbers.tscn" id="4_numbers"]
@@ -70,6 +71,9 @@ type = ExtResource("typed_c_ycro")
 owner_slot = 2
 idle_aggro = false
 
+[node name="LocalSeat" type="Node" parent="."]
+script = ExtResource("n6_seat")
+
 [node name="Camera" type="Camera3D" parent="." node_paths=PackedStringArray("follow", "shake")]
 current = true
 far = 2000.0
@@ -80,8 +84,9 @@ shake = NodePath("CameraShake")
 [node name="CameraShake" parent="Camera" instance=ExtResource("3_shake")]
 run_headless = true
 
-[node name="DamageNumbers" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("4_numbers")]
+[node name="DamageNumbers" parent="." node_paths=PackedStringArray("camera", "seat") instance=ExtResource("4_numbers")]
 camera = NodePath("../Camera")
+seat = NodePath("../LocalSeat")
 run_headless = true
 
 [node name="Overlay" type="CanvasLayer" parent="."]

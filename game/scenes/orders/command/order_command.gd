@@ -27,7 +27,7 @@ func right_at(screen: Vector2, from_action := false, formation_id := &"") -> voi
 	if body:
 		if PointerRay.is_corpse(body):
 			order("guard_area", body.global_position, null, formation_id)
-		elif PointerRay.is_enemy(body):
+		elif ray.is_enemy(body):
 			order("attack", body.global_position, body, formation_id)
 		else:
 			order("guard", body.global_position, body, formation_id)
@@ -82,7 +82,7 @@ func context_kind(screen: Vector2) -> StringName:
 		return &"ground"
 	if PointerRay.is_corpse(body):
 		return &"corpse"
-	return &"enemy" if PointerRay.is_enemy(body) else &"own"
+	return &"enemy" if ray.is_enemy(body) else &"own"
 
 
 ## The radial menu chose an order entry: `kind` ("attack", "guard", "move") is given at the screen point the menu opened on,

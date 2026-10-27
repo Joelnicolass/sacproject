@@ -6,7 +6,7 @@ extends Node
 ## set's `crossfade_s` (0.5 s); the track of a mood is drawn with its own generator (the battle one among battle1-5),
 ## never the global one. MusicMood decides the mood; this node only gathers its inputs and plays:
 ## - battle: `gauge` (CombatGauge.is_battle; it computes the intensity, not this node);
-## - the result: `match_state` (MatchState, or the first of group «match_state») has_result / won(MpKit.local_slot());
+## - the result: `match_state` (MatchState, or the first of group «match_state») has_result / won(the seat's slot);
 ## - rituals (group «ritual», replicated on every peer): one running within `ritual_radius_m` of the camera, and the
 ##   desecrations that involve the local side.
 ## The set: `music` (the menu's in boot.tscn, a fixture in the lab), or the look's `music` of the GodType that `biome` applies
@@ -32,6 +32,8 @@ const EMITTER := &"music"
 @export var gauge: CombatGauge
 ## MatchState (has_result, won, result_changed). Optional: else the first node of group «match_state».
 @export var match_state: Node
+## Who looks at this screen (its slot decides the result and the desecrations). Empty: nobody (the menu in boot.tscn).
+@export var seat: MpLocalSeat
 ## The camera the rituals are measured from. Optional: else the viewport's.
 @export var camera: Camera3D
 @export var menu := false
@@ -177,13 +179,13 @@ func _result() -> MusicMood.Result:
 	var state := (match_state if match_state != null else get_tree().get_first_node_in_group(MatchState.GROUP)) as MatchState
 	if state == null:
 		return MusicMood.Result.NONE
-	var slot := MpKit.local_slot()
+	var slot := seat.slot if seat != null else 0
 	return MusicMood.result_of(state.has_result(), state.won(slot), slot)
 
 
 func _desecration() -> MusicMood.Desecration:
 	var worst := MusicMood.Desecration.NONE
-	var slot := MpKit.local_slot()
+	var slot := seat.slot if seat != null else 0
 	for node in get_tree().get_nodes_in_group(Ritual.GROUP):
 		var ritual := node as Ritual
 		if ritual != null and ritual.is_running() and ritual.kind == Ritual.Kind.DESECRATE:
@@ -207,4 +209,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if track_a == null or track_b == null:
 		out.append("Asigná `track_a` y `track_b` (los dos AudioStreamPlayer hijos): sin ellos no suena.")
+	if seat == null and match_state != null:
+		out.append("Asigná `seat` (el MpLocalSeat): sin él no sabe quién mira el resultado.")
 	return out

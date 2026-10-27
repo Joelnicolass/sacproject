@@ -111,6 +111,6 @@ func _show() -> void:
 
 
 func _burst() -> void:
-	if Engine.is_editor_hint() or MpKit.is_dedicated() or burst_fx == null or burst_spot == null:
+	if Engine.is_editor_hint() or burst_fx == null or burst_spot == null:
 		return
 	FxBus.play(burst_fx, burst_spot.global_position)

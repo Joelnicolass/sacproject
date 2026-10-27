@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://debug/audio/audio_lab.gd" id="1_lab"]
+[ext_resource type="Script" uid="uid://bgtcxpe3ofu2f" path="res://addons/mp_kit/nodes/mp_local_seat.gd" id="n6_seat"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="2_unit"]
 [ext_resource type="PackedScene" path="res://scenes/wizards/wizard_body.tscn" id="3_wizard"]
 [ext_resource type="Script" path="res://scenes/audio/listener_focus.gd" id="4_listener"]
@@ -51,6 +52,9 @@ music = NodePath("MusicDirector")
 ambience = NodePath("AmbienceDirector")
 gauge = NodePath("CombatGauge")
 match_state = NodePath("Match")
+
+[node name="LocalSeat" type="Node" parent="."]
+script = ExtResource("n6_seat")
 
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 3.5, 9)
@@ -127,8 +131,9 @@ bus = &"Voice"
 [node name="AdvisorVoice" parent="." node_paths=PackedStringArray("command_log") instance=ExtResource("13_advisor")]
 command_log = NodePath("../Battle")
 
-[node name="AdvisorWatch" parent="AdvisorVoice" index="1" node_paths=PackedStringArray("wizard")]
+[node name="AdvisorWatch" parent="AdvisorVoice" index="1" node_paths=PackedStringArray("wizard", "seat")]
 wizard = NodePath("../../Wizard")
+seat = NodePath("../../LocalSeat")
 
 [node name="Match" type="Node" parent="." node_paths=PackedStringArray("world")]
 process_mode = 4
@@ -142,7 +147,8 @@ script = ExtResource("17_gauge")
 wizard = NodePath("../Wizard")
 hold_s = 0.5
 
-[node name="MusicDirector" parent="." node_paths=PackedStringArray("gauge", "match_state", "camera") instance=ExtResource("18_music")]
+[node name="MusicDirector" parent="." node_paths=PackedStringArray("gauge", "match_state", "camera", "seat") instance=ExtResource("18_music")]
+seat = NodePath("../LocalSeat")
 music = ExtResource("14_music_set")
 gauge = NodePath("../CombatGauge")
 match_state = NodePath("../Match")

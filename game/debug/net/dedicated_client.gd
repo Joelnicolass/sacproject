@@ -15,6 +15,8 @@ extends Node
 ## --e2e-away-s=N (and joins again N seconds later). It must sit in the same slot and see its own WizardN; with
 ## --e2e-expect-reason=grace_over the return must be turned away with that reason instead. No result is awaited then;
 ## --e2e-linger-s keeps it connected after the return (the seat stays in while another one runs out of grace).
+## Network cut: --e2e-cut-watch (the run freezes this process with SIGSTOP after `E2E_READY_TO_CUT`, until the server drops it):
+## it waits for the lost server, joins again with the credential it kept and must sit in the same slot and see its own WizardN.
 ## Every wait is in real seconds (F350: the process may run with `--fixed-fps`, where a SceneTree timer is simulated time).
 ## Prints `PASS …` / `FAIL …` per check, `E2E_CLOCK <name> at_start=<tick>` (the MatchClock tick when this client saw the gate
 ## open: about 0 if it waited paused), `E2E_STATUS`, `E2E_LEFT`, `E2E_BACK` and `E2E CLIENT <name> PASS|FAIL`; exit 0 / 1.
@@ -110,6 +112,12 @@ func _run() -> void:
 	var mode_tag := MpBoot.user_value("e2e-expect-mode", "")
 	if not mode_tag.is_empty():
 		_check(String(GameModeCatalog.current_tag()) == mode_tag, "%s plays the mode %s (got %s)" % [_name, mode_tag, GameModeCatalog.current_tag()])
+	if MpBoot.user_flag("e2e-cut-watch"):
+		await _rejoin_after_cut()
+		await _wait_wall(float(MpBoot.user_value("e2e-linger-s", "0")))
+		MpKit.leave()
+		_finish()
+		return
 	if not MpBoot.user_value("e2e-rejoin-after-s", "").is_empty():
 		await _rejoin()
 		await _wait_wall(float(MpBoot.user_value("e2e-linger-s", "0")))
@@ -173,6 +181,27 @@ func _rejoin() -> void:
 	if not MpBoot.user_value("e2e-expect-reason", "").is_empty():
 		await _expect_turned_away()
 		return
+	_check(await _until(func() -> bool: return _slot != 0), "%s gets a slot again" % _name)
+	_check(_slot == first, "%s is back in slot %d (got %d)" % [_name, first, _slot])
+	_check(await _until(func() -> bool: return _state() != null), "%s loaded the match world again" % _name)
+	_check(await _until(func() -> bool: return _wizard_of(first) != null), "%s sees its own Wizards/Wizard%d (owner_slot %d)" % [_name, first, first])
+	print("E2E_BACK %s slot=%d" % [_name, _slot])
+
+
+## The run cuts this process off (SIGSTOP) once it says it is ready; the server drops it, then this side loses the server too. It
+## joins again with the seat's credential (kept by MpKit for this host:port): the same slot and its own wizard.
+func _rejoin_after_cut() -> void:
+	await _until(func() -> bool: return _started_at >= 0)
+	var first := _slot
+	var lost := [false]
+	MpKit.server_lost.connect(func() -> void: lost[0] = true)
+	print("E2E_READY_TO_CUT %s slot=%d" % [_name, first])
+	_check(await _until(func() -> bool: return lost[0], 120.0), "%s lost the server after the cut" % _name)
+	print("E2E_LEFT %s slot=%d" % [_name, first])
+	_slot = 0
+	_rejected = ""
+	await _wait_wall(1.0)
+	_check(SacrificeFlow.join_lan(LOCAL_HOST) == OK, "%s joins again" % _name)
 	_check(await _until(func() -> bool: return _slot != 0), "%s gets a slot again" % _name)
 	_check(_slot == first, "%s is back in slot %d (got %d)" % [_name, first, _slot])
 	_check(await _until(func() -> bool: return _state() != null), "%s loaded the match world again" % _name)

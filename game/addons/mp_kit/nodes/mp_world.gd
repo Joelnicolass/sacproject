@@ -6,11 +6,13 @@ extends Node
 ## world needs, as its own children you can see and move:
 ##   SpawnPoints  one marker per seat (move them where players start)
 ##   Actors       where the players (and anything a spawner makes) live
-##   Players      MpSlotSpawner: one player per seat, on every peer, late joiners included
+##   Players      MpSlotSpawner: one player per seat, on every peer, a seat that comes back included
 ##   State        MpState: score, timer, round (`Mp.state()`)
 ##   Match        MpMatch: waits for every seat, players leaving and coming back, finish (`Mp.finish()`)
 ##   Hud/Leave    MpLeaveButton (turn off Leave Button to skip it)
 ##   Hud/Invite   MpInviteLabel: in a private match of this PC, what friends type to join
+##   Hud/Start    MpStartButton: on a listen host whose match waits for seats, start with the players already in
+##   Hud/Waiting  MpWaitingLabel: while the match waits for its seats, "Waiting for players (1/4)" on every peer
 ## A piece you delete is built again next time the scene opens; a piece you rename is not found (keep the names).
 ## Not: your level (put it next to this node), your player (a scene with MpActor + MpInput, see the Setup game wizard).
 
@@ -22,6 +24,8 @@ const STATE := "res://addons/mp_kit/nodes/mp_state.gd"
 const MATCH := "res://addons/mp_kit/nodes/mp_match.gd"
 const LEAVE := "res://addons/mp_kit/nodes/mp_leave_button.gd"
 const INVITE := "res://addons/mp_kit/nodes/mp_invite_label.gd"
+const START := "res://addons/mp_kit/nodes/mp_start_button.gd"
+const WAITING := "res://addons/mp_kit/nodes/mp_waiting_label.gd"
 const PIECES := ["SpawnPoints", "Actors", "Players", "State", "Match"]
 
 ## The scene every seat gets (it needs an MpActor). Same as Players › Pawn Scene.
@@ -37,6 +41,10 @@ const PIECES := ["SpawnPoints", "Actors", "Players", "State", "Match"]
 @export var leave_button: bool = true
 ## Build the Hud's invite line for private matches (MpInviteLabel).
 @export var invite_label: bool = true
+## Build the Hud's Start now button for a listen host (MpStartButton).
+@export var start_button: bool = true
+## Build the Hud's line that says the match waits for players (MpWaitingLabel).
+@export var waiting_label: bool = true
 
 
 ## The MpWorld of the current scene, or null.
@@ -88,7 +96,7 @@ static func build(world: MpWorld, scene_root: Node, is_3d: bool) -> void:
 		match_node.name = "Match"
 		_own(world, match_node, scene_root)
 	var hud := world.get_node_or_null("Hud")
-	if hud == null and (world.leave_button or world.invite_label):
+	if hud == null and (world.leave_button or world.invite_label or world.start_button or world.waiting_label):
 		hud = CanvasLayer.new()
 		hud.name = "Hud"
 		_own(world, hud, scene_root)
@@ -104,6 +112,18 @@ static func build(world: MpWorld, scene_root: Node, is_3d: bool) -> void:
 		invite.name = "Invite"
 		invite.position = Vector2(16, 56)
 		_own(hud, invite, scene_root)
+	if world.start_button and hud.get_node_or_null("Start") == null:
+		var start := Button.new()
+		start.set_script(load(START))
+		start.name = "Start"
+		start.position = Vector2(16, 96)
+		_own(hud, start, scene_root)
+	if world.waiting_label and hud.get_node_or_null("Waiting") == null:
+		var waiting := Label.new()
+		waiting.set_script(load(WAITING))
+		waiting.name = "Waiting"
+		waiting.position = Vector2(16, 136)
+		_own(hud, waiting, scene_root)
 
 
 static func _own(parent: Node, child: Node, scene_root: Node) -> void:

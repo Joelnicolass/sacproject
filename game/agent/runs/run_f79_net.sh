@@ -8,7 +8,7 @@ OUT="$ROOT/agent/out/f79_net"; mkdir -p "$OUT"
 if ps -axo command | grep "Godot.app/Contents/MacOS/Godot" | grep -v grep | grep -qv -- "--editor"; then echo "otro Godot de prueba, no arranco"; exit 3; fi
 cd "$ROOT"
 G="$GODOT_BIN"
-"$G" --headless --max-fps 60 --path "$ROOT" -- --dedicated --mp-port="$PORT" > "$OUT/$FLOW.server.log" 2>&1 &
+"$G" --headless --max-fps 60 --path "$ROOT" -- --dedicated --start-seats=1 --mp-port="$PORT" > "$OUT/$FLOW.server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 80); do grep -q "dedicado listo" "$OUT/$FLOW.server.log" && break; sleep 0.25; done
 GODOT="$ROOT/agent/harness/godot60.sh" addons/agent_kit/cli.sh "$ROOT" flow --flow="$FLOW.json" --out=res://agent/out/f79_net --fail-on-error --mp-port="$PORT" > "$OUT/$FLOW.client.log" 2>&1 &

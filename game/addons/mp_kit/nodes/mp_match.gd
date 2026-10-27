@@ -7,7 +7,7 @@ extends Node
 ## Not: the wait or the grace (the gate pauses the world and counts them), the rules that decide who won (your game calls
 ## finish), the lobby screen, scoring (MpState).
 
-## Server: the match starts (every seat it waited for loaded), or the world is ready (solo, no gate).
+## Server: the match starts (every seat it waited for loaded; solo: the local world), or at once when no gate holds it.
 signal all_loaded
 signal player_joined(slot: int)
 signal player_left(slot: int)

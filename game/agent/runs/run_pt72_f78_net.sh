@@ -11,7 +11,7 @@ OUT="$ROOT/agent/out/pt72/f78_net"
 WORLD=res://debug/orders/selection_many.tscn
 mkdir -p "$OUT"
 cd "$ROOT"
-"$GODOT" --headless --path "$ROOT" -- --dedicated --mp-port="$PORT" --world="$WORLD" > "$OUT/server.log" 2>&1 &
+"$GODOT" --headless --path "$ROOT" -- --dedicated --start-seats=1 --mp-port="$PORT" --world="$WORLD" > "$OUT/server.log" 2>&1 &
 SERVER=$!
 for _ in $(seq 1 80); do grep -q "dedicado listo" "$OUT/server.log" && break; sleep 0.25; done
 addons/agent_kit/cli.sh "$ROOT" flow --flow=f78_online_a.json --out=res://agent/out/pt72/f78_net --mp-port="$PORT" --world="$WORLD" > "$OUT/client.log" 2>&1 &

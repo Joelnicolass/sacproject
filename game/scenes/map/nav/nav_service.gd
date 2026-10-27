@@ -11,7 +11,7 @@ extends Node
 ## answers from the NavigationRegion3D `region`. What the bake
 ## does not hold (altars, structures, nav_blocker) and a building that fell change the map: NavRebake bakes the whole navmesh again on a
 ## worker thread and the result is swapped into the region `rebake_swap_s` after the change (a count, so it is the
-## same tick on every machine). A missing navmesh leaves the service not ready (callers get the straight line) with a warning.
+## same tick on every machine while the bake is done by then; if not, the swap waits for the first tick it is done, never blocking). A missing navmesh leaves the service not ready (callers get the straight line) with a warning.
 
 signal built(ms: float)
 
@@ -25,7 +25,7 @@ const SEARCH_LOG_MAX := 200000
 ## service stays not ready, with a warning.
 @export var region: NavigationRegion3D
 ## Time between a change and the swap of the re-baked navmesh (the bake takes a couple of seconds on a worker thread; if it
-## is not done by then the swap waits for it). Counted in physics ticks, never a clock.
+## is not done by then the match goes on with the old navmesh and the swap happens at the first tick it is). Counted in physics ticks, never a clock.
 @export_range(0.0, 30.0, 0.0001, "suffix:s") var rebake_swap_s := 3.0
 ## Time the lasting changes of the ground (the holes of Bore, a mound that stays) are gathered for before the navmesh is baked
 ## again, so a spiral of holes costs a few bakes and not one per vertex.
@@ -96,7 +96,7 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	_tick += 1
 	searches_this_tick = 0
-	if _swap_at >= 0 and _tick >= _swap_at:
+	if _swap_at >= 0 and _tick >= _swap_at and rebake.is_done():
 		_swap_rebaked()
 	if _holes_at >= 0 and _tick >= _holes_at:
 		_holes_at = -1
@@ -223,13 +223,14 @@ func _tag_dynamic_nodes() -> void:
 
 
 func _swap_rebaked() -> void:
+	var late := _tick - _swap_at
 	_swap_at = -1
 	var baked := rebake.finish()
 	if baked != null:
 		rebake.retire(mesh.swap(baked, rebake.regions))
 		_baked_signature = _pending_signature
 		rebakes += 1
-		print("nav: re-bake %d polígonos, %d regiones (parse %.1f ms, bake %.0f ms en el worker, swap %.2f ms)" % [mesh.polygon_count, mesh.regions.component_count, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms])
+		print("nav: re-bake %d polígonos, %d regiones (parse %.1f ms, bake %.0f ms en el worker, swap %.2f ms%s)" % [mesh.polygon_count, mesh.regions.component_count, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms, (", swap %d ticks tarde" % late) if late > 0 else ""])
 	else:
 		push_warning("nav: the re-bake came out empty, the old navmesh stays")
 	if _dirty:

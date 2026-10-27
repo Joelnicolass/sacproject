@@ -6,7 +6,8 @@ extends RefCounted
 ## (NavigationServer3D.parse_source_geometry_data, a fallen building has its collision off and is not parsed), and the bake
 ## (bake_from_source_geometry_data) runs on a worker thread, and so does the index of its components (NavRegions.build, pure data:
 ## the main thread only swaps references). The caller swaps the result in at a TICK it chose, not when the thread happens to end
-## (`finish` waits for it), so the match stays reproducible whatever the machine's speed.
+## (`is_done` says when it can be collected without waiting), so the match is reproducible while the bake ends before that tick; a
+## slower machine swaps at the first tick it is done (the server only) and the match keeps running with the old navmesh meanwhile.
 ## Not: when to bake (NavService), the swap itself (NavMeshBackend.swap).
 ## Tile by tile re-baking was dropped: the full bake of High Noon is a couple of seconds on a worker thread, and a lone tile leaves a
 ## seam against the neighbours baked in one piece.
@@ -52,7 +53,12 @@ func start(root: Node) -> bool:
 	return true
 
 
-## Waits for the bake and returns its navmesh (null when it came out empty); `regions` then holds its components.
+## True when the worker has finished (or none runs): `finish` then does not block.
+func is_done() -> bool:
+	return not is_running() or WorkerThreadPool.is_task_completed(_task)
+
+
+## Waits for the bake (blocks the caller: use `is_done` first in the match) and returns its navmesh (null when it came out empty); `regions` then holds its components.
 func finish() -> NavigationMesh:
 	if not is_running():
 		return null

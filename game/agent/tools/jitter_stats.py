@@ -12,7 +12,8 @@ MIN_SPEED, 0.5 s trimmed off each edge of every walk, and only inside the walk_s
   stalls       share of frames with a speed under 1 % of the median (the body stopped while it walks)
 JITTER PASS when, for every body and on BOTH sides (absolute, not relative to the host: the host judders too), CV <= MAX_CV,
 p95/median <= MAX_P95M and stalls <= STALL_MAX, and each side renders steadily (p95 frame time <= MAX_FRAME_MS; above it the
-machine is loaded and the run says so); else JITTER FAIL with the reasons.
+machine is loaded and the run says so); a creature (RELATIVE_BODIES) only on the client, against max(MAX_CV, 1.10 x host CV)
+and host stalls + 1 %; else JITTER FAIL with the reasons.
 --step2 adds the prediction criteria of the own wizard on the client: key -> first step <= 2 frames (walk_start mark to the first
 frame that moved) and last_correction p95 <= 0.05 m, max <= 0.25 m.
 Exit code 0 = pass, 1 = fail.
@@ -33,6 +34,9 @@ MAX_CV = 0.15
 MAX_P95M = 1.30
 STALL_MAX = 0.01
 MAX_FRAME_MS = 20.0
+# Bodies whose speed is the game's to vary (agreed with the kit session 2026-10-27): judged on the client against the host.
+RELATIVE_BODIES = ("creature",)
+HOST_MARGIN = 1.10
 STALL_FRAC = 0.01
 BODIES = ("own", "rival", "creature")
 
@@ -138,13 +142,19 @@ def main():
             print("%-9s | %-26s | %-26s | FAIL (not enough walking frames)" % (body, "n=%d" % (h["n"] if h else 0), "n=%d" % (c["n"] if c else 0)))
             continue
         reasons = []
-        for side, v in (("host", h), ("client", c)):
-            if v["cv"] > MAX_CV:
-                reasons.append("%s CV %.2f > %.2f" % (side, v["cv"], MAX_CV))
+        # A creature's own speed changes (it starts, brakes, follows its path) show on the host too: on the client it may vary
+        # as much as on the host (+10 %), never less smooth than the absolute bar; the host side of it is not judged.
+        sides = (("client", c),) if body in RELATIVE_BODIES else (("host", h), ("client", c))
+        for side, v in sides:
+            relative = body in RELATIVE_BODIES
+            max_cv = max(MAX_CV, HOST_MARGIN * h["cv"]) if relative else MAX_CV
+            max_stall = max(STALL_MAX, h["stall"] + STALL_MAX) if relative else STALL_MAX
+            if v["cv"] > max_cv:
+                reasons.append("%s CV %.2f > %.2f" % (side, v["cv"], max_cv))
             if v["p95m"] > MAX_P95M:
                 reasons.append("%s p95/med %.2f > %.2f" % (side, v["p95m"], MAX_P95M))
-            if v["stall"] > STALL_MAX:
-                reasons.append("%s stalls %.1f %% > %.0f %%" % (side, 100 * v["stall"], 100 * STALL_MAX))
+            if v["stall"] > max_stall:
+                reasons.append("%s stalls %.1f %% > %.1f %%" % (side, 100 * v["stall"], 100 * max_stall))
         ok = ok and not reasons
         print("%-9s | %5d %6.2f %7.2f %6.1f %% | %5d %6.2f %7.2f %6.1f %% | %s" % (
             body, h["n"], h["cv"], h["p95m"], 100 * h["stall"], c["n"], c["cv"], c["p95m"], 100 * c["stall"],

@@ -64,9 +64,12 @@ properties/8/replication_mode = 2
 properties/9/path = NodePath("MpActor:net_stamp")
 properties/9/spawn = true
 properties/9/replication_mode = 1
-properties/10/path = NodePath("MpActor:owner_slot")
+properties/10/path = NodePath("MpActor:net_teleports")
 properties/10/spawn = true
-properties/10/replication_mode = 0
+properties/10/replication_mode = 1
+properties/11/path = NodePath("MpActor:owner_slot")
+properties/11/spawn = true
+properties/11/replication_mode = 0
 
 [node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "collision", "mount", "health_bar", "states", "motor")]
 collision_layer = 2

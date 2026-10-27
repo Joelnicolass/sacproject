@@ -23,8 +23,8 @@ El juego nunca llama `set_multiplayer_authority` (todo nodo con autoridad en el 
 - Autoridad: el propio nodo con `is_multiplayer_authority()`; fuera los `_has_authority()` privados; los públicos (`UnitBody.simulates()`, `MatchState.is_authority()`, `Terrain.is_authority()`) solo cambian el cuerpo.
 - Spawners: `MpSpawner.spawn_here(data)` (kit) — crea en servidor y solo, null en cliente. Subclases `Mp*` a la allowlist.
 - Asiento local: nodo del kit `MpLocalSeat` en `match.tscn` (`slot`, `is_mine(slot)`, `is_online()`, `changed(slot)`, `preview_slot` en el inspector). HUD, audio, órdenes, pausa y resultado lo reciben por `@export var seat`; lo que nace en runtime usa `MpLocalSeat.of(self)` (`const GROUP`).
-- Presentación: `ScreenGate.is_open()` (hermano de `AudioGate`): no headless y no dedicado.
-- Snapshots: el estado de la partida por un `MpState` `Shared` (`shared.set_value(&"match", ...)`, cliente `shared.watch(&"match", apply_snapshot)`, kit nuevo). El bioma NO va a `MpState` (`MatchSky.message()` lleva `at_s`): va por un nodo de red con `@rpc` — **es el `BiomeLink` de 055i-b b3** (`scenes/net/biome_link.gd`); N7 lo reusa en lugar de crear `MatchBiomeNet`.
+- Presentación: `ScreenGate.is_open()` estático (hermano de `AudioGate`, usuario 2026-10-27): no headless y no dedicado.
+- Snapshots: el estado de la partida por `MatchStateNet` (`scenes/net/`, mismo canal `push_snapshot`/`snapshot_received`; usuario 2026-10-27: `MpState` dejaría viejo el `left` del altar para un asiento que vuelve). El bioma NO va a `MpState` (`MatchSky.message()` lleva `at_s`): va por un nodo de red con `@rpc` — **es el `BiomeLink` de 055i-b b3** (`scenes/net/biome_link.gd`); N7 lo reusa en lugar de crear `MatchBiomeNet`.
 - Comandos: sin cambios (`submit_*` + `MpAuthority`).
 - Lint C12: cuenta `\bMp(Kit)?\.`; allowlist suma `extends Mp[A-Z]…`, `scenes/ui/lobby/`, `scenes/ui/local_server/`, `scenes/ui/match_wait/`.
 
@@ -58,10 +58,11 @@ Fuera de alcance: `MpActor`/`MpInput`, `ensure_sync`, los ~30 `DisplayServer.get
 | N1 | `scenes/units/**` (27) | ya |
 | N2 | hechizos y sacrificio (9) | ya |
 | N3 | `health`, `mana_pool`, `soul_purse`, `soul` | después de 060s |
-| N4 | mapa, nav e IA (7) | después de 055i-b b1 |
-| N5 | spawners + `seat_away` | después de K |
-| N6 | asiento y pantalla + `ScreenGate` | después de K y N5 |
-| N7 | `Shared` + `MatchState` + bioma (reusa `BiomeLink`) | después de K, N6 y 055i-b b3 |
+| N4 | mapa, nav e IA (7; ghost_form pasa a N6) | 2026-10-27, en paralelo |
+| N5 | spawners + soul_system con `spawn_here`; WizardSpawner con `Mp.gate().seat_away`; C12 sin cambio, cierre por grep | 2026-10-27, en paralelo |
+| N6 | `LocalSeat` en match.tscn, `ScreenGate` estático (CameraShake, DamageNumbers), AltarCollapse sin chequeo (FxBus es el dueño), `PointerRay.is_enemy` de instancia; lo nacido en runtime con `MpLocalSeat.slot_of(self)` (K11) | 2026-10-27, en paralelo |
+| N7 | `MatchStateNet` en `scenes/net/` (no `MpState`: `left` del altar queda viejo al volver un asiento); el bioma ya lo hace `BiomeLink` | 2026-10-27, en paralelo |
+| K11 | kit: `MpLocalSeat.slot_of(from)` (respaldo `MpKit.local_slot()`) | MpKit rc 0.13.1 (87556a2), PR #18/#19 |
 | F | pasada única; kit a rc EN y ES | al final |
 
 ## 8. Pruebas

@@ -52,7 +52,15 @@ func test_local_seat_solo_and_preview() -> void:
 	seat.preview_slot = 0
 	seat._process(0.0)
 	check(seat.slot == MpKit.local_slot() and changes.size() == 2, "back to the own seat")
+	seat.preview_slot = 3
+	seat._process(0.0)
+	var asker := Node.new()
+	tree.root.add_child(asker)
+	check(MpLocalSeat.slot_of(asker) == 3, "slot_of() answers with the scene's seat (its preview too)")
 	seat.free()
+	check(MpLocalSeat.of(asker) == null and MpLocalSeat.slot_of(asker) == MpKit.local_slot(),
+		"slot_of() without a seat in the scene: the local slot (%d), not 0" % MpKit.local_slot())
+	asker.free()
 
 
 func test_spawn_here_spawns_solo() -> void:

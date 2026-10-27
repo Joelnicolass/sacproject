@@ -718,7 +718,7 @@ No escribas `state.values["x"] = 3` a mano: no se sincroniza. Usá `set_value`.
 
 ### Quién mira esta pantalla: `MpLocalSeat`
 
-El HUD, los sonidos, las órdenes, la pausa y el resultado muestran el lado de un jugador. Poné un **MpLocalSeat** en el mundo y pasáselo con `@export var seat: MpLocalSeat` (lo que nace en runtime lo encuentra con `MpLocalSeat.of(self)`):
+El HUD, los sonidos, las órdenes, la pausa y el resultado muestran el lado de un jugador. Poné un **MpLocalSeat** en el mundo y pasáselo con `@export var seat: MpLocalSeat` (lo que nace en runtime lo encuentra con `MpLocalSeat.of(self)`; si solo pregunta quién mira, `MpLocalSeat.slot_of(self)`, que da `MpKit.local_slot()` en una escena sin asiento, como una escena corrida sola o un test):
 
 | | Qué dice |
 |---|---|

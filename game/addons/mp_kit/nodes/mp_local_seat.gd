@@ -2,7 +2,8 @@ class_name MpLocalSeat
 extends Node
 
 ## Who looks at this screen. Drop one in the world and hand it to what shows one player's side (HUD, audio, orders, pause,
-## result) with `@export var seat: MpLocalSeat`; a node made at runtime finds it with `MpLocalSeat.of(self)`. `slot` is the
+## result) with `@export var seat: MpLocalSeat`; a node made at runtime finds it with `MpLocalSeat.of(self)`, or asks only the slot with
+## `MpLocalSeat.slot_of(self)` (MpKit.local_slot() where the scene has none). `slot` is the
 ## seat this PC plays (0 on a dedicated server and on a client not seated yet); `changed(slot)` when it changes.
 ## Solo, `preview_slot` shows the match as another seat (a quick look at player 2's HUD). Not: who simulates
 ## (is_multiplayer_authority() / MpKit.is_authority()), who may sit (MpMatchGate).
@@ -27,6 +28,13 @@ static func of(from: Node) -> MpLocalSeat:
 	if from == null or not from.is_inside_tree():
 		return null
 	return from.get_tree().get_first_node_in_group(GROUP) as MpLocalSeat
+
+
+## The seat that looks at `from`'s scene: that MpLocalSeat's slot, or MpKit.local_slot() in a scene without one
+## (a scene run on its own, a test). For what is made at runtime and only asks "who looks?".
+static func slot_of(from: Node) -> int:
+	var seat := of(from)
+	return seat.slot if seat != null else MpKit.local_slot()
 
 
 func _enter_tree() -> void:

@@ -1,12 +1,13 @@
 class_name MatchCommand
 extends Node
 
-## The player's commands in the world (sacengine dagonBackend.d:947-1300), as a coordinator of small children
+## The player's commands in the world, as a coordinator of small children
 ## (scenes/orders/command/): CommandInput routes keys and the left button, MinimapPointing the minimap, ArmedCommand holds
 ## what waits for its target, SpellCommand / AbilityCommand / OrderCommand apply it, PointerRay turns pixels into bodies,
 ## GroupKeys reads the group keys and CommandFeedback pings and says. Take a child out and that command is gone.
-## The right button belongs to OrderRadial (RFC-038): a tap calls `right_at`, a hold opens the radial menu, whose
+## The right button belongs to OrderRadial: a tap calls `right_at`, a hold opens the radial menu, whose
 ## entries call `order_at`, `order_in_formation`, `retreat`, `use_ability` and `set_formation` here.
+## Ref: RFC-038; sacengine dagonBackend.d:947-1300.
 ## Nothing is drawn as text (RFC-025c): what is armed goes to %Battle (CommandLog) and CommandCue draws it on the cursor.
 
 @export var ray: PointerRay

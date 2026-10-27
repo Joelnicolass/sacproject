@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-## RFC-031 031b (F141): the pause menu. `pause_menu` (Esc) opens and closes it.
+## The pause menu. `pause_menu` (Esc) opens and closes it.
 ## - Alone the tree pauses (this layer runs with process_mode ALWAYS); online the match goes on and only the overlay
 ##   shows (the server and the other player are not stopped by one player's menu).
 ## - While open the node is in the group `WorldInput.MODAL`: the world input readers ask `WorldInput.blocked` and keep
@@ -8,7 +8,8 @@ extends CanvasLayer
 ## - «Salir al menú» asks first, inside the same panel (Salir / Volver); then it unpauses and asks the session flow
 ##   (MpFlow.return_to_boot) to go back to the boot. A client leaves the server cleanly there (MpKit.leave), and the
 ##   server sees peer_left.
-## «Opciones» (RFC-031 031c) opens the OptionsMenu child over this panel; Esc closes it first, then this menu.
+## «Opciones» opens the OptionsMenu child over this panel; Esc closes it first, then this menu.
+## Ref: RFC-031 031b (F141), 031c.
 
 signal opened
 signal closed

@@ -31,7 +31,8 @@ func set_spirit(texture: Texture2D) -> void:
 	%Spirit.texture = texture
 
 
-## sacengine: factor = min(1, mana/manaCost) scales and fades the icon; soulCost > souls shows the spirit.
+## factor = min(1, mana/manaCost) scales and fades the icon; soulCost > souls shows the spirit.
+## Ref: sacengine.
 func show_readiness(mana: float, souls: int) -> void:
 	var factor := clampf(mana / _mana_cost, 0.0, 1.0)
 	var side := SIZE * factor

@@ -1,8 +1,9 @@
 class_name LobbyText
 extends RefCounted
 
-## RFC-034 034f: every text of the room screens that is not a label of a scene. The lobby of the kit speaks in stable
+## Every text of the room screens that is not a label of a scene. The lobby of the kit speaks in stable
 ## codes (`room_full`, `rate`…); this is where they become Spanish. Pure functions: no node, no network.
+## Ref: RFC-034 034f.
 
 const OFFLINE := "LOBBY_OFFLINE"
 const CONNECTING := "LOBBY_CONNECTING"

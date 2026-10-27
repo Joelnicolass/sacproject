@@ -10,9 +10,11 @@ extends Button
 
 signal activated(cell: RosterCell, shift: bool, ctrl: bool)
 
-## sacobject.d:1155 healthColor.
+## The health bar color.
+## Ref: sacobject.d:1155 healthColor.
 @export_color_no_alpha var health_color := Color8(192, 0, 0)
-## sacobject.d:1156 manaColor.
+## The mana bar color.
+## Ref: sacobject.d:1156 manaColor.
 @export_color_no_alpha var mana_color := Color8(0, 96, 192)
 ## Pixels a full bar is tall: 36 of the 38 of the cell.
 @export var bar_height := 36.0

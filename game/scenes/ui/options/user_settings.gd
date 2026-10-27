@@ -1,16 +1,17 @@
 class_name UserSettings
 extends RefCounted
 
-## RFC-031 031c (F142): the one reader and writer of the player's local preferences, `user://settings.cfg`.
+## The one reader and writer of the player's local preferences, `user://settings.cfg`.
 ## Each owner keeps its own section (`[ui]` UiScalePrefs, `[graphics]` GraphicsPrefs); a write loads the file first,
 ## so the other sections stay as they are.
 ## A file that exists but cannot be read (corrupt, no permission) is never overwritten: the reads fall back to the
 ## caller's defaults and the writes are refused, with one warning each. After a failed load the file is not read again in this run:
 ## the choices made then apply live but are not saved.
-## Sandbox (RFC-031 §3.5): under AgentKit (`--agent=…` in the user args) the player's file is never read nor written.
+## Sandbox: under AgentKit (`--agent=…` in the user args) the player's file is never read nor written.
 ## Reads give the caller's defaults and writes go to an in-memory ConfigFile, so the UI and the match setup see the
 ## changes of this run and the next run starts clean. `--user-settings=user://<file>.cfg` (a persistence test, or a
 ## playtest that must apply the preferences) uses that file instead and turns the sandbox off.
+## Ref: RFC-031 031c (F142), RFC-031 §3.5.
 
 const PATH := "user://settings.cfg"
 const PATH_ARG := "--user-settings="

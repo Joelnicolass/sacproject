@@ -2,13 +2,12 @@
 class_name CursorSkin
 extends Node
 
-## The mouse cursor of the original game (RFC-025c): `C*` of curs.FLDR while nothing is armed and
-## `T*` while an icon waits for its target, chosen by what lies under the pointer (TargetProbe) like
-## sacengine `cursor()` (state.d:30830), and `blocked_cursor` while the armed icon would be refused there (%Battle.aim_status). The pictures are the ones of `cues` (data/ui/command_cues.tres); without
+## The mouse cursor of the original game: `C*` of curs.FLDR while nothing is armed and
+## `T*` while an icon waits for its target, chosen by what lies under the pointer (TargetProbe), and `blocked_cursor` while the armed icon would be refused there (%Battle.aim_status). The pictures are the ones of `cues` (data/ui/command_cues.tres); without
 ## one the system cursor stays. The hardware cursor is drawn by the OS in window pixels, so Godot's stretch does not scale it: its
 ## side is `cursor_px` canvas pixels times window height over canvas height, hot spot at the top center. It does nothing in a
 ## headless process or in the dedicated server (no player, no window), and nothing over the HUD beyond picking the plain arrow.
-## Ref: renderer.d:4113 renderCursor (32 units, ×1.2).
+## Ref: RFC-025c; sacengine `cursor()` (state.d:30830); renderer.d:4113 renderCursor (32 units, ×1.2).
 
 ## The cursor changed: its name (`Tnme`) and image (null without cache).
 signal changed(cursor_name: String, texture: Texture2D)

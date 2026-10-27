@@ -1,9 +1,10 @@
 class_name LocalServerText
 extends RefCounted
 
-## RFC-034 034m: every text of the «Servidor local» screens that is not a label of a scene. Pure functions: no node.
-## RFC-068: the reasons of the door of the match (`match_started`, `grace_over`, `full`) are read by every networked path
+## Every text of the «Servidor local» screens that is not a label of a scene. Pure functions: no node.
+## The reasons of the door of the match (`match_started`, `grace_over`, `full`) are read by every networked path
 ## (SacrificeFlow.rejection_text).
+## Ref: RFC-034 034m; RFC-068.
 
 const TITLE := "LOCAL_TITLE"
 const PICK_BUTTON := "LOCAL_PICK_BUTTON"

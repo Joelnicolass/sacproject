@@ -2,8 +2,9 @@
 class_name RadialSlot
 extends Control
 
-## One icon of a radial ring (RFC-038 038c): the picture and a glow. It knows nothing about the menu. The hover state is tweened:
+## One icon of a radial ring: the picture and a glow. It knows nothing about the menu. The hover state is tweened:
 ## the hovered icon grows and glows, the others dim while something is hovered.
+## Ref: RFC-038 038c.
 
 @export var icon_rect: TextureRect
 @export var highlight: Control

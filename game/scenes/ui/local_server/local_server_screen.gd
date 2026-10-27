@@ -1,8 +1,9 @@
 extends Control
 
-## RFC-034 034m: «Servidor local». A door with three buttons: create a server on this PC, join the one of a friend, or go back.
+## «Servidor local». A door with three buttons: create a server on this PC, join the one of a friend, or go back.
 ## It owns no state. The two views do the work (`local_host_view`, `local_join_view`); this node only shows one at a time.
 ## Apart from «Salas online»: no room server, no list, no UPnP.
+## Ref: RFC-034 034m.
 
 @onready var _menu: Control = %LocalMenu
 @onready var _host_view: Control = %LocalHostView

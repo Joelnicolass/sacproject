@@ -1,7 +1,8 @@
 extends Control
 
-## RFC-034 034f: the first view of the room screens: the player's name and «Conectar». Only debug builds show a field
+## The first view of the room screens: the player's name and «Conectar». Only debug builds show a field
 ## for the server (the others use data/net/lobby_endpoint.tres). It does not connect by itself: it asks.
+## Ref: RFC-034 034f.
 
 signal connect_requested(display_name: String, host_override: String)
 signal back_requested

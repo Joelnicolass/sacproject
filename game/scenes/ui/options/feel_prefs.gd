@@ -2,7 +2,7 @@
 class_name FeelPrefs
 extends Resource
 
-## RFC-053 053e/053f (F374, F375): the player's combat-feel choices, a local preference (never a match rule, never sent).
+## The player's combat-feel choices, a local preference (never a match rule, never sent).
 ## - `shake_scale` (0-1): how much the camera shakes (CameraShake); 0 turns it off.
 ## - `damage_numbers`: the floating numbers over the bodies that lose health (DamageNumbers).
 ## - `hover_info`: the info box beside the pointer (TargetInfoPanel).
@@ -10,6 +10,7 @@ extends Resource
 ## - It lives in `user://settings.cfg` `[sensacion]` through UserSettings (sandboxed under AgentKit, like the others).
 ## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that instance and
 ## the exported fields (the defaults) are never written. Changes emit `changed`.
+## Ref: RFC-053 053e/053f (F374, F375).
 
 const SHARED_PATH := "res://data/ui/feel_prefs.tres"
 const SECTION := "sensacion"

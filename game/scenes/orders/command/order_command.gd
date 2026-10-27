@@ -1,10 +1,11 @@
 class_name OrderCommand
 extends Node
 
-## Orders to the selection (sacengine dagonBackend.d:1215-1233 and state.d:29256): a right click orders by what is under the
-## cursor (ground = move, enemy = attack, corpse = guard the spot, anything else = guard it), an armed order icon
-## (Ctrl+R / Ctrl+A, or the radial menu's entry) takes the left click the same way, retreat calls every creature back to the
-## wizard and a formation is stored on the selection. The right button itself belongs to OrderRadial (RFC-038).
+## Orders to the selection: a right click orders by what is under the cursor (ground = move, enemy = attack, corpse =
+## guard the spot, anything else = guard it), an armed order icon (Ctrl+R / Ctrl+A, or the radial menu's entry) takes
+## the left click the same way, retreat calls every creature back to the wizard and a formation is stored on the
+## selection. The right button itself belongs to OrderRadial.
+## Ref: RFC-038; sacengine dagonBackend.d:1215-1233, state.d:29256.
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
 const _ORDERS := preload("res://scenes/orders/orders.gd")
@@ -39,8 +40,9 @@ func right_at(screen: Vector2, from_action := false, formation_id := &"") -> voi
 	order("move", ground, null, formation_id)
 
 
-## dagonBackend.d:1215-1233: attack or guard a body; on the ground, advance or guard the spot. A move icon (radial menu)
+## Attack or guard a body; on the ground, advance or guard the spot. A move icon (radial menu)
 ## goes to the ground point under the cursor.
+## Ref: dagonBackend.d:1215-1233.
 func icon_at(screen: Vector2) -> void:
 	icon_on(ray.body_under(screen, false), ray.ground(screen))
 

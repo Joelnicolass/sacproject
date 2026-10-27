@@ -2,13 +2,12 @@
 class_name GraphicsApplier
 extends Node
 
-## RFC-031 031c (F142): puts the player's GraphicsPrefs on screen, at start and live on every change.
+## Puts the player's GraphicsPrefs on screen, at start and live on every change.
 ## - Only where this node's owner is the running scene: the boot, or the world in a match. A debug scene that
 ##   instances the world (look_bench, biome_gallery with F6) keeps its own window settings and preset.
-## - Window: fullscreen or windowed, VSync and `Engine.max_fps`. An engine flag of this run (`--max-fps`,
-##   `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the preference and is left alone.
+## - Window: fullscreen or windowed, VSync and `Engine.max_fps`. An engine flag of this run (`--max-fps`, `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the preference and is left alone.
 ## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none), and the «Vegetación»
-##   switch: `rig.set_vegetation_enabled` (RFC-054 054f).
+##   switch: `rig.set_vegetation_enabled`.
 ## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated server and under
 ##   AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the player and the agents' runs, so a
 ##   test never inherits the player's choice (no VSync off / no cap in a playtest). The rule is UserSettings.sandboxed():
@@ -17,6 +16,7 @@ extends Node
 ## - Under AgentKit with a window (not headless) the preset is still applied, deterministically and without touching the
 ##   player's file: `--quality=low|medium|high`, else `sandbox_quality` (high). The window settings and the vegetation switch
 ##   stay as the run started; without a preset FloraField plants nothing, so a capture would show a bare ground.
+## Ref: RFC-031 031c (F142), RFC-054 054f.
 
 ## The shared preference (data/ui/graphics_prefs.tres).
 @export var prefs: GraphicsPrefs

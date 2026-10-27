@@ -1,10 +1,11 @@
 class_name SeatRow
 extends HBoxContainer
 
-## RFC-034 034f: one seat of the room: who sits there, their wizard and god, if they are ready, and «Sentarme aquí»
+## One seat of the room: who sits there, their wizard and god, if they are ready, and «Sentarme aquí»
 ## when the seat is free. It shows what the view hands it (`show_seat`); the only thing it does is ask.
-## RFC-049 049h (F297): a bot seat shows «IA» with its god and difficulty; the host sees «Agregar IA» on a free seat and «Quitar IA»
+## A bot seat shows «IA» with its god and difficulty; the host sees «Agregar IA» on a free seat and «Quitar IA»
 ## on a bot seat.
+## Ref: RFC-034 034f; RFC-049 049h (F297).
 
 signal sit_requested(seat: int)
 signal bot_add_requested(seat: int)

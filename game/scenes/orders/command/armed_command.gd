@@ -5,7 +5,8 @@ extends Node
 ## %Battle uses for `armed`), with the index or tag it was armed with, and the local wizard's Caster whose answers end
 ## the wait. Arming and clearing live here; each kind of command reads the state and applies its own click.
 ## Disarming (`mode = ""`) also clears %Battle, so the cursor icon goes away with it. An armed spell or ability stays
-## armed after a refused click, as in sacengine (dagonBackend.d:1236-1250).
+## armed after a refused click, as in the original.
+## Ref: sacengine dagonBackend.d:1236-1250.
 
 const _WORLD := preload("res://scenes/match/match_world.gd")
 const _SELECTION := preload("res://scenes/orders/selection.gd")

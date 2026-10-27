@@ -6,6 +6,8 @@
 [ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="5_medium"]
 
 [node name="Flora" type="Node3D"]
+process_mode = 3
+editor_description = "Planta la vegetación alrededor de la cámara también con el árbol en pausa (la puerta de inicio pausa mientras carga y espera jugadores)."
 script = ExtResource("1_field")
 configs = Array[ExtResource("2_config")]([ExtResource("3_plants")])
 editor_quality = ExtResource("5_medium")

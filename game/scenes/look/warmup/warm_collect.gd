@@ -2,39 +2,66 @@ class_name WarmCollect
 extends RefCounted
 
 ## What the warm-up draws, found by walking the typed resources under some roots (a god goes to its book, its spells, their scenes;
-## a body scene to the `<name>_look.tscn` next to it): every mesh, every 3D material and every scene whose root is a look (BodyLook,
-## FxScene), which is safe to instance because it simulates nothing. Adding content adds no line here.
-## What it does not do: draw, instance or load files of its own (only the look scene of a body, BodyLook.of_body), or keep anything.
-
-## Engine resources with nothing to draw under them: the walk stops there (they are big and hold no mesh or material).
-const LEAVES: Array[StringName] = [&"Script", &"Texture", &"Image", &"AudioStream", &"Animation", &"AnimationLibrary",
-		&"NavigationMesh", &"Font", &"Shape3D", &"Shape2D", &"Curve", &"Gradient"]
+## a body scene to the `<name>_look.tscn` next to it, a script to what it preloads): every mesh, every 3D material, every bare
+## spatial shader (its material is made at runtime) and every scene whose root is a look (BodyLook, FxScene), which is safe to
+## instance because it simulates nothing (as is a scene of bare engine geometry, like a pooled Label3D). Adding content adds no line
+## here. The looks it finds are read all at once on the loader's threads while the walk goes on (`read_looks`).
+## What it does not do: draw, instance or load files of its own (only the look scene of a body, BodyLook.path_of_body), or keep
+## anything beyond what it found (whoever holds it keeps those loaded).
 
 var meshes: Array[Mesh] = []
 var materials: Array[Material] = []
+## Spatial shaders kept bare (an `@export var shader`, a script's `preload`): their material is made at runtime.
+var shaders: Array[Shader] = []
 var scenes: Array[PackedScene] = []
+## Materials worn by an ImmediateMesh a script fills every frame (a ribbon, a thread): ShaderWarmup draws them on stroke probes,
+## whose vertex format and primitives are those of such a mesh, not of a mesh on disk.
+var strokes: Array[Material] = []
 
 var _seen: Dictionary[int, bool] = {}
+## Look paths asked to the loader and not walked yet, and every look path asked so far.
+var _looks_due: PackedStringArray = []
+var _looks_asked: Dictionary[String, bool] = {}
+## False when it only lists the looks (`look_paths`): nothing is asked to the loader.
+var _read_looks := true
 
 
-## Everything drawable under `roots` (Resources, Arrays or Dictionaries of them).
-static func from_roots(roots: Array) -> WarmCollect:
+## The body looks under `roots`, listed and not read (the flow reads them on its loading thread beside the map).
+static func look_paths(roots: Array) -> PackedStringArray:
 	var found := WarmCollect.new()
+	found._read_looks = false
+	found.add(roots)
+	return found._looks_due
+
+
+## Walks `roots` (Resources, Arrays or Dictionaries of them). Each body look found on the way is asked to ResourceLoader's threads at
+## once; `read_looks` walks them once they are read.
+func add(roots: Array) -> void:
 	for root: Variant in roots:
-		found._visit(root)
-	return found
+		_visit(root)
 
 
-## How many things there are to draw.
-func size() -> int:
-	return meshes.size() + materials.size() + scenes.size()
+## Walks the body looks the loader finished reading (they may lead to more). True when none is left to read: call it again a frame
+## later until then, so the screen keeps drawing while they load.
+func read_looks() -> bool:
+	var due := _looks_due
+	_looks_due = PackedStringArray()
+	for path in due:
+		if ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+			_looks_due.append(path)
+		else:
+			_visit(ResourceLoader.load_threaded_get(path))
+	return _looks_due.is_empty()
 
 
-## Meshes, then materials, then scenes: what ShaderWarmup draws, in order.
+## Meshes, materials, the bare shaders no found material wears, then scenes: what ShaderWarmup draws, in order.
 func items() -> Array:
 	var all: Array = []
 	all.append_array(meshes)
 	all.append_array(materials)
+	for shader in shaders:
+		if not materials.any(func(worn: Material) -> bool: return worn is ShaderMaterial and worn.shader == shader):
+			all.append(shader)
 	all.append_array(scenes)
 	return all
 
@@ -42,12 +69,15 @@ func items() -> Array:
 func _visit(value: Variant) -> void:
 	match typeof(value):
 		TYPE_ARRAY:
-			for item: Variant in value:
-				_visit(item)
+			var array: Array = value
+			if array.is_typed() and not WarmKinds.holds(array.get_typed_builtin()):
+				return
+			for item: Variant in array:
+				if WarmKinds.holds(typeof(item)):
+					_visit(item)
 		TYPE_DICTIONARY:
-			for key: Variant in value:
-				_visit(key)
-				_visit(value[key])
+			_visit((value as Dictionary).keys())
+			_visit((value as Dictionary).values())
 		TYPE_OBJECT:
 			var resource := value as Resource
 			if resource != null:
@@ -56,19 +86,39 @@ func _visit(value: Variant) -> void:
 
 func _visit_resource(resource: Resource) -> void:
 	var id := resource.get_instance_id()
-	if _seen.has(id) or _is_leaf(resource):
+	if _seen.has(id):
 		return
 	_seen[id] = true
 	if resource is PackedScene:
 		_visit_scene(resource as PackedScene)
 		return
+	if resource is Script:
+		_visit_script(resource as Script)
+		return
+	var fields: Variant = WarmKinds.fields_of(resource)
+	if fields == null:
+		return
 	if resource is Mesh:
-		meshes.append(resource as Mesh)
-	elif _is_drawable(resource):
+		var mesh := resource as Mesh
+		meshes.append(mesh)
+		for surface in mesh.get_surface_count():
+			_visit(mesh.surface_get_material(surface))
+	elif WarmKinds.is_drawable(resource):
 		materials.append(resource as Material)
-	for property in resource.get_property_list():
-		if property.usage & PROPERTY_USAGE_STORAGE and property.type in [TYPE_OBJECT, TYPE_ARRAY, TYPE_DICTIONARY]:
-			_visit(resource.get(property.name))
+	elif resource is Shader and (resource as Shader).get_mode() == Shader.MODE_SPATIAL:
+		shaders.append(resource as Shader)
+	for field: String in fields:
+		_visit(resource.get(field))
+
+
+## What a script preloads (a shader it builds a material from, a scene it spawns: its constants and the defaults of its properties,
+## which a scene does not save), and its base script's.
+func _visit_script(script: Script) -> void:
+	_visit(script.get_script_constant_map().values())
+	for property in script.get_script_property_list():
+		if WarmKinds.holds(property.type):
+			_visit(script.get_property_default_value(property.name))
+	_visit(script.get_base_script())
 
 
 ## A scene is read from its saved state (nothing is instanced): its nodes' values, the scenes it instances and, for a body, its look.
@@ -76,43 +126,24 @@ func _visit_scene(packed: PackedScene) -> void:
 	var state := packed.get_state()
 	if state.get_node_count() == 0:
 		return
-	if _is_look(state):
+	if WarmKinds.is_look(state):
 		scenes.append(packed)
-	_visit(BodyLook.of_body(packed))
+	var look := BodyLook.path_of_body(packed)
+	if not look.is_empty() and not _looks_asked.has(look):
+		_looks_asked[look] = true
+		_looks_due.append(look)
+		if _read_looks:
+			ResourceLoader.load_threaded_request(look, "", true)
 	for node in state.get_node_count():
 		_visit(state.get_node_instance(node))
+		var drawn: Variant = null
+		var worn: Variant = null
 		for i in state.get_node_property_count(node):
-			_visit(state.get_node_property_value(node, i))
-
-
-## True when the root of the scene is (or extends) BodyLook or FxScene.
-static func _is_look(state: SceneState) -> bool:
-	var script := _root_script(state)
-	while script != null:
-		if script == BodyLook or script == FxScene:
-			return true
-		script = script.get_base_script()
-	return false
-
-
-static func _root_script(state: SceneState) -> Script:
-	for i in state.get_node_property_count(0):
-		if state.get_node_property_name(0, i) == &"script":
-			return state.get_node_property_value(0, i) as Script
-	var base := state.get_node_instance(0)
-	return _root_script(base.get_state()) if base != null and base.get_state().get_node_count() > 0 else null
-
-
-## A material a 3D mesh can wear (not a particle process or a 2D one).
-static func _is_drawable(resource: Resource) -> bool:
-	if resource is BaseMaterial3D:
-		return true
-	var shader_material := resource as ShaderMaterial
-	return shader_material != null and shader_material.shader != null and shader_material.shader.get_mode() == Shader.MODE_SPATIAL
-
-
-static func _is_leaf(resource: Resource) -> bool:
-	for leaf in LEAVES:
-		if resource.is_class(leaf):
-			return true
-	return false
+			var value: Variant = state.get_node_property_value(node, i)
+			if WarmKinds.holds(typeof(value)):
+				_visit(value)
+			match state.get_node_property_name(node, i):
+				&"mesh": drawn = value
+				&"material_override": worn = value
+		if drawn is ImmediateMesh and worn is Material and not worn in strokes:
+			strokes.append(worn)

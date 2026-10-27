@@ -1,11 +1,18 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/blood/hit_flash.gd" id="1_flash"]
 [ext_resource type="Material" path="res://data/fx/blood/hit_flash.tres" id="2_material"]
 [ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="9_prefs"]
+[ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="10_warm"]
 
 [node name="HitFlash" type="Node"]
 editor_description = "Destello sutil (0,12 s) sobre el cuerpo cuando baja su Health.current. Al instanciarlo asigná health y visual (Tilt/Mesh)."
 script = ExtResource("1_flash")
 material = ExtResource("2_material")
 prefs = ExtResource("9_prefs")
+
+[node name="WarmHook" type="Node" parent="."]
+editor_description = "069: detrás de la pantalla de carga el destello pasa un frame sobre este cuerpo (HitFlash.warm), así el primer golpe no compila nada."
+script = ExtResource("10_warm")
+
+[connection signal="asked" from="WarmHook" to="." method="warm"]

@@ -74,6 +74,24 @@ func _choice(sample: AtmosphereSample) -> Array[AmbientSwarm]:
 	return out
 
 
+## Warm-up (the WarmHook child): every swarm of the look (the air's and the habitats') flies for a drawn frame in the air slots, in
+## front of the camera (their FollowCamera always processes, so they fly while the start gate pauses the tree); then they show
+## what they should.
+func warm(_stage: Node3D) -> void:
+	if _set == null or air_slots.is_empty() or _density <= 0.0 or not is_visible_in_tree():
+		return
+	var swarms: Array[AmbientSwarm] = []
+	for listed: Array[AmbientSwarm] in [_set.air, _set.meadow, _set.water, _set.woods, _set.rock]:
+		for swarm in listed:
+			if swarm != null and not swarm in swarms:
+				swarms.append(swarm)
+	for start in range(0, swarms.size(), air_slots.size()):
+		for i in air_slots.size():
+			_show_air(air_slots[i], swarms[start + i] if start + i < swarms.size() else null)
+		await RenderingServer.frame_post_draw
+	_refresh()
+
+
 ## A slot is set up stopped and only then started: changing the material or the amount of an emitter that already runs
 ## left its particles without a uniform set (`Parameter "uniform_set" is null` every frame until the next restart).
 func _show_air(slot: GPUParticles3D, swarm: AmbientSwarm) -> void:

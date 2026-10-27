@@ -40,12 +40,12 @@ func set_density(scale: float) -> void:
 		_apply(true)
 
 
-## Warm-up: `look` falls at full for one drawn frame, silent, then what fell before falls again.
+## Warm-up: `look` falls at full for one drawn frame, silent, then what fell before falls again. The drops follow the camera and
+## fall with the tree paused too (their FollowCamera always processes), so they are drawn while the start gate waits.
 func flash(look: PrecipitationLook) -> void:
 	if drops == null or look == null:
 		return
-	drops.process_material = look.process_material
-	drops.draw_pass_1 = look.mesh
+	_fit(look, roundi(look.amount * _density))
 	drops.amount_ratio = 1.0
 	drops.emitting = true
 	await RenderingServer.frame_post_draw
@@ -56,14 +56,24 @@ func _apply(rebuild: bool) -> void:
 	if drops:
 		var count := roundi(_look.amount * _density) if _look else 0
 		if rebuild and _look:
-			drops.process_material = _look.process_material
-			drops.draw_pass_1 = _look.mesh
-			drops.lifetime = _look.lifetime_s
-			if count > 0 and drops.amount != count:
-				drops.amount = count
+			_fit(_look, count)
+		elif rebuild:
+			drops.emitting = false
 		drops.amount_ratio = _amount
 		drops.emitting = count > 0 and _amount > 0.001
 	_play_bed()
+
+
+## The drops take `look`'s motion, mesh and life, and `count` drops (0 = as they are). Set up stopped, then restarted: a running
+## emitter given another material or amount kept no uniform set (the same as LifeSpot).
+func _fit(look: PrecipitationLook, count: int) -> void:
+	drops.emitting = false
+	drops.process_material = look.process_material
+	drops.draw_pass_1 = look.mesh
+	drops.lifetime = look.lifetime_s
+	if count > 0 and drops.amount != count:
+		drops.amount = count
+	drops.restart()
 
 
 func _play_bed() -> void:

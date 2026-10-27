@@ -6,7 +6,7 @@ Tech lead, 2026-10-27. Estado: **aprobado** por el usuario 2026-10-27 (D1–D9 c
 Partida 1v1 por WebSockets contra el relay real (RTT ~68 ms): el host suave, el cliente con jitter. Variación del movimiento por frame: cliente CV 1,83 y p95/mediana 17,6; host 1,19 y 8,7. Causa: `unit.tscn` y `wizard_body.tscn` replican `.:position`/`.:rotation` al nodo (MultiplayerSynchronizer ALWAYS) y `MpReplicate` → `MpSmoother` persigue la última pose; sobre TCP los estados llegan en ráfagas. El mago propio del cliente no se predice.
 
 ## 2. Criterios
-- Paso 1: en el cliente, por cuerpo (mago propio, mago rival, criatura), CV ≤ 1,10 × el del host y p95/mediana ≤ 1,10 × el del host; stalls ≤ 3 % de los cuadros; dos corridas sobre el relay. Determinismo: mismos digests (el servidor no cambia).
+- Paso 1 (criterio absoluto, usuario 2026-10-27: el relativo al host pasó con judder evidente porque el host también lo tiene): por cuerpo caminando y en los DOS lados, CV ≤ 0,15, p95/mediana ≤ 1,3, stalls ≤ 1 %, y p95 del tiempo de cuadro ≤ 20 ms (si no, la máquina está cargada y la corrida lo dice). Base de hoy sobre el relay: host CV 0,47–0,55 y p95/med 3,0; cliente 0,49–0,54 y 1,84–1,95; cuadro p95 37–43 ms (dos ventanas en una Mac). Dos corridas sobre el relay. Determinismo: mismos digests (el servidor no cambia).
 - Paso 2: el mago propio con los mismos criterios; tecla → primer paso ≤ 2 cuadros; `last_correction` caminando recto sin efectos p95 ≤ 0,05 m y máx ≤ 0,25 m; proxies sin regresión > 5 %.
 - En el cliente solo `MpActor` escribe la pose de un nodo replicado.
 

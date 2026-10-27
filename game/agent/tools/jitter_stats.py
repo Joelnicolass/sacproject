@@ -9,7 +9,9 @@ MIN_SPEED, 0.5 s trimmed off each edge of every walk, and only inside the walk_s
   CV           std / mean of the step
   p95/median   95th percentile of the step over its median
   stalls       share of frames with a step under 1 % of the median (the body stopped while it walks)
-JITTER PASS when, for every body, client CV <= 1.10 x host, client p95/median <= 1.10 x host and client stalls <= 3 %; else JITTER FAIL.
+JITTER PASS when, for every body and on BOTH sides (absolute, not relative to the host: the host judders too), CV <= MAX_CV,
+p95/median <= MAX_P95M and stalls <= STALL_MAX, and each side renders steadily (p95 frame time <= MAX_FRAME_MS; above it the
+machine is loaded and the run says so); else JITTER FAIL with the reasons.
 --step2 adds the prediction criteria of the own wizard on the client: key -> first step <= 2 frames (walk_start mark to the first
 frame that moved) and last_correction p95 <= 0.05 m, max <= 0.25 m.
 Exit code 0 = pass, 1 = fail.
@@ -25,8 +27,11 @@ MIN_SPEED = 0.5      # m/s over the window: walking
 TRIM_S = 0.5
 TAIL_S = 2.5         # a body seen across the net keeps moving after the local walk_end mark
 MIN_STEPS = 30
-RATIO = 1.10
-STALL_MAX = 0.03
+# Absolute smoothness (user 2026-10-27: the relative criterion passed with judder plain to the eye).
+MAX_CV = 0.15
+MAX_P95M = 1.30
+STALL_MAX = 0.01
+MAX_FRAME_MS = 20.0
 STALL_FRAC = 0.01
 BODIES = ("own", "rival", "creature")
 
@@ -97,6 +102,12 @@ def stats(steps):
     }
 
 
+def frame_p95_ms(series):
+    """95th percentile of the time between rendered frames (the own wizard is sampled every frame)."""
+    gaps = sorted((b[0] - a[0]) * 1000.0 for a, b in zip(series, series[1:]))
+    return pct(gaps, 0.95) if gaps else float("inf")
+
+
 def fmt(v, spec):
     return "   -  " if v is None else spec % v
 
@@ -110,6 +121,11 @@ def main():
     host_rows, host_marks = read(args.host)
     cli_rows, cli_marks = read(args.client)
     ok = True
+    for side, rows in (("host", host_rows), ("client", cli_rows)):
+        p95 = frame_p95_ms(rows["own"])
+        steady = p95 <= MAX_FRAME_MS
+        ok = ok and steady
+        print("%s frame time p95 %.1f ms (<= %.0f)  %s" % (side, p95, MAX_FRAME_MS, "ok" if steady else "FAIL: loaded machine (frames lost)"))
     print("%-9s | %-26s | %-26s | %s" % ("body", "host   n   CV  p95/med  stall", "client n   CV  p95/med  stall", "verdict"))
     for body in BODIES:
         h = stats(walk_steps(host_rows[body], host_marks))
@@ -119,12 +135,13 @@ def main():
             print("%-9s | %-26s | %-26s | FAIL (not enough walking frames)" % (body, "n=%d" % (h["n"] if h else 0), "n=%d" % (c["n"] if c else 0)))
             continue
         reasons = []
-        if c["cv"] > RATIO * h["cv"]:
-            reasons.append("CV %.2f > %.2f" % (c["cv"], RATIO * h["cv"]))
-        if c["p95m"] > RATIO * h["p95m"]:
-            reasons.append("p95/med %.2f > %.2f" % (c["p95m"], RATIO * h["p95m"]))
-        if c["stall"] > STALL_MAX:
-            reasons.append("stalls %.1f %% > %.0f %%" % (100 * c["stall"], 100 * STALL_MAX))
+        for side, v in (("host", h), ("client", c)):
+            if v["cv"] > MAX_CV:
+                reasons.append("%s CV %.2f > %.2f" % (side, v["cv"], MAX_CV))
+            if v["p95m"] > MAX_P95M:
+                reasons.append("%s p95/med %.2f > %.2f" % (side, v["p95m"], MAX_P95M))
+            if v["stall"] > STALL_MAX:
+                reasons.append("%s stalls %.1f %% > %.0f %%" % (side, 100 * v["stall"], 100 * STALL_MAX))
         ok = ok and not reasons
         print("%-9s | %5d %6.2f %7.2f %6.1f %% | %5d %6.2f %7.2f %6.1f %% | %s" % (
             body, h["n"], h["cv"], h["p95m"], 100 * h["stall"], c["n"], c["cv"], c["p95m"], 100 * c["stall"],

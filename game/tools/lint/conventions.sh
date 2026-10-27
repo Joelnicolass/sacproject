@@ -95,6 +95,17 @@ xargs grep -nE '(^|[^A-Za-z0-9_.])print\(' < "$OUT/all.txt" 2>/dev/null \
 	| grep -v 'DebugLog' | grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C14.txt" || true
 grep -v '/debug_log\.gd' "$OUT/C14.txt" > "$OUT/C14b.txt"; mv "$OUT/C14b.txt" "$OUT/C14.txt"
 
+# C24: citations of the original (state.d, sacengine, shiny.d, dagonBackend, file.d:line) in comment/doc lines outside a `## Ref:` line.
+# Only whole-line comments count; the citation belongs at the end of the doc, in `## Ref:`.
+xargs grep -nE '^[ 	]*#.*(state\.d|sacengine|shiny\.d|dagonBackend|[a-z_]+\.d:[0-9])' < "$OUT/all.txt" 2>/dev/null \
+	| grep -vE ':[0-9]+:[ 	]*## Ref:' > "$OUT/C24.txt" || true
+
+# C25: raw key or mouse button in code (controls live in the InputMap). Whole-line comments do not count.
+# Allowlist: the label that shows the key of an action.
+grep -v '^scenes/ui/spell_book/action_key_label\.gd$' "$OUT/all.txt" \
+	| xargs grep -nE 'KEY_[A-Z]|MOUSE_BUTTON_[A-Z]' 2>/dev/null \
+	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C25.txt" || true
+
 # ---- Editor-first rules (RFC-055 §15): "todo en el editor, movible con gizmo, sin capas de abstraccion". ----
 
 # C15: content nodes built with .new() in code (allowlist: pools, buses, planters, previews).
@@ -195,7 +206,7 @@ xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (model|sounds|carried_fx)\b|^@ex
 	< <(grep -E '^scenes/(units/creature_type|wizards/wizard_type|gods/god_type)\.gd$' "$OUT/all.txt") 2>/dev/null \
 	| grep -vE '@export var body: PackedScene' | grep -vE '^scenes/gods/god_type\.gd:[0-9]+:@export var look: LookProfile' > "$OUT/C23.txt" || true
 
-RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C18c:text_instead_of_resource C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks C23:presentation_in_server_types"
+RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C18c:text_instead_of_resource C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks C23:presentation_in_server_types C24:original_citation_outside_Ref C25:raw_key_or_mouse_button"
 
 baseline_of() { grep -E "^$1=" "$BASELINE" 2>/dev/null | head -1 | cut -d= -f2; }
 

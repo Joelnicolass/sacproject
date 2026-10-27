@@ -38,6 +38,8 @@ Palabras simples primero; la columna de la derecha dice quién las controla.
 | C7 | Prohibido `.call("nombre")` y `has_method(` sobre tipos con `class_name`: se llama el método tipado. | lint (`C7`) |
 | C8 | Los Resources usan nombres humanos con unidad (`vision_m`, `cooldown_s`). Prohibidos en `*_type.gd`: `flags*`, `folder`, `components`, `Dictionary`, `Array[Dictionary]`, y Strings donde existe el tipo. | lint (`C8`) |
 | C9 | El doc cuenta primero qué pasa en el juego, en palabras simples. La cita al original va al final (`## Ref: state.d:…`) y nunca abre el comentario. | lint (`C9`) |
+| C24 | La cita al original va al final, en `## Ref:`; ningún otro comentario nombra `state.d`, `sacengine`, `shiny.d`, `dagonBackend` ni `archivo.d:línea`. | lint (`C24`) |
+| C25 | Los controles viven en el InputMap: sin `KEY_*` ni `MOUSE_BUTTON_*` en el código de `scenes/` (salvo `action_key_label.gd`, que muestra la tecla de una acción). | lint (`C25`) |
 | C10 | FSM solo con ≥3 estados; command/interactor solo con ≥2 llamadores. | reviewer |
 | C11 | Herencia propia de profundidad ≤1 (`A extends Node`, `B extends A` y listo). Para más, componé. | lint (`C11`) |
 | C12 | La red (`MpKit.` o la fachada `Mp.`) solo vive en `scenes/net/`, en las pantallas de red (`scenes/ui/lobby/`, `scenes/ui/local_server/`, `scenes/ui/match_wait/`), en los dueños de `submit_*`/`@rpc`, en los que usan `MultiplayerSpawner` y en las subclases de nodos del kit (`extends Mp…`). Un componente que simula pregunta `is_multiplayer_authority()`. Las líneas de comentario no cuentan. | lint (`C12`, un renglón por archivo) |

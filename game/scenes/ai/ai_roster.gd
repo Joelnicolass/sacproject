@@ -35,7 +35,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _ready() -> void:
 	if Engine.is_editor_hint() or not enabled:
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return
 	var seats := _seats()
 	if seats.is_empty():

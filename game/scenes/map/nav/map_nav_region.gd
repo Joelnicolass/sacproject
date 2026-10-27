@@ -56,7 +56,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	## A client loads the region but does not log it (it never asks for a path).
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		return
 	var polygons := navigation_mesh.get_polygon_count() if navigation_mesh != null else 0
 	print("nav: navmesh %d polígonos" % polygons)

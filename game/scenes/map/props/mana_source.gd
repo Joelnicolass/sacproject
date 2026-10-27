@@ -27,7 +27,7 @@ enum Kind { FOUNT, ALTAR, CUSTOM }
 func _ready() -> void:
 	add_to_group("mana_source")
 	_read_rules()
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 

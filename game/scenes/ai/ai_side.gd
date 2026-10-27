@@ -39,7 +39,7 @@ var _arrived: Array[Node3D] = []
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	if MpKit.is_networked() and not MpKit.is_server():
+	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
 	if active:
@@ -70,7 +70,7 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	if creature_brain != null:
 		creature_brain.play = play
 	if ai_seat.book != null and wizard is WizardBody:  # a bench's or a solo game's own book: it does not travel on the network
-		if MpKit.is_networked():
+		if not multiplayer.multiplayer_peer is OfflineMultiplayerPeer:
 			push_warning("AiSide: AiSeat.book no viaja por red (slot %d)" % slot)
 		(wizard as WizardBody).book = ai_seat.book
 	perception.slot = slot

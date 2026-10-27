@@ -63,7 +63,8 @@ extends Camera3D
 var yaw := 0.0
 var zoom := 0.125
 var target_zoom := 0.125
-## Free-look pitch on top of the follow angle. Negative looks up. Ref: sacengine camera.pitch over pitchOffset.
+## Free-look pitch on top of the follow angle. Negative looks up.
+## Ref: sacengine camera.pitch over pitchOffset.
 var free_pitch_deg := 0.0
 ## Resulting view pitch below the horizon, in [-look_up_max_deg, look_down_max_deg]. Negative looks up.
 var view_pitch_deg := 0.0

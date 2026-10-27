@@ -32,7 +32,8 @@ var local_slot := 0
 @export var structures_root: Node
 @export var ground: Control
 @export var markers: Control
-## Compass gem on the frame; it rides the edge at the map's north as the map turns. Empty = none. Ref: sacengine minimapCompass.
+## Compass gem on the frame; it rides the edge at the map's north as the map turns. Empty = none.
+## Ref: sacengine minimapCompass.
 @export var compass: Control
 @export_group("Resources")
 @export var style: MinimapStyleSet

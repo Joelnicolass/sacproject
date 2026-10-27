@@ -222,18 +222,12 @@ func _on_node_added(node: Node) -> void:
 func _on_result_changed() -> void:
 	if _match_state == null or not _match_state.ended:
 		return
-	var defeated: Array = []
-	for slot in _match_state.defeated_slots:
-		defeated.append(slot)
-	var winners: Array = []
-	for slot in _match_state.winner_slots:
-		winners.append(slot)
+	var out := _match_state.result()
+	var defeated: Array = out["defeated_slots"]
 	## The abandon of a seat defeated the last team standing against the winners: the room reads it as an abandon.
-	var abandon := not defeated.is_empty() and Mp.gate().is_abandoned(int(defeated.back()))
-	_report({
-		"winner_slot": _match_state.winner_slot, "winner_slots": winners, "defeated_slots": defeated,
-		"reason": "abandon" if abandon else "result",
-	})
+	if not defeated.is_empty() and Mp.gate().is_abandoned(int(defeated.back())):
+		out["reason"] = "abandon"
+	_report(out)
 
 
 ## Every human of the ticket is past the grace: the match is `empty` and has no winner.

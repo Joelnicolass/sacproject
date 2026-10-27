@@ -239,6 +239,7 @@ func end_match(winner: int) -> void:
 	print("partida terminada, gana el slot %d" % winner)
 	result_changed.emit()
 	publish()
+	_tell_kit_ended()
 
 
 ## Server (or solo): the match is over and the team of `slots` (the living ones that were left, plus the allies that fell before) won.
@@ -258,6 +259,24 @@ func end_match_team(slots: Array[int]) -> void:
 	print("partida terminada, gana el equipo %d: slots %s" % [winner_team, str(team)])
 	result_changed.emit()
 	publish()
+	_tell_kit_ended()
+
+
+## The result as the room and the kit read it: who won (the whole team) and who was defeated. Empty-ish while there is none.
+func result() -> Dictionary:
+	var winners: Array = []
+	winners.assign(winner_slots)
+	var defeated: Array = []
+	defeated.assign(defeated_slots)
+	return {"winner_slot": winner_slot, "winner_slots": winners, "defeated_slots": defeated, "reason": "result"}
+
+
+## A dedicated started by hand: tells MpKit the match is over, so it opens the next one as soon as the last player leaves
+## (not past the grace). A room's match reports through its MatchTicketGlue (the agent tells the kit); a listen host and solo
+## do not serve a next match, so nothing changes there.
+func _tell_kit_ended() -> void:
+	if MpKit.is_dedicated() and get_tree().get_nodes_in_group(MpMatchAgent.GROUP).is_empty():
+		MpKit.broadcast_session_ended(result())
 
 
 ## Advances the altar clocks by `delta` seconds (the server's physics step; a test may call it).

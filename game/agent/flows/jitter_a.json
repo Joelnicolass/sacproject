@@ -82,16 +82,59 @@
   {
    "call": {
     "harness": "jitter_watch",
-    "method": "mark_walk",
+    "method": "hold",
     "args": [
-     "walk_start"
+     "move_forward",
+     8.0,
+     "walk"
     ]
    }
   },
   {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "holding",
+    "equals": false,
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "hold",
+    "args": [
+     "move_forward,turn_right",
+     5.0,
+     "walk_turn"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "holding",
+    "equals": false,
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 3.0
+  },
+  {
    "press": {
-    "name": "move_forward",
-    "hold": 8.0
+    "name": "zoom_out",
+    "hold": 1.5
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/ptnet_real_watch",
+    "prop": "mana",
+    "timeout": 90,
+    "gte": 800
    }
   },
   {
@@ -99,9 +142,105 @@
     "harness": "jitter_watch",
     "method": "mark_walk",
     "args": [
-     "walk_end"
+     "warp_start"
     ]
    }
+  },
+  {
+   "click": "%StructureTab"
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "aim_tower",
+    "args": [
+     2
+    ]
+   }
+  },
+  {
+   "press": "spell_5"
+  },
+  {
+   "wait": 0.2
+  },
+  {
+   "press": "select"
+  },
+  {
+   "wait": 0.3
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "pointer_center",
+    "args": []
+   }
+  },
+  {
+   "wait": 4.0
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "mark_walk",
+    "args": [
+     "warp_end"
+    ]
+   }
+  },
+  {
+   "wait": 1.5
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "hold",
+    "args": [
+     "turn_right",
+     1.0,
+     "turn_back"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "holding",
+    "equals": false,
+    "timeout": 30
+   }
+  },
+  {
+   "call": {
+    "harness": "ptnet_real_watch",
+    "method": "mark",
+    "args": [
+     "knock_go"
+    ]
+   }
+  },
+  {
+   "call": {
+    "harness": "jitter_watch",
+    "method": "hold",
+    "args": [
+     "move_forward",
+     4.5,
+     "walk_knock"
+    ]
+   }
+  },
+  {
+   "wait_until": {
+    "node": "AgentKit/jitter_watch",
+    "prop": "holding",
+    "equals": false,
+    "timeout": 30
+   }
+  },
+  {
+   "wait": 4.0
   },
   {
    "call": {

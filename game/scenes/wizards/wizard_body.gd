@@ -341,6 +341,12 @@ func warp_to(point: Vector3) -> void:
 		walk_changed.emit(false)
 	velocity = Vector3.ZERO
 	global_position = Vector3(point.x, point.y - feet_drop(), point.z)
+	_announce_jump()
+
+
+## Tells the clients the body jumped, so their copy of it jumps too instead of sliding there. On a client the pose is
+## drawn by the MpActor child; this body never writes it there.
+func _announce_jump() -> void:
 	var snap := get_node_or_null("WarpSnap") as WarpSnap
 	if snap != null:
 		snap.announce()
@@ -467,6 +473,7 @@ func _return_to_altar() -> void:
 	_walking = false
 	velocity = Vector3.ZERO
 	global_position = FallCheck.altar_return_spot(self, best.global_position) - Vector3.UP * feet_drop()
+	_announce_jump()
 	print("mago %d volvio al altar" % owner_slot)
 
 

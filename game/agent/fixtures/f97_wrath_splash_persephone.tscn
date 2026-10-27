@@ -1,9 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="PackedScene" path="res://debug/spells/wrath_splash.tscn" id="1_base"]
-[ext_resource type="Resource" path="res://agent/fixtures/f97_rules_persephone.tres" id="2_rules"]
-
-[node name="WrathSplash" instance=ExtResource("1_base")]
-
-[node name="HighNoon" parent="."]
-rules = ExtResource("2_rules")

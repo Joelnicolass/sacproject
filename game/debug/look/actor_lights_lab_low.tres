@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="ActorLightsLabSetup" format=3]
-
-[ext_resource type="Script" path="res://debug/look/actor_lights_lab_setup.gd" id="1_setup"]
-[ext_resource type="Resource" path="res://data/look/quality_low.tres" id="2_quality"]
-
-[resource]
-script = ExtResource("1_setup")
-quality = ExtResource("2_quality")
-light_count = 200

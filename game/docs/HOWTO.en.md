@@ -6,8 +6,6 @@ A short guide. All paths are from `game/`. General rule: content is `.tres` file
 
 The in-game interface and the **Project > Tools > Sacrifice** menu are in Spanish: labels are quoted as they appear, with an English gloss.
 
-After any content change, run the validator (last section).
-
 ## A creature
 
 For a creature that does not exist in the original, go straight to «Create your own creature from Blender». These steps are for the catalog ones.
@@ -34,10 +32,8 @@ A new enemy or character needs nothing from the original game (neither `index.js
    ```
    It writes three files and **overwrites none that exist** (`--force` redoes all three): `scenes/bodies/models/<tag>.tscn` (the model with its `AnimationTree` and the hit event), `scenes/units/bodies/<tag>.tscn` and `<tag>_look.tscn` (the body with the capsule, footprint and sockets measured from the mesh, and its look) and `data/catalog/creatures/<tag>.tres` (stats from `data/templates/creature.tres` plus the clip data). It also draws the **HUD icon** (book and selection): if `assets/custom/icons/<tag>.png` exists it uses it as is (it never overwrites it; it is yours, 32×32); otherwise it renders it from the model (idle pose, camera over its box, dark disc with a golden ring) and saves it there. Drawing needs a window: from the plugin one opens by itself for a moment; from the console, drop `--headless` (`--resolution 256x256`) or run `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` afterwards (`--force` redoes it). You can also assign a texture to the creature's `icon` field in the inspector (it beats everything). `--icon` redraws it in `new_creature.gd`; `--no-icon` skips it. It prints which clip it took for each role and which ones it did not use.
 4. **Tune in the inspector.** Stats, mana and soul cost, `display_name` in the creature's `.tres`; size in the body scene (drag `Sockets/Reach`: how far the strike gets). Which clip each role plays: the model's `<tag>_clips.tres` library (the `Clips` node of its scene; an `AnimationTree` state plays the animation of its role, and the length comes from the animation); the hit frame: the `hit` marker of that animation (and the `attack` call of its method track). If you touched roles or the hit, **Project > Tools > Sacrifice: Sincronizar criatura con su modelo…** (Sync creature with its model…) (or `new_creature.gd -- <tag> --sync`) reads the scene again and updates the times the rules use (hit, shot, stun, flight); your stats are not touched.
-5. **Put it in a book**: `data/gods/<god>.tres` → `book` → `creatures` (drag the `.tres`) and a line in `unlocks` with the wizard level. Run the validator: `CATALOG PASS` (it also warns if a named clip does not exist in the `.glb`).
+5. **Put it in a book**: `data/gods/<god>.tres` → `book` → `creatures` (drag the `.tres`) and a line in `unlocks` with the wizard level.
 6. **Sounds** (optional): drop `death_1.wav`, `swing_1.wav`… in `assets/custom/sounds/creatures/<tag>/` before step 3, or afterwards with «Hornear sonidos» (Bake sounds). See «Your own sounds».
-
-End-to-end test (a Blender creature, summoned, walks, hits on the strike and dies): `$G --headless --fixed-fps 600 --path . res://debug/units/custom_creature.tscn` prints `CUSTOM_CREATURE PASS` (it counts which strike variant each swing used and when it fell, and checks the icon).
 
 ## Your own sounds
 
@@ -49,7 +45,7 @@ They need nothing from the original game. They work for any creature (including 
    - Wizard: `incantation` (casts), `damaged`, `death`, `ghost` (rises as a ghost).
    - `selected`, `ack`, `attack_ack`, `annoyed` and `incantation` go to the `Voice` bus; the rest, to `SFX`. A name that is not a field is skipped, and the tool warns.
 3. **Create the set:** **Project > Tools > Sacrifice: Nueva criatura desde modelo…** (New creature from model…) writes `data/audio/creatures/<name>.tres` (the files of the folder in its fields; over the melee set `melee/fist.tres`) and assigns it to the creature's `Sounds` field. It does not overwrite one that exists: `--force` redoes it and loses what you edited. With no sounds folder the set stays empty: drag the files onto its fields.
-4. **Review:** open the `.tres` in the inspector. There is one cue per event, and ▶ on a stream plays it. Volume, `cooldown_s` and `max_voices` are tuned there. In the game, the lab `debug/audio/f360_audio_lab.tscn` (F6 and the `debug_audio_event` action) shows each event that sounds and its file. Without a window, the test is `bash agent/runs/run_audio_cases.sh`; the `lab_052i` case creates the set of `testmonster` from two test `.wav` files and plays them.
+4. **Review:** open the `.tres` in the inspector. There is one cue per event, and ▶ on a stream plays it. Volume, `cooldown_s` and `max_voices` are tuned there.
 
 More detail (FX sounds, music and ambience per god): `data/audio/README.md`.
 
@@ -99,14 +95,13 @@ G="${GODOT_BIN:-godot}"   # see «Configure paths» below
 python3 tools/import/import_map.py --map=<Name> --terrain-bin=/tmp/<tag>.bin   # light, ntts, widgets + the terrain bin
 python3 tools/import/scaffold_map.py --map=<Name>                              # MapDefinition, map.tscn (starts with their WizardSpot), empty nav.res
 python3 -I tools/import/bake_ground_roles.py                                     # ground_roles.png: which ground (open, earth, rock, path) lies in each cell
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/import_terrain.gd -- --map=<tag> --bin=/tmp/<tag>.bin
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # imports heights.png, ground_roles.png and light.png
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/terrain_glb_export.gd -- --map=<tag> --force
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # once more: terrain.glb
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # twice
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # seats, objects on land, level bases, altar->fount paths (no --map: every map)
-bash agent/runs/run_050_maps.sh <tag>                                            # smoke: AI vs AI for 0.5 min
+$G --headless --path . --script res://tools/bake/import_terrain.gd -- --map=<tag> --bin=/tmp/<tag>.bin
+$G --headless --path . --import                  # imports heights.png, ground_roles.png and light.png
+$G --headless --path . --script res://tools/bake/terrain_glb_export.gd -- --map=<tag> --force
+$G --headless --path . --import                  # once more: terrain.glb
+$G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
+$G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # twice
+$G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # seats, objects on land, level bases, altar->fount paths (no --map: every map)
 ```
 
 After importing, `map.tscn` and `<tag>.tres` are edited by hand (the scene is the truth). Careful with `--force`: it overwrites what you edited. The plants of a map that is not James's stay empty until the models of its widgets exist. `room_selectable = false` in the definition takes it out of the rooms.
@@ -119,7 +114,7 @@ After importing, `map.tscn` and `<tag>.tres` are edited by hand (the scene is th
 2. In `map.tscn`, one `PlayerStart` per seat under `MapProps/Starts` (`Start1`…`Start4`, with `slot` 1..N without repeats) and its altar; move each start's `WizardSpot` with the gizmo (the wizard appears there, facing where it faces); the fountains under `MapProps/Founts`. A building is dragged under `Buildings`. In `test_flat4`, seats 1 and 2 are on the same side and 3 and 4 opposite, because `2v2` puts 1+2 against 3+4.
 3. The sides come from the nodes: each `PlayerStart` is a seat (`slot`; a `team` above 0 allies the seats that share it, 0 = enemy of everyone) and each `side` of an `NpcSpawn` is a side no player takes. The teams of a mode are set by the mode.
 4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (and `light` if it has one) dragged from the inspector, and `player_starts` (= number of `PlayerStart`). `room_selectable = false` if it is only for testing (the rooms offer it with `--room-test-maps`).
-5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Hornear navmesh» button of `NavRegion`) and run the validator: it fails if the `PlayerStart`s do not match `player_starts`.
+5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Hornear navmesh» button of `NavRegion`) and run `tools/audit/check_map.tscn -- --map=<tag>` (seats, objects on land, level bases, paths).
 
 A map only shows up in a mode if it has one start per seat: High Noon (2) offers `1v1`; `winter_wonder` and `test_flat4` (4) also offer `2v2`, `ffa3` and `ffa4`.
 
@@ -130,7 +125,7 @@ A mode (how many seats, which team each one is on, how you win) is a `GameMode` 
 1. Duplicate a similar one (for example `2v2.tres`) and name it `<tag>.tres`.
 2. In the inspector: `tag` (the one of `--mode=<tag>` and of the room), `display_name` (a key of `data/i18n/strings.csv`, like `MODE_2V2`; add yours with its text), `team_of_seat` (the team of each seat, seat 1 first: `[0,1]` is 1 against 1, `[0,0,1,1]` is 2 against 2, `[0,1,2]` three against everyone; teams go from 0 without gaps) and `room_selectable`.
 3. Add it to `modes` in `data/modes/mode_catalog.tres`.
-4. Run the validator. It warns if no map has starts for all the mode's seats; without such a map, the screens do not offer it.
+4. If no map has starts for all the mode's seats, the screens do not offer it.
 
 To try it without the screens: `--map=test_flat4 --mode=<tag>`.
 
@@ -152,7 +147,7 @@ You need a 4-seat map: `winter_wonder`, or `test_flat4` for testing.
 - **Match rules** (duration, friendly fire, caps): `data/match_rules.tres` (`MatchRules`).
 - **AI and difficulty:** `data/ai/`.
 - **Graphics quality:** `data/look/quality_*.tres`.
-- A `.tres` is not mutated at runtime. After touching numbers, the determinism bench will change its fingerprint on purpose: `agent/det_baseline.txt` is the baseline: re-record it only if the balance change is what you wanted (`agent/README.md`).
+- A `.tres` is not mutated at runtime.
 
 ## Relief (PBR maps) of a model
 
@@ -163,13 +158,8 @@ Each texture of a model is a material in `scenes/bodies/materials/<owner>_<label
 - **To make many,** use Project > Tools > «Generar relieve…». From the console it is `tools/bake/bake_relief.gd -- <folder> --recipe=…`, run once, then `--import`, then the same command again.
 - **Recipes** live in `addons/surface_maps/recipes/`:
   - `default.tres` uses NormalMap-Online's settings: strength 2.5, level 7, smoothing 0, normal map only.
-  - `foliage.tres` adds smoothing 1, for thin leaves that speckle with the default. It is used for the `<TAG>_plant*` flora and for the leafy props listed in `agent/harness/relief_batch_lists.py`.
-  - To compare recipes, run `agent/harness/relief_recipe_probe.gd`, then `agent/harness/measure_mottle.py`.
+  - `foliage.tres` adds smoothing 1, for thin leaves that speckle with the default. It is used for the `<TAG>_plant*` flora and for the leafy props.
 - **The PNG is the source:** retouch it in any image editor. The recipe that made it is not kept.
-- **Check:**
-  - rules_suite `surface_refs_cases`: no dangling references, and meshes with a normal map have tangents.
-  - rules_suite `surface_maps_cases`: the generator.
-  - F6 on `debug/look/surface_lab.tscn`.
 
 ## PBR from Blender
 
@@ -179,27 +169,18 @@ Your own model does not need the generator.
 2. Export to `assets/custom/models/<tag>.glb`. Godot turns each material into a `StandardMaterial3D` with its maps, and `new_creature.gd` does not overwrite them. Missing tangents are generated at import (`meshes/ensure_tangents=true`).
 3. If you exported only the colour, generate the relief on the extracted texture from the inspector. The map lands beside that texture.
 
-## Run the tests and the validator
+## Run the lint and the bakers
 
-Everything runs from `game/` and one Godot at a time (the queue is `agent/harness/godot_run.sh`).
+Everything runs from `game/` and one Godot at a time.
 
 ```bash
 G="${GODOT_BIN:-godot}"   # see «Configure paths» below
 
 # Conventions lint (grep/awk, no Godot, ~1 s; fails if a count goes above tools/lint/baseline.txt)
 bash tools/lint/conventions.sh
-
-# Catalog validator: prints CATALOG PASS or CATALOG FAIL with the failing file
-bash agent/harness/godot_run.sh $G --headless --path . --script res://debug/suite/catalog_cases.gd
-
-# Rules, without a window
-bash agent/harness/godot_run.sh $G --headless --fixed-fps 600 --path . res://debug/suite/rules_suite.tscn
-
-# Quick determinism bench, against agent/det_baseline.txt
-bash agent/run_determinism.sh quick --no-window
 ```
 
-From the editor, **Project > Tools > Sacrifice** runs the validator, re-bakes the navmesh and bakes the missing models, and shows the output in a dialog. The minimap has a «Re-hornear minimapa» (Re-bake minimap) button in the inspector of `MinimapTerrainBake`.
+From the editor, **Project > Tools > Sacrifice** re-bakes the navmesh and bakes the missing models, and shows the output in a dialog. The minimap has a «Re-hornear minimapa» (Re-bake minimap) button in the inspector of `MinimapTerrainBake`.
 
 The console bakes (without `--force` they do not overwrite hand edits):
 
@@ -209,7 +190,7 @@ $G --headless --path . --script res://tools/bake/bake_body_scenes.gd -- --force 
 $G --headless --path . res://tools/bake/bake_nav.tscn                      # navmesh
 ```
 
-A new test goes in `debug/<domain>/` (and in `agent/det_cases.txt` if it is a bench case).
+Tests are throwaway: an AgentKit flow or harness is regenerated under `agent/` when needed and is not versioned.
 
 ## Tools that need the original game
 
@@ -218,10 +199,10 @@ Paths are relative to `game/`.
 | Tool | Needs the original? | What it produces |
 |---|---|---|
 | Play (F5), `godot --path game`, the room server | **No** | Nothing: the assets are already in `game/assets/original/` (LFS) |
-| Tests: `agent/run_determinism.sh`, `rules_suite`, `agent/runs/*.sh`, AgentKit flows | **No** | PASS/FAIL, screenshots in `agent/out/` |
+| Throwaway AgentKit flows and captures | **No** | PASS/FAIL and screenshots, not versioned |
 | `tools/import/export_stats.py` | **Yes** | `assets/original/data/*.json` (creature, spell, wizard, building stats) |
 | `tools/import/export_skeletal.py` | **Yes** | `assets/original/models/*.glb` + `index.json` (skeleton and animations) |
-| `tools/import/export_skeletal_reference.py` | **Yes** | Reference OBJ in `agent/out/skeletal_ref/` (not versioned) |
+| `tools/import/export_skeletal_reference.py` | **Yes** | Reference OBJ in the system temp folder (`--out` to change it) |
 | `tools/import/import_textures.py` | **Yes** | `assets/original/textures/*.png` |
 | `tools/import/import_props.py` | **Yes** | `assets/original/props/*.glb` (buildings and plants) |
 | `tools/import/import_themes.py` | **Yes** | `assets/original/themes/<god>/` (ground, sky, light) |
@@ -260,7 +241,7 @@ export SAC_INSTALL="/path/to/Sacrifice/data"
 cd game && python3 tools/import/import_map.py --list
 ```
 
-**Godot and Blender** (the scripts in `game/agent/` and `game/tools/`). All of them read `agent/harness/env.sh`, which computes the project root from its own location and picks:
+**Godot and Blender** (the scripts in `game/tools/`). They pick:
 
 - `GODOT_BIN`: the environment variable if set; otherwise `godot` from the `PATH`; otherwise the macOS one (`/Applications/Godot.app/Contents/MacOS/Godot`).
 - `BLENDER_BIN`: the environment variable if set; otherwise `blender` from the `PATH`; otherwise the macOS one (`/Applications/Blender.app/Contents/MacOS/Blender`).

@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="StateTick" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://debug/suite/state_tick.gd" id="1_tick"]
-
-[resource]
-script = ExtResource("1_tick")
-order_name = "state"
-frame_count = 60

@@ -14,18 +14,12 @@ extends EditorExportPlugin
 ## The navmesh is not baked from meshes (NavBakeSettings: static colliders, i.e. shapes), so nothing under scenes/ needs more.
 ## NOT here: textures (Godot's own dedicated mode already turns them into placeholders),
 ## and nothing runs outside an export: the game and the editor never load this class.
-## Environment, for measuring only: SAC_DEDICATED_STRIP=0 exports the preset untouched; SAC_PACK_PROBE=1 also puts the memory
-## probe (agent/harness/dedicated_mem_probe.gd) in the pack, to run as `--main-pack <pck> res://dedicated_mem_probe/probe.tscn`.
+## Environment, for measuring only: SAC_DEDICATED_STRIP=0 exports the preset untouched.
 
 const VERSION := 3
 const ENV_OFF := "SAC_DEDICATED_STRIP"
-const ENV_PROBE := "SAC_PACK_PROBE"
 const CLIP_DIR := "res://scenes/bodies/models/"
 const CLIP_FOLDER_SUFFIX := "_clips"
-const PROBE_SOURCE := "res://agent/harness/dedicated_mem_probe.gd"
-const PROBE_SCRIPT := "res://dedicated_mem_probe/probe.gd"
-const PROBE_SCENE := "res://dedicated_mem_probe/probe.tscn"
-const PROBE_SCENE_TEXT := "[gd_scene load_steps=2 format=3]\n\n[ext_resource type=\"Script\" path=\"%s\" id=\"1\"]\n\n[node name=\"Probe\" type=\"Node\"]\nscript = ExtResource(\"1\")\n"
 
 var _audio := 0
 var _animations := 0
@@ -115,13 +109,3 @@ func _customize_resource(resource: Resource, path: String) -> Resource:
 		return stripped_mesh(resource as Mesh)
 	return null
 
-
-func _export_begin(_features: PackedStringArray, _is_debug: bool, _path: String, _flags: int) -> void:
-	if OS.get_environment(ENV_PROBE) != "1":
-		return
-	var source := FileAccess.get_file_as_bytes(PROBE_SOURCE)
-	if source.is_empty():
-		push_error("DedicatedStrip: %s is missing, the pack has no memory probe" % PROBE_SOURCE)
-		return
-	add_file(PROBE_SCRIPT, source, false)
-	add_file(PROBE_SCENE, (PROBE_SCENE_TEXT % PROBE_SCRIPT).to_utf8_buffer(), false)

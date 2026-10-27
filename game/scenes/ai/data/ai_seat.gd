@@ -20,8 +20,7 @@ const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
 @export var book: GodBook
 ## The seats of a debug scene start paused: the runner starts them (AiSide.active).
 @export var start_active := true
-## The scene of the AI side of this seat; empty = the default of the bench (ai_side.tscn). The bench opponent of 024d is
-## debug/ai/ai_side_trivial.tscn (summons and stays at its altar).
+## The scene of the AI side of this seat; empty = the default (ai_side.tscn).
 @export var side_scene: PackedScene
 
 

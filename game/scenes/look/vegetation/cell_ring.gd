@@ -2,8 +2,7 @@ class_name CellRing
 extends RefCounted
 
 ## Which cells of a square grid exist around the camera and in which tier (level of detail), shared
-## by the vegetation layers (GrassField now; FloraField later). Moved from GrassField with the same arithmetic (the
-## golden debug/look/cell_ring_golden.txt was recorded before the move).
+## by the vegetation layers (GrassField now; FloraField later). Moved from GrassField with the same arithmetic.
 ## - A cell appears when its rect is within `radius + 1` of the eye (the fade center) and goes away past
 ##   `radius + keep_margin_m`.
 ## - Its tier goes by the rect distance to the field center: tier i starts at `tier_starts[i]`, entered only

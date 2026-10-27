@@ -78,14 +78,6 @@ En el menú: **Cambiar personaje** para elegir mago y dios, y **Jugar solo** o *
 | Mostrar u ocultar el minimapa | `M` |
 | Pausa | `Esc` |
 
-### Mirar una partida IA contra IA
-
-```bash
-godot --path game res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=10 --npcs --follow=1 --autostart
-```
-
-`--follow=2` sigue al otro mago, y con otro `--seed` la partida sale distinta.
-
 ### Servidor dedicado (VPS)
 
 La guía de export de Linux, puertos, firewall y systemd está en [`game/tools/deploy/README.md`](game/tools/deploy/README.md). Para probar en local, el servidor de salas arranca con:
@@ -96,7 +88,7 @@ godot --headless --path game -- --room-server
 
 ## Comandos útiles
 
-Se corren **desde `game/`** (`cd game` después de clonar). `godot` es tu binario de Godot 4.7.2: ponelo en el `PATH` o reemplazalo por la ruta completa (en macOS, `/Applications/Godot.app/Contents/MacOS/Godot`). Los scripts de `agent/` y `tools/` lo toman de `GODOT_BIN` (ver [Configurar rutas](#configurar-rutas)). De a un Godot por vez: los scripts se encolan con `agent/harness/godot_run.sh`.
+Se corren **desde `game/`** (`cd game` después de clonar). `godot` es tu binario de Godot 4.7.2: ponelo en el `PATH` o reemplazalo por la ruta completa (en macOS, `/Applications/Godot.app/Contents/MacOS/Godot`). Los scripts de `tools/` lo toman de `GODOT_BIN` (ver [Configurar rutas](#configurar-rutas)). De a un Godot por vez.
 
 **Git LFS**
 
@@ -113,61 +105,6 @@ godot --path . --import    # primera importación (o después de bajar assets nu
 godot --path .             # jugar
 godot --path . --editor    # abrir el proyecto en el editor
 ```
-
-**Mirar a la IA**
-
-```bash
-# IA contra IA con ventana: Fácil contra Normal en High Noon, aldeanos en el campo, la cámara sigue al mago 1, sin pausa inicial
-godot --path . res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_easy_vs_normal.tres --seed=7 --minutes=10 --npcs --follow=1 --autostart
-
-# 2 contra 2 de IA Normal en el mapa de prueba de 4 asientos (asientos 1+2 contra 3+4)
-godot --path . res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_2v2_flat4.tres --map=test_flat4 --mode=2v2 --seed=7 --minutes=10 --follow=1 --autostart
-
-# La misma partida sin ventana: imprime AI_REPORT <json> y escribe el informe
-godot --headless --fixed-fps 60 --path . res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=2 --out=agent/out/ai/duel_s7.json
-```
-
-Otras opciones de `ai_match` después de `--`: `--difficulties=easy,normal` (por asiento de IA), `--souls=N` (almas iniciales), `--follow=2` (el otro mago), `--quit` (salir al terminar con ventana). Los archivos de reglas están en `debug/rules/ai_*.tres`.
-
-**Rendimiento**
-
-```bash
-# Banco de flora (necesita ventana: sin ventana no hay tiempo de GPU): preset alto sobre la flora más densa de Peaks, capa Flora apagada y prendida
-godot --path . res://debug/look/look_bench.tscn -- --map=peaks --flora
-godot --path . res://debug/look/look_bench.tscn -- --map=roads --flora
-```
-
-**Pruebas rápidas** (sin ventana, unos segundos cada una)
-
-```bash
-# Suite de reglas
-godot --headless --fixed-fps 600 --path . res://debug/suite/rules_suite.tscn
-
-# Validador del catálogo: CATALOG PASS o CATALOG FAIL con el archivo que falla
-godot --headless --path . --script res://debug/suite/catalog_cases.gd
-
-# Prueba de red de todos los días (servidor de salas, 2 clientes, dedicado, resultado de vuelta a la sala): NET QUICK PASS / FAIL
-GODOT_BIN=godot bash agent/runs/run_net_quick.sh
-TRANSPORT=ws GODOT_BIN=godot bash agent/runs/run_net_quick.sh   # lo mismo por WebSocket
-NET_TS=1 bash agent/runs/run_net_quick.sh                       # cada línea del log con los segundos desde el arranque
-
-# Casos de audio en cada modo del gate: AUDIO RUN PASS / FAIL (el binario de Godot es un argumento opcional)
-bash agent/runs/run_audio_cases.sh godot
-
-# Los casos sin ventana de un corte de RFC-053 (053a … 053i): RFC053 <corte> PASS / FAIL
-bash agent/runs/run_rfc053.sh 053a
-```
-
-Qué suite de red correr al cerrar un RFC de red: [`game/agent/runs/README.md`](game/agent/runs/README.md).
-
-**Banco de determinismo**
-
-```bash
-bash agent/run_determinism.sh quick --no-window   # los casos rápidos contra agent/det_baseline.txt
-bash agent/run_determinism.sh table               # veredicto y tabla desde agent/out/det/
-```
-
-`quick` es una **prueba de humo**: dice si un cambio alteró la huella de la simulación, no si el juego se juega bien. Después de un cambio de balance buscado la huella cambia a propósito; regrabá la línea de base solo en ese caso (`agent/README.md`).
 
 **Horneados** (no necesitan el original; sin `--force` nunca pisan lo editado a mano)
 
@@ -217,10 +154,7 @@ El port se armó por etapas. Cada cambio grande tiene su RFC en [`game/rfcs/`](g
    - el orquestador corre las pruebas;
    - un playtester juega con ventana y saca capturas.
 
-   Las pruebas automáticas son de tres tipos:
-   - **flows de AgentKit**, que hacen clics y capturas;
-   - **casos sin ventana**, en `debug/rules_suite`;
-   - un **banco de determinismo**: partidas IA contra IA con semilla, cuya huella (un hash de las posiciones) avisa si un cambio alteró el juego sin querer.
+   Las pruebas son descartables: un **flow de AgentKit** (clics y capturas) o un harness se regenera en `game/agent/` cuando un cambio lo necesita, y no se versiona.
 
    El kit de skills y agentes es [godot-studio-skills](https://github.com/Joelnicolass/godot-studio-skills).
 
@@ -232,24 +166,10 @@ game/
   assets/original/  assets extraídos del original (LFS)
   data/          catálogo, presets de calidad, reglas, navmesh, UI (.tres)
   scenes/        el juego: world/, ui/, net/, fx/
-  debug/         escenas y casos de prueba
-  agent/         flows de AgentKit y el banco de determinismo
   rfcs/          diseño de cada etapa
   tools/         importadores de los WAD y herramientas de horneado
 docs/screenshots/
 ```
-
-### Correr las pruebas
-
-```bash
-cd game && bash agent/run_determinism.sh quick
-```
-
-```bash
-godot --headless --fixed-fps 60 --path game res://debug/suite/rules_suite.tscn
-```
-
-Más en [Comandos útiles](#comandos-útiles).
 
 ## Herramientas que necesitan el juego original
 
@@ -258,10 +178,10 @@ Las rutas son relativas a `game/`.
 | Herramienta | ¿Necesita el original? | Qué produce |
 |---|---|---|
 | Jugar (F5), `godot --path game`, el servidor de salas | **No** | Nada: los assets ya están en `game/assets/original/` (LFS) |
-| Pruebas: `agent/run_determinism.sh`, `rules_suite`, `agent/runs/*.sh`, flows de AgentKit | **No** | PASS/FAIL, capturas en `agent/out/` |
+| Flows y capturas descartables de AgentKit | **No** | PASS/FAIL y capturas, no se versionan |
 | `tools/import/export_stats.py` | **Sí** | `assets/original/data/*.json` (estadísticas de criaturas, hechizos, magos, edificios) |
 | `tools/import/export_skeletal.py` | **Sí** | `assets/original/models/*.glb` + `index.json` (esqueleto y animaciones) |
-| `tools/import/export_skeletal_reference.py` | **Sí** | OBJ de referencia en `agent/out/skeletal_ref/` (no se versiona) |
+| `tools/import/export_skeletal_reference.py` | **Sí** | OBJ de referencia en la carpeta temporal del sistema (`--out` para cambiarla) |
 | `tools/import/import_textures.py` | **Sí** | `assets/original/textures/*.png` |
 | `tools/import/import_props.py` | **Sí** | `assets/original/props/*.glb` (edificios y plantas) |
 | `tools/import/import_themes.py` | **Sí** | `assets/original/themes/<dios>/` (suelo, cielo, luz) |
@@ -292,7 +212,7 @@ export SAC_INSTALL="/ruta/a/Sacrifice/data"
 cd game && python3 tools/import/import_map.py --list
 ```
 
-**Godot y Blender** (los scripts de `game/agent/` y `game/tools/`). Todos leen `agent/harness/env.sh`, que calcula la raíz del proyecto desde su propia ubicación y elige:
+**Godot y Blender** (los scripts de `game/tools/`). Eligen:
 
 - `GODOT_BIN`: la variable de entorno si está; si no, `godot` del `PATH`; si no, el de macOS (`/Applications/Godot.app/Contents/MacOS/Godot`).
 - `BLENDER_BIN`: la variable de entorno si está; si no, `blender` del `PATH`; si no, el de macOS (`/Applications/Blender.app/Contents/MacOS/Blender`).

@@ -1,9 +1,0 @@
-{
- "scene": "res://agent/fixtures/rfc022c_match.tscn",
- "wait_first": 10.0,
- "steps": [
-  { "press": { "name": "turn_right", "hold": 0.5 } },
-  { "wait": 0.5 },
-  { "shot": "frost.png" }
- ]
-}

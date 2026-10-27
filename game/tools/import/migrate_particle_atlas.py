@@ -18,7 +18,7 @@ def uid_of(png: str) -> str:
 
 
 done = 0
-for tres in sorted((ROOT / "data").rglob("*.tres")) + sorted((ROOT / "scenes").rglob("*.tres")) + sorted((ROOT / "debug").rglob("*.tres")):
+for tres in sorted((ROOT / "data").rglob("*.tres")) + sorted((ROOT / "scenes").rglob("*.tres")):
     text = tres.read_text()
     m = re.search(r'^atlas_key = "([^"]*)"\n', text, re.M)
     if not m or "particle_type.gd" not in text:

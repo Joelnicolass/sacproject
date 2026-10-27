@@ -4,7 +4,6 @@ web-spike/
 .tools/
 rea/
 sacengine/
-!game/agent/fixtures/sacengine/
 godot-studio-skills/
 
 # Sistema y dependencias
@@ -12,10 +11,6 @@ godot-studio-skills/
 node_modules/
 .next/
 __pycache__/
-
-# Salidas de pruebas del juego (renderizan arte del original; 7,8 GB)
-game/agent/out/*
-!game/agent/out/.gdignore
 
 # Assets finales del port (RFC-023, 2026-10-17): sus .import sí se versionan.
 !game/assets/original/**/*.import

@@ -1,9 +1,0 @@
-{
- "scene": "res://agent/fixtures/rfc022e4_pyro_edit.tscn",
- "wait_first": 12.0,
- "steps": [
-  { "shot": "edit_before.png" },
-  { "wait": 4.0 },
-  { "shot": "edit_after.png" }
- ]
-}

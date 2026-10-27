@@ -6,7 +6,7 @@ Parity reference for tools/audit/audit_skeletal.gd (RFC-023a): sacengine's own O
 Runs the sacengine binary (read only, never modified) with `export-all-frames:` (app.d) for each clip of each
 model, adds the displacement correction the game applies (referenceHeight, sxsk.d frameOffset; without the
 skip threshold export_stats uses) and keeps only the frames the audit compares: 0, middle and last.
-Output: <out>/<model>/<clip>/<frame>.obj, outside git (default agent/out/skeletal_ref/, ignored).
+Output: <out>/<model>/<clip>/<frame>.obj, outside git (default <system temp>/skeletal_ref/).
 Usage: python3 tools/import/export_skeletal_reference.py [--out DIR] [--clips TAG,TAG | --unit-clips] [model ...]   (default eorc jnwr)
 --unit-clips: only the clips the creature units play (UnitClipRoles: stance/idle, run/walk, melee[0], cower/work,
 flight, stun) and writes <out>/unit_clips.json ({model: [tag]}), which `audit_skeletal.gd --clips=` reads.
@@ -18,6 +18,7 @@ import argparse
 import shutil
 import struct
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -25,7 +26,7 @@ import export_skeletal as sk  # noqa: E402
 
 stats = sk.stats
 ROOT = sk.ROOT
-DEFAULT_OUT = ROOT / "agent" / "out" / "skeletal_ref"
+DEFAULT_OUT = Path(tempfile.gettempdir()) / "skeletal_ref"
 
 
 UNIT_ROLE_FIELDS = ("stance_animation", "idle_animation", "run_animation", "walk_animation")

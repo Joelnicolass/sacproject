@@ -4,8 +4,6 @@
 
 Guía corta. Todas las rutas son desde `game/`. Regla general: el contenido son `.tres` en `data/` (un archivo por tipo, se edita en el inspector) y el comportamiento son escenas y nodos en `scenes/<dominio>/`. Nada de `match tag` en código. Cada carpeta tiene su `README.md`.
 
-Después de cualquier cambio de contenido, corré el validador (último apartado).
-
 ## Una criatura
 
 Para una criatura que no existe en el original, andá directo a «Crear una criatura propia desde Blender». Estos pasos son para las del catálogo.
@@ -32,10 +30,8 @@ Un enemigo o personaje nuevo no necesita nada del juego original (ni `index.json
    ```
    Escribe tres archivos y **no pisa ninguno que exista** (`--force` rehace los tres): `scenes/bodies/models/<tag>.tscn` (el modelo con su `AnimationTree` y el evento del golpe), `scenes/units/bodies/<tag>.tscn` y `<tag>_look.tscn` (el cuerpo con la cápsula, la huella y los sockets medidos del mesh, y su apariencia) y `data/catalog/creatures/<tag>.tres` (stats de `data/templates/creature.tres` más los datos de los clips). Además dibuja el **icono del HUD** (libro y selección): si existe `assets/custom/icons/<tag>.png` lo usa tal cual (nunca lo pisa; es tuyo, 32×32), si no lo renderiza del modelo (pose de idle, cámara sobre su caja, disco oscuro con aro dorado) y lo guarda ahí. Dibujar necesita ventana: desde el plugin se abre sola un instante; por consola, quitá `--headless` (`--resolution 256x256`) o corré después `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` (`--force` lo rehace). También podés asignar una textura al campo `icon` de la criatura en el inspector (gana a todo). `--icon` lo redibuja en `new_creature.gd`; `--no-icon` lo salta. Imprime qué clip tomó cada rol y cuáles no usó.
 4. **Ajustar en el inspector.** Stats, costo de maná y almas, `display_name` en el `.tres` de la criatura; tamaño en la escena del cuerpo (arrastrá `Sockets/Reach`: es hasta dónde llega el golpe). Qué clip toca cada rol: la biblioteca `<tag>_clips.tres` del modelo (nodo `Clips` de su escena; un estado del `AnimationTree` reproduce la animación de su rol, y la duración sale de la animación); el cuadro del golpe: el marcador `hit` de esa animación (y la llamada `attack` de su pista de métodos). Si tocaste roles o el golpe, **Project > Tools > Sacrifice: Sincronizar criatura con su modelo…** (o `new_creature.gd -- <tag> --sync`) vuelve a leer la escena y actualiza los tiempos que usan las reglas (golpe, disparo, aturdimiento, vuelo); tus stats no se tocan.
-5. **Ponerla en un libro**: `data/gods/<dios>.tres` → `book` → `creatures` (arrastrá el `.tres`) y una línea en `unlocks` con el nivel de mago. Corré el validador: `CATALOG PASS` (también avisa si un clip nombrado no existe en el `.glb`).
+5. **Ponerla en un libro**: `data/gods/<dios>.tres` → `book` → `creatures` (arrastrá el `.tres`) y una línea en `unlocks` con el nivel de mago.
 6. **Sonidos** (opcional): dejá `death_1.wav`, `swing_1.wav`… en `assets/custom/sounds/creatures/<tag>/` antes del paso 3, o después con «Hornear sonidos». Ver «Sonidos propios».
-
-Prueba de punta a punta (criatura de Blender, convocada, camina, pega en el golpe y muere): `$G --headless --fixed-fps 600 --path . res://debug/units/custom_creature.tscn` imprime `CUSTOM_CREATURE PASS` (cuenta qué variante de golpe usó cada swing y cuándo cayó, y mira el icono).
 
 ## Sonidos propios
 
@@ -47,7 +43,7 @@ No necesitan nada del juego original. Funcionan para cualquier criatura (tambié
    - Mago: `incantation` (lanza), `damaged`, `death`, `ghost` (se levanta como fantasma).
    - `selected`, `ack`, `attack_ack`, `annoyed` e `incantation` van al bus `Voice`; el resto, a `SFX`. Un nombre que no es un campo se salta y la herramienta avisa.
 3. **Crear el set:** **Project > Tools > Sacrifice: Nueva criatura desde modelo…** escribe `data/audio/creatures/<nombre>.tres` (los archivos de la carpeta en sus campos; sobre el set de golpes `melee/fist.tres`) y lo asigna al campo `Sounds` de la criatura. No pisa uno que exista: `--force` lo rehace y pierde lo que editaste. Sin carpeta de sonidos el set queda vacío: arrastrá los archivos a sus campos.
-4. **Revisar:** abrí el `.tres` en el inspector. Hay un cue por evento, y ▶ en un stream lo toca. Ahí se ajustan volumen, `cooldown_s` y `max_voices`. En el juego, el lab `debug/audio/f360_audio_lab.tscn` (F6 y la acción `debug_audio_event`) muestra cada evento que suena y su archivo. Sin ventana, la prueba es `bash agent/runs/run_audio_cases.sh`; el caso `lab_052i` crea el set de `testmonster` con dos `.wav` de prueba y los toca.
+4. **Revisar:** abrí el `.tres` en el inspector. Hay un cue por evento, y ▶ en un stream lo toca. Ahí se ajustan volumen, `cooldown_s` y `max_voices`.
 
 Más detalle (sonidos de FX, música y ambiente por dios): `data/audio/README.md`.
 
@@ -97,12 +93,11 @@ G="${GODOT_BIN:-godot}"   # ver «Configurar rutas» abajo
 python3 tools/import/import_map.py --map=<Nombre>                                # luz, ntts, widgets
 python3 tools/import/scaffold_map.py --map=<Nombre>                              # MapDefinition, map.tscn (inicios con su WizardSpot, una instancia de terrain.tscn), heights.png plano, nav.res vacío
 python3 -I tools/import/bake_ground_roles.py                                     # ground_roles.png: qué suelo (abierto, tierra, roca, camino) hay en cada celda
-bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/terrain/heights_from_original.gd -- --map=<tag> --scp="<archivo .scp>"   # el suelo del original: heights.png + void.png
-bash agent/harness/godot_run.sh $G --headless --path . --import                  # importa heights.png, ground_roles.png y light.png
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # dos veces
-bash agent/harness/godot_run.sh $G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # asientos, objetos sobre tierra, bases a nivel, caminos altar->manantial (sin --map: todos)
-bash agent/runs/run_050_maps.sh <tag>                                            # humo: IA contra IA 0,5 min
+$G --headless --path . --script res://tools/terrain/heights_from_original.gd -- --map=<tag> --scp="<archivo .scp>"   # el suelo del original: heights.png + void.png
+$G --headless --path . --import                  # importa heights.png, ground_roles.png y light.png
+$G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
+$G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # dos veces
+$G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # asientos, objetos sobre tierra, bases a nivel, caminos altar->manantial (sin --map: todos)
 ```
 
 Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es la verdad). Ojo con `--force`: pisa lo editado. Las plantas de un mapa que no es de James quedan vacías hasta tener los modelos de sus widgets. `room_selectable = false` en la definición lo saca de las salas.
@@ -115,7 +110,7 @@ Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es l
 2. En `map.tscn`, un `PlayerStart` por asiento bajo `MapProps/Starts` (`Start1`…`Start4`, con `slot` 1..N sin repetir) y su altar; mové el `WizardSpot` de cada inicio con el gizmo (ahí aparece el mago y hacia dónde mira); los manantiales bajo `MapProps/Founts`. Un edificio se arrastra bajo `Buildings`. En `test_flat4`, los asientos 1 y 2 están del mismo lado y 3 y 4 enfrente, porque el `2v2` junta 1+2 contra 3+4.
 3. Los bandos salen de los nodos: cada `PlayerStart` es un asiento (`slot`; `team` mayor que 0 aliada a los asientos que lo comparten, 0 = enemigo de todos) y cada `side` de un `NpcSpawn` un bando sin jugador. Los equipos de un modo los pone el modo.
 4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (y `light` si tiene) arrastrados desde el inspector, y `player_starts` (= cantidad de `PlayerStart`). `room_selectable = false` si es solo de prueba (las salas lo ofrecen con `--room-test-maps`).
-5. No hay lista que editar (`MapCatalog` recorre la carpeta). Horneá el navmesh (botón «Hornear navmesh» de `NavRegion`) y corré el validador: falla si los `PlayerStart` no coinciden con `player_starts`.
+5. No hay lista que editar (`MapCatalog` recorre la carpeta). Horneá el navmesh (botón «Hornear navmesh» de `NavRegion`) y corré `tools/audit/check_map.tscn -- --map=<tag>` (asientos, objetos sobre tierra, bases a nivel, caminos).
 
 Un mapa solo aparece en un modo si tiene un inicio por asiento: High Noon (2) ofrece `1v1`; `winter_wonder` y `test_flat4` (4) ofrecen también `2v2`, `ffa3` y `ffa4`.
 
@@ -126,7 +121,7 @@ Un modo (cuántos asientos, de qué equipo es cada uno, cómo se gana) es un `Ga
 1. Duplicá uno parecido (por ejemplo `2v2.tres`) y llamalo `<tag>.tres`.
 2. En el inspector: `tag` (el de `--mode=<tag>` y de la sala), `display_name` (una clave de `data/i18n/strings.csv`, como `MODE_2V2`; agregá la tuya con su texto), `team_of_seat` (el equipo de cada asiento, el 1 primero: `[0,1]` es 1 contra 1, `[0,0,1,1]` es 2 contra 2, `[0,1,2]` tres contra todos; los equipos van de 0 sin huecos) y `room_selectable`.
 3. Sumalo a `modes` en `data/modes/mode_catalog.tres`.
-4. Corré el validador. Avisa si ningún mapa tiene inicios para todos los asientos del modo; sin ese mapa, las pantallas no lo ofrecen.
+4. Si ningún mapa tiene inicios para todos los asientos del modo, las pantallas no lo ofrecen.
 
 Para probarlo sin pantallas: `--map=test_flat4 --mode=<tag>`.
 
@@ -148,7 +143,7 @@ Hace falta un mapa de 4 asientos: `winter_wonder`, o `test_flat4` para probar.
 - **Reglas de la partida** (duración, fuego amigo, topes): `data/match_rules.tres` (`MatchRules`).
 - **IA y dificultad:** `data/ai/`.
 - **Calidad gráfica:** `data/look/quality_*.tres`.
-- No se muta un `.tres` en runtime. Después de tocar números, el banco de determinismo va a cambiar de huella a propósito: `agent/det_baseline.txt` es la línea base: regrabala solo si el cambio de balance es lo que querías (`agent/README.md`).
+- No se muta un `.tres` en runtime.
 
 ## Relieve (mapas PBR) de un modelo
 
@@ -158,43 +153,33 @@ Cada textura de un modelo es un material en `scenes/bodies/materials/<owner>_<la
 - **Generar uno.** Arriba del inspector, en la sección «Relieve desde albedo», mové los knobs (la vista previa muestra el resultado), pulsá Generar y guardá con Ctrl+S. Escribe el PNG que falte, lo importa y lo asigna en un solo Ctrl+Z. Un PNG que ya existe se usa tal cual; «Sobrescribir» lo rehace y pierde lo que hayas retocado.
 - **Muchos a la vez.** Usá **Project > Tools > «Generar relieve…»** (carpeta o selección, con «Saltear existentes»). Por consola son dos pasos, porque un PNG nuevo se asigna recién después de importarlo:
   ```bash
-  bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
-  bash agent/harness/godot_run.sh $G --headless --path . --import
-  bash agent/harness/godot_run.sh $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
+  $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
+  $G --headless --path . --import
+  $G --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --recipe=res://addons/surface_maps/recipes/default.tres
   ```
-- **Recetas.** Hay dos en `addons/surface_maps/recipes/`. `default.tres` usa los valores de NormalMap-Online (strength 2,5, level 7, smoothing 0, sin paso alto, solo normal). `foliage.tres` agrega smoothing 1 para hojas finas, que con la receta por defecto se ven moteadas. Se usa en las plantas `<TAG>_plant*` y en los props de árboles y hojas (la lista está en `agent/harness/relief_batch_lists.py`). Para comparar recetas con números: `agent/harness/relief_recipe_probe.gd` y `python3 -I agent/harness/measure_mottle.py --albedo=<albedo.png> <normal.png>…`.
+- **Recetas.** Hay dos en `addons/surface_maps/recipes/`. `default.tres` usa los valores de NormalMap-Online (strength 2,5, level 7, smoothing 0, sin paso alto, solo normal). `foliage.tres` agrega smoothing 1 para hojas finas, que con la receta por defecto se ven moteadas. Se usa en las plantas `<TAG>_plant*` y en los props de árboles y hojas.
 - **Retocar.** El PNG es la fuente: editalo en Krita o en cualquier editor de imágenes y Godot lo reimporta. La receta con que se generó no se guarda.
-- **Verificar.** El `rules_suite` corre `surface_refs_cases` (ninguna referencia colgada y las mallas con normal map tienen tangentes) y `surface_maps_cases` (el generador). Con F6 en `debug/look/surface_lab.tscn` la luz orbita alrededor de los modelos (O pausa).
 
 ## PBR desde Blender
 
 Un modelo propio no necesita el generador: el `.glb` trae sus mapas.
 
 1. En Blender conectá los mapas al **Principled BSDF**: Base Color, Normal (con un nodo *Normal Map*, espacio tangente), Roughness y Metallic (un ORM: R oclusión, G rugosidad, B metal), y Emission si hace falta. No pases el umbral de glow 1,0 (VISUAL: nada de brillo plástico).
-2. Exportá a `assets/custom/models/<tag>.glb` (glTF 2.0). Si el `.glb` no trae tangentes, Godot las genera al importar (`meshes/ensure_tangents=true`, lo revisa `surface_refs_cases`). Godot convierte cada material en un `StandardMaterial3D` con sus mapas, y `tools/bake/new_creature.gd` no los pisa.
+2. Exportá a `assets/custom/models/<tag>.glb` (glTF 2.0). Si el `.glb` no trae tangentes, Godot las genera al importar (`meshes/ensure_tangents=true`). Godot convierte cada material en un `StandardMaterial3D` con sus mapas, y `tools/bake/new_creature.gd` no los pisa.
 3. Si exportaste solo el color, generá el relieve sobre la textura extraída con la sección «Relieve desde albedo» del inspector. El mapa queda al lado del albedo, no en `assets/surfaces/`.
 
-## Correr las pruebas y el validador
+## Correr el lint y los horneados
 
-Todo se corre desde `game/` y de a un Godot por vez (la cola es `agent/harness/godot_run.sh`).
+Todo se corre desde `game/` y de a un Godot por vez.
 
 ```bash
 G="${GODOT_BIN:-godot}"   # ver «Configurar rutas» abajo
 
 # Lint de convenciones (grep/awk, sin Godot, ~1 s; falla si un conteo sube sobre tools/lint/baseline.txt)
 bash tools/lint/conventions.sh
-
-# Validador del catálogo: imprime CATALOG PASS o CATALOG FAIL con el archivo que falla
-bash agent/harness/godot_run.sh $G --headless --path . --script res://debug/suite/catalog_cases.gd
-
-# Reglas, sin ventana
-bash agent/harness/godot_run.sh $G --headless --fixed-fps 600 --path . res://debug/suite/rules_suite.tscn
-
-# Banco de determinismo rápido, contra agent/det_baseline.txt
-bash agent/run_determinism.sh quick --no-window
 ```
 
-Desde el editor, **Project > Tools > Sacrifice** corre el validador, re-hornea el navmesh y hornea los modelos que faltan, y muestra la salida en un diálogo. El minimapa tiene un botón «Re-hornear minimapa» en el inspector de `MinimapTerrainBake`.
+Desde el editor, **Project > Tools > Sacrifice** re-hornea el navmesh y hornea los modelos que faltan, y muestra la salida en un diálogo. El minimapa tiene un botón «Re-hornear minimapa» en el inspector de `MinimapTerrainBake`.
 
 Los horneados por consola (sin `--force` no pisan lo editado a mano):
 
@@ -204,7 +189,7 @@ $G --headless --path . --script res://tools/bake/bake_body_scenes.gd -- --force 
 $G --headless --path . res://tools/bake/bake_nav.tscn                      # navmesh
 ```
 
-Una prueba nueva va en `debug/<dominio>/` (y en `agent/det_cases.txt` si es un caso del banco).
+Las pruebas son descartables: un flow o harness de AgentKit se regenera en `agent/` cuando hace falta y no se versiona.
 
 ## Herramientas que necesitan el juego original
 
@@ -213,10 +198,10 @@ Las rutas son relativas a `game/`.
 | Herramienta | ¿Necesita el original? | Qué produce |
 |---|---|---|
 | Jugar (F5), `godot --path game`, el servidor de salas | **No** | Nada: los assets ya están en `game/assets/original/` (LFS) |
-| Pruebas: `agent/run_determinism.sh`, `rules_suite`, `agent/runs/*.sh`, flows de AgentKit | **No** | PASS/FAIL, capturas en `agent/out/` |
+| Flows y capturas descartables de AgentKit | **No** | PASS/FAIL y capturas, no se versionan |
 | `tools/import/export_stats.py` | **Sí** | `assets/original/data/*.json` (estadísticas de criaturas, hechizos, magos, edificios) |
 | `tools/import/export_skeletal.py` | **Sí** | `assets/original/models/*.glb` + `index.json` (esqueleto y animaciones) |
-| `tools/import/export_skeletal_reference.py` | **Sí** | OBJ de referencia en `agent/out/skeletal_ref/` (no se versiona) |
+| `tools/import/export_skeletal_reference.py` | **Sí** | OBJ de referencia en la carpeta temporal del sistema (`--out` para cambiarla) |
 | `tools/import/import_textures.py` | **Sí** | `assets/original/textures/*.png` |
 | `tools/import/import_props.py` | **Sí** | `assets/original/props/*.glb` (edificios y plantas) |
 | `tools/import/import_themes.py` | **Sí** | `assets/original/themes/<dios>/` (cielo, sol, borde) |
@@ -257,7 +242,7 @@ export SAC_INSTALL="/ruta/a/Sacrifice/data"
 cd game && python3 tools/import/import_map.py --list
 ```
 
-**Godot y Blender** (los scripts de `game/agent/` y `game/tools/`). Todos leen `agent/harness/env.sh`, que calcula la raíz del proyecto desde su propia ubicación y elige:
+**Godot y Blender** (los scripts de `game/tools/`). Eligen:
 
 - `GODOT_BIN`: la variable de entorno si está; si no, `godot` del `PATH`; si no, el de macOS (`/Applications/Godot.app/Contents/MacOS/Godot`).
 - `BLENDER_BIN`: la variable de entorno si está; si no, `blender` del `PATH`; si no, el de macOS (`/Applications/Blender.app/Contents/MacOS/Blender`).

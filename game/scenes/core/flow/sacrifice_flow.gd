@@ -39,7 +39,7 @@ var _cli_setup := MatchSetup.new()
 func _ready() -> void:
 	pick = default_pick.duplicate() as WizardPick
 	boot_path = "res://scenes/core/boot.tscn"
-	## `--world=res://debug/….tscn` on the dedicated and its clients plays a debug scene online.
+	## `--world=res://<scene>.tscn` on the dedicated and its clients plays another world scene online.
 	world_path = MpBoot.user_value("world", "res://scenes/match/match.tscn")
 	joining_status = tr("UI_FLOW_JOINING")
 	join_fail_status = tr("UI_FLOW_JOIN_FAIL")

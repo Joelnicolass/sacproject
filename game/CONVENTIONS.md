@@ -14,7 +14,7 @@ bash tools/lint/conventions.sh --update-baseline
 
 ```
 scenes/<system>/
-  README.md            10 líneas: qué es · quién habla con quién · cómo agregar uno · cómo se verifica (debug/suite)
+  README.md            10 líneas: qué es · qué no · quién habla con quién · cómo se edita
   <system>.tscn        la escena compuesta (la raíz es un nodo flaco)
   <system>.gd          ≤150 líneas (raíz de un actor replicado: ≤200)
   <part>.gd/.tscn      un hijo por responsabilidad
@@ -60,7 +60,7 @@ Regla del usuario: lo que se ve, se mueve o se mide en el juego es un nodo en un
 | C18 | Gameplay no busca contenido por tag de texto: recibe el Resource por `@export`. | `GameData.(creature\|spell\|ability\|wizard\|god\|book)*(`, `MapCatalog.`, `GameModeCatalog.` | spawners (`*spawn*.gd`), `scenes/net/`, `scenes/core/catalog/` |
 | C18b | Lo mismo para las búsquedas por id que C18 no ve: la pantalla o el gameplay reciben el Resource, solo los catálogos y el cable convierten texto en Resource. | `GameCatalog.shared().god(`/`.building(`, `TypeRef.`, `AiProfile.for_god(`, `BiomeRules.has_look(`, `MatchWire.decode_` en `scenes/` | spawners, `scenes/net/`, `scenes/core/catalog/` |
 | C18c | Un componente recibe la habilidad, el hechizo o la pasiva como Resource, no como texto. | `@export` String/StringName/PackedStringArray con nombre `tag`, `*_tag`, `*_tags`, `*_spell`, `spell`, `passive_*` y `const …TAGS` en `scenes/units`, `ai`, `wizards` y `sacrifice` | el id de red (`tag` en `*_type.gd`, `creature_tag`, `wizard_tag`) |
-| C19 | Un `.tres` de `data/` no guarda posiciones: eso es un nodo. | archivos `.tres` en `data/` con `*_offset/_position/_origin/_transform/_pos`, `position*`, `offsets`, `origin`, `transform`, `Transform3D(`. `debug/` se informa aparte (`info:`), no sube el listón | `roughness_offset` |
+| C19 | Un `.tres` de `data/` no guarda posiciones: eso es un nodo. | archivos `.tres` en `data/` con `*_offset/_position/_origin/_transform/_pos`, `position*`, `offsets`, `origin`, `transform`, `Transform3D(` | `roughness_offset` |
 | C20 | Un radio de lugar o de efecto es un `CollisionShape3D`, no un número de `MatchRules`. | `@export` `*_radius/_height/_distance` en `scenes/match/match_rules.gd` | ninguna |
 | C21 | Una referencia es un tipo (`PackedScene`, `Resource`), no una ruta en texto. | `@export_file` en `scenes/` | ninguna |
 | C22 | Un tiempo que edita un humano va en segundos (`_s`); la simulación lo pasa a ticks con `MatchClock.ticks_for`. | `@export` con `_ticks` o `frames` en el nombre, en `scenes/` (`@export_storage` no cuenta) | `scenes/ui/`, `scenes/net/`, celdas de atlas (`h_frames`, `v_frames`, `frames_h`, `frames_v`, `frames_per_s`), resync de red (`resync_ticks`) |
@@ -86,7 +86,7 @@ var muzzle_pos := muzzle.global_position
 - **Nada disperso.** Lo que un humano edita junto vive en UN lugar que se abre y se ve en el viewport, con nodos estándar de Godot. Sin cadenas de `.tres` que se referencian entre sí cuando una escena o un recurso embebido alcanza.
 - **Pocos scripts genéricos, muchos nodos y `.tres`.** Nunca un script por hechizo, criatura o edificio si una pieza común con knobs alcanza (ejemplo: `StructureAction` para Manalith y Shrine).
 - **No inventar.** Todo dato o comportamiento del original se verifica con sacengine (`archivo:línea`), los datos horneados y REA sobre el ejecutable; lo que no se pudo confirmar se marca NO VERIFICADO.
-- **Debug para verificar, edición en las escenas reales.** El developer arma lo que necesite en `debug/<sistema>/` (escenas F6, casos de la suite) para verificar su corte. Las herramientas que usa un humano para editar viven en las escenas reales (p. ej. el nodo `Look` del `map.tscn`), nunca solo en `debug/`, porque `debug/` se borra al terminar el refactor.
+- **Verificar con descartables, editar en las escenas reales.** No hay carpeta `debug/` ni banco versionado. Una prueba de un corte se regenera cuando hace falta en `agent/` con AgentKit (flujo, captura o harness), se usa y no se guarda (`agent/` está en `.gitignore`). Las herramientas que usa un humano para editar viven en las escenas reales (p. ej. el nodo `Look` del `map.tscn`) o en `tools/`.
 - **Portable.** Sin rutas personales en archivos versionados; el producto no necesita el juego original; las herramientas que sí lo necesitan lo dicen al arrancar.
 - **Medible.** Un arreglo visual se cierra con una captura de cámara fija y un criterio numérico, no a ojo.
 
@@ -98,10 +98,9 @@ What: a creature sees foes inside its Vision area; the side remembers them for `
 Not: who to attack (Engagement), what the AI knows (AiPerception).
 Talks to: Vision.seen(foe) goes up to UnitBody -> Engagement; VisionSides joins every Vision of a side.
 Edit: unit.tscn/Vision radius_m · data/creatures/<name>.tres vision_m.
-Check: debug/units/vision_range.tscn (F6) · rules_suite vision_cases.
 ```
 
-Las cinco líneas son obligatorias: What / Not / Talks to / Edit / Check. Si el README ya tenía texto cierto y útil, queda debajo de una línea `---`.
+Las cuatro líneas son obligatorias: What / Not / Talks to / Edit. Una línea `Check:` opcional dice cómo se verifica sin archivos descartables (un `--log=`, un nodo en Remote, una herramienta de `tools/`). Si el README ya tenía texto cierto y útil, queda debajo de una línea `---`.
 
 ## 4. Datos: antes y después
 
@@ -141,7 +140,7 @@ Pocas plantas en un lugar: `VegetationPatch` (especie, `radius_m`, `count`, `see
 - ¿Un hijo nombra a su padre o a un hermano?
 - ¿Hay un socket `@export` sin warning cuando falta?
 - ¿Quedó un campo crudo (`flags`, `Dictionary`, String-tipo) en un `.tres`?
-- ¿El corte se puede verificar (escena `debug/<sistema>/` con F6, caso en la suite o captura de `agent/harness/`)? ¿Alguna herramienta de edición quedó solo en `debug/`?
+- ¿El corte se puede verificar (F6 sobre la escena real, `--log=`, o una prueba descartable de AgentKit en `agent/` que no se versiona)? ¿Alguna herramienta de edición quedó fuera de las escenas reales o de `tools/`?
 - ¿El README del sistema dice quién habla con quién?
 - ¿Hay un `MpKit.` nuevo fuera de la allowlist?
 - ¿El lint está verde, y bajó el conteo de lo que el corte tocaba?

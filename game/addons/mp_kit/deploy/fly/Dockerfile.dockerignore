@@ -12,7 +12,6 @@ fly.toml
 # references these folders, and no class_name defined in them is used outside them).
 # Kept on purpose: tools/ (data/nav/nav_bake.tres and the terrain_tools / sacrifice_tools addons preload scripts there).
 agent
-debug
 rfcs
 docs
 reviews

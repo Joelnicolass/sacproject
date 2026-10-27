@@ -266,7 +266,7 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 ## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots.
 ## Here the units furthest along `yaw` take the front row, the next ones the row
 ## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
-## Ref: F88 round 3, debug/map/crowd_rock.tscn; sacengine numCreaturesInGroup = 12, state.d:29205.
+## Ref: F88 round 3; sacengine numCreaturesInGroup = 12, state.d:29205.
 func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int) -> PackedInt32Array:
 	var n := units.size()
 	var result := PackedInt32Array()

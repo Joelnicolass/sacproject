@@ -18,7 +18,7 @@ const BYTES_PER_VERTEX := 8
 ## The rig this layer belongs to (look_rig.tscn sets it): its `ground` is the one to follow.
 @export var rig: LookRig
 
-## What the last frame sent to the GPU and the CPU time it took (debug/perf/terrain_deform_bench prints them).
+## What the last frame sent to the GPU and the CPU time it took.
 var uploaded_bytes := 0
 var upload_usec := 0
 

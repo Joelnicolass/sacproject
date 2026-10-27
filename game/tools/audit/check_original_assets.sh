@@ -7,11 +7,12 @@
 #   bash tools/audit/check_original_assets.sh            exit 0 = every family identical
 # The ground of each map (scenes/map/maps/<tag>/heights.png and void.png) is not an asset of assets/original/: run
 # tools/terrain/heights_from_original.gd, which writes only what changed. The icon file names are checked by
-# tools/audit/check_icon_files.gd through agent/harness/godot_run.sh.
+# tools/audit/check_icon_files.gd through the AgentKit Godot queue (addons/agent_kit/determinism/harness/godot_run.sh).
 set -u
 case "${1:-}" in -h|--help) head -n 3 "$0" | tail -n 2 | cut -c3-; exit 0 ;; esac
-. "$(dirname "$0")/../../agent/harness/env.sh"
-GODOT="${GODOT:-$GODOT_BIN}"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+# Godot: $GODOT, else $GODOT_BIN, else `godot` in the PATH, else the macOS default install.
+GODOT="${GODOT:-${GODOT_BIN:-$(command -v godot || echo /Applications/Godot.app/Contents/MacOS/Godot)}}"
 # Fails early (status 2) with the explanation in Spanish when the original install is missing or invalid.
 python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import sac_formats.install' "$ROOT/tools/import" || exit 2
 TMP="$(mktemp -d)"
@@ -37,5 +38,5 @@ done
 python3 -I tools/import/import_ui.py --out="$TMP/ui" >/dev/null && { cmp_dir ui "$TMP/ui/ui" "$A/ui"; cmp_dir fx "$TMP/ui/fx" "$A/fx"; } || { echo "FAIL  ui/fx"; fail=1; }
 python3 -I tools/import/export_stats.py --out "$TMP/data" >/dev/null 2>&1 && cmp_dir data "$TMP/data" "$A/data" || { echo "FAIL  data"; fail=1; }
 python3 -I tools/import/import_ui.py --icon-files="$TMP/icons.tsv"
-if bash agent/harness/godot_run.sh "$GODOT" --headless --path "$ROOT" --script res://tools/audit/check_icon_files.gd -- --list="$TMP/icons.tsv" 2>&1 | grep -q " 0 failures"; then echo "OK    icon file names (GDScript = Python)"; else echo "DIFF  icon file names"; fail=1; fi
+if GODOT_RUN_NS=sacproject bash addons/agent_kit/determinism/harness/godot_run.sh "$GODOT" --headless --path "$ROOT" --script res://tools/audit/check_icon_files.gd -- --list="$TMP/icons.tsv" 2>&1 | grep -q " 0 failures"; then echo "OK    icon file names (GDScript = Python)"; else echo "DIFF  icon file names"; fail=1; fi
 [ $fail = 0 ] && echo "ASSETS PARITY PASS" || { echo "ASSETS PARITY FAIL"; exit 1; }

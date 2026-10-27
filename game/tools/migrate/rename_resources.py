@@ -19,7 +19,7 @@ What it does with --apply (without it, it only prints the table and the plan):
      already exists, or when a new name is not snake_case;
   2. `git mv` of each file together with its `.uid` / `.import` siblings (a uid inside the header travels with the file);
   3. rewrites `res://<old>` (and the bare `<old>` path used by scripts) to the new path in the text files of game/,
-     except .godot/, rfcs/, reviews/, changes/, agent/out/, assets/original/ and this tool (history and generated data);
+     except .godot/, rfcs/, reviews/, changes/, assets/original/ and this tool (history and generated data);
   4. looks for any old path left in those files and exits 1 if one remains.
 Exit codes: 0 ok, 1 an old path remains or a step failed, 2 the plan is invalid (nothing was touched).
 """
@@ -34,7 +34,7 @@ import unicodedata
 GAME = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TEXT_EXT = ('.tres', '.tscn', '.gd', '.json', '.cfg', '.txt', '.sh', '.py', '.gdshader', '.import')
 TEXT_NAMES = ('project.godot',)
-SKIP_PREFIX = ('.godot/', 'rfcs/', 'reviews/', 'changes/', 'agent/out/', 'assets/original/',
+SKIP_PREFIX = ('.godot/', 'rfcs/', 'reviews/', 'changes/', 'assets/original/',
                'tools/migrate/rename_resources.py')
 SIBLINGS = ('.uid', '.import')
 NAME_OK = re.compile(r'^[a-z][a-z0-9_]*$')

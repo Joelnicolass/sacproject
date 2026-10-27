@@ -22,8 +22,7 @@ Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se
 
 - Una criatura nueva: «Nueva criatura desde modelo…» (`tools/bake/new_creature.gd`) crea `creatures/<nombre>.tres` sobre `melee/fist.tres` y lo asigna a su `Sounds`. Si existe `assets/custom/sounds/creatures/<nombre>/` con `<evento>[_n].ogg|wav` (por ejemplo `death_1.ogg`, `death_2.ogg`), los pone en los campos; si no, el set queda vacío y se arrastran los archivos a los campos en el inspector.
 - Cada archivo de un evento es una variante del mismo cue. Los eventos son los campos del set; un `swing` sin `shoot` suena también al disparar (el mismo cue). `selected`, `ack`, `attack_ack`, `annoyed` e `incantation` van al bus `Voice`; el resto, a `SFX`.
-- No pisa un `.tres` que ya existe (con `-- --force` sí, y se pierde lo que editaste). Un set propio nunca nombra `assets/original/` (lo valida `debug/suite/catalog_cases.gd`).
-- Prueba: `lab_052i.tres` en `bash agent/runs/run_audio_cases.sh` (dos `.wav` de `debug/audio/fixtures/custom_sounds/creatures/testmonster/`).
+- No pisa un `.tres` que ya existe (con `-- --force` sí, y se pierde lo que editaste). Un set propio nunca nombra `assets/original/`.
 
 ## De dónde salieron los sets del original
 

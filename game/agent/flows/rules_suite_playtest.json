@@ -1,8 +1,0 @@
-{
-  "scene": "res://debug/suite/rules_suite.tscn",
-  "wait_first": 1.5,
-  "steps": [
-    { "wait": 0.8 },
-    { "shot": "rules_suite.png" }
-  ]
-}

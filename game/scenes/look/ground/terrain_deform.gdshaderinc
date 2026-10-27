@@ -18,8 +18,8 @@ global uniform float terrain_deform_on;
 instance uniform float deform_follow = 1.0;
 
 // Mirror of TerrainGrid (scenes/map/terrain/terrain_grid.gd), the one copy in the shaders: DEFORM_CELL = CELL_M, the metres
-// between two vertices; DEFORM_LAST = SIDE - 1, the last column and row of the lattice. debug/suite/grid_constants_cases.gd
-// fails when they differ.
+// between two vertices; DEFORM_LAST = SIDE - 1, the last column and row of the lattice. Change both
+// together.
 const float DEFORM_CELL = 10.0;
 const float DEFORM_LAST = 255.0;
 

@@ -69,7 +69,7 @@ Mensajes binarios, little-endian:
 | Dirección | Mensaje |
 |---|---|
 | relay → peer | `0x01 WELCOME u32 tu_id` · `0x02 JOIN u32 id` (al host) · `0x03 LEAVE u32 id` (al host) · `0x04 DATA u32 from u8 canal u8 modo bytes…` |
-| peer → relay | `0x04 DATA i32 to u8 canal u8 modo bytes…` (host: un id, `0` = todos, `-id` = todos menos id; cliente: siempre al host) · `0x05 KICK u32 id` (solo el host) |
+| peer → relay | `0x04 DATA i32 to u8 canal u8 modo bytes…` (host: un id, `0` = todos, `-id` = todos menos id; cliente: siempre al host) · `0x05 KICK u32 id [motivo]` (solo el host; el relay cierra a ese cliente con `4007` y el motivo, así sabe por qué lo rechazaron) |
 
 Conexión: `wss://relay/?role=host&room=SALA` con el header `X-Relay-Secret: CLAVE` (también se acepta `&secret=CLAVE`), o `?role=client&room=SALA`.
 

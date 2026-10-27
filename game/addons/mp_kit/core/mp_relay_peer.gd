@@ -62,6 +62,8 @@ func start(url: String, room: String, host: bool, secret: String = "", tls: TLSO
 ## Relay close codes the kit acts on.
 const CLOSE_ROOM_IN_USE := 4009
 ## What each relay close code means, for the log of a peer the relay closed.
+## Host: peer id -> why it is being kicked (set_kick_reason).
+var _kick_reasons: Dictionary = {}
 const CLOSE_REASONS := {
 	4004: "no host in this room (wrong relay_room or port, or the server is not up)",
 	4005: "the host left the room",
@@ -110,7 +112,9 @@ func _poll() -> void:
 				push_error("MpRelayPeer: the relay closed the host (%d %s)" % [_ws.get_close_code(), _ws.get_close_reason()])
 			else:
 				var code := _ws.get_close_code()
-				push_warning("MpRelayPeer: the relay closed this client (%d): %s" % [code, CLOSE_REASONS.get(code, _ws.get_close_reason())])
+				var why := _ws.get_close_reason()
+				push_warning("MpRelayPeer: the relay closed this client (%d): %s%s" % [code, CLOSE_REASONS.get(code, why),
+					": " + why if code in CLOSE_REASONS and not why.is_empty() else ""])
 			_drop_all()
 		return
 	while _ws.get_available_packet_count() > 0:
@@ -229,11 +233,19 @@ func _close() -> void:
 
 
 ## The host closes a client: the relay closes its socket (KICK) and its packets are dropped from now on.
+## Host: why the next close of `peer` happens; the relay passes it to the client as the close reason.
+func set_kick_reason(peer: int, reason: String) -> void:
+	_kick_reasons[peer] = reason
+
+
 func _disconnect_peer(peer: int, _force: bool) -> void:
 	var msg := PackedByteArray()
 	msg.resize(5)
 	msg[0] = KICK
 	msg.encode_u32(1, peer)
+	## The reason after the id (old relays read only the id). A WebSocket close reason fits 123 bytes.
+	msg.append_array(str(_kick_reasons.get(peer, "")).to_utf8_buffer().slice(0, 100))
+	_kick_reasons.erase(peer)
 	_ws.send(msg)
 	if _peers.erase(peer):
 		peer_disconnected.emit(peer)

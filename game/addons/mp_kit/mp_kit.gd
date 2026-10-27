@@ -421,7 +421,7 @@ func _on_peer_connected(id: int) -> void:
 		return
 	if _admitting():
 		if _awaiting_ticket.size() >= max_pending_admission:
-			multiplayer.multiplayer_peer.disconnect_peer(id)
+			_cut_peer(multiplayer.multiplayer_peer, id, "too_many_pending")
 			return
 		_awaiting_ticket[id] = true
 		get_tree().create_timer(admission_timeout_s).timeout.connect(_on_admission_timeout.bind(id))
@@ -471,7 +471,16 @@ func _reject_peer(id: int, reason: String) -> void:
 	var closing := multiplayer.multiplayer_peer
 	get_tree().create_timer(REJECT_FLUSH_S).timeout.connect(func() -> void:
 		if closing != null and multiplayer.multiplayer_peer == closing and multiplayer.get_peers().has(id):
-			closing.disconnect_peer(id))
+			_cut_peer(closing, id, reason))
+
+
+## Server: disconnects `id`, saying why in the log (every path that turns a peer away goes through here). Through the relay the
+## reason also travels in the close, so the client knows it even if the admission_rejected RPC was lost.
+func _cut_peer(peer: MultiplayerPeer, id: int, reason: String) -> void:
+	push_warning("MpKit: the server turned peer %d away (%s)" % [id, reason])
+	if peer.has_method(&"set_kick_reason"):
+		peer.call(&"set_kick_reason", id, reason)
+	peer.disconnect_peer(id)
 
 
 ## Always presents (a ticket, a stored credential or ""): a server that admits nobody ignores it.
@@ -542,7 +551,7 @@ func _admit_at_gate(sender: int, credential: String) -> void:
 	var stale := gate.displaced_by(sender, credential)
 	if stale != 0:
 		_on_peer_disconnected(stale)
-		multiplayer.multiplayer_peer.disconnect_peer(stale)
+		_cut_peer(multiplayer.multiplayer_peer, stale, "replaced_by_rejoin")
 	var seat := gate.admit(sender, credential)
 	if seat.slot <= 0:
 		_reject_peer(sender, seat.reason)

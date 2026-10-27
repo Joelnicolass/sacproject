@@ -16,7 +16,7 @@
 //                   0x04 DATA u32 from u8 channel u8 mode bytes…
 //   peer -> relay:  0x04 DATA i32 to u8 channel u8 mode bytes…   (host: to = a client id, 0 = every client,
 //                   -id = every client but id; a client: to is ignored, it always reaches the host)
-//                   0x05 KICK u32 id   (host only: the relay closes that client, 4007)
+//                   0x05 KICK u32 id [reason]   (host only: the relay closes that client, 4007, with the reason)
 // The host is id 1; clients get 2, 3… A room with a live host is taken: a second host is refused (4009). A host
 // silent for RELAY_HOST_SILENT_MS (pinged three times in that span, at most every 5 s) is dropped (4010) and its room
 // freed. Clients of a room without a host are refused (4004); when the host leaves every client of the room is
@@ -153,7 +153,14 @@ function attachHost(conn, name) {
   conn.send(u32(WELCOME, 1));
   log(`host ${name}`);
   conn.onMessage = (msg) => {
-    if (msg.length >= 5 && msg[0] === KICK) { room.clients.get(msg.readUInt32LE(1))?.close(4007, "kicked by the host"); return; }
+    if (msg.length >= 5 && msg[0] === KICK) {
+      const id = msg.readUInt32LE(1);
+      // An optional reason after the id (MpKit sends why it turned the client away); it becomes the close reason.
+      const why = msg.length > 5 ? msg.subarray(5, 105).toString("utf8").replace(/[^\x20-\x7e]/g, "") : "";
+      if (room.clients.has(id)) log(`host ${name} kicked client ${id}${why ? ` (${why})` : ""}`);
+      room.clients.get(id)?.close(4007, why || "kicked by the host");
+      return;
+    }
     if (msg.length < 7 || msg[0] !== DATA) return;
     const to = msg.readInt32LE(1);
     const out = forward(1, msg);

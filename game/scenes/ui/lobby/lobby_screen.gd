@@ -10,6 +10,8 @@ extends Control
 
 ## Where the room server is. `--lobby=host:port` wins over the saved values.
 @export var endpoint: MpLobbyEndpoint
+## How the online rooms are reached (the relay); applied here, so solo, LAN and «Servidor local» keep ENet.
+@export var online: OnlineNetwork
 ## Seconds a notice stays on screen.
 @export var notice_s: float = 4.0
 
@@ -33,8 +35,7 @@ func _ready() -> void:
 	_list_view.back_requested.connect(_on_menu)
 	_create_view.cancelled.connect(_on_create_cancelled)
 	var client := MpLobby.client
-	## RFC-034 034g (F184): a drop of the lobby (also during a match) is not the end: the client comes back with its token and
-	## keeps its seat for the server's `resume_grace_s`.
+	## RFC-034 034g (F184): a lobby drop (also in a match) is not the end: it comes back with its token and keeps its seat (`resume_grace_s`).
 	client.auto_resume = true
 	client.lobby_resuming.connect(_on_lobby_resuming)
 	client.lobby_joined.connect(_on_lobby_joined)
@@ -68,10 +69,10 @@ func _refresh() -> void:
 func _on_connect_requested(display_name: String, host_override: String) -> void:
 	var where := endpoint.resolved() if endpoint != null else MpLobbyEndpoint.new()
 	var host := host_override if not host_override.is_empty() else where.host
+	online.apply()
 	print("pantalla de salas: conectando a %s:%d (%s) como \"%s\"" % [host, where.port, MpLobby.client.transport, display_name])
 	var err := MpLobby.connect_to(host, where.port, display_name)
 	if err != OK:
-		print("pantalla de salas: no se pudo abrir la conexión (%s)" % error_string(err))
 		_connect_view.show_message(LobbyText.lost_text("connect_failed"))
 		return
 	_refresh()
@@ -134,6 +135,7 @@ func _on_admission_rejected(_reason: String) -> void:
 func _on_menu() -> void:
 	SacrificeFlow.from_lobby = false
 	MpLobby.client.close_connection()
+	online.restore()
 	## By path: the menu points to this screen, so the screen cannot hold the menu as a resource (cyclic).
 	get_tree().change_scene_to_file(SacrificeFlow.boot_path)
 
@@ -145,5 +147,4 @@ func _show_notice(text: String) -> void:
 
 
 func _clear_notice() -> void:
-	_notice.text = ""
 	_notice.visible = false

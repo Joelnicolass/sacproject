@@ -1,6 +1,6 @@
 extends "res://addons/mp_kit/tests/mp_test.gd"
 
-## The world helpers, solo: MpState.watch (current value, then each change), MpLocalSeat (the seat on this screen,
+## The world helpers, solo: MpKit.ready_peers, MpState.watch (current value, then each change), MpLocalSeat (the seat on this screen,
 ## preview_slot) and MpSpawner.spawn_here (spawns where the rules run).
 
 
@@ -22,6 +22,10 @@ func test_state_watch_gives_the_current_value_then_changes() -> void:
 	state.watch(&"missing", func(value: Variant) -> void: empty.append(value), -1)
 	check(empty == [-1], "a key with no value yet gives the default")
 	state.free()
+
+
+func test_ready_peers_solo() -> void:
+	check(MpKit.ready_peers().is_empty(), "solo: no peer to play a one-off effect for")
 
 
 func test_local_seat_solo_and_preview() -> void:

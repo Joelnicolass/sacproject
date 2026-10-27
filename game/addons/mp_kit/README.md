@@ -359,7 +359,7 @@ El kit **no lee** el dict. **No reenvía solo**. Si el servidor no hace `broadca
 | Quién | Método | Qué pasa |
 |-------|--------|----------|
 | Cliente, 1P, o el propio servidor | `MpKit.send_custom(channel, data)` | Cliente → RPC al servidor. 1P / servidor: emite `custom_received` **en local** (`from_peer` 1 o tu unique id). |
-| Solo servidor | `MpKit.broadcast_custom(channel, data)` | Emite en el servidor (`from_peer` = 1) **y** manda a todos los clientes. |
+| Solo servidor | `MpKit.broadcast_custom(channel, data)` | Emite en el servidor (`from_peer` = 1) **y** manda a todos los clientes. `broadcast_custom(channel, data, true)`: solo a los peers con el mundo cargado (`MpKit.ready_peers()`), para un efecto de un instante que un peer que todavía carga perdería. |
 | Solo servidor | `MpKit.push_custom_to(peer_id, channel, data)` | Un cliente. El servidor **no** emite en local. |
 | Todos | señal `MpKit.custom_received(channel, data, from_peer)` | Ahí recibís. |
 

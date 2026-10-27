@@ -1,9 +1,9 @@
 extends Node
 
 ## The one door to every visual effect: a burst (ParticleType), a bolt (BeamType) or a scene (PackedScene with an FxScene root).
-## `broadcast*` is what the server calls: one RPC carries the id of the effect (FxWire) and each peer draws it with its own pools (%Bursts,
-## %Beams); `play*` draws on this peer only. Every play says `played(kind, fx, at)` first, also headless (FxSounds, CameraShake and the checks
-## listen); a headless process then returns and instances nothing.
+## `broadcast*` is what the server calls: one RPC with the id (FxWire) to each peer with its world loaded (MpKit.ready_peers), and here
+## too; each draws it with its own pools (%Bursts, %Beams). `play*` draws on this peer only. Every play says `played(kind, fx, at)`
+## first, also headless (FxSounds, CameraShake and the checks listen); a headless process then returns and instances nothing.
 ## What it does not do: keep the pools, turn ids into effects (FxWire), or decide who plays what.
 
 ## `kind` is a KIND_* constant, `fx` the ParticleType, BeamType or PackedScene, `at` where (the middle of a beam).
@@ -51,12 +51,13 @@ func puff(fx: ParticleType, at: Vector3) -> void:
 	_burst(KIND_PUFF, fx, at, Vector3.ZERO)
 
 
-## `play` on every peer (the server calls it; a client never does).
+## `play` on every peer with a world (the server calls it; a client never does).
 func broadcast(fx: ParticleType, at: Vector3, dir := Vector3.ZERO) -> void:
-	if fx != null and _may_send():
-		_play_everywhere.rpc(FxWire.id_of(fx), at, dir)
-	elif fx != null and not MpKit.is_networked():
-		play(fx, at, dir)
+	if fx == null or _is_client():
+		return
+	for peer_id in MpKit.ready_peers():
+		_play_everywhere.rpc_id(peer_id, FxWire.id_of(fx), at, dir)
+	play(fx, at, dir)
 
 
 ## A bolt of `beam` from `from` to `to`. With `follow`, the end keeps its offset from that node while it lives.
@@ -70,13 +71,12 @@ func play_beam(beam: BeamType, from: Vector3, to: Vector3, follow: Node3D = null
 
 ## `follow` travels as its path (the units have the same path on every peer).
 func broadcast_beam(beam: BeamType, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
-	if beam == null:
+	if beam == null or _is_client():
 		return
 	var path := str(follow.get_path()) if follow != null and follow.is_inside_tree() else ""
-	if _may_send():
-		_play_beam_everywhere.rpc(FxWire.id_of(beam), from, to, path)
-	elif not MpKit.is_networked():
-		play_beam(beam, from, to, follow)
+	for peer_id in MpKit.ready_peers():
+		_play_beam_everywhere.rpc_id(peer_id, FxWire.id_of(beam), from, to, path)
+	play_beam(beam, from, to, follow)
 
 
 ## A scene whose root is an FxScene, at `at`: it goes under the current scene, answers `play(params)` and frees itself. Never headless.
@@ -101,12 +101,11 @@ func play_scene(packed: PackedScene, at: Vector3, params: Dictionary) -> void:
 
 
 func broadcast_scene(packed: PackedScene, at: Vector3, params: Dictionary) -> void:
-	if packed == null:
+	if packed == null or _is_client():
 		return
-	if _may_send():
-		_play_scene_everywhere.rpc(FxWire.id_of(packed), at, params)
-	elif not MpKit.is_networked():
-		play_scene(packed, at, params)
+	for peer_id in MpKit.ready_peers():
+		_play_scene_everywhere.rpc_id(peer_id, FxWire.id_of(packed), at, params)
+	play_scene(packed, at, params)
 
 
 func _burst(kind: StringName, fx: ParticleType, at: Vector3, dir: Vector3) -> void:
@@ -117,8 +116,9 @@ func _burst(kind: StringName, fx: ParticleType, at: Vector3, dir: Vector3) -> vo
 		_bursts.play(fx, at, next_particle_seed(), dir)
 
 
-static func _may_send() -> bool:
-	return MpKit.is_networked() and MpKit.is_server()
+## A client never broadcasts; the server (or solo) sends to the peers with a world and plays here (a dedicated only says `played`).
+static func _is_client() -> bool:
+	return MpKit.is_networked() and not MpKit.is_server()
 
 
 static func _is_headless() -> bool:

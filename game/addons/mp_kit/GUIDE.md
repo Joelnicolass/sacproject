@@ -548,6 +548,8 @@ func mp_all_flash() -> void:
 - Solo el servidor puede llamar `to_all`. Corre ahí y en cada peer que ya tiene el nodo.
 - El que entra después **no** lo recibe. Para algo que tiene que quedar (un color, una puerta abierta), usá **Sync** o `MpState`.
 
+**¿Un efecto o un estado?** Un efecto es un momento: un destello, un sonido, una sacudida. Va por `to_all` (o por un `@rpc` tuyo), y el que no estaba se lo pierde, y está bien. Un estado es lo que queda: una marca en el piso, una puerta abierta, un puntaje. Va en **Sync**, en `MpState` (una lista de marcas en una clave) o como un nodo que crea un spawner: el que entra o vuelve lo recibe al cargar, sin que nadie lo mande de nuevo. Si mandás efectos con un `@rpc` tuyo, mandalos a `MpKit.ready_peers()` (los peers con el mundo cargado) con `rpc_id`, y reproducilo también en el servidor si se ve ahí: un peer que todavía carga lo jugaría sin mundo. `MpKit.broadcast_custom(channel, data, true)` hace lo mismo para el túnel.
+
 ### 6.8 Más del `MpActor`
 
 | Llamada | Qué hace |
@@ -735,7 +737,7 @@ Un `MpMatch` en el mundo dice cuándo empieza la partida, quién se fue y quién
 - **Antes del arranque** los asientos libres están abiertos. El mundo queda **pausado en todos los peers** hasta que cargan los asientos que espera: todos por defecto (`start_seats` = 0, igual en Host LAN y en un dedicado a mano; en una partida de sala, todos los del ticket). `--start-seats=N` cambia ese número sin tocar la escena. Pasado `load_timeout_s` (15 s) desde el primero que entró, arranca con los que cargaron; mientras tanto el HUD dice que espera (`MpWaitingLabel`, `Hud/Waiting`: «Waiting for players (1/4)»). En Host LAN el host no tiene que esperar: el botón **Start now** del HUD (`MpStartButton`, en `Hud/Start` del `MpWorld`) arranca con los que ya cargaron.
 - **Después del arranque** solo vuelve un asiento que se fue, dentro de `rejoin_grace_s`, al mismo slot (*rejoin*), salvo que esté prendido **`late_join`** (inspector del `MpFlow` o `--late-join`; apagado por defecto): entonces un recién llegado todavía toma un asiento libre, y un asiento abandonado pasada la gracia queda libre otra vez. Una partida de sala nunca tiene late join (el ticket nombra cada asiento). En LAN el cliente vuelve solo con la credencial que el servidor le dio al sentarlo (en memoria, por `host:puerto`); en una sala, con su ticket. Si el servidor todavía no notó que el cliente se cayó, gana la credencial (o el ticket): se suelta la conexión vieja y el asiento vuelve como rejoin. Cualquier otro peer se rechaza con un motivo: `match_started`, `full`, `grace_over`, `slot_taken`. El cliente recibe `admission_rejected(motivo)` y el flow lo muestra con `rejection_text(motivo)` (pisalo para traducir).
 - Un asiento que no vuelve a tiempo, o que nunca cargó, **abandona** (`player_abandoned`). Si se fueron todos en un dedicado, nadie abandona: la puerta espera y, cuando pasó la gracia de todos, emite `all_gone`. En un listen host el host sigue jugando: cada asiento que pasa la gracia abandona y no hay `all_gone`.
-- **Un dedicado a mano sirve una partida tras otra** (una VPS arrancada con `--dedicated`): cuando su partida termina (`Mp.finish()`) y se va el último jugador, o todos quedaron afuera pasada la gracia (`all_gone`), carga un mundo nuevo (puntos y actores desde cero) y abre otra vez todos los asientos. Un juego con pantalla de revancha puede llamar él mismo a `MpFlow.next_open_match()` cuando se fueron sus jugadores. Los clientes reciben el estado de la puerta al ser admitidos y se pausan apenas cargan su mundo, así que su `MatchClock` arranca en 0.
+- **Un dedicado a mano sirve una partida tras otra** (una VPS arrancada con `--dedicated`): cuando su partida termina (`Mp.finish()`) y se va el último jugador, o todos quedaron afuera pasada la gracia (`all_gone`), carga un mundo nuevo (puntos y actores desde cero) y abre otra vez todos los asientos. Un juego con pantalla de revancha puede llamar él mismo a `MpFlow.next_open_match()` cuando se fueron sus jugadores. **Si tu juego termina la partida a su manera** (no con `Mp.finish()`), avisale al kit en el servidor con `MpKit.broadcast_session_ended(result)`, o llamá a `MpFlow.next_open_match()` cuando terminó y quedó vacío; si no, la partida siguiente recién se abre cuando pasó la gracia de todos, y el que llega antes se rechaza (`match_started`). Los clientes reciben el estado de la puerta al ser admitidos y se pausan apenas cargan su mundo, así que su `MatchClock` arranca en 0.
 
 Los knobs están en el inspector del `MpFlow`, grupo **Match start** (`rejoin_grace_s`, `load_timeout_s`, `start_seats`, `late_join`, `pause_clients`, `match_started_status`). En una partida de sala, la gracia y el tiempo de carga salen del `MpLobbyConfig`. En el Remote del editor, `/root/MpKit/Gate` muestra `phase`, `expected`, `loaded` y `away`. En Host LAN el host puede arrancar con los que ya cargaron: `MpStartButton`, o `Mp.gate().can_start_now()` / `Mp.gate().start_now()` desde un botón propio.
 
@@ -862,6 +864,8 @@ godot --headless --path . -- --dedicated
 ```
 
 Después abrí clientes (F5, o varias instancias) y uní cada uno a `127.0.0.1`. El servidor no tiene jugador: el primer cliente es P1.
+
+La partida arranca cuando cargaron todos los asientos, o `load_timeout_s` (15 s) después de que entró el primero. Para probarlo con un solo cliente y sin esperar: `godot --headless --path . -- --dedicated --start-seats=1`.
 
 Desde el editor: en el diálogo de personalizar instancias del menú **Depurar**, poné `--headless -- --dedicated` en los argumentos de una instancia (marcá que anule los argumentos).
 
@@ -1260,6 +1264,8 @@ Probalo local antes:
 PORT=8080 RELAY_HOST_SECRET=prueba node addons/mp_kit/relay/server.mjs
 # dirección: ws://127.0.0.1:8080
 ```
+
+O en **Fly.io**, con una región cerca de tus jugadores (`gru` = São Paulo; Railway no tiene ninguna en Sudamérica): los pasos, el `Dockerfile` + `fly.toml` y todos los comandos útiles (desplegar, logs, secretos, apagar) están en [relay/README.md](relay/README.md).
 
 ### 12.2 Configurar el juego
 
@@ -1720,6 +1726,6 @@ Cambió de pestaña: el navegador la pausó. Ver [11.5](#115-pestaña-oculta).
 - [QUICKSTART.md](QUICKSTART.md): la versión corta.
 - [README.md](README.md): referencia de cada pieza, transporte, túnel `Dictionary`, salas hub y bajo nivel.
 - [deploy/README.md](deploy/README.md): despliegue en un VPS en detalle.
-- [relay/README.md](relay/README.md): el relay, Railway y su protocolo.
+- [relay/README.md](relay/README.md): el relay, Railway, Fly.io, comandos útiles y su protocolo.
 - [examples/arena_2d/](examples/arena_2d/): el ejemplo completo. Abrí `boot.tscn` y apretá F6.
 - `mpkit_lab/` (en la raíz del repo): `run/play.sh` para jugar o mirar en ventanas, `run/all.sh` para toda la matriz, y `CASES.md` con qué cubre cada prueba.

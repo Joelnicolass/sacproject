@@ -20,6 +20,17 @@ No tiene dependencias: `server.mjs` usa solo Node 18+.
 
 Probalo local antes: `PORT=8080 RELAY_HOST_SECRET=prueba node server.mjs` y `ws://127.0.0.1:8080`. Para pruebas en tu máquina, `RELAY_OPEN=1` deja hostear sin secreto; nunca lo uses en un relay público.
 
+### O en Fly.io (una región cerca de tus jugadores, p.ej. São Paulo)
+
+Fly tiene regiones que Railway no (`gru` para Sudamérica; las de Railway están en EE.UU., Europa y Asia). [relay-godot](https://github.com/Joelnicolass/relay-godot) trae `server.mjs`, `package.json` y el `Dockerfile` + `fly.toml` para Fly, listos para clonar.
+
+1. Instalá `flyctl` e iniciá sesión: `fly auth login`.
+2. En `fly.toml`, poné en `app` un nombre tuyo (en Fly es global) y en `primary_region` la región más cercana a tus jugadores (`fly platform regions`).
+3. `fly apps create <tu-app>`, y el secreto del host (nunca en un archivo del repo): `fly secrets set --app <tu-app> RELAY_HOST_SECRET=<una clave larga al azar>`.
+4. `fly deploy --ha=false`: una sola máquina (las salas viven en su memoria). La dirección es `wss://<tu-app>.fly.dev`; `/health` responde `ok`.
+
+`fly.toml` deja la máquina siempre prendida (`auto_stop_machines = "off"`, `min_machines_running = 1`): un apagado por inactividad cortaría los WebSocket abiertos. Costo: la máquina más chica más el tráfico de salida por GB; el ejemplo arena del kit mueve unos 0,15 GB por jugador por hora a través del relay.
+
 ## 2. Configurar el juego
 
 En el `game.tres` del juego (un `MpGame`; o el `MpNetConfig` que uses):
@@ -62,6 +73,50 @@ Mensajes binarios, little-endian:
 
 Conexión: `wss://relay/?role=host&room=SALA` con el header `X-Relay-Secret: CLAVE` (también se acepta `&secret=CLAVE`), o `?role=client&room=SALA`.
 
+## 5. Comandos útiles
+
+Un secreto del host (copialo en el relay y en el servidor Godot, en ningún otro lado):
+
+```bash
+openssl rand -hex 24
+```
+
+El relay en tu máquina:
+
+```bash
+PORT=8080 RELAY_HOST_SECRET=prueba node addons/mp_kit/relay/server.mjs   # ws://127.0.0.1:8080
+RELAY_OPEN=1 PORT=8080 node addons/mp_kit/relay/server.mjs               # cualquiera puede hostear: solo pruebas locales
+curl http://127.0.0.1:8080/health   # ok
+```
+
+En Fly.io (`<tu-app>` = `app` en `fly.toml`):
+
+```bash
+fly auth login
+fly apps create <tu-app>
+fly secrets set --app <tu-app> RELAY_HOST_SECRET=<clave>   # con --stage antes del primer deploy
+fly deploy --ha=false                 # desplegar o actualizar, una sola máquina
+fly status --app <tu-app>             # la máquina, su región, el chequeo de /health
+fly logs --app <tu-app>               # log en vivo: hosts que entran, hosts rechazados, salas
+curl https://<tu-app>.fly.dev/health  # ok
+fly secrets list --app <tu-app>       # nombres y digests, nunca los valores
+fly scale count 0 --app <tu-app>      # apagarlo (no se cobra máquina)
+fly scale count 1 --app <tu-app>      # prenderlo otra vez
+fly platform regions                  # códigos de región (gru = São Paulo)
+fly apps destroy <tu-app>             # borrarlo del todo
+```
+
+En Railway: **Variables** (`RELAY_HOST_SECRET`), **Deployments › View logs**, **Settings › Networking** (el dominio).
+
+El servidor Godot por el relay (el secreto por entorno, nunca en el `.tres`):
+
+```bash
+MPKIT_RELAY_SECRET=<clave> godot --headless --path . -- --dedicated --transport=relay --relay-url=wss://<tu-relay> --relay-room=mi-juego
+MPKIT_RELAY_SECRET=<clave> godot --headless --path . -- --room-server   # con relay_url / relay_room en game.tres
+```
+
+Probar las reglas del relay desde el repo del kit: `bash mpkit_lab/run/relay.sh` (secreto del host, sala ocupada) y `bash mpkit_lab/run/relayfault.sh` (un host que muere, se congela o reinicia); todo el juego por un relay local: `TRANSPORT=relay bash mpkit_lab/run/arena.sh`.
+
 ## Verificado
 
-En una Mac, con el relay local: arena (dedicado, LAN, rejoin, lag, inundación), salas (siete escenarios) y partida privada por el relay. Railway en sí no se probó desde acá: el relay es el mismo archivo.
+Con el relay local: arena (dedicado, LAN, rejoin, lag, inundación), salas (siete escenarios) y partida privada por el relay. En Fly.io (`gru`), probado desde Argentina: arena, salas, la partida privada y un cliente web pasan por él; el kit midió 59 ms de ida y vuelta a través del relay (Railway, en EE.UU.: unos 300 ms).

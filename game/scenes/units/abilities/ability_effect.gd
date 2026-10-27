@@ -1,28 +1,31 @@
 class_name AbilityEffect
 extends Node
 
-## The own part of one active ability (sacengine useAbility, state.d:13463-13561: the function each SpellTag calls). AbilitySlot
-## checks cooldown → mana (abilityStatus, state.d:29582-29604), then asks status() for the ability's own rule, calls fire() and, when
-## it returns true, spends the mana and starts the cooldown (`apply()`, 13467-13470). The effect never touches mana or cooldown.
+## The own part of one active ability: what the ability does when it is used. AbilitySlot
+## checks cooldown → mana, then asks status() for the ability's own rule, calls fire() and, when
+## it returns true, spends the mana and starts the cooldown. The effect never touches mana or cooldown.
 ## The AbilityType says which scene is its effect (`AbilityType.effect`).
 ## Server (or solo): on a client AbilitySlot does not call it and its _physics_process stays off.
+## Ref: sacengine useAbility (state.d:13463-13561: the function each SpellTag calls), abilityStatus 29582-29604, apply() 13467-13470.
 
 ## How long the body prepares before fire(). 0 = at once (Protector, Life Shield).
 ## Ref: sacengine startUsingAbility … shoot tick.
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var windup_s := 0.0
-## Starts the cooldown when it fires. Off = none (the pull: sacengine returns before setting it, state.d:12738-12739).
+## Starts the cooldown when it fires. Off = none (the pull: the original returns before setting it).
+## Ref: state.d:12738-12739.
 @export var starts_cooldown := true
 ## The preparation comes from the creature's ability clip (see windup()). Off = windup_s as is (Protector, Halo: none).
 @export var windup_from_clip := false
 ## F157: which of the creature's two ability clips the preparation reads (SHOOT_ROLES[windup_clip]). 1 = `shoot2` (Firewalk, Breath
 ## of life, Pull, Sticky bomb: they must not change); 0 = `shoot` (the Styx's Rend Soul prepares its attack clip, 100 ticks).
 @export_range(0, 1) var windup_clip := 1
-## F132: the mana is paid when the preparation starts, not at the shoot tick (sacengine act(), state.d:13495-13510: the Jabberocky's
+## The mana is paid when the preparation starts, not at the shoot tick (the Jabberocky's
 ## Quake). At the shoot tick AbilitySlot does not check the mana again: fire() and, if it was 0, the cooldown. If the preparation is cut the mana
 ## is gone and there is no cooldown. Off = the mana is paid at the shoot tick (Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour, Rend).
+## Ref: F132; sacengine act(), state.d:13495-13510.
 @export var pays_upfront := false
 
-## Ticks one animation frame lasts (sacengine updates 60 times a second, the clips run at 30).
+## Ticks one animation frame lasts (the game updates 60 times a second, the clips run at 30).
 const FRAME_TICKS := 2
 ## The clip of each ability: the first and the second shoot clip of the creature's model.
 const SHOOT_ROLES: Array[StringName] = [&"shoot", &"shoot2"]
@@ -54,7 +57,7 @@ func windup() -> int:
 		var rate := float(facts.fps(role))
 		if not shots.is_empty() and rate > 0.0:
 			return roundi(float(MatchClock.TICKS_PER_SECOND) * float(shots[0]) / rate)
-		## A clip without `lrba` shoots on its last frame (sacengine: Sticky bomb, 47 x 2 = 94 ticks).
+		## A clip without `lrba` shoots on its last frame (the original: Sticky bomb, 47 x 2 = 94 ticks).
 		var frames := facts.frames(role)
 		if frames > 0:
 			return FRAME_TICKS * (frames - 1)

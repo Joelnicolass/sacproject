@@ -1,9 +1,9 @@
 class_name DirectImpact
 extends ShotImpact
 
-## F121 (RFC-030j): the shot's whole amount as direct ranged damage to the body it hit (dealRangedDamage with
-## DamageMod.none: Squall amba state.d:24001-24003, Vortick cita 23869-23873). What RangedShot does with no impact,
+## The shot's whole amount as direct ranged damage to the body it hit. What RangedShot does with no impact,
 ## as a child, so an impact scene can push or spin a vortex and still hit. A building takes it too; the ground nothing.
+## Ref: F121 (RFC-030j); dealRangedDamage with DamageMod.none: Squall amba state.d:24001-24003, Vortick cita 23869-23873.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")

@@ -1,11 +1,12 @@
 class_name OilImpact
 extends ShotImpact
 
-## F155 (RFC-030 030r-b): where the Pyrodactyl's Viscous oil (kcfa) bursts, sacengine oilExplosion (state.d:25588-25612). No
-## damage: dealDamageAt(0, 0.0, effectRange) with a callback that smears every body in the SPEL's effect_range (15 m) that is not
-## already oiled and canBeOiled, of ANY side (the shooter's own too). Each body keeps its own Oiled (the body's component), which owns
+## Where the Pyrodactyl's Viscous oil bursts. No
+## damage: it smears every body in the spell's effect_range (15 m) that is not
+## already oiled and can be oiled, of ANY side (the shooter's own too). Each body keeps its own Oiled (the body's component), which owns
 ## the oil: this node only asks it to start. The shot itself bursts on any creature but its shooter or on the ground (ShotLook.hits_every_side).
 ## Look: the shot's impact_fx (oil_splash). Not here (declared): the scar on the ground (25604 TODO).
+## Ref: F155 (RFC-030 030r-b); Pyrodactyl kcfa, sacengine oilExplosion (state.d:25588-25612), dealDamageAt(0, 0.0, effectRange), canBeOiled.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 

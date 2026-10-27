@@ -1,31 +1,36 @@
 class_name Vortex
 extends Node3D
 
-## F121 (RFC-030j): the Vortick's vortex, sacengine VortexEffect (state.d:4736-4751, updateVortexEffect 23922-23960).
+## The Vortick's vortex that throws bodies up.
 ## VortexImpact puts it in the shots' container where the shot burst; server (or solo) only, it lives
 ## `duration_s`·60 + 1 ticks. While frame < influence_share·duration·60 it touches every live creature and wizard whose
 ## box meets its own (±√2·radius on the ground plane, −¼·height to +height), with no side filter:
 ## - frame < catapult_s·60 and not thrown: catapult with `tangent_speed` along the circle and `lift_speed` up
-##   (direction = (center − body).normalized·1.5 turned −90°, state.d:23946-23949);
-## - thrown: vortexForceField (23891-23898) adds field·(−y−x, x−y) and `field` up per second, relative to the center,
-##   only below `height`; vz ≥ `min_rise`; no gravity that tick (antiGravityTime).
-## sacengine axes (x, y, z up) are the port's (x, z, y up). Effects run before creatures (state.d:29331): physics priority −1.
+##   (direction = (center − body).normalized·1.5 turned −90°);
+## - thrown: the force field adds field·(−y−x, x−y) and `field` up per second, relative to the center,
+##   only below `height`; vz ≥ `min_rise`; no gravity that tick.
+## The original's axes (x, y, z up) are the port's (x, z, y up). Effects run before creatures: physics priority −1.
 ## The swirl itself (particles) is not drawn yet: its FxBus puff is the shot's impact_fx.
+## Ref: F121 (RFC-030j); sacengine VortexEffect (state.d:4736-4751, updateVortexEffect 23922-23960), direction 23946-23949, vortexForceField 23891-23898, antiGravityTime, state.d:29331.
 
 @export var duration_s := 2.0
-## sacengine radiusFactor·effectRange; the impact writes it from the SPEL (cita: 2 m).
+## The radius of the vortex; the impact writes it from the spell (the Vortick's shot: 2 m).
+## Ref: sacengine radiusFactor·effectRange.
 @export var radius := 2.0
-## sacengine maxHeight.
+## The height of the vortex.
+## Ref: sacengine maxHeight.
 @export var height := 4.0
 @export_range(0.0, 1.0) var influence_share := 0.75
 @export var catapult_s := 0.75
 @export var tangent_speed := 1.5
 @export var lift_speed := 2.5
-## vortexForceField factor (m/s² per m, and m/s² up).
+## The force field factor (m/s² per m, and m/s² up).
+## Ref: sacengine vortexForceField.
 @export var field := 5.5
 @export var min_rise := 1.0
 
-## The shooter's slot (tumbleAttackerSide).
+## The shooter's slot.
+## Ref: sacengine tumbleAttackerSide.
 var side := -1
 var _frame := 0
 

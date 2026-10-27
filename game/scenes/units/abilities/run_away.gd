@@ -1,8 +1,9 @@
 class_name RunAway
 extends AbilityEffect
 
-## F133 (RFC-030 030v-a): Run Away (!nur: the Flame Minion's, the Silverback's, the Frostwolf's), moved from AbilitySlot's branches without a
+## Run Away (the Flame Minion's, the Silverback's, the Frostwolf's), moved from AbilitySlot's branches without a
 ## change. The body takes a Speedup (SpeedupEffect, duration ≥ 1 s), stops and drops its orders. Refused while it already has one.
+## Ref: F133 (RFC-030 030v-a); !nur.
 
 const _SPEEDUP_SCENE := preload("res://scenes/spells/speedup_effect.tscn")
 

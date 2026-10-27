@@ -1,9 +1,8 @@
 class_name BreathOfLife
 extends Node3D
 
-## F153 (RFC-030 030p-b): the flight of the Dragon's Breath of life (filb). sacengine breathOfLifeShoot (state.d:13238-13248)
-## adds the effect at the shoot tick and updateBreathOfLife (25943-25975) runs it from the next tick: each tick
-## velocity = 60·(target − position), capped at the SPEL's speed (60), position += velocity / 60. When that velocity is under
+## The flight of the Dragon's Breath of life. The effect is added at the shoot tick and runs from the next tick: each tick
+## velocity = 60·(target − position), capped at the spell's speed (60), position += velocity / 60. When that velocity is under
 ## 0.01 the breath has arrived and the target fastRevives (FastRevive). So it takes ⌈d⌉ ticks to land and one more to notice:
 ## ⌈d⌉ + 1 from the shoot tick. The target is the corpse's center, followed every tick (a soul was resolved to its corpse).
 ## This node is the coordinator; the body of the breath is a RangedShot of the shot container (ShotLook breath_of_life:
@@ -11,7 +10,8 @@ extends Node3D
 ## before the bodies move, like Protector and HaloOfEarth.
 ##
 ## Divergences (declared): the breath is a golden ball with the heal trail (the original's ray and particles are not ported);
-## the breath does not turn the caster's head (animateBreathOfLifeHead); no sound.
+## the breath does not turn the caster's head; no sound.
+## Ref: F153 (RFC-030 030p-b); Dragon filb, sacengine breathOfLifeShoot (state.d:13238-13248), updateBreathOfLife 25943-25975, animateBreathOfLifeHead.
 
 
 
@@ -94,7 +94,8 @@ func _arrive() -> void:
 	_finish()
 
 
-## sacengine shotPosition: the Dragon's shot origin (its RangedWeapon), or its feet lifted when it has none.
+## The Dragon's shot origin (its RangedWeapon), or its feet lifted when it has none.
+## Ref: sacengine shotPosition.
 func _origin() -> Vector3:
 	return ShotAim.shot_position(user)
 

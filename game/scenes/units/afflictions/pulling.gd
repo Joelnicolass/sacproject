@@ -1,12 +1,11 @@
 class_name Pulling
 extends Affliction
 
-## F128 (RFC-030 030q-a): the user of Web pull and Cage pull while it pulls, sacengine mode `pulling` (startPulling,
-## state.d:10108-10113) and the Pull effect that runs beside it (updatePull, 25434-25519). The one owner of the simulation
+## The user of Web pull and Cage pull while it pulls, and the pull effect that runs beside it. The one owner of the simulation
 ## of the pull: the thread, the pulls, the 25-tick window, the extra pull and the end. Pull (the AbilityEffect) only judges
 ## the target and calls start(); the target's own states (Stunned, Tumbling) keep what they own and are asked by their API.
 ##
-## One update per tick from the tick after start() (sacengine frame 1, 2, …), before the bodies move (process priority −1,
+## One update per tick from the tick after start() (frame 1, 2, …), before the bodies move (process priority −1,
 ## like the other effects): nothing is checked while the first 20 ticks last (numShootFrames). Then, each tick:
 ##   1. the user must still be pulling and the target a valid body (isValidAttackTarget); at a pull tick the target must
 ##      still be applicable to the ability (checkAbility; range, mana and cooldown do not count for a ranged ability);
@@ -26,18 +25,21 @@ extends Affliction
 ## The thread (hilo) is a presentation scene (Pull.thread_scene) played on every peer by FxBus.broadcast_scene once; it
 ## follows the two bodies by itself while this state's bit is on.
 ##
-## Divergences (declared): a structure or a soul on the way does not become the target (sacengine's ray would stop there and
+## Divergences (declared): a structure or a soul on the way does not become the target (the original's ray would stop there and
 ## the pull would end at frame 20); the user does not walk closer or turn to the target; the web / cage around the target is
 ## not drawn; the user keeps its idle pose (no shoot clip while it pulls).
 ##
 ## Server (or solo) only: the clients get the bit and the positions. The user's own velocity is 0 while it lasts (steer).
+## Ref: F128 (RFC-030 030q-a); sacengine mode `pulling` (startPulling, state.d:10108-10113), updatePull 25434-25519.
 
 
-## sacengine Pull.numShootFrames: no check while the thread flies out.
+## No check while the thread flies out.
+## Ref: sacengine Pull.numShootFrames.
 const SHOOT_FRAMES := 20
 ## unit_orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
-## sacengine updatePull: the extra pull (25462-25481) and the lift of every pull (25485).
+## The extra pull and the lift of every pull.
+## Ref: sacengine updatePull 25462-25481, 25485.
 const OUTWARD_RADIUS_FACTOR := 1.05
 const OUTWARD_SPEED := 1.5
 const BACKWARD_FACTOR := 0.2
@@ -62,13 +64,14 @@ static func of(body: Node) -> Pulling:
 
 func _ready() -> void:
 	set_physics_process(false)
-	## sacengine updates its effects before its creatures: the pull sets the target's velocity before the target steps.
+	## The original updates its effects before its creatures: the pull sets the target's velocity before the target steps.
 	process_physics_priority = -1
 
 
-## Server (or solo): sacengine startPulling + the Pull effect. `loop_ticks`: the user's clip loop (frames · 2). `pull_frame`:
+## Server (or solo): starts the pull. `loop_ticks`: the user's clip loop (frames · 2). `pull_frame`:
 ## the tick of the clip (counted from the order) at which it pulls, its last frame ((frames − 1) · 2). The first pull falls
 ## at the fire tick − effect.windup() + pull_frame. True when it started (it ends a UsingAbility, the type's `cancels`).
+## Ref: sacengine startPulling + the Pull effect.
 func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bool:
 	var body := _body()
 	if not is_multiplayer_authority() or body == null or effect == null or target == null or loop_ticks <= 0 or is_on():
@@ -97,7 +100,8 @@ func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bo
 	return true
 
 
-## The user does not move while it pulls (sacengine: mode pulling has no movement).
+## The user does not move while it pulls (mode pulling has no movement).
+## Ref: sacengine.
 func steer(_velocity: Vector3, _delta: float) -> Vector3:
 	return Vector3.ZERO
 
@@ -232,7 +236,8 @@ static func _forward(body: Node3D) -> Vector3:
 	return flat.normalized()
 
 
-## sacengine boxPointDistance: from `point` to the nearest point of the box (0 inside it).
+## Distance from `point` to the nearest point of the box (0 inside it).
+## Ref: sacengine boxPointDistance.
 static func box_distance(box: AABB, point: Vector3) -> float:
 	var low := box.position
 	var high := box.end

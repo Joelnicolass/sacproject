@@ -8,7 +8,8 @@ extends Node
 ## Ref: sacengine abilityStatus (state.d:29582-29604) and useAbility (state.d:13463-13561). Time is MatchClock ticks, not the render
 ## delta: the cooldown is «until tick N».
 
-## sacengine manaEpsilon (abilityStatus).
+## The mana slack of the cost check.
+## Ref: sacengine manaEpsilon (abilityStatus).
 const MANA_EPSILON := 0.01
 
 ## The preparation of an effect that is not instant.
@@ -17,7 +18,8 @@ const MANA_EPSILON := 0.01
 var ability: AbilityType
 ## The AbilityEffect of `ability` (instanced from its AbilityType.effect), or null.
 var effect: AbilityEffect
-## A guardian has no active ability (activeAbility, state.d:1414). GuardianBond sets it.
+## A guardian has no active ability. GuardianBond sets it.
+## Ref: activeAbility, state.d:1414.
 var locked := false
 var body: UnitBody
 
@@ -82,7 +84,8 @@ func use(target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## The mana an ability costs: exactly the SPEL's (abilityStatus, useAbility: state.d:29584, 13468). 0 (Devour, Play Dead) spends nothing.
+## The mana an ability costs: exactly the spell's. 0 (Devour, Play Dead) spends nothing.
+## Ref: abilityStatus, useAbility: state.d:29584, 13468.
 func cost() -> float:
 	return float(ability.mana_cost) if ability else 0.0
 
@@ -95,7 +98,8 @@ func pay() -> void:
 	_mana.spend(cost())
 
 
-## Starts the cooldown (`force`, or only if it was 0: state.d:12746-12748).
+## Starts the cooldown (`force`, or only if it was 0).
+## Ref: state.d:12746-12748.
 func start_cooldown(force: bool) -> void:
 	if effect.starts_cooldown and (force or MatchClock.now() >= _ready_at):
 		_ready_at = MatchClock.now() + roundi(ability.cooldown_s * MatchClock.TICKS_PER_SECOND)

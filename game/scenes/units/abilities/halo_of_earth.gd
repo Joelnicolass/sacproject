@@ -1,34 +1,35 @@
 class_name HaloOfEarth
 extends SpellLaunch
 
-## F127 (RFC-030 030p-a): the Rhinok's Halo of Earth (HRba). sacengine haloOfEarth (state.d:13232-13236) adds the effect at
-## once; updateHaloOfEarth (19284-19321) runs it from the next tick: while the Rhinok can carry it (canCarryHaloOfEarth,
-## 202-209) it makes rocks until there are 6, and when it cannot it blows up the free ones (despawnHaloOfEarth, 19272-19282);
+## The Rhinok's Halo of Earth: rocks that orbit it and fly at foes. The effect is added at
+## once and runs from the next tick: while the Rhinok can carry it
+## it makes rocks until there are 6, and when it cannot it blows up the free ones;
 ## it ends when every rock it made is gone. This node is that coordinator and simulates the 6 rocks; each rock's body is a
 ## RangedShot of the shot container (ShotLook halo_rock: collides off), which only draws it and replicates its position.
 ## Server (or solo) only: a client never gets this node (HaloOfEarthAbility adds it on the server). Priority −1: it moves the
 ## rocks before the bodies move, like Protector.
 ##
-## Per rock and tick (updateHaloRock, 19212-19270; `isCasting` is false for an ability):
-## - free: Hermite interpolation (cintp2, util.d:554-560) between points of a ball of `orbit_radius` around the center
+## Per rock and tick (`isCasting` is false for an ability):
+## - free: Hermite interpolation between points of a ball of `orbit_radius` around the center
 ##   (the top of the Rhinok's box + `orbit_height`), `orbit_speed` per second; it is born buried inside the Rhinok's box
 ##   scaled by `spawn_box_scale`, so it rises into the orbit.
 ## - with a target: velocity += acceleration toward the target's center, capped at the SPEL's speed and at 60 · distance;
 ##   it blows up on the target when the distance (before the step) is under `arrive_distance`.
 ## - then, whatever it does: it blows up on the first live body not of its side its `ShotLook.hit_size` box touches, on the
 ##   land from `ground_grace_s` of life, and at `life_s` (the SPEL duration, 35 s) with no target.
-## - free ones look for a target (closestNonAllyInRange, 28825): the closest non-ally creature or wizard within
+## - free ones look for a target: the closest non-ally creature or wizard within
 ##   effectRange (50 m), alive, targetable, in sight, that no other rock chases.
-## Blowing up = the SPEL's amount as direct spell damage to the body it hit (haloRockExplosion, 19076-19100).
+## Blowing up = the SPEL's amount as direct spell damage to the body it hit.
 ##
 ## RFC-061e: the wizard's Halo of Earth (olah) is the same node. LaunchAction makes it when the cast starts (`begin_cast`: the numbers
 ## come from the SpellType): the rocks come out staggered while the wizard casts, floor((progress + 0.1) × 6) of them by the share of the
 ## casting that has gone, and only orbit until `release` (no target, no hit, no ground, no clock); `abort` blows the free ones up.
 ##
-## Divergences (declared): the line of sight is a ray to the target's center (sacengine: a box); an ally is the same slot;
+## Divergences (declared): the line of sight is a ray to the target's center (the original: a box); an ally is the same slot;
 ## the rocks use MatchSeed's stream, not the engine's; the dust trail is always there; no screen shake, no sound, no
 ## particles of its own (the look's FxBus types); a rock that blows up does not make the rock after it move twice in the
-## same tick (the swap of 19311-19313); buildings without Health do not stop a rock.
+## same tick; buildings without Health do not stop a rock.
+## Ref: F127 (RFC-030 030p-a), RFC-061e; Rhinok HRba, sacengine haloOfEarth (state.d:13232-13236), updateHaloOfEarth 19284-19321, canCarryHaloOfEarth 202-209, despawnHaloOfEarth 19272-19282, updateHaloRock 19212-19270, cintp2 util.d:554-560, closestNonAllyInRange 28825, haloRockExplosion 19076-19100, swap 19311-19313.
 
 
 

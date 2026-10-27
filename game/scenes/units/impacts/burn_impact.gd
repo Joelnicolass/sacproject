@@ -1,15 +1,16 @@
 class_name BurnImpact
 extends ShotImpact
 
-## F123 (RFC-030l): a shot that sets bodies ablaze where it bursts (a Burning on each). The scene decides which fire:
-##   heat_ray_impact.tscn (Tickferno sfba, updateTickfernoProjectile state.d:23797-23810): a creature or a wizard gets
-##     setAblazeWithManaDrain(duration·60 frames, amount, 0.5 · its max mana); a building the same with no drain.
-##   rocket_impact.tscn (Pyromaniac lffa, updatePyromaniacRocket 24314-24321): setAblaze(duration·60, ranged, amount,
-##     peirceShield), with no direct damage.
-##   bombard_impact.tscn (Bombard cfba, bombardProjectileExplosion 24518-24528): a fire of no damage for 60 frames on the
+## A shot that sets bodies ablaze where it bursts (a Burning on each). The scene decides which fire:
+##   heat_ray_impact.tscn (Tickferno): a creature or a wizard gets
+##     a fire for duration·60 frames that drains 0.5 · its max mana; a building the same with no drain.
+##   rocket_impact.tscn (Pyromaniac): a fire for duration·60 frames that deals the shot's amount
+##     and pierces shields, with no direct damage.
+##   bombard_impact.tscn (Bombard): a fire of no damage for 60 frames on the
 ##     body it hit and, through the splash callback, on every body within damageRange (any side; only the look).
 ## Not here (declared): igniteBuilding (no building catches fire) and DamageMod.ignite (030r).
-## F162b: a fire of no damage now reaches a building too (it ends on its first update, as updateFire does).
+## A fire of no damage now reaches a building too (it ends on its first update, as updateFire does).
+## Ref: F123 (RFC-030l), F162b; Tickferno sfba (updateTickfernoProjectile state.d:23797-23810, setAblazeWithManaDrain), Pyromaniac lffa (updatePyromaniacRocket 24314-24321, setAblaze), Bombard cfba (bombardProjectileExplosion 24518-24528).
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
@@ -24,7 +25,8 @@ enum RadiusSource { NONE, DAMAGE_RANGE, EFFECT_RANGE }
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var fixed_s := 1.0
 ## The Health kind of its damage (setAblaze `ranged`: direct ranged; else direct spell).
 @export var kind: StringName = &"direct_ranged"
-## sacengine DamageMod.peirceShield: skips the body's shields and states (Health).
+## Skips the body's shields and states (Health).
+## Ref: sacengine DamageMod.peirceShield.
 @export var pierce_shield := false
 ## Mana drained over its life, as a fraction of a creature's or a wizard's max mana (heat ray 0.5). A building: none.
 @export_range(0.0, 1.0) var mana_drain_fraction := 0.0
@@ -32,7 +34,8 @@ enum RadiusSource { NONE, DAMAGE_RANGE, EFFECT_RANGE }
 @export var radius_source := RadiusSource.NONE
 @export var splash_groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")
-## The fire puffed on a burning creature (sacengine spawnFireParticles: 3 particles a frame). Empty = none.
+## The fire puffed on a burning creature (3 particles a frame). Empty = none.
+## Ref: sacengine spawnFireParticles.
 @export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.1666
 ## The socket of the body the fire puffs from (inside its box, under the health bar).

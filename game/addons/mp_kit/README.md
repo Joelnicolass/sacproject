@@ -544,7 +544,7 @@ Piezas de bajo nivel:
 | `mp_matchmaker.gd` | cola FIFO; arma una room al llenar `party_size` |
 | `mp_boot.gd` | detectar proceso dedicated, flags de la línea de comandos, asientos del ticket (`ticket_seats`) |
 | `mp_flow.gd` | escenas, host/join/1P, catálogo de mundos |
-| `mp_world_loader.gd` | `MpWorldLoader`: único dueño de la carga del mundo (hilo, progreso, «el mundo avisa que está listo»); hijo interno del `MpFlow` |
+| `mp_world_loader.gd` | `MpWorldLoader`: único dueño de la carga del mundo (hilo, progreso, «el mundo avisa que está listo», lectura en el hilo principal si el hilo falla); hijo interno del `MpFlow` |
 | `mp_world_ref.gd` | un mundo del catálogo |
 | `mp_replicate.gd` | authority + freeze + lerp de proxy (el synchronizer vive en la escena) |
 | `mp_spawner.gd` | MultiplayerSpawner + hold por peer de su alcance + `room_id`; `spawn_actor(scene, props, owner_slot)`, `spawn_here(data)` (spawnea en el servidor o en solo, `null` en un cliente) |

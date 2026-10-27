@@ -826,9 +826,9 @@ MpFlow.find_in_tree(self).return_to_boot()  # siempre al menú
 
 El `MpFlow` carga el mundo en un hilo (`MpWorldLoader`, hijo interno del flow y único dueño de la carga): primero lee la escena del mundo y los archivos que nombre tu juego, después cambia de escena y, si lo pediste, espera a que **el mundo avise que está listo** (por ejemplo, después de precalentar shaders detrás de una pantalla). Recién ahí ese peer cuenta como cargado en la puerta de arranque. Así nadie arranca la partida con el mundo a medio compilar.
 
-1. En tu flow (o su escena), tildá **`world_reports_loaded`**. Apagado (por defecto), «cargado» es «la escena del mundo entró», como siempre.
+1. En tu flow (o su escena), tildá **`world_reports_loaded`** (o arrancá con `--world-reports-loaded`). Apagado (por defecto), «cargado» es «la escena del mundo entró», como siempre.
 2. En el mundo, cuando esté listo: `MpFlow.find_in_tree(self).report_world_loaded()`. Mientras tanto podés contar el avance con `report_world_progress(0..1)`. Si el mundo nunca avisa, el loader sigue solo a los `report_timeout_s` (30 s) y la puerta arranca igual pasado `load_timeout_s`.
-3. Para la pantalla, escuchá `world_load_progressed(ratio, phase)` del flow: `phase` es `MpWorldLoader.Phase` (`FILES` leyendo archivos, `WORLD` el mundo preparándose, `READY` listo, `IDLE` la carga se cortó porque la escena cambió por otro lado, por ejemplo se cayó el servidor). `ratio` va de 0 a 0,5 con los archivos y de 0,5 a 1 con el mundo. `world_loaded` avisa al final. La pantalla tiene que tener **Process › Mode = Always**: la puerta pausa el árbol mientras espera.
+3. Para la pantalla, escuchá `world_load_progressed(ratio, phase)` del flow: `phase` es `MpWorldLoader.Phase` (`FILES` leyendo archivos, `WORLD` el mundo preparándose, `READY` listo, `IDLE` la carga se cortó porque la escena cambió por otro lado, por ejemplo se cayó el servidor). `ratio` va de 0 a 0,5 con los archivos y de 0,5 a 1 con el mundo. `world_loaded` avisa al final. La pantalla, y lo que precalienta el mundo, tienen que tener **Process › Mode = Always**: la puerta pausa el árbol mientras espera.
 4. Dos ganchos para pisar en tu subclase de `MpFlow`: `_before_world_load()` (justo antes de cargar, en cada peer: elegir el mapa) y `_extra_world_loads() -> PackedStringArray` (archivos que el mundo va a usar después, para leerlos en el mismo hilo y no trabarse al aparecer).
 
 Con `world_reports_loaded` prendido cambia quién cuenta:
@@ -836,6 +836,8 @@ Con `world_reports_loaded` prendido cambia quién cuenta:
 - **Cliente**: su asiento cuenta al `report_loaded` (RPC al servidor), no al `world_ready` de los spawners. El `world_ready` sigue igual para lo demás (revelar spawns, `client_world_ready`), así que el servidor le puede mandar lo que el cliente necesita para prepararse.
 - **Servidor** (host LAN, dedicado): la puerta espera también su propio mundo (`wait_host`, `mark_host_loaded`). Un dedicado sin pantalla avisa enseguida.
 - **Solo** («Jugar solo» o contra la IA): la puerta se arma también, sin asientos ni red (`arm([], 0)`), y solo espera al host. El árbol queda pausado hasta que el mundo avisa, así el reloj de la partida y la IA no corren detrás de la pantalla. Sin `world_reports_loaded` arranca enseguida, como antes.
+
+Si leer el mundo en el hilo falla (un arranque en frío justo después de importar, un pedido que el motor rechaza), el loader lo lee en el hilo principal en vez de quedarse sin mundo.
 
 ## 8. Probar
 

@@ -125,8 +125,9 @@ func _run() -> void:
 		_finish()
 		return
 	var timeout_s := float(MpBoot.user_value("e2e-timeout-s", "150"))
+	# Asks for the state on every poll: a captured MatchState dies with its world when this client drops (lambda capture freed).
+	var ended := await _until(func() -> bool: return _state() != null and _state().ended, timeout_s)
 	var state := _state()
-	var ended := await _until(func() -> bool: return state != null and state.ended, timeout_s)
 	_check(ended, "%s sees the end of the match" % _name)
 	if ended:
 		print("E2E_RESULT %s winner_slots=%s winner_team=%d defeated=%s" % [_name, str(state.winner_slots), state.winner_team, str(state.defeated_slots)])

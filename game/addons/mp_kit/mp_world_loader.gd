@@ -55,8 +55,8 @@ func load_world(path: String, scene: PackedScene, extra: PackedStringArray, wait
 		if ResourceLoader.load_threaded_request(file) == OK:
 			_requested.append(file)
 		elif file == path:
-			push_error("MpWorldLoader: cannot load the world %s" % path)
-			return
+			## No thread for it (a cold start, a request the loader refused): the world still loads, on this thread.
+			push_warning("MpWorldLoader: cannot read the world %s on a thread; loading it here" % path)
 		else:
 			push_warning("MpWorldLoader: cannot load %s; the world loads without it" % file)
 	_set_phase(Phase.FILES, 0.0)
@@ -110,6 +110,11 @@ func _swap() -> void:
 		if file == _world_path:
 			_world_scene = res as PackedScene
 	_requested.clear()
+	## The thread gave nothing (it failed, or never got the request): read the world here before giving up.
+	if _world_scene == null and not _world_path.is_empty():
+		_world_scene = load(_world_path) as PackedScene
+		if _world_scene != null:
+			_held.append(_world_scene)
 	if _world_scene == null:
 		push_error("MpWorldLoader: the world %s is not a scene" % _world_path)
 		_drop(true)

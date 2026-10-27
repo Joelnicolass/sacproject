@@ -52,6 +52,7 @@ enum StartWhen {
 @export var custom_channels: PackedStringArray = PackedStringArray()
 @export var start_when: StartWhen = StartWhen.LISTEN_IMMEDIATE
 ## On: the world says when it is ready (report_world_loaded); only then is this peer loaded at the gate (solo too). Off: its scene is in.
+## `--world-reports-loaded` turns it on from the command line.
 @export var world_reports_loaded := false
 
 @export var host_fail_status: String = "Could not host (port busy?)"
@@ -150,9 +151,7 @@ func _ready() -> void:
 		advertise_lan = false
 	for link in _kit_links():
 		(link[0] as Signal).connect(link[1])
-	## How a peer counts as loaded at the gate, on every path that arms it.
-	MpKit.gate.wait_host = world_reports_loaded
-	MpKit.gate.loaded_on_world_ready = not world_reports_loaded
+	_apply_load_mode()
 	## A dedicated started by the room server: the ticket says who may join (unless the game armed its own agent),
 	## and how many seats the match has, before the port opens.
 	if not MpBoot.user_value("match-ticket-file", "").is_empty():
@@ -359,7 +358,7 @@ func goto_world() -> void:
 	if path.is_empty() and scene == null:
 		path = world_path.strip_edges()
 		scene = world_scene
-	_loader.load_world(path, scene, _extra_world_loads(), world_reports_loaded)
+	_loader.load_world(path, scene, _extra_world_loads(), _reports_loaded())
 
 
 ## The world says how far it got getting ready (0..1), between the scene swap and report_world_loaded().
@@ -382,9 +381,20 @@ func _extra_world_loads() -> PackedStringArray:
 	return PackedStringArray()
 
 
+## world_reports_loaded, or `--world-reports-loaded`.
+func _reports_loaded() -> bool:
+	return world_reports_loaded or MpBoot.user_flag("world-reports-loaded")
+
+
+## How a peer counts as loaded at the gate (see world_reports_loaded), on every path that arms it.
+func _apply_load_mode() -> void:
+	MpKit.gate.wait_host = _reports_loaded()
+	MpKit.gate.loaded_on_world_ready = not _reports_loaded()
+
+
 func _on_world_loaded() -> void:
 	world_loaded.emit()
-	if world_reports_loaded:
+	if _reports_loaded():
 		MpKit.report_loaded()
 
 
@@ -431,6 +441,8 @@ func rejection_text(reason: String) -> String:
 func _arm_gate() -> void:
 	if MpKit.gate.is_armed() or (MpKit.is_networked() and not MpKit.is_server()):
 		return
+	## Here and not only in _ready: play_solo / host_lan may run before it (a game that starts from its boot scene's _ready).
+	_apply_load_mode()
 	if not MpKit.is_networked():
 		MpKit.gate.load_timeout_s = float(MpBoot.user_value("load-timeout-s", str(load_timeout_s)))
 		MpKit.gate.arm([], 0)

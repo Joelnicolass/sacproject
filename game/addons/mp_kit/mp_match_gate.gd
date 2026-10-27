@@ -44,12 +44,12 @@ var rejoin_grace_s := 60.0
 var load_timeout_s := 15.0
 ## The clients pause their world too while the match waits (nobody walks ahead).
 var pause_clients := true
-## True on a listen host: the host may start with whoever loaded (can_start_now). MpFlow sets it before arm().
 ## True (the default): a seat counts as loaded when its world is ready (MpKit's world_ready). False: when its world says so
 ## (MpKit.report_loaded, e.g. after a loading screen). MpFlow sets it from `world_reports_loaded`.
 var loaded_on_world_ready := true
 ## True: the match also waits for the server's own world (mark_host_loaded): a listen host, a dedicated, solo. MpFlow sets it.
 var wait_host := false
+## True on a listen host: the host may start with whoever loaded (can_start_now). MpFlow sets it before arm().
 var host_present := false
 ## Open seats only (LAN, a dedicated by hand): after the start a newcomer still takes a free seat, and a seat abandoned past the
 ## grace is free again. Off: after the start only a seat that left comes back. MpFlow sets it before arm().

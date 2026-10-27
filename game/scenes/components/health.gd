@@ -71,7 +71,7 @@ func setup(full: float) -> void:
 
 ## Server or solo. The maximum goes up by `amount` and so does the health (devourSoul: health += 500, maxHealth += 500).
 func raise_maximum(amount: float) -> void:
-	if not _has_authority() or amount <= 0.0:
+	if not is_multiplayer_authority() or amount <= 0.0:
 		return
 	maximum += amount
 	current += amount
@@ -99,7 +99,7 @@ func is_full() -> bool:
 ## deflector, the damage its stand-ins took (F164b). LifeDrain.feed reads it; callers that ignore it do not change.
 func damage(amount: float, from_slot: int = 0) -> float:
 	deflected_last = false
-	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
+	if not is_multiplayer_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
 	## A caller that does not say the kind (melee, rituals) is asked as melee.
 	var passed := _deflect(amount, MELEE, from_slot)
@@ -118,7 +118,7 @@ func damage(amount: float, from_slot: int = 0) -> float:
 ## Server or solo. The health goes to 0 whatever the body wears: no resistance, shield or side rule (Death's blow, a gib). A dead body
 ## or one that cannot be hurt (maximum 0) takes nothing.
 func kill(from_slot: int = 0) -> void:
-	if _has_authority() and not is_dead() and maximum > 0.0:
+	if is_multiplayer_authority() and not is_dead() and maximum > 0.0:
 		_hit(current, from_slot)
 
 
@@ -143,7 +143,7 @@ func _hit(amount: float, from_slot: int) -> void:
 ## Rockform, Life Shield; _state_factor: petrified) do not scale it. The Pyromaniac's fire (F123).
 func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false, pierce_shield := false, mods := 0) -> float:
 	deflected_last = false
-	if not _has_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
+	if not is_multiplayer_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
 	var passed := _deflect(amount, kind, from_slot)
 	if not is_nan(passed):
@@ -270,7 +270,7 @@ func regenerate(amount: float) -> void:
 
 
 func heal(amount: float) -> void:
-	if not _has_authority() or amount <= 0.0:
+	if not is_multiplayer_authority() or amount <= 0.0:
 		return
 	current = minf(current + amount, maximum)
 
@@ -287,7 +287,3 @@ func _can_be_damaged() -> bool:
 func _owner_slot() -> int:
 	var body := get_parent()
 	return int(body.get("owner_slot")) if body and "owner_slot" in body else 0
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

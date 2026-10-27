@@ -43,14 +43,14 @@ func setup(full: float) -> void:
 
 
 func spend(amount: float) -> bool:
-	if not _has_authority() or amount < 0.0 or current < amount:
+	if not is_multiplayer_authority() or amount < 0.0 or current < amount:
 		return false
 	current -= amount
 	return true
 
 
 func add(amount: float, source: StringName = &"") -> void:
-	if not _has_authority() or amount <= 0.0:
+	if not is_multiplayer_authority() or amount <= 0.0:
 		return
 	if poisoning and poisoning.mana_blocked():
 		return
@@ -63,11 +63,8 @@ func add(amount: float, source: StringName = &"") -> void:
 ## sacengine drainMana (state.d:8822-8825): mana − amount, never under 0. Poison does not block it (F123: the
 ## Tickferno's heat ray). Returns what it took.
 func drain(amount: float) -> float:
-	if not _has_authority() or amount <= 0.0:
+	if not is_multiplayer_authority() or amount <= 0.0:
 		return 0.0
 	var before := current
 	current = maxf(0.0, current - amount)
 	return before - current
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

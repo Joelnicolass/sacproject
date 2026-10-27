@@ -125,6 +125,8 @@ var _tree: SceneTree
 var _origin: String = ""
 
 var _lan: MpLanBeacon
+## The flow took this process to the match world (loading or loaded) and not yet back to the boot or the lobby.
+var _in_world: bool = false
 var _loader := MpWorldLoader.new()
 
 
@@ -449,7 +451,14 @@ func return_to_boot() -> void:
 
 
 ## Loads the world on a thread (MpWorldLoader, world_load_progressed) with what _extra_world_loads() names; world_loaded at the end.
+## True from goto_world() until the flow goes back to the boot or the lobby: this player is in (or loading) the match
+## world, not on a menu or a room screen of the game's.
+func in_world() -> bool:
+	return _in_world
+
+
 func goto_world() -> void:
+	_in_world = true
 	_adopt()
 	world_loading.emit()
 	_before_world_load()
@@ -684,6 +693,7 @@ func _on_session_ended_sent(_result: Dictionary) -> void:
 func _back_to_lobby() -> bool:
 	if not _match_from_lobby or lobby_path.is_empty():
 		return false
+	_in_world = false
 	_match_from_lobby = false
 	MpKit.leave()
 	get_tree().change_scene_to_file(lobby_path)
@@ -710,6 +720,7 @@ func _ensure_match_agent() -> void:
 
 
 func _go_boot() -> void:
+	_in_world = false
 	_adopt()
 	var path := boot_path.strip_edges()
 	if not path.is_empty():

@@ -116,14 +116,19 @@ func start(players: int, room_name: String, listed: bool = true, match_ticket: D
 		_start_listen(data)
 
 
-## Stops hosting the room (the match process, or this game's server) and closes it on the issuer. Deliberate: `failed`
-## does not fire, `ended` does.
+## Closes the room on purpose (a Close button): this player leaves the match first, then the match process stops and
+## the issuer forgets the room. In the match world (MpFlow.in_world) the flow takes it back to the menu
+## (return_to_boot); from a screen of the game's (the room's own screen, before the match) the scene stays where the
+## game puts it. Deliberate: `ended` fires, never `failed`, and nothing warns that the host left.
 func stop() -> void:
 	_stopping = true
+	var flow := MpFlow.find_in_tree(self)
+	if flow and flow.in_world():
+		flow.return_to_boot()
+	elif MpKit.is_networked():
+		MpKit.leave()
 	if _local and is_instance_valid(_local):
 		_local.stop()
-	elif mode == LISTEN and MpKit.is_server():
-		MpKit.leave()
 	await _close()
 
 

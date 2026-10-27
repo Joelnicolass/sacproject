@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://debug/fx/f377_fount_exit.gd" id="1_case"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="2_fount"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="3_structure"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_manalith.tscn" id="3_structure"]
 [ext_resource type="Script" path="res://debug/fx/f377_drawing_emitter.gd" id="4_emitter"]
 
 [node name="F377FountExit" type="Node" node_paths=PackedStringArray("world", "fount", "manalith", "exit_fount")]

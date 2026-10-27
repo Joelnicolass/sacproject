@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" path="res://debug/map/structure_siege.tscn" id="1_siege"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="2_tower"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_manalith.tscn" id="2_tower"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_hut.tscn" id="3_hut"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_cactus_1.tscn" id="4_cactus"]
 [ext_resource type="Script" path="res://debug/structures/break_key.gd" id="5_key"]

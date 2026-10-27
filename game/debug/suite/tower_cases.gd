@@ -15,6 +15,13 @@ const RULES := preload("res://data/match_rules.tres")
 const MANAHOAR: CreatureType = preload("res://data/catalog/creatures/manahoar.tres")
 const MANALITHS: Array[String] = ["mana", "pyma", "jman", "stam", "cama"]
 const SHRINES: Array[String] = ["pcsh", "pasp", "jsac", "stsp", "casp"]
+## Tag (the wire id) -> the building scene, named for humans since 055i-b5.
+const SCENE_BY_TAG := {
+	"mana": "persephone_manalith", "pyma": "pyro_manalith", "jman": "james_manalith",
+	"stam": "stratos_manalith", "cama": "charnel_manalith",
+	"pcsh": "persephone_shrine", "pasp": "pyro_shrine", "jsac": "james_shrine",
+	"stsp": "stratos_shrine", "casp": "charnel_shrine",
+}
 const MANA_TOLERANCE := 0.01
 
 var _host: Node3D
@@ -263,7 +270,7 @@ func _cast() -> Dictionary:
 
 
 func _packed(tag: String) -> PackedScene:
-	return load("res://scenes/structures/buildings/_%s.tscn" % tag)
+	return load("res://scenes/structures/buildings/%s.tscn" % SCENE_BY_TAG[tag])
 
 
 func _tower(tag: String, slot: int, at: Vector3) -> CastTower:

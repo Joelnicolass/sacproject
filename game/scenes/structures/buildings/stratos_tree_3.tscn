@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://data/buildings/stratos_tree_3.tres" id="2_type"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/stt3.res" id="mesh_stt3"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(3.194, 6.7650003, 2.256)
+
+[node name="StratosStt3" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_stt3")
+
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
+position = Vector3(0.27100003, 0, -0.08500004)
+script = ExtResource("3_clear")
+radius_m = 2.96
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0.27100003, 3.0305002, -0.08500004)
+shape = SubResource("BoxShape3D_body")

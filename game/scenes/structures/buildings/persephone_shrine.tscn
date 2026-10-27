@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/structures/towers/shrine_tower.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://data/buildings/persephone_shrine.tres" id="2_type"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcsh.res" id="mesh_pcsh"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(22.628, 25.991, 18.582)
+
+[node name="Pcsh" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_pcsh")
+
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
+position = Vector3(0.08199978, 0, -0.00799942)
+script = ExtResource("3_clear")
+radius_m = 15.64
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0.08199978, 8.5545, -0.00799942)
+shape = SubResource("BoxShape3D_body")

@@ -33,9 +33,9 @@
 [ext_resource type="Resource" path="res://data/catalog/spells/rwsp.tres" id="32_s_rwsp"]
 [ext_resource type="Resource" path="res://data/catalog/spells/taed.tres" id="33_s_taed"]
 [ext_resource type="Resource" path="res://data/catalog/spells/tfir.tres" id="34_s_tfir"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_cama.tscn" id="gs_mana"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_manalith.tscn" id="gs_mana"]
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_casp.tscn" id="gs_shrine"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_shrine.tscn" id="gs_shrine"]
 [ext_resource type="Resource" path="res://data/look/charnel.tres" id="99_look"]
 
 [sub_resource type="Resource" id="Unlock_0"]

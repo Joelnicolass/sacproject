@@ -34,9 +34,9 @@
 [ext_resource type="Resource" path="res://data/catalog/spells/rtem.tres" id="33_s_rtem"]
 [ext_resource type="Resource" path="res://data/catalog/spells/tpre.tres" id="34_s_tpre"]
 [ext_resource type="Resource" path="res://data/look/james.tres" id="99_look"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jman.tscn" id="gs_mana"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_manalith.tscn" id="gs_mana"]
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
-[ext_resource type="PackedScene" path="res://scenes/structures/buildings/_jsac.tscn" id="gs_shrine"]
+[ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_shrine.tscn" id="gs_shrine"]
 [ext_resource type="Resource" path="res://data/fx/cast_james.tres" id="fx_cast"]
 
 [sub_resource type="Resource" id="Unlock_0"]

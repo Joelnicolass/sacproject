@@ -484,6 +484,7 @@ side = 2
 [node name="NavRegion" type="NavigationRegion3D" parent="." unique_id=1200200200]
 unique_name_in_owner = true
 navigation_mesh = ExtResource("f200_navmesh")
+use_edge_connections = false
 script = ExtResource("f200_nav_region")
 bake_settings = ExtResource("f200_bake")
 

@@ -4,6 +4,7 @@ extends Node
 ## Bakes the map's navmesh headless (RFC-035 035f): the static colliders of the `nav_source` nodes of the map scene (the
 ## terrain's collision, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into scenes/map/maps/<tag>/nav.res
 ## (the navmesh of the map's NavRegion; the «Hornear navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).
+## The map is baked by zones (NavZones) and joined; the file is one navmesh as always.
 ## The navmesh carries the source hash (NavFingerprint.source_hash) in its metadata; MapNavRegion warns when it is stale.
 ## It runs as a scene (autoloads exist, the parse needs the nodes inside the tree):
 ## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn [-- --map=test_flat]           bakes and saves
@@ -127,8 +128,11 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	if not geometry.has_data():
 		_fail("no source geometry: no static collider in the group %s" % NavFingerprint.GROUP)
 		return null
-	settings.fit_to(navmesh, geometry)  # a map with land over its whole grid bakes at a coarser cell, not a crash
-	NavigationServer3D.bake_from_source_geometry_data(navmesh, geometry)
+	# Every zone of the fixed grid (several at once on the worker pool), joined into the one navmesh of the map.
+	var started := Time.get_ticks_usec()
+	var zones := NavZones.new(settings).bake_all(geometry)
+	navmesh = zones.stitched()
+	print("bake_nav: %d zones baked and joined in %d ms" % [zones.zone_count(), (Time.get_ticks_usec() - started) / 1000])
 	if navmesh.get_polygon_count() == 0:
 		_fail("the bake produced no polygons")
 		return null

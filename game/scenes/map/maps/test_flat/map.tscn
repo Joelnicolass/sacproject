@@ -56,6 +56,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1300, 10, 1300)
 [node name="NavRegion" type="NavigationRegion3D" parent="." unique_id=1044100013]
 unique_name_in_owner = true
 navigation_mesh = ExtResource("11_navmesh")
+use_edge_connections = false
 script = ExtResource("12_nav_region")
 bake_settings = ExtResource("10_bake")
 

@@ -18,7 +18,14 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Asigná bake_settings (data/nav/nav_bake.tres).")
 	if navigation_mesh == null or navigation_mesh.get_polygon_count() == 0:
 		warnings.append("El navmesh está vacío: apretá «Hornear navmesh».")
-	elif bake_settings != null and get_parent() != null:
+	if bake_settings != null:
+		for number in [bake_settings.zone_m, bake_settings.zone_border_m]:
+			if not is_zero_approx(fmod(number, bake_settings.cell_size)):
+				warnings.append("zone_m y zone_border_m de nav_bake.tres tienen que ser múltiplos de cell_size.")
+				break
+	if use_edge_connections:
+		warnings.append("Apagá use_edge_connections: las zonas calzan exacto y prendido cada cambio cuesta ~850 ms en el hilo principal.")
+	if navigation_mesh != null and navigation_mesh.get_polygon_count() > 0 and bake_settings != null and get_parent() != null:
 		var stored := str(navigation_mesh.get_meta(NavFingerprint.META_SOURCE, ""))
 		if stored != NavFingerprint.source_hash(get_parent(), bake_settings):
 			warnings.append("El navmesh está viejo (el mapa o nav_bake.tres cambiaron): apretá «Hornear navmesh».")

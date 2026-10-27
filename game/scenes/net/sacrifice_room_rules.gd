@@ -1,10 +1,11 @@
 class_name SacrificeRoomRules
 extends Node
 
-## RFC-034 034e: what the room server needs to know about Sacrifice. The kit's lobby is generic; this node
+## What the room server needs to know about Sacrifice. The kit's lobby is generic; this node
 ## gives it the three Callables it calls: is a pick valid (`meta_validator`), are the room options valid
 ## (`options_validator`) and how the ticket of a match is built (`ticket_builder`). Nothing here opens a
 ## socket or starts a process.
+## Ref: RFC-034 034e.
 
 const LEVEL_MIN := 1
 const LEVEL_MAX := 9

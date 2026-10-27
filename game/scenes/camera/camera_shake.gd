@@ -2,13 +2,14 @@
 class_name CameraShake
 extends Node
 
-## RFC-053 053f (F375): the camera's shake, a child of WorldCamera. It only computes; WorldCamera._place composes `offset()` and
+## The camera's shake, a child of WorldCamera. It only computes; WorldCamera._place composes `offset()` and
 ## `roll()` on top of its own placement. Presentation only: no RPC, no sim writes, no global RNG (its own FastNoiseLite with a
 ## fixed seed). In a headless or dedicated process it does nothing (`run_headless` lets a check run it).
 ## - Trauma (0…1) from the hits to the local wizard (the `local_wizard` group): lost fraction × `wizard_hit_trauma_per_max`,
 ##   read from Health.changed (every peer has it), and from the `camera_trauma` of the FX near the camera (FxBus.played; `shake_map` gives the fall-off).
 ## - Trauma falls by `decay_per_s` a second. Offset = trauma² × `max_offset_m` × noise, roll = trauma² × `max_roll_deg` × noise,
 ##   both × FeelPrefs.shake_scale (0 = none, exactly).
+## Ref: RFC-053 053f (F375).
 
 ## Group a check counts (see `is_active`).
 const GROUP := &"feel_presentation"

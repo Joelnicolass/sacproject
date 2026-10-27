@@ -3,13 +3,14 @@ class_name AltarCollapse
 extends Node
 
 ## The visible destruction of an altar, the same on every peer: the pillars and the top sink
-## for 4 s, the base rises and shrinks for 4 s and bursts for 3 s (AltarDestruction: disappearDuration,
-## floatDuration, explodeDuration, state.d:5289-5291). It only plays: when the altar is gone
+## for 4 s, the base rises and shrinks for 4 s and bursts for 3 s. It only plays: when the altar is gone
 ## is decided by MatchState's clock on the server.
+## Ref: sacengine AltarDestruction disappearDuration, floatDuration, explodeDuration, state.d:5289-5291.
 
 signal finished
 
-## sacengine 4 + 4 + 3 s (state.d:5289-5291); MatchRules.altar_collapse_s is the server's clock.
+## The original's 4 + 4 + 3 s; MatchRules.altar_collapse_s is the server's clock.
+## Ref: sacengine state.d:5289-5291.
 @export var duration_s := 11.0
 ## Share of the duration spent sinking (4/11) and floating (4/11); the rest is the burst.
 @export_range(0.0, 1.0) var sink_fraction := 0.3636

@@ -37,8 +37,9 @@ var winner_slot := 0
 var winner_slots: Array[int] = []
 ## The team (SideRelations.team_of) of the winners; 0 with no winner.
 var winner_team := 0
-## RFC-049 049b: the slots with a wizard seated (human or AI), derived on the authority from the children of `wizards`. Only they count for the
-## victory (sacengine altarSides, state.d:31493); the altar of an empty seat stays in the map and does not count (P4).
+## The slots with a wizard seated (human or AI), derived on the authority from the children of `wizards`. Only they count for the
+## victory; the altar of an empty seat stays in the map and does not count (P4).
+## Ref: RFC-049 049b; sacengine altarSides, state.d:31493.
 var seated_slots: Array[int] = []
 var defeated_slots: Array[int] = []
 ## True once the match has a result, with or without a winner.
@@ -119,8 +120,9 @@ func has_standing_altar(slot: int) -> bool:
 	return false
 
 
-## The slots that own an altar and have a wizard seated (sacengine altarSides, state.d:30494-30500, 31493-31514), in order. A world
+## The slots that own an altar and have a wizard seated, in order. A world
 ## where nobody was ever marked (a bench with no WizardSpawner) keeps every owner of an altar, as before 049b.
+## Ref: sacengine altarSides, state.d:30494-30500, 31493-31514.
 func sides() -> Array[int]:
 	var found: Array[int] = []
 	for altar in altars():

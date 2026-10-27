@@ -7,7 +7,8 @@ extends FxScene
 ## process shows none. The shape of the piece is FallingChunkRules.
 ## Ref: sacengine updateFallingLandChunk (state.d:26094-26101).
 
-## How fast it speeds up (sacengine fallingLandChunkAcceleration).
+## How fast it speeds up.
+## Ref: sacengine fallingLandChunkAcceleration.
 @export_range(0.0, 100.0, 0.5, "suffix:m/s²") var gravity := 30.0
 ## It goes when it is this far below the lowest corner of the piece (twice the depth of the map).
 @export_range(10.0, 200.0, 1.0, "suffix:m") var fall_depth_m := 100.0

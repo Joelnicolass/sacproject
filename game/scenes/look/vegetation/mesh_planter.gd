@@ -1,7 +1,7 @@
 class_name MeshPlanter
 extends RefCounted
 
-## RFC-054 054c (F382): draws one VegetationLayerConfig of FloraField as meshes. A CellRing of 32 m cells (4 x 4 cells of
+## Draws one VegetationLayerConfig of FloraField as meshes. A CellRing of 32 m cells (4 x 4 cells of
 ## the FloraLayer images, at 8 m a pixel) follows the camera; each cell is built once on the CPU and holds one MultiMeshInstance3D per species
 ## (an internal child of the host, never saved).
 ## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives the instances; they are
@@ -24,6 +24,7 @@ extends RefCounted
 ##   never touched) and `visibility_range_end` on the node, past which the whole cell is culled.
 ## - The ring radius is a camera distance: on the ground it is sqrt(radius² - height²), so a high camera keeps fewer cells.
 ## Presentation only: FloraField never makes one in a headless or dedicated process.
+## Ref: RFC-054 054c (F382).
 
 const CELL_M := 32.0
 const MAP_CELLS := 80

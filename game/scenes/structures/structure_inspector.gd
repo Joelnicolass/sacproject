@@ -1,11 +1,12 @@
 class_name StructureInspector
 extends Node
 
-## RFC-028b (F93): the building, cactus or Manalith the local player clicked shows its health bar over
-## the model, one at a time, without touching the selection (a port extension: sacengine only has the
-## mouse-over box, renderer.d:5036-5230). Local presentation: no RPC. The body must carry a `HealthBar`
+## The building, cactus or Manalith the local player clicked shows its health bar over
+## the model, one at a time, without touching the selection (a port extension: the original only has the
+## mouse-over box). Local presentation: no RPC. The body must carry a `HealthBar`
 ## (unit_health_bar.tscn with `only_when_selected`) and a `Health` with maximum > 0; an altar or an
 ## indestructible building has no bar and just clears the inspection.
+## Ref: RFC-028b (F93); sacengine mouse-over box, renderer.d:5036-5230.
 
 signal inspected_changed(body: Node3D)
 

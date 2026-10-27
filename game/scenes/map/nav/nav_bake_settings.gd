@@ -2,8 +2,9 @@
 class_name NavBakeSettings
 extends Resource
 
-## The numbers of the map's navmesh bake (RFC-035 035f): data/nav/nav_bake.tres is their only source. tools/bake/bake_nav.gd and
+## The numbers of the map's navmesh bake: data/nav/nav_bake.tres is their only source. tools/bake/bake_nav.gd and
 ## MapNavRegion read them; nothing else hardcodes a radius or a cell. Never mutated at runtime.
+## Ref: RFC-035 035f.
 
 ## Voxel size of the bake (m). The RFC asks 0.5; 1.0 keeps the headless bake of the 2.56 km map light (RFC-035 R12 note).
 @export var cell_size := 1.0

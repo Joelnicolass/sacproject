@@ -3,10 +3,11 @@ class_name PortalDisc
 extends MeshInstance3D
 
 ## A flat ring with a glowing center that always faces the camera: the portal around a creature carried
-## by a Sac Doctor (blue) and the red vortex the doctor falls out of (sacengine SacVortex, renderer.d:1616-1677).
+## by a Sac Doctor (blue) and the red vortex the doctor falls out of.
 ## Presentation only: it reads no simulation and the headless server draws nothing. Opens in `open_s`,
 ## closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to switch it off.
 ## The mesh and the material are made here (they are not stored in the scene).
+## Ref: sacengine SacVortex, renderer.d:1616-1677.
 
 ## Finished closing (openness reached 0).
 signal closed
@@ -20,9 +21,11 @@ signal closed
 	set(value):
 		radius = value
 		_apply()
-## Seconds from closed to open. sacengine: vortexScale += 1/60 per tick (state.d:2697): 1 s.
+## Seconds from closed to open.
+## Ref: sacengine vortexScale += 1/60 per tick (state.d:2697): 1 s.
 @export_range(0.05, 10.0, 0.05) var open_s := 1.0
-## Seconds from open to closed. sacengine: 1/45 per tick (state.d:2698): 0.75 s.
+## Seconds from open to closed.
+## Ref: sacengine 1/45 per tick (state.d:2698): 0.75 s.
 @export_range(0.05, 10.0, 0.05) var close_s := 0.75
 ## 0 = closed, 1 = open. In the editor it is what you see.
 @export_range(0.0, 1.0, 0.01) var openness := 1.0:

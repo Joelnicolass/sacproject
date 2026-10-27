@@ -1,12 +1,13 @@
 extends Node
 
-## RFC-034 034e: the scene the VPS runs (and the tests, with a local config):
+## The scene the VPS runs (and the tests, with a local config):
 ## `godot --headless --path game res://scenes/net/room_server.tscn -- --room-server [--lobby-config=res://…tres] [--max-matches=2]`
 ## (or, as in an export, without the scene: the boot sends a `--room-server` process here)
 ## It puts the kit's pieces together: the launcher (one dedicated process per match), the rules of Sacrifice
 ## (picks, options, ticket) and the lobby server. Every number is a flag of `MpLobbyConfig` (`--lobby-port=7700`, …).
 ## It prints one line per event so a log tells the story: `salas listo puerto N`, `partida <id> sala "x" puerto P semilla S`,
 ## `sala "x" resultado {…}`. `--match-args=` passes extra user args to the dedicated processes (tests).
+## Ref: RFC-034 034e.
 
 @onready var launcher: MpMatchLauncher = %Launcher
 @onready var rules: SacrificeRoomRules = %Rules

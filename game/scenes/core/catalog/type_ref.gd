@@ -2,10 +2,11 @@
 class_name TypeRef
 extends RefCounted
 
-## Finds the catalog type a tag names (RFC-043 043b). MapBuilding and NpcSpawn keep a typed reference; their `tag` is derived from it,
+## Finds the catalog type a tag names. MapBuilding and NpcSpawn keep a typed reference; their `tag` is derived from it,
 ## and this is how an old tag string (a debug scene, a tool) becomes the reference. Static and @tool: the editor has no autoloads.
 ## The id of a creature is its `tag` or, when empty, its file name (CreatureType.id()): the files carry human names, not tags.
 ## Types are read-only: never mutate what it returns.
+## Ref: RFC-043 043b.
 
 const CREATURES_FOLDER := "res://data/catalog/creatures/"
 

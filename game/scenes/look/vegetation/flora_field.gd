@@ -2,7 +2,7 @@
 class_name FloraField
 extends LookLayer
 
-## RFC-054 054c (F382): the mesh vegetation of a map (Look/Layers/Flora). One MeshPlanter per VegetationLayerConfig of
+## The mesh vegetation of a map (Look/Layers/Flora). One MeshPlanter per VegetationLayerConfig of
 ## `configs` (original_plants.tres), each drawing the FloraLayer nodes of the map (the `Vegetation` node of its map.tscn;
 ## a snapshot, FloraDensity) around the camera: the 3D viewport's in the editor, the game's when playing.
 ## How much each layer draws comes from the quality preset (`LookQuality.vegetation_for(config.id)`; the editor uses
@@ -12,6 +12,7 @@ extends LookLayer
 ## dedicated or headless process the rig is freed, and this never builds anything there either.
 ## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`; FloraClears): only the cells it touches
 ## are rebuilt. The map brush painting a layer calls `layer_painted`: only that area plans again, the planters stay.
+## Ref: RFC-054 054c (F382).
 
 ## Group of the fields: FloraLayer calls `layers_changed` on it.
 const GROUP := &"flora_field"

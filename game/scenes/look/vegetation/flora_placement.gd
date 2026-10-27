@@ -1,7 +1,7 @@
 class_name FloraPlacement
 extends RefCounted
 
-## RFC-054 054a (F380): where the plants of one cell stand. Pure functions of (seed, tag, cell, count): no randi(), no
+## Where the plants of one cell stand. Pure functions of (seed, tag, cell, count): no randi(), no
 ## global RNG, no match RNG, so the editor, every client and every run plant the same thing.
 ## - `instance_count`: n = round_stochastic(count x density_scale), the rounding decided by the cell's hash, so a cell
 ##   never differs from count x scale by 1 or more.
@@ -11,6 +11,7 @@ extends RefCounted
 ##   smallest box. So instances 0-3 fall in the four quadrants, 0-15 in the sixteen sub-quadrants, and so on: any prefix
 ##   is an even sample of the cell, which is what lets the LOD draw a prefix (`visible_instance_count`).
 ## Integers are kept to 32 bits with `MASK`; `_mul32` splits the product so it never overflows 64 bits.
+## Ref: RFC-054 054a (F380).
 
 const MASK := 0xFFFFFFFF
 ## Floats per instance in `cell_instances`: x, z (map meters), yaw (radians), scale.

@@ -1,17 +1,18 @@
 class_name NavService
 extends Node
 
-## The world's pathfinder (RFC-024 §3.1, 024b): %Nav in the match. It takes the map's navmesh once, after the
+## The world's pathfinder: %Nav in the match. It takes the map's navmesh once, after the
 ## world is ready (terrain, manafounts and altars exist), and answers find_path / component_at for the
 ## player, the AI and the perception. Only where the world is simulated: a client never asks.
 ## Blockers come from the scene: the collision shapes of the nodes in `blocker_groups` (manafounts, the
-## altars in play and the buildings of the map, RFC-024 addendum 1; `nav_blocker` is for whatever else a scene puts in the way, a
+## altars in play and the buildings of the map; `nav_blocker` is for whatever else a scene puts in the way, a
 ## pillar of the test of the Sac Doctors). Nothing here moves a body; PathFollower hands waypoints to begin_walk.
-## RFC-035 035i: the navmesh is the one owner (NavMeshBackend + NavRegions + NavBoxBlockers; the 5 m grid is gone). The engine
+## The navmesh is the one owner (NavMeshBackend + NavRegions + NavBoxBlockers; the 5 m grid is gone). The engine
 ## answers from the NavigationRegion3D `region`. What the bake
 ## does not hold (altars, structures, nav_blocker) and a building that fell change the map: NavRebake bakes the whole navmesh again on a
 ## worker thread and the result is swapped into the region `rebake_swap_s` after the change (a count, so it is the
 ## same tick on every machine while the bake is done by then; if not, the swap waits for the first tick it is done, never blocking). A missing navmesh leaves the service not ready (callers get the straight line) with a warning.
+## Ref: RFC-024 §3.1, 024b, addendum 1; RFC-035 035i.
 
 signal built(ms: float)
 

@@ -2,13 +2,14 @@
 class_name SurfaceReliefLayer
 extends LookLayer
 
-## RFC-067: the one global switch of the relief maps. On when the preset's `relief_maps` and the player's «Relieve» option
+## The one global switch of the relief maps. On when the preset's `relief_maps` and the player's «Relieve» option
 ## (GraphicsPrefs; ignored under AgentKit like GraphicsApplier, so a test never inherits the player's file) both say so.
 ## Off, it turns off in memory the normal map of every material drawn (shared .tres or a copy) and of every mesh that enters
 ## the tree later, and the relief of the StoneLook / BuildReveal copies (`use_relief`); on again (or when the layer leaves
 ## with its map), exactly those come back. The only runtime writer of `normal_enabled`; it never saves (the .tres on disk
 ## keeps its maps). Inert in the editor. Cost: none while on.
 ## Not: which maps a material has (its .tres), how they are made (addons/surface_maps).
+## Ref: RFC-067.
 
 ## The shared player preference (data/ui/graphics_prefs.tres). Empty = only the preset decides (a debug scene).
 @export var prefs: GraphicsPrefs

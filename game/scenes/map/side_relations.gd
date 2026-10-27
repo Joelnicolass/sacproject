@@ -2,16 +2,16 @@
 class_name SideRelations
 extends RefCounted
 
-## Who is the enemy of whom (RFC-024 addendum 1, 024b2). The matrix is the SIDS of the map
-## (sids.d, state.d Sides.getStance): each side has a bit mask of allies and one of enemies, and the
+## Who is the enemy of whom. The matrix is the SIDS of the map:
+## each side has a bit mask of allies and one of enemies, and the
 ## stance is read from the first side towards the second; a side is its own ally. Slot = side + 1
 ## (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side 31, the owner of the map's houses,
 ## which has no relations and which nobody has as an enemy (High Noon: enemies 0xe and 0x7ffffffd… skip bit 31).
-## RFC-044 044c: that is the rule for High Noon, which has two seats. A seat (a player slot) and a side of the map are
+## That is the rule for High Noon, which has two seats. A seat (a player slot) and a side of the map are
 ## different things: the seats are the first `MapDefinition.player_starts` slots and take the sides players can take
 ## (assignment != 0) in order; the sides no player takes (NPCs) come after the seats. With two seats this is the old
 ## slot = side + 1, so a map with four seats puts its NPCs in slots 5 and up instead of on the seats of players 3 and 4.
-## RFC-049 049b (F291): on top of the SIDS goes the team overlay of the game mode, as sacengine stanceSettings does after seating the
+## On top of the SIDS goes the team overlay of the game mode, applied after seating the
 ## wizards: two seats of the mode are allies when they share a team and enemies when they do not; NPCs and houses keep the SIDS.
 ## The overlay is installed only when the mode has allies or more than two seats, so 1v1 follows the old path untouched.
 ## The map's rows come from its scene (MapSides.rows_of: the PlayerStart seats with their `team` and the sides its NpcSpawns
@@ -19,6 +19,7 @@ extends RefCounted
 ## tells it which map and mode it plays (MatchWorld calls `use` once, before any of its systems is ready); nothing here asks which
 ## match is active. Static and @tool: the editor and a headless run read it without autoloads, and the suite can load its own rows
 ## with set_rows().
+## Ref: RFC-024 addendum 1, 024b2; RFC-044 044c; RFC-049 049b (F291); sacengine sids.d, Sides.getStance (state.d), stanceSettings.
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
@@ -70,7 +71,8 @@ static func set_rows(rows: Array, seats := -1) -> void:
 			_seat_sides.append(id)
 		else:
 			_npc_sides.append(id)
-	## sacengine multiplayerSide(i): the seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
+	## The seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
+	## Ref: sacengine multiplayerSide(i).
 	_seat_sides.sort_custom(_before_by_seat)
 	_npc_sides.sort()
 	if seats >= 0:

@@ -1,11 +1,12 @@
 class_name GrassHeight
 extends RefCounted
 
-## The land height the grass layer reads (RFC-022e), derived from the terrain when the grass loads instead of read from a
-## baked height.exr (RFC-033 033f). RG float, 1024x1024 over the whole map (2.5 m per texel on a 2560 m map): R = height, G = 1 where land
+## The land height the grass layer reads, derived from the terrain when the grass loads instead of read from a
+## baked height.exr. RG float, 1024x1024 over the whole map (2.5 m per texel on a 2560 m map): R = height, G = 1 where land
 ## lies under the texel centre (`Terrain.height_at` is not NAN), 0 over holes and the map rim. Hole texels take the
 ## height of the nearest land texel so a bilinear read near a hole edge does not dip to 0. The grass is off today, so this
 ## costs nothing at start-up; it runs once, when a grass field first loads.
+## Ref: RFC-022e; RFC-033 033f.
 
 const SIZE := 1024
 

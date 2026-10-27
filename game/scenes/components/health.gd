@@ -9,17 +9,18 @@ signal died(from_slot: int)
 ## After damage_typed(): what was really taken (0 = immune, an ally with no friendly fire, or dead).
 signal hurt(amount: float, kind: StringName, from_slot: int)
 ## Every hit that took health, whatever called (a blow, a shot, a spell, a ritual): what was taken, who
-## took it and whether the bar was full before (sacengine dealDamage notes a grudge only then, state.d:8933).
+## took it and whether the bar was full before.
 signal hit(amount: float, from_slot: int, was_full: bool)
 
-## sacengine DamageMod (state.d:8868) as the resistance dealDamage picks (state.d:8951-8957).
+## The kinds of damage, each the resistance the body uses against it.
+## Ref: sacengine DamageMod (state.d:8868), dealDamage state.d:8951-8957.
 const MELEE := &"melee"
 const DIRECT_SPELL := &"direct_spell"
 const SPLASH_SPELL := &"splash_spell"
 const DIRECT_RANGED := &"direct_ranged"
 const SPLASH_RANGED := &"splash_ranged"
 
-## sacengine DamageMod bits that are not the kind (state.d:8868-8880), for damage_typed(..., mods). F130 (lightning charges the
+## The damage bits that are not the kind, for damage_typed(..., mods). F130 (lightning charges the
 ## Storm Giant) and F155 (ignite lights the oil) read them; the kinds above stay the resistance's.
 const LIGHTNING := 1 << 5
 const IGNITE := 1 << 6
@@ -40,22 +41,25 @@ const IGNITE := 1 << 6
 @export var deflector: DamageDeflector
 ## F117: the body's passiveOnDamage (Taurock korq). Optional: empty = no passive, every hit ×1.
 @export var passive: DamagePassive
-## F137: the states the body is in (petrified ×0.2, state.d:8965) scale every hit, on both paths. Optional: empty = ×1.
+## The states the body is in (petrified ×0.2) scale every hit, on both paths. Optional: empty = ×1.
+## Ref: F137; sacengine state.d:8965.
 @export var afflictions: Afflictions
 ## F122: the body's poison (Poisoning): its resistance bonus goes into every resistance and its factor into regenerate().
 ## Optional: empty = no bonus, regeneration ×1.
 @export var poisoning: Poisoning
 ## The body's shields and temporary forms (Life Shield, Skin of Stone, Air Shield, Ethereal Form...). Optional: empty = no ward, ×1.
 @export var wards: Wards
-## F155: the body's oil (Oiled). A hit with IGNITE that reaches it while the body is oiled takes ×2 and lights it (sacengine
-## dealRawDamage, state.d:9028-9031). Optional: empty = never doubled.
+## F155: the body's oil (Oiled). A hit with IGNITE that reaches it while the body is oiled takes ×2 and lights it.
+## Optional: empty = never doubled.
+## Ref: sacengine dealRawDamage, state.d:9028-9031.
 @export var oil: Oiled
-## F131: what the body has devoured (Devour): its five resistances ×0.9 each soul (sacengine devourSoul, state.d:13154-13158).
+## F131: what the body has devoured (Devour): its five resistances ×0.9 each soul.
 ## Optional: empty = ×1.
+## Ref: sacengine devourSoul, state.d:13154-13158.
 @export var growth: DevourGrowth
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as dealDamage
-## stacks them (state.d:8962-8969); Rockform sets 0.05.
+## stacks them; Rockform sets 0.05.
 var damage_factor := 1.0
 ## Per kind of damage (the constants above): multiplies damage_typed on top of the resistance. The
 ## body's own effects write here, Health reads (Guardian: spells ×0.5, ranged ×0.25).
@@ -130,17 +134,18 @@ func _hit(amount: float, from_slot: int) -> void:
 		died.emit(from_slot)
 
 
-## sacengine dealDamage (state.d:8948-8972) and dealRawDamage (state.d:9001-9050):
+## The damage a hit does to this body:
 ## amount · side factor · max(0, resistance) · damage_factor of the body's CRE8/WIZD data · its states, capped at the
 ## health left.
-## The side factor is the match's friendly fire (_side_factor): an ally takes nothing with it off (dealDamage returns 0,
-## state.d:8961) and ally_damage_factor with it on (sideDamageMultiplier, state.d:9005, 28892-28899); `ignore_friendly`
-## (poison, state.d:9415-9419) takes ×1 then. A dead body takes nothing (canDamage).
-## Melee callers still apply sacengine's extra 0.4 themselves (melee_weapon.gd).
+## The side factor is the match's friendly fire (_side_factor): an ally takes nothing with it off
+## and ally_damage_factor with it on; `ignore_friendly`
+## (poison) takes ×1 then. A dead body takes nothing (canDamage).
+## Melee callers still apply the original's extra 0.4 themselves (melee_weapon.gd).
 ## Returns the damage taken.
 ## `mods` (F130): the DamageMod bits of the hit (LIGHTNING, IGNITE). The body's passive and the oil read them.
-## `pierce_shield` (sacengine DamageMod.peirceShield, state.d:8962-8969): the body's shields and states (damage_factor:
+## `pierce_shield`: the body's shields and states (damage_factor:
 ## Rockform, Life Shield; _state_factor: petrified) do not scale it. The Pyromaniac's fire (F123).
+## Ref: sacengine dealDamage state.d:8948-8972, 8961, 8962-8969 (DamageMod.peirceShield); dealRawDamage state.d:9001-9050; sideDamageMultiplier state.d:9005, 28892-28899; poison state.d:9415-9419.
 func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false, pierce_shield := false, mods := 0) -> float:
 	deflected_last = false
 	if not is_multiplayer_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
@@ -164,16 +169,17 @@ func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_fr
 	return taken
 
 
-## sacengine dealDamage (state.d:8962-8969): the body's damage_factor (Rockform) times its wards' for `kind`. The melee path asks it too.
+## The body's damage_factor (Rockform) times its wards' for `kind`. The melee path asks it too.
 func shield_factor(kind := MELEE) -> float:
 	return maxf(0.0, damage_factor) * (wards.factor(kind) if wards else 1.0)
 
 
 ## The body's resistance for `kind`: CreatureType for a UnitBody, WizardType for a wizard.
-## sacengine stores them ×1e-3 (sacobject.d:156-160); a 0 is immunity (Trogg vs spells).
-## F122: dealDamage adds the poison's resistanceBonus inside the max (state.d:8950-8957): max(0, resistance + bonus).
+## A 0 is immunity (Trogg vs spells).
+## F122: the poison's resistance bonus goes inside the max: max(0, resistance + bonus).
 ## F131: the resistance is the one the body has devoured down to (DevourGrowth, ×0.9 a soul).
-## RFC 061c: its spell states add theirs inside the same max (Slime +0.2 a layer, sacengine state.d:8950).
+## RFC 061c: its spell states add theirs inside the same max (Slime +0.2 a layer).
+## Ref: sacengine stores them ×1e-3, sacobject.d:156-160; poison bonus state.d:8950-8957; Slime state.d:8950.
 func resistance(kind: StringName) -> float:
 	var base := _base_resistance(kind) * (growth.resistance_factor() if growth else 1.0)
 	return maxf(0.0, base + (poisoning.resistance_bonus() if poisoning else 0.0) + (afflictions.resistance_bonus() if afflictions else 0.0))
@@ -195,7 +201,8 @@ func _base_resistance(kind: StringName) -> float:
 
 var _deflecting := false
 ## F164b: the last hit was taken by the deflector's stand-ins (a building's guardians), not by this body. They are
-## creatures, so the attacker drains from what they took (sacengine damageGuardians, state.d:9119-9141): LifeDrain reads it.
+## creatures, so the attacker drains from what they took: LifeDrain reads it.
+## Ref: sacengine damageGuardians, state.d:9119-9141.
 var deflected_last := false
 ## F139: the match's MatchState, found on the first hit between allies (group `match_state`).
 var _match: MatchState
@@ -208,10 +215,11 @@ func side_factor(from_slot: int) -> float:
 
 
 ## F139 (RFC-031 §3.2): the one place that decides how much of a hit from `from_slot` this body takes for its side.
-## Another side, or no side (0): ×1. The same side, or an ally by the stance (RFC-049 049c: 2v2 teams): 0 with friendly fire off (state.d:8961); with it on, ×1 if the hit
-## ignores it (poison, state.d:9415-9419) and the match's ally_damage_factor otherwise (state.d:9005, 28892-28899).
+## Another side, or no side (0): ×1. The same side, or an ally by the stance (RFC-049 049c: 2v2 teams): 0 with friendly fire off; with it on, ×1 if the hit
+## ignores it (poison) and the match's ally_damage_factor otherwise.
 ## The rule is the one MatchState took from the world's rules. With no MatchState (a harness) it is `unruled`: the
 ## behaviour each caller had before F139 (damage_typed 0, damage ×1).
+## Ref: sacengine state.d:8961, 9005, 9415-9419, 28892-28899.
 func _side_factor(from_slot: int, ignore_friendly: bool, unruled: float) -> float:
 	if from_slot <= 0:
 		return 1.0
@@ -234,14 +242,15 @@ func _match_state() -> MatchState:
 	return _match
 
 
-## F137: the one place both damage paths ask for the factor of the states the body is in (dealDamage, state.d:8965).
+## F137: the one place both damage paths ask for the factor of the states the body is in.
 func _state_factor() -> float:
 	return maxf(0.0, afflictions.damage_factor()) if afflictions else 1.0
 
 
-## sacengine dealRawDamage (state.d:9010-9028): the passive scales every kind of hit by the health before it. F130: it also
+## The passive scales every kind of hit by the health before it. F130: it also
 ## gets the hit's `mods`, the damage that reached it (`before`: side, resistance and shields already applied) and whether the
-## attacker is of the body's side, which the Lightning Charge reads (state.d:9017-9022).
+## attacker is of the body's side, which the Lightning Charge reads.
+## Ref: sacengine dealRawDamage, state.d:9010-9028, 9017-9022.
 func _passive_factor(before := 0.0, mods := 0, from_slot := 0) -> float:
 	if passive == null or maximum <= 0.0:
 		return 1.0
@@ -260,9 +269,10 @@ func _deflect(amount: float, kind: StringName, from_slot: int) -> float:
 	return taken
 
 
-## sacengine updateCreatureStats (state.d:14403): heal(max(0, regeneration · poisonRegeneration) · …). The body's
+## Heals max(0, regeneration · poisonRegeneration) · …. The body's
 ## regeneration (amount already scaled by mana and delta) times the poison's factor (freg 0: none while it lasts).
-## F159: a state that blocks regeneration (Vined: sacengine regenerationBlocked, stats.d:73) makes it nothing.
+## F159: a state that blocks regeneration (Vined) makes it nothing.
+## Ref: sacengine updateCreatureStats, state.d:14403; regenerationBlocked, stats.d:73.
 func regenerate(amount: float) -> void:
 	if afflictions != null and afflictions.blocks_regeneration():
 		return
@@ -275,8 +285,9 @@ func heal(amount: float) -> void:
 	current = minf(current + amount, maximum)
 
 
-## sacengine canDamage (state.d:8916-8923): a wizard's ghost takes no damage while it heals; neither does a body in a ward that
+## A wizard's ghost takes no damage while it heals; neither does a body in a ward that
 ## makes it immune (Ethereal Form), whatever the hit pierces.
+## Ref: sacengine canDamage, state.d:8916-8923.
 func _can_be_damaged() -> bool:
 	if wards != null and wards.immune():
 		return false

@@ -2,9 +2,10 @@
 class_name GodType
 extends Resource
 
-## A god (RFC-042 042a): everything the game knows about one, in one file `data/gods/<tag>.tres`. Adding a god is adding
+## A god: everything the game knows about one, in one file `data/gods/<tag>.tres`. Adding a god is adding
 ## that file; no code lists the gods. Read-only at runtime, like the other types.
 ## The book, the look and the casting particle sit in the file as references (how the AI plays is its seat's, not the god's).
+## Ref: RFC-042 042a.
 
 @export var tag: String = ""
 @export var display_name: String = ""

@@ -1,11 +1,11 @@
 class_name OrderMarker
 extends Node3D
 
-## F220: the mark an order leaves on the ground. sacengine's CommandCone (sacobject.d:4483-4505, renderer.d:3690-3730,
-## state.d:29261-29264): a narrow 8-sided cone, apex on the ordered point, drawn with the `aura` texture plus 8 white
+## The mark an order leaves on the ground: a narrow 8-sided cone, apex on the ordered point, drawn with the `aura` texture plus 8 white
 ## shells that turn against each other. It lasts 0.5 s: alpha 1 - t, width grows to 3x and height to 1.25x. White for a
 ## move or retreat, blue for guard, red for attack and advance. Client-local presentation: no RPC, never in headless.
 ## One instance is reused (`play` restarts it), so no node is created or freed per order.
+## Ref: sacengine CommandCone, sacobject.d:4483-4505, renderer.d:3690-3730, state.d:29261-29264; F220.
 
 enum Tone { WHITE, RED, BLUE }
 
@@ -18,7 +18,8 @@ const CONE_RADIUS := 0.7
 
 static var _cone_mesh: ArrayMesh
 
-## Seconds the mark lasts (sacengine: 0.5).
+## Seconds the mark lasts.
+## Ref: sacengine 0.5.
 @export_range(0.05, 3.0, 0.05, "suffix:s") var lifetime_s := 0.5
 ## Overall size multiplier (1 = the original's 10 m by 0.7 m cone).
 @export_range(0.1, 4.0, 0.05) var size_scale := 1.0
@@ -94,7 +95,8 @@ func _instance(mesh: Mesh, material: Material) -> MeshInstance3D:
 	return node
 
 
-## Cone with the apex at the origin and the ring `CONE_HEIGHT` up (sacengine builds it along z; here y is up).
+## Cone with the apex at the origin and the ring `CONE_HEIGHT` up (y is up).
+## Ref: sacengine builds it along z.
 static func _mesh() -> ArrayMesh:
 	if _cone_mesh != null:
 		return _cone_mesh

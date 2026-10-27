@@ -17,11 +17,15 @@
 #   DET_OUT (default agent/out/det)  DET_BASELINE (default agent/det_baseline.txt: lines `case digest`)
 #   DET_RSS_LIMIT_KB (2500000)  DET_LIMIT_FIXED (600)  DET_LIMIT_STRESS (900)  DET_LIMIT_WINDOW (900)  (seconds)
 #   DET_STRESS_FPS (6)  DET_WINDOW_RES (1280x720)  DET_WINDOW_ARGS (--autostart --quit)
+#   DET_JOBS (3): case/mode runs at once, never more than 3 (the machine's rule: 3 headless + 1 window; godot_run.sh
+#   queues the rest, and a window still runs alone). The digests do not depend on the load (headless --fixed-fps, and
+#   stress/window change the clock on purpose), so parallel runs give the same verdict as one at a time.
 #   GODOT_BIN, GODOT_RUN_NS (queue namespace, see harness/godot_run.sh). DET_OUT and DET_BASELINE can also come from the
 #   environment (they win over the cfg).
 # Every Godot goes through harness/godot_run.sh, one queue. The watchdog kills at RSS > limit, after the time limit of the
 # mode, and AT ONCE when the log has Parse Error / Compile Error / Failed to load script (watchdog=script_error_kill).
-# CONTAMINATED in the meta: another Godot (not an editor) showed up during the run.
+# CONTAMINATED in the meta: a Godot that is not this bench's (nor an editor) showed up during the run: its wall time
+# and RSS are not comparable. It does not change a digest, so it never fails the verdict (the report says so).
 # Out: $DET_OUT/<case>_<mode>.json (report), .events (record lines), .log, .meta (wall_s rss_max_kb contaminated watchdog).
 # quick deletes the old results of its cases first, runs them, compares each `fixed` digest with the baseline
 # (`baseline CASE OK|FAIL`) and needs at least two fresh modes in the table. Prints QUICK PASS or QUICK FAIL.
@@ -56,6 +60,10 @@ RSS_LIMIT_KB="${DET_RSS_LIMIT_KB:-2500000}"
 STRESS_FPS="${DET_STRESS_FPS:-6}"
 WINDOW_RES="${DET_WINDOW_RES:-1280x720}"
 WINDOW_ARGS="${DET_WINDOW_ARGS---autostart --quit}"
+JOBS="${DET_JOBS:-3}"
+case "$JOBS" in ''|*[!0-9]*) JOBS=3 ;; esac
+[ "$JOBS" -lt 1 ] && JOBS=1
+[ "$JOBS" -gt 3 ] && JOBS=3
 if [ -z "${GODOT_BIN:-}" ]; then
   GODOT_BIN="$(command -v godot godot4 Godot 2>/dev/null | head -n1)"
   [ -z "$GODOT_BIN" ] && [ -x /Applications/Godot.app/Contents/MacOS/Godot ] && GODOT_BIN=/Applications/Godot.app/Contents/MacOS/Godot
@@ -71,6 +79,25 @@ case_args() { # case -> args; fails if the case is unknown
 }
 report() { # [case...]
   python3 -I "$HERE/det_report.py" "$OUT" "$@"
+}
+
+## A pool of at most JOBS background jobs (bash 3.2: no `wait -n`). pool_add <cmd...>; pool_wait at the end.
+POOL_PIDS=()
+pool_add() {
+  while :; do
+    local live=() p
+    for p in ${POOL_PIDS[@]+"${POOL_PIDS[@]}"}; do kill -0 "$p" 2>/dev/null && live+=("$p"); done
+    POOL_PIDS=(${live[@]+"${live[@]}"})
+    [ ${#POOL_PIDS[@]} -lt "$JOBS" ] && break
+    sleep 0.5
+  done
+  "$@" &
+  POOL_PIDS+=($!)
+}
+pool_wait() {
+  local p
+  for p in ${POOL_PIDS[@]+"${POOL_PIDS[@]}"}; do wait "$p" 2>/dev/null; done
+  POOL_PIDS=()
 }
 
 NOWIN=0; MODES=()
@@ -93,6 +120,78 @@ if [ "$CMD" = bless ]; then
   echo "baseline written: $BASELINE"; exit 0
 fi
 
+if [ "$CMD" = all ]; then CASES=($(cases_where '$4 == "all"')); else CASES=("$CMD"); fi
+[ ${#CASES[@]} -eq 0 ] && { echo "no cases"; exit 2; }
+if [ ${#MODES[@]} -eq 0 ]; then
+  if [ $NOWIN = 1 ]; then MODES=(fixed fixed2 stress); else MODES=(fixed stress window); fi
+fi
+# `fixed` is the reference: always run it in this invocation, and a verdict needs at least two fresh modes.
+case " ${MODES[*]} " in *" fixed "*) ;; *) MODES=(fixed "${MODES[@]}") ;; esac
+if [ $NOWIN = 1 ]; then
+  KEEP=(); for m in "${MODES[@]}"; do [ "$m" != window ] && KEEP+=("$m"); done; MODES=("${KEEP[@]}")
+fi
+mkdir -p "$OUT"
+cd "$DET_PROJECT" || exit 2
+
+# The Godot child of the godot_run.sh pid: RSS cap, time cap (from the moment Godot starts, not the lock wait),
+# a script that does not compile (kill at once), and a Godot that is not this bench's (nor an editor) marks the run
+# CONTAMINATED: this bench's other runs in parallel do not count.
+watch() { # runner_pid meta limit_s log
+  local runner=$1 meta=$2 limit=$3 log=$4 start="" g="" rss_max=0 contaminated=0 dog=none
+  while kill -0 "$runner" 2>/dev/null; do
+    # Only the Godot child counts (godot_run.sh also spawns mkdir, sleep and godot_busy.sh while it waits).
+    [ -z "$g" ] && g=$(ps -axo pid=,ppid=,comm= | awk -v r="$runner" '$2 == r && $3 ~ /(^|\/)[Gg]odot4?$/ {print $1; exit}')
+    if [ -n "$g" ]; then
+      [ -z "$start" ] && start=$(date +%s)
+      local r; r=$(ps -o rss= -p "$g" 2>/dev/null | tr -d ' ')
+      if [ -n "$r" ]; then
+        [ "$r" -gt "$rss_max" ] && rss_max=$r
+        if [ "$r" -gt "$RSS_LIMIT_KB" ]; then dog="rss_kill"; kill -9 "$g"; fi
+      fi
+      if [ $(( $(date +%s) - start )) -gt "$limit" ]; then dog="timeout_kill"; kill -9 "$g"; fi
+      if [ -n "$log" ] && grep -q -E "Parse Error|Failed to load script|Compile Error" "$log" 2>/dev/null; then
+        dog="script_error_kill"; kill -9 "$g"
+      fi
+      local p others="" cmd
+      for p in $(ps -axo pid=,comm= | awk '$2 ~ /(^|\/)[Gg]odot4?$/ {print $1}'); do
+        [ "$p" = "$g" ] && continue
+        cmd=$(ps -o command= -p "$p" 2>/dev/null)
+        printf '%s' "$cmd" | grep -q -E -- "--editor( |$)" && continue
+        ## This bench's own runs (in parallel: every one writes its --out= in OUT) and the queue's import of this project.
+        case "$cmd" in *"--out=$OUT/"*) continue ;; esac
+        case "$cmd" in *"--path $DET_PROJECT --import"*|*"--import"*"--path $DET_PROJECT"*) continue ;; esac
+        others="$others $p"
+      done
+      [ -n "$others" ] && contaminated=1
+    fi
+    sleep 1
+  done
+  local wall=0; [ -n "$start" ] && wall=$(( $(date +%s) - start ))
+  echo "wall_s=$wall rss_max_kb=$rss_max contaminated=$contaminated watchdog=$dog" > "$meta"
+}
+
+
+## One case in one mode: its files in OUT, a summary line.
+run_one() { # case mode
+  local CASE=$1 MODE=$2 ARGS BASE IO LIMIT P code
+  ARGS=$(case_args "$CASE") || { echo "unknown case $CASE"; return 2; }
+  BASE="$OUT/${CASE}_${MODE}"
+  rm -f "$BASE.json" "$BASE.events" "$BASE.log" "$BASE.meta"
+  IO="--out=$BASE.json --events=$BASE.events"
+  local GARGS=()
+  case "$MODE" in
+    fixed|fixed2) GARGS=(--headless --fixed-fps 60); LIMIT="${DET_LIMIT_FIXED:-600}" ;;
+    stress) GARGS=(--headless --max-fps "$STRESS_FPS"); LIMIT="${DET_LIMIT_STRESS:-900}" ;;
+    window) GARGS=(--max-fps 60 --resolution "$WINDOW_RES"); IO="$IO $WINDOW_ARGS"; LIMIT="${DET_LIMIT_WINDOW:-900}" ;;
+    *) echo "unknown mode $MODE"; return 2 ;;
+  esac
+  # shellcheck disable=SC2086
+  bash "$HERE/harness/godot_run.sh" "$BIN" "${GARGS[@]}" --path "$DET_PROJECT" "$DET_SCENE" -- $ARGS $IO > "$BASE.log" 2>&1 &
+  P=$!; watch "$P" "$BASE.meta" "$LIMIT" "$BASE.log"; wait "$P"; code=$?
+  echo "$CASE $MODE exit $code $(cat "$BASE.meta")"
+  grep -h "SCRIPT ERROR" "$BASE.log" | head -3 | cut -c1-200
+}
+
 # quick: the quick cases against the baseline. Old results are deleted first: a stale file read as OK once hid that no case had run.
 if [ "$CMD" = quick ]; then
   QALL=$(cases_where '$3 == "all"'); QFIX=$(cases_where '$3 == "fixed"')
@@ -101,8 +200,12 @@ if [ "$CMD" = quick ]; then
   done
   if [ $NOWIN = 1 ]; then QMODES="fixed fixed2 stress"; else QMODES="fixed stress window"; fi
   ok=1
-  for c in $QALL; do bash "$0" "$CASES_FILE" "$c" $QMODES >/dev/null || true; done
-  for c in $QFIX; do bash "$0" "$CASES_FILE" "$c" fixed >/dev/null || true; done
+  mkdir -p "$OUT"
+  cd "$DET_PROJECT" || exit 2
+  ## Every case/mode of the quick pass in one pool (DET_JOBS at once).
+  for c in $QALL; do for m in $QMODES; do pool_add run_one "$c" "$m" > /dev/null; done; done
+  for c in $QFIX; do pool_add run_one "$c" fixed > /dev/null; done
+  pool_wait
   if [ -f "$BASELINE" ]; then
     while read -r c want; do
       [ -z "$c" ] && continue
@@ -121,68 +224,9 @@ if [ "$CMD" = quick ]; then
   [ $ok = 1 ] && { echo "QUICK PASS"; exit 0; } || { echo "QUICK FAIL"; exit 1; }
 fi
 
-if [ "$CMD" = all ]; then CASES=($(cases_where '$4 == "all"')); else CASES=("$CMD"); fi
-[ ${#CASES[@]} -eq 0 ] && { echo "no cases"; exit 2; }
-if [ ${#MODES[@]} -eq 0 ]; then
-  if [ $NOWIN = 1 ]; then MODES=(fixed fixed2 stress); else MODES=(fixed stress window); fi
-fi
-# `fixed` is the reference: always run it in this invocation, and a verdict needs at least two fresh modes.
-case " ${MODES[*]} " in *" fixed "*) ;; *) MODES=(fixed "${MODES[@]}") ;; esac
-if [ $NOWIN = 1 ]; then
-  KEEP=(); for m in "${MODES[@]}"; do [ "$m" != window ] && KEEP+=("$m"); done; MODES=("${KEEP[@]}")
-fi
-mkdir -p "$OUT"
-cd "$DET_PROJECT" || exit 2
-
-# The Godot child of the godot_run.sh pid: RSS cap, time cap (from the moment Godot starts, not the lock wait),
-# a script that does not compile (kill at once) and any other Godot (not an editor) marks the run CONTAMINATED.
-watch() { # runner_pid meta limit_s log
-  local runner=$1 meta=$2 limit=$3 log=$4 start="" g="" rss_max=0 contaminated=0 dog=none
-  while kill -0 "$runner" 2>/dev/null; do
-    # Only the Godot child counts (godot_run.sh also spawns mkdir, sleep and godot_busy.sh while it waits).
-    [ -z "$g" ] && g=$(ps -axo pid=,ppid=,comm= | awk -v r="$runner" '$2 == r && $3 ~ /(^|\/)[Gg]odot4?$/ {print $1; exit}')
-    if [ -n "$g" ]; then
-      [ -z "$start" ] && start=$(date +%s)
-      local r; r=$(ps -o rss= -p "$g" 2>/dev/null | tr -d ' ')
-      if [ -n "$r" ]; then
-        [ "$r" -gt "$rss_max" ] && rss_max=$r
-        if [ "$r" -gt "$RSS_LIMIT_KB" ]; then dog="rss_kill"; kill -9 "$g"; fi
-      fi
-      if [ $(( $(date +%s) - start )) -gt "$limit" ]; then dog="timeout_kill"; kill -9 "$g"; fi
-      if [ -n "$log" ] && grep -q -E "Parse Error|Failed to load script|Compile Error" "$log" 2>/dev/null; then
-        dog="script_error_kill"; kill -9 "$g"
-      fi
-      local p others=""
-      for p in $(ps -axo pid=,comm= | awk '$2 ~ /(^|\/)[Gg]odot4?$/ {print $1}'); do
-        [ "$p" = "$g" ] && continue
-        ps -o command= -p "$p" 2>/dev/null | grep -q -E -- "--editor( |$)" && continue
-        others="$others $p"
-      done
-      [ -n "$others" ] && contaminated=1
-    fi
-    sleep 1
-  done
-  local wall=0; [ -n "$start" ] && wall=$(( $(date +%s) - start ))
-  echo "wall_s=$wall rss_max_kb=$rss_max contaminated=$contaminated watchdog=$dog" > "$meta"
-}
-
 for CASE in "${CASES[@]}"; do
-  ARGS=$(case_args "$CASE") || { echo "unknown case $CASE"; exit 2; }
-  for MODE in "${MODES[@]}"; do
-    BASE="$OUT/${CASE}_${MODE}"
-    rm -f "$BASE.json" "$BASE.events" "$BASE.log" "$BASE.meta"
-    IO="--out=$BASE.json --events=$BASE.events"
-    case "$MODE" in
-      fixed|fixed2) GARGS=(--headless --fixed-fps 60); LIMIT="${DET_LIMIT_FIXED:-600}" ;;
-      stress) GARGS=(--headless --max-fps "$STRESS_FPS"); LIMIT="${DET_LIMIT_STRESS:-900}" ;;
-      window) GARGS=(--max-fps 60 --resolution "$WINDOW_RES"); IO="$IO $WINDOW_ARGS"; LIMIT="${DET_LIMIT_WINDOW:-900}" ;;
-      *) echo "unknown mode $MODE"; exit 2 ;;
-    esac
-    # shellcheck disable=SC2086
-    bash "$HERE/harness/godot_run.sh" "$BIN" "${GARGS[@]}" --path "$DET_PROJECT" "$DET_SCENE" -- $ARGS $IO > "$BASE.log" 2>&1 &
-    P=$!; watch "$P" "$BASE.meta" "$LIMIT" "$BASE.log"; wait "$P"; code=$?
-    echo "$CASE $MODE exit $code $(cat "$BASE.meta")"
-    grep -h "SCRIPT ERROR" "$BASE.log" | head -3 | cut -c1-200
-  done
+  case_args "$CASE" > /dev/null || { echo "unknown case $CASE"; exit 2; }
+  for MODE in "${MODES[@]}"; do pool_add run_one "$CASE" "$MODE"; done
 done
+pool_wait
 DET_MODES="${MODES[*]}" report "${CASES[@]}"

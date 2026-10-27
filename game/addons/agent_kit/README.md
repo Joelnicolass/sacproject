@@ -114,15 +114,16 @@ Mide que una misma corrida da el mismo resultado con relojes distintos. Genéric
 **Corredor**
 `bash addons/agent_kit/determinism/det_run.sh <casos.txt> CASO|all|quick|table|bless [MODO...] [--no-window]`
 - `casos.txt`: una línea `nombre|args|quick|set` (`quick`: `all` = todos los modos, `fixed` = solo referencia, vacío = fuera de quick; `set`: `all` = entra en `all`).
-- `det.cfg` junto al archivo de casos (shell): `DET_SCENE` (obligatorio), `DET_PROJECT`, `DET_OUT`, `DET_BASELINE` (líneas `caso digest`), `DET_RSS_LIMIT_KB`, `DET_LIMIT_FIXED|STRESS|WINDOW`, `DET_STRESS_FPS`, `DET_WINDOW_RES`, `DET_WINDOW_ARGS`, `GODOT_BIN`, `GODOT_RUN_NS`.
+- `det.cfg` junto al archivo de casos (shell): `DET_SCENE` (obligatorio), `DET_PROJECT`, `DET_OUT`, `DET_BASELINE` (líneas `caso digest`), `DET_RSS_LIMIT_KB`, `DET_LIMIT_FIXED|STRESS|WINDOW`, `DET_STRESS_FPS`, `DET_WINDOW_RES`, `DET_WINDOW_ARGS`, `DET_JOBS`, `GODOT_BIN`, `GODOT_RUN_NS`.
 - Modos: `fixed` (referencia), `fixed2` (repetición), `stress` (headless con `--max-fps` bajo), `window` (nunca dos ventanas a la vez).
-- Salidas por caso y modo en `DET_OUT`: `.json`, `.events`, `.log`, `.meta` (`wall_s`, `rss_max_kb`, `contaminated`, `watchdog`). Un `watchdog` distinto de `none` o `CONTAMINATED` hace fallar el veredicto.
+- **En paralelo**: `DET_JOBS` (por defecto 3, nunca más de 3) corridas caso/modo a la vez, en `all`, en `quick` y con un caso y varios modos. La cola (`harness/godot_run.sh`) hace cumplir la regla de la máquina: hasta 3 headless más 1 ventana, nunca dos ventanas. Los digests no dependen de la carga (headless `--fixed-fps`; `stress` y `window` cambian el reloj a propósito), así que el veredicto es el mismo que corriendo de a uno: `DET_JOBS=1` vuelve al modo en serie.
+- Salidas por caso y modo en `DET_OUT`: `.json`, `.events`, `.log`, `.meta` (`wall_s`, `rss_max_kb`, `contaminated`, `watchdog`). Un `watchdog` distinto de `none` hace fallar el veredicto. `CONTAMINATED` (corrió un Godot que no es del banco ni un editor; las corridas paralelas del propio banco no cuentan) es solo un aviso: no cambia un digest, solo hace que el tiempo de pared y la RSS no sean comparables, y el reporte lo dice.
 - Watchdog: RSS, tiempo, y **corte inmediato** (`script_error_kill`) si el log trae `Parse Error`, `Compile Error` o `Failed to load script`.
 - `quick` borra los resultados viejos de sus casos, compara el digest de `fixed` con la base (`baseline X OK|FAIL`) y exige al menos 2 modos frescos: `QUICK PASS` / `QUICK FAIL`. `bless` escribe la base desde los `fixed` actuales.
 - Tabla y veredicto: `det_report.py` (`DETERMINISM PASS|FAIL`; columnas `case, mode, sha256, end_tick, lines, vs fixed, wall (s), RSS max (MB), warnings, first different line`).
 
-**Autoprueba** (escena propia con 20 cuerpos y semilla): `perl -e 'alarm 900; exec @ARGV' bash addons/agent_kit/determinism/det_selftest.sh` -> `SELFTEST PASS`.
+**Autoprueba** (escena propia con 20 cuerpos y semilla): `perl -e 'alarm 900; exec @ARGV' bash addons/agent_kit/determinism/det_selftest.sh` -> `SELFTEST PASS`. Corre `all` en paralelo (`DET_JOBS=3`) y de a uno (`DET_JOBS=1`) y exige los mismos digests; con la máquina sin otros Godot, exige además que ninguna corrida del banco marque CONTAMINATED a otra.
 
 ## Versión
 
-0.1.5
+0.1.6

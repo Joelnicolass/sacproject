@@ -7,6 +7,9 @@ Reads OUT_DIR/<case>_<mode>.json (report), .events (record lines) and .meta (wal
 watchdog). A case passes when every mode it has gives the digest of `fixed`. With DET_MODES set only those modes
 count (an old file of a previous run is not a result of now) and a case needs `fixed` plus another fresh mode.
 Prints a markdown table and a last line `DETERMINISM PASS` or `DETERMINISM FAIL`.
+A watchdog kill fails the case. CONTAMINATED (a Godot that is not the bench's ran meanwhile) is only a warning: the
+digests do not depend on the load (headless --fixed-fps; stress and window change the clock on purpose), so a run in
+parallel with others gives the same verdict; only its wall time and RSS are not comparable.
 """
 import json
 import os
@@ -42,7 +45,7 @@ def main():
     out, cases = sys.argv[1], sys.argv[2:]
     only = os.environ.get("DET_MODES", "").split()
     modes = [m for m in MODES if m in only] if only else MODES
-    rows, verdict, nocmp = [], True, []
+    rows, verdict, nocmp, contaminated = [], True, [], []
     for case in cases:
         ref, _, ref_lines = load(out, case, "fixed")
         if only and sum(1 for m in modes if load(out, case, m)[0] is not None) < 2:
@@ -69,6 +72,8 @@ def main():
             flags = " ".join(f for f in (
                 "CONTAMINATED" if meta.get("contaminated") == "1" else "",
                 meta.get("watchdog", "") if meta.get("watchdog", "none") != "none" else "") if f)
+            if meta.get("contaminated") == "1":
+                contaminated.append("%s %s" % (case, mode))
             rows.append([
                 case, mode, digest,
                 str(rep.get("end_tick", "")) if rep else "",
@@ -77,7 +82,7 @@ def main():
                 meta.get("wall_s", ""),
                 "%d" % (int(meta["rss_max_kb"]) // 1024) if meta.get("rss_max_kb") else "",
                 flags, first])
-            if flags:
+            if meta.get("watchdog", "none") not in ("none", ""):
                 verdict = False
     print("| case | mode | sha256 | end_tick | lines | vs fixed | wall (s) | RSS max (MB) | warnings | first different line |")
     print("|---|---|---|---|---|---|---|---|---|---|")
@@ -86,6 +91,9 @@ def main():
     print()
     for c in nocmp:
         print("%s: no comparison (needs fixed plus another mode run now)" % c)
+    if contaminated:
+        print("contaminated (another Godot ran meanwhile; digests unaffected, wall time and RSS not comparable): %s"
+              % ", ".join(contaminated))
     print("DETERMINISM %s" % ("PASS" if verdict and rows else "FAIL"))
 
 

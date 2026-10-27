@@ -27,7 +27,6 @@ var _max_lights := -1
 var _night := 0.0
 var _enabled := true
 var _clock := 0.0
-var _on := 0
 
 
 class _Entry:
@@ -75,11 +74,6 @@ func _on_atmosphere(sample: AtmosphereSample) -> void:
 	rank()
 
 
-## Lights on now.
-func on_count() -> int:
-	return _on
-
-
 func max_lights() -> int:
 	return maxi(_max_lights, 0)
 
@@ -107,7 +101,6 @@ func rank() -> void:
 		entry.score = light.priority / maxf(distance, min_distance_m) * (hysteresis if light.is_budget_on() else 1.0)
 		entries.append(entry)
 	entries.sort_custom(func(a: _Entry, b: _Entry) -> bool: return a.score > b.score)
-	_on = mini(cap, entries.size())
 	for i in entries.size():
 		entries[i].light.set_budget_on(i < cap)
 

@@ -37,9 +37,8 @@ const COMMANDS := {
 ## creature closest to its own slot within this range.
 ## Ref: attackDistance, state.d:13609.
 @export var retarget_range := 100.0
-## Print «orden <command> <n>» for every applied order (the network scripts grep it on the server). The AI's orders
-## (`apply_for`) are printed only with `log_ai_orders`: thousands per match.
-@export var log_orders := true
+## With the DebugLog category `orders` on, every applied human order prints «orden <command> <n>». The AI's orders
+## (`apply_for`) print too only with `log_ai_orders`: thousands per match.
 @export var log_ai_orders := false
 
 
@@ -127,8 +126,8 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 		var order_facing := _yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
 		(unit.get_node("Orders") as UnitOrders).give(kind as UnitOrders.Command, foe, order_point, slots[index], order_facing)
 	last_apply_us = Time.get_ticks_usec() - started
-	if log_orders and (unit_nodes.is_empty() or log_ai_orders):
-		print("orden %s %d" % [command, units.size()])
+	if unit_nodes.is_empty() or log_ai_orders:
+		if DebugLog.on(&"orders"): print("orden %s %d" % [command, units.size()])
 
 
 ## "formation": keeps `formation_id` on each creature of the slot that was asked for. Nobody moves; an id the catalog does
@@ -138,8 +137,8 @@ func _set_formation(slot: int, unit_paths: PackedStringArray, formation_id: Stri
 		return
 	for unit in _own_units(slot, unit_paths, null, UnitOrders.Command.MOVE, unit_nodes):
 		unit.get_node("Orders").set("formation_id", formation_id)
-	if log_orders and (unit_nodes.is_empty() or log_ai_orders):
-		print("orden formation %s" % formation_id)
+	if unit_nodes.is_empty() or log_ai_orders:
+		if DebugLog.on(&"orders"): print("orden formation %s" % formation_id)
 
 
 ## The formation most of the group keeps; a tie goes to the one first in the catalog (the original's order).

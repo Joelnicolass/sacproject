@@ -80,8 +80,7 @@ func think() -> void:
 func _flee_from(threat: Node3D, leg_m: float) -> bool:
 	if threat == null:
 		return false
-	transition(&"Flee")
-	(current as VillagerFleeState).run_from(threat, leg_m)
+	transition(&"Flee", {"threat": threat, "leg_m": leg_m})
 	return true
 
 

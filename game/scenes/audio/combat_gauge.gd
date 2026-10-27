@@ -95,12 +95,6 @@ func force(value: float) -> void:
 	sample()
 
 
-## Forgets the wizard's last hit (the lab, between steps).
-func clear_wizard_hit() -> void:
-	_wizard_hit_at = -INF
-	sample()
-
-
 ## The local wizard whose health keeps the battle on (MatchWorld.local_wizard_changed; the lab sets it).
 func bind_wizard(node: Node3D) -> void:
 	if _health != null and is_instance_valid(_health) and _health.changed.is_connected(_on_health):

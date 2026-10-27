@@ -66,4 +66,4 @@ func _ready() -> void:
 	if not is_multiplayer_authority():
 		return
 	var polygons := navigation_mesh.get_polygon_count() if navigation_mesh != null else 0
-	print("nav: navmesh %d polígonos" % polygons)
+	if DebugLog.on(&"nav"): print("nav: navmesh %d polígonos" % polygons)

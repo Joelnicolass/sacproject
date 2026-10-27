@@ -10,8 +10,6 @@ extends RefCounted
 
 ## Edge tolerance of the inside test; a point on an edge counts as inside.
 const EDGE_TOLERANCE := 0.0001
-## A triangle with less area than this seen from above is a cliff wall, not land.
-const WALL_AREA := 0.01
 
 
 ## The land of a map ready to be asked: `ground` holds three vertices per land triangle; `cells` two triangle ids per
@@ -52,11 +50,6 @@ static func index(data: MapTerrainData) -> Index:
 	return result
 
 
-## True for a triangle that has no area seen from above (a cliff wall).
-static func is_wall(a: Vector3, b: Vector3, c: Vector3) -> bool:
-	return absf(flat_cross(a, b, Vector2(c.x, c.z))) < WALL_AREA
-
-
 ## Land height under (x, z) in world units, NAN over a hole or off the map. `shift`/`corners`: see the class doc.
 static func height_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array,
 		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> float:
@@ -72,23 +65,6 @@ static func height_in(x: float, z: float, ground: PackedVector3Array, cells: Pac
 		c.y += shift[corners[id * 3 + 2] * 2]
 	var plane := Plane(a, b, c)
 	return (plane.d - plane.normal.x * x - plane.normal.z * z) / plane.normal.y
-
-
-## Unit normal (y >= 0) of the land triangle under (x, z), corners shifted like `height_in`; UP over a hole or off the map.
-static func normal_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array,
-		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> Vector3:
-	var id := triangle_in(x, z, ground, cells, shift, corners)
-	if id < 0:
-		return Vector3.UP
-	var a := ground[id * 3]
-	var b := ground[id * 3 + 1]
-	var c := ground[id * 3 + 2]
-	if not shift.is_empty():
-		a.y += shift[corners[id * 3] * 2]
-		b.y += shift[corners[id * 3 + 1] * 2]
-		c.y += shift[corners[id * 3 + 2] * 2]
-	var normal := Plane(a, b, c).normal
-	return normal if normal.y >= 0.0 else -normal
 
 
 ## The land triangle under (x, z) (an id into `ground`), -1 over a hole or off the map.

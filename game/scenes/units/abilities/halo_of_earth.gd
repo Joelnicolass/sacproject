@@ -166,15 +166,6 @@ func _ready() -> void:
 		set_physics_process(false)
 
 
-## The bodies of the rocks that are out now (the harness reads them).
-func rock_nodes() -> Array[Node3D]:
-	var found: Array[Node3D] = []
-	for rock in _active:
-		if rock.node != null and is_instance_valid(rock.node):
-			found.append(rock.node)
-	return found
-
-
 func _exit_tree() -> void:
 	for rock in _active:
 		if rock.node != null and is_instance_valid(rock.node):

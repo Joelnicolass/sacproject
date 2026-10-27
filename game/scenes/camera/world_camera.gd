@@ -106,10 +106,6 @@ func is_dragging() -> bool:
 	return _dragged
 
 
-func yaw_degrees() -> float:
-	return rad_to_deg(yaw)
-
-
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		_pointer = (event as InputEventMouse).position

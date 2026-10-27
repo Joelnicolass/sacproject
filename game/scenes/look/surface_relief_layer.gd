@@ -38,11 +38,6 @@ func apply_quality(preset: LookQuality) -> void:
 	_refresh()
 
 
-## True while the relief maps draw.
-func relief_on() -> bool:
-	return _on
-
-
 ## Turns the relief maps of everything drawn on or off, in memory only.
 func set_relief(on: bool) -> void:
 	if Engine.is_editor_hint() or not is_inside_tree() or on == _on:

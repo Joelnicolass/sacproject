@@ -79,11 +79,9 @@ ritual = NodePath("..")
 
 [node name="Phases" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor")]
 script = ExtResource("2_machine")
-initial_state = NodePath("Off")
+initial_state = NodePath("Setup")
 actor = NodePath("..")
-
-[node name="Off" type="Node" parent="Phases"]
-script = ExtResource("3_state")
+autostart = false
 
 [node name="Setup" type="Node" parent="Phases"]
 script = ExtResource("4_setup")

@@ -7,6 +7,9 @@ extends FsmState
 ## physics_update runs where the sim runs, called by UnitBody at the point of its physics step that used to be the `match`.
 ## Ref: RFC-036 036j.
 
+## Start payload of a body born in this mode (UnitBody._ready): its look, without the animation.
+const JOINED := {"animate": false}
+
 @export var mode: UnitBody.Mode = UnitBody.Mode.IDLE
 
 var body: UnitBody:
@@ -16,10 +19,10 @@ var body: UnitBody:
 
 func enter() -> void:
 	super.enter()
-	present(true)
+	present(not (machine.payload is Dictionary and machine.payload == JOINED))
 
 
-## The look this mode leaves on the body. `animate` false: a peer that joins in this mode (UnitBody._ready).
+## The look this mode leaves on the body. `animate` false: a body born in this mode (started with JOINED).
 func present(_animate: bool) -> void:
 	pass
 

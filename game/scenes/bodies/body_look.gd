@@ -53,11 +53,6 @@ static func sounds_in(scene: PackedScene) -> SoundSet:
 	return _root_value(scene, &"sounds") as SoundSet
 
 
-## The scene the root of the look `scene` carries as `carried_fx`, without building it. Null when it has none.
-static func carried_fx_in(scene: PackedScene) -> PackedScene:
-	return _root_value(scene, &"carried_fx") as PackedScene
-
-
 static func _root_value(scene: PackedScene, property: StringName) -> Variant:
 	if scene == null:
 		return null

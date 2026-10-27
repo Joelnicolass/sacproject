@@ -48,10 +48,6 @@ func passive() -> DamagePassive:
 	return weapons.passive if weapons != null else null
 
 
-func is_swinging() -> bool:
-	return swing.active
-
-
 ## The clip of the swing in course (or the last one): 0 attack, 1 attack2, 2 attack3.
 func swing_index() -> int:
 	return swing.index

@@ -91,10 +91,6 @@ func count_of(kind: StringName) -> int:
 	return (_ends.get(kind, []) as Array).size()
 
 
-func is_clinging() -> bool:
-	return count_of(STICKY) + count_of(MITES) + count_of(FROGS) > 0
-
-
 ## Server (or solo): every piece lets go now.
 func clear(reason := "fin") -> void:
 	if _ends.is_empty():

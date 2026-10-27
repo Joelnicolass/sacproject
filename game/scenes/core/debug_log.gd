@@ -18,6 +18,8 @@ extends RefCounted
 ## approach; agent/tools/melee_gap_expect.py reads it, so f177 and the spit flow pass --log=gap or enable it). pace (PaceFactors: a «ritmo»
 ## line on every tick a speed factor changes, so every tick of a Speedup that decays; f129, f130, f133 and f156_expect.py read it: --log=pace).
 ## terrain_load (TerrainShape and TerrainMesh: how long the ground's faces, index and mesh took to build; debug/terrain/load_time).
+## nav (NavService, MapNavRegion: the navmesh in play and each re-bake by zones; NavMeshBackend: the map that never synced).
+## orders (Orders: «orden <command> <n>» for every human order; the AI's too with Orders.log_ai_orders).
 ## Ref: RFC-036 036b.
 
 ## Every category.
@@ -47,12 +49,6 @@ static func enable(category: StringName) -> void:
 static func enable_bench() -> void:
 	for category in BENCH:
 		_on[category] = true
-
-
-static func disable_all() -> void:
-	_on.clear()
-	_all = false
-	_cli_read = true
 
 
 static func _read_cli() -> void:

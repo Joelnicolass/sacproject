@@ -67,10 +67,10 @@ func _physics_process(delta: float) -> void:
 		body.give_up()
 
 
-## `body.errand_walks`: the errand wants the body to walk: every window it must have moved `idle_move_m`; else it sidesteps, and after the
+## `body.errand.walks()`: the errand (a carrier's; a ritual doctor has none) wants the body to walk: every window it must have moved `idle_move_m`; else it sidesteps, and after the
 ## abort time of the rules it gives up, as a walk that makes no progress does.
 func _watch_idle(delta: float) -> void:
-	if not body.errand_walks or not body.is_targetable():
+	if body.errand == null or not body.errand.walks() or not body.is_targetable():
 		_idle_mark = Vector3.INF
 		_idle_for = 0.0
 		return

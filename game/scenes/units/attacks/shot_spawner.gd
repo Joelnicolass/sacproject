@@ -46,13 +46,7 @@ func _ready() -> void:
 func spawn_shot(data: Dictionary) -> RangedShot:
 	_serial += 1
 	data["name"] = "Shot%d" % _serial
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			return spawn(data) as RangedShot
-		return null
-	var shot := _make(data) as RangedShot
-	get_node(spawn_path).add_child(shot)
-	return shot
+	return spawn_here(data) as RangedShot
 
 
 ## F165: a scene that is not a RangedShot but flies in the same container and replicates the same way (the Divine Sight eye).
@@ -61,13 +55,7 @@ func spawn_scene(data: Dictionary) -> Node3D:
 	_serial += 1
 	if not data.has("name"):
 		data["name"] = "%s%d" % [str(data.get("prefix", "Node")), _serial]
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			return spawn(data) as Node3D
-		return null
-	var node := _make(data) as Node3D
-	get_node(spawn_path).add_child(node)
-	return node
+	return spawn_here(data) as Node3D
 
 
 func _make(data: Variant) -> Node:

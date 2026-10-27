@@ -1,0 +1,36 @@
+{
+ "scene": "res://agent/harness/058_fix/g_h12_fog.tscn",
+ "wait_first": 2.0,
+ "steps": [
+  {
+   "wait": 6.0
+  },
+  {
+   "shot": "g_h12_fog_ref.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "g_h12_fog_rts.png"
+  },
+  {
+   "press": {
+    "name": "debug_next_camera",
+    "hold": 0.1
+   }
+  },
+  {
+   "wait": 0.6
+  },
+  {
+   "shot": "g_h12_fog_horizon.png"
+  }
+ ]
+}

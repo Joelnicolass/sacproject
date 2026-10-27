@@ -145,9 +145,23 @@ static func strikes_between(sky_seed: int, t0_s: float, t1_s: float, per_min: fl
 static func fog_transmittance(sky: SkyLook, sample: AtmosphereSample, d_m: float) -> float:
 	if sky == null or not sky.fog_enabled:
 		return 1.0
-	var end_m := maxf(sky.fog_end_m * sample.fog_end, sky.fog_begin_m + 0.01)
-	var amount := smoothstep(sky.fog_begin_m, end_m, d_m) * sky.fog_density * sample.fog_density
+	var span := fog_range(sky, sample)
+	var amount := smoothstep(span.x, span.y, d_m) * sky.fog_density * sample.fog_density
 	return 1.0 - clampf(amount, 0.0, 1.0)
+
+
+## Where the depth fog begins and where it is thickest (m) for the sky's fog bent by the sample: the weather pulls the
+## far end in (`fog_end`), the near end in (`fog_begin`) and keeps the play clear (`fog_clear_m`). EnvironmentLayer writes exactly this.
+static func fog_range(sky: SkyLook, sample: AtmosphereSample) -> Vector2:
+	var begin_m := maxf(sky.fog_begin_m * sample.fog_begin, sample.fog_clear_m)
+	return Vector2(begin_m, maxf(sky.fog_end_m * sample.fog_end, begin_m + 1.0))
+
+
+## The fog's color for the sky's fog bent by the sample: greyed by `sky_grey`, paled by the mist, tinted like the sky.
+static func fog_color(sky: SkyLook, sample: AtmosphereSample) -> Color:
+	var luma := sky.fog_color.get_luminance()
+	var color := sky.fog_color.lerp(Color(luma, luma, luma), sample.sky_grey) if sample.sky_grey > 0.0 else sky.fog_color
+	return (color.lerp(sample.mist_color, sample.mist) if sample.mist > 0.0 else color) * sample.sky_tint
 
 
 ## Integer hash of two numbers (splitmix64's finalizer): the same on every architecture, unlike `hash()`.

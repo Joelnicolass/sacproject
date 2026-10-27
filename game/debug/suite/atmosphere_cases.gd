@@ -6,7 +6,8 @@ extends RefCounted
 ##   - (b) weather_repeatable: weather_at gives the same in 1000 queries in any order, and the first segment is plan.first;
 ##   - (c) strikes_split: strikes_between(0, 60) == (0, 30) + (30, 60), two strikes ≥ min_gap_s apart, each 150-600 m
 ##     away, and storm.tres gives 3-8 in every minute of an hour (any start);
-##   - (d) fog_lets_see: the depth fog lets ≥ 0.75 of the land at 150 m through, for every god × weather state;
+##   - (d) fog_lets_see: the depth fog lets ≥ 0.75 of the land at 30 m (the play around the wizard) through, for every
+##     god × weather state, and the fog state veils ≥ 0.5 of it at 150 m (a mist that shows on the far land);
 ##   - (e) sky_neutral_start: at the start hour the sky's new uniforms are neutral, so the dresser keeps the SkyLook's
 ##     own material (the approved sky, exactly);
 ##   - (f) sky_clock_adopt: MatchSky.adopt(100, s) then now_s() ≈ 100 (±1 tick) and sky_seed() == s;
@@ -120,9 +121,12 @@ func _fog_lets_see() -> Dictionary:
 	for look in _looks():
 		for state_name in STATES:
 			var state := load("res://data/look/weather/%s.tres" % state_name) as WeatherState
-			var through := AtmosphereRules.fog_transmittance(look.sky, AtmosphereRules.state_sample(state), 150.0)
+			var through := AtmosphereRules.fog_transmittance(look.sky, AtmosphereRules.state_sample(state), 30.0)
 			if through < 0.75:
 				bad.append("%s/%s=%.3f" % [look.god, state_name, through])
+			var far := AtmosphereRules.fog_transmittance(look.sky, AtmosphereRules.state_sample(state), 150.0)
+			if state_name == "fog" and far > 0.5:
+				bad.append("%s/%s lejos=%.3f" % [look.god, state_name, far])
 	if not bad.is_empty():
 		print("ATMOSPHERE   fog: %s" % bad)
 	return {"ok": bad.is_empty(), "bad": bad}

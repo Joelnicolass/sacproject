@@ -54,13 +54,16 @@ func _on_atmosphere_changed(_sample: AtmosphereSample) -> void:
 		_write_atmosphere(look)
 
 
-## What the hour bends: where the light comes from (sun or moon), its color and energy, and the fill's.
+## What the hour and the weather bend: where the light comes from (sun or moon), its color, energy and shadows, and the fill's.
 func _write_atmosphere(look: LightLook) -> void:
 	var sample := atmosphere.current() if atmosphere else AtmosphereSample.neutral()
 	if sun:
 		sun.basis = Basis.looking_at(-_light_direction(look, sample), Vector3.UP)
 		sun.light_color = look.sun_color * sample.light_tint
 		sun.light_energy = look.sun_energy * sample.light_energy
+		# An overcast sky (the weather's `shadow_mul`) makes the shadows faint and soft, not just the light dimmer.
+		sun.shadow_opacity = look.shadow_opacity * sample.shadow
+		sun.shadow_blur = look.shadow_blur * (1.0 + 2.0 * (1.0 - sample.shadow))
 	if fill:
 		fill.basis = Basis.looking_at(-look.fill_direction(), Vector3.UP)
 		fill.light_color = look.fill_color * sample.ambient_tint
@@ -79,10 +82,8 @@ func _light_direction(look: LightLook, sample: AtmosphereSample) -> Vector3:
 func _write_sun(look: LightLook) -> void:
 	sun.light_angular_distance = look.sun_angular_distance
 	sun.light_volumetric_fog_energy = look.sun_fog_energy
-	sun.shadow_opacity = look.shadow_opacity
 	sun.shadow_bias = look.shadow_bias
 	sun.shadow_normal_bias = look.shadow_normal_bias
-	sun.shadow_blur = look.shadow_blur
 	sun.directional_shadow_mode = _preset.shadow_splits if _preset else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 	var distance := look.shadow_max_distance
 	if _preset and _preset.shadow_distance_cap > 0.0:

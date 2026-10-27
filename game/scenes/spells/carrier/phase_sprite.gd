@@ -21,6 +21,10 @@ extends MeshInstance3D
 var _age := -1.0
 
 
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _get_configuration_warnings() -> PackedStringArray:
 	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
 
@@ -57,5 +61,5 @@ func _process(delta: float) -> void:
 	scale = Vector3.ONE * size_m * minf(grow, shrink)
 	var target := carrier.target_body()
 	if over_target and target != null and is_instance_valid(target):
-		var box := BodyNudge.box(target)
+		var box := DrawnPose.box(target)
 		global_position = box.get_center() + Vector3(0.0, box.size.y * 0.5 + 0.4 * scale.x, 0.0)

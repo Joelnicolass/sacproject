@@ -40,6 +40,7 @@ script = ExtResource("1_soul")
 atlas = ExtResource("2_atlas")
 
 [node name="Visual" type="Node3D" parent="."]
+physics_interpolation_mode = 2
 editor_description = "The drawing of the soul: Rise lifts it from the corpse without moving the soul."
 
 [node name="Target" type="StaticBody3D" parent="."]

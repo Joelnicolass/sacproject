@@ -41,6 +41,10 @@ var _rng: RandomNumberGenerator
 var _phase_age := 0.0
 
 
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+
+
 func _get_configuration_warnings() -> PackedStringArray:
 	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
 
@@ -80,11 +84,11 @@ func _process(delta: float) -> void:
 		_set_visible(false)
 		return
 	_set_visible(true)
-	var center := BodyNudge.center(focus) if focus != carrier else carrier.global_position
+	var center := DrawnPose.center(focus) if focus != carrier else DrawnPose.origin(carrier)
 	if phase == SpellCarrier.Phase.FLYING or phase == SpellCarrier.Phase.SHRINKING:
 		for i in members.size():
 			var angle := TAU * float(i) / float(members.size())
-			members[i].global_position = carrier.global_position + Vector3(sin(angle), 0.0, cos(angle)) * flight_spread_m
+			members[i].global_position = DrawnPose.origin(carrier) + Vector3(sin(angle), 0.0, cos(angle)) * flight_spread_m
 		return
 	var radius := radius_base_m + radius_per_size * _size(focus)
 	for i in members.size():

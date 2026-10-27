@@ -145,6 +145,7 @@ func _ready() -> void:
 		_rise_t = rise_s
 	if not is_multiplayer_authority():
 		set_physics_process(false)
+		physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 ## A soul off its corpse and not being taken has no side.

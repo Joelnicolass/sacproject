@@ -161,7 +161,7 @@ func _post() -> GuardPost:
 ## Remembers where the ends are while they exist: a body that is gone leaves its last place.
 func _sample() -> void:
 	if _creature != null and is_instance_valid(_creature):
-		_creature_at = _creature.global_transform * BodyFacts.of_body(_creature).center
+		_creature_at = DrawnPose.point(_creature, _creature.global_transform * BodyFacts.of_body(_creature).center)
 	var post := _post()
 	if post != null:
 		_building_at = post.attach_position()

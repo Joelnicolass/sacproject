@@ -28,14 +28,17 @@ const ORIGIN_WIZARD := &"wizard"
 ## Holds `rules: MatchRules` and `local_wizard()` (MatchWorld). Convert (RFC-020e) lives in SacrificeSystem.
 @export var world: Node
 @export var souls_root: Node3D
-@export var spawner: MultiplayerSpawner
+@export var spawner: MpSpawner
 
 var _serial := 0
 
 
+func _enter_tree() -> void:
+	spawner.spawn_function = _make
+
+
 func _ready() -> void:
 	add_to_group("soul_system")
-	spawner.spawn_function = _make
 	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
@@ -51,12 +54,7 @@ func spawn_soul(data: Dictionary) -> Node3D:
 		return null
 	_serial += 1
 	data["name"] = "Soul%d" % _serial
-	var soul: Node3D
-	if MpKit.is_networked():
-		soul = spawner.spawn(data) as Node3D
-	else:
-		soul = _make(data) as Node3D
-		souls_root.add_child(soul)
+	var soul := spawner.spawn_here(data) as Node3D
 	soul_spawned.emit(soul)
 	return soul
 

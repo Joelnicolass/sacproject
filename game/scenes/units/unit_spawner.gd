@@ -27,13 +27,7 @@ func spawn_unit(data: Dictionary) -> Node3D:
 	var label := str(data.get("label", data.get("tag", "Unit"))).replace(" ", "")
 	_serials[label] = int(_serials.get(label, 0)) + 1
 	data["name"] = "%s%d" % [label, _serials[label]]
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			return spawn(data) as Node3D
-		return null
-	var unit := _make(data)
-	get_node(spawn_path).add_child(unit)
-	return unit
+	return spawn_here(data) as Node3D
 
 
 ## A creature the map puts on the field (MapPopulation): a type with `peasant` gets villager_scene, and every one

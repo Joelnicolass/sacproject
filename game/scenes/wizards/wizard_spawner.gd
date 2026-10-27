@@ -10,28 +10,22 @@ extends MpSlotSpawner
 ## still; past the grace the slot loses (SeatPresence).
 func _ready() -> void:
 	super._ready()
-	if not despawn_on_leave and MpKit.is_networked() and MpKit.is_server():
-		MpKit.peer_left.connect(_on_slot_peer_away)
-	if MpKit.is_networked() and MpKit.is_server():
-		_spawn_ready_peers()
+	var gate := Mp.gate()
+	if not despawn_on_leave and gate != null:
+		gate.seat_away.connect(_on_seat_away)
 
 
 func _exit_tree() -> void:
-	if MpKit.peer_left.is_connected(_on_slot_peer_away):
-		MpKit.peer_left.disconnect(_on_slot_peer_away)
+	var gate := Mp.gate()
+	if gate != null and gate.seat_away.is_connected(_on_seat_away):
+		gate.seat_away.disconnect(_on_seat_away)
 	super._exit_tree()
 
 
-func _on_slot_peer_away(_peer_id: int, slot: int) -> void:
+func _on_seat_away(slot: int) -> void:
 	var wizard := pawn_for(slot) as WizardBody
 	if is_instance_valid(wizard):
 		wizard.stand_still()
-
-
-func _spawn_ready_peers() -> void:
-	for peer in multiplayer.get_peers():
-		if MpKit.is_peer_world_ready(peer):
-			spawn_slot(MpKit.slot_for_peer(peer))
 
 
 func _place(pawn: Node, slot: int) -> void:

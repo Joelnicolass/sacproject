@@ -10,7 +10,7 @@ var _by_mode := {}
 
 ## Once, from UnitBody._ready: maps the modes and takes the state of the mode the body was born in. The machine began in Idle; a body
 ## born in another mode (a late join, a summon) takes its state without the enter.
-func start(mode: UnitBody.Mode) -> void:
+func begin(mode: UnitBody.Mode) -> void:
 	for state: UnitState in get_children():
 		_by_mode[state.mode] = state
 	set_physics_process(false)
@@ -26,3 +26,10 @@ func follow(mode: UnitBody.Mode) -> void:
 	var next: UnitState = _by_mode.get(mode)
 	if next != null:
 		transition_to(next)
+
+
+## A state asked for another (UnitState.transition): UnitBody.mode is the only writer, so the request writes it and its setter
+## moves the machine through follow().
+func _request_transition(next: FsmState, _next_payload: Variant) -> bool:
+	(actor as UnitBody).mode = (next as UnitState).mode
+	return false

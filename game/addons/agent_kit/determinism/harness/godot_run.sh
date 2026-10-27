@@ -5,9 +5,7 @@
 # Three kinds of run:
 # - headless (has --headless, not --import): up to HEADLESS_SLOTS at once (default 3), each ~0.3-1 GB, almost no GPU.
 # - window: one at a time, alongside headless runs. Its timing is measured under load (mark it CONTAMINATED in a bench).
-# - import (--import): alone in ITS project (the --path folder, or the current one): it waits until no other Godot runs on
-#   that project, and nothing else of that project starts while it holds the lock. Other projects (worktrees, each with
-#   its own .godot/) keep running: an import of one worktree no longer stops every agent.
+# - import (--import): alone; waits until no other Godot runs, and nothing starts while it holds the lock.
 # Never more than GODOT_MAX Godots (default 4). Use separate worktrees for parallel agents (one .godot/ each).
 # Windows never run in parallel (two heavy windowed Godots hung a 16 GB machine).
 # Locks are directories (mkdir is atomic); a lock whose holder pid is gone is stale and removed.
@@ -24,14 +22,7 @@
 #                        the self-test overrides it so real Godots on the machine do not matter).
 #   GODOT_RUN_NO_PREFLIGHT  set to skip the class_name preflight.
 NS="${GODOT_RUN_NS:-agentkit}"
-# The project this run works on: the --path folder (absolute) or the current folder. Its key scopes the import lock.
-projdir=""
-prev=""
-for a in "$@"; do [ "$prev" = "--path" ] && projdir="$a"; prev="$a"; done
-[ -z "$projdir" ] && projdir="$PWD"
-projdir="$(cd "$projdir" 2>/dev/null && pwd || echo "$projdir")"
-PKEY=$(printf "%s" "$projdir" | cksum | cut -d' ' -f1)
-EXCL=/tmp/${NS}_godot.lock.$PKEY
+EXCL=/tmp/${NS}_godot.lock
 LAUNCH=/tmp/${NS}_godot.launch
 SLOTS="${HEADLESS_SLOTS:-3}"
 # At most MAXG Godot processes at once. One window at a time (WIN); an import (--import) is still alone.
@@ -59,18 +50,16 @@ QUEUE=/tmp/${NS}_godot.queue
 mkdir -p "$QUEUE"
 ticket=""
 take_ticket() {  # take_ticket <x|h>
-  ticket="$QUEUE/$(python3 -c 'import time; print(time.time_ns())').$$.$1.$PKEY"
+  ticket="$QUEUE/$(python3 -c 'import time; print(time.time_ns())').$$.$1"
   : > "$ticket"
 }
-older() {  # older <kinds|any> [same]: a live ticket older than mine of one of those kinds (i import, w window, h headless, x old
-  # exclusive)? With `same`, only tickets of my project count.
-  local mine f base pid kind key; mine=$(basename "$ticket")
+older() {  # older <kinds|any>: is there a live ticket older than mine of one of those kinds (i import, w window, h headless, x old exclusive)?
+  local mine f base pid kind; mine=$(basename "$ticket")
   for f in "$QUEUE"/*; do
     [ -e "$f" ] || continue
-    base=$(basename "$f"); pid=$(echo "$base" | cut -d. -f2); kind=$(echo "$base" | cut -d. -f3); key=$(echo "$base" | cut -d. -f4)
+    base=$(basename "$f"); pid=$(echo "$base" | cut -d. -f2); kind=$(echo "$base" | cut -d. -f3)
     if ! kill -0 "$pid" 2>/dev/null; then rm -f "$f"; continue; fi
     [ "$base" = "$mine" ] && continue
-    [ "${2:-}" = same ] && [ "$key" != "$PKEY" ] && continue
     [ "$1" != any ] && [ "${1#*$kind}" = "$1" ] && continue
     [ "${base%%.*}" -lt "${mine%%.*}" ] && return 0
   done
@@ -133,10 +122,10 @@ launch() {  # launch <cmd...>: start once nothing exclusive runs and fewer than 
 if [ $import -eq 1 ]; then
   take_ticket i
   trap 'rm -f "$ticket"' EXIT INT TERM
-  while older any same; do sleep 2; waited=$((waited+2)); done
+  while older any; do sleep 2; waited=$((waited+2)); done
   take "$EXCL"; echo "$*" > "$EXCL/cmd"
   trap 'rm -rf "$EXCL"; rm -f "$ticket"' EXIT INT TERM
-  until bash "${GODOT_BUSY_SCRIPT:-$HERE/godot_busy.sh}" "$projdir" >/dev/null && [ "$(godots)" -lt "$MAXG" ]; do sleep 3; waited=$((waited+3)); done
+  until bash "${GODOT_BUSY_SCRIPT:-$HERE/godot_busy.sh}" >/dev/null; do sleep 3; waited=$((waited+3)); done
   echo "godot_run: import exclusivo, espera ${waited}s" >&2
   "$@"
   exit $?
@@ -145,7 +134,7 @@ fi
 if [ $headless -eq 0 ]; then
   take_ticket w
   trap 'rm -f "$ticket"' EXIT INT TERM
-  while older w || older ix same; do sleep 2; waited=$((waited+2)); done
+  while older iwx; do sleep 2; waited=$((waited+2)); done
   take "$WIN"; echo "$*" > "$WIN/cmd"
   trap 'rm -rf "$WIN"; rm -f "$ticket"' EXIT INT TERM
   echo "godot_run: ventana, espera ${waited}s" >&2
@@ -156,7 +145,7 @@ fi
 
 take_ticket h
 trap 'rm -f "$ticket"' EXIT INT TERM
-while older ix same; do sleep 2; waited=$((waited+2)); done
+while older ix; do sleep 2; waited=$((waited+2)); done
 slot=""
 until [ -n "$slot" ]; do
   for i in $(seq 0 $((SLOTS-1))); do

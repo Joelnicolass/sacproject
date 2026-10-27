@@ -100,7 +100,7 @@ func is_valid_guard() -> bool:
 ## Server or solo. Ties the creature to `target`. False if it is already tied, cannot be (dead, taken)
 ## or the post is closed.
 func bind(target: GuardPost) -> bool:
-	if not _has_authority() or target == null or not target.is_open() or is_bound():
+	if not is_multiplayer_authority() or target == null or not target.is_open() or is_bound():
 		return false
 	if body == null or health == null or body.is_dead() or body.is_taken():
 		return false
@@ -125,7 +125,7 @@ func release() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint() or post == null or not _has_authority():
+	if Engine.is_editor_hint() or post == null or not is_multiplayer_authority():
 		return
 	if not is_instance_valid(post) or not post.is_open() or not is_valid_guard():
 		release()
@@ -202,7 +202,3 @@ func _apply_post() -> void:
 
 func _rules() -> MatchRules:
 	return rules if rules != null else MatchRules.new()
-
-
-func _has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()

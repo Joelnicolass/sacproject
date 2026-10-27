@@ -132,7 +132,7 @@ func give_up() -> void:
 
 
 ## The server or a solo game moves and rules it; a client only shows it.
-func simulates() -> bool: return not MpKit.is_networked() or MpKit.is_server()
+func simulates() -> bool: return is_multiplayer_authority()
 
 func is_walking() -> bool: return motor.is_walking()
 

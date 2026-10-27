@@ -179,7 +179,7 @@ func _who() -> String:
 
 ## True on the server (or in a solo match): the only peer that decides.
 func has_authority() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
+	return is_multiplayer_authority()
 
 
 func _get_configuration_warnings() -> PackedStringArray:

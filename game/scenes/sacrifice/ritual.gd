@@ -105,7 +105,7 @@ func type() -> RitualType:
 
 ## This peer runs the ritual: the server, or a solo game.
 func simulates() -> bool:
-	return not MpKit.is_networked() or MpKit.is_server()
+	return is_multiplayer_authority()
 
 
 ## Server or solo. The site is already taken by this ritual and the doctors stand on the ring.

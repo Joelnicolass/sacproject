@@ -50,7 +50,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## Simulation: the lifetime, on the server only.
 func _physics_process(_delta: float) -> void:
-	if Engine.is_editor_hint() or max_life_s <= 0.0 or (MpKit.is_networked() and not MpKit.is_server()):
+	if Engine.is_editor_hint() or max_life_s <= 0.0 or not is_multiplayer_authority():
 		return
 	_life_ticks += 1
 	if _life_ticks >= MatchClock.ticks_for(max_life_s):

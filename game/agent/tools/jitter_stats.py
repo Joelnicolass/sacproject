@@ -38,7 +38,7 @@ MAX_FRAME_MS = 20.0
 RELATIVE_BODIES = ("creature",)
 HOST_MARGIN = 1.10
 STALL_FRAC = 0.01
-BODIES = ("own", "rival", "creature")
+BODIES = ("own", "rival", "creature", "camera")
 
 
 def read(path):

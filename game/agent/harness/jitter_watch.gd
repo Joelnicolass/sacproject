@@ -1,10 +1,10 @@
 extends Node
 
 ## 072 1d: render-frame jitter recorder (agent/tools/jitter_stats.py reads its CSV). Idle unless the process has `--jitter-out=<file.csv>`.
-## It only reads the world: one row per rendered frame for up to three bodies, written from `_process` with a priority above the
+## It only reads the world: one row per rendered frame for up to three bodies and the active camera, written from `_process` with a priority above the
 ## MpActor's (10000), so the pose it reads is the one the frame draws.
 ##   t_usec, frame, who, name, x, z, rtt_ms, last_correction
-##   who = own (the local wizard) | rival (the other wizard) | creature (see below) | mark (walk_start / walk_end rows, label in `name`)
+##   who = own (the local wizard) | rival (the other wizard) | creature (see below) | camera (the active Camera3D, drawn pose) | mark (walk_start / walk_end rows, label in `name`)
 ## The creature: `--jitter-creature=<node name>`, else the first live non-wizard unit of the lowest seat that has one (in the
 ## jitter flows the host summons it, so the host sees its own and the client sees the rival's).
 ## rtt_ms: Mp.net_quality() (on a server the rival's slot). last_correction: the own wizard's MpActor, empty without one.
@@ -72,6 +72,9 @@ func _process(_delta: float) -> void:
 	creature_ready = _creature != null
 	if _creature != null:
 		_row(now, frame, "creature", _creature, _rtt, "")
+	var view := get_viewport().get_camera_3d()
+	if view != null:
+		_row(now, frame, "camera", view, _rtt, "")
 
 
 func _row(now: int, frame: int, who: String, node: Node3D, rtt: String, correction: String) -> void:

@@ -9,6 +9,11 @@ extends Node3D
 @export_range(0.0, 200.0, 0.5, "suffix:m") var ahead_m: float = 25.0
 
 
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	process_priority = 15001  # after the camera (15000), which it follows
+
+
 func _process(_delta: float) -> void:
 	var camera := _camera()
 	if camera == null:

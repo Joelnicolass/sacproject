@@ -46,12 +46,12 @@ static func world_corners(node: Node) -> PackedVector3Array:
 		var body := node as CharacterBody3D
 		var box := BodyBox.box_of(body)
 		var local := AABB(Vector3(-box.x, 0.0, -box.x), Vector3(box.x * 2.0, box.y, box.x * 2.0))
-		_add_corners(out, body.global_transform, local)
+		_add_corners(out, body.get_global_transform_interpolated(), local)
 		return out
 	for found in node.find_children("*", "CollisionShape3D", true, false):
 		var shape := found as CollisionShape3D
 		if shape.shape != null and not shape.disabled:
-			_add_corners(out, shape.global_transform, shape.shape.get_debug_mesh().get_aabb())
+			_add_corners(out, shape.get_global_transform_interpolated(), shape.shape.get_debug_mesh().get_aabb())
 	return out
 
 

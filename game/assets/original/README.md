@@ -4,7 +4,7 @@ Assets extracted from the original game's installation, in Godot-native formats 
 
 Only the importers in `tools/` write here, one per family. The game never writes here. What is edited by hand lives in `data/`. Importers are idempotent (deterministic output, no timestamps) and never touch an existing `.import` (it carries the UID).
 
-The paths are owned by `scenes/core/catalog/original_assets.gd` (`OriginalAssets`). Nothing else spells `res://assets/original/`.
+Only the tools spell `res://assets/original/` (`tools/import/original_assets.gd`); the game never reads it.
 
 | Folder | What | Importer | Cut |
 |---|---|---|---|
@@ -32,4 +32,4 @@ The ones that lived as exporters (`export_icons`, `export_particles`, `export_ti
 - **Suelo:** `themes/<dios>/roles/<rol>.png` (las hojas de abierto, tierra, roca y camino; `tools/import/bake_role_sheets.py`), que usa el `GodGround` de `data/look/<dios>.tres` junto con `themes/<dios>/edge.png`; la luz horneada es la `light.png` de cada mapa.
 - **Contenido:** edificios, plantas y NPC (`NpcSpawn`) están en `scenes/map/maps/high_noon/layout.tscn`. Los bandos están en `maps/high_noon/sides.tres`; la `MapDefinition` del mapa (`scenes/map/maps/high_noon/high_noon.tres`) nombra todos estos archivos. La y de un `NpcSpawn` hay que ajustarla a mano si se lo mueve.
 - **Navegación:** después de mover el terreno o los edificios, hay que correr `godot --headless --path game res://tools/bake/bake_nav.tscn` (con `-- --map=<tag>` para otro mapa). Con `-- --check` se verifica el resultado. El nodo `NavRegion` avisa en el editor si el navmesh quedó viejo. El botón «Bake» del editor no sirve, porque los edificios arman su colisión en partida.
-- **Catálogo:** criaturas, hechizos, magos, habilidades y edificios están en `data/catalog/*.tres`. Los regenera `tools/bake/bake_catalog.gd -- --force` a partir de los JSON.
+- **Catálogo:** criaturas, hechizos, magos, habilidades y edificios están en `data/catalog/*.tres`. Son la fuente: se editan en el inspector.

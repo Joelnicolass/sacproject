@@ -1,8 +1,7 @@
 extends SceneTree
 
 ## Gives every creature, spell and ability in data/catalog/ its `icon`: the picture the book, the roster, the info box and the
-## armed cursor show. Run it after `bake_catalog.gd` (the bake rewrites the .tres and drops the icons). It reads the versioned PNGs
-## and needs no original game; without `assets/original/ui/icons/` it says so and writes nothing.
+## armed cursor show. It reads the versioned PNGs and needs no original game; without `assets/original/ui/icons/` it says so and writes nothing.
 ## A creature of your own uses `assets/custom/icons/<tag>.png` (tools/bake/creature_icon.gd draws it); the rest, the PNG of the original.
 ## A type that already has an icon is kept (it may be yours): `--force` replaces it.
 ##

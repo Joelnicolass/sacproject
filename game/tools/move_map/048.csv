@@ -418,11 +418,9 @@ debug/wrath_splash_building.tscn,debug/spells/wrath_splash_building.tscn,i
 tools/audit_skeletal.gd,tools/audit/audit_skeletal.gd,j
 tools/audit_skeletal_center.gd,tools/audit/audit_skeletal_center.gd,j
 tools/bake_body_scenes.gd,tools/bake/bake_body_scenes.gd,j
-tools/bake_catalog.gd,tools/bake/bake_catalog.gd,j
 tools/bake_map_layout.gd,tools/bake/bake_map_layout.gd,j
 tools/bake_nav.gd,tools/bake/bake_nav.gd,j
 tools/bake_nav.tscn,tools/bake/bake_nav.tscn,j
-tools/catalog_builder.gd,tools/bake/catalog_builder.gd,j
 tools/check_icon_files.gd,tools/audit/check_icon_files.gd,j
 tools/check_layout_transforms.gd,tools/audit/check_layout_transforms.gd,j
 tools/check_layout_transforms.tscn,tools/audit/check_layout_transforms.tscn,j

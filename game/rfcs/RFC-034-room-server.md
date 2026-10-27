@@ -411,7 +411,7 @@ game/
 - Salas con IA (un asiento IA en la sala). RFC aparte; hoy `--ai-slots` sigue para el dedicado directo.
 - Cuentas, contraseñas, ranking, emparejamiento por cola automática (`MpMatchmaker` sigue disponible pero no se usa) y moderación del chat.
 - Varios VPS y descubrimiento de servidores; pool precalentado (P5); más de 2 asientos por sala (High Noon tiene dos inicios).
-- Export web y WebSocket. Espectadores. Chat dentro de la partida.
+- Export web y WebSocket (el export web pasó a RFC-039, con red WebRTC P2P). Espectadores. Chat dentro de la partida.
 - Cambios a la simulación o al determinismo.
 
 ## 13. Cómo verifica un humano

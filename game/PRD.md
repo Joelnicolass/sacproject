@@ -1,6 +1,6 @@
 # Sacrifice — GDD corto
 
-Juego de escritorio en Godot 4. Fan game personal de Sacrifice (Shiny, 2000), no comercial. La instalación original no se copia al repositorio. sacengine es el decodificador de datos y el árbitro de la simulación.
+Juego de escritorio y web (navegador de escritorio) en Godot 4. Fan game personal de Sacrifice (Shiny, 2000), no comercial. La instalación original no se copia al repositorio. sacengine es el decodificador de datos y el árbitro de la simulación.
 
 ## Decisiones
 
@@ -8,8 +8,9 @@ Juego de escritorio en Godot 4. Fan game personal de Sacrifice (Shiny, 2000), no
 - 3D.
 - Multijugador: online con **servidor de salas** (Godot headless, mismo proyecto, `--room-server`) que lanza **un dedicado por partida** (`host_dedicated()`, el de hoy) en un puerto del VPS. El peer 1 del dedicado no es un jugador. El cliente se conecta al lobby de `data/net/lobby_endpoint.tres`; no escribe la IP. (RFC-034; hasta que 034e cierre, el camino directo `join(ip)` sigue vigente.)
 - Desarrollo local: `res://scenes/net/room_server.tscn -- --room-server` y clientes al lobby `127.0.0.1:7700`; el servidor de salas lanza los dedicados en `127.0.0.1:7800+`. El VPS corre el mismo binario y abre UDP 7700 y 7800-7831. El dedicado directo (`--headless -- --dedicated`) queda para pruebas de humo y el banco.
-- Sin Steam ni WebRTC. Un proceso dedicado por partida (decisión del 2026-10-17: el estado global de la simulación no admite varias partidas por proceso).
+- Sin Steam. WebRTC solo en el port web (abajo). En escritorio, un proceso dedicado por partida (decisión del 2026-10-17: el estado global de la simulación no admite varias partidas por proceso).
 - Sin fork de Godot. Sin fork de `addons/mp_kit`. El servidor de salas es genérico del kit; se sube a `godot-studio-skills` como RC cuando sea estable (RFC-034).
+- Web (RFC-039, decisión del 2026-10-18): cliente en el navegador de escritorio (Compatibility/WebGL2, sin threads). Solo contra la IA corre entero en la pestaña. Online web P2P por WebRTC: el navegador que crea la partida es el host; la señalización es un servidor Node aparte (repo `godot-studio-signaling`, en Railway) con salas por código; NAT con STUN público y TURN de Cloudflare. Sin «Servidor local» en web, sin lobby público por ahora, sin móvil. El trabajo web vive en la rama `web-port`.
 - Blender no entra en el primer corte. Las mallas salen de sacengine.
 
 ## Fantasía
@@ -18,7 +19,7 @@ Dos magos en High Noon. Cada uno manda desde su cliente, o uno de los dos lo con
 
 ## Fuera del primer corte
 
-Campaña, hechizos de nivel 2 en adelante y el Shrine (las criaturas completas por nivel sí entran: RFC-030, CHANGE-REQUEST-002), audio original, export web, arte nuevo, modificar el motor de Godot. Más de un rival IA, alianzas y los modos `slaughter`, `domination` y `soul-harvest` de sacengine tampoco entran en el modo solo.
+Campaña, hechizos de nivel 2 en adelante y el Shrine (las criaturas completas por nivel sí entran: RFC-030, CHANGE-REQUEST-002), audio original, arte nuevo, modificar el motor de Godot. Más de un rival IA, alianzas y los modos `slaughter`, `domination` y `soul-harvest` de sacengine tampoco entran en el modo solo.
 
 ## Slice jugable
 

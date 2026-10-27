@@ -1,6 +1,6 @@
 # RFC-039 — Port web (cliente en el navegador, red por WebSocket)
 
-Estado: propuesto (2026-10-18). Pedido del usuario: «el port web, con ws. Deberíamos pensar en reducir efectos y tamaño de modelos para hacerlo liviano.»
+Estado: aprobado (2026-10-18), PRD editado; 039a en plan. Pedido del usuario: «el port web, con ws. Deberíamos pensar en reducir efectos y tamaño de modelos para hacerlo liviano.»
 
 ## 0. Conflictos con artefactos de mayor autoridad
 
@@ -377,3 +377,5 @@ La carga perezosa por dios (la 039h vieja) pasa a ser **039k**, y solo si no se 
 - **P-W2. ¿TURN de Cloudflare como primera opción?** Sí; hay que confirmar los límites del plan gratuito.
 - **P-W3. ¿Dónde vive el servidor Node?** Recomendado: en un repo aparte del kit.
 - **P-W4. ¿Hace falta lobby público o alcanza con códigos para amigos?** Recomendado: códigos primero, y el lobby público después.
+
+**Respuestas del usuario (2026-10-18):** P-W1 sí (PRD «escritorio y web», online web por WebRTC P2P). P-W2 TURN de Cloudflare. P-W3 repo aparte `godot-studio-signaling`. P-W4 códigos primero; lobby público después. El conflicto de §0 queda resuelto.

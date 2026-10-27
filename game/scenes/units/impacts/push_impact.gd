@@ -1,12 +1,14 @@
 class_name PushImpact
 extends ShotImpact
 
-## F121 (RFC-030j): Squall amba (updateSquallProjectile, state.d:23996-24003): a creature or a wizard it hits is pushed
-## (pushback, 11677-11685) before the damage; a building and the ground are not. The push is a Pushback child of the
-## body, along the shot. If the body is already thrown, its thrower becomes this side (tumbleAttackerSide).
+## Squall's shot: a creature or a wizard it hits is pushed
+## before the damage; a building and the ground are not. The push is a Pushback child of the
+## body, along the shot. If the body is already thrown, its thrower becomes this side.
+## Ref: F121 (RFC-030j); Squall amba (updateSquallProjectile, state.d:23996-24003), pushback 11677-11685, tumbleAttackerSide.
 
 @export var pushback_scene: PackedScene
-## sacengine movingObjects (creatures and wizards).
+## Moving bodies (creatures and wizards).
+## Ref: sacengine movingObjects.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 
 

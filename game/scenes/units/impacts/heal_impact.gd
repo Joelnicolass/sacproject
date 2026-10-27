@@ -1,16 +1,17 @@
 class_name HealImpact
 extends ShotImpact
 
-## F136 (RFC-030h2): the Scarab's Healing web. sacengine scarabProjectileHit (state.d:23609-23627) calls
-## dealSplashSpellDamageAt(-1, …, effectRange) with a callback that heals every moving body of the shooter's side
-## (the shooter included) whose box is within effectRange of the burst and returns false: nobody is damaged, no
-## building either. heal() with the infinite amount of slba (sacspell.d:211): maxHealth at 240/s, satAdd (10443-10458),
+## The Scarab's Healing web. It heals every moving body of the shooter's side
+## (the shooter included) whose box is within effectRange of the burst: nobody is damaged, no
+## building either. The heal has an infinite amount: maxHealth at 240/s,
 ## the same rule as the Healing Shower (HealEffect.heal_full).
+## Ref: F136 (RFC-030h2); sacengine scarabProjectileHit (state.d:23609-23627, dealSplashSpellDamageAt(-1, …, effectRange)), slba sacspell.d:211, satAdd 10443-10458.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
-## sacengine movingObjects: creatures and wizards.
+## Moving bodies: creatures and wizards.
+## Ref: sacengine movingObjects.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 
 

@@ -1,23 +1,23 @@
 class_name LightningStrike
 extends Node3D
 
-## F130 (RFC-030 030s-a): one bolt of sacengine's `lightning` (state.d:10474-10491, Lightning 2831-2840, updateLightning
-## 16366-16386). The one owner of "a bolt flies from here to there and hurts what it meets": Call lightning (gsba) and each
+## One lightning bolt. The one owner of "a bolt flies from here to there and hurts what it meets": Call lightning (gsba) and each
 ## discharge of the Lightning Charge (gcil) put one of these in the shot container (the node the shot spawner spawns into).
 ## Server (or solo) only: a client never gets this node (LightningStrike.launch adds it on the server); the look reaches every peer
 ## through FxBus.broadcast_beam(beam_type). Priority −1: it hurts before the bodies move, like Protector and HaloOfEarth.
 ##
-## - It is born in the tick of the order. With `retarget` (updateTargets, 10475-10484) the segment from the start to the end's
+## - It is born in the tick of the order. With `retarget` the segment from the start to the end's
 ##   center is cut at the first live body it crosses, the shooter left out: that body is the new end (it "bounces"). The charge's
 ##   discharges do not (updateTargets = false: the end was picked by the charge).
 ## - `travel_s` later (Lightning.travelDelay 12; the node counts from the tick after it was born) the end's center is
 ##   read again (the bolt follows its target) and, if the end is a valid body, it takes the SPEL's amount as direct spell damage
-##   with DamageMod.lightning (dealSpellDamage, 16380-16383). A ground end (a discharge into the land) hurts nothing.
-## - The damage goes through Health.damage_typed: the side factor (friendly fire off: an ally takes nothing; on: ally_damage_factor,
-##   28892-28899), the resistance (a Trogg's is 0) and the Lightning Charge's passive of the body that takes it are all Health's.
+##   with DamageMod.lightning. A ground end (a discharge into the land) hurts nothing.
+## - The damage goes through Health.damage_typed: the side factor (friendly fire off: an ally takes nothing; on: ally_damage_factor),
+##   the resistance (a Trogg's is 0) and the Lightning Charge's passive of the body that takes it are all Health's.
 ##
 ## Divergences (declared): buildings do not stop the ray (only creatures and wizards); the bolt does not keep its 64 frames of
 ## life (the look has its own): the node is freed after it strikes; the scar and the sound are not here.
+## Ref: F130 (RFC-030 030s-a); sacengine `lightning` (state.d:10474-10491, Lightning 2831-2840, updateLightning 16366-16386), updateTargets 10475-10484, dealSpellDamage 16380-16383, 28892-28899.
 
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")

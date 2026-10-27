@@ -11,7 +11,8 @@ extends AbilityEffect
 @export var shell_scene: PackedScene = preload("res://scenes/units/abilities/rock_shell.tscn")
 @export var shell_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 @export var rock_scale_factor := 0.55
-## sacengine RockForm.numFrames at 60 fps.
+## How long the body takes to grow into the rock.
+## Ref: sacengine RockForm.numFrames at 60 fps.
 @export var rock_grow_s := 0.5
 ## The burst on every peer when the body turns to rock, and where on the body (NO VERIFICADO: the original only plays a sound here).
 @export var emerge_fx: ParticleType = preload("res://data/fx/rock_emerge.tres")

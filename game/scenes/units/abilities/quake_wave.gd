@@ -24,13 +24,16 @@ extends Node3D
 ## (25737-25759), quake (13204-13207); effects before creatures (29331 against 29345). F132 (RFC-030 030u-a), RFC-057 057a.
 
 
-## sacengine Quake.waveRange (m) and waveDur (s).
+## How far the wave goes (m) and how long it takes (s).
+## Ref: sacengine Quake.waveRange, waveDur.
 @export var wave_range := 50.0
 @export var wave_s := 0.5
-## sacengine stunMinRange / stunMaxRange (m): the wave stuns only between them.
+## The wave stuns only between these two distances (m).
+## Ref: sacengine stunMinRange / stunMaxRange.
 @export var stun_min := 0.5
 @export var stun_max := 10.0
-## The band the wave stuns, in frames of travel: 1,5 (sacengine 1.5·waveRange/(waveDur·updateFPS) = 2,5 m).
+## The band the wave stuns, in frames of travel: 1,5 (1.5·waveRange/(waveDur·ticks per second) = 2,5 m).
+## Ref: sacengine.
 @export var band := 1.5
 ## How long a stunned body cannot be stunned again.
 ## Ref: sacengine stunCooldownFrames = 8·updateFPS.
@@ -38,7 +41,8 @@ extends Node3D
 ## How long the wave lasts.
 ## Ref: sacengine totalFrames = int(waveDur·updateFPS + 0.5).
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var life_s := 0.5
-## sacengine movingObjects: creatures and wizards (buildings are not stunned).
+## Moving bodies: creatures and wizards (buildings are not stunned).
+## Ref: sacengine movingObjects.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")
@@ -132,7 +136,8 @@ func _step(f: int) -> void:
 				SplashDamage.box_distance(body, center), result, MatchClock.now()])
 
 
-## sacengine stunWithCooldown on a body of the band; what happened, for the log.
+## Stuns a body of the band with the cooldown rule; what happened, for the log.
+## Ref: sacengine stunWithCooldown.
 func _stun(body: Node3D) -> String:
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
 	if stunned == null:

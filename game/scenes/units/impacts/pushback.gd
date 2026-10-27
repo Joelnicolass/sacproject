@@ -1,13 +1,15 @@
 class_name Pushback
 extends Node
 
-## F121 (RFC-030j): Squall's push, sacengine Pushback (state.d:4768-4776, updatePushback 24017-24031). A child of the
+## Squall's push. A child of the
 ## body it pushes (it goes with the body), server (or solo) only. For `duration_s` it pushes the body at
 ## `speed` m/s along the shot (BodyNudge.push: it slides on the land, a step off the land is not taken). A thrown body
-## (Tumbling on) gets the velocity once and the push ends. Effects run before the creatures (state.d:29331): the
+## (Tumbling on) gets the velocity once and the push ends. Effects run before the creatures: the
 ## node's physics priority is −1, so it pushes before the body moves.
+## Ref: F121 (RFC-030j); sacengine Pushback (state.d:4768-4776, updatePushback 24017-24031), state.d:29331.
 
-## sacengine pushDistance / pushDuration = 15 m in 2/3 s.
+## The push is 15 m in 2/3 s.
+## Ref: sacengine pushDistance / pushDuration.
 @export var speed := 22.5
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var duration_s := 0.6666
 

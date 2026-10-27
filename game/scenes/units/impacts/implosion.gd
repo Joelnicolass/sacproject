@@ -1,18 +1,20 @@
 class_name Implosion
 extends Node3D
 
-## F121 (RFC-030j): the Flurry's implosion, sacengine FlurryImplosion (state.d:4868-4876, updateFlurryImplosion
-## 24619-24672). ImplosionImpact puts it in the shots' container where the shot burst; server (or solo) only. Its scale
+## The Flurry's implosion that draws bodies in.
+## ImplosionImpact puts it in the shots' container where the shot burst; server (or solo) only. Its scale
 ## starts at effectRange and shrinks at effectRange/duration per second; it ends when it reaches 0. Every tick, every
 ## live creature and wizard whose box meets the cube ±scale and whose center is within effectRange of the burst (no
 ## side filter) is drawn in:
 ##   speed = √(max(10, d)·max(10, scale)) / effectRange · influence_speed / 60  (meters this tick, toward the center)
 ## - not thrown: the step speed·direction; if it ends at most influence_speed/120 over the ground it slides
 ##   (BodyNudge.slide, on the land only), else it is thrown with 2·speed·direction (vz ≥ −1/60) as its velocity;
-## - thrown: position += 2·speed·direction, and a body going down that this lifts has vz = 0 (sacengine's «hack»).
-## sacengine axes (x, y, z up) are the port's (x, z, y up). Effects run before creatures (state.d:29331): priority −1.
+## - thrown: position += 2·speed·direction, and a body going down that this lifts has vz = 0 (the original's «hack»).
+## The original's axes (x, y, z up) are the port's (x, z, y up). Effects run before creatures: priority −1.
+## Ref: F121 (RFC-030j); sacengine FlurryImplosion (state.d:4868-4876, updateFlurryImplosion 24619-24672), state.d:29331.
 
-## sacengine FlurryImplosion.influenceSpeed.
+## How fast bodies are drawn in.
+## Ref: sacengine FlurryImplosion.influenceSpeed.
 @export var influence_speed := 15.0
 ## The SPEL's effectRange and duration (caba: 20 m, 1,5 s); the impact writes them.
 @export var effect_range := 20.0

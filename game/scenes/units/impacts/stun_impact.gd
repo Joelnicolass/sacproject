@@ -1,11 +1,11 @@
 class_name StunImpact
 extends ShotImpact
 
-## F120 (RFC-030i-a): the Flummox's stun. flummoxProjectileExplosion (state.d:24059-24067) passes a callback to
-## dealSplashRangedDamageAt that calls stunWithCooldown(target, 480) on every moving body whose box is within
-## effectRange of the burst, before its damage: no side filter, the shooter included (dealDamageAt skips only the
-## direct target, which is 0 here, 9075-9089). The walk is SplashDamage's; each body's Afflictions/Stunned decides.
-## Wizards too (F138, RFC-030i-c: wizard_body.tscn has Afflictions/Stunned). A body with no Stunned is named in the log.
+## The Flummox's stun. It stuns (480 ticks of cooldown) every moving body whose box is within
+## effectRange of the burst, before its damage: no side filter, the shooter included (only the
+## direct target is skipped, and it is 0 here). The walk is SplashDamage's; each body's Afflictions/Stunned decides.
+## Wizards too (wizard_body.tscn has Afflictions/Stunned). A body with no Stunned is named in the log.
+## Ref: F120 (RFC-030i-a), F138 (RFC-030i-c); sacengine flummoxProjectileExplosion (state.d:24059-24067), dealSplashRangedDamageAt, stunWithCooldown(target, 480), dealDamageAt 9075-9089.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
@@ -13,7 +13,8 @@ const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 ## How long a stunned body cannot be stunned again.
 ## Ref: sacengine stunCooldownFrames = 8·updateFPS.
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var cooldown_s := 8.0
-## sacengine movingObjects: creatures and wizards (buildings are not stunned).
+## Moving bodies: creatures and wizards (buildings are not stunned).
+## Ref: sacengine movingObjects.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")

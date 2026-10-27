@@ -1,40 +1,41 @@
 class_name Oiled
 extends Affliction
 
-## F155 (RFC-030 030r-b): a body smeared with the Pyrodactyl's Viscous oil (kcfa), sacengine Oil (state.d:25653-25676) and
-## `creatureStats.effects.oiled / oilStatus`. A child of Afflictions with its own bit (bit 7) that COEXISTS with the other
+## A body smeared with the Pyrodactyl's Viscous oil. A child of Afflictions with its own bit (bit 7) that COEXISTS with the other
 ## states (AfflictionType.coexists: it neither refuses nor is refused by them), so a stunned, frozen or burning body can be
 ## oiled and the oil never cancels the others.
 ##
-## Life (updateOil): `start()` is the explosion of the oil shot (OilImpact). One update per tick from the next one (frame 1, 2…,
+## Life: `start()` is the explosion of the oil shot (OilImpact). One update per tick from the next one (frame 1, 2…,
 ## before the bodies move: process priority −1, like the other effects):
-##   - while frame <= `ticks` (900 = the SPEL's duration · 60) the oil holds: a creature that is not a wizard has its order queue
-##     cleared every tick (`orders` socket; a wizard has none) and, as the type `holds`, the AI does not run (13647-13649);
+##   - while frame <= `ticks` (900 = the spell's duration · 60) the oil holds: a creature that is not a wizard has its order queue
+##     cleared every tick (`orders` socket; a wizard has none) and, as the type `holds`, the AI does not run;
 ##   - frame `ticks` + 1 the oil is gone («limpio»): the body can be oiled again (+901 ticks after the shot);
-##   - a body that can no longer be oiled (dying, dead, dissolving: sacengine canBeOiled = canBePoisoned) loses it with no blast.
-## Ignite (dealRawDamage, 9028-9031): Health calls `ignite()` when a hit carries IGNITE and the body is oiled; that hit takes ×2
-## (Health) and the oil blasts on the NEXT update (igniteOil, 25639-25651): dealSplashRangedDamageAt of the SPEL's amount
+##   - a body that can no longer be oiled (dying, dead, dissolving) loses it with no blast.
+## Ignite: Health calls `ignite()` when a hit carries IGNITE and the body is oiled; that hit takes ×2
+## (Health) and the oil blasts on the NEXT update: splash damage of the spell's amount
 ## (500) within its damage_range (5 m) of the body's center, with IGNITE, in the name of whoever threw the oil; each body in the
-## radius also gets a 60-tick fire of no damage (setAblaze(target, 60, false, 0), only the look), and the oil is removed.
+## radius also gets a 60-tick fire of no damage (only the look), and the oil is removed.
 ## The oil of the body that blasts is already «ignited», so its own blast is not doubled; a neighbour that is oiled is (and so it
-## blasts one update later: the chain). An ally of whoever threw it takes 0 with no friendly fire and does not ignite (dealDamage
-## returns before dealRawDamage, 8961): Health decides, `ignite()` is never called for it.
+## blasts one update later: the chain). An ally of whoever threw it takes 0 with no friendly fire and does not ignite
+## (the damage returns before the raw damage): Health decides, `ignite()` is never called for it.
 ##
 ## The shown bit is the oil for every peer; the splash look is the shot's (ShotLook.impact_fx). Server (or solo) only decides.
-## Divergence (declared): in sacengine two oiled bodies blast in the order of their Oil effects (creation order); here, in the order of
+## Divergence (declared): in the original two oiled bodies blast in the order of their Oil effects (creation order); here, in the order of
 ## the scene tree. A neighbour lit by a blast may blast on the same tick or on the next one.
+## Ref: F155 (RFC-030 030r-b); sacengine Oil (state.d:25653-25676), `creatureStats.effects.oiled / oilStatus`, updateOil, 13647-13649, canBeOiled = canBePoisoned, dealRawDamage 9028-9031, igniteOil 25639-25651, setAblaze(target, 60, false, 0), dealDamage 8961.
 
 
 ## unit_orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
-## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard (sacengine `!isWizard`).
+## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard.
 @export var orders: Node
 ## The fire puffed on each body the blast lights, and how long that fire of no damage lasts (setAblaze(…, updateFPS)).
 @export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var fire_s := 1.0
-## The fireball that blasts at the body's center (sacengine animateFireballExplosion, 25650; the explosion's
+## The fireball that blasts at the body's center (the explosion's
 ## particles of the original are the `fire` atlas here, in MIX like the Bombard's). Empty = none.
+## Ref: sacengine animateFireballExplosion, 25650.
 @export var blast_fx: ParticleType = preload("res://data/fx/oil_blast.tres")
 
 var _frame := 0
@@ -52,13 +53,14 @@ static func of(body: Node) -> Oiled:
 
 func _ready() -> void:
 	set_physics_process(false)
-	## sacengine updates its effects before its creatures: the oil clears the orders before the body acts.
+	## The original updates its effects before its creatures: the oil clears the orders before the body acts.
 	process_physics_priority = -1
 
 
-## Server (or solo): sacengine oilExplosion's callback + Oil. `ticks`: how long it lasts (ability.duration_s · 60); `slot`: the
-## side of whoever threw it (the blast's attacker); `ability`: the SPEL (amount and damage_range of the blast). True when the body
+## Server (or solo): smears the body with oil. `ticks`: how long it lasts (ability.duration_s · 60); `slot`: the
+## side of whoever threw it (the blast's attacker); `ability`: the spell (amount and damage_range of the blast). True when the body
 ## got smeared; false if it already is, cannot be, or this is a client.
+## Ref: sacengine oilExplosion's callback + Oil.
 func start(ticks: int, slot: int, ability: AbilityType) -> bool:
 	var body := _body()
 	if not is_multiplayer_authority() or body == null or ticks <= 0 or is_on() or not can_be_oiled():
@@ -78,14 +80,16 @@ func start(ticks: int, slot: int, ability: AbilityType) -> bool:
 	return true
 
 
-## sacengine canBeOiled = canBePoisoned(mode): a live body that is not dying, being summoned or taken.
+## A live body that is not dying, being summoned or taken.
+## Ref: sacengine canBeOiled = canBePoisoned(mode).
 func can_be_oiled() -> bool:
 	var poisoning := Poisoning.of(_body())
 	return poisoning != null and poisoning.can_be_poisoned()
 
 
-## Server (or solo): a hit that carries IGNITE reached an oiled body (Health, sacengine igniteOil 25632-25634). True the first
+## Server (or solo): a hit that carries IGNITE reached an oiled body (Health). True the first
 ## time only: the oil is lit, the hit counts ×2 and the blast comes on the next update.
+## Ref: sacengine igniteOil 25632-25634.
 func ignite() -> bool:
 	if not _running or not is_on() or _ignited:
 		return false

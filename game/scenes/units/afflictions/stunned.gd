@@ -1,22 +1,25 @@
 class_name Stunned
 extends Affliction
 
-## F120 (RFC-030i-a): sacengine stunned. stunWithCooldown (state.d:8561-8568) refuses while the body's own stun cooldown
-## runs or when canStun says no (8546-8553: a rock, a body playing dead, dying, still summoned, already stunned…), then
-## holds it for the length of its clips: (knocked2Floor + getUp)·updateAnimFactor ticks on the ground, flyDamage in the
-## air (8138-8150, 14170-14212). The cooldown counts from the stun, every tick.
+## A creature knocked out for a while. A stun refuses while the body's own stun cooldown
+## runs or when it cannot be stunned (a rock, a body playing dead, dying, still summoned, already stunned…), then
+## holds it for the length of its clips: (knocked to the floor + get up) ticks on the ground, the damage-fly clip in the
+## air. The cooldown counts from the stun, every tick.
 ##
-## A wizard too (F138, RFC-030i-c): its WizardType clips; it never flies. The fasterStandupTimes fix
-## (sacobject.d:844-874) only swaps hitFloor, which a stun on the ground never plays (14170-14212), so it changes nothing here.
+## A wizard too: its WizardType clips; it never flies. The original's faster-standup fix
+## only swaps hitFloor, which a stun on the ground never plays, so it changes nothing here.
 ## Look: the knock, hit_floor and get_up roles of ClipPose when the model has those clips; a model without one falls on its side
 ## and gets up with a Tween on Tilt.
 ## WORKAROUND: Tween on Tilt rotation:z, only for a model whose scene lacks the stun clip.
+## Ref: F120 (RFC-030i-a), F138 (RFC-030i-c); sacengine stunned, stunWithCooldown state.d:8561-8568, canStun 8546-8553, 8138-8150, 14170-14212, fasterStandupTimes sacobject.d:844-874.
 
-## sacengine updateAnimFactor: a 30 fps clip frame lasts 2 ticks of 60.
+## A 30 fps clip frame lasts 2 ticks of 60.
+## Ref: sacengine updateAnimFactor.
 const FRAME_TICKS := 2
 
-## F121: the state whose landing hands over to this one (tumbling.tres). Then it lies hitFloor + getUp, not knock +
-## getUp (state.d:14175-14212); a client tells it from Afflictions.previous. Optional: empty = always knock + getUp.
+## The state whose landing hands over to this one (tumbling.tres). Then it lies hitFloor + getUp, not knock +
+## getUp; a client tells it from Afflictions.previous. Optional: empty = always knock + getUp.
+## Ref: F121; state.d:14175-14212.
 @export var fall_type: AfflictionType
 @export var clip_pose: ClipPlayback
 @export var tilt: Node3D
@@ -50,7 +53,8 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-## Server (or solo): sacengine stunWithCooldown. True when it stunned.
+## Server (or solo): stuns with the cooldown rule. True when it stunned.
+## Ref: sacengine stunWithCooldown.
 func stun_with_cooldown(cooldown_ticks: int) -> bool:
 	var body := _body()
 	if _cooldown > 0 or body == null or not _body_allows(body) or not _afflictions().admit(self):
@@ -62,8 +66,9 @@ func stun_with_cooldown(cooldown_ticks: int) -> bool:
 	return true
 
 
-## Server (or solo): a thrown body landed (Tumbling). sacengine keeps the mode stunned and plays hitFloor, then getUp
-## (state.d:14182-14212): no canStun, no cooldown (the one it had keeps running).
+## Server (or solo): a thrown body landed (Tumbling). It keeps the mode stunned and plays hitFloor, then getUp:
+## no canStun, no cooldown (the one it had keeps running).
+## Ref: sacengine state.d:14182-14212.
 func fall_down() -> void:
 	var body := _body()
 	if body == null:
@@ -73,8 +78,9 @@ func fall_down() -> void:
 	print("aturdido tras caer %s durante %d (hit_floor + get_up) (cuadro %d)" % [_body_name(), _total, MatchClock.now()])
 
 
-## Server (or solo): sacengine damageStun as the end of a petrification calls it (state.d:23732-23739, 8569-8577): the
+## Server (or solo): the stun the end of a petrification calls: the
 ## stun cooldown is cleared first, then it stuns with the damage-stun cooldown (4 s).
+## Ref: sacengine damageStun (state.d:23732-23739, 8569-8577).
 func knock(cooldown_ticks: int) -> bool:
 	_cooldown = 0
 	return stun_with_cooldown(cooldown_ticks)
@@ -92,8 +98,9 @@ func clip_role() -> String:
 	return "get_up"
 
 
-## canStun (state.d:8546-8553), with the port's names: a live, targetable creature (not summoning, held by a doctor,
+## Can it be stunned, with the port's names: a live, targetable creature (not summoning, held by a doctor,
 ## playing dead or dead) that is not a rock.
+## Ref: canStun (state.d:8546-8553).
 func _body_allows(body: Node3D) -> bool:
 	if body is UnitBody and (body as UnitBody).is_rock_form():
 		return false
@@ -123,7 +130,7 @@ func _shown(on: bool) -> void:
 
 
 ## The length from the body's clips (the knock, get_up, fly_damage and hit_floor roles of its model), on every peer. Without knock
-## or get_up the sacengine creature stands in stance1 for one loop; the port uses its `gesture` clip.
+## or get_up the original creature stands in stance1 for one loop; the port uses its `gesture` clip.
 func _measure() -> void:
 	var body := _body()
 	var facts := _clip_facts(body)

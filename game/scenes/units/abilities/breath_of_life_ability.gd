@@ -1,15 +1,15 @@
 class_name BreathOfLifeAbility
 extends AbilityEffect
 
-## F153 (RFC-030 030p-b): the Dragon's Breath of life (filb, flags targetSouls | targetCorpses | onlyAlly = 4106). sacengine
-## useAbility → shoot (state.d:13470-13493): the body prepares (startUsingAbility, shoot2) and at the shoot tick shootOnTick
-## calls breathOfLifeShoot (13238-13248), which drains the mana (12746-12748) and adds the BreathOfLife effect; the cooldown
+## The Dragon's Breath of life, an ally revival. The body prepares and at the shoot tick the effect
+## drains the mana and adds the BreathOfLife effect; the cooldown
 ## (4 s) is set if it was 0. The preparation is AbilityWindup's (UsingAbility + windup()), the flight is BreathOfLife's and
 ## the revival is FastRevive's: this effect only judges the target and launches the breath.
 ##
-## Target (abilityStatus, 29582-29604: applicable → range): a soul is resolved to its corpse (13241-13244). It must be dead,
-## of the caster's slot (the original decides `onlyAlly` by side; here by slot), with its soul NORMAL or EMERGING (revive,
-## 8651-8664) and within the SPEL's range of the caster's feet (40 m, 3D: obj.position to target.position).
+## Target (applicable → range): a soul is resolved to its corpse. It must be dead,
+## of the caster's slot (the original decides `onlyAlly` by side; here by slot), with its soul NORMAL or EMERGING
+## and within the spell's range of the caster's feet (40 m, 3D: obj.position to target.position).
+## Ref: F153 (RFC-030 030p-b); Dragon filb (flags targetSouls | targetCorpses | onlyAlly = 4106), sacengine useAbility → shoot (state.d:13470-13493), breathOfLifeShoot 13238-13248, 12746-12748, abilityStatus 29582-29604, 13241-13244, revive 8651-8664.
 
 ## BreathOfLife scene (breath_of_life.tscn): the coordinator the shot container holds while the breath flies.
 @export var breath_scene: PackedScene

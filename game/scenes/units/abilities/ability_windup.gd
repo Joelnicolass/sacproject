@@ -71,7 +71,7 @@ func _finish() -> void:
 		return
 	var before := slot.mana_left()
 	if slot.cost() > before + AbilitySlot.MANA_EPSILON:
-		## sacengine loadOnTick asks mana >= cost at the load tick: short of it, nothing happens and nothing is spent.
+		## The original asks mana >= cost at the load tick: short of it, nothing happens and nothing is spent.
 		if DebugLog.on(&"ability"):
 			print("preparación sin maná %s %s (tick %d)" % [slot.ability.display_name, str(slot.body.name), MatchClock.now()])
 		afflictions.mark(using, false)

@@ -1,15 +1,15 @@
 class_name DevourAbility
 extends AbilityEffect
 
-## F131 (RFC-030 030t-a): the Netherfiend's (crpd) and the Hellmouth's (nomd) Devour (ifna, flags 4098). sacengine useAbility →
-## shoot1 (state.d:13463-13561): the body prepares (startUsingAbility, shoot1: PCes c36 72 ticks, DMes c46 92) and at the shoot
-## tick shootOnTick calls devourSoul (12735-12736, 13138-13163). It costs no mana and has no cooldown, so AbilitySlot spends 0.
+## The Netherfiend's and the Hellmouth's Devour: eating a soul. The body prepares (72 ticks for the Netherfiend, 92 for the Hellmouth)
+## and at the shoot tick the soul is devoured. It costs no mana and has no cooldown, so AbilitySlot spends 0.
 ## The preparation is AbilityWindup's (UsingAbility + windup()); what the soul goes through is Soul's (begin_devour); what the
 ## eater becomes is DevourGrowth's; the cure is HealEffect's. This effect only judges the target and tells them.
 ##
-## Target (isApplicable, summarize: 30820-30825): a soul (or the corpse it waits on) that is blue for the eater's slot (free or
-## its own), NORMAL or EMERGING (devourSoul), within the length of the eater's box measured in 2D (useAbilityDistance 12474,
-## moveWithinRange2D 12526-12529). Declared: the creature does not walk closer or turn (sacengine does); out of range is refused.
+## Target: a soul (or the corpse it waits on) that is blue for the eater's slot (free or
+## its own), NORMAL or EMERGING, within the length of the eater's box measured in 2D.
+## Declared: the creature does not walk closer or turn (the original does); out of range is refused.
+## Ref: F131 (RFC-030 030t-a); Netherfiend crpd, Hellmouth nomd, Devour ifna (flags 4098), sacengine useAbility → shoot1 (state.d:13463-13561; PCes c36, DMes c46), devourSoul 12735-12736, 13138-13163, isApplicable/summarize 30820-30825, useAbilityDistance 12474, moveWithinRange2D 12526-12529.
 
 const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 

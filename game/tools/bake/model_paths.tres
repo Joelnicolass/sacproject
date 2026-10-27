@@ -1,20 +1,24 @@
-[gd_resource type="Resource" script_class="ModelFiles" format=3]
+[gd_resource type="Resource" script_class="ModelPaths" format=3]
 
-[ext_resource type="Script" path="res://scenes/bodies/model_files.gd" id="1_files"]
+[ext_resource type="Script" path="res://tools/bake/model_paths.gd" id="1_files"]
 
 [resource]
 script = ExtResource("1_files")
 stems = Dictionary[String, String]({
 "AArc": "sylph_model",
 "ABRX": "abraxus_model",
+"FAmr": "familiar_model",
 "YOGO": "yogo_model",
 "aclw": "flurry_model",
 "adrg": "silverback_model",
 "apez": "snowman_model",
 "aprc": "yeti_model",
 "babc": "mutant_model",
+"baby": "dragon_hatchling_model",
 "bala": "squall_model",
 "bale": "boulderdash_model",
+"ban2": "astaroth_model",
+"bane": "gangrel_model",
 "brod": "hachimen_model",
 "buga": "vortick_model",
 "bugf": "tickferno_model",
@@ -39,6 +43,7 @@ stems = Dictionary[String, String]({
 "epez": "farmer_model",
 "eslg": "basilisk_model",
 "estm": "jabberocky_model",
+"faez": "thestor_model",
 "fcak": "pyrodactyl_model",
 "fclw": "bombard_model",
 "fdrg": "phoenix_model",
@@ -48,12 +53,14 @@ stems = Dictionary[String, String]({
 "fklp": "flame_minion_model",
 "fpez": "slave_model",
 "ftrl": "firefist_model",
+"gamm": "gammel_model",
 "gobl": "frostwolf_model",
 "gret": "sorcha_model",
 "gund": "styx_model",
 "gunf": "warmonger_model",
 "gutc": "abomination_model",
 "hero": "eldred_model",
+"hoom": "toldor_model",
 "huma": "ranger_model",
 "humn": "druid_model",
 "jnwr": "jadugarr_model",
@@ -62,18 +69,24 @@ stems = Dictionary[String, String]({
 "ltrl": "troll_model",
 "maho": "manahoar_model",
 "mrdk": "marduk_model",
+"peas": "peasant_model",
 "prcy": "netherfiend_model",
 "quil": "acheron_model",
 "rigl": "grakkus_model",
 "sacd": "sac_doctor_model",
 "sage": "mithras_model",
+"sara": "sara_bella_model",
 "sbob": "brainiac_model",
 "serx": "seerix_model",
 "shkt": "shakti_model",
+"sirc": "sirocco_model",
 "sogr": "storm_giant_model",
 "spdr": "charlotte_model",
 "sprg": "seraph_model",
 "sprl": "gremlin_model",
 "stmp": "ent_model",
+"surt": "lord_surtur_model",
+"the2": "faestus_pyro_model",
+"thes": "faestus_persephone_model",
 "xwiz": "the_ragman_model"
 })

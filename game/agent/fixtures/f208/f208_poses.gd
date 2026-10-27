@@ -18,7 +18,7 @@ func _ready() -> void:
 	var lines := PackedStringArray()
 	for job: Array in _jobs():
 		var model: String = job[0]
-		if not BodyModel.exists(model):
+		if not ModelPaths.exists(model):
 			lines.append("%s|nonskeletal" % model)
 			continue
 		_show(rig, model, job[1])
@@ -72,7 +72,7 @@ func _jobs() -> Array:
 
 func _show(rig: BodyRig, model: String, _roles_of_model: Dictionary) -> void:
 	var look := BodyLook.new()
-	var root := (load(BodyModel.scene_path(model)) as PackedScene).instantiate() as BodyModel
+	var root := (load(ModelPaths.scene_path(model)) as PackedScene).instantiate() as BodyModel
 	look.add_child(root)
 	look.model = root
 	rig.mount(look)

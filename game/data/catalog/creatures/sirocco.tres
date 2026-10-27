@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
 [ext_resource type="Resource" path="res://data/passives/dragon_vines.tres" id="typed_passive_0"]
 [ext_resource type="Resource" path="res://data/death_clouds/mutant_cloud.tres" id="typed_passive_1"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sirc_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/sirocco_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/sirocco.tscn" id="body_scene"]
 
 [resource]

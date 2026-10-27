@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_yt7v8"]
 [ext_resource type="Texture2D" uid="uid://c55i2qfp2gq4o" path="res://assets/original/ui/icons/_r_a_m_h.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/ban2_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/astaroth_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/astaroth.tscn" id="body_scene"]
 
 [resource]

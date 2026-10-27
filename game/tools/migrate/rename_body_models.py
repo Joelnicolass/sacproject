@@ -6,13 +6,15 @@
 
 `models/eorc.tscn` becomes `models/trogg_model.tscn`, with `eorc_clips.tres` -> `trogg_model_clips.tres` and the folder
 `eorc_clips/` -> `trogg_model_clips/`. Only file names and paths change: the model tag (`eorc`, the `model` of the scene and the
-`model_id` that travels on the wire) stays. `models/model_files.tres` (ModelFiles) records tag -> file stem, so
-`BodyModel.scene_path("eorc")` still finds the scene; the script rewrites it from what is on disk.
+`model_id` that travels on the wire) stays. `tools/bake/model_paths.tres` (ModelPaths) records tag -> file stem, so
+`ModelPaths.scene_path("eorc")` still finds the scene for the bake tools; the script rewrites it from what is on disk.
 
 The human name is the name of the look scene that wears the model (`scenes/units/bodies/trogg_look.tscn` -> `trogg`), so it is the
-name of the CreatureType / WizardType. Left with their code (listed in the output):
-  - a model worn by more than one look (there is no single name for it),
-  - a model no look wears, and the clip libraries without a scene,
+name of the CreatureType / WizardType. A model worn by more than one look takes the name chosen in SHARED (055i-b4: the Familiar
+model is also Zyzyx's, the Peasant model is also the Ghost's). A clip library without a scene (a creature drawn with another
+model's skeleton) takes the name of the one CreatureType / WizardType whose `clips` points at it: `ban2_clips.tres` ->
+`astaroth_model_clips.tres`. Left with their code (listed in the output):
+  - a shared model missing from SHARED, a model no look wears, a library no type (or more than one) uses,
   - `testmonster`, the custom creature: its tag is already its name and new_creature.gd writes it under the tag.
 
 Idempotent: a second run finds every model named and every reference rewritten, and does nothing. Plain Python 3 and `git`; no Godot.
@@ -34,10 +36,15 @@ rr.SKIP_PREFIX = rr.SKIP_PREFIX + ('docs/CHANGELOG', 'tools/migrate/rename_body_
 GAME = rr.GAME
 MODELS = 'scenes/bodies/models'
 LOOK_DIRS = ('scenes/units/bodies', 'scenes/wizards/bodies')
-FILES_TRES = f'{MODELS}/model_files.tres'
+FILES_TRES = 'tools/bake/model_paths.tres'
+TYPE_DIRS = ('data/catalog/creatures', 'data/catalog/wizards')
+# Models worn by more than one look: the look whose name the files take.
+SHARED = {'FAmr': 'familiar', 'peas': 'peasant'}
 KEEP = ('testmonster',)
 MODEL_REF = re.compile(r'scenes/bodies/models/([A-Za-z0-9_]+)\.tscn')
 TAG_LINE = re.compile(r'^model = "([^"]*)"', re.M)
+CLIPS_REF = re.compile(r'path="res://scenes/bodies/models/([A-Za-z0-9_]+)_clips\.tres"')
+STEM_ENTRY = re.compile(r'"([^"]+)": "([^"]+)"')
 
 
 def read(path):
@@ -57,6 +64,17 @@ def worn_by():
     return found
 
 
+def clips_used_by():
+    """{clip library stem: [type names]} from the CreatureType / WizardType files."""
+    found = {}
+    for folder in TYPE_DIRS:
+        for name in sorted(os.listdir(os.path.join(GAME, folder))):
+            if name.endswith('.tres'):
+                for stem in set(CLIPS_REF.findall(read(f'{folder}/{name}'))):
+                    found.setdefault(stem, []).append(name.removesuffix('.tres'))
+    return found
+
+
 def model_stems():
     return sorted(name[:-5] for name in os.listdir(os.path.join(GAME, MODELS)) if name.endswith('.tscn'))
 
@@ -71,20 +89,30 @@ def plan():
             kept.append((stem, 'custom creature, its tag is its name'))
         elif stem.endswith('_model'):
             continue  # already renamed
-        elif len(looks) > 1:
+        elif len(looks) > 1 and SHARED.get(stem) not in looks:
             kept.append((stem, 'worn by ' + ', '.join(looks)))
         elif not looks:
             kept.append((stem, 'no look wears it'))
         else:
-            new = looks[0] + '_model'
+            new = (SHARED[stem] if len(looks) > 1 else looks[0]) + '_model'
             rows.append((f'{MODELS}/{stem}.tscn', f'{MODELS}/{new}.tscn'))
             rows.append((f'{MODELS}/{stem}_clips.tres', f'{MODELS}/{new}_clips.tres'))
             if os.path.isdir(os.path.join(GAME, MODELS, f'{stem}_clips')):
                 rows.append((f'{MODELS}/{stem}_clips', f'{MODELS}/{new}_clips'))
     scenes = set(model_stems())
+    used = clips_used_by()
     for name in sorted(os.listdir(os.path.join(GAME, MODELS))):
-        if name.endswith('_clips.tres') and name[:-len('_clips.tres')] not in scenes:
-            kept.append((name[:-len('_clips.tres')], 'clip library without a scene'))
+        stem = name[:-len('_clips.tres')] if name.endswith('_clips.tres') else ''
+        if not stem or stem in scenes or stem.endswith('_model'):
+            continue
+        types = used.get(stem, [])
+        if len(types) != 1:
+            kept.append((stem, 'clip library used by ' + (', '.join(types) or 'no type')))
+            continue
+        new = types[0] + '_model'
+        rows.append((f'{MODELS}/{stem}_clips.tres', f'{MODELS}/{new}_clips.tres'))
+        if os.path.isdir(os.path.join(GAME, MODELS, f'{stem}_clips')):
+            rows.append((f'{MODELS}/{stem}_clips', f'{MODELS}/{new}_clips'))
     return rows, kept
 
 
@@ -110,22 +138,31 @@ def model_tag(stem):
     return match.group(1) if match else stem
 
 
-def files_text():
-    """model_files.tres from what is on disk: every scene whose stem is not its tag."""
+def files_text(rows=()):
+    """model_paths.tres from what is on disk: every scene whose stem is not its tag, and every clip library without a scene
+    that was renamed (by `rows` now, or by an earlier run, which the current table remembers)."""
     entries = {}
+    current = read(FILES_TRES) if os.path.isfile(os.path.join(GAME, FILES_TRES)) else ''
+    scenes = set(model_stems())
+    for tag, stem in STEM_ENTRY.findall(current):
+        if stem not in scenes and os.path.isfile(os.path.join(GAME, MODELS, f'{stem}_clips.tres')):
+            entries[tag] = stem
+    for old, new in rows:
+        if old.endswith('_clips.tres') and os.path.basename(old)[:-len('_clips.tres')] not in scenes:
+            entries[os.path.basename(old)[:-len('_clips.tres')]] = os.path.basename(new)[:-len('_clips.tres')]
     for stem in model_stems():
         tag = model_tag(stem)
         if tag != stem:
             entries[tag] = stem
     dictionary = '{\n' + ',\n'.join(f'"{tag}": "{entries[tag]}"' for tag in sorted(entries)) + '\n}' if entries else '{}'
-    return ('[gd_resource type="Resource" script_class="ModelFiles" format=3]\n\n'
-            '[ext_resource type="Script" path="res://scenes/bodies/model_files.gd" id="1_files"]\n\n'
+    return ('[gd_resource type="Resource" script_class="ModelPaths" format=3]\n\n'
+            '[ext_resource type="Script" path="res://tools/bake/model_paths.gd" id="1_files"]\n\n'
             '[resource]\nscript = ExtResource("1_files")\n'
             f'stems = Dictionary[String, String]({dictionary})\n')
 
 
-def write_files_tres(apply):
-    text = files_text()
+def write_files_tres(apply, rows=()):
+    text = files_text(rows)
     current = read(FILES_TRES) if os.path.isfile(os.path.join(GAME, FILES_TRES)) else ''
     if text == current:
         return False
@@ -170,8 +207,8 @@ def main():
         print('Nothing to rename.')
 
     if args.check:
-        if write_files_tres(False):
-            print('model_files.tres would change.')
+        if write_files_tres(False, rows):
+            print('model_paths.tres would change.')
         return 0
 
     for old, new in rows:
@@ -179,8 +216,8 @@ def main():
     if rows:
         touched = rr.rewrite(rows, rr.text_files())
         print(f'Moved {len(rows)} entries; rewrote {sum(touched.values())} references in {len(touched)} files.')
-    changed = write_files_tres(True)
-    print('model_files.tres written.' if changed else 'model_files.tres is up to date.')
+    changed = write_files_tres(True, rows)
+    print('model_paths.tres written.' if changed else 'model_paths.tres is up to date.')
     left = rr.leftovers(rows) if rows else []
     if left:
         print('\nFAIL: an old path remains:', file=sys.stderr)

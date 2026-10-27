@@ -99,7 +99,7 @@ func _run() -> void:
 	var facts := type.clip_facts() if type != null else ClipFacts.of(null)
 	var checks := {
 		"type_found": type != null and type.model_id() == TAG,
-		"scene_exists": BodyModel.exists(TAG),
+		"scene_exists": ModelPaths.exists(TAG),
 		"size_height": absf(body.height_m - 2.0) < 0.05,
 		"size_reach": absf(body.reach_m - 0.475) < 0.01,
 		"melee_clips": facts.frames(&"attack") == 40 and facts.hits(&"attack") == PackedInt32Array([18])
@@ -249,7 +249,7 @@ func _dummy(at: Vector3) -> UnitBody:
 
 
 func _model_scene() -> String:
-	var packed := load(BodyModel.scene_path(TAG)) as PackedScene
+	var packed := load(ModelPaths.scene_path(TAG)) as PackedScene
 	var model := packed.instantiate() as BodyModel
 	add_child(model)
 	await _frames(2)

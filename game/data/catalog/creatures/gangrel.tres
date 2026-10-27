@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_vx1gb"]
 [ext_resource type="Texture2D" uid="uid://c7glllnpeynhx" path="res://assets/original/ui/icons/ram_h.png" id="icon_tex"]
-[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/bane_clips.tres" id="clips_lib"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gangrel_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/gangrel.tscn" id="body_scene"]
 
 [resource]

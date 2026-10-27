@@ -2,11 +2,11 @@
 class_name BodyModel
 extends Node3D
 
-## The root of scenes/bodies/models/<tag>.tscn, one per skeletal model: the .glb, the clips it plays and the tree that picks one.
+## The root of scenes/bodies/models/<name>_model.tscn, one per skeletal model: the .glb, the clips it plays and the tree that picks one.
 ## The scene is made once (tools/bake/new_creature.gd for a new model) and edited in the editor from then on:
 ##   Model       the .glb of assets/original/models/ (or of assets/custom/models/; skeleton, skinned mesh and every clip of the model),
 ##               drawn with the game's axes (z mirrored, like the baked meshes).
-##   Clips       an AnimationPlayer that holds the model's AnimationLibrary (<tag>_clips.tres): one Animation per ROLE (idle, run,
+##   Clips       an AnimationPlayer that holds the model's AnimationLibrary (<name>_model_clips.tres): one Animation per ROLE (idle, run,
 ##               attack...), with the exact length, the markers `hit`/`shoot` where the blow lands or the shot leaves, and the
 ##               method track that calls ClipEvents.fire(kind) at the frame of each event (sound, foot, strike...).
 ##   Tree        the AnimationTree whose AnimationNodeStateMachine has one state PER ROLE. A state plays the Animation of its own
@@ -31,16 +31,14 @@ const ONE_SHOT_ROLES: PackedStringArray = ["attack", "attack2", "attack3", "shoo
 	"unghost"]
 ## Roles that play once and stay on their last frame; every other role repeats.
 const HOLD_ROLES: PackedStringArray = ["death", "death2", "death3", "fly_death", "fall"]
-const SCENE_DIR := "res://scenes/bodies/models/"
-## Which file holds each model (a tag is not always the name of its files since 055s s6).
-const FILES: ModelFiles = preload("res://scenes/bodies/models/model_files.tres")
 ## The roles whose Animation carries the `hit` marker.
 const MELEE_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 ## Frames per second of a glTF animation, which carries none (Godot imports them at 30).
 const DEFAULT_FRAMERATE := 30
 const PLAYBACK := &"parameters/playback"
 
-## Model tag (eorc, jnwr...). Filled by the bake: the name of the scene it roots.
+## Model tag (eorc, jnwr...), the id that travels on the wire. Filled by the bake; the file is named after its creature
+## (trogg_model.tscn), and tools/bake/model_paths.tres says which file holds which tag.
 @export var model := ""
 ## Meters added to every side of the skinned mesh's bounding box (it is the rest pose's; arms swing outside it).
 @export_range(0.0, 4.0, 0.05, "or_greater") var aabb_margin := 0.5
@@ -72,30 +70,6 @@ const PLAYBACK := &"parameters/playback"
 @onready var _model: Node3D = %Model
 @onready var _tree: AnimationTree = %Tree
 @onready var _clips: AnimationPlayer = %Clips
-
-
-static func scene_path(model_tag: String) -> String:
-	return SCENE_DIR + FILES.stem_of(model_tag) + ".tscn"
-
-
-## The library of clips of `model_tag` (role -> Animation).
-static func clips_path(model_tag: String) -> String:
-	return SCENE_DIR + FILES.stem_of(model_tag) + "_clips.tres"
-
-
-## The folder with one Animation file per clip of `model_tag`.
-static func clips_dir(model_tag: String) -> String:
-	return SCENE_DIR + FILES.stem_of(model_tag) + "_clips/"
-
-
-## The model tag of a file of SCENE_DIR (`trogg_model.tscn` or `trogg_model_clips.tres` -> "eorc").
-static func tag_of_file(file: String) -> String:
-	return FILES.tag_of(file.get_basename().trim_suffix("_clips"))
-
-
-## True when `model_tag` has a baked scene (a skeletal model with a playable idle clip).
-static func exists(model_tag: String) -> bool:
-	return not model_tag.is_empty() and ResourceLoader.exists(scene_path(model_tag))
 
 
 func _ready() -> void:
@@ -222,9 +196,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if model.is_empty():
 		warnings.append("`model` está vacío: la escena se hace con tools/bake/new_creature.gd (Project > Tools > Sacrifice).")
-	elif scene_file_path.is_empty() == false and scene_file_path.get_file().get_basename() != model:
-		warnings.append("El archivo se llama «%s» pero `model` es «%s»: el juego busca la escena por `model`." % [
-			scene_file_path.get_file().get_basename(), model])
 	if hang_bone != null and ragdoll == null:
 		warnings.append("`hang_bone` está asignado pero falta `ragdoll`: el cuerpo no puede colgar sin el esqueleto físico.")
 	elif hang_bone != null and hang_bone.get_parent() != ragdoll:

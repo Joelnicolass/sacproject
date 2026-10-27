@@ -164,9 +164,9 @@ func _foe_in_sight(body: UnitBody) -> bool:
 func _measure_all_models() -> void:
 	if not _slides.is_empty():
 		return
-	for file in DirAccess.get_files_at(BodyModel.SCENE_DIR):
+	for file in DirAccess.get_files_at(ModelPaths.SCENE_DIR):
 		if file.ends_with(".tscn"):
-			gesture_slide_m(BodyModel.tag_of_file(file))
+			gesture_slide_m(ModelPaths.tag_of_file(file))
 
 
 ## Meters the `gesture` clip of `model`'s scene slides the body on the ground (ClipSlide). -1 when the model has no scene
@@ -175,9 +175,9 @@ func gesture_slide_m(model: String) -> float:
 	if _slides.has(model):
 		return float(_slides[model])
 	_slides[model] = -1.0
-	if not BodyModel.exists(model):
+	if not ModelPaths.exists(model):
 		return -1.0
-	var scene := load(BodyModel.scene_path(model)) as PackedScene
+	var scene := load(ModelPaths.scene_path(model)) as PackedScene
 	var root := scene.instantiate() as BodyModel if scene != null else null
 	if root == null:
 		return -1.0

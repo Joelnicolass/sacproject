@@ -268,7 +268,7 @@ func _check_custom_model(creature: CreatureType) -> void:
 	var glb_path := "res://assets/custom/models/%s.glb" % creature.model_id()
 	if creature.model_id().is_empty() or not ResourceLoader.exists(glb_path):
 		return
-	if not BodyModel.exists(creature.model_id()):
+	if not ModelPaths.exists(creature.model_id()):
 		_report("creatures/%s: model \"%s\" has no scenes/bodies/models/%s.tscn (tools/bake/new_creature.gd makes it)" % [_file(creature), creature.model_id(), creature.model_id()])
 		return
 	var scene := load(glb_path) as PackedScene

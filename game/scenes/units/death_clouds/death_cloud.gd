@@ -1,22 +1,24 @@
 class_name DeathCloud
 extends Node3D
 
-## F118 (RFC-030g): the cloud a creature leaves when it dies (sacengine kill(), state.d:8274-8278). sacengine adds one
-## SteamCloud / PoisonCloud / HealingShower effect that acts once, on its first update, and is gone (state.d:25216-25254,
-## 25674-25697); what lasts is on the bodies it touched (a Poisoned dose, a HealEffect). So does this node: burst() acts
+## The cloud a creature leaves when it dies. The original adds one
+## SteamCloud / PoisonCloud / HealingShower effect that acts once, on its first update, and is gone;
+## what lasts is on the bodies it touched (a Poisoned dose, a HealEffect). So does this node: burst() acts
 ## on the bodies around the dead one's center, plays its puff through FxBus (clients see it there) and frees itself.
 ## Server (or solo) only. The variants override _affect(); the numbers come from the SPEL of `ability`.
+## Ref: F118 (RFC-030g), sacengine kill() state.d:8274-8278, state.d:25216-25254, 25674-25697.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
-## Bodies a cloud may touch: creatures and wizards (sacengine movingObjects). SteamCloud also hits buildings itself.
+## Bodies a cloud may touch: creatures and wizards (movingObjects). SteamCloud also hits buildings itself.
 const GROUPS: Array[StringName] = [&"wizard", &"unit"]
 
 ## The numbers of the cloud (DeathCloudType.ability); set by DeathCloudSpawner before burst().
 var ability: AbilityType
-## The dead body's slot (sacengine side).
+## The dead body's slot.
 var from_slot := 0
-## The dead body: never touched by its own cloud (state.d:25239, dealDamageAt directTarget).
+## The dead body: never touched by its own cloud (dealDamageAt directTarget).
+## Ref: sacengine state.d:25239.
 var dead: Node3D
 
 

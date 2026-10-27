@@ -1,11 +1,12 @@
 class_name RayStrike
 extends ShotStrike
 
-## F124 (RFC-030 030m): instant rays, cast on given ticks. The Gnome (gnome_ray.tscn: one ray on tick 0, gnomeShoot
-## state.d:11724-11735) and the Warmonger's gun (warmonger_gun.tscn, 030m-b: 16 bursts of 2 rays from tick 2, one every
-## 4, WarmongerGun 11815-11819, 24121-24135, 11833-11850).
+## Instant rays, cast on given ticks. The Gnome (gnome_ray.tscn: one ray on tick 0) and the Warmonger's gun
+## (warmonger_gun.tscn, 030m-b: 16 bursts of 2 rays from tick 2, one every
+## 4).
+## Ref: F124 (RFC-030 030m), sacengine gnomeShoot state.d:11724-11735, WarmongerGun 11815-11819, 24121-24135, 11833-11850, collideRay.
 ##
-## A ray (`_cast`) is sacengine collideRay with `entry.id != attacker && isValidTarget`: it goes `max_distance` from the
+## A ray (`_cast`) is the original's collideRay with `entry.id != attacker && isValidTarget`: it goes `max_distance` from the
 ## shot origin and stops on the first live body that is not the shooter, of any side, or on the ground or a structure
 ## (`stop_mask`). The damage is ShotImpact.land on the body it stopped on; with `foes_only` a body of the shooter's side
 ## that is not the intended target stops the ray and takes nothing (Health is not asked). The hit FX (ShotLook.impact_fx)
@@ -31,11 +32,13 @@ extends ShotStrike
 ## The bolt (a BeamType of data/fx/beams) drawn from the origin of each ray. Empty: none.
 @export var beam: BeamType
 ## Meters of the beam along the ray: a gun flame at the muzzle (the Gnome's GnomeEffect, createGunFlameMeshes length
-## 1.7, sacobject.d:4268-4283). 0: the whole ray, to where it ends.
+## 1.7). 0: the whole ray, to where it ends.
+## Ref: sacengine sacobject.d:4268-4283.
 @export_range(0.0, 200.0, 0.1, "suffix:m") var beam_length := 0.0
 ## F166: a ray that meets nothing (no body, no ground, no structure) is drawn only this fraction of its length: the Locust's
-## zbba shows 0.5 * range when it finds no target (updateLocustShoot, state.d:23003-23005). Only the beam: where the ray
+## zbba shows 0.5 * range when it finds no target. Only the beam: where the ray
 ## ends for the log and the damage is not touched. 1 = the whole ray (the Gnome's).
+## Ref: sacengine updateLocustShoot state.d:23003-23005.
 @export_range(0.0, 1.0, 0.01) var miss_fraction := 1.0
 ## Word for the strike in the log of a cut (`<label> <tag> cortada: …`).
 @export var label := "rayo"

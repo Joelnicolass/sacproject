@@ -1,8 +1,8 @@
 class_name FireShield
 extends Node
 
-## F163 (RFC-030 030w-f): the Phoenix's Shield (rifl, its passiveOnDamage), sacengine runPhoenixPassive (state.d:13899-13919), called
-## every frame from updateCreatureStats (runPassive, 13921-13931). A body that can shield (canShield, 218-225: not dying, dead,
+## The Phoenix's Shield (rifl, its passiveOnDamage), called
+## every frame from updateCreatureStats. A body that can shield (canShield: not dying, dead,
 ## reviving or a ghost) and holds the mana the SPEL asks (rifl: 0) takes every moving body whose box meets its own box scaled ×1.5 from
 ## the center (the Phoenix itself apart). A body that is not an ally of the Phoenix's side burns: ignite(fireform.amount / 60) is
 ## dealFireDamage(0, amount / 60, …, peirceShield), i.e. a direct spell hit that skips the Life Shield / Rockform / petrified
@@ -11,6 +11,7 @@ extends Node
 ## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.on_damage is `passive`, so the other
 ## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (`fire_fx`
 ## at the burned body's `fire_socket` every `fire_every_s`); the shield ticks only on a carrier (the node sleeps on the rest).
+## Ref: F163 (RFC-030 030w-f), sacengine runPhoenixPassive state.d:13899-13919, updateCreatureStats runPassive 13921-13931, canShield 218-225.
 
 
 const GROUPS: Array[StringName] = [&"unit", &"wizard"]
@@ -155,8 +156,9 @@ func _carries() -> bool:
 	return type != null and type.has_passive(passive)
 
 
-## canShield (state.d:218-225): stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,
+## canShield: stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,
 ## reviving and taken by a Doctor do not.
+## Ref: sacengine canShield state.d:218-225.
 func _can_shield() -> bool:
 	if health != null and health.is_dead():
 		return false

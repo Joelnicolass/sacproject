@@ -5,7 +5,7 @@ extends Node
 ## The only owner of «does this creature leave a cloud when it dies?»: every DeathCloudType in the creature's `passives`
 ## instances its scene where the body died. A child of unit.tscn; take it out and nobody leaves a cloud. Server (or solo) only:
 ## Health.died fires there, the cloud acts there and its puff reaches every peer through FxBus.
-## Ref: F118 (RFC-030g), sacengine kill() walks passiveAbility and passiveAbility2 (state.d:8274-8278).
+## Ref: F118 (RFC-030g), sacengine kill() walks passiveAbility and passiveAbility2 (state.d:8274-8278), state.d:27454-27522.
 
 @export var body: UnitBody
 @export var health: Health
@@ -30,8 +30,8 @@ func _ready() -> void:
 func _on_died(_from_slot: int) -> void:
 	if body == null or body.type == null:
 		return
-	## The center is taken now, where the body died; the cloud acts after the hit that killed it is over (sacengine adds
-	## the effect and runs it in its effects pass, state.d:27454-27522).
+	## The center is taken now, where the body died; the cloud acts after the hit that killed it is over (the original adds
+	## the effect and runs it in its effects pass).
 	var center := _center()
 	for passive: CreaturePassive in body.type.passives:
 		var cloud_type := passive as DeathCloudType
@@ -53,7 +53,8 @@ func _burst(cloud_type: DeathCloudType, ability: AbilityType, center: Vector3) -
 	cloud.burst(center, cloud_type.fx)
 
 
-## sacengine boxCenter(hitbox): the center of the body's collision capsule.
+## The center of the body's collision capsule.
+## Ref: sacengine boxCenter(hitbox).
 func _center() -> Vector3:
 	var col := body.get_node_or_null("Collision") as Node3D
 	return col.global_position if col else body.global_position

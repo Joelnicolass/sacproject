@@ -1,14 +1,15 @@
 extends DeathCloud
 
-## Poison Cloud (cen@, Necryl). sacengine updatePoisonCloud (state.d:25235-25254): every creature (any side) whose hit box
-## is within effectRange of the center gets one poison dose (state.d:25241): poison(obj, ability) = amount / duration /
-## poisonNerfFactor per second for duration·60 frames, with the SPEL's `ires` / `freg` / `iacc` (state.d:11610-11614), as
+## Poison Cloud (cen@, Necryl). Every creature (any side) whose hit box
+## is within effectRange of the center gets one poison dose: poison(obj, ability) = amount / duration /
+## poisonNerfFactor per second for duration·60 frames, with the SPEL's `ires` / `freg` / `iacc`, as
 ## splash spell and not infectious. The dose goes through the body's Poisoning (F122, RFC-030k-a).
 ## Not here: `iacc` (no data carries it).
+## Ref: sacengine updatePoisonCloud state.d:25235-25254, 25241, 11610-11614.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 
-## sacengine poisonNerfFactor (state.d:11610).
+## The poison nerf factor (poisonNerfFactor).
 @export var nerf_factor := 1.3
 
 

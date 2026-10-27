@@ -1,14 +1,15 @@
 class_name PaceFactors
 extends Node
 
-## F129 (RFC-030 030r-a): the one owner of a body's `speed_factor`. Everything that speeds a creature or a wizard up or
+## The one owner of a body's `speed_factor`. Everything that speeds a creature or a wizard up or
 ## slows it down (Speedup ×1.75, Sticky bombs ×0.75ⁿ, Blight mites ×0.8ⁿ…) gives its factor here under the name of its
-## source; the body's speed_factor is the product of all of them (sacengine movementSpeed effectFactor, stats.d:122), derived
+## source; the body's speed_factor is the product of all of them, derived
 ## and written only when it changes. Nobody else writes speed_factor on a body that has this component (the Sac Doctor has
 ## none and keeps its own writer).
 ## The product walks the sources in name order, so it does not depend on the order they came in (idempotent: asking twice, or
 ## in another order, gives the same number). A factor of exactly 1 is the same as no factor.
 ## Server (or solo): speed_factor is simulated there; on a client the component does nothing.
+## Ref: F129 (RFC-030 030r-a), sacengine movementSpeed effectFactor stats.d:122.
 
 
 ## The body whose speed_factor it owns. Empty = the parent.

@@ -3,7 +3,7 @@ extends Node
 
 ## A body with no death animation falls over backwards like a plank: it leans a little the other way, tips onto its
 ## back and settles with a small bounce. Standing up is the same fall played softly the other way. Only the model
-## moves (the body, its collision and its soul stay where the simulation put them). Ref: sacengine has no such fall;
+## moves (the body, its collision and its soul stay where the simulation put them). The original has no such fall;
 ## this one is ours, for models without a death clip.
 
 ## The model that tips over (feet at its origin): the unit's `Tilt/Mesh`.

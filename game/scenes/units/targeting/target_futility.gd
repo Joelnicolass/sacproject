@@ -1,14 +1,15 @@
 class_name TargetFutility
 extends Node
 
-## The futile targets of a creature (RFC-053 053a, F370): a target it fights that does not lose at least `futile_min_loss` of
+## The futile targets of a creature: a target it fights that does not lose at least `futile_min_loss` of
 ## its maximum health within `futile_window_s` is banned for `futile_forget_s`, and TargetPicker passes over it. A Shrike that
 ## stuns a Farmer misses the next shot at the lying body and the Farmer regenerates in between: without this the creature
-## stays on it for good (the user's «mis criaturas no atacan»). Not in sacengine (a deviation of the port, RFC-053 §15).
+## stays on it for good (the user's «mis criaturas no atacan»). Not in the original (a deviation of the port).
 ## The window is a rolling one: it starts at the first swing or shot on the target (ATTACK or SHOOT), runs while the body
 ## keeps it and is read every `sample_s` (the health `futile_window_s` ago against now); a new target starts it again.
 ## The target of an explicit ATTACK order is never measured (the player's order ignores the ban). Bench log: `targets`.
 ## Server (or solo) only; counts MatchClock ticks. Removing this child turns the rule off.
+## Ref: RFC-053 053a (F370), RFC-053 §15.
 
 ## The body that fights (a UnitBody).
 @export var body: UnitBody

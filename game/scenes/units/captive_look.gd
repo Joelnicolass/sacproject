@@ -7,8 +7,9 @@ extends Node
 ## to the body's mode and never writes to the simulation: the only thing it writes is `captive_role`, which nothing in the sim reads.
 ## What to show for each change of mode is CaptiveRules.
 
-## The clips of a held creature, in order (sacengine state.d:8200-8223, 14329-14342): it rises, floats into the thrash and
+## The clips of a held creature, in order: it rises, floats into the thrash and
 ## thrashes until it is let go. A revived corpse only rises.
+## Ref: sacengine state.d:8200-8223, 14329-14342.
 const SEQUENCE: PackedStringArray = ["rise", "held", "thrash"]
 
 ## The unit that is held.

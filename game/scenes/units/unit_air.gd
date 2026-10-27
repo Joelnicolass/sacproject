@@ -97,8 +97,9 @@ func cap_pace() -> void:
 		body.velocity.z = flat.y
 
 
-## F116: the Flight child takes the walk to `point` by air (sacengine moveTowards, state.d:12335-12339). A flier goes
+## F116: the Flight child takes the walk to `point` by air. A flier goes
 ## straight: its waypoints are dropped.
+## Ref: sacengine moveTowards state.d:12335-12339.
 func flies_to(point: Vector3) -> bool:
 	if not body.simulates():
 		return false

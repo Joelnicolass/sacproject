@@ -1,15 +1,16 @@
 class_name WoundedAllyPolicy
 extends TargetPolicy
 
-## F136 (RFC-030h2): the Scarab (slba, Healing web). sacengine updateTarget (state.d:12949-12958): by itself it takes the
-## creature of its own side with the lowest relative health that is not full (lowestHealthCreatureInRange, 28828-28842:
+## The Scarab (slba, Healing web): by itself it takes the
+## creature of its own side with the lowest relative health that is not full (lowestHealthCreatureInRange:
 ## a moving object, not itself, valid), first within its ranged attack's range of the center and then within its sight;
-## it never picks a foe. Under an ATTACK order it keeps the foe it was told to attack, as any creature (attack, 12849-12855).
+## it never picks a foe. Under an ATTACK order it keeps the foe it was told to attack, as any creature (attack).
 ## A wounded ally stays a valid target until its bar is full, then the body drops it and stops shooting.
+## Ref: F136 (RFC-030h2), sacengine updateTarget state.d:12949-12958, lowestHealthCreatureInRange 28828-28842, attack 12849-12855.
 
 const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
-## Groups of the bodies it may heal: sacengine movingObjects (wizards and creatures).
+## Groups of the bodies it may heal: wizards and creatures (movingObjects).
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 
 
@@ -28,7 +29,7 @@ func pick(body: UnitBody, center: Vector3, within: float) -> Node3D:
 	return found
 
 
-## A live, targetable body of `body`'s side (not itself) whose health is not full (sacengine canHeal).
+## A live, targetable body of `body`'s side (not itself) whose health is not full (canHeal).
 func is_patient(body: UnitBody, node: Variant) -> bool:
 	if node == null or not is_instance_valid(node) or node == body or not node is Node3D:
 		return false

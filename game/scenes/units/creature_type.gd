@@ -17,7 +17,8 @@ extends Resource
 @export var regeneration_per_s: float = 0.0
 ## Regenerates in any mode that can heal, also walking, fighting and being hit (the Troll); the rest only at rest, once a hit is over.
 @export var regenerates_always := false
-## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration (shiny.d:241 `fillStats`).
+## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration.
+## Ref: shiny.d:241 fillStats.
 @export var drain: float = 0.0
 @export var run_speed_m_s: float = 0.0
 @export var fly_speed_m_s: float = 0.0
@@ -97,8 +98,9 @@ func is_flying() -> bool:
 	return run_speed_m_s <= 0.0 and fly_speed_m_s > 0.0
 
 
-## sacengine canFly && !mustFly (sacobject.d:81-83, 113-115): walks and flies (the hybrids). It flies when that arrives
+## Walks and flies (the hybrids: canFly && !mustFly). It flies when that arrives
 ## first (Flight). A creature that must fly (is_flying) is not a hybrid.
+## Ref: sacengine sacobject.d:81-83, 113-115.
 func is_hybrid_flier() -> bool:
 	return run_speed_m_s > 0.0 and fly_speed_m_s > 0.0 and clip_facts().has(&"fly")
 

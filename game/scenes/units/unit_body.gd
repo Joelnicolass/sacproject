@@ -188,7 +188,8 @@ func melee_profile() -> Dictionary:
 	return {"evasion": float(type.melee_evasion_milli()) if type else 0.0, "resistance": type.melee_resistance if type else 1.0, "reach": mount.facts.reach_m, "height": mount.facts.height_m}
 
 
-## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright). Ref: sacengine soulPosition.
+## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright).
+## Ref: sacengine soulPosition.
 func soul_anchor() -> Vector3:
 	var pivot := get_node_or_null("Tilt") as Node3D
 	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual

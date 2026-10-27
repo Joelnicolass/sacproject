@@ -1,31 +1,32 @@
 class_name MiteHop
 extends ShotInFlight
 
-## F156 (RFC-030 030s-b): the Bilemite (liba) hops. sacengine updateBlightMite, state.d:25271-25340 (the branch of a mite that has not stuck
+## The Bilemite (liba) hops (the branch of a mite that has not stuck
 ## yet): on every update position += v/60 and then v.z -= g/60 (g = ability.fallingAcceleration, 20; RangedShot does both
 ## and calls fly() after them), and when the land is above it (isOnGround and getGroundHeight > position.z):
 ##   - it is put on the ground and numJumps += 1;
 ##   - the 5th touch (numJumps >= 5) stops it (v = 0): it stays there and is gone 30 updates later (vanish: alpha -= 1/(fadeTime·60));
-##   - else it hops towards the closest creature (closestCreatureInRange, 25235-25260, state.d:28778: range ability.effectRange =
+##   - else it hops towards the closest creature (closestCreatureInRange: range ability.effectRange =
 ##     15, only bodies whose feet are at most 10 m over the land, any side, the shooter too): the intended target when it is
-##     within the range instead of that one (25311-25318): v = 4.5·direction + 0.5·uniformDirection, then
+##     within the range instead of that one: v = 4.5·direction + 0.5·uniformDirection, then
 ##     v.z += 0.5·g·|direction| / |v| and v.z = min(v.z, 10);
 ##   - with nobody there: v = 5·uniformDirection and v.z = 10.
 ## This node owns the shot's height (holds_height): RangedShot does not burst it on the ground, the mite ends on the 5th touch
 ## (spent()) or when RangedShot's box finds a body (ShotLook.hits_every_side: StickImpact sticks it to whoever it touches).
 ## The stream is MatchSeed.rng(["mites", shot name]): the same match gives the same hops (R11). uniformDirection is the cube
-## [-1, 1]^3 normalized (state.d:29106-29111), 3 draws, as LobAbility's.
+## [-1, 1]^3 normalized, 3 draws, as LobAbility's.
 ## The intended target comes in the packet (spawn_data "intended": the path of the body the ability was aimed at, "" = none).
 ## Divergences (declared): the land is the terrain's (a roof is not ground); a mite over a hole (no land) never touches and flies
-## until RangedShot's range ends; a stopped mite can still stick to a body that touches it in its last 30 ticks (sacengine skips
+## until RangedShot's range ends; a stopped mite can still stick to a body that touches it in its last 30 ticks (the original skips
 ## the collision once it has stopped).
 ## Server (or solo) only: RangedShot instances this node there only.
+## Ref: F156 (RFC-030 030s-b), sacengine updateBlightMite state.d:25271-25340, closestCreatureInRange 25235-25260 and state.d:28778, 25311-25318, uniformDirection state.d:29106-29111.
 
-## sacengine: the mite stops on the touch number `jumps` (5).
+## The mite stops on this touch number.
 @export var jumps := 5
 ## How long a stopped mite stays before it is gone (the fade).
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var rest_s := 0.5
-## sacengine closestCreatureInRange(…, 10): a body whose feet are higher over the land than this is not a target.
+## A body whose feet are higher over the land than this is not a target (closestCreatureInRange limit).
 @export var max_target_height := 10.0
 ## Range of the search when the shot has no SPEL (ability.effect_range_m is the rule).
 @export var fallback_range := 15.0
@@ -159,7 +160,7 @@ func _land(shot: RangedShot) -> Terrain:
 	return _shape
 
 
-## state.uniformDirection: a point of the cube [-1, 1]^3, normalized (3 draws). The draws are the simulation's.
+## A point of the cube [-1, 1]^3, normalized (3 draws). The draws are the simulation's.
 func _uniform_direction() -> Vector3:
 	return LobAbility.uniform_direction(_rng)
 

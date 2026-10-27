@@ -6,7 +6,8 @@ extends RefCounted
 ## Not: when it shoots (RangedWeapon) nor the flight (RangedShot).
 ## Ref: sacengine getShotDirectionWithGravity (state.d:11506, 11548-11800), shootOnTick (state.d:12631-12758).
 
-## sacspell.d:120 fallingAcceleration; 30 for every other tag.
+## fallingAcceleration; 30 for every other tag.
+## Ref: sacspell.d:120.
 const FALLING_ACCELERATION := {"dkba": 10.0}
 const DEFAULT_FALLING := 30.0
 ## Shots fired with getShotDirectionWithGravity: earthfling, flame minion, fallen, sylph, ranger, mutant, abomination, bombard,
@@ -22,7 +23,8 @@ static func is_live(body: Node) -> bool:
 	return health != null and not health.is_dead()
 
 
-## sacspell.d:194 manaCost = max(1, cost).
+## manaCost = max(1, cost).
+## Ref: sacspell.d:194.
 static func mana_cost(weapon: RangedWeapon) -> float:
 	return maxf(1.0, float(weapon.attack.mana_cost)) if weapon.attack else INF
 
@@ -37,7 +39,8 @@ static func loaded(weapon: RangedWeapon) -> bool:
 
 
 ## One shoot tick of the clip (the clip says how many shots it has): it drains its share of the mana (if it has that much), fires,
-## and the cooldown starts on the first shot (sacengine state.d:12774-12776).
+## and the cooldown starts on the first shot.
+## Ref: sacengine state.d:12774-12776.
 static func tick(weapon: RangedWeapon, tick_count: int) -> void:
 	var target := weapon.shooting_at
 	if target == null or not is_instance_valid(target) or not is_live(target):
@@ -91,8 +94,9 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 	if look.strike != null:
 		_strike(weapon, data)
 		return
-	## ShotLook.volley shots with this one direction (one accuracy roll, boulderdashShoot state.d:11806-11808); each packet says
+	## ShotLook.volley shots with this one direction (one accuracy roll); each packet says
 	## which one it is and how far the aim was (ShotSplit fans them out).
+	## Ref: sacengine boulderdashShoot state.d:11806-11808.
 	var half := (maxi(look.volley, 1) - 1) / 2
 	for index in range(-half, half + 1):
 		var shot := data.duplicate()  # a new Dictionary per shot: the spawner writes its name

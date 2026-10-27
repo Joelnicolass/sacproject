@@ -1,16 +1,17 @@
 class_name DevourGrowth
 extends Node
 
-## F131 (RFC-030 030t-a): what a creature that ate souls (Devour: Netherfiend crpd, Hellmouth nomd) has become. The one owner
-## of the souls eaten, the regeneration they added, the resistance they took and the bulk the body draws. sacengine devourSoul
-## (state.d:13138-13163), per soul eaten: health and maximum +500; the regeneration increment is 0.25·maximum the first time
+## What a creature that ate souls (Devour: Netherfiend crpd, Hellmouth nomd) has become. The one owner
+## of the souls eaten, the regeneration they added, the resistance they took and the bulk the body draws.
+## Per soul eaten: health and maximum +500; the regeneration increment is 0.25·maximum the first time
 ## and 0.75·increment + 125 after; regeneration += increment/60 a second; the five resistances ×0.9; numBulks +1. The bulk is
-## render only: 2 − 0.75ⁿ, reached by a smoothing of exp(ln 0.1/60) a tick (state.d:13943-13948).
+## render only: 2 − 0.75ⁿ, reached by a smoothing of exp(ln 0.1/60) a tick.
 ## Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeWeapon through resistance_factor_of), UnitBody asks
 ## extra_regeneration_of() when it regenerates, DevourAbility calls grow(). The cure (Rainbow) is HealEffect's.
 ## `shown` (the souls eaten) is replicated (the unit's MultiplayerSynchronizer, "DevourGrowth:shown"): every peer draws the bulk
-## from it. Declared: the bulk is a scale of the mesh, not sacengine's bone bulge (placeholder).
+## from it. Declared: the bulk is a scale of the mesh, not the original's bone bulge (placeholder).
 ## Server (or solo) only for grow().
+## Ref: F131 (RFC-030 030t-a), sacengine devourSoul state.d:13138-13163, bulk 13943-13948.
 
 
 ## The body that grows (its name goes in the log). Empty = the parent.
@@ -34,7 +35,7 @@ extends Node
 @export var bulk_step := 0.75
 ## Smoothing per tick: 1 − exp(ln(0.1)/60).
 @export var bulk_blend := 0.0376494
-## The swelling of Intestinal Vaporization adds up to this much to the bulk when `inflation` is 1 (sacengine maxBulk 2.5 − 1).
+## The swelling of Intestinal Vaporization adds up to this much to the bulk when `inflation` is 1 (maxBulk 2.5 − 1).
 @export var inflate_by := 1.5
 
 ## Replicated: souls eaten. The setter is the one place the bulk is asked.

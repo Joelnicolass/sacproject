@@ -1,0 +1,96 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/online/online_screen.gd" id="1_screen"]
+[ext_resource type="PackedScene" path="res://scenes/ui/online/online_host_view.tscn" id="2_host"]
+[ext_resource type="PackedScene" path="res://scenes/ui/online/online_join_view.tscn" id="3_join"]
+[ext_resource type="Script" path="res://scenes/net/online_network.gd" id="4_network"]
+[ext_resource type="Resource" path="res://data/net/online_config.tres" id="5_config"]
+
+[node name="OnlineScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+
+[node name="OnlineMenu" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Column" type="VBoxContainer" parent="OnlineMenu"]
+theme_type_variation = &"VBoxMenu"
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -110.0
+offset_right = 200.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="OnlineMenu/Column"]
+theme_type_variation = &"LabelTitle"
+layout_mode = 2
+text = "UI_ONLINE_SCREEN_TITLE"
+horizontal_alignment = 1
+
+[node name="CreateOnline" type="Button" parent="OnlineMenu/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "UI_ONLINE_SCREEN_CREATE"
+
+[node name="JoinOnline" type="Button" parent="OnlineMenu/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "UI_ONLINE_SCREEN_JOIN"
+
+[node name="OnlineBack" type="Button" parent="OnlineMenu/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ONLINE_SCREEN_BACK"
+
+[node name="OnlineHostView" parent="." instance=ExtResource("2_host")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="OnlineJoinView" parent="." instance=ExtResource("3_join")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="OnlineStatus" type="Label" parent="."]
+unique_name_in_owner = true
+editor_description = "Lo que dice SacrificeFlow (consultando, código de la sala, rechazos del emisor, conectando). Es la única línea de estado de la pantalla."
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -64.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="OnlineNetwork" type="Node" parent="."]
+unique_name_in_owner = true
+editor_description = "El emisor de las salas online (data/net/online_config.tres: issuer_url y game_id). Los flags --issuer-url y --issuer-game le ganan."
+script = ExtResource("4_network")
+config = ExtResource("5_config")

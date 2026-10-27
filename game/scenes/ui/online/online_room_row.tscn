@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="OnlineRoomRow" type="Button"]
+editor_description = "Una sala pública de la lista (nombre · jugadores/máximo). La vista de unirse le pone el texto y la conecta; el look se cambia acá."
+custom_minimum_size = Vector2(0, 40)
+text_overrun_behavior = 3

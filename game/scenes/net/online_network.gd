@@ -1,33 +1,26 @@
 class_name OnlineNetwork
 extends Node
 
-## How the online rooms are reached: the network of `config` (data/net/online_config.tres: the relay). A child of the
-## lobby screen; only `apply()` changes the process, so solo, LAN and «Servidor local» keep the ENet of the flags and
-## `restore()` gives it back when the player leaves the rooms. Flags win over the resource (`--transport=enet` with
-## `--lobby=host:port` reaches a local room server; `--relay-url` / `--relay-room` aim at another relay).
-## A relay needs no secret on a client. Ref: RFC-034 (online by relay).
+## Where this game asks for online rooms: the issuer of `config` (data/net/online_config.tres: `issuer_url`, `game_id`). A child
+## of the online screen. `apply()` points this process at that issuer (the flags `--issuer-url=` / `--issuer-game=` win, so a test
+## reaches a local issuer without a localhost URL in the repo); `restore()` gives LAN and «Servidor local» the transport of the
+## flags back when the player leaves the screen. Not: the room (MpOnline), the relay (the issuer names it), the rules of a match.
 
 @export var config: MpNetConfig
 
 
-## The lobby link and the match that follows it (MpKit.join) talk through the same transport.
 func apply() -> void:
 	if config == null:
+		push_warning("OnlineNetwork: falta config (data/net/online_config.tres)")
 		return
-	MpTransport.relay_from_flags()
-	if MpBoot.user_value("relay-url", "").is_empty() and not config.relay_url.is_empty():
-		MpTransport.relay_url = config.relay_url
-	if MpBoot.user_value("relay-room", "").is_empty() and not config.relay_room.is_empty():
-		MpTransport.relay_room = config.relay_room
-	var chosen := config.effective_transport()
-	MpLobby.client.transport = chosen
-	MpKit.transport = chosen
-	var tls := config.client_tls()
-	if tls:
-		MpLobby.client.tls = tls
-		MpKit.tls_client = tls
+	if not config.issuer_url.is_empty():
+		MpIssuer.url = config.issuer_url
+	if not config.game_id.is_empty():
+		MpIssuer.game = config.game_id
+	MpIssuer.from_flags()
 
 
-## Back to the menu: LAN and «Servidor local» use the transport of the flags again.
+## WORKAROUND: MpKit 0.18.0 leaves MpKit.transport on the relay after an online room (asked to the kit session: the one
+## that changed it gives it back). Until then the screen does it on its way out.
 func restore() -> void:
 	MpKit.transport = MpTransport.from_flags()

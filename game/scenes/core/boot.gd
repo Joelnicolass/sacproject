@@ -23,8 +23,8 @@ func _ready() -> void:
 	%VsAi.pressed.connect(_on_vs_ai)
 	_fill_ai_levels()
 	%Join.pressed.connect(_on_join)
-	## RFC-034 034f: the player goes online through the rooms (the server is in data/net/lobby_endpoint.tres). The field
-	## for an IP and «Unirse» (direct to a dedicated or a LAN host) stay only in debug builds.
+	## «Salas online»: rooms the players host through the issuer (scenes/ui/online/; the issuer is in data/net/online_config.tres).
+	## The field for an IP and «Unirse» (direct to a dedicated or a LAN host) stay only in debug builds.
 	%Online.pressed.connect(_on_online)
 	## RFC-034 034m: «Servidor local» is a door of its own (create on this PC / join an address), visible in every build.
 	%LocalServer.pressed.connect(_on_local_server)
@@ -81,7 +81,7 @@ func _fill_ai_levels() -> void:
 			picker.select(picker.item_count - 1)
 
 func _on_online() -> void:
-	get_tree().change_scene_to_file(SacrificeFlow.LOBBY_SCENE)
+	get_tree().change_scene_to_file(SacrificeFlow.ONLINE_SCENE)
 
 func _on_local_server() -> void:
 	get_tree().change_scene_to_file(SacrificeFlow.LOCAL_SERVER_SCENE)

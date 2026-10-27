@@ -2724,7 +2724,7 @@ Opción **aparte** de «Salas online»: una partida 1v1 en la PC del jugador, co
 
 ### F198 — Catálogo del juego en `.tres` (RFC-036, corte 036c) — cerrado 2026-10-18
 
-- **Qué cambió:** `tools/bake/bake_catalog.gd` hornea los JSON en `data/catalog/`, un `.tres` por tipo: 71 criaturas, 53 hechizos, 15 magos, 63 habilidades, 196 edificios y 201 tamaños. `game_catalog.tres` los reúne.
+- **Qué cambió:** el horneado del catalogo (borrado en 055z) hornea los JSON en `data/catalog/`, un `.tres` por tipo: 71 criaturas, 53 hechizos, 15 magos, 63 habilidades, 196 edificios y 201 tamaños. `game_catalog.tres` los reúne.
 - **En partida:** `GameData` lee el catálogo, y `MapBuilding` y `BodyCatalog` leen `BuildingType` y `BodySize`. Ningún JSON del catálogo se lee desde `scenes/`. Daño, maná y demás valores se editan en el inspector.
 - **Verificación:**
   - `debug/suite/catalog_cases.gd`: CATALOG PASS, todos los valores iguales al JSON. El `.tres` de texto ordena las claves de los diccionarios y el chequeo compara el conjunto de claves.
@@ -3134,7 +3134,7 @@ Referencias de sacengine: `renderer.d:4459-4760` y `minimap.d`.
 - **Una sola fuente de verdad:** `GameCatalog` recorre `data/catalog/{creatures,spells,wizards,abilities,buildings,body_sizes}/*.tres` y los ordena por tag. Se borró `game_catalog.tres` (346 KB, tenía los 599 tipos embebidos y por eso editar un archivo suelto no tenía efecto).
 - **Agregar contenido:** basta con soltar un `.tres` en la carpeta; no hay que registrarlo.
 - **Libros:** están en `data/catalog/books.tres` (`GodBooks`).
-- **`bake_catalog.gd`:** escribe solo los archivos sueltos y, sin `--force`, no pisa las ediciones.
+- **el horneado del catalogo (borrado en 055z):** escribe solo los archivos sueltos y, sin `--force`, no pisa las ediciones.
 - **Prueba de aceptación** (`debug/suite/catalog_edit_cases.tscn`): la vida de EHTH pasa de 2080 a 14425 en su `.tres`, el juego lee el valor nuevo y después se restaura.
 - **Validador** (`debug/suite/catalog_cases.gd`):
   - revisa referencias, tags duplicados, rangos, nombres de archivo y `BodySize`;

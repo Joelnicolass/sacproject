@@ -55,8 +55,6 @@ const SACRIFICE_PLACES_CASES := preload("res://debug/suite/sacrifice_places_case
 const REACH_PLACES_CASES := preload("res://debug/suite/reach_places_cases.gd")  # 055r r2
 const RITUAL_PARTS_CASES := preload("res://debug/suite/ritual_parts_cases.gd")  # 055g g3
 const BOOK_CASES := preload("res://debug/suite/book_cases.gd")  # 055e e4
-const SPELL_FIELD_CASES := preload("res://debug/suite/spell_field_cases.gd")  # 055e e1
-const ABILITY_FIELD_CASES := preload("res://debug/suite/ability_field_cases.gd")  # 055e e6
 const SPELL_LINK_CASES := preload("res://debug/suite/spell_link_cases.gd")  # 055e e3
 const FX_WIRE_CASES := preload("res://debug/suite/fx_wire_cases.gd")  # 055x x1
 const ATMOSPHERE_CASES := preload("res://debug/suite/atmosphere_cases.gd")  # 058
@@ -143,8 +141,6 @@ func _run_suite() -> void:
 	_results.merge(REACH_PLACES_CASES.new().run(self))  # 055r r2
 	_results.merge(await RITUAL_PARTS_CASES.new().run(self))  # 055g g3
 	_results.merge(await BOOK_CASES.new().run(self))  # 055e e4
-	_results.merge(SPELL_FIELD_CASES.new().run(self))  # 055e e1
-	_results.merge(ABILITY_FIELD_CASES.new().run(self))  # 055e e6
 	_results.merge(preload("res://debug/suite/ai_names_cases.gd").new().run(self))  # 055f f1
 	_results.merge(await preload("res://debug/suite/ai_sight_cases.gd").new().run(self))  # 055f f2
 	_results.merge(preload("res://debug/suite/ai_tactics_cases.gd").new().run(self))  # 055f f4

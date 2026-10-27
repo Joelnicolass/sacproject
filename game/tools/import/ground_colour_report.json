@@ -919,5 +919,64 @@
   "stratos/peasantville",
   "stratos/tutorial_valley",
   "stratos/winter_wonder"
- ]
+ ],
+ "fix_062_3": {
+  "doc": "2026-10-26, after the 062-3 playtest (loose pale squares on Charnel, light and dark diamonds on Pyro's plateau). Cause: a role made of groups that look different (Charnel open = MG03 pale spawn pockets V0.61 + MG04 brown V0.40; Pyro earth = MG01 V0.69 + MG02 V0.84; Stratos earth = MG03 + MG04) mixed their tiles in one 4x4 sheet, and the shader picks one cell at random per 10 m cell, so the odd tile showed as a loose square (Charnel: fit_cells gave MG03's tile 30 one cell of 16). In the original those groups lie in their own height bands and never mix cell by cell. Fix: bake_role_sheets.one_look keeps, per role, the most painted group plus the groups that pass plan 062's colour criterion against it (measure_ground.same_look); the table keeps every group's role on the map.",
+  "sheets_changed": {
+   "charnel/open": "groups [0,3,4,5] -> [4]",
+   "pyro/earth": "groups [1,2] -> [1]",
+   "stratos/earth": "groups [3,4] -> [3]"
+  },
+  "against_original": {
+   "charnel/peaks": {
+    "roles": {
+     "sat": 0.452,
+     "val": 0.556,
+     "hue": 25.3
+    },
+    "original": {
+     "sat": 0.431,
+     "val": 0.581,
+     "hue": 25.1
+    },
+    "d_sat": 0.021,
+    "d_val": 0.025,
+    "d_hue": 0.2,
+    "result": "PASS"
+   },
+   "pyro/roads": {
+    "roles": {
+     "sat": 0.503,
+     "val": 0.644,
+     "hue": 18.8
+    },
+    "original": {
+     "sat": 0.491,
+     "val": 0.667,
+     "hue": 18.9
+    },
+    "d_sat": 0.012,
+    "d_val": 0.023,
+    "d_hue": 0.1,
+    "result": "PASS"
+   },
+   "stratos/winter_wonder": {
+    "roles": {
+     "sat": 0.078,
+     "val": 0.949,
+     "hue": 190.9
+    },
+    "original": {
+     "sat": 0.078,
+     "val": 0.949,
+     "hue": 191.2
+    },
+    "d_sat": 0.0,
+    "d_val": 0.0,
+    "d_hue": 0.3,
+    "result": "PASS"
+   }
+  },
+  "brightness": "The in-match change against the pre-062-3 ground (luminance of the fixed boxes: Peaks overview -38 %, Roads overview -28 %, Pyro on High Noon plateau -46 %, Winter Wonder ground +46 %) is not the sheets: their colour before light matches the original (above). Two causes, both toward the original: the classic atlas showed other groups (double id translation: Charnel on Peaks classic V0.89 vs original 0.58, Winter Wonder grey), and the classic shader never applied the map's baked light (GroundSet.lightmap_tint 0), which the original does (sacengine dagon terrain2.d:205-206: 0.5*diffuse*(1+detail)*LMAP). NO VERIFICADO: the lit colour against the running original (it cannot run here) and the LMAP channel order (import_map.py reads bytes 0..2 as RGB, as sacengine maps.d:82 does; Roads then gets a blue light (144,180,252), BGR would give a warm one)."
+ }
 }

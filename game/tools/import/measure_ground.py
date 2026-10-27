@@ -57,6 +57,17 @@ ROLES = ("open", "earth", "rock", "path")
 ROLE_LIMITS = (("sat", 0.03), ("val", 0.03), ("hue", 4.0))
 
 
+def same_look(a: dict, b: dict) -> bool:
+    """True when two colours (hsv_of) pass the criterion of plan 062 against each other, without printing."""
+    for key, limit in ROLE_LIMITS:
+        delta = abs(a[key] - b[key])
+        if key == "hue":
+            delta = min(delta, 360.0 - delta)
+        if delta > limit:
+            return False
+    return True
+
+
 def roles_stats(folder: str, map_path: str, tints: str) -> dict:
     weights = np.asarray(Image.open(map_path).convert("RGBA"), dtype=np.float64).reshape(-1, 4).sum(0)
     grey = [float(t) for t in tints.split(",")] if tints else [1.0] * 4

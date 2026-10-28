@@ -60,6 +60,19 @@ extends Resource
 		light_gain = value
 		emit_changed()
 
+@export_group("Light response")
+## Share of the ambient light the ground keeps (below 1 = darker in shade and at night; the sun and
+## the local lights are not touched).
+@export_range(0.1, 1.0, 0.01) var ambient_share := 0.7:
+	set(value):
+		ambient_share = value
+		emit_changed()
+## How strongly the local lights (spells, creatures) light the ground: above 1 they stand out.
+@export_range(0.0, 4.0, 0.05) var local_light_gain := 1.6:
+	set(value):
+		local_light_gain = value
+		emit_changed()
+
 @export_group("Cloud shadows")
 ## How dark the shadow of a cloud makes the ground. 0 = no cloud shadows.
 @export_range(0.0, 1.0, 0.01) var cloud_shadow_strength := 0.85:

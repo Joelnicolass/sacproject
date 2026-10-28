@@ -82,6 +82,8 @@ static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) 
 	mat.set_shader_parameter("macro_strength", ground.macro_strength)
 	mat.set_shader_parameter("light_base", ground.light_base)
 	mat.set_shader_parameter("light_gain", ground.light_gain)
+	mat.set_shader_parameter("ambient_share", ground.ambient_share)
+	mat.set_shader_parameter("local_light_gain", ground.local_light_gain)
 	var clouds := preset == null or preset.ground_cloud_shadows
 	mat.set_shader_parameter(
 		"cloud_shadow_strength", ground.cloud_shadow_strength if clouds else 0.0

@@ -49,6 +49,7 @@ detail = ExtResource("30_path_detail")
 
 [sub_resource type="Resource" id="GodGround_stratos"]
 script = ExtResource("20_god_ground")
+ambient_share = 0.55
 open = SubResource("Role_open")
 earth = SubResource("Role_earth")
 rock = SubResource("Role_rock")

@@ -22,6 +22,9 @@ const GROUP := &"fx_light_pool"
 @export_range(0.0, 1.0, 0.05) var specular: float = 0.35
 ## `light_volumetric_fog_energy`: 0 keeps the lights out of the volumetric fog pass (cost).
 @export_range(0.0, 4.0, 0.05) var fog_energy: float = 0.0
+## Every spell light's energy and reach times these (the look of the whole game: everything glows).
+@export_range(0.1, 6.0, 0.05) var energy_scale: float = 1.0
+@export_range(0.5, 4.0, 0.05) var range_scale: float = 1.0
 ## Closer than this to the camera counts as this distance in the priority (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_priority_distance_m: float = 4.0
 ## Most lights fading out at once after losing their place. 0 = they are cut, as before.
@@ -135,7 +138,9 @@ func _process(delta: float) -> void:
 		if slot.t >= slot.spec.total_s(min_decay_s):
 			_end(slot)
 			continue
-		slot.light.light_energy = slot.spec.energy * slot.spec.envelope(slot.t, min_decay_s)
+		slot.light.light_energy = (
+			slot.spec.energy * energy_scale * slot.spec.envelope(slot.t, min_decay_s)
+		)
 	for i in range(_fading.size() - 1, -1, -1):
 		var fade: Dictionary = _fading[i]
 		fade["t"] += delta
@@ -192,9 +197,9 @@ func _place(slot: _Slot) -> void:
 	var light := slot.light
 	light.global_position = slot.at + Vector3.UP * slot.spec.height_m
 	light.light_color = slot.spec.color
-	light.omni_range = slot.spec.range_m
+	light.omni_range = slot.spec.range_m * range_scale
 	light.omni_attenuation = slot.spec.attenuation
-	light.light_energy = slot.spec.energy * slot.spec.envelope(0.0, min_decay_s)
+	light.light_energy = slot.spec.energy * energy_scale * slot.spec.envelope(0.0, min_decay_s)
 	light.visible = true
 
 

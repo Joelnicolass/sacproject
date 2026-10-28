@@ -18,6 +18,8 @@ extends LookLayer
 
 ## Group of the fields: FloraLayer calls `layers_changed` on it.
 const GROUP := &"flora_field"
+## Group of the map's forest trees (forest_tree.tscn): `dress_trees` gives them the land's meshes.
+const TREE_GROUP := &"forest_tree"
 
 ## The rig this layer belongs to (look_rig.tscn sets it): the terrain, the preset and the switch.
 @export var rig: LookRig
@@ -60,6 +62,9 @@ var _density_dirty := true
 ## The match's land plants (the biome's GodFlora); null = the layers' own species.
 var _land: GodFlora
 var _density_version := 0
+## The scene's own mesh of each dressed tree part.
+var _tree_meshes := {}
+var _forest: ForestDraw
 
 
 func _ready() -> void:
@@ -88,7 +93,50 @@ func apply_look(profile: LookProfile, look_rig: LookRig) -> void:
 	if land != _land:
 		_land = land
 		_density_dirty = true
+	dress_trees()
 	_refresh()
+
+
+## The map's forest trees (ForestScatter, group `forest_tree`) take the meshes of the land's trees
+## (GodFlora.trees), each the same one on every peer (by its name). A land without trees, or no
+## land, leaves each tree its scene's mesh. Only the mesh: the trunk is the same on every land. In
+## play a ForestDraw draws them in batches; in the editor each tree shows its own.
+func dress_trees() -> void:
+	if not is_inside_tree():
+		return
+	var trees := get_tree().get_nodes_in_group(TREE_GROUP)
+	if not Engine.is_editor_hint():
+		if _forest == null:
+			_forest = ForestDraw.new()
+			_forest.top_level = true
+			add_child(_forest, false, INTERNAL_MODE_BACK)
+		_forest.build(trees, _tree_mesh)
+		return
+	for node in trees:
+		var part := node.get_node_or_null(^"Mesh") as MeshInstance3D
+		if part != null:
+			part.mesh = _tree_mesh(node)
+
+
+func _tree_mesh(tree: Node) -> Mesh:
+	var part := tree.get_node_or_null(^"Mesh") as MeshInstance3D
+	if part == null:
+		return null
+	if not _tree_meshes.has(part):
+		_tree_meshes[part] = part.mesh
+	var land: Array = _land.trees if _land else []
+	var picked: VegetationSpecies = (
+		land[posmod(hash(String(tree.name)), land.size())] if not land.is_empty() else null
+	)
+	return picked.mesh if picked and picked.mesh else _tree_meshes[part]
+
+
+# The editor saves each tree with its scene's mesh, never the land's.
+func _undress_trees() -> void:
+	for part: Variant in _tree_meshes:
+		if is_instance_valid(part):
+			(part as MeshInstance3D).mesh = _tree_meshes[part]
+	_tree_meshes.clear()
 
 
 func apply_quality(_preset: LookQuality) -> void:
@@ -309,6 +357,15 @@ func _scope() -> Node:
 
 func planters() -> Array[MeshPlanter]:
 	return _planters
+
+
+func _notification(what: int) -> void:
+	if not Engine.is_editor_hint():
+		return
+	if what == NOTIFICATION_EDITOR_PRE_SAVE:
+		_undress_trees()
+	elif what == NOTIFICATION_EDITOR_POST_SAVE:
+		dress_trees()
 
 
 func _exit_tree() -> void:

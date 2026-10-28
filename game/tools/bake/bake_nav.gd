@@ -29,6 +29,8 @@ extends Node
 const SETTINGS_PATH := "res://scenes/map/nav_bake.tres"
 ## The manafounts under MapProps (optional: a map may have none).
 const FOUNTS_PATH := "MapProps/Founts"
+## The forest trees (optional): projected obstructions, not parsed colliders (NavObstructions).
+const FOREST_PATH := "MapProps/Forest"
 
 var _map: MapDefinition
 var _nav_path := ""
@@ -146,6 +148,9 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	var founts := map.get_node_or_null(FOUNTS_PATH)
 	if founts != null:
 		parts.append(founts)
+	var forest := map.get_node_or_null(FOREST_PATH)
+	if forest != null:
+		parts.append(forest)
 	for part in parts:
 		_detach(part, world)
 		part.get_parent().remove_child(part)
@@ -160,6 +165,7 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	settings.apply_to(navmesh)
 	var geometry := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(navmesh, geometry, bake_root)
+	var obstructions := NavObstructions.add_to(geometry, bake_root)
 	if not geometry.has_data():
 		_fail("no source geometry: no static collider in the group %s" % NavFingerprint.GROUP)
 		return null
@@ -178,6 +184,7 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 		_fail("the bake produced no polygons")
 		return null
 	navmesh.set_meta(NavFingerprint.META_SOURCE, source_hash)
+	navmesh.set_meta(NavObstructions.META_COUNT, obstructions)
 	return navmesh
 
 

@@ -75,6 +75,13 @@ script = ExtResource("sky_hour_picker")
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="HostForest" type="CheckBox" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "UI_FOREST_TIP"
+button_pressed = true
+text = "UI_FOREST"
+
 [node name="HostSeats" type="VBoxContainer" parent="Column/HostForm"]
 theme_type_variation = &"VBoxList"
 unique_name_in_owner = true

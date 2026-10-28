@@ -34,6 +34,8 @@ var biome: GodType
 var sky_hour := -1.0
 ## The weather of the match (MatchRules `weather`); null = the land's plan.
 var weather: WeatherState
+## 1 on, 0 off, -1 = the rules' forest (the map's trees).
+var forest := -1
 
 
 func copy() -> MatchSetup:
@@ -48,6 +50,7 @@ func copy() -> MatchSetup:
 	other.biome = biome
 	other.sky_hour = sky_hour
 	other.weather = weather
+	other.forest = forest
 	return other
 
 
@@ -61,6 +64,7 @@ func is_empty() -> bool:
 		and biome == null
 		and sky_hour < 0.0
 		and weather == null
+		and forest < 0
 	)
 
 
@@ -90,6 +94,8 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.sky_hour = over.sky_hour
 	if over.weather != null:
 		merged.weather = over.weather
+	if over.forest >= 0:
+		merged.forest = over.forest
 	return merged
 
 
@@ -116,4 +122,6 @@ func apply_to(rules: Variant) -> Variant:
 		copy.sky_hour = sky_hour
 	if weather != null:
 		copy.weather = weather
+	if forest >= 0:
+		copy.forest = forest == 1
 	return copy

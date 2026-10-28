@@ -27,6 +27,10 @@
 [ext_resource type="Resource" path="res://scenes/look/life/gnats.tres" id="58_gnats"]
 [ext_resource type="Script" path="res://scenes/look/vegetation/god_flora.gd" id="fl_script"]
 [ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="fl_species"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jcc1.res" id="flm_jcc1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jcc2.res" id="flm_jcc2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jcc3.res" id="flm_jcc3"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jcc4.res" id="flm_jcc4"]
 [ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_1.tres" id="fl_james_bush_1"]
 [ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_2.tres" id="fl_james_bush_2"]
 [ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_3.tres" id="fl_james_bush_3"]
@@ -70,9 +74,33 @@ water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
 woods = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
 rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
 
+[sub_resource type="Resource" id="Tree_jcc1"]
+script = ExtResource("fl_species")
+tag = "tree_jcc1"
+mesh = ExtResource("flm_jcc1")
+cast_shadow = true
+
+[sub_resource type="Resource" id="Tree_jcc2"]
+script = ExtResource("fl_species")
+tag = "tree_jcc2"
+mesh = ExtResource("flm_jcc2")
+cast_shadow = true
+
+[sub_resource type="Resource" id="Tree_jcc3"]
+script = ExtResource("fl_species")
+tag = "tree_jcc3"
+mesh = ExtResource("flm_jcc3")
+cast_shadow = true
+
+[sub_resource type="Resource" id="Tree_jcc4"]
+script = ExtResource("fl_species")
+tag = "tree_jcc4"
+mesh = ExtResource("flm_jcc4")
+cast_shadow = true
+
 [sub_resource type="Resource" id="Flora_james"]
 script = ExtResource("fl_script")
-trees = Array[Resource]([])
+trees = Array[Resource]([SubResource("Tree_jcc1"), SubResource("Tree_jcc2"), SubResource("Tree_jcc3"), SubResource("Tree_jcc4")])
 shrubs = Array[Resource]([ExtResource("fl_james_bush_1"), ExtResource("fl_james_bush_2"), ExtResource("fl_james_bush_3"), ExtResource("fl_james_bush_4"), ExtResource("fl_james_bush_5")])
 cover = Array[Resource]([])
 

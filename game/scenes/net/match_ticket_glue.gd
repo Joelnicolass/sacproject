@@ -158,6 +158,8 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 		setup.friendly_fire = 1 if bool(options["friendly_fire"]) else 0
 	if options.has("drop_soul"):
 		setup.drop_soul = 1 if bool(options["drop_soul"]) else 0
+	if options.has("forest"):
+		setup.forest = 1 if bool(options["forest"]) else 0
 	setup.starting_souls = int(options.get("starting_souls", -1))
 	setup.match_seed = int(ticket.get("seed", 0))
 	setup.map = MatchWire.decode_map(str(ticket.get("world", "")))

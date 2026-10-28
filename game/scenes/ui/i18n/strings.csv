@@ -336,3 +336,5 @@ UI_ONLINE_RATE_LIMITED,Demasiados intentos: esperá un minuto,
 UI_ONLINE_BANNED,Este jugador no puede jugar online,
 UI_ONLINE_NETWORK,No se puede llegar al servidor online,
 UI_ONLINE_NO_ISSUER,Este juego no tiene servidor online configurado,
+UI_FOREST,Bosque,Forest
+UI_FOREST_TIP,"Los árboles del mapa. Sin ellos la partida se juega en campo abierto (se elige antes de empezar: cambian la colisión y la navegación).","The map's trees. Without them the match is played in the open (chosen before it starts: they change collision and navigation)."

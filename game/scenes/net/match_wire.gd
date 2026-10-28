@@ -157,6 +157,8 @@ static func options_of(setup: MatchSetup) -> Dictionary:
 		out["sky_hour"] = setup.sky_hour
 	if setup.weather != null:
 		out["weather"] = encode_weather(setup.weather)
+	if setup.forest >= 0:
+		out["forest"] = setup.forest == 1
 	return out
 
 

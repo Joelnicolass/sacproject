@@ -228,6 +228,7 @@ func _build_navmesh() -> bool:
 	)
 	rebake = NavRebake.new(settings)
 	rebake.set_stored(nav_region.navigation_mesh)
+	_check_obstructions(nav_region.navigation_mesh)
 	mesh.build(nav_region, entries, box_clearance_m)
 	if DebugLog.on(&"nav"):
 		print(
@@ -239,6 +240,18 @@ func _build_navmesh() -> bool:
 	_request_rebake()
 	built.emit(mesh.build_ms)
 	return true
+
+
+## The stored bake held a different number of obstructions than stand now (a match that plays
+## without the map's forest): the whole map is baked again (on the worker; the stored navmesh
+## serves meanwhile).
+func _check_obstructions(stored: NavigationMesh) -> void:
+	var baked := int(stored.get_meta(NavObstructions.META_COUNT, -1))
+	var root := bake_root if bake_root != null else get_parent()
+	if baked < 0 or terrain == null or root == null or not root.is_inside_tree():
+		return
+	if NavObstructions.count_in(root) != baked:
+		changes.add_area(terrain.bounds())
 
 
 ## Starts a bake of the zones that changed (see `changes`), or marks it dirty when one runs. Nothing

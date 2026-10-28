@@ -3,8 +3,9 @@ extends Node
 
 ## The one owner of the network channel "biome". The server sends each client, once that client's
 ## world is ready (a seat that comes back too), the land of the match (the god MatchBiome drew) and
-## the sky's clock and seed (MatchSky.message()); a client turns the text back into a GodType,
-## adopts the sky and hands the god to MatchBiome (`adopt`). It does not draw the god nor apply its
+## the sky's clock and seed (MatchSky.message()) and whether the map keeps its forest; a client
+## turns the text back into a GodType, adopts the sky, takes the forest away when the match has
+## none and hands the god to MatchBiome (`adopt`). It does not draw the god nor apply its
 ## look. Offline it only tells MatchBiome that this process has a screen.
 
 const CHANNEL := &"biome"
@@ -45,6 +46,8 @@ func send_to(peer_id: int) -> void:
 	if biome == null or biome.god == null:
 		return
 	var payload := {"god": MatchWire.encode_god(biome.god)}
+	var rules: MatchRules = biome.world.rules if biome.world else null
+	payload["forest"] = rules == null or rules.forest
 	payload.merge(sky.message())
 	MpKit.push_custom_to(peer_id, CHANNEL, payload)
 
@@ -61,4 +64,6 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 		float(data.get("sky_hour", -1.0)),
 		MatchWire.decode_weather(str(data.get("weather", "")))
 	)
+	if not bool(data.get("forest", true)):
+		get_tree().call_group(ForestScatter.GROUP, "take_away")
 	biome.adopt(god)

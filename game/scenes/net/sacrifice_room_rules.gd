@@ -21,6 +21,7 @@ const OPTION_KEYS: PackedStringArray = [
 	"starting_souls",
 	"biome",
 	"sky_hour",
+	"forest",
 	"weather"
 ]
 ## Version of the ticket this builds (2 = `mode` and `ai_seats`). The dedicated reads a ticket
@@ -115,7 +116,7 @@ func clean_options(options: Dictionary) -> Dictionary:
 	var level: Variant = options.get("level")
 	if level is int and level >= LEVEL_MIN and level <= LEVEL_MAX:
 		out["level"] = level
-	for key in ["friendly_fire", "drop_soul"]:
+	for key in ["friendly_fire", "drop_soul", "forest"]:
 		var flag: Variant = options.get(key)
 		if flag is bool:
 			out[key] = flag

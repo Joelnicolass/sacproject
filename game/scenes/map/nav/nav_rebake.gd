@@ -107,6 +107,13 @@ func _begin(root: Node, areas: Array[Rect2], everything: bool) -> bool:
 	var geometry := NavigationMeshSourceGeometryData3D.new()
 	var started := Time.get_ticks_usec()
 	NavigationServer3D.parse_source_geometry_data(parse_mesh, geometry, root)
+	# The zones the areas touch, with their borders: the trees past them change no zone baked now.
+	var reach := settings.zone_m + 2.0 * settings.zone_border_m
+	var within: Array[Rect2] = []
+	if not everything:
+		for area in areas:
+			within.append(area.grow(reach))
+	NavObstructions.add_to(geometry, root, within)
 	parse_ms = float(Time.get_ticks_usec() - started) / 1000.0
 	if not geometry.has_data():
 		return false

@@ -5,7 +5,8 @@ extends Resource
 ## map says where trees, shrubs and ground cover grow, the god says which plants they are. The
 ## layer's `land_index` picks one of the role's list (wrapping), so a map with five shrub layers
 ## shows five kinds of the god's shrubs when it has them. A role the god has no plant for falls back
-## to the next list (trees → shrubs → cover → shrubs). Presentation only.
+## to the next list (trees → shrubs → cover → shrubs). `trees` also dress the map's forest props
+## (ForestScatter trees, FloraField.dress_trees). Presentation only.
 
 enum Role { NONE, TREE, SHRUB, COVER }
 

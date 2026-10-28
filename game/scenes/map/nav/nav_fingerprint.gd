@@ -7,7 +7,7 @@ extends RefCounted
 ## source is.
 
 ## Nodes of the map that feed the bake (their static colliders and children): the terrain, the
-## buildings, the manafounts.
+## buildings, the manafounts. The `NavObstructions.GROUP` nodes (the forest trees) are hashed too.
 const GROUP := &"nav_source"
 ## Metadata key of the source hash inside the navmesh resource.
 const META_SOURCE := &"source_hash"
@@ -28,7 +28,7 @@ static func source_hash(root: Node, settings: NavBakeSettings) -> String:
 
 
 static func _collect(node: Node, path: String, lines: PackedStringArray) -> void:
-	if node.is_in_group(GROUP):
+	if node.is_in_group(GROUP) or node.is_in_group(NavObstructions.GROUP):
 		lines.append(_describe(node, path))
 	for child in node.get_children():
 		_collect(child, "%s/%s" % [path, child.name], lines)

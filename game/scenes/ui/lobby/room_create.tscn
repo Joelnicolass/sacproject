@@ -76,6 +76,13 @@ script = ExtResource("sky_hour_picker")
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="RoomForest" type="CheckBox" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "UI_FOREST_TIP"
+button_pressed = true
+text = "UI_FOREST"
+
 [node name="CreateConfirm" type="Button" parent="Column"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)

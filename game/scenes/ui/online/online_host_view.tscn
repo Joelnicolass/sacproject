@@ -67,6 +67,13 @@ script = ExtResource("sky_hour_picker")
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="HostForest" type="CheckBox" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "UI_FOREST_TIP"
+button_pressed = true
+text = "UI_FOREST"
+
 [node name="RoomName" type="LineEdit" parent="Column/HostForm"]
 unique_name_in_owner = true
 editor_description = "Empty = the room_name of sacrifice_flow.tscn."

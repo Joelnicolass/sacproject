@@ -96,6 +96,8 @@ func _setup(level: int) -> MatchSetup:
 	# The hour and the weather of %Hour and %Weather (-1 / null = the land's own).
 	setup.sky_hour = (%Hour as HourPicker).selected_hour()
 	setup.weather = (%Weather as WeatherPicker).selected_weather()
+	# The map's forest: unticked = the match plays without it (ticked = the rules', on).
+	setup.forest = -1 if (%Forest as CheckBox).button_pressed else 0
 	return setup
 
 

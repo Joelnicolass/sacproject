@@ -3,7 +3,7 @@ extends RefCounted
 
 ## Reads the command line of this process into a LaunchPlan: the overrides of the rules
 ## (`--level`, `--souls`, `--friendly-fire`, `--drop-soul`, `--match-seed`, `--biome`,
-## `--sky-hour`, `--weather`) and the AI seats of a dedicated (`--ai-slots`, `--ai-god`). The map
+## `--sky-hour`, `--weather`, `--no-forest`) and the AI seats of a dedicated (`--ai-slots`, `--ai-god`). The map
 ## and the mode (`--map`, `--mode`) are ActiveMatch's. It changes nothing: SacrificeFlow applies
 ## the plan it returns. Every flag it takes is told in the log. A bad value is a warning and the
 ## rules decide.
@@ -70,6 +70,8 @@ static func _read_setup(setup: MatchSetup) -> void:
 		setup.friendly_fire = 0
 	elif MpBoot.user_flag("friendly-fire"):
 		setup.friendly_fire = 1
+	if MpBoot.user_flag("no-forest"):
+		setup.forest = 0
 	if MpBoot.user_flag("no-drop-soul"):
 		setup.drop_soul = 0
 	elif MpBoot.user_flag("drop-soul"):

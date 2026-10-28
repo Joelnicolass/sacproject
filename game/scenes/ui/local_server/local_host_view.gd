@@ -57,6 +57,7 @@ func _on_create() -> void:
 	chosen.biome = (%HostBiome as BiomePicker).selected_god()
 	chosen.sky_hour = (%HostHour as HourPicker).selected_hour()
 	chosen.weather = (%HostWeather as WeatherPicker).selected_weather()
+	chosen.forest = -1 if (%HostForest as CheckBox).button_pressed else 0
 	var err := _server.start(SacrificeFlow.pick, kind, MatchWire.options_of(chosen), ai_seats())
 	if err != OK:
 		_server.queue_free()

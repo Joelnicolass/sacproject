@@ -56,6 +56,7 @@ func options() -> Dictionary:
 	chosen.biome = (%RoomBiome as BiomePicker).selected_god()
 	chosen.sky_hour = (%RoomHour as HourPicker).selected_hour()
 	chosen.weather = (%RoomWeather as WeatherPicker).selected_weather()
+	chosen.forest = -1 if (%RoomForest as CheckBox).button_pressed else 0
 	return MatchWire.options_of(chosen)
 
 

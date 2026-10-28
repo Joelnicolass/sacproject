@@ -32,6 +32,9 @@ extends Resource
 @export_range(-1.0, 24.0, 0.25) var sky_hour: float = -1.0
 ## Forces the weather of the match. Empty: the land's weather plan.
 @export var weather: WeatherState
+## The map's forest trees (MapProps/Forest, ForestScatter). Off: they are taken away before the
+## match starts on every peer and the navmesh is baked again without them.
+@export var forest: bool = true
 ## 0: the match draws one and prints `seed <n>`. Otherwise every source of
 ## chance (bodies, ghosts, separation ties, biome) derives from it, see MatchSeed.
 @export var match_seed: int = 0

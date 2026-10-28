@@ -75,9 +75,13 @@ scan C13 'assets/original|OriginalAssets\.|res://tools'
 # Comments and doc lines that only mention a path are not reads (audit 055R, user decision 2026-10-24).
 grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' "$OUT/C13.txt" > "$OUT/C13.tmp" || true; mv "$OUT/C13.tmp" "$OUT/C13.txt"
 
-# C14: print( in scenes/ (DebugLog is the logger; comments do not count).
-xargs grep -nE '(^|[^A-Za-z0-9_.])print\(' < "$OUT/all.txt" 2>/dev/null \
-	| grep -v 'DebugLog' | grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C14.txt" || true
+# C14: print( in scenes/ (DebugLog is the logger; comments do not count). A print guarded by `DebugLog.on(...)` on the same
+# line or on the line right above (the way gdformat splits `if DebugLog.on(x): print(...)`) is allowed.
+xargs awk '
+	FNR == 1 { prev = "" }
+	/(^|[^A-Za-z0-9_.])print\(/ && $0 !~ /DebugLog/ && prev !~ /DebugLog\.on/ && $0 !~ /^[ \t]*#/ { print FILENAME ":" FNR ":" $0 }
+	$0 !~ /^[ \t]*$/ { prev = $0 }
+' < "$OUT/all.txt" > "$OUT/C14.txt" 2>/dev/null || true
 grep -v '/debug_log\.gd' "$OUT/C14.txt" > "$OUT/C14b.txt"; mv "$OUT/C14b.txt" "$OUT/C14.txt"
 
 # C25: raw key or mouse button in code (controls live in the InputMap). Whole-line comments do not count.

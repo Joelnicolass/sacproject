@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/look/haze/haze_layer.gd" id="1_haze"]
 [ext_resource type="Shader" path="res://scenes/look/haze/god_rays.gdshader" id="2_rays"]
+[ext_resource type="Shader" path="res://scenes/look/haze/light_shaft.gdshader" id="3_shaft"]
+[ext_resource type="Script" path="res://scenes/look/haze/light_shafts.gd" id="4_shafts"]
 
 [sub_resource type="FastNoiseLite" id="Noise_banks"]
 noise_type = 3
@@ -31,14 +33,20 @@ shader_parameter/reach = 0.7
 shader_parameter/decay = 0.95
 shader_parameter/off_screen_fade = 0.6
 
+[sub_resource type="ShaderMaterial" id="Mat_shaft"]
+render_priority = 10
+shader = ExtResource("3_shaft")
+shader_parameter/intensity = 0.25
+
 [sub_resource type="QuadMesh" id="Quad_screen"]
 size = Vector2(2, 2)
 
-[node name="Haze" type="Node3D" node_paths=PackedStringArray("mist", "god_rays")]
+[node name="Haze" type="Node3D" node_paths=PackedStringArray("mist", "god_rays", "shafts")]
 editor_description = "The ground mist (a FogVolume over the whole map, banks from its 3D noise, tinted with the biome's fog colour, drifting with the wind) and the sun's god rays (a full-screen quad, god_rays.gdshader). The rig sets `sun` and `world_environment`."
 script = ExtResource("1_haze")
 mist = NodePath("GroundMist")
 god_rays = NodePath("GodRays")
+shafts = NodePath("LightShafts")
 
 [node name="GroundMist" type="FogVolume" parent="."]
 size = Vector3(2600, 40, 2600)
@@ -48,3 +56,8 @@ material = SubResource("Fog_mist")
 cast_shadow = 0
 mesh = SubResource("Quad_screen")
 material_override = SubResource("Mat_rays")
+
+[node name="LightShafts" type="MultiMeshInstance3D" parent="."]
+editor_description = "Faked sun shafts (the original's lit planes): hashed on a 40 m world grid around the camera, leaning along the sun, facing the camera."
+material_override = SubResource("Mat_shaft")
+script = ExtResource("4_shafts")

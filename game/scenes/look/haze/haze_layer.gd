@@ -15,6 +15,8 @@ extends Node3D
 @export var world_environment: WorldEnvironment
 @export var mist: FogVolume
 @export var god_rays: MeshInstance3D
+## Faked sun shafts hanging around the camera (LightShafts).
+@export var shafts: LightShafts
 ## How far (m) the mist box rises above the land under the camera; its density falls off toward
 ## the top.
 @export_range(5.0, 200.0, 1.0, "suffix:m") var mist_height_m := 6.0
@@ -91,9 +93,13 @@ func _tint_mist() -> void:
 
 
 func _feed_rays() -> void:
-	if god_rays == null or _rays_material == null or sun == null:
+	if sun == null:
 		return
 	var lit := sun.visible and sun.light_energy >= rays_min_sun_energy
+	if shafts != null:
+		shafts.set_sun(sun.global_basis.z, sun.light_color, 1.0 if lit else 0.0)
+	if god_rays == null or _rays_material == null:
+		return
 	god_rays.visible = lit
 	if not lit:
 		return

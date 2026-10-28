@@ -68,7 +68,10 @@ const SPRITE_LIFT := 1.25 * 1.6
 ## Devour: 3/updateFPS a tick.
 ## Ref: state.d:14998
 @export var devour_shrink_per_s := 3.0
-@export var fall_speed := 1.0
+## A free soul in the air falls like a thing: it speeds up by `fall_gravity` (m/s²) up to `max_fall_speed` (m/s). The original
+## came down at a flat 1 m/s, so a soul freed high in the air (a creature the Volcano threw) hung there out of reach.
+@export_range(0.0, 50.0, 0.1, "suffix:m/s²") var fall_gravity := 9.8
+@export_range(0.1, 100.0, 0.1, "suffix:m/s") var max_fall_speed := 20.0
 ## A soul that falls through a hole is gone this far under the last ground it had.
 ## Ref: soulVanishDepth = mapDepth (sacmap.d:108).
 @export_range(0.0, 200.0, 1.0, "suffix:m") var vanish_depth_m := 50.0
@@ -111,6 +114,8 @@ var _facing := 0.0
 var _rise_t := 0.0
 ## Server only: the height of the last ground under it (NAN until it has seen one).
 var _last_ground_y := NAN
+## Server only: how fast it falls now (m/s, down); 0 on the ground.
+var _fall_v := 0.0
 var _sprites: Array[MeshInstance3D] = []
 var _material: ShaderMaterial
 
@@ -317,8 +322,8 @@ func _follow_corpse() -> void:
 	global_position = (corpse as UnitBody).soul_anchor() if corpse is UnitBody else corpse.global_position
 
 
-## A free soul comes down to the land under it. Over a hole (no land under it on the map) it keeps falling at `fall_speed` and is
-## gone once it is `vanish_depth_m` under the last ground it had. Without ground and without a hole (the terrain not built yet) it
+## A free soul comes down to the land under it, faster and faster (`fall_gravity`, `max_fall_speed`). Over a hole (no land under
+## it on the map) it keeps falling and is gone once it is `vanish_depth_m` under the last ground it had. Without ground and without a hole (the terrain not built yet) it
 ## stays put.
 ## Ref: updateSoul (state.d:14912-14920), soulVanishDepth = mapDepth (sacmap.d:108).
 func _settle(delta: float) -> void:
@@ -330,15 +335,23 @@ func _settle(delta: float) -> void:
 			return
 		if is_nan(_last_ground_y):
 			_last_ground_y = at.y
-		global_position.y = at.y - fall_speed * delta
+		global_position.y = at.y - _fall_step(delta)
 		if global_position.y < _last_ground_y - vanish_depth_m:
 			_vanish()
 		return
 	_last_ground_y = ground
 	if at.y > ground:
-		global_position.y = maxf(at.y - fall_speed * delta, ground)
+		global_position.y = maxf(at.y - _fall_step(delta), ground)
 	else:
 		global_position.y = ground
+	if global_position.y <= ground:
+		_fall_v = 0.0
+
+
+## How far it falls this tick: the speed grows by `fall_gravity` up to `max_fall_speed`.
+func _fall_step(delta: float) -> float:
+	_fall_v = minf(_fall_v + fall_gravity * delta, max_fall_speed)
+	return _fall_v * delta
 
 
 ## Server or solo: it fell through a hole and is gone, with nothing inside (no one collects it).

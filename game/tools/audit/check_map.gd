@@ -37,7 +37,6 @@ func _check(tag: StringName) -> Array[String]:
 	var definition := MapCatalog.shared().find(tag)
 	if definition == null:
 		return ["no map definition maps/%s/%s.tres" % [tag, tag]]
-	ActiveMatch.choose_ids(tag, ActiveMatch.mode_tag())
 	var packed := definition.map_scene
 	var root: MapRoot = packed.instantiate() as MapRoot if packed != null else null
 	if root == null:

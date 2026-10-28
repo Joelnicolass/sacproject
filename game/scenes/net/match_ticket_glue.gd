@@ -311,7 +311,7 @@ func _report(data: Dictionary) -> void:
 	for slot in picks.keys():
 		played[str(slot)] = MatchWire.encode_pick(picks[slot])
 	out["picks"] = played
-	out["seed"] = MatchSeed.current
+	out["seed"] = MatchSeed.current()
 	out["ticks"] = MatchClock.now()
 	print("partida %s: resultado %s" % [agent.match_id, JSON.stringify(out)])
 	agent.report_result(out)

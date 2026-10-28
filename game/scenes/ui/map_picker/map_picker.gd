@@ -34,7 +34,7 @@ func fill() -> void:
 	var keep := selected_map()
 	clear()
 	var mode: GameMode = mode_picker.selected_mode() if mode_picker != null else null
-	var active := ActiveMatch.map()
+	var active := SacrificeFlow.active_match.map()
 	var wanted := 0
 	var kept := -1
 	for definition in GameCatalog.shared().maps():

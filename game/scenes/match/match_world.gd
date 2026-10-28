@@ -4,13 +4,20 @@ extends Node3D
 ## The match is map-agnostic. The map is the child `Map` (a MapRoot) of `map_parent` (World): the one the scene already
 ## holds (an inherited scene with a map in it) or, when there is none or `--map=<tag>` asks for another, the scene of the
 ## active MapDefinition. The systems below are bound to its sockets before any of them is ready.
-## The children are grouped: World (3D world and spawners), Systems, Input, Hud and Audio.
+## The children are grouped: Context (the clock, the seed, the sky and the sides of this match: first, so it is there for
+## everything below and leaves last), World (3D world and spawners), Systems, Input, Hud and Audio.
 
 signal local_wizard_changed(wizard: Node3D)
 
 const MAP_NODE := "Map"
 
 @export var rules: MatchRules
+@export_group("Context")
+## The state of this match that everybody reads through static functions (Context/*): started here, freed with the match.
+@export var clock: MatchClock
+@export var match_seed: MatchSeed
+@export var sides: SideRelations
+@export_group("")
 ## The group the map is put under, as its first child (World).
 @export var map_parent: Node3D
 ## The systems that take parts of the map when it is attached (set in match.tscn).
@@ -28,7 +35,8 @@ const MAP_NODE := "Map"
 
 ## The map of this match (set in _enter_tree).
 var map: MapRoot
-## The map and the mode this world plays, read once from ActiveMatch when it enters the tree; the systems get them from here.
+## The map and the mode this world plays, read once from SacrificeFlow.active_match when it enters the tree; the systems get
+## them from here.
 var definition: MapDefinition
 var mode: GameMode
 
@@ -38,17 +46,20 @@ var _local_wizard: Node3D
 
 func _enter_tree() -> void:
 	_entered_ms = Time.get_ticks_msec()
+	if clock == null or match_seed == null or sides == null:
+		push_error("Match: clock, match_seed and sides must be set in match.tscn.")
+		return
 	# The ticks of the match start at 0 on every peer (the client counts its own for the cooldowns).
-	MatchClock.begin(get_tree())
+	clock.begin(get_tree())
 	# The one who simulates applies the match setup (level, friendly fire, drop soul, starting souls)
 	# before any child is ready. The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
 	if not MpKit.is_networked() or MpKit.is_server():
 		rules = SacrificeFlow.setup.apply_to(rules)
 	# Every peer seeds the match: online with the seed the server announced, offline with the rules' or a drawn one.
-	MatchSeed.begin(rules, ActiveMatch.match_seed())
-	definition = ActiveMatch.map()
-	mode = ActiveMatch.mode()
-	SideRelations.use(definition, mode)
+	match_seed.begin(rules, SacrificeFlow.active_match.match_seed())
+	definition = SacrificeFlow.active_match.map()
+	mode = SacrificeFlow.active_match.mode()
+	sides.use(definition, mode)
 	_attach_map()
 
 

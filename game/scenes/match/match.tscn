@@ -100,15 +100,22 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/match_wait/match_wait.tscn" id="g68_wait"]
 [ext_resource type="PackedScene" path="res://scenes/look/warmup/shader_warmup.tscn" id="w69_warmup"]
 [ext_resource type="Script" path="res://scenes/net/load_report.gd" id="w69_report"]
+[ext_resource type="Script" uid="uid://c2n2wauwc4p7w" path="res://scenes/match/match_clock.gd" id="q12_clock"]
+[ext_resource type="Script" uid="uid://bvekv0tj0x8rf" path="res://scenes/match/match_seed.gd" id="q12_seed"]
+[ext_resource type="Script" uid="uid://c14fmfa8dkqog" path="res://scenes/match/match_sky.gd" id="q12_sky"]
+[ext_resource type="Script" uid="uid://bju6gwfi4b7v1" path="res://scenes/map/side_relations.gd" id="q12_sides"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
 
 
-[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap", "camera", "selection", "nav", "wizard_spawner", "population", "graphics_applier", "match_state", "map_parent")]
+[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap", "camera", "selection", "nav", "wizard_spawner", "population", "graphics_applier", "match_state", "map_parent", "clock", "match_seed", "sides")]
 script = ExtResource("1_world")
 rules = ExtResource("12_rules")
+clock = NodePath("Context/Clock")
+match_seed = NodePath("Context/Seed")
+sides = NodePath("Context/Sides")
 camera = NodePath("World/Camera")
 selection = NodePath("Input/Selection")
 nav = NodePath("Systems/Nav")
@@ -119,6 +126,21 @@ match_state = NodePath("Systems/MatchState")
 minimap = NodePath("Hud/Minimap")
 map_parent = NodePath("World")
 
+
+[node name="Context" type="Node" parent="."]
+editor_description = "The state of this match that everybody reads (MatchClock.now(), MatchSeed.rng(), MatchSky, SideRelations.stance()). First child: it starts before the map and the bodies and leaves after them. Freed with the match, so nothing carries over to the next one."
+
+[node name="Clock" type="Node" parent="Context"]
+script = ExtResource("q12_clock")
+
+[node name="Seed" type="Node" parent="Context"]
+script = ExtResource("q12_seed")
+
+[node name="Sky" type="Node" parent="Context"]
+script = ExtResource("q12_sky")
+
+[node name="Sides" type="Node" parent="Context"]
+script = ExtResource("q12_sides")
 
 [node name="World" type="Node3D" parent="."]
 editor_description = "What is in the 3D world: camera, map (MatchWorld adds it as the first child), bodies, spells, shots, structures and their spawners, the biome and the screen look."
@@ -160,14 +182,16 @@ actor_name_prefix = "Wizard"
 despawn_on_leave = false
 
 
-[node name="MatchBiome" type="Node" parent="World" unique_id=1771451217 node_paths=PackedStringArray("world")]
+[node name="MatchBiome" type="Node" parent="World" unique_id=1771451217 node_paths=PackedStringArray("world", "sky")]
 script = ExtResource("13_biome")
 world = NodePath("../..")
+sky = NodePath("../../Context/Sky")
 
-[node name="BiomeLink" type="Node" parent="World" node_paths=PackedStringArray("biome")]
+[node name="BiomeLink" type="Node" parent="World" node_paths=PackedStringArray("biome", "sky")]
 editor_description = "El canal de red «biome». El servidor manda el dios de la tierra y el reloj del cielo a cada cliente con el mundo listo; el cliente se los da a MatchBiome. Va debajo de MatchBiome (que sortea primero)."
 script = ExtResource("b3_biome_link")
 biome = NodePath("../MatchBiome")
+sky = NodePath("../../Context/Sky")
 
 
 [node name="Units" type="Node3D" parent="World" unique_id=1921753883]

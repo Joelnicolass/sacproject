@@ -82,8 +82,6 @@ static func _enter(scene: String, tag: String, host: Node) -> MapRoot:
 	var packed := load(scene) as PackedScene if ResourceLoader.exists(scene) else null
 	if packed == null:
 		return null
-	if MapCatalog.shared().has(StringName(tag)):
-		ActiveMatch.choose_ids(StringName(tag), ActiveMatch.mode_tag())
 	var root := packed.instantiate() as MapRoot
 	if root != null:
 		host.add_child(root)

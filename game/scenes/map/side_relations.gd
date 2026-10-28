@@ -1,6 +1,6 @@
 @tool
 class_name SideRelations
-extends RefCounted
+extends Node
 
 ## Who is the enemy of whom. The matrix is the SIDS of the map:
 ## each side has a bit mask of allies and one of enemies, and the
@@ -15,165 +15,84 @@ extends RefCounted
 ## wizards: two seats of the mode are allies when they share a team and enemies when they do not; NPCs and houses keep the SIDS.
 ## The overlay is installed only when the mode has allies or more than two seats, so 1v1 follows the old path untouched.
 ## The map's rows come from its scene (MapSides.rows_of: the PlayerStart seats with their `team` and the sides its NpcSpawns
-## name). Without them, or for a side the map does not describe, «another slot is an enemy» (what the port did before). The world
-## tells it which map and mode it plays (MatchWorld calls `use` once, before any of its systems is ready); nothing here asks which
-## match is active. Static and @tool: the editor and a headless run read it without autoloads, and the suite can load its own rows
-## with set_rows().
+## name). Without them, or for a side the map does not describe, «another slot is an enemy» (what the port did before).
+## It is the node `Context/Sides` of match.tscn: MatchWorld calls `use(map, mode)` from its _enter_tree, before any of its
+## systems is ready, and the relations hold until this node leaves the tree. The static functions are how everybody asks
+## (bodies, spells, the HUD; @tool code in the editor too): they forward to the relations of the match in the tree, and
+## without a match they answer with no rows (every other slot an enemy).
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
 const NEUTRAL_SIDE := 31
 
-static var _loaded := false
-## A question came before any world called `use`: warned once.
+## The relations of the running match (set by use, cleared in _exit_tree); null = no match.
+static var _live: SideRelations
+## A question came with no match outside the editor: warned once per process.
 static var _warned := false
-static var _allies: Dictionary = {}
-static var _enemies: Dictionary = {}
-static var _assignment: Dictionary = {}
-## Side ids a player can take (assignment != 0), in order: seat k is `_seat_sides[k - 1]`.
-static var _seat_sides: Array[int] = []
-## Side ids no player takes and that are not the neutral one, in order: NPC k is the slot `seats + k + 1`.
-static var _npc_sides: Array[int] = []
-## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the time).
-static var _seat_count := 2
-## Team overlay: the team of each seat (seat 1 first). Empty = not installed.
-static var _team_of_seat: PackedInt32Array = PackedInt32Array()
+## The answers with no match: no rows, two seats, no teams. Never written.
+static var _no_rows := Table.new()
+
+var _table := Table.new()
 
 
-## The sides of `map` (MapSides.rows_of its scene, its seats) and the team overlay of `mode`, from now on. The world calls it once
-## when it starts; calling it again with the same map and mode changes nothing. A null map leaves no rows (every slot an enemy).
-static func use(map: MapDefinition, mode: GameMode) -> void:
-	set_rows(
+## The sides of `map` (MapSides.rows_of its scene, its seats) and the team overlay of `mode`, from now on: this becomes the
+## relations everybody asks. A null map leaves no rows (every slot an enemy).
+func use(map: MapDefinition, mode: GameMode) -> void:
+	_table = Table.new()
+	_table.set_rows(
 		MapSides.rows_of(map.map_scene) if map != null else [],
 		map.player_starts if map != null else 2
 	)
-	_install_mode(mode)
+	_table.install_mode(mode)
+	_live = self
 
 
-## `rows`: [{id, allies, enemies, assignment}] as MapSides.rows_of gives them. `seats` >= 0 also sets the seat count (a suite
-## that writes its own rows says how many are players); -1 keeps the one of the last map.
-## The team overlay `use` installed stays.
-static func set_rows(rows: Array, seats := -1) -> void:
-	_loaded = true
-	_allies = {}
-	_enemies = {}
-	_assignment = {}
-	_seat_sides = []
-	_npc_sides = []
-	for row: Variant in rows:
-		if not row is Dictionary:
-			continue
-		var id := int(row.get("id", -1))
-		_allies[id] = int(row.get("allies", 0))
-		_enemies[id] = int(row.get("enemies", 0))
-		_assignment[id] = int(row.get("assignment", 0))
-		if id == NEUTRAL_SIDE:
-			continue
-		if _assignment[id] != 0:
-			_seat_sides.append(id)
-		else:
-			_npc_sides.append(id)
-	# The seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
-	_seat_sides.sort_custom(_before_by_seat)
-	_npc_sides.sort()
-	if seats >= 0:
-		_seat_count = seats
-
-
-static func _before_by_seat(a: int, b: int) -> bool:
-	var seat_a := int(_assignment[a]) & 31
-	var seat_b := int(_assignment[b]) & 31
-	return seat_a < seat_b if seat_a != seat_b else a < b
-
-
-## Installs (or clears) the team overlay of `mode`.
-static func _install_mode(mode: GameMode) -> void:
-	_team_of_seat = PackedInt32Array()
-	if mode != null and (mode.has_allies() or mode.seats() > 2):
-		_team_of_seat = mode.team_of_seat.duplicate()
+func _exit_tree() -> void:
+	if _live == self:
+		_live = null
 
 
 ## True when the team overlay of a mode with allies or more than two seats is on.
 static func has_teams() -> bool:
-	_ensure()
-	return not _team_of_seat.is_empty()
-
-
-## The seat of the mode this slot occupies (the slots 1..min(mode seats, map seats)), or false.
-static func _in_mode(slot: int) -> bool:
-	return slot >= 1 and slot <= _team_of_seat.size() and slot <= _seat_count
+	return not _rows().team_of_seat.is_empty()
 
 
 ## The team of a slot: the mode's for a seat of the mode, else `-slot` (its own team: NPCs, the neutral side, or no overlay).
 ## With `-slot` for everybody (1v1) the team rules give back the old «every slot for itself».
 static func team_of(slot: int) -> int:
-	_ensure()
-	return _team_of_seat[slot - 1] if _in_mode(slot) else -slot
+	return _rows().team_of(slot)
 
 
 static func side_of(slot: int) -> int:
-	if slot <= 0:
-		return NEUTRAL_SIDE
-	_ensure()
-	var seats := seat_count()
-	if slot <= seats:
-		return _seat_sides[slot - 1] if slot - 1 < _seat_sides.size() else slot - 1
-	var npc := slot - seats - 1
-	return _npc_sides[npc] if npc < _npc_sides.size() else slot - 1
+	return _rows().side_of(slot)
 
 
 static func slot_of(side: int) -> int:
-	if side == NEUTRAL_SIDE:
-		return 0
-	_ensure()
-	var seat := _seat_sides.find(side)
-	if seat >= 0 and seat < seat_count():
-		return seat + 1
-	var npc := _npc_sides.find(side)
-	if npc >= 0:
-		return seat_count() + npc + 1
-	return side + 1
+	return _rows().slot_of(side)
 
 
 ## The player seats of the map being played (MapDefinition.player_starts).
 static func seat_count() -> int:
-	_ensure()
-	return _seat_count
+	return _rows().seat_count
 
 
 ## True when the map describes both sides (otherwise the old rule applies).
 static func knows(slot_a: int, slot_b: int) -> bool:
-	_ensure()
-	return _enemies.has(side_of(slot_a)) and _enemies.has(side_of(slot_b))
+	return _rows().knows(slot_a, slot_b)
 
 
 static func stance(from_slot: int, to_slot: int) -> Stance:
 	if from_slot == to_slot:
 		return Stance.ALLY
-	_ensure()
-	if _in_mode(from_slot) and _in_mode(to_slot):
-		return (
-			Stance.ALLY
-			if _team_of_seat[from_slot - 1] == _team_of_seat[to_slot - 1]
-			else Stance.ENEMY
-		)
-	if not knows(from_slot, to_slot):
-		return Stance.ENEMY
-	var from_side := side_of(from_slot)
-	var bit := 1 << side_of(to_slot)
-	if int(_allies.get(from_side, 0)) & bit:
-		return Stance.ALLY
-	if int(_enemies.get(from_side, 0)) & bit:
-		return Stance.ENEMY
-	return Stance.NEUTRAL
+	return _rows().stance(from_slot, to_slot)
 
 
 ## The seats that are allies of `slot` (not itself): who shares its sight (MatchRules.allied_vision). Empty in a 1v1.
 static func allies_of(slot: int) -> Array[int]:
+	var rows := _rows()
 	var found: Array[int] = []
-	_ensure()
-	for other in range(1, _seat_count + 1):
-		if other != slot and stance(slot, other) == Stance.ALLY:
+	for other in range(1, rows.seat_count + 1):
+		if other != slot and rows.stance(slot, other) == Stance.ALLY:
 			found.append(other)
 	return found
 
@@ -184,18 +103,114 @@ static func is_enemy(from_slot: int, to_slot: int) -> bool:
 
 ## A side of the map no player takes (assignment 0 and not the neutral side): Farmers and Taurocks.
 static func is_npc_slot(slot: int) -> bool:
-	_ensure()
-	var side := side_of(slot)
-	return slot > 0 and _assignment.has(side) and int(_assignment[side]) == 0
+	var rows := _rows()
+	var side := rows.side_of(slot)
+	return slot > 0 and rows.assignment.has(side) and int(rows.assignment[side]) == 0
 
 
-## Asked before a world said which map it plays: no rows (every other slot an enemy), with one warning outside the editor.
-static func _ensure() -> void:
-	if _loaded:
-		return
+## The table of the running match; with none, the empty one (and one warning outside the editor).
+static func _rows() -> Table:
+	if _live != null:
+		return _live._table
 	if not _warned and not Engine.is_editor_hint():
 		_warned = true
 		push_warning(
-			"SideRelations: asked before a world called use(map, mode); every other slot is an enemy."
+			"SideRelations: asked with no match in the tree; every other slot is an enemy."
 		)
-	set_rows([])
+	return _no_rows
+
+
+## The rows of one map and the team overlay of one mode: the data of the relations and the questions on it.
+class Table:
+	extends RefCounted
+
+	var allies: Dictionary = {}
+	var enemies: Dictionary = {}
+	var assignment: Dictionary = {}
+	## Side ids a player can take (assignment != 0), in order: seat k is `seat_sides[k - 1]`.
+	var seat_sides: Array[int] = []
+	## Side ids no player takes and that are not the neutral one, in order: NPC k is the slot `seats + k + 1`.
+	var npc_sides: Array[int] = []
+	## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the time).
+	var seat_count := 2
+	## Team overlay: the team of each seat (seat 1 first). Empty = not installed.
+	var team_of_seat: PackedInt32Array = PackedInt32Array()
+
+	## `rows`: [{id, allies, enemies, assignment}] as MapSides.rows_of gives them; `seats` = how many are players.
+	func set_rows(rows: Array, seats: int) -> void:
+		for row: Variant in rows:
+			if not row is Dictionary:
+				continue
+			var id := int(row.get("id", -1))
+			allies[id] = int(row.get("allies", 0))
+			enemies[id] = int(row.get("enemies", 0))
+			assignment[id] = int(row.get("assignment", 0))
+			if id == NEUTRAL_SIDE:
+				continue
+			if assignment[id] != 0:
+				seat_sides.append(id)
+			else:
+				npc_sides.append(id)
+		# The seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
+		seat_sides.sort_custom(_before_by_seat)
+		npc_sides.sort()
+		seat_count = seats
+
+	func _before_by_seat(a: int, b: int) -> bool:
+		var seat_a := int(assignment[a]) & 31
+		var seat_b := int(assignment[b]) & 31
+		return seat_a < seat_b if seat_a != seat_b else a < b
+
+	## Installs the team overlay of `mode` (nothing for null or a 1v1).
+	func install_mode(mode: GameMode) -> void:
+		team_of_seat = PackedInt32Array()
+		if mode != null and (mode.has_allies() or mode.seats() > 2):
+			team_of_seat = mode.team_of_seat.duplicate()
+
+	## The seat of the mode this slot occupies (the slots 1..min(mode seats, map seats)), or false.
+	func in_mode(slot: int) -> bool:
+		return slot >= 1 and slot <= team_of_seat.size() and slot <= seat_count
+
+	func team_of(slot: int) -> int:
+		return team_of_seat[slot - 1] if in_mode(slot) else -slot
+
+	func side_of(slot: int) -> int:
+		if slot <= 0:
+			return NEUTRAL_SIDE
+		if slot <= seat_count:
+			return seat_sides[slot - 1] if slot - 1 < seat_sides.size() else slot - 1
+		var npc := slot - seat_count - 1
+		return npc_sides[npc] if npc < npc_sides.size() else slot - 1
+
+	func slot_of(side: int) -> int:
+		if side == NEUTRAL_SIDE:
+			return 0
+		var seat := seat_sides.find(side)
+		if seat >= 0 and seat < seat_count:
+			return seat + 1
+		var npc := npc_sides.find(side)
+		if npc >= 0:
+			return seat_count + npc + 1
+		return side + 1
+
+	func knows(slot_a: int, slot_b: int) -> bool:
+		return enemies.has(side_of(slot_a)) and enemies.has(side_of(slot_b))
+
+	func stance(from_slot: int, to_slot: int) -> Stance:
+		if from_slot == to_slot:
+			return Stance.ALLY
+		if in_mode(from_slot) and in_mode(to_slot):
+			return (
+				Stance.ALLY
+				if team_of_seat[from_slot - 1] == team_of_seat[to_slot - 1]
+				else Stance.ENEMY
+			)
+		if not knows(from_slot, to_slot):
+			return Stance.ENEMY
+		var from_side := side_of(from_slot)
+		var bit := 1 << side_of(to_slot)
+		if int(allies.get(from_side, 0)) & bit:
+			return Stance.ALLY
+		if int(enemies.get(from_side, 0)) & bit:
+			return Stance.ENEMY
+		return Stance.NEUTRAL

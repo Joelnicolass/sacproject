@@ -10,11 +10,13 @@ const CHANNEL := &"biome"
 
 ## The land of this match (the MatchBiome of the world; it must be ready first: put it above this node).
 @export var biome: MatchBiome
+## The sky clock of the match (Context/Sky): the server reads its message, a client adopts the server's.
+@export var sky: MatchSky
 
 
 func _ready() -> void:
-	if biome == null:
-		push_error("BiomeLink: set the `biome` socket")
+	if biome == null or sky == null:
+		push_error("BiomeLink: set the `biome` and `sky` sockets")
 		return
 	biome.shows_look = not MpKit.is_dedicated()
 	if not MpKit.is_networked():
@@ -40,7 +42,7 @@ func send_to(peer_id: int) -> void:
 	if biome == null or biome.god == null:
 		return
 	var payload := {"god": MatchWire.encode_god(biome.god)}
-	payload.merge(MatchSky.message())
+	payload.merge(sky.message())
 	MpKit.push_custom_to(peer_id, CHANNEL, payload)
 
 
@@ -50,5 +52,5 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 	var god := MatchWire.decode_god(str(data.get("god", "")))
 	if god == null or god.look == null:
 		return
-	MatchSky.adopt(float(data.get("at_s", 0.0)), int(data.get("sky_seed", 0)))
+	sky.adopt(float(data.get("at_s", 0.0)), int(data.get("sky_seed", 0)))
 	biome.adopt(god)

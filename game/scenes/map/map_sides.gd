@@ -11,7 +11,7 @@ extends RefCounted
 const NEUTRAL_SIDE := 31
 
 
-## The rows SideRelations.set_rows takes: [{id, allies, enemies, assignment}]. Empty when the scene has no PlayerStart.
+## The rows SideRelations.use reads: [{id, allies, enemies, assignment}]. Empty when the scene has no PlayerStart.
 static func rows_of(scene: PackedScene) -> Array:
 	var seats: Dictionary = {}
 	var npc_sides: Dictionary = {}

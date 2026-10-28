@@ -1,7 +1,7 @@
 extends MpFlow
 
 ## How a Sacrifice match starts, ends and comes back (solo, «Contra la IA», LAN, a room's dedicated, a «Servidor local»). It holds
-## the local pick and the AI seats; PickBoard the picks by slot, ActiveMatch the map and the mode. It does not decide who may pick.
+## the local pick and the AI seats; PickBoard the picks by slot, `active_match` the map and the mode. It does not decide who may pick.
 
 signal slot_picks_changed
 
@@ -32,6 +32,9 @@ var pick: WizardPick
 var from_lobby := false
 ## The AI seats of the match this process simulates (AiRoster reads them): «Contra la IA», or a dedicated with bots. Empty = humans only.
 var solo_ai_seats: Array[AiSeat] = []
+## The map, the mode and the seed of the next (or the running) match: chosen right before the world loads, read by the world
+## and the screens, forgotten when the match ends.
+var active_match := ActiveMatch.new()
 ## What the next match overrides of its rules (level, souls, friendly fire, seed, land, map, mode): the menu's choice over the flags.
 var setup := MatchSetup.new()
 ## The picks by MpKit slot, replicated to clients (they live in `board`).
@@ -55,7 +58,7 @@ func _ready() -> void:
 	advertise_lan = false
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT
 	# Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1 and the AI keeps slot 2.
-	var plan := LaunchFlags.read(vs_ai_seat, ActiveMatch.seats())
+	var plan := LaunchFlags.read(vs_ai_seat, active_match.seats())
 	max_players = plan.max_players
 	solo_ai_seats = plan.ai_seats
 	_cli_setup = plan.setup
@@ -101,7 +104,7 @@ func play_vs_ai(god: GodType = null, chosen: MatchSetup = null) -> void:
 	setup = _cli_setup.overlaid_by(chosen)
 	# Decided now (idempotent) to know how many seats the mode has.
 	_apply_match_choice()
-	solo_ai_seats = vs_ai_seat.for_seats(ActiveMatch.seats(), god)
+	solo_ai_seats = vs_ai_seat.for_seats(active_match.seats(), god)
 	_play_alone()
 
 
@@ -132,21 +135,21 @@ func return_to_boot() -> void:
 func _apply_match_choice() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
-	ActiveMatch.choose(setup.map, setup.mode)
+	active_match.choose(setup.map, setup.mode)
 	if MpKit.is_networked() and setup.match_seed <= 0:
 		setup.match_seed = MatchSeed.draw()
-	ActiveMatch.choose_seed(setup.match_seed)
+	active_match.choose_seed(setup.match_seed)
 
 
 ## The map and the mode reach the clients before the order to load the world.
 func snapshot_for_joiner() -> Dictionary:
-	return super.snapshot_for_joiner().merged(MatchWire.encode_choice(), true)
+	return super.snapshot_for_joiner().merged(MatchWire.encode_choice(active_match), true)
 
 
 func _on_flow_snapshot(data: Dictionary) -> void:
 	super._on_flow_snapshot(data)
 	if not MpKit.is_networked() or not MpKit.is_server():
-		MatchWire.decode_choice(data)
+		MatchWire.decode_choice(data, active_match)
 
 
 func _begin_match() -> void:
@@ -160,7 +163,7 @@ func _before_world_load() -> void:
 
 ## Read on the loading thread beside the world: what the match will spawn (the gods and wizards of its seats).
 func _extra_world_loads() -> PackedStringArray:
-	return ActiveMatch.load_paths()
+	return active_match.load_paths()
 
 
 ## Joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the token.
@@ -213,7 +216,7 @@ func rejection_text(reason: String) -> String:
 
 ## The way out of a match (pause menu, end, lost server): the room screens if it came from a room, else the menu.
 func _go_boot() -> void:
-	ActiveMatch.forget()
+	active_match.forget()
 	print("flow: left the match, from a room: %s" % from_lobby)
 	if from_lobby:
 		from_lobby = false

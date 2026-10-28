@@ -12,6 +12,8 @@ extends Node
 signal applied(god: GodType)
 
 @export var world: MatchWorld
+## The sky clock of the match (Context/Sky): the authority starts it here.
+@export var sky: MatchSky
 
 ## The god of the land; null until it is drawn (the authority) or adopted (a client), or when the draw gave a god with no look.
 var god: GodType
@@ -21,7 +23,6 @@ var _world_ready := false
 
 
 func _ready() -> void:
-	MatchSky.reset()
 	if is_multiplayer_authority():
 		_draw()
 		_begin_sky()
@@ -52,7 +53,10 @@ func _draw() -> void:
 ## The sky's seed is a hash of the match seed (it moves no stream); 0 is kept for «no match».
 func _begin_sky() -> void:
 	var sky_seed := MatchSeed.derive(["sky"]) & 0x7fffffff
-	MatchSky.begin(maxi(1, sky_seed))
+	if sky == null:
+		push_error("MatchBiome: sky must be set in match.tscn.")
+		return
+	sky.begin(maxi(1, sky_seed))
 	if DebugLog.on(&"atmosphere"):
 		print("atmosphere seed %d" % MatchSky.sky_seed())
 

@@ -21,7 +21,7 @@ func _ready() -> void:
 func fill() -> void:
 	clear()
 	var maps := GameCatalog.shared().maps()
-	var active := ActiveMatch.mode()
+	var active := SacrificeFlow.active_match.mode()
 	var wanted := 0
 	for mode in GameCatalog.shared().modes:
 		if not mode.room_selectable or not _has_map(mode, maps):

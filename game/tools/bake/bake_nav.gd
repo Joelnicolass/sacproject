@@ -30,7 +30,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	var check := OS.get_cmdline_user_args().has("--check")
-	_map = ActiveMatch.map()
+	_map = ActiveMatch.new().map()  # the map of --map (or the default)
 	if _map == null or _map.map_scene == null:
 		_fail("no map scene to bake")
 		return

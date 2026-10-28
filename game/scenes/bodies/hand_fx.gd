@@ -19,6 +19,8 @@ const POSE_WAIT_S := 0.3
 @export_range(0.05, 2.0, 0.05) var interval_s := 0.5
 
 var _type: ParticleType
+## The god's cast light, for a cast with no particle (GodType.cast_light).
+var _light: FxLightSpec
 var _left := 0.0
 var _waited := 0.0
 
@@ -32,7 +34,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _type == null:
+	if _type == null and _light == null:
 		return
 	_left -= delta
 	if _left > 0.0:
@@ -43,11 +45,12 @@ func _process(delta: float) -> void:
 		_waited = 0.0
 
 
-func _on_cast_changed(_casting: bool, fx: ParticleType) -> void:
+func _on_cast_changed(casting: bool, fx: ParticleType) -> void:
 	_type = fx
+	_light = _god_light() if casting and fx == null else null
 	_left = 0.0
 	_waited = 0.0
-	set_process(fx != null)
+	set_process(fx != null or _light != null)
 
 
 ## true when something played. A skeletal wizard whose spellcast pose has not arrived yet (the body
@@ -63,5 +66,13 @@ func _burst() -> bool:
 			return false
 		points.append(BodyFacts.point(body, BodyFacts.Socket.CENTER))
 	for point in points:
-		FxBus.puff(_type, point)
+		if _type != null:
+			FxBus.puff(_type, point)
+		else:
+			_light.light_up(get_tree(), self, point)
 	return true
+
+
+func _god_light() -> FxLightSpec:
+	var wizard := caster.wizard if caster != null else null
+	return wizard.god_type.cast_light if wizard != null and wizard.god_type != null else null

@@ -1,7 +1,19 @@
-[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ParticleType" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/cst0.png" id="atlas_png"]
+[ext_resource type="Script" path="res://scenes/fx/fx_light_spec.gd" id="fx_light_script"]
+
+[sub_resource type="Resource" id="fx_light"]
+script = ExtResource("fx_light_script")
+color = Color(0.437, 0.865, 1.000, 1)
+energy = 2.5
+range_m = 6.0
+attack_s = 0.05
+decay_s = 0.35
+decay_power = 1.0
+height_m = 1.2
+attenuation = 0.8
 
 [resource]
 script = ExtResource("1_type")
@@ -19,3 +31,4 @@ emission_radius = 0.125
 additive = true
 fade_s = 0.267
 scale_fade_s = 0.267
+light = SubResource("fx_light")

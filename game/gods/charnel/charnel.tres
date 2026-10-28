@@ -37,6 +37,7 @@
 [ext_resource type="Script" uid="uid://nrjtqemmijb" path="res://scenes/gods/god_structure.gd" id="gs_script"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_shrine.tscn" id="gs_shrine"]
 [ext_resource type="Resource" path="res://gods/charnel/charnel_look.tres" id="99_look"]
+[ext_resource type="Script" path="res://scenes/fx/fx_light_spec.gd" id="cast_light_script"]
 
 [sub_resource type="Resource" id="Unlock_0"]
 script = ExtResource("3_unl")
@@ -187,6 +188,16 @@ script = ExtResource("gs_script")
 spell = ExtResource("31_s_pcas")
 scene = ExtResource("gs_shrine")
 
+[sub_resource type="Resource" id="cast_light"]
+script = ExtResource("cast_light_script")
+color = Color(0.62, 0.95, 0.55, 1)
+energy = 2.5
+range_m = 6.0
+attack_s = 0.05
+decay_s = 0.35
+height_m = 1.2
+attenuation = 0.8
+
 [resource]
 script = ExtResource("1_gtype")
 tag = "charnel"
@@ -195,3 +206,4 @@ sort_order = 4
 book = SubResource("Book_1")
 structures = Array[ExtResource("gs_script")]([SubResource("Structure_0"), SubResource("Structure_1")])
 look = ExtResource("99_look")
+cast_light = SubResource("cast_light")

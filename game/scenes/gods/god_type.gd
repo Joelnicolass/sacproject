@@ -19,6 +19,9 @@ extends Resource
 ## the god casts without one (the pose still plays). A spell with its own (SpellAction.cast_fx)
 ## wins.
 @export var cast_fx: ParticleType
+## The light its wizard's hands give off while he casts with no particle (a god without `cast_fx`, a
+## spell without its own). Empty: no light.
+@export var cast_light: FxLightSpec
 @export var book: GodBook
 ## The towers this god raises: one row per structure spell (Manalith, Shrine) with the scene of its
 ## own model.

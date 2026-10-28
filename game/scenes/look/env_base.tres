@@ -8,4 +8,5 @@ glow_enabled = true
 fog_enabled = true
 fog_sun_scatter = 0.4
 volumetric_fog_enabled = true
-volumetric_fog_anisotropy = 0.75
+volumetric_fog_anisotropy = 0.35
+volumetric_fog_sky_affect = 0.1

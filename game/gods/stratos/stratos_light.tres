@@ -6,7 +6,7 @@
 script = ExtResource("1_l")
 label = "Stratos: altura fria"
 sun_azimuth_deg = 40.0
-sun_elevation_deg = 55.0
+sun_elevation_deg = 32.0
 sun_color = Color(1.0, 0.929, 0.809, 1)
 sun_energy = 1.12
 fill_color = Color(0.8, 0.88, 1.0, 1)

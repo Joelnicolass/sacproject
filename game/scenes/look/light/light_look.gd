@@ -21,7 +21,7 @@ extends Resource
 @export_range(0.0, 3.0, 0.05) var sun_angular_distance: float = 0.7
 ## How much the sun lights the volumetric fog (1 = like any light). It only scales the
 ## in-scatter; the milky veil comes from `volumetric_density` (see Fog below).
-@export_range(0.0, 4.0, 0.05) var sun_fog_energy: float = 0.3
+@export_range(0.0, 4.0, 0.05) var sun_fog_energy: float = 0.4
 
 @export_group("Shadows")
 ## 1 = black shadow, lower lets the ambient and fill through.

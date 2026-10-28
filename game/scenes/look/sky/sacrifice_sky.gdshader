@@ -63,6 +63,16 @@ uniform float aurora_speed : hint_range(0.0, 1.0, 0.001) = 0.12;
 uniform float aurora_height : hint_range(1.0, 100.0, 0.5) = 42.0;
 uniform float aurora_scale : hint_range(0.1, 4.0, 0.01) = 0.8;
 
+group_uniforms grade;
+// A deeper colour toward the zenith over the textured bands (0 = the bands as they are).
+uniform vec3 zenith_color : source_color = vec3(0.25, 0.45, 0.85);
+uniform float zenith_strength : hint_range(0.0, 1.0, 0.01) = 0.0;
+// A warm glow along the horizon (0 = none).
+uniform vec3 horizon_color : source_color = vec3(1.0, 0.7, 0.45);
+uniform float horizon_strength : hint_range(0.0, 1.0, 0.01) = 0.0;
+// 1 = the colours as they are; above 1 more vivid.
+uniform float saturation : hint_range(0.0, 2.0, 0.01) = 1.0;
+
 group_uniforms discs;
 // The sun disc follows the scene's first DirectionalLight3D. 0 = no disc.
 uniform float sun_intensity : hint_range(0.0, 20.0, 0.05) = 0.0;
@@ -155,6 +165,13 @@ void sky() {
 			color = mix(color, glow.rgb, glow.a * aurora_strength);
 		}
 
+		if (zenith_strength > 0.0 || horizon_strength > 0.0 || saturation != 1.0) {
+			float up = clamp(dir.y, 0.0, 1.0);
+			color = mix(color, color * 0.35 + zenith_color * 0.85, zenith_strength * smoothstep(0.05, 0.9, up));
+			color += horizon_color * horizon_strength * pow(1.0 - abs(dir.y), 6.0);
+			float grey = dot(color, vec3(0.2126, 0.7152, 0.0722));
+			color = max(mix(vec3(grey), color, saturation), vec3(0.0));
+		}
 		if (sun_intensity + halo_strength + moon_intensity > 0.0) {
 			vec3 sun_dir = LIGHT0_ENABLED ? LIGHT0_DIRECTION : vec3(0.0, 0.6, 0.8);
 			color = sky_disc_add(color, dir, sun_dir, sun_color * sun_intensity, sun_radius_deg, halo_color * halo_strength, halo_power,

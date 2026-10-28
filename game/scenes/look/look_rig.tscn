@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/life/ambient_life.tscn" id="15_life"]
 [ext_resource type="Script" path="res://scenes/look/surface_relief_layer.gd" id="16_relief"]
 [ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="17_prefs"]
+[ext_resource type="PackedScene" path="res://scenes/look/haze/haze_layer.tscn" id="20_haze"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")
@@ -51,6 +52,10 @@ unique_name_in_owner = true
 environment = ExtResource("7_env")
 
 [node name="Grass" parent="Layers" instance=ExtResource("8_grass")]
+
+[node name="Haze" parent="Layers" node_paths=PackedStringArray("sun", "world_environment") instance=ExtResource("20_haze")]
+sun = NodePath("../Sun/Sun")
+world_environment = NodePath("../Environment/WorldEnvironment")
 
 [node name="FxLight" parent="Layers" instance=ExtResource("9_fx_light")]
 

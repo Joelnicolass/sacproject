@@ -1,0 +1,50 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/haze/haze_layer.gd" id="1_haze"]
+[ext_resource type="Shader" path="res://scenes/look/haze/god_rays.gdshader" id="2_rays"]
+
+[sub_resource type="FastNoiseLite" id="Noise_banks"]
+noise_type = 3
+frequency = 0.045
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture3D" id="Tex_banks"]
+width = 64
+height = 16
+depth = 64
+seamless = true
+noise = SubResource("Noise_banks")
+
+[sub_resource type="FogMaterial" id="Fog_mist"]
+density = 0.012
+albedo = Color(0.85, 0.85, 0.9, 1)
+height_falloff = 0.4
+edge_fade = 0.25
+density_texture = SubResource("Tex_banks")
+
+[sub_resource type="ShaderMaterial" id="Mat_rays"]
+render_priority = 100
+shader = ExtResource("2_rays")
+shader_parameter/intensity = 1.0
+shader_parameter/samples = 24
+shader_parameter/reach = 0.7
+shader_parameter/decay = 0.95
+shader_parameter/off_screen_fade = 0.6
+
+[sub_resource type="QuadMesh" id="Quad_screen"]
+size = Vector2(2, 2)
+
+[node name="Haze" type="Node3D" node_paths=PackedStringArray("mist", "god_rays")]
+editor_description = "The ground mist (a FogVolume over the whole map, banks from its 3D noise, tinted with the biome's fog colour, drifting with the wind) and the sun's god rays (a full-screen quad, god_rays.gdshader). The rig sets `sun` and `world_environment`."
+script = ExtResource("1_haze")
+mist = NodePath("GroundMist")
+god_rays = NodePath("GodRays")
+
+[node name="GroundMist" type="FogVolume" parent="."]
+size = Vector3(2600, 40, 2600)
+material = SubResource("Fog_mist")
+
+[node name="GodRays" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Quad_screen")
+material_override = SubResource("Mat_rays")

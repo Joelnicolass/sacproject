@@ -13,7 +13,7 @@ extends UnitPassive
 
 const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
-## The passive (data/catalog/abilities/rifl.tres): its numbers give the mana cost.
+## The passive (data/catalog/abilities/phoenix_fire_shield.tres): its numbers give the mana cost.
 @export var passive: AbilityType
 ## The fire it ignites with (data/catalog/spells/fireform.tres, fireform): the spell's amount, per second.
 @export var fire: SpellType

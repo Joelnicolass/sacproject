@@ -32,7 +32,7 @@ const PACE_SOURCE := &"lightning_charge"
 
 ## The discharge's bolt (lightning_strike.tscn).
 @export var bolt_scene: PackedScene
-## The passive (data/catalog/abilities/gcil.tres): its numbers give the amount 250, the range 30 and the bolt's damage 250.
+## The passive (data/catalog/abilities/lightning_charge.tres): its numbers give the amount 250, the range 30 and the bolt's damage 250.
 @export var passive: AbilityType
 ## Frames charged per point of damage taken from an ally / from anyone else.
 @export var ally_factor := 4.0

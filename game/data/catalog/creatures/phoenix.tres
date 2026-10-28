@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_g6wjd"]
 [ext_resource type="Texture2D" uid="uid://dxjogj4b33ybh" path="res://assets/original/ui/icons/grdr.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/rdra.tres" id="typed_rdra"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/rifl.tres" id="typed_rifl"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/phoenix_shot.tres" id="typed_rdra"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/phoenix_fire_shield.tres" id="typed_rifl"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/phoenix_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/phoenix.tscn" id="body_scene"]
 

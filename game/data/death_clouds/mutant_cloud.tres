@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_type.gd" id="1_type"]
 [ext_resource type="PackedScene" path="res://scenes/units/death_clouds/healing_shower.tscn" id="2_scene"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/tum@.tres" id="typed_tum_"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/healing_shower.tres" id="typed_tum_"]
 [ext_resource type="Resource" path="res://data/fx/rainbow.tres" id="fx_rainbow"]
 
 [resource]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nni0f"]
 [ext_resource type="Texture2D" uid="uid://cvg33nxgcefqx" path="res://assets/original/ui/icons/sohe.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/ehba.tres" id="typed_ehba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/gargoyle_shot.tres" id="typed_ehba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gargoyle_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/gargoyle.tscn" id="body_scene"]
 

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_dtvq4"]
 [ext_resource type="Texture2D" uid="uid://crppaxi3c5887" path="res://assets/original/ui/icons/eaf_h.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/plfa.tres" id="typed_plfa"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/gnome_shot.tres" id="typed_plfa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/thestor_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/thestor.tscn" id="body_scene"]
 

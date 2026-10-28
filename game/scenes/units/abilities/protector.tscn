@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/protector.gd" id="1_protector"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_life_shield"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/life_shield.tres" id="typed_life_shield"]
 
 [node name="Protector" type="Node"]
 process_physics_priority = -1

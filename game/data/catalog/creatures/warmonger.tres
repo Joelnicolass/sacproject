@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_n0fcr"]
 [ext_resource type="Texture2D" uid="uid://co2nm8vnn27cl" path="res://assets/original/ui/icons/nugf.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/fhga.tres" id="typed_fhga"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/wfhg.tres" id="typed_wfhg"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/tfhg.tres" id="typed_tfhg"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/warmonger_shot.tres" id="typed_fhga"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/firewalk.tres" id="typed_wfhg"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/warmonger_passive.tres" id="typed_tfhg"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/warmonger_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/warmonger.tscn" id="body_scene"]
 

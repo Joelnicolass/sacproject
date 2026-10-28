@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_oqlub"]
 [ext_resource type="Texture2D" uid="uid://cedbb5ksqd4wv" path="res://assets/original/ui/icons/glsd.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/cena.tres" id="typed_cena"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/necryl_shot.tres" id="typed_cena"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/necryl_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/necryl.tscn" id="body_scene"]
 

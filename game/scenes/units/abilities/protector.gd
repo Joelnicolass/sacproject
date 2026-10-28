@@ -11,7 +11,7 @@ extends AbilityEffect
 
 static var TICKS_PER_SECOND := MatchClock.TICKS_PER_SECOND
 
-## The shield it gives (data/catalog/abilities/hsba.tres, Life Shield): its duration is the shield's.
+## The shield it gives (data/catalog/abilities/life_shield.tres, Life Shield): its duration is the shield's.
 @export var life_shield: AbilityType
 ## Ticks after fire() at which the allies are shielded (the effect's first update).
 @export var allies_delay_ticks := 1

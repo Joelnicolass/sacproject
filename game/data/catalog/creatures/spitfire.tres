@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_l2bu3"]
 [ext_resource type="Texture2D" uid="uid://t5shjbaadrna" path="res://assets/original/ui/icons/sohf.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/fhba.tres" id="typed_fhba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/spitfire_shot.tres" id="typed_fhba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/spitfire_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/spitfire.tscn" id="body_scene"]
 

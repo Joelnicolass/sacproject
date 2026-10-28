@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wbuvc"]
 [ext_resource type="Texture2D" uid="uid://cm7p1cd07usua" path="res://assets/original/ui/icons/grps.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/psaa.tres" id="typed_psaa"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/cage_pull.tres" id="typed_psaa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/seraph_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/seraph.tscn" id="body_scene"]
 

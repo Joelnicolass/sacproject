@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_1aner"]
 [ext_resource type="Texture2D" uid="uid://bkpqfxsr2p23i" path="res://assets/original/ui/icons/nmuh.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_hsba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/life_shield.tres" id="typed_hsba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/druid_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/druid.tscn" id="body_scene"]
 

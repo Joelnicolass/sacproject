@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3nw7s"]
 [ext_resource type="Texture2D" uid="uid://dkuxo3breglsc" path="res://assets/original/ui/icons/nomd.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/mhba.tres" id="typed_mhba"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/ifna.tres" id="typed_ifna"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/hellmouth_shot.tres" id="typed_mhba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/devour.tres" id="typed_ifna"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/hellmouth_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/hellmouth.tscn" id="body_scene"]
 

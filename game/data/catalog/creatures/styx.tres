@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_8orfn"]
 [ext_resource type="Texture2D" uid="uid://d2qgjk4t3otu5" path="res://assets/original/ui/icons/nugd.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/dhga.tres" id="typed_dhga"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/dner.tres" id="typed_dner"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/tdhg.tres" id="typed_tdhg"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/styx_shot.tres" id="typed_dhga"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/rend_soul.tres" id="typed_dner"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/styx_passive.tres" id="typed_tdhg"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/styx_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/styx.tscn" id="body_scene"]
 

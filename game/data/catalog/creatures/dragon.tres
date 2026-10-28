@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_m3kw8"]
 [ext_resource type="Texture2D" uid="uid://cpyy0cwriafo2" path="res://assets/original/ui/icons/grdg.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/filb.tres" id="typed_filb"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/breath_of_life.tres" id="typed_filb"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/dragon_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/dragon.tscn" id="body_scene"]
 

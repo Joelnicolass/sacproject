@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/passives/fire_shield.gd" id="1_shield"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/rifl.tres" id="typed_passive"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/phoenix_fire_shield.tres" id="typed_passive"]
 [ext_resource type="Resource" path="res://data/catalog/spells/fireform.tres" id="typed_fire"]
 
 [node name="FireShield" type="Node"]

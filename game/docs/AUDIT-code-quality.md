@@ -51,7 +51,7 @@ Para cada sistema elegí una tarea típica. «Abrir» cuenta los archivos que ha
 | # | Archivo | Por qué hay que abrirlo |
 |---|---|---|
 | 1 | `data/catalog/creatures/firefist.tres` | `on_damage = ahtf.tres`; nada dice «furia» |
-| 2 | `data/catalog/abilities/ahtf.tres` | Es un `AbilityType` «Firefist Passive» con `mana_cost = 10`, `cast_range_m = 100`, `cooldown_s = 1.25` y `effect` vacío. Ninguno de esos números es la furia |
+| 2 | `data/catalog/abilities/firefist_fury.tres` | Es un `AbilityType` «Firefist Passive» con `mana_cost = 10`, `cast_range_m = 100`, `cooldown_s = 1.25` y `effect` vacío. Ninguno de esos números es la furia |
 | 3 | grep `ahtf` → `data/passives/firefist_fury.tres` | Acá está el número (`outgoing_melee_per_missing = 1.5`) y apunta **de vuelta** a `ahtf.tres` |
 | 4 | `scenes/units/unit.tscn:274-278` | `DamagePassive.types` lista a mano `taurock_hide.tres` y `firefist_fury.tres` |
 | 5 | `scenes/units/passives/damage_passive.gd:64-74` | Búsqueda inversa: recorre `types` hasta que `candidate.ability == body.type.on_damage` |
@@ -484,4 +484,4 @@ Archivos de referencia citados (todos bajo `/Users/joelsartori/Development/sacpr
 - **Hechizos:** `scenes/spells/caster.gd`, `scenes/spells/actions/spell_action.gd`, `scenes/spells/actions/thrown_action.gd`, `scenes/spells/actions/fireball_action.tscn`, `scenes/spells/spell_spawner.gd`, `scenes/spells/launch_point.gd`, `scenes/spells/fireball_projectile.gd`, `scenes/spells/cast_time.gd`, `scenes/orders/command_log.gd`.
 - **Partida y flujo:** `scenes/match/match.tscn`, `scenes/match/match_world.gd`, `scenes/match/match_clock.gd`, `scenes/core/catalog/game_data.gd`, `scenes/core/flow/sacrifice_flow.gd`, `scenes/components/health.gd`.
 - **IA:** `scenes/ai/ai_audit.gd`, `scenes/ai/ai_side.tscn`, `scenes/ai/brains/wizard_brain.gd`, `scenes/ai/perception/ai_perception.gd`, `scenes/ai/data/ai_tactics.gd`, `data/ai/tactics_hard.tres`.
-- **Datos y proyecto:** `data/catalog/creatures/firefist.tres`, `data/catalog/abilities/ahtf.tres`, `data/passives/firefist_fury.tres`, `.gitignore`, `project.godot`.
+- **Datos y proyecto:** `data/catalog/creatures/firefist.tres`, `data/catalog/abilities/firefist_fury.tres`, `data/passives/firefist_fury.tres`, `.gitignore`, `project.godot`.

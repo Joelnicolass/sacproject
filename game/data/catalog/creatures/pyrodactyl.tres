@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_8736l"]
 [ext_resource type="Texture2D" uid="uid://cc5jf8w74ht5x" path="res://assets/original/ui/icons/kacf.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/kcfa.tres" id="typed_kcfa"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/viscous_oil.tres" id="typed_kcfa"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/pyrodactyl_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/pyrodactyl.tscn" id="body_scene"]
 

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_cbtr8"]
 [ext_resource type="Texture2D" uid="uid://dkwt4qld5ypfe" path="res://assets/original/ui/icons/mag_h.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/acia.tres" id="typed_acia"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/sticky_bomb.tres" id="typed_acia"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/gammel_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/gammel.tscn" id="body_scene"]
 

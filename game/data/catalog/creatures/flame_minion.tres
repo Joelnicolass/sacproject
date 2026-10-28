@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_5iwmj"]
 [ext_resource type="Texture2D" uid="uid://r7hdquidis3h" path="res://assets/original/ui/icons/fplk.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/fkba.tres" id="typed_fkba"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/!nur.tres" id="typed__nur"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/flame_minion_shot.tres" id="typed_fkba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/run_away.tres" id="typed__nur"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/flame_minion_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/flame_minion.tscn" id="body_scene"]
 

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_4djl0"]
 [ext_resource type="Texture2D" uid="uid://bn6qifs6uyuky" path="res://assets/original/ui/icons/wlca.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/caba.tres" id="typed_caba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/flurry_shot.tres" id="typed_caba"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/flurry_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/flurry.tscn" id="body_scene"]
 

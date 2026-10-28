@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/passives/lightning_charge.gd" id="1_charge"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/lightning_strike.tscn" id="2_bolt"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_passive"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/lightning_charge.tres" id="typed_passive"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_charge"]
 properties/0/path = NodePath("Passives/LightningCharge:shown")

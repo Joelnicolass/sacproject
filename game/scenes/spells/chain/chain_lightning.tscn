@@ -7,7 +7,7 @@
 [ext_resource type="Resource" path="res://data/fx/spark.tres" id="5_spark"]
 
 [node name="ChainLightning" type="Node3D" node_paths=PackedStringArray("effect")]
-editor_description = "Chain Lightning (ntlc): 7 golpes, uno cada 20 ticks, al no aliado vivo mas cercano que no fue golpeado, en un radio que se achica (6-n)/6 del alcance. Cada salto es un rayo (ChainStrike). Para probar el rayo del exe: cambiar `beam` del hijo Strike por lightning_ltng.tres."
+editor_description = "Chain Lightning (ntlc): 7 golpes, uno cada 20 ticks, al no aliado vivo mas cercano que no fue golpeado, en un radio que se achica (6-n)/6 del alcance. Cada salto es un rayo (ChainStrike). Para probar el rayo del exe: cambiar `beam` del hijo Strike por lightning_dark.tres."
 script = ExtResource("1_hop")
 effect = NodePath("Strike")
 hits = 7

@@ -16,7 +16,7 @@ const GROUP := &"scar_marks"
 ## Not painted when the ground under it is this far (m) from the mark (a bolt that bursts in the air leaves nothing). 0 = always.
 @export_range(0.0, 40.0, 0.5, "suffix:m") var max_height_m := 0.0
 
-## Where the last mark was painted (world; INF before any): the capture harness points its camera there.
+## Where the last mark was painted (world; INF before any).
 static var last_painted_at := Vector3.INF
 
 
@@ -55,4 +55,4 @@ static func broadcast(scene: PackedScene, at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if texture != null else PackedStringArray(["Asigná `texture` (la imagen de la marca)."])
+	return PackedStringArray() if texture != null else PackedStringArray(["Assign `texture` (the picture of the mark)."])

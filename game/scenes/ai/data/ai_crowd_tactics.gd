@@ -6,8 +6,6 @@ extends Resource
 ## the wizard to an altar, and the focus of the side. It does not choose the wizard's spells
 ## (AiTactics). Embedded in each data/ai/tactics_*.tres; never changed while playing. The numbers
 ## are the original's, except the deviations named on each field.
-## Ref: shiny.d:1702-1710 canAccept, 3419 and 3433 recordUpdate, 2376 retreat (state.d:13608
-## retreatDistance), 2552 autoCapture, 2565 orderInteract, 3026-3050 pickGuardCreature.
 
 @export_group("Groups")
 ## A group of n takes a body within group_radius_m * min(1 + group_growth * n, group_cap) of its

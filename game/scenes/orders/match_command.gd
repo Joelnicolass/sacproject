@@ -7,8 +7,7 @@ extends Node
 ## GroupKeys reads the group keys and CommandFeedback pings and says. Take a child out and that command is gone.
 ## The right button belongs to OrderRadial: a tap calls `right_at`, a hold opens the radial menu, whose
 ## entries call `order_at`, `order_in_formation`, `retreat`, `use_ability` and `set_formation` here.
-## Ref: RFC-038; sacengine dagonBackend.d:947-1300.
-## Nothing is drawn as text (RFC-025c): what is armed goes to %Battle (CommandLog) and CommandCue draws it on the cursor.
+## Nothing is drawn as text: what is armed goes to %Battle (CommandLog) and CommandCue draws it on the cursor.
 
 ## The local player's command input (one per match).
 const GROUP := &"match_command"

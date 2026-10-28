@@ -7,13 +7,12 @@ extends RefCounted
 ##   A projectile (Rock, Wrath, Fireball, Swarm): the first body the ball would burst on that is not
 ##   the target blocks it. The bodies are the ones `ProjectileTargets.pick_body` takes (mask 3, live
 ##   bodies of Attackable, the caster skipped; the thrown balls skip their own side as
-##   wrathCollisionTarget does). A body that is not one of those (the terrain, a rock of the map)
+##   Wrath's own collision does). A body that is not one of those (the terrain, a rock of the map)
 ##   blocks the sight. Any other spell (Lightning): only the terrain and what is not a body block
 ##   it.
 ## Rays, not the ball's box (0.1 m Wrath, 2 m Rock): «aprox.», the line the human sees and one under
 ## it. It reads the world as it is, like the human's eye; the AI only asks it about a body it can
 ## aim at (AiCommandPort.can_aim, checked before).
-## Ref: RFC-053 053b, F371; executeBestCast's line of fire and sight, shiny.d:3246-3270.
 
 ## How the spell's effect travels (flight_of): nothing flies, a projectile, a thrown ball that
 ## skips its own side.

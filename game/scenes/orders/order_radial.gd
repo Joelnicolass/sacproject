@@ -8,7 +8,6 @@ extends Node
 ## that formation, in one submit. Releasing in the center cancels. Holding `order_menu` (Tab) the same time opens it at the pointer and releasing it runs the entry. `formation_1`..`formation_8`
 ## (Alt+1..8) store a formation of the catalog on the selection without the menu.
 ## The menu draws and picks; this node turns an entry into a call to MatchCommand. It knows no order rule.
-## Ref: RFC-038 038d; sacengine xmenuTime.
 
 enum Source { NONE, MOUSE, KEY }
 
@@ -30,7 +29,7 @@ var _pointer := Vector2.ZERO
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if menu == null or view == null or command == null:
-		return PackedStringArray(["Asigná menu, view y command."])
+		return PackedStringArray(["Assign menu, view and command."])
 	return PackedStringArray()
 
 

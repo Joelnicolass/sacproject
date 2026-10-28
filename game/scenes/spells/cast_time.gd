@@ -6,10 +6,8 @@ extends RefCounted
 ## (book_level), at most 5 levels, with integer division. A creature with a `cast_time_factor` below 1 (the Basilisk, 0.95)
 ## first keeps that share of its frames, rounded down.
 ## With no bonus and no factor it is the exported casting_time_s untouched.
-## Ref: sacengine `castingTime(level)`, sacspell.d:93-102
 
 ## Cast frames per second: `frames/(1.35f*60.0f)`; tools/import/export_stats.py CAST_FRAMES_PER_SECOND.
-## Ref: sacengine
 const FRAMES_PER_SECOND := 1.35 * 60.0
 const MAX_BONUS := 5
 

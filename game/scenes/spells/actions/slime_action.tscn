@@ -14,7 +14,7 @@ refuse_cc_protected = true
 
 [node name="Slime" type="Node"]
 script = ExtResource("1_script")
-editor_description = "cast_fx: slime_cast (cfx1, el SPEL leth y sacengine) o slime_cast_cst0 (cst0, el valor por defecto del exe)."
+editor_description = "cast_fx: slime_cast (cfx1, el SPEL leth) o slime_cast_cst0 (cst0, el valor por defecto del exe)."
 cast_fx = ExtResource("fx_slime_cast")
 affliction = ExtResource("3_type")
 target = SubResource("Target_enemy")

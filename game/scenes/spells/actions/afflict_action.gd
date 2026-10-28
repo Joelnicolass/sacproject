@@ -6,7 +6,6 @@ extends SpellAction
 ## valid, and when the casting time ends the body's Affliction of `affliction` takes it with the spell's numbers. One script for all of
 ## them; the state's behaviour is the Affliction's and what a hit does is Health's. It does not time the state nor draw it (the
 ## Affliction and its look do), and it does not scale the duration: the Affliction says how long it lasts.
-## Ref: sacengine castFreeze / freeze, castGraspingVines / graspingVines, castRingsOfFire / ringsOfFire, castSlime / slime.
 
 ## The state laid on the body (the child of its Afflictions that has this type).
 @export var affliction: AfflictionType
@@ -20,9 +19,9 @@ extends SpellAction
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if affliction == null:
-		warnings.append("Falta `affliction`: el estado que el hechizo pone en el blanco.")
+		warnings.append("`affliction` is missing: the state the spell puts on the target.")
 	if target == null:
-		warnings.append("Falta `target`: quién es un blanco válido.")
+		warnings.append("`target` is missing: who is a valid target.")
 	return warnings
 
 

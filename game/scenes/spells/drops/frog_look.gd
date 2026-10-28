@@ -5,7 +5,6 @@ extends Node
 ## The frog's picture, on every peer, from its replicated state: the falling frame while it falls, the jump's sixteen frames (30 a second)
 ## while it jumps, the sitting frame while it sits or is stuck to a body; and a croak on one jump in five. It does not move the frog nor
 ## decide when it jumps (FrogHop). A dedicated server or a headless run draws nothing.
-## Ref: sacengine updateRainFrog, renderer.d:2500-2516 (animationFrame 11 falling, 0..15 jumping, 15 sitting).
 
 @export var drop: ZoneDrop
 @export var sprite: AtlasSprite
@@ -39,4 +38,4 @@ func _process(delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null and sprite != null else PackedStringArray(["Faltan la rana (ZoneDrop) y su sprite (AtlasSprite)."])
+	return PackedStringArray() if drop != null and sprite != null else PackedStringArray(["The frog (ZoneDrop) and its sprite (AtlasSprite) are missing."])

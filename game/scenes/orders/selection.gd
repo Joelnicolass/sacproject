@@ -11,7 +11,6 @@ extends Node
 ## Groups 1–0: Ctrl+N defines, N selects (an empty group changes nothing), Shift+N adds.
 ## Summoned creatures join the selection and group 0.
 ## Own creatures show their health bar only while selected.
-## Ref: RFC-025; sacengine SideData (state.d:30258), canSelect (state.d:1134), numCreaturesInGroup, selectAll (state.d:29867), dagonBackend.d:1173-1198, newCreatureAddToSelection (state.d:29959), renderer.d:3890-3895.
 
 signal changed(units: Array)
 
@@ -21,19 +20,18 @@ const GROUP := &"selection"
 ## Who looks at this screen: only this seat's creatures can be selected.
 @export var seat: MpLocalSeat
 ## Rectangle drawn while dragging (white frame).
-## Ref: renderer.d:4030.
 @export var box: Control
-## Only this ground blocks the camera's line of sight for the rectangle (terrainLineOfSight).
+## Only this ground blocks the camera's line of sight for the rectangle.
 @export var ground: Node3D
-## 0 = no limit (selection, groups and the summon group); 12 = the original numCreaturesInGroup.
+## 0 = no limit (selection, groups and the summon group); 12 = the original's group size.
 @export var max_size := 0
 @export var group_count := 10
 ## groups[$-1] gathers new summons.
 @export var summon_group := 9
 @export var same_type_radius := 50.0
-## options.doubleClickSpeed: 20 frames at 60 fps.
+## 20 frames at 60 fps.
 @export var double_click_s := 0.333
-## renderer targetCacheDelta.
+## How far apart the two clicks of a double click may be, px.
 @export var double_click_px := 10.0
 
 ## Read-only mirror of size() so flows can assert it (AgentKit reads properties, not methods).
@@ -77,7 +75,6 @@ func has(unit: Variant) -> bool:
 ## The active ability the selection offers: the newest selected creature that has one wins
 ## (the creature's CRE8 priority is not exported). Null = none. MatchCommand
 ## (Ctrl+Q) and the roster's ability icon both read it, so they never disagree.
-## Ref: sacengine renderedSelection ability.
 func ability() -> AbilityType:
 	for unit in units():
 		if not unit is UnitBody:
@@ -223,10 +220,9 @@ func select_group(index: int) -> bool:
 	return true
 
 
-## A creature that was tied to a building leaves the selection and every group (unselect + removeFromGroups).
+## A creature that was tied to a building leaves the selection and every group (unselect + leave the groups).
 ## GuardianBond calls it on every peer when its `post_path` fills; the
-## creature can be selected again afterwards (canSelect does not exclude guardians).
-## Ref: state.d:10408-10410.
+## creature can be selected again afterwards (selecting does not exclude guardians).
 func drop(unit: Node3D) -> void:
 	var was_selected := has(unit)
 	_units.erase(unit)
@@ -336,7 +332,6 @@ func _push_back(group: Array, unit: Node3D) -> Array:
 
 ## Own creatures within same_type_radius of `unit`, closest first: of the same type that are not
 ## guardians; for a guardian, the guardians of the same building, whatever their type.
-## Ref: selectAll, state.d:29884-29896.
 func _same_type_near(unit: Node3D) -> Array:
 	var tag := str(unit.get("creature_tag"))
 	var bond := GuardianBond.of(unit)

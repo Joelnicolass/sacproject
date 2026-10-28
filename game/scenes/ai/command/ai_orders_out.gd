@@ -10,7 +10,6 @@ extends Node
 ## human's order. A body of another side the side does not see now is never taken: the creatures go
 ## where it was seen last. It does not cast (the port does) and it never touches a body. Child
 ## `Orders` of the port, which binds it and gives it its clock.
-## Ref: shiny.d:2350-2391 issueOrder, 2393-2478 orderIfChanged and the radius orders.
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 ## orders.gd has no class_name (other scripts preload it).
@@ -18,7 +17,6 @@ const _ORDERS := preload("res://scenes/orders/orders.gd")
 ## Two positions are «the same order» within this squared distance. The engine compares them
 ## exactly; in the port a body rests with a jitter of centimeters (BodyAvoidance, the ground), so
 ## the exact test would re-issue the order of every follower every 12 ticks. 1 m² = 1 m («aprox.»).
-## Ref: shiny.d:2398
 const SAME_POS_SQ := 1.0
 ## A body this close (squared meters) to the spot of its MOVE or ADVANCE has completed it: the order
 ## is retained and not issued again.
@@ -98,7 +96,7 @@ func flush_due() -> void:
 		t.ord_pos = goal
 
 
-## orderIfChanged. `target` is a track or null; `pos` a Vector3 or null.
+## `target` is a track or null; `pos` a Vector3 or null.
 func order_if_changed(
 	t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Variant
 ) -> void:
@@ -147,7 +145,7 @@ func order_if_changed(
 	t.ord_pos = goal
 
 
-## orderTargetRadius: inside `radius` of the target the body holds where it stands. Returns true
+## Inside `radius` of the target the body holds where it stands. Returns true
 ## when it is that close.
 func order_target_radius(
 	t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, radius: float
@@ -159,7 +157,7 @@ func order_target_radius(
 	return false
 
 
-## orderPosRadius: farther than `radius` from `pos` the body goes there, else it holds where it
+## Farther than `radius` from `pos` the body goes there, else it holds where it
 ## stands. Returns true when it is that close.
 func order_pos_radius(
 	t: AiTrack, ostate: AiCommandPort.AiOrder, pos: Vector3, radius: float
@@ -171,11 +169,10 @@ func order_pos_radius(
 	return true
 
 
-## orderInteract: too far from `anchor` (more than `radius`): go there (MOVE). Near: at a structure
+## Too far from `anchor` (more than `radius`): go there (MOVE). Near: at a structure
 ## stay by it and fight what comes (REFILL), at an enemy Manalith attack it (ATTACK; ADVANCE with
 ## more than one guardian, which the port does not count), else advance to the anchor (ADVANCE).
 ## Returns true when it is near.
-## Ref: shiny.d:2452-2478, 0x487550
 func order_interact(t: AiTrack, anchor: Vector3, target: AiTrack, radius: float) -> bool:
 	if radius * radius < t.cur_pos.distance_squared_to(anchor):
 		order_if_changed(t, AiCommandPort.AiOrder.MOVE, null, anchor)
@@ -207,14 +204,12 @@ func note(key: String, spent_us: int) -> void:
 ## «changed»: another ostate or target; «moved<3/<10/…»: the same order to a spot that moved
 ## (meters; «hold»: the body's own spot; «walking»/«still»: the body when it got it); «ended»: the
 ## same order again because the live one ended.
-## Ref: sacengine re-issues it too
 func _reason(t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Variant) -> String:
 	if t.ord_state != ostate or (target != null and t.ord_target != target.id):
 		return "changed"
 	if pos == null or t.ord_pos.distance_squared_to(pos as Vector3) <= SAME_POS_SQ:
 		# completed orders are retained: fixed-position orders are not re-issued once the body has
 		# arrived
-		# Ref: shiny.d:2400-2409
 		var fixed := ostate == AiCommandPort.AiOrder.MOVE or ostate == AiCommandPort.AiOrder.ADVANCE
 		if fixed and t.cur_pos.distance_squared_to(t.ord_pos) <= ARRIVED_SQ:
 			return ""
@@ -235,7 +230,6 @@ func _reason(t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Va
 
 
 ## A unit with an order in progress, or a wizard walking.
-## Ref: the live order sacengine compares with, shiny.d:2398
 func _has_live_order(t: AiTrack) -> bool:
 	if is_waiting(t.id):
 		return true
@@ -247,7 +241,7 @@ func _has_live_order(t: AiTrack) -> bool:
 	return orders_node != null and int(orders_node.get("command")) != UnitOrders.Command.NONE
 
 
-## issueOrder: the call the order becomes. Returns where the body was sent. A «retreat» of the
+## The call the order becomes. Returns where the body was sent. A «retreat» of the
 ## original (GUARD and REFILL with a target: stay near it and fight) is `guard` here: Orders
 ## `retreat` orders every creature of the side to the wizard.
 func _issue(t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Variant) -> Vector3:
@@ -272,7 +266,6 @@ func _issue(t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Var
 	# The game refuses «advance» and «attack» to a pacifist (Orders._own_units): the original AI
 	# keeps asking and is refused every time; the port does not call, so the Manahoars wait where
 	# they were summoned.
-	# Ref: sacengine order()
 	var type: Variant = t.node.get("type")
 	var fight := ostate == AiCommandPort.AiOrder.ATTACK or ostate == AiCommandPort.AiOrder.ADVANCE
 	if fight and type != null and (type as CreatureType).aggressiveness <= 0:
@@ -305,7 +298,6 @@ func _issue(t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Var
 
 ## The wizard walks: to `pos`, else to the target, else he stays. On GUARD or REFILL of a target he
 ## stops `wizard_stop_m` from it.
-## Ref: AiTactics.wizard_stop_m; shiny.d:2376 `ntt+0x2e4 + 10.0`
 func _walk_wizard(
 	t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Variant
 ) -> Vector3:

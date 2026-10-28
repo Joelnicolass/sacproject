@@ -5,7 +5,6 @@ extends ZonePulse
 ## and, if `damage_radius_m` says so, a splash of the spell's damage that falls off to nothing at that distance around the zone's
 ## first point. It does not throw or set anyone alight (ZoneBlast, ZoneHeat) nor time itself (ZonePulse). Server (or solo) only; the
 ## bursts reach every peer through FxBus.
-## Ref: sacengine updateVolcano (state.d:22353-22362, 22369).
 
 ## The burst scene played over the first point (it also carries the sound).
 @export var burst: PackedScene

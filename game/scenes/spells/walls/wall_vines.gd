@@ -5,7 +5,6 @@ extends MultiMeshInstance3D
 ## thickness, and rise to the height of the wall swaying and twisting until the wall sinks and they shrink back. One tube mesh drawn
 ## `count` times; the shader (wall_vine.gdshader) bends each by its own phase and growth, so no vine needs a skeleton. Presentation only,
 ## on every peer, from the wall's age and ends; it does not tie anybody (WallTouch).
-## Ref: sacengine Vinewall, makeVinewallVine (state.d:3813-3873, 20336-20368, 20412-20464; renderer.d:2232-2259).
 
 @export var wall: SpellWall
 @export_range(1, 400) var count := 180

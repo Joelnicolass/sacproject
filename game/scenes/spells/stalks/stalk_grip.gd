@@ -4,7 +4,6 @@ extends Node
 ## The body one stalk holds: it throws it into the air when the stalk catches it, keeps its centre on the tip while the stalk lifts it and
 ## throws it with the speed of the tip when it lets go. The only writer of the position of a body that hangs from a stalk. It does not
 ## say when to catch or release (Stalk does) and it does not land the body (Tumbling does). Server only.
-## Ref: sacengine updateMeanstalk, modes grabbing, holding and throwing (state.d:22618-22653, 22682-22688).
 
 var _body: Node3D
 var _tip := Vector3.ZERO
@@ -12,7 +11,7 @@ var _velocity := Vector3.ZERO
 
 
 func _ready() -> void:
-	## After the body has moved this tick, so the tip is the last word on where it hangs.
+	# After the body has moved this tick, so the tip is the last word on where it hangs.
 	process_physics_priority = 1
 	set_physics_process(false)
 

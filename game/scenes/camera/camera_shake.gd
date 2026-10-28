@@ -9,7 +9,6 @@ extends Node
 ##   heard from Events.body_hurt (every peer tells it), and from the `camera_trauma` of the FX near the camera (FxBus.played; `shake_map` gives the fall-off).
 ## - Trauma falls by `decay_per_s` a second. Offset = trauma² × `max_offset_m` × noise, roll = trauma² × `max_roll_deg` × noise,
 ##   both × FeelPrefs.shake_scale (0 = none, exactly).
-## Ref: RFC-053 053f (F375).
 
 ## Group a check counts (see `is_active`).
 const GROUP := &"feel_presentation"
@@ -39,7 +38,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if not prefs_warning.is_empty():
 		warnings.append(prefs_warning)
 	if shake_map == null:
-		warnings.append("Asigná `shake_map` (data/fx/shake_map.tres).")
+		warnings.append("Assign `shake_map` (data/fx/shake_map.tres).")
 	return warnings
 
 

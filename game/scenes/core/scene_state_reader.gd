@@ -15,7 +15,7 @@ static func nodes_of(state: SceneState) -> Dictionary:
 	if base != null:
 		nodes = nodes_of(base)
 	for index in state.get_node_count():
-		## A PackedScene state names the root "." and its children "./Child".
+		# A PackedScene state names the root "." and its children "./Child".
 		var path := String(state.get_node_path(index)).trim_prefix("./")
 		var props: Dictionary = nodes.get(path, {})
 		for slot in state.get_node_property_count(index):

@@ -5,7 +5,6 @@ extends SpellAction
 ## Rock (kcor): the rock rises out of the ground while the wizard casts and flies when the casting ends.
 ## The projectile is spawned when the cast starts and knows how many casting frames
 ## it has to wait; what it does after that is the projectile's.
-## Ref: sacengine castRock
 
 ## The rock scene (its root is a RockProjectile).
 @export var projectile: PackedScene
@@ -16,7 +15,7 @@ extends SpellAction
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if target == null:
-		warnings.append("Falta `target`: quién es un blanco válido.")
+		warnings.append("`target` is missing: who is a valid target.")
 	if projectile == null:
 		warnings.append("`projectile` is empty: drag the rock scene.")
 	return warnings

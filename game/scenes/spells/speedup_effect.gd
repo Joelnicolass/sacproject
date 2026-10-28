@@ -5,7 +5,6 @@ extends Node
 ## duration * 1000 / max health + 0.5 s. The factor is 1 + 0.75 * min(1, frames_left / 60):
 ## ×1.75, easing back to ×1 in the last second. Gives its factor to the body's PaceFactors (the one owner of speed_factor); a body without it (the Sac Doctor) gets speed_factor written directly.
 ## Server (or solo) only: the body is simulated there.
-## Ref: sacengine speedUp
 
 const NODE_NAME := "SpeedupEffect"
 ## The PaceFactors source of this effect.

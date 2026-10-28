@@ -11,7 +11,7 @@ extends Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if health != null else PackedStringArray(["Asigná en `health` la vida que se regenera."])
+	return PackedStringArray() if health != null else PackedStringArray(["Assign to `health` the health that regenerates."])
 
 
 func _physics_process(delta: float) -> void:

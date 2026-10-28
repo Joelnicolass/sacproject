@@ -8,8 +8,7 @@ extends SpellAction
 ## own altar closest to the wizard, where a ritual of Convert turns it into souls for him. If the cast is
 ## interrupted there is no doctor and the soul stays red and convertible. All the rules live in
 ## SacrificeSystem; this action is only the contract with
-## the Caster (RFC-021a). The ritual itself is Ritual.Kind.CONVERT (RFC-020e).
-## Ref: sacengine castConvert, state.d:10181-10196
+## the Caster. The ritual itself is Ritual.Kind.CONVERT.
 
 var _system: SacrificeSystem
 var _cast: SacrificeSystem.Cast

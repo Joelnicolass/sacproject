@@ -6,7 +6,6 @@ extends Node
 ## structure changed hands). It does not know what a job does: it says `job_due` and the side runs
 ## it. It also keeps how long each tick and each job took (diagnostic, never read by the
 ## simulation). Child `Clock` of ai_side.tscn.
-## Ref: shiny.d:459-488 run, 468 periods, 469 force masks, 504-514 scheduler, 517-546 forceFlags
 
 ## A job's time came (or something woke it): the side runs it now, before the next job is looked at.
 signal job_due(job: Job)
@@ -25,10 +24,8 @@ const FORCE_MASKS: Array[int] = [
 	ANY_WAKE,
 	Wake.REPLAN
 ]
-## First tick of each job. With all six at tick 0 every 60th tick ran them together (~2 ms); groups
-## and tasks start at 3 and 6 and perception at 1, so they no longer fall on the ticks of the replan
-## and the tasks: the same periods and order, the work spread over more ticks (measured in
-## ai_perf60: those ticks were the 1.7 % that set the p99).
+## First tick of each job. Groups and tasks start at 3 and 6 and perception at 1, so they do not
+## fall on the ticks of the replan: the same periods and order, the work spread over more ticks.
 const START_TICKS: Array[int] = [0, 0, 1, 3, 0, 6]
 
 @export_group("How often (at Normal pace)")

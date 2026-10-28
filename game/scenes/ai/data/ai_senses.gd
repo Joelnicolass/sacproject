@@ -7,7 +7,6 @@ extends Resource
 ## AiPlay.ages_for), so a difficulty that slows its clock stretches them the same. It does not say
 ## what the side sees (Vision does). Embedded in each data/ai/tactics_*.tres; never changed while
 ## playing. The numbers are the original's.
-## Ref: shiny.d:1044, 1053, 1065-1072, 1080, 1089, 1095 (16, 8, 32 and 8 ages of 6 ticks).
 
 @export_group("How often")
 ## A creature or a wizard is rated again (16 ages at Normal).

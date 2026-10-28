@@ -7,8 +7,6 @@ extends Node
 ## replan, tasks). The decisions are in the children and all that leaves goes through the port. Runs
 ## only where the game is simulated (solo or the server); a test scene can start it paused (`active`
 ## off). Take away a child and that behaviour is gone.
-## Ref: shiny.d:459-500 run; shiny.d:1129-1172 updateStatus, 1305-1346 updateReplan; shiny.d:575-584
-## botSpawned
 
 signal started
 

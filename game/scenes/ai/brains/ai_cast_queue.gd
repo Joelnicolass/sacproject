@@ -5,7 +5,6 @@ extends RefCounted
 ## before the ones with its score; an entry with the same spell tag replaces the old one. Entries
 ## are Dictionaries {forced (bool), score, target (AiTrack|null), obj (AiTrack|null), range, spell
 ## (Resource)}. The queue is emptied at every replan of the wizard. Static.
-## Ref: shiny.d:2638-2662 `enqueueCast`, 0x48ced0 + 0x48ce40; shiny.d:3333
 
 
 ## `forced`: the original's flag 1 (it goes first and waits for the mana it needs).
@@ -17,7 +16,6 @@ static func make(
 		"score": score,
 		"target": target,
 		# obj0 == 0 falls back to the target.
-		# Ref: shiny.d:2640
 		"obj": obj if obj != null else target,
 		"range": range_m,
 		"spell": spell,

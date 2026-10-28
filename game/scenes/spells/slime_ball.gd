@@ -4,7 +4,6 @@ extends FxScene
 ## The ball of slime that grows ten metres over a body while the wizard casts Slime and then falls on it. It is a presentation that FxBus
 ## plays on every peer (`play`), follows the body it was thrown at and frees itself when it lands (the state that lands is Slimed's). It does
 ## not apply the state nor splash: the Slimed state draws the splash when it goes on.
-## Ref: sacengine SlimeCasting (sacobject.d:2602-2612, renderer.d:2208-2231).
 
 ## The ball, a 1 m sphere under this node.
 @export var ball: MeshInstance3D

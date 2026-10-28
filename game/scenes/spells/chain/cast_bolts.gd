@@ -5,7 +5,6 @@ extends FxScene
 ## random point of his box (a bit larger than it) and rises a few metres. FxBus plays it on this peer only; the scene frees itself when
 ## the casting ends. It is a presentation that LaunchAction hands to FxBus.broadcast_scene (`play`); it hurts nothing and the cast does
 ## not wait for it.
-## Ref: sacengine updateChainLightningCasting (state.d:18207-18224), chainLightningCastingEffect.
 
 ## The little bolt (a BeamType under data/fx/beams/).
 @export var beam: BeamType

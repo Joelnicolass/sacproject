@@ -4,7 +4,6 @@ extends Node
 ## What the player's commands answer with: the ping a cast or an order leaves at its point (a cone, local only), the
 ## line on %Battle (CommandLog: the cue flashes `ncst` for a refusal) and the creatures that join the selection when
 ## they are summoned. It decides no order and no cast.
-## Ref: RFC-025c; sacengine command cone, state.d:29261-29264.
 
 ## The cone's color by order.
 const ORDER_TONE := {
@@ -75,7 +74,6 @@ func _on_unit_entered(unit: Node) -> void:
 
 
 ## The owner's new creature joins the selection.
-## Ref: sacengine newCreatureAddToSelection.
 func _on_unit_summoned(unit: Node) -> void:
 	if seat != null and is_instance_valid(unit) and seat.is_mine((unit as UnitBody).owner_slot):
 		_selection.add_summoned(unit as UnitBody)

@@ -7,7 +7,6 @@ extends Node3D
 ## The server decides when a post is born; `posts` (metres along the wall and the tick of birth, sorted by metre) is replicated, and every
 ## peer derives a post's height and size from it and the wall's age. It draws each as a violet bubble with a ring of sparks over it. It does
 ## not hurt anybody (FenceZap).
-## Ref: sacengine updateFence, makeFencePost, updateFencePost (state.d:20712-20752, 20755-20806; renderer.d:632-646).
 
 ## A post was born (server only): `at` is its place. FenceZap throws its first bolts.
 signal post_born(at: Vector3)
@@ -32,7 +31,7 @@ var posts := PackedVector2Array()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if wall != null else PackedStringArray(["Falta el SpellWall."])
+	return PackedStringArray() if wall != null else PackedStringArray(["The SpellWall is missing."])
 
 
 func _ready() -> void:

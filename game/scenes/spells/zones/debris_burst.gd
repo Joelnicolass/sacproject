@@ -38,4 +38,4 @@ func play(_params: Dictionary) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if piece != null else PackedStringArray(["Falta la roca (piece): una escena de DebrisPiece."])
+	return PackedStringArray() if piece != null else PackedStringArray(["The rock (piece) is missing: a DebrisPiece scene."])

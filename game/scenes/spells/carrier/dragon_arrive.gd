@@ -5,7 +5,6 @@ extends CarrierArrive
 ## and when it reaches a body it hurts everything around with the spell's splash, sets it ablaze for a second and flies on to a point
 ## before it looks for another target. Its ChainHop says who was hit and whom to fly to next (a fixed radius, up to `hits`); after
 ## `misses_allowed` failed searches, or with the chain full, the dragon shrinks away. It does not fly (SpellCarrier).
-## Ref: sacengine updateDragonfirePosition, updateDragonfireTarget (state.d:18801-18856).
 
 ## Who was hit and who is next.
 @export var chain: ChainHop
@@ -66,7 +65,7 @@ func arrive(carrier: SpellCarrier) -> void:
 		_wander(carrier)
 
 
-## The splash at the dragon, each body in it set ablaze: dealSplashSpellDamageAt with DamageMod.ignite and setAblaze.
+## The splash at the dragon, each body in it set ablaze: splash spell damage with DamageMod.ignite.
 func _burst(carrier: SpellCarrier) -> void:
 	var center := carrier.global_position
 	var tree := carrier.get_tree()

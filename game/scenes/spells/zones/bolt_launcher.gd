@@ -5,7 +5,6 @@ extends Node
 ## Cloudkill's bolt: when its ZoneDropper says where, a lightning bolt leaves the cloud for the body (or the point of the land) and, when
 ## it arrives, its splash hurts what stands near. The bolt (LightningStrike) does the flight and the damage to the body it reaches; this
 ## adds only the splash. It does not choose where (ZoneDropper). Server (or solo) only.
-## Ref: sacengine updateCloudkill (state.d:22087-22101); REA CloudKillBoltRun 0x420600 (900 and a 5 m splash).
 
 @export var zone: GroundZone
 @export var dropper: ZoneDropper
@@ -32,4 +31,4 @@ func _splash(body: Node3D, at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and dropper != null and bolt != null and cloud_at != null else PackedStringArray(["Faltan la zona, su ZoneDropper, el rayo y la nube (Marker3D)."])
+	return PackedStringArray() if zone != null and dropper != null and bolt != null and cloud_at != null else PackedStringArray(["The zone, its ZoneDropper, the bolt and the cloud (Marker3D) are missing."])

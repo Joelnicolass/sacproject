@@ -7,7 +7,6 @@ extends Node
 ## killing) and goes on to the next, until it has struck `SpellType.max_targets` of them or the spell's duration is over; then it leaves. Each tick it
 ## looks again, so it changes its mind if something comes closer. It does not kill (TargetEffect) and it does not draw (the look follows `phase`:
 ## CASTING, FLYING = walking, STRIKING, LEAVING). Server (or solo) only.
-## Ref: sacengine updateDeath, Death (state.d:4262-4298, 22153-22274).
 
 @export var carrier: SpellCarrier
 @export var groups: Array[StringName] = [&"unit"]
@@ -35,7 +34,7 @@ var _lifetime := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
 
 ## Server or solo. The cast started: it appears where it is and looks where the wizard looks, for `cast_ticks`.
 func begin(wizard: Node3D, cast_ticks: int) -> void:

@@ -5,7 +5,6 @@ extends SpellProjectile
 ## fifteen streams a second from the wizard to it (StreamerFx), in the original's rhythm: every second tick, one time in two. It lasts as
 ## long as the revival and frees itself. Presentation only, on every peer: it never touches the creature (FastRevive does) and makes
 ## nothing in a headless process.
-## Ref: sacengine AnimateDead and animateAnimateDead (state.d:10865-10880, 18335-18353).
 
 ## One stream. Its look is its own BeamType.
 @export var streamer_scene: PackedScene

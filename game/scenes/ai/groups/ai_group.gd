@@ -3,7 +3,6 @@ extends RefCounted
 
 ## A group of nearby bodies of one relation (AiTrack.Relation): center, who is in it, and the
 ## aggregates the stance and the threat read. Made by AiGroups every 60 ticks and refreshed every 6.
-## Ref: shiny.d:105-124 `AIGroup`, slot-4 groups.
 
 var prio := 0
 var members: Array[AiTrack] = []

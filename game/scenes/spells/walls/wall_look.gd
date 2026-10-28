@@ -5,7 +5,6 @@ extends MeshInstance3D
 ## ends, thickness and height. Every frame it hands the shader where the ends are and how tall the wall stands now; once it lays down the
 ## land height along the wall (129 samples) so the strip follows the ground. The material is the scene's own, copied per wall, so two walls
 ## do not share their ends. Presentation only, on every peer; it does not hurt anybody (WallTouch).
-## Ref: sacengine makeWallMesh, Firewall.scale / height (renderer.d:2639-2671; state.d:3690-3697).
 
 @export var wall: SpellWall
 ## Samples of the land (the strip has one section more than this minus one).

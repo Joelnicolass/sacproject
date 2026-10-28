@@ -6,7 +6,6 @@ extends Node
 ## the wait. Arming and clearing live here; each kind of command reads the state and applies its own click.
 ## Disarming (`mode = ""`) also clears %Battle, so the cursor icon goes away with it. An armed spell or ability stays
 ## armed after a refused click, as in the original.
-## Ref: sacengine dagonBackend.d:1236-1250.
 
 const _WORLD := preload("res://scenes/match/match_world.gd")
 const _SELECTION := preload("res://scenes/orders/selection.gd")
@@ -79,7 +78,7 @@ func _on_local_wizard(wizard: Node3D) -> void:
 
 
 func _on_feedback(text: String) -> void:
-	## The answer to the pending cast is the one that is not a refusal (by key, never by the spell's words).
+	# The answer to the pending cast is the one that is not a refusal (by key, never by the spell's words).
 	if (mode == "spell" or mode == "structure") and not cast_pending.is_empty() and not _log.is_reason(text):
 		mode = ""
 		cast_pending = ""

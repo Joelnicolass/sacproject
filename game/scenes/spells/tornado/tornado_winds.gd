@@ -4,7 +4,6 @@ extends Node
 ## The four winds that bend the funnel: each starts at a random angle of this cast and turns at its own rate; every peer counts its own ticks,
 ## so the bend is the same everywhere with nothing replicated (a peer that joins late is a few ticks off, which nobody can see). The only
 ## source of the winds' angles: TornadoLift reads them to find the axis and TornadoLook to draw it.
-## Ref: sacengine castTornado wobblePhases and updateTornado (state.d:11477, 22865-22868).
 
 @export var zone: GroundZone
 

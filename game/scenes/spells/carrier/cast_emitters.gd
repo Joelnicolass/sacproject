@@ -4,7 +4,6 @@ extends FxScene
 ## The sprites a spell throws at a place while the wizard casts it (the earth that rises where Bovine Intervention's cow will come out), played on
 ## every peer by FxBus.broadcast_scene: its SpriteEmitter children are on for as many ticks as the cast lasts, then off, and the node frees itself
 ## when the last sprite is gone. Presentation only. It hurts nobody and does not follow anything.
-## Ref: sacengine animateGroundForCow (state.d:21665-21683).
 
 ## Seconds the last sprites need to fade after the emitters go off.
 @export_range(0.0, 5.0, 0.1, "suffix:s") var tail_s := 1.0

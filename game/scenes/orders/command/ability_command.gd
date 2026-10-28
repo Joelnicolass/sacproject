@@ -1,10 +1,9 @@
 class_name AbilityCommand
 extends Node
 
-## The selection's active ability. One that needs a target (requiresTarget = flags != 0) arms the next left click; any
+## The selection's active ability. One that needs a target (its target flags are not 0) arms the next left click; any
 ## other is used at once with no target. The click (screen or minimap) looks for a body, and for souls and corpses when
 ## the ability aims at them. Every selected creature whose active ability is the armed one gets the order.
-## Ref: RFC-030 030p-b; sacengine selectAbility (dagonBackend.d:152-178), renderedSelection ability (state.d:30231).
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
 
@@ -38,7 +37,7 @@ func use() -> void:
 
 func click_at(screen: Vector2) -> void:
 	var body := ray.body_under(screen, false)
-	## RFC-030 030p-b: an ability that aims at souls or corpses (Breath of life) looks for them after the living body.
+	# An ability that aims at souls or corpses (Breath of life) looks for them after the living body.
 	if body == null and _aims_at_dead(armed.ability):
 		body = ray.soul_under(screen)
 		if body == null:
@@ -62,7 +61,6 @@ func _aims_at_dead(ability: AbilityType) -> bool:
 
 ## Every selected creature whose active ability is `ability` gets the order; the others skip it
 ## `point` null = no target (the creature's own spot).
-## Ref: applyOrder, state.d:29256.
 func _apply(ability: AbilityType, point: Variant, body: Node3D) -> bool:
 	if ability == null:
 		return false

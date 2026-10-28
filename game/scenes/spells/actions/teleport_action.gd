@@ -4,16 +4,14 @@ extends SpellAction
 
 ## Teleport (elet): the wizard and the creatures of his side near him jump to an own building.
 ## The click is a standing building of his own (OWN_BUILDING: Manalith, altar, shrine) at any distance
-## (flags 4112 = targetStructures | onlyAlly, range 5000). When the casting ends, he and every creature of
+## (an own structure, range 5000). When the casting ends, he and every creature of
 ## his within `effect_range` (30) of him go to `effect_range` from the building, on the side he came from,
 ## keeping their formation.
-## Not carried: the dead, Sac Doctors, guardians and, a port decision
-## (RFC-021 risk 3), any creature in group «rooted» or held by a doctor. The destination follows the
+## Not carried: the dead, Sac Doctors, guardians and, a port decision, any creature in group «rooted» or held by a doctor. The destination follows the
 ## building until the casting ends; if it falls meanwhile, the last one is used.
 ## A wizard who dies in the middle moves nobody (the Caster calls cancel()).
 ## The arithmetic is TeleportMath; the body moves itself (warp_to). Here only the rules, and the cosmetic
 ## burst, which is local presentation on every peer (nothing is drawn on the dedicated server).
-## Ref: RFC-021c; sacengine teleport / getTeleportPosition, state.d:10213-10228, 10313-10327; canTeleport, state.d:10306-10311; updateTeleportCasting, state.d:16056-16072
 
 ## Groups a building can be in to be aimed at. A shrine would add its own.
 @export var target_groups: PackedStringArray = PackedStringArray(["structure", "altar"])
@@ -86,7 +84,6 @@ func cancel() -> void:
 
 ## A standing building of `slot` that can be aimed at. Altars count while they stand; any other building,
 ## while it has life. `picked` comes from the client.
-## Ref: state.d:30786-30790
 func is_building_of(slot: int, picked: Node3D) -> bool:
 	if picked == null or not is_instance_valid(picked) or not picked.is_inside_tree() or picked.is_queued_for_deletion():
 		return false

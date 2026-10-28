@@ -7,10 +7,8 @@ extends Node
 ## land, says `landed` and ends. The horizontal pace is the distance left over the ticks left (twice that until the last two ticks), so it always
 ## arrives on time, however the target runs. It does not hurt (TargetEffect on `arrived`, CarrierLanding on `landed`) and it does not draw.
 ## Server (or solo) only.
-## Ref: sacengine updateBovineIntervention (state.d:21788-21819), BovineIntervention.travelTime / maxHeight (state.d:4162-4174).
 
 ## Below this under the void it is gone.
-## Ref: sacengine gibDepth
 const _VOID_DEPTH_M := 25.0
 
 @export var carrier: SpellCarrier
@@ -25,7 +23,7 @@ var _tick := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
 
 
 ## Server or solo. The fall starts on the carrier's place (buried), aimed at `target`; the cow looks at it.

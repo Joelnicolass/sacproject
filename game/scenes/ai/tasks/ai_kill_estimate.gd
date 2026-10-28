@@ -10,9 +10,8 @@ extends RefCounted
 ## WoundedAllyPolicy) and the heal effect that shows on the target (HealEffect, the glow a human
 ## sees). The health is AiPerception.health_of: the last seen of a body the side does not see now.
 ## Static: FocusTask and AttackPhase call it, the suite tests the pure parts.
-## Ref: RFC-053 053d (F373).
 
-## Only healers this close to the target count (RFC-053 §9 053d).
+## Only healers this close to the target count.
 const HEAL_SEEN_M := 30.0
 ## The shortest cadence a blow or a shot is taken to have (a type with no animation data).
 const MIN_PERIOD_S := 0.5

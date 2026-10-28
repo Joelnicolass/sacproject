@@ -12,7 +12,7 @@ const HOST_SLOT := 1
 ## Empty when the rules refuse `options` (a map without a start for each seat of the mode, an unknown key).
 static func build(host_pick: WizardPick, options: Dictionary) -> Dictionary:
 	var rules := SacrificeRoomRules.new()
-	## Not in the tree, so its _ready does not run: the test maps follow the same flag here.
+	# Not in the tree, so its _ready does not run: the test maps follow the same flag here.
 	rules.include_test_maps = MpBoot.user_flag("room-test-maps")
 	var ticket := _build_with(rules, host_pick, options)
 	rules.free()
@@ -33,10 +33,10 @@ static func _build_with(rules: SacrificeRoomRules, host_pick: WizardPick, option
 		seats.append({"slot": slot, "token": "", "meta": {}})
 		open_picks.append(slot)
 	var ticket := rules.build_ticket(seats, options)
-	## The kit writes the token of each seat; the rows here carry only the slot and the pick.
+	# The kit writes the token of each seat; the rows here carry only the slot and the pick.
 	for row: Dictionary in ticket["seats"]:
 		row.erase("token")
 	ticket["open_picks"] = open_picks
-	## The rules' own generator is seeded in their _ready, which a node outside the tree never runs.
+	# The rules' own generator is seeded in their _ready, which a node outside the tree never runs.
 	ticket["seed"] = MatchSeed.draw()
 	return ticket

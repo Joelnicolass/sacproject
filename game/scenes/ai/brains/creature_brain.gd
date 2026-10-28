@@ -2,17 +2,15 @@ class_name CreatureBrain
 extends Node
 
 ## The brain of a creature of the AI. What a creature does when its record asks it to think. First,
-## `autoCapture`: a body with mana that dropped to its minimum goes to the best source it knows (a
+## A body with mana that dropped to its minimum goes to the best source it knows (a
 ## ready Manahoar of its side, weighed x1000, or an own mana building) and stays by it. Then, by the
 ## kind of the record's task: guard stays by the target and fights what comes (REFILL, radius
-## `retreat_hold_m`), capture goes to the anchor of the record (orderInteract: move there, then
-## guard it or advance), focus (F373) attacks the record's target, idle nothing, since the record's
+## `retreat_hold_m`), capture goes to the anchor of the record (order_interact: move there, then
+## guard it or advance), focus attacks the record's target, idle nothing, since the record's
 ## leader or the creature's own aggression decide. The wizard calls it when he has nothing to cast,
 ## as the original does.
-## Ref: RFC-024 §3.1 `CreatureBrain`; shiny.d:2557-2570 `t4oBrain`, 2546-2555 `autoCapture`.
 
 ## A body that goes to refill holds this close to the source: a building, a Manahoar.
-## Ref: shiny.d:2518-2545
 const BUILDING_HOLD_M := 50.0
 const MANAHOAR_HOLD_M := 40.0
 ## A Manahoar weighs this much more than a mana building as a source.
@@ -27,7 +25,6 @@ var play: AiPlay
 
 
 ## t4oBrain. Returns true when it handled the case.
-## Ref: shiny.d:2557-2570
 func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> bool:
 	if auto_capture(t):
 		return true
@@ -46,12 +43,12 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> bool:
 				)
 			return true
 		AiTask.Kind.CAPTURE:
-			# thaum: (1 - value6c) * 160, with value6c the wizard's threat (a creature's is 0).
+			# (1 - value6c) * interact_reach_m, with value6c the wizard's threat (a creature's is 0).
 			var reach := AiField.f32((1.0 - t.value_6c()) * play.tactics.crowd.interact_reach_m)
 			port.orders.order_interact(t, record.anchor, record.target, reach)
 			return true
 		AiTask.Kind.FOCUS:
-			# RFC-053 053d (F373): attack the target the side committed to, the order of a human's
+			# Attack the target the side committed to, the order of a human's
 			# right click.
 			if record.target != null and AiWizardBrain.target_alive(record.target):
 				port.orders.order_if_changed(t, AiCommandPort.AiOrder.ATTACK, record.target, null)
@@ -59,11 +56,10 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> bool:
 	return true
 
 
-## autoCapture: a body with a mana pool whose mana is not above its minimum (`minManaCost`; a wizard
+## A body with a mana pool whose mana is not above its minimum (`min_mana_cost`; a wizard
 ## with a creature to summon at the head of his queue: 5/4 of its cost) looks for the best source of
 ## mana within 3620 m of itself and, if it is not already within the radius of it (50 m a building,
 ## 40 m a Manahoar), guards it.
-## Ref: shiny.d:2546-2555, 0x487600
 func auto_capture(t: AiTrack) -> bool:
 	if (
 		perception == null
@@ -105,8 +101,7 @@ func auto_capture(t: AiTrack) -> bool:
 	return true
 
 
-## nodeSlot22: the mana a body must be above to stay where it is.
-## Ref: shiny.d:2498-2512
+## The mana a body must be above to stay where it is.
 func _min_mana(t: AiTrack) -> int:
 	if t.kind == AiTrack.Kind.WIZARD and not t.cast_queue.is_empty():
 		if perception.own_desecration():
@@ -132,12 +127,11 @@ static func _respawning(t: AiTrack) -> bool:
 	return t.kind == AiTrack.Kind.WIZARD and (t.node as WizardBody).is_ghost()
 
 
-## findBestCaptureTarget: among the own and ally bodies and structures that are READY (a Manahoar
+## Among the own and ally bodies and structures that are READY (a Manahoar
 ## that works, a standing mana building with nothing on top) in the region of `pos`, the one that
 ## weighs most: 1 within 1 m, falling to 0 at `radius`; x1000 a Manahoar (a building: x its mana
 ## yield, which the port does not export: 1, «aprox.»). Returns {node, radius} or {} (50 m for a
 ## building, 40 m for a Manahoar).
-## Ref: shiny.d:2518-2545, 0x485a40
 func find_best_capture_target(pos: Vector3, radius: float) -> Dictionary:
 	var best := 0.0
 	var found: AiTrack

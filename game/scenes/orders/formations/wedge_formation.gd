@@ -2,7 +2,6 @@ class_name WedgeFormation
 extends FormationType
 
 ## The wedge: a V pointing at the front, its tip `3·0.5·√2·scale` ahead of the order point.
-## Ref: state.d:467-472.
 
 ## On an attack the wedge has no advance: the tip stands on the order point.
 @export var attack_forward := true

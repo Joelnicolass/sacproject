@@ -3,7 +3,6 @@ extends FormationType
 
 ## The formations laid in rows: line, flanks, phalanx and skirmish. Rows of `row_size` bodies stand one
 ## behind the other, `spacing` apart (an extension: the original cuts at 12 bodies); 0 = a single row.
-## Ref: state.d:429-475.
 
 enum Anchor { CENTER, LEFT, RIGHT }
 

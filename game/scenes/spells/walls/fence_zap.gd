@@ -7,7 +7,6 @@ extends Node
 ## more charge than the other (waiting 1 to 2 s between arcs); and a post sometimes discharges to the ground 5 to 15 m away. Charge moves
 ## with every bolt and the posts share what is left. A new post throws three to five bolts at itself from 10 m. It does not make or place the
 ## posts (FencePosts) and the bolt is drawn by FxBus. Server (or solo) only; its dice are the match's, seeded by the wall.
-## Ref: sacengine updateFence, makeFencePost, Fence enums (state.d:3963-3991, 20729-20744, 20819-20893).
 
 @export var wall: SpellWall
 @export var posts: FencePosts
@@ -29,7 +28,7 @@ var _right := {}
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if wall != null and posts != null and bolt != null else PackedStringArray(["Faltan wall, posts y bolt."])
+	return PackedStringArray() if wall != null and posts != null and bolt != null else PackedStringArray(["The wall, posts and bolt are missing."])
 
 
 func _ready() -> void:

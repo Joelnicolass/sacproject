@@ -2,9 +2,8 @@ class_name Refusal
 extends RefCounted
 
 ## Why a command did not start. A key, never the words a player reads: the server answers with
-## it, `CueSet.refusals` maps it to a cue and the text on screen is `Refusal.text(key)` (translated, RFC-045b).
+## it, `CueSet.refusals` maps it to a cue and the text on screen is `Refusal.text(key)` (translated).
 ## Nobody compares display text; compare these keys.
-## Ref: RFC-045a
 
 const NO_MANA := &"no_mana"
 const COOLING := &"cooling"

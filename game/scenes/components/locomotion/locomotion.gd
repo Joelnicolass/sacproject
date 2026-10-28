@@ -5,7 +5,6 @@ extends Node
 ## avoidance, the turn toward where it really goes, the edge of the land, the slide and the fall into a hole. Units and wizards share it.
 ## Not: where to go (the states and the orders), when to step (the body calls `begin` and `finish` in its own order: this node never
 ## processes by itself) nor what a fall means (it only says `fell`).
-## Ref: sacengine stats.d:104 (ground creatures turn at π rad/s), state.d:14800-14821 (gibDepth).
 
 ## The slide is done: the body presents its pose.
 signal moved
@@ -35,7 +34,7 @@ var _walk_intent := false
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null or afflictions == null or avoidance == null:
-		warnings.append("Asigná body, afflictions y avoidance.")
+		warnings.append("Assign body, afflictions and avoidance.")
 	return warnings
 
 
@@ -95,7 +94,7 @@ func flat_distance(node: Node3D) -> float:
 
 func _slide() -> void:
 	var delta := body.get_physics_process_delta_time()
-	## A ground creature faces where it really goes (avoidance may bend the wanted velocity); pushes never reach here.
+	# A ground creature faces where it really goes (avoidance may bend the wanted velocity); pushes never reach here.
 	if _walk_intent and _flat_speed() > face_min_speed:
 		turn_toward(Vector3(body.velocity.x, 0.0, body.velocity.z), delta)
 	if air != null:

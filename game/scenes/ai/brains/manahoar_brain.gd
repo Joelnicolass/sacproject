@@ -8,12 +8,10 @@ extends Node
 ## is more than one. In the best group the member that lacks most (2 * max - current) is guarded
 ## (AiOrder.GUARD: stay near it and feed it). If there is no group worth going to, it thinks like
 ## any creature (t4oBrain).
-## Ref: RFC-024 §3.1 `ManahoarBrain`; shiny.d:2572-2608 `mahoBrain`, 0x487ae0.
 
 ## A group within this of the Manahoar weighs 1.
 const NEAR_M := 10.0
 ## Retail cutoff and scale: 3620 m, 0.00027700831.
-## Ref: shiny.d:2581-2582
 const CUTOFF_M := 3620.0
 const SCALE := 0.00027700831
 

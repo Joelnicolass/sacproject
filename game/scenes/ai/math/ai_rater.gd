@@ -6,8 +6,6 @@ extends RefCounted
 ## summon (the phases and tasks ask it). Sums stay double and every accumulator is a
 ## PackedFloat32Array (each store is a float32), so a match repeats. The stats are read in the
 ## creature file's scale: see stats_of().
-## Ref: RFC-024 §3.1 `AiRater`; shiny.d:109-130 (accumulator), 199-263 (rater1 formulas), 207-229
-## (combine, divide, rate, rateWithBase), 230-241 (`typeStats`).
 
 const RATE_MELEE := 0
 const RATE_ABILITY := 1
@@ -16,13 +14,11 @@ const RATE_HEALTH_RANGED := 3
 const RATE_SPEED := 4
 
 ## The scales of the rater: a thousandth, a flier's range scale and the weight of an ability.
-## Ref: shiny.d:197-199: 0x4bb7a0, 1/980 (0x4bcde0), 0.04 (0x4bcdd8).
 const MILLI := 0.001
 const INV_FLY := 1.0 / 980.0
 const ABILITY_K := 0.04
 
 ## Every wizard is rated with these stats, whatever his file says.
-## Ref: thaum's wizd loader, shiny.d:235.
 const WIZARD_STATS := {
 	"melee_accuracy": 1250,
 	"melee_evasion": 1250,
@@ -46,7 +42,6 @@ static func new_acc() -> PackedFloat32Array:
 
 
 ## Round to nearest, ties to even.
-## Ref: MSVCRT _ftol, shiny.d:20-26.
 static func ftol(x: float) -> int:
 	var f := floorf(x)
 	var d := x - f
@@ -78,7 +73,6 @@ static func stats_of(type: CreatureType) -> Dictionary:
 
 
 ## Ratings 0, 2, 3 and 4 from the stats.
-## Ref: shiny.d:251-262 `fillStats`.
 static func fill_stats(acc: PackedFloat32Array, ts: Dictionary) -> void:
 	acc[RATE_MELEE] = float(ts["melee_strength"]) * (float(ts["melee_accuracy"]) * MILLI)
 	var unk11k := AiField.f32(float(ts["melee_evasion"]) * MILLI)
@@ -101,7 +95,6 @@ static func fill_stats(acc: PackedFloat32Array, ts: Dictionary) -> void:
 ## What one ability adds to rating 1: melee_accuracy*0.001*ai_worth * (ranged_accuracy*k*range * (1
 ## - f)) * 0.04, with f = cost/mana when the mana is above the cost and 1 otherwise; k = 0.001, or
 ## 1/980 for a flier.
-## Ref: shiny.d:243-249 `abilityAcc` (`amount2` is ai_worth, `unk10` the melee accuracy).
 static func ability_acc(
 	acc: PackedFloat32Array,
 	ai_worth: float,
@@ -120,7 +113,6 @@ static func ability_acc(
 
 ## The worth of a creature a wizard may summon: the stats, then every ability of the type with the
 ## type's own mana. `abilities` are AbilityType (ai_worth, cast_range_m, mana_cost).
-## Ref: shiny.d:265-281 `fillByTag`.
 static func fill_by_tag(type: CreatureType, abilities: Array) -> PackedFloat32Array:
 	var acc := new_acc()
 	var ts := stats_of(type)
@@ -144,7 +136,6 @@ static func fill_by_tag(type: CreatureType, abilities: Array) -> PackedFloat32Ar
 ## The worth of a body on the field, with its mana now: creatures use their abilities that are
 ## attacks on creatures (AbilityType.is_creature_attack); a wizard adds its book (spells with an AI
 ## phase: ai_worth*range*(1-f)*0.04). `ts` from stats_of() or WIZARD_STATS.
-## Ref: shiny.d:283-306 `fillFromObject`.
 static func fill_from_object(
 	ts: Dictionary, current_mana: int, abilities: Array, spells: Array
 ) -> PackedFloat32Array:
@@ -181,14 +172,12 @@ static func fill_from_object(
 
 
 ## Mixes two ratings: a = wB*b + wA*a, the five elements.
-## Ref: shiny.d:207-209 `combine` (0x4891e0).
 static func combine(a: PackedFloat32Array, w_a: float, b: PackedFloat32Array, w_b: float) -> void:
 	for i in 5:
 		a[i] = float(w_b) * float(b[i]) + float(w_a) * float(a[i])
 
 
 ## Divides elements 0..3 only; w = 0 does nothing.
-## Ref: shiny.d:210-213 `divide`.
 static func divide(acc: PackedFloat32Array, w: float) -> void:
 	if w == 0.0:
 		return
@@ -198,7 +187,6 @@ static func divide(acc: PackedFloat32Array, w: float) -> void:
 
 ## One number for a rating: ((r3 + r2) * 0.5) + 2*(r1 + r0). The caller keeps the answer as the
 ## cached rate.
-## Ref: shiny.d:214-220 `rate` (0x488a60).
 static func rate(acc: PackedFloat32Array) -> float:
 	var r := (float(acc[3]) + acc[2]) * 0.5
 	var s := float(acc[1]) + acc[0]
@@ -211,7 +199,6 @@ static func _pos(x: float) -> float:
 
 
 ## What `a` is worth against `b`.
-## Ref: shiny.d:221-229 `rateWithBase` (0x4889e0).
 static func rate_with_base(a: PackedFloat32Array, b: PackedFloat32Array) -> float:
 	var r := _pos(float(a[0]) - 0.1 * b[2]) + _pos(float(a[1]) - 0.1 * b[3])
 	var t := _pos(float(b[1]) - 0.1 * a[3]) + _pos(float(b[0]) - 0.1 * a[2])

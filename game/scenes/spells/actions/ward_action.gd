@@ -6,7 +6,6 @@ extends SpellAction
 ## himself: the key starts the cast, no click; Healing Aura on a creature the click names). When the casting time ends the Ward of that
 ## spell runs for the spell's duration. One scene for all of them; the numbers are the SpellType's and the Ward's. It does not scale damage
 ## (Wards) nor push, burn or heal anyone (BodyAura).
-## Ref: sacengine skinOfStone, airShield, etherealForm, fireform, protectiveSwarm, healingAura (state.d:10591-10686, 11076-11088).
 
 ## Who carries the ward. Empty = the wizard himself.
 @export var target: SpellTarget
@@ -15,7 +14,7 @@ extends SpellAction
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if target == null and pick != Pick.SELF:
-		warnings.append("Sin `target`, el hechizo cae sobre el mago: `pick` tiene que ser SELF.")
+		warnings.append("With no `target` the spell lands on the wizard: `pick` must be SELF.")
 	return warnings
 
 

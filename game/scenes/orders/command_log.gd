@@ -1,13 +1,11 @@
 class_name CommandLog
 extends Node
 
-## What the local command is doing, as state and not as words. It replaces the Label
-## that used to draw «Elegí el blanco», «N unidades», the refusals and so on: nothing here is drawn.
+## What the local command is doing, as state and not as words: nothing here is drawn.
 ## `armed` says which icon waits for its target (`""`, `spell`, `structure`, `ability`, `attack`,
 ## `guard`, `move`) and `armed_icon` its picture (the `icon` of the spell, ability or creature, or a picture of CueSet).
 ## CommandCue and CursorSkin draw from the signals.
 ## The name stays `Battle` in the scenes so the flows that read `%Battle` keep working.
-## Ref: RFC-025c.
 
 signal armed_changed(kind: String, icon: Texture2D)
 signal said(text: String, cue: StringName)

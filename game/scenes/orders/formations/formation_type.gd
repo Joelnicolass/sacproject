@@ -3,14 +3,13 @@ extends Resource
 
 ## A formation of a group order. A type resource: it never changes during a match; the formation a creature keeps is a
 ## StringName on its UnitOrders.
-## Ref: RFC-038; sacengine Formation / getFormationOffsets, state.d:417.
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
 @export var id: StringName = &""
 ## UI text (Spanish).
 @export var display_name := ""
-## The icon of the radial menu entry (RFC-038 038c).
+## The icon of the radial menu entry.
 @export var icon: Texture2D
 
 

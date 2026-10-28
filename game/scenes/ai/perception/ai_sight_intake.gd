@@ -7,7 +7,6 @@ extends Node
 ## known place one of the side's bodies is looking at while the foe is not there, and hands it back
 ## once the side sees it again. It does not look (Vision) nor decide anything; AiPerception adds and
 ## drops the tracks.
-## Ref: shiny.d:616-635 botSeen.
 
 ## Bodies forgotten because the side looked where they were and they were not there.
 var forgotten := 0

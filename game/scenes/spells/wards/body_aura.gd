@@ -8,7 +8,6 @@ extends Node3D
 ## Reach is a sphere drawn in the editor: its radius is the distance, measured between the two boxes (BOX_GAP) or from the
 ## owner's centre to the other body's centre (CENTER). Only bodies that move are touched (wizards and creatures), as the Phoenix.
 ## Damage type: the SPEL of Fireform and Protective Swarm says «direct spell» (type byte 1 at record offset 64), pierce or not.
-## Ref: sacengine updateFireform, updateProtectiveSwarm, updateAirShield + pushAll (state.d:8614-8633, 17263-17295, 17376-17420, 17458-17525).
 
 ## The aura hurt `victim` this tick. Server (or solo) only; AuraImpact turns it into the mark and the sound on every peer.
 signal stung(victim: Node3D)
@@ -112,7 +111,6 @@ func _sting(body: Node3D, other: Node3D, delta: float) -> float:
 
 
 ## Away from the owner's centre, full strength inside the owner's own radius, none at the reach.
-## Ref: sacengine pushAll
 func _push(body: Node3D, other: Node3D, mine: AABB, radius: float, delta: float) -> void:
 	if push_force <= 0.0:
 		return
@@ -139,7 +137,7 @@ func _slot(node: Node) -> int:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if ward == null:
-		warnings.append("Falta el Ward: el aura no sabe cuándo correr.")
+		warnings.append("The Ward is missing: the aura does not know when to run.")
 	if reach == null or not reach.shape is SphereShape3D:
-		warnings.append("Reach necesita un CollisionShape3D con una esfera: su radio es el alcance.")
+		warnings.append("Reach needs a CollisionShape3D with a sphere: its radius is the reach.")
 	return warnings

@@ -7,7 +7,6 @@ extends RefCounted
 ## once per physics step before any _physics_process (and also while the tree is paused), so the count does not depend
 ## on the order of the nodes; it only advances when the tree is not paused. Without MatchWorld (debug scenes) now()
 ## hooks itself lazily on the first read.
-## Ref: RFC-032 §3.1.
 
 ## Ticks per second of the simulation: the project's physics/common/physics_ticks_per_second (read once at class load).
 static var TICKS_PER_SECOND: int = Engine.physics_ticks_per_second
@@ -32,7 +31,6 @@ static func now() -> int:
 
 
 ## Whole ticks that cover `seconds` (frames of 1/60 s). 0.5 s → 30; 0.501 s → 31.
-## Ref: sacengine state.d counts frames of 1/60 s.
 static func ticks_for(seconds: float) -> int:
 	return maxi(0, ceili(seconds * TICKS_PER_SECOND - 1e-4))
 

@@ -2,7 +2,6 @@ class_name ArcFormation
 extends FormationType
 
 ## Semicircle and circle: the bodies stand on an arc of `arc_deg` degrees, behind the order point.
-## Ref: state.d:455-466.
 
 ## 180 = semicircle, 360 = full circle.
 @export_range(30.0, 360.0, 1.0) var arc_deg := 180.0

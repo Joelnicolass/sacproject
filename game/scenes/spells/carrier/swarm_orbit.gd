@@ -6,7 +6,6 @@ extends Node3D
 ## charmed), Intestinal Vaporization's seven guts (the creature that swells). Each member wanders: every so often it picks a point of a disc around
 ## the center and a push, and glides there on a smooth curve. While the carrier flies they fly with it, a little apart. Presentation only: every
 ## peer moves its own from the replicated phase and positions, and a headless process moves none. It hurts nobody and picks no target.
-## Ref: sacengine updateTargetedCharmSpirit, updateFlyingCharmSpirit, updateIntestinalVaporizationEffect (state.d:21863-21913, 21492-21516).
 
 @export var carrier: SpellCarrier
 ## The phases in which they circle the carrier (the target); in CASTING they circle the wizard, in the others they stay by the carrier.
@@ -46,7 +45,7 @@ func _init() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
 
 
 func _ready() -> void:

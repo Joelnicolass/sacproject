@@ -98,17 +98,17 @@ static func decode_choice(data: Dictionary) -> void:
 	var mode_id := str(data.get("mode", ""))
 	if not mode_id.is_empty():
 		if decode_mode(mode_id) == null:
-			push_error("MatchWire: el servidor mandó el modo '%s' y este cliente no lo tiene." % mode_id)
+			push_error("MatchWire: the server sent the mode '%s' and this client does not have it." % mode_id)
 		else:
 			chosen_mode = StringName(mode_id)
-			print("modo de la partida %s (del servidor)" % mode_id)
+			print("match mode %s (from the server)" % mode_id)
 	var map_id := str(data.get("map", ""))
 	if not map_id.is_empty():
 		if not MapCatalog.shared().has(StringName(map_id)):
-			push_error("MatchWire: el servidor mandó el mapa '%s' y este cliente no lo tiene." % map_id)
+			push_error("MatchWire: the server sent the map '%s' and this client does not have it." % map_id)
 		else:
 			chosen_map = StringName(map_id)
-			print("mapa de la partida %s (del servidor)" % map_id)
+			print("match map %s (from the server)" % map_id)
 	ActiveMatch.choose_ids(chosen_map, chosen_mode)
 	if int(data.get("seed", 0)) > 0:
 		ActiveMatch.choose_seed(int(data["seed"]))

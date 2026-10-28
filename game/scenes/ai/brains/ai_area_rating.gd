@@ -5,10 +5,9 @@ extends RefCounted
 ## take. The worth is the target's, plus the enemy groups the area would hit and minus the own and
 ## ally ones. It does not pick the spell (AiSpellEval) and it does not hold the cast back
 ## (AiWizardCasting asks `own_splash`). Static.
-## Ref: shiny.d:2843-2847 f489860, 2742-2754 aoeSpellBase
 
 
-## The worth of the area of `spell` bursting at `point` on `target`. RFC-053 053b: an own or ally
+## The worth of the area of `spell` bursting at `point` on `target`. An own or ally
 ## group counts by its members within the area of `point` (the nearest one gives the distance), not
 ## by its center: a Ranger at 1 m of the burst weighs even if the rest of its group stands far. The
 ## only casts the wizard releases burst on the target (AiLineOfFire: a blocked shot walks instead),
@@ -31,7 +30,7 @@ static func rate(spell: SpellType, target: AiTrack, point: Vector3, groups: AiGr
 			)
 			if d2 > r2:
 				continue
-			# 055f f6: a group whose health the side does not know (never seen) weighs nothing,
+			# A group whose health the side does not know (never seen) weighs nothing,
 			# instead of hit / 0 = INF.
 			if group.health_sum2 <= 0:
 				continue
@@ -53,7 +52,7 @@ static func _nearest_member_d2(group: AiGroup, point: Vector3) -> float:
 	return best
 
 
-## RFC-053 053b: the largest fraction of its maximum health any own body would lose to a burst of
+## The largest fraction of its maximum health any own body would lose to a burst of
 ## `spell` at `point` (SplashDamage: the body it bursts on, `direct`, takes the whole amount; the
 ## rest amount·(1 − d/damage_range) by the distance to their hit box; the side factor of Health, so
 ## with friendly fire off an own body loses 0). The wizard counts when the tactics say so. Own

@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/drops/meteor.tscn" id="q8_scene"]
 
 [node name="Bombardment" type="Node3D"]
-editor_description = "Bombardment (rtem): sin nube. 2 meteoritos por segundo durante 20 s; cada uno sale de la tierra a <= 12,5 m del mago y cruza el cielo en un arco de 12 s hasta un punto del disco de 50 m alrededor del clic. Sin abolladuras (061k)."
+editor_description = "Bombardment (rtem): sin nube. 2 meteoritos por segundo durante 20 s; cada uno sale de la tierra a <= 12,5 m del mago y cruza el cielo en un arco de 12 s hasta un punto del disco de 50 m alrededor del clic. Sin abolladuras."
 script = ExtResource("zone")
 spell = ExtResource("spell")
 hold_is_spell_duration = true

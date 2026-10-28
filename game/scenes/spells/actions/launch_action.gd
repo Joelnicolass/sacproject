@@ -7,7 +7,6 @@ extends SpellAction
 ## made (its root is a SpellLaunch). When the cast starts the launch is made in the shot container; when the casting time ends it is
 ## released; if the wizard is cut it is aborted. `cast_scene` is the look the wizard's cast has on every peer. It does not hurt nor heal
 ## (the launch does) and it does not know which spell it is.
-## Ref: sacengine castChainLightning, castRainbow, castHaloOfEarth (state.d:10832-10857, 11015-11023).
 
 ## Who the click may name. SELF casts on the key (set `pick` to SELF too).
 @export var target: SpellTarget
@@ -25,9 +24,9 @@ var _released := false
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if target == null:
-		warnings.append("Falta `target`: quién es un blanco válido.")
+		warnings.append("`target` is missing: who is a valid target.")
 	if launch_scene == null:
-		warnings.append("Falta `launch_scene`: lo que el hechizo pone en el mundo.")
+		warnings.append("`launch_scene` is missing: what the spell puts in the world.")
 	return warnings
 
 
@@ -49,7 +48,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> void:
 	var container := _container()
 	if launch_scene == null or container == null:
-		push_warning("LaunchAction: sin escena o sin contenedor de disparos (grupo shot_spawner).")
+		push_warning("LaunchAction: no scene or no shot container (group shot_spawner).")
 		return
 	_launch = launch_scene.instantiate() as SpellLaunch
 	_released = false

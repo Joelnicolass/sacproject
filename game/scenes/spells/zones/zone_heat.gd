@@ -5,7 +5,6 @@ extends Node
 ## falls from full to nothing across the ring, and every creature there is set alight (the look of burning) and pushed away from the
 ## center, a little more the closer it is. One tick at a time, server (or solo) only. The same node does the volcano's burn (hurts,
 ## lights and pushes along the ground) and its slow push (pushes only). It does not time the zone (GroundZone) nor draw the fire (Burning).
-## Ref: sacengine volcanoBurn, pushAll (state.d:22379-22403, 8614-8633).
 
 @export var zone: GroundZone
 ## Between the center and `full_m` the effect is at full strength; it falls to nothing at `reach_m` (flat distance).
@@ -68,4 +67,4 @@ func _ignite(body: Node3D) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) cuyo calor es."])
+	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) whose heat this is is missing."])

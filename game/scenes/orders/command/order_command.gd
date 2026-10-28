@@ -5,7 +5,6 @@ extends Node
 ## guard the spot, anything else = guard it), an armed order icon (Ctrl+R / Ctrl+A, or the radial menu's entry) takes
 ## the left click the same way, retreat calls every creature back to the wizard and a formation is stored on the
 ## selection. The right button itself belongs to OrderRadial.
-## Ref: RFC-038; sacengine dagonBackend.d:1215-1233, state.d:29256.
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
 const _ORDERS := preload("res://scenes/orders/orders.gd")
@@ -42,7 +41,6 @@ func right_at(screen: Vector2, from_action := false, formation_id := &"") -> voi
 
 ## Attack or guard a body; on the ground, advance or guard the spot. A move icon (radial menu)
 ## goes to the ground point under the cursor.
-## Ref: dagonBackend.d:1215-1233.
 func icon_at(screen: Vector2) -> void:
 	icon_on(ray.body_under(screen, false), ray.ground(screen))
 

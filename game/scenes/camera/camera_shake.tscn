@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/fx/shake_map.tres" id="3_map"]
 
 [node name="CameraShake" type="Node"]
-editor_description = "RFC-053 053f: sacudida de cámara (golpes al mago local y explosiones de ShakeMap cerca). Solo calcula; WorldCamera la compone. Nada en headless ni dedicado."
+editor_description = "Sacudida de cámara (golpes al mago local y explosiones de ShakeMap cerca). Solo calcula; WorldCamera la compone. Nada en headless ni dedicado."
 script = ExtResource("1_shake")
 prefs = ExtResource("2_prefs")
 shake_map = ExtResource("3_map")

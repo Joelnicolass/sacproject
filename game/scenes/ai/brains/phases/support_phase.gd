@@ -8,7 +8,6 @@ extends AiPhase
 ## himself also weighs what he does for his side from where he stands: raise a corpse, fetch a soul,
 ## escape; the entry then aims at that soul or building (AiSpellEval.find_best). The ratings are in
 ## AiSpellEval and AiSpellUses.
-## Ref: wizSupport, shiny.d:3073-3087, 0x48d7c0.
 
 
 func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:

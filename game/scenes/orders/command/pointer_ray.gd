@@ -105,7 +105,7 @@ func building_under(screen: Vector2) -> Node3D:
 	return _building_of(cast(screen, 1, false))
 
 
-## RFC-028b: a structure or altar only when it is the first thing under the cursor (mask 15, as
+## A structure or altar only when it is the first thing under the cursor (mask 15, as
 ## `is_empty_at`): a wizard, corpse or soul in front of a house keeps the click from inspecting it.
 func building_first(screen: Vector2) -> Node3D:
 	return _building_of(cast(screen, 15, false))

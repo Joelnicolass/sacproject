@@ -3,7 +3,6 @@ extends Node3D
 
 ## A rock thrown by a blast: it flies on a parabola, spins, bounces on the land keeping little of its speed, leaves a trail of fire and goes
 ## when it stops bouncing or after `life_s`. Presentation only: every peer draws its own and a headless process draws none. It hurts nobody.
-## Ref: sacengine updateDebris (state.d:15054-15083).
 
 @export var rock: MeshInstance3D
 ## Optional. The mark it leaves on the ground where it stops (a crack).

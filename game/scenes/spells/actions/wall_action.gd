@@ -6,7 +6,6 @@ extends SpellAction
 ## within range; the wall is born there when the cast starts, perpendicular to the line from the wizard to the point, grows while he casts and
 ## starts to act when the casting time ends; if he is interrupted it sinks at once. One scene per spell: the kind of wall and the cast
 ## particle change, not the script. It does not grow the wall nor hurt anybody (SpellWall and WallTouch do).
-## Ref: sacengine castFirewall, castWailingWall, castVinewall, castWallOfSpikes, castFence (state.d:11118-11211).
 
 ## The kind of the wall scene in SpellSpawner.zones (match.tscn).
 @export var wall_kind := ""
@@ -18,7 +17,7 @@ var _wall: SpellWall
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if wall_kind.is_empty():
-		warnings.append("Escribí en `wall_kind` la clave del muro en SpellSpawner.")
+		warnings.append("Set `wall_kind` to the wall's key in SpellSpawner.")
 	return warnings
 
 

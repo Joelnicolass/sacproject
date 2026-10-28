@@ -15,7 +15,6 @@ extends AiTask
 ## same order a human's right click gives: attack it (AiOrder.ATTACK, CreatureBrain). AttackPhase
 ## reads `committed()`: the wizard's spells go to the same target. Uses only what the side knows
 ## (AiPerception). Take this node out and the side never commits.
-## Ref: RFC-053 053d (F373).
 
 ## Diagnostic for the report: commitments made and the last one («name kill_s score»).
 var commits := 0

@@ -5,11 +5,9 @@ extends Node
 ## capture, guard, idle (the order of its children) the free creatures are handed to them; every 12
 ## ticks each record updates: the brains of its members think (a clustered record) or, with a wizard
 ## as leader, the rest follow the wizard. Each brain gets the kind of the task (AiTask.Kind) whose
-## record it is in. 024c has IdleTask and GuardTask; 024d adds CaptureTask (first: the order of its
-## children is the order of the claim) and the Manahoar's own brain. Without a child task that kind
+## record it is in. The order of the child tasks is the order of the claim (CaptureTask first).
+## Without a child task that kind
 ## of work does not happen.
-## Ref: RFC-024 §3.1 `AiTaskBoard`; shiny.d:2096-2346 replan and claim, 2350-2440 the order bridge,
-## 3380-3427 `recordUpdate`.
 
 ## A member a record sends to its center holds within this of it.
 const CENTER_HOLD_M := 5.0
@@ -21,7 +19,7 @@ const SPREAD_MAX_FACTOR := 4.0
 @export var stance: AiStance
 @export var wizard_brain: AiWizardBrain
 @export var creature_brain: CreatureBrain
-## The Manahoar thinks apart (mahoBrain); without it a Manahoar thinks like any creature.
+## The Manahoar thinks apart; without it a Manahoar thinks like any creature.
 @export var maho_brain: ManahoarBrain
 @export var port: AiCommandPort
 
@@ -38,8 +36,7 @@ func _ready() -> void:
 			tasks.append(child)
 
 
-## replanTasks: every task makes its records again.
-## Ref: shiny.d:2096-2116
+## Every task makes its records again.
 func replan_tasks() -> void:
 	for t: AiTrack in perception.tracks.values():
 		t.record = null
@@ -47,8 +44,6 @@ func replan_tasks() -> void:
 		task.replan()
 
 
-## claimPass.
-## Ref: shiny.d:2240-2260
 func claim_pass() -> void:
 	var free: Array[AiTrack] = []
 	for t: AiTrack in perception.bodies(AiTrack.Relation.OWN):
@@ -60,7 +55,6 @@ func claim_pass() -> void:
 
 ## ntt vtbl[19]: any own body but a Sac Doctor or a dying one. The port also leaves out a creature
 ## being summoned (it cannot take orders yet) and one a Sac Doctor holds.
-## Ref: shiny.d:1475-1478
 static func claimable(t: AiTrack) -> bool:
 	if not t.is_valid() or t.node.is_in_group(DoctorBody.GROUP):
 		return false
@@ -73,8 +67,6 @@ static func claimable(t: AiTrack) -> bool:
 	return true
 
 
-## updateTasks.
-## Ref: shiny.d:1402-1411
 func update_tasks() -> void:
 	for task in tasks:
 		var task_kind := task.kind()
@@ -82,8 +74,7 @@ func update_tasks() -> void:
 			_record_update(record, task_kind)
 
 
-## recordSetup. `capture`: a capture record (its members go to the anchor, see record_update).
-## Ref: shiny.d:1938-1951
+## `capture`: a capture record (its members go to the anchor, see record_update).
 func new_record(target: AiTrack, capture := false) -> AiRecord:
 	var record := AiRecord.new()
 	record.target = target
@@ -93,7 +84,6 @@ func new_record(target: AiTrack, capture := false) -> AiRecord:
 
 
 ## claim: the track leaves the free list and joins the record. Returns its soul worth.
-## Ref: shiny.d:1964-1977
 func claim_member(record: AiRecord, free: Array[AiTrack], t: AiTrack) -> float:
 	free.erase(t)
 	AiRater.combine(record.members_acc, 1.0, t.acc, 1.0)
@@ -107,7 +97,6 @@ func claim_member(record: AiRecord, free: Array[AiTrack], t: AiTrack) -> float:
 
 
 ## Distances from `from` to the altars of `relation`.
-## Ref: probOr, shiny.d:2012-2022
 func distances_to_altars(from: AiTrack, relation: AiTrack.Relation) -> PackedFloat32Array:
 	var out := PackedFloat32Array()
 	for t: AiTrack in perception.structures(relation):
@@ -117,9 +106,8 @@ func distances_to_altars(from: AiTrack, relation: AiTrack.Relation) -> PackedFlo
 	return out
 
 
-## densityGroups without the soul groups (slot 5): the soul worth of the enemy and neutral body
+## The density of the groups without the soul groups (slot 5): the soul worth of the enemy and neutral body
 ## groups near `pos`, over the most souls the side has seen.
-## Ref: shiny.d:2042-2062
 func density(pos: Vector3, near: float, far: float) -> float:
 	var acc := 0.0
 	for relation in [AiTrack.Relation.NEUTRAL, AiTrack.Relation.ENEMY]:
@@ -129,14 +117,12 @@ func density(pos: Vector3, near: float, far: float) -> float:
 			acc += AiField.ramp(pos.distance_to(group.center), near, far) * float(group.souls_sum)
 	# Deviation: with no souls seen (max 0) the engine divides 0/0 and every guard score becomes
 	# NaN, so nobody is escorted. Here it is 0.
-	# Ref: shiny.d:2062
 	if perception.max_souls_seen <= 0:
 		return 0.0
 	return AiField.f32(AiField.safediv(acc, float(perception.max_souls_seen)))
 
 
-## recordRefresh: center, spread and movement of the members.
-## Ref: shiny.d:1915-1952
+## Center, spread and movement of the members.
 func _refresh_record(record: AiRecord) -> void:
 	record.vel_acc = Vector3.ZERO
 	record.prev_center = record.center
@@ -172,8 +158,6 @@ func _refresh_record(record: AiRecord) -> void:
 	record.predicted = record.center + record.vel_acc
 
 
-## recordUpdate.
-## Ref: shiny.d:3408-3447
 func _record_update(record: AiRecord, task_kind: AiTask.Kind) -> void:
 	if record.count == 0 and record.members.is_empty():
 		return
@@ -215,8 +199,7 @@ func _record_update(record: AiRecord, task_kind: AiTask.Kind) -> void:
 		_node_brain(m, task_kind, record)
 
 
-## proximityTrigger: a spread record sends each member to the center; a clustered one thinks alone.
-## Ref: shiny.d:3389-3406
+## A spread record sends each member to the center; a clustered one thinks alone.
 func _proximity_trigger(record: AiRecord, task_kind: AiTask.Kind) -> bool:
 	if record.count == 1:
 		return false
@@ -237,7 +220,6 @@ func _proximity_trigger(record: AiRecord, task_kind: AiTask.Kind) -> bool:
 
 
 ## node vtbl[3]: the brain of the body's kind thinks.
-## Ref: shiny.d:2483-2491
 func _node_brain(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> void:
 	match t.kind:
 		AiTrack.Kind.MANAHOAR:
@@ -253,7 +235,6 @@ func _node_brain(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> void:
 
 ## node vtbl[19]: a body that is already heading somewhere by its own brain keeps thinking; the
 ## others walk to the center of the record.
-## Ref: shiny.d:2471-2481
 func _node_slot19(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord, pos: Vector3) -> void:
 	if t.kind == AiTrack.Kind.NONE or t.kind == AiTrack.Kind.STRUCTURE:
 		return

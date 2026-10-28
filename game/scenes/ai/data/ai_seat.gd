@@ -2,8 +2,8 @@ class_name AiSeat
 extends Resource
 
 ## A seat the AI takes: which slot, which wizard and god, how well it plays. Drag the wizard and the
-## god from the FileSystem (data/catalog/wizards, data/gods). It does not play: AiRoster (or the
-## bench) seats it and AiSide plays it.
+## god from the FileSystem (data/catalog/wizards, data/gods). It does not play: AiRoster (or a
+## test scene) seats it and AiSide plays it.
 
 ## Normal: the difficulty of a seat that names none (drag another file here to change the default).
 const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
@@ -13,12 +13,12 @@ const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
 @export var wizard: WizardType
 ## Empty: AiRoster draws one per match from the gods the lobby offers («Aleatorio»).
 @export var god: GodType
-## How well it plays (024e). Empty: Normal (data/ai/difficulty_normal.tres).
+## How well it plays. Empty: Normal (data/ai/difficulty_normal.tres).
 @export var difficulty: AiDifficulty
 ## A personality of its own: these tactics instead of the difficulty's. Empty: the difficulty's
 ## (AiDifficulty.tactics).
 @export var tactics: AiTactics
-## The wizard's book instead of his god's (a bench or a solo game: it does not travel on the
+## The wizard's book instead of his god's (a test or a solo game: it does not travel on the
 ## network). Empty: the god's.
 @export var book: GodBook
 ## The seats of a debug scene start paused: the runner starts them (AiSide.active).

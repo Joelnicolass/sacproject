@@ -5,7 +5,6 @@ extends RefCounted
 ## cast ramps up, and whether a body's box is inside it. A wall is a centre, a unit direction on the ground (x, z) and an interval
 ## [left, right] of metres along that direction; its thickness is across it. It does not move, hurt or draw anything (SpellWall, WallTouch
 ## and the look do).
-## Ref: sacengine WallPosition, isInWall, castFirewall, Firewall.scale / height (state.d:11118-11131, 19935-19966, 3690-3697).
 
 
 ## The way the wall runs: perpendicular to the line from the caster to the click. A click on the caster itself gives the way he faces.
@@ -62,7 +61,7 @@ static func ramp(age: int, start_ticks: int, ramp_ticks: int) -> float:
 	return clampf(float(age - start_ticks) / float(ramp_ticks), 0.0, 1.0)
 
 
-## isInWall: a body's box (world) is inside when it is not above the wall nor below the ground at its centre, its footprint overlaps
+## A body's box (world) is inside when it is not above the wall nor below the ground at its centre, its footprint overlaps
 ## the thickness across the axis, and its extent along the axis overlaps [left, right].
 static func in_wall(box: AABB, ground_y: float, top: float, center: Vector3, dir: Vector2, left: float, right: float, thickness: float) -> bool:
 	if box.end.y < ground_y or box.position.y > ground_y + top:

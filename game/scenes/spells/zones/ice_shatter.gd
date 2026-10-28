@@ -4,7 +4,6 @@ extends FxScene
 ## One step of the breaking of Frozen Ground's ice, played on every peer by FxBus.broadcast_scene: a burst of shards that rise from the
 ## ring of ground that broke, between the radius `inner` and the radius `outer` around this node (its sound is the one of this scene's name
 ## in the sound table). Presentation only; it frees itself. It hurts nobody (ZoneShatter).
-## Ref: sacengine updateFrozenGround (state.d:19882-19896).
 
 @export var shards: SpriteEmitter
 @export_range(0.5, 10.0, 0.5, "suffix:s") var life_s := 3.0
@@ -23,4 +22,4 @@ func play(params: Dictionary) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shards != null else PackedStringArray(["Falta el SpriteEmitter de los trozos."])
+	return PackedStringArray() if shards != null else PackedStringArray(["The SpriteEmitter of the shards is missing."])

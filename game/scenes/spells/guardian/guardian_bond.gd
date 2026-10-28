@@ -16,14 +16,13 @@ extends Node
 ## Farther than the leash (ReachFacts) from the attach
 ## point it gets a move order back to the return distance of the building.
 ## `post_path` is replicated: whoever joins late sees the bond and draws the beam.
-## Ref: sacengine, none verified against Sacrifice.exe; attackDamageFactor, state.d:8884; dealRawDamage, state.d:9007-9008; state.d:14408; state.d:1414; state.d:25071; state.d:14069; canTeleport, state.d:10309: group `rooted`; state.d:10408-10410; RFC-021b; isValidGuard, state.d:15352-15355; the building gone, state.d:15362; state.d:15366-15376
 
 ## Tied to `post`.
 signal bound(post: GuardPost)
 ## The bond ended.
 signal released
 
-## Group of bodies that cannot be moved by Teleport or Guardian (RFC-021 risk 3).
+## Group of bodies that cannot be moved by Teleport or Guardian.
 const ROOTED := &"rooted"
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
@@ -71,15 +70,15 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null:
-		warnings.append("Asigná en `body` la unidad (UnitBody).")
+		warnings.append("Assign the unit (UnitBody) to `body`.")
 	if health == null:
-		warnings.append("Asigná en `health` el Health de la unidad.")
+		warnings.append("Assign the unit's Health to `health`.")
 	if orders == null:
-		warnings.append("Asigná en `orders` el nodo Orders de la unidad.")
+		warnings.append("Assign the unit's Orders node to `orders`.")
 	if ability == null:
-		warnings.append("Asigná en `ability` el AbilitySlot de la unidad (Abilities/Ability).")
+		warnings.append("Assign the unit's AbilitySlot to `ability` (Abilities/Ability).")
 	if rules == null:
-		warnings.append("Asigná en `rules` el MatchRules (factores y correa del guardián).")
+		warnings.append("Assign the MatchRules to `rules` (the guardian's factors and leash).")
 	return warnings
 
 
@@ -87,7 +86,7 @@ func is_bound() -> bool:
 	return not post_path.is_empty()
 
 
-## Server or solo: a guardian that counts for the post (isValidGuard): alive, not taken by a doctor,
+## Server or solo: a guardian that counts for the post: alive, not taken by a doctor,
 ## on the post's side.
 func is_valid_guard() -> bool:
 	if body == null or health == null or post == null or not is_instance_valid(post):
@@ -136,7 +135,6 @@ func _physics_process(delta: float) -> void:
 
 ## Farther than the leash from the attach point: a move order back to the return distance of the
 ## building. An order that already goes there stays.
-## Ref: state.d:15366-15376
 func _keep_near() -> void:
 	var reach := ReachFacts.of_rules(_rules())
 	var attach := post.attach_position()

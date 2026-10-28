@@ -7,7 +7,6 @@ extends Node3D
 ## replicates it, so a peer that joins late draws the same moment), stands on the mound, and hands each shader its frame, its growth and its
 ## fade; the splash also gets a picture of the land around it, a few angles a frame. It writes nothing of the game; a dedicated server or a
 ## headless run draws nothing.
-## Ref: sacengine renderer volcanos (renderer.d:3414-3452), SacVolcanoLava.getFrame, SacVolcanoCloud.getFrame (sacobject.d:3422-3459).
 
 const ANGLES := 64
 
@@ -15,7 +14,7 @@ const ANGLES := 64
 ## The stamp that digs the crater: the eruption happens when it starts, and its ticks are the zone's clock.
 @export var eruption: TerrainStamp
 ## The lava and the splash: meshes with a ShaderMaterial of volcano_lava / volcano_spatter.gdshader. `cloud` holds the smoke (the noisy
-## layers of 061h, CloudLook) and is shown from the eruption.
+## layers of CloudLook) and is shown from the eruption.
 @export var lava: MeshInstance3D
 @export var cloud: Node3D
 @export var spatter: MeshInstance3D
@@ -104,7 +103,7 @@ func _renew_ground(land: Terrain, mouth: Vector2) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if zone == null or eruption == null:
-		warnings.append("Faltan la zona (GroundZone) y el sello del cráter (eruption).")
+		warnings.append("The zone (GroundZone) and the crater stamp (eruption) are missing.")
 	if lava == null or cloud == null or spatter == null:
-		warnings.append("Faltan las tres mallas (lava, cloud, spatter).")
+		warnings.append("The three meshes (lava, cloud, spatter) are missing.")
 	return warnings

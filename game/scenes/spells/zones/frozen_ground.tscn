@@ -25,7 +25,7 @@ shader = ExtResource("9_shader")
 shader_parameter/ice = ExtResource("10_ice")
 
 [node name="FrozenGround" type="Node3D"]
-editor_description = "Frozen Ground (zorf): la bola de nieve crece junto al mago, vuela 2 s y cae; el hielo crece 0,5 s hasta 15 m y congela (con los numeros de Freeze) a cada no aliado en tierra, una vez; dura lo que dice el hechizo (30 s; sacengine fuerza 15) y se rompe en 6 pasos del centro hacia afuera haciendo 800 una vez a cada uno. Las duraciones salen del SPEL; solo `end_s` y `grow_s` son de la escena."
+editor_description = "Frozen Ground (zorf): la bola de nieve crece junto al mago, vuela 2 s y cae; el hielo crece 0,5 s hasta 15 m y congela (con los numeros de Freeze) a cada no aliado en tierra, una vez; dura lo que dice el hechizo (30 s; el original fuerza 15) y se rompe en 6 pasos del centro hacia afuera haciendo 800 una vez a cada uno. Las duraciones salen del SPEL; solo `end_s` y `grow_s` son de la escena."
 script = ExtResource("1_zone")
 spell = ExtResource("2_spell")
 hold_is_spell_duration = true

@@ -6,7 +6,6 @@ extends FxScene
 ## while the wall grows and goes out, one after another over 4 s, once it sinks. An ORBIT spirit (FxBus plays its own scene on the body
 ## the wall slowed) circles that body for `ticks`, closing in at the end. Presentation only, on every peer; it does not slow anybody
 ## (WallTouch). Its dice are its own.
-## Ref: sacengine WailingWallSpirit, updateWailingWallSpirit, nextWailingWallTarget (state.d:3739-3758, 20126-20227, 20198-20207).
 
 enum Mode { PATROL, ORBIT }
 

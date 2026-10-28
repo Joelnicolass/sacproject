@@ -4,7 +4,6 @@ extends ZonePulse
 ## What an explosion zone does when it goes off, at each of its points: splash damage that falls off with distance, a fire of no damage on
 ## every body it reaches, the burst everybody sees, and then the throw of every body near the first point. It does not time the blast (the
 ## zone and ZonePulse do) nor draw the balls (the zone's look).
-## Ref: sacengine explosion (state.d:10978-11013).
 
 ## The burst played at each point: a scene with the spheres and the debris (it also carries the sound of the blast).
 @export var burst: PackedScene

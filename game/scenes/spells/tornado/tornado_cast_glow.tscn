@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/fx/tornado_cast.tres" id="3_type"]
 
 [node name="CastGlow" type="Node3D" node_paths=PackedStringArray("emitter")]
-editor_description = "Las estrellas cst0 que suben alrededor del mago mientras lanza Tornado (sacengine las trae en espiral hacia el; aqui suben dentro de su caja). ZoneAction.cast_scene lo juega en cada peer con FxBus.broadcast_scene."
+editor_description = "Las estrellas cst0 que suben alrededor del mago mientras lanza Tornado (el original las trae en espiral hacia el; aqui suben dentro de su caja). ZoneAction.cast_scene lo juega en cada peer con FxBus.broadcast_scene."
 script = ExtResource("1_script")
 emitter = NodePath("Glow")
 

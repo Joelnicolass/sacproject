@@ -6,7 +6,6 @@ extends Node
 ## body within the spell's damage range, and (by knob) a fire of a moment on all of them and a stun on those it only splashed. It plays the
 ## bursts of the place, whose sounds, shakes and lights are the ones of each burst's name. It does not fly the drop (ZoneDrop) nor poison
 ## (DropPoison). Server (or solo) only.
-## Ref: sacengine rainFrogExplosion, rainOfFireDropExplosion, bombardmentDropExplosion (state.d:19405-19427, 21142-21154, 21344-21379).
 
 @export var drop: ZoneDrop
 ## FxBus bursts played where it ends (ParticleType under data/fx/).
@@ -50,4 +49,4 @@ func blast(body: Node3D, at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["Falta la gota (ZoneDrop) cuyo final recibe."])
+	return PackedStringArray() if drop != null else PackedStringArray(["The drop (ZoneDrop) whose end it gets is missing."])

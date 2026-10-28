@@ -3,7 +3,6 @@ extends RefCounted
 
 ## The plain numbers of the ground zones, with no tree: how hard a blast throws a body, which blast point a body answers to, how fast the
 ## ice grows, where each step of the breaking ring reaches, and where a scattered point lands. It does not hurt, freeze or draw anything.
-## Ref: sacengine explosion's catapultCallback (state.d:10990-11010), FrozenGround.curRadius/minRadius (state.d:3632-3646), castExplosion (10960-10971).
 
 ## The weakest and the strongest throw, in m/s, and how much of the span the distance takes away.
 const THROW_FLOOR := 5.0
@@ -87,7 +86,6 @@ static func launch_velocity(start: Vector3, goal: Vector3, seconds: float, gravi
 
 ## The velocity of a shot at `speed` m/s from `start` toward `goal` that leans up to make up for `gravity` (a lava ball): the unit
 ## direction plus half the pull times the distance over the speed squared, not normalised again, as the original shoots.
-## Ref: sacengine getShotDirectionWithGravity (state.d:11506-11511).
 static func shot_velocity(start: Vector3, goal: Vector3, speed: float, gravity: float) -> Vector3:
 	var offset := goal - start
 	var direction := offset.normalized() if offset.length() > 0.0 else offset

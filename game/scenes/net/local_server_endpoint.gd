@@ -3,7 +3,6 @@ extends RefCounted
 
 ## The text a rival types to reach a local server. Pure functions: no node, no network.
 ## `192.168.1.5:7710`, `mi-pc.example.com:7710` or only `192.168.1.5` (then the default port is used).
-## Ref: RFC-034 034m.
 
 const PORT_MIN := 1
 const PORT_MAX := 65535

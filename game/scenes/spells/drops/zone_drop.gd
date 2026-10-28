@@ -5,7 +5,6 @@ extends SpellProjectile
 ## say what it does where it ends (DropBlast, DropPoison) or what else it does on the way (FrogHop, FrogCling). It owns its position,
 ## velocity and state (flying, resting on the ground, stuck to a body); it never hurts anyone itself. The server (or solo) moves it and
 ## replicates `position` and `status`; every peer draws it. A cloud's DropLauncher makes it.
-## Ref: sacengine updateRainFrog, updatePlagueDrop, updateRainOfFireDrop, updateBombardmentDrop (state.d:19428-19504, 21030-21053, 21172-21196, 21395-21421).
 
 ## It touched the ground and stays there (only with `rests`).
 signal landed(at: Vector3)

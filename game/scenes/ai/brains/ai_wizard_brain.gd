@@ -8,8 +8,6 @@ extends Node
 ## capture task (Desecrate an enemy altar, or a Manalith on a free fount), the best cast he can pay
 ## (the child Casting), else he thinks like a creature. A ghost waits for his Manahoars or goes to
 ## the nearest mana building. It does not rate spells (AiSpellEval) nor talk to the game (the port).
-## Ref: shiny.d:3303-3387 wizBrain, 3306-3326 the ghost, 3330-3337 souls, 3354-3382 the capture
-## block, 3026-3050 pickGuardCreature, 3285-3301 castCachedInRange, 2610-2636 wizSpellRebuild.
 
 ## What one `think` did.
 enum Thought {
@@ -53,7 +51,6 @@ func prepare() -> void:
 	casting.prepare(eval, play)
 
 
-## wizBrain.
 func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> Thought:
 	if not wizard.is_valid():
 		return Thought.NOTHING
@@ -75,7 +72,7 @@ func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> Thought
 		for phase in phases:
 			phase.run(wizard, w3, capture_record)
 	# Souls he can take by touching (retail: 100 + 80 m scaled by the threat; the beta 80 + 60):
-	# first what he can cast in passing (checkOnly), else he walks onto the soul.
+	# first what he can cast in passing, else he walks onto the soul.
 	var reach := AiField.f32(
 		(1.0 - wizard.threat) * tactics.soul_reach_scale + tactics.soul_reach_base
 	)
@@ -101,7 +98,7 @@ static func target_alive(t: AiTrack) -> bool:
 	return not AiBody.is_dead(t.node)
 
 
-## wizSpellRebuild: the book of the wizard in the lists the phases read.
+## The book of the wizard in the lists the phases read.
 func rebuild_spells(wizard: AiTrack) -> void:
 	wizard.summons = []
 	wizard.spell_accs = []
@@ -140,7 +137,7 @@ func rebuild_spells(wizard: AiTrack) -> void:
 
 ## The ghost: his own Manahoars within ghost_wait_m will channel him back, so he waits; with none
 ## near he goes to the nearest mana building of his side (altar, Manalith). That last part is a
-## deliberate deviation of the engine, not of thaum.
+## deliberate deviation from the original.
 func _ghost(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> Thought:
 	var wait_m := play.tactics.ghost_wait_m
 	for t: AiTrack in perception.bodies(AiTrack.Relation.OWN):
@@ -189,7 +186,7 @@ func _capture(wizard: AiTrack, record: AiRecord) -> bool:
 
 
 ## The desecrate path: an enemy altar not under ritual, the creature with most souls brought next to
-## the wizard, and the altar being the closest enemy one in range (the game's closestEnemyAltar).
+## the wizard, and the altar being the closest enemy one in range.
 func _desecrate(wizard: AiTrack, altar: AiTrack) -> bool:
 	if wizard.desecrate_spell == null or altar.relation != AiTrack.Relation.ENEMY:
 		return false
@@ -211,7 +208,6 @@ func _desecrate(wizard: AiTrack, altar: AiTrack) -> bool:
 ## creature of 0 souls is never picked. Deviation: the game's own test `sacrifice_status` (alive,
 ## free, not held, a Captive) filters the candidates first, so the AI never asks Desecrate for a
 ## creature that would answer «Blanco inválido». A creature bound by the Guardian spell is skipped.
-## Ref: shiny.d:3026-3050 (0x485700), 3032 isGuardianEnt; sacengine tests the mode after picking
 func _pick_guard_creature(target: AiTrack) -> AiTrack:
 	var best := 0.0
 	var best_track: AiTrack
@@ -246,8 +242,7 @@ func _pick_guard_creature(target: AiTrack) -> AiTrack:
 
 ## The Manalith spell, forced, when the wizard is within range * sqrt(build_range_slack) *
 ## build_reach_factor of the fount and the threat is under build_threat_cap. The fount must still be
-## free (canCastSpellOn's onlyManafounts reads it live).
-## Ref: shiny.d:3285-3301 (0x48dce0)
+## free (the Manalith spell's check reads it live).
 func _build_on_fount(wizard: AiTrack, fount: AiTrack) -> bool:
 	var shrine: SpellType = wizard.shrine_spell
 	var tactics := play.tactics

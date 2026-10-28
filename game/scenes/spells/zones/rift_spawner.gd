@@ -5,7 +5,6 @@ extends Node
 ## creature that is not an ally, inside the spell's range of a point drawn around the click and that no spirit went for yet; when there is
 ## none, it flies to the ground and the next one waits a second. When the last spirit is gone the rift closes. It does not move or hit
 ## (RiftSpirit) nor draw the rift (the zone's look). Server (or solo) only.
-## Ref: sacengine spawnDemonicRiftSpirit, demonicRiftTarget (state.d:19530-19564).
 
 @export var zone: GroundZone
 ## The spirit scene it lets out (its root is a RiftSpirit).

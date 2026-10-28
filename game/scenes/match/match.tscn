@@ -165,7 +165,7 @@ script = ExtResource("13_biome")
 world = NodePath("../..")
 
 [node name="BiomeLink" type="Node" parent="World" node_paths=PackedStringArray("biome")]
-editor_description = "055i-b3: el canal de red «biome». El servidor manda el dios de la tierra y el reloj del cielo a cada cliente con el mundo listo; el cliente se los da a MatchBiome. Va debajo de MatchBiome (que sortea primero)."
+editor_description = "El canal de red «biome». El servidor manda el dios de la tierra y el reloj del cielo a cada cliente con el mundo listo; el cliente se los da a MatchBiome. Va debajo de MatchBiome (que sortea primero)."
 script = ExtResource("b3_biome_link")
 biome = NodePath("../MatchBiome")
 
@@ -289,7 +289,7 @@ bake_root = NodePath("../..")
 
 [node name="AiRoster" type="Node" parent="Systems" unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]
 unique_name_in_owner = true
-editor_description = "RFC-024 024f: arma los asientos IA (MatchRules.ai_seats o SacrificeFlow.solo_ai_seats) solo en solo o en el servidor. Sin asientos no hace nada."
+editor_description = "Arma los asientos IA (MatchRules.ai_seats o SacrificeFlow.solo_ai_seats) solo en solo o en el servidor. Sin asientos no hace nada."
 script = ExtResource("f77_roster")
 world = NodePath("../..")
 wizard_spawner = NodePath("../../World/WizardSpawner")
@@ -301,7 +301,7 @@ script = ExtResource("f142_applier")
 prefs = ExtResource("f142_prefs")
 
 [node name="UiScaleApplier" type="Node" parent="Systems"]
-editor_description = "055h-1: el tamaño de la interfaz del jugador (Opciones › Gráficos) sobre la ventana. Único escritor de Window.content_scale_factor junto al de boot.tscn."
+editor_description = "El tamaño de la interfaz del jugador (Opciones › Gráficos) sobre la ventana. Único escritor de Window.content_scale_factor junto al de boot.tscn."
 script = ExtResource("h1_ui_applier")
 prefs = ExtResource("h1_ui_scale")
 
@@ -387,7 +387,7 @@ abilities = NodePath("../AbilityCommand")
 orders = NodePath("../OrderCommand")
 
 [node name="ArmedPreview" type="Node" parent="Input/MatchCommand" node_paths=PackedStringArray("armed", "ray", "probe")]
-editor_description = "F388: con una estructura armada, 15 veces por segundo pregunta al Caster local qué respondería un clic en el puntero (aim_for) y lo deja en %Battle (aim_status, aim_site); prende el anillo del manantial en verde o rojo. Local, sin RPC. Sacalo y queda solo el parpadeo después del clic."
+editor_description = "Con una estructura armada, 15 veces por segundo pregunta al Caster local qué respondería un clic en el puntero (aim_for) y lo deja en %Battle (aim_status, aim_site); prende el anillo del manantial en verde o rojo. Local, sin RPC. Sacalo y queda solo el parpadeo después del clic."
 script = ExtResource("f388_armed_preview")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
@@ -398,7 +398,7 @@ probe = NodePath("../../../Hud/TargetProbe")
 
 [node name="OrderRadial" type="Node" parent="Input" unique_id=901968895 node_paths=PackedStringArray("menu", "view", "command")]
 unique_name_in_owner = true
-editor_description = "RFC-038: dueño del botón derecho (toque = orden, mantener 0,25 s = menú radial), de Tab mantenido y de Alt+1..8 (formaciones). Va después de MatchCommand: ve Alt+N antes que él."
+editor_description = "Dueño del botón derecho (toque = orden, mantener 0,25 s = menú radial), de Tab mantenido y de Alt+1..8 (formaciones). Va después de MatchCommand: ve Alt+N antes que él."
 script = ExtResource("f218_order_radial")
 menu = NodePath("../../Hud/RadialMenu")
 view = NodePath("../../Hud/View")
@@ -407,7 +407,7 @@ command = NodePath("../MatchCommand")
 
 [node name="Inspector" type="Node" parent="Input" unique_id=459803602]
 unique_name_in_owner = true
-editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
+editor_description = "La casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
 script = ExtResource("f93_inspector")
 
 
@@ -521,7 +521,7 @@ selection_box = NodePath("../SelectionBox")
 
 [node name="TargetInfoPanel" parent="Hud" node_paths=PackedStringArray("probe", "inspector") instance=ExtResource("f374_info")]
 unique_name_in_owner = true
-editor_description = "RFC-053 053e: la caja del original junto al puntero (0,5 s sobre un cuerpo); el edificio clicado queda fijo. Local, sin RPC."
+editor_description = "La caja del original junto al puntero (0,5 s sobre un cuerpo); el edificio clicado queda fijo. Local, sin RPC."
 probe = NodePath("../TargetProbe")
 inspector = NodePath("../../Input/Inspector")
 
@@ -540,7 +540,7 @@ world = NodePath("../..")
 camera = NodePath("../../World/Camera")
 
 [node name="CommandVoice" type="Node" parent="Audio" node_paths=PackedStringArray("selection", "orders", "channel")]
-editor_description = "RFC-052 052e: las criaturas contestan al jugador local (elegir: selected/annoyed; ordenar: ack/attack_ack), un canal propio en el bus Voice. Sin audio (dedicado, headless) no hace nada."
+editor_description = "Las criaturas contestan al jugador local (elegir: selected/annoyed; ordenar: ack/attack_ack), un canal propio en el bus Voice. Sin audio (dedicado, headless) no hace nada."
 script = ExtResource("a052_command_voice")
 selection = NodePath("../../Input/Selection")
 orders = NodePath("../../Input/Orders")
@@ -557,7 +557,7 @@ world = NodePath("../../..")
 seat = NodePath("../../../Systems/LocalSeat")
 
 [node name="CombatGauge" type="Node" parent="Audio" node_paths=PackedStringArray("world")]
-editor_description = "RFC-052 052f: la intensidad del combate cerca del oyente (criaturas en ATTACK/SHOOT a menos de radius_m) con histéresis, más el daño al mago local en los últimos wizard_damage_s. Solo lee estado replicado."
+editor_description = "La intensidad del combate cerca del oyente (criaturas en ATTACK/SHOOT a menos de radius_m) con histéresis, más el daño al mago local en los últimos wizard_damage_s. Solo lee estado replicado."
 script = ExtResource("a052_gauge")
 world = NodePath("../..")
 

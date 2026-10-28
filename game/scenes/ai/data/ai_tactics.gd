@@ -11,9 +11,6 @@ extends Resource
 ## AI's own judgment (when to heal, how long to keep a focus, how much a healer weighs, when to
 ## escape), which the original does not have. None of them cheats: they only choose what to do with
 ## what the side knows.
-## Ref: shiny.d:3058 wizAttack, 3070-3072 target weights, 2928-2934 findBestSpell, 3115-3172
-## wizSacrifice, 3098 and 3113 wizRetreat, 3285-3301 castCachedInRange, 3366 Desecrate range,
-## 3330-3337 souls, 3306-3326 ghost, 2376 wizard stop, 3328 and 3356 replan and re-issue.
 
 const NORMAL := "res://data/ai/tactics_normal.tres"
 
@@ -46,11 +43,11 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 @export var range_distance_scale := 0.714
 ## Under this squared distance (40 m) the target counts as at distance 0.
 @export var near_distance_sq := 1600.0
-## Weight of a passive NPC among the targets. 0: never (RFC-053 053b).
+## Weight of a passive NPC among the targets. 0: never.
 @export_range(0.0, 1.0, 0.05) var npc_passive_weight := 0.0
-## Weight of an enemy that heals (053d).
+## Weight of an enemy that heals.
 @export_range(0.0, 10.0, 0.1) var healer_weight := 2.0
-## Weight of the target the side committed to, and seconds the side keeps it (053d).
+## Weight of the target the side committed to, and seconds the side keeps it.
 @export_range(0.0, 10.0, 0.1) var commit_weight := 1.5
 @export_range(0.0, 60.0, 0.5) var commit_hold_s := 6.0
 ## A body the side's attack spells would not bring down in this many casts (it regenerates between
@@ -61,7 +58,7 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 ## seconds it lasts / this).
 @export_range(1.0, 60.0, 1.0) var disable_ref_s := 10.0
 ## A burst around himself (Halo) is worth casting with at least this many known enemies inside its
-## reach (055f f5).
+## reach.
 @export_range(1, 20) var self_area_min_foes := 2
 
 @export_group("Clear shot and own splash")
@@ -86,10 +83,10 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 ## The known enemies within guard_threat_m that make him ward himself (or tie a Guardian).
 @export_range(1, 10) var guard_min_foes := 2
 ## A heal on an area (Rainbow, Healing Aura) goes where the own bodies inside it miss at least this
-## much health in all (055f f5).
+## much health in all.
 @export_range(0.0, 5000.0, 10.0) var heal_area_min_missing := 300.0
 ## He jumps to an own building far away (Teleport) when his threat is at least this (0: calm, 1:
-## overrun) (055f f5). 0.5: the enemy near him weighs as much as his whole side near him (8 Troggs
+## overrun). 0.5: the enemy near him weighs as much as his whole side near him (8 Troggs
 ## on a wizard with 2 creatures measure about that).
 @export_range(0.0, 1.0, 0.05) var escape_threat := 0.5
 
@@ -136,7 +133,7 @@ const NORMAL := "res://data/ai/tactics_normal.tres"
 ## can first lead away). 1: the original.
 @export var soul_keep_factor := 1.25
 ## A soul farther than this he would rather send a spell for (Soul Wind, Soul Mole) than walk to;
-## nearer, he walks (055f f5).
+## nearer, he walks.
 @export_range(0.0, 200.0, 1.0, "suffix:m") var soul_send_min_m := 40.0
 
 

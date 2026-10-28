@@ -10,7 +10,7 @@ extends Node
 
 func apply() -> void:
 	if config == null:
-		push_warning("OnlineNetwork: falta config (data/net/online_config.tres)")
+		push_warning("OnlineNetwork: config is missing (data/net/online_config.tres)")
 		return
 	if not config.issuer_url.is_empty():
 		MpIssuer.url = config.issuer_url

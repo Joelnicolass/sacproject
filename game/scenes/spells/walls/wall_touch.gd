@@ -55,7 +55,7 @@ var _slows := {}
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if wall != null else PackedStringArray(["Falta el SpellWall."])
+	return PackedStringArray() if wall != null else PackedStringArray(["The SpellWall is missing."])
 
 func _ready() -> void:
 	if Engine.is_editor_hint() or not multiplayer.is_server():

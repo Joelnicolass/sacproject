@@ -12,14 +12,14 @@ static func check(shapes: Dictionary[String, CollisionShape3D], marks: Dictionar
 	for prop: String in shapes:
 		var node := shapes[prop]
 		if node == null or node.shape == null:
-			warnings.append("Falta `%s` (CollisionShape3D con su forma)." % prop)
+			warnings.append("`%s` is missing (a CollisionShape3D with its shape)." % prop)
 			continue
 		if not (node.shape is SphereShape3D or node.shape is CylinderShape3D):
-			warnings.append("`%s` tiene que llevar una esfera o un cilindro." % prop)
+			warnings.append("`%s` must hold a sphere or a cylinder." % prop)
 		var area := node.get_parent() as Area3D
 		if area != null and (area.monitoring or area.collision_layer != 0 or area.collision_mask != 0):
-			warnings.append("El Area3D de `%s` tiene que estar apagada (monitoring off, capa y máscara 0)." % prop)
+			warnings.append("The Area3D of `%s` must be off (monitoring off, layer and mask 0)." % prop)
 	for prop: String in marks:
 		if marks[prop] == null:
-			warnings.append("Falta `%s` (Marker3D)." % prop)
+			warnings.append("`%s` is missing (Marker3D)." % prop)
 	return warnings

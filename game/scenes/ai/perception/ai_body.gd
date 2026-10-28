@@ -4,7 +4,6 @@ extends RefCounted
 ## The one place where the AI reads a body of the game: whether it is dead, its health, its mana and
 ## its book. It only reads (it never writes into a body) and answers zero or null for a body without
 ## that part. Typed: no `has_method`, no `call`.
-## Ref: shiny.d:1458-1464 node vtbl[5] (mana pair), 2715-2722 healthPair.
 
 
 ## A unit or a Sac Doctor that is dying or dead (the bodies that can die; a wizard, a structure or a
@@ -70,7 +69,7 @@ static func caster(node: Node) -> Caster:
 
 ## Whether the body of `t` has something it can do now with `mana` (the mana the side believes it
 ## has): a wizard with at least the quarter of his pool he keeps for a spell, a creature with an
-## ability it can pay, a Manahoar that can channel. 055f f5.
+## ability it can pay, a Manahoar that can channel.
 static func ability_ready(t: AiTrack, mana: int) -> bool:
 	match t.kind:
 		AiTrack.Kind.WIZARD:

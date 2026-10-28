@@ -6,7 +6,6 @@ extends Node3D
 ## tornado is, bent by the winds) and hands it, with the turn and the fade, to the shader of each part (upper wall, lower wall, ragged edge);
 ## it raises dust where the foot touches the ground (its light is a StateLight of the scene that follows the zone). Presentation only: it reads the
 ## replicated position and size and writes nothing of the game. A dedicated server or a headless run draws nothing.
-## Ref: sacengine renderTornado, animateTornadoDirt (renderer.d:3453-3481, state.d:22802-22823).
 
 @export var zone: GroundZone
 @export var drift: TornadoDrift
@@ -58,4 +57,4 @@ func _physics_process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and drift != null and winds != null else PackedStringArray(["Faltan la zona, la deriva y los vientos."])
+	return PackedStringArray() if zone != null and drift != null and winds != null else PackedStringArray(["The zone, the drift and the winds are missing."])

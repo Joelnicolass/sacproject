@@ -5,7 +5,6 @@ extends Node3D
 ## throwing earth and leaving a mark on the ground at each step; when the spiral ends it is gone. Every peer walks it from its own
 ## count of ticks, and the server's count is sent so one that joins late is where the others are. Presentation only: a headless
 ## process keeps its count and draws nothing. It does not open the ground (HoleCutter) and hurts nobody.
-## Ref: sacengine updateBore, animateBore (state.d:18636-18651, 18593-18616).
 
 @export var zone: GroundZone
 ## How fast it goes, against the spell's `speed`.
@@ -43,7 +42,7 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) a la que acompaña."])
+	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) it goes with is missing."])
 
 
 func _physics_process(_delta: float) -> void:

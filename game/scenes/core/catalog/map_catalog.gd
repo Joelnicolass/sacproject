@@ -65,7 +65,7 @@ func playable_tags() -> PackedStringArray:
 	return tags
 
 
-## RFC-049 049a: every tag, the test maps included (a room server started with `--room-test-maps`, the debug boot).
+## Every tag, the test maps included (a room server started with `--room-test-maps`, the debug boot).
 func all_tags() -> PackedStringArray:
 	var tags := Array(DirAccess.get_directories_at(DIR))
 	tags = tags.filter(func(tag: String) -> bool: return ResourceLoader.exists("%s/%s/%s.tres" % [DIR, tag, tag]))

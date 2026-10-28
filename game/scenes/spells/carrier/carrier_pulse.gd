@@ -6,7 +6,6 @@ extends Node3D
 ## `Reach` is stunned, and with `damage_foes` the foes of the wizard also take the spell's damage and a bolt, once each per trip.
 ## Soul Mole stuns everybody but its wizard and hurts nobody; Soul Wind stuns and hurts only the foes, once. It does not move, does not
 ## take the soul (SoulFetch) and does not draw the carrier. Server (or solo) only.
-## Ref: sacengine updateSoulMole, updateSoulWind (state.d:18030-18044, 18999-19018).
 
 enum Affects { ALL_BUT_WIZARD, FOES }
 
@@ -31,9 +30,9 @@ var _hit := {}
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if carrier == null:
-		warnings.append("Falta el SpellCarrier.")
+		warnings.append("The SpellCarrier is missing.")
 	if reach == null or not reach.shape is SphereShape3D:
-		warnings.append("Falta `reach` con una forma esférica.")
+		warnings.append("`reach` with a sphere shape is missing.")
 	return warnings
 
 

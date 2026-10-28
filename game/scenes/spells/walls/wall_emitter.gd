@@ -4,7 +4,6 @@ extends Node3D
 ## Sprites that rise from a wall: from along all of it (the Firewall's tongues of flame) or only from one of its ends while that end is
 ## still growing (the flames, dust and sparks of the advancing front). It moves its SpriteEmitter child over the wall every frame and sets
 ## how many it emits; what a sprite looks like is the child's ParticleType. Presentation only, on every peer; it does not hurt anybody.
-## Ref: sacengine updateFirewall particles, firyParticle (state.d:20036-20085).
 
 enum Where { ALONG, LEFT_END, RIGHT_END }
 

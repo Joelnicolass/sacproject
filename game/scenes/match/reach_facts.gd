@@ -59,5 +59,5 @@ func _read(state: SceneState) -> void:
 	guardian_leash_m = SceneStateReader.radius(nodes, root, "guardian_leash", guardian_leash_m)
 	guardian_return_m = SceneStateReader.radius(nodes, root, "guardian_return", guardian_return_m)
 	if root.has("guardian_leash_from"):
-		## Kept as the 32-bit Vector3 the scene saves, like the 0.9 the bond always added.
+		# Kept as the 32-bit Vector3 the scene saves, like the 0.9 the bond always added.
 		guardian_leash_from = SceneStateReader.marker(nodes, root, "guardian_leash_from")

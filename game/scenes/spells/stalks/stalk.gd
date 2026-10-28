@@ -4,7 +4,6 @@ extends Node3D
 ## One stalk of Meanstalks: it grows while the wizard casts, then stretches its tip to the nearest body it can reach, hits it, lifts it to
 ## the top and throws it, and starts again; it shrinks when the zone ends. The only owner of its tip, growth and prey; the server replicates
 ## `tip`, `growth` and `mode`. It does not time the spell (GroundZone), choose the prey (StalkHunt), hold the body (StalkGrip) or draw (StalkLook).
-## Ref: sacengine updateMeanstalk (state.d:22574-22695).
 
 ## The stalk entered mode `mode` (every peer): the look plays its sounds from it.
 signal mode_changed(mode: int)

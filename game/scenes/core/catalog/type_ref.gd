@@ -6,7 +6,6 @@ extends RefCounted
 ## and this is how an old tag string (a debug scene, a tool) becomes the reference. Static and @tool: the editor has no autoloads.
 ## The id of a creature is its `tag` or, when empty, its file name (CreatureType.id()): the files carry human names, not tags.
 ## Types are read-only: never mutate what it returns.
-## Ref: RFC-043 043b.
 
 const CREATURES_FOLDER := "res://data/catalog/creatures/"
 

@@ -6,7 +6,6 @@ extends SpellAction
 ## starts (it does not wait for the casting time, and an interruption does not undo it). It climbs, turns and stands up on its own
 ## (FastRevive with the slow knobs), and a replicated effect shows the streams from the wizard to it. A soul without a corpse (a
 ## dropped one, a free one) is refused before any mana is spent. It does not decide how long the revival takes (the FastRevive scene).
-## Ref: sacengine castAnimateDead, animateDead (state.d:10859-10903).
 
 ## The revival the creature goes through (a FastRevive scene with the normal, slow knobs).
 @export var revive_scene: PackedScene

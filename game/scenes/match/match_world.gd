@@ -1,12 +1,13 @@
 class_name MatchWorld
 extends Node3D
 
-signal local_wizard_changed(wizard: Node3D)
-
 ## The match is map-agnostic. The map is the child `Map` (a MapRoot) of `map_parent` (World): the one the scene already
 ## holds (an inherited scene with a map in it) or, when there is none or `--map=<tag>` asks for another, the scene of the
 ## active MapDefinition. The systems below are bound to its sockets before any of them is ready.
 ## The children are grouped: World (3D world and spawners), Systems, Input, Hud and Audio.
+
+signal local_wizard_changed(wizard: Node3D)
+
 const MAP_NODE := "Map"
 
 @export var rules: MatchRules
@@ -37,13 +38,13 @@ var _local_wizard: Node3D
 
 func _enter_tree() -> void:
 	_entered_ms = Time.get_ticks_msec()
-	## RFC-032 032b: the ticks of the match start at 0 on every peer (the client counts its own for the cooldowns).
+	# The ticks of the match start at 0 on every peer (the client counts its own for the cooldowns).
 	MatchClock.begin(get_tree())
-	## The one who simulates applies the match setup (level, friendly fire, drop soul, starting souls; RFC-031 031a2/031d)
-	## before any child is ready (RFC-024 §5.1). The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
+	# The one who simulates applies the match setup (level, friendly fire, drop soul, starting souls)
+	# before any child is ready. The setup returns a copy when it overrides something (an empty setup returns `rules` itself): never mutate world.rules at runtime.
 	if not MpKit.is_networked() or MpKit.is_server():
 		rules = SacrificeFlow.setup.apply_to(rules)
-	## Every peer seeds the match: online with the seed the server announced (RFC-060 060s), offline with the rules' or a drawn one.
+	# Every peer seeds the match: online with the seed the server announced, offline with the rules' or a drawn one.
 	MatchSeed.begin(rules, ActiveMatch.match_seed())
 	definition = ActiveMatch.map()
 	mode = ActiveMatch.mode()
@@ -56,8 +57,8 @@ func _attach_map() -> void:
 	if map_parent == null:
 		push_error("Match: map_parent must be set in match.tscn.")
 		return
-	## One line for the logs and the runs (RFC-049 049a): which map this process loaded, and whether it simulates it.
-	print(("mapa %s" if not MpKit.is_networked() or MpKit.is_server() else "en mapa %s") % definition.tag)
+	# One line for the logs and the runs: which map this process loaded, and whether it simulates it.
+	print(("map %s" if not MpKit.is_networked() or MpKit.is_server() else "on map %s") % definition.tag)
 	map = map_parent.get_node_or_null(MAP_NODE) as MapRoot
 	if map != null and definition.map_scene != null and map.scene_file_path != definition.map_scene.resource_path:
 		map_parent.remove_child(map)
@@ -100,13 +101,13 @@ func _ready() -> void:
 	var map_name := "?"
 	if definition:
 		map_name = definition.display_name if not definition.display_name.is_empty() else String(definition.tag)
-	print("en %s slot %d" % [map_name, MpKit.local_slot()])
+	print("on %s slot %d" % [map_name, MpKit.local_slot()])
 	if match_state:
 		match_state.result_changed.connect(_on_result_changed)
 	%Wizards.child_entered_tree.connect(_on_wizard_entered)
 	for wizard in %Wizards.get_children():
 		_check_local(wizard)
-	print("mundo listo %d ms" % (Time.get_ticks_msec() - _entered_ms))
+	print("world ready %d ms" % (Time.get_ticks_msec() - _entered_ms))
 
 
 ## Where the shader warm-up starts its walk (WarmCollect): this match's map and every god and wizard a seat can pick (any of them can show up).

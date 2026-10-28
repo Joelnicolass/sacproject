@@ -4,13 +4,12 @@ extends AiTask
 ## What the side wants to take. Three kinds of record, each with a score `lerp(s1, s2, s3)` (s1 the
 ## worth of the target, s2 the weight of the side's aggression, s3 = 1 - the influence of the enemy
 ## groups within 140 m):
-##   - a free manafount (`free_fount`): the wizard builds a Manalith over it (his capture block:
-##     castCachedInRange). The free bodies must count the wizard (the original's required status 2).
-##     s1 = nodeValueScore(f1): the more fronts the enemy has taken (f1 = 1 - own Manaliths / free
+##   - a free manafount (`free_fount`): the wizard builds a Manalith over it (his capture block). The free bodies must count the wizard (required status 2).
+##     s1 = node_value_score(f1): the more fronts the enemy has taken (f1 = 1 - own Manaliths / free
 ##     founts) the more it is worth.
 ##   - an enemy Manalith (or shrine): the creatures attack it. Only if the AI has territory there
-##     (territorialScore) or no Manalith of its own. The free bodies must count one that fights
-##     (required status 1). s1 = nodeValueScore(max(f1, f2)) * 0.99 * aggression.
+##     (territorial_score) or no Manalith of its own. The free bodies must count one that fights
+##     (required status 1). s1 = node_value_score(max(f1, f2)) * 0.99 * aggression.
 ##   - an enemy altar (flags 0x200): the profanation. Skipped without territory near it (a Manalith
 ##     of the AI within 1000 m, an altar within 50 m). With a Desecrate already underway against it
 ##     the record is worth 0.4 (so the army keeps guarding); else s1 = aggression² * 2 * (own share
@@ -18,10 +17,8 @@ extends AiTask
 ##     The wizard leads the army and, once at the altar, Desecrates it (AiWizardBrain).
 ## Not ported: the record that hunts an enemy wizard and the first-pass guardian-bound creatures.
 ## The claim hands every free body that fights to the best record that the army can beat
-## (rateWithBase >= 0), until the souls they hold pass `own souls * share * 0.9 * aggression`; with
+## (AiRater.rate_with_base >= 0), until the souls they hold pass `own souls * share * 0.9 * aggression`; with
 ## a Desecrate of the side underway it claims nothing, so the army stays where it is.
-## Ref: shiny.d:2118-2194 `replanCapture`, 2262-2286 `claimCapture`, retail 0x48dc04..0x48e21b;
-## flags 0x10, status 8; shiny.d:2152-2157; guardian excluded here too, shiny.d:2272
 
 ## The claim stops once the souls taken pass own souls * share * this * aggression (0.9, stored as
 ## the original's float32).
@@ -110,7 +107,6 @@ func replan() -> void:
 			record.score = score
 			insert_sorted(record)
 	# Decay the claimed scores by position (0.5^i) and normalize by the decayed sum.
-	# Ref: shiny.d:2188-2194
 	var factor := 1.0
 	var total := 0.0
 	for record in records:
@@ -120,8 +116,6 @@ func replan() -> void:
 	normalize(AiField.f32(total))
 
 
-## claimCapture.
-## Ref: shiny.d:2262-2286
 func claim(free: Array[AiTrack]) -> float:
 	var perception := board.perception
 	if perception.own_desecration():
@@ -168,10 +162,9 @@ func claim(free: Array[AiTrack]) -> float:
 	return total
 
 
-## nodeValueScore: `f` pulled towards the density of the souls around (0.45), towards the shadow of
+## `f` pulled towards the density of the souls around (0.45), towards the shadow of
 ## the enemy altars over it (0.3) and the own ones (0.5). Retail weights; the beta uses 0.4 and
 ## 0.35.
-## Ref: shiny.d:2083-2095
 func node_value_score(f: float, t: AiTrack) -> float:
 	var r := AiField.lerp_w(f, 0.45, board.density(t.cur_pos, 10.0, 280.0))
 	r = AiField.lerp_w(
@@ -183,10 +176,9 @@ func node_value_score(f: float, t: AiTrack) -> float:
 	return r
 
 
-## territorialScore: how much of the AI's own ground (its structures and its allies') lies around
+## How much of the AI's own ground (its structures and its allies') lies around
 ## `pos`: each one weighs 1 within 10 m, falling to 0 at 1000 m (a Manalith) or 50 m (any other),
 ## added as a probability.
-## Ref: shiny.d:2023-2041, retail 0x488d70
 func territorial_score(pos: Vector3, exclude: AiTrack) -> float:
 	var acc := 0.0
 	for relation in [AiTrack.Relation.OWN, AiTrack.Relation.ALLY]:

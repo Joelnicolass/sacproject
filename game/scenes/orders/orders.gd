@@ -5,7 +5,6 @@ extends Node
 ## owner_slot. The selection stands in the formation most of its creatures keep (the default is the line) turned by the
 ## camera facing; units are matched to slots greedily by distance. The "formation" command stores a formation on each
 ## creature and moves nobody. Retreat orders every creature of the side, not the selection.
-## Ref: RFC-038; sacengine Command → ObjectState.applyOrder (state.d:29140), Formation / getFormationOffsets (state.d:417), greedy slot matching (state.d:29205), retreat (state.d:29174).
 
 ## The local player asked for an order (request(), the owner side, before it is sent or applied). Presentation only;
 ## the AI's apply_for and the server's submit_order do not emit it.
@@ -27,17 +26,16 @@ const COMMANDS := {
 
 ## The formations the server accepts (a Resource never travels over the network, only its id).
 @export var catalog: FormationCatalog = preload("res://data/orders/formations.tres")
-## 0 = no limit (RFC-025); the original cuts at numCreaturesInGroup = 12.
+## 0 = no limit; the original cuts at 12.
 @export var max_units := 0
-## getFormationOffsets: unitDistance = min(1.25·max(size) + 0.85, 10).
+## Unit distance = min(1.25·max(size) + 0.85, 10).
 @export var spacing_per_size := 1.25
 @export var spacing_base := 0.85
 @export var max_spacing := 10.0
 ## An attack on a creature retargets each unit to the enemy
 ## creature closest to its own slot within this range.
-## Ref: attackDistance, state.d:13609.
 @export var retarget_range := 100.0
-## With the DebugLog category `orders` on, every applied human order prints «orden <command> <n>». The AI's orders
+## With the DebugLog category `orders` on, every applied human order prints «order <command> <n>». The AI's orders
 ## (`apply_for`) print too only with `log_ai_orders`: thousands per match.
 @export var log_ai_orders := false
 
@@ -59,14 +57,14 @@ func request(units: Array, command: String, point: Vector3, target: Node3D, faci
 	_apply(MpKit.local_slot(), paths, command, point, target_path, facing, formation_id)
 
 
-## The orders of a side that has no peer behind it (the AI, RFC-024 024c): server or solo only, no RPC. It is
+## The orders of a side that has no peer behind it (the AI): server or solo only, no RPC. It is
 ## `request` with the slot given instead of read from MpKit.local_slot(); _apply still checks that every unit
 ## belongs to `slot`, so the AI can order exactly what a human of that slot could.
-## The AI does not choose formations (RFC-038 P5): its creatures keep the line.
+## The AI does not choose formations: its creatures keep the line.
 func apply_for(slot: int, units: Array, command: String, point: Vector3, target: Node3D, facing := 0.0, formation_id := &"") -> void:
 	if slot <= 0 or (MpKit.is_networked() and not MpKit.is_server()):
 		return
-	## The nodes go straight in: the AI orders thousands of times per match and the roundtrip through NodePaths cost half of each order.
+	# The nodes go straight in: the AI orders thousands of times per match and the roundtrip through NodePaths cost half of each order.
 	_apply(slot, PackedStringArray(), command, point, "", facing, formation_id, units, target)
 
 
@@ -92,7 +90,7 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 		return
 	if not COMMANDS.has(command):
 		return
-	## An order that carries a formation (the radial menu's pick) stores it first: the order itself already uses it.
+	# An order that carries a formation (the radial menu's pick) stores it first: the order itself already uses it.
 	if formation_id != &"":
 		_set_formation(slot, unit_paths, formation_id, unit_nodes)
 	var started := Time.get_ticks_usec()
@@ -126,7 +124,7 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 		(unit.get_node("Orders") as UnitOrders).give(kind as UnitOrders.Command, foe, order_point, slots[index], order_facing)
 	last_apply_us = Time.get_ticks_usec() - started
 	if unit_nodes.is_empty() or log_ai_orders:
-		if DebugLog.on(&"orders"): print("orden %s %d" % [command, units.size()])
+		if DebugLog.on(&"orders"): print("order %s %d" % [command, units.size()])
 
 
 ## "formation": keeps `formation_id` on each creature of the slot that was asked for. Nobody moves; an id the catalog does
@@ -137,7 +135,7 @@ func _set_formation(slot: int, unit_paths: PackedStringArray, formation_id: Stri
 	for unit in _own_units(slot, unit_paths, null, UnitOrders.Command.MOVE, unit_nodes):
 		unit.get_node("Orders").set("formation_id", formation_id)
 	if unit_nodes.is_empty() or log_ai_orders:
-		if DebugLog.on(&"orders"): print("orden formation %s" % formation_id)
+		if DebugLog.on(&"orders"): print("order formation %s" % formation_id)
 
 
 ## The formation most of the group keeps; a tie goes to the one first in the catalog (the original's order).
@@ -169,7 +167,6 @@ func _retreat(slot: int) -> void:
 
 
 ## Pacifists refuse attack and advance.
-## Ref: canOrder (state.d:1140), sacengine order().
 func _own_units(slot: int, unit_paths: PackedStringArray, target: Node3D, kind: int, unit_nodes: Array = []) -> Array[Node3D]:
 	var units: Array[Node3D] = []
 	var seen := {}
@@ -198,12 +195,11 @@ func _can_order(unit: Node, slot: int) -> bool:
 
 
 ## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes them.
-## Ref: state.d:429.
 func _formation(formation: FormationType, units: Array[Node3D], kind: int, target: Node3D) -> Array[Vector2]:
 	var size := 0.0
 	for unit in units:
 		size = maxf(size, 2.0 * _half_size(unit))
-	## getFormationOffsets: unitDistance = min(1.25·max(size) + 0.85, 10).
+	# Unit distance = min(1.25·max(size) + 0.85, 10).
 	var spacing := minf(spacing_per_size * size + spacing_base, max_spacing)
 	var around := 0.0
 	if target:
@@ -265,7 +261,6 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 ## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots.
 ## Here the units furthest along `yaw` take the front row, the next ones the row
 ## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
-## Ref: F88 round 3; sacengine numCreaturesInGroup = 12, state.d:29205.
 func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int) -> PackedInt32Array:
 	var n := units.size()
 	var result := PackedInt32Array()
@@ -286,7 +281,7 @@ func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_si
 			var u: int = order[k][1]
 			row.append([right.dot(units[u].global_position), u])
 		row.sort()
-		## The slots of this row, left to right (_formation lays them out in that order).
+		# The slots of this row, left to right (_formation lays them out in that order).
 		for k in row.size():
 			result[row[k][1]] = start + k
 		start = stop

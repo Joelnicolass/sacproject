@@ -7,22 +7,18 @@ extends AiPhase
 ## ability it can pay, weight_sac_doctor a Sac Doctor) is the target, and the book's attack with the
 ## best score against it is queued with the score `best * w3[0] / total` (on the body the spell aims
 ## at: himself for a burst around him, AiSpellEval.find_best). It uses what the AI KNOWS: an enemy
-## it has not seen stays where it was when taken in. RFC-053 053b (F371): a passive NPC (a body of
+## it has not seen stays where it was when taken in. A passive NPC (a body of
 ## an NPC slot that never picks a fight: CRE8 aggressiveness 0, or a peasant, whose VillagerBrain
 ## never attacks) weighs AiTactics.npc_passive_weight more (0 in every difficulty: «la IA no los
-## caza a propósito», PRD). Measured in f371_npc before the change: the first replan took a Farmer
-## at 20 m (threat 0.000, enemy_ratio 0.167) with the Druid at 40 m in range, and Wrath went to it.
-## Hostile NPC (Taurocks) still count as any foe. RFC-053 053d (F373): the target the side committed
+## caza a propósito», PRD), so the first replan does not throw Wrath at a
+## Farmer while the Druid is in range. Hostile NPC (Taurocks) still count as any foe. The target the side committed
 ## to (FocusTask.committed) weighs AiTactics.commit_weight more, so the wizard's spells go where his
 ## creatures were sent, replan after replan; an enemy healer the side sees near that target
-## (AiKillEstimate. healer_near; the target itself when it heals) weighs healer_weight more.
-## Measured in f373_ai_finish before the change: each replan took the closest foe again. RFC-053
-## (deviation, wizAttack has no such test): a body the side's attack spells do not bring down
+## (AiKillEstimate. healer_near; the target itself when it heals) weighs healer_weight more,
+## so a replan does not just take the closest foe again. A body the side's attack spells do not bring down
 ## (AiWizardCasting.is_futile: it regenerated between two casts) is passed over for
-## AiTactics.spell_futile_forget_s. Measured in ai_easy_vs_normal seed 7: the Easy wizard threw a
-## Rock at the same Taurock every ~19 s for five minutes (310 of 1500 each, back to full in
-## between).
-## Ref: wizAttack, shiny.d:3052-3071, 0x48d640 CheckAttack.
+## AiTactics.spell_futile_forget_s, so the wizard does not throw Rock after Rock at a Taurock that
+## heals back to full between two casts.
 
 ## The focus of the side (optional: without it nothing is committed).
 @export var focus: FocusTask

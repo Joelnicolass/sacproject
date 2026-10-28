@@ -4,7 +4,6 @@ extends Node
 ## What a stalk hunts and how fast it moves while it does: which body it may take (alive, not frozen, not caught by this cast before, inside
 ## the 10 to 45 m band of its root), the nearest such body in reach, and the speeds of its tip. It does not move the tip (Stalk does) nor hold
 ## the body (StalkGrip does). Server only.
-## Ref: sacengine findMeanstalkTarget, meanstalkCheckTarget (state.d:22544-22573).
 
 const BODY_GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP]
 

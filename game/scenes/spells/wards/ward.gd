@@ -7,7 +7,6 @@ extends Node3D
 ## the body. It does not decide how a hit is scaled across several wards (Wards) nor what the body does to its neighbours
 ## (BodyAura). The server (or solo) starts and stops it; `shown` is replicated, so every peer draws the look from it.
 ## It ends by its time or when the body dies.
-## Ref: sacengine lifeShield, skinOfStone, airShield, protectiveSwarm (state.d:8962-8969, 13092-13100).
 
 ## The ward went on (true) or off (false). Every peer, from `shown`.
 signal shown_changed(on: bool)
@@ -185,5 +184,5 @@ func has_authority() -> bool:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if health == null:
-		warnings.append("Sin Health: el escudo no termina con la muerte.")
+		warnings.append("No Health: the shield does not end with death.")
 	return warnings

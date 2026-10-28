@@ -1,15 +1,13 @@
 extends SpellProjectile
 
 ## Persephone's Wrath. A ball of light leaves the
-## caster's hands and flies at its target (accelerateTowards, 0.5 m over the ground). It
+## caster's hands and flies at its target (accelerating toward it, 0.5 m over the ground). It
 ## bursts on the first body of another side it touches, under the ground, or at the target.
 ## The body hit takes the full amount as splash spell damage; every other body within
 ## damage_range takes amount·(1 − distance/range), also as splash spell damage.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
-## Ref: sacengine state.d:10493-10506, 16386-16581; wrathExplosion, state.d:16496-16501; dealDamage, state.d:9053-9088
 
 ## Flying height.
-## Ref: sacengine wrathFlyingHeight
 const FLYING_HEIGHT := 0.5
 const ARRIVE_DISTANCE := 0.25
 ## Trail puffs on every peer, by time (FxTrail): one per 2/60 s.
@@ -50,8 +48,7 @@ func setup(data: Dictionary) -> void:
 		push_error("%s: `hit_box` is empty, it hits no body." % scene_file_path)
 	_query = ProjectileTargets.query_for(hit_box)
 	_attach_net()
-	## The ball is only particles, its trail.
-	## Ref: sacengine animateWrath
+	# The ball is only particles, its trail.
 	FxTrail.attach(self, trail, TRAIL_INTERVAL_S)
 
 
@@ -72,9 +69,8 @@ func _attach_net() -> void:
 	add_child(net)
 
 
-## Flight with accelerateTowards. The target's
+## Flight accelerating toward the target. The target's
 ## motion is not predicted: it aims at the current center.
-## Ref: sacengine updateWrath (flying); state.d:16528-16562; sacengine predictCenter
 func _physics_process(_delta: float) -> void:
 	var target_center := _target_center()
 	var to_target := target_center - global_position
@@ -128,8 +124,7 @@ func _ground_height(at: Vector3) -> float:
 
 
 ## The direct hit gets the whole amount (DamageMod.splash), then
-## dealSplashSpellDamageAt hurts the rest by the distance to their hit box.
-## Ref: sacengine wrathExplosion
+## The splash hurts the rest by the distance to their hit box.
 func _explode(direct: Node3D) -> void:
 	var center := global_position
 	if direct and is_instance_valid(direct) and ProjectileTargets.is_live_body(direct):

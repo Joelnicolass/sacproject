@@ -10,10 +10,9 @@ extends Node
 ## admitted, the dedicated checks it with the rules of the game (`SacrificeFlow`) and the world does not start until it has it.
 ## This node lives under `root` (it survives `change_scene`) and frees itself when the match ends or the host leaves.
 ## `--match-args=--flag=1,--other` adds user args to the dedicated (tests only, same hook as the room server).
-## RFC-049 049h (F297): the options carry the map (`world`) and the mode (`mode`); the ticket has one seat per seat of the mode. The host
+## The options carry the map (`world`) and the mode (`mode`); the ticket has one seat per seat of the mode. The host
 ## is seat 1; each other seat is an AI (`ai_seats` of `start`, {slot: {god, difficulty}}) or a person with a code of its own
 ## (`codes`, {slot: code}). `rival_code` is the code of the lowest seat for a person (the only one in a 1v1).
-## Ref: RFC-034 034m.
 
 signal server_ready(address: String, port: int, code: String)
 signal server_failed(reason: String)
@@ -47,7 +46,7 @@ var _stopping: bool = false
 
 
 func _ready() -> void:
-	## The game exported has no `--path`; the editor (and the tests) run the same project with it.
+	# The game exported has no `--path`; the editor (and the tests) run the same project with it.
 	if launcher.base_args.is_empty():
 		var args := PackedStringArray(["--headless"])
 		if OS.has_feature("editor"):
@@ -70,18 +69,18 @@ func _ready() -> void:
 func start(host_pick: WizardPick, transport: String = "", options: Dictionary = {}, ai_seats: Dictionary = {}) -> Error:
 	if hosting:
 		return ERR_ALREADY_IN_USE
-	## Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
+	# Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
 	if not is_inside_tree() or launcher == null or launcher.config == null or rules == null:
-		push_error("LocalServerHost.start: el nodo no está en el árbol (agregalo a root y esperá un frame)")
+		push_error("LocalServerHost.start: the node is not in the tree (add it to root and wait a frame)")
 		return ERR_UNCONFIGURED
 	if not transport.is_empty():
 		launcher.config.transport = MpTransport.normalize(transport)
 	if not rules.are_options_valid(options):
-		push_error("LocalServerHost.start: opciones inválidas %s" % JSON.stringify(options))
+		push_error("LocalServerHost.start: invalid options %s" % JSON.stringify(options))
 		return ERR_INVALID_PARAMETER
 	for slot in ai_seats.keys():
 		if int(slot) <= HOST_SLOT or not rules.is_valid_bot(ai_seats[slot]):
-			push_error("LocalServerHost.start: asiento IA inválido %s" % str(slot))
+			push_error("LocalServerHost.start: invalid AI seat %s" % str(slot))
 			return ERR_INVALID_PARAMETER
 	MpKit.transport = launcher.config.transport
 	host_token = _new_code()
@@ -142,7 +141,7 @@ func _on_listening(listening_id: String, listening_port: int) -> void:
 		return
 	port = listening_port
 	address = MpLan.get_local_ipv4()
-	## One line for the logs and the tests: the same three things the screen shows.
+	# One line for the logs and the tests: the same three things the screen shows.
 	print("servidor local listo direccion=%s puerto=%d transporte=%s codigo=%s asientos=%s" % [
 		address, port, launcher.config.transport, rival_code, ",".join(PackedStringArray(codes.keys().map(str)))])
 	server_ready.emit(address, port, rival_code)

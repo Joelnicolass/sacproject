@@ -5,7 +5,6 @@ extends Node
 ## convert, and a track for each so the cast queue and the orders aim at a soul like at any other
 ## target. Souls are not gated by sight (the original follows them all). It does not cast nor walk
 ## (Brain, Port).
-## Ref: shiny.d:1358-1369 and 583 (souls ungated), 3005-3024 findBestNear (retail 0x485490).
 
 ## Above this many soul tracks the ones whose soul is gone are dropped.
 const PRUNE_ABOVE := 64

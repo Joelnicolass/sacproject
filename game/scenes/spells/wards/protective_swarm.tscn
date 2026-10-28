@@ -35,7 +35,7 @@ half_axes_m = Vector3(2.04, 2.03, 2.04)
 on_surface = true
 
 [node name="BugsCast" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
-editor_description = "Mientras se lanza: los 150 bichos se reparten a lo largo del lanzamiento (sacengine los nace en las manos); aca la cuota sube de 0 a la plena sobre el torso."
+editor_description = "Mientras se lanza: los 150 bichos se reparten a lo largo del lanzamiento (el original los nace en las manos); aca la cuota sube de 0 a la plena sobre el torso."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
 use_fixed_seed = true
 local_coords = false

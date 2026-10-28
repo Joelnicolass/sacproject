@@ -5,7 +5,6 @@ extends RefCounted
 ## SpellType's named fields only (`ai_use`, `ai_phase`, the «who it may land on» ticks, `ai_worth`);
 ## it does not cast nor look at tags. One evaluator per use (Rating), never per spell: AiSpellUses
 ## says which and on what body the cast lands.
-## Ref: shiny.d:2799-2923 rateSpellAcc, 2925-2951 findBestSpell, 2930-2934
 
 ## The evaluator a spell is rated with (AiSpellUses.rate), from its `ai_use`.
 enum Rating {
@@ -144,7 +143,7 @@ static func _names_a_kind(spell: SpellType) -> bool:
 
 ## What `spell` cast on `target` is worth. `looked_at`: the body the phase weighs when the cast
 ## lands elsewhere (a burst around him, a soul, a building); a spell «only on himself» counts when
-## either is him. `dist_scaled`: findBestSpell's.
+## either is him. `dist_scaled`: the scaled distance of find_best.
 func rate(
 	caster: AiTrack,
 	spell: SpellType,
@@ -163,13 +162,13 @@ func rate(
 	return AiSpellUses.rate(self, rating_of(spell), caster, spell, target)
 
 
-## F372: whether a queued Heal on `target` still rates over 0 with the health the side knows now
+## Whether a queued Heal on `target` still rates over 0 with the health the side knows now
 ## (AiSpellUses.still_worth).
 func still_worth(spell: Resource, target: AiTrack) -> bool:
 	return AiSpellUses.still_worth(spell, target, perception, tactics)
 
 
-## findBestSpell: the best spell against `target`, its cost paid out of the pool ((1 - cost/pool) *
+## The best spell against `target`, its cost paid out of the pool ((1 - cost/pool) *
 ## s). `target` in the answer is the body the best one lands on (AiSpellUses.aim: the target itself,
 ## him, a soul or a building).
 func find_best(caster: AiTrack, target: AiTrack, phase: SpellType.AiPhase) -> Dictionary:
@@ -204,7 +203,7 @@ func find_best(caster: AiTrack, target: AiTrack, phase: SpellType.AiPhase) -> Di
 	}
 
 
-## The squared distance findBestSpell rates by: distance² * range_distance_scale, 0 under
+## The squared distance find_best rates by: distance² * range_distance_scale, 0 under
 ## near_distance_sq.
 func _dist_scaled(caster: AiTrack, target: AiTrack) -> float:
 	var dist_scaled := 0.0

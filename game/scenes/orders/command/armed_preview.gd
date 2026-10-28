@@ -23,11 +23,11 @@ var _ring_site: ManafountBody
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if armed == null:
-		warnings.append("Asigná `armed` (MatchCommand/ArmedCommand).")
+		warnings.append("Assign `armed` (MatchCommand/ArmedCommand).")
 	if ray == null:
-		warnings.append("Asigná `ray` (MatchCommand/PointerRay).")
+		warnings.append("Assign `ray` (MatchCommand/PointerRay).")
 	if probe == null:
-		warnings.append("Asigná `probe` (Hud/TargetProbe).")
+		warnings.append("Assign `probe` (Hud/TargetProbe).")
 	return warnings
 
 

@@ -4,7 +4,6 @@ extends Node3D
 ## The snowball of Frozen Ground, from the wizard's hands to the ground: while he casts it grows in front of him and rises to over his head,
 ## spinning; when the cast ends it flies a parabola to the point of the click in the zone's arming time, leaving a trail; when it lands it
 ## bursts into shards. Presentation only, on every peer, from the zone's phase. It freezes nobody (ZoneFreeze).
-## Ref: sacengine frozenGroundSnowballCastingPosition, updateFrozenGroundSnowball (state.d:11097-11102, 19773-19828).
 
 @export var zone: GroundZone
 ## The ball: a mesh child (it holds the mesh).

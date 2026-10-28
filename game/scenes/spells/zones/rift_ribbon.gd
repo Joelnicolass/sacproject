@@ -4,7 +4,6 @@ extends MeshInstance3D
 ## The trail of a spirit of a Demonic Rift: a ribbon that faces the camera along the last positions of the node it follows (one in every few
 ## ticks, 120 ticks back), as wide as that node is scaled. Presentation only: every peer draws its own, a headless process none. It moves
 ## nothing and hurts nobody.
-## Ref: sacengine DemonicRiftSpirit.locations (state.d:3527-3529, renderer.d:2517-2598).
 
 ## The node whose positions it draws (a RiftSpirit); it keeps drawing from where that node is.
 @export var follows: Node3D
@@ -54,4 +53,4 @@ func _process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if follows != null else PackedStringArray(["Falta `follows`: el nodo que sigue la cinta."])
+	return PackedStringArray() if follows != null else PackedStringArray(["`follows` is missing: the node the ribbon follows."])

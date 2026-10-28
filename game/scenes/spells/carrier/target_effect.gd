@@ -23,11 +23,11 @@ enum When { ARRIVED, SETTLED }
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if carrier == null:
-		warnings.append("Falta el SpellCarrier.")
+		warnings.append("The SpellCarrier is missing.")
 	if effect == null:
-		warnings.append("Falta el BodyEffect.")
+		warnings.append("The BodyEffect is missing.")
 	if reach != null and not reach.shape is SphereShape3D:
-		warnings.append("`reach` necesita una forma esférica.")
+		warnings.append("`reach` needs a sphere shape.")
 	return warnings
 
 

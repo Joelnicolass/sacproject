@@ -8,8 +8,6 @@ extends RefCounted
 ## not cast nor pick the best spell (AiSpellEval.find_best). Static.
 ## The uses marked «AI's own design» have no evaluator in the original (its flags give 0): they are
 ## the AI's common sense.
-## Ref: shiny.d:2830-2842 f489780 (one foe), 2873-2884 f489af0 (Heal), 2893-2916 f489c40
-## (Speedup).
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 ## Speedup: the base distance of an advancing creature, of a body going to a soul (or guarding or
@@ -80,7 +78,6 @@ static func aim(eval: AiSpellEval, caster: AiTrack, spell: SpellType, target: Ai
 
 ## A spell on one enemy body (a wizard, a creature or a structure): its worth times the part of its
 ## health the spell takes (`ai_worth` against the health the side knows).
-## Ref: shiny.d:2830-2842 f489780
 static func single(perception: AiPerception, spell: SpellType, target: AiTrack) -> float:
 	if target.kind == AiTrack.Kind.NONE or target.relation != AiTrack.Relation.ENEMY:
 		return 0.0
@@ -91,7 +88,7 @@ static func single(perception: AiPerception, spell: SpellType, target: AiTrack) 
 
 
 ## Heal: worth of the target x the part of its health the spell would give back. Not on an enemy and
-## not on one with a heal running (hasActiveHeal). Nor on a body at or over `heal_below_ratio` of
+## not on one with a heal running. Nor on a body at or over `heal_below_ratio` of
 ## its health, nor on one that misses less than `heal_min_missing`, nor on one still being summoned
 ## (the original heals whatever is not full).
 static func heal(

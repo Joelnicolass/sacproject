@@ -9,12 +9,12 @@ extends RefCounted
 var level := 0
 ## 1 on, 0 off, -1 = the rules' friendly_fire.
 var friendly_fire := -1
-## RFC-031 031d (F143): 1 on, 0 off, -1 = the rules' enable_drop_soul (P drops a soul).
+## 1 on, 0 off, -1 = the rules' enable_drop_soul (P drops a soul).
 var drop_soul := -1
-## RFC-031 031d (F143): blue souls of every wizard at the start; -1 = the rules' starting_souls.
+## Blue souls of every wizard at the start; -1 = the rules' starting_souls.
 var starting_souls := -1
-## RFC-034 034e: the seed of the match; 0 = the rules' `match_seed` (the one who simulates draws it). The room server draws it
-## and puts it in the ticket (`--match-ticket-file`); `--match-seed=N` sets it by hand. The benches pass none.
+## The seed of the match; 0 = the rules' `match_seed` (the one who simulates draws it). The room server draws it
+## and puts it in the ticket (`--match-ticket-file`); `--match-seed=N` sets it by hand. Tests may pass none.
 var match_seed := 0
 ## The map of the match; null = the one of `--map` or the default. It is not a rule of the round: `apply_to` and `is_empty`
 ## ignore it, and SacrificeFlow hands it to ActiveMatch.
@@ -67,7 +67,7 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 	return merged
 
 
-## A copy of `rules` with the overrides of this setup. Without overrides (a bench, a run with no flags) it returns
+## A copy of `rules` with the overrides of this setup. Without overrides (a test, a run with no flags) it returns
 ## `rules` itself, so nothing that reads the world's rules changes. `rules` that are not MatchRules pass through.
 func apply_to(rules: Variant) -> Variant:
 	if not rules is MatchRules or is_empty():

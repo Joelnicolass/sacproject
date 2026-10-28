@@ -8,10 +8,9 @@ extends Node
 ## without mana). Creatures check souls, mana, then cooldown, and need no target: the
 ## Summoner puts them in front of the wizard when the cast starts. Starting sets every
 ## cooldown, then mana drains at cast_drain_per_s during the casting frames.
-## Every spell of the book (combat or structure) is a SpellAction child of `actions`, instanced from `SpellType.action` and found by `spell` (RFC-041):
+## Every spell of the book (combat or structure) is a SpellAction child of `actions`, instanced from `SpellType.action` and found by `spell`:
 ## Caster does the common part and asks the action to check, begin, start, finish and cancel. A creature needs
 ## no action: the Summoner puts it in front of the wizard when the cast starts and finishes it when it ends.
-## Ref: sacengine startCasting
 
 signal feedback(text: String)
 ## A cast began (`casting` true; `fx` is the particle of the hands, null for a god without one) or ended or was cut (false, null).
@@ -19,10 +18,8 @@ signal feedback(text: String)
 signal cast_changed(casting: bool, fx: ParticleType)
 
 ## Mana tolerance.
-## Ref: sacengine manaEpsilon
 const MANA_EPSILON := 0.01
-## Every spell costs at least this much: manaCost = max(1, manaCost).
-## Ref: sacengine SacSpell
+## Every spell costs at least this much: cost = max(1, cost).
 const MIN_MANA_COST := 1.0
 ## `cast_fx_shown` of a cast without a particle (a god without one): the pose and the incantation still follow it.
 const BARE := "-"
@@ -48,7 +45,6 @@ var _shown_id := ""
 
 ## The cast in progress as every peer sees it: the FxWire id of the hands' particle, BARE without one, "" while idle. The server
 ## writes it and the body's synchronizer replicates it; nothing in the simulation reads it. Presentation only.
-## Ref: RFC-023 023d.
 @export var cast_fx_shown := "":
 	set(value):
 		if value == cast_fx_shown:
@@ -81,13 +77,11 @@ func cast_fx() -> ParticleType:
 
 
 ## Only an idle or moving wizard, not a dying or ghost one.
-## Ref: sacengine canCast (state.d:9520)
 func wizard_can_cast() -> bool:
 	return wizard.can_cast()
 
 
 ## Can the spell be armed? &"" = yes, else a Refusal key.
-## Ref: sacengine selectSpell: mana, then cooldown.
 func arm_status(index: int) -> StringName:
 	var spell := spellbook.spell_at(index)
 	if spell == null:
@@ -103,7 +97,6 @@ func arm_status(index: int) -> StringName:
 
 
 ## Can the creature be summoned now? &"" = yes, else a Refusal key.
-## Ref: sacengine spellStatus: souls, mana, then cooldown.
 func summon_status(index: int) -> StringName:
 	var type := spellbook.creature_at(index)
 	if type == null:
@@ -122,7 +115,7 @@ func summon_status(index: int) -> StringName:
 	return status
 
 
-## RFC-036 036d. True when the wizard's side already owns rules.max_creatures_per_player live
+## True when the wizard's side already owns rules.max_creatures_per_player live
 ## creatures (0 = no cap). Counts the creatures of the wizard's slot that are not dead, including
 ## one still being summoned; the wizard itself and NPCs (slot 0) are not units of that slot.
 func at_creature_limit() -> bool:
@@ -179,7 +172,7 @@ func action_for(tag: String) -> SpellAction:
 
 
 ## Read only: where a cast of the spell `tag` would land at `point` / `picked`, or why it would not start (`status`). The one answer
-## `_try_action`, the AI (RFC-024 024e) and the armed preview share: a preview and the server never disagree on the same state.
+## `_try_action`, the AI and the armed preview share: a preview and the server never disagree on the same state.
 func aim_for(tag: String, point: Vector3, picked: Node3D) -> SpellAction.Aim:
 	var action := action_for(tag)
 	var spell := _spell_of(tag)
@@ -266,7 +259,7 @@ func _owner_sender() -> int:
 	return multiplayer.get_remote_sender_id()
 
 
-## "" = refused without a word (a dying or ghost wizard: startCasting just fails).
+## "" = refused without a word (a dying or ghost wizard cannot start a cast).
 func _report(text: String) -> void:
 	if not text.is_empty():
 		feedback.emit(text)
@@ -378,10 +371,10 @@ func _physics_process(_delta: float) -> void:
 		_finish()
 
 
-## The wizard died, or was stunned or petrified (F138), while casting: the spell does not land and a creature being
+## The wizard died, or was stunned or petrified, while casting: the spell does not land and a creature being
 ## summoned goes.
 func _interrupt() -> void:
-	print("se corta %s slot %d" % [_entry.display_name, wizard.owner_slot])
+	print("cast cut %s slot %d" % [_entry.display_name, wizard.owner_slot])
 	if _entry is CreatureType and is_instance_valid(_target):
 		_target.queue_free()
 	if _active != null:
@@ -414,7 +407,6 @@ func _finish() -> void:
 
 ## The id of the hands' particle: the action's own (Rock throws dirt, Wrath its sparks), else the god's, a summon included (a
 ## creature only comes out of its god's book). BARE when there is none.
-## Ref: state.d:16386, 16707.
 func _cast_fx_id() -> String:
 	var fx: ParticleType = _active.cast_fx if _active != null else null
 	if fx == null and wizard.god_type != null:

@@ -3,7 +3,6 @@ extends RefCounted
 
 ## A claim of a task: what it aims at (`target`, a track or null), where (`anchor`), who
 ## goes (`members`, with a `leader` if a wizard is among them) and how much it is worth (`score`).
-## Ref: shiny.d:134-157 `AIRecord`.
 
 var score := 0.0
 var target: AiTrack

@@ -5,8 +5,6 @@ extends RefCounted
 ## Manahoar, structure), its site (altar, fount, Manalith, shrine), whether it fights, what it is
 ## worth (`rate`). Static: it never follows a body in time (that is AiPerception) and never writes
 ## into the game. The Manahoar is the creature whose passive is the side's `mana_source` (hmba).
-## Ref: shiny.d:46 NodeKind, 884-1100 setupT4oBody/setupMaho/setupBldg, 926-931 the BLDG words of
-## 055f's table (§8.1).; shiny.d:891-894; shiny.d:392-405 tagAcc; shiny.d:739-745 relation
 
 
 ## The kind of `node` for the AI (NONE: the AI does not track it).
@@ -126,8 +124,7 @@ static func setup(t: AiTrack, perception: AiPerception) -> void:
 			if fights_of(type):
 				t.fights = true
 			# The mana below which a creature with abilities goes to a source to recharge (the
-			# Manahoar has none). 024d (autoCapture).
-			# Ref: shiny.d:892-900 setupT4oBody, setupMaho.
+			# Manahoar has none).
 			if t.kind == AiTrack.Kind.CREATURE and type != null and seen:
 				t.min_mana_cost = (
 					float(AiRater.ftol(AiBody.mana_max(t.node))) if ability_count(type) > 0 else 0.0

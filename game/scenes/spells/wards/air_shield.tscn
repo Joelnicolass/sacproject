@@ -81,7 +81,7 @@ shape = SubResource("Sphere_reach")
 
 
 [node name="CastSparks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
-editor_description = "Mientras se lanza: 2 destellos cst0 por tick nacen en la caja x4 del mago y convergen a su centro (sacengine animateFreezeCastingTarget sobre el lanzador). pull_m_s2 = 2 d / T^2 con d ~ 4 m y T = 0,53 s."
+editor_description = "Mientras se lanza: 2 destellos cst0 por tick nacen en la caja x4 del mago y convergen a su centro (como el original, sobre el lanzador). pull_m_s2 = 2 d / T^2 con d ~ 4 m y T = 0,53 s."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
 use_fixed_seed = true
 local_coords = false

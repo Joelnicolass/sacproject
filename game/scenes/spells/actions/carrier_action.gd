@@ -7,7 +7,6 @@ extends SpellAction
 ## made through the SpellSpawner (so every peer draws it) when the cast starts or ends (`spawn_when`), where `spawn_at` says; when the casting time
 ## ends it is let go toward the body. If the wizard is cut it goes away. It does not fly nor hurt (SpellCarrier and its children) and it does not
 ## know which spell it is.
-## Ref: sacengine castDragonfire, castBovineIntervention bovineIntervention, castDeath (state.d:10926-10939, 11257-11286, 11341-11354).
 
 enum When { START, FINISH }
 enum Where { WIZARD, AHEAD_OF_WIZARD, AIM }
@@ -37,7 +36,7 @@ var _ticks := 0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if target == null:
-		warnings.append("Falta `target`: quién es un blanco válido.")
+		warnings.append("`target` is missing: who is a valid target.")
 	if carrier == null:
 		warnings.append("`carrier` is empty: drag the carrier scene.")
 	return warnings
@@ -90,7 +89,7 @@ func _spawn(wizard: WizardBody, spell: SpellType) -> void:
 		return
 	var spawner := SpellSpawner.of(get_tree())
 	if spawner == null:
-		push_warning("CarrierAction: no hay SpellSpawner (grupo spell_spawner).")
+		push_warning("CarrierAction: there is no SpellSpawner (group spell_spawner).")
 		return
 	var at := _birth(wizard, _aim) - Vector3.UP * depth_m
 	var launch := ProjectileLaunch.toward(wizard, spell, at, _aim.target, _aim.point)

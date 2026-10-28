@@ -4,7 +4,6 @@ extends RefCounted
 ## The plain numbers of a Meanstalk with no tree: the curve its body follows from the root to the tip, how the tip speeds up towards its goal,
 ## which bodies it may reach and where it wanders. It does not decide when the tip moves, who it grabs nor how it is drawn (Stalk and
 ## StalkLook do).
-## Ref: sacengine meanstalkCurveSetup, meanstalkAccelerate, meanstalkCheckTarget, meanstalkRandomPos (state.d:11419-11440, 22527-22554).
 
 ## The hold the tip keeps on a body: the horizontal reach of the original's pick, 10 to 45 m from the root, with the height counted half.
 const PICK_MIN_M := 10.0

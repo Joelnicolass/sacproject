@@ -38,20 +38,20 @@ func _draw() -> void:
 	if match_seed == 0:
 		match_seed = MatchSeed.rng(["biome"]).seed  # the biome stream of the match (randomized without one)
 	if forced != null and forced.look == null:
-		push_warning("MatchBiome: '%s' no tiene tierra; se sortea." % forced.id())
+		push_warning("MatchBiome: '%s' has no land; one is drawn." % forced.id())
 	var picked := BiomeRules.choose(forced, match_seed, GameCatalog.shared().gods)
 	if picked == null or picked.look == null:
-		if DebugLog.on(&"biome"): print("bioma sin look")
+		if DebugLog.on(&"biome"): print("biome without a look")
 		return
 	god = picked
-	if DebugLog.on(&"biome"): print("bioma %s semilla %d" % [god.id(), match_seed])
+	if DebugLog.on(&"biome"): print("biome %s seed %d" % [god.id(), match_seed])
 
 
 ## The sky's seed is a hash of the match seed (it moves no stream); 0 is kept for «no match».
 func _begin_sky() -> void:
 	var sky_seed := MatchSeed.derive(["sky"]) & 0x7fffffff
 	MatchSky.begin(maxi(1, sky_seed))
-	if DebugLog.on(&"atmosphere"): print("atmosfera semilla %d" % MatchSky.sky_seed())
+	if DebugLog.on(&"atmosphere"): print("atmosphere seed %d" % MatchSky.sky_seed())
 
 
 ## A client: the land the server sent (BiomeLink adopted the sky's clock first). A god with no look is ignored.
@@ -59,8 +59,8 @@ func adopt(received: GodType) -> void:
 	if received == null or received.look == null:
 		return
 	god = received
-	if DebugLog.on(&"biome"): print("bioma %s" % god.id())
-	if DebugLog.on(&"atmosphere"): print("atmosfera semilla %d" % MatchSky.sky_seed())
+	if DebugLog.on(&"biome"): print("biome %s" % god.id())
+	if DebugLog.on(&"atmosphere"): print("atmosphere seed %d" % MatchSky.sky_seed())
 	_apply()
 
 

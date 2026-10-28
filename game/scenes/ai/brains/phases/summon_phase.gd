@@ -6,18 +6,15 @@ extends AiPhase
 ## if there is a Manalith (own or ally, retail), a Manahoar spell, and fewer ready Manahoars than
 ## souls/2; and either none is ready or the mana deficit per Manalith and ready Manahoar is above
 ## 1400. A forced Manahoar is the only thing queued this replan. BLOCK2: with threat < 0.6 and a
-## pool of mana (maxMana x Manaliths) > 0, the creature of the book (not the Manahoar) the wizard
-## can pay in souls with the best score `rateWithBase(creature, field) x (1 - cost/pool)` is forced.
-## The Manaliths count because the pool is maxMana x Manaliths: with none, the original summons
+## pool of mana (max mana x Manaliths) > 0, the creature of the book (not the Manahoar) the wizard
+## can pay in souls with the best score `AiRater.rate_with_base(creature, field) x (1 - cost/pool)` is forced.
+## The Manaliths count because the pool is max mana x Manaliths: with none, the original summons
 ## nothing (so a match starts with its Manalith). The «field» is the quirky mix of acc1 and acc2
-## (see AiStance). RFC-053 (deviation): in the BLOCK2 test the hostile NPC around the wizard weigh
-## AiTactics.npc_summon_threat_weight (0 in every difficulty): measured in ai_easy_vs_normal seed 7
-## with NPC, two Taurocks by the East fount kept the Easy wizard's threat at 0.64-0.86 for minutes,
-## so he never summoned again while his souls piled up («se queda quieta con muchas almas»). And the
-## pool counts at least AiTactics.summon_min_manaliths Manaliths (1): in the same match the Taurocks
-## broke both Manaliths and neither side could summon again (BLOCK1, the Manahoar, still needs a
+## (see AiStance). In the threat that stops the summons the hostile NPC around the wizard weigh
+## AiTactics.npc_summon_threat_weight (0 in every difficulty), so two Taurocks by a fount do not keep
+## him from summoning while his souls pile up. And the pool counts at least
+## AiTactics.summon_min_manaliths Manaliths (1), so a side whose Manaliths fell can still summon (BLOCK1, the Manahoar, still needs a
 ## Manalith to channel: unchanged).
-## Ref: wizSacrifice, shiny.d:3115-3172, 0x48d8b0; shiny.d:3123-3137; shiny.d:3139-3171
 
 
 func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
@@ -27,7 +24,7 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 	var souls := AiBody.souls(node)
 	if max_mana == 0 or souls == 0:
 		return
-	# Adenda 1.3: the difficulty's own pace (Easy): no summon before its interval has passed. Normal
+	# The difficulty's own pace (Easy): no summon before its interval has passed. Normal
 	# and Hard: always over.
 	if not brain.casting.summon_interval_over():
 		_note(wizard, "interval")
@@ -74,7 +71,7 @@ func run(wizard: AiTrack, _w3: Array[float], _record: AiRecord) -> void:
 		var type: CreatureType = entry["type"]
 		if type.souls > souls:
 			continue
-		# Adenda 1.3: the mana the difficulty keeps (Easy) is not spent on a creature. Normal and
+		# The mana the difficulty keeps (Easy) is not spent on a creature. Normal and
 		# Hard: no reserve.
 		if not brain.casting.keeps_mana_reserve(wizard, type.mana_cost):
 			continue

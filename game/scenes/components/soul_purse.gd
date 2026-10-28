@@ -32,6 +32,5 @@ func take(amount: int = 1) -> bool:
 
 
 ## Summons pay here: the souls go when the cast ends.
-## Ref: sacengine updateCreatureCasting.
 func spend(amount: int = 1) -> bool:
 	return take(amount)

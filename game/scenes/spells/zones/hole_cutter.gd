@@ -6,7 +6,6 @@ extends Node
 ## lets a piece of ground drop. When it reaches the end of the spiral it waits, then gives the holes back one at a time, the last
 ## one first (`fill_hole`); when none is left the zone is done. Server (or solo) only; the clients get the holes from the
 ## Terrain and the effects from FxBus. It draws nothing itself (the zone's look does) and knows no lattice.
-## Ref: sacengine updateBoreHole (state.d:18653-18696), removeLandVertex (state.d:29027-29059).
 
 signal hole_cut(at: Vector3)
 signal hole_filled(at: Vector3)
@@ -44,7 +43,7 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) a la que pertenece."])
+	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) it belongs to is missing."])
 
 
 func _physics_process(_delta: float) -> void:

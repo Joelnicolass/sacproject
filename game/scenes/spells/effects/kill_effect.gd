@@ -4,7 +4,6 @@ extends BodyEffect
 
 ## Death's blow: the body dies at once whatever it wears (a shield, a resistance), the normal way (corpse and soul stay), with `bolts` bolts of
 ## lightning through its center and a flash. It does not gib (GibEffect) and it does not choose who (the carrier's hunt).
-## Ref: sacengine updateDeath attack, deathEffects (state.d:22243-22295).
 
 ## The bolt (FxBus beam type) and how many of them cross the body.
 @export var beam: BeamType

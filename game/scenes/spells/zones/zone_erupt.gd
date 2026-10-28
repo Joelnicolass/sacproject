@@ -5,7 +5,6 @@ extends ZonePulse
 ## spell's damage range, and every creature and wizard nearer than `throw_range_m` thrown up and away, harder the closer it
 ## stands to the center. Then the burst everybody sees (rocks, dust, the light of the blast). It does not lift the ground
 ## (the zone's TerrainStamps do) nor stun the wave's bodies (ZoneStunRing), and it draws nothing by itself.
-## Ref: sacengine eruptExplosion (state.d:18440-18491).
 
 ## The burst played at the center: a scene with the flying rocks (it also carries the sound of the blast).
 @export var burst: PackedScene

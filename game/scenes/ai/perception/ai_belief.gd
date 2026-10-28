@@ -9,8 +9,6 @@ extends Node
 ## reads more; a snapshot of an unseen body is counted in `unseen_reads` (0 is the rule,
 ## ai_knowledge_cases checks it). It does not look (Vision, SightIntake) nor choose which bodies the
 ## AI knows (AiPerception).
-## Ref: shiny.d:1024-1038 updateBase, 1710-1711 and 2715-2722 healthPair (the original reads
-## everything live).
 
 ## What the AI may know of what its side does not see (AiSide.setup: the difficulty's; look_from).
 var knowledge: AiDifficulty.Knowledge = AiDifficulty.Knowledge.SIGHT
@@ -35,7 +33,6 @@ func look_from(center: Node3D, p_knowledge: AiDifficulty.Knowledge, sight_m: flo
 ## (structures stand still and are marked for good once seen; souls are not gated either); a body of
 ## another side while the side's Vision keeps it in mind (the rule the creatures pick their targets
 ## by).
-## Ref: shiny.d:583
 static func sees(t: AiTrack, side: int) -> bool:
 	if (
 		t == null
@@ -120,7 +117,6 @@ func snapshot(t: AiTrack, side: int) -> void:
 ## Own and seen bodies follow the real position, `dt` ticks after the last run, while the AI knows
 ## where they are (seen, or on the minimap). A seen body it does not know where is now stays where
 ## it was seen last, one step of its last velocity ahead; known again, it does not jump from there.
-## Ref: shiny.d:1024-1038 updateBase (it follows own bodies and the ones flagged «seen», 1025)
 func follow(t: AiTrack, dt: int, side: int) -> void:
 	if t.relation != AiTrack.Relation.OWN and not t.seen:
 		return

@@ -7,7 +7,6 @@ extends Resource
 ## difficulty is another `.tres` (data/ai/difficulty_*.tres); it never changes while playing. Normal
 ## plays the original's numbers except one deviation the user chose: it knows only what it saw last
 ## of what its side does not see now (Knowledge.SIGHT).
-## Ref: RFC-024 §3.3 `AiDifficulty`, 024e; shiny.d:380, 662.
 
 ## What the AI may know of the bodies its side does not see now. No difficulty reads the real health
 ## or mana of one of them (RULES.md «IA»: no cheat in any difficulty); what changes is the position.
@@ -22,7 +21,7 @@ enum Knowledge {
 	SIGHT_AND_MAP,
 }
 
-## The name of the difficulty in the UI (debug HUD now, the «Contra la IA» menu in 024f).
+## The name of the difficulty in the UI (the debug HUD and the «Contra la IA» menu).
 @export var display_name := "Normal"
 
 @export_group("Reaction")
@@ -32,7 +31,6 @@ enum Knowledge {
 @export_range(0.25, 4.0, 0.05) var period_scale := 1.0
 ## How bold the side plays. It scales the reach of Convert, the
 ## weights of attacking and the claims of the capture task.
-## Ref: AiPlay.aggression; fixed 1.0 in the original, shiny.d:380
 @export_range(0.0, 1.0, 0.05) var aggression := 1.0
 ## Seconds between the decision and the request that leaves the port (a cast, a summon, an order, a
 ## walk): a human's reaction. While a cast waits the wizard counts as busy (he asks for nothing
@@ -40,12 +38,12 @@ enum Knowledge {
 @export_range(0.0, 2.0, 0.05) var request_delay_s := 0.0
 
 @export_group("Summons")
-## Adenda 1.3: a limit the AI puts on itself, not a rule of the game. Minimum seconds between two
+## A limit the AI puts on itself, not a rule of the game. Minimum seconds between two
 ## summons it decides (the Manahoar included). 0 = none (Normal, Hard: the original). Summons are
 ## bound by mana, not by how often the AI thinks, so the slower periods of Easy alone did not slow
-## them (measured in 024e: Easy summoned 124 % of Normal).
+## them.
 @export_range(0.0, 120.0, 1.0) var summon_interval_s := 0.0
-## Adenda 1.3: the fraction of the wizard's maximum mana the AI keeps and never spends on a creature
+## The fraction of the wizard's maximum mana the AI keeps and never spends on a creature
 ## (the Manahoar, which brings mana, is not held back). 0 = none (Normal, Hard). Nothing is taken
 ## from the wizard: he only chooses not to spend it.
 @export_range(0.0, 0.9, 0.05) var mana_reserve := 0.0
@@ -61,7 +59,7 @@ enum Knowledge {
 @export var tactics: AiTactics
 
 @export_group("Resources")
-## RULES.md «IA»: the AI has no bonus of resources in any difficulty. Locked at 0 (RFC-024 §3.3)
+## RULES.md «IA»: the AI has no bonus of resources in any difficulty. Locked at 0
 ## unless the user decides otherwise: any other value is refused when the resource is loaded.
 ## Nothing in the game reads it.
 @export var resource_bonus := 0.0:

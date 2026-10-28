@@ -4,7 +4,6 @@ extends Camera3D
 ## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the keys, the screen edges and
 ## free look, and zooms with the wheel (except over `wheel_blockers`). Controls are InputMap actions: `camera_orbit` (middle
 ## button, or `camera_orbit_modifier` Ctrl + `select`) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are the keys.
-## Ref: sacengine dagonBackend.d positionCamera / cameraControl. Units 1:1 sac → m.
 
 @export var follow: Node3D
 ## Only this ground counts for the ray under the camera (props on layer 1 are skipped). The live land (Terrain.height_at,
@@ -17,7 +16,7 @@ extends Camera3D
 ## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms itself). A control with a
 ## `covers(screen)` method (Minimap: its circle) decides by that; any other counts by its rectangle.
 @export var wheel_blockers: Array[Control] = []
-## RFC-053 053f: the shake this camera adds on top of its placement (a CameraShake child). Empty: no shake.
+## The shake this camera adds on top of its placement (a CameraShake child). Empty: no shake.
 @export var shake: CameraShake
 
 @export_group("Edges")
@@ -52,7 +51,6 @@ extends Camera3D
 ## Degrees per pixel. Negative = the original "grab the world" feel.
 @export var look_deg_per_px := -0.25
 ## Absolute limits of view_pitch_deg. Basis.looking_at degenerates at ±90°, so the view stops short of vertical.
-## Ref: sacengine only wraps the pitch at ±180° (dagonBackend.d:425).
 @export var look_down_max_deg := 85.0
 @export var look_up_max_deg := 80.0
 @export var drag_px := 3.0
@@ -65,7 +63,6 @@ var yaw := 0.0
 var zoom := 0.125
 var target_zoom := 0.125
 ## Free-look pitch on top of the follow angle. Negative looks up.
-## Ref: sacengine camera.pitch over pitchOffset.
 var free_pitch_deg := 0.0
 ## Resulting view pitch below the horizon, in [-look_up_max_deg, look_down_max_deg]. Negative looks up.
 var view_pitch_deg := 0.0

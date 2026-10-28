@@ -6,7 +6,6 @@ extends SpellLaunch
 ## that shrinks with each hit ((shrink_steps - n) / shrink_steps of the spell's range). With nobody in reach the jump goes on to a point on
 ## the land and the chain goes on. It does not know what a jump does (its ChainEffect) nor how a hit hurts (Health). With `hop_s` 0 it keeps
 ## no clock: whoever owns the flight (the dragon) calls `add_hit` and `pick_next`. Server (or solo) only; it frees itself after the last landing.
-## Ref: sacengine updateChainLightning, updateRainbow (state.d:18129-18156, 18270-18293), REA FUN_00420070 / FUN_0042cc70 for the radius.
 
 ## A jump left toward `body` (null: a point on the land).
 signal hopped(from: Vector3, body: Node3D, point: Vector3, index: int)

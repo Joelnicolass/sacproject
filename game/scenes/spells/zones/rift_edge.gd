@@ -4,7 +4,6 @@ extends Node3D
 ## The mouth of a Demonic Rift: an open cylinder that rises out of the ground while the wizard casts and while the rift opens, stays, and sinks
 ## away when it closes; the shader draws its flames dark. Presentation only, on every peer, from the zone's phase. It frees nothing and hurts
 ## nobody (RiftSpawner and RiftSpirit).
-## Ref: sacengine DemonicRift heightScale (state.d:19608-19635, renderer.d:2517-2598).
 
 @export var zone: GroundZone
 ## The wall: a cylinder mesh child, standing on this node's origin (the node's height scale makes it rise out of the ground).

@@ -5,7 +5,6 @@ extends Node
 ## What a cloud lets go: while its zone acts, `rate_per_s` times a second it picks where something falls, a point of a disk around the
 ## zone or, when a body is near, that body, and says so with `chosen`. It does not make what falls (DropLauncher, BoltLauncher) nor time
 ## the zone (GroundZone). Server (or solo) only; every draw comes from MatchSeed, so one seed gives one rain.
-## Ref: sacengine updateRainOfFrogs, updateRainOfFire, updateBombardment, updateCloudkill (state.d:19367-19395, 21099-21131, 21300-21333, 22074-22108).
 
 ## `point` stands on the land; `body` is the creature the drop was pulled to (null = a plain point).
 signal chosen(point: Vector3, body: Node3D)
@@ -83,4 +82,4 @@ func _pulled(centre: Vector3, spot: Vector3) -> Node3D:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) de la que sale lo que cae."])
+	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) the drops fall from is missing."])

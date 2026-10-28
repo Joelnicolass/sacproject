@@ -9,7 +9,6 @@ extends SpellAction
 ## one makes it stand. The tower scene comes from the wizard's god (GodType.structures), so the same node serves every structure
 ## spell. Does not build anything itself (StructureSpawner does) nor draw or sound the rise: every peer derives that from the replicated
 ## CastTower.build_progress (BuildReveal, ManafountBody), so the cast sends no FX.
-## Ref: sacengine spellStatus (state.d:29534-29573), the structure cast (state.d:10072-10083, 15250-15274).
 
 const NO_FOUNT := Refusal.NO_FOUNT
 const FOUNT_TAKEN := Refusal.FOUNT_TAKEN

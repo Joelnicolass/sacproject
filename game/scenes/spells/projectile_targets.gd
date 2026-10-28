@@ -60,12 +60,12 @@ static func is_live_body(body: Node) -> bool:
 	return health != null and not health.is_dead()
 
 
-## Logs the damage `target` took ("dano <who> <taken> vida <left>"); the test bench reads this line.
+## Logs the damage `target` took ("damage <who> <taken> health <left>").
 static func report(target: Node3D, taken: float, kind: StringName) -> void:
 	var health := target.get_node("Health") as Health
-	# The bench tells apart bodies of the same kind by their display name.
+	# Bodies of the same kind are told apart by their display name.
 	var who := str(target.name) if DebugLog.on(&"oil") else GameBody.name_of(target)
-	var line := "dano %s %d vida %d" % [who, roundi(taken), roundi(health.current)]
+	var line := "damage %s %d health %d" % [who, roundi(taken), roundi(health.current)]
 	if taken <= 0.0 and health.resistance(kind) <= 0.0:
 		line += " (inmune)"
 	print(line)

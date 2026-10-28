@@ -5,12 +5,10 @@ extends RefCounted
 ## (the radius grows with the angle, so the turns get further apart as it goes). `advance()` gives the place for this tick and
 ## moves on; `arrived` is true once the last place was given. The drill that bores and the cutter that opens the holes both walk
 ## it, each at its own pace. It knows nothing of the ground.
-## Ref: sacengine boreGetPos (state.d:18578-18591).
 
 ## The inner end of the spiral.
 const START_RADIUS_M := 5.0
 ## Turns per metre of radius.
-## Ref: sacengine: 0.2 pi of angle for each metre past the start
 const ANGLE_PER_M := 0.2 * PI
 
 var center := Vector2.ZERO

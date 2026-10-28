@@ -10,7 +10,6 @@ extends Node
 ## hand does; a waiting cast keeps the wizard busy and goes out only if it still can be paid and its
 ## target still lives (else it lapses, never a refusal). In no difficulty a request takes a body of
 ## another side the side does not see now: such a body is never clicked.
-## Ref: shiny.d:3247-3254 startCasting.
 
 ## What a brain asks a body to do (`ostate`). The numbers are the original's order states and show
 ## in the logs.
@@ -23,7 +22,7 @@ enum AiOrder {
 	GUARD = 3,
 	## Walk to a point (the anchor of a record).
 	MOVE = 4,
-	## Stay by a body or a mana source (retreat, autoCapture).
+	## Stay by a body or a mana source (retreat, refill).
 	REFILL = 5,
 	## Attack a body.
 	ATTACK = 6,
@@ -92,7 +91,7 @@ func bind(side_slot: int, wizard_body: Node3D, orders_node: Node) -> void:
 	_caster.feedback.connect(_on_feedback)
 
 
-## startCasting. Returns the answer of the Caster: the spell's name when it starts, or the reason it
+## Returns the answer of the Caster: the spell's name when it starts, or the reason it
 ## did not ("" = refused without a word).
 func start_casting(spell: Resource, target: AiTrack, point: Vector3) -> String:
 	if delay_ticks > 0:

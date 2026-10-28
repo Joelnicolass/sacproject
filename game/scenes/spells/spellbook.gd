@@ -4,11 +4,10 @@ extends Node
 ## Book of a wizard: the god's creatures and spells up to the wizard's level in one
 ## list sorted by level and position (BookOrder). Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
 ## creature_2 (Shift+Q)…; spell entry 0 is spell_1 (X), 1 spell_2 (R)…
-## Cooldowns are derived state (RFC-032 032b): each entry keeps the MatchClock tick it is ready again, and
+## Cooldowns are derived state: each entry keeps the MatchClock tick it is ready again, and
 ## cooldown() = (ready − now) / 60. Nothing writes them per tick, so they follow the ticks of the match, not the render
-## delta, and stand still while the game is paused. The server sets them (applyCooldown, over the whole book) and pushes
+## delta, and stand still while the game is paused. The server sets them (over the whole book) and pushes
 ## the seconds left to the owner client, which turns them into ticks of its own clock.
-## Ref: getSpells, state.d:29512; sacengine Spellbook.sort
 
 signal book_changed
 signal cooldowns_changed
@@ -127,9 +126,8 @@ func creature_max_cooldown(index: int) -> float:
 	return _max_cooldown_at(_creature_rows, index)
 
 
-## The cast entry waits castingTime(level) + cooldown + extra; every
-## other entry castingTime + generic + extra. A running cooldown is never shortened.
-## Ref: sacengine applyCooldown
+## The cast entry waits casting time (level) + cooldown + extra; every
+## other entry casting time + generic + extra. A running cooldown is never shortened.
 func apply_cooldown(tag: String) -> void:
 	var row := _row_of(tag)
 	if row < 0 or rules == null:
@@ -191,7 +189,7 @@ func _push_to_owner() -> void:
 
 
 ## The seconds left on the server, turned into ticks of this peer's MatchClock (the countdown is local; up to 1 tick
-## of rounding, RFC-032 §7).
+## of rounding).
 @rpc("authority", "call_remote", "reliable")
 func _receive_cooldowns(remaining: PackedFloat32Array, maximum: PackedFloat32Array) -> void:
 	if remaining.size() != _ready_tick.size():
@@ -211,7 +209,7 @@ func _rebuild() -> void:
 	_built_from = book
 	_level = level
 	_warn_if_override()
-	# TODO(RFC-030 N2): a level change rebuilds the book and clears every cooldown. Today the level is fixed for the
+	# TODO: a level change rebuilds the book and clears every cooldown. Today the level is fixed for the
 	# match; when XP raises it mid-match, keep the cooldowns of the entries that stay (by tag).
 	var rows: Dictionary = book.up_to(level) if book != null else {}
 	var sorted: Array[BookEntry] = []

@@ -13,7 +13,7 @@ extends Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
 
 
 func _ready() -> void:

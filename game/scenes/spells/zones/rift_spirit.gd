@@ -4,11 +4,10 @@ extends SpellProjectile
 ## A spirit of a Demonic Rift: it leaves the rift toward one creature, hits it once, spirals up around it for four seconds, flies to a point
 ## in the air, comes back to the rift and sinks into it. The server (or solo) moves it and does the hit; `position`, `scale` and `status`
 ## are replicated, and its RiftRibbon child draws the trail on every peer. It does not choose its target (RiftSpawner) nor open the rift.
-## Ref: sacengine updateDemonicRiftSpirit (state.d:19566-19606).
 
 enum Status { TARGETING, RISING, MOVING_AWAY, MOVING_BACK, VANISHING }
 
-## Every spirit in the world is in this group (the checks and the capture harness count them).
+## Every spirit in the world is in this group (so they can be counted).
 const GROUP := &"rift_spirit"
 
 @export var hit_sound: SoundEmitter3D

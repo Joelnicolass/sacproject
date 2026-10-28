@@ -5,7 +5,7 @@ extends Node
 ## and spell keys (SpellCommand), group keys (GroupKeys), Ctrl+R / Ctrl+A arm attack / guard, Ctrl+Space retreats,
 ## Ctrl+Q / Shift+B uses the ability, the order and select actions work through the crosshair. Left button on %View: a spell,
 ## ability or order icon waiting for its target takes the click; otherwise it selects (click, or a box past
-## `rect_threshold_px`). The right button belongs to OrderRadial (RFC-038) and the minimap to MinimapPointing.
+## `rect_threshold_px`). The right button belongs to OrderRadial and the minimap to MinimapPointing.
 ## It decides nothing itself: every branch is one call to a command.
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
@@ -84,10 +84,10 @@ func left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 			if unit:
 				_selection.click(unit, screen, shift, ctrl)
 			elif building:
-				# RFC-028b: a building shows its bar (StructureInspector); the selection stays.
+				# A building shows its bar (StructureInspector); the selection stays.
 				_inspector.inspect(building)
 			elif not shift and not ctrl and ray.is_empty_at(screen):
-				# RFC-025 3.2: a plain left click on the ground or on nothing drops the selection
+				# A plain left click on the ground or on nothing drops the selection
 				# (an armed icon never gets here: the original keeps it).
 				_selection.clear()
 				_inspector.clear()

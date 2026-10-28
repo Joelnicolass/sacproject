@@ -6,7 +6,6 @@ extends Node3D
 ## MorphClip names the poses to go through and how long each lasts, and the weights of the shapes blend one into the next. It follows its
 ## SpellCarrier: `phase_clips` says which clip each phase plays (a finished clip goes on to its `next`). It moves nothing and hurts nobody;
 ## every peer plays its own from the replicated phase, and a headless process plays none.
-## Ref: sacengine SacCow.getFrame, SacDeath.getFrame, SacBlindRage.getFrame (sacobject.d:3143-3307): the order of the poses and their pace.
 
 @export var carrier: SpellCarrier
 ## The mesh that has the blend shapes (the glb's own MeshInstance3D); empty: the first one found below this node.
@@ -23,7 +22,7 @@ var _set := PackedInt32Array()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if not clips.is_empty() else PackedStringArray(["Faltan los clips."])
+	return PackedStringArray() if not clips.is_empty() else PackedStringArray(["The clips are missing."])
 
 
 func _ready() -> void:

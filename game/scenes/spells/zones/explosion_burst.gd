@@ -4,12 +4,11 @@ extends FxScene
 ## The look of one blast, played on every peer by FxBus.broadcast_scene at each point of an Explosion: two spheres of fire that swell (a big one
 ## and a small one), and the rocks it throws. The sprites of the blast (xplo, exp2, ash, smoke) are bursts the zone plays beside it; the sound
 ## is the one of this scene's file name in the sound table. Presentation only; it frees itself. It does not hurt anyone (ZoneBlast).
-## Ref: sacengine explosionAnimation and animateDebris (state.d:27625-27642).
 
 ## The spheres, scaled from nothing: each is a unit-diameter sphere.
 @export var big: MeshInstance3D
 @export var small: MeshInstance3D
-## The burn it leaves on the ground (061k-5), painted when the blast starts.
+## The burn it leaves on the ground, painted when the blast starts.
 @export var scar: ScarMark
 ## The rock that flies off, and how many.
 @export var piece: PackedScene
@@ -67,4 +66,4 @@ func _axis(rng: RandomNumberGenerator) -> Vector3:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if big != null and small != null else PackedStringArray(["Faltan las dos esferas (big y small)."])
+	return PackedStringArray() if big != null and small != null else PackedStringArray(["The two spheres (big and small) are missing."])

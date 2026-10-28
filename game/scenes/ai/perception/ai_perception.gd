@@ -8,9 +8,6 @@ extends Node
 ## a foe once its side sees it (SightIntake), and it drops what dies. It keeps each track up to date
 ## (rating, readiness, souls), sorts the lists and answers the questions about the rituals. What it
 ## believes of an unseen body is Belief's, the souls are Souls'. It takes no decisions.
-## Ref: shiny.d:1129-1200 scanGlobal (0x10, 1158), 575-584, 563-566, 1289-1300, 1373-1400, 975,
-## 536; shiny.d:1243-1262 updateStats; 754-775 shouldTrack; 1651-1672 sortFam1; 3079-3085
-## desecrationOngoing, 3096 and 2264 wizardSacrificing, 3100 closestShrine, 3358 closestEnemyAltar.
 
 ## Something the side's clock should answer before its time (AiClock.Wake bits).
 signal forced(bits: int)
@@ -286,7 +283,6 @@ func closest_enemy_altar_in_range() -> Node3D:
 
 
 ## A Manahoar works while it is not dead, not being summoned and not held.
-## Ref: manahoarAbilityEnabled.
 static func maho_ready(node: Node) -> bool:
 	var unit := node as UnitBody
 	return unit == null or not (unit.is_dead() or unit.is_summoning() or unit.is_taken())

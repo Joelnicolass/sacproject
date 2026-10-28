@@ -6,7 +6,6 @@ extends SpellAction
 ## `launch_at_finish` says whether it leaves when the casting ends (Wrath)
 ## or as soon as the cast starts (Fireball, Swarm). It explodes with
 ## `damage_range` splash around the body it hits.
-## Ref: sacengine updateWrathCasting
 
 ## The projectile scene it throws (its root extends SpellProjectile and reads a ProjectileLaunch).
 @export var projectile: PackedScene
@@ -21,7 +20,7 @@ var _point := Vector3.ZERO
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if target == null:
-		warnings.append("Falta `target`: quién es un blanco válido.")
+		warnings.append("`target` is missing: who is a valid target.")
 	if projectile == null:
 		warnings.append("`projectile` is empty: drag the projectile scene.")
 	return warnings

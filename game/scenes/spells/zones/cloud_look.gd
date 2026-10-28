@@ -5,7 +5,6 @@ extends Node3D
 ## The storm cloud of a zone, on every peer, from its replicated phase: twenty layers of a noisy sphere (a MultiMesh) that swell while the
 ## wizard casts and while the zone acts, and shrink away when it ends or the cast is cut. The cloud is wider than tall and its radius is a
 ## share of the spell's effect range (or a fixed one). It does not drop anything (ZoneDropper) nor time the zone (GroundZone).
-## Ref: sacengine SacCloud, SacCloud2, renderCloud (sacobject.d:2778-2819, renderer.d:451-475, 1844-1853, 2477-2486).
 
 @export var zone: GroundZone
 ## The layers: a MultiMeshInstance3D of a unit sphere with the cloud_sphere shader (its MultiMesh uses custom data and has no instances: this sets them).
@@ -62,4 +61,4 @@ func _process(delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and layers != null else PackedStringArray(["Faltan la zona (GroundZone) y las capas (MultiMeshInstance3D)."])
+	return PackedStringArray() if zone != null and layers != null else PackedStringArray(["The zone (GroundZone) and the layers (MultiMeshInstance3D) are missing."])

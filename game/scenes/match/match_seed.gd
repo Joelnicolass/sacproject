@@ -9,14 +9,13 @@ extends RefCounted
 ## instance_id (it differs between a window and headless). The global RNG (randf, randi, shuffle, pick_random) is for
 ## presentation only: begin seeds it from its own stream, so no simulation stream moves when an effect draws from it.
 ## Reproducible with the same binary on the same machine; not across architectures.
-## Ref: RFC-024 §5.1; RFC-032 §3.3.
 
 ## 0 until a match begins: rng() and seed_rng() then randomize (the one place with that fallback).
 static var current := 0
 
 
 ## Takes `announced` (the seed every peer of a networked match shares, ActiveMatch.match_seed()) when it is not 0, else
-## `rules.match_seed`, else draws one; seeds the global RNG (presentation), prints `semilla <n>` and returns it.
+## `rules.match_seed`, else draws one; seeds the global RNG (presentation), prints `seed <n>` and returns it.
 static func begin(rules: Variant, announced := 0) -> int:
 	var wanted := announced
 	if wanted <= 0:
@@ -25,7 +24,7 @@ static func begin(rules: Variant, announced := 0) -> int:
 		wanted = draw()
 	current = wanted
 	seed(derive(["presentation"]))
-	print("semilla %d" % wanted)
+	print("seed %d" % wanted)
 	return wanted
 
 

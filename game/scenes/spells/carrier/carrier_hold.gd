@@ -6,7 +6,6 @@ extends Node
 ## ends. Charm's spirits wait the spell's duration around the creature; Blind Rage's fist forms 82 ticks four metres over the land and comes down
 ## in the last half second; Intestinal Vaporization's guts turn around the target while it swells. It does not act on the target (TargetEffect does)
 ## and it does not draw. Server (or solo) only.
-## Ref: sacengine updateCharm charming, updateBlindRage formingFist, updateIntestinalVaporization vaporizing (state.d:21447-21487, 21570-21615, 21992-22013).
 
 @export var carrier: SpellCarrier
 @export_range(0.0, 120.0, 0.01, "suffix:s") var hold_s := 0.0
@@ -25,7 +24,7 @@ var _linger := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
 
 
 func _ready() -> void:

@@ -5,7 +5,6 @@ extends Node
 ## What a drop of plague does where its flight ends: the body it ended on takes a contagious dose of poison, and every creature within the
 ## spell's damage range takes a weaker one that falls off with distance. The dose is the spell's damage spread over `seconds`; the
 ## poisoned do not regenerate. It does not fly the drop (ZoneDrop) nor hurt at once (DropBlast). Server (or solo) only.
-## Ref: sacengine plagueDropExplosion (state.d:20980-21015); `freg` of the SPEL (spells.wad `plag`).
 
 @export var drop: ZoneDrop
 ## Bursts played where it ends, and the one played on the body it poisons (ParticleType under data/fx/).
@@ -49,4 +48,4 @@ func _dose(body: Node3D, per_second: float, ticks: int) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["Falta la gota (ZoneDrop) cuyo final recibe."])
+	return PackedStringArray() if drop != null else PackedStringArray(["The drop (ZoneDrop) whose end it gets is missing."])

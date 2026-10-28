@@ -12,7 +12,6 @@ extends DamageDeflector
 ## building takes the hit.
 ## Where the beam ends is the `attach_point` marker of the building: move it with the gizmo (15 m up on a Manalith, 2.5 m on
 ## an altar or a Shrine).
-## Ref: RFC-021b; damageGuardians, state.d:9098-9117; the NaN of state.d:9117
 
 const GROUP := &"guard_post"
 
@@ -29,14 +28,12 @@ var _guards: Array[GuardianBond] = []
 
 
 ## n guardians each take damage / this.
-## Ref: sacengine; state.d:9101
 static func split_divisor(count: int) -> float:
 	return minf(float(count), 0.5 * (float(count) + 3.0))
 
 
 ## The open post of `slot` closest to `from` on the plane within `max_distance`, or null.
 ## It is the nearest by distance on the plane, own side. Posts are found by group, never by path.
-## Ref: findClosestBuilding, state.d:10371-10396
 static func closest(tree: SceneTree, slot: int, from: Vector3, max_distance := INF) -> GuardPost:
 	var best: GuardPost = null
 	var best_d := INF
@@ -60,9 +57,9 @@ func _enter_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if host == null:
-		warnings.append("Asigná en `host` el edificio (su dueño y su posición).")
+		warnings.append("Assign the building to `host` (its owner and its position).")
 	if attach_point == null:
-		warnings.append("Asigná en `attach_point` el Marker3D donde termina el rayo.")
+		warnings.append("Assign to `attach_point` the Marker3D where the beam ends.")
 	return warnings
 
 

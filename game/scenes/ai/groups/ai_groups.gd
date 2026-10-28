@@ -5,9 +5,7 @@ extends Node
 ## away and made again: the bodies of a relation sorted by worth (best first), the first starts a
 ## group and takes in each next one that lies within 30*min(1+0.1n, 1.8) m of the center, until none
 ## does. Every 6 ticks (k3) each group refreshes its center, its aggregates and drops its dead.
-## Wizards and creatures go in; souls (slot-5 groups) are not tracked in 024c («aprox.»).
-## Ref: RFC-024 §3.1 `AiGroups`; shiny.d:1479-1580 slot-4 groups, 1563-1621 `groupRefresh4`,
-## 1702-1760 `canAccept`/`formGroups4`; shiny.d:1711-1735, 1740-1778
+## Wizards and creatures go in; souls (slot-5 groups) are not tracked.
 
 @export var perception: AiPerception
 
@@ -19,9 +17,8 @@ func list(relation: AiTrack.Relation) -> Array:
 	return groups[relation]
 
 
-## recycleGroups + formGroups4 of every relation; the bodies come sorted by
+## The groups of every relation are thrown away and formed again; the bodies come sorted by
 ## AiPerception.sort_bodies().
-## Ref: shiny.d:1305-1330
 func rebuild() -> void:
 	for relation: AiTrack.Relation in AiTrack.Relation.values():
 		groups[relation] = _form(perception.bodies(relation))
@@ -30,7 +27,7 @@ func rebuild() -> void:
 func _form(bodies: Array) -> Array:
 	var pending: Array[AiTrack] = []
 	# the live position while the side knows where it is (seen, or on the minimap), else the last
-	# seen (024e, f6); read once per body here (nothing moves during the rebuild), not once per
+	# seen; read once per body here (nothing moves during the rebuild), not once per
 	# test.
 	var at: Array[Vector3] = []
 	for t: AiTrack in bodies:
@@ -78,16 +75,13 @@ func _add(group: AiGroup, t: AiTrack) -> void:
 	t.group = group
 
 
-## updateGroups: every group refreshes.
-## Ref: shiny.d:1300-1303
+## Every group refreshes.
 func refresh() -> void:
 	for list_of_relation: Array in groups:
 		for group: AiGroup in list_of_relation:
 			refresh_group(group)
 
 
-## groupRefresh4.
-## Ref: shiny.d:1563-1621
 func refresh_group(group: AiGroup) -> void:
 	group.avg_vel = Vector3.ZERO
 	group.prev_center = group.center
@@ -125,7 +119,6 @@ func refresh_group(group: AiGroup) -> void:
 		)
 	group.predicted = group.center + group.avg_vel
 	# the aggregates of the slot-4 tail: members with a status only.
-	# Ref: shiny.d:1604-1620
 	group.acc = AiRater.new_acc()
 	group.mana_sum = 0
 	group.max_mana_sum = 0
@@ -164,7 +157,6 @@ static func alive(t: AiTrack) -> bool:
 
 
 ## node vtbl[21]: (soul worth, 0) of a creature; a wizard's snapshot (mana 0, souls).
-## Ref: shiny.d:1465-1474
 static func souls_pair(t: AiTrack) -> Vector2i:
 	match t.kind:
 		AiTrack.Kind.CREATURE, AiTrack.Kind.MANAHOAR:

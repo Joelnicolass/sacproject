@@ -6,7 +6,6 @@ extends SpellAction
 ## Cloudkill, Bombardment): the click names the ground, the zone is born when the cast starts (it is drawn while the wizard casts), the
 ## cast's end releases it and an interrupted cast cancels it. One script for all of them; the zone's scene says what happens there. It
 ## does not act on bodies (the zone's children do) nor time the zone (GroundZone does).
-## Ref: sacengine castExplosion, castFrozenGround, castDemonicRift, castRainOfFrogs, castCloudkill (state.d:9986-10048, 10960-11339).
 
 enum Anchor { CLICK, WIZARD }
 
@@ -44,7 +43,7 @@ var _zone: GroundZone
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if kind.is_empty():
-		warnings.append("Falta `kind`: la clase de zona del SpellSpawner.")
+		warnings.append("`kind` is missing: the SpellSpawner's kind of zone.")
 	return warnings
 
 

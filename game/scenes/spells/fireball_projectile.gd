@@ -2,7 +2,6 @@ extends SpellProjectile
 
 ## Pyro Fireball.
 ## Guided projectile with flying height 0.5 m and splash spell damage on impact.
-## Ref: sacengine castFireball/updateFireball, state.d:10519-10528, 16682-16700
 
 const FLYING_HEIGHT := 0.5
 const ARRIVE_DISTANCE := 0.25
@@ -44,7 +43,7 @@ func setup(data: Dictionary) -> void:
 		push_error("%s: `hit_box` is empty, it hits no body." % scene_file_path)
 	_query = ProjectileTargets.query_for(hit_box)
 	_attach_net()
-	## Its own trail (7 firy + 1 fbal per tick, scale 1.5), played locally on every peer.
+	# Its own trail (7 firy + 1 fbal per tick, scale 1.5), played locally on every peer.
 	for type in trail:
 		FxTrail.attach(self, type, TRAIL_INTERVAL_S)
 
@@ -127,8 +126,7 @@ func _explode(direct: Node3D) -> void:
 	else:
 		direct = null
 	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
-	## Its own explosion: xplo + exp2 + frck + smok.
-	## Ref: sacengine animateFireballExplosion, state.d:16631-16665
+	# Its own explosion: xplo + exp2 + frck + smok.
 	for type in explosion:
 		FxBus.broadcast(type, center)
 	set_physics_process(false)

@@ -31,7 +31,7 @@ func _notification(what: int) -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if not get_parent() is Node3D:
-		return PackedStringArray(["GroundSnap apoya a su padre en el suelo: tiene que ser hijo de un Node3D."])
+		return PackedStringArray(["GroundSnap rests its parent on the ground: it must be a child of a Node3D."])
 	return PackedStringArray()
 
 

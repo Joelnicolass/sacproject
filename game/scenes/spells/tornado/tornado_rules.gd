@@ -4,7 +4,6 @@ extends RefCounted
 ## The plain numbers of a Tornado with no tree: the seven points of its axis and their radii (the funnel is 500 m tall, its top fixed and
 ## its foot wandering), the winds that bend it, which point of the axis a body at some height answers to, and the pull on a body that is
 ## inside. It does not lift anybody (TornadoLift does), move the tornado (TornadoDrift does) or draw it (TornadoLook does).
-## Ref: sacengine Tornado.updateCurve and getCentre, tornadoLift (state.d:4465-4505, 22760-22801).
 
 ## How tall the column is above its point, m.
 const COLUMN_M := 500.0

@@ -6,7 +6,6 @@ extends MeshInstance3D
 ## is cast and flies, the big heart over a charmed creature while the spirits linger. It can grow when it appears, shrink before it goes (`life_s`) and
 ## sit over the carrier's target instead of on the carrier. Presentation only: every peer decides from the replicated phase; a headless process
 ## draws none. It does not move the carrier nor affect the target.
-## Ref: sacengine renderCharmHeart, CharmHeart.growTime / shrinkTime / lifetime (renderer.d:2898-2915, state.d:4218-4226).
 
 @export var carrier: SpellCarrier
 @export var shown_in: Array[SpellCarrier.Phase] = []
@@ -26,7 +25,7 @@ func _init() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
 
 
 func _ready() -> void:

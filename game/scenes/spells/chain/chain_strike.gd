@@ -4,7 +4,6 @@ extends ChainEffect
 ## One bolt of a chain of lightning: each jump launches a LightningStrike from the last point to the next body (or to a point on the
 ## land), which hurts it with the spell's amount a few ticks later and draws the bolt on every peer. It does not choose whom (ChainHop)
 ## and it does not retarget on the way: a bolt hits who the chain chose.
-## Ref: sacengine lightning with updateTargets false (state.d:18274, 10474-10491).
 
 ## The bolt (lightning_strike.tscn).
 @export var strike_scene: PackedScene
@@ -23,4 +22,4 @@ func hop(chain: ChainHop, from: Vector3, body: Node3D, point: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray(["Falta `strike_scene` (lightning_strike.tscn)."]) if strike_scene == null else PackedStringArray()
+	return PackedStringArray(["`strike_scene` is missing (lightning_strike.tscn)."]) if strike_scene == null else PackedStringArray()

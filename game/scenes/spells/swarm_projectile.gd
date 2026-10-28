@@ -2,7 +2,6 @@ extends SpellProjectile
 
 ## Charnel Insect Swarm.
 ## Guided projectile with smaller hit box, higher cruise height and splash spell damage.
-## Ref: sacengine castSwarm/updateSwarm, state.d:10576, 17011
 
 const FLYING_HEIGHT := 1.25
 const ARRIVE_DISTANCE := 0.25
@@ -44,7 +43,7 @@ func setup(data: Dictionary) -> void:
 		push_error("%s: `hit_box` is empty, it hits no body." % scene_file_path)
 	_query = ProjectileTargets.query_for(hit_box)
 	_attach_net()
-	## Wrath's trail, played locally on every peer.
+	# Wrath's trail, played locally on every peer.
 	FxTrail.attach(self, trail, TRAIL_INTERVAL_S)
 
 

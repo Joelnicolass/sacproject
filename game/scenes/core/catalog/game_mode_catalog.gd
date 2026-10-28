@@ -19,7 +19,7 @@ static func shared() -> GameModeCatalog:
 	return catalog
 
 
-## RFC-049 049f: seats of the mode with that tag (empty = the default mode); 0 if there is no such mode. Plain ints and bools, for
+## Seats of the mode with that tag (empty = the default mode); 0 if there is no such mode. Plain ints and bools, for
 ## callers that must not name GameMode (autoloads, the room glue).
 static func seats_of(tag: StringName) -> int:
 	var mode := shared().find(DEFAULT_TAG if tag == &"" else tag)
@@ -51,7 +51,7 @@ func find(tag: StringName) -> GameMode:
 	return null
 
 
-## RFC-049 049d (F293): the tags of the maps (of `maps`) that have a start for each seat of `mode`; `only_rooms` leaves out the test maps.
+## The tags of the maps (of `maps`) that have a start for each seat of `mode`; `only_rooms` leaves out the test maps.
 func map_tags_for(mode: GameMode, catalog: MapCatalog, only_rooms := false) -> PackedStringArray:
 	var tags := PackedStringArray()
 	for definition in catalog.maps:

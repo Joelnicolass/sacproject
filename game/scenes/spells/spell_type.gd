@@ -31,7 +31,7 @@ enum AiPhase { NEVER, ATTACK, SUPPORT }
 ## How long its effect lasts (s).
 @export var duration_s: float = 0.0
 @export var is_structure: bool = false
-## Scene of the SpellAction that casts this spell (RFC-041). Caster instances it under its `actions` node the first time the
+## Scene of the SpellAction that casts this spell. Caster instances it under its `actions` node the first time the
 ## spell is asked for and sets its `spell`, so a new spell is a `.tres` plus a scene, with no edit in Caster.
 @export var action: PackedScene
 @export_group("AI: who it may land on")
@@ -59,6 +59,6 @@ enum AiPhase { NEVER, ATTACK, SUPPORT }
 @export var max_targets := 0
 
 
-## Where the book lists it: by level first, then by position (the old spell_order, level * 100 + position).
+## Where the book lists it: by level first, then by position (level * 100 + position).
 func order_key() -> int:
 	return book_level * 100 + book_slot

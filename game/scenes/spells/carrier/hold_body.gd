@@ -6,11 +6,9 @@ extends Node
 ## it a little more each tick, from 0 to 1 of `DevourGrowth.inflation`, so the body is at its biggest when the wait ends. Intestinal Vaporization:
 ## the carrier's TargetEffect gibs it then. If the wait ends in some other way the body goes back to its size. It does not wait (CarrierHold)
 ## and it does not burst the body (GibEffect). Server (or solo) only; every peer draws the swelling from the replicated `inflation`.
-## Ref: sacengine updateIntestinalVaporization vaporizing (state.d:21471-21489).
 
 @export var carrier: SpellCarrier
 ## The stun's own cooldown for the body, in seconds.
-## Ref: sacengine 3 s
 @export_range(0.0, 20.0, 0.1, "suffix:s") var stun_cooldown_s := 3.0
 @export var stunned_path := NodePath("Afflictions/Stunned")
 
@@ -20,7 +18,7 @@ var _total := 1
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
 
 
 func _ready() -> void:

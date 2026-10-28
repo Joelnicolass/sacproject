@@ -7,8 +7,7 @@ extends Node
 ## slot (replicated like any wizard), and an AiSide (a child of this node) plays it. Only where the
 ## game is simulated: solo or the server; a client never has a side. The seats are
 ## MatchRules.ai_seats; when the rules have none, SacrificeFlow.solo_ai_seats («Contra la IA», or
-## the dedicated with --ai-slots). No seats = nothing happens (a match of humans, as before).
-## Ref: RFC-024 §4 (024f).
+## the dedicated with --ai-slots). No seats = nothing happens (a match of humans).
 
 signal seated(slot: int, side: AiSide)
 
@@ -16,7 +15,7 @@ signal seated(slot: int, side: AiSide)
 @export var wizard_spawner: MpSlotSpawner
 ## The scene of an AI side; a seat with its own side_scene uses that one.
 @export var side_scene: PackedScene
-## Off: the match takes no AI seat (a check scene that seats its own sides).
+## Off: the match takes no AI seat (a scene that seats its own sides).
 @export var enabled := true
 ## Seconds between the spawn of the wizards and the start of their sides: the wizard settles on the
 ## ground first.

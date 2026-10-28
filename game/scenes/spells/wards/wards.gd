@@ -7,7 +7,6 @@ extends Node3D
 ## Pull ask shielded(); a SpellAction asks ward_for(spell). It does not start a ward (the action does) nor draw one (the Ward).
 ## It is a Node3D (not a plain Node) so the transform of the body reaches the looks of its wards.
 ## `changed` fires on every peer when any ward goes on or off.
-## Ref: sacengine effects.lifeShield / skinOfStone / ... and `shielded` (stats.d:86-90).
 
 signal changed
 

@@ -14,7 +14,7 @@ const SNAPSHOT_KEY := "match"
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if state != null else PackedStringArray(["Falta el socket `state` (el MatchState)."])
+	return PackedStringArray() if state != null else PackedStringArray(["The socket `state` (the MatchState) is missing."])
 
 
 func _ready() -> void:

@@ -29,7 +29,7 @@ const START_NOTES := {
 func _ready() -> void:
 	var gate := Mp.gate()
 	if gate == null:
-		push_warning("SeatPresence: no hay MpMatchGate en MpKit")
+		push_warning("SeatPresence: MpKit has no MpMatchGate")
 		return
 	gate.seat_admitted.connect(_on_seat_admitted)
 	gate.seat_loaded.connect(_on_seat_loaded)

@@ -5,7 +5,6 @@ extends SpellProjectile
 ## (it acts, for the spell's duration or until it is told it is done) and ENDING (it goes away), and its children do what their phase asks:
 ## pulses hurt or freeze the bodies near it, the look draws the balls, the ice or the rift. It does not know what the spell does to a body
 ## (ZonePulse and its classes do) nor how to draw (the scene does). The server (or solo) runs the clock and replicates `phase`; every peer counts the ticks of the phase.
-## Ref: sacengine ExplosionCasting, FrozenGround, DemonicRift (state.d:3405-3655)
 
 ## The zone entered phase `phase` (every peer, from the replicated `phase`).
 signal phase_changed(phase: int)

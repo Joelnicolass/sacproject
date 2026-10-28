@@ -4,7 +4,6 @@ extends MeshInstance3D
 ## The ice of Frozen Ground as a ring of mesh glued to the land: built once when the ice starts to grow, with every vertex on the height of
 ## the land under it, and drawn by ice_ground.gdshader, which shows only the band between what already broke and how far the ice grew.
 ## Presentation only, on every peer, from the zone's phase. It freezes nobody (ZoneFreeze) and hurts nobody (ZoneShatter).
-## Ref: sacengine GroundPatch and updateFrozenGround (renderer.d:3369-3411, state.d:3632-3646).
 
 @export var zone: GroundZone
 @export_range(8, 64) var sides := 32

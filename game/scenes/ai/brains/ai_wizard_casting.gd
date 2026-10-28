@@ -10,8 +10,6 @@ extends Node
 ## body. It also keeps the difficulty's summon pace (a summon only every `summon_interval_ticks`,
 ## leaving `mana_reserve`) and bans the bodies his attack spells do not bring down. It does not rate
 ## spells (AiSpellEval) nor fill the queue (the phases).
-## Ref: shiny.d:3201-3280 executeBestCast, 3174-3199 lightCanCast; shiny.d:3290 (0x48d080);
-## shiny.d:3216-3224; shiny.d:3254-3270 line of fire, 3262.
 
 ## What the shot check answers: cast, walked closer for a clear line, or skip the entry.
 enum Shot { OK, WALKED, VETOED }
@@ -103,7 +101,7 @@ func cast_refusal(wizard: AiTrack, spell: Resource, target: AiTrack, point: Vect
 	return port.cast_status(spell, target, point)
 
 
-## enqueueForcedExecute: score 0, forced, and straight to the execution. Returns true when he cast
+## Score 0, forced, and straight to the execution. Returns true when he cast
 ## or walked.
 func enqueue_forced_execute(
 	wizard: AiTrack, target: AiTrack, spell: Resource, range_m: float, obj: AiTrack
@@ -112,7 +110,7 @@ func enqueue_forced_execute(
 	return execute_best_cast(wizard, false)
 
 
-## executeBestCast. `check_only` is the soul-pickup test (what he can cast in passing). Returns true
+## `check_only` is the soul-pickup test (what he can cast in passing). Returns true
 ## when he cast or walked.
 func execute_best_cast(wizard: AiTrack, check_only: bool) -> bool:
 	var queue := wizard.cast_queue

@@ -6,7 +6,6 @@ extends MultiMeshInstance3D
 ## They are the mesh of the Rhinok's spikes (SpikeField); their skin is the `material_override` of this node in the scene (the texture is a
 ## Texture2D dragged onto that material). Presentation only, on every peer, from the wall's age
 ## and ends; it does not hurt anybody (WallTouch) and its dice are its own. The wall must be the parent.
-## Ref: sacengine WallOfSpikes, makeWallOfSpikesSpike (state.d:3898-3937, 20504-20538, 20608-20662; renderer.d:2626-2655).
 
 @export var wall: SpellWall
 @export_range(1, 400) var count := 180

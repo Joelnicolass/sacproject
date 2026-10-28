@@ -22,4 +22,4 @@ func _physics_process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) que puede cortarse."])
+	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) that can be cut is missing."])

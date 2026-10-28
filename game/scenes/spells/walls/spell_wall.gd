@@ -47,9 +47,9 @@ var grow_ticks: int:  # grow_s in ticks: what the parts compare `age` against
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if spell == null:
-		warnings.append("Falta `spell`: el SpellType del muro (alcance y duración).")
+		warnings.append("`spell` is missing: the SpellType of the wall (reach and duration).")
 	if body == null or not body.shape is BoxShape3D:
-		warnings.append("Falta `body` con un BoxShape3D: su y es el alto y su z el espesor.")
+		warnings.append("`body` with a BoxShape3D is missing: its y is the height and its z the thickness.")
 	return warnings
 
 

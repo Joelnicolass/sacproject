@@ -4,7 +4,6 @@ extends RefCounted
 ## The route of a carrier: for the one that walks to a soul and brings it back, two curves that bend to one side, so it never goes in a
 ## straight line. It only does the arithmetic (no tree, no ground): the SpellCarrier asks where to be at tick `f` and puts the
 ## result on the ground. Out and back take the same number of ticks.
-## Ref: sacengine cintp2 and updateSoulMolePosition (util.d:554, state.d:17938-18028).
 
 
 ## Hermite curve through `p0` (leaving with `m0`) and `p1` (arriving with `m1`), at `t` in [0, 1].
@@ -33,7 +32,6 @@ static func back_at(turn: Vector3, wizard: Vector3, side: Vector3, f: int, leg_t
 
 ## Where a guided carrier is `progress` (0 to 1) of the way through the casting: one turn around the wizard, climbing from his feet to
 ## `height_m` over his head, in a circle that opens as it goes (`cast_s` and `speed` size the circle). Dragonfire's dragon.
-## Ref: sacengine dragonfireCastingPosition (state.d:18698-18706).
 static func spiral(wizard: Node3D, cast_s: float, speed: float, height_m: float, progress: float) -> Vector3:
 	var top := BodyNudge.box(wizard).end.y - wizard.global_position.y + height_m
 	var radius := 0.5 * cast_s * speed / TAU * (0.5 + 0.5 * progress)

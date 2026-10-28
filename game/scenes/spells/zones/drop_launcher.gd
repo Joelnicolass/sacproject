@@ -5,7 +5,6 @@ extends Node
 ## Makes the drop of a cloud: when its ZoneDropper says where, it spawns `drop` (a ZoneDrop scene) at its start, with the point it
 ## must reach, the time it takes and the numbers of the spell. It does not choose where (ZoneDropper) nor move or hurt (ZoneDrop and its
 ## children). Server (or solo) only.
-## Ref: sacengine updateRainOfFrogs, updateRainOfFire, makeBombardmentDrop (state.d:19387, 21121-21123, 21235-21257).
 
 enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK, ZONE_COLUMN }
 
@@ -78,7 +77,7 @@ func _disk() -> Vector3:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if zone == null or dropper == null:
-		warnings.append("Faltan la zona y su ZoneDropper.")
+		warnings.append("The zone and its ZoneDropper are missing.")
 	if drop == null:
 		warnings.append("`drop` is empty: drag the drop scene.")
 	return warnings

@@ -4,7 +4,6 @@ extends RefCounted
 ## What a wall asks of the world around it: the land under a point, whether an end may stand there, and which bodies are inside it now.
 ## It holds no state of the wall (SpellWall) and hurts nobody (WallTouch). Without a map (a bare debug floor) the land is flat at the
 ## wall's own height and everywhere.
-## Ref: sacengine Firewall.check, wallTargets (state.d:20024-20034, 19976-19997).
 
 
 ## The land height under (x, z), or the wall's own height when there is no map or the point is a hole.
@@ -44,7 +43,7 @@ static func can_stand(wall: SpellWall, t: float) -> bool:
 	return true
 
 
-## The live creatures and wizards inside the wall now (isInWall).
+## The live creatures and wizards inside the wall now.
 static func bodies_inside(wall: SpellWall) -> Array[Node3D]:
 	var found: Array[Node3D] = []
 	var top := wall.top()

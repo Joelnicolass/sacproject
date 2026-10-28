@@ -7,8 +7,6 @@ extends Node
 ## original that matter and are kept: u[2], u[3], u[4] start at 1; the `u[6]` the divisor of acc1
 ## and acc2 is the integer read of the float bits of the ratios, so acc1 and acc2 are tiny numbers:
 ## summoning compares each creature with almost nothing.
-## Ref: RFC-024 §3.1 `AiStance`; shiny.d:1220-1288 `updateStance`, 1061-1085 the threat of the
-## wizard, 2064-2082 `influenceGroups`; shiny.d:1284-1287, «thaum quirk»
 
 
 class Rec:
@@ -38,8 +36,6 @@ var acc2 := AiRater.new_acc()
 var enemy_wizards := 0
 
 
-## updateStance.
-## Ref: shiny.d:1220-1288
 func update() -> void:
 	for relation: AiTrack.Relation in AiTrack.Relation.values():
 		var rec := Rec.new()
@@ -66,8 +62,6 @@ func update() -> void:
 	for t: AiTrack in perception.bodies(AiTrack.Relation.ENEMY):
 		if t.kind == AiTrack.Kind.WIZARD:
 			enemy_wizards += 1
-	# strengthRatio.
-	# Ref: shiny.d:1268-1280
 	var ebx := 0
 	var ebp := 0
 	for t: AiTrack in perception.structures(AiTrack.Relation.ENEMY):
@@ -102,28 +96,24 @@ static func _ratio(num: int, den: int) -> float:
 
 
 ## `cast(int)` of the raw word of a float: the quirk of the divisor.
-## Ref: shiny.d:171 `si`
 static func _bits(x: float) -> int:
 	var raw := PackedFloat32Array([x]).to_byte_array()
 	return raw.decode_s32(0)
 
 
-## Souls ratio own/(own+enemy) the weights use: `sf(stanceRecs[3], 6)`.
-## Ref: shiny.d:2955
+## Souls ratio own/(own+enemy) the weights use: `sf(souls record, 6)`.
 func enemy_ratio() -> float:
 	return recs[AiTrack.Relation.ENEMY].ratio_a
 
 
 ## Manaliths of the side plus its allies'.
-## Ref: retail `GetManaSource`: own+ally, shiny.d:2926 / 3128
 func manalith_count() -> int:
 	return recs[AiTrack.Relation.OWN].manaliths + recs[AiTrack.Relation.ALLY].manaliths
 
 
-## influenceGroups: the groups of `relation` within `far` of `at`, weighted 1 up to `near` and
+## The groups of `relation` within `far` of `at`, weighted 1 up to `near` and
 ## linearly to 0 at `far`, are added into `acc` (combine with weight w). Returns the weighted souls
 ## divided by u[4].
-## Ref: shiny.d:2064-2082
 func influence(
 	relation: AiTrack.Relation, at: Vector3, near: float, far: float, acc: PackedFloat32Array
 ) -> float:
@@ -145,12 +135,11 @@ func influence(
 	return AiField.safediv(souls_w, float(recs[relation].souls_all))
 
 
-## RFC-053 053d (F373): the strength of the bodies of `relation` within `radius` (flat) of `at`, as
+## The strength of the bodies of `relation` within `radius` (flat) of `at`, as
 ## the side knows them: each body's rate (AiRater, the number the groups add) times the fraction of
 ## its health the side believes it has. Creatures only: the wizards fight with spells, and the rater
 ## weighs a wizard like eight Rangers (WIZARD_STATS), so with them in the sum the brawl of the
-## creatures did not count (measured in f373: 4 Rangers and their wizard against a wizard and a
-## Scarab, 1.12; without the AI's wizard, 0.43). The enemy wizard's danger is the side's threat
+## creatures would not count. The enemy wizard's danger is the side's threat
 ## (update_threat).
 func local_strength(relation: AiTrack.Relation, at: Vector3, radius: float) -> float:
 	var sum := 0.0
@@ -169,7 +158,7 @@ func local_strength(relation: AiTrack.Relation, at: Vector3, radius: float) -> f
 	return sum
 
 
-## RFC-053: the share of the enemy strength within `radius` (flat) of `at` that belongs to NPC slots
+## The share of the enemy strength within `radius` (flat) of `at` that belongs to NPC slots
 ## (Taurocks of a village), by the rates of the bodies the side knows (creatures and wizards, each
 ## by its known health). 0 with no enemy there.
 func npc_share(at: Vector3, radius: float) -> float:
@@ -195,8 +184,7 @@ func npc_share(at: Vector3, radius: float) -> float:
 	return npc / all if all > 0.0 else 0.0
 
 
-## updateWiz: the threat of the wizard track, every 8 ticks of its age.
-## Ref: shiny.d:1061-1085
+## The threat of the wizard track, every 8 ticks of its age.
 func update_threat(wizard: AiTrack) -> void:
 	if wizard == null or wizard.relation != AiTrack.Relation.OWN or wizard.age < wizard.threat_tick:
 		return

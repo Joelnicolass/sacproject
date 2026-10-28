@@ -3,7 +3,6 @@ extends FxScene
 
 ## Rocks thrown up and out from a point, played on every peer by FxBus.broadcast_scene: the cow bursting on the land. Each rock is a DebrisPiece
 ## that flies, spins and bounces. Presentation only; it frees itself. It hurts nobody (the quake wave stuns, CarrierLanding).
-## Ref: sacengine cowExplosion EruptDebris (state.d:21752-21761): 16 rocks at 20 ± 7.5 m/s, sideways and up.
 
 @export var piece: PackedScene
 @export_range(0, 64) var pieces := 16
@@ -29,4 +28,4 @@ func _axis(rng: RandomNumberGenerator) -> Vector3:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if piece != null else PackedStringArray(["Falta la roca (piece)."])
+	return PackedStringArray() if piece != null else PackedStringArray(["The rock (piece) is missing."])

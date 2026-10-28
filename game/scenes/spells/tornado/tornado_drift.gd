@@ -4,7 +4,6 @@ extends Node
 ## Where the tornado is and how big: it grows with the cast (to 0.8), then to 1 on the ground and wanders around the point it was cast at,
 ## picking a random spot inside the spell's range and going there at the spell's speed and acceleration; it shrinks when the zone ends. The only
 ## writer of the zone's position and of `size` (the server runs it and replicates both). It does not lift bodies (TornadoLift) or draw (TornadoLook).
-## Ref: sacengine updateTornado, tornadoWanderOffset (state.d:22756-22759, 22826-22873).
 
 @export var zone: GroundZone
 ## Size while the wizard casts is this fraction of the cast's progress.

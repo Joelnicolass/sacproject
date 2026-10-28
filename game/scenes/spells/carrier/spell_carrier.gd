@@ -6,7 +6,6 @@ extends SpellProjectile
 ## FALL: the cow arcs onto it (CarrierFall). HUNT: Death walks to the closest creature again and again (CarrierHunt). On arriving it says `arrived`;
 ## a CarrierHold makes it wait and then say `settled`. The other children listen and act (TargetEffect, SoulFetch, a pulse, the look). The server (or
 ## solo) moves it and replicates it; a client only draws. It does not know what it carries nor who is near.
-## Ref: sacengine SoulMole, SoulWind, Dragonfire, Charm, BlindRage, IntestinalVaporization, BovineIntervention, Death (state.d:17938-22300).
 
 ## Server only: SOUL_TRIP stands on the soul (`reached`); the trip is over (`ended`, the node frees itself); it reached its target (`arrived`, null: a
 ## point; for HUNT each blow); the wait there is over or there was none (`settled`); FALL went through the land (`landed`).

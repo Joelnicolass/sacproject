@@ -5,7 +5,6 @@ extends MeshInstance3D
 ## `type.segments` links with three fins, its texture stretched along its whole length (a strip of frames, one every `type.frame_s`).
 ## Only a part of the curve shows at once (`length` of it), and that part travels from the wizard to the creature in `travel_s`. The two
 ## ends follow their bodies. Presentation only: no sound, no damage, no state; AnimateDeadFx makes it and it frees itself.
-## Ref: sacengine animateDeadEffect and renderAnimateDead (state.d:18328-18334, renderer.d:2341-2358).
 
 const UV_INSET := 0.5 / 256.0
 

@@ -10,7 +10,6 @@ extends Node
 ## off: its icon answers «No implementado».
 ## Only the server (or solo) runs begin/finish/cancel. This base holds no game logic, so the editor
 ## can run it for the configuration warnings.
-## Ref: RFC-021a
 
 enum Pick { GROUND, OWN_UNIT, SOUL, OWN_BUILDING, SELF }
 
@@ -44,7 +43,6 @@ var tag: String:
 ## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god (GodType.cast_fx).
 @export var cast_fx: ParticleType
 ## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the end of the cast.
-## Ref: sacspell.d:201 (a structure always casts standing), state.d:62-63, 14672 (no step while stationaryCasting).
 @export var stationary := false
 
 
@@ -54,7 +52,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if parent != null and spell != null:
 		for sibling in parent.get_children():
 			if sibling != self and sibling is SpellAction and (sibling as SpellAction).spell == spell:
-				warnings.append("Otra acción de `%s` lanza el mismo hechizo." % parent.name)
+				warnings.append("Another action of `%s` casts the same spell." % parent.name)
 				break
 	return warnings
 

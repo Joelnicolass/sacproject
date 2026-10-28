@@ -4,7 +4,6 @@ extends Node3D
 ## Dust that rises from the ground around a zone while it is in some of its phases: a few puffs each tick at random spots
 ## of the disc, most of them near the center, each on the ground where the ground is at that moment (so it follows a mound
 ## as it lifts). On every peer, from the zone's phase; a dedicated server draws nothing. It does not hurt anyone.
-## Ref: sacengine animateErupt (state.d:18394-18411).
 
 @export var zone: GroundZone
 ## The puff (FxBus, under data/fx/).
@@ -30,7 +29,7 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and type != null else PackedStringArray(["Falta la zona (zone) o el tipo de partícula (type)."])
+	return PackedStringArray() if zone != null and type != null else PackedStringArray(["The zone (zone) or the particle type (type) is missing."])
 
 
 func _physics_process(_delta: float) -> void:

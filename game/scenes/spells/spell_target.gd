@@ -5,7 +5,6 @@ extends Resource
 ## Who a spell may land on, as data: the body the click names must be of this kind, alive and (if asked) on the ground and not already
 ## protected from crowd control. A SpellAction embeds one in its scene, so a new single-target spell is a scene and a `.tres`, not a
 ## subclass. It does not aim, start the cast or apply anything: it answers «is this body a valid target?».
-## Ref: sacengine castFreeze, castGraspingVines, castRingsOfFire, castSlime (state.d:10687-10770).
 
 ## OWN_OR_SELF and NOT_OWN compare `owner_slot` only (the wizard and the creatures of his player); ALLY_OR_SELF and ENEMY use the side
 ## relations (allies of other players count). Append only: the values are saved as integers.
@@ -16,12 +15,11 @@ enum Who { SELF, ALLY_OR_SELF, ENEMY, ANY, OWN_OR_SELF, NOT_OWN }
 @export var alive_only := true
 ## Refuses a body that flies (Grasping Vines: a flier is never tied).
 @export var ground_only := false
-## Refuses a body that is ccProtected: shielded, petrified, frozen, in Rings of Fire, slimed or vined.
+## Refuses a body that is protected from control: shielded, petrified, frozen, in Rings of Fire, slimed or vined.
 @export var refuse_cc_protected := false
 ## Refuses a wizard (the level-8 spells aim at creatures: SPEL flags have no «wizards» bit).
 @export var refuse_wizards := false
 ## Off: refuses a body of no player (owner_slot 0: the creatures of the map, which have no wizard). Charm's rule.
-## Ref: sacengine charmNeutralCreatures
 @export var neutral_allowed := true
 
 

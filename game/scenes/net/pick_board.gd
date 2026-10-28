@@ -63,7 +63,7 @@ func _store(data: Dictionary, from_peer: int) -> void:
 	if not MpKit.is_server():
 		return
 	var slot := MpKit.slot_for_peer(from_peer)
-	## The ticket closed the picks: the client that just got its slot only needs to hear them.
+	# The ticket closed the picks: the client that just got its slot only needs to hear them.
 	if ticket_glue != null:
 		if ticket_glue.is_pick_open(slot):
 			_accept_open(from_peer, slot, data)

@@ -4,7 +4,7 @@ extends Node
 ## The spellbook's side of the player's input: a creature key summons at once, a spell or a structure is armed (an
 ## unaffordable or cooling one is not) and the next left click, on the screen or on the minimap, casts it where the
 ## cursor points. What a structure's click aims at (ground, own creature, soul, own building) is the `pick` of the
-## entry's SpellAction (RFC-021). The server answers; `ArmedCommand` ends the wait when it does.
+## entry's SpellAction. The server answers; `ArmedCommand` ends the wait when it does.
 
 const _SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 
@@ -55,7 +55,6 @@ func summon(index: int) -> void:
 
 
 ## An unaffordable or cooling spell is not armed.
-## Ref: sacengine selectSpell.
 func arm_spell(index: int) -> void:
 	if _book != null:
 		_book.show_tab(_SPELL_BOOK.Tab.SPELL)

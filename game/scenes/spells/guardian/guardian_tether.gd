@@ -9,38 +9,32 @@ extends Node3D
 ## building in a second, pulses at 0.75-1 of its width
 ## and withdraws in a second, toward the building if the creature is gone or toward the creature if the
 ## building is.
-## Look: the tube of 3 planes with pointed ends that the original draws (makeLineMeshes(19, 4, 4, 1.5, 1.0,
+## Look: the tube of 3 planes with pointed ends that the original draws (19 segments, 4 sides, 4 points, 1.5, 1.0,
 ## pointy)), additive and shadeless with energy 5, from the
 ## `grdn` atlas that tools/import/import_ui.py puts in assets/original/fx/. One
 ## cell of the 4x4 per 2 ticks (16 cells). Without the atlas it falls back to a flat soft color.
 ## The beam waits for the building while `post_path` is set and the building has not arrived on this peer
 ## (a late client); it only withdraws when the bond ends (retire()).
 ## Only presentation: nothing here reads or writes game state.
-## Ref: updateGuardianShape, state.d:15326-15340; cubic, state.d:15400-15402; renderer.d:1716; state.d:15404-15417; sacobject.d:4466-4472; renderer.d:253-261; charlie.wad, sacobject.d:4466; RFC-021b
 
 enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE }
 
 ## Segments of the line.
-## Ref: SacGuardianTether.numSegments, sacobject.d:4462
 @export var segments := 19
 ## Edge of the box the control points wobble in; the ends move a quarter of that.
-## Ref: Guardian.locRadius, state.d:2780
 @export var jitter_radius := 0.75
 ## Distance from the axis to each of the 3 planes, meters.
-## Ref: the 1.0 passed to makeLineMeshes, sacobject.d:4472
 @export var width := 1.0
 ## The atlas of the beam (grdn.png in guardian_tether.tscn). Empty = the flat `color`.
 @export var atlas: Texture2D
 ## Brightness.
-## Ref: SacGuardianTether material energy, renderer.d:257
 @export var energy := 5.0
 ## Seconds per atlas cell.
-## Ref: 2 ticks of the original's 60 per second.
 @export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 @export var appear_s := 1.0
 @export var reshape_s := 1.0
 @export var withdraw_s := 1.0
-## Pulse period (Guardian.pulseFrames = updateFPS / 2).
+## Pulse period (half a second).
 @export var pulse_s := 0.5
 @export var color := Color(0.35, 1.0, 0.55, 1.0)
 ## Draws the ribbon. Its material is the look; a missing one warns in the inspector.
@@ -92,7 +86,7 @@ func _apply_look() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if beam == null:
-		warnings.append("Asigná en `beam` el MeshInstance3D que dibuja el haz (con su material).")
+		warnings.append("Assign to `beam` the MeshInstance3D that draws the beam (with its material).")
 	return warnings
 
 
@@ -136,7 +130,7 @@ func _process(delta: float) -> void:
 	_phase_clock += delta
 	_sample()
 	if not _building_known:
-		## A late client: the building has not been replicated yet. Wait for it while the bond stands.
+		# A late client: the building has not been replicated yet. Wait for it while the bond stands.
 		if phase == Phase.WITHDRAWING_AT_CREATURE or phase == Phase.WITHDRAWING_AT_BUILDING:
 			queue_free()
 			return
@@ -191,8 +185,7 @@ func _draw(from: Vector3, to: Vector3) -> void:
 		var t := float(i) / float(segments)
 		var wobble := _spline(locs, t)
 		points.append(from + line * t + side_a * wobble.x + side_b * wobble.y + along * wobble.z)
-	## 3 planes at 120 degrees, pointed at both ends.
-	## Ref: makeLineMesh offsets, sacobject.d:2192
+	# 3 planes at 120 degrees, pointed at both ends.
 	var root := sqrt(0.75)
 	var offsets: Array[Vector3] = [-side_b, side_a * root + side_b * 0.5, -side_a * root + side_b * 0.5]
 	var inset := 0.5 / 64.0
@@ -207,7 +200,7 @@ func _draw(from: Vector3, to: Vector3) -> void:
 				if (k == 2 or k == 3) and bone != 0 and bone != segments:
 					p += offsets[j] * width * pulse
 				pos.append(p)
-				## makeLineMesh texcoords: u flips per segment, v is the bright centerline for k 0 and 1.
+				# Texcoords: u flips per segment, v is the bright centerline for k 0 and 1.
 				var flip := ((i & 1) == 1) != (k == 1 or k == 2)
 				uvs.append(Vector2(1.0 - inset if flip else inset, 1.0 - inset if (k == 0 or k == 1) else inset))
 			for idx in [0, 1, 2, 2, 3, 0]:
@@ -217,7 +210,6 @@ func _draw(from: Vector3, to: Vector3) -> void:
 
 
 ## The 5 control points, mixed between the last shape and the next.
-## Ref: state.d:15326-15340
 func _control_points() -> Array[Vector3]:
 	if _next.is_empty():
 		_next = _random_shape()

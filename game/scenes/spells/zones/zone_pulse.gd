@@ -50,4 +50,4 @@ func is_ally(body: Node3D) -> bool:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) a la que pertenece."])
+	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) it belongs to is missing."])

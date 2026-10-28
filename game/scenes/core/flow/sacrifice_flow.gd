@@ -21,7 +21,7 @@ const ONLINE_SCENE := "res://scenes/ui/online/online_screen.tscn"
 @export var presence: SeatPresence
 ## The black screen while a match loads (a child of this scene). Empty = no screen; the load is the same.
 @export var loading_screen: LoadingScreen
-## The room server of a VPS (RFC-034: `--room-server`, scenes/ui/lobby/, data/net/lobby_*.tres), kept for a future deploy (tools/deploy/).
+## The room server of a VPS (`--room-server`, scenes/ui/lobby/, data/net/lobby_*.tres), kept for a future deploy (tools/deploy/).
 ## Off: «Salas online» opens the rooms the players host and `--room-server` refuses to start. On: «Salas online» opens the
 ## room-server lobby and the binary can run as the room server.
 @export var room_server_enabled := false
@@ -45,7 +45,7 @@ var _cli_setup := MatchSetup.new()
 func _ready() -> void:
 	pick = default_pick.duplicate() as WizardPick
 	boot_path = "res://scenes/core/boot.tscn"
-	## `--world=res://<scene>.tscn` on the dedicated and its clients plays another world scene online.
+	# `--world=res://<scene>.tscn` on the dedicated and its clients plays another world scene online.
 	world_path = MpBoot.user_value("world", "res://scenes/match/match.tscn")
 	joining_status = tr("UI_FLOW_JOINING")
 	join_fail_status = tr("UI_FLOW_JOIN_FAIL")
@@ -54,13 +54,13 @@ func _ready() -> void:
 	_translate_online_texts()
 	advertise_lan = false
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT
-	## Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1 and the AI keeps slot 2.
+	# Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1 and the AI keeps slot 2.
 	var plan := LaunchFlags.read(vs_ai_seat, ActiveMatch.seats())
 	max_players = plan.max_players
 	solo_ai_seats = plan.ai_seats
 	_cli_setup = plan.setup
 	setup = _cli_setup.copy()
-	## The room server never loads a world by itself.
+	# The room server never loads a world by itself.
 	if MpBoot.role() == "room-server":
 		start_when = StartWhen.MANUAL
 	if not _arm_ticket_glue():
@@ -99,7 +99,7 @@ func play_solo(chosen: MatchSetup = null) -> void:
 ## «Contra la IA»: solo, with the AI in every seat but the player's. `god` null = drawn when the match starts.
 func play_vs_ai(god: GodType = null, chosen: MatchSetup = null) -> void:
 	setup = _cli_setup.overlaid_by(chosen)
-	## Decided now (idempotent) to know how many seats the mode has.
+	# Decided now (idempotent) to know how many seats the mode has.
 	_apply_match_choice()
 	solo_ai_seats = vs_ai_seat.for_seats(ActiveMatch.seats(), god)
 	_play_alone()
@@ -214,7 +214,7 @@ func rejection_text(reason: String) -> String:
 ## The way out of a match (pause menu, end, lost server): the room screens if it came from a room, else the menu.
 func _go_boot() -> void:
 	ActiveMatch.forget()
-	print("flujo: salida de la partida, desde sala: %s" % from_lobby)
+	print("flow: left the match, from a room: %s" % from_lobby)
 	if from_lobby:
 		from_lobby = false
 		get_tree().change_scene_to_file(LOBBY_SCENE)
@@ -251,7 +251,7 @@ func _arm_ticket_glue() -> bool:
 		solo_ai_seats = plan.ai_seats
 	slot_picks.merge(plan.picks)
 	setup = _cli_setup.overlaid_by(plan.setup)
-	## The world waits for the open picks: the first admission does not start it (see PickBoard).
+	# The world waits for the open picks: the first admission does not start it (see PickBoard).
 	if plan.wait_for_picks:
 		start_when = StartWhen.MANUAL
 	return true

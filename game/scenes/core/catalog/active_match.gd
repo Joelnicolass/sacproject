@@ -93,7 +93,7 @@ static func choose(map_choice: MapDefinition, mode_choice: GameMode) -> void:
 	if chosen_map == null or chosen_mode == null:
 		return
 	if not chosen_map.fits(chosen_mode):
-		push_error("ActiveMatch: el modo '%s' pide %d asientos y el mapa '%s' tiene %d; se juega '%s'." % [
+		push_error("ActiveMatch: the mode '%s' asks for %d seats and the map '%s' has %d; '%s' is played." % [
 			chosen_mode.tag, chosen_mode.seats(), chosen_map.tag, chosen_map.player_starts, GameModeCatalog.DEFAULT_TAG])
 		_mode_id = GameModeCatalog.DEFAULT_TAG
 

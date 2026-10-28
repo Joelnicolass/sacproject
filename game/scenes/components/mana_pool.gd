@@ -7,7 +7,6 @@ extends Node
 signal changed(current: float, maximum: float)
 ## add() was called: `amount` is what the source gave, before the clamp to maximum
 ## (a ghost heals by it even with a full pool).
-## Ref: sacengine giveMana, state.d:8828-8832.
 signal given(amount: float)
 
 ## Only read by setup(): MatchRules.start_mana, if not negative, replaces a full pool.
@@ -22,7 +21,6 @@ signal given(amount: float)
 		changed.emit(current, maximum)
 ## The body's poison (Poisoning). While a dose blocks the mana, add() gives nothing.
 ## Optional: empty = never blocked.
-## Ref: F122; sacengine giveMana, state.d:8829.
 @export var poisoning: Poisoning
 
 
@@ -57,10 +55,8 @@ func add(amount: float) -> void:
 	given.emit(amount)
 
 
-
-## Mana − amount, never under 0. Poison does not block it (F123: the
+## Mana − amount, never under 0. Poison does not block it (the
 ## Tickferno's heat ray). Returns what it took.
-## Ref: sacengine drainMana, state.d:8822-8825.
 func drain(amount: float) -> float:
 	if not is_multiplayer_authority() or amount <= 0.0:
 		return 0.0

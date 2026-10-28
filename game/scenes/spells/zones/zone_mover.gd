@@ -6,7 +6,6 @@ extends Node
 ## (it speeds up by the spell's acceleration each tick), and stays still when it arrives, when the body is gone, or when the click was the
 ## ground. Cloudkill's cloud hangs over it at a fixed height (a child marker of the zone). The only writer of the zone's position; the zone
 ## replicates it (`replicates_position`). Server (or solo) only.
-## Ref: sacengine updateCloudkill (state.d:22079-22084); REA CloudKillRun 0x420a30 (speed 3, acceleration 0.3; how the acceleration enters is NOT VERIFIED).
 
 @export var zone: GroundZone
 
@@ -28,4 +27,4 @@ func _physics_process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) que persigue."])
+	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) it chases is missing."])

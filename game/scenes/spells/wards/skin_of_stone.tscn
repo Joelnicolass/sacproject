@@ -30,7 +30,7 @@ half_axes_m = Vector3(0.93, 1.38, 0.93)
 on_surface = false
 
 [node name="CastRing" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
-editor_description = "Mientras se lanza: 30 particulas dirt por tick en un anillo a ras del suelo, de radio 2 (s + 0,5), que se cierra hacia los pies (sacengine, SPEL niks: tcst = dirt). Cierra al 10 %: el original llega al 90 % en xy."
+editor_description = "Mientras se lanza: 30 particulas dirt por tick en un anillo a ras del suelo, de radio 2 (s + 0,5), que se cierra hacia los pies (SPEL niks: tcst = dirt). Cierra al 10 %: el original llega al 90 % en xy."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 use_fixed_seed = true
 local_coords = false

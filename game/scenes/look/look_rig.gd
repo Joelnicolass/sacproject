@@ -12,6 +12,8 @@ extends Node
 signal profile_applied(profile: LookProfile)
 ## The player's «Vegetación» switch changed; the vegetation layers listen.
 signal vegetation_toggled(enabled: bool)
+## The player's «Pasto» switch changed; GrassField listens.
+signal grass_toggled(enabled: bool)
 
 @export_group("Editor preview")
 ## Pick a god and the map shows its look in the editor, live (sky, light, glow, ground, plants).
@@ -43,6 +45,8 @@ var quality_preset: LookQuality
 ## The player's «Vegetación» switch (GraphicsPrefs, through GraphicsApplier): off, the mesh
 ## vegetation draws nothing whatever the preset says. On by default (the editor, debug scenes).
 var vegetation_enabled := true
+## The player's «Pasto» switch: off, the grass draws nothing whatever the preset says.
+var grass_enabled := true
 
 
 func _ready() -> void:
@@ -69,6 +73,13 @@ func apply_quality(preset: LookQuality) -> void:
 	if quality:
 		quality.quality = preset
 	_push_quality()
+
+
+func set_grass_enabled(on: bool) -> void:
+	if on == grass_enabled:
+		return
+	grass_enabled = on
+	grass_toggled.emit(on)
 
 
 func set_vegetation_enabled(on: bool) -> void:

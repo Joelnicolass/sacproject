@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_p")
-color_mid = Color(0.28, 0.55, 0.08, 1)
-color_tip = Color(0.55, 0.8, 0.2, 1)
+color_mid = Color(0.14, 0.29, 0.05, 1)
+color_tip = Color(0.32, 0.45, 0.12, 1)
 paint_tone = 1.3

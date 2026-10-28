@@ -10,7 +10,7 @@ extends Node
 ##   (`--max-fps`, `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the
 ##   preference and is left alone.
 ## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none), and
-##   the «Vegetación» switch: `rig.set_vegetation_enabled`.
+##   the «Vegetación» switch: `rig.set_vegetation_enabled`; the «Pasto» one: `rig.set_grass_enabled`.
 ## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated
 ##   server and under AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the
 ##   player and the agents' runs, so a test never inherits the player's choice (no VSync off / no
@@ -64,17 +64,19 @@ func apply() -> void:
 		return
 	_apply_window()
 	var line := (
-		"graphics: %s · vsync %s · fullscreen %s · fps cap %s · vegetation %s"
+		"graphics: %s · vsync %s · fullscreen %s · fps cap %s · vegetation %s · grass %s"
 		% [
 			prefs.quality_id(),
 			_yes(prefs.vsync()),
 			_yes(prefs.fullscreen()),
 			str(prefs.max_fps()) if prefs.max_fps() > 0 else "no",
 			_yes(prefs.vegetation_enabled()),
+			_yes(prefs.grass_enabled()),
 		]
 	)
 	if _has_rig():
 		rig.set_vegetation_enabled(prefs.vegetation_enabled())
+		rig.set_grass_enabled(prefs.grass_enabled())
 	var preset := prefs.quality()
 	if _has_rig() and preset and rig.quality_preset != preset:
 		var started := Time.get_ticks_usec()

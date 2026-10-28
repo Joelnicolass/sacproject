@@ -8,6 +8,8 @@ extends Resource
 ## - VSync, fullscreen and the FPS cap are the window's.
 ## - «Vegetación»: off, the mesh vegetation layers (FloraField) draw nothing whatever the preset
 ##   says.
+## - «Pasto»: off, the grass (GrassField) draws nothing whatever the preset says; it takes effect at
+##   once, in a match too.
 ## - «Relieve»: off, no model draws its normal maps whatever the preset says (SurfaceReliefLayer
 ##   reads it).
 ## - It lives in `user://settings.cfg` `[graphics]` through UserSettings.
@@ -31,6 +33,7 @@ const ARG := "--quality="
 @export var default_vsync := true
 @export var default_fullscreen := false
 @export var default_vegetation := true
+@export var default_grass := true
 @export var default_relief := true
 ## 32 to 256 painted ground tiles.
 @export_range(32, 256) var default_scar_tiles := 256
@@ -47,6 +50,7 @@ var _vsync := true
 var _fullscreen := false
 var _max_fps := 0
 var _vegetation := true
+var _grass := true
 var _relief := true
 var _scar_tiles := 256
 
@@ -80,6 +84,18 @@ func max_fps() -> int:
 func vegetation_enabled() -> bool:
 	_ensure_loaded()
 	return _vegetation
+
+
+func grass_enabled() -> bool:
+	_ensure_loaded()
+	return _grass
+
+
+func set_grass_enabled(on: bool) -> void:
+	if on == grass_enabled():
+		return
+	_grass = on
+	_commit()
 
 
 func relief_enabled() -> bool:
@@ -179,6 +195,7 @@ func _commit() -> void:
 					"fullscreen": _fullscreen,
 					"max_fps": _max_fps,
 					"vegetation": _vegetation,
+					"grass": _grass,
 					"relief": _relief,
 					"scar_tiles": _scar_tiles,
 				}
@@ -196,6 +213,7 @@ func _ensure_loaded() -> void:
 	_fullscreen = default_fullscreen
 	_max_fps = default_max_fps
 	_vegetation = default_vegetation
+	_grass = default_grass
 	_relief = default_relief
 	_scar_tiles = default_scar_tiles
 	if Engine.is_editor_hint():
@@ -215,6 +233,7 @@ func _ensure_loaded() -> void:
 	_vsync = _read_bool("vsync", default_vsync)
 	_fullscreen = _read_bool("fullscreen", default_fullscreen)
 	_vegetation = _read_bool("vegetation", default_vegetation)
+	_grass = _read_bool("grass", default_grass)
 	_relief = _read_bool("relief", default_relief)
 	var tiles: Variant = UserSettings.read_value(SECTION, "scar_tiles", default_scar_tiles)
 	_scar_tiles = (

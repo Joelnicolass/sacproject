@@ -7,7 +7,8 @@ extends LookLayer
 ## wider blades for the far ones). Crossing a cell only moves the `transform` of the cells left
 ## behind: nothing is regenerated. `grass.gdshader` places, culls, bends and colors every blade, so
 ## the CPU does a handful of uniform writes per frame. Hiding the node, a profile without grass,
-## a map without ground or a preset with grass off removes every cell.
+## a map without ground, a preset with grass off or the player's «Pasto» switch off removes every
+## cell.
 ## Everything built here (MultiMeshes, height texture, clearings, stamps) is runtime-only: the cells
 ## are internal children and never reach a saved scene. In a dedicated or headless process the
 ## rig is freed, so this never exists there. In the editor it follows the viewport camera.
@@ -93,9 +94,18 @@ func _ready() -> void:
 
 
 func apply_look(profile: LookProfile, rig: LookRig) -> void:
+	if _rig != rig:
+		if _rig and _rig.grass_toggled.is_connected(_on_grass_toggled):
+			_rig.grass_toggled.disconnect(_on_grass_toggled)
+		if rig and not rig.grass_toggled.is_connected(_on_grass_toggled):
+			rig.grass_toggled.connect(_on_grass_toggled)
 	_rig = rig
 	_preset = rig.quality_preset
 	_set_grass(profile.grass if profile else null)
+
+
+func _on_grass_toggled(_enabled: bool) -> void:
+	_refresh()
 
 
 func apply_quality(preset: LookQuality) -> void:
@@ -179,7 +189,7 @@ func _refresh() -> void:
 	if DisplayServer.get_name() == "headless":
 		return
 	# Grass is off unless a quality preset turns it on (the editor has no preset).
-	if _preset == null or not _preset.grass_enabled:
+	if _preset == null or not _preset.grass_enabled or (_rig and not _rig.grass_enabled):
 		return
 	var terrain := _ground_mesh()
 	if (
@@ -445,6 +455,9 @@ func _apply_type() -> void:
 	m.set_shader_parameter("clump_scale_m", t.clump_scale_m)
 	m.set_shader_parameter("clump_tint", t.clump_tint)
 	m.set_shader_parameter("clump_height", t.clump_height)
+	m.set_shader_parameter("clump_facing", t.clump_facing)
+	m.set_shader_parameter("clump_splay", t.clump_splay)
+	m.set_shader_parameter("blade_curve", t.blade_curve)
 	m.set_shader_parameter("normal_roundness", t.normal_roundness)
 	m.set_shader_parameter("translucency", t.translucency)
 	m.set_shader_parameter("root_ao", t.root_ao)

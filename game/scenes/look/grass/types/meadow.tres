@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_t")
-label = "Pradera (BotW)"
+label = "Pradera"
 width_m = 0.16
 tip_width = 0.1
 far_width_scale = 4.3
@@ -13,13 +13,13 @@ specular = 0.4
 roughness = 0.55
 height_variation = 0.35
 lean = 0.55
-short_height_m = 0.5
-tall_height_m = 2.3
-density_near = 120.0
+short_height_m = 0.25
+tall_height_m = 0.8
+density_near = 45.0
 density_far = 9.5
-color_mid = Color(0.28, 0.55, 0.08, 1)
-color_tip = Color(0.55, 0.8, 0.2, 1)
-ground_mix = 0.1
+color_mid = Color(0.14, 0.29, 0.05, 1)
+color_tip = Color(0.32, 0.45, 0.12, 1)
+ground_mix = 0.3
 normal_roundness = 0.8
 translucency = 0.5
 root_ao = 0.5

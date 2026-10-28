@@ -91,6 +91,12 @@ uniform float ground_mix = 0.3;
 uniform float clump_scale_m = 1.6;
 uniform float clump_tint = 0.5;
 uniform float clump_height = 0.35;
+/** Clumps (Ghost of Tsushima): how much the blades of a clump share its facing, and how much they
+splay out from its centre (0 = every blade on its own). */
+uniform float clump_facing = 0.6;
+uniform float clump_splay = 0.5;
+/** Arch of the blade's Bezier: 0 straight to the tip, 1 a long curve that droops at the end. */
+uniform float blade_curve = 0.55;
 uniform float normal_roundness = 0.7;
 uniform float translucency = 0.5;
 uniform float root_ao = 0.45;
@@ -146,11 +152,25 @@ vec2 hash22(vec2 p) {
 	return fract(sin(q) * 43758.5453);
 }
 
-// Tuft: two cheap noise reads at the tuft scale (x = distance-like falloff, y and z = random per tuft).
-vec3 tuft(vec2 p, float scale) {
-	vec4 n = textureLod(noise_tex, p / scale, 0.0);
-	vec4 m = textureLod(noise_tex, p / (scale * 3.1) + vec2(0.37, 0.71), 0.0);
-	return vec3(0.5, clamp((n.g - 0.5) * 1.7 + 0.5 + (m.a - 0.5) * 0.6, 0.0, 1.0), n.b);
+// Clump (Ghost of Tsushima): the nearest of a grid of jittered points `scale` apart (Voronoi). The
+// blades of one clump share its traits, so the field varies by patches, not blade by blade.
+// xy = the blade's offset from the clump's centre (m); z, w = two randoms of the clump.
+vec4 clump(vec2 p, float scale) {
+	vec2 g = floor(p / scale);
+	float best = 1e9;
+	vec4 found = vec4(0.0, 0.0, 0.5, 0.5);
+	for (int j = -1; j <= 1; j++) {
+		for (int i = -1; i <= 1; i++) {
+			vec2 c = g + vec2(float(i), float(j));
+			vec2 d = p - (c + 0.15 + 0.7 * hash22(c)) * scale;
+			float dd = dot(d, d);
+			if (dd < best) {
+				best = dd;
+				found = vec4(d, hash22(c + vec2(41.7, 9.2)));
+			}
+		}
+	}
+	return found;
 }
 
 // A seamless noise channel read at two unrelated scales and orientations, so its tile never shows:
@@ -273,7 +293,10 @@ Grown grow(vec3 base_vertex, vec2 uv, vec4 custom, vec3 origin, vec3 camera_worl
 	}
 
 	// Height: short on paths, around clearings and near the camera; tall in the open, by patches.
-	vec3 tf = use_clumps ? tuft(pos, clump_scale_m) : vec3(0.5, 0.5, 0.5);
+	vec4 cl = use_clumps ? clump(pos, clump_scale_m) : vec4(0.0, 0.0, 0.5, 0.5);
+	// The heart of a clump stands a little taller than its rim: tufts, not a flat lawn.
+	float rim = use_clumps ? clamp(length(cl.xy) / (clump_scale_m * 0.6), 0.0, 1.0) : 0.5;
+	vec3 tf = vec3(0.5, clamp(cl.z + (0.5 - rim) * 0.5, 0.0, 1.0), cl.w);
 	float open_n = wide_noise(pos + vec2(311.0, 97.0), open_scale_m, vec4(0, 0, 1, 0), vec4(0, 1, 0, 0));
 	float openness = clamp(zone_height * clear_height * (0.5 + 0.5 * smoothstep(0.15, 0.6, open_n)), 0.0, 1.0);
 	float h = mix(short_height_m, tall_height_m, openness);
@@ -334,11 +357,12 @@ Grown grow(vec3 base_vertex, vec2 uv, vec4 custom, vec3 origin, vec3 camera_worl
 	float gust = smoothstep(0.45, 0.8, wave);
 	float flutter = sin(time * 2.6 + custom.x * 40.0 + pos.x * 0.9) * 0.5 + sin(time * 4.1 + custom.z * 30.0) * 0.5;
 	vec2 wind_push = wd * (0.35 + gust * 1.1) + vec2(-wd.y, wd.x) * flutter * 0.25;
-	float bend = t * t;
-
-	// Blade frame: yaw by instance, edge-on blades turned toward the camera.
+	// Blade frame: yaw by instance, pulled toward the clump's facing; edge-on blades turned toward
+	// the camera.
 	float yaw = custom.x * 6.2831853;
 	vec2 side = vec2(cos(yaw), sin(yaw));
+	float clump_yaw = cl.w * 6.2831853;
+	side = normalize(mix(side, vec2(cos(clump_yaw), sin(clump_yaw)) * sign(dot(side, vec2(cos(clump_yaw), sin(clump_yaw))) + 0.001), clump_facing) + vec2(0.0001));
 	vec3 cam_map = camera_world - map_origin;
 	vec2 to_cam = normalize(cam_map.xz - pos + vec2(0.0001));
 	vec2 perp = vec2(-to_cam.y, to_cam.x);
@@ -346,7 +370,11 @@ Grown grow(vec3 base_vertex, vec2 uv, vec4 custom, vec3 origin, vec3 camera_worl
 	side = normalize(side + perp * (dot(side, perp) >= 0.0 ? 1.0 : -1.0) * edge_on * view_thicken * 1.4);
 
 	float lean_yaw = custom.z * 6.2831853;
-	vec2 natural = vec2(cos(lean_yaw), sin(lean_yaw)) * lean * (1.0 + hill * slope_lean_gain) * h;
+	vec2 own_lean = vec2(cos(lean_yaw), sin(lean_yaw));
+	// The blades of a clump splay out from its centre, like a real tuft.
+	vec2 out_dir = length(cl.xy) > 0.001 ? normalize(cl.xy) : own_lean;
+	vec2 lean_dir = normalize(mix(own_lean, out_dir, clump_splay * float(use_clumps)) + vec2(0.0001));
+	vec2 natural = lean_dir * lean * (1.0 + hill * slope_lean_gain) * h;
 	vec2 sway = wind_push * wind_strength * h + natural + push * h * 1.0 * press;
 	vec3 wp = vec3(pos.x, ground_y - SINK_M, pos.y);
 	// Width profile: 1 at the root down to `tip_width` of it near the tip (the mesh stores 1 - 0.93 t^0.9).
@@ -354,14 +382,27 @@ Grown grow(vec3 base_vertex, vec2 uv, vec4 custom, vec3 origin, vec3 camera_worl
 	float tip_w = mix(tip_width, 0.55, blend);
 	float profile = (1.0 - (1.0 - tip_w) * pow(t, 0.9)) / max(1.0 - 0.93 * pow(t, 0.9), 0.05);
 	wp.xz += side * base_vertex.x * width_here * mix(1.0, slope_width_scale, hill) * (t > 0.99 ? 1.0 : profile);
-	wp.y += t * h;
-	wp.xz += sway * bend;
-	wp.y -= 0.5 * dot(sway, sway) * bend / max(h, 0.05) * 0.5;
+	// The blade is a cubic Bezier (Ghost of Tsushima): root, two control points, tip. The tip goes
+	// where lean, wind and trample push it, keeping the blade's length (it bends, never stretches);
+	// the middle point follows less of the wind, so the tip leads and the blade whips.
+	float tip_up = sqrt(max(h * h - dot(sway, sway), 0.09 * h * h));
+	vec2 wind_only = wind_push * wind_strength * h;
+	vec3 p1 = vec3(0.0, tip_up * 0.45, 0.0);
+	vec3 p2 = vec3(
+		(sway - wind_only * 0.6) * (0.3 + 0.45 * blade_curve), tip_up * (1.0 - 0.15 * blade_curve)
+	).xzy;
+	vec3 p3 = vec3(sway.x, tip_up, sway.y);
+	float s = 1.0 - t;
+	vec3 on_curve = 3.0 * s * s * t * p1 + 3.0 * s * t * t * p2 + t * t * t * p3;
+	vec3 tangent = 3.0 * s * s * p1 + 6.0 * s * t * (p2 - p1) + 3.0 * t * t * (p3 - p2);
+	wp += on_curve;
 	o.vertex = wp - root;
 
-	// Rounded normal: across the blade it curves, leaning over to the tip.
-	vec2 face = vec2(-side.y, side.x);
-	o.normal = normalize(vec3(face.x, 0.35, face.y) + vec3(side.x, 0.0, side.y) * (uv.x - 0.5) * 1.3);
+	// Rounded normal: across the blade it curves; along it, it follows the Bezier's bend.
+	vec3 side3 = vec3(side.x, 0.0, side.y);
+	vec3 face3 = normalize(cross(side3, normalize(tangent + vec3(0.0, 0.0001, 0.0))));
+	face3 = face3.y < 0.0 ? -face3 : face3;
+	o.normal = normalize(mix(vec3(face3.x, 0.35, face3.z), face3, 0.5) + side3 * (uv.x - 0.5) * 1.3);
 
 	// Colors. The root is the ground's; body and tip come from the type, tinted by macro drift and
 	// by tuft, and everything converges on the ground toward the edge of the field.

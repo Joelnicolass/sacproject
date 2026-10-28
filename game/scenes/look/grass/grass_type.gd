@@ -74,6 +74,12 @@ const MIN_FAR_COVERAGE := 2.3
 @export_range(0.3, 8.0, 0.1, "suffix:m") var clump_scale_m := 1.6
 @export_range(0.0, 1.0, 0.01) var clump_tint := 0.5
 @export_range(0.0, 1.0, 0.01) var clump_height := 0.35
+## How much the blades of a clump share its facing (0 = each its own).
+@export_range(0.0, 1.0, 0.01) var clump_facing := 0.6
+## How much the blades of a clump splay out from its centre, like a tuft.
+@export_range(0.0, 1.0, 0.01) var clump_splay := 0.5
+## Arch of the blade (a cubic Bezier): 0 straight to the tip, 1 a long droop.
+@export_range(0.0, 1.0, 0.01) var blade_curve := 0.55
 
 @export_group("Hillsides")
 ## On a slope the blades take the color of the ground under them (valley green -> hill soil, no

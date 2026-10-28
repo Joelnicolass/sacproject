@@ -35,7 +35,10 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_shrine.tscn" id="tw_casp"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="f25_unit"]
 [ext_resource type="Script" uid="uid://c3o4n6xmxkjph" path="res://scenes/units/unit_spawner.gd" id="f25_unit_spawner"]
-[ext_resource type="Script" uid="uid://dqkkafcm1xuke" path="res://scenes/orders/orders.gd" id="f27_orders"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/rts_orders.gd" id="f27_orders"]
+[ext_resource type="Resource" path="res://scenes/orders/commands.tres" id="f27_commands"]
+[ext_resource type="Resource" path="res://scenes/orders/formations.tres" id="f27_formations"]
+[ext_resource type="Script" path="res://scenes/net/order_link.gd" id="f27_link"]
 [ext_resource type="Script" uid="uid://0e71ph1e726s" path="res://scenes/orders/selection.gd" id="f27_selection"]
 [ext_resource type="Script" uid="uid://dx4uvidfw53j2" path="res://scenes/units/attacks/shot_spawner.gd" id="f29_shots"]
 [ext_resource type="PackedScene" path="res://scenes/souls/soul_system.tscn" id="f30_souls"]
@@ -345,8 +348,17 @@ seat = NodePath("../../Systems/LocalSeat")
 
 
 [node name="Orders" type="Node" parent="Input" unique_id=1688586003]
+editor_description = "The RtsKit orders: who of the slot obeys, the formation and each unit's place. Sacrifice's commands (attack_body: an attack on a wizard or a building, no retarget) and formations are data here."
 unique_name_in_owner = true
 script = ExtResource("f27_orders")
+commands = ExtResource("f27_commands")
+formations = ExtResource("f27_formations")
+
+[node name="OrderLink" type="Node" parent="Input" node_paths=PackedStringArray("orders", "units_root")]
+editor_description = "Sacrifice's side of the orders: the local slot, the retreat anchor (the wizard), the retarget to the nearest enemy creature and the network (a client sends its orders on MpKit's custom channel rts_order; the server applies them with the sender's slot)."
+script = ExtResource("f27_link")
+orders = NodePath("../Orders")
+units_root = NodePath("../../World/Units")
 
 
 [node name="MatchCommand" type="Node" parent="Input" unique_id=391205645 node_paths=PackedStringArray("ray", "armed", "orders", "abilities")]

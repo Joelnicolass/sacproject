@@ -40,7 +40,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg", "res://addons/terrain_tools/plugin.cfg", "res://addons/surface_maps/plugin.cfg")
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/rts_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg", "res://addons/terrain_tools/plugin.cfg", "res://addons/surface_maps/plugin.cfg")
 
 [global_group]
 

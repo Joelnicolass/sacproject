@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="RowFormation" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="RtsRowFormation" load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scenes/orders/formations/row_formation.gd" id="1"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_row_formation.gd" id="1"]
 
 [ext_resource type="Texture2D" path="res://assets/original/ui/xmenu/rks1.png" id="2"]
 

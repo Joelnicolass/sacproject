@@ -32,6 +32,8 @@ const GROUP := &"unit"
 	set(value):
 		type = value
 		creature_tag = value.id() if value != null else ""
+		if unit != null:
+			unit.kind = StringName(creature_tag)
 		if creature != null:
 			creature.adopt()
 ## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived
@@ -55,6 +57,7 @@ const GROUP := &"unit"
 			clips.update()
 		if mode != was:
 			mode_changed.emit(was, mode)
+		_sync_unit()
 
 @export var mount: BodyMount
 @export var vision: Vision
@@ -110,6 +113,9 @@ var target: Node3D:
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	if unit != null:
+		unit.kind = StringName(creature_tag)
+	_sync_unit()
 	floor_snap_length = 0.5
 	collision_layer = unit_layer
 	collision_mask = ground_mask
@@ -149,6 +155,16 @@ func _physics_process(delta: float) -> void:
 		state.physics_update(delta)
 	regeneration.step(delta, resting)
 	locomotion.finish(delta, not special_forms.playing_dead, is_obstacle)
+
+
+## What the RtsKit may do with it: a dead creature is not picked, ordered or aimed at; a summoning
+## one is picked and aimed at but takes no order yet.
+func _sync_unit() -> void:
+	if unit == null:
+		return
+	unit.selectable = mode != Mode.DEAD
+	unit.orderable = mode != Mode.DEAD and mode != Mode.SUMMONING
+	unit.targetable = mode != Mode.DEAD
 
 
 ## `owner_slot` is the player slot that summoned it; its health bar takes the side colour.

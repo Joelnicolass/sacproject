@@ -87,6 +87,7 @@
 [ext_resource type="Script" path="res://scenes/units/afflictions/afflictions_damage.gd" id="dm_afflictions"]
 [ext_resource type="Script" path="res://scenes/spells/wards/wards_damage.gd" id="dm_wards"]
 [ext_resource type="Script" path="res://scenes/units/passives/passive_damage.gd" id="dm_passive"]
+[ext_resource type="Script" path="res://scenes/bodies/game_unit.gd" id="gu_game_unit"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -172,10 +173,11 @@ properties/25/path = NodePath("MpActor:owner_slot")
 properties/25/spawn = true
 properties/25/replication_mode = 0
 
-[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities", "health", "creature", "locomotion", "engagement", "special_forms", "regeneration", "clips", "states", "health_bar")]
+[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities", "health", "creature", "locomotion", "engagement", "special_forms", "regeneration", "clips", "states", "health_bar", "unit")]
 collision_layer = 2
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
+unit = NodePath("RtsUnit")
 mount = NodePath("BodyMount")
 vision = NodePath("Vision")
 weapons = NodePath("Weapons")
@@ -610,3 +612,6 @@ mana = NodePath("../ManaPool")
 [connection signal="shown_changed" from="Afflictions/BlindRaged" to="Afflictions/BlindRaged/Glow" method="show_lit"]
 
 [editable path="Afflictions"]
+
+[node name="RtsUnit" type="Node" parent="."]
+script = ExtResource("gu_game_unit")

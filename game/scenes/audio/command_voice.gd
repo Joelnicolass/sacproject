@@ -9,7 +9,7 @@ extends Node
 ##   set has one. A selection that only shrank (a creature died, was dropped) says nothing.
 ## - Ordering: Orders.requested(units, command) (the local order path, before it is sent) -> the
 ##   first one says `order_events[command]`: `ack` for move and guard, `attack_ack` for attack and
-##   advance. An order starts the count of `annoyed` again.
+##   attack_move (an advance). An order starts the count of `annoyed` again.
 ## - Each kind keeps its cooldown (`cooldown_s` selections, `ack_cooldown_s` orders): clicking fast
 ##   does not chain voices.
 ## The cue is the creature's own set (the `sounds` of the look it wears, with its fallback chain).
@@ -22,7 +22,7 @@ extends Node
 	set(value):
 		selection = value
 		update_configuration_warnings()
-## Emits `requested(units: Array, command: String)` (scenes/orders/orders.gd, %Orders).
+## Emits `requested(order: RtsOrder)` (RtsOrders, %Orders).
 @export var orders: Node:
 	set(value):
 		orders = value
@@ -42,7 +42,8 @@ extends Node
 	"guard": SoundEvent.ACK,
 	"guard_area": SoundEvent.ACK,
 	"attack": SoundEvent.ATTACK_ACK,
-	"advance": SoundEvent.ATTACK_ACK,
+	"attack_body": SoundEvent.ATTACK_ACK,
+	"attack_move": SoundEvent.ATTACK_ACK,
 }
 
 var _open := false
@@ -109,15 +110,18 @@ func _on_selection_changed(units: Array) -> void:
 		_last_select_s = now
 
 
-func _on_orders_requested(units: Array, command: String) -> void:
-	var event: StringName = order_events.get(command, &"")
-	if event.is_empty() or units.is_empty() or not is_instance_valid(units[0]):
+func _on_orders_requested(order: RtsOrder) -> void:
+	var event: StringName = order_events.get(String(order.command), &"")
+	if event.is_empty() or order.units.is_empty() or not is_instance_valid(order.units[0]):
+		return
+	var first := order.units[0].body as UnitBody
+	if first == null:
 		return
 	_count = 0
 	var now := BodySounds.game_seconds()
 	if now - _last_ack_s < ack_cooldown_s:
 		return
-	if speak(units[0] as UnitBody, event):
+	if speak(first, event):
 		_last_ack_s = now
 
 

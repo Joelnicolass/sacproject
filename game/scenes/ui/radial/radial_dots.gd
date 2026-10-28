@@ -9,7 +9,7 @@ extends RefCounted
 ## `box` square around `center`.
 static func draw(
 	canvas: CanvasItem,
-	formation: FormationType,
+	formation: RtsFormation,
 	center: Vector2,
 	box: float,
 	radius: float,

@@ -19,7 +19,7 @@ enum Source { NONE, MOUSE, KEY }
 @export var view: Control
 @export var command: MatchCommand
 ## The formations `formation_N` picks from (the Nth of the catalog, in the menu's order).
-@export var catalog: FormationCatalog = preload("res://scenes/orders/formations.tres")
+@export var catalog: RtsFormationCatalog = preload("res://scenes/orders/formations.tres")
 
 var _source := Source.NONE
 var _right_down := false

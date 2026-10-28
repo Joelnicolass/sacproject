@@ -21,7 +21,7 @@ enum Action { CONTEXT, ARM_ORDER, ORDER_NOW, FORMATION, ABILITY }
 ## "attack", "guard", "move" (ARM_ORDER) or "retreat" (ORDER_NOW).
 @export var order: StringName = &""
 ## FORMATION: the formation this entry stores; its name and icon are used when this entry has none.
-@export var formation: FormationType
+@export var formation: RtsFormation
 
 
 func display_label() -> String:

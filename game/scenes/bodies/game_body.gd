@@ -13,7 +13,12 @@ extends CharacterBody3D
 @export var owner_slot := 0:
 	set(value):
 		owner_slot = value
+		if unit != null:
+			unit.owner_slot = value
 		_owner_slot_changed()
+## The body as a unit of the RtsKit (selection, orders): its GameUnit child. Kept in step with
+## `owner_slot`.
+@export var unit: GameUnit
 
 
 ## The body is dead. A body that never dies (a wizard turns ghost) answers false.

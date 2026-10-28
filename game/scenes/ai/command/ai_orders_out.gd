@@ -6,14 +6,12 @@ extends Node
 ## hold a position when the body is already close. With a delay (Easy) an order waits `delay_ticks`,
 ## and a newer decision for the same body replaces it and keeps its time. An order becomes the call
 ## a human's order makes: a wizard walks (WizardBody.request_walk, a click on the ground); a
-## creature gets the command of its order state through Orders.apply_for, the same validation as a
+## creature gets the command of its order state through Orders.apply_units, the same validation as a
 ## human's order. A body of another side the side does not see now is never taken: the creatures go
 ## where it was seen last. It does not cast (the port does) and it never touches a body. Child
 ## `Orders` of the port, which binds it and gives it its clock.
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
-## orders.gd has no class_name (other scripts preload it).
-const _ORDERS := preload("res://scenes/orders/orders.gd")
 ## Two positions are «the same order» within this squared distance. The engine compares them
 ## exactly; in the port a body rests with a jitter of centimeters (BodyAvoidance, the ground), so
 ## the exact test would re-issue the order of every follower every 12 ticks. 1 m² = 1 m («aprox.»).
@@ -293,7 +291,12 @@ func _issue(t: AiTrack, ostate: AiCommandPort.AiOrder, target: AiTrack, pos: Var
 	elif goal_node != null:
 		point = goal_node.global_position
 	orders_issued += 1
-	(world_orders as _ORDERS).apply_for(slot, [t.node], command, point, goal_node)
+	var kind := StringName(command)
+	if command == "attack":
+		kind = OrderLink.attack_command(goal_node)
+	elif command == "advance":
+		kind = &"attack_move"
+	(world_orders as RtsOrders).apply_units(slot, [t.node], kind, point, goal_node)
 	return point
 
 

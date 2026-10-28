@@ -1,0 +1,178 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://addons/rts_kit/examples/skirmish_2d/skirmish_2d.gd" id="1_main"]
+[ext_resource type="Script" path="res://addons/rts_kit/camera/rts_camera_2d.gd" id="2_camera"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/ping/rts_ping_2d.gd" id="3_ping"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_command_input.gd" id="4_command"]
+[ext_resource type="Script" path="res://addons/rts_kit/selection/rts_selection.gd" id="5_selection"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/rts_orders.gd" id="6_orders"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_pointer.gd" id="7_pointer"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_command_state.gd" id="8_state"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_armed_command.gd" id="9_armed"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_order_input.gd" id="10_order_input"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_select_input.gd" id="11_select_input"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_group_keys.gd" id="12_group_keys"]
+[ext_resource type="Script" path="res://addons/rts_kit/input/rts_order_button.gd" id="13_button"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/cue/rts_target_probe.gd" id="14_probe"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/cue/rts_cue_set.gd" id="15_cues"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/card/rts_command_card.gd" id="16_card"]
+[ext_resource type="PackedScene" path="res://addons/rts_kit/ui/cue/rts_command_cue.tscn" id="17_cue"]
+
+[sub_resource type="Resource" id="Resource_cues"]
+script = ExtResource("15_cues")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_box"]
+bg_color = Color(0.4, 1, 0.5, 0.12)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4, 1, 0.5, 0.9)
+
+[node name="Skirmish2D" type="Node2D"]
+editor_description = "RtsKit's 2D example, with no radial menu: the right button is a plain right click and the command panel gives every order with the mouse. Command: the kit's rig, every piece wired in the inspector. Units: spawned by the script (RtsUnit + RtsExampleWalker). Hud/View takes the world's clicks."
+script = ExtResource("1_main")
+
+[node name="Units" type="Node2D" parent="."]
+
+[node name="Camera" type="Camera2D" parent="." node_paths=PackedStringArray("edge_area")]
+script = ExtResource("2_camera")
+edge_area = NodePath("../Hud/View")
+bounds = Rect2(-1000, -600, 2000, 1200)
+
+[node name="Ping" type="Node2D" parent="." node_paths=PackedStringArray("order_input")]
+script = ExtResource("3_ping")
+order_input = NodePath("../Command/OrderInput")
+
+[node name="Command" type="Node" parent="." node_paths=PackedStringArray("selection", "orders", "pointer", "armed", "state", "order_input", "select_input", "group_keys", "order_button")]
+script = ExtResource("4_command")
+selection = NodePath("Selection")
+orders = NodePath("Orders")
+pointer = NodePath("Pointer")
+armed = NodePath("Armed")
+state = NodePath("State")
+order_input = NodePath("OrderInput")
+select_input = NodePath("SelectInput")
+group_keys = NodePath("GroupKeys")
+order_button = NodePath("OrderButton")
+
+[node name="Selection" type="Node" parent="Command" node_paths=PackedStringArray("box")]
+script = ExtResource("5_selection")
+box = NodePath("../../Hud/View/Box")
+same_type_radius = 600.0
+
+[node name="Orders" type="Node" parent="Command"]
+script = ExtResource("6_orders")
+spacing_base = 8.0
+max_spacing = 120.0
+retarget_range = 1200.0
+
+[node name="Pointer" type="Node" parent="Command" node_paths=PackedStringArray("camera")]
+script = ExtResource("7_pointer")
+dimension = 2
+camera = NodePath("../../Camera")
+ground_bounds_2d = Rect2(-1000, -600, 2000, 1200)
+
+[node name="State" type="Node" parent="Command"]
+script = ExtResource("8_state")
+cues = SubResource("Resource_cues")
+
+[node name="Armed" type="Node" parent="Command" node_paths=PackedStringArray("state")]
+script = ExtResource("9_armed")
+state = NodePath("../State")
+
+[node name="OrderInput" type="Node" parent="Command" node_paths=PackedStringArray("selection", "orders", "pointer", "armed", "state")]
+script = ExtResource("10_order_input")
+selection = NodePath("../Selection")
+orders = NodePath("../Orders")
+pointer = NodePath("../Pointer")
+armed = NodePath("../Armed")
+state = NodePath("../State")
+
+[node name="SelectInput" type="Node" parent="Command" node_paths=PackedStringArray("view", "selection", "pointer", "armed", "order_input")]
+script = ExtResource("11_select_input")
+view = NodePath("../../Hud/View")
+selection = NodePath("../Selection")
+pointer = NodePath("../Pointer")
+armed = NodePath("../Armed")
+order_input = NodePath("../OrderInput")
+
+[node name="GroupKeys" type="Node" parent="Command" node_paths=PackedStringArray("selection")]
+script = ExtResource("12_group_keys")
+selection = NodePath("../Selection")
+
+[node name="OrderButton" type="Node" parent="Command" node_paths=PackedStringArray("view", "order_input", "pointer")]
+editor_description = "The right button with no menu: every press is a plain right click. The command panel (Hud/CommandCard) gives the rest with the mouse."
+script = ExtResource("13_button")
+view = NodePath("../../Hud/View")
+order_input = NodePath("../OrderInput")
+pointer = NodePath("../Pointer")
+
+[node name="Probe" type="Node" parent="Command" node_paths=PackedStringArray("pointer", "world_view")]
+script = ExtResource("14_probe")
+pointer = NodePath("../Pointer")
+world_view = NodePath("../../Hud/View")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="View" type="Control" parent="Hud"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Box" type="Panel" parent="Hud/View"]
+visible = false
+layout_mode = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_box")
+
+[node name="Status" type="Label" parent="Hud"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 400.0
+offset_bottom = 36.0
+mouse_filter = 2
+text = "Nothing selected"
+
+[node name="Help" type="Label" parent="Hud"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -170.0
+offset_right = 800.0
+offset_bottom = -12.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Left: select (drag: box, Shift: add, Ctrl/Cmd or double click: same kind)
+Right: order   Panel (bottom right): every order with the mouse
+A / G / M: arm attack / guard / move, then left click   R: retreat   Alt+1..8: formation
+Ctrl/Cmd+1..0: store a group   1..0: recall   Shift+1..0: add to it
+Arrows / screen edges / middle drag: pan   Wheel: zoom   F: follow the hero / free camera"
+
+[node name="CommandCard" type="GridContainer" parent="Hud" node_paths=PackedStringArray("order_input", "command_input")]
+editor_description = "The kit's command panel: a button per command and formation of the catalogs, with its key. The no-menu way to give every order with the mouse."
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -380.0
+offset_top = -250.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+columns = 3
+script = ExtResource("16_card")
+order_input = NodePath("../../Command/OrderInput")
+command_input = NodePath("../../Command")
+
+
+[node name="Cue" parent="Hud" node_paths=PackedStringArray("state", "probe") instance=ExtResource("17_cue")]
+state = NodePath("../../Command/State")
+cues = SubResource("Resource_cues")
+probe = NodePath("../../Command/Probe")

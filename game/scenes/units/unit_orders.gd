@@ -15,6 +15,17 @@ extends Node
 
 enum Command { NONE, MOVE, ATTACK, GUARD, GUARD_AREA, ADVANCE, RETREAT }
 
+## The RtsKit command each order of the kit (RtsUnit.order_started) is carried out as.
+const KIT_COMMANDS: Dictionary[StringName, Command] = {
+	&"move": Command.MOVE,
+	&"attack": Command.ATTACK,
+	&"attack_body": Command.ATTACK,
+	&"guard": Command.GUARD,
+	&"guard_area": Command.GUARD_AREA,
+	&"attack_move": Command.ADVANCE,
+	&"retreat": Command.RETREAT,
+}
+
 ## How far (m) a guard stays from its anchor.
 @export var guard_range := 50.0
 ## How far (m) a retreating body stays from the wizard, added to the wizard's radius.
@@ -37,9 +48,6 @@ var point := Vector3.ZERO
 ## Formation slot (right, forward) in meters, turned by `facing`.
 var offset := Vector2.ZERO
 var facing := 0.0
-## The formation this creature keeps; the group's next order uses the one most of its creatures
-## have. Server only, not replicated.
-var formation_id: StringName = &"line"
 
 var _think_left := 0.0
 
@@ -51,8 +59,13 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _ready() -> void:
-	if not Engine.is_editor_hint() and body == null:
+	if Engine.is_editor_hint():
+		return
+	if body == null:
 		push_error("%s: `body` is empty." % get_path())
+		return
+	if body.unit != null:
+		body.unit.order_started.connect(_on_kit_order)
 
 
 func give(
@@ -99,6 +112,8 @@ func clear() -> void:
 	command = Command.NONE
 	target = null
 	body.ordered = false
+	if body.unit != null and body.unit.current_order() != null:
+		body.unit.complete()
 
 
 ## Teleport: the creature loses its orders unless it is
@@ -270,3 +285,12 @@ static func _yaw_of(node: Node3D) -> float:
 
 static func _radius_of(node: Node3D) -> float:
 	return BodyFacts.of_body(node).radius_m
+
+
+# An order of the RtsKit (the player's or the AI's, through RtsOrders): the unit's place and turn of
+# the formation, carried out as before.
+func _on_kit_order(order: RtsUnitOrder, _replaced: RtsUnitOrder) -> void:
+	if not KIT_COMMANDS.has(order.command):
+		return
+	var target_node := order.target as Node3D if order.has_target() else null
+	give(KIT_COMMANDS[order.command], target_node, order.point, order.slot, order.facing)

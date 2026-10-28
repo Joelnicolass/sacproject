@@ -52,6 +52,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/afflictions_damage.gd" id="dm_afflictions"]
 [ext_resource type="Script" path="res://scenes/spells/wards/wards_damage.gd" id="dm_wards"]
+[ext_resource type="Script" path="res://scenes/bodies/game_unit.gd" id="gu_game_unit"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -149,9 +150,10 @@ properties/29/path = NodePath("MpActor:owner_slot")
 properties/29/spawn = true
 properties/29/replication_mode = 0
 
-[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "seat", "regeneration", "clips")]
+[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "seat", "regeneration", "clips", "unit")]
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
+unit = NodePath("RtsUnit")
 mount = NodePath("BodyMount")
 vision = NodePath("Vision")
 seat = NodePath("Seat")
@@ -450,3 +452,8 @@ face_velocity = false
 [connection signal="shown_changed" from="Wards/EtherealForm" to="GhostForm" method="set_ethereal"]
 
 [editable path="Afflictions"]
+
+[node name="RtsUnit" type="Node" parent="."]
+script = ExtResource("gu_game_unit")
+selectable = false
+orderable = false

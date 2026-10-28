@@ -13,6 +13,8 @@ extends Node
 @export var mana: ManaPool
 ## Who multiplies the creature's pace (the Lightning Charge speeds it up).
 @export var pace: PaceFactors
+## Health's modifier that asks the damage passive for the factor of every hit the body takes.
+@export var passive_damage: PassiveDamage
 ## The weapons that ask the damage passive for the factor of a blow.
 @export var weapons: Weapons
 ## The blow whose connection fires the on-hit passives (the Yeti's freeze).
@@ -32,8 +34,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 		or pace == null
 		or weapons == null
 		or melee == null
+		or passive_damage == null
 	):
-		warnings.append("Assign body, health, mana, pace, weapons and melee.")
+		warnings.append("Assign body, health, mana, pace, passive_damage, weapons and melee.")
 	return warnings
 
 

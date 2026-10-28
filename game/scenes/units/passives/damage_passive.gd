@@ -8,7 +8,7 @@ extends UnitPassive
 ## The defaults change nothing. Health asks incoming_factor() for every hit; the Weapons ask
 ## outgoing_melee_factor() and melee_accuracy_factor() for every blow. It is a node of the
 ## creature's `<name>_passives.tscn` (Taurock's hide, Firefist's fury); attach() makes it the
-## `passive` of the creature's Health and Weapons. With a `charge` (the Storm Giant's Lightning
+## `passive` of the creature's PassiveDamage (Health's modifier) and Weapons. With a `charge` (the Storm Giant's Lightning
 ## Charge) a lightning hit charges the body and a charged body hits and aims harder.
 
 ## Multiplier on every hit at full health minus `incoming_per_health`: the Taurock's hide is 0.25 +
@@ -23,7 +23,10 @@ extends UnitPassive
 
 func attach(mount: PassiveMount) -> void:
 	super(mount)
-	mount.health.passive = self
+	if mount.passive_damage:
+		mount.passive_damage.passive = self
+	else:
+		push_error("DamagePassive on '%s': its PassiveMount has no passive_damage" % body.name)
 	mount.weapons.passive = self
 
 

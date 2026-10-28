@@ -1,5 +1,5 @@
 class_name DevourGrowth
-extends Node
+extends DamageModifier
 
 ## What a creature that ate souls (Devour: Netherfiend crpd, Hellmouth nomd) has become. The one owner
 ## of the souls eaten, the regeneration they added, the resistance they took and the bulk the body draws.

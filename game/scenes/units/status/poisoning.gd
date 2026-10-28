@@ -1,5 +1,5 @@
 class_name Poisoning
-extends Node
+extends DamageModifier
 
 ## The one owner of the poison on a body (creature or wizard). Its children are the doses (Poisoned);
 ## it runs them once per physics tick in the order they came, frees the ones that end, and is the only one that answers

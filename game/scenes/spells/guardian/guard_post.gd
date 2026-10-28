@@ -1,12 +1,13 @@
 @tool
 class_name GuardPost
-extends DamageDeflector
+extends DamageModifier
 
 ## «This building accepts guardians». A child of a Manalith (structure.tscn) or an altar
 ## (altar.tscn); a shrine would add its own. It knows its owner, where a guardian is tied (the attach
 ## point), whether it is still open and which creatures are tied to it, and it splits the damage the
 ## building would take among them. Take the child out and the building cannot be guarded.
-## Only the server (or solo) keeps the list: Health.deflect runs where there is authority.
+## Only the server (or solo) keeps the list: it is a DamageModifier of the building's Health, which
+## asks deflect() only where it has authority.
 ## Damage split: each valid guardian takes
 ## damage / min(n, 0.5 (n + 3)) with its own resistances and factors; with no valid guardian the
 ## building takes the hit.

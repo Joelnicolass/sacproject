@@ -39,24 +39,13 @@ const IGNITE := 1 << 6
 		if current < before and is_inside_tree():
 			Events.body_hurt.emit(get_parent() as Node3D, before - current, current, maximum)
 
-## Takes a hit before this body does (a building's guardians). Optional: empty = nobody
-## stands in for it.
-@export var deflector: DamageDeflector
-## The body's passive on damage (Taurock korq). Optional: empty = no passive, every hit ×1.
-@export var passive: DamagePassive
-## The states the body is in (petrified ×0.2) scale every hit, on both paths. Optional: empty = ×1.
-@export var afflictions: Afflictions
-## The body's poison (Poisoning): its resistance bonus goes into every resistance and its factor into regenerate().
-## Optional: empty = no bonus, regeneration ×1.
-@export var poisoning: Poisoning
-## The body's shields and temporary forms (Life Shield, Skin of Stone, Air Shield, Ethereal Form...). Optional: empty = no ward, ×1.
-@export var wards: Wards
-## The body's oil (Oiled). A hit with IGNITE that reaches it while the body is oiled takes ×2 and lights it.
-## Optional: empty = never doubled.
-@export var oil: Oiled
-## What the body has devoured (Devour): its five resistances ×0.9 each soul.
-## Optional: empty = ×1.
-@export var growth: DevourGrowth
+## What changes the hits this body takes and what it heals, asked in this order at every stage
+## (DamageModifier lists the stages). Order matters only where two add up: the poison before the
+## states, so the resistance sums as resistance + poison + states. The body scenes set it:
+## a building's guardians (GuardPost) · DevourGrowth · Poisoning · the states and the oil
+## (AfflictionsDamage) · the wards (WardsDamage) · the creature's passive (PassiveDamage).
+## Empty = every hit ×1 with the plain resistance.
+@export var modifiers: Array[DamageModifier] = []
 
 ## Multiplies damage_typed on top of the resistance: the body's own effects, as the original's damage
 ## stacks them; Rockform sets 0.05.
@@ -172,8 +161,8 @@ func damage_typed(
 		var shields := 1.0 if pierce_shield else shield_factor(kind) * _state_factor()
 		var before := amount * side * resistance(kind) * maxf(0.0, factor) * shields
 		var scaled := before * _passive_factor(before, mods, from_slot)
-		if mods & IGNITE != 0 and oil != null and oil.ignite():
-			scaled *= 2.0
+		for modifier in _modifiers():
+			scaled *= modifier.final_factor(mods)
 		taken = minf(current, scaled)
 	if taken > 0.0:
 		_hit(taken, from_slot)
@@ -181,26 +170,27 @@ func damage_typed(
 	return taken
 
 
-## The body's damage_factor (Rockform) times its wards' for `kind`. The melee path asks it too.
+## The body's damage_factor (Rockform) times its modifiers' shield_factor for `kind` (the wards).
+## The melee path asks it too.
 func shield_factor(kind := MELEE) -> float:
-	return maxf(0.0, damage_factor) * (wards.factor(kind) if wards else 1.0)
+	var factor := 1.0
+	for modifier in _modifiers():
+		factor *= modifier.shield_factor(kind)
+	return maxf(0.0, damage_factor) * factor
 
 
 ## The body's resistance for `kind`: CreatureType for a UnitBody, WizardType for a wizard.
 ## A 0 is immunity (Trogg vs spells).
-## The poison's resistance bonus goes inside the max: max(0, resistance + bonus).
-## The resistance is the one the body has devoured down to (DevourGrowth, ×0.9 a soul).
-## Its spell states add theirs inside the same max (Slime +0.2 a layer).
+## The modifiers scale the base (DevourGrowth, ×0.9 a soul), then add their bonuses inside the
+## max, in list order: max(0, resistance + poison + spell states (Slime +0.2 a layer)).
 func resistance(kind: StringName) -> float:
-	var base := _base_resistance(kind) * (growth.resistance_factor() if growth else 1.0)
-	return maxf(
-		0.0,
-		(
-			base
-			+ (poisoning.resistance_bonus() if poisoning else 0.0)
-			+ (afflictions.resistance_bonus() if afflictions else 0.0)
-		)
-	)
+	var scale := 1.0
+	for modifier in _modifiers():
+		scale *= modifier.resistance_factor()
+	var total := _base_resistance(kind) * scale
+	for modifier in _modifiers():
+		total += modifier.resistance_bonus()
+	return maxf(0.0, total)
 
 
 func _base_resistance(kind: StringName) -> float:
@@ -255,37 +245,49 @@ func _match_state() -> MatchState:
 
 ## The one place both damage paths ask for the factor of the states the body is in.
 func _state_factor() -> float:
-	return maxf(0.0, afflictions.damage_factor()) if afflictions else 1.0
+	var factor := 1.0
+	for modifier in _modifiers():
+		factor *= modifier.state_factor()
+	return factor
 
 
-## The passive scales every kind of hit by the health before it. It also
-## gets the hit's `mods`, the damage that reached it (`before`: side, resistance and shields already applied) and whether the
-## attacker is of the body's side, which the Lightning Charge reads.
+## The modifiers' incoming_factor (a creature's passive) scales every kind of hit by the health
+## before it. They also get the hit's `mods`, the damage that reached them (`before`: side,
+## resistance and shields already applied) and whether the attacker is of the body's side, which
+## the Lightning Charge reads.
 func _passive_factor(before := 0.0, mods := 0, from_slot := 0) -> float:
-	if passive == null or maximum <= 0.0:
+	if maximum <= 0.0:
 		return 1.0
 	var ally := from_slot > 0 and from_slot == _owner_slot()
-	return passive.incoming_factor(current / maximum, mods, before, ally)
+	var factor := 1.0
+	for modifier in _modifiers():
+		factor *= modifier.incoming_factor(current / maximum, mods, before, ally)
+	return factor
 
 
-## One query per hit: the damage the deflector's stand-ins took, or NAN if it did not deflect.
+## One query per hit: the damage the first deflecting modifier's stand-ins took, or NAN if none did.
 func _deflect(amount: float, kind: StringName, from_slot: int) -> float:
-	if deflector == null or not is_instance_valid(deflector) or _deflecting:
+	if _deflecting:
 		return NAN
 	_deflecting = true
-	var taken: float = deflector.deflect(amount, kind, from_slot)
+	var taken := NAN
+	for modifier in _modifiers():
+		taken = modifier.deflect(amount, kind, from_slot)
+		if not is_nan(taken):
+			break
 	_deflecting = false
 	deflected_last = not is_nan(taken)
 	return taken
 
 
-## Heals max(0, regeneration · poison regeneration factor) · …. The body's
-## regeneration (amount already scaled by mana and delta) times the poison's factor (freg 0: none while it lasts).
-## A state that blocks regeneration (Vined) makes it nothing.
+## Heals the body's regeneration (amount already scaled by mana and delta) times each modifier's
+## regeneration_factor, each clamped at 0: the poison's freg (0: none while it lasts), a state that
+## blocks regeneration (Vined) 0.
 func regenerate(amount: float) -> void:
-	if afflictions != null and afflictions.blocks_regeneration():
-		return
-	heal(amount * (maxf(0.0, poisoning.regeneration_factor()) if poisoning else 1.0))
+	var factor := 1.0
+	for modifier in _modifiers():
+		factor *= maxf(0.0, modifier.regeneration_factor())
+	heal(amount * factor)
 
 
 func heal(amount: float) -> void:
@@ -294,11 +296,12 @@ func heal(amount: float) -> void:
 	current = minf(current + amount, maximum)
 
 
-## A wizard's ghost takes no damage while it heals; neither does a body in a ward that
-## makes it immune (Ethereal Form), whatever the hit pierces.
+## A wizard's ghost takes no damage while it heals; neither does a body with a modifier that
+## blocks damage (the Ethereal Form ward), whatever the hit pierces.
 func _can_be_damaged() -> bool:
-	if wards != null and wards.immune():
-		return false
+	for modifier in _modifiers():
+		if modifier.blocks_damage():
+			return false
 	var body := get_parent()
 	return GameBody.targetable(body)
 
@@ -306,3 +309,12 @@ func _can_be_damaged() -> bool:
 func _owner_slot() -> int:
 	var body := get_parent()
 	return int(body.get("owner_slot")) if body and "owner_slot" in body else 0
+
+
+## The modifiers that are still there, in list order (a freed one is skipped).
+func _modifiers() -> Array[DamageModifier]:
+	var live: Array[DamageModifier] = []
+	for modifier in modifiers:
+		if is_instance_valid(modifier):
+			live.append(modifier)
+	return live

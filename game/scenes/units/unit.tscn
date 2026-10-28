@@ -1,4 +1,4 @@
-[gd_scene load_steps=120 format=3]
+[gd_scene load_steps=123 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -84,6 +84,9 @@
 [ext_resource type="Resource" path="res://data/audio/cues/summon.tres" id="a055_summon"]
 [ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="q5_state_light"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/afflictions_damage.gd" id="dm_afflictions"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards_damage.gd" id="dm_wards"]
+[ext_resource type="Script" path="res://scenes/units/passives/passive_damage.gd" id="dm_passive"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -201,13 +204,21 @@ mount = NodePath("../../BodyMount")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "afflictions", "poisoning", "wards", "growth")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("modifiers")]
 script = ExtResource("3_health")
-growth = NodePath("../DevourGrowth")
-oil = NodePath("../Afflictions/Oiled")
-afflictions = NodePath("../Afflictions")
-poisoning = NodePath("../Poisoning")
-wards = NodePath("../Wards")
+modifiers = [NodePath("../DevourGrowth"), NodePath("../Poisoning"), NodePath("AfflictionsDamage"), NodePath("WardsDamage"), NodePath("PassiveDamage")]
+
+[node name="AfflictionsDamage" type="Node" parent="Health" node_paths=PackedStringArray("afflictions", "oil")]
+script = ExtResource("dm_afflictions")
+afflictions = NodePath("../../Afflictions")
+oil = NodePath("../../Afflictions/Oiled")
+
+[node name="WardsDamage" type="Node" parent="Health" node_paths=PackedStringArray("wards")]
+script = ExtResource("dm_wards")
+wards = NodePath("../../Wards")
+
+[node name="PassiveDamage" type="Node" parent="Health"]
+script = ExtResource("dm_passive")
 
 [node name="Wards" type="Node3D" parent="."]
 physics_interpolation_mode = 2
@@ -238,10 +249,11 @@ body = NodePath("..")
 poisoning = NodePath("../Poisoning")
 pace = NodePath("../PaceFactors")
 
-[node name="Passives" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "pace", "weapons", "melee", "creature_fx")]
+[node name="Passives" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "pace", "passive_damage", "weapons", "melee", "creature_fx")]
 script = ExtResource("q9_passives")
 body = NodePath("..")
 health = NodePath("../Health")
+passive_damage = NodePath("../Health/PassiveDamage")
 mana = NodePath("../ManaPool")
 pace = NodePath("../PaceFactors")
 weapons = NodePath("../Weapons")

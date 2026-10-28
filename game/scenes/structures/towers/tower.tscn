@@ -40,8 +40,8 @@ script = ExtResource("2_tower")
 mana_source = NodePath("ManaSource")
 guard_post = NodePath("GuardPost")
 
-[node name="Health" parent="." index="2" node_paths=PackedStringArray("deflector")]
-deflector = NodePath("../GuardPost")
+[node name="Health" parent="." index="2" node_paths=PackedStringArray("modifiers")]
+modifiers = [NodePath("../GuardPost")]
 
 [node name="Sync" parent="." index="3"]
 replication_config = SubResource("SceneReplicationConfig_tower")

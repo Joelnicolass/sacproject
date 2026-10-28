@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=3]
+[gd_scene load_steps=50 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -47,6 +47,8 @@
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 [ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/afflictions_damage.gd" id="dm_afflictions"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards_damage.gd" id="dm_wards"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -215,12 +217,18 @@ script = ExtResource("s1_collider")
 mount = NodePath("../BodyMount")
 collision = NodePath("../Collision")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "afflictions", "poisoning", "wards")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("modifiers")]
 script = ExtResource("4_health")
-wards = NodePath("../Wards")
-oil = NodePath("../Afflictions/Oiled")
-afflictions = NodePath("../Afflictions")
-poisoning = NodePath("../Poisoning")
+modifiers = [NodePath("../Poisoning"), NodePath("AfflictionsDamage"), NodePath("WardsDamage")]
+
+[node name="AfflictionsDamage" type="Node" parent="Health" node_paths=PackedStringArray("afflictions", "oil")]
+script = ExtResource("dm_afflictions")
+afflictions = NodePath("../../Afflictions")
+oil = NodePath("../../Afflictions/Oiled")
+
+[node name="WardsDamage" type="Node" parent="Health" node_paths=PackedStringArray("wards")]
+script = ExtResource("dm_wards")
+wards = NodePath("../../Wards")
 
 [node name="Wards" type="Node3D" parent="."]
 physics_interpolation_mode = 2

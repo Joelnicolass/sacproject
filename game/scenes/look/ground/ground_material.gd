@@ -90,6 +90,7 @@ static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) 
 	mat.set_shader_parameter("cloud_shadow_speed", ground.cloud_shadow_speed_m_s)
 	mat.set_shader_parameter("cloud_shadow_dir", ground.cloud_shadow_wind)
 	mat.set_shader_parameter("cloud_shadow_softness", ground.cloud_shadow_softness)
+	mat.set_shader_parameter("cloud_shadow_cover", ground.cloud_shadow_cover)
 	mat.set_shader_parameter("edge", ground.edge)
 	mat.set_shader_parameter("has_edge", ground.edge != null)
 

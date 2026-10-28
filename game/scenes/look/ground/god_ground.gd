@@ -61,13 +61,13 @@ extends Resource
 		emit_changed()
 
 @export_group("Cloud shadows")
-## How dark the shadow of a cloud makes the sun-lit part of the ground. 0 = no cloud shadows.
-@export_range(0.0, 1.0, 0.01) var cloud_shadow_strength := 0.45:
+## How dark the shadow of a cloud makes the ground. 0 = no cloud shadows.
+@export_range(0.0, 1.0, 0.01) var cloud_shadow_strength := 0.85:
 	set(value):
 		cloud_shadow_strength = value
 		emit_changed()
 ## Size of one cloud pattern over the land, in metres.
-@export_range(20.0, 600.0, 1.0, "suffix:m") var cloud_shadow_scale_m := 140.0:
+@export_range(20.0, 600.0, 1.0, "suffix:m") var cloud_shadow_scale_m := 260.0:
 	set(value):
 		cloud_shadow_scale_m = value
 		emit_changed()
@@ -82,9 +82,14 @@ extends Resource
 		cloud_shadow_wind = value
 		emit_changed()
 ## Softness of the shadow edge: 0 = hard, 1 = a smooth gradient.
-@export_range(0.05, 1.0, 0.01) var cloud_shadow_softness := 0.35:
+@export_range(0.05, 1.0, 0.01) var cloud_shadow_softness := 0.12:
 	set(value):
 		cloud_shadow_softness = value
+		emit_changed()
+## Share of the land under clouds: the noise level the edge sits at (lower = more cloud).
+@export_range(0.2, 0.8, 0.01) var cloud_shadow_cover := 0.5:
+	set(value):
+		cloud_shadow_cover = value
 		emit_changed()
 
 

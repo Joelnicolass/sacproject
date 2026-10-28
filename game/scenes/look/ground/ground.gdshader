@@ -83,9 +83,7 @@ void fragment() {
 	}
 	albedo = ground_scar_mix(albedo, map_pos.xz, false);
 	vec3 light = texture(lightmap, map_pos.xz / roles_map_size).rgb;
-	// The cloud shadow dims the sun-like part only; the base (ambient) light stays.
-	float sun = cloud_shadow_strength > 0.0 ? cloud_shadow(map_pos.xz, TIME) : 1.0;
-	ALBEDO = albedo * (light_base + light * light_gain * sun);
+	ALBEDO = albedo * (light_base + light * light_gain);
 	ROUGHNESS = orm.g;
 	if (use_maps && !wall) {
 		// `g` came from the NORMAL Godot already flipped on a back face, so the rebuilt one needs no flip.
@@ -93,4 +91,16 @@ void fragment() {
 		AO = orm.r;
 		AO_LIGHT_AFFECT = 0.6;
 	}
+}
+
+// Lambert diffuse for every light; the sun's is dimmed by the clouds over the point, found along its
+// ray (Simulating Cloud Shadows Analytically, godotshaders.com, MIT). The spells' and the creatures'
+// lights are never dimmed. The ground is rough: no specular, as before.
+void light() {
+	float light_amount = clamp(dot(NORMAL, LIGHT), 0.0, 1.0) * ATTENUATION;
+	if (LIGHT_IS_DIRECTIONAL && cloud_shadow_strength > 0.0) {
+		vec3 to_sun = normalize(mat3(INV_VIEW_MATRIX) * LIGHT);
+		light_amount *= cloud_shadow_along(map_pos, to_sun, TIME);
+	}
+	DIFFUSE_LIGHT += light_amount * LIGHT_COLOR * ALBEDO / PI;
 }

@@ -55,15 +55,6 @@
 [ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_spawner.gd" id="f118_spawner"]
 [ext_resource type="Script" path="res://scenes/units/targeting/target_policy.gd" id="f136_policy"]
 [ext_resource type="Resource" path="res://data/targeting/slba.tres" id="f136_slba"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/afflictions.gd" id="f120_afflictions"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/stunned.gd" id="f120_stunned"]
-[ext_resource type="Resource" path="res://data/afflictions/stunned.tres" id="f120_stunned_type"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/petrified.gd" id="f137_petrified"]
-[ext_resource type="Resource" path="res://data/afflictions/petrified.tres" id="f137_petrified_type"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/tumbling.gd" id="f121_tumbling"]
-[ext_resource type="Resource" path="res://data/afflictions/tumbling.tres" id="f121_tumbling_type"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/frozen.gd" id="f149_frozen"]
-[ext_resource type="Resource" path="res://data/afflictions/frozen.tres" id="f149_frozen_type"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/affliction.gd" id="f152_affliction"]
 [ext_resource type="Resource" path="res://data/afflictions/using_ability.tres" id="f152_using_type"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/pulling.gd" id="f128_pulling"]
@@ -90,44 +81,19 @@
 [ext_resource type="Script" path="res://scenes/units/states/cower_state.gd" id="f221_cower"]
 [ext_resource type="Script" path="res://scenes/units/unit_air.gd" id="f221_air"]
 [ext_resource type="Script" path="res://scenes/units/unit_clips.gd" id="f221_clips"]
-[ext_resource type="Script" path="res://scenes/look/stone_look.gd" id="f137_stone_look"]
-[ext_resource type="Shader" path="res://scenes/look/stone.gdshader" id="f137_stone_shader"]
 
-[ext_resource type="Script" path="res://scenes/units/afflictions/oiled.gd" id="f155_oiled"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/vined.gd" id="f159_vined"]
-[ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="f159_vined_type"]
-[ext_resource type="Resource" path="res://data/afflictions/oiled.tres" id="f155_oiled_type"]
 [ext_resource type="Script" path="res://scenes/audio/unit_sounds.gd" id="a052_sounds"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/spell_affliction.gd" id="f161_spell_affliction"]
-[ext_resource type="Resource" path="res://data/afflictions/rings_of_fire.tres" id="f161_rings_type"]
-[ext_resource type="Resource" path="res://data/afflictions/slimed.tres" id="f161_slimed_type"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/looks/body_box_look.gd" id="l161_box"]
-[ext_resource type="Material" path="res://scenes/units/afflictions/looks/ice_block.tres" id="l161_ice"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/looks/vine_look.gd" id="l161_vine"]
-[ext_resource type="Material" path="res://scenes/units/afflictions/looks/vine_skin.tres" id="l161_vskin"]
-[ext_resource type="PackedScene" path="res://assets/custom/vine/vine.glb" id="l161_glb"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/looks/rings_look.gd" id="l161_rings"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/looks/affliction_emitter.gd" id="l161_emit"]
-[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="l161_sprite"]
-[ext_resource type="Resource" path="res://data/fx/rings_flame.tres" id="l161_flame"]
-[ext_resource type="Resource" path="res://data/fx/slime_splash.tres" id="l161_splash"]
-[ext_resource type="Resource" path="res://data/fx/slime_drip.tres" id="l161_drip"]
-[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="l161_snd"]
-[ext_resource type="Script" path="res://scenes/units/afflictions/looks/affliction_cues.gd" id="l161_cues"]
 [ext_resource type="Resource" path="res://data/afflictions/blind_raged.tres" id="i8_raged_type"]
 [ext_resource type="Resource" path="res://data/targeting/rage.tres" id="i8_rage_policy"]
 [ext_resource type="Resource" path="res://data/fx/rage_swirl.tres" id="i8_swirl"]
-[ext_resource type="Resource" path="res://data/audio/cues/freeze_block.tres" id="cue_freeze_block"]
-[ext_resource type="Resource" path="res://data/audio/cues/vines_grab.tres" id="cue_vines_grab"]
-[ext_resource type="Resource" path="res://data/audio/cues/vines_release.tres" id="cue_vines_release"]
-[ext_resource type="Resource" path="res://data/audio/cues/rings_start.tres" id="cue_rings_start"]
-[ext_resource type="Resource" path="res://data/audio/cues/rings_end.tres" id="cue_rings_end"]
-[ext_resource type="Resource" path="res://data/audio/cues/rings_loop.tres" id="cue_rings_loop"]
-[ext_resource type="Resource" path="res://data/audio/cues/slime_hit.tres" id="cue_slime_hit"]
 [ext_resource type="Resource" path="res://data/audio/cues/summon.tres" id="a055_summon"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="typed_hmba"]
+[ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="q5_state_light"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
 radius = 0.3
@@ -215,8 +181,6 @@ properties/25/replication_mode = 1
 properties/26/path = NodePath("MpActor:owner_slot")
 properties/26/spawn = true
 properties/26/replication_mode = 0
-
-[sub_resource type="BoxMesh" id="Box_unit"]
 
 [node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities", "health", "creature", "locomotion", "engagement", "special_forms", "regeneration", "clips", "states", "health_bar")]
 collision_layer = 2
@@ -358,248 +322,54 @@ mana_support = NodePath("../ManaSupport")
 script = ExtResource("f36_clip")
 visual = NodePath("../Tilt/Mesh")
 
-[node name="Afflictions" type="Node3D" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "look", "wards")]
-physics_interpolation_mode = 2
-script = ExtResource("f120_afflictions")
+[node name="Afflictions" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "wards") instance=ExtResource("q5_afflictions")]
 body = NodePath("..")
 health = NodePath("../Health")
 clip_pose = NodePath("../ClipPose")
-look = NodePath("Look")
 wards = NodePath("../Wards")
 
-[node name="Stunned" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
-script = ExtResource("f120_stunned")
-type = ExtResource("f120_stunned_type")
-fall_type = ExtResource("f121_tumbling_type")
+[node name="Stunned" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
 clip_pose = NodePath("../../ClipPose")
 tilt = NodePath("../../Tilt")
 visual = NodePath("../../Tilt/Mesh")
 
-[node name="Petrified" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned")]
-script = ExtResource("f137_petrified")
-type = ExtResource("f137_petrified_type")
-stunned = NodePath("../Stunned")
-
-[node name="Look" type="Node" parent="Afflictions" node_paths=PackedStringArray("mesh")]
-script = ExtResource("f137_stone_look")
+[node name="Look" parent="Afflictions" node_paths=PackedStringArray("mesh")]
 mesh = NodePath("../../Tilt/Mesh")
-shader = ExtResource("f137_stone_shader")
 
-[node name="Tumbling" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("stunned", "tilt")]
-script = ExtResource("f121_tumbling")
-type = ExtResource("f121_tumbling_type")
-stunned = NodePath("../Stunned")
+[node name="Tumbling" parent="Afflictions" node_paths=PackedStringArray("tilt")]
 tilt = NodePath("../../Tilt")
 
-[node name="Frozen" type="Node3D" parent="Afflictions"]
-script = ExtResource("f149_frozen")
-type = ExtResource("f149_frozen_type")
-
-[node name="Cues" type="Node" parent="Afflictions/Frozen" node_paths=PackedStringArray("affliction", "on_start")]
-script = ExtResource("l161_cues")
-affliction = NodePath("..")
-on_start = NodePath("../FreezeSound")
-
-[node name="FreezeSound" parent="Afflictions/Frozen" instance=ExtResource("l161_snd")]
-cue = ExtResource("cue_freeze_block")
-loop = false
-play_on_ready = false
-active = false
-
-[node name="IceBlock" type="MeshInstance3D" parent="Afflictions/Frozen" node_paths=PackedStringArray("affliction", "body")]
-editor_description = "El bloque de hielo (frez). Alfa 0.753 = 192/255 del SPEL; sacengine usa 0.2 (cambiar el alfa de albedo_color en ice_block.tres). Brillo: albedo_color > 1."
-top_level = true
-visible = false
-cast_shadow = 0
-mesh = SubResource("Box_unit")
-surface_material_override/0 = ExtResource("l161_ice")
-script = ExtResource("l161_box")
-affliction = NodePath("..")
+[node name="IceBlock" parent="Afflictions/Frozen" node_paths=PackedStringArray("body")]
 body = NodePath("../../..")
 
-[node name="Pulling" type="Node3D" parent="Afflictions"]
+[node name="Pulling" type="Node3D" parent="Afflictions" index="5"]
 script = ExtResource("f128_pulling")
 type = ExtResource("f128_pulling_type")
 
-[node name="UsingAbility" type="Node3D" parent="Afflictions"]
+[node name="UsingAbility" type="Node3D" parent="Afflictions" index="6"]
 script = ExtResource("f152_affliction")
 type = ExtResource("f152_using_type")
 
-[node name="Firewalking" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("snap", "tilt")]
+[node name="Firewalking" type="Node3D" parent="Afflictions" index="7" node_paths=PackedStringArray("snap", "tilt")]
 script = ExtResource("f152_firewalking")
 type = ExtResource("f152_firewalking_type")
 snap = NodePath("../../WarpSnap")
 tilt = NodePath("../../Tilt")
 
-[node name="Oiled" type="Node3D" parent="Afflictions" node_paths=PackedStringArray("orders")]
-script = ExtResource("f155_oiled")
-type = ExtResource("f155_oiled_type")
+[node name="Oiled" parent="Afflictions" node_paths=PackedStringArray("orders")]
 orders = NodePath("../../Orders")
 
-[node name="Vined" type="Node3D" parent="Afflictions"]
-script = ExtResource("f159_vined")
-type = ExtResource("f159_vined_type")
-
-[node name="Cues" type="Node" parent="Afflictions/Vined" node_paths=PackedStringArray("affliction", "on_start", "on_end")]
-script = ExtResource("l161_cues")
-affliction = NodePath("..")
-on_start = NodePath("../GrabSound")
-on_end = NodePath("../ReleaseSound")
-
-[node name="GrabSound" parent="Afflictions/Vined" instance=ExtResource("l161_snd")]
-cue = ExtResource("cue_vines_grab")
-loop = false
-play_on_ready = false
-active = false
-
-[node name="ReleaseSound" parent="Afflictions/Vined" instance=ExtResource("l161_snd")]
-cue = ExtResource("cue_vines_release")
-loop = false
-play_on_ready = false
-active = false
-
-[node name="VineLook" type="Node3D" parent="Afflictions/Vined" node_paths=PackedStringArray("affliction", "body")]
-script = ExtResource("l161_vine")
-affliction = NodePath("..")
-body = NodePath("../../..")
-material = ExtResource("l161_vskin")
-
-[node name="Vine00" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine01" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine02" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine03" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine04" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine05" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine06" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine07" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine08" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine09" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine10" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine11" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine12" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine13" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine14" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="Vine15" parent="Afflictions/Vined/VineLook" instance=ExtResource("l161_glb")]
-
-[node name="RingsOfFire" type="Node3D" parent="Afflictions"]
-script = ExtResource("f161_spell_affliction")
-type = ExtResource("f161_rings_type")
-damage_from_spell = true
-pierce_shield = true
-
-[node name="Cues" type="Node" parent="Afflictions/RingsOfFire" node_paths=PackedStringArray("affliction", "on_start", "on_end", "loop")]
-script = ExtResource("l161_cues")
-affliction = NodePath("..")
-on_start = NodePath("../StartSound")
-on_end = NodePath("../EndSound")
-loop = NodePath("../LoopSound")
-
-[node name="StartSound" parent="Afflictions/RingsOfFire" instance=ExtResource("l161_snd")]
-cue = ExtResource("cue_rings_start")
-loop = false
-play_on_ready = false
-active = false
-
-[node name="EndSound" parent="Afflictions/RingsOfFire" instance=ExtResource("l161_snd")]
-cue = ExtResource("cue_rings_end")
-loop = false
-play_on_ready = false
-active = false
-
-[node name="LoopSound" parent="Afflictions/RingsOfFire" instance=ExtResource("l161_snd")]
-cue = ExtResource("cue_rings_loop")
-loop = true
-play_on_ready = false
-active = false
-
-[node name="RingsLook" type="Node3D" parent="Afflictions/RingsOfFire" node_paths=PackedStringArray("affliction", "body")]
-editor_description = "Anillos de 30 llamas firy aditivas (energia 8, como el original). Variante del puerto sobre nieve: firy_a.png con additive = false en data/fx/rings_flame.tres."
-script = ExtResource("l161_rings")
-affliction = NodePath("..")
+[node name="VineLook" parent="Afflictions/Vined" node_paths=PackedStringArray("body")]
 body = NodePath("../../..")
 
-[node name="Ring0" type="CPUParticles3D" parent="Afflictions/RingsOfFire/RingsLook"]
-use_fixed_seed = true
-script = ExtResource("l161_sprite")
-type = ExtResource("l161_flame")
-
-[node name="Ring1" type="CPUParticles3D" parent="Afflictions/RingsOfFire/RingsLook"]
-use_fixed_seed = true
-script = ExtResource("l161_sprite")
-type = ExtResource("l161_flame")
-
-[node name="Ring2" type="CPUParticles3D" parent="Afflictions/RingsOfFire/RingsLook"]
-use_fixed_seed = true
-script = ExtResource("l161_sprite")
-type = ExtResource("l161_flame")
-
-[node name="Ring3" type="CPUParticles3D" parent="Afflictions/RingsOfFire/RingsLook"]
-use_fixed_seed = true
-script = ExtResource("l161_sprite")
-type = ExtResource("l161_flame")
-
-[node name="Ring4" type="CPUParticles3D" parent="Afflictions/RingsOfFire/RingsLook"]
-use_fixed_seed = true
-script = ExtResource("l161_sprite")
-type = ExtResource("l161_flame")
-
-[node name="Ring5" type="CPUParticles3D" parent="Afflictions/RingsOfFire/RingsLook"]
-use_fixed_seed = true
-script = ExtResource("l161_sprite")
-type = ExtResource("l161_flame")
-
-[node name="Slimed" type="Node3D" parent="Afflictions"]
-script = ExtResource("f161_spell_affliction")
-type = ExtResource("f161_slimed_type")
-duration_mode = 1
-max_stacks = 16
-pace_per_stack = 0.2
-attack_time_per_stack = 5.0
-accuracy_per_stack = 0.2
-resistance_bonus_per_stack = 0.2
-
-[node name="Cues" type="Node" parent="Afflictions/Slimed" node_paths=PackedStringArray("affliction", "on_start")]
-script = ExtResource("l161_cues")
-affliction = NodePath("..")
-on_start = NodePath("../HitSound")
-
-[node name="HitSound" parent="Afflictions/Slimed" instance=ExtResource("l161_snd")]
-cue = ExtResource("cue_slime_hit")
-loop = false
-play_on_ready = false
-active = false
-
-[node name="Splash" type="CPUParticles3D" parent="Afflictions/Slimed" node_paths=PackedStringArray("affliction", "body")]
-use_fixed_seed = true
-script = ExtResource("l161_emit")
-type = ExtResource("l161_splash")
-affliction = NodePath("..")
+[node name="RingsLook" parent="Afflictions/RingsOfFire" node_paths=PackedStringArray("body")]
 body = NodePath("../../..")
-box_scale = 1.2
 
-[node name="Drip" type="CPUParticles3D" parent="Afflictions/Slimed" node_paths=PackedStringArray("affliction", "body")]
-use_fixed_seed = true
-script = ExtResource("l161_emit")
-type = ExtResource("l161_drip")
-affliction = NodePath("..")
+[node name="Splash" parent="Afflictions/Slimed" node_paths=PackedStringArray("body")]
 body = NodePath("../../..")
-shape = 1
-box_scale = 0.8
+
+[node name="Drip" parent="Afflictions/Slimed" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
 
 [node name="BlindRaged" type="Node3D" parent="Afflictions"]
 editor_description = "Blind Rage (egar): 30 s sin ordenes ni disparos, pelea con la criatura mas cercana de cualquier bando. Cada capa es un lanzamiento. Las particulas swrl giran alrededor de su caja."
@@ -615,6 +385,14 @@ affliction = NodePath("..")
 body = NodePath("../../..")
 shape = 1
 box_scale = 1.5
+
+[node name="Glow" parent="Afflictions/BlindRaged" instance=ExtResource("q5_state_light")]
+editor_description = "Luz roja mientras la criatura esta enfurecida (Blind Rage; color dominante de swrl.png y per2.png). Se ajusta color, energia y alcance aca; cada criatura enfurecida lleva una."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(1, 0.2, 0.12, 1)
+light_energy = 0.9
+omni_range = 5.0
+priority = 2.0
 
 [node name="Orders" type="Node" parent="."]
 script = ExtResource("f27_orders")
@@ -847,3 +625,6 @@ mana = NodePath("../ManaPool")
 
 [connection signal="solved" from="Avoidance" to="Locomotion" method="resume"]
 [connection signal="moved" from="Locomotion" to="Clips" method="update"]
+[connection signal="shown_changed" from="Afflictions/BlindRaged" to="Afflictions/BlindRaged/Glow" method="show_lit"]
+
+[editable path="Afflictions"]

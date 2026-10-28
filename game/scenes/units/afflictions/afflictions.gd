@@ -48,7 +48,6 @@ var previous := 0
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	AfflictionGlows.attach(self)
 	if wards != null:
 		wards.changed.connect(_show_look)
 	if health and is_multiplayer_authority():

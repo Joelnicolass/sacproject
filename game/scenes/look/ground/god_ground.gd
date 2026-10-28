@@ -62,7 +62,7 @@ extends Resource
 
 @export_group("Cloud shadows")
 ## How dark the shadow of a cloud makes the sun-lit part of the ground. 0 = no cloud shadows.
-@export_range(0.0, 1.0, 0.01) var cloud_shadow_strength := 0.3:
+@export_range(0.0, 1.0, 0.01) var cloud_shadow_strength := 0.45:
 	set(value):
 		cloud_shadow_strength = value
 		emit_changed()

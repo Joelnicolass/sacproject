@@ -25,7 +25,7 @@ density_texture = SubResource("Tex_banks")
 [sub_resource type="ShaderMaterial" id="Mat_rays"]
 render_priority = 100
 shader = ExtResource("2_rays")
-shader_parameter/intensity = 1.0
+shader_parameter/intensity = 0.45
 shader_parameter/samples = 24
 shader_parameter/reach = 0.7
 shader_parameter/decay = 0.95

@@ -1,12 +1,18 @@
 [gd_resource type="Resource" script_class="SkyLook" format=3]
 
 [ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_0mfki"]
-[ext_resource type="Texture2D" path="res://scenes/look/sky/aurora_gradient.tres" id="2_sgdx0"]
 [ext_resource type="Texture2D" path="res://assets/custom/sky/charnel_skyb_tileable.png" id="3_b6ynb"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/charnel/sky.png" id="4_e3u8l"]
 [ext_resource type="Texture2D" path="res://assets/custom/sky/charnel_skyt_tileable.png" id="5_e1u1d"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/charnel/undr.png" id="7_undr"]
 [ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_u8dev"]
+
+[sub_resource type="Gradient" id="Gradient_aurora"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.55, 0.196, 0.152, 1, 0.534, 0.611, 0.616, 1, 0.922, 0.896, 0.848, 1)
+
+[sub_resource type="GradientTexture1D" id="Aurora_charnel"]
+gradient = SubResource("Gradient_aurora")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6m8g2"]
 shader = ExtResource("1_0mfki")
@@ -21,7 +27,7 @@ shader_parameter/rotation_period_s = 512.0
 shader_parameter/clouds_texture = ExtResource("4_e3u8l")
 shader_parameter/cloud_period_s = 64.0
 shader_parameter/sun_intensity = 4.0
-shader_parameter/halo_strength = 0.6
+shader_parameter/halo_strength = 0.9
 shader_parameter/zenith_color = Color(0.12, 0.32, 0.36, 1)
 shader_parameter/zenith_strength = 0.0
 shader_parameter/horizon_color = Color(0.6, 0.9, 0.55, 1)
@@ -34,7 +40,7 @@ shader_parameter/ambient_ground_color = Color(0.05, 0.08, 0.1, 1)
 shader_parameter/ambient_energy = 1.0
 shader_parameter/ambient_curve = 0.2
 shader_parameter/aurora_strength = 0.35
-shader_parameter/aurora_gradient = ExtResource("2_sgdx0")
+shader_parameter/aurora_gradient = SubResource("Aurora_charnel")
 shader_parameter/sun_color = Color(1, 0.9, 0.7, 1)
 shader_parameter/sun_radius_deg = 2.2
 shader_parameter/halo_color = Color(1, 0.7, 0.4, 1)

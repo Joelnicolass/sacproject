@@ -1,12 +1,18 @@
 [gd_resource type="Resource" script_class="SkyLook" format=3]
 
 [ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_2xyu4"]
-[ext_resource type="Texture2D" path="res://scenes/look/sky/aurora_gradient.tres" id="2_ebrgk"]
 [ext_resource type="Texture2D" path="res://assets/custom/sky/persephone_skyb_tileable.png" id="3_yy0cy"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/persephone/sky.png" id="4_jwwaj"]
 [ext_resource type="Texture2D" path="res://assets/custom/sky/persephone_skyt_tileable.png" id="5_n3j26"]
 [ext_resource type="Texture2D" path="res://assets/original/themes/persephone/undr.png" id="7_undr"]
 [ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_hirsd"]
+
+[sub_resource type="Gradient" id="Gradient_aurora"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.288, 0.459, 0.55, 1, 0.449, 0.595, 0.69, 1, 0.584, 0.786, 0.894, 1)
+
+[sub_resource type="GradientTexture1D" id="Aurora_persephone"]
+gradient = SubResource("Gradient_aurora")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7gcis"]
 shader = ExtResource("1_2xyu4")
@@ -21,7 +27,7 @@ shader_parameter/rotation_period_s = 512.0
 shader_parameter/clouds_texture = ExtResource("4_jwwaj")
 shader_parameter/cloud_period_s = 64.0
 shader_parameter/sun_intensity = 4.0
-shader_parameter/halo_strength = 0.6
+shader_parameter/halo_strength = 0.9
 shader_parameter/zenith_color = Color(0.2, 0.5, 0.85, 1)
 shader_parameter/zenith_strength = 0.0
 shader_parameter/horizon_color = Color(1.0, 0.85, 0.55, 1)
@@ -34,7 +40,7 @@ shader_parameter/ambient_ground_color = Color(0.16, 0.26, 0.1, 1)
 shader_parameter/ambient_energy = 1.0
 shader_parameter/ambient_curve = 0.2
 shader_parameter/aurora_strength = 0.2
-shader_parameter/aurora_gradient = ExtResource("2_ebrgk")
+shader_parameter/aurora_gradient = SubResource("Aurora_persephone")
 shader_parameter/sun_color = Color(1, 0.92, 0.72, 1)
 shader_parameter/sun_radius_deg = 1.7
 shader_parameter/halo_color = Color(1, 0.7, 0.4, 1)

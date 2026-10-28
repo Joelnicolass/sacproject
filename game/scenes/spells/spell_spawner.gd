@@ -1,37 +1,19 @@
 class_name SpellSpawner
 extends MpSpawner
 
-## Spawns spell projectiles under spawn_path: on the server (replicated) or in solo. The scene of each kind is in
-## `projectiles` (RFC-041): a new projectile is a scene here, not a line of code.
+## Spawns what a spell puts into the world (projectiles, carriers, drops, zones, walls) under spawn_path: on the server
+## (replicated) or in solo. The caller hands it the scene to make, dragged into the caller's own inspector; the wire carries
+## that scene's resource path, which is the same file on every peer of the same build. Zones are the exception: see `zones`.
 
-const DEFAULT_KIND := "Rock"
 ## The group the spawner joins, for whoever starts a spell that raises something (a zone).
 const GROUP := &"spell_spawner"
+## Spawn-data key with the resource path of the scene to make.
+const _SCENE_KEY := "scene"
+## Spawn-data key with the kind of a zone in `zones`.
+const _ZONE_KEY := "zone"
 
-## Projectile scene by kind. Its root extends SpellProjectile.
-@export var projectiles: Dictionary[String, PackedScene] = {
-	"Rock": preload("res://scenes/spells/rock_projectile.tscn"),
-	"Wrath": preload("res://scenes/spells/wrath_strike.tscn"),
-	"Fireball": preload("res://scenes/spells/fireball_projectile.tscn"),
-	"Swarm": preload("res://scenes/spells/swarm_projectile.tscn"),
-	"Dragonfire": preload("res://scenes/spells/carrier/dragonfire.tscn"),
-	"RiftSpirit": preload("res://scenes/spells/zones/rift_spirit.tscn"),
-	"SoulMole": preload("res://scenes/spells/carrier/soul_mole.tscn"),
-	"SoulWind": preload("res://scenes/spells/carrier/soul_wind.tscn"),
-	"AnimateDead": preload("res://scenes/spells/animate_dead/animate_dead_fx.tscn"),
-	"Vaporization": preload("res://scenes/spells/carrier/vaporization.tscn"),
-	"Charm": preload("res://scenes/spells/carrier/charm.tscn"),
-	"BlindRage": preload("res://scenes/spells/carrier/blind_rage.tscn"),
-	"BovineIntervention": preload("res://scenes/spells/carrier/bovine_intervention.tscn"),
-	"Death": preload("res://scenes/spells/carrier/death.tscn"),
-	"RainFrog": preload("res://scenes/spells/drops/rain_frog.tscn"),
-	"FireDrop": preload("res://scenes/spells/drops/fire_drop.tscn"),
-	"PlagueDrop": preload("res://scenes/spells/drops/plague_drop.tscn"),
-	"Meteor": preload("res://scenes/spells/drops/meteor.tscn"),
-	"LavaBall": preload("res://scenes/spells/drops/lava_ball.tscn"),
-}
-## Zone scenes by kind (Explosion, FrozenGround, DemonicRift, RainOfFrogs, RainOfFire, Plague, Cloudkill, Bombardment), assigned in match.tscn and not preloaded here: a zone points at its SpellType,
-## the SpellType at its action, and the action's script knows this class, so a preload would close the circle. Root extends GroundZone.
+## Zone and wall scenes by kind, assigned in match.tscn. A zone scene points at its SpellType, the SpellType at its action
+## scene, so the action cannot point back at the zone scene: it names its kind here. Root extends SpellProjectile.
 @export var zones: Dictionary[String, PackedScene] = {}
 
 var _serial := 0
@@ -48,21 +30,53 @@ func _ready() -> void:
 	super._ready()
 
 
-## `kind` is a key of `projectiles`; `data` = the projectile's setup() keys without `name`. Returns the projectile on the server
-## and in solo (a spell that must arm or cancel it keeps it), null on a client.
-func spawn_projectile(kind: String, data: Dictionary) -> Node:
+## Makes `scene` (its root extends SpellProjectile) with `data`, the keys its `setup` reads. Returns the node on the server
+## and in solo (a spell that must arm or cancel it keeps it), null on a client or when `scene` is missing.
+func spawn_scene(scene: PackedScene, data: Dictionary) -> Node:
+	if scene == null or scene.resource_path.is_empty():
+		push_error("SpellSpawner: no scene file to spawn (data %s)" % [data])
+		return null
+	_serial += 1
+	data["name"] = "%s%d" % [scene.resource_path.get_file().get_basename().to_pascal_case(), _serial]
+	data[_SCENE_KEY] = scene.resource_path
+	return spawn_here(data)
+
+
+## Makes a guided projectile or a carrier from its typed launch.
+func spawn_launch(scene: PackedScene, launch: ProjectileLaunch) -> Node:
+	return spawn_scene(scene, launch.to_dict())
+
+
+## Makes the zone or wall of `kind` (a key of `zones`) with `data`, the keys its `setup` reads.
+func spawn_zone(kind: String, data: Dictionary) -> Node:
+	if not zones.has(kind):
+		push_error("SpellSpawner: no zone scene for kind «%s» in `zones`" % kind)
+		return null
 	_serial += 1
 	data["name"] = "%s%d" % [kind, _serial]
-	data["kind"] = kind
+	data[_ZONE_KEY] = kind
 	return spawn_here(data)
 
 
 func _make(data: Variant) -> Node:
 	var info: Dictionary = data
-	var kind := str(info.get("kind", DEFAULT_KIND))
-	if not projectiles.has(kind) and not zones.has(kind):
-		push_error("SpellSpawner: no projectile scene for kind «%s», using %s" % [kind, DEFAULT_KIND])
-		kind = DEFAULT_KIND
-	var effect := (projectiles[kind] if projectiles.has(kind) else zones[kind]).instantiate() as SpellProjectile
+	var scene := _scene_of(info)
+	if scene == null:
+		push_error("SpellSpawner: cannot make %s" % [info])
+		# The spawn function must return a node: an empty one that leaves at once.
+		var empty := SpellProjectile.new()
+		empty.name = str(info.get("name", "Missing"))
+		empty.queue_free.call_deferred()
+		return empty
+	var effect := scene.instantiate() as SpellProjectile
 	effect.setup(info)
 	return effect
+
+
+func _scene_of(info: Dictionary) -> PackedScene:
+	if info.has(_ZONE_KEY):
+		return zones.get(str(info[_ZONE_KEY])) as PackedScene
+	var path := str(info.get(_SCENE_KEY, ""))
+	if not path.begins_with("res://") or not ResourceLoader.exists(path, "PackedScene"):
+		return null
+	return ResourceLoader.load(path, "PackedScene") as PackedScene

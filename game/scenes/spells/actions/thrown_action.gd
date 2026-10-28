@@ -2,14 +2,14 @@
 class_name ThrownAction
 extends SpellAction
 
-## A guided ball that leaves the wizard's hands (Wrath, Fireball, Insect Swarm). `projectile_kind` names its
-## scene in SpellSpawner; `launch_at_finish` says whether it leaves when the casting ends (Wrath)
+## A guided ball that leaves the wizard's hands (Wrath, Fireball, Insect Swarm). `projectile` is its scene;
+## `launch_at_finish` says whether it leaves when the casting ends (Wrath)
 ## or as soon as the cast starts (Fireball, Swarm). It explodes with
 ## `damage_range` splash around the body it hits.
 ## Ref: sacengine updateWrathCasting
 
-## Kind of the projectile scene in SpellSpawner.
-@export var projectile_kind := ""
+## The projectile scene it throws (its root extends SpellProjectile and reads a ProjectileLaunch).
+@export var projectile: PackedScene
 @export var launch_at_finish := false
 ## Who may be hit (a living body of another player).
 @export var target: SpellTarget
@@ -22,6 +22,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if target == null:
 		warnings.append("Falta `target`: quién es un blanco válido.")
+	if projectile == null:
+		warnings.append("`projectile` is empty: drag the projectile scene.")
 	return warnings
 
 
@@ -49,9 +51,11 @@ func cancel() -> void:
 
 
 func _throw(wizard: WizardBody, spell: SpellType, body: Node3D, point: Vector3) -> void:
+	if projectile == null:
+		push_error("ThrownAction %s: `projectile` is empty, nothing is thrown." % name)
+		return
 	var spawner := projectile_spawner()
 	if spawner == null:
 		return
-	var data := LaunchPoint.projectile_data(wizard, spell, LaunchPoint.from_hand(wizard), body, point)
-	data["damage_range"] = spell.damage_range_m
-	spawner.spawn_projectile(projectile_kind, data)
+	var launch := ProjectileLaunch.toward(wizard, spell, LaunchPoint.from_hand(wizard), body, point)
+	spawner.spawn_launch(projectile, launch)

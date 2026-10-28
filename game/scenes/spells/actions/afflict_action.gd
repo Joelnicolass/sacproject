@@ -8,8 +8,6 @@ extends SpellAction
 ## Affliction and its look do), and it does not scale the duration: the Affliction says how long it lasts.
 ## Ref: sacengine castFreeze / freeze, castGraspingVines / graspingVines, castRingsOfFire / ringsOfFire, castSlime / slime.
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 ## The state laid on the body (the child of its Afflictions that has this type).
 @export var affliction: AfflictionType
 ## Who the spell may land on.
@@ -41,7 +39,7 @@ func started(_wizard: WizardBody, _spell: SpellType, aim: Aim, frames: int) -> v
 
 ## The casting time ended: the state goes on the body if it is still a valid one (dead or already protected = nothing).
 func finish(wizard: WizardBody, spell: SpellType, picked: Node3D) -> String:
-	var body := picked if picked != null and _ROCK.is_live_body(picked) else null
+	var body := picked if picked != null and ProjectileTargets.is_live_body(picked) else null
 	var state := _state_of(body) if body != null else null
 	if state != null:
 		state.lay(spell, wizard.owner_slot)

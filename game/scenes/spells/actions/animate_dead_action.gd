@@ -10,8 +10,15 @@ extends SpellAction
 
 ## The revival the creature goes through (a FastRevive scene with the normal, slow knobs).
 @export var revive_scene: PackedScene
-## Key of the effect scene in SpellSpawner.
-@export var effect_kind := "AnimateDead"
+## The replicated effect of the streams from the wizard to the creature (an AnimateDeadFx scene).
+@export var effect: PackedScene
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := super()
+	if effect == null:
+		warnings.append("`effect` is empty: drag the streams scene.")
+	return warnings
 
 
 ## Funds first, then a soul on a dead creature of the wizard's side, then the range.
@@ -42,11 +49,14 @@ func started(wizard: WizardBody, _spell: SpellType, aim: Aim, _frames: int) -> v
 			revive.free()
 		return
 	corpse.add_child(revive)
+	if effect == null:
+		push_error("AnimateDeadAction %s: `effect` is empty, the streams are not shown." % name)
+		return
 	var spawner := projectile_spawner()
 	if spawner == null:
 		return
 	var at := corpse.global_position
-	spawner.spawn_projectile(effect_kind, {
+	spawner.spawn_scene(effect, {
 		"x": at.x, "y": at.y, "z": at.z,
 		"caster": str(wizard.get_path()),
 		"target": str(corpse.get_path()),

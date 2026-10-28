@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/actions/thrown_action.gd" id="1_script"]
 [ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="9_target"]
+[ext_resource type="PackedScene" path="res://scenes/spells/fireball_projectile.tscn" id="q8_scene"]
 
 [sub_resource type="Resource" id="Target_enemy"]
 script = ExtResource("9_target")
@@ -9,5 +10,5 @@ who = 5
 
 [node name="Fireball" type="Node"]
 script = ExtResource("1_script")
-projectile_kind = "Fireball"
+projectile = ExtResource("q8_scene")
 target = SubResource("Target_enemy")

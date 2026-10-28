@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="light"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="dropper"]
 [ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="launcher"]
+[ext_resource type="PackedScene" path="res://scenes/spells/drops/rain_frog.tscn" id="q8_scene"]
 
 [sub_resource type="ShaderMaterial" id="Mat_cloud"]
 shader = ExtResource("shader")
@@ -71,7 +72,7 @@ far_chance = 0.667
 script = ExtResource("launcher")
 zone = NodePath("..")
 dropper = NodePath("../Dropper")
-kind = "RainFrog"
+drop = ExtResource("q8_scene")
 start = 0
 cloud_at = NodePath("../CloudAt")
 fall_s = 2.0

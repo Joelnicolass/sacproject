@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" path="res://scenes/spells/actions/soul_action.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/fx/dirt_cast.tres" id="fx_dirt_cast"]
+[ext_resource type="PackedScene" path="res://scenes/spells/carrier/soul_mole.tscn" id="q8_scene"]
 
 [node name="SoulMole" type="Node"]
 script = ExtResource("1_script")
 pick = 2
 cast_fx = ExtResource("fx_dirt_cast")
-carrier_kind = "SoulMole"
+carrier = ExtResource("q8_scene")

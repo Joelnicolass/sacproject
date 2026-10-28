@@ -12,8 +12,6 @@ extends RefCounted
 ## Ref: dealDamageAt skips only the directTarget, state.d:9077; maximum ≤ 0, sacengine canDamage; sacengine dealSplashSpellDamageAt / dealDamageAt, state.d:9063-9095
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 const GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP, MapBuilding.STRUCTURE_GROUP]
 
 
@@ -40,7 +38,7 @@ static func bodies_within(tree: SceneTree, center: Vector3, radius: float, excep
 	for group in groups:
 		for node in tree.get_nodes_in_group(group):
 			var body := node as Node3D
-			if body == null or body == except or seen.has(body) or not _ROCK.is_live_body(body):
+			if body == null or body == except or seen.has(body) or not ProjectileTargets.is_live_body(body):
 				continue
 			seen[body] = true
 			if box_distance(body, center) <= radius:
@@ -54,7 +52,7 @@ static func bodies_within(tree: SceneTree, center: Vector3, radius: float, excep
 ## Ref: sacengine dealDamage with an attacker creature, state.d:8933-8947, also on the splash walk
 static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0, attacker: Node = null) -> void:
 	var taken := (body.get_node("Health") as Health).damage_typed(amount, kind, from_slot, false, false, mods)
-	_ROCK.report(body, taken, kind)
+	ProjectileTargets.report(body, taken, kind)
 	LifeDrain.feed(attacker, body, taken)
 
 

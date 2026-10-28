@@ -10,8 +10,12 @@
 [ext_resource type="Resource" path="res://data/fx/wrath_explosion2.tres" id="fx_wrath_explosion2"]
 [ext_resource type="Resource" path="res://data/fx/wrath_particle.tres" id="fx_wrath_particle"]
 
+[sub_resource type="BoxShape3D" id="HitBox"]
+size = Vector3(0.1, 0.1, 0.1)
+
 [node name="WrathStrike" type="Node3D"]
 script = ExtResource("1_script")
+hit_box = SubResource("HitBox")
 trail = ExtResource("fx_wrath_trail")
 explosion = Array[ExtResource("fx_ptype")]([ExtResource("fx_wrath_explosion1"), ExtResource("fx_wrath_explosion2"), ExtResource("fx_wrath_particle")])
 

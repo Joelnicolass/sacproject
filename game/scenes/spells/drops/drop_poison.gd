@@ -7,8 +7,6 @@ extends Node
 ## poisoned do not regenerate. It does not fly the drop (ZoneDrop) nor hurt at once (DropBlast). Server (or solo) only.
 ## Ref: sacengine plagueDropExplosion (state.d:20980-21015); `freg` of the SPEL (spells.wad `plag`).
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 @export var drop: ZoneDrop
 ## Bursts played where it ends, and the one played on the body it poisons (ParticleType under data/fx/).
 @export var bursts: Array[ParticleType] = []
@@ -34,7 +32,7 @@ func _ready() -> void:
 func poison(body: Node3D, at: Vector3) -> void:
 	var per_second := drop.damage * share_per_s
 	var ticks := MatchClock.ticks_for(seconds)
-	var live := body != null and is_instance_valid(body) and _ROCK.is_live_body(body)
+	var live := body != null and is_instance_valid(body) and ProjectileTargets.is_live_body(body)
 	if live:
 		_dose(body, per_second, ticks)
 		if hit_burst != null:

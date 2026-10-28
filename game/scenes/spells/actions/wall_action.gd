@@ -8,7 +8,7 @@ extends SpellAction
 ## particle change, not the script. It does not grow the wall nor hurt anybody (SpellWall and WallTouch do).
 ## Ref: sacengine castFirewall, castWailingWall, castVinewall, castWallOfSpikes, castFence (state.d:11118-11211).
 
-## Key of the wall scene in SpellSpawner.
+## The kind of the wall scene in SpellSpawner.zones (match.tscn).
 @export var wall_kind := ""
 
 ## The wall of the cast in progress (server only).
@@ -41,7 +41,7 @@ func started(wizard: WizardBody, _spell: SpellType, aim: Aim, _frames: int) -> v
 	if spawner == null:
 		return
 	var run := WallRules.direction_for(wizard.global_position, aim.point, wizard.facing_flat())
-	_wall = spawner.spawn_projectile(wall_kind, {
+	_wall = spawner.spawn_zone(wall_kind, {
 		"x": aim.point.x, "y": aim.point.y, "z": aim.point.z,
 		"dir_x": run.x, "dir_z": run.y,
 		"caster": str(wizard.get_path()),

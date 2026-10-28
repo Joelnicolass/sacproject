@@ -3,9 +3,11 @@
 [ext_resource type="Script" path="res://scenes/spells/actions/animate_dead_action.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/revive_slow.tscn" id="2_revive"]
 [ext_resource type="Resource" path="res://data/fx/animate_dead_cast.tres" id="fx_animate_dead_cast"]
+[ext_resource type="PackedScene" path="res://scenes/spells/animate_dead/animate_dead_fx.tscn" id="q8_scene"]
 
 [node name="AnimateDead" type="Node"]
 script = ExtResource("1_script")
+effect = ExtResource("q8_scene")
 pick = 2
 cast_fx = ExtResource("fx_animate_dead_cast")
 revive_scene = ExtResource("2_revive")

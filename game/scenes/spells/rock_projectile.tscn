@@ -13,8 +13,12 @@
 [ext_resource type="Resource" path="res://data/fx/rock.tres" id="fx_rock"]
 [ext_resource type="Resource" path="res://data/fx/dirt.tres" id="fx_dirt"]
 
+[sub_resource type="BoxShape3D" id="HitBox"]
+size = Vector3(2.0, 2.0, 2.0)
+
 [node name="RockProjectile" type="Node3D"]
 script = ExtResource("1_script")
+hit_box = SubResource("HitBox")
 trail = ExtResource("fx_rock_trail")
 emerge = Array[ExtResource("fx_ptype")]([ExtResource("fx_rock_emerge"), ExtResource("fx_rock_dust")])
 explosion = Array[ExtResource("fx_ptype")]([ExtResource("fx_rock"), ExtResource("fx_dirt")])

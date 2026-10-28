@@ -7,8 +7,6 @@ extends Resource
 ## subclass. It does not aim, start the cast or apply anything: it answers «is this body a valid target?».
 ## Ref: sacengine castFreeze, castGraspingVines, castRingsOfFire, castSlime (state.d:10687-10770).
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 ## OWN_OR_SELF and NOT_OWN compare `owner_slot` only (the wizard and the creatures of his player); ALLY_OR_SELF and ENEMY use the side
 ## relations (allies of other players count). Append only: the values are saved as integers.
 enum Who { SELF, ALLY_OR_SELF, ENEMY, ANY, OWN_OR_SELF, NOT_OWN }
@@ -31,7 +29,7 @@ enum Who { SELF, ALLY_OR_SELF, ENEMY, ANY, OWN_OR_SELF, NOT_OWN }
 ## give the wizard.
 func pick(wizard: Node3D, picked: Node3D) -> Node3D:
 	var body := _by_who(wizard, picked)
-	if body == null or (alive_only and not _ROCK.is_live_body(body)):
+	if body == null or (alive_only and not ProjectileTargets.is_live_body(body)):
 		return null
 	if ground_only and BodyNudge.airborne(body):
 		return null

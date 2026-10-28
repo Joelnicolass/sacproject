@@ -8,8 +8,6 @@ extends SpellAction
 ## (Wards) nor push, burn or heal anyone (BodyAura).
 ## Ref: sacengine skinOfStone, airShield, etherealForm, fireform, protectiveSwarm, healingAura (state.d:10591-10686, 11076-11088).
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 ## Who carries the ward. Empty = the wizard himself.
 @export var target: SpellTarget
 
@@ -55,7 +53,7 @@ func begin(wizard: WizardBody, spell: SpellType, aim: Aim) -> void:
 func finish(wizard: WizardBody, spell: SpellType, carrier: Node3D) -> String:
 	var body := carrier if carrier != null else wizard
 	var ward := _ward(body, spell)
-	if ward != null and _ROCK.is_live_body(body):
+	if ward != null and ProjectileTargets.is_live_body(body):
 		ward.start_for(spell)
 	return ""
 

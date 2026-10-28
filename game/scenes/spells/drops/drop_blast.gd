@@ -8,8 +8,6 @@ extends Node
 ## (DropPoison). Server (or solo) only.
 ## Ref: sacengine rainFrogExplosion, rainOfFireDropExplosion, bombardmentDropExplosion (state.d:19405-19427, 21142-21154, 21344-21379).
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 @export var drop: ZoneDrop
 ## FxBus bursts played where it ends (ParticleType under data/fx/).
 @export var bursts: Array[ParticleType] = []
@@ -33,7 +31,7 @@ func _ready() -> void:
 
 ## The blast at `at`, on `body` (null = the ground).
 func blast(body: Node3D, at: Vector3) -> void:
-	var live := body != null and is_instance_valid(body) and _ROCK.is_live_body(body)
+	var live := body != null and is_instance_valid(body) and ProjectileTargets.is_live_body(body)
 	var mods := Health.IGNITE if ignites else 0
 	var slot := drop.from_slot
 	if live:

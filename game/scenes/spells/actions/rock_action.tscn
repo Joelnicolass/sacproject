@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scenes/spells/actions/rock_action.gd" id="1_script"]
 [ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="9_target"]
 [ext_resource type="Resource" path="res://data/fx/dirt_cast.tres" id="fx_dirt_cast"]
+[ext_resource type="PackedScene" path="res://scenes/spells/rock_projectile.tscn" id="q8_scene"]
 
 [sub_resource type="Resource" id="Target_enemy"]
 script = ExtResource("9_target")
@@ -10,5 +11,6 @@ who = 5
 
 [node name="Rock" type="Node"]
 script = ExtResource("1_script")
+projectile = ExtResource("q8_scene")
 cast_fx = ExtResource("fx_dirt_cast")
 target = SubResource("Target_enemy")

@@ -8,6 +8,8 @@ extends Node
 ## Ref: sacengine spawnDemonicRiftSpirit, demonicRiftTarget (state.d:19530-19564).
 
 @export var zone: GroundZone
+## The spirit scene it lets out (its root is a RiftSpirit).
+@export var spirit_scene: PackedScene
 @export_range(1, 64) var max_spirits := 24
 @export_range(0.05, 5.0, 0.0001, "suffix:s") var every_s := 0.3333
 ## The wait after a spirit that found no creature.
@@ -24,6 +26,8 @@ var _alive: Array = []
 
 
 func _ready() -> void:
+	if spirit_scene == null:
+		push_error("RiftSpawner %s: `spirit_scene` is empty, no spirit leaves the rift." % name)
 	set_physics_process(zone != null and zone.is_authority() and not Engine.is_editor_hint())
 
 
@@ -51,8 +55,8 @@ func _is_out(spirit: Variant) -> bool:
 
 ## Sends one spirit out. True when it has a creature to go for.
 func _release() -> bool:
-	var spawner := get_tree().get_first_node_in_group(SpellSpawner.GROUP) as SpellSpawner
-	if spawner == null:
+	var spawner := SpellSpawner.of(get_tree())
+	if spawner == null or spirit_scene == null:
 		return true
 	var rng := MatchSeed.rng(["rift", String(zone.name), _out])
 	var around := zone.aim_point + ZoneRules.disk_point(rng, zone.spell.effect_range_m)
@@ -67,7 +71,7 @@ func _release() -> bool:
 	start.y = rift.y if is_nan(ground) else ground
 	var aimed := Vector3(outward.x, 5.0, outward.z).normalized()
 	_out += 1
-	var spirit := spawner.spawn_projectile("RiftSpirit", {
+	var spirit := spawner.spawn_scene(spirit_scene, {
 		"x": start.x, "y": start.y, "z": start.z, "goal": goal, "home": rift, "velocity": aimed * zone.spell.speed_m_s,
 		"target": str(body.get_path()) if body != null else "", "slot": zone.from_slot, "speed": zone.spell.speed_m_s,
 		"acceleration": zone.spell.acceleration_m_s2, "damage": float(zone.spell.damage), "range": zone.spell.effect_range_m,

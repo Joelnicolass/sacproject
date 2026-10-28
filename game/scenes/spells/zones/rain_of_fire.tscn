@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="launcher"]
 [ext_resource type="Resource" path="res://data/audio/cues/explosion_loop.tres" id="cue_explosion_loop"]
 [ext_resource type="Resource" path="res://data/audio/cues/cloud_loop.tres" id="cue_cloud_loop"]
+[ext_resource type="PackedScene" path="res://scenes/spells/drops/fire_drop.tscn" id="q8_scene"]
 
 [sub_resource type="ShaderMaterial" id="Mat_cloud"]
 shader = ExtResource("shader")
@@ -74,7 +75,7 @@ far_chance = 0.667
 script = ExtResource("launcher")
 zone = NodePath("..")
 dropper = NodePath("../Dropper")
-kind = "FireDrop"
+drop = ExtResource("q8_scene")
 start = 1
 cloud_at = NodePath("../CloudAt")
 disk_share = 0.5

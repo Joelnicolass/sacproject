@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="26_sound"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_stamp_stop.gd" id="27_stop"]
 [ext_resource type="Resource" path="res://data/audio/cues/erupt_burst.tres" id="cue_erupt_burst"]
+[ext_resource type="PackedScene" path="res://scenes/spells/drops/lava_ball.tscn" id="q8_scene"]
 
 [sub_resource type="Curve" id="Curve_mound_time"]
 _limits = [0.0, 1.0, 0.0, 64.4444]
@@ -185,7 +186,7 @@ decoys = 4
 script = ExtResource("14_launcher")
 zone = NodePath("..")
 dropper = NodePath("../Dropper")
-kind = "LavaBall"
+drop = ExtResource("q8_scene")
 start = 3
 column_m = 120.0
 shoots = true

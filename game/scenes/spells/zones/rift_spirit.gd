@@ -6,8 +6,6 @@ extends SpellProjectile
 ## are replicated, and its RiftRibbon child draws the trail on every peer. It does not choose its target (RiftSpawner) nor open the rift.
 ## Ref: sacengine updateDemonicRiftSpirit (state.d:19566-19606).
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 enum Status { TARGETING, RISING, MOVING_AWAY, MOVING_BACK, VANISHING }
 
 ## Every spirit in the world is in this group (the checks and the capture harness count them).
@@ -128,7 +126,7 @@ func _arrived() -> void:
 	match status:
 		Status.TARGETING:
 			var body := get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null
-			if body != null and _ROCK.is_live_body(body):
+			if body != null and ProjectileTargets.is_live_body(body):
 				SplashDamage.hurt(body, damage, from_slot, Health.DIRECT_SPELL)
 				status = Status.RISING
 			else:

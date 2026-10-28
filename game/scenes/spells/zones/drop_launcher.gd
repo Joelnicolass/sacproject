@@ -2,7 +2,7 @@
 class_name DropLauncher
 extends Node
 
-## Makes the drop of a cloud: when its ZoneDropper says where, it spawns the scene of `kind` (a ZoneDrop) at its start, with the point it
+## Makes the drop of a cloud: when its ZoneDropper says where, it spawns `drop` (a ZoneDrop scene) at its start, with the point it
 ## must reach, the time it takes and the numbers of the spell. It does not choose where (ZoneDropper) nor move or hurt (ZoneDrop and its
 ## children). Server (or solo) only.
 ## Ref: sacengine updateRainOfFrogs, updateRainOfFire, makeBombardmentDrop (state.d:19387, 21121-21123, 21235-21257).
@@ -11,8 +11,8 @@ enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK, ZONE_COLUMN }
 
 @export var zone: GroundZone
 @export var dropper: ZoneDropper
-## The key of the drop's scene in SpellSpawner.projectiles.
-@export var kind := ""
+## The drop scene it spawns (its root is a ZoneDrop).
+@export var drop: PackedScene
 @export var start := Start.ABOVE_POINT
 ## The cloud: a drop of ABOVE_POINT or CLOUD_DISK starts at its height.
 @export var cloud_at: Marker3D
@@ -38,7 +38,10 @@ func _ready() -> void:
 
 
 func _launch(point: Vector3, _body: Node3D) -> void:
-	var spawner := get_tree().get_first_node_in_group(SpellSpawner.GROUP) as SpellSpawner
+	if drop == null:
+		push_error("DropLauncher %s: `drop` is empty, nothing falls." % name)
+		return
+	var spawner := SpellSpawner.of(get_tree())
 	if spawner == null:
 		return
 	var from := _start(point)
@@ -49,7 +52,7 @@ func _launch(point: Vector3, _body: Node3D) -> void:
 		"caster": str(zone.caster_path), "damage": float(spell.damage), "damage_range": spell.damage_range_m, "effect_range": spell.effect_range_m}
 	if shoots:
 		data["shot_speed"] = spell.speed_m_s
-	spawner.spawn_projectile(kind, data)
+	spawner.spawn_scene(drop, data)
 
 
 func _start(point: Vector3) -> Vector3:
@@ -76,6 +79,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if zone == null or dropper == null:
 		warnings.append("Faltan la zona y su ZoneDropper.")
-	if kind.is_empty():
-		warnings.append("Falta `kind`: la escena de la gota en SpellSpawner.projectiles.")
+	if drop == null:
+		warnings.append("`drop` is empty: drag the drop scene.")
 	return warnings

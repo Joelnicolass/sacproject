@@ -19,8 +19,12 @@ emission_enabled = true
 emission = Color(0.25, 0.6, 0.1, 1)
 emission_energy_multiplier = 1.6
 
+[sub_resource type="BoxShape3D" id="HitBox"]
+size = Vector3(0.3, 0.3, 0.3)
+
 [node name="SwarmProjectile" type="Node3D"]
 script = ExtResource("1_script")
+hit_box = SubResource("HitBox")
 trail = ExtResource("fx_wrath_trail")
 explosion = Array[ExtResource("fx_ptype")]([ExtResource("fx_wrath_explosion1"), ExtResource("fx_wrath_explosion2")])
 

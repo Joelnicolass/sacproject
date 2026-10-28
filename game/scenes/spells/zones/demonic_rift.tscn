@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 [ext_resource type="Resource" path="res://data/audio/cues/rift_open.tres" id="cue_rift_open"]
 [ext_resource type="Resource" path="res://data/audio/cues/rift_close.tres" id="cue_rift_close"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/rift_spirit.tscn" id="q8_scene"]
 
 [sub_resource type="ShaderMaterial" id="Mat_edge"]
 shader = ExtResource("4_shader")
@@ -56,6 +57,7 @@ to_phase = 2
 
 [node name="Spirits" type="Node" parent="." node_paths=PackedStringArray("zone", "wall")]
 script = ExtResource("8_spawner")
+spirit_scene = ExtResource("q8_scene")
 zone = NodePath("..")
 wall = NodePath("../Edge/Wall")
 

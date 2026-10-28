@@ -8,14 +8,9 @@ extends SpellProjectile
 ## The server (or solo) moves it; clients get the position and play the trail locally.
 ## Ref: sacengine state.d:10493-10506, 16386-16581; wrathExplosion, state.d:16496-16501; dealDamage, state.d:9053-9088
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 ## Flying height.
 ## Ref: sacengine wrathFlyingHeight
 const FLYING_HEIGHT := 0.5
-## Hit box of ±0.05 m.
-## Ref: sacengine wrathSize 0.1
-const SIZE := 0.1
 const ARRIVE_DISTANCE := 0.25
 ## Trail puffs on every peer, by time (FxTrail): one per 2/60 s.
 const TRAIL_INTERVAL_S := 2.0 / 60.0
@@ -24,6 +19,8 @@ const TRAIL_INTERVAL_S := 2.0 / 60.0
 @export var trail: ParticleType
 ## Bursts where it breaks, on every peer.
 @export var explosion: Array[ParticleType] = []
+## The box that touches the bodies it bursts on, centered on the projectile.
+@export var hit_box: Shape3D
 
 var speed := 0.0
 var acceleration := 0.0
@@ -34,19 +31,24 @@ var velocity := Vector3.ZERO
 var target_point := Vector3.ZERO
 var target_path := NodePath()
 var caster_path := NodePath()
+var _query: PhysicsShapeQueryParameters3D
 
 
 func setup(data: Dictionary) -> void:
-	name = str(data["name"])
-	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
-	target_point = Vector3(float(data["tx"]), float(data["ty"]), float(data["tz"]))
-	target_path = NodePath(str(data.get("target", "")))
-	caster_path = NodePath(str(data.get("caster", "")))
-	speed = float(data["speed"])
-	acceleration = float(data["acceleration"])
-	damage = float(data.get("damage", 0.0))
-	damage_range = float(data.get("damage_range", 0.0))
-	from_slot = int(data.get("slot", 0))
+	var launch := ProjectileLaunch.from_dict(data)
+	name = launch.name
+	position = launch.from
+	target_point = launch.aim
+	target_path = launch.target
+	caster_path = launch.caster
+	speed = launch.speed_m_s
+	acceleration = launch.acceleration_m_s2
+	damage = launch.damage
+	damage_range = launch.damage_range_m
+	from_slot = launch.slot
+	if hit_box == null:
+		push_error("%s: `hit_box` is empty, it hits no body." % scene_file_path)
+	_query = ProjectileTargets.query_for(hit_box)
 	_attach_net()
 	## The ball is only particles, its trail.
 	## Ref: sacengine animateWrath
@@ -92,9 +94,7 @@ func _physics_process(_delta: float) -> void:
 	var flat_left := Vector2(target_center.x - next.x, target_center.z - next.z).length()
 	var close := (target_center - next).length() < ARRIVE_DISTANCE \
 		or (on_ground and target_center.y < next.y and flat_left < ARRIVE_DISTANCE)
-	var shape := BoxShape3D.new()
-	shape.size = Vector3.ONE * SIZE
-	var hit := _ROCK.pick_body(self, shape, global_position, null, from_slot, true)
+	var hit := ProjectileTargets.pick_body(self, _query, global_position, null, from_slot, true)
 	if hit:
 		_explode(hit)
 	elif global_position.y < _ground_height(global_position):
@@ -119,7 +119,7 @@ func _target_center() -> Vector3:
 	var target := _target()
 	if target == null:
 		return target_point
-	target_point = _ROCK.body_center(target)
+	target_point = ProjectileTargets.body_center(target)
 	return target_point
 
 
@@ -132,7 +132,7 @@ func _ground_height(at: Vector3) -> float:
 ## Ref: sacengine wrathExplosion
 func _explode(direct: Node3D) -> void:
 	var center := global_position
-	if direct and is_instance_valid(direct) and _ROCK.is_live_body(direct):
+	if direct and is_instance_valid(direct) and ProjectileTargets.is_live_body(direct):
 		SplashDamage.hurt(direct, damage, from_slot)
 	else:
 		direct = null

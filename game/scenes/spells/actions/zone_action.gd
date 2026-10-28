@@ -8,11 +8,9 @@ extends SpellAction
 ## does not act on bodies (the zone's children do) nor time the zone (GroundZone does).
 ## Ref: sacengine castExplosion, castFrozenGround, castDemonicRift, castRainOfFrogs, castCloudkill (state.d:9986-10048, 10960-11339).
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
-
 enum Anchor { CLICK, WIZARD }
 
-## The kind of the zone scene in SpellSpawner.
+## The kind of the zone scene in SpellSpawner.zones (match.tscn).
 @export var kind := ""
 ## Where the zone stands: on the click, or under the wizard (a rift opens at his feet and looks around the click).
 @export var anchor := Anchor.CLICK
@@ -55,7 +53,7 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 	var aim := Aim.new()
 	aim.point = picked.global_position if picked != null else point
 	aim.target = wizard
-	if follows_target and picked != null and _ROCK.is_live_body(picked):
+	if follows_target and picked != null and ProjectileTargets.is_live_body(picked):
 		aim.data["follow"] = str(picked.get_path())
 	aim.status = standing_status(funds, wizard, spell, aim.point)
 	return aim
@@ -67,7 +65,7 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 		return
 	var data := _data(wizard, spell, aim.point, frames)
 	data["follow"] = aim.data.get("follow", "")
-	_zone = spawner.spawn_projectile(kind, data) as GroundZone
+	_zone = spawner.spawn_zone(kind, data) as GroundZone
 	if cast_scene != null:
 		FxBus.broadcast_scene(cast_scene, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
 

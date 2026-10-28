@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="dropper"]
 [ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="launcher"]
 [ext_resource type="Resource" path="res://data/audio/cues/bombardment_loop.tres" id="cue_bombardment_loop"]
+[ext_resource type="PackedScene" path="res://scenes/spells/drops/meteor.tscn" id="q8_scene"]
 
 [node name="Bombardment" type="Node3D"]
 editor_description = "Bombardment (rtem): sin nube. 2 meteoritos por segundo durante 20 s; cada uno sale de la tierra a <= 12,5 m del mago y cruza el cielo en un arco de 12 s hasta un punto del disco de 50 m alrededor del clic. Sin abolladuras (061k)."
@@ -26,7 +27,7 @@ far_chance = 0.667
 script = ExtResource("launcher")
 zone = NodePath("..")
 dropper = NodePath("../Dropper")
-kind = "Meteor"
+drop = ExtResource("q8_scene")
 start = 2
 disk_share = 0.25
 buried_m = 1.0

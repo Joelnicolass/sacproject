@@ -22,8 +22,12 @@ emission_enabled = true
 emission = Color(1, 0.3, 0.05, 1)
 emission_energy_multiplier = 2.5
 
+[sub_resource type="BoxShape3D" id="HitBox"]
+size = Vector3(0.5, 0.5, 0.5)
+
 [node name="FireballProjectile" type="Node3D"]
 script = ExtResource("1_script")
+hit_box = SubResource("HitBox")
 trail = Array[ExtResource("4_ptype")]([ExtResource("5_trail1"), ExtResource("6_trail2")])
 explosion = Array[ExtResource("4_ptype")]([ExtResource("7_b1"), ExtResource("8_b2"), ExtResource("9_b3"), ExtResource("10_b4")])
 

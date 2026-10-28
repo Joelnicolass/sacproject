@@ -14,8 +14,8 @@ enum Where { WIZARD, AHEAD_OF_WIZARD, AIM }
 
 ## Who the click may name.
 @export var target: SpellTarget
-## The key of the carrier scene in SpellSpawner.projectiles.
-@export var kind := ""
+## The carrier scene it sends (its root is a SpellCarrier).
+@export var carrier: PackedScene
 ## A click on the ground is a valid aim (Death); the carrier then has no target body.
 @export var ground_ok := false
 @export_group("Birth")
@@ -38,8 +38,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if target == null:
 		warnings.append("Falta `target`: quién es un blanco válido.")
-	if kind.is_empty():
-		warnings.append("Falta `kind`: la clave del portador en SpellSpawner.projectiles.")
+	if carrier == null:
+		warnings.append("`carrier` is empty: drag the carrier scene.")
 	return warnings
 
 
@@ -85,15 +85,17 @@ func cancel() -> void:
 
 
 func _spawn(wizard: WizardBody, spell: SpellType) -> void:
+	if carrier == null:
+		push_error("CarrierAction %s: `carrier` is empty, nothing is sent." % name)
+		return
 	var spawner := SpellSpawner.of(get_tree())
 	if spawner == null:
 		push_warning("CarrierAction: no hay SpellSpawner (grupo spell_spawner).")
 		return
 	var at := _birth(wizard, _aim) - Vector3.UP * depth_m
-	var data := LaunchPoint.projectile_data(wizard, spell, at, _aim.target, _aim.point)
-	data["damage_range"] = spell.damage_range_m
-	data["cast_ticks"] = _ticks
-	_carrier = spawner.spawn_projectile(kind, data) as SpellCarrier
+	var launch := ProjectileLaunch.toward(wizard, spell, at, _aim.target, _aim.point)
+	launch.cast_ticks = _ticks
+	_carrier = spawner.spawn_launch(carrier, launch) as SpellCarrier
 	_released = false
 	if _carrier != null:
 		_carrier.begin(wizard, spell, _aim.target, _aim.point, _ticks if spawn_when == When.START else 0)

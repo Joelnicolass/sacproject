@@ -7,7 +7,6 @@ extends SpellAction
 ## Ref: sacengine castLightning
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## The bolt of the strike. Empty = it strikes unseen.
 ## Ref: RFC-029 029d.
@@ -28,14 +27,14 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 
 
 func finish(wizard: WizardBody, spell: SpellType, body: Node3D) -> String:
-	if body == null or not _ROCK.is_live_body(body):
+	if body == null or not ProjectileTargets.is_live_body(body):
 		return ""
 	## F130: DamageMod.lightning, which charges a Storm Giant.
 	## Ref: state.d:9017-9022
 	var taken := (body.get_node("Health") as Health).damage_typed(float(spell.damage), _HEALTH.DIRECT_SPELL, wizard.owner_slot, false, false, _HEALTH.LIGHTNING)
-	_ROCK.report(body, taken, _HEALTH.DIRECT_SPELL)
+	ProjectileTargets.report(body, taken, _HEALTH.DIRECT_SPELL)
 	if beam != null:
-		FxBus.broadcast_beam(beam, _origin(wizard), _ROCK.body_center(body), body)
+		FxBus.broadcast_beam(beam, _origin(wizard), ProjectileTargets.body_center(body), body)
 	return ""
 
 

@@ -11,7 +11,7 @@ extends Node3D
 ## A creature with passives (the Firefist's fury, the Phoenix's shield) has a `Passives` child: an instance of `<name>_passives.tscn`,
 ## whose nodes carry the numbers in the inspector.
 
-## The model id that travels in the network packets (what the original calls the body); read only, the tool writes it.
+## The model id that travels in the network packets; read only, the tool writes it.
 @export var model_id := ""
 @export_group("Bounds")
 ## The capsule the body collides with on the ground (height floors at 0.6 m, radius at most 0.45 of the height).
@@ -42,21 +42,21 @@ extends Node3D
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if capsule == null or not capsule.shape is CapsuleShape3D:
-		warnings.append("Falta `capsule` (CollisionShape3D con una CapsuleShape3D).")
+		warnings.append("Missing `capsule` (a CollisionShape3D with a CapsuleShape3D).")
 	if flying_capsule != null and not flying_capsule.shape is CapsuleShape3D:
-		warnings.append("`flying_capsule` tiene que llevar una CapsuleShape3D.")
+		warnings.append("`flying_capsule` must hold a CapsuleShape3D.")
 	if footprint == null or not footprint.shape is CylinderShape3D:
-		warnings.append("Falta `footprint` (CollisionShape3D con una CylinderShape3D).")
+		warnings.append("Missing `footprint` (a CollisionShape3D with a CylinderShape3D).")
 	if reach == null or center == null or top == null:
-		warnings.append("Faltan marcadores: `reach`, `center` y `top`.")
+		warnings.append("Missing markers: `reach`, `center` and `top`.")
 	if look == null:
-		warnings.append("Falta `look`: el nodo `Look` con la apariencia (<nombre>_look.tscn) como instancia, «Cargar como placeholder».")
+		warnings.append("Missing `look`: the `Look` node with the look (<name>_look.tscn) as an instance, «Load As Placeholder».")
 	elif look.scene_file_path.is_empty() and not look is InstancePlaceholder:
-		warnings.append("`look` tiene que ser la instancia de <nombre>_look.tscn.")
+		warnings.append("`look` must be the instance of <name>_look.tscn.")
 	elif not look is InstancePlaceholder and not look.get_scene_instance_load_placeholder():
-		warnings.append("`look` tiene que cargarse como placeholder (clic derecho › Cargar como placeholder): si no, el servidor carga el modelo y los sonidos.")
+		warnings.append("`look` must load as a placeholder (right click › Load As Placeholder): otherwise the server loads the model and the sounds.")
 	if model_id.is_empty():
-		warnings.append("`model_id` vacío: el cable no sabría qué modelo dibujar.")
+		warnings.append("`model_id` is empty: the network would not know which model to draw.")
 	if passives != null and passives.scene_file_path.is_empty():
 		warnings.append("`passives` must be the instance of <name>_passives.tscn.")
 	elif passives != null and is_editable_instance(passives):

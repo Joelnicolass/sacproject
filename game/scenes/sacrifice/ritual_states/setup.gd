@@ -2,7 +2,6 @@ extends RitualStep
 
 ## Preparation (rules.ritual_setup_s, 5 s): the four doctors stand on the ring and the creature rises
 ## over the site (Ritual moves it).
-## Ref: sacengine setupTime; state.d:2713
 
 
 func enter() -> void:

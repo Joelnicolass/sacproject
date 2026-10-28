@@ -18,7 +18,6 @@ static func leaves_soul(souls: int, burst: bool) -> bool:
 ## The doctor carrying `kind` died. A body that was being pumped back to life dies again, always. A carried one dies
 ## when it is dropped only if the match says so (`dies_when_dropped`, MatchRules.carried_dies_when_dropped); otherwise
 ## it lands alive and stunned. A body that is already dead stays dead.
-## Ref: sacengine frees a carried creature alive (state.d:15776-15779): dying on the drop is our own rule.
 static func on_carrier_lost(kind: Carried, alive: bool, dies_when_dropped: bool) -> Outcome:
 	if not alive or kind == Carried.REVIVING:
 		return Outcome.DROP_DEAD

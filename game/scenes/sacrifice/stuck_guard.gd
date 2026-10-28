@@ -2,13 +2,12 @@
 class_name StuckGuard
 extends Node
 
-## Not in the original, which pushes until the doctor dies or the target stops being valid. Since 024d the
-## carrying doctor walks by a PathFollower (DoctorBody.walk_to), but the ritual's doctors do not, and a path
+## The carrying doctor walks by a PathFollower (DoctorBody.walk_to), but the ritual's doctors do not, and a path
 ## can still end against a body or an edge the grid does not know, where the doctor would hold its cargo forever.
 ## While the body walks, every `window_s` seconds it checks it got `progress_m` closer to the goal; if
 ## not it nudges the body sideways (alternating sides). After `rules.doctor_stuck_abort_s` seconds
 ## without progress it gives up: the body emits `stuck` and dies. Remove this node (or set the rule
-## to 0) and the original behavior is back. Server only.
+## to 0) and the doctor pushes until it dies or the target stops being valid. Server only.
 
 signal dodged
 signal gave_up
@@ -23,7 +22,7 @@ signal gave_up
 @export var dodge_s := 1.0
 
 var _best := INF
-## The goal the progress is measured against: a PathFollower hands the body one leg after another (RFC-024 024d), and a leg that
+## The goal the progress is measured against: a PathFollower hands the body one leg after another, and a leg that
 ## starts farther than the best distance of the last one is not «no progress»: it starts the measure again.
 var _goal := Vector3.INF
 var _window_left := 0.0
@@ -113,5 +112,5 @@ func _reset() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if body == null:
-		out.append("Asigná `body` (el DoctorBody que vigila).")
+		out.append("Assign `body` (the DoctorBody it watches).")
 	return out

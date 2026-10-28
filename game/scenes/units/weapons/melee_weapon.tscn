@@ -3,5 +3,5 @@
 [ext_resource type="Script" path="res://scenes/units/weapons/melee_weapon.gd" id="1_melee"]
 
 [node name="Melee" type="Node"]
-editor_description = "Golpe cuerpo a cuerpo: un solo golpe a la vez, con el tiempo del clip de ataque de la criatura. Suelta esta escena bajo Weapons para dar un golpe a una criatura; el orden de los hijos de Weapons es la prioridad. Las cajas (start_factor, forward_factor, height_factor) y el castigo de resistencia se editan aca. Lo que agrega un golpe que conecta (el Congelar del Yeti) son los MeleeOnHit del <nombre>_passives.tscn de la criatura."
+editor_description = "A melee blow: one blow at a time, timed by the creature's attack clip. Drop this scene under Weapons to give a creature a blow; the order of the Weapons children is the priority. The boxes (start_factor, forward_factor, height_factor) and the resistance penalty are edited here. What a blow that connects adds (the Yeti's Freeze) are the MeleeOnHit nodes of the creature's <name>_passives.tscn."
 script = ExtResource("1_melee")

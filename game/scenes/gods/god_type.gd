@@ -5,7 +5,6 @@ extends Resource
 ## A god: everything the game knows about one, in one file `data/gods/<tag>.tres`. Adding a god is adding
 ## that file; no code lists the gods. Read-only at runtime, like the other types.
 ## The book, the look and the casting particle sit in the file as references (how the AI plays is its seat's, not the god's).
-## Ref: RFC-042 042a.
 
 @export var tag: String = ""
 @export var display_name: String = ""
@@ -19,7 +18,7 @@ extends Resource
 @export var book: GodBook
 ## The towers this god raises: one row per structure spell (Manalith, Shrine) with the scene of its own model.
 @export var structures: Array[GodStructure] = []
-## Lobby (055i-a): false takes this god out of the menu, the AI picker and the rooms without deleting the file.
+## Lobby: false takes this god out of the menu, the AI picker and the rooms without deleting the file.
 @export var offered := true
 
 

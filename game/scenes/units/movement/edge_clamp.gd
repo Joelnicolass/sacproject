@@ -7,7 +7,6 @@ extends RefCounted
 ## the heightmap, the common case ends there); only when it is not, the navmesh gives the closest land point and the
 ## step is cut to it (the navmesh edge is inset by the agent radius, so the capsule stays over the ground). Without a
 ## NavService the horizontal step is dropped. A body thrown on purpose (Tumbling) is not clamped: it falls.
-## Ref: RFC-036 036h (F209).
 
 
 ## `velocity` whose horizontal step from the body's position this tick stays on the land. Y is kept.

@@ -36,8 +36,8 @@ func _on_connected(target: Node3D, was_frozen: bool) -> void:
 		return
 	var took := affliction.inflict(spell, int(body.owner_slot))
 	if DebugLog.on(&"on_hit"):
-		var said := "aplicada" if took else "sin efecto"
-		print("pasiva %s %s → %s %s (tick %d)" % [spell.tag, body.name, target.name, said, MatchClock.now()])
+		var said := "applied" if took else "no effect"
+		print("passive %s %s → %s %s (tick %d)" % [spell.tag, body.name, target.name, said, MatchClock.now()])
 
 
 func _flies(target: Node) -> bool:

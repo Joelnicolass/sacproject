@@ -5,7 +5,6 @@ extends Node3D
 ## Afflictions, which owns the questions the body asks and the replicated mask. Whether it is on is that mask's bit
 ## (`type.bit`), the same on the server and on the clients. Variants start themselves (stun_with_cooldown, petrify…)
 ## through Afflictions.admit/mark and draw themselves in _shown().
-## Ref: F120 (RFC-030i).
 
 ## The state went on (true) or off (false). Every peer, from the replicated mask: whoever draws it (a look, an emitter) listens here.
 signal shown_changed(on: bool)
@@ -20,7 +19,6 @@ func is_on() -> bool:
 
 ## An on-hit passive (MeleeOnHit) or a spell lays this state on the body with `spell` from the side `from_slot`. True when it
 ## took hold. Default: this state is not laid that way.
-## Ref: F158.
 func inflict(_spell: SpellType, _from_slot: int) -> bool:
 	return false
 
@@ -44,8 +42,7 @@ func lay_ticks(_spell: SpellType) -> int:
 
 ## How many ticks a crowd-control state lasts: ceil(ticks per second · duration), duration =
 ## (wizard ? 0.25 : 1000 / max health) · the spell's duration. Plain GDScript floats: a tick of difference from
-## the original's float32 is accepted. 0 for a creature with no health.
-## Ref: sacengine Freeze 10701-10702, Grasping Vines 10806; RFC-036e.
+## float32 is accepted. 0 for a creature with no health.
 static func cc_ticks(wizard: bool, max_health: float, spell_duration: float, creature_k := 1000.0, wizard_factor := 0.25) -> int:
 	var seconds := wizard_factor * spell_duration
 	if not wizard:

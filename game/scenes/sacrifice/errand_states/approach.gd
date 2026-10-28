@@ -6,7 +6,6 @@ extends ErrandStep
 ## Convert: if the soul is not there to convert any more (somebody took it, its corpse is gone) or the site fell, the doctor dies;
 ## closer than `pump_reach_m` (on the plane) it goes on to Pump. Nothing to undo if the doctor dies here, but a Convert soul becomes
 ## convertible again.
-## Ref: sacengine SacDocCarry `walk`, state.d:15676-15722.
 
 
 func physics_update(_delta: float) -> void:

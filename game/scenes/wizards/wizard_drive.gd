@@ -3,14 +3,13 @@ class_name WizardDrive
 extends Node
 
 ## The one writer of a wizard's movement each tick. `step` is what `WizardBody.mp_move` runs: the kit runs it on the server for every
-## frame of the owner's keys, on the owner at once with its own keys and again when it reconciles, and an AI seat or a bench body
+## frame of the owner's keys, on the owner at once with its own keys and again when it reconciles, and an AI seat or a test-scene body
 ## runs it with no keys at all. A step reads only what travels in the MpSync (the pose, `velocity`, `speed_factor`, `locked`) and the
 ## keys, so the server, the owner and a replay get the same answer; the walk orders (`walking`, `goal`) are the server's alone.
 ## Owns `locked`: the server derives it every step from what holds the wizard (a stun or a tumble, a structure cast, a ghost that
 ## cannot move, the seating), and the owner reads the copy that arrived, because `Caster.holds_wizard` is not true on a client.
 ## Not: where the keys come from (`WizardBody` sets the values `forward` and `yaw` of its MpInput), the slide and the fall
 ## (Locomotion), the pose of a client (MpActor), nor what a fall means (the body).
-## Ref: RFC-072 2a, state.d:93-145, 1140-1142.
 
 ## The keys' `forward` and `yaw` are the only inputs; anything else a peer sends is dropped by `_forward_of` and `_yaw_of`.
 @export var body: WizardBody
@@ -32,7 +31,7 @@ var moving := false
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if body == null or locomotion == null or afflictions == null or caster == null or ghost == null:
-		return PackedStringArray(["Asigná body, locomotion, afflictions, caster y ghost."])
+		return PackedStringArray(["Assign body, locomotion, afflictions, caster and ghost."])
 	return PackedStringArray()
 
 
@@ -46,7 +45,7 @@ func step(keys: MpInput, delta: float) -> void:
 			return
 		held = afflictions.holds() or caster.holds_wizard()
 		locked = held or not ghost.can_move()
-		## A held wizard keeps its order and waits; one that cannot move at all forgets it.
+		# A held wizard keeps its order and waits; one that cannot move at all forgets it.
 		walking = walking and (held or not locked)
 	locomotion.begin(delta)
 	var forward := 0.0

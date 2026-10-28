@@ -3,7 +3,7 @@ extends RefCounted
 
 ## The swing in course: how long it lasts, the frames where its blows land and the share of the damage each carries. It is read
 ## once when the swing starts, so the ticks that follow read only variables. Not: whether a blow hits (MeleeWeapon).
-## Ref: sacengine startMeleeAttacking (state.d:8725); an animation without attack events hits on its last frame (sacobject.d:420).
+## An animation without attack events hits on its last frame.
 
 ## Used when the model has no attack clip: the humanoid swing, 24 frames at 30 fps with the blow on frame 15.
 const FALLBACK_FRAMES := 24

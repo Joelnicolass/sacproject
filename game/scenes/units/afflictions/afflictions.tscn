@@ -82,7 +82,7 @@ play_on_ready = false
 active = false
 
 [node name="IceBlock" type="MeshInstance3D" parent="Frozen" node_paths=PackedStringArray("affliction")]
-editor_description = "El bloque de hielo (frez). Alfa 0.753 = 192/255 del SPEL; sacengine usa 0.2 (cambiar el alfa de albedo_color en ice_block.tres). Brillo: albedo_color > 1."
+editor_description = "The ice block (frez). Alpha 0.753 = 192/255 of the SPEL (change the alpha of albedo_color in ice_block.tres). Glow: albedo_color > 1."
 top_level = true
 visible = false
 cast_shadow = 0
@@ -202,7 +202,7 @@ play_on_ready = false
 active = false
 
 [node name="RingsLook" type="Node3D" parent="RingsOfFire" node_paths=PackedStringArray("affliction")]
-editor_description = "Anillos de 30 llamas firy aditivas (energia 8, como el original). Variante del puerto sobre nieve: firy_a.png con additive = false en data/fx/rings_flame.tres."
+editor_description = "Rings of 30 additive firy flames (energy 8). Variant over snow: firy_a.png with additive = false in data/fx/rings_flame.tres."
 script = ExtResource("32_rings_look")
 affliction = NodePath("..")
 

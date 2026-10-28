@@ -6,7 +6,6 @@ extends Node
 ## MultiplayerSpawner and its root (they stay where the network paths expect them) and one counter that names its nodes
 ## (Doctor%d, Vortex%d, Ritual%d). The server (or solo) spawns; clients only receive through the spawners.
 ## What it does not do: decide where or when something spawns (SacrificeCasts and RitualStarter do) or hold the rules.
-## Ref: sacengine sacDoc castings and ritual state, state.d:15489-15866.
 
 const CARRIER := preload("res://scenes/sacrifice/carrier_doctor.tscn")
 const RITUAL_DOCTOR := preload("res://scenes/sacrifice/ritual_doctor.tscn")
@@ -38,19 +37,19 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if system == null:
-		warnings.append("Asigná `system` (SacrificeSystem que da las reglas).")
+		warnings.append("Assign `system` (the SacrificeSystem that gives the rules).")
 	if doctors_root == null:
-		warnings.append("Asigná `doctors_root` (Node3D donde nacen los doctores).")
+		warnings.append("Assign `doctors_root` (the Node3D where the doctors spawn).")
 	if doctor_spawner == null:
-		warnings.append("Asigná `doctor_spawner` (MpSpawner de carrier_doctor.tscn).")
+		warnings.append("Assign `doctor_spawner` (the MpSpawner of carrier_doctor.tscn).")
 	if vortices_root == null:
-		warnings.append("Asigná `vortices_root` (Node3D donde nacen los vórtices).")
+		warnings.append("Assign `vortices_root` (the Node3D where the vortices spawn).")
 	if vortex_spawner == null:
-		warnings.append("Asigná `vortex_spawner` (MpSpawner de red_vortex.tscn).")
+		warnings.append("Assign `vortex_spawner` (the MpSpawner of red_vortex.tscn).")
 	if rituals_root == null:
-		warnings.append("Asigná `rituals_root` (Node3D donde nacen los rituales).")
+		warnings.append("Assign `rituals_root` (the Node3D where the rituals spawn).")
 	if ritual_spawner == null:
-		warnings.append("Asigná `ritual_spawner` (MpSpawner de ritual.tscn).")
+		warnings.append("Assign `ritual_spawner` (the MpSpawner of ritual.tscn).")
 	return warnings
 
 
@@ -122,7 +121,7 @@ func _make_ritual(data: Variant) -> Node:
 	ritual.target_slot = int(info.get("target", 0))
 	ritual.creature_path = NodePath(str(info.get("creature", "")))
 	ritual.rules = system.active_rules()
-	## 055g 9.2: the ritual asks its system what a finished Convert announces. set() until the ritual declares `system` (g3).
+	# The ritual asks its system what a finished Convert announces. set() until the ritual declares `system`.
 	ritual.set(&"system", system)
 	return ritual
 

@@ -3,16 +3,15 @@ extends Node3D
 
 ## A creature's ranged attack with no flight, in place of a RangedShot: the Gnome's ray (plfa),
 ## the Styx's bolt at the next tick (dhga) and the
-## Warmonger's gun (fhga, 030m-b). The scene is ShotLook.strike; RangedFire instances it on the server (or solo) only,
+## Warmonger's gun (fhga). The scene is ShotLook.strike; RangedFire instances it on the server (or solo) only,
 ## as its own child, and calls launch() once. The strike is not replicated: what peers see goes through FxBus.
 ##
 ## Ticks: launch() runs tick 0 in the tick of the shot; then every physics tick runs the ticks MatchClock advanced
-## since (1, 2, …). The scene's process_physics_priority is −1: the original updates its effects before its creatures.
+## since (1, 2, …). The scene's process_physics_priority is −1: effects update before creatures.
 ## Variants override _strike_tick() and call finish() when done.
 ##
 ## Same names as RangedShot, so a ShotImpact reads either: damage, from_slot, velocity, ability, target_path,
 ## shooter_path.
-## Ref: F124 (RFC-030 030m), sacengine gnomeShoot state.d:11724-11735, StyxShoot 11852-11855, 24154-24172, effects before creatures 29331 vs 29345.
 
 
 ## Already scaled by the shooter (attack_factor).

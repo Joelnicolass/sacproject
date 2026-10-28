@@ -6,40 +6,36 @@ extends Affliction
 ## the target and calls start(); the target's own states (Stunned, Tumbling) keep what they own and are asked by their API.
 ##
 ## One update per tick from the tick after start() (frame 1, 2, …), before the bodies move (process priority −1,
-## like the other effects): nothing is checked while the first 20 ticks last (numShootFrames). Then, each tick:
-##   1. the user must still be pulling and the target a valid body (isValidAttackTarget); at a pull tick the target must
-##      still be applicable to the ability (checkAbility; range, mana and cooldown do not count for a ranged ability);
+## like the other effects): nothing is checked while the first 20 ticks last. Then, each tick:
+##   1. the user must still be pulling and the target a valid body; at a pull tick the target must
+##      still be applicable to the ability (range, mana and cooldown do not count for a ranged ability);
 ##   2. thread = target center − (user center + 0.5 · forward); velocity = −pull_speed · thread/|thread|;
 ##   3. it ends when it already pulled once, the target's box is within `min_thread` of the user's center and the window ran
 ##      out or the thread does not go below −0.5 · min_thread (a pulled body that is not far under the user);
 ##   4. a tumbling target that goes away (farther than 1.05 · the smallest radius so far and moving along the thread
 ##      faster than 1.5, or backwards faster than 0.2 of its climb) is pulled at once (the extra pull);
 ##   5. at a pull tick (the clip's last frame, every `loop_ticks`, or the extra pull): numPulls += 1,
-##      velocity.y += 5 · fallingAcceleration / 60, Stunned.stun_with_cooldown(stun_s) (only the first one stuns: the
+##      velocity.y += 5 · falling acceleration / 60, Stunned.stun_with_cooldown(stun_s) (only the first one stuns: the
 ##      cooldown runs), Tumbling.catapult(velocity), window = pull_s. Else, for the next pull_s (in ticks) − 1 ticks: a
 ##      tumbling target takes `velocity` (Tumbling.drive), one on the ground is pushed by velocity / 60 (BodyNudge.push);
 ##   6. with max_pulls pulls done it ends at the last tick of the clip loop (frame + 1 >= numFrames · 2).
 ## Ending (a thread cut, the target gone, the user stunned or dead…) always goes through _finish(): the break FX at the
-## target, the bit off, and the user is free again (idle, as startIdling).
+## target, the bit off, and the user is free again (idle).
 ##
 ## The thread (hilo) is a presentation scene (Pull.thread_scene) played on every peer by FxBus.broadcast_scene once; it
 ## follows the two bodies by itself while this state's bit is on.
 ##
-## Divergences (declared): a structure or a soul on the way does not become the target (the original's ray would stop there and
-## the pull would end at frame 20); the user does not walk closer or turn to the target; the web / cage around the target is
+## Rules: a structure or a soul on the way does not become the target; the user does not walk closer or turn to the target; the web / cage around the target is
 ## not drawn; the user keeps its idle pose (no shoot clip while it pulls).
 ##
 ## Server (or solo) only: the clients get the bit and the positions. The user's own velocity is 0 while it lasts (steer).
-## Ref: F128 (RFC-030 030q-a); sacengine mode `pulling` (startPulling, state.d:10108-10113), updatePull 25434-25519.
 
 
 ## No check while the thread flies out.
-## Ref: sacengine Pull.numShootFrames.
 const SHOOT_FRAMES := 20
 ## unit_orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 ## The extra pull and the lift of every pull.
-## Ref: sacengine updatePull 25462-25481, 25485.
 const OUTWARD_RADIUS_FACTOR := 1.05
 const OUTWARD_SPEED := 1.5
 const BACKWARD_FACTOR := 0.2
@@ -64,14 +60,13 @@ static func of(body: Node) -> Pulling:
 
 func _ready() -> void:
 	set_physics_process(false)
-	## The original updates its effects before its creatures: the pull sets the target's velocity before the target steps.
+	# Effects update before creatures: the pull sets the target's velocity before the target steps.
 	process_physics_priority = -1
 
 
 ## Server (or solo): starts the pull. `loop_ticks`: the user's clip loop (frames · 2). `pull_frame`:
 ## the tick of the clip (counted from the order) at which it pulls, its last frame ((frames − 1) · 2). The first pull falls
 ## at the fire tick − effect.windup() + pull_frame. True when it started (it ends a UsingAbility, the type's `cancels`).
-## Ref: sacengine startPulling + the Pull effect.
 func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bool:
 	var body := _body()
 	if not is_multiplayer_authority() or body == null or effect == null or target == null or loop_ticks <= 0 or is_on():
@@ -95,13 +90,12 @@ func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bo
 	set_physics_process(true)
 	_throw_thread(body)
 	if DebugLog.on(&"pull"):
-		print("tirón %s → %s inicio blanco a %.3f m (tick %d)" % [
+		print("pull %s → %s start target at %.3f m (tick %d)" % [
 			AbilityEffect.who(body), AbilityEffect.who(target), body.global_position.distance_to(target.global_position), _fired])
 	return true
 
 
 ## The user does not move while it pulls (mode pulling has no movement).
-## Ref: sacengine.
 func steer(_velocity: Vector3, _delta: float) -> Vector3:
 	return Vector3.ZERO
 
@@ -123,14 +117,14 @@ func _physics_process(_delta: float) -> void:
 		_finish("cortado")
 		return
 	if not Pull.is_live(_target):
-		_finish("blanco inválido")
+		_finish("invalid target")
 		return
 	var pull_now := false
 	while now >= _next_pull:
 		pull_now = pull_now or now == _next_pull
 		_next_pull += _loop
 	if pull_now and not _effect.applicable(_target):
-		_finish("blanco no aplicable")
+		_finish("target not applicable")
 		return
 	var forward := _forward(body)
 	var user_center := BodyNudge.center(body)
@@ -153,7 +147,7 @@ func _physics_process(_delta: float) -> void:
 			if (-forward).dot(tumbling.velocity) > BACKWARD_FACTOR * tumbling.velocity.y:
 				pull_now = true
 	_radius = minf(_radius, (target_center - user_center).length())
-	var action := "nada"
+	var action := "nothing"
 	if pull_now:
 		_pulls += 1
 		velocity.y += LIFT_FACTOR * _fall_acceleration(tumbling) / MatchClock.TICKS_PER_SECOND_F
@@ -161,11 +155,11 @@ func _physics_process(_delta: float) -> void:
 		if tumbling != null:
 			tumbling.catapult(velocity, int(body.get("owner_slot")) if "owner_slot" in body else 0)
 		_window = MatchClock.ticks_for(_effect.pull_s)
-		action = "tirón"
+		action = "pull"
 		if DebugLog.on(&"pull"):
-			print("tirón %d %s → %s v (%.4f, %.4f, %.4f) hilo (%.4f, %.4f, %.4f) aturde %s (tick %d)" % [
+			print("pull %d %s → %s v (%.4f, %.4f, %.4f) thread (%.4f, %.4f, %.4f) stuns %s (tick %d)" % [
 				_pulls, AbilityEffect.who(body), AbilityEffect.who(_target), velocity.x, velocity.y, velocity.z,
-				thread.x, thread.y, thread.z, "sí" if stunned else "no", now])
+				thread.x, thread.y, thread.z, "yes" if stunned else "no", now])
 	else:
 		_window -= 1
 		if _window > 0:
@@ -173,13 +167,13 @@ func _physics_process(_delta: float) -> void:
 				tumbling.drive(velocity)
 			else:
 				BodyNudge.push(_target, velocity)
-			action = "ventana"
+			action = "window"
 	if DebugLog.on(&"pull") and _pulls >= 1:
-		print("paso %s → %s centro (%.3f, %.3f, %.3f) hilo y %.4f caja %.4f ventana %d accion %s (tick %d)" % [
+		print("step %s → %s center (%.3f, %.3f, %.3f) thread y %.4f box %.4f window %d action %s (tick %d)" % [
 			AbilityEffect.who(body), AbilityEffect.who(_target), target_center.x, target_center.y, target_center.z,
 			thread.y, box, checked_window, action, now])
 	if _pulls >= _effect.max_pulls and (now - _clip_origin) % _loop + 1 >= _loop:
-		_finish("4 tirones", box, thread.y)
+		_finish("4 pulls", box, thread.y)
 
 
 ## The one way out: the break FX at the target, the bit off, one line in the log. Idempotent.
@@ -200,7 +194,7 @@ func _finish(reason: String, box := NAN, thread_y := 0.0) -> void:
 		_afflictions().mark(self, false)
 	set_physics_process(false)
 	if DebugLog.on(&"pull"):
-		print("tirón fin %s → %s por %s tirones %d caja %.4f hilo y %.4f ventana %d bit %d centro (%.3f, %.3f, %.3f) (tick %d)" % [
+		print("pull end %s → %s by %s pulls %d box %.4f thread y %.4f window %d bit %d center (%.3f, %.3f, %.3f) (tick %d)" % [
 			AbilityEffect.who(body), AbilityEffect.who(target) if target != null and is_instance_valid(target) else "?", reason,
 			_pulls, box, thread_y, _window, 1 if is_on() else 0, center.x, center.y, center.z, MatchClock.now()])
 	_target = null
@@ -223,7 +217,7 @@ func _stun() -> bool:
 	return stunned != null and stunned.stun_with_cooldown(MatchClock.ticks_for(_effect.stun_s))
 
 
-## The target's fallingAcceleration (CreatureStats): its Tumbling's, else the default of a creature.
+## The target's falling acceleration (CreatureStats): its Tumbling's, else the default of a creature.
 static func _fall_acceleration(tumbling: Tumbling) -> float:
 	return tumbling.falling_acceleration if tumbling != null else 9.81
 
@@ -237,7 +231,6 @@ static func _forward(body: Node3D) -> Vector3:
 
 
 ## Distance from `point` to the nearest point of the box (0 inside it).
-## Ref: sacengine boxPointDistance.
 static func box_distance(box: AABB, point: Vector3) -> float:
 	var low := box.position
 	var high := box.end

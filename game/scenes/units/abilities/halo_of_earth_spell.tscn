@@ -7,7 +7,7 @@
 [ext_resource type="Resource" path="res://data/fx/halo_emerge.tres" id="fx_halo_emerge"]
 
 [node name="HaloOfEarth" instance=ExtResource("1_halo")]
-editor_description = "Halo of Earth del mago (olah): el mismo coordinador que el del Rhinok. LaunchAction lo crea al empezar el lanzamiento (las rocas salen escalonadas, floor((progreso + 0.1) x 6), y solo orbitan) y lo suelta al terminar. Las rocas nacen en la caja del mago x2,5."
+editor_description = "The wizard's Halo of Earth (olah): the same coordinator as the Rhinok's. LaunchAction creates it when the cast starts (the rocks come out staggered, floor((progress + 0.1) x 6), and only orbit) and releases it when the cast ends. The rocks spawn in the wizard's box x2.5."
 spawn_box_scale = 2.5
 emerge_fx = ExtResource("fx_halo_emerge")
 emerge_extra = Array[ParticleType]([ExtResource("3_dirt"), ExtResource("4_dust")])

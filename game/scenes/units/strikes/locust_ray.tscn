@@ -5,7 +5,7 @@
 
 [node name="LocustRay" type="Node3D"]
 process_physics_priority = -1
-editor_description = "F166 (RFC-030 030w-d). El rayo de la Locust (zbba, locustShoot 11527-11531, updateLocustShoot 22992-23005): un solo rayo en el tick del disparo, alcance de la habilidad (50), frena en el primer cuerpo vivo de cualquier bando que no sea el tirador (Health decide el fuego amigo), el suelo o una estructura. Sin blanco se dibuja a 0,5 del alcance (miss_fraction). Daño directo por ShotImpact.land (ShotLook zbba sin impact). Beam locust_ray: provisorio (deuda: las partículas de sangre o escombro que viajan hacia la Locust, LocustProjectile 23007-23022)."
+editor_description = "The Locust's ray (zbba): one ray on the tick of the shot, the ability's range (50), stopped by the first live body of any side but the shooter (Health decides friendly fire), the ground or a structure. With no target it is drawn at 0.5 of the range (miss_fraction). Direct damage by ShotImpact.land (ShotLook zbba with no impact). Beam locust_ray: provisional (debt: the blood or debris particles that travel toward the Locust)."
 script = ExtResource("1_ray")
 bursts = 1
 first_tick = 0

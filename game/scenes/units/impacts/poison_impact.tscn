@@ -3,5 +3,5 @@
 [ext_resource type="Script" path="res://scenes/units/impacts/poison_impact.gd" id="1_poison"]
 
 [node name="PoisonImpact" type="Node"]
-editor_description = "Disparos de veneno (Deadeye lfda, Hellmouth mhba): criatura o mago → el tirador se cura amount·drain y el blanco recibe una dosis (amount/duración/1,3 por segundo, duración·60 cuadros, ranged directo); edificio → amount de daño directo a distancia."
+editor_description = "Poison shots (Deadeye lfda, Hellmouth mhba): creature or wizard → the shooter heals amount·drain and the target takes a dose (amount/duration/1.3 per second, duration·60 frames, direct ranged); building → amount of direct ranged damage."
 script = ExtResource("1_poison")

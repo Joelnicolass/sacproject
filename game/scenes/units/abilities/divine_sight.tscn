@@ -4,6 +4,6 @@
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/divine_sight_eye.tscn" id="2_eye"]
 
 [node name="DivineSight" type="Node"]
-editor_description = "F133/F165 (RFC-030): efecto propio del Divine Sight del Ranger (eesd). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Sin blanco ni preparación: lanza el ojo (divine_sight_eye.tscn) 2 m delante del usuario, hacia donde mira, a la velocidad del SPEL (30 m/s). Maná 50 y enfriamiento 25 s los cobra AbilitySlot."
+editor_description = "The Ranger's Divine Sight effect (eesd). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). No target and no preparation: it throws the eye (divine_sight_eye.tscn) 2 m ahead of the user, where it faces, at the SPEL's speed (30 m/s). AbilitySlot charges the mana (50) and the cooldown (25 s)."
 script = ExtResource("1_sight")
 eye_scene = ExtResource("2_eye")

@@ -251,7 +251,7 @@ body = NodePath("../..")
 health = NodePath("../../Health")
 
 [node name="CastColumn" type="CPUParticles3D" parent="Wards/HealingAura" node_paths=PackedStringArray("ward")]
-editor_description = "Mientras el mago lanza Healing Aura: seis chispas glo2 por tick suben desde sus pies (sacengine animateHealingAuraCasting). Solo el mago la tiene: la criatura portadora no lanza."
+editor_description = "While the wizard casts Healing Aura: six glo2 sparks per tick rise from its feet. Only the wizard has it: a carrier creature does not cast."
 use_fixed_seed = true
 local_coords = false
 script = ExtResource("w_ward_emitter")

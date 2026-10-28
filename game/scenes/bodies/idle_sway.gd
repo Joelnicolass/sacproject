@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if clip_player == null:
-		out.append("Asigná `clip_player` (BodyAnimator del cuerpo).")
+		out.append("Assign `clip_player` (the body's BodyAnimator).")
 	if pivot == null:
-		out.append("Asigná `pivot` (el nodo que dibuja, p. ej. el BodyRig).")
+		out.append("Assign `pivot` (the node that draws, e.g. the BodyRig).")
 	return out

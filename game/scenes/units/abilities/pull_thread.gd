@@ -8,14 +8,12 @@ extends FxScene
 ## peer), `seed` (the shapes) and `grow_ticks` (the network sends ticks; `grow_s` without it). It ends with the bit of the user's Pulling (replicated), or when a body is
 ## gone; `wait_s` covers the clients whose bit arrives after the event. Presentation only, never headless, drawn in MIX
 ## (alpha blend, never additive).
-## WORKAROUND: the textures of the original (TXTR `cord`, `ltng`) are not in the exporter's atlases (tools/import/fx_catalog.py):
+## WORKAROUND: the `cord` and `ltng` textures are not in the exporter's atlases (tools/import/fx_catalog.py):
 ## a flat color stands in until `texture` has an atlas.
-## Divergences (declared): the web / cage mesh around the target is not drawn; the cage's shape does not reset at each pull
+## Limits: the web / cage mesh around the target is not drawn; the cage's shape does not reset at each pull
 ## (the clients do not see the pull ticks): one ramp from the start.
-## Ref: F128 (RFC-030 030q-a), F154 (030q-b); renderer.d webPulls 3551-3565, cagePulls 1931-1946, renderCord, changeShape 5126-5136.
 
 ## Time the thread takes to reach the target (20 ticks).
-## Ref: sacengine Pull.numShootFrames.
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var grow_s := 0.3333
 ## Half width of each fin (m).
 @export var width := 0.06
@@ -25,10 +23,8 @@ extends FxScene
 @export var jitter := 0.0
 @export_range(2, 32) var segments := 10
 ## The bolt takes a new shape every this long (6 ticks).
-## Ref: sacengine changeShapeDelay.
 @export_range(0.0166, 2.0, 0.0001, "suffix:s") var reshape_s := 0.1
 ## The bolt grows from nothing to its full spread over this long (2 per second).
-## Ref: sacengine boltScaleGrowth.
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var ramp_s := 0.5
 ## The thread's texture. Empty: the material's color.
 @export var texture: Texture2D
@@ -99,7 +95,6 @@ func _process(_delta: float) -> void:
 
 
 ## The user's shot position, else the muzzle socket of its body.
-## Ref: sacengine shotPosition.
 func _origin() -> Vector3:
 	var unit := _user as UnitBody
 	var ranged := unit.weapons.ranged if unit != null else null

@@ -26,7 +26,6 @@ func desecrations() -> Array[SacrificeSystem.Cast]:
 
 
 ## The cast of Desecrate starts: the vortex opens near the creature, on the wizard's side. The altar is fixed now.
-## Ref: sacengine castDesecrate with closestEnemyAltar when the cast starts, state.d:10198-10213.
 func begin_cast(wizard: WizardBody, creature: UnitBody, casting_s: float) -> SacrificeSystem.Cast:
 	var cast := SacrificeSystem.Cast.new()
 	cast.kind = Ritual.Kind.DESECRATE
@@ -41,7 +40,6 @@ func begin_cast(wizard: WizardBody, creature: UnitBody, casting_s: float) -> Sac
 
 ## The cast of Convert starts: the vortex opens past the soul as seen from the wizard, the soul is reserved for him and the altar the
 ## creature will be taken to is fixed now.
-## Ref: sacengine castConvert with closestShrine, state.d:10181-10196, 9907.
 func begin_convert_cast(wizard: WizardBody, soul: Soul, casting_s: float) -> SacrificeSystem.Cast:
 	var cast := SacrificeSystem.Cast.new()
 	cast.kind = Ritual.Kind.CONVERT
@@ -55,7 +53,6 @@ func begin_convert_cast(wizard: WizardBody, soul: Soul, casting_s: float) -> Sac
 
 
 ## The wizard died or was interrupted: the vortex closes and no doctor comes out.
-## Ref: sacengine updateSacDocCasting `interrupted`, state.d:15526-15530.
 func cancel_cast(cast: SacrificeSystem.Cast) -> void:
 	if cast != null:
 		_desecrations.erase(cast)
@@ -87,7 +84,7 @@ func finish_cast(cast: SacrificeSystem.Cast) -> String:
 			doctor.queue_free()
 		_release_soul(cast)
 		return BAD_TARGET
-	doctor.errand = errand  ## 055g 9.2: the doctor holds its errand.
+	doctor.errand = errand  # The doctor holds its errand.
 	errand.configure(cast.kind, cast.caster_slot, cast.creature, cast.site, cast.soul)
 	errand.reached_site.connect(starter.on_reached.bind(errand))
 	doctor.drop_to(cast.landing)
@@ -95,7 +92,6 @@ func finish_cast(cast: SacrificeSystem.Cast) -> String:
 
 
 ## Why the doctor does not come out when the casting time ends, or "".
-## Ref: sacengine updateSacDocCasting, state.d:15519-15545.
 func _cast_problem(cast: SacrificeSystem.Cast) -> String:
 	if cast.site == null or not is_instance_valid(cast.site) or not cast.site.is_standing():
 		return NO_ALTAR
@@ -116,7 +112,7 @@ func _on_ground(point: Vector3) -> bool:
 
 ## Opens the vortex of a cast over `target`: `beyond` hangs it past the target as seen from the caster (Convert), else on the
 ## caster's side (Desecrate). Fixes where the doctor comes out and lands.
-## Ref: sacengine castDesecrate / castConvert, state.d:10162-10213; the doctor never comes out below the ground, state.d:15489.
+## The doctor never comes out below the ground.
 func _open_vortex(cast: SacrificeSystem.Cast, target: Vector3, caster: Vector3, casting_s: float, beyond: bool) -> void:
 	var facts := system.facts()
 	var drop := SacrificeMath.drop_positions(target, caster, facts.drop_out_m, _on_ground, beyond)

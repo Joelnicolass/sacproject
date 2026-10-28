@@ -8,7 +8,7 @@ extends RefCounted
 ## Whether `node` is a creature, wizard or structure that a body of player `slot` may fight (`me` is that
 ## body, never its own foe).
 ## `by_stance`: also ask SideRelations (the SIDS of the map) whether the body's side is an enemy of `slot`. Only the target
-## of an explicit ATTACK order is asked without it (UnitBody.accepts_target, F370).
+## of an explicit ATTACK order is asked without it (UnitBody.accepts_target).
 static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance := true) -> bool:
 	if node == null or not is_instance_valid(node) or node == me or not node is Node3D:
 		return false
@@ -17,12 +17,10 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 		return false
 	if other is UnitBody and (other as UnitBody).is_summoning():
 		return false
-	## A rock is not a target.
-	## Ref: sacengine isVisibleToAI state.d:93.
+	# A rock is not a target.
 	if other is UnitBody and (other as UnitBody).is_rock_form():
 		return false
-	## Not a dying or ghost wizard.
-	## Ref: sacengine isValidAttackTarget state.d:138.
+	# Not a dying or ghost wizard.
 	if not GameBody.targetable(other):
 		return false
 	var other_slot := int(other.get("owner_slot"))
@@ -30,16 +28,14 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 		return false
 	if by_stance and not SideRelations.is_enemy(slot, other_slot):
 		return false
-	## A body of health 0 (a gravestone, a fence) can
-	## not be damaged, so it is no foe, by stance or not (F370). Shots still hit it: that is physics.
-	## Ref: sacengine isValidAttackTarget / canDamage state.d:12426-12432, 9091.
+	# A body of health 0 (a gravestone, a fence) can
+	# not be damaged, so it is no foe, by stance or not. Shots still hit it: that is physics.
 	var health := other.get_node_or_null("Health") as Health
 	return health != null and health.maximum > 0.0 and not health.is_dead()
 
 
-## Whether `node` is a creature that never picks a fight: CRE8 aggressiveness 0 (isPacifist) or a villager, whose
-## Brain never attacks whatever its data says. One owner (F372): TargetPicker weighs these `passive_weight`.
-## Ref: sacobject.d:84.
+## Whether `node` is a creature that never picks a fight: CRE8 aggressiveness 0 or a villager, whose
+## Brain never attacks whatever its data says. One owner: TargetPicker weighs these `passive_weight`.
 static func is_passive(node: Node) -> bool:
 	if not node is UnitBody:
 		return false

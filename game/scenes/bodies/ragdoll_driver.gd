@@ -3,7 +3,7 @@ extends Node
 
 ## Lets a body fall, or hang, like a rag doll with the physical skeleton of its model (BodyModel.ragdoll). FALL throws the body a
 ## little away and after `settle_s` freezes the pose and stops the physics, so a field of corpses costs nothing. HANG leaves the hang
-## bone out of the physics (it rides the frozen skeleton) and lets the rest dangle on wide cones (055a-5j). Bones only meet the terrain
+## bone out of the physics (it rides the frozen skeleton) and lets the rest dangle on wide cones. Bones only meet the terrain
 ## (layer 16, mask 1). It moves the model only (the simulation never reads it; a server mounts no model, so it never binds) and does not decide when.
 
 ## The ragdoll started to fall.

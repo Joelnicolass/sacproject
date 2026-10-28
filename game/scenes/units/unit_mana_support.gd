@@ -44,10 +44,8 @@ func _physics_process(delta: float) -> void:
 				pool.add(rate * delta)
 
 
-## Particles per second of the Manahoar's flame: the original draws one flame particle per mana point per second it gives
-## (animateManahoar takes the rate addManahoar returns), so it is 0 when no allied manalith is around. Every peer
+## Particles per second of the Manahoar's flame: one flame particle per mana point per second it gives, so it is 0 when no allied manalith is around. Every peer
 ## can ask (it only reads the structures); a body that gives no mana (dead, or not a Manahoar) answers 0.
-## Ref: sacengine animateManahoar, addManahoar (state.d).
 func flame_rate() -> float:
 	if body == null or body.is_dead():
 		return 0.0
@@ -65,7 +63,7 @@ func _rate_from_manaliths() -> float:
 	var total := 0.0
 	for node in get_tree().get_nodes_in_group(CastTower.TOWER_GROUP):
 		var manalith := node as CastTower
-		## Only Manaliths feed a Manahoar, the allies' too; a Shrine does not.
+		# Only Manaliths feed a Manahoar, the allies' too; a Shrine does not.
 		if manalith == null or manalith.type.role != BuildingType.Role.MANALITH:
 			continue
 		if manalith.owner_slot != body.owner_slot and SideRelations.stance(body.owner_slot, manalith.owner_slot) != SideRelations.Stance.ALLY:

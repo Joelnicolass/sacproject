@@ -5,7 +5,6 @@ extends Node
 ## Watches what cancels a ritual: a doctor dies, the creature is lost, the site stops standing (unless the altar is already falling
 ## because its wizard died). It also starts that fall once the wizard is gone. What it does not do: drain, pay or end the ritual
 ## itself (it calls `ritual.abort()`). Ritual calls `step` once a tick, after Lift. Take this node out and nothing cancels it.
-## Ref: sacengine state.d:15921-15925.
 
 @export var ritual: Ritual
 
@@ -13,7 +12,7 @@ extends Node
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if ritual == null:
-		warnings.append("Asigná en `ritual` el Ritual que vigila.")
+		warnings.append("Assign to `ritual` the Ritual it watches.")
 	return warnings
 
 

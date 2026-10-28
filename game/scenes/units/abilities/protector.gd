@@ -3,21 +3,19 @@ extends AbilityEffect
 
 ## The Ent's Protector: a life shield for the Ent and the allies around it. It is refused while the Ent
 ## already has a life shield (nothing spent); else the Ent takes the life shield and a Protector effect is added.
-## The effect runs once, on the next tick: every creature whose center is within effectRange (30 m,
+## The effect runs once, on the next tick: every creature whose center is within effect range (30 m,
 ## 3D, center to center) of the Ent's, of its side, not itself, valid (alive, on the field) and not a wizard, takes
 ## the life shield, which refuses one that already has a shield. Statics (buildings) are not creatures.
 ## The pending tick is MatchClock's (fire tick + 1), processed in _physics_process (priority −1, before the bodies).
 ## The shield is each body's LifeShield; its time is the hsba spell's duration · 60.
-## Ref: F126 (RFC-030 030o-a); Ent HSba, sacengine protector (state.d:13196-13202), lifeShield(hsba) 13092-13100, updateProtector 25698-25713.
 
 static var TICKS_PER_SECOND := MatchClock.TICKS_PER_SECOND
 
 ## The shield it gives (data/catalog/abilities/hsba.tres, Life Shield): its duration is the shield's.
 @export var life_shield: AbilityType
 ## Ticks after fire() at which the allies are shielded (the effect's first update).
-## Ref: sacengine.
 @export var allies_delay_ticks := 1
-## The bench log also lists the same-side bodies up to this many times effectRange, as «fuera».
+## The debug log also lists the same-side bodies up to this many times effect range, as «fuera».
 @export var log_radius_factor := 2.0
 
 ## MatchClock tick at which the allies are shielded. -1 = nothing pending.
@@ -68,11 +66,11 @@ func _shield_allies() -> void:
 			continue
 		var distance := origin.distance_to(BodyNudge.center(other))
 		var shield := LifeShield.of(other)
-		var verdict := "fuera"
+		var verdict := "out"
 		if distance <= radius:
-			verdict = "sin escudo"
+			verdict = "no shield"
 			if shield:
-				verdict = "sí" if shield.start(ticks) else "ya tenía"
+				verdict = "yes" if shield.start(ticks) else "already had one"
 		if DebugLog.on(&"effects") and distance <= radius * log_radius_factor:
 			seen.append([distance, "%s %.1f m %s" % [who(other), distance, verdict]])
 	if DebugLog.on(&"effects"):
@@ -80,11 +78,10 @@ func _shield_allies() -> void:
 		var parts := PackedStringArray()
 		for entry in seen:
 			parts.append(str(entry[1]))
-		print("protector %s: %s (tick %d)" % [who(user), "; ".join(parts) if not parts.is_empty() else "nadie", MatchClock.now()])
+		print("protector %s: %s (tick %d)" % [who(user), "; ".join(parts) if not parts.is_empty() else "nobody", MatchClock.now()])
 
 
 ## Alive and on the field (not dead, not being summoned, not taken by a Sac Doctor).
-## Ref: sacengine isValidTarget(creature).
 func _valid(body: Node3D) -> bool:
 	if body == null or not is_instance_valid(body) or not body is UnitBody:
 		return false

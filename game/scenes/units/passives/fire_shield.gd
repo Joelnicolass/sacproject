@@ -1,16 +1,14 @@
 class_name FireShield
 extends UnitPassive
 
-## The Phoenix's Shield (rifl, its passiveOnDamage), called
-## every frame from updateCreatureStats. A body that can shield (canShield: not dying, dead,
-## reviving or a ghost) and holds the mana the SPEL asks (rifl: 0) takes every moving body whose box meets its own box scaled ×1.5 from
-## the center (the Phoenix itself apart). A body that is not an ally of the Phoenix's side burns: ignite(fireform.amount / 60) is
-## dealFireDamage(0, amount / 60, …, peirceShield), i.e. a direct spell hit that skips the Life Shield / Rockform / petrified
+## The Phoenix's Shield (rifl): every frame, it burns every non-allied body that touches the Phoenix, costing its mana per burn.
+## A body that can shield (not dying, dead, reviving or a ghost) and holds the mana the SPEL asks (rifl: 0) takes every moving
+## body whose box meets its own box scaled ×1.5 from the center (the Phoenix itself apart). A body that is not an ally of the
+## Phoenix's side burns: fireform.amount / 60 as a direct spell hit that skips the Life Shield / Rockform / petrified
 ## factors (Health.damage_typed, pierce_shield) plus three fire particles. If it burned someone it drains the mana cost
-## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched (movingObjectById).
-## A node of the Phoenix's `phoenix_passives.tscn`: only a creature that has it burns. Server (or solo) only. Divergence (declared):
-## the particles are the reserve look (`fire_fx` at the burned body's `fire_socket` every `fire_every_s`).
-## Ref: F163 (RFC-030 030w-f), sacengine runPhoenixPassive state.d:13899-13919, updateCreatureStats runPassive 13921-13931, canShield 218-225.
+## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched.
+## A node of the Phoenix's `phoenix_passives.tscn`: only a creature that has it burns. Server (or solo) only.
+## The particles are the reserve look (`fire_fx` at the burned body's `fire_socket` every `fire_every_s`).
 
 
 const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
@@ -19,7 +17,7 @@ const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 @export var passive: AbilityType
 ## The fire it ignites with (data/catalog/spells/mrff.tres, fireform): the spell's amount, per second.
 @export var fire: SpellType
-## Scale of the body's box about its center (scaleBox(object.hitbox, 1.5f)).
+## Scale of the body's box about its center.
 @export var box_scale := 1.5
 @export_group("Look")
 ## The fire played on a burned body every `fire_every_s` it burns (reserve look). Empty = none.
@@ -88,7 +86,7 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 		var box := BodyBox.box_of(target)
 		var center: Vector3 = mine[0]
 		var at := target.global_position
-		print("escudo %s quema %s %.4f vida %.4f (tick %d) maná %.3f caja (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) otro (%.3f, %.3f, %.3f) ± (%.3f, %.3f)" % [
+		print("shield %s burns %s %.4f health %.4f (tick %d) mana %.3f box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) other (%.3f, %.3f, %.3f) ± (%.3f, %.3f)" % [
 			body.name, target.name, taken, victim.current, MatchClock.now(), mana.current if mana != null else -1.0, center.x, center.y, center.z, mine[1], mine[2], mine[1],
 			at.x, at.y, at.z, box.x, box.y])
 
@@ -96,7 +94,7 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 func _log_ally(target: Node3D) -> void:
 	if DebugLog.on(&"shield") and not _allies_seen.has(target.get_instance_id()):
 		_allies_seen[target.get_instance_id()] = true
-		print("escudo %s toca %s aliado, no quema (tick %d)" % [body.name, target.name, MatchClock.now()])
+		print("shield %s touches %s ally, no burn (tick %d)" % [body.name, target.name, MatchClock.now()])
 
 
 ## (center, half width, half height) of the Phoenix's box, scaled about the center.
@@ -130,16 +128,15 @@ func _mana_cost() -> float:
 	return float(passive.mana_cost) if passive != null else 0.0
 
 
-## canShield: stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,
+## Stunned, cowering, casting, Rockform, firewalk and stealth keep the shield; dying, dead, summoning,
 ## reviving and taken by a Doctor do not.
-## Ref: sacengine canShield state.d:218-225.
 func _can_shield() -> bool:
 	if health != null and health.is_dead():
 		return false
 	return _present(body)
 
 
-## A moving body the shield can burn: movingObjectById takes any creature or wizard that is not dead (stealth and firewalk included).
+## A moving body the shield can burn: any creature or wizard that is not dead (stealth and firewalk included).
 func _burnable(target: Node3D) -> bool:
 	if not Attackable.is_body(target) or target.is_in_group(MapBuilding.STRUCTURE_GROUP):
 		return false

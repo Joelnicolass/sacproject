@@ -1,7 +1,7 @@
 class_name AttackState
 extends UnitState
 
-## ATTACK (meleeAttacking): faces the target, closes in while the swing plays and goes back to CHASE when it ends.
+## ATTACK: faces the target, closes in while the swing plays and goes back to CHASE when it ends.
 
 
 func physics_update(delta: float) -> void:
@@ -16,6 +16,6 @@ func physics_update(delta: float) -> void:
 		transition(&"Chase")
 
 
-## F336: the clip of the swing that was picked (MeleeWeapon): attack, attack2 or attack3 when the model has them, else attack.
+## The clip of the swing that was picked (MeleeWeapon): attack, attack2 or attack3 when the model has them, else attack.
 func clip_role() -> String:
 	return body.weapons.melee.clip_role()

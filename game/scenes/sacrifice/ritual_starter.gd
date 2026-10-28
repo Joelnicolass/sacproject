@@ -4,7 +4,6 @@ extends Node
 ## Starts the ritual when a carrier reaches its site holding the creature: it spawns the ritual and the four doctors of the ring and hands
 ## the creature over. If the site is taken the carrier waits and is tried again every frame (SacrificeSystem calls retry_waiting first).
 ## What it does not do: run the rounds (Ritual does), choose the site or open the cast.
-## Ref: sacengine updateSacDocCasting / ritual start, state.d:15780, 15866.
 
 @export var system: SacrificeSystem
 @export var spawns: SacrificeSpawns
@@ -16,7 +15,7 @@ var _waiting: Array[CarryErrand] = []
 
 ## A carrier reached its site: tell the system, start the ritual if the site is free, else wait.
 func on_reached(errand: CarryErrand) -> void:
-	print("sacrificio: el portador de slot %d llegó al altar de slot %d" % [errand.caster_slot, errand.site.owner_slot()])
+	print("sacrifice: the carrier of slot %d reached the altar of slot %d" % [errand.caster_slot, errand.site.owner_slot()])
 	system.carrier_arrived.emit(errand)
 	if start(errand) == null:
 		_waiting.append(errand)
@@ -65,11 +64,11 @@ func start(errand: CarryErrand) -> Ritual:
 		})
 		if doctor != null:
 			ring.append(doctor)
-	## The carrier hands the creature over and is gone ("the carrier dies"): the ritual moves it now.
+	# The carrier hands the creature over and is gone ("the carrier dies"): the ritual moves it now.
 	if errand.captive != null:
 		errand.captive.hand_to_ritual()
 	errand.hand_over()
 	errand.body.kill()
-	## Convert drains nobody: it has no wizard to name.
+	# Convert drains nobody: it has no wizard to name.
 	ritual.begin(creature, site, ring, targets.wizard_of(site.owner_slot()) if errand.kind == Ritual.Kind.DESECRATE else null)
 	return ritual

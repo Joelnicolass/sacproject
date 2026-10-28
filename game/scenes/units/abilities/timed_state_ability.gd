@@ -4,7 +4,6 @@ extends AbilityEffect
 ## An ability that turns one of the SpecialForms of a UnitBody on for a time and off again: Play Dead (dedp) and Stealth (ivni). Which form
 ## is `form`; the time is «until tick N» on MatchClock, the SPEL's duration but never less than `min_duration_s`. Refused while it is on.
 ## Server only (fire() needs authority).
-## Ref: F133 (RFC-030 030v-b), RFC-032.
 
 ## Which form of the creature it turns on.
 @export var form := SpecialForms.Form.PLAYING_DEAD

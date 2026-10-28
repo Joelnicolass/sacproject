@@ -4,7 +4,6 @@ extends Node
 ## The dead body as the game sees it: it keeps falling until it rests on the floor, and only then counts as a corpse
 ## that stays on the map until its soul is taken, it is desecrated or it is converted back to life. It counts the fall
 ## in physics ticks and tells whoever listens (the soul, the look). It never animates anything and never fades the body.
-## Ref: sacengine dying -> dead, when the soul appears (state.d:14026).
 
 ## The body died and started to lie down (`instant`: it joined late and already lies). CorpseLook listens.
 signal laid_down(instant: bool)

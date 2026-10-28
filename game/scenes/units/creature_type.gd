@@ -13,7 +13,6 @@ extends BookEntry
 ## Regenerates in any mode that can heal, also walking, fighting and being hit (the Troll); the rest only at rest, once a hit is over.
 @export var regenerates_always := false
 ## CRE8 `drain` (file word / 1000): the AI's rater adds 2x drain to the regeneration.
-## Ref: shiny.d:241 fillStats.
 @export var drain: float = 0.0
 @export var run_speed_m_s: float = 0.0
 @export var fly_speed_m_s: float = 0.0
@@ -55,7 +54,7 @@ extends BookEntry
 @export_group("")
 
 
-## The model id that travels with the creature on the network (what the original calls its body): the one saved in its body scene.
+## The model id that travels with the creature on the network: the one saved in its body scene.
 func model_id() -> String:
 	return BodyFacts.of(body).model_id
 
@@ -88,9 +87,8 @@ func is_flying() -> bool:
 	return run_speed_m_s <= 0.0 and fly_speed_m_s > 0.0
 
 
-## Walks and flies (the hybrids: canFly && !mustFly). It flies when that arrives
+## Walks and flies (the hybrids: can fly and need not). It flies when that arrives
 ## first (Flight). A creature that must fly (is_flying) is not a hybrid.
-## Ref: sacengine sacobject.d:81-83, 113-115.
 func is_hybrid_flier() -> bool:
 	return run_speed_m_s > 0.0 and fly_speed_m_s > 0.0 and clip_facts().has(&"fly")
 
@@ -113,7 +111,7 @@ func ranged_accuracy_milli() -> int:
 	return roundi(ranged_accuracy * 1000.0)
 
 
-## Where the book lists it: by level first, then by position (the old spell_order, level * 100 + position).
+## Where the book lists it: by level first, then by position (level * 100 + position).
 func order_key() -> int:
 	return book_level * 100 + book_slot
 

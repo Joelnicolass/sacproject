@@ -5,7 +5,6 @@ extends Node
 ## What every peer shows of a Sac Doctor: the clip of its pose (and, while it works, of what it does) and the fade-out when it dies.
 ## It listens to `body.pose_changed`; it changes no state and the server (no meshes) draws nothing.
 ## What it does not do: move the body (DoctorMotor), keep the pose (DoctorBody) or play the clips itself (the ClipPlayback does).
-## Ref: sacengine animations.d (stab = attack, pumpCorpse = attack2, pickUpCorpse = attack3; torture has no clip: it uses the stab).
 
 ## Seconds of the fade when the rules do not say (a doctor without `rules`).
 const _DEFAULT_FADE_S := 2.0
@@ -42,11 +41,11 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if body == null:
-		out.append("Asigná `body` (el DoctorBody que se muestra).")
+		out.append("Assign `body` (the DoctorBody shown).")
 	if clip_player == null:
-		out.append("Asigná `clip_player` (BodyAnimator): sin él el doctor queda en pose fija.")
+		out.append("Assign `clip_player` (BodyAnimator): without it the doctor stays in a fixed pose.")
 	if visual == null:
-		out.append("Asigná `visual` (BodyVisual): sin él un doctor muerto no se desvanece.")
+		out.append("Assign `visual` (BodyVisual): without it a dead doctor does not fade out.")
 	return out
 
 

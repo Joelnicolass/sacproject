@@ -6,20 +6,16 @@ extends Affliction
 ## holds it for the length of its clips: (knocked to the floor + get up) ticks on the ground, the damage-fly clip in the
 ## air. The cooldown counts from the stun, every tick.
 ##
-## A wizard too: its WizardType clips; it never flies. The original's faster-standup fix
-## only swaps hitFloor, which a stun on the ground never plays, so it changes nothing here.
+## A wizard too: its WizardType clips; it never flies.
 ## Look: the knock, hit_floor and get_up roles of ClipPose when the model has those clips; a model without one falls on its side
 ## and gets up with a Tween on Tilt.
 ## WORKAROUND: Tween on Tilt rotation:z, only for a model whose scene lacks the stun clip.
-## Ref: F120 (RFC-030i-a), F138 (RFC-030i-c); sacengine stunned, stunWithCooldown state.d:8561-8568, canStun 8546-8553, 8138-8150, 14170-14212, fasterStandupTimes sacobject.d:844-874.
 
 ## A 30 fps clip frame lasts 2 ticks of 60.
-## Ref: sacengine updateAnimFactor.
 const FRAME_TICKS := 2
 
-## The state whose landing hands over to this one (tumbling.tres). Then it lies hitFloor + getUp, not knock +
-## getUp; a client tells it from Afflictions.previous. Optional: empty = always knock + getUp.
-## Ref: F121; state.d:14175-14212.
+## The state whose landing hands over to this one (tumbling.tres). Then it lies hit_floor + get_up, not knock +
+## get_up; a client tells it from Afflictions.previous. Optional: empty = always knock + get_up.
 @export var fall_type: AfflictionType
 @export var clip_pose: ClipPlayback
 @export var tilt: Node3D
@@ -44,7 +40,7 @@ var _elapsed := 0
 var _knock_ticks := 0
 var _total := 0
 var _airborne := false
-## Lying after a fall (hitFloor + getUp) rather than knocked down.
+## Lying after a fall rather than knocked down.
 var _from_fall := false
 var _tween: Tween
 
@@ -54,7 +50,6 @@ func _ready() -> void:
 
 
 ## Server (or solo): stuns with the cooldown rule. True when it stunned.
-## Ref: sacengine stunWithCooldown.
 func stun_with_cooldown(cooldown_ticks: int) -> bool:
 	var body := _body()
 	if _cooldown > 0 or body == null or not _body_allows(body) or not _afflictions().admit(self):
@@ -62,25 +57,23 @@ func stun_with_cooldown(cooldown_ticks: int) -> bool:
 	_cooldown = cooldown_ticks
 	_from_fall = false
 	_afflictions().mark(self, true)
-	print("aturdido %s durante %d (cuadro %d)" % [_body_name(), _total, MatchClock.now()])
+	print("stunned %s for %d (frame %d)" % [_body_name(), _total, MatchClock.now()])
 	return true
 
 
-## Server (or solo): a thrown body landed (Tumbling). It keeps the mode stunned and plays hitFloor, then getUp:
-## no canStun, no cooldown (the one it had keeps running).
-## Ref: sacengine state.d:14182-14212.
+## Server (or solo): a thrown body landed (Tumbling). It keeps the mode stunned and plays hit_floor, then get_up:
+## no stun check, no cooldown (the one it had keeps running).
 func fall_down() -> void:
 	var body := _body()
 	if body == null:
 		return
 	_from_fall = true
 	_afflictions().mark(self, true)
-	print("aturdido tras caer %s durante %d (hit_floor + get_up) (cuadro %d)" % [_body_name(), _total, MatchClock.now()])
+	print("stunned after a fall %s for %d (hit_floor + get_up) (frame %d)" % [_body_name(), _total, MatchClock.now()])
 
 
 ## Server (or solo): the stun the end of a petrification calls: the
 ## stun cooldown is cleared first, then it stuns with the damage-stun cooldown (4 s).
-## Ref: sacengine damageStun (state.d:23732-23739, 8569-8577).
 func knock(cooldown_ticks: int) -> bool:
 	_cooldown = 0
 	return stun_with_cooldown(cooldown_ticks)
@@ -98,9 +91,8 @@ func clip_role() -> String:
 	return "get_up"
 
 
-## Can it be stunned, with the port's names: a live, targetable creature (not summoning, held by a doctor,
+## Can it be stunned, in this game's terms: a live, targetable creature (not summoning, held by a doctor,
 ## playing dead or dead) that is not a rock.
-## Ref: canStun (state.d:8546-8553).
 func _body_allows(body: Node3D) -> bool:
 	if body is UnitBody and (body as UnitBody).is_rock_form():
 		return false
@@ -113,7 +105,7 @@ func _physics_process(_delta: float) -> void:
 	if is_on():
 		_elapsed += 1
 		if is_multiplayer_authority() and _elapsed >= _total:
-			print("%s se levanta (cuadro %d)" % [_body_name(), MatchClock.now()])
+			print("%s gets up (frame %d)" % [_body_name(), MatchClock.now()])
 			_afflictions().mark(self, false)
 	if _cooldown <= 0 and not is_on():
 		set_physics_process(false)
@@ -130,7 +122,7 @@ func _shown(on: bool) -> void:
 
 
 ## The length from the body's clips (the knock, get_up, fly_damage and hit_floor roles of its model), on every peer. Without knock
-## or get_up the original creature stands in stance1 for one loop; the port uses its `gesture` clip.
+## or get_up the body plays its `gesture` clip.
 func _measure() -> void:
 	var body := _body()
 	var facts := _clip_facts(body)
@@ -150,7 +142,7 @@ func _measure() -> void:
 	_total = maxi(1, (knock + up) * FRAME_TICKS)
 
 
-## F138: what the body says about its clips (a wizard: its WizardType; it has no `type`, which other readers take for a
+## What the body says about its clips (a wizard: its WizardType; it has no `type`, which other readers take for a
 ## creature's), else its CreatureType.
 static func _clip_facts(body: Node3D) -> ClipFacts:
 	if body is WizardBody:

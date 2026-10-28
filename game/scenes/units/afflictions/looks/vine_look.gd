@@ -5,7 +5,6 @@ extends Node3D
 ## Each follows a spline through four control points; the two middle ones are damped springs that are pushed again when they rest, so the
 ## vines never stop twisting. They grow when the state goes on and shrink when it ends. It does not decide when the state is on
 ## (Affliction) nor hold the body (Vined). Presentation only, on every peer, from the replicated mask; its shapes use a stream of their own.
-## Ref: sacengine GraspingVines (state.d:17825-17876, renderer.d:2232-2259).
 
 ## The state that shows it, and the body whose box it fills.
 @export var affliction: Affliction
@@ -120,5 +119,5 @@ func _pose(skeleton: Skeleton3D, root: Vector3, p0: Vector3, p1: Vector3, p2: Ve
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if affliction == null or body == null:
-		warnings.append("Faltan affliction y body.")
+		warnings.append("Missing affliction and body.")
 	return warnings

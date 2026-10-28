@@ -6,13 +6,11 @@ extends RefCounted
 ## It works on the meshes of that instance only: a BodyVisual with a BodyRig draws with the skeleton's skinned meshes,
 ## a baked body with its own mesh. The materials the other bodies share (scenes/bodies/materials/) are never touched: the
 ## shadeless copy goes on each MeshInstance3D as a surface override.
-## Ref: RFC-023 023f; sacengine shadelessBoneMaterialBackend (energy 1 -> ghostEnergy).
 
 var visual: GeometryInstance3D
-## Converts a dagon shadeless energy to Godot's light scale (GhostForm.energy_scale).
+## Converts a shadeless energy to Godot's light scale (GhostForm.energy_scale).
 var energy_scale := 0.224
 ## The end of the fade.
-## Ref: sacengine ghostAlpha / ghostEnergy.
 var ghost_alpha := 0.36
 var ghost_energy := 10.0
 

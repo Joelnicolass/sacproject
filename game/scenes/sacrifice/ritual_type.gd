@@ -5,7 +5,6 @@ extends Resource
 ## nobody, lasts as many rounds as the creature has health for and pays its souls to the caster. A `.tres` per class, assigned in
 ## `Ritual.types`; the ritual and its parts read these fields instead of asking which kind it is. What it does not do: hold balance
 ## numbers (MatchRules does) or know the phases (Ritual does).
-## Ref: sacengine state.d:15817-16045.
 
 ## How a ritual knows its last round.
 enum Ending {

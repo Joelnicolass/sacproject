@@ -2,9 +2,8 @@ class_name IdleState
 extends UnitState
 
 ## IDLE (idle + patrol): regenerates. The scan for an enemy with no order is
-## TargetRefresh's (F370), which also runs while the body fights. The rest loop ends in the idle gesture 1 time in GESTURE_EVERY (the original's 1/5),
+## TargetRefresh's, which also runs while the body fights. The rest loop ends in the idle gesture 1 time in GESTURE_EVERY (1/5),
 ## picked as (hash(name) + loops) % 5: the same on every peer, no randi().
-## Ref: RFC-023, F370, sacengine patrol state.d:13029, state.d:7957-7992.
 
 const GESTURE_EVERY := 5
 

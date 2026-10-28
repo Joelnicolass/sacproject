@@ -9,28 +9,23 @@ extends Node3D
 ##   (direction = (center − body).normalized·1.5 turned −90°);
 ## - thrown: the force field adds field·(−y−x, x−y) and `field` up per second, relative to the center,
 ##   only below `height`; vz ≥ `min_rise`; no gravity that tick.
-## The original's axes (x, y, z up) are the port's (x, z, y up). Effects run before creatures: physics priority −1.
+## Effects run before creatures: physics priority −1.
 ## The swirl itself (particles) is not drawn yet: its FxBus puff is the shot's impact_fx.
-## Ref: F121 (RFC-030j); sacengine VortexEffect (state.d:4736-4751, updateVortexEffect 23922-23960), direction 23946-23949, vortexForceField 23891-23898, antiGravityTime, state.d:29331.
 
 @export var duration_s := 2.0
 ## The radius of the vortex; the impact writes it from the spell (the Vortick's shot: 2 m).
-## Ref: sacengine radiusFactor·effectRange.
 @export var radius := 2.0
 ## The height of the vortex.
-## Ref: sacengine maxHeight.
 @export var height := 4.0
 @export_range(0.0, 1.0) var influence_share := 0.75
 @export var catapult_s := 0.75
 @export var tangent_speed := 1.5
 @export var lift_speed := 2.5
 ## The force field factor (m/s² per m, and m/s² up).
-## Ref: sacengine vortexForceField.
 @export var field := 5.5
 @export var min_rise := 1.0
 
 ## The shooter's slot.
-## Ref: sacengine tumbleAttackerSide.
 var side := -1
 var _frame := 0
 

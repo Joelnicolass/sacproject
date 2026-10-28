@@ -166,7 +166,7 @@ interpolate = false
 replication_config = SubResource("SceneReplicationConfig_ritual")
 
 [node name="RitualSounds" type="Node" parent="." node_paths=PackedStringArray("ritual")]
-editor_description = "RFC-052 052h: Xsac en cada ronda (phase pasa a SHOOT) y Xgib al terminar completo (outcome); un Convertir completo suma spir. Solo lee estado replicado. Sin audio no hace nada."
+editor_description = "Xsac on every round (phase turns SHOOT) and Xgib when it ends complete (outcome); a complete Convert adds spir. It only reads replicated state. Without audio it does nothing."
 script = ExtResource("a052_ritual_sounds")
 ritual = NodePath("..")
 round_cue = ExtResource("a055_sacrifice_round")

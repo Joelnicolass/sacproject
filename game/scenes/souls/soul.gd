@@ -4,16 +4,15 @@ extends Node3D
 ## A soul of a dead creature. The server (or solo) moves it; clients get
 ## position, scaling and state from the MultiplayerSynchronizer and only draw it.
 ##
-## While `attached` it sits on its corpse (soulPosition = corpse center). A free soul (dropped,
+## While `attached` it sits on its corpse (at the corpse center). A free soul (dropped,
 ## or its corpse is gone) falls at 1 m/s to the ground. It grows in over 3 s (EMERGING) before
 ## anyone can take it, and shrinks toward the collector at 4/s (COLLECTING).
 ## Color is per viewer (`color_for`): blue if it has no side or it is the viewer's, else red.
-## Convert (RFC-020e): a red soul can be converted by the other side; while a Sac Doctor revives its
+## Convert: a red soul can be converted by the other side; while a Sac Doctor revives its
 ## corpse the soul is REVIVING (nobody collects or converts it, it is not drawn).
-## F131 (RFC-030 030t-a): a creature with Devour eats it (DEVOURING): it shrinks at 3/s toward the eater's shot origin and
+## A creature with Devour eats it (DEVOURING): it shrinks at 3/s toward the eater's shot origin and
 ## the corpse dissolves. This script owns what a soul
 ## is and what can be done to it: the corpse it leaves (`sever`), who may eat it, which soul waits on a corpse.
-## Ref: sacengine Soul, state.d:1580, updateSoul 14904; sacengine devourSoul, severSoul, updateSoul: state.d:13138, 17925, 14991
 
 ## REVIVING and DEVOURING go last: `state` is replicated as an integer.
 enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
@@ -24,20 +23,17 @@ const GROUP := &"soul"
 ## The soul's clickable Target child: the pointer and the HUD pick a soul through it.
 const TARGET_GROUP := &"soul_target"
 
-## The state changed (every peer: the setter runs on the replicated value too). RFC-052 052h: SoulSounds listens.
+## The state changed (every peer: the setter runs on the replicated value too). SoulSounds listens.
 signal state_changed(was: State, now: State)
 
-## SacSoul.getMesh(color, frame/2) with frame at 30 fps: 8 cells at 15 fps.
-## Ref: sacobject.d:1174
+## The sprite plays 8 cells at 15 fps.
 const ANIM_FPS := 15.0
 const ANIM_FRAMES := 8
 const FIRST_FRAME := { SoulColor.BLUE: 0, SoulColor.RED: 8 }
-## SacSoul soulWidth 1, soulHeight 1.6, soulRadius 0.3.
-## Ref: sacobject.d:1163
+## Sprite width 1 and height 1.6; ring radius 0.3.
 const SPRITE_SIZE := Vector2(1.0, 1.6)
 const RING_RADIUS := 0.3
-## The sprite is drawn 1.25·soulHeight over the soul position.
-## Ref: renderer.d:1533
+## The sprite is drawn 1.25 · its height over the soul position.
 const SPRITE_LIFT := 1.25 * 1.6
 
 ## Souls inside (Cre8.souls of the creature, 1 when dropped).
@@ -48,12 +44,10 @@ const SPRITE_LIFT := 1.25 * 1.6
 ## Slot of the creature or of the wizard that dropped it (0 = nobody).
 @export var owner_slot := 0
 ## Still on its corpse.
-## Ref: sacengine creatureId != 0
 @export var attached := false
 ## Slot of the wizard taking it, while COLLECTING.
 @export var collector_slot := 0
 ## Dropped with P: creature orders will not target it.
-## Ref: sacengine `dropped`
 @export var dropped := false
 @export var state: State = State.NORMAL:
 	set(value):
@@ -67,19 +61,16 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export_group("Motion")
 @export var emerge_s := 3.0
 @export var collect_shrink_per_s := 4.0
-## Devour: 3/updateFPS a tick.
-## Ref: state.d:14998
+## Devour: 3/60 a tick.
 @export var devour_shrink_per_s := 3.0
-## A free soul in the air falls like a thing: it speeds up by `fall_gravity` (m/s²) up to `max_fall_speed` (m/s). The original
-## came down at a flat 1 m/s, so a soul freed high in the air (a creature the Volcano threw) hung there out of reach.
+## A free soul in the air falls like a thing: it speeds up by `fall_gravity` (m/s²) up to `max_fall_speed` (m/s), so a
+## soul freed high in the air (a creature the Volcano threw) does not hang there out of reach.
 @export_range(0.0, 50.0, 0.1, "suffix:m/s²") var fall_gravity := 9.8
 @export_range(0.1, 100.0, 0.1, "suffix:m/s") var max_fall_speed := 20.0
 ## A soul that falls through a hole is gone this far under the last ground it had.
-## Ref: soulVanishDepth = mapDepth (sacmap.d:108).
 @export_range(0.0, 200.0, 1.0, "suffix:m") var vanish_depth_m := 50.0
 @export var collector_lift := 0.5
 ## The ring of a multi-soul turns 2π/8 rad/s.
-## Ref: sacengine
 @export var ring_turn_per_s := TAU / 8.0
 @export_flags_3d_physics var ground_mask := 1
 
@@ -93,7 +84,7 @@ const SPRITE_LIFT := 1.25 * 1.6
 ## Soul sprite sheet (`spir`, 4x4 frames).
 @export var atlas: Texture2D
 @export var shader: Shader = preload("res://scenes/souls/soul.gdshader")
-## The original uses 20 with its own tonemap; under High Noon's ACES that clips the soul to white.
+## Emission energy of the sprite; 20 clips the soul to white under High Noon's ACES tonemap.
 @export var energy := 2.0
 
 
@@ -101,7 +92,7 @@ var corpse: Node3D
 var collector: Node3D
 ## The spell that drags it (Soul Mole, Soul Wind): while it lives the soul sits on it. Server only; the clients get the position.
 var carrier: Node3D
-## Where it came from (SoulSystem.ORIGIN_*), for the ledger of the bench. Not replicated: the clients only draw.
+## Where it came from (SoulSystem.ORIGIN_*), for the debug ledger. Not replicated: the clients only draw.
 var origin: StringName = &"creature"
 
 ## Server only: bit `slot` set = a Convert of that slot is underway on this soul.
@@ -147,7 +138,7 @@ func _ready() -> void:
 	if target:
 		target.add_to_group(TARGET_GROUP)
 	_rebuild_sprites()
-	## A soul that is already full grown (a late join) does not rise again.
+	# A soul that is already full grown (a late join) does not rise again.
 	if state != State.EMERGING:
 		_rise_t = rise_s
 	if not is_multiplayer_authority():
@@ -156,7 +147,6 @@ func _ready() -> void:
 
 
 ## A soul off its corpse and not being taken has no side.
-## Ref: sacengine Soul.side
 func side() -> int:
 	if not attached and collector_slot == 0:
 		return 0
@@ -169,25 +159,23 @@ func color_for(slot: int) -> SoulColor:
 
 
 ## A red soul still on its corpse needs Convert first.
-## Ref: state.d:14951
 func can_be_collected_by(slot: int) -> bool:
 	return state == State.NORMAL and (not attached or color_for(slot) == SoulColor.BLUE)
 
 
 ## A red soul in the open, grown or still growing in, that no doctor of that side is already coming for. A soul that just
 ## appeared can be converted right away, like the end of the cast and the carrier already allow.
-## Ref: sacengine convertSideMask and spellStatus (no soul state check), state.d:1588, 10184, 29547, 30822.
 func can_convert_by(slot: int) -> bool:
 	return (state == State.NORMAL or state == State.EMERGING) and color_for(slot) == SoulColor.RED and not is_reserved_for(slot)
 
 
-## Server or solo. A Convert cast of `slot` fixes this soul (castConvert clears the side's bit).
+## Server or solo. A Convert cast of `slot` fixes this soul (the side's bit is cleared).
 func reserve_for(slot: int) -> void:
 	if slot > 0 and slot < 32:
 		_reserved_mask |= 1 << slot
 
 
-## Server or solo. The doctor died or the cast stopped: the soul can be converted again (freeSoulImpl).
+## Server or solo. The doctor died or the cast stopped: the soul can be converted again.
 func release_for(slot: int) -> void:
 	if slot > 0 and slot < 32:
 		_reserved_mask &= ~(1 << slot)
@@ -208,14 +196,12 @@ func begin_collect(by: Node3D, slot: int) -> void:
 
 
 ## Blue for `slot`: no side (free, dropped) or its own.
-## Ref: isApplicable of Devour, state.d:30820-30825
 func is_free_or_own(slot: int) -> bool:
 	return color_for(slot) == SoulColor.BLUE
 
 
 ## Server or solo. `by` eats the soul: it leaves the corpse, takes the eater's side and
 ## shrinks toward its shot origin; the corpse dissolves. What the eater gains is DevourGrowth's.
-## Ref: devourSoul, state.d:13138-13148
 func begin_devour(by: Node3D) -> void:
 	collector = by
 	collector_slot = int(by.get("owner_slot")) if "owner_slot" in by else 0
@@ -225,12 +211,11 @@ func begin_devour(by: Node3D) -> void:
 	corpse = null
 	state = State.DEVOURING
 	if DebugLog.on(&"souls"):
-		print("alma %s devorando (tick %d)" % [_who, MatchClock.now()])
+		print("soul %s devouring (tick %d)" % [_who, MatchClock.now()])
 	sever()
 
 
 ## Server or solo. The soul no longer holds its corpse: it dissolves. The one place that does.
-## Ref: severSoul, state.d:17925-17935
 func sever() -> void:
 	var dead := _remains
 	_remains = null
@@ -241,7 +226,7 @@ func sever() -> void:
 		return
 	body.dissolve(dead)
 	if DebugLog.on(&"souls"):
-		print("cadáver %s disuelto (tick %d)" % [dead.name, MatchClock.now()])
+		print("corpse %s dissolved (tick %d)" % [dead.name, MatchClock.now()])
 
 
 ## A soul a spell can fetch for `slot`: not dropped with P, blue for that side, and still waiting (not being taken, eaten or revived).
@@ -261,9 +246,8 @@ func release_to(slot: int, by: Node3D) -> void:
 	carrier = by
 
 
-## Server or solo. Rend Soul: the soul explodes. It lets go of its corpse (severSoul dissolves
-## it), has nothing inside and goes. What the blast does is the strike's.
-## Ref: updateRendShoot, state.d:25867-25890
+## Server or solo. Rend Soul: the soul explodes. It lets go of its corpse (which dissolves),
+## has nothing inside and goes. What the blast does is the strike's.
 func burst() -> void:
 	_who = label()
 	if _remains == null:
@@ -273,7 +257,7 @@ func burst() -> void:
 	sever()
 	number = 0
 	if DebugLog.on(&"souls"):
-		print("alma %s reventada (tick %d)" % [_who, MatchClock.now()])
+		print("soul %s burst (tick %d)" % [_who, MatchClock.now()])
 	queue_free()
 
 
@@ -327,7 +311,6 @@ func _follow_corpse() -> void:
 ## A free soul comes down to the land under it, faster and faster (`fall_gravity`, `max_fall_speed`). Over a hole (no land under
 ## it on the map) it keeps falling and is gone once it is `vanish_depth_m` under the last ground it had. Without ground and without a hole (the terrain not built yet) it
 ## stays put.
-## Ref: updateSoul (state.d:14912-14920), soulVanishDepth = mapDepth (sacmap.d:108).
 func _settle(delta: float) -> void:
 	var at := global_position
 	var ground := GroundRay.surface_y(self, at, ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
@@ -373,8 +356,7 @@ func _collect_step(delta: float) -> void:
 		queue_free()
 
 
-## updateSoul: it shrinks toward the eater's shot origin and goes at nothing.
-## Ref: state.d:14991-15006
+## It shrinks toward the eater's shot origin and goes at nothing.
 func _devour_step(delta: float) -> void:
 	var previous := scaling
 	scaling = maxf(scaling - devour_shrink_per_s * delta, 0.0)
@@ -386,7 +368,7 @@ func _devour_step(delta: float) -> void:
 	if scaling <= 0.0:
 		number = 0
 		if DebugLog.on(&"souls"):
-			print("alma %s devorada (tick %d)" % [_who, MatchClock.now()])
+			print("soul %s devoured (tick %d)" % [_who, MatchClock.now()])
 		queue_free()
 
 

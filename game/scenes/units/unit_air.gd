@@ -85,7 +85,6 @@ func hold_still() -> void:
 
 
 ## A hybrid in the air keeps its flying pace: the avoidance turns its heading but does not add to it.
-## Ref: sacengine speedInAir (state.d:14742-14751), F116.
 func cap_pace() -> void:
 	if body.flight == null or not body.flight.is_airborne():
 		return
@@ -97,16 +96,15 @@ func cap_pace() -> void:
 		body.velocity.z = flat.y
 
 
-## F116: the Flight child takes the walk to `point` by air. A flier goes
+## The Flight child takes the walk to `point` by air. A flier goes
 ## straight: its waypoints are dropped.
-## Ref: sacengine moveTowards state.d:12335-12339.
 func flies_to(point: Vector3) -> bool:
 	if not body.simulates():
 		return false
 	var type := body.type
 	var flight := body.flight
 	var follower := body.path_follower
-	## A creature that must fly has no Flight child (it is never on the ground): it always goes straight, no path on the navmesh or the grid.
+	# A creature that must fly has no Flight child (it is never on the ground): it always goes straight, no path on the navmesh or the grid.
 	if type != null and type.is_flying():
 		if is_instance_valid(follower):
 			follower.cancel()

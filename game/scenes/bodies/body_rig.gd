@@ -9,7 +9,6 @@ extends Node3D
 ## A look without a model (a hybrid drawn as a static mesh) is held too, and nothing plays.
 ## On the dedicated server (headless) nothing is mounted: the rig is inert.
 ## Presentation only: the simulation never reads the rig (it reads the same clips through ClipFacts).
-## Ref: RFC-023 (023b), RFC-036 (036g).
 
 ## A look with a model was mounted under the rig (its skeleton and sockets exist now).
 signal model_loaded
@@ -118,7 +117,7 @@ func is_loaded() -> bool:
 	return _model_root != null
 
 
-## World positions of the hands the active clip has (RFC-023 023d: where a wizard's casting particles go). A hand shows only in the
+## World positions of the hands the active clip has (where a wizard's casting particles go). A hand shows only in the
 ## clips that have it (a `visible` track of the clip), so these are the sockets whose hand is visible now. Empty when the clip has none
 ## or the model is not loaded.
 func hand_points() -> PackedVector3Array:

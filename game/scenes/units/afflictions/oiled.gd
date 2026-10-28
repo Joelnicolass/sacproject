@@ -20,9 +20,7 @@ extends Affliction
 ## (the damage returns before the raw damage): Health decides, `ignite()` is never called for it.
 ##
 ## The shown bit is the oil for every peer; the splash look is the shot's (ShotLook.impact_fx). Server (or solo) only decides.
-## Divergence (declared): in the original two oiled bodies blast in the order of their Oil effects (creation order); here, in the order of
-## the scene tree. A neighbour lit by a blast may blast on the same tick or on the next one.
-## Ref: F155 (RFC-030 030r-b); sacengine Oil (state.d:25653-25676), `creatureStats.effects.oiled / oilStatus`, updateOil, 13647-13649, canBeOiled = canBePoisoned, dealRawDamage 9028-9031, igniteOil 25639-25651, setAblaze(target, 60, false, 0), dealDamage 8961.
+## Two oiled bodies blast in the order of the scene tree. A neighbour lit by a blast may blast on the same tick or on the next one.
 
 
 ## unit_orders.gd has no class_name (other scripts preload it).
@@ -30,12 +28,10 @@ const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 ## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard.
 @export var orders: Node
-## The fire puffed on each body the blast lights, and how long that fire of no damage lasts (setAblaze(…, updateFPS)).
+## The fire puffed on each body the blast lights, and how long that fire of no damage lasts.
 @export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var fire_s := 1.0
-## The fireball that blasts at the body's center (the explosion's
-## particles of the original are the `fire` atlas here, in MIX like the Bombard's). Empty = none.
-## Ref: sacengine animateFireballExplosion, 25650.
+## The fireball that blasts at the body's center (the `fire` atlas, in MIX like the Bombard's). Empty = none.
 @export var blast_fx: ParticleType = preload("res://data/fx/oil_blast.tres")
 
 var _frame := 0
@@ -53,14 +49,13 @@ static func of(body: Node) -> Oiled:
 
 func _ready() -> void:
 	set_physics_process(false)
-	## The original updates its effects before its creatures: the oil clears the orders before the body acts.
+	# Effects update before creatures: the oil clears the orders before the body acts.
 	process_physics_priority = -1
 
 
 ## Server (or solo): smears the body with oil. `ticks`: how long it lasts (ability.duration_s · 60); `slot`: the
 ## side of whoever threw it (the blast's attacker); `ability`: the spell (amount and damage_range of the blast). True when the body
 ## got smeared; false if it already is, cannot be, or this is a client.
-## Ref: sacengine oilExplosion's callback + Oil.
 func start(ticks: int, slot: int, ability: AbilityType) -> bool:
 	var body := _body()
 	if not is_multiplayer_authority() or body == null or ticks <= 0 or is_on() or not can_be_oiled():
@@ -81,7 +76,6 @@ func start(ticks: int, slot: int, ability: AbilityType) -> bool:
 
 
 ## A live body that is not dying, being summoned or taken.
-## Ref: sacengine canBeOiled = canBePoisoned(mode).
 func can_be_oiled() -> bool:
 	var poisoning := Poisoning.of(_body())
 	return poisoning != null and poisoning.can_be_poisoned()
@@ -89,7 +83,6 @@ func can_be_oiled() -> bool:
 
 ## Server (or solo): a hit that carries IGNITE reached an oiled body (Health). True the first
 ## time only: the oil is lit, the hit counts ×2 and the blast comes on the next update.
-## Ref: sacengine igniteOil 25632-25634.
 func ignite() -> bool:
 	if not _running or not is_on() or _ignited:
 		return false
@@ -112,9 +105,9 @@ func _physics_process(_delta: float) -> void:
 	if orders != null and is_instance_valid(orders):
 		(orders as _ORDERS).clear()
 	if DebugLog.on(&"oil"):
-		_say("paso (%.3f, %.3f, %.3f)" % [body.global_position.x, body.global_position.y, body.global_position.z])
+		_say("step (%.3f, %.3f, %.3f)" % [body.global_position.x, body.global_position.y, body.global_position.z])
 	if not can_be_oiled():
-		_finish("no se puede untar")
+		_finish("cannot be oiled")
 		return
 	if _ignited:
 		_blast(body)
@@ -125,19 +118,19 @@ func _shown(on: bool) -> void:
 		_finish("cortado")
 
 
-## igniteOil: 500 of ranged splash with IGNITE from the body's center, a short fire of no damage on each body in the radius
+## 500 of ranged splash with IGNITE from the body's center, a short fire of no damage on each body in the radius
 ## (the callback runs before the damage, 9086), then the oil is gone.
 func _blast(body: Node3D) -> void:
 	var center := BodyNudge.center(body)
-	_say("explota en (%.3f, %.3f, %.3f) radio %.1f" % [center.x, center.y, center.z, _radius])
+	_say("blows up at (%.3f, %.3f, %.3f) radius %.1f" % [center.x, center.y, center.z, _radius])
 	if blast_fx != null:
 		FxBus.broadcast(blast_fx, center)
 	var tree := get_tree()
 	for target in SplashDamage.bodies_within(tree, center, _radius):
 		Burning.ignite(target, 0.0, MatchClock.ticks_for(fire_s), Health.SPLASH_RANGED, _slot, 0.0, false, fire_fx)
 	SplashDamage.deal(tree, center, _damage, _radius, null, _slot, Health.SPLASH_RANGED, Health.IGNITE)
-	_say("explosión fin")
-	_finish("explotó")
+	_say("blast end")
+	_finish("blew up")
 
 
 ## The one way out. Idempotent: the bit off, one line in the log.
@@ -148,10 +141,10 @@ func _finish(reason: String) -> void:
 	set_physics_process(false)
 	if is_on():
 		_afflictions().mark(self, false)
-	_say("limpio (%s)" % reason)
+	_say("clean (%s)" % reason)
 
 
 func _say(text: String) -> void:
 	if DebugLog.on(&"oil"):
 		var body := _body()
-		print("aceite %s %s (tick %d)" % [AbilityEffect.who(body), text, MatchClock.now()])
+		print("oil %s %s (tick %d)" % [AbilityEffect.who(body), text, MatchClock.now()])

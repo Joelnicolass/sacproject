@@ -62,14 +62,14 @@ static func brake(bones: Array[PhysicalBone3D], start: Vector3, max_drift_m: flo
 			bone.linear_velocity -= out * outward
 
 
-## Cone limits wide enough that a hanging chain never pushes against them (055a-5j spike: tight cones blow up under gravity).
+## Cone limits wide enough that a hanging chain never pushes against them (tight cones blow up under gravity).
 const HANG_SPAN_DEG := 180.0
 
 
 ## Starts the simulation: every bone (a fall: the joints stay as built), or every bone but `anchor`, which stays on the skeleton (a
 ## hang). A hang rebuilds every cone joint, parents first, on HANG_SPAN_DEG cones: Godot builds a joint when its bone enters the tree,
-## with every body static, and the joints hanging from the root come out loose (plan 055a-5 s17). Rebuilding them for a fall sends
-## bones flying (gallery fall, 055a-5j), so a fall keeps them. `spans` (spans_of) are put back before the cones open.
+## with every body static, and the joints hanging from the root come out loose. Rebuilding them for a fall sends
+## bones flying (a gallery fall), so a fall keeps them. `spans` (spans_of) are put back before the cones open.
 static func start(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, spans: Dictionary, anchor: PhysicalBone3D) -> void:
 	var names: Array[StringName] = []
 	for bone in bones_of(simulator):

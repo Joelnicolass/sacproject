@@ -7,8 +7,7 @@ extends Node
 ## of mana a source gives it heals 4.2 health, even with a full pool. With full health it turns back where it
 ## stands (alpha 0.36 → 1). Other sides do not see a ghost. The server (or solo) runs the stages; `stage` is
 ## replicated and every peer fades the body on its own. A see-through wizard is drawn shadeless with energy
-## 1 → ghostEnergy and, being in the transparent pass, casts no shadow.
-## Ref: sacengine state.d: dying 14000-14014, deadToGhost 14081, ghostToIdle 13959 and 14091, idleGhost/movingGhost, speed 1090, damage and target 8916 and 138, cast and souls 9520 and 243, mana heal 8827 and 14409, energy 14084 and 14094; renderer.d:1412; shadeless.d:114; renderShadowCastingEntities3D, renderer.d:5658-5661; sacengine ghostAlpha; sacengine ghostEnergy; sacengine updateFPS / updateAnimFactor; sacengine disappear(updateFPS); state.d:14010; albedo · 1, deferred.d:403; state.d:14009-14010; sacengine isValidAttackTarget / canDamage; sacengine isObstacle (state.d:120-126); sacengine isValidGuardTarget (state.d:145-151); sacengine isGhost; sacengine canCast; sacengine canRegenerateMana; state.d:168-175; sacengine canCollectSouls (state.d:243-249); sacengine spellbookVisible (state.d:28104); sacengine state.d:13959-13962
+## 1 → GHOST_ENERGY and, being in the transparent pass, casts no shadow.
 
 enum Stage { ALIVE, DYING, RISING, GHOST, UNGHOSTING, GONE }
 
@@ -26,7 +25,7 @@ const GROUP := &"ghost_form"
 ## Without MatchRules: 1 s to vanish with no altar left, 4 s under ritual.
 const VANISH_S := 1.0
 const VANISH_RITUAL_S := 4.0
-const STAGE_NAMES: PackedStringArray = ["vivo", "muere", "se levanta", "fantasma", "vuelve", "desaparece"]
+const STAGE_NAMES: PackedStringArray = ["alive", "dies", "rises", "ghost", "returns", "vanishes"]
 
 @export var rules: MatchRules
 @export var visual: GeometryInstance3D
@@ -34,9 +33,8 @@ const STAGE_NAMES: PackedStringArray = ["vivo", "muere", "se levanta", "fantasma
 @export var mana: ManaPool
 ## Lays the body down when it dies and stands it up for the ghost (empty = the body just stays as it is).
 @export var death_look: WizardDeathLook
-## Converts a dagon shadeless energy to Godot's light scale. Shadeless is texture · energy like
-## the ambient, so it takes the ambient's ratio: π/14
-## (the old theme's ambient_light_energy with ambient 1).
+## Converts a shadeless energy to Godot's light scale. Shadeless is texture · energy like
+## the ambient, so it takes the ambient's ratio: π/14.
 @export_range(0.0, 2.0, 0.001) var energy_scale := 0.224
 @export var stage: Stage = Stage.ALIVE:
 	set(value):
@@ -58,7 +56,7 @@ var _left := 0.0
 var _ethereal := false
 var _fade: Tween
 var _rng := RandomNumberGenerator.new()
-## RFC-023f: the see-through look of THIS body (its own meshes, or the rig's), never of the others.
+## The see-through look of THIS body (its own meshes, or the rig's), never of the others.
 var _look := SeeThroughLook.new()
 
 @onready var _wizard: Node3D = get_parent()
@@ -122,7 +120,7 @@ func is_guard_target() -> bool:
 	return stage != Stage.DYING and stage != Stage.GONE
 
 
-## idleGhost or movingGhost.
+## The wizard is a ghost, idle or moving.
 func is_ghost() -> bool:
 	return stage == Stage.GHOST
 
@@ -146,7 +144,7 @@ func can_take_mana() -> bool:
 	return stage == Stage.ALIVE or stage == Stage.GHOST or stage == Stage.UNGHOSTING
 
 
-## ghostToIdle already collects.
+## Turning back from a ghost already collects.
 func can_collect_souls() -> bool:
 	return stage == Stage.ALIVE or stage == Stage.UNGHOSTING
 
@@ -172,8 +170,8 @@ func _physics_process(delta: float) -> void:
 			if _left <= 0.0:
 				_enter(Stage.GHOST, 0.0)
 		Stage.GHOST:
-			## A ritual on the altar brings the ghost back to the body so it can be drained and killed;
-			## with at least 1 life so it does not die on the way.
+			# A ritual on the altar brings the ghost back to the body so it can be drained and killed;
+			# with at least 1 life so it does not die on the way.
 			if desecrations > 0 and health.current < 1.0:
 				health.current = 1.0
 			if desecrations > 0 or health.is_full():
@@ -190,9 +188,8 @@ func _on_died(_from_slot: int) -> void:
 	_enter(Stage.DYING, _clip_s(_death_role()))
 
 
-## dying → dead → deadToGhost with an altar, else disappear;
+## dying → dead → ghost with an altar, else disappear;
 ## under ritual he disappears even with one.
-## Ref: sacengine; state.d:14004-14014; state.d:14009-14010
 func _after_dying() -> void:
 	if desecrations > 0 or not _has_altar():
 		_enter(Stage.GONE, 0.0)
@@ -210,11 +207,10 @@ func _enter(next: Stage, seconds: float) -> void:
 	_left = seconds
 	stage = next
 	var at := _wizard.global_position
-	print("mago %d %s en %.1f %.1f vida %d mana %d" % [owner_slot(), STAGE_NAMES[next], at.x, at.z, roundi(health.current), roundi(mana.current)])
+	print("wizard %d %s at %.1f %.1f health %d mana %d" % [owner_slot(), STAGE_NAMES[next], at.x, at.z, roundi(health.current), roundi(mana.current)])
 
 
 ## Death, death2 or death3, whichever of them his model has.
-## Ref: sacengine pickRandomAnimation(deathCandidatesOnGround)
 func _death_role() -> StringName:
 	var roles: Array[StringName] = []
 	roles.assign(_type().death_roles() if _type() else [])
@@ -231,7 +227,6 @@ func _type() -> WizardType:
 
 
 ## An altar of the wizard's side that stands.
-## Ref: sacengine hasAltar (state.d:13293)
 func _has_altar() -> bool:
 	var slot := owner_slot()
 	for node in get_tree().get_nodes_in_group(Altar.GROUP):
@@ -241,7 +236,7 @@ func _has_altar() -> bool:
 	return false
 
 
-## Every peer: deadToGhost and ghostToIdle fade over their animation, a ghost is hidden from
+## Every peer: turning into a ghost and back fade over their animation, a ghost is hidden from
 ## other sides, and a wizard without an altar fades out.
 func _show_stage(animate: bool) -> void:
 	if visual == null:
@@ -288,8 +283,7 @@ func _fade_to(transparency: float, seconds: float, animate: bool) -> void:
 	_fade.tween_method(_look.set_transparency, _look.transparency, transparency, seconds)
 
 
-## Energy follows the fade: 1 at alpha 1, GHOST_ENERGY at ghostAlpha.
-## Ref: sacengine shadelessBoneMaterialBackend
+## Energy follows the fade: 1 at alpha 1, GHOST_ENERGY at the ghost alpha.
 func _process(_delta: float) -> void:
 	_look.energy_scale = energy_scale
 	_look.update()

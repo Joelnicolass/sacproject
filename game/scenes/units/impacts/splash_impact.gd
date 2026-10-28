@@ -5,12 +5,11 @@ extends ShotImpact
 ## amount·(1 − d/radius) as splash ranged damage. SplashDamage owns the walk.
 ##
 ## - Mutant babt / Abomination tugt: the body it hit takes the whole amount as ranged|splash (splash ranged resistance),
-##   and the rest of damageRange the falloff: `direct_hit` on, `radius_source` DAMAGE_RANGE.
+##   and the rest of the damage range the falloff: `direct_hit` on, `radius_source` DAMAGE_RANGE.
 ## - Flummox crba: nobody is hit whole, the body it hit included takes the falloff: `direct_hit` off,
 ##   `radius_source` EFFECT_RANGE.
 ## The side is Health's rule (Health._side_factor): the shooter's own side takes 0 or ally_damage_factor by the
 ## match's friendly fire, the shooter included if it stands in the radius.
-## Ref: F139; sacengine dealSplashRangedDamageAt (state.d:9400) = dealDamageAt with DamageMod.splash|ranged, state.d:9055-9088, resistance 8952-8954, 9077, mutantProjectileExplosion 24381-24387, abominationProjectileExplosion 24432-24439, flummoxProjectileExplosion 24059-24067.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
@@ -30,7 +29,7 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	var mods := mods_of(shot)
 	var shooter := shooter_of(shot)
 	var direct := target if direct_hit and target and is_instance_valid(target) else null
-	print("salpicadura %s en (%.1f, %.1f, %.1f) radio %.1f m de %d" % [ability.tag if ability else "?", point.x, point.y, point.z, radius, roundi(amount)])
+	print("splash %s at (%.1f, %.1f, %.1f) radius %.1f m of %d" % [ability.tag if ability else "?", point.x, point.y, point.z, radius, roundi(amount)])
 	if direct and ProjectileTargets.is_live_body(direct):
 		print("  directo %s" % GameBody.name_of(direct))
 		_SPLASH.hurt(direct, amount, from_slot, _HEALTH.SPLASH_RANGED, mods, shooter)

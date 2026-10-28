@@ -3,7 +3,7 @@ extends RefCounted
 
 ## The size of a body as the others see it: half the width of its box (the avoidance radius, the formation spacing and the
 ## trample radius) and its height. Both come from the body scene it wears (BodyFacts), the same for the avoidance agent, Orders
-## (getFormationOffsets) and the melee gap. The bodies do not push each other by physics: BodyAvoidance steers them apart.
+## and the melee gap. The bodies do not push each other by physics: BodyAvoidance steers them apart.
 
 
 ## Half the box width: the larger of the footprint radius and the reach of the body.

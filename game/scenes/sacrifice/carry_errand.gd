@@ -4,10 +4,9 @@ extends Node
 
 ## The errand of a carrier doctor: which creature it came for and which site it takes it to. The body is the DoctorBody (it only walks and dies);
 ## the errand is what makes this doctor a carrier, and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor has no errand.
-## Server only: the clients get the doctor and the creature through their synchronizers. 020e adds Convert and Pump.
-## Ref: sacengine SacDocCarry; sacengine `soul.state.among(normal, emerging)`, state.d:15681; freeSoulImpl, state.d:15617
+## Server only: the clients get the doctor and the creature through their synchronizers.
 
-## The carrier reached the site and holds the creature there. The ritual starts from here (RFC-020d).
+## The carrier reached the site and holds the creature there. The ritual starts from here.
 signal reached_site
 ## The errand ended: HANDED_OVER = the ritual took over; FAILED = the doctor died.
 signal finished(outcome: Outcome)
@@ -47,9 +46,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null:
-		warnings.append("Asigná en `body` el doctor (DoctorBody) que cumple el recado.")
+		warnings.append("Assign to `body` the doctor (DoctorBody) that runs the errand.")
 	if steps == null:
-		warnings.append("Asigná en `steps` la FsmMachine con Wait, Approach, Pump, Haul y Over.")
+		warnings.append("Assign to `steps` the FsmMachine with Wait, Approach, Pump, Haul and Over.")
 	return warnings
 
 
@@ -106,7 +105,7 @@ func arrive() -> void:
 	reached_site.emit()
 
 
-## RFC-020d: the ritual took the creature over. The carrier's work is done.
+## The ritual took the creature over. The carrier's work is done.
 func hand_over() -> void:
 	_finish(Outcome.HANDED_OVER)
 	steps.transition(&"Over")

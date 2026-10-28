@@ -4,9 +4,8 @@ extends Node
 ## What a GrowingWave does to a body it touches besides the damage. A child of the wave scene; the wave
 ## calls before_hit(body) right before the damage of a body that takes it (the shot's target or a splash body, not a
 ## body of the shooter's side), after_hit with what before_hit returned right after, and settled() at the end of every
-## update. `direct` says which of the two bodies it is: the original does not use the same order for both (the Spitfire
+## update. `direct` says which of the two bodies it is: the order is not the same for both (the Spitfire
 ## sets a target ablaze after the blow and any other body before it). Default: nothing.
-## Ref: F162 (030w-c), sacengine state.d:23035-23063.
 
 
 ## Server (or solo): read what the damage may change. The value goes back to after_hit.

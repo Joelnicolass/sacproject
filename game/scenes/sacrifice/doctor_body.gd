@@ -6,7 +6,6 @@ extends GameBody
 ## creatures, shots and spells can still attack it (group «doctor»). It keeps the pose, the work and the health and offers the verbs;
 ## it does not walk (its `motor`, DoctorMotor) or draw (DoctorLook listens to `pose_changed`); `errand` is what a carrier came for.
 ## The server (or solo) runs the States machine; clients get the pose (drawn smoothly by its MpActor, BUFFERED), `pose`, `work`, `carried` and Health from the MpActor's MpSync (doctor.tscn) and only present them.
-## Ref: sacengine CRE8 `dcas`, model `sacd`.
 
 ## Server only: the drop is over (the bounce included) / walk_to reached its goal / it died (no corpse, no soul) / the StuckGuard gave up.
 signal landed
@@ -194,5 +193,5 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	for socket in ["type", "rules", "health", "collision", "mount", "health_bar", "states", "motor"]:
 		if get(socket) == null:
-			out.append("Asigná `%s` (ver doctor.tscn)." % socket)
+			out.append("Assign `%s` (see doctor.tscn)." % socket)
 	return out

@@ -9,40 +9,32 @@ extends Node3D
 ## Its frame is MatchClock.now() − the tick it was born; the birth tick is discarded (the first update is the next one,
 ## frame 1). On every frame:
 ## - frame 1: the explosion (64 dirt particles and the shake: the look, FxBus);
-## - the wave is at wave_range · (frame / 60) / wave_s (1,667 m per frame, float32 as the original);
+## - the wave is at wave_range · (frame / 60) / wave_s (1,667 m per frame, float32);
 ## - while stun_min < wave < stun_max (frames 1 to 5), every moving body of `groups`, any side (wizards too, the user
 ##   if it stood there), whose hit box is within wave + 0,1 and whose feet are, seen from above, farther than stun_min
 ##   and within `band`·wave_range / (wave_s · 60) (2,5 m) of the wave takes Stunned.stun_with_cooldown(cooldown_s).
 ##   No damage;
 ## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31 (and Ground with it).
-## The stun is each body's Afflictions/Stunned (canStun, its own cooldown): a stunned one is skipped by it.
+## The stun is each body's Afflictions/Stunned (its own cooldown): a stunned one is skipped by it.
 ## The land: Ground's two TerrainStamps (the sinking and the wave) play here on the server, so the bodies follow the ground;
 ## a client sees the copy in quake_ring.tscn (on_clients_only). Priority −1: effects update before creatures.
 ##
-## Deviations (declared): the look is quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
-## Ref: sacengine Quake (state.d:5187-5225, displacement 5204-5222, part of Displacement 28929-28931), updateQuake
-## (25737-25759), quake (13204-13207); effects before creatures (29331 against 29345). F132 (RFC-030 030u-a), RFC-057 057a.
+## Limits: the look is quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
 
 
 ## How far the wave goes (m) and how long it takes (s).
-## Ref: sacengine Quake.waveRange, waveDur.
 @export var wave_range := 50.0
 @export var wave_s := 0.5
 ## The wave stuns only between these two distances (m).
-## Ref: sacengine stunMinRange / stunMaxRange.
 @export var stun_min := 0.5
 @export var stun_max := 10.0
-## The band the wave stuns, in frames of travel: 1,5 (1.5·waveRange/(waveDur·ticks per second) = 2,5 m).
-## Ref: sacengine.
+## The band the wave stuns, in frames of travel: 1,5 (1.5·wave_range/(wave_s·ticks per second) = 2,5 m).
 @export var band := 1.5
 ## How long a stunned body cannot be stunned again.
-## Ref: sacengine stunCooldownFrames = 8·updateFPS.
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var cooldown_s := 8.0
 ## How long the wave lasts.
-## Ref: sacengine totalFrames = int(waveDur·updateFPS + 0.5).
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var life_s := 0.5
 ## Moving bodies: creatures and wizards (buildings are not stunned).
-## Ref: sacengine movingObjects.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")
@@ -65,11 +57,11 @@ static func launch(scene: PackedScene, from: Node, feet: Vector3, tag: String) -
 	var spawner := from.get_tree().get_first_node_in_group(ShotSpawner.GROUP)
 	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
 	if container == null:
-		push_warning("QuakeWave: no hay contenedor de disparos (grupo shot_spawner).")
+		push_warning("QuakeWave: no shot container (group shot_spawner).")
 		return null
 	var wave := scene.instantiate() as QuakeWave
 	if wave == null:
-		push_warning("QuakeWave: la escena no es un QuakeWave.")
+		push_warning("QuakeWave: the scene is not a QuakeWave.")
 		return null
 	wave.label = tag
 	container.add_child(wave, true)
@@ -83,7 +75,7 @@ func begin() -> void:
 	_born = MatchClock.now()
 	if DebugLog.on(&"quake"):
 		var at := global_position
-		print("onda %s en (%.3f, %.3f, %.3f) alcance %.1f m %.2f s aturde de %.1f a %.1f m banda %.3f m por %d (cuadro %d)" % [
+		print("wave %s at (%.3f, %.3f, %.3f) range %.1f m %.2f s stuns from %.1f to %.1f m band %.3f m for %d (frame %d)" % [
 			label, at.x, at.y, at.z, wave_range, wave_s, stun_min, stun_max, band_meters(), MatchClock.ticks_for(cooldown_s), _born])
 
 
@@ -102,13 +94,13 @@ func _physics_process(_delta: float) -> void:
 	_last_frame = frame
 
 
-## waveLoc of frame `f`: waveRange·(float(frame)/updateFPS)/waveDur.
+## Where the wave is on frame `f`: wave_range·(frame/60)/wave_s.
 func wave_at(f: int) -> float:
 	var ticks := float(MatchClock.TICKS_PER_SECOND)
 	return wave_range * (float(f) / ticks) / wave_s
 
 
-## The half-width of the stunned band (m): 1.5·waveRange/(waveDur·updateFPS).
+## The half-width of the stunned band (m): 1.5·wave_range/.
 func band_meters() -> float:
 	var ticks := float(MatchClock.TICKS_PER_SECOND)
 	return band * wave_range / (wave_s * ticks)
@@ -124,30 +116,29 @@ func _step(f: int) -> void:
 	var reach := loc + 0.1
 	var half_band := band_meters()
 	if DebugLog.on(&"quake"):
-		print("onda %s paso %d radio %.3f m (cuadro %d)" % [label, f, loc, MatchClock.now()])
+		print("wave %s step %d radius %.3f m (frame %d)" % [label, f, loc, MatchClock.now()])
 	for body in SplashDamage.bodies_within(get_tree(), center, reach, null, groups):
 		var feet := body.global_position
 		var flat := Vector2(feet.x - center.x, feet.z - center.z).length()
-		var result := "fuera de la banda"
+		var result := "outside the band"
 		if stun_min < flat and absf(flat - loc) < half_band:
 			result = _stun(body)
 		if DebugLog.on(&"quake"):
-			print("  onda %s %s a %.3f m en planta, caja %.3f m: %s (cuadro %d)" % [label, body.name, flat,
+			print("  wave %s %s at %.3f m flat, box %.3f m: %s (frame %d)" % [label, body.name, flat,
 				SplashDamage.box_distance(body, center), result, MatchClock.now()])
 
 
 ## Stuns a body of the band with the cooldown rule; what happened, for the log.
-## Ref: sacengine stunWithCooldown.
 func _stun(body: Node3D) -> String:
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
 	if stunned == null:
-		return "sin Stunned"
+		return "no Stunned"
 	if stunned.stun_with_cooldown(MatchClock.ticks_for(cooldown_s)):
 		return "aturdido"
-	return "sin efecto, enfriamiento %d" % stunned.cooldown_ticks() if stunned.cooldown_ticks() > 0 else "sin efecto"
+	return "no effect, cooldown %d" % stunned.cooldown_ticks() if stunned.cooldown_ticks() > 0 else "no effect"
 
 
-## quakeExplosion (frame 1): the look. Presentation, every peer.
+## The explosion (frame 1): the look. Presentation, every peer.
 func _explode() -> void:
 	if dust_fx != null:
 		FxBus.broadcast(dust_fx, global_position)
@@ -157,6 +148,6 @@ func _explode() -> void:
 
 func _end(frame: int) -> void:
 	if DebugLog.on(&"quake"):
-		print("onda %s fin paso %d (cuadro %d)" % [label, frame, MatchClock.now()])
+		print("wave %s end step %d (frame %d)" % [label, frame, MatchClock.now()])
 	set_physics_process(false)
 	queue_free()

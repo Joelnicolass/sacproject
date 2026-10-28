@@ -7,8 +7,7 @@ extends AbilityEffect
 ## and the cooldown are paid at the shoot tick whether or not the soul is still there (AbilitySlot does it).
 ## This effect only judges the soul and throws the SoulStrike; what happens the tick after is the strike's.
 ## Range: the spell's cast_range (90) in 3D, to the soul's center.
-## Divergence (declared): the body does not walk closer or turn; out of range is refused.
-## Ref: F157 (RFC-030 030t-b); Styx dner, sacengine useAbility → shoot0 (state.d:13463-13561), rendShoot 12750, 13226-13230, canRend 13219-13225.
+## Limits: the body does not walk closer or turn; out of range is refused.
 
 ## The strike (strikes/soul_strike.tscn), a child of the user's RangedWeapon.
 @export var strike_scene: PackedScene
@@ -27,31 +26,31 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## canRend: the one answer for the order and for the strike that checks again.
+## The one answer for the order and for the strike that checks again.
 static func can_rend(soul: Soul, slot: int) -> bool:
 	return soul != null and is_instance_valid(soul) and soul.is_inside_tree() and not soul.is_queued_for_deletion() \
 			and (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING) \
 			and soul.is_free_or_own(slot) and not soul.dropped
 
 
-## rendShoot. False = the soul is gone by the shoot tick: nothing flies; the mana is spent all the same.
+## Shoots at the soul. False = the soul is gone by the shoot tick: nothing flies; the mana is spent all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority() or user == null or strike_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):
-			print("reventar %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
+			print("rend %s without a valid target (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var soul := _soul_of(target)
 	var parent := user.weapons.ranged
 	if parent == null:
-		push_warning("RendSoul: %s no tiene RangedWeapon." % who(user))
+		push_warning("RendSoul: %s has no RangedWeapon." % who(user))
 		return false
 	var node := strike_scene.instantiate()
 	var strike := node as SoulStrike
 	if strike == null:
 		node.free()
-		push_warning("RendSoul: la escena no es un SoulStrike.")
+		push_warning("RendSoul: the scene is not a SoulStrike.")
 		return false
 	strike.soul = soul
 	parent.add_child(strike)

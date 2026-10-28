@@ -3,9 +3,8 @@ extends MeshInstance3D
 
 ## A translucent box around a body while one of its states is on, the size of the body's hit box, that grows from nothing and vanishes at
 ## once when the state ends (Freeze's ice). It does not decide when the state is on (Affliction) nor break into shards (Frozen).
-## It is not turned with the body: it stays aligned to the world, as the box of the original. Presentation only, on every peer, from the
+## It is not turned with the body: it stays aligned to the world. Presentation only, on every peer, from the
 ## replicated mask. The mesh and the material are the scene's: a BoxMesh of 1 m and a material to tune in the editor.
-## Ref: sacengine Freeze (state.d:3037-3045, renderer.d:2183-2207).
 
 ## The state that shows it.
 @export var affliction: Affliction
@@ -52,5 +51,5 @@ func _fit() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if affliction == null or body == null:
-		warnings.append("Faltan affliction y body.")
+		warnings.append("Missing affliction and body.")
 	return warnings

@@ -5,7 +5,6 @@ extends ErrandStep
 ## stops and says `reached_site`. From then on it waits holding the creature: the ritual starts from that signal (and takes the errand
 ## over); until then, and while the site is busy, the carrier stays. If the doctor dies here the creature is let go: alive, its
 ## original owner's, falling to the ground.
-## Ref: sacengine SacDocCarry `move`, state.d:15750-15790.
 
 
 func physics_update(_delta: float) -> void:

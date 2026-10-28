@@ -8,7 +8,6 @@ extends Node
 ## are pushed hard (superpush: 1.1 times their pace). Bodies move with move_and_collide, like a hit would; ground and holes are
 ## respected (SacrificeGround). Server only.
 ## Take this node out of ritual.tscn and nothing is pushed: then melee creatures can kill doctors.
-## Ref: sacengine pushAll, state.d:16046-16051, 8606-8628, 8623-8627.
 
 @export var ritual: Ritual
 
@@ -18,7 +17,7 @@ const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP, DoctorBody.
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if ritual == null:
-		warnings.append("Asigná en `ritual` el Ritual que empuja.")
+		warnings.append("Assign to `ritual` the Ritual that pushes.")
 	return warnings
 
 

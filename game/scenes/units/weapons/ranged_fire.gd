@@ -4,13 +4,11 @@ extends RefCounted
 ## What happens on a shoot tick of a RangedWeapon: the direction (led by the target's velocity, raised for a ballistic shot, then
 ## scattered by the ranged accuracy) and the packet that spawns the shot, the volley of shots or the strike of the ShotLook.
 ## Not: when it shoots (RangedWeapon) nor the flight (RangedShot).
-## Ref: sacengine getShotDirectionWithGravity (state.d:11506, 11548-11800), shootOnTick (state.d:12631-12758).
 
-## fallingAcceleration; 30 for every other tag.
-## Ref: sacspell.d:120.
+## falling acceleration; 30 for every other tag.
 const FALLING_ACCELERATION := {"dkba": 10.0}
 const DEFAULT_FALLING := 30.0
-## Shots fired with getShotDirectionWithGravity: earthfling, flame minion, fallen, sylph, ranger, mutant, abomination, bombard,
+## Shots fired on a ballistic arc: earthfling, flame minion, fallen, sylph, ranger, mutant, abomination, bombard,
 ## flurry, flummox. The rest fly straight.
 const BALLISTIC: PackedStringArray = ["ekba", "fkba", "dkba", "aaba", "wobf", "babt", "tugt", "cfba", "caba", "crba"]
 
@@ -24,7 +22,6 @@ static func is_live(body: Node) -> bool:
 
 
 ## manaCost = max(1, cost).
-## Ref: sacspell.d:194.
 static func mana_cost(weapon: RangedWeapon) -> float:
 	return maxf(1.0, float(weapon.attack.mana_cost)) if weapon.attack else INF
 
@@ -40,7 +37,6 @@ static func loaded(weapon: RangedWeapon) -> bool:
 
 ## One shoot tick of the clip (the clip says how many shots it has): it drains its share of the mana (if it has that much), fires,
 ## and the cooldown starts on the first shot.
-## Ref: sacengine state.d:12774-12776.
 static func tick(weapon: RangedWeapon, tick_count: int) -> void:
 	var target := weapon.shooting_at
 	if target == null or not is_instance_valid(target) or not is_live(target):
@@ -62,7 +58,7 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 	var body := weapon.body
 	var spawner := ShotSpawner.of(weapon.get_tree())
 	if look.strike == null and spawner == null:
-		push_warning("RangedWeapon: no hay ShotSpawner en el mundo.")
+		push_warning("RangedWeapon: no ShotSpawner in the world.")
 		return
 	var origin := weapon.shot_origin()
 	var predicted := weapon.predicted(target)
@@ -87,16 +83,15 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 		"max_distance": INF if ballistic else attack.cast_range_m * look.range_factor,
 		"target": str(target.get_path()),
 		"shooter": str(body.get_path()),
-		## The predicted point without accuracy, and the accuracy, for the strikes that aim again.
+		# The predicted point without accuracy, and the accuracy, for the strikes that aim again.
 		"aim_x": predicted.x, "aim_y": predicted.y, "aim_z": predicted.z,
 		"accuracy": weapon.accuracy(),
 	}
 	if look.strike != null:
 		_strike(weapon, data)
 		return
-	## ShotLook.volley shots with this one direction (one accuracy roll); each packet says
-	## which one it is and how far the aim was (SplitFlight fans them out).
-	## Ref: sacengine boulderdashShoot state.d:11806-11808.
+	# ShotLook.volley shots with this one direction (one accuracy roll); each packet says
+	# which one it is and how far the aim was (SplitFlight fans them out).
 	var half := (maxi(look.volley, 1) - 1) / 2
 	for index in range(-half, half + 1):
 		var shot := data.duplicate()  # a new Dictionary per shot: the spawner writes its name
@@ -112,7 +107,7 @@ static func _strike(weapon: RangedWeapon, data: Dictionary) -> void:
 	var strike := node as ShotStrike
 	if strike == null:
 		node.free()
-		push_warning("RangedWeapon: el strike de %s no es un ShotStrike." % weapon.attack.tag)
+		push_warning("RangedWeapon: the strike of %s is not a ShotStrike." % weapon.attack.tag)
 		return
 	weapon.add_child(strike)
 	strike.launch(data, weapon.look, weapon.attack, weapon)

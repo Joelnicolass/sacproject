@@ -15,7 +15,7 @@ extends Resource
 @export var run_speed_m_s: float = 0.0
 @export var regeneration_per_s: float = 0.0
 @export_group("Senses")
-## How far he sees, in metres (his Vision): a wizard has no sight range in the original data, so he sees like a creature of the roster.
+## How far he sees, in metres (his Vision): a wizard type has no sight range of its own, so he sees like a creature of the roster.
 @export var vision_m: float = 100.0
 @export_group("")
 ## How well he dodges blows; 1.0 is a normal creature, 1.25 is what a wizard is.
@@ -26,7 +26,7 @@ extends Resource
 @export var direct_ranged_resistance: float = 1.0
 @export var splash_ranged_resistance: float = 1.0
 
-## Lobby (055i-a): false takes this wizard out of the menu and the rooms without deleting the file.
+## Lobby: false takes this wizard out of the menu and the rooms without deleting the file.
 @export var offered := true
 
 

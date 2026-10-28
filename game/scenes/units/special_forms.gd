@@ -4,7 +4,6 @@ extends Node
 ## The shapes a creature takes on purpose: playing dead (it lies still, half faded, and heals), stealth (faded out, nobody can target it,
 ## shown to every peer through the replicated `stealth`) and stone (rock form: it drops its orders and stands as a rock until told to move).
 ## Not: how long a form lasts (the ability that turns it on: TimedStateAbility, Rockform) nor what a form does to damage.
-## Ref: sacengine rockForm (state.d:13052), the Fallen's Play Dead and the Sylph's Stealth (RFC-030 030v-b).
 
 enum Form { PLAYING_DEAD, STEALTH }
 

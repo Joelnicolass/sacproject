@@ -7,7 +7,6 @@ extends Node
 ## server calls announce() right after writing the new pose: MpActor.snap() counts the teleport and it travels in
 ## the same packet as the pose (net_teleports), so every client jumps there instead of sliding. Nothing is sent
 ## from here and nothing runs on a client. Take the child out and the body glides (a joke, not a bug).
-## Ref: RFC-021c, plan 072 (GUIDE of the kit, snap).
 
 ## The MpActor of the body. Obligatory.
 @export var net: MpActor
@@ -16,7 +15,7 @@ extends Node
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if net == null:
-		warnings.append("Asigná en `net` el MpActor del cuerpo.")
+		warnings.append("Assign to `net` the body's MpActor.")
 	return warnings
 
 

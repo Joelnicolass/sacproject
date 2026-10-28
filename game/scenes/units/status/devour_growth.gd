@@ -9,9 +9,8 @@ extends Node
 ## Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeWeapon through resistance_factor_of), UnitBody asks
 ## extra_regeneration_of() when it regenerates, Devour calls grow(). The cure (Rainbow) is HealEffect's.
 ## `shown` (the souls eaten) is replicated (the unit's MultiplayerSynchronizer, "DevourGrowth:shown"): every peer draws the bulk
-## from it. Declared: the bulk is a scale of the mesh, not the original's bone bulge (placeholder).
+## from it. The bulk is a scale of the mesh (placeholder).
 ## Server (or solo) only for grow().
-## Ref: F131 (RFC-030 030t-a), sacengine devourSoul state.d:13138-13163, bulk 13943-13948.
 
 
 ## The body that grows (its name goes in the log). Empty = the parent.
@@ -27,7 +26,6 @@ extends Node
 @export var increment_keep := 0.75
 @export var increment_add := 125.0
 ## The increment heals over this long: regeneration per second goes up by increment / regeneration_over_s.
-## Ref: state.d:13138-13163 (increment / updateFPS).
 @export_range(1.0, 600.0, 0.0001, "suffix:s") var regeneration_over_s := 60.0
 @export var resistance_step := 0.9
 @export_group("Bulk")
@@ -105,7 +103,7 @@ func grow(souls: int, from := "") -> void:
 		_resistance *= resistance_step
 		shown += 1
 	if DebugLog.on(&"devour"):
-		print("devora %s alma %s n %d vida %d->%d máx %d->%d incremento %.3f regeneración +%.3f/s resistencia %.4f (tick %d)" % [
+		print("devours %s soul %s n %d health %d->%d max %d->%d increment %.3f regeneration +%.3f/s resistance %.4f (tick %d)" % [
 			AbilityEffect.who(body), from, souls, roundi(life), roundi(health.current), roundi(most), roundi(health.maximum),
 			_increment, _extra, _resistance, MatchClock.now()])
 

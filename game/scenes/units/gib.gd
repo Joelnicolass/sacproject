@@ -4,7 +4,6 @@ extends RefCounted
 ## A creature bursts into blood: no corpse is left, the body is gone the next tick and its soul stays on the ground (SoulSystem puts it
 ## there because the body is `gibbed`). It dies like any other death (`Health.died`, the match counts it); what is different is what stays.
 ## It does not choose who bursts (the spell does) and a creature that falls into a hole bursts the same way but leaves no soul (`fall_into_hole`).
-## Ref: sacengine gib (state.d:8310-8364), the blood of gibAnimation.
 
 ## The bursts: the cloud and the spray (the same as a creature that falls into a hole), at the body's center (`soul_anchor`, the
 ## CENTER socket of the body as it lies).
@@ -30,11 +29,10 @@ static func burst(body: UnitBody, from_slot := 0) -> bool:
 
 
 ## A creature far below the land over a hole bursts with no soul and is gone at once (Locomotion.fell). Frees the body in the middle of its step.
-## Ref: sacengine gib(state, -2) (state.d:8341-8365).
 static func fall_into_hole(body: UnitBody) -> void:
 	body.set_physics_process(false)
 	var center := body.soul_anchor()
 	FxBus.broadcast(CLOUD, center)
 	FxBus.broadcast(SPRAY, center)
-	print("%s cae al vacio" % body.display_name())
+	print("%s falls into the void" % body.display_name())
 	body.queue_free()

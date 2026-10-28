@@ -10,7 +10,7 @@ cull_mode = 2
 albedo_color = Color(0.1, 0.3, 0.95, 1)
 
 [node name="CageThread" type="Node3D"]
-editor_description = "F154 (RFC-030 030q-b): hilo del Cage pull del Seraph (renderer.d:1931-1946). Un rayo con forma de jaula: LightningBolt de 10 tramos, 2,5 m de dispersión, que cambia de forma cada 6 cuadros y crece de la nada a pleno en 0,5 s. Misma escena de código que el Web pull (pull_thread.gd). En MIX. Color liso: falta la textura ltng del exportador."
+editor_description = "The thread of the Seraph's Cage pull. A cage-shaped bolt: a LightningBolt of 10 segments, 2.5 m of spread, that changes shape every 6 frames and grows from nothing to full in 0.5 s. Same code scene as the Web pull (pull_thread.gd). In MIX. Flat color: the exporter lacks the ltng texture."
 script = ExtResource("1_thread")
 width = 0.1
 fins = 3

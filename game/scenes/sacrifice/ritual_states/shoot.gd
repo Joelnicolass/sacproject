@@ -3,7 +3,6 @@ extends RitualStep
 ## The doctors turn to the site and torture the creature (the rope shows it: doctor.carried). Within the
 ## window rules.ritual_drain_start_s .. + ritual_drain_s the wizard loses a round's worth of life and
 ## mana, evenly (RitualDrain). At the end: complete or wait.
-## Ref: sacengine state.d:15975, 15997-16011, 16020-16042.
 
 const FACING_TOLERANCE := 0.05
 

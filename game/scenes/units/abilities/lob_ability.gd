@@ -6,27 +6,23 @@ extends AbilityEffect
 ## The body prepares (AbilitySlot's windup()) and at the shoot tick
 ## the shots fly and the mana is drained (the cooldown if it was 0).
 ## Each shot: direction = the way to the target, plus 0.5·g·d/speed² up, with
-## the ranged accuracy (ShotAim.scatter: 2 draws), plus `spread · uniformDirection` (3 draws; a point of the cube [−1, 1]³,
+## the ranged accuracy (ShotAim.scatter: 2 draws), plus `spread` · a uniform direction (3 draws; a point of the cube [−1, 1]³,
 ## normalized); v = direction · speed, NOT normalized (the bomb flies a little faster or slower than
 ## the spell's speed). The stream is MatchSeed.rng(["lob", user, tick]): the same match and tick give the same volley.
 ## The target: an enemy creature is aimed at by its center led by its pace (like RangedWeapon);
 ## anything else is the point (the ground): an ally as the target is treated as the ground.
 ## Range: the spell's cast_range, to the aimed point.
 ## The shots are RangedShot of the shot container with the look `look` (gravity `falling`:
-## 20 for blightMites, stickyBomb, oil, bombardment); what each does where it lands is that look's ShotImpact (StickImpact).
+## 20 for mites, sticky bombs, oil, bombardment); what each does where it lands is that look's ShotImpact (StickImpact).
 ## They carry no intended target, so one of the shooter's own side is never hit.
-## Divergences (declared): the shot leaves from ShotAim.origin (the body's front at shot_height, not the animation's hand); a
+## Limits: the shot leaves from ShotAim.origin (the body's front at shot_height, not the animation's hand); a
 ## shot that flies off the map ends at flight_limit meters.
-## Ref: F129 (RFC-030 030r-a); Ikarus acia, Pyrodactyl kcfa, sacengine useAbility → shoot!true (state.d:13463-13493), stickyBombShoot / oilShoot 13179-13194, 12746-12748, getShotDirectionWithGravity 11506-11510, uniformDirection 29106-29111, predictShotTargetPosition, checkAbility 13451-13458, sacspell.d:123.
 
 ## Shots per use (the Sticky bomb fires 10, the oil one).
-## Ref: sacengine foreach(i;0..10) in stickyBombShoot.
 @export var shots := 10
 ## Scale of the random push added to each direction (0.2·a random direction).
-## Ref: sacengine 0.2·uniformDirection.
 @export var spread := 0.2
 ## The shots' gravity in m/s². Also what the aim lifts the direction by.
-## Ref: sacspell.d:123.
 @export var falling := 20.0
 ## The shot leaves from the body's front at this fraction of its height (as RangedWeapon.shot_height).
 @export var shot_height := 0.7
@@ -50,7 +46,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		return false
 	var spawner := ShotSpawner.of(user.get_tree())
 	if spawner == null:
-		push_warning("LobAbility: no hay ShotSpawner en el mundo.")
+		push_warning("LobAbility: no ShotSpawner in the world.")
 		return false
 	var origin := ShotAim.origin(user, shot_height)
 	var offset := _aim_point(target_pos, target) - origin
@@ -59,7 +55,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	var accuracy := _accuracy()
 	var look_id := FxWire.id_of(look if look != null else ability.shot_look)
 	for index in shots:
-		## getShotDirectionWithGravity: a zero offset stays a zero direction (offset.length == 0 ? offset : normalized).
+		# A zero offset stays a zero direction (offset.length == 0 ? offset : normalized).
 		var direction := offset.normalized() if offset.length_squared() > 0.0 else offset
 		direction.y += 0.5 * falling * offset.length() / (ability.speed_m_s * ability.speed_m_s)
 		direction = ShotAim.scatter(direction, accuracy, rng)
@@ -79,13 +75,13 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 			"shooter": str(user.get_path()),
 		})
 		if DebugLog.on(&"effects"):
-			print("lob %s %s tiro %d/%d %s v (%.4f, %.4f, %.4f) origen (%.4f, %.4f, %.4f) (tick %d)" % [
+			print("lob %s %s shot %d/%d %s v (%.4f, %.4f, %.4f) origin (%.4f, %.4f, %.4f) (tick %d)" % [
 				who(user), ability.tag, index + 1, shots, shot.name if shot else "?", velocity.x, velocity.y, velocity.z,
 				origin.x, origin.y, origin.z, tick])
 	return true
 
 
-## state.uniformDirection: a point of the cube [−1, 1]³, normalized. The draws are the simulation's: do not reorder them.
+## A point of the cube [−1, 1]³, normalized. The draws are the simulation's: do not reorder them.
 func _uniform_direction(rng: RandomNumberGenerator) -> Vector3:
 	return LobAbility.uniform_direction(rng)
 

@@ -54,9 +54,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if get_child_count() == 0:
-		warnings.append("Suelta un melee_weapon.tscn o un ranged_weapon.tscn como hijo.")
+		warnings.append("Drop a melee_weapon.tscn or a ranged_weapon.tscn as a child.")
 	if mana == null:
-		warnings.append("Asigná en `mana` el ManaPool de la unidad (el arma a distancia lo gasta).")
+		warnings.append("Assign to `mana` the unit's ManaPool (the ranged weapon spends it).")
 	return warnings
 
 

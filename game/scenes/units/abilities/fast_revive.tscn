@@ -3,5 +3,5 @@
 [ext_resource type="Script" path="res://scenes/units/abilities/fast_revive.gd" id="1_revive"]
 
 [node name="FastRevive" type="Node"]
-editor_description = "F153 (RFC-030 030p-b): revivir rapido del cuerpo caido por el Breath of life. BreathOfLife lo agrega como hijo del cuerpo, solo en el servidor, despues de begin(). Dura 150 ticks: sube 2 m / 75 por tick mientras timer < 75 (1,97 m), gira 2 pi; al final quita el alma y deja el cuerpo en IDLE (Captive.finish_revive)."
+editor_description = "The fast revival of the body raised by the Breath of life. BreathOfLife adds it as a child of the body, on the server only, after begin(). It lasts 150 ticks: it rises 2 m / 75 per tick while timer < 75 (1.97 m) and turns 2 pi; at the end it removes the soul and leaves the body IDLE (Captive.finish_revive)."
 script = ExtResource("1_revive")

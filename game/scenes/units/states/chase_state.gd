@@ -3,7 +3,7 @@ extends UnitState
 
 ## CHASE: toward the attack target; starts the swing or the shot of the first weapon that can when in range. Without an order it gives up
 ## beyond the sight range.
-## F376 (RFC-053 053g): a chase that does not move (turning in place, held by the avoidance, under a flier it cannot reach)
+## A chase that does not move (turning in place, held by the avoidance, under a flier it cannot reach)
 ## shows the rest clip instead of `run` on the spot once its flat speed stays under `still_speed` for `still_after_s`. Only the
 ## clip: measured on every peer from the body's real displacement, the simulation never reads it.
 
@@ -29,8 +29,8 @@ func physics_update(delta: float) -> void:
 		body.target = null
 		transition(&"Idle")
 		return
-	## The first weapon (in priority order) that wants this foe: it asks to walk on, to hold and turn, or it starts. A weapon that wants
-	## the foe but is out of range keeps the body walking: a weaker weapon does not take over.
+	# The first weapon (in priority order) that wants this foe: it asks to walk on, to hold and turn, or it starts. A weapon that wants
+	# the foe but is out of range keeps the body walking: a weaker weapon does not take over.
 	for weapon: Weapon in body.weapons.ordered():
 		if not weapon.wants(foe):
 			continue

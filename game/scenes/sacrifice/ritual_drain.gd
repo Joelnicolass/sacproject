@@ -5,7 +5,6 @@ extends Node
 ## What a ritual takes from the wizard whose altar it is: `apply` removes a fraction of a round's life and mana (Shoot calls it with
 ## the time that passed), and `collapse_altar` starts the fall of his altar, once. Only a type that `drains_target_wizard` takes
 ## anything. What it does not do: decide when a round is or who wins (Ritual). Take this node out and the wizard is never touched.
-## Ref: sacengine state.d:15901-15903, 15997-16011.
 
 @export var ritual: Ritual
 
@@ -18,7 +17,7 @@ var _match: MatchState
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if ritual == null:
-		warnings.append("Asigná en `ritual` el Ritual que drena.")
+		warnings.append("Assign to `ritual` the Ritual it drains.")
 	return warnings
 
 

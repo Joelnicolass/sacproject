@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://data/shots/acia.tscn" id="look_shot"]
 
 [node name="StickyBomb" type="Node"]
-editor_description = "F129 (RFC-030 030r-a): efecto propio de la Sticky bomb del Ikarus (acia). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Prepara 94 ticks (CKa2: 48 cuadros, sin lrba: último cuadro 47 x 2), lanza 10 bombas con dispersión 0,2 y gravedad 20; el look es data/shots/acia.tscn y lo que hace al caer, StickImpact."
+editor_description = "The Ikarus's Sticky bomb effect (acia). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). It prepares 94 ticks (CKa2: 48 frames, no lrba: last frame 47 x 2) and throws 10 bombs with spread 0.2 and gravity 20; the look is data/shots/acia.tscn and what it does when it lands, StickImpact."
 script = ExtResource("1_lob")
 windup_s = 1.5666
 windup_from_clip = true

@@ -4,7 +4,6 @@ extends RefCounted
 ## What a whole side sees: the union of what the Visions of its bodies remember (and of its allies' when the match shares sight).
 ## It keeps no marks of its own, only the list of live Visions and a cache of the union for the current tick; the marks live in each Vision.
 ## It does not choose targets (TargetPicker) nor decide what the AI knows (AiPerception): both ask it.
-## Ref: sacengine isVisibleToSide / markAsVisible (state.d:29658-29693).
 
 ## Where the Visions announce what they learn (VisionMemory emits `learned`).
 static var events := VisionEvents.new()

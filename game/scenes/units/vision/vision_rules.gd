@@ -3,7 +3,6 @@ extends RefCounted
 
 ## The plain arithmetic of sight: is a point inside a sight shape, inside a cone, and has a memory run out.
 ## It holds no state and needs no tree, so the rules suite can try it alone. It does not know bodies or sides (Vision does).
-## Ref: sacengine markVisibleNTTs (state.d:12901) measures the flat distance to the center of each body.
 
 
 ## Whether `at` is inside the sight shape around `center`: a cylinder looks at the flat distance (height does not matter), a sphere at the

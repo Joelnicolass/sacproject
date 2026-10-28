@@ -2,7 +2,6 @@ extends RitualStep
 
 ## Each doctor walks a quarter turn around the site; the ring (`Ring` / `RingEnd` of sacrifice_places.tscn, SacrificeFacts) shrinks
 ## from 20 to 17 m in the last fifth. Rounds start one quarter further.
-## Ref: sacengine ritualPositions, state.d:15854-15863, 15953-15972.
 
 
 func enter() -> void:

@@ -14,7 +14,6 @@ const BAD_TARGET := SpellAction.BAD_TARGET
 
 
 ## The closest standing enemy altar to `from` within `max_range` on the plane, or null. A destroyed or collapsing altar is not there.
-## Ref: sacengine closestEnemyAltar, state.d:28083.
 func closest_enemy_altar(slot: int, from: Vector3, max_range := INF) -> Altar:
 	var best: Altar = null
 	var best_d := max_range
@@ -22,7 +21,7 @@ func closest_enemy_altar(slot: int, from: Vector3, max_range := INF) -> Altar:
 		var altar := node as Altar
 		if altar == null or not altar.is_standing() or altar.owner_slot <= 0 or altar.owner_slot == slot:
 			continue
-		## Only an altar of an enemy (the altar of an ally is not a target of Desecrate). Ref: RFC-049 049c.
+		# Only an altar of an enemy (the altar of an ally is not a target of Desecrate).
 		if not SideRelations.is_enemy(slot, altar.owner_slot):
 			continue
 		var d := Vector2(altar.global_position.x - from.x, altar.global_position.z - from.z).length()
@@ -33,7 +32,6 @@ func closest_enemy_altar(slot: int, from: Vector3, max_range := INF) -> Altar:
 
 
 ## "" when Desecrate can be armed from `from`, else why not.
-## Ref: sacengine mustBeNearEnemyAltar, state.d:29562.
 func altar_status(slot: int, from: Vector3) -> String:
 	if closest_enemy_altar(slot, from) == null:
 		return NO_ALTAR
@@ -57,7 +55,6 @@ func sacrifice_status(slot: int, picked: Node3D) -> String:
 
 ## The standing ritual site of `slot` closest to `from` on the plane, or null: where a Convert takes the creature. It is the
 ## site of an altar or of a Shrine, whichever is closer, with no range.
-## Ref: sacengine closestShrine, state.d:28060-28095.
 func closest_own_site(slot: int, from: Vector3) -> RitualSite:
 	var best: RitualSite = null
 	var best_d := INF
@@ -73,7 +70,6 @@ func closest_own_site(slot: int, from: Vector3) -> RitualSite:
 
 
 ## "" when Convert can be armed from `from`: the wizard needs an own altar standing.
-## Ref: sacengine mustBeConnectedToConversion, state.d:29563.
 func convert_arm_status(slot: int, from: Vector3) -> String:
 	return "" if closest_own_site(slot, from) != null else NO_ALTAR
 
@@ -97,7 +93,6 @@ func convert_status(slot: int, picked: Node3D) -> String:
 ## Is a Desecrate underway against the altars of `altar_slot` (0 = any) cast by `caster_slot` (0 = any): a wizard casting it (one of
 ## `casting`, the casts the caller holds), a carrier on its way or a ritual running. The AI reads it to guard its altar, to leave a
 ## target alone and to stop claiming creatures.
-## Ref: sacengine desecrationOngoing, shiny.d:3079 over the `sacDocCastings`; RFC-024 024d.
 func desecration_matches(altar_slot: int, caster_slot: int, casting: Array[SacrificeSystem.Cast]) -> bool:
 	for cast in casting:
 		if cast.site != null and is_instance_valid(cast.site) \

@@ -4,5 +4,5 @@
 
 [node name="Pushback" type="Node"]
 process_physics_priority = -1
-editor_description = "Squall amba (Pushback, state.d:4768-4776, 24017-24031): 22,5 m/s por 40 ticks a lo largo del disparo; prioridad −1 (los efectos van antes que las criaturas)."
+editor_description = "Squall amba: 22.5 m/s for 40 ticks along the shot; priority −1 (effects go before creatures)."
 script = ExtResource("1_push")

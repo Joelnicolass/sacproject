@@ -342,7 +342,7 @@ body = NodePath("../../..")
 body = NodePath("../../..")
 
 [node name="BlindRaged" type="Node3D" parent="Afflictions"]
-editor_description = "Blind Rage (egar): 30 s sin ordenes ni disparos, pelea con la criatura mas cercana de cualquier bando. Cada capa es un lanzamiento. Las particulas swrl giran alrededor de su caja."
+editor_description = "Blind Rage (egar): 30 s without orders or shots, it fights the closest creature of any side. Each layer is one cast. The swrl particles circle its box."
 script = ExtResource("f161_spell_affliction")
 type = ExtResource("i8_raged_type")
 max_stacks = 16
@@ -357,7 +357,7 @@ shape = 1
 box_scale = 1.5
 
 [node name="Glow" parent="Afflictions/BlindRaged" instance=ExtResource("q5_state_light")]
-editor_description = "Luz roja mientras la criatura esta enfurecida (Blind Rage; color dominante de swrl.png y per2.png). Se ajusta color, energia y alcance aca; cada criatura enfurecida lleva una."
+editor_description = "Red light while the creature rages (Blind Rage; dominant colour of swrl.png and per2.png). Tune color, energy and range here; every raging creature gets one."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 light_color = Color(1, 0.2, 0.12, 1)
 light_energy = 0.9

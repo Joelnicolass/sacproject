@@ -5,7 +5,6 @@ extends Node
 ## regenerates always (the Troll) heals in any mode that can heal, with no pause. A blocked body (Afflictions) heals nothing in either case.
 ## Not: when to heal (the body asks once per physics step, in its own order: this node never processes by itself) nor what heals it
 ## from outside (spells, auras).
-## Ref: sacengine isRegenerating (state.d:1428-1434), updateCreatureStats (state.d:14400-14403).
 
 @export var body: UnitBody
 @export var health: Health

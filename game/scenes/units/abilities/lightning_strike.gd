@@ -8,16 +8,15 @@ extends Node3D
 ##
 ## - It is born in the tick of the order. With `retarget` the segment from the start to the end's
 ##   center is cut at the first live body it crosses, the shooter left out: that body is the new end (it "bounces"). The charge's
-##   discharges do not (updateTargets = false: the end was picked by the charge).
-## - `travel_s` later (Lightning.travelDelay 12; the node counts from the tick after it was born) the end's center is
+##   discharges do not (the end was picked by the charge).
+## - `travel_s` later (12 ticks; the node counts from the tick after it was born) the end's center is
 ##   read again (the bolt follows its target) and, if the end is a valid body, it takes the SPEL's amount as direct spell damage
 ##   with DamageMod.lightning. A ground end (a discharge into the land) hurts nothing.
 ## - The damage goes through Health.damage_typed: the side factor (friendly fire off: an ally takes nothing; on: ally_damage_factor),
 ##   the resistance (a Trogg's is 0) and the Lightning Charge's passive of the body that takes it are all Health's.
 ##
-## Divergences (declared): buildings do not stop the ray (only creatures and wizards); the bolt does not keep its 64 frames of
+## Limits: buildings do not stop the ray (only creatures and wizards); the bolt does not keep its 64 frames of
 ## life (the look has its own): the node is freed after it strikes; the scar and the sound are not here.
-## Ref: F130 (RFC-030 030s-a); sacengine `lightning` (state.d:10474-10491, Lightning 2831-2840, updateLightning 16366-16386), updateTargets 10475-10484, dealSpellDamage 16380-16383, 28892-28899.
 
 
 
@@ -25,13 +24,12 @@ extends Node3D
 signal struck(body: Node3D, at: Vector3)
 
 ## Time from the order to the damage.
-## Ref: Lightning.travelDelay (12 ticks).
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var travel_s := 0.2
-## updateTargets: the first live body on the way becomes the end.
+## The first live body on the way becomes the end.
 @export var retarget := true
 ## The bolt every peer sees (a BeamType of data/fx/beams; empty = none).
 @export var beam_type: BeamType
-## The burst where the bolt hurts a body (sparkAnimation, 16376; reserve look). Empty = none.
+## The burst where the bolt hurts a body (reserve look). Empty = none.
 @export var hit_fx: ParticleType
 
 ## The body that shoots (the Storm Giant): out of the retarget ray, and the "attacker" of the hit.
@@ -63,11 +61,11 @@ static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point:
 	var spawner := from.get_tree().get_first_node_in_group(ShotSpawner.GROUP)
 	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
 	if container == null:
-		push_warning("LightningStrike: no hay contenedor de disparos (grupo shot_spawner).")
+		push_warning("LightningStrike: no shot container (group shot_spawner).")
 		return null
 	var bolt := scene.instantiate() as LightningStrike
 	if bolt == null:
-		push_warning("LightningStrike: la escena no es un LightningStrike.")
+		push_warning("LightningStrike: the scene is not a LightningStrike.")
 		return null
 	bolt.retarget = with_retarget
 	if beam != null:
@@ -83,7 +81,7 @@ static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point:
 	return bolt
 
 
-## isValidTarget: alive and on the field (and targetable). The one answer for the retarget ray, the damage and the charge's picks.
+## Alive and on the field (and targetable). The one answer for the retarget ray, the damage and the charge's picks.
 static func is_valid_target(body: Node) -> bool:
 	if body == null or not is_instance_valid(body) or not body.is_inside_tree() or not ProjectileTargets.is_live_body(body):
 		return false
@@ -113,9 +111,9 @@ func _ready() -> void:
 	_follow()
 	if retarget:
 		_retarget()
-	_say("rayo %s %s nace de %s a %s en %s (tick %d)" % [label, _who, _v(start), _name_of(end_body), _v(end_point), _born])
+	_say("lightning %s %s spawns from %s to %s at %s (tick %d)" % [label, _who, _v(start), _name_of(end_body), _v(end_point), _born])
 	if end_body != first:
-		_say("rayo %s %s rebota en %s en vez de %s (tick %d)" % [label, _who, _name_of(end_body), _name_of(first), _born])
+		_say("lightning %s %s bounces on %s instead of %s (tick %d)" % [label, _who, _name_of(end_body), _name_of(first), _born])
 	if beam_type != null:
 		FxBus.broadcast_beam(beam_type, start, end_point, end_body if end_body != null and is_instance_valid(end_body) else null)
 
@@ -138,7 +136,7 @@ func _follow() -> void:
 		end_point = BodyNudge.center(end_body)
 
 
-## updateTargets: the first valid body (not the shooter) the segment start → end meets becomes the end.
+## The first valid body (not the shooter) the segment start → end meets becomes the end.
 func _retarget() -> void:
 	var best: Node3D = null
 	var best_d := INF
@@ -161,14 +159,14 @@ func _retarget() -> void:
 		end_point = BodyNudge.center(best)
 
 
-## Frame travelDelay: the SPEL's amount as direct spell damage with DamageMod.lightning to a valid end.
+## On the travel frame: the SPEL's amount as direct spell damage with DamageMod.lightning to a valid end.
 func _strike() -> void:
 	struck.emit(end_body if end_body != null and is_valid_target(end_body) else null, end_point)
 	if end_body == null:
-		_say("rayo %s %s llega al suelo en %s (tick %d)" % [label, _who, _v(end_point), MatchClock.now()])
+		_say("lightning %s %s reaches the ground at %s (tick %d)" % [label, _who, _v(end_point), MatchClock.now()])
 		return
 	if not is_valid_target(end_body):
-		_say("rayo %s %s llega a %s: ya no es blanco (tick %d)" % [label, _who, _name_of(end_body), MatchClock.now()])
+		_say("lightning %s %s reaches %s: no longer a target (tick %d)" % [label, _who, _name_of(end_body), MatchClock.now()])
 		return
 	var health := end_body.get_node_or_null("Health") as Health
 	if health == null:
@@ -176,11 +174,11 @@ func _strike() -> void:
 	if hit_fx != null:
 		FxBus.broadcast(hit_fx, end_point)
 	var taken := health.damage_typed(amount, Health.DIRECT_SPELL, _slot, false, false, Health.LIGHTNING)
-	_say("rayo %s %s dano %s %.2f vida %.2f (tick %d)" % [label, _who, _name_of(end_body), taken, health.current, MatchClock.now()])
+	_say("lightning %s %s damage %s %.2f health %.2f (tick %d)" % [label, _who, _name_of(end_body), taken, health.current, MatchClock.now()])
 
 
 func _name_of(body: Node) -> String:
-	return str(body.name) if body != null and is_instance_valid(body) else "suelo"
+	return str(body.name) if body != null and is_instance_valid(body) else "ground"
 
 
 func _say(text: String) -> void:

@@ -7,9 +7,8 @@ extends AbilityEffect
 ## the revival is FastRevive's: this effect only judges the target and launches the breath.
 ##
 ## Target (applicable → range): a soul is resolved to its corpse. It must be dead,
-## of the caster's slot (the original decides `onlyAlly` by side; here by slot), with its soul NORMAL or EMERGING
+## of the caster's slot, with its soul NORMAL or EMERGING
 ## and within the spell's range of the caster's feet (40 m, 3D: obj.position to target.position).
-## Ref: F153 (RFC-030 030p-b); Dragon filb (flags targetSouls | targetCorpses | onlyAlly = 4106), sacengine useAbility → shoot (state.d:13470-13493), breathOfLifeShoot 13238-13248, 12746-12748, abilityStatus 29582-29604, 13241-13244, revive 8651-8664.
 
 ## BreathOfLife scene (breath_of_life.tscn): the coordinator the shot container holds while the breath flies.
 @export var breath_scene: PackedScene
@@ -29,23 +28,23 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## breathOfLifeShoot: the breath leaves the shot origin toward the corpse. False = nothing launched (the target is gone by the
-## shoot tick): AbilitySlot spends the mana all the same, like the original.
+## The breath leaves the shot origin toward the corpse. False = nothing launched (the target is gone by the
+## shoot tick): AbilitySlot spends the mana all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority() or breath_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):
-			print("aliento %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
+			print("breath %s without a valid target (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var spawner := get_tree().get_first_node_in_group(ShotSpawner.GROUP)
 	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
 	if container == null:
-		push_warning("BreathOfLifeAbility: no hay contenedor de disparos (grupo shot_spawner).")
+		push_warning("BreathOfLifeAbility: no shot container (group shot_spawner).")
 		return false
 	var breath := breath_scene.instantiate() as BreathOfLife
 	if breath == null:
-		push_warning("BreathOfLifeAbility: breath_scene no es un BreathOfLife.")
+		push_warning("BreathOfLifeAbility: breath_scene is not a BreathOfLife.")
 		return false
 	breath.setup(user, ability, spawner as ShotSpawner, corpse_of(target))
 	container.add_child(breath)

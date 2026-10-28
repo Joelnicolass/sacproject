@@ -8,7 +8,6 @@ extends ClipPlayback
 ## dedicated server mounts no look, so it plays nothing and reports no clips and no loops; nothing in the simulation depends on that.
 ## It listens to the rig: whenever BodyMount hands the rig a look, this node tells the visual what to draw and starts the wanted role.
 ## Presentation only: the simulation takes its ticks from CreatureType and never reads this node.
-## Ref: RFC-023 (023c), RFC-036 (036g).
 
 ## The body's visual (Tilt/Mesh). Its `rig` is the BodyRig that draws the skeleton; it has the pose and the measures.
 @export var visual: BodyVisual

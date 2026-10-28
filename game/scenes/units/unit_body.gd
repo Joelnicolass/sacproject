@@ -4,7 +4,6 @@ extends GameBody
 ## A creature on the map: the physics body, the ids that travel on the network (`creature_tag`, `model`, `mode`), the commands other
 ## systems give it and the explicit order of its physics step. What it is and does lives in its children: Creature, Locomotion, Engagement,
 ## Weapons, Abilities, SpecialForms, Regeneration, Clips and States (one per mode). Clients only present what the synchronizer brings.
-## Ref: sacengine CreatureMode (state.d), patrol (state.d:13029).
 
 signal died(tag: String, owner_slot: int, at: Vector3)
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
@@ -20,7 +19,7 @@ enum Mode { IDLE, MOVE, CHASE, ATTACK, DEAD, SUMMONING, SHOOT, ROCK_FORM, HELD, 
 const GROUP := &"unit"
 
 ## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it enters the tree: the spawner on every peer,
-## the .tscn of a bench. It never looks the type up by text.
+## the .tscn of a test scene. It never looks the type up by text.
 @export var type: CreatureType:
 	set(value):
 		type = value
@@ -110,7 +109,7 @@ func _ready() -> void:
 ## One simulated step, in this order and no other (no child processes by itself): vertical motion, time since the last hit, the state of
 ## the mode (unless playing dead or held), regeneration, then Locomotion steers, avoids and slides.
 func _physics_process(delta: float) -> void:
-	if not simulates() or is_taken():  ## A client presents; a held creature is carried by Captive.
+	if not simulates() or is_taken():  # A client presents; a held creature is carried by Captive.
 		clips.update()
 		return
 	if air.seat():
@@ -122,7 +121,7 @@ func _physics_process(delta: float) -> void:
 		var state := current_state()
 		if state.rests_on_floor() and (is_dead() or (not locomotion.airborne_step and is_on_floor())):
 			return
-		resting = state.regenerates()  ## asked before the update: a mode it leaves this tick does not regenerate in it
+		resting = state.regenerates()  # asked before the update: a mode it leaves this tick does not regenerate in it
 		state.physics_update(delta)
 	regeneration.step(delta, resting)
 	locomotion.finish(delta, not special_forms.playing_dead, is_obstacle)
@@ -152,7 +151,7 @@ func finish_summon() -> void:
 
 ## Questions. A body held or revived by a Sac Doctor is not a creature of the match meanwhile; an obstacle is not dead, not summoning, not
 ## taken and not hidden by an affliction; flying is a creature that must fly or a hybrid with its Flight up.
-## Ref: sacengine isObstacle (state.d:112-126), canRegenerateMana (state.d:168): not while dead or still being summoned.
+## Mana does not regenerate while dead or still being summoned.
 func is_dead() -> bool: return mode == Mode.DEAD
 func is_summoning() -> bool: return mode == Mode.SUMMONING
 func is_held() -> bool: return mode == Mode.HELD
@@ -181,7 +180,6 @@ func melee_profile() -> Dictionary:
 
 
 ## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright).
-## Ref: sacengine soulPosition.
 func soul_anchor() -> Vector3:
 	var pivot := get_node_or_null("Tilt") as Node3D
 	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual

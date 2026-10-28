@@ -5,19 +5,18 @@ extends FsmMachine
 ## against) and runs the other way, and with none it stands still (Work); with no shelter near it crouches (Cower). A hit from another side
 ## makes it run from whoever hit it for a while (the panic), shelter or not. It thinks every `think_interval_s` and never attacks.
 ## Not: what it notices (VillagerSenses) nor what each state does (the states, one child each). Server or solo only.
-## Ref: sacengine updateCreatureAI (state.d:13732-13760).
 
 @export var senses: VillagerSenses
-## Decision of the port: the original decides on the turn of its AI queue; this is a fixed period.
+## How often the brain decides: a fixed period.
 @export_range(0.0166, 5.0, 0.0001, "suffix:s") var think_interval_s := 0.25
 @export_group("Run")
-## Decision of the port (the original runs at a point mirrored through the enemy every tick): how far ahead of the villager the point it runs
+## How far ahead of the villager the point it runs
 ## to lies, straight away from the scare.
 @export var flee_leg_m := 30.0
 ## How far the panic leg reaches before it re-decides (longer than a calm flee: it is running for its life).
 @export var panic_leg_m := 40.0
 @export_group("Look")
-## «Working the fields» is in the original's villager FSM with no rule decompiled, so a calm villager (mode IDLE) plays `work_role` instead of
+## A calm villager (mode IDLE) plays `work_role` instead of
 ## its idle clip. Off = the CRE8 idle. Presentation only, on every peer.
 @export var work_when_calm := true
 ## Clip role of the calm villager ("work" = dig).
@@ -34,7 +33,7 @@ func _ready() -> void:
 	set_process(false)
 	set_process_unhandled_input(false)
 	if work_when_calm:
-		body.clips.idle_role = work_role  ## IDLE is the calm mode of a villager (flee = MOVE, cower = COWER): every peer shows it the same way.
+		body.clips.idle_role = work_role  # IDLE is the calm mode of a villager (flee = MOVE, cower = COWER): every peer shows it the same way.
 	if not body.simulates():
 		set_physics_process(false)
 		return

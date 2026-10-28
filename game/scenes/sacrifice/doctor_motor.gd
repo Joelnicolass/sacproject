@@ -7,10 +7,8 @@ extends Node
 ## waypoints of a PathFollower (set only in carrier_doctor.tscn); without one it walks in a line.
 ## What it does not do: decide where to go (the errand and the ritual do), play a clip (DoctorLook) or keep the pose (DoctorBody).
 ## The server (or solo) runs it; the clients only get the position and rotation of the body.
-## Ref: sacengine state.d:15480-15504 (the ground step), stats.d:104 (turn rate).
 
 ## Ground creatures turn at pi rad/s.
-## Ref: sacengine
 @export_range(0.1, 12.0, 0.1, "suffix:rad/s") var turn_rate := PI
 ## The goal counts as reached this close (m).
 @export_range(0.0, 2.0, 0.01, "suffix:m") var arrive_distance_m := 0.25
@@ -36,9 +34,9 @@ var _walking := false
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if body == null:
-		out.append("Asigná `body` (el DoctorBody que mueve).")
+		out.append("Assign `body` (the DoctorBody it moves).")
 	if avoidance == null:
-		out.append("Asigná `avoidance` (BodyAvoidance): sin él los doctores se atraviesan.")
+		out.append("Assign `avoidance` (BodyAvoidance): without it the doctors walk through each other.")
 	return out
 
 
@@ -91,7 +89,7 @@ func advance_on_ground(horizontal: Vector3, delta: float) -> void:
 		body.velocity.y -= gravity() * delta
 	body.velocity.x = horizontal.x
 	body.velocity.z = horizontal.z
-	## The engine's avoidance steers the body around the others; the step ends in _on_avoided, this same physics step.
+	# The engine's avoidance steers the body around the others; the step ends in _on_avoided, this same physics step.
 	if body.is_obstacle() and avoidance.steer(body.velocity):
 		return
 	_finish_step()

@@ -5,7 +5,6 @@ extends Area3D
 ## What one body sees: who stands inside its sight shape (and cone), reported in name order, and what its side keeps in mind of them.
 ## It does not choose targets (TargetPicker) nor decide what the AI knows (AiPerception); the sight of a side is the union of the
 ## Visions of its bodies (VisionSides). Resize it with the gizmo of its Shape or set `radius_m`; what it can see sits in `seen_groups`.
-## Ref: sacengine markVisibleNTTs (state.d:12901), isVisibleToSide (state.d:29689).
 
 ## Who came into sight / left it on the last refresh, and who hurt this body (VisionSides.reveal).
 signal seen(node: Node3D)
@@ -78,7 +77,7 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shape != null else PackedStringArray(["Falta la forma (shape): un CollisionShape3D hijo."])
+	return PackedStringArray() if shape != null else PackedStringArray(["Missing the shape (shape): a CollisionShape3D child."])
 
 
 func _physics_process(_delta: float) -> void:

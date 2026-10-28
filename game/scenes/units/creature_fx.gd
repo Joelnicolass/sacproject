@@ -2,15 +2,13 @@ class_name CreatureFx
 extends Node3D
 
 ## The sprite effect a creature carries, from the `carried_fx` of its look (the Manahoar's mana flame). It adds the scene
-## once the body is dressed and tints it with the side's mana color (`SideColors.mana_color`): the original draws it with
+## once the body is dressed and tints it with the side's mana color (`SideColors.mana_color`), drawn with
 ## additive sprites, not with a light. A creature with no `carried_fx` gets nothing.
 ## Where: the flame follows the `carried_fx_socket` of the model's scene (BodyModel; a BoneAttachment3D + Marker3D the editor
-## moves with a gizmo), like the original's manahoarManaOffset (a point of the skeleton in the current frame of the clip), so it
+## moves with a gizmo; a point of the skeleton in the current frame of the clip), so it
 ## moves with the body standing, walking or in any clip. A model with no socket gets the fallback `offset` over the feet.
-## How much: the original emits as many flame particles per second as the mana the Manahoar gives (animateManahoar takes
-## the rate addManahoar returns), so with `follow_mana_rate` the flame fades out when no allied manalith is near.
+## How much: as many flame particles per second as the mana the Manahoar gives, so with `follow_mana_rate` the flame fades out when no allied manalith is near.
 ## Presentation only: the simulation never reads it; a dedicated process draws nothing (SpriteEmitter is inert there).
-## Ref: sacengine manahoarManaOffset, state.d animateManahoar.
 
 @export var body: UnitBody
 ## The skeleton that draws the body: where the model's socket is.
@@ -89,7 +87,7 @@ func _apply_rate() -> void:
 	emitter.set_rate(mana_support.flame_rate())
 
 
-## The center of the flame circles in the horizontal plane (the original adds it to the point of the skeleton).
+## The center of the flame circles in the horizontal plane (added to the point of the skeleton).
 func _wobble() -> Vector3:
 	var angle := TAU * float(Time.get_ticks_msec()) / 1000.0
 	return Vector3(cos(angle), 0.0, sin(angle)) * wobble_m

@@ -10,7 +10,7 @@ cull_mode = 2
 albedo_color = Color(0.32, 0.2, 0.08, 1)
 
 [node name="PullThread" type="Node3D"]
-editor_description = "F128 (RFC-030 030q-a): hilo del Web pull del Gremlin (renderer.d:3551-3565). Una cuerda recta del disparo del usuario al centro del blanco, que sale en 20 cuadros y sigue a los dos cuerpos mientras el usuario tira. FxBus.broadcast_scene lo crea con play(user, target, seed). En MIX. Color liso: falta la textura cord del exportador."
+editor_description = "The thread of the Gremlin's Web pull. A straight rope from the user's shot origin to the target's center, that comes out in 20 frames and follows both bodies while the user pulls. FxBus.broadcast_scene creates it with play(user, target, seed). In MIX. Flat color: the exporter lacks the cord texture."
 script = ExtResource("1_thread")
 width = 0.1
 fins = 2

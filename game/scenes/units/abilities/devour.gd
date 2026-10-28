@@ -8,8 +8,7 @@ extends AbilityEffect
 ##
 ## Target: a soul (or the corpse it waits on) that is blue for the eater's slot (free or
 ## its own), NORMAL or EMERGING, within the length of the eater's box measured in 2D.
-## Declared: the creature does not walk closer or turn (the original does); out of range is refused.
-## Ref: F131 (RFC-030 030t-a); Netherfiend crpd, Hellmouth nomd, Devour ifna (flags 4098), sacengine useAbility → shoot1 (state.d:13463-13561; PCes c36, DMes c46), devourSoul 12735-12736, 13138-13163, isApplicable/summarize 30820-30825, useAbilityDistance 12474, moveWithinRange2D 12526-12529.
+## The creature does not walk closer or turn; out of range is refused.
 
 const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
@@ -30,13 +29,13 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## devourSoul. False = nothing happened (the soul is gone by the shoot tick): the cost is 0 all the same.
+## Eats the soul. False = nothing happened (the soul is gone by the shoot tick): the cost is 0 all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority():
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):
-			print("devorar %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
+			print("devour %s without a valid target (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var soul := _soul_of(target)
 	var number := soul.number

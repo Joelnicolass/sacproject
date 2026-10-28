@@ -9,7 +9,6 @@ extends Node3D
 ## the wizard's life (Shoot), `Payoff` pays the souls at the end, `Push` and `Fx` are the barrier and what is seen. Take a part
 ## out of ritual.tscn and that thing stops happening. Replicated: phase, round_index and outcome. Numbers: MatchRules.
 ## Every peer tells its start and its end game-wide (Events.ritual_started / ritual_ended).
-## Ref: sacengine state.d:15854-16045.
 
 signal phase_changed(phase: Phase)  ## every peer
 signal round_tortured(round_index: int)  ## server only
@@ -83,7 +82,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(GROUP)
-	## A client that receives a ritual already running (its phase came with the spawn) tells it now.
+	# A client that receives a ritual already running (its phase came with the spawn) tells it now.
 	if is_running():
 		Events.ritual_started.emit(self)
 	if not simulates():
@@ -97,11 +96,11 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if phases == null:
-		warnings.append("Asigná en `phases` la FsmMachine con Setup, Walk, Shoot, Wait y Ended (autostart apagado: begin() la arranca).")
+		warnings.append("Assign to `phases` the FsmMachine with Setup, Walk, Shoot, Wait and Ended (autostart off: begin() starts it).")
 	if types.is_empty():
-		warnings.append("Asigná en `types` un RitualType por clase (data/sacrifice/desecrate_ritual.tres, convert_ritual.tres).")
+		warnings.append("Assign to `types` one RitualType per kind (data/sacrifice/desecrate_ritual.tres, convert_ritual.tres).")
 	if rules == null:
-		warnings.append("Asigná `rules` (MatchRules) o lo hace SacrificeSystem al crearlo.")
+		warnings.append("Assign `rules` (MatchRules), or SacrificeSystem does it when it creates it.")
 	return warnings
 
 
@@ -131,8 +130,8 @@ func begin(unit: UnitBody, ritual_site: RitualSite, ring_doctors: Array[DoctorBo
 		doctor.died.connect(_on_doctor_died)
 	if drain != null:
 		drain.mark_target(true)
-	if DebugLog.on(&"ritual"): print("ritual %s: empieza sobre el altar del slot %d (lanza el slot %d, %d almas)" % [Kind.keys()[kind].to_lower(), target_slot, caster_slot, souls])
-	phases.start()  ## autostart is off: the phases begin here, in their initial_state (Setup)
+	if DebugLog.on(&"ritual"): print("ritual %s: starts on the altar of slot %d (cast by slot %d, %d souls)" % [Kind.keys()[kind].to_lower(), target_slot, caster_slot, souls])
+	phases.start()  # autostart is off: the phases begin here, in their initial_state (Setup)
 
 
 func is_running() -> bool:
@@ -179,13 +178,12 @@ func complete() -> void:
 
 
 ## Cancelled: doctors die, the creature falls alive and free, the wizard is not under ritual any more.
-## Ref: stopRitual, state.d:15817-15833
 func abort() -> void:
 	if outcome != Outcome.RUNNING:
 		return
 	outcome = Outcome.ABORTED
 	if is_instance_valid(creature) and captive != null and is_instance_valid(captive):
-		## It falls where it was when the ritual began (the original throws it toward that point).
+		# It falls where it was when the ritual began.
 		creature.global_position = Vector3(start_point.x, creature.global_position.y, start_point.z)
 		captive.release()
 	if drain != null:

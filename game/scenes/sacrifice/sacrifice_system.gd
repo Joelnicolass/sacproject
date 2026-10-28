@@ -6,7 +6,6 @@ extends Node
 ## to its children. Desecrate: a carrier doctor takes an own creature to the closest enemy altar and the ritual drains the wizard
 ## there. Convert: the carrier pumps a red soul's corpse back to life and takes it to the own altar, where the ritual turns it into souls.
 ## What it does not do: any logic of its own. SacrificeSpawns builds, SacrificeTargets answers, SacrificeCasts runs the cast, RitualStarter starts the ritual.
-## Ref: RFC-020 (sacrifice), RFC-055g (split).
 
 ## A carrier reached the ritual site holding its creature.
 signal carrier_arrived(errand: CarryErrand)
@@ -60,9 +59,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if spawns == null or targets == null or casts == null or starter == null:
-		warnings.append("Asigná `spawns`, `targets`, `casts` y `starter` (los hijos del sistema).")
+		warnings.append("Assign `spawns`, `targets`, `casts` and `starter` (the system's children).")
 	if world == null and rules == null:
-		warnings.append("Asigná `world` (MatchWorld) o `rules` (MatchRules).")
+		warnings.append("Assign `world` (MatchWorld) or `rules` (MatchRules).")
 	return warnings
 
 

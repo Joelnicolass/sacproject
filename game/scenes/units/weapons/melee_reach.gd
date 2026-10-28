@@ -3,8 +3,8 @@ extends RefCounted
 
 ## Where a melee blow reaches: the box ahead of the body that a swing starts in, lands in and walks into. Not: the timing of the
 ## swing (MeleeSwing) nor the damage (MeleeRules).
-## Ref: sacengine defaultMeleeHitbox (sacobject.d:446-476) and `attack` (state.d:12814, 12857-12862): a box 1.3·size ahead of the
-## body, size = (width + depth)/4, dimensions (width, depth, 1.5·height); the baked body gives width = depth = 2·reach.
+## The box is 1.3·size ahead of the body, size = (width + depth)/4, dimensions (width, depth, 1.5·height); the baked body gives
+## width = depth = 2·reach.
 
 
 ## Half width of the melee box at `factor` of its size: the reach, widened by the creature's `melee_width_scale`. The box only
@@ -38,7 +38,7 @@ static func close_in(weapon: MeleeWeapon, target: Node3D, pace: float, delta: fl
 	var to_foe := target.global_position - body.global_position
 	to_foe.y = 0.0
 	var foe_reach := float(MeleeRules.profile_of(target).get("reach", 0.35))
-	## The goal never lies inside the distance the avoidance leaves two bodies at (it would steer the walker back every tick).
+	# The goal never lies inside the distance the avoidance leaves two bodies at (it would steer the walker back every tick).
 	var goal := maxf(foe_reach + weapon.close_in_factor * weapon.forward_factor * weapon.reach, BodyBox.rest_distance(body, target))
 	var excess := to_foe.length() - goal
 	var walk := Vector3.ZERO if excess <= 0.0 or delta <= 0.0 else to_foe.normalized() * minf(pace, excess / delta)

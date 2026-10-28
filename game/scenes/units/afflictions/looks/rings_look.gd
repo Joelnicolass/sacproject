@@ -6,7 +6,6 @@ extends Node3D
 ## body stood. The flames are the scene's SpriteEmitter children, used in turn: each one is a single burst of 30. It does not decide
 ## when the state is on (Affliction) nor burn anyone (SpellAffliction). Presentation only, on every peer, from the replicated mask; its
 ## dice are a stream of their own.
-## Ref: sacengine animateRingsOfFire, updateRingsOfFire (state.d:17662-17704).
 
 ## The state that shows it, and the body it surrounds.
 @export var affliction: Affliction
@@ -80,7 +79,7 @@ func _spawn(follow: bool) -> void:
 	emitter.lifetime = seconds
 	emitter.initial_velocity_min = 0.0
 	emitter.initial_velocity_max = 0.0
-	## A pull toward the emitter's origin (the feet) that brings every flame there in `seconds`.
+	# A pull toward the emitter's origin (the feet) that brings every flame there in `seconds`.
 	var pull := -2.0 * Vector2(radius, height).length() / (seconds * seconds)
 	emitter.radial_accel_min = pull
 	emitter.radial_accel_max = pull
@@ -95,5 +94,5 @@ func _spawn(follow: bool) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if affliction == null or body == null:
-		warnings.append("Faltan affliction y body.")
+		warnings.append("Missing affliction and body.")
 	return warnings

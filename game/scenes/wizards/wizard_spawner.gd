@@ -7,7 +7,7 @@ extends MpSlotSpawner
 ## when the spawn arrives on a client, and again whenever the picks change.
 
 
-## RFC-068: `despawn_on_leave` is off in match.tscn: a player who drops may come back to the same slot within the grace of the
+## `despawn_on_leave` is off in match.tscn: a player who drops may come back to the same slot within the grace of the
 ## door of the match (MpMatchGate), on every networked path. His wizard, creatures and altar stay in the world, the wizard standing
 ## still; past the grace the slot loses (SeatPresence).
 func _ready() -> void:
@@ -52,12 +52,12 @@ func _give_picks() -> void:
 
 
 func _place(pawn: Node, slot: int) -> void:
-	## MatchState seats the slot when the wizard enters `Wizards` (RFC-049 049b), so `owner_slot` goes before add_child.
+	# MatchState seats the slot when the wizard enters `Wizards`, so `owner_slot` goes before add_child.
 	pawn.set("owner_slot", slot)
 	var wizard := pawn as WizardBody
 	if wizard != null:
 		wizard.seat_pick = SacrificeFlow.pick_for(slot)
-	## An AI seat has no keys to predict from: it moves on the server (WizardBody steps Drive itself) and owns no MpInput frames.
+	# An AI seat has no keys to predict from: it moves on the server (WizardBody steps Drive itself) and owns no MpInput frames.
 	var net := MpActor.of(pawn)
 	if net != null and SacrificeFlow.board.is_ai(slot):
 		net.predict = false
@@ -82,8 +82,8 @@ func _place(pawn: Node, slot: int) -> void:
 	body.rotation.y = spot.basis.get_euler().y
 
 
-## RFC-030 030d (F115): the level of this match. The level chosen in the boot or with --level is already in the world's
-## rules (MatchSetup.apply_to in MatchWorld, RFC-031 031a2).
+## The level of this match. The level chosen in the boot or with --level is already in the world's
+## rules (MatchSetup.apply_to in MatchWorld).
 func _level(match_rules: MatchRules) -> int:
 	return match_rules.wizard_level
 

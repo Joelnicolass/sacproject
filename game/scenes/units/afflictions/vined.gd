@@ -2,17 +2,16 @@ class_name Vined
 extends Affliction
 
 ## The Dragon's Grasping Vines. The blow ties the body to the ground: while it lasts the body is `fixed` (cannot walk nor be moved
-## from outside), does not regenerate and is ccProtected. The type
+## from outside), does not regenerate and is cc-protected. The type
 ## (`vined.tres`: bit 8, coexists, holds = false, cc_protects, pins, blocks_regeneration) says all of that; this node owns the clock.
 ##
 ## Each blow brings its own timer (one vines effect with its own `timer`): `_ends` holds the tick every one
 ## runs out on, and the bit is on while any is left. The duration of one is (wizard ? 0.25 : 1000 / max health) · the spell's 40 s in
 ## float32 (Affliction.cc_ticks): a Jabberocky of 5600 hp is 429 ticks. A flier is never tied, and a body that is
 ## dead or dying loses every vine at once (Afflictions ends the bit when it dies).
-## The body's xz velocity is 0 in steer(); the original's xy position is the port's xz (the vertical follows the land by itself).
+## The body's xz velocity is 0 in steer() (the vertical follows the land by itself).
 ##
 ## Look (every peer, from the replicated bit): the VineLook child, sixteen skinned vines that grow and shrink in a second.
-## Ref: F159 (RFC-030 030u-c); sacengine graspingVines (eniv, passiveOnHit of grdg; state.d:10795-10812, isHitboxFlying 10799), updateGraspingVines 17852-17876, stats.d:73-94 (vined → regenerationBlocked, ccProtected, fixed), numVines, canPersistCC.
 
 ## Vine lifetime of a creature: creature_k / max health · the SPEL's duration (s); of a wizard: wizard_factor · duration.
 @export var creature_k := 1000.0
@@ -31,14 +30,13 @@ static func is_vined(node: Node) -> bool:
 	return vined != null and vined.is_on()
 
 
-## F158: the on-hit passive. Every blow that connects ties the body, whatever its damage roll gave.
+## The on-hit passive. Every blow that connects ties the body, whatever its damage roll gave.
 func inflict(spell: SpellType, _from_slot: int) -> bool:
 	return grasp(spell)
 
 
 ## The Vinewall's grasp: its length is the usual share (wizard 0.25, creature 1000 / health) of `max_s`, the wall's remaining time, and never more
 ## than `max_s`.
-## Ref: sacengine vinewallGraspingVines, state.d:20370-20383.
 func lay_within(spell: SpellType, _from_slot: int, max_s: float) -> bool:
 	return grasp(spell, max_s)
 
@@ -49,7 +47,6 @@ func lay_ticks(spell: SpellType) -> int:
 
 
 ## Server (or solo): ties the body with the vines. True when the vines took hold (a flier refuses them).
-## Ref: sacengine graspingVines(target, spell).
 func grasp(spell: SpellType, max_s := INF) -> bool:
 	var body := _body()
 	var owner_node := _afflictions()
@@ -68,7 +65,7 @@ func grasp(spell: SpellType, max_s := INF) -> bool:
 	owner_node.mark(self, true)
 	set_physics_process(true)
 	if DebugLog.on(&"vines"):
-		print("enredado %s durante %d (n %d) (cuadro %d)" % [str(body.name), ticks, _ends.size(), now])
+		print("vined %s for %d (n %d) (frame %d)" % [str(body.name), ticks, _ends.size(), now])
 	return true
 
 
@@ -79,7 +76,7 @@ func steer(velocity: Vector3, _delta: float) -> Vector3:
 	return velocity
 
 
-## updateGraspingVines: `--timer <= 0` ends one blow's vines; the bit goes when the last one does.
+## `--timer <= 0` ends one blow's vines; the bit goes when the last one does.
 func _physics_process(_delta: float) -> void:
 	var now := MatchClock.now()
 	var left := PackedInt32Array()
@@ -97,7 +94,7 @@ func _physics_process(_delta: float) -> void:
 
 func _say_end() -> void:
 	if DebugLog.on(&"vines"):
-		print("enredado fin %s (n %d) (cuadro %d)" % [str(_body().name), _ends.size(), MatchClock.now()])
+		print("vined end %s (n %d) (frame %d)" % [str(_body().name), _ends.size(), MatchClock.now()])
 
 
 ## The bit changed (every peer). On the server a bit turned off from outside (the body died) clears the clocks; VineLook draws the rest.

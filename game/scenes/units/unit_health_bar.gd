@@ -4,16 +4,15 @@ extends MeshInstance3D
 ## Floating bar over a body. Green for the local slot, red for anyone else. Reads the Health component's `changed`
 ## signal, so it works the same on server and clients. It is the only one that shows or hides itself: never over a
 ## dead body, nor over one a Sac Doctor has taken (carried or being pumped back to life).
-## Ref: sacengine draws your own creatures' bars only while they are selected (renderer.d:3890).
 
 @export var own_color := Color(0.2, 0.85, 0.25)
 @export var enemy_color := Color(0.9, 0.18, 0.12)
-## RFC-049 049c: the bar of an ally of the local slot (2v2), apart from the own green and the enemy red.
+## The bar of an ally of the local slot (2v2), apart from the own green and the enemy red.
 @export var ally_color := Color(0.25, 0.6, 0.95)
 ## Meters above the top of the body.
 @export var lift := 0.45
 @export var own_only_when_selected := true
-## RFC-028b: a building's bar, shown only while StructureInspector holds it (any side) and never
+## A building's bar, shown only while StructureInspector holds it (any side) and never
 ## for a body without health (maximum ≤ 0).
 @export var only_when_selected := false
 

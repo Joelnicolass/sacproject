@@ -3,7 +3,6 @@ extends RefCounted
 
 ## The decisions of a ranged weapon before it shoots: whether this foe is for shooting or for striking, and, once the foe is in
 ## range with a clear line, whether the body already faces the aim and the weapon is loaded. Not: the shot itself (RangedFire).
-## Ref: sacengine `attack` (state.d:12849-12855), `aim` (state.d:12521-12571), shootRange (state.d:12468).
 
 
 ## Shoot unless the foe is in melee contact. A body of the weapon's own side (a Scarab's patient) is always shot, never struck.

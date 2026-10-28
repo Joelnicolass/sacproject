@@ -5,7 +5,6 @@ extends Node
 ## What a completed ritual gives: the creature disintegrates in blood and its souls go to the caster's purse (a conversion also
 ## announces them). What it does not do: end the ritual or free the doctors (Ritual does, right after). Take this node out and a
 ## completed ritual pays nothing and leaves the creature alone.
-## Ref: sacengine state.d:8341-8350, 16020-16041.
 
 @export var ritual: Ritual
 
@@ -13,7 +12,7 @@ extends Node
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if ritual == null:
-		warnings.append("Asigná en `ritual` el Ritual que paga.")
+		warnings.append("Assign to `ritual` the Ritual that pays out.")
 	return warnings
 
 
@@ -31,7 +30,7 @@ func pay() -> void:
 					system.announce_conversion(ritual.caster_slot, ritual.souls, creature)
 			purse.add(ritual.souls)
 		_free(creature)
-	if DebugLog.on(&"ritual"): print("ritual: completo, %d almas para el slot %d (altar del slot %d)" % [ritual.souls, ritual.caster_slot, ritual.target_slot])
+	if DebugLog.on(&"ritual"): print("ritual: complete, %d souls for slot %d (altar of slot %d)" % [ritual.souls, ritual.caster_slot, ritual.target_slot])
 
 
 ## A hanging rag doll is handed back to its clips before the body goes (a body that simulates is never freed with `free()`).

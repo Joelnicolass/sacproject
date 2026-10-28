@@ -18,7 +18,6 @@ extends Node3D
 ## Open the scene and press play on the Tree (or set `preview_role` here) to see a role move.
 ## The body draws from it (a BodyRig instances this scene under its ModelSlot); the rules read the same library through
 ## ClipFacts, and never a pose.
-## Ref: RFC-036 (036g), RFC-055 (055c1).
 
 ## Roles the state machine of a model scene can have a state for. A new role is a new state in the scenes (and here).
 ## attack2 and attack3 are the other swings of a creature of your own; walk, shoot2, pull, death2, death3, ghost_rise and unghost
@@ -195,19 +194,19 @@ func _fit_bounds() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if model.is_empty():
-		warnings.append("`model` está vacío: la escena se hace con tools/bake/new_creature.gd (Project > Tools > Sacrifice).")
+		warnings.append("`model` is empty: the scene is made with tools/bake/new_creature.gd (Project > Tools > Sacrifice).")
 	if hang_bone != null and ragdoll == null:
-		warnings.append("`hang_bone` está asignado pero falta `ragdoll`: el cuerpo no puede colgar sin el esqueleto físico.")
+		warnings.append("`hang_bone` is set but `ragdoll` is missing: the body cannot hang without the physical skeleton.")
 	elif hang_bone != null and hang_bone.get_parent() != ragdoll:
-		warnings.append("`hang_bone` tiene que ser un hijo directo de `ragdoll` (un PhysicalBone3D del mismo simulador).")
+		warnings.append("`hang_bone` must be a direct child of `ragdoll` (a PhysicalBone3D of the same simulator).")
 	if ragdoll != null and ragdoll.get_child_count() == 0:
-		warnings.append("`ragdoll` no tiene PhysicalBone3D: se hornean con tools/bake/bake_ragdolls.gd.")
+		warnings.append("`ragdoll` has no PhysicalBone3D: bake them with tools/bake/bake_ragdolls.gd.")
 	var player := get_node_or_null("%Clips") as AnimationPlayer
 	if player == null or not player.has_animation(&"idle"):
-		warnings.append("Falta el nodo `Clips` con la biblioteca <modelo>_clips.tres (rol idle incluido): el cuerpo no tiene qué reproducir.")
+		warnings.append("Missing the `Clips` node with the <model>_clips.tres library (idle role included): the body has nothing to play.")
 		return warnings
 	for role in MELEE_ROLES:
 		var wanted := animation_for(role)
 		if player.has_animation(wanted) and not player.get_animation(wanted).has_marker(ClipFacts.HIT):
-			warnings.append("El rol `%s` no tiene marcador `hit` en su Animation: el golpe caería en el último cuadro." % role)
+			warnings.append("The role `%s` has no `hit` marker in its Animation: the blow would land on the last frame." % role)
 	return warnings

@@ -57,7 +57,7 @@ func _burst(cloud_type: DeathCloudType, ability: AbilityType, center: Vector3) -
 	cloud.burst(center, cloud_type.fx)
 
 
-## The center of the body's collision capsule. Ref: sacengine boxCenter(hitbox).
+## The center of the body's collision capsule.
 func _center() -> Vector3:
 	var col := body.get_node_or_null("Collision") as Node3D
 	return col.global_position if col else body.global_position

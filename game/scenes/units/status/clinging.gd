@@ -1,19 +1,17 @@
 class_name Clinging
 extends Node3D
 
-## The things stuck to a body that slow it down (numStickyBombs / numBlightMites in the original):
+## The things stuck to a body that slow it down:
 ## the Ikarus's Sticky bombs (×0.75 each, 10 s) and the Bilemites (×0.8 each). The one owner of how many
 ## there are and when each lets go. stick() adds one piece of a kind for a number of MatchClock ticks; each piece lets go at
-## its own tick (updateStickyBomb: `++infectionTime <= updateFPS·duration` keeps it, so it is gone at duration·60 + 1
-## updates after it stuck); every piece of every body lets go at once when the body can no longer be poisoned
-## (canBeStickyBombed = canBePoisoned): it dies, is being summoned…
+## its own tick (gone at duration·60 + 1
+## updates after it stuck); every piece of every body lets go at once when the body can no longer be poisoned: it dies, is being summoned…
 ## The slowdown is not written here: for each kind Clinging gives PaceFactors the factor `factor ^ count` under its own source
 ## (&"cling_sticky", &"cling_mites"), and PaceFactors writes speed_factor. It is derived from the lists on every change, so a
 ## piece that lets go in the same tick as another one is the same as the two one after the other.
 ## `shown` is replicated (the unit's MultiplayerSynchronizer, "Clinging:shown"): x = bombs, y = mites, z = frogs. Every peer draws that
-## many of the look scenes at fixed places on the body (declared: the original keeps where each one hit).
+## many of the look scenes at fixed places on the body.
 ## Server (or solo) only for stick(); the look runs on every peer.
-## Ref: F129 (RFC-030 030r-a), sacengine effects.numStickyBombs / numBlightMites stats.d:122, updateStickyBomb, canBeStickyBombed state.d:186.
 
 const STICKY := &"sticky"
 const MITES := &"mites"
@@ -26,7 +24,7 @@ const SOURCES := {STICKY: &"cling_sticky", MITES: &"cling_mites", FROGS: &"cling
 
 ## The body they stick to (its box places the look, its name goes in the log). Empty = the parent.
 @export var body: Node3D
-## Whether the body can still be stuck to (canBePoisoned). Empty = nothing ends them but their time.
+## Whether the body can still be stuck to. Empty = nothing ends them but their time.
 @export var poisoning: Poisoning
 ## Who writes speed_factor. Empty = the pieces do not slow the body.
 @export var pace: PaceFactors
@@ -80,7 +78,7 @@ func stick(kind: StringName, ticks: int, factor: float) -> bool:
 	_refresh()
 	set_physics_process(true)
 	if DebugLog.on(&"cling"):
-		print("pegado %s %s n=%d factor ×%.4f hasta %d (tick %d)" % [_who(), kind, ends.size(), pow(factor, ends.size()), ends.max(), MatchClock.now()])
+		print("stuck %s %s n=%d factor ×%.4f until %d (tick %d)" % [_who(), kind, ends.size(), pow(factor, ends.size()), ends.max(), MatchClock.now()])
 	return true
 
 
@@ -92,11 +90,11 @@ func count_of(kind: StringName) -> int:
 
 
 ## Server (or solo): every piece lets go now.
-func clear(reason := "fin") -> void:
+func clear(reason := "end") -> void:
 	if _ends.is_empty():
 		return
 	if DebugLog.on(&"cling"):
-		print("suelto todo %s por %s (tick %d)" % [_who(), reason, MatchClock.now()])
+		print("all loose %s by %s (tick %d)" % [_who(), reason, MatchClock.now()])
 	_ends.clear()
 	_refresh()
 	set_physics_process(false)
@@ -104,7 +102,7 @@ func clear(reason := "fin") -> void:
 
 func _physics_process(_delta: float) -> void:
 	if poisoning != null and not poisoning.can_be_poisoned():
-		clear("no puede ser pegado")
+		clear("cannot be stuck to")
 		return
 	var now := MatchClock.now()
 	var changed := false
@@ -115,7 +113,7 @@ func _physics_process(_delta: float) -> void:
 			continue
 		changed = true
 		if DebugLog.on(&"cling"):
-			print("suelto %s %s n=%d->%d (tick %d)" % [_who(), kind, ends.size(), kept.size(), now])
+			print("loose %s %s n=%d->%d (tick %d)" % [_who(), kind, ends.size(), kept.size(), now])
 		_ends[kind] = kept
 	if changed:
 		_refresh()
@@ -124,7 +122,7 @@ func _physics_process(_delta: float) -> void:
 	elif DebugLog.on(&"cling") and body != null:
 		var at := body.global_position
 		var pace_now := float(body.get("speed_factor")) if "speed_factor" in body else 1.0
-		print("marcha %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)" % [_who(), pace_now, at.x, at.y, at.z, now])
+		print("pace %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)" % [_who(), pace_now, at.x, at.y, at.z, now])
 
 
 func _total() -> int:

@@ -7,13 +7,11 @@ extends Node3D
 ## - The red vortex over the drained wizard (a type that `drains_target_wizard`), 12.5 m from him toward the altar, 15 m up, for
 ##   the whole ritual.
 ## - While the doctors shoot: the `altar_ropes` go from the `AltarTop` marker (60 m over the altar) to the creature, and the
-##   `drain_ropes` from the vortex to the wizard. ESTIMADO: the original draws LightningBolts that change shape every 6-9 ticks;
-##   here they are the spring ropes of Tether (the same ltn2 atlas). Markers, start points and ropes are nodes of ritual.tscn:
+##   `drain_ropes` from the vortex to the wizard. They are the spring ropes of Tether (the same ltn2 atlas). Markers, start points and ropes are nodes of ritual.tscn:
 ##   drag them, add a rope by instancing tether.tscn and listing it.
 ## - The blood of a completed ritual (`blood_fx`), when RitualPayoff asks for it.
 ## - The doctors' own ropes to the creature are drawn by their CarryRope (`doctor.carried`).
 ## Remove this node from ritual.tscn to switch all of it off; the brightness is the `energy_scale` of the ropes.
-## Ref: sacengine RedVortex.desecrateDistance / desecrateHeight (state.d:15878-15889, 15961-15973), altarBolts / desecrateBolts end at the `center` of the creature and the wizard (renderer.d:1948-1958).
 
 ## scenes/sacrifice/red_vortex.tscn
 @export var vortex_scene: PackedScene
@@ -45,11 +43,11 @@ var _vortex: RedVortex
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if ritual == null:
-		warnings.append("Asigná en `ritual` el Ritual que se dibuja.")
+		warnings.append("Assign to `ritual` the Ritual it draws.")
 	if vortex_scene == null:
-		warnings.append("Asigná en `vortex_scene` el vórtice rojo (red_vortex.tscn).")
+		warnings.append("Assign to `vortex_scene` the red vortex (red_vortex.tscn).")
 	if altar_top == null or vortex_aim == null or creature_aim == null or wizard_aim == null:
-		warnings.append("Asigná los cuatro marcadores (altar_top, vortex_aim, creature_aim, wizard_aim).")
+		warnings.append("Assign the four markers (altar_top, vortex_aim, creature_aim, wizard_aim).")
 	return warnings
 
 

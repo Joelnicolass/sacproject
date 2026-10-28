@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/impacts/stick_impact.gd" id="1_stick"]
 
 [node name="MiteImpact" type="Node"]
-editor_description = "F129 (RFC-030 030r-a): impacto de los Bilemites (ácaros): se pega a la criatura enemiga que se puede envenenar (Clinging, tipo mites): velocidad ×0,8 por ácaro. Lo usa 030 cuando llegue Bilemites."
+editor_description = "The impact of the Bilemites (mites): it sticks to the enemy creature that can be poisoned (Clinging, kind mites): speed ×0.8 per mite."
 script = ExtResource("1_stick")
 kind = &"mites"
 factor = 0.8

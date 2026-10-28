@@ -3,7 +3,6 @@ extends RefCounted
 
 ## The numbers behind a melee blow, with no node: which way a body faces, the defense and size of a target and the damage a blow
 ## rolls. Not: when a swing starts or lands (MeleeWeapon) nor where it reaches (MeleeReach).
-## Ref: sacengine dealMeleeDamage (state.d:9231-9244) and the melee resistance of dealDamage (state.d:8951).
 
 ## The clip of each swing: attack, attack2 (both picked at random) and attack3 (the downward one).
 const SWING_ROLES: Array[StringName] = [&"attack", &"attack2", &"attack3"]
@@ -48,8 +47,8 @@ static func roll(weapon: MeleeWeapon, target: Node3D) -> Dictionary:
 	var facing := 1.5 + 0.5 * facing_of(body).dot(facing_of(target))
 	var damage := facing * pending
 	var foe := profile_of(target)
-	## The Storm Giant's Lightning Charge makes it x1.5; each layer of Slime on the attacker costs accuracy and each on the target
-	## costs its evasion, x0.2.
+	# The Storm Giant's Lightning Charge makes it x1.5; each layer of Slime on the attacker costs accuracy and each on the target
+	# costs its evasion, x0.2.
 	var accuracy := float(type.melee_accuracy_milli()) * (passive.melee_accuracy_factor() if passive != null else 1.0) * Afflictions.stat_factor_of(body, Afflictions.Stat.ACCURACY)
 	var evasion := float(foe.get("evasion", 0.0)) * Afflictions.stat_factor_of(target, Afflictions.Stat.ACCURACY)
 	var total := accuracy + evasion / facing
@@ -61,7 +60,7 @@ static func roll(weapon: MeleeWeapon, target: Node3D) -> Dictionary:
 	if rolled >= hit_chance:
 		damage *= (1.0 - rolled) / (1.0 - hit_chance)
 	damage *= float(type.melee_strength)
-	## The poison's resistance bonus goes inside the max; so do what the target has devoured down to and its afflictions.
+	# The poison's resistance bonus goes inside the max; so do what the target has devoured down to and its afflictions.
 	var resistance := maxf(0.0, float(foe.get("resistance", 1.0)) * DevourGrowth.resistance_factor_of(target) + Poisoning.resistance_bonus_of(target)
 		+ Afflictions.resistance_bonus_of(target))
 	damage *= weapon.melee_resistance_scale * resistance
@@ -71,7 +70,6 @@ static func roll(weapon: MeleeWeapon, target: Node3D) -> Dictionary:
 
 ## A guardian hits harder, and the passive scales melee by the attacker's health
 ## (Firefist).
-## Ref: sacengine attackDamageFactor state.d:8882-8892.
 static func attack_factor(weapon: MeleeWeapon) -> float:
 	var result := maxf(0.0, weapon.body.attack_factor)
 	var own: Health = weapon.weapons.health if weapon.weapons != null else null

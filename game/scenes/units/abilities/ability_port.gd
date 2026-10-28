@@ -9,7 +9,7 @@ extends Node
 @export var slot: AbilitySlot
 
 
-## F27 calls this for Ctrl+Q / Shift+B on the owner's peer. Returns the local refusal (mana, no ability, «No implementado»), or ""
+## The input calls this for Ctrl+Q / Shift+B on the owner's peer. Returns the local refusal (mana, no ability, «No implementado»), or ""
 ## once sent. The server checks the cooldown again.
 func request(target_pos: Vector3, foe: Node3D = null) -> String:
 	var reason := status(target_pos, foe)
@@ -29,7 +29,6 @@ func status(target_pos: Vector3, foe: Node3D = null) -> String:
 
 
 ## Server or solo: uses the ability. "" = used.
-## Ref: sacengine useAbility.
 func use(target_pos: Vector3, foe: Node3D = null) -> String:
 	if _refused():
 		return Refusal.BAD_TARGET

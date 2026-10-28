@@ -5,7 +5,7 @@
 
 [node name="GnomeRay" type="Node3D"]
 process_physics_priority = -1
-editor_description = "F124 (RFC-030 030m-a). El rayo del Gnome (plfa, gnomeShoot state.d:11724-11735): un solo rayo en el tick del disparo, alcance de la habilidad, frena en el primer cuerpo vivo de cualquier bando (Health decide el fuego amigo), el suelo o una estructura. Beam gnome_flame: el fogonazo de 1,7 m en la boca (GnomeEffect). Daño e impact_fx (gnome_hit): ShotLook de plfa."
+editor_description = "The Gnome's ray (plfa): one ray on the tick of the shot, the ability's range, stopped by the first live body of any side (Health decides friendly fire), the ground or a structure. Beam gnome_flame: the 1.7 m muzzle flash. Damage and impact_fx (gnome_hit): the ShotLook of plfa."
 script = ExtResource("1_ray")
 bursts = 1
 first_tick = 0

@@ -5,6 +5,6 @@
 
 [node name="HaloOfEarth" type="Node3D"]
 process_physics_priority = -1
-editor_description = "F127 (RFC-030 030p-a): coordinador del Halo of Earth del Rhinok (HRba). HaloOfEarthAbility lo agrega al contenedor de disparos, solo en el servidor. Simula las 6 rocas (órbita, blanco, persecución, choque y vida) y mueve sus RangedShot (look halo_rock). Knobs: spawn_box_scale, ground_grace_s, life_s. Se libera cuando explotan todas."
+editor_description = "The coordinator of the Rhinok's Halo of Earth (HRba). HaloOfEarthAbility adds it to the shot container, on the server only. It simulates the 6 rocks (orbit, target, chase, hit and life) and moves their RangedShots (look halo_rock). Knobs: spawn_box_scale, ground_grace_s, life_s. It frees itself when all of them have blown up."
 script = ExtResource("1_halo")
 look = ExtResource("look_shot")

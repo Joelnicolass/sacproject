@@ -3,30 +3,27 @@ extends Node
 
 ## The fast revival of a corpse by the Dragon's breath:
 ## the corpse must be dead and its soul NORMAL or EMERGING; the soul turns REVIVING and the body gets its full health. The
-## creature then rises and turns for reviveTime/2 = 150 ticks: while timer < 75 it climbs reviveHeight/75 per
+## creature then rises and turns for half the revive time = 150 ticks: while timer < 75 it climbs the revive height/75 per
 ## tick (74 ticks · 2/75 = 1.97 m), it turns 2π in all, and at timer 150 its soul is removed and it idles.
 ## Child of the body, server (or solo) only; the body is REVIVING (Captive: out of the group «unit», without collision, nobody's
 ## target) and UnitBody.physics skips a taken body, so this node writes its height and its facing. begin() before add_child.
 ## Time is MatchClock's: the height and the angle are derived from the ticks since begin(), so the order of the nodes in a tick
 ## changes nothing.
 ##
-## Divergences (declared): the creature goes back to the ground by gravity (the original tumbles it down); it is not added to
-## the selection again (newCreatureAddToSelection); the corpse stands up with Corpse.stand_up (0.9 s), not the revive clip.
-## Ref: F153 (RFC-030 030p-b); sacengine revive(fast) (state.d:8651-8664), reviveTime 14101-14131.
+## The creature goes back to the ground by gravity; it is not added to
+## the selection again; the corpse stands up with Corpse.stand_up (0.9 s), not the revive clip.
 
 
 
 ## How long the revival lasts.
-## Ref: creatureStats.reviveTime 5 s / 2 when fast.
 @export_range(0.0166, 30.0, 0.0001, "suffix:s") var revive_s := 2.5
 ## It climbs while the timer is under this.
-## Ref: reviveTime / 2 in the original's tick count (150 / 2).
 @export_range(0.0166, 30.0, 0.0001, "suffix:s") var rise_s := 1.25
-## Meters it climbs in rise_s (creatureStats.reviveHeight).
+## Meters it climbs in rise_s.
 @export var rise_height := 2.0
 ## Turns it makes in revive_s (fast: 2π).
 @export var turns := 1.0
-## Fraction of its maximum health it comes back with (fastRevive: all of it).
+## Fraction of its maximum health it comes back with (all of it).
 @export_range(0.0, 1.0) var health_fraction := 1.0
 
 ## revive_s and rise_s in ticks (what the timer counts).
@@ -60,7 +57,7 @@ func begin(corpse: UnitBody, soul: Soul) -> bool:
 	_facing = corpse.rotation.y
 	_who = AbilityEffect.who(corpse)
 	name = "FastRevive"
-	_say("revive %s inicio vida %d (tick %d)" % [_who, roundi(_health()), _begin])
+	_say("revive %s start health %d (tick %d)" % [_who, roundi(_health()), _begin])
 	return true
 
 
@@ -82,23 +79,23 @@ func _physics_process(_delta: float) -> void:
 	if timer >= revive_ticks:
 		_finish()
 		return
-	## timer 1..rise_ticks−1 climb rise_height / rise_ticks each: the sum is 74 · 2/75 = 1.9733 m and it stays there.
+	# timer 1..rise_ticks−1 climb rise_height / rise_ticks each: the sum is 74 · 2/75 = 1.9733 m and it stays there.
 	var rise := rise_height * float(mini(timer, rise_ticks - 1)) / float(rise_ticks)
 	_body.global_position = Vector3(_start.x, _start.y + rise, _start.z)
 	_body.rotation.y = wrapf(_facing + TAU * turns * float(timer) / float(revive_ticks), -PI, PI)
 	if timer == rise_ticks - 1:
-		_say("revive %s sube %.4f m (tick %d)" % [_who, rise, MatchClock.now()])
+		_say("revive %s rises %.4f m (tick %d)" % [_who, rise, MatchClock.now()])
 
 
-## timer ≥ reviveTime: the soul is removed and the creature idles (Captive.finish_revive: REVIVING → IDLE).
+## timer ≥ the revive time: the soul is removed and the creature idles (Captive.finish_revive: REVIVING → IDLE).
 func _finish() -> void:
 	_body.rotation.y = _facing
 	if _soul != null and is_instance_valid(_soul):
 		_soul.queue_free()
 	var captive := Captive.of(_body)
 	if captive == null or not captive.finish_revive():
-		push_warning("FastRevive: %s no pudo terminar el revivir (sin Captive o no estaba REVIVING)." % _who)
-	_say("revive %s fin idle vida %d (tick %d)" % [_who, roundi(_health()), MatchClock.now()])
+		push_warning("FastRevive: %s could not finish the revival (no Captive, or it was not REVIVING)." % _who)
+	_say("revive %s end idle health %d (tick %d)" % [_who, roundi(_health()), MatchClock.now()])
 	queue_free()
 
 

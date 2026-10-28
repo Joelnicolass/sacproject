@@ -26,9 +26,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if mount == null:
-		warnings.append("Falta el cuerpo vestido (mount).")
+		warnings.append("Missing the worn body (mount).")
 	if collision == null:
-		warnings.append("Falta la cápsula (collision).")
+		warnings.append("Missing the capsule (collision).")
 	return warnings
 
 

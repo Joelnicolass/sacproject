@@ -9,7 +9,6 @@ extends Node
 
 ## The clips of a held creature, in order: it rises, floats into the thrash and
 ## thrashes until it is let go. A revived corpse only rises.
-## Ref: sacengine state.d:8200-8223, 14329-14342.
 const SEQUENCE: PackedStringArray = ["rise", "held", "thrash"]
 
 ## The unit that is held.

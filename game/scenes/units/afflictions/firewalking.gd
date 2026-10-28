@@ -11,17 +11,14 @@ extends Affliction
 ##   else p <= 0.5: from start to start + animated_distance/2 · dir (2p); p > 0.5: from end − animated_distance/2 · dir
 ##   to end (2(p − 0.5)). The jump between the halves is announced to the clients (WarpSnap).
 ## At the last frame the body is at `end` and the state ends. Whether `end` is land is decided
-## by Firewalk before it starts (isOnGround), so the final catapult never happens here.
+## by Firewalk before it starts, so the final catapult never happens here.
 ## Look: Tilt (the mesh) hidden while it lasts and a `fire` trail at the body (every peer, from the replicated bit; the
-## position is replicated). Declared: the health bar stays visible and the capsule stays on the units' layer.
-## Ref: F152 (RFC-030 030o-b); sacengine updateFirewalk (state.d:25802-25846; target 141, obstacle 124, 135, damage 8922, immobilize 193; catapult 25838-25840), startIdling.
+## position is replicated). The health bar stays visible and the capsule stays on the units' layer.
 
 
 ## How long the walk lasts.
-## Ref: sacengine Firewalk.numFrames (60 ticks).
 @export_range(0.0166, 10.0, 0.0001, "suffix:s") var walk_s := 1.0
 ## The distance (m) under which the walk is a straight line.
-## Ref: sacengine Firewalk.animatedDistance.
 @export var animated_distance := 20.0
 ## A step longer than this (m) is a jump: the clients are told not to glide it.
 @export var snap_step := 2.0
@@ -32,14 +29,11 @@ var frames: int:
 ## The mesh pivot that is hidden while it lasts.
 @export var tilt: Node3D
 ## The trail of flames puffed while it walks, and the socket it leaves from: the muzzle, where the Warmonger's flame is.
-## Ref: sacengine placeFirewalkParticles at warmongerFlame (state.d:25761-25783, sacobject.d:389).
 @export var trail_fx: ParticleType = preload("res://data/fx/firewalk_trail.tres")
 @export var trail_socket: BodyFacts.Socket = BodyFacts.Socket.MUZZLE
-## How often a trail flame is placed. The original places 6 flames every tick; the type's 14 every 2 ticks is the same density with
-## a quarter of the emitters.
+## How often a trail flame is placed. The type's 14 every 2 ticks give 6 flames per tick with a quarter of the emitters.
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var trail_every_s := 0.0333
 ## The burst at the start and at the end (32 flames in the body's box), and its socket.
-## Ref: sacengine animateFirewalk.
 @export var burst_fx: ParticleType = preload("res://data/fx/firewalk_burst.tres")
 @export var burst_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
@@ -59,7 +53,6 @@ func _ready() -> void:
 
 
 ## Server (or solo): starts the Firewalk effect. True when the walk started (it ends a UsingAbility).
-## Ref: sacengine firewalk.
 func walk(end: Vector3) -> bool:
 	var body := _body()
 	if body == null or frames <= 0 or is_on() or not _afflictions().admit(self):
@@ -71,7 +64,7 @@ func walk(end: Vector3) -> bool:
 	_afflictions().mark(self, true)
 	set_physics_process(true)
 	if DebugLog.on(&"walk"):
-		print("firewalk %s inicio de (%.3f, %.3f, %.3f) a (%.3f, %.3f, %.3f) d %.2f m (tick %d)" % [
+		print("firewalk %s start from (%.3f, %.3f, %.3f) to (%.3f, %.3f, %.3f) d %.2f m (tick %d)" % [
 			str(body.name), _start.x, _start.y, _start.z, end.x, end.y, end.z, _start.distance_to(end), MatchClock.now()])
 	return true
 
@@ -113,7 +106,7 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 	if snap and jump > snap_step:
 		snap.announce()
 	if DebugLog.on(&"walk"):
-		print("firewalk %s cuadro %d (%.3f, %.3f, %.3f) (tick %d)" % [str(body.name), _frame, at.x, at.y, at.z, MatchClock.now()])
+		print("firewalk %s frame %d (%.3f, %.3f, %.3f) (tick %d)" % [str(body.name), _frame, at.x, at.y, at.z, MatchClock.now()])
 	if DebugLog.on(&"walk") and _frame == frames / 2 and body is UnitBody:
 		print("firewalk %s oculto: is_targetable %s is_obstacle %s (tick %d)" % [
 			str(body.name), (body as UnitBody).is_targetable(), (body as UnitBody).is_obstacle(), MatchClock.now()])
@@ -134,7 +127,7 @@ func _physics_process(_delta: float) -> void:
 		_running = false
 		_afflictions().mark(self, false)
 		if DebugLog.on(&"walk") and body:
-			print("firewalk %s fin (tick %d)" % [str(body.name), MatchClock.now()])
+			print("firewalk %s end (tick %d)" % [str(body.name), MatchClock.now()])
 
 
 func _shown(on: bool) -> void:

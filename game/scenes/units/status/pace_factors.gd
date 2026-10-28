@@ -9,7 +9,6 @@ extends Node
 ## The product walks the sources in name order, so it does not depend on the order they came in (idempotent: asking twice, or
 ## in another order, gives the same number). A factor of exactly 1 is the same as no factor.
 ## Server (or solo): speed_factor is simulated there; on a client the component does nothing.
-## Ref: F129 (RFC-030 030r-a), sacengine movementSpeed effectFactor stats.d:122.
 
 
 ## The body whose speed_factor it owns. Empty = the parent.
@@ -80,4 +79,4 @@ func _apply() -> void:
 		return
 	body.set("speed_factor", now)
 	if DebugLog.on(&"pace"):
-		print("ritmo %s ×%.4f %s (tick %d)" % [str(body.name), now, str(sources()), MatchClock.now()])
+		print("pace %s ×%.4f %s (tick %d)" % [str(body.name), now, str(sources()), MatchClock.now()])

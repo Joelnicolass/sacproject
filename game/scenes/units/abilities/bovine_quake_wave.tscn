@@ -3,5 +3,5 @@
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_wave.tscn" id="1_wave"]
 
 [node name="BovineQuakeWave" instance=ExtResource("1_wave")]
-editor_description = "La onda de la vaca de Bovine Intervention al reventar (sacengine Quake con stunMaxRange 25 para ivob, state.d:25743): la misma onda del Quake del Jabberocky, pero aturde hasta 25 m del centro. Sin dano."
+editor_description = "The wave of the Bovine Intervention cow when it bursts: the same wave as the Jabberocky's Quake, but it stuns up to 25 m from the center. No damage."
 stun_max = 25.0

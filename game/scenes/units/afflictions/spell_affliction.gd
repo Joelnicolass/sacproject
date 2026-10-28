@@ -5,7 +5,6 @@ extends Affliction
 ## side; the bit is on while any layer is left. What the layers do to the body is knobs: a pace factor per layer, swings and shots that
 ## take longer, a worse aim, a higher resistance, damage over time. It does not decide who may be targeted (SpellTarget) nor draw
 ## itself (the looks under it listen to `shown_changed`). The server (or solo) runs the layers; `shown` (the bit) is what every peer sees.
-## Ref: sacengine ringsOfFire / updateRingsOfFire (state.d:10726-10742, 17687-17704), slime / updateSlime (10744-10764, 17765-17786), 1381-1383, 8950, 9237.
 
 enum Duration { FIXED, BY_LIFE }
 
@@ -91,7 +90,7 @@ func _physics_process(_delta: float) -> void:
 		if _hits[i] > 0.0 and health != null:
 			health.damage_typed(_hits[i], damage_kind, _slots[i], false, pierce_shield)
 			if i >= _left.size():
-				return  ## the hit killed the body: Afflictions ended every state and _shown cleared the layers
+				return  # the hit killed the body: Afflictions ended every state and _shown cleared the layers
 		_left[i] -= 1
 		if _left[i] > 0:
 			_left[kept] = _left[i]

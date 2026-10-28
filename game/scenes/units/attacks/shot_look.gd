@@ -23,53 +23,43 @@ extends Node
 @export_range(0.0, 100.0, 0.5, "suffix:m/s") var trail_min_speed_m_s := 0.0
 ## The bursts broadcast where it bursts.
 @export var impact_fx: Array[ParticleType] = []
-## 061k-5: the mark it leaves on the ground where it bursts (a ScarMark scene from spells/marks/, played on every peer). Empty = none.
+## The mark it leaves on the ground where it bursts (a ScarMark scene from spells/marks/, played on every peer). Empty = none.
 @export var ground_mark: PackedScene
-## F119: ShotImpact scene the server (or solo) applies where it bursts, in place of the plain direct ranged hit
+## ShotImpact scene the server (or solo) applies where it bursts, in place of the plain direct ranged hit
 ## (impacts/*.tscn). Empty = the whole amount as direct ranged damage to the body it hit.
 @export var impact: PackedScene
-## F136: the shot bursts on its target or on any body of the shooter's side, and flies through the rest
-## (scarabProjectileCollisionTarget). Off: its target or any body not of the shooter's side.
-## Ref: sacengine scarabProjectileCollisionTarget state.d:23637-23642.
+## The shot bursts on its target or on any body of the shooter's side, and flies through the rest
+##. Off: its target or any body not of the shooter's side.
 @export var hits_allies := false
-## F155: the shot bursts on any creature but its shooter (the Viscous oil's kcfa), whatever the side:
-## neither the target nor the side filter matters. Wins over hits_allies. Also read by 030s-b.
-## Ref: sacengine state.d:25580-25586.
+## The shot bursts on any creature but its shooter (the Viscous oil's kcfa), whatever the side:
+## neither the target nor the side filter matters. Wins over hits_allies.
 @export var hits_every_side := false
-## F156: the shot only meets a body that Poisoning.can_be_poisoned (blightMiteCollisionTarget); it flies through the rest.
-## Ref: sacengine blightMiteCollisionTarget state.d:25262-25269.
+## The shot only meets a body that Poisoning.can_be_poisoned; it flies through the rest.
 @export var hits_only_poisonable := false
-## F155: the shot's hit carries DamageMod.ignite (fkba, cfba; fhba, the Spitfire's cone, is not a shot): on an oiled body it
+## The shot's hit carries DamageMod.ignite (fkba, cfba; fhba, the Spitfire's cone, is not a shot): on an oiled body it
 ## takes ×2 and lights the oil. RangedShot.mods -> ShotImpact.land and the impacts.
-## Ref: sacengine state.d:23247, 24521.
 @export var ignites := false
-## F136: when its box touches nothing this frame, it also checks the segment it flew (lineOfSight in
-## updateScarabProjectile), so a small fast shot does not pass through a body. slba; F121: amba and cita too (lineOfSightWithoutSide).
-## Ref: sacengine updateScarabProjectile state.d:23655-23664, lineOfSightWithoutSide 23863, 23992.
+## When its box touches nothing this frame, it also checks the segment it flew, so a small fast shot does not pass through a body. slba; amba and cita too.
 @export var sweep := false
-## F136: at the end of its range it bursts there (impact included) instead of vanishing.
-## slba; F121: cita too (its vortex spawns where the range ends).
-## Ref: sacengine updateScarabProjectile state.d:23667-23670, 23866.
+## At the end of its range it bursts there (impact included) instead of vanishing.
+## slba; cita too (its vortex spawns where the range ends).
 @export var burst_at_range_end := false
-## F148/F149: ShotInFlight scene the server (or solo) puts on the shot; it acts on every tick of the flight. tugt: a
+## ShotInFlight scene the server (or solo) puts on the shot; it acts on every tick of the flight. tugt: a
 ## ShotDropper (a droplet that falls on whoever is below); rdba: a
-## GrowingWave + FreezeTouch (the Silverback's breath grows and freezes); F162: fhba and
+## GrowingWave + FreezeTouch (the Silverback's breath grows and freezes); fhba and
 ## ehba, the Spitfire's and the Gargoyle's waves (spitfire_wave, gargoyle_wave).
-## Ref: sacengine animateAbominationProjectile state.d:24441-24452, updateSilverbackProjectile 24758-24831.
 @export var in_flight: PackedScene
-## F149: off, the shot touches nothing on its way, neither a body nor the ground, and flies its whole range (the
+## Off: the shot touches nothing on its way, neither a body nor the ground, and flies its whole range (the
 ## Silverback's breath: its in_flight does the damage). On: it bursts on its hit (the rest of the shots).
 @export var collides := true
-## F124 (RFC-030 030m): ShotStrike scene that replaces the flight (strikes/*.tscn): a ray at once (the Gnome's
+## ShotStrike scene that replaces the flight (strikes/*.tscn): a ray at once (the Gnome's
 ## gnome_ray), a blow on the next tick (the Styx's styx_strike). RangedWeapon instances it on the server (or solo).
 ## Empty = a RangedShot flies.
 @export var strike: PackedScene
-## F125 (RFC-030 030n-a): shots per fire, one accuracy roll for all (which = −1, 0, +1 in boulderdashShoot).
+## Shots per fire, one accuracy roll for all (which = −1, 0, +1).
 ## RangedWeapon writes volley_index −k..k and aim_distance in each packet (RangedShot.spawn_data).
-## Ref: sacengine boulderdashShoot state.d:11806-11808.
 @export_range(1, 9, 2) var volley := 1
-## F125: a straight shot flies range_factor · the SPEL's range (emba 2: remainingDistance = 2·range).
-## Ref: sacengine state.d:11799.
+## A straight shot flies range_factor · the SPEL's range (emba 2: 2·range).
 @export var range_factor := 1.0
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15

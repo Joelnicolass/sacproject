@@ -8,24 +8,21 @@ extends Node3D
 ## until the doctor comes out or the cast is interrupted; the SacrificeSystem spawns and frees it on
 ## the server and the spawner shows it on every peer. Only the drawing is here: the dedicated server
 ## draws nothing. When it is freed it leaves a closing copy of the ring behind (1 s).
-## Ref: sacengine RedVortex, state.d:15463-15543
 
 const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 
 ## The ring and its center (scenes/fx/portal_disc.tscn with data/fx/portal_red.tres).
 @export var disc: PortalDisc
-## One drop of the vortex (data/fx/red_vortex.tres): falls from the ring, 2 per tick in the original.
+## One drop of the vortex (data/fx/red_vortex.tres): falls from the ring.
 @export var effect: ParticleType
-## Seconds between bursts of `effect.count` drops. Original: 2 drops per tick (120/s).
+## Seconds between bursts of `effect.count` drops.
 @export_range(0.01, 1.0, 0.0001, "suffix:s") var pulse_s := 0.0333
 ## Drops start once the ring is this open.
-## Ref: state.d:15465: scale > 0.3
 @export_range(0.0, 1.0, 0.05) var drops_after := 0.3
 ## Where the drops come out under the center, as a fraction of the radius.
-## Ref: state.d:15471: -0.8
 @export var drops_depth := 0.8
 ## The server frees it after this long if nobody did (a wizard freed mid-cast). 0 = never. Counted in ticks of the
-## match (MatchClock.ticks_for, RFC-032 032d), not with the render delta.
+## match (MatchClock.ticks_for), not with the render delta.
 @export var max_life_s := 0.0
 
 var _pulse_left := 0.0
@@ -36,7 +33,7 @@ var _life_ticks := 0
 func _ready() -> void:
 	if Engine.is_editor_hint() or disc == null:
 		return
-	## The scene shows the ring open (for the editor); in play it emerges.
+	# The scene shows the ring open (for the editor); in play it emerges.
 	disc.openness = 0.0
 	disc.open()
 	tree_exiting.connect(_leave_closing_ring)
@@ -45,9 +42,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if disc == null:
-		warnings.append("Asigná en `disc` el PortalDisc rojo del vórtice.")
+		warnings.append("Assign to `disc` the red PortalDisc of the vortex.")
 	if effect == null:
-		warnings.append("Asigná en `effect` el ParticleType de las gotas (data/fx/red_vortex.tres).")
+		warnings.append("Assign to `effect` the ParticleType of the drops (data/fx/red_vortex.tres).")
 	return warnings
 
 
@@ -78,7 +75,7 @@ func _leave_closing_ring() -> void:
 	var tree := get_tree()
 	if tree == null or tree.root == null or disc.openness <= 0.0:
 		return
-	## The node goes away at once: a copy of the ring stays at the same place and closes by itself.
+	# The node goes away at once: a copy of the ring stays at the same place and closes by itself.
 	var ghost := disc.duplicate() as PortalDisc
 	var at := global_transform * disc.transform
 	var openness := disc.openness

@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/fx/rock_emerge.tres" id="fx_rock_emerge"]
 
 [node name="Rockform" type="Node"]
-editor_description = "F133 (RFC-030 030v-b): efecto propio del Rockform del Earthfling (dihk). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Entra en roca en el tick de la orden y lleva la cascara rock_shell.tscn en el socket CENTER (show_rock_form, todos los peers; nunca en el dedicado). La rafaga emerge_fx sale de emerge_socket."
+editor_description = "The Earthfling's Rockform effect (dihk). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). It turns to rock on the tick of the order and wears the rock_shell.tscn shell at the CENTER socket (show_rock_form, every peer; never on the dedicated server). The emerge_fx burst comes out of emerge_socket."
 script = ExtResource("1_rock")
 shell_scene = ExtResource("2_shell")
 emerge_fx = ExtResource("fx_rock_emerge")

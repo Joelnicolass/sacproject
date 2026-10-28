@@ -6,13 +6,11 @@ extends RefCounted
 ## leaves the land is not taken, and the height is the ground's); one in the air takes the step as it is. The server
 ## (or solo) calls it; the clients get the position. Without terrain data (a bare debug scene) the land is everywhere
 ## and the ground is where the body stands.
-## Ref: F121 (RFC-030j), sacengine push state.d:8604-8612.
 
 
 ## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in a line to `edge` at `radius`, 0 from
 ## `radius` out; under `inner` it keeps growing (1.5 times `speed` at the middle with inner 5 and radius 15). The ritual and a tower
 ## being cast push with it.
-## Ref: sacengine pushAll, state.d:8614-8628.
 static func push_speed(distance: float, inner: float, radius: float, speed: float, edge := 0.0) -> float:
 	if distance >= radius or radius <= inner:
 		return 0.0
@@ -46,7 +44,6 @@ static func place(body: Node3D, to: Vector3) -> void:
 
 ## A petrified, frozen or vined body (push and catapult do nothing). The one answer
 ## to «can this body be moved from outside?», asked of its Afflictions.
-## Ref: sacengine effects.fixed state.d:8588-8590.
 static func fixed(body: Node) -> bool:
 	var afflictions := body.get_node_or_null("Afflictions") as Afflictions
 	return afflictions != null and afflictions.fixed()
@@ -71,8 +68,8 @@ static func ground_y(body: Node3D, at: Vector3) -> float:
 	return body.global_position.y if is_nan(height) else height
 
 
-## The height a body on the ground stands at near `at`: the land's, or (REVIEW-F121) the body's own when it rests on a
-## building or another body above the land (getHeight counts building tops). Off its edge, move_and_slide and
+## The height a body on the ground stands at near `at`: the land's, or the body's own when it rests on a
+## building or another body above the land (building tops count). Off its edge, move_and_slide and
 ## gravity take it down.
 static func floor_y(body: Node3D, at: Vector3) -> float:
 	var land := ground_y(body, at)

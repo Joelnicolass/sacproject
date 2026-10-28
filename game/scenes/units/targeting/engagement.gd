@@ -4,7 +4,6 @@ extends Node
 ## Whom a creature is committed to: its `target`, and the commands that begin or end a commitment (engage a foe, walk somewhere, stand
 ## still, cower, follow a leader). It asks the TargetPicker who is worth fighting and keeps the Vision of the body on only while it can look.
 ## Not: how to hit (Weapons), what each mode does (States) nor the orders of the player (UnitOrders).
-## Ref: sacengine updateTarget (state.d:12924), isValidAttackTarget (state.d:12442), isValidEnemyAttackTarget, startCowering (state.d:13760), teleport (state.d:10260-10269), RFC-021c.
 
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
@@ -98,12 +97,12 @@ func drop() -> void:
 
 func cancel_attacks() -> void:
 	if body.mode == UnitBody.Mode.ROCK_FORM and body.simulates() and afflictions.breaks_special_modes():
-		body.mode = UnitBody.Mode.IDLE  ## Petrified ends Rockform (state.d:11631-11640); Afflictions.held_changed calls here.
+		body.mode = UnitBody.Mode.IDLE  # Petrified ends Rockform; Afflictions.held_changed calls here.
 	body.weapons.cancel_all()
 	body.clips.cancel_lunge()
 
 
-## The visible foe of the best score above `threshold` around `center` (patrol 0.25; patrolAround min(100, d)*0.01; advance 0.25 with ref
+## The visible foe of the best score above `threshold` around `center` (idle 0.25; guard min(100, d)*0.01; advance 0.25 with ref
 ## 150), or the closest foe within sight without a picker. Null for a pacifist (aggressiveness 0).
 func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF) -> Node3D:
 	var type := body.type

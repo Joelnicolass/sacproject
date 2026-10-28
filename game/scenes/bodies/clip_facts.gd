@@ -66,7 +66,6 @@ func shots(role: StringName) -> PackedInt32Array:
 
 ## Seconds the frames of the clip last on the rules' clock, frames / 30 whatever the clip's own rate; 0 without
 ## the role. Not `seconds`: that is the Animation's length, which a 32-bit float stores a little off.
-## Ref: sacengine animFPS.
 func seconds_at_30(role: StringName) -> float:
 	return float(frames(role)) / float(DEFAULT_FPS)
 

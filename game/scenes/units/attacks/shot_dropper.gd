@@ -2,22 +2,19 @@ class_name ShotDropper
 extends ShotInFlight
 
 ## The droplets an Abomination's gut drops while it flies: every
-## frame of flight `numParticles = !!state.uniform(4)`, so with probability 3/4 one
-## AbominationDroplet is added at the shot's new position (i = 0 of 1: oldPosition·0 + position·1),
+## frame of flight, with probability 3/4, one droplet is added at the shot's new position,
 ## with velocity 0. The droplet's fall and hit belong to DropletRain (one pool in the world, server only).
 ##
-## The scene is ShotLook.in_flight (a ShotInFlight, F149). RangedShot instances it on the server (or solo) only, as a
-## child of the shot, and calls fly() once per physics tick, after it moved and before it checks its hit (the order of
-## the original's update). Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
-## Ref: F148 (RFC-030 030h3), sacengine animateAbominationProjectile state.d:24441-24452, AbominationDroplet 4838-4845, 4844, 24481, 24491, updateAbominationProjectile 24454-24460.
+## The scene is ShotLook.in_flight (a ShotInFlight). RangedShot instances it on the server (or solo) only, as a
+## child of the shot, and calls fly() once per physics tick, after it moved and before it checks its hit. Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
 
-## state.uniform(4) != 0: a droplet unless the roll is 0, i.e. (one_in − 1) / one_in of the ticks.
+## A droplet unless the roll is 0, i.e. (one_in − 1) / one_in of the ticks.
 @export_range(1, 16) var one_in := 4
-## AbominationDroplet.amount: direct ranged damage, not scaled by the shooter.
+## Direct ranged damage of a droplet, not scaled by the shooter.
 @export var amount := 50.0
-## The droplet's fall: velocity.z −= 10/updateFPS.
+## The droplet's fall: velocity.z −= 10/60.
 @export var gravity := 10.0
-## Side of the droplet's hit box in meters (abominationDropletSize).
+## Side of the droplet's hit box in meters.
 @export var hit_size := 0.25
 
 ## Droplets it dropped (the ticks are ShotInFlight's).
@@ -52,7 +49,7 @@ func drop(at: Vector3, from_slot: int) -> void:
 	if _rain == null:
 		if not _warned:
 			_warned = true
-			push_warning("ShotDropper: no hay DropletRain en el mundo.")
+			push_warning("ShotDropper: no DropletRain in the world.")
 		return
 	drops += 1
 	_rain.add(at, amount, from_slot, gravity, hit_size)
@@ -60,5 +57,5 @@ func drop(at: Vector3, from_slot: int) -> void:
 
 func _exit_tree() -> void:
 	if ticks > 0 and _rain != null and is_instance_valid(_rain) and _rain.log_hits:
-		print("gotas %s %d de %d ticks, de (%.1f, %.1f, %.1f) a (%.1f, %.1f, %.1f)" % [get_parent().name, drops, ticks,
+		print("drops %s %d of %d ticks, from (%.1f, %.1f, %.1f) to (%.1f, %.1f, %.1f)" % [get_parent().name, drops, ticks,
 			first_at.x, first_at.y, first_at.z, last_at.x, last_at.y, last_at.z])

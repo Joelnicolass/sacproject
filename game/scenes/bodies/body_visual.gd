@@ -11,7 +11,7 @@ extends MeshInstance3D
 const _UNSAVED: PackedStringArray = ["mesh", "transform"]
 const _LOCKED: PackedStringArray = ["mesh", "position", "rotation", "scale"]
 
-## The skeletal body (BodyRig, RFC-023 023c) that hangs under this node and draws instead of the static mesh. It inherits
+## The skeletal body (BodyRig) that hangs under this node and draws instead of the static mesh. It inherits
 ## this node's transform (the pose, the capsule scale, DevourGrowth). Set by the body's clip animator; null otherwise.
 @export var rig: BodyRig
 ## The body scene this visual draws (BodyMount of the creature, wizard or doctor): `body_height` and `body_radius` come from there.
@@ -79,7 +79,7 @@ func _kill_fade() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if mount == null:
-		warnings.append("Asigná `mount` (el BodyMount del cuerpo): de ahí salen la altura y el radio.")
+		warnings.append("Assign `mount` (the body's BodyMount): the height and the radius come from it.")
 	return warnings
 
 

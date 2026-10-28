@@ -5,7 +5,6 @@ extends Node
 ## model (HandL, HandR: BoneAttachment3D nodes placed in the editor) that the clip shows. A body with none gets the burst at its Center.
 ## The Caster says which particle shows (`cast_changed`, from its replicated `cast_fx_shown`); this node only draws it, on every peer. It is
 ## presentation: nothing here reads or writes the simulation, and a dedicated server (no meshes) plays nothing.
-## Ref: RFC-023 (023d), sacengine animateCasting (state.d:16165-16195).
 
 ## Emits `cast_changed(casting, fx)`; `cast_fx()` is the particle showing now.
 @export var caster: Caster

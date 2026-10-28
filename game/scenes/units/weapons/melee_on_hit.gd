@@ -1,46 +1,43 @@
 class_name MeleeOnHit
-extends Node
+extends UnitPassive
 
-## The passives of a creature that fire when its melee blow connects: the Yeti's Freeze, the Dragon's Vines. The MeleeWeapon says
-## «connected» on the attack tick, whatever the damage roll gave; for every OnHitPassiveType in `body.type.passives` this applies
-## the type's two knobs (refuse_flying, skip_if_was_frozen) and calls Affliction.inflict(spell, slot) on the target's Affliction at
-## the type's path. The Affliction owns the rule (cooldown, roll, protection); a new on-hit passive is a new .tres.
-## Not: the blow itself (MeleeWeapon). Server (or solo) only: the weapon only swings there.
-## Ref: F158 (RFC-030 030u-b), sacengine updateCreatureAttack (state.d:14411-14438).
+## An affliction a creature's melee blow lays when it connects, whatever the damage roll gave: the
+## Yeti's Freeze, the Dragon's Grasping Vines. On every connection it calls
+## Affliction.inflict(spell, slot) on the target's Affliction at `affliction_path`; the Affliction
+## owns the rule (cooldown, roll, protection). A node of the creature's `<name>_passives.tscn`, one
+## per effect. Not: the blow itself (MeleeWeapon). Server (or solo) only: the weapon only swings
+## there.
 
-@export var melee: MeleeWeapon
+## The spell the affliction takes (data/catalog/spells/).
+@export var spell: SpellType
+## The Affliction under the target body ("Afflictions/Frozen").
+@export var affliction_path := NodePath("")
+## A target in the air is spared (the Vines).
+@export var refuse_flying := false
+## A blow on a body that was frozen before it does not lay it again (the Freeze: that blow breaks
+## the ice).
+@export var skip_if_was_frozen := false
 
 
-func _ready() -> void:
-	if melee:
-		melee.connected.connect(_on_connected)
-
-
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if melee == null:
-		warnings.append("Falta el golpe (melee).")
-	return warnings
+func attach(mount: PassiveMount) -> void:
+	super(mount)
+	mount.melee.connected.connect(_on_connected)
 
 
 func _on_connected(target: Node3D, was_frozen: bool) -> void:
-	var body := melee.body
-	if body == null or body.type == null or not is_instance_valid(target):
+	if spell == null or not is_instance_valid(target):
 		return
-	for entry: CreaturePassive in body.type.passives:
-		var passive := entry as OnHitPassiveType
-		if passive == null or passive.spell == null:
-			continue
-		if passive.skip_if_was_frozen and was_frozen:
-			continue
-		if passive.refuse_flying and _flies(target):
-			continue
-		var affliction := target.get_node_or_null(passive.affliction_path) as Affliction
-		if affliction == null:
-			continue
-		var took := affliction.inflict(passive.spell, int(body.owner_slot))
-		if DebugLog.on(&"on_hit"):
-			print("pasiva %s %s → %s %s (tick %d)" % [passive.spell.tag, body.name, target.name, "aplicada" if took else "sin efecto", MatchClock.now()])
+	if skip_if_was_frozen and was_frozen:
+		return
+	if refuse_flying and _flies(target):
+		return
+	var affliction := target.get_node_or_null(affliction_path) as Affliction
+	if affliction == null:
+		return
+	var took := affliction.inflict(spell, int(body.owner_slot))
+	if DebugLog.on(&"on_hit"):
+		var said := "aplicada" if took else "sin efecto"
+		print("pasiva %s %s → %s %s (tick %d)" % [spell.tag, body.name, target.name, said, MatchClock.now()])
 
 
 func _flies(target: Node) -> bool:

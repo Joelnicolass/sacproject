@@ -1,10 +1,10 @@
 class_name LightningCharge
-extends Node
+extends UnitPassive
 
 ## The Storm Giant's Lightning Charge (gcil, its passiveOnDamage). The one owner of how charged a body
 ## is: the frames it still holds, the ramp of its discharges, what it multiplies (pace, blow, accuracy) and the bolts it throws.
-## A child of unit.tscn; take it out and no body is charged. Not a DamagePassiveType: the passive has side effects (gcil is not of
-## the shape of korq / ahtf, damage_passive_type.gd), so DamagePassive only asks it.
+## A node of the creature's `<name>_passives.tscn`, next to the DamagePassive whose `charge` it is (that one asks it on every hit
+## and blow); a creature without it is never charged.
 ##
 ## Charging: a hit with DamageMod.lightning charges `int(f · damage)` frames (f = 4 when the
 ## attacker is an ally, 2 otherwise; the damage is the one already scaled by side, resistance and shields) and the body takes a
@@ -21,7 +21,8 @@ extends Node
 ## While charged: pace ×1.5 (movementSpeed), blow ×1.5 (attackDamageFactor) and accuracy ×1.5
 ## (dealMeleeDamage). The pace goes to PaceFactors under its own source; the other two are asked of melee_factor().
 ## The simulation is MatchSeed's stream ["charge", body, tick] (drawn only on a tick that can discharge); the sparks have a stream
-## of their own, so they never move it. `shown` is replicated (the unit's MultiplayerSynchronizer, "LightningCharge:shown").
+## of their own, so they never move it. `shown` is replicated by the `Sync` child of this scene: its root is the creature, so the node
+## has to keep the name `LightningCharge` as a direct child of the creature's `Passives`.
 ## Divergences (declared): the candidates go in the order of the groups (wizards, then units), not the original's proximity order; a
 ## body that dies loses its charge at once; the sparks are a reserve look.
 ## Ref: F130 (RFC-030 030s-a), sacengine dealRawDamage state.d:9017-9022, lightningCharge 13131-13136, updateLightningCharge 25342-25386, stats.d:122, state.d:8885, dealMeleeDamage 9237.
@@ -30,10 +31,6 @@ extends Node
 ## The PaceFactors source of the charge.
 const PACE_SOURCE := &"lightning_charge"
 
-## The body that is charged (its center, its name, its slot). Empty = the parent.
-@export var body: Node3D
-## Who writes speed_factor. Empty = the charge does not change the pace.
-@export var pace: PaceFactors
 ## The discharge's bolt (lightning_strike.tscn).
 @export var bolt_scene: PackedScene
 ## The passive (data/catalog/abilities/gcil.tres): its numbers give the amount 250, the range 30 and the bolt's damage 250.
@@ -69,18 +66,19 @@ const PACE_SOURCE := &"lightning_charge"
 var frames := 0
 var ramp := 0.0
 
+## Who writes speed_factor (set by attach). Empty = the charge does not change the pace.
+var pace: PaceFactors
+
 var _look_rng := RandomNumberGenerator.new()
 var _last_walk := Vector3.INF
 
 
-## The LightningCharge of `node`, or null.
-static func of(node: Node) -> LightningCharge:
-	return (node.get_node_or_null("LightningCharge") as LightningCharge) if node else null
+func attach(mount: PassiveMount) -> void:
+	super(mount)
+	pace = mount.pace
 
 
 func _ready() -> void:
-	if body == null:
-		body = get_parent() as Node3D
 	MatchSeed.seed_rng(_look_rng, ["charge_look", _who()])
 	_wake()
 
@@ -124,8 +122,7 @@ func _physics_process(_delta: float) -> void:
 func _simulate() -> void:
 	if frames <= 0:
 		return
-	var health: Health = body.get_node_or_null("Health") as Health if body != null else null
-	if health != null and health.is_dead():
+	if body.health.is_dead():
 		frames = 0
 		_say("carga %s fin por muerte (tick %d)" % [_who(), MatchClock.now()])
 		_refresh()
@@ -203,26 +200,20 @@ func _refresh() -> void:
 		_wake()
 
 
-## The tick runs while charged, and with the bench log on (a carrier of the passive traces its walk: its type is set after
-## _ready, so the check is per tick).
+## The tick runs while charged, and with the bench log on (the carrier traces its walk).
 func _wake() -> void:
 	set_physics_process(shown or frames > 0 or DebugLog.on(&"charge"))
 
 
-func _carries() -> bool:
-	var type: Variant = body.get("type") if body != null and "type" in body else null
-	return type is CreatureType and (type as CreatureType).has_passive(passive)
-
-
 ## Bench only: `marcha body ×pace (x, y, z)` on every tick the carrier moved, for the replica to measure the step.
 func _trace_walk() -> void:
-	if not DebugLog.on(&"charge") or body == null or not _carries():
+	if not DebugLog.on(&"charge") or body == null:
 		return
 	var at := body.global_position
 	if at == _last_walk:
 		return
 	_last_walk = at
-	var factor := float(body.get("speed_factor")) if "speed_factor" in body else 1.0
+	var factor := body.speed_factor
 	print("marcha %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)" % [_who(), factor, at.x, at.y, at.z, MatchClock.now()])
 
 

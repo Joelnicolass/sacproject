@@ -9,7 +9,6 @@ extends CharacterBody3D
 signal died(tag: String, owner_slot: int, at: Vector3)
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 signal summoned  ## The summon cast ended; it acts now and joins its owner's selection.
-signal model_changed  ## `model` changed (data, not order): FireShield reads the box again.
 signal held_changed(held: bool)  ## A Sac Doctor holds it (true) or lets go (false).
 signal taken_changed(taken: bool)  ## Held or being revived by a Sac Doctor (true) or neither (false).
 signal mode_changed(was: Mode, now: Mode)
@@ -34,7 +33,6 @@ var creature_tag := ""
 	set(value):
 		model = value
 		if creature != null: creature.adopt_model()
-		model_changed.emit()
 ## Player slot that summoned it (0 = nobody).
 @export var owner_slot := 0:
 	set(value):

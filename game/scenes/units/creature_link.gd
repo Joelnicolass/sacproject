@@ -1,8 +1,9 @@
 class_name CreatureLink
 extends Node
 
-## Which creature a UnitBody is: it wears the body scene of its CreatureType (size, sockets, model id), takes its pace and sight from it,
-## hands the type to its weapons, abilities and mana support, gives it its health and mana once and bursts it if it falls into a hole.
+## Which creature a UnitBody is: it wears the body scene of its CreatureType (size, sockets, model id) and mounts the passives that come
+## with it, takes its pace and sight from it, hands the type to its weapons and abilities, gives it its health and mana once and bursts it
+## if it falls into a hole.
 ## The body holds the type itself (the spawner sets `UnitBody.type` before it enters the tree).
 ## Not: what the creature does (States, Weapons, Engagement) nor how the type is found (the spawner and the catalog).
 
@@ -16,7 +17,8 @@ signal type_applied
 @export var health_bar: UnitHealthBar
 @export var flight: Flight
 @export var locomotion: Locomotion
-@export var mana_support: UnitManaSupport
+## Where the passives of the body scene go (the Firefist's fury, the Phoenix's shield).
+@export var passives: PassiveMount
 
 ## The stream of chance of its weapons, seeded from the name of the body (MatchSeed) when it simulates.
 var rng := RandomNumberGenerator.new()
@@ -31,7 +33,7 @@ func _ready() -> void:
 	health_bar.bind(health, body.owner_slot, body)
 
 
-## The type of the body changed: its pace, its sight and its body scene follow; the model id comes from the body scene.
+## The type of the body changed: its pace, its sight, its body scene and its passives follow; the model id comes from the body scene.
 func adopt() -> void:
 	var type := body.type
 	_adopt_pace()
@@ -39,6 +41,8 @@ func adopt() -> void:
 		body.vision.adopt_range(type.vision_m if type else 0.0)
 	if type and body.mount != null:
 		body.mount.wear(type.body)
+		if passives != null:
+			passives.mount(body.mount.facts.passives)
 		if body.model.is_empty():
 			body.model = body.mount.facts.model_id
 	type_applied.emit()
@@ -59,13 +63,11 @@ func arm() -> void:
 	body.weapons.setup(body, body.type, rng)
 
 
-## Every peer, once the body is ready: the type reaches its weapons, abilities and mana support.
+## Every peer, once the body is ready: the type reaches its weapons and abilities.
 func equip() -> void:
 	body.weapons.struck.connect(body.struck.emit)
 	arm()
 	body.abilities.setup(body, body.type)
-	if mana_support:
-		mana_support.setup(body, body.type, body.owner_slot, body.rules)
 
 
 ## Server or solo, once the body is ready: its health and mana, its stream of chance (seeded from its name), the ray casts that seat it

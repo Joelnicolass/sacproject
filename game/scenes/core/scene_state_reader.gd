@@ -60,6 +60,17 @@ static func half_height(nodes: Dictionary, root: Dictionary, prop: String, fallb
 	return fallback
 
 
+## The scene instanced at the node the root's `prop` points at (a child saved as an instance of another scene), or null.
+static func instance(state: SceneState, root: Dictionary, prop: String) -> PackedScene:
+	if not root.has(prop):
+		return null
+	var wanted := String(root[prop])
+	for index in state.get_node_count():
+		if String(state.get_node_path(index)).trim_prefix("./") == wanted:
+			return state.get_node_instance(index)
+	return null
+
+
 ## The double a measure of at most 3 decimals had before the scene stored it in 32 bits.
 static func mm(value: float) -> float:
 	return roundi(value * 1000.0) / 1000.0

@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/units/passives/damage_passive.gd" id="1_damage"]
+
+[node name="FirefistPassives" type="Node"]
+
+[node name="Fury" type="Node" parent="."]
+script = ExtResource("1_damage")
+outgoing_melee_per_missing = 1.5

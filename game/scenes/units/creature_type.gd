@@ -49,12 +49,9 @@ extends BookEntry
 @export var ranged_attack: AbilityType
 ## The ability the player triggers with Ctrl+Q while the creature is selected (Rhinok's halo, Dragon's breath of life), or empty.
 @export var active_ability: AbilityType
-## What happens to the creature when it is hurt (Taurock's hide, Firefist's fury, Phoenix's shield, Storm Giant's charge), or empty.
-## DamagePassive, FireShield and LightningCharge are the components that act on it; a passive no component knows does nothing.
+## The passive ability the book and the AI know the creature by (Taurock's hide, Firefist's fury, Phoenix's shield), or empty:
+## its icon, name and mana cost. What the passive does is the UnitPassive nodes of the body scene's `<name>_passives.tscn`.
 @export var on_damage: AbilityType
-## What the creature does without being asked: the clouds it leaves when it dies (Cog, Necryl, Mutant) and the effects its blows
-## add (Yeti's freeze, Dragon's vines). DeathCloudSpawner and MeleeOnHit walk this list.
-@export var passives: Array[CreaturePassive] = []
 @export_group("")
 
 
@@ -68,8 +65,7 @@ func id() -> String:
 	return tag if not tag.is_empty() else resource_path.get_file().get_basename()
 
 
-## True when `passive` is the one this creature has (its `on_damage`). The only place that answers it: FireShield, LightningCharge,
-## DamagePassive and the Manahoar's ManaSupport ask here, so a passive node only wakes up on a creature that lists its ability.
+## True when `passive` is the one this creature has (its `on_damage`): the AI tells a Manahoar by it.
 func has_passive(passive: AbilityType) -> bool:
 	return passive != null and on_damage == passive
 

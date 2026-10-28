@@ -3,7 +3,7 @@ extends Weapon
 
 ## A blow with the body: one swing at a time, timed by the creature's attack clip. It starts when the target touches the melee box
 ## (scaled by `start_factor`) and the blow lands only if the target still touches the unscaled box on the clip's blow frame.
-## Not: choosing who to hit (the chase state) nor what a blow adds afterwards (MeleeOnHit and the passives).
+## Not: choosing who to hit (the chase state) nor what a blow adds afterwards (the creature's MeleeOnHit passives).
 ## Ref: sacengine `attack` (state.d:12814) and dealMeleeDamage (state.d:9231-9263). Server (or solo) only.
 
 ## The share of the melee box a target must touch to start a swing.
@@ -43,7 +43,7 @@ func setup(unit: UnitBody, creature: CreatureType, stream: RandomNumberGenerator
 	rng = stream if stream else MatchSeed.rng(["melee", String(unit.name)])
 
 
-## The Firefist's passive, which reads the body's health; null = x1.
+## The creature's DamagePassive (the Firefist's fury reads the body's health); null = x1.
 func passive() -> DamagePassive:
 	return weapons.passive if weapons != null else null
 

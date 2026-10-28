@@ -1,4 +1,4 @@
-[gd_scene load_steps=130 format=3]
+[gd_scene load_steps=122 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -6,14 +6,13 @@
 [ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/clinging.tscn" id="f129_cling"]
+[ext_resource type="Script" path="res://scenes/units/passives/passive_mount.gd" id="q9_passives"]
 [ext_resource type="PackedScene" path="res://scenes/units/status/devour_growth.tscn" id="f131_growth"]
-[ext_resource type="PackedScene" path="res://scenes/units/passives/lightning_charge.tscn" id="f130_charge"]
 [ext_resource type="PackedScene" path="res://scenes/units/passives/life_shield.tscn" id="f126_shield"]
 [ext_resource type="Script" path="res://scenes/spells/wards/wards.gd" id="w_wards"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/healing_aura.tscn" id="w_healing_aura"]
 [ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
-[ext_resource type="PackedScene" path="res://scenes/units/passives/fire_shield.tscn" id="f163_shield"]
 [ext_resource type="Script" path="res://scenes/units/corpse.gd" id="5_corpse"]
 [ext_resource type="Script" path="res://scenes/units/corpse_look.gd" id="f055_look"]
 [ext_resource type="Script" path="res://scenes/units/tipping_fall.gd" id="f055_tipping"]
@@ -35,7 +34,6 @@
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_port.gd" id="f55c3_port"]
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="f36_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
-[ext_resource type="Script" path="res://scenes/units/unit_mana_support.gd" id="f41_mana_support"]
 [ext_resource type="Script" path="res://scenes/units/creature_fx.gd" id="f055_cfx"]
 [ext_resource type="Script" path="res://scenes/spells/guardian/guardian_bond.gd" id="f63_bond"]
 [ext_resource type="PackedScene" path="res://scenes/spells/guardian/guardian_tether.tscn" id="f63_tether"]
@@ -48,11 +46,6 @@
 [ext_resource type="Script" path="res://scenes/units/movement/flight.gd" id="f116_flight"]
 [ext_resource type="Script" path="res://scenes/units/movement/body_collider.gd" id="f135_collider"]
 [ext_resource type="Script" path="res://scenes/bodies/body_mount.gd" id="s1_mount"]
-[ext_resource type="Script" path="res://scenes/units/passives/damage_passive.gd" id="f117_passive"]
-[ext_resource type="Script" path="res://scenes/units/passives/damage_passive_type.gd" id="f117_type"]
-[ext_resource type="Resource" path="res://data/passives/taurock_hide.tres" id="f117_korq"]
-[ext_resource type="Resource" path="res://data/passives/firefist_fury.tres" id="f117_ahtf"]
-[ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_spawner.gd" id="f118_spawner"]
 [ext_resource type="Script" path="res://scenes/units/targeting/target_policy.gd" id="f136_policy"]
 [ext_resource type="Resource" path="res://data/targeting/slba.tres" id="f136_slba"]
 [ext_resource type="Script" path="res://scenes/units/afflictions/affliction.gd" id="f152_affliction"]
@@ -91,7 +84,6 @@
 [ext_resource type="Resource" path="res://data/targeting/rage.tres" id="i8_rage_policy"]
 [ext_resource type="Resource" path="res://data/fx/rage_swirl.tres" id="i8_swirl"]
 [ext_resource type="Resource" path="res://data/audio/cues/summon.tres" id="a055_summon"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/hmba.tres" id="typed_hmba"]
 [ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="q5_state_light"]
 
@@ -151,36 +143,33 @@ properties/15/replication_mode = 2
 properties/16/path = NodePath("Clinging:shown")
 properties/16/spawn = true
 properties/16/replication_mode = 2
-properties/17/path = NodePath("LightningCharge:shown")
+properties/17/path = NodePath("DevourGrowth:shown")
 properties/17/spawn = true
 properties/17/replication_mode = 2
-properties/18/path = NodePath("DevourGrowth:shown")
+properties/18/path = NodePath("Corpse:dissolving")
 properties/18/spawn = true
 properties/18/replication_mode = 2
-properties/19/path = NodePath("Corpse:dissolving")
+properties/19/path = NodePath("SpecialForms:stealth")
 properties/19/spawn = true
 properties/19/replication_mode = 2
-properties/20/path = NodePath("SpecialForms:stealth")
+properties/20/path = NodePath("Wards/HealingAura:shown")
 properties/20/spawn = true
 properties/20/replication_mode = 2
-properties/21/path = NodePath("Wards/HealingAura:shown")
+properties/21/path = NodePath("DevourGrowth:inflation")
 properties/21/spawn = true
 properties/21/replication_mode = 2
-properties/22/path = NodePath("DevourGrowth:inflation")
+properties/22/path = NodePath("BloodFx:wound")
 properties/22/spawn = true
 properties/22/replication_mode = 2
-properties/23/path = NodePath("BloodFx:wound")
+properties/23/path = NodePath("MpActor:net_stamp")
 properties/23/spawn = true
-properties/23/replication_mode = 2
-properties/24/path = NodePath("MpActor:net_stamp")
+properties/23/replication_mode = 1
+properties/24/path = NodePath("MpActor:net_teleports")
 properties/24/spawn = true
 properties/24/replication_mode = 1
-properties/25/path = NodePath("MpActor:net_teleports")
+properties/25/path = NodePath("MpActor:owner_slot")
 properties/25/spawn = true
-properties/25/replication_mode = 1
-properties/26/path = NodePath("MpActor:owner_slot")
-properties/26/spawn = true
-properties/26/replication_mode = 0
+properties/25/replication_mode = 0
 
 [node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities", "health", "creature", "locomotion", "engagement", "special_forms", "regeneration", "clips", "states", "health_bar")]
 collision_layer = 2
@@ -214,11 +203,10 @@ mount = NodePath("../../BodyMount")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_unit")
 
-[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "passive", "afflictions", "poisoning", "wards", "growth")]
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("oil", "afflictions", "poisoning", "wards", "growth")]
 script = ExtResource("3_health")
 growth = NodePath("../DevourGrowth")
 oil = NodePath("../Afflictions/Oiled")
-passive = NodePath("../DamagePassive")
 afflictions = NodePath("../Afflictions")
 poisoning = NodePath("../Poisoning")
 wards = NodePath("../Wards")
@@ -234,17 +222,6 @@ health = NodePath("../../Health")
 [node name="HealingAura" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_healing_aura")]
 body = NodePath("../..")
 health = NodePath("../../Health")
-
-[node name="DamagePassive" type="Node" parent="." node_paths=PackedStringArray("body", "charge")]
-script = ExtResource("f117_passive")
-body = NodePath("..")
-charge = NodePath("../LightningCharge")
-types = Array[ExtResource("f117_type")]([ExtResource("f117_korq"), ExtResource("f117_ahtf")])
-
-[node name="DeathCloudSpawner" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
-script = ExtResource("f118_spawner")
-body = NodePath("..")
-health = NodePath("../Health")
 
 [node name="ManaPool" type="Node" parent="." node_paths=PackedStringArray("poisoning")]
 script = ExtResource("f29_mana")
@@ -263,25 +240,25 @@ body = NodePath("..")
 poisoning = NodePath("../Poisoning")
 pace = NodePath("../PaceFactors")
 
-[node name="FireShield" parent="." node_paths=PackedStringArray("body", "health", "mana") instance=ExtResource("f163_shield")]
+[node name="Passives" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "pace", "weapons", "melee", "creature_fx")]
+script = ExtResource("q9_passives")
 body = NodePath("..")
 health = NodePath("../Health")
 mana = NodePath("../ManaPool")
+pace = NodePath("../PaceFactors")
+weapons = NodePath("../Weapons")
+melee = NodePath("../Weapons/Melee")
+creature_fx = NodePath("../CreatureFx")
 
 [node name="DevourGrowth" parent="." node_paths=PackedStringArray("body", "health", "visual") instance=ExtResource("f131_growth")]
 body = NodePath("..")
 health = NodePath("../Health")
 visual = NodePath("../Tilt/Mesh")
 
-[node name="LightningCharge" parent="." node_paths=PackedStringArray("body", "pace") instance=ExtResource("f130_charge")]
-body = NodePath("..")
-pace = NodePath("../PaceFactors")
-
-[node name="Weapons" type="Node" parent="." node_paths=PackedStringArray("mana", "health", "passive", "clips")]
+[node name="Weapons" type="Node" parent="." node_paths=PackedStringArray("mana", "health", "clips")]
 script = ExtResource("f55c3_weapons")
 mana = NodePath("../ManaPool")
 health = NodePath("../Health")
-passive = NodePath("../DamagePassive")
 clips = NodePath("../Clips")
 
 [node name="Ranged" parent="Weapons" instance=ExtResource("f55c3_ranged")]
@@ -307,16 +284,11 @@ script = ExtResource("f55c3_port")
 body = NodePath("../..")
 slot = NodePath("../Ability")
 
-[node name="ManaSupport" type="Node3D" parent="."]
-script = ExtResource("f41_mana_support")
-source = ExtResource("typed_hmba")
-
-[node name="CreatureFx" type="Node3D" parent="." node_paths=PackedStringArray("body", "rig", "mana_support")]
+[node name="CreatureFx" type="Node3D" parent="." node_paths=PackedStringArray("body", "rig")]
 physics_interpolation_mode = 2
 script = ExtResource("f055_cfx")
 body = NodePath("..")
 rig = NodePath("../Tilt/Mesh/Rig")
-mana_support = NodePath("../ManaSupport")
 
 [node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
 script = ExtResource("f36_clip")
@@ -485,7 +457,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
 
 [node name="MpActor" type="Node" parent="."]
 script = ExtResource("7_actor")
-sync_extra = PackedStringArray("owner_slot", "creature_tag", "model", "mode", "Weapons:swings", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "Weapons:shots", "GuardianBond:post_path", "Flight:state", "Afflictions:shown", "Wards/LifeShield:shown", "Clinging:shown", "LightningCharge:shown", "DevourGrowth:shown", "Corpse:dissolving", "SpecialForms:stealth", "Wards/HealingAura:shown", "DevourGrowth:inflation", "BloodFx:wound")
+sync_extra = PackedStringArray("owner_slot", "creature_tag", "model", "mode", "Weapons:swings", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "Weapons:shots", "GuardianBond:post_path", "Flight:state", "Afflictions:shown", "Wards/LifeShield:shown", "Clinging:shown", "DevourGrowth:shown", "Corpse:dissolving", "SpecialForms:stealth", "Wards/HealingAura:shown", "DevourGrowth:inflation", "BloodFx:wound")
 send_hz = 30
 lag_compensate = false
 
@@ -585,7 +557,7 @@ script = ExtResource("g5_ring")
 body = NodePath("..")
 portal_scene = ExtResource("f59_portal")
 
-[node name="Creature" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "regeneration", "health_bar", "flight", "locomotion", "mana_support")]
+[node name="Creature" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "regeneration", "health_bar", "flight", "locomotion", "passives")]
 script = ExtResource("c4_creature")
 body = NodePath("..")
 health = NodePath("../Health")
@@ -594,7 +566,7 @@ regeneration = NodePath("../Regeneration")
 health_bar = NodePath("../HealthBar")
 flight = NodePath("../Flight")
 locomotion = NodePath("../Locomotion")
-mana_support = NodePath("../ManaSupport")
+passives = NodePath("../Passives")
 
 [node name="Locomotion" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "avoidance", "air")]
 script = ExtResource("c4_locomotion")

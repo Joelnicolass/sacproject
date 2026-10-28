@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/units/weapons/melee_on_hit.gd" id="1_on_hit"]
+[ext_resource type="Resource" path="res://data/catalog/spells/zerf.tres" id="2_freeze"]
+
+[node name="YetiPassives" type="Node"]
+
+[node name="Freeze" type="Node" parent="."]
+script = ExtResource("1_on_hit")
+spell = ExtResource("2_freeze")
+affliction_path = NodePath("Afflictions/Frozen")
+skip_if_was_frozen = true

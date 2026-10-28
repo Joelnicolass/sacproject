@@ -1,27 +1,18 @@
 class_name UnitManaSupport
-extends Node3D
+extends UnitPassive
 
-## Server-authoritative mana support aura for units like Manahoar (hmba).
-## Aura radius 40 and rate derived from
-## allied manalith distance (50..1000) with a triangular ramp peaking at 20 mana/s.
-## The aura radius and the ramp distances come from ReachFacts.of_rules(rules), read at every use (rules may be set without setup()).
-## Ref: res://scenes/match/reach_facts.gd (manahoar_aura_m, manahoar_peak_m, manahoar_end_m); sacengine addManahoar (state.d).
+## The Manahoar's mana aura: the body gives mana to its own side's wizards and creatures within the aura, at a rate that grows with
+## the allied Manaliths around it (a triangular ramp peaking at `MatchRules.manahoar_rate`). The aura radius and the ramp distances
+## come from ReachFacts.of_rules(body.rules), read at every use. A node of `manahoar_passives.tscn`; attach() hands it to the
+## creature's CreatureFx (its flame follows the rate). Server (or solo) only for the giving.
 
-@export var rules: MatchRules
-@export var owner_slot := 0
-@export var enabled := false
-## The ability that makes a creature a mana source (data/catalog/abilities/hmba.tres, the Manahoar's).
-@export var source: AbilityType
 @export var target_groups: PackedStringArray = PackedStringArray(["wizard", "unit"])
 
-var _body: UnitBody
 
-
-func setup(body: UnitBody, creature: CreatureType, slot: int, match_rules: MatchRules) -> void:
-	_body = body
-	owner_slot = slot
-	rules = match_rules
-	enabled = creature != null and creature.has_passive(source)
+func attach(mount: PassiveMount) -> void:
+	super(mount)
+	if mount.creature_fx != null:
+		mount.creature_fx.mana_support = self
 
 
 func _ready() -> void:
@@ -30,24 +21,21 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not enabled or _body == null:
-		return
-	if _body.is_dead():
-		return
-	if _body.is_summoning():
+	if body == null or body.is_dead() or body.is_summoning():
 		return
 	var rate := _rate_from_manaliths()
 	if rate <= 0.0:
 		return
-	var radius := ReachFacts.of_rules(rules).manahoar_aura_m
+	var radius := ReachFacts.of_rules(body.rules).manahoar_aura_m
+	var at := body.global_position
 	for group in target_groups:
 		for node in get_tree().get_nodes_in_group(group):
 			var target := node as Node3D
 			if target == null:
 				continue
-			if int(target.get("owner_slot")) != owner_slot:
+			if int(target.get("owner_slot")) != body.owner_slot:
 				continue
-			if target.global_position.distance_to(global_position) > radius:
+			if target.global_position.distance_to(at) > radius:
 				continue
 			if target.has_method("can_take_mana") and not target.call("can_take_mana"):  # dynamic: a unit or a wizard
 				continue
@@ -61,12 +49,13 @@ func _physics_process(delta: float) -> void:
 ## can ask (it only reads the structures); a body that gives no mana (dead, or not a Manahoar) answers 0.
 ## Ref: sacengine animateManahoar, addManahoar (state.d).
 func flame_rate() -> float:
-	if not enabled or _body == null or _body.is_dead():
+	if body == null or body.is_dead():
 		return 0.0
 	return _rate_from_manaliths()
 
 
 func _rate_from_manaliths() -> float:
+	var rules := body.rules
 	var peak := rules.manahoar_rate if rules else 20.0
 	var facts := ReachFacts.of_rules(rules)
 	var near := facts.manahoar_peak_m
@@ -79,9 +68,9 @@ func _rate_from_manaliths() -> float:
 		## Only Manaliths feed a Manahoar, the allies' too; a Shrine does not.
 		if manalith == null or manalith.type.role != BuildingType.Role.MANALITH:
 			continue
-		if manalith.owner_slot != owner_slot and SideRelations.stance(owner_slot, manalith.owner_slot) != SideRelations.Stance.ALLY:
+		if manalith.owner_slot != body.owner_slot and SideRelations.stance(body.owner_slot, manalith.owner_slot) != SideRelations.Stance.ALLY:
 			continue
-		var distance := global_position.distance_to(manalith.global_position)
+		var distance := body.global_position.distance_to(manalith.global_position)
 		if distance >= far:
 			continue
 		if distance <= near:

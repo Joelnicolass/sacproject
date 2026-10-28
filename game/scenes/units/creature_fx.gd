@@ -15,8 +15,6 @@ extends Node3D
 @export var body: UnitBody
 ## The skeleton that draws the body: where the model's socket is.
 @export var rig: BodyRig
-## The Manahoar's mana aura: its rate says how many flame particles per second there are.
-@export var mana_support: UnitManaSupport
 ## Emit at the rate of the mana the creature gives (0 without allied manaliths) instead of the type's `rate_per_s`.
 @export var follow_mana_rate := true
 ## Where the flame floats, in meters over the creature's feet, when the model has no socket.
@@ -25,6 +23,10 @@ extends Node3D
 @export_range(0.0, 0.5, 0.01, "suffix:m") var wobble_m := 0.05
 ## Seconds between two looks at the mana rate.
 @export_range(0.05, 2.0, 0.05, "suffix:s") var rate_interval_s := 0.25
+
+## The Manahoar's mana aura: its rate says how many flame particles per second there are. Set by the aura itself when the
+## creature's passives are mounted (UnitManaSupport.attach); empty on any other creature.
+var mana_support: UnitManaSupport
 
 var _fx: Node3D
 var _socket: Node3D

@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/units/passives/fire_shield.tscn" id="0_shield"]
+[ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_spawner.gd" id="1_spawner"]
+[ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_type.gd" id="2_cloud_type"]
+[ext_resource type="Resource" path="res://data/death_clouds/cog_cloud.tres" id="3_cloud"]
+
+[node name="PhoenixPassives" type="Node"]
+
+[node name="FireShield" parent="." instance=ExtResource("0_shield")]
+
+[node name="DeathClouds" type="Node" parent="."]
+script = ExtResource("1_spawner")
+clouds = Array[ExtResource("2_cloud_type")]([ExtResource("3_cloud")])

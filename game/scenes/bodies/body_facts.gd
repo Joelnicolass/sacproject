@@ -35,6 +35,9 @@ var top := Vector3(0.0, 1.8, 0.0)
 var feet := Vector3.ZERO
 ## True when the facts come from a scene (false for the unknown-model default).
 var from_scene := false
+## The passives the creature always has (the scene instanced at the frame's `passives`), or null for none. PassiveMount builds it on
+## every peer.
+var passives: PackedScene
 
 
 func _init() -> void:
@@ -128,6 +131,7 @@ func _read(state: SceneState) -> bool:
 	top = SceneStateReader.marker(nodes, root, "top")
 	feet = SceneStateReader.marker(nodes, root, "feet")
 	muzzle = SceneStateReader.marker(nodes, root, "muzzle") if root.has("muzzle") else _hand(height_m, reach_m)
+	passives = SceneStateReader.instance(state, root, "passives")
 	return true
 
 

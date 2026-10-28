@@ -1,76 +1,58 @@
-@tool
 class_name DamagePassive
-extends Node
+extends UnitPassive
 
-## The only owner of the damage multipliers of a creature's passiveOnDamage. Health asks
-## incoming_factor() for every hit the body takes; MeleeWeapon asks outgoing_melee_factor() for every blow it lands. The
-## formula lives in the DamagePassiveType of the creature's `on_damage`; a creature without one (or an ability with no resource here) is ×1.
-## A child of unit.tscn; take it out and no passive applies.
-## F130: gcil (the Storm Giant's Lightning Charge) has side effects and is not a DamagePassiveType: its LightningCharge is the
-## `charge` socket, and this node only asks it (a lightning hit charges, a charged body blows and aims ×1.5).
-## Ref: F117 (RFC-030f), sacobject.d:426.
+## How a creature's own health scales the damage it takes and the melee blows it deals, as two
+## linear knobs on its relative health h (health / maximum, read before the hit):
+##   incoming = incoming_base + incoming_per_health · h        (every hit the body takes)
+##   outgoing = 1 + outgoing_melee_per_missing · (1 − h)        (its own melee blows only)
+## The defaults change nothing. Health asks incoming_factor() for every hit; the Weapons ask
+## outgoing_melee_factor() and melee_accuracy_factor() for every blow. It is a node of the
+## creature's `<name>_passives.tscn` (Taurock's hide, Firefist's fury); attach() makes it the
+## `passive` of the creature's Health and Weapons. With a `charge` (the Storm Giant's Lightning
+## Charge) a lightning hit charges the body and a charged body hits and aims harder.
 
-## The body whose CreatureType.on_damage picks the resource. Read on every query: a body that changes its type changes its
-## passive with it.
-@export var body: UnitBody
-## The passives of this shape (korq, ahtf). A new one is a new .tres here; Health and MeleeWeapon do not change.
-@export var types: Array[DamagePassiveType] = []
-## F130: the body's Lightning Charge. Optional: empty = no charge. It only counts for a body whose `on_damage` is its `passive`.
+## Multiplier on every hit at full health minus `incoming_per_health`: the Taurock's hide is 0.25 +
+## 0.75 · h.
+@export var incoming_base := 1.0
+@export var incoming_per_health := 0.0
+## Extra melee damage per share of health missing: the Firefist's fury is ×(1 + 1.5 · (1 − h)).
+@export var outgoing_melee_per_missing := 0.0
+## The creature's Lightning Charge, in the same passives scene. Empty = no charge.
 @export var charge: LightningCharge
 
-var _cached_for: AbilityType
-var _cached: DamagePassiveType
+
+func attach(mount: PassiveMount) -> void:
+	super(mount)
+	mount.health.passive = self
+	mount.weapons.passive = self
 
 
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if body == null:
-		warnings.append("Falta el cuerpo (body).")
-	return warnings
-
-
-## Multiplier on the damage the body takes at relative health `health_fraction` (before the hit). F130: `mods` are the hit's
-## DamageMod bits, `before` the damage that reached the passive and `ally` whether the attacker is of the body's side: a lightning
-## hit on a Lightning Charge body charges it f · before frames and leaves a quarter.
-## Ref: sacengine state.d:9017-9022.
+## Multiplier on the damage the body takes at relative health `health_fraction` (before the hit).
+## `mods` are the hit's DamageMod bits, `before` the damage that reached the passive and `ally`
+## whether the attacker is of the body's side: a lightning hit on a charged body charges it and
+## leaves a quarter.
 func incoming_factor(health_fraction: float, mods := 0, before := 0.0, ally := false) -> float:
-	var passive := active()
-	var factor := passive.incoming(health_fraction) if passive else 1.0
-	var lightning := _charge()
-	if lightning != null and mods & Health.LIGHTNING != 0:
-		factor *= lightning.absorb(before, ally)
+	var factor := incoming(health_fraction)
+	if charge != null and mods & Health.LIGHTNING != 0:
+		factor *= charge.absorb(before, ally)
 	return factor
 
 
 ## Multiplier on the melee damage the body deals at relative health `health_fraction`.
 func outgoing_melee_factor(health_fraction: float) -> float:
-	var passive := active()
-	var lightning := _charge()
-	return (passive.outgoing_melee(health_fraction) if passive else 1.0) * (lightning.melee_factor() if lightning else 1.0)
+	return outgoing_melee(health_fraction) * (charge.melee_factor() if charge else 1.0)
 
 
-## F130: ×1.5 on the body's melee accuracy while its Lightning Charge is on (dealMeleeDamage).
-## Ref: sacengine state.d:9237.
+## ×1.5 on the body's melee accuracy while its Lightning Charge is on.
 func melee_accuracy_factor() -> float:
-	var lightning := _charge()
-	return lightning.melee_factor() if lightning else 1.0
+	return charge.melee_factor() if charge else 1.0
 
 
-## The Lightning Charge, when the body's passive is its (the other bodies carry the node and ignore it).
-func _charge() -> LightningCharge:
-	if charge == null or body == null or body.type == null or not body.type.has_passive(charge.passive):
-		return null
-	return charge
+## The incoming knob alone at relative health `health_fraction` (clamped to 0..1); never below 0.
+func incoming(health_fraction: float) -> float:
+	return maxf(0.0, incoming_base + incoming_per_health * clampf(health_fraction, 0.0, 1.0))
 
 
-## The resource of the body's passive, or null.
-func active() -> DamagePassiveType:
-	var ability: AbilityType = body.type.on_damage if body != null and body.type != null else null
-	if ability != _cached_for:
-		_cached_for = ability
-		_cached = null
-		for candidate in types:
-			if candidate != null and ability != null and candidate.ability == ability:
-				_cached = candidate
-				break
-	return _cached
+## The outgoing knob alone at relative health `health_fraction` (clamped to 0..1); never below 0.
+func outgoing_melee(health_fraction: float) -> float:
+	return maxf(0.0, 1.0 + outgoing_melee_per_missing * (1.0 - clampf(health_fraction, 0.0, 1.0)))

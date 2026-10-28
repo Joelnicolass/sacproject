@@ -8,6 +8,8 @@ extends Node3D
 ## The scene never points at its creature's type, never carries a synchronizer, and never loads a sound or a model: its `Look` is an
 ## instance placeholder of `<name>_look.tscn`, the appearance (model, sounds), and only a client builds it (BodyMount).
 ## Each creature has `scenes/units/bodies/<name>.tscn`, each wizard `scenes/wizards/bodies/<name>.tscn`.
+## A creature with passives (the Firefist's fury, the Phoenix's shield) has a `Passives` child: an instance of `<name>_passives.tscn`,
+## whose nodes carry the numbers in the inspector.
 
 ## The model id that travels in the network packets (what the original calls the body); read only, the tool writes it.
 @export var model_id := ""
@@ -32,6 +34,9 @@ extends Node3D
 ## The appearance (model, sounds) hangs here, as an instance placeholder of the `<name>_look.tscn` next to this scene (the editor
 ## draws it; a game only loads it when a client asks). Do not override anything on it: an override would load with this scene.
 @export var look: Node
+## What the creature always has (UnitPassive nodes): an instance of `<name>_passives.tscn` next to this scene, or empty for none.
+## Edit the numbers in that scene: the game builds it on its own, so changes made to it here are not used.
+@export var passives: Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -52,6 +57,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("`look` tiene que cargarse como placeholder (clic derecho › Cargar como placeholder): si no, el servidor carga el modelo y los sonidos.")
 	if model_id.is_empty():
 		warnings.append("`model_id` vacío: el cable no sabría qué modelo dibujar.")
+	if passives != null and passives.scene_file_path.is_empty():
+		warnings.append("`passives` must be the instance of <name>_passives.tscn.")
+	elif passives != null and is_editable_instance(passives):
+		warnings.append("Changes to `Passives` made in this scene are not used: edit the numbers in <name>_passives.tscn.")
 	return warnings
 
 

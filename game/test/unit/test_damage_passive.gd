@@ -1,9 +1,9 @@
 extends GutTest
-## DamagePassiveType: incoming and melee factors as linear functions of the relative health h.
+## DamagePassive: incoming and melee factors as linear functions of the relative health h.
 
 
-func _passive(base: float, per_health: float, per_missing: float) -> DamagePassiveType:
-	var passive := DamagePassiveType.new()
+func _passive(base: float, per_health: float, per_missing: float) -> DamagePassive:
+	var passive: DamagePassive = autofree(DamagePassive.new())
 	passive.incoming_base = base
 	passive.incoming_per_health = per_health
 	passive.outgoing_melee_per_missing = per_missing
@@ -11,7 +11,7 @@ func _passive(base: float, per_health: float, per_missing: float) -> DamagePassi
 
 
 func test_defaults_change_nothing() -> void:
-	var passive := DamagePassiveType.new()
+	var passive: DamagePassive = autofree(DamagePassive.new())
 	assert_eq(passive.incoming(0.3), 1.0)
 	assert_eq(passive.outgoing_melee(0.3), 1.0)
 

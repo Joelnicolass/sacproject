@@ -1,5 +1,5 @@
 class_name FireShield
-extends Node
+extends UnitPassive
 
 ## The Phoenix's Shield (rifl, its passiveOnDamage), called
 ## every frame from updateCreatureStats. A body that can shield (canShield: not dying, dead,
@@ -8,18 +8,13 @@ extends Node
 ## dealFireDamage(0, amount / 60, …, peirceShield), i.e. a direct spell hit that skips the Life Shield / Rockform / petrified
 ## factors (Health.damage_typed, pierce_shield) plus three fire particles. If it burned someone it drains the mana cost
 ## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched (movingObjectById).
-## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.on_damage is `passive`, so the other
-## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (`fire_fx`
-## at the burned body's `fire_socket` every `fire_every_s`); the shield ticks only on a carrier (the node sleeps on the rest).
+## A node of the Phoenix's `phoenix_passives.tscn`: only a creature that has it burns. Server (or solo) only. Divergence (declared):
+## the particles are the reserve look (`fire_fx` at the burned body's `fire_socket` every `fire_every_s`).
 ## Ref: F163 (RFC-030 030w-f), sacengine runPhoenixPassive state.d:13899-13919, updateCreatureStats runPassive 13921-13931, canShield 218-225.
 
 
 const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
-## The Phoenix. Empty = the parent.
-@export var body: Node3D
-@export var health: Health
-@export var mana: ManaPool
 ## The passive (data/catalog/abilities/rifl.tres): its numbers give the mana cost.
 @export var passive: AbilityType
 ## The fire it ignites with (data/catalog/spells/mrff.tres, fireform): the spell's amount, per second.
@@ -33,42 +28,26 @@ const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 ## Where on the burned body the fire comes out.
 @export var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
-var _carrier := false
+## The Phoenix's health and mana (set by attach).
+var health: Health
+var mana: ManaPool
+
 var _burn_ticks := {}
 var _allies_seen := {}
 
 
+func attach(mount: PassiveMount) -> void:
+	super(mount)
+	health = mount.health
+	mana = mount.mana
+
+
 func _ready() -> void:
-	set_physics_process(false)
-	if body == null:
-		body = get_parent() as Node3D
-	if health == null and body != null:
-		health = body.get_node_or_null("Health") as Health
-	if mana == null and body != null:
-		mana = body.get_node_or_null("ManaPool") as ManaPool
-	# The type may not be set yet (children are ready before the parent): asked again when the body gets its model, and once the
-	# frame's setup is over. Only a carrier of the passive ticks.
-	if body != null and body.has_signal("model_changed"):
-		body.connect("model_changed", _refresh)
-	_refresh()
-	_refresh.call_deferred()
-
-
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if body == null:
-		warnings.append("Falta el cuerpo (body).")
-	return warnings
-
-
-## Turns the tick on for a carrier of the passive and off for everyone else.
-func _refresh() -> void:
-	_carrier = _carries()
-	set_physics_process(_carrier and is_multiplayer_authority())
+	set_physics_process(is_multiplayer_authority())
 
 
 func _physics_process(_delta: float) -> void:
-	if not _carrier or not _can_shield():
+	if not _can_shield():
 		return
 	var cost := _mana_cost()
 	if cost > 0.0 and (mana == null or mana.current < cost):
@@ -149,11 +128,6 @@ func _slot(node: Node) -> int:
 
 func _mana_cost() -> float:
 	return float(passive.mana_cost) if passive != null else 0.0
-
-
-func _carries() -> bool:
-	var type: CreatureType = body.get("type") as CreatureType if body != null and "type" in body else null
-	return type != null and type.has_passive(passive)
 
 
 ## canShield: stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,

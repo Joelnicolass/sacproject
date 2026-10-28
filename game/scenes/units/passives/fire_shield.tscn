@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/catalog/spells/mrff.tres" id="typed_fire"]
 
 [node name="FireShield" type="Node"]
-editor_description = "F163 (RFC-030 030w-f): el Escudo del Phoenix (rifl), runPhoenixPassive de sacengine. Cada tick, si el cuerpo lleva la pasiva, quema (hechizo directo mrff.amount/60, atravesando escudos) a todo cuerpo móvil que no es aliado y cuya caja toca la propia ×1,5; el maná se toca solo si el SPEL pide (rifl: 0). Edificios no. El padre asigna body, health y mana; los demás cuerpos lo llevan y lo ignoran."
+editor_description = "The Phoenix's shield: every tick it burns (a direct spell hit of the fire spell's amount / 60 that pierces shields) every moving body that is not an ally and whose box meets its own ×1.5; mana is spent only if the passive asks for it. Buildings are not touched. Drop it in a creature's <name>_passives.tscn."
 script = ExtResource("1_shield")
 fire = ExtResource("typed_fire")
 passive = ExtResource("typed_passive")

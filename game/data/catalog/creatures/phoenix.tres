@@ -4,8 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://dxjogj4b33ybh" path="res://assets/original/ui/icons/grdr.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/rdra.tres" id="typed_rdra"]
 [ext_resource type="Resource" path="res://data/catalog/abilities/rifl.tres" id="typed_rifl"]
-[ext_resource type="Script" path="res://scenes/units/passives/creature_passive.gd" id="typed_passive_script"]
-[ext_resource type="Resource" path="res://data/death_clouds/cog_cloud.tres" id="typed_passive_0"]
 [ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/phoenix_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://scenes/units/bodies/phoenix.tscn" id="body_scene"]
 
@@ -39,4 +37,3 @@ book_level = 9
 book_slot = 86
 ranged_attack = ExtResource("typed_rdra")
 on_damage = ExtResource("typed_rifl")
-passives = Array[ExtResource("typed_passive_script")]([ExtResource("typed_passive_0")])

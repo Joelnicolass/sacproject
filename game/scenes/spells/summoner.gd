@@ -46,6 +46,9 @@ const NO_SOULS := Refusal.NO_SOULS
 @export var clear_half_height := 10.0
 @export var blocker_groups: PackedStringArray = PackedStringArray(["unit", "wizard"])
 @export_flags_3d_physics var ground_mask := 1
+## A spot more than this (m) above the land is on top of something (a tower, a roof): the creature
+## would be born up there, so the spot is skipped.
+@export_range(0.0, 5.0, 0.1, "suffix:m") var max_above_land_m := 0.5
 ## Played on the creature when it appears. Empty = no burst.
 @export var summon_fx: ParticleType = preload("res://data/fx/summon.tres")
 ## Where on the new creature's body the burst plays.
@@ -131,6 +134,8 @@ func _ground_at(at: Vector3) -> Variant:
 
 
 func _is_clear(spot: Vector3) -> bool:
+	if spot.y - SacrificeGround.height(wizard, spot) > max_above_land_m:
+		return false
 	for group in blocker_groups:
 		for node in get_tree().get_nodes_in_group(group):
 			if not node is Node3D or (node as Node).is_in_group(Corpse.GROUP):

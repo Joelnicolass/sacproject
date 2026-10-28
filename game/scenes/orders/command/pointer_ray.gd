@@ -45,6 +45,13 @@ func action_pointer() -> Vector2:
 	return get_viewport().get_visible_rect().size * 0.5
 
 
+## Where the pointer is now: the camera's debug pointer when a flow set it, else the mouse.
+func pointer_now() -> Vector2:
+	if _camera != null and _camera.debug_pointer.x >= 0.0:
+		return _camera.debug_pointer
+	return get_viewport().get_mouse_position()
+
+
 func camera_yaw() -> float:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:

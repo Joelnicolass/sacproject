@@ -108,6 +108,9 @@
 [ext_resource type="Script" uid="uid://c14fmfa8dkqog" path="res://scenes/match/match_sky.gd" id="q12_sky"]
 [ext_resource type="Script" uid="uid://bju6gwfi4b7v1" path="res://scenes/map/side_relations.gd" id="q12_sides"]
 [ext_resource type="Script" uid="uid://bq1r40x83hhlr" path="res://scenes/units/vision/vision_sides.gd" id="q13_vision"]
+[ext_resource type="Script" path="res://scenes/orders/command/spell_aim.gd" id="aim_script"]
+[ext_resource type="Texture2D" path="res://assets/custom/ui/aim_area.png" id="aim_area_tex"]
+[ext_resource type="Texture2D" path="res://assets/custom/ui/aim_range.png" id="aim_range_tex"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -429,6 +432,34 @@ ray = NodePath("../PointerRay")
 spells = NodePath("../SpellCommand")
 abilities = NodePath("../AbilityCommand")
 orders = NodePath("../OrderCommand")
+
+[node name="SpellAim" type="Node3D" parent="Input/MatchCommand" node_paths=PackedStringArray("armed", "ray", "area", "range_ring")]
+editor_description = "With a spell armed, the ring of its area at the pointer (SpellType.aim_radius: the damage radius unless aim_radius_m says otherwise; no area = a small mark), blue within reach and red out of it, and the ring of its cast range around the wizard. Decals on the land; local only, it decides nothing."
+script = ExtResource("aim_script")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+area = NodePath("Area")
+range_ring = NodePath("Range")
+
+[node name="Area" type="Decal" parent="Input/MatchCommand/SpellAim"]
+visible = false
+size = Vector3(10, 60, 10)
+texture_albedo = ExtResource("aim_area_tex")
+texture_emission = ExtResource("aim_area_tex")
+emission_energy = 1.5
+upper_fade = 0.05
+lower_fade = 0.05
+normal_fade = 0.5
+
+[node name="Range" type="Decal" parent="Input/MatchCommand/SpellAim"]
+visible = false
+size = Vector3(200, 60, 200)
+texture_albedo = ExtResource("aim_range_tex")
+texture_emission = ExtResource("aim_range_tex")
+emission_energy = 0.8
+upper_fade = 0.05
+lower_fade = 0.05
+normal_fade = 0.5
 
 [node name="ArmedPreview" type="Node" parent="Input/MatchCommand" node_paths=PackedStringArray("armed", "ray", "probe")]
 editor_description = "Con una estructura armada, 15 veces por segundo pregunta al Caster local qué respondería un clic en el puntero (aim_for) y lo deja en %Battle (aim_status, aim_site); prende el anillo del manantial en verde o rojo. Local, sin RPC. Sacalo y queda solo el parpadeo después del clic."

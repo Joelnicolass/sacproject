@@ -30,3 +30,4 @@ ai_use = 4
 ai_phase = 1
 ai_worth = 500
 structures = PackedStringArray()
+aim_radius_m = 50.0

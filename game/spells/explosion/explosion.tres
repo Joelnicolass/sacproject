@@ -16,6 +16,7 @@ casting_time_s = 1.9753
 book_level = 5
 book_slot = 57
 damage = 600
+aim_radius_m = 20.0
 damage_range_m = 10.0
 effect_range_m = 20.0
 action = ExtResource("2_action")

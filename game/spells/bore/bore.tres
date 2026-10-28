@@ -23,3 +23,4 @@ action = ExtResource("2_action")
 targets_ground = true
 ai_worth = 10000
 structures = PackedStringArray()
+aim_radius_m = 50.0

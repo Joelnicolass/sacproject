@@ -98,7 +98,7 @@ func _ready() -> void:
 		# changes nothing for good.
 		terrain.kept.connect(_on_ground_kept)
 	if structures != null:
-		structures.child_entered_tree.connect(_on_structure_changed.unbind(1))
+		structures.child_entered_tree.connect(_on_structure_entered)
 		structures.child_exiting_tree.connect(_on_structure_changed.unbind(1))
 	if build_on_ready:
 		build.call_deferred()
@@ -122,6 +122,20 @@ func _physics_process(_delta: float) -> void:
 func _on_structure_changed() -> void:
 	if is_ready():
 		_rebuild_in = rebuild_delay_frames
+
+
+## A tower is born rising, with its collision off (it blocks nothing yet): the navmesh is baked
+## again when it stands, or a doctor walks into its trunk forever.
+func _on_structure_entered(node: Node) -> void:
+	_on_structure_changed()
+	var tower := node as CastTower
+	if tower != null and not tower.build_progress_changed.is_connected(_on_tower_progress):
+		tower.build_progress_changed.connect(_on_tower_progress)
+
+
+func _on_tower_progress(progress: float) -> void:
+	if progress >= 1.0:
+		_on_structure_changed()
 
 
 func _exit_tree() -> void:
@@ -429,6 +443,10 @@ func _collect_blockers(groups: PackedStringArray, with_built: bool) -> Array:
 
 
 func _collect(node: Node3D, discs: Array, depth: int) -> void:
+	# A body whose collision is off (a tower still rising) stops nothing: it is no blocker until it
+	# is on.
+	if node is PhysicsBody3D and (node as PhysicsBody3D).collision_layer == 0:
+		return
 	for child in node.get_children():
 		if child is CollisionShape3D:
 			var shape_node := child as CollisionShape3D

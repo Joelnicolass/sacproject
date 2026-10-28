@@ -33,7 +33,9 @@ func test_bonus_stops_at_five_levels() -> void:
 
 func test_basilisk_casts_in_nineteen_twentieths() -> void:
 	# 162 frames * 19 / 20 = 153 frames, even with no level bonus.
-	assert_almost_eq(CastTime.seconds(_creature(2.0, 1, "guls"), 1), 153.0 / 81.0, 1e-6)
+	var basilisk := _creature(2.0, 1)
+	basilisk.cast_time_factor = 0.95
+	assert_almost_eq(CastTime.seconds(basilisk, 1), 153.0 / 81.0, 1e-6)
 
 
 func test_frames_rounds_the_seconds() -> void:

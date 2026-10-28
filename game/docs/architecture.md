@@ -121,7 +121,7 @@ share most components and add `Spellbook`, `Caster`, `Summoner`, `SoulPurse`, `G
 - Game-specific glue lives in `scenes/net/`: `MatchWire` (ids ↔ resources on the wire), `PickBoard` (picks by seat),
   `BiomeLink`, `MatchStateNet`, launch flags and tickets.
 - **«Salas online»:** a player hosts a room; others join with its code or from the public list. Rooms are found through
-  the issuer in `data/net/online_config.tres`, and players connect through its relay (`scenes/ui/online/`).
+  the issuer URL in `config.cfg` (base64url), and players connect through its relay (`scenes/ui/online/`).
 - **«Servidor local»:** the player's PC runs one dedicated match of the same game and gives the rival an address and a
   code (`scenes/net/local_server_host.gd`, `scenes/ui/local_server/`). See [`servidor_local.en.md`](servidor_local.en.md).
 - A dedicated server is the same binary with `--dedicated`; it draws nothing and plays no sound.

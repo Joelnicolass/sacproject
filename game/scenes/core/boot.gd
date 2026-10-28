@@ -34,10 +34,10 @@ func _ready() -> void:
 	%VsAi.pressed.connect(_on_vs_ai)
 	_fill_ai_levels()
 	%Join.pressed.connect(_on_join)
-	# «Salas online»: rooms the players host through the issuer (scenes/ui/online/; the issuer is in
-	# data/net/online_config.tres), or the room-server lobby when
-	# `SacrificeFlow.room_server_enabled` is on. The field for an IP and «Unirse» (direct to a
-	# dedicated or a LAN host) stay only in debug builds.
+	# «Salas online»: rooms the players host through the issuer (scenes/ui/online/; the issuer
+	# is in config.cfg), or the room-server lobby when `SacrificeFlow.room_server_enabled` is
+	# on. The field for an IP and «Unirse» (direct to a dedicated or a LAN host) stay only in
+	# debug builds.
 	%Online.pressed.connect(_on_online)
 	# «Servidor local» is a door of its own (create on this PC / join an address), visible in every
 	# build.

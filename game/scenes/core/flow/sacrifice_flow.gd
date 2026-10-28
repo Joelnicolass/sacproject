@@ -55,6 +55,7 @@ var _cli_setup := MatchSetup.new()
 
 
 func _ready() -> void:
+	GameSettings.apply_version()
 	pick = default_pick.duplicate() as WizardPick
 	boot_path = "res://scenes/core/boot.tscn"
 	# `--world=res://<scene>.tscn` on the dedicated and its clients plays another world scene

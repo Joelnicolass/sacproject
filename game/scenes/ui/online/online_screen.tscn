@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/online/online_screen.gd" id="1_screen"]
 [ext_resource type="PackedScene" path="res://scenes/ui/online/online_host_view.tscn" id="2_host"]
 [ext_resource type="PackedScene" path="res://scenes/ui/online/online_join_view.tscn" id="3_join"]
 [ext_resource type="Script" path="res://scenes/net/online_network.gd" id="4_network"]
-[ext_resource type="Resource" path="res://data/net/online_config.tres" id="5_config"]
 
 [node name="OnlineScreen" type="Control"]
 layout_mode = 3
@@ -91,6 +90,5 @@ autowrap_mode = 3
 
 [node name="OnlineNetwork" type="Node" parent="."]
 unique_name_in_owner = true
-editor_description = "The issuer of the online rooms (data/net/online_config.tres: issuer_url and game_id). The --issuer-url and --issuer-game flags override it."
+editor_description = "The issuer of the online rooms: its URL and game id are in config.cfg ([online]). The --issuer-url and --issuer-game flags override them."
 script = ExtResource("4_network")
-config = ExtResource("5_config")

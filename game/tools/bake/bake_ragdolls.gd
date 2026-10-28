@@ -14,7 +14,6 @@ extends SceneTree
 ## failed.
 
 
-
 func _init() -> void:
 	var names: Array[String] = []
 	var skip: Array[String] = []

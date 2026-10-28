@@ -1,5 +1,7 @@
 # Rules
 
+> **2026-10-28:** superseded by [`CONTRIBUTING.md`](CONTRIBUTING.md), which follows the official Godot standards. Where this file disagrees with it, `CONTRIBUTING.md` wins. Kept as reference while the code is migrated (branch `refactor/godot-standard`).
+
 Producto: juego Godot 4. Checks de web, SQL, auth y negocio: no aplican.
 
 ## Stack

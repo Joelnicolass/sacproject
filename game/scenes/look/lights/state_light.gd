@@ -32,6 +32,10 @@ var _applied := false
 var _started := false
 
 
+func is_glow() -> bool:
+	return true
+
+
 func _ready() -> void:
 	super()
 	if is_queued_for_deletion():

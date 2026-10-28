@@ -20,6 +20,11 @@ const GROUP := &"actor_light_budget"
 ## Closer than this to the camera counts as this distance in the score (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_distance_m: float = 4.0
 
+## The glows of spells, zones and states (StateLight) times these: the look of the whole game, where
+## everything glows. The units' and wizards' own lights are not scaled.
+@export_range(0.1, 6.0, 0.05) var state_energy_scale: float = 1.0
+@export_range(0.5, 4.0, 0.05) var state_range_scale: float = 1.0
+
 ## The atmosphere whose `night` dims the lights (0 = day, 1 = full night); empty = they keep their
 ## energy.
 @export var atmosphere: Atmosphere
@@ -40,6 +45,8 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(GROUP)
+	for light in get_tree().get_nodes_in_group(ActorLight.GROUP):
+		scale_light(light as ActorLight)
 	if _max_lights < 0:
 		_max_lights = fallback_max_lights
 	visibility_changed.connect(rank)
@@ -68,6 +75,13 @@ func _process(delta: float) -> void:
 ## The atmosphere's night now (0 when there is no atmosphere).
 func night() -> float:
 	return _night
+
+
+## Gives `light` the look's scale for its kind (ActorLight calls it when it is ready; the lights
+## already in the tree get it in _ready).
+func scale_light(light: ActorLight) -> void:
+	if light.is_glow():
+		light.set_look_scale(state_energy_scale, state_range_scale)
 
 
 func _on_atmosphere(sample: AtmosphereSample) -> void:

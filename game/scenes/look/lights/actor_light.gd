@@ -30,6 +30,9 @@ const GROUP := &"actor_lights"
 var _lit := true
 var _budget_on := true
 var _full_energy := 1.0
+## The scene's energy and range, before the budget's scale for this kind of light.
+var _own_energy := -1.0
+var _own_range := -1.0
 ## The three factors of `light_energy` (see _apply_energy): fade in/out, the level a caller asked
 ## for, the atmosphere's night 0..1.
 var _fade_k := 1.0
@@ -49,6 +52,7 @@ func _ready() -> void:
 	var budget := get_tree().get_first_node_in_group(ActorLightBudget.GROUP) as ActorLightBudget
 	if budget != null:
 		_night = budget.night()
+		budget.scale_light(self)
 	add_to_group(GROUP)
 	_apply_energy()
 	_refresh()
@@ -115,6 +119,22 @@ func _on_faded_out() -> void:
 
 func _set_fade(k: float) -> void:
 	_fade_k = k
+	_apply_energy()
+
+
+## A glow of a spell, a zone or a state (StateLight), scaled by the budget's state scales.
+func is_glow() -> bool:
+	return false
+
+
+## The scene's energy and range times `energy_k` and `range_k` (the look's scale for this kind of
+## light, from ActorLightBudget). Idempotent: always from the scene's own values.
+func set_look_scale(energy_k: float, range_k: float) -> void:
+	if _own_energy < 0.0:
+		_own_energy = _full_energy
+		_own_range = omni_range
+	_full_energy = _own_energy * energy_k
+	omni_range = _own_range * range_k
 	_apply_energy()
 
 

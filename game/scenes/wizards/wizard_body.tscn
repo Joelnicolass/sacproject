@@ -229,7 +229,7 @@ mount = NodePath("../../BodyMount")
 [node name="Light" parent="." instance=ExtResource("f055_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
 always_on = true
-night_energy = 0.4
+night_energy = 0.25
 light_color = Color(1, 1, 1, 1)
 light_energy = 8.0
 light_specular = 0.0

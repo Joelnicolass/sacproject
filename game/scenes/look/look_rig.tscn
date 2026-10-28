@@ -65,6 +65,8 @@ rig = NodePath("../..")
 [node name="ActorLights" type="Node3D" parent="Layers" node_paths=PackedStringArray("atmosphere")]
 atmosphere = NodePath("../Atmosphere")
 script = ExtResource("11_budget")
+state_energy_scale = 2.0
+state_range_scale = 1.4
 
 [node name="TerrainDeform" type="Node3D" parent="Layers" node_paths=PackedStringArray("rig")]
 editor_description = "Tells the ground shader how far the land moved (global texture terrain_deform_map). With nothing to move it costs nothing."

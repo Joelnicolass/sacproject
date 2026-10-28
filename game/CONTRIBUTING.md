@@ -61,10 +61,32 @@ A developer should guess where a thing lives and change it by opening one or two
 - A required `@export` that is empty shows a warning in the editor (`_get_configuration_warnings`) **and** fails loudly at
   runtime (`push_error`), never silently.
 
+## 2b. Communication and patterns
+
+Use the proven Godot patterns, and only these, so a developer recognises them on sight.
+
+| Need | Pattern | How |
+|---|---|---|
+| A node tells "something happened" | **Signals (observer)** | Declare a typed signal in past tense (`signal died(by: GameBody)`). Whoever cares connects; the emitter never knows who listens |
+| A child reports to its owner | **Signal up, call down** | Children emit, parents call methods on their children. A child never calls its parent |
+| Systems that do not know each other (combat ↔ HUD ↔ audio ↔ AI) | **Event bus** | One autoload `Events` (`scenes/core/events.gd`) with only typed `signal` declarations for game-wide events (`unit_died`, `spell_cast`, `soul_collected`, `match_ended`). No state, no methods. Emit from the owner of the fact; listen anywhere. Local events stay as plain signals: the bus is for cross-system events only |
+| An entity with modes (idle, walk, attack, dead) | **State machine** | `FsmKit`: `FsmMachine` with one `FsmState` child per state. No `match mode:` blocks spread over a script |
+| A behaviour shared by many entities | **Component** | A child node with its own script and exports (`Health`, `ManaPool`). The entity is the sum of its components |
+| An order the player or the AI gives | **Command** | One small object or method per order (`move`, `attack`, `cast`), queued and executed by `Orders`. The same path for the player, the AI and the network |
+| Many short-lived objects (shots, particles, sounds) | **Object pool** | The owning bus (`FxBus`, `SoundBus`, a spawner) reuses instances. Callers ask the pool and never `queue_free` pooled objects |
+| Types and tuning shared by many instances | **Resource as data** | A `Resource` script with typed exports (`CreatureType`, `SpellType`). Only when shared (rule 0) |
+| Creating entities | **Spawner (factory)** | One node per kind (`UnitSpawner`, `ShotSpawner`) instantiates the scene, sets it up and adds it. On the network it is a `MultiplayerSpawner` |
+
+- **Connect in the editor** (the Node › Signals panel) when both ends are in the same scene. Connect in code in `_ready`
+  when one end is created at runtime. Never connect by method name strings (`connect("x", obj, "method")`).
+- A signal carries typed arguments; listeners do not reach back into the emitter to find what happened.
+- Do not invent other patterns (registries, service locators, managers of managers). If one of the above does not fit, write
+  the simplest direct code.
+
 ## 3. Autoloads and global state
 
 - An autoload is for a service that owns its own state for the whole game: `SacrificeFlow` (menu ↔ match), `SoundBus`,
-  `FxBus`, the network kit. Nothing else.
+  `FxBus`, the network kit, and the `Events` bus (signals only). Nothing else.
 - Development tools are not autoloads of the shipped game.
 - State that belongs to one match lives in a node of the match scene, not in `static var`.
 - `static func` libraries (`class_name X extends RefCounted`) are fine for **pure** rules and math (`CastTime`, `DeathRules`).

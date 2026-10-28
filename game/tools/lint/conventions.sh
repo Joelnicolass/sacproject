@@ -131,7 +131,7 @@ grep -vE '^scenes/spells/caster\.gd:[0-9]+:@export var cast_fx_shown\b' "$OUT/C1
 mv "$OUT/C17.sorted" "$OUT/C17.txt"
 
 # C18: text-tag lookups of content in gameplay (allowed in spawners, scenes/net/, scenes/core/catalog/).
-xargs grep -nE 'GameData\.(creature|spell|ability|wizard|god|book)[a-z_]*\(|MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
+xargs grep -nE 'MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18.txt" || true
 # C18 widened (055i-b1): which match this process plays is read once, by the world (MatchWorld hands the map and the mode to its

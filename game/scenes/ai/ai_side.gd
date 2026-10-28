@@ -103,7 +103,7 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	clock.job_due.connect(_run_job)
 	# A creature the side summons, or a structure it builds (a Manalith), is one of its own bodies
 	# from the moment it stands.
-	for parent: Node in [world.get_node_or_null("%Units"), world.get_node_or_null("Structures")]:
+	for parent: Node in [world.get_node_or_null("%Units"), world.get_node_or_null("%Structures")]:
 		if parent != null:
 			parent.child_entered_tree.connect(_on_unit_entered)
 

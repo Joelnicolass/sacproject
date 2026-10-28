@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/local_server/local_host_view.gd" id="1_host"]
 [ext_resource type="PackedScene" path="res://scenes/net/local_server_host.tscn" id="2_server"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/local_server/local_seat_row.tscn" id="5_seat_row"]
 [ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="6_biome_picker"]
 
+[ext_resource type="Script" path="res://scenes/ui/sky_picker/hour_picker.gd" id="sky_hour_picker"]
+[ext_resource type="PackedScene" path="res://scenes/ui/sky_picker/weather_picker.tscn" id="sky_weather_picker"]
 [node name="LocalHostView" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -63,6 +65,15 @@ mode_picker = NodePath("../HostMode")
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("6_biome_picker")
+
+[node name="HostHour" type="OptionButton" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("sky_hour_picker")
+
+[node name="HostWeather" parent="Column/HostForm" instance=ExtResource("sky_weather_picker")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="HostSeats" type="VBoxContainer" parent="Column/HostForm"]
 theme_type_variation = &"VBoxList"

@@ -28,6 +28,10 @@ extends Resource
 ## 0: random seed per match. Otherwise BiomeRules.pick_god(biome_seed, gods). With a match_seed
 ## and biome_seed 0 the biome follows the match seed (MatchSeed.derive).
 @export var biome_seed: int = 0
+## Pins the hour of the match (0..24; 11 day, 0 night). -1: the land's own clock.
+@export_range(-1.0, 24.0, 0.25) var sky_hour: float = -1.0
+## Forces the weather of the match. Empty: the land's weather plan.
+@export var weather: WeatherState
 ## 0: the match draws one and prints `seed <n>`. Otherwise every source of
 ## chance (bodies, ghosts, separation ties, biome) derives from it, see MatchSeed.
 @export var match_seed: int = 0

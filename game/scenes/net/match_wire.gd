@@ -6,8 +6,11 @@ extends RefCounted
 ## of a room. Screens and gameplay hold `WizardPick` / `GodType` / `MapDefinition` / `GameMode`;
 ## only this file (and the catalogs) knows that the wire says `cwa1`, `persephone`, `high_noon` and
 ## `1v1`. The wire is the same text as always: a pick is {"wizard", "model", "god"}, in that order.
+## A weather is the name of its file in WEATHER_DIR (`rain`, `storm`).
 ## It does not talk to the network and it does not decide who may pick: SacrificeFlow and
 ## SacrificeRoomRules do.
+
+const WEATHER_DIR := "res://scenes/look/weather/"
 
 
 ## {"wizard": id, "model": model, "god": id} of a complete pick. The model is derived from the
@@ -150,6 +153,10 @@ static func options_of(setup: MatchSetup) -> Dictionary:
 		out["biome"] = setup.biome.id()
 	if setup.level > 0:
 		out["level"] = setup.level
+	if setup.sky_hour >= 0.0:
+		out["sky_hour"] = setup.sky_hour
+	if setup.weather != null:
+		out["weather"] = encode_weather(setup.weather)
 	return out
 
 
@@ -170,3 +177,20 @@ static func map_in(options: Dictionary) -> MapDefinition:
 ## The god whose land the options of a room name; null = drawn.
 static func land_in(options: Dictionary) -> GodType:
 	return decode_god(str(options.get("biome", "")))
+
+
+## The wire id of a weather (its file name); empty = none forced.
+static func encode_weather(weather: WeatherState) -> String:
+	if weather == null or not weather.resource_path.begins_with(WEATHER_DIR):
+		return ""
+	return weather.resource_path.get_file().get_basename()
+
+
+## The weather with that id, or null (empty, not a plain name, or no WeatherState there).
+static func decode_weather(id: String) -> WeatherState:
+	if id.is_empty() or not id.is_valid_ascii_identifier():
+		return null
+	var path := WEATHER_DIR + id + ".tres"
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as WeatherState

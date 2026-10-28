@@ -128,19 +128,23 @@ func publish() -> void:
 
 
 func _sample_now() -> AtmosphereSample:
-	if (_cycle == null and _plan == null) or not is_visible_in_tree():
+	# The match may pin the hour and force the weather (MatchSky): a land with no day of its own
+	# then takes the default one.
+	var cycle := MatchSky.day_of(_cycle)
+	var forced: WeatherState = preview_weather if preview_weather else MatchSky.weather()
+	if (cycle == null and _plan == null and forced == null) or not is_visible_in_tree():
 		_weather.quiet()
 		return AtmosphereSample.neutral()
 	var pin := frozen_hour
 	if Engine.is_editor_hint():
-		pin = preview_hour if preview_hour >= 0.0 else (_cycle.start_hour if _cycle else -1.0)
+		pin = preview_hour if preview_hour >= 0.0 else (cycle.start_hour if cycle else -1.0)
 	var t := now_s()
-	var day := _time.sample_at(_cycle, t * time_scale, pin)
+	var day := _time.sample_at(cycle, t * time_scale, pin)
 	day.moon = AtmosphereRules.is_moon(_sun_elevation_deg, day)
 	var plan: WeatherPlan = (
 		null if Engine.is_editor_hint() else (plan_override if plan_override else _plan)
 	)
-	var sample := AtmosphereSample.mix(day, _weather.advance(plan, sky_seed(), t, preview_weather))
+	var sample := AtmosphereSample.mix(day, _weather.advance(plan, sky_seed(), t, forced))
 	return sample.as_neutral() if sample.is_neutral(1e-4) else sample
 
 

@@ -163,6 +163,8 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 	setup.map = MatchWire.decode_map(str(ticket.get("world", "")))
 	setup.mode = MatchWire.decode_mode(str(ticket.get("mode", "")))
 	setup.biome = MatchWire.decode_god(str(options.get("biome", "")))
+	setup.sky_hour = float(options.get("sky_hour", -1.0))
+	setup.weather = MatchWire.decode_weather(str(options.get("weather", "")))
 	return setup
 
 

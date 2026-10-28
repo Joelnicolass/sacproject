@@ -1,7 +1,7 @@
 class_name HazeLayer
 extends Node3D
 
-## The air between the camera and the land: a ground mist and the sun's shafts. `mist` is a
+## The air between the camera and the land: a ground mist and the sun's god rays. `mist` is a
 ## FogVolume laid over the whole map (Terrain.bounds), its floor following the land under the camera
 ## (the map has heights from the void to the peaks), thicker near the ground and broken into banks
 ## by its noise texture, tinted with the biome's fog colour and drifting with `wind_m_s`; the
@@ -15,8 +15,6 @@ extends Node3D
 @export var world_environment: WorldEnvironment
 @export var mist: FogVolume
 @export var god_rays: MeshInstance3D
-## Faked sun shafts hanging around the camera (LightShafts).
-@export var shafts: LightShafts
 ## How far (m) the mist box rises above the land under the camera; its density falls off toward
 ## the top.
 @export_range(5.0, 200.0, 1.0, "suffix:m") var mist_height_m := 6.0
@@ -26,8 +24,8 @@ extends Node3D
 @export var wind_m_s := Vector2(0.6, 0.25)
 ## How fast (m/s) the mist's floor follows the land under the camera.
 @export_range(0.5, 50.0, 0.5, "suffix:m/s") var follow_m_s := 6.0
-## The sun lights the shafts while its energy is above this (no shafts by night).
-@export_range(0.0, 2.0, 0.01) var rays_min_sun_energy := 0.2
+## The sun casts god rays while its energy is above this (none by night).
+@export_range(0.0, 2.0, 0.01) var rays_min_sun_energy := 0.4
 
 var _drift := Vector2.ZERO
 var _base := Vector3.ZERO
@@ -96,8 +94,6 @@ func _feed_rays() -> void:
 	if sun == null:
 		return
 	var lit := sun.visible and sun.light_energy >= rays_min_sun_energy
-	if shafts != null:
-		shafts.set_sun(sun.global_basis.z, sun.light_color, 1.0 if lit else 0.0)
 	if god_rays == null or _rays_material == null:
 		return
 	god_rays.visible = lit

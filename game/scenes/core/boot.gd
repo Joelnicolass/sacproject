@@ -93,6 +93,9 @@ func _setup(level: int) -> MatchSetup:
 	# The land of %BiomePicker (null = drawn from the seed; the authority of the match draws it and
 	# sends it to the clients).
 	setup.biome = (%BiomePicker as BiomePicker).selected_god()
+	# The hour and the weather of %Hour and %Weather (-1 / null = the land's own).
+	setup.sky_hour = (%Hour as HourPicker).selected_hour()
+	setup.weather = (%Weather as WeatherPicker).selected_weather()
 	return setup
 
 

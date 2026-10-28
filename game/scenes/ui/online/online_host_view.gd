@@ -34,6 +34,8 @@ func _on_create() -> void:
 	chosen.mode = (%HostMode as ModePicker).selected_mode()
 	chosen.map = (%HostMap as MapPicker).selected_map()
 	chosen.biome = (%HostBiome as BiomePicker).selected_god()
+	chosen.sky_hour = (%HostHour as HourPicker).selected_hour()
+	chosen.weather = (%HostWeather as WeatherPicker).selected_weather()
 	var room := (%RoomName as LineEdit).text.strip_edges()
 	_online = SacrificeFlow.host_online_room(
 		MatchWire.options_of(chosen), room, (%Listed as CheckBox).button_pressed

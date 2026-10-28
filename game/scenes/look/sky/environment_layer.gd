@@ -22,6 +22,7 @@ var _env: Environment
 var _sky: Sky
 var _sky_dresser := SkyDresser.new()
 var _watched: Array[Resource] = []
+var _sky_retry := false
 
 
 func _ready() -> void:
@@ -103,6 +104,17 @@ func _on_atmosphere_changed(_sample: AtmosphereSample) -> void:
 		_write_atmosphere(false)
 
 
+# The sky held a sample back (rate limit): dress it again once the limit allows, so the last change
+# always reaches the sky even when no other change follows.
+func _retry_sky(sky_hz: float) -> void:
+	if _sky_retry or not is_inside_tree():
+		return
+	_sky_retry = true
+	await get_tree().create_timer(1.0 / maxf(sky_hz, 0.1)).timeout
+	_sky_retry = false
+	_on_atmosphere_changed(null)
+
+
 ## The parts the atmosphere bends: fog and light every time; the sky at most `atmosphere.sky_hz`
 ## (its cubemap re-bakes).
 func _write_atmosphere(force_sky: bool) -> void:
@@ -110,14 +122,11 @@ func _write_atmosphere(force_sky: bool) -> void:
 	_write_fog(_profile.sky, sample)
 	if _profile.light:
 		_write_light(_profile.light, sample)
-	var moon := (
-		_profile.day.moon_dir_deg(_profile.light)
-		if _profile.day and _profile.light
-		else Vector2.ZERO
-	)
-	_sky_dresser.dress(
-		_sky, _profile.sky, sample, moon, atmosphere.sky_hz if atmosphere else 2.0, force_sky
-	)
+	var day := MatchSky.day_of(_profile.day)
+	var moon := day.moon_dir_deg(_profile.light) if day and _profile.light else Vector2.ZERO
+	var sky_hz := atmosphere.sky_hz if atmosphere else 2.0
+	if not _sky_dresser.dress(_sky, _profile.sky, sample, moon, sky_hz, force_sky):
+		_retry_sky(sky_hz)
 
 
 func _write_sky(look: SkyLook) -> void:

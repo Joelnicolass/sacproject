@@ -55,6 +55,8 @@ func _on_create() -> void:
 	chosen.mode = (%HostMode as ModePicker).selected_mode()
 	chosen.map = (%HostMap as MapPicker).selected_map()
 	chosen.biome = (%HostBiome as BiomePicker).selected_god()
+	chosen.sky_hour = (%HostHour as HourPicker).selected_hour()
+	chosen.weather = (%HostWeather as WeatherPicker).selected_weather()
 	var err := _server.start(SacrificeFlow.pick, kind, MatchWire.options_of(chosen), ai_seats())
 	if err != OK:
 		_server.queue_free()

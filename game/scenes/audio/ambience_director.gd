@@ -126,7 +126,8 @@ func play_one_shot() -> bool:
 
 ## True while it is night on this land now.
 func is_night() -> bool:
-	return _day != null and AtmosphereRules.is_night(_day, MatchSky.now_s())
+	var day := MatchSky.day_of(_day)
+	return day != null and AtmosphereRules.is_night(day, MatchSky.now_s())
 
 
 ## The playable one-shots of `ambience_set` (the cues with a stream).

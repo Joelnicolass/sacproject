@@ -29,6 +29,11 @@ var mode: GameMode
 ## `map` it IS a rule of the round for `apply_to`: the copy of the rules carries it (`biome`) and
 ## MatchBiome on the authority sends the result to the clients.
 var biome: GodType
+## The hour of the match, 0..24 (MatchRules `sky_hour`); -1 = the land's own clock. A rule of the
+## round like `biome`: MatchSky carries it to the clients.
+var sky_hour := -1.0
+## The weather of the match (MatchRules `weather`); null = the land's plan.
+var weather: WeatherState
 
 
 func copy() -> MatchSetup:
@@ -41,6 +46,8 @@ func copy() -> MatchSetup:
 	other.map = map
 	other.mode = mode
 	other.biome = biome
+	other.sky_hour = sky_hour
+	other.weather = weather
 	return other
 
 
@@ -52,6 +59,8 @@ func is_empty() -> bool:
 		and starting_souls < 0
 		and match_seed == 0
 		and biome == null
+		and sky_hour < 0.0
+		and weather == null
 	)
 
 
@@ -77,6 +86,10 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.mode = over.mode
 	if over.biome != null:
 		merged.biome = over.biome
+	if over.sky_hour >= 0.0:
+		merged.sky_hour = over.sky_hour
+	if over.weather != null:
+		merged.weather = over.weather
 	return merged
 
 
@@ -99,4 +112,8 @@ func apply_to(rules: Variant) -> Variant:
 		copy.match_seed = match_seed
 	if biome != null:
 		copy.biome = biome
+	if sky_hour >= 0.0:
+		copy.sky_hour = sky_hour
+	if weather != null:
+		copy.weather = weather
 	return copy

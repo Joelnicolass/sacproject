@@ -1,11 +1,12 @@
 class_name LaunchFlags
 extends RefCounted
 
-## Reads the command line of this process into a LaunchPlan: the overrides of the rules (`--level`,
-## `--souls`, `--friendly-fire`, `--drop-soul`, `--match-seed`, `--biome`) and the AI seats of a
-## dedicated (`--ai-slots`, `--ai-god`). The map and the mode (`--map`, `--mode`) are ActiveMatch's.
-## It changes nothing: SacrificeFlow applies the plan it returns. Every flag it takes is told in the
-## log. A bad value is a warning and the rules decide.
+## Reads the command line of this process into a LaunchPlan: the overrides of the rules
+## (`--level`, `--souls`, `--friendly-fire`, `--drop-soul`, `--match-seed`, `--biome`,
+## `--sky-hour`, `--weather`) and the AI seats of a dedicated (`--ai-slots`, `--ai-god`). The map
+## and the mode (`--map`, `--mode`) are ActiveMatch's. It changes nothing: SacrificeFlow applies
+## the plan it returns. Every flag it takes is told in the log. A bad value is a warning and the
+## rules decide.
 ##
 
 
@@ -92,3 +93,14 @@ static func _read_setup(setup: MatchSetup) -> void:
 		setup.biome = MatchWire.decode_god(land)
 		if setup.biome == null:
 			push_warning("--biome=%s: no god has that id, the land is drawn" % land)
+	var hour := MpBoot.user_value("sky-hour", "")
+	if not hour.is_empty():
+		if hour.is_valid_float() and float(hour) >= 0.0 and float(hour) <= 24.0:
+			setup.sky_hour = float(hour)
+		else:
+			push_warning("--sky-hour=%s: not 0-24, the land's clock is used" % hour)
+	var weather := MpBoot.user_value("weather", "")
+	if not weather.is_empty():
+		setup.weather = MatchWire.decode_weather(weather)
+		if setup.weather == null:
+			push_warning("--weather=%s: no such weather, the land's plan is used" % weather)

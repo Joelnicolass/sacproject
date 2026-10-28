@@ -13,7 +13,15 @@ const SOULS_MIN := 0
 const SOULS_MAX := 200
 const SEED_MAX := 0x7fffffff
 const OPTION_KEYS: PackedStringArray = [
-	"world", "mode", "level", "friendly_fire", "drop_soul", "starting_souls", "biome"
+	"world",
+	"mode",
+	"level",
+	"friendly_fire",
+	"drop_soul",
+	"starting_souls",
+	"biome",
+	"sky_hour",
+	"weather"
 ]
 ## Version of the ticket this builds (2 = `mode` and `ai_seats`). The dedicated reads a ticket
 ## without them as a 1v1.
@@ -117,6 +125,13 @@ func clean_options(options: Dictionary) -> Dictionary:
 	var land: GodType = MatchWire.decode_god(biome) if biome is String else null
 	if land != null and land.look != null:
 		out["biome"] = biome
+	# The hour (0..24) and the weather of the match (absent = the land's own).
+	var hour: Variant = options.get("sky_hour")
+	if (hour is float or hour is int) and hour >= 0.0 and hour <= 24.0:
+		out["sky_hour"] = float(hour)
+	var weather: Variant = options.get("weather")
+	if weather is String and MatchWire.decode_weather(weather) != null:
+		out["weather"] = weather
 	var souls: Variant = options.get("starting_souls")
 	if souls is int and souls >= SOULS_MIN and souls <= SOULS_MAX:
 		out["starting_souls"] = souls

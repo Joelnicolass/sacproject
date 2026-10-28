@@ -55,5 +55,10 @@ func _on_custom_received(channel: StringName, data: Dictionary, from_peer: int) 
 	var god := MatchWire.decode_god(str(data.get("god", "")))
 	if god == null or god.look == null:
 		return
-	sky.adopt(float(data.get("at_s", 0.0)), int(data.get("sky_seed", 0)))
+	sky.adopt(
+		float(data.get("at_s", 0.0)),
+		int(data.get("sky_seed", 0)),
+		float(data.get("sky_hour", -1.0)),
+		MatchWire.decode_weather(str(data.get("weather", "")))
+	)
 	biome.adopt(god)

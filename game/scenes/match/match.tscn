@@ -106,6 +106,7 @@
 [ext_resource type="Script" uid="uid://c2n2wauwc4p7w" path="res://scenes/match/match_clock.gd" id="q12_clock"]
 [ext_resource type="Script" uid="uid://bvekv0tj0x8rf" path="res://scenes/match/match_seed.gd" id="q12_seed"]
 [ext_resource type="Script" uid="uid://c14fmfa8dkqog" path="res://scenes/match/match_sky.gd" id="q12_sky"]
+[ext_resource type="Resource" path="res://scenes/look/atmosphere/default_day.tres" id="q13_default_day"]
 [ext_resource type="Script" uid="uid://bju6gwfi4b7v1" path="res://scenes/map/side_relations.gd" id="q12_sides"]
 [ext_resource type="Script" uid="uid://bq1r40x83hhlr" path="res://scenes/units/vision/vision_sides.gd" id="q13_vision"]
 [ext_resource type="Script" path="res://scenes/orders/command/spell_aim.gd" id="aim_script"]
@@ -145,6 +146,7 @@ script = ExtResource("q12_seed")
 
 [node name="Sky" type="Node" parent="Context"]
 script = ExtResource("q12_sky")
+default_day = ExtResource("q13_default_day")
 
 [node name="Sides" type="Node" parent="Context"]
 script = ExtResource("q12_sides")

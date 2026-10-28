@@ -74,8 +74,9 @@ func _write_atmosphere(look: LightLook) -> void:
 
 
 func _light_direction(look: LightLook, sample: AtmosphereSample) -> Vector3:
-	if sample.moon and _profile.day:
-		var moon := _profile.day.moon_dir_deg(look)
+	var day := MatchSky.day_of(_profile.day)
+	if sample.moon and day:
+		var moon := day.moon_dir_deg(look)
 		return LightLook.direction_of(moon.x, moon.y)
 	if sample.elevation_change_deg == 0.0:
 		return look.sun_direction()

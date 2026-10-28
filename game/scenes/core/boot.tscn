@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bootsacrifice01"]
+[gd_scene load_steps=19 format=3 uid="uid://bootsacrifice01"]
 
 [ext_resource type="Script" path="res://scenes/core/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
@@ -16,6 +16,8 @@
 [ext_resource type="Resource" path="res://scenes/ui/ui_scale.tres" id="14_ui_scale"]
 [ext_resource type="Resource" path="res://scenes/audio/music/menu.tres" id="a055_menu_music"]
 
+[ext_resource type="Script" path="res://scenes/ui/sky_picker/hour_picker.gd" id="sky_hour_picker"]
+[ext_resource type="PackedScene" path="res://scenes/ui/sky_picker/weather_picker.tscn" id="sky_weather_picker"]
 [node name="Boot" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -93,6 +95,15 @@ mode_picker = NodePath("../ModePicker")
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("12_biome_picker")
+
+[node name="Hour" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("sky_hour_picker")
+
+[node name="Weather" parent="Column" instance=ExtResource("sky_weather_picker")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="Solo" type="Button" parent="Column"]
 unique_name_in_owner = true

@@ -54,6 +54,8 @@ func options() -> Dictionary:
 	chosen.mode = (%RoomMode as ModePicker).selected_mode()
 	chosen.map = (%RoomMap as MapPicker).selected_map()
 	chosen.biome = (%RoomBiome as BiomePicker).selected_god()
+	chosen.sky_hour = (%RoomHour as HourPicker).selected_hour()
+	chosen.weather = (%RoomWeather as WeatherPicker).selected_weather()
 	return MatchWire.options_of(chosen)
 
 

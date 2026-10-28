@@ -60,7 +60,11 @@ func _begin_sky() -> void:
 	if sky == null:
 		push_error("MatchBiome: sky must be set in match.tscn.")
 		return
-	sky.begin(maxi(1, sky_seed))
+	var rules: MatchRules = world.rules if world else null
+	if rules:
+		sky.begin(maxi(1, sky_seed), rules.sky_hour, rules.weather)
+	else:
+		sky.begin(maxi(1, sky_seed))
 	if DebugLog.on(&"atmosphere"):
 		print("atmosphere seed %d" % MatchSky.sky_seed())
 

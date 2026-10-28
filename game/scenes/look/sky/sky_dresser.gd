@@ -22,7 +22,8 @@ func reset() -> void:
 
 
 ## Puts the right material on `sky`. `force` skips the rate limit (a new look, a preset).
-## `moon_dir_deg` = azimuth and elevation of the moon light.
+## `moon_dir_deg` = azimuth and elevation of the moon light. False: a new sample was held back by
+## the rate limit; the caller dresses again later (a pinned hour changes only once).
 func dress(
 	sky: Sky,
 	look: SkyLook,
@@ -30,23 +31,26 @@ func dress(
 	moon_dir_deg: Vector2,
 	sky_hz: float,
 	force: bool
-) -> void:
+) -> bool:
 	var due := (
 		Time.get_ticks_msec() - _written_ms >= int(1000.0 / maxf(sky_hz, 0.1))
 		or sample.flash != _written.flash
 	)
-	if not force and (not due or sample.is_close(_written, 1e-3)):
-		return
+	if not force and sample.is_close(_written, 1e-3):
+		return true
+	if not force and not due:
+		return false
 	_cloud_phase = _next_cloud_phase(look, sample)
 	_written = sample
 	_written_ms = Time.get_ticks_msec()
 	if look.material == null or (sample.is_neutral(0.0) and _cloud_phase == 0.0):
 		sky.sky_material = look.material
-		return
+		return true
 	if _copy == null:
 		_copy = look.material.duplicate() as ShaderMaterial
 	look.write_atmosphere(_copy, sample, moon_dir_deg, _cloud_phase)
 	sky.sky_material = _copy
+	return true
 
 
 ## The drift is t / period * speed + phase: when the speed changes the phase takes the difference,

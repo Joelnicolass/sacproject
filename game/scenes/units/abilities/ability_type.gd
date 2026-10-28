@@ -7,6 +7,9 @@ extends BookEntry
 ## What the ability does when a creature uses it on command: the scene of an AbilityEffect (scenes/units/abilities/). Empty = «No
 ## implementado». A new active ability is a new scene dropped here, never a new branch in code.
 @export var effect: PackedScene
+## How a shot of this ability looks and what it does in flight and on arrival: a scene of data/shots/ whose root is a ShotLook.
+## Required when a creature fires this ability as its ranged attack (RangedWeapon); empty for every other ability.
+@export var shot_look: PackedScene
 ## How far from the caster it can be cast (m).
 @export var cast_range_m: float = 0.0
 ## Speed of what it sends (m/s).

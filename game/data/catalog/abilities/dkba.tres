@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_oyxlq"]
 [ext_resource type="Texture2D" uid="uid://coi28rexkeu2f" path="res://assets/original/ui/icons/dkba.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://data/shots/plain_ball.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_oyxlq")
+shot_look = ExtResource("shot_look")
 tag = "dkba"
 display_name = "Spit swarm"
 icon = ExtResource("icon_tex")

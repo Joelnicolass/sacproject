@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_av7gt"]
 [ext_resource type="Texture2D" uid="uid://c8gos3xx1mkk7" path="res://assets/original/ui/icons/ekba.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://data/shots/ekba.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_av7gt")
+shot_look = ExtResource("shot_look")
 tag = "ekba"
 display_name = "Spit rock"
 icon = ExtResource("icon_tex")

@@ -9,7 +9,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/alpine_meadow/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
-[ext_resource type="Resource" path="res://data/buildings/persephone_fountain.tres" id="fbldg_font"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcfn.res" id="fmesh_font"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_arch.tscn" id="d2_persephone_arch"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_hut.tscn" id="d2_persephone_hut1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_rock_1.tscn" id="d2_persephone_rock_1"]
@@ -100,31 +100,31 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30)
 
 [node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 990, 109.1, 1570)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1540, 109.2, 1290)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Fount03" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 105.9, 1430)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Fount04" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 96.6, 1690)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Fount05" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1530, 88.7, 1560)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Fount06" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 990, 92.6, 1270)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Fount07" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280, 100.1, 1160)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Props" type="Node3D" parent="."]
 

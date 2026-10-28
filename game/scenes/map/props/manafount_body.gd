@@ -6,22 +6,21 @@ extends StaticBody3D
 ## the source stops and the jet goes; while that tower rises the fount shows nothing, and once it stands the column (tinted with
 ## the occupant's side), its ManalithLight and its hum (`manalith_loop`) show, until the tower is removed. The look is derived from
 ## (occupant, rising) in one place (_show), so a late joiner or a client sees the same. The dedicated process draws nothing.
-## The mesh is the first part of `building` (the land's fountain BLDG); collision and source are the same for every land.
+## The mesh is the land's fountain (`mesh`); collision and source are the same for every land.
 ## Does not decide who builds (StructureAction) nor mark the start or the end of a rise (BuildCues).
 
 ## The group every manafount joins.
 const GROUP := &"manafount"
 
-## The fountain's BLDG (data/buildings/<name>.tres): drag the land's fountain here; the mesh shows in the editor.
-@export var building: BuildingType:
+## The land's fountain model (the mesh of its fountain building in scenes/structures/buildings/), drawn by `visual`.
+## The scene's default is the Persephone fountain; a map sets its land's.
+@export var mesh: Mesh:
 	set(value):
-		building = value
+		mesh = value
 		if is_node_ready():
 			_show_mesh()
 ## Where the fountain is drawn.
 @export var visual: MeshInstance3D
-## Drawn when `building` is empty or has no parts: the Persephone fountain.
-@export var fallback_mesh: Mesh
 ## The ground a tower cast here clears (and the ring of the armed preview). Empty: no push, no ring, no building check.
 @export var build_area: BuildArea
 
@@ -47,24 +46,18 @@ func _ready() -> void:
 	_show()
 
 
-## The mesh of this fountain: the first part of its BLDG, else `fallback_mesh`.
-func fountain_mesh() -> Mesh:
-	var base := building.base_mesh() if building != null else null
-	return base if base != null else fallback_mesh
-
-
 func _show_mesh() -> void:
 	update_configuration_warnings()
-	if visual != null:
-		var wanted := fountain_mesh()
-		if visual.mesh != wanted:
-			visual.mesh = wanted
+	if visual != null and visual.mesh != mesh:
+		visual.mesh = mesh
 
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if visual == null:
 		warnings.append("Asigná `visual` (el MeshInstance3D de la fuente).")
+	if mesh == null:
+		warnings.append("Asigná `mesh` (el modelo de la fuente de esta tierra).")
 	if build_area == null:
 		warnings.append("Asigná `build_area` (el BuildArea que despeja la torre al lanzarla).")
 	return warnings

@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_wlfml"]
 [ext_resource type="Texture2D" uid="uid://cho5ligo63f5f" path="res://assets/original/ui/icons/hrba.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://data/shots/hrba.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_wlfml")
+shot_look = ExtResource("shot_look")
 tag = "hrba"
 display_name = "Spikey Death"
 icon = ExtResource("icon_tex")

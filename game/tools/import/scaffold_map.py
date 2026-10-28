@@ -223,9 +223,19 @@ def map_tscn(ntts: dict, seats: list) -> str:
             ext.append('[ext_resource type="%s" path="%s" id="%s"]' % (kind, path, key))
         return key
 
-    # The BLDG each fount row names (its first part is the model ManafountBody draws).
+    # The model ManafountBody draws for each fount row: the first mesh of the building scene whose type is that BLDG.
+    fount_meshes = {}
     for t in sorted({row["tag"] for row in founts}):
-        resource("Resource", "res://data/buildings/%s" % bldg_files[t], "fbldg_%s" % t)
+        type_path = 'path="res://data/buildings/%s"' % bldg_files[t]
+        for f in sorted((ROOT / "scenes/structures/buildings").glob("*.tscn")):
+            text = f.read_text()
+            m = re.search(r'\[ext_resource type="ArrayMesh" path="([^"]+)"', text)
+            if type_path in text and m:
+                fount_meshes[t] = m.group(1)
+                break
+        if t not in fount_meshes:
+            sys.exit("scaffold_map: no building scene with a mesh for the fountain %s" % t)
+        resource("ArrayMesh", fount_meshes[t], "fmesh_%s" % t)
     starts = []
     for altar in sorted(altars, key=lambda a: seats.index(a["side"])):
         slot = seats.index(altar["side"]) + 1
@@ -248,7 +258,7 @@ transform = Transform3D({basis}, {x_off}, 0, {z_off})
         body.append("""
 [node name="{name}" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, {y}, {z})
-building = ExtResource("fbldg_{bldg}")
+mesh = ExtResource("fmesh_{bldg}")
 """.format(name=name, x=fmt(row["x"]), y=fmt(y_of(row)), z=fmt(row["z"]), bldg=row["tag"]))
 
     # Slot of each side, as SideRelations gives it: seats first, then the sides of the Npcs in the order they appear.

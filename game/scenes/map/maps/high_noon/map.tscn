@@ -9,7 +9,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
 [ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
-[ext_resource type="Resource" path="res://data/buildings/james_fountain.tres" id="fbldg_jfnt"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jfnt.res" id="fmesh_jfnt"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_1.tscn" id="d2_james_rock_1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_2.tscn" id="d2_james_rock_2"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_3.tscn" id="d2_james_rock_3"]
@@ -90,23 +90,23 @@ transform = Transform3D(0.9970545, 0, -0.0766964, 0, 1, 0, 0.0766964, 0, 0.99705
 
 [node name="FountCenter" parent="MapProps/Founts" unique_id=1897756010 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1270, 10, 1270)
-building = ExtResource("fbldg_jfnt")
+mesh = ExtResource("fmesh_jfnt")
 
 [node name="FountEast" parent="MapProps/Founts" unique_id=646644486 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1520, 16.1, 1450)
-building = ExtResource("fbldg_jfnt")
+mesh = ExtResource("fmesh_jfnt")
 
 [node name="FountSouth" parent="MapProps/Founts" unique_id=351329644 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1080, 16.2, 1490)
-building = ExtResource("fbldg_jfnt")
+mesh = ExtResource("fmesh_jfnt")
 
 [node name="FountNorth" parent="MapProps/Founts" unique_id=1492753983 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1450, 13.7, 1070)
-building = ExtResource("fbldg_jfnt")
+mesh = ExtResource("fmesh_jfnt")
 
 [node name="FountWest" parent="MapProps/Founts" unique_id=1824358006 instance=ExtResource("9_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1030, 21, 1110)
-building = ExtResource("fbldg_jfnt")
+mesh = ExtResource("fmesh_jfnt")
 
 [node name="Props" type="Node3D" parent="."]
 

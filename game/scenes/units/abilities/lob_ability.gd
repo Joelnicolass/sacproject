@@ -30,7 +30,7 @@ extends AbilityEffect
 @export var falling := 20.0
 ## The shot leaves from the body's front at this fraction of its height (as RangedWeapon.shot_height).
 @export var shot_height := 0.7
-## The shots' look (data/shots/acia.tscn); empty = the ability's default (ShotSpawner.default_look).
+## The shots' look (data/shots/acia.tscn); empty = the ability's own `shot_look`.
 @export var look: PackedScene
 ## A shot that has not hit anything flies at most this far.
 @export var flight_limit := 300.0
@@ -57,7 +57,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	var tick := MatchClock.now()
 	var rng := MatchSeed.rng(["lob", who(user), tick])
 	var accuracy := _accuracy()
-	var look_id := FxWire.id_of(look if look != null else ShotSpawner.default_look(ability))
+	var look_id := FxWire.id_of(look if look != null else ability.shot_look)
 	for index in shots:
 		## getShotDirectionWithGravity: a zero offset stays a zero direction (offset.length == 0 ? offset : normalized).
 		var direction := offset.normalized() if offset.length_squared() > 0.0 else offset

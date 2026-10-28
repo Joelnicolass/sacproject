@@ -3,5 +3,5 @@
 [ext_resource type="Script" path="res://scenes/units/weapons/ranged_weapon.gd" id="1_ranged"]
 
 [node name="Ranged" type="Node"]
-editor_description = "Disparo: la criatura se detiene, gira hasta apuntar, gasta maná y dispara en los cuadros de disparo de su clip, y espera el enfriamiento. Suelta esta escena bajo Weapons para darle un disparo a una criatura; el orden de los hijos de Weapons es la prioridad. En attack_type va el ataque a distancia (vacío = el de su CreatureType). El aspecto y lo que hace al llegar es el ShotLook de esa habilidad (data/shots/<tag>.tscn): un aliento es este arma con un ShotLook cuyo in_flight es una ola."
+editor_description = "Disparo: la criatura se detiene, gira hasta apuntar, gasta maná y dispara en los cuadros de disparo de su clip, y espera el enfriamiento. Suelta esta escena bajo Weapons para darle un disparo a una criatura; el orden de los hijos de Weapons es la prioridad. En attack_type va el ataque a distancia (vacío = el de su CreatureType). El aspecto y lo que hace al llegar es el ShotLook de esa habilidad (su campo shot_look, una escena de data/shots/): un aliento es este arma con un ShotLook cuyo in_flight es una ola."
 script = ExtResource("1_ranged")

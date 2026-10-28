@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_ph7av"]
 [ext_resource type="Texture2D" uid="uid://bnj4hlkofl6rw" path="res://assets/original/ui/icons/tugt.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://data/shots/tugt.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_ph7av")
+shot_look = ExtResource("shot_look")
 tag = "tugt"
 display_name = "Throw gut"
 icon = ExtResource("icon_tex")

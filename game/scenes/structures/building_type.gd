@@ -3,9 +3,9 @@ class_name BuildingType
 extends Resource
 
 ## What a building of the map is: the name its panel shows, how much it takes to destroy it, whether peasants hide in it
-## and what stays when it falls. One .tres per building in data/buildings/; the scene with the same name in
-## scenes/structures/buildings/ is the building you drag into a map. Never changed while playing: the health lives in the
-## building's Health node. Does not place anything: MapBuilding does.
+## and what stays when it falls. One .tres per building in data/buildings/; the building you drag into a map is a scene of
+## scenes/structures/buildings/ whose MapBuilding root points here through `type`. Never changed while playing: the health
+## lives in the building's Health node. Does not place anything: MapBuilding does.
 
 ## What the building does in the game: nothing (scenery), a Manalith (feeds mana, the Manahoar use it) or a Shrine (feeds
 ## less mana, takes Convert rituals). Code that needs the difference asks this, never the tag.
@@ -31,26 +31,3 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "tag":
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
-
-## The building scene to drag into a map: scenes/structures/buildings/<this file's name>.tscn (its root is a MapBuilding
-## whose `type` is this resource). Null when there is none. For code that spawns a building by type (debug, tools).
-func scene() -> PackedScene:
-	var path := "res://scenes/structures/buildings/%s.tscn" % resource_path.get_file().get_basename()
-	return load(path) as PackedScene if ResourceLoader.exists(path) else null
-
-
-## The mesh of the first part (the base of a fountain). Null when there is no scene.
-func base_mesh() -> Mesh:
-	var packed := scene()
-	if packed == null:
-		return null
-	var top := packed.instantiate() as MapBuilding
-	var found: Mesh = null
-	if top != null and top.visuals != null:
-		for part in top.visuals.get_children():
-			for child in part.get_children():
-				if child is MeshInstance3D and found == null:
-					found = (child as MeshInstance3D).mesh
-	if top != null:
-		top.free()
-	return found

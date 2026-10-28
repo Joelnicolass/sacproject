@@ -9,7 +9,7 @@
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/tutorial_valley/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
-[ext_resource type="Resource" path="res://data/buildings/persephone_fountain.tres" id="fbldg_font"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcfn.res" id="fmesh_font"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_arch.tscn" id="d2_persephone_arch"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_hut.tscn" id="d2_persephone_hut1"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/persephone_fence.tscn" id="d2_persephone_fence"]
@@ -97,11 +97,11 @@ transform = Transform3D(-0.9261, 0, 0.3773, 0, 1, 0, -0.3773, 0, -0.9261, 11.318
 
 [node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1710, 11.8, 490)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1700, 6, 230)
-building = ExtResource("fbldg_font")
+mesh = ExtResource("fmesh_font")
 
 [node name="Props" type="Node3D" parent="."]
 

@@ -2,10 +2,10 @@ class_name ShotLook
 extends Node
 
 ## How a creature's ranged shot looks and what it does in flight and on arrival: a scene of data/shots/ whose root is this node,
-## handed over as a PackedScene (`look` of the ability node, or ShotSpawner.default_look of a creature's attack). Flight and
+## handed over as a PackedScene (`look` of the ability node, or AbilityType.shot_look of a creature's attack). Flight and
 ## damage come from the AbilityType; no scene flies as a plain ball with no particles.
 ## The shot (or the weapon, or the strike) that uses it holds it as a child, so it goes when they go.
-## Not: the flight itself (RangedShot), who is hit (ShotImpact), nor finding a look by text (ShotSpawner.default_look).
+## Not: the flight itself (RangedShot), who is hit (ShotImpact), nor which look an attack has (AbilityType.shot_look).
 
 ## The shot's mesh (scenes/props/meshes/<tag>.res); empty = a ball of fallback_radius.
 @export var mesh: Mesh

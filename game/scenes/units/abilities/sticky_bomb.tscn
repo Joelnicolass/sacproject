@@ -1,10 +1,10 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/lob_ability.gd" id="1_lob"]
-[ext_resource type="PackedScene" path="res://data/shots/acia.tscn" id="look_shot"]
+[ext_resource type="PackedScene" path="res://data/shots/sticky_bomb.tscn" id="look_shot"]
 
 [node name="StickyBomb" type="Node"]
-editor_description = "The Ikarus's Sticky bomb effect (acia). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). It prepares 94 ticks (CKa2: 48 frames, no lrba: last frame 47 x 2) and throws 10 bombs with spread 0.2 and gravity 20; the look is data/shots/acia.tscn and what it does when it lands, StickImpact."
+editor_description = "The Ikarus's Sticky bomb effect (acia). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). It prepares 94 ticks (CKa2: 48 frames, no lrba: last frame 47 x 2) and throws 10 bombs with spread 0.2 and gravity 20; the look is data/shots/sticky_bomb.tscn and what it does when it lands, StickImpact."
 script = ExtResource("1_lob")
 windup_s = 1.5666
 windup_from_clip = true

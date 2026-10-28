@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_7jgf1"]
 [ext_resource type="Texture2D" uid="uid://dhvvrr1lawr21" path="res://assets/original/ui/icons/emba.png" id="icon_tex"]
-[ext_resource type="PackedScene" path="res://data/shots/emba.tscn" id="shot_look"]
+[ext_resource type="PackedScene" path="res://data/shots/boulderdash_shot.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_7jgf1")

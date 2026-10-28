@@ -26,7 +26,7 @@ extends AbilityEffect
 @export var falling := 20.0
 ## The shot leaves from the body's front at this fraction of its height (as RangedWeapon.shot_height).
 @export var shot_height := 0.7
-## The shots' look (data/shots/acia.tscn); empty = the ability's own `shot_look`.
+## The shots' look (data/shots/sticky_bomb.tscn); empty = the ability's own `shot_look`.
 @export var look: PackedScene
 ## A shot that has not hit anything flies at most this far.
 @export var flight_limit := 300.0

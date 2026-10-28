@@ -1,10 +1,10 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/lob_ability.gd" id="1_lob"]
-[ext_resource type="PackedScene" path="res://data/shots/liba.tscn" id="look_shot"]
+[ext_resource type="PackedScene" path="res://data/shots/bilemites.tscn" id="look_shot"]
 
 [node name="Bilemites" type="Node"]
-editor_description = "The Blight's Bilemites effect (liba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). It prepares 94 ticks (the Blight's ability clip, like the Sticky bomb) and throws 10 mites with spread 0.2 and gravity 20; the look is data/shots/liba.tscn: the flight (MiteHop: 5 hops) and what it does on touch (StickImpact mites, x0.8 per mite, no damage)."
+editor_description = "The Blight's Bilemites effect (liba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). It prepares 94 ticks (the Blight's ability clip, like the Sticky bomb) and throws 10 mites with spread 0.2 and gravity 20; the look is data/shots/bilemites.tscn: the flight (MiteHop: 5 hops) and what it does on touch (StickImpact mites, x0.8 per mite, no damage)."
 script = ExtResource("1_lob")
 windup_s = 1.5666
 windup_from_clip = true

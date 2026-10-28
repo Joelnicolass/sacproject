@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_jj01q"]
 [ext_resource type="Texture2D" uid="uid://3n4ao5bw1xui" path="res://assets/original/ui/icons/acia.png" id="icon_tex"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/sticky_bomb.tscn" id="effect_scene"]
-[ext_resource type="PackedScene" path="res://data/shots/acia.tscn" id="shot_look"]
+[ext_resource type="PackedScene" path="res://data/shots/sticky_bomb.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_jj01q")

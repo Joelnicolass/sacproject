@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_4f6w3"]
 [ext_resource type="Texture2D" uid="uid://bcq6tjudv1yxd" path="res://assets/original/ui/icons/plfa.png" id="icon_tex"]
-[ext_resource type="PackedScene" path="res://data/shots/plfa.tscn" id="shot_look"]
+[ext_resource type="PackedScene" path="res://data/shots/gnome_shot.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_4f6w3")

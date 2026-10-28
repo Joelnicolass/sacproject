@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3]
+[gd_scene load_steps=53 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
 [ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
@@ -44,6 +44,9 @@
 [ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
 [ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_input.gd" id="p72_input"]
 [ext_resource type="Script" path="res://scenes/wizards/wizard_drive.gd" id="p72_drive"]
+[ext_resource type="Script" path="res://scenes/bodies/ground_seat.gd" id="ws_seat"]
+[ext_resource type="Script" path="res://scenes/units/regeneration.gd" id="ws_regen"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_clips.gd" id="ws_clips"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 [ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
@@ -146,11 +149,14 @@ properties/29/path = NodePath("MpActor:owner_slot")
 properties/29/spawn = true
 properties/29/replication_mode = 0
 
-[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision")]
+[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "seat", "regeneration", "clips")]
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 mount = NodePath("BodyMount")
 vision = NodePath("Vision")
+seat = NodePath("Seat")
+regeneration = NodePath("Regeneration")
+clips = NodePath("Clips")
 step = ExtResource("2_step")
 wizard_type = ExtResource("typed_cwa0")
 model = "jnwr"
@@ -171,7 +177,7 @@ replication_config = SubResource("SceneReplicationConfig_wizard")
 script = ExtResource("p72_input")
 actions = PackedStringArray()
 
-[node name="Drive" type="Node" parent="." node_paths=PackedStringArray("body", "locomotion", "afflictions", "caster", "ghost", "follower")]
+[node name="Drive" type="Node" parent="." node_paths=PackedStringArray("body", "locomotion", "afflictions", "caster", "ghost", "follower", "seat")]
 script = ExtResource("p72_drive")
 body = NodePath("..")
 locomotion = NodePath("../Locomotion")
@@ -179,6 +185,34 @@ afflictions = NodePath("../Afflictions")
 caster = NodePath("../Caster")
 ghost = NodePath("../GhostForm")
 follower = NodePath("../PathFollower")
+seat = NodePath("../Seat")
+
+[node name="Seat" type="Node" parent="." node_paths=PackedStringArray("body", "mount")]
+script = ExtResource("ws_seat")
+body = NodePath("..")
+mount = NodePath("../BodyMount")
+ground_mask = 1
+attempts = 12
+
+[node name="Regeneration" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana")]
+script = ExtResource("ws_regen")
+body = NodePath("..")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
+pause_s = 0.5
+
+[node name="Clips" type="Node" parent="." node_paths=PackedStringArray("body", "clip_pose", "caster", "afflictions", "ghost")]
+script = ExtResource("ws_clips")
+body = NodePath("..")
+clip_pose = NodePath("../ClipPose")
+caster = NodePath("../Caster")
+afflictions = NodePath("../Afflictions")
+ghost = NodePath("../GhostForm")
+moving_above_m_s = 0.1
+gesture_every = 5
+sampled_cap = 1.6
+rise_per_s = 20.0
+fall_per_s = 6.0
 
 [node name="Tilt" type="Node3D" parent="."]
 physics_interpolation_mode = 2

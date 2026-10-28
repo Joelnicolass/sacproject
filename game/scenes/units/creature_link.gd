@@ -2,10 +2,10 @@ class_name CreatureLink
 extends Node
 
 ## Which creature a UnitBody is: it wears the body scene of its CreatureType (size, sockets, model
-## id) and mounts the passives that come with it, takes its pace and sight from it, hands the type
-## to its weapons and abilities, gives it its health and mana once and bursts it if it falls into a
-## hole. The body holds the type itself (the spawner sets `UnitBody.type` before it enters the
-## tree).
+## id) and mounts the passives that come with it, takes its pace, sight and regeneration from it,
+## hands the type to its weapons and abilities, gives it its health and mana once and bursts it if
+## it falls into a hole. The body holds the type itself (the spawner sets `UnitBody.type` before it
+## enters the tree).
 ## Not: what the creature does (States, Weapons, Engagement) nor how the type is found (the spawner
 ## and the catalog).
 
@@ -41,6 +41,9 @@ func _ready() -> void:
 func adopt() -> void:
 	var type := body.type
 	_adopt_pace()
+	if regeneration != null:
+		regeneration.rate_per_s = type.regeneration_per_s if type else 0.0
+		regeneration.always = type != null and type.regenerates_always
 	if body.vision != null:
 		body.vision.adopt_range(type.vision_m if type else 0.0)
 	if type and body.mount != null:

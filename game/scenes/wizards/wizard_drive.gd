@@ -24,6 +24,8 @@ extends Node
 @export var ghost: GhostForm
 ## The path of an order-level walk (go_to); `cancel_orders` stops it.
 @export var follower: PathFollower
+## While it seats the body on the land, the wizard neither walks nor turns.
+@export var seat: GroundSeat
 
 ## Held, ghost that cannot move or seating: it neither walks nor turns. Server writes, clients read
 ## (MpSync).
@@ -37,8 +39,15 @@ var moving := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	if body == null or locomotion == null or afflictions == null or caster == null or ghost == null:
-		return PackedStringArray(["Assign body, locomotion, afflictions, caster and ghost."])
+	if (
+		body == null
+		or locomotion == null
+		or afflictions == null
+		or caster == null
+		or ghost == null
+		or seat == null
+	):
+		return PackedStringArray(["Assign body, locomotion, afflictions, caster, ghost and seat."])
 	return PackedStringArray()
 
 
@@ -48,7 +57,7 @@ func step(keys: MpInput, delta: float) -> void:
 	var authority := is_multiplayer_authority()
 	var held := false
 	if authority:
-		if body.is_seating():
+		if seat.is_seating():
 			locked = true
 			return
 		held = afflictions.holds() or caster.holds_wizard()

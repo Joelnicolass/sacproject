@@ -18,7 +18,7 @@ signal cooldowns_changed
 @export var wizard: WizardBody
 
 ## CreatureType or SpellType, sorted by level and position (BookOrder).
-var _entries: Array[Resource] = []
+var _entries: Array[BookEntry] = []
 var _creature_rows := PackedInt32Array()
 var _spell_rows := PackedInt32Array()
 var _structure_rows := PackedInt32Array()
@@ -137,7 +137,7 @@ func apply_cooldown(tag: String) -> void:
 	var cast := _entries[row]
 	var casting := CastTime.seconds(cast, _level)
 	for i in _entries.size():
-		var base := float(cast.get("cooldown_s")) if i == row else rules.other_spell_cooldown_s
+		var base := cast.cooldown_s if i == row else rules.other_spell_cooldown_s
 		_raise(i, casting + base + rules.extra_cooldown_s)
 	cooldowns_changed.emit()
 	_push_to_owner()
@@ -145,14 +145,14 @@ func apply_cooldown(tag: String) -> void:
 
 func _tab_index(rows: PackedInt32Array, tag: String) -> int:
 	for i in rows.size():
-		if str(_entries[rows[i]].get("tag")) == tag:
+		if _entries[rows[i]].tag == tag:
 			return i
 	return -1
 
 
 func _row_of(tag: String) -> int:
 	for i in _entries.size():
-		if str(_entries[i].get("tag")) == tag:
+		if _entries[i].tag == tag:
 			return i
 	return -1
 
@@ -214,14 +214,14 @@ func _rebuild() -> void:
 	# TODO(RFC-030 N2): a level change rebuilds the book and clears every cooldown. Today the level is fixed for the
 	# match; when XP raises it mid-match, keep the cooldowns of the entries that stay (by tag).
 	var rows: Dictionary = book.up_to(level) if book != null else {}
-	var sorted: Array[Resource] = []
+	var sorted: Array[BookEntry] = []
 	for creature in rows.get("creatures", []):
 		sorted.append(creature)
 	for spell in rows.get("spells", []):
 		sorted.append(spell)
 	for structure in rows.get("structures", []):
 		sorted.append(structure)
-	sorted.sort_custom(func(a: Resource, b: Resource) -> bool: return BookOrder.key(a) < BookOrder.key(b))
+	sorted.sort_custom(func(a: BookEntry, b: BookEntry) -> bool: return BookOrder.key(a) < BookOrder.key(b))
 	_entries = sorted
 	_creature_rows = PackedInt32Array()
 	_spell_rows = PackedInt32Array()
@@ -229,7 +229,7 @@ func _rebuild() -> void:
 	for i in _entries.size():
 		if _entries[i] is CreatureType:
 			_creature_rows.append(i)
-		elif _entries[i] is SpellType and bool(_entries[i].get("is_structure")):
+		elif _entries[i] is SpellType and (_entries[i] as SpellType).is_structure:
 			_structure_rows.append(i)
 		else:
 			_spell_rows.append(i)

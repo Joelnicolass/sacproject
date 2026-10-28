@@ -1,18 +1,13 @@
 @tool
 class_name CreatureType
-extends Resource
+extends BookEntry
 
-@export var tag: String = ""
-@export var display_name: String = ""
 ## The body the creature wears: its size, capsule and sockets (scenes/units/bodies/<name>.tscn, a BodyFrame). Drag the scene here.
 ## Its look (model, sounds, carried effect) is the `<name>_look.tscn` behind the placeholder of that scene: a client builds it, the server never does.
 @export var body: PackedScene
 ## What the model plays and how long each role lasts (scenes/bodies/models/<model>_clips.tres): the same library the body draws,
 ## read by the rules through ClipFacts.
 @export var clips: AnimationLibrary
-## The picture of the creature in the roster, the book and the info box. Drag any PNG here to change it. A creature of your own gets one
-## drawn from its model (tools/bake/creature_icon.gd); the original's come from tools/bake/fill_type_icons.gd. Empty: the tag is written.
-@export var icon: Texture2D
 @export var health: int = 0
 @export var regeneration_per_s: float = 0.0
 ## Regenerates in any mode that can heal, also walking, fighting and being hit (the Troll); the rest only at rest, once a hit is over.
@@ -38,10 +33,9 @@ extends Resource
 @export var direct_ranged_resistance: float = 1.0
 @export var splash_ranged_resistance: float = 1.0
 @export var mana: int = 0
-@export var mana_cost: int = 0
 @export var souls: int = 0
-@export var cooldown_s: float = 0.0
-@export var casting_time_s: float = 0.0
+## Multiplies its casting frames (the Basilisk: 0.95). 1 = the casting time as exported.
+@export_range(0.5, 1.0, 0.01) var cast_time_factor := 1.0
 ## Wizard level it is meant for (0 to 9): casting it with a lower-level wizard is slower, with a higher one faster (CastTime).
 @export_range(0, 9) var book_level := 0
 ## Place in the book among the entries of its level (0 to 99); the book lists entries by level, then by this number.

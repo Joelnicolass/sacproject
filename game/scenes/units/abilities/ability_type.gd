@@ -1,21 +1,14 @@
 class_name AbilityType
-extends Resource
+extends BookEntry
 
 ## One active ability of a creature (Viscous Oil, Run Away...): what it costs, how far it reaches, who it aims at, and the scene that
 ## does it. It does NOT run anything (the AbilityEffect scene does) and it never changes at run time.
 
-@export var tag: String = ""
-@export var display_name: String = ""
 ## What the ability does when a creature uses it on command: the scene of an AbilityEffect (scenes/units/abilities/). Empty = «No
 ## implementado». A new active ability is a new scene dropped here, never a new branch in code.
 @export var effect: PackedScene
-## The picture of the ability on the roster button and on the cursor while it waits for its target. Empty: the tag is written instead.
-@export var icon: Texture2D
-@export var mana_cost: int = 0
 ## How far from the caster it can be cast (m).
 @export var cast_range_m: float = 0.0
-@export var cooldown_s: float = 0.0
-@export var casting_time_s: float = 0.0
 ## Speed of what it sends (m/s).
 @export var speed_m_s: float = 0.0
 ## Acceleration of what it sends (m/s²).

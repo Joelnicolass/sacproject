@@ -1,5 +1,5 @@
 class_name SpellType
-extends Resource
+extends BookEntry
 
 ## What the AI wants a spell for. Saved as an integer: only append at the end.
 ## SELF_GUARD: a ward on himself. DISABLE_FOE: a control spell on a foe. HIT_ONE / HIT_AREA: damage on one body or on a group.
@@ -13,15 +13,8 @@ enum AiUse { NONE, SELF_GUARD, DISABLE_FOE, HIT_ONE, HIT_AREA, HEAL, SPEEDUP, CO
 ## Saved as an integer: only append at the end.
 enum AiPhase { NEVER, ATTACK, SUPPORT }
 
-@export var tag: String = ""
-@export var display_name: String = ""
-## The picture of the spell in the book and on the cursor while it waits for its target. Drag any PNG here to change it.
-@export var icon: Texture2D
-@export var mana_cost: int = 0
 ## How far from the caster it can be cast (m).
 @export var cast_range_m: float = 0.0
-@export var cooldown_s: float = 0.0
-@export var casting_time_s: float = 0.0
 ## Wizard level it is meant for (0 to 9): casting it with a lower-level wizard is slower, with a higher one faster (CastTime).
 @export_range(0, 9) var book_level := 0
 ## Place in the book among the entries of its level (0 to 99); the book lists entries by level, then by this number.

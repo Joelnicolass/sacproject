@@ -17,25 +17,12 @@ signal feedback(text: String)
 ## Every peer emits it, from the replicated `cast_fx_shown`: HandFx, WizardSounds, Ward and the pose follow it.
 signal cast_changed(casting: bool, fx: ParticleType)
 
-## Casting and drain are counted in frames.
-## Ref: sacengine updateFPS
-const FPS := 60.0
 ## Mana tolerance.
 ## Ref: sacengine manaEpsilon
 const MANA_EPSILON := 0.01
 ## Every spell costs at least this much: manaCost = max(1, manaCost).
 ## Ref: sacengine SacSpell
 const MIN_MANA_COST := 1.0
-const NO_MANA := SpellAction.NO_MANA
-const NO_SOULS := Refusal.NO_SOULS
-const COOLING := SpellAction.COOLING
-const OUT_OF_RANGE := SpellAction.OUT_OF_RANGE
-const BAD_TARGET := SpellAction.BAD_TARGET
-const NOT_IMPLEMENTED := SpellAction.NOT_IMPLEMENTED
-const BUSY := Refusal.CASTING
-const NO_ROOM := SpellAction.NO_ROOM
-## RFC-036 036d: MatchRules.max_creatures_per_player reached.
-const CREATURE_LIMIT := Refusal.CREATURE_LIMIT
 ## `cast_fx_shown` of a cast without a particle (a god without one): the pose and the incantation still follow it.
 const BARE := "-"
 
@@ -46,7 +33,7 @@ const BARE := "-"
 @export var actions: Node
 
 ## SpellType or CreatureType being cast.
-var _entry: Resource
+var _entry: BookEntry
 var _target: Node3D
 var _frames_left := 0
 var _drain_left := 0
@@ -87,39 +74,39 @@ func wizard_can_cast() -> bool:
 	return _wizard.can_cast()
 
 
-## Can the spell be armed? "" = yes.
+## Can the spell be armed? &"" = yes, else a Refusal key.
 ## Ref: sacengine selectSpell: mana, then cooldown.
-func arm_status(index: int) -> String:
+func arm_status(index: int) -> StringName:
 	var spell := spellbook.spell_at(index)
 	if spell == null:
-		return BAD_TARGET
+		return Refusal.BAD_TARGET
 	if action_for(spell.tag) == null:
-		return NOT_IMPLEMENTED
-	var status := ""
+		return Refusal.NOT_IMPLEMENTED
+	var status := &""
 	if _cost(spell) > _mana() + MANA_EPSILON:
-		status = NO_MANA
+		status = Refusal.NO_MANA
 	if spellbook.cooldown(index) > 0.0:
-		status = COOLING
+		status = Refusal.COOLING
 	return status
 
 
-## Can the creature be summoned now? "" = yes.
+## Can the creature be summoned now? &"" = yes, else a Refusal key.
 ## Ref: sacengine spellStatus: souls, mana, then cooldown.
-func summon_status(index: int) -> String:
+func summon_status(index: int) -> StringName:
 	var type := spellbook.creature_at(index)
 	if type == null:
-		return BAD_TARGET
+		return Refusal.BAD_TARGET
 	if summoner == null or not summoner.can_summon(type):
-		return NOT_IMPLEMENTED
-	var status := ""
+		return Refusal.NOT_IMPLEMENTED
+	var status := &""
 	if type.souls > _souls():
-		status = NO_SOULS
+		status = Refusal.NO_SOULS
 	elif _cost(type) > _mana() + MANA_EPSILON:
-		status = NO_MANA
+		status = Refusal.NO_MANA
 	if spellbook.creature_cooldown(index) > 0.0:
-		status = COOLING
+		status = Refusal.COOLING
 	if at_creature_limit():
-		status = CREATURE_LIMIT
+		status = Refusal.CREATURE_LIMIT
 	return status
 
 
@@ -130,7 +117,7 @@ func at_creature_limit() -> bool:
 	var cap := rules.max_creatures_per_player if rules != null else 0
 	if cap <= 0:
 		return false
-	var slot := int(_wizard.get("owner_slot"))
+	var slot := _wizard.owner_slot
 	var count := 0
 	for unit in get_tree().get_nodes_in_group(&"unit"):
 		if unit.get("owner_slot") == slot and unit is UnitBody and not (unit as UnitBody).is_dead():
@@ -138,15 +125,15 @@ func at_creature_limit() -> bool:
 	return count >= cap
 
 
-## Can this structure entry be armed? "" = yes.
-func structure_status(index: int) -> String:
+## Can this structure entry be armed? &"" = yes, else a Refusal key.
+func structure_status(index: int) -> StringName:
 	var spell := spellbook.structure_at(index)
-	if spell == null or not bool(spell.is_structure):
-		return BAD_TARGET
+	if spell == null or not spell.is_structure:
+		return Refusal.BAD_TARGET
 	var action := action_for(spell.tag)
 	if action == null:
-		return NOT_IMPLEMENTED
-	var status := action.arm_status(_wizard as WizardBody, spell)
+		return Refusal.NOT_IMPLEMENTED
+	var status := action.arm_status(_wizard, spell)
 	if not status.is_empty():
 		return status
 	return _funds(spell)
@@ -185,8 +172,8 @@ func aim_for(tag: String, point: Vector3, picked: Node3D) -> SpellAction.Aim:
 	var action := action_for(tag)
 	var spell := _spell_of(tag)
 	var aim := SpellAction.Aim.new()
-	aim.status = BAD_TARGET if action == null or spell == null else action.arm_status(_wizard as WizardBody, spell)
-	return aim if not aim.status.is_empty() else action.check(_wizard as WizardBody, spell, point, picked, _funds(spell))
+	aim.status = Refusal.BAD_TARGET if action == null or spell == null else action.arm_status(_wizard, spell)
+	return aim if not aim.status.is_empty() else action.check(_wizard, spell, point, picked, _funds(spell))
 
 
 ## Read only: aim_for(...).status ("" = it would start).
@@ -262,7 +249,7 @@ func _receive_feedback(text: String) -> void:
 
 ## Server only: the RPC sender when it owns this wizard, else 0.
 func _owner_sender() -> int:
-	if not MpAuthority.accept_command(self, int(_wizard.get("owner_slot"))):
+	if not MpAuthority.accept_command(self, _wizard.owner_slot):
 		return 0
 	return multiplayer.get_remote_sender_id()
 
@@ -276,7 +263,7 @@ func _report(text: String) -> void:
 ## Server or solo: tells the owner something that happened after the request answered.
 func _tell_owner(text: String) -> void:
 	if MpKit.is_networked() and MpKit.is_server():
-		var peer := MpKit.peer_id_for(int(_wizard.get("owner_slot")))
+		var peer := MpKit.peer_id_for(_wizard.owner_slot)
 		if peer > 0 and peer != multiplayer.get_unique_id():
 			_receive_feedback.rpc_id(peer, text)
 			return
@@ -289,12 +276,12 @@ func _try_cast(tag: String, point: Vector3, path: NodePath) -> String:
 		return ""
 	var action := action_for(tag)
 	if action == null:
-		return NOT_IMPLEMENTED if spellbook.spell_by_tag(tag) != null else BAD_TARGET
+		return Refusal.NOT_IMPLEMENTED if spellbook.spell_by_tag(tag) != null else Refusal.BAD_TARGET
 	var spell := _spell_of(tag)
 	if spell == null:
-		return BAD_TARGET
+		return Refusal.BAD_TARGET
 	if is_casting():
-		return BUSY
+		return Refusal.CASTING
 	return _try_action(action, spell, point, path)
 
 
@@ -305,15 +292,15 @@ func _try_summon(tag: String) -> String:
 	if not wizard_can_cast():
 		return ""
 	if type == null:
-		return BAD_TARGET
+		return Refusal.BAD_TARGET
 	if is_casting():
-		return BUSY
+		return Refusal.CASTING
 	var status := summon_status(index)
 	if not status.is_empty():
 		return status
 	var unit := summoner.begin(type)
 	if unit == null:
-		return NO_ROOM
+		return Refusal.OCCUPIED
 	_start(type, unit)
 	return type.display_name
 
@@ -323,13 +310,13 @@ func _try_structure(index: int, point: Vector3) -> String:
 	var spell := spellbook.structure_at(index)
 	if not wizard_can_cast():
 		return ""
-	if spell == null or not bool(spell.is_structure):
-		return BAD_TARGET
+	if spell == null or not spell.is_structure:
+		return Refusal.BAD_TARGET
 	if is_casting():
-		return BUSY
+		return Refusal.CASTING
 	var action := action_for(spell.tag)
 	if action == null:
-		return NOT_IMPLEMENTED
+		return Refusal.NOT_IMPLEMENTED
 	return _try_action(action, spell, point, NodePath())
 
 
@@ -340,32 +327,27 @@ func _try_action(action: SpellAction, spell: SpellType, point: Vector3, path: No
 	var aim := aim_for(spell.tag, point, picked)
 	if not aim.status.is_empty():
 		return aim.status
-	action.begin(_wizard as WizardBody, spell, aim)
+	action.begin(_wizard, spell, aim)
 	_active = action
 	var frames := _start(spell, aim.target)
-	action.started(_wizard as WizardBody, spell, aim, frames)
+	action.started(_wizard, spell, aim, frames)
 	return spell.display_name
 
 
-func _wizard_level() -> int:
-	var value: Variant = _wizard.get("level")
-	return int(value) if value != null else 1
-
-
 ## Takes the cast: counts the casting frames and the drain, sets the cooldowns. Returns the casting frames.
-func _start(entry: Resource, target: Node3D) -> int:
-	## RFC-030 030c: the wizard level shortens the cast (CastTime, sacspell.d castingTime).
-	var frames := floori(FPS * CastTime.seconds(entry, _wizard_level()))
+func _start(entry: BookEntry, target: Node3D) -> int:
+	# The wizard level shortens the cast (CastTime).
+	var frames := floori(MatchClock.TICKS_PER_SECOND_F * CastTime.seconds(entry, _wizard.level))
 	var cost := _cost(entry)
 	_entry = entry
 	_target = target
 	_frames_left = frames
-	_drain_left = mini(frames, ceili(cost * FPS / rules.cast_drain_per_s))
+	_drain_left = mini(frames, ceili(cost * MatchClock.TICKS_PER_SECOND_F / rules.cast_drain_per_s))
 	_drain_per_frame = cost / float(maxi(_drain_left, 1))
-	spellbook.apply_cooldown(str(entry.get("tag")))
+	spellbook.apply_cooldown(entry.tag)
 	_shown_id = _cast_fx_id()
 	var verb := "convoca" if entry is CreatureType else "lanza"
-	print("%s %s slot %d" % [verb, str(entry.get("display_name")), int(_wizard.get("owner_slot"))])
+	print("%s %s slot %d" % [verb, entry.display_name, _wizard.owner_slot])
 	return frames
 
 
@@ -387,7 +369,7 @@ func _physics_process(_delta: float) -> void:
 ## The wizard died, or was stunned or petrified (F138), while casting: the spell does not land and a creature being
 ## summoned goes.
 func _interrupt() -> void:
-	print("se corta %s slot %d" % [str(_entry.get("display_name")), int(_wizard.get("owner_slot"))])
+	print("se corta %s slot %d" % [_entry.display_name, _wizard.owner_slot])
 	if _entry is CreatureType and is_instance_valid(_target):
 		_target.queue_free()
 	if _active != null:
@@ -405,7 +387,7 @@ func _finish() -> void:
 	_target = null
 	cast_fx_shown = ""
 	if entry is CreatureType:
-		var text := summoner.finish(target, entry)
+		var text := summoner.finish(target, entry as CreatureType)
 		if not text.is_empty():
 			_tell_owner(text)
 		return
@@ -413,7 +395,7 @@ func _finish() -> void:
 	if _active != null:
 		var action := _active
 		_active = null
-		var text := action.finish(_wizard as WizardBody, spell, target)
+		var text := action.finish(_wizard, spell, target)
 		if not text.is_empty():
 			_tell_owner(text)
 
@@ -437,36 +419,32 @@ func _spell_of(tag: String) -> SpellType:
 	return spell
 
 
-## Mana and cooldown of a spell with an action: "", NO_MANA, or COOLING (which wins).
+## Mana and cooldown of a spell with an action: "", Refusal.NO_MANA, or Refusal.COOLING (which wins).
 func _funds(spell: SpellType) -> String:
 	var status := ""
 	if _cost(spell) > _mana() + MANA_EPSILON:
-		status = NO_MANA
+		status = Refusal.NO_MANA
 	var index := spellbook.structure_index_of(spell.tag)
 	var cooldown := spellbook.structure_cooldown(index) if index >= 0 else 0.0
 	if index < 0:
 		index = spellbook.index_of(spell.tag)
 		cooldown = spellbook.cooldown(index) if index >= 0 else 0.0
 	if cooldown > 0.0:
-		status = COOLING
+		status = Refusal.COOLING
 	return status
 
 
-func _cost(entry: Resource) -> float:
-	return maxf(MIN_MANA_COST, float(entry.get("mana_cost")))
+func _cost(entry: BookEntry) -> float:
+	return maxf(MIN_MANA_COST, float(entry.mana_cost))
 
 
 func _mana() -> float:
-	var pool := _wizard.get_node_or_null("ManaPool")
-	return float(pool.get("current")) if pool else 0.0
+	return _wizard.mana.current
 
 
 func _souls() -> int:
-	var purse := _wizard.get_node_or_null("SoulPurse")
-	return int(purse.get("count")) if purse else 0
+	return _wizard.souls.count
 
 
 func _spend(amount: float) -> void:
-	var pool := _wizard.get_node_or_null("ManaPool") as ManaPool
-	if pool:
-		pool.spend(minf(amount, pool.current))
+	_wizard.mana.spend(minf(amount, _wizard.mana.current))

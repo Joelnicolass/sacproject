@@ -14,7 +14,7 @@ extends Node
 ## Ref: F163 (RFC-030 030w-f), sacengine runPhoenixPassive state.d:13899-13919, updateCreatureStats runPassive 13921-13931, canShield 218-225.
 
 
-const GROUPS: Array[StringName] = [&"unit", &"wizard"]
+const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
 ## The Phoenix. Empty = the parent.
 @export var body: Node3D
@@ -167,7 +167,7 @@ func _can_shield() -> bool:
 
 ## A moving body the shield can burn: movingObjectById takes any creature or wizard that is not dead (stealth and firewalk included).
 func _burnable(target: Node3D) -> bool:
-	if not Attackable.is_body(target) or target.is_in_group(&"structure"):
+	if not Attackable.is_body(target) or target.is_in_group(MapBuilding.STRUCTURE_GROUP):
 		return false
 	var life := target.get_node_or_null("Health") as Health
 	return life != null and not life.is_dead() and _present(target)

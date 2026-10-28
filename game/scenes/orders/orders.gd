@@ -7,11 +7,11 @@ extends Node
 ## creature and moves nobody. Retreat orders every creature of the side, not the selection.
 ## Ref: RFC-038; sacengine Command → ObjectState.applyOrder (state.d:29140), Formation / getFormationOffsets (state.d:417), greedy slot matching (state.d:29205), retreat (state.d:29174).
 
-const UnitOrders := preload("res://scenes/units/unit_orders.gd")
-
-## The local player asked for an order (request(), the owner side, before it is sent or applied). Presentation only
-## (CommandVoice, RFC-052 052e); the AI's apply_for and the server's submit_order do not emit it.
+## The local player asked for an order (request(), the owner side, before it is sent or applied). Presentation only;
+## the AI's apply_for and the server's submit_order do not emit it.
 signal requested(units: Array, command: String)
+
+const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
 ## Not a UnitOrders.Command: it stores a formation on the creatures and moves nobody.
 const FORMATION_COMMAND := "formation"
@@ -40,6 +40,12 @@ const COMMANDS := {
 ## With the DebugLog category `orders` on, every applied human order prints «orden <command> <n>». The AI's orders
 ## (`apply_for`) print too only with `log_ai_orders`: thousands per match.
 @export var log_ai_orders := false
+
+## Microseconds the last _apply took, and the last formation (rows, widest row in meters),
+## for debug overlays.
+var last_apply_us := 0
+var last_rows := 0
+var last_width := 0.0
 
 
 ## Owner side. `facing` is the camera yaw (forward = (sin, 0, cos)). `formation_id` only matters for "formation".
@@ -80,13 +86,6 @@ func submit_order(unit_paths: PackedStringArray, command: String, target_pos: Ve
 	_apply(slot, unit_paths, command, target_pos, target_path, facing, formation_id)
 
 
-## Microseconds the last _apply took, and the last formation (rows, widest row in meters),
-## for debug overlays.
-var last_apply_us := 0
-var last_rows := 0
-var last_width := 0.0
-
-
 func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Vector3, target_path: String, facing: float, formation_id: StringName, unit_nodes: Array = [], target_node: Node3D = null) -> void:
 	if command == FORMATION_COMMAND:
 		_set_formation(slot, unit_paths, formation_id, unit_nodes)
@@ -113,7 +112,7 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 	var yaw := _yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
 	var row_size := formation.match_row_size(units.size())
 	var matched := _match(units, spots) if last_rows <= 1 or row_size <= 0 else _match_rows(units, slots, yaw, row_size)
-	var retarget := kind == UnitOrders.Command.ATTACK and target != null and target.is_in_group("unit")
+	var retarget := kind == UnitOrders.Command.ATTACK and target != null and target.is_in_group(UnitBody.GROUP)
 	for i in units.size():
 		var unit: Node3D = units[i]
 		var index: int = matched[i]
@@ -159,12 +158,12 @@ func _majority_formation(units: Array[Node3D]) -> FormationType:
 
 func _retreat(slot: int) -> void:
 	var wizard: Node3D = null
-	for node in get_tree().get_nodes_in_group("wizard"):
+	for node in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		if int(node.get("owner_slot")) == slot:
 			wizard = node
 	if wizard == null:
 		return
-	for unit in get_tree().get_nodes_in_group("unit"):
+	for unit in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		if _can_order(unit, slot):
 			(unit.get_node("Orders") as UnitOrders).give(UnitOrders.Command.RETREAT, wizard, wizard.global_position, Vector2.ZERO, 0.0)
 
@@ -192,7 +191,7 @@ func _own_units(slot: int, unit_paths: PackedStringArray, target: Node3D, kind: 
 
 
 func _can_order(unit: Node, slot: int) -> bool:
-	if not unit.is_in_group("unit") or int(unit.get("owner_slot")) != slot:
+	if not unit.is_in_group(UnitBody.GROUP) or int(unit.get("owner_slot")) != slot:
 		return false
 	var body := unit as UnitBody
 	return body != null and not body.is_dead() and not body.is_summoning() and body.has_node("Orders")
@@ -297,7 +296,7 @@ func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_si
 func _closest_enemy_creature(unit: Node3D, spot: Vector3) -> Node3D:
 	var best: Node3D = null
 	var best_d := retarget_range
-	for node in get_tree().get_nodes_in_group("unit"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		if not (unit as UnitBody).engagement.is_foe(node):
 			continue
 		var d := spot.distance_to((node as Node3D).global_position)

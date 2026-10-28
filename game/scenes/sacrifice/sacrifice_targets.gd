@@ -48,7 +48,7 @@ func sacrifice_status(slot: int, picked: Node3D) -> String:
 	var unit := picked as UnitBody
 	if unit == null or not is_instance_valid(unit) or not unit.is_inside_tree():
 		return BAD_TARGET
-	if not unit.is_in_group(Captive.UNIT_GROUP) or unit.owner_slot != slot or slot <= 0:
+	if not unit.is_in_group(UnitBody.GROUP) or unit.owner_slot != slot or slot <= 0:
 		return BAD_TARGET
 	if unit.is_dead() or unit.is_summoning() or unit.is_held() or Captive.of(unit) == null:
 		return BAD_TARGET
@@ -119,7 +119,7 @@ func desecration_matches(altar_slot: int, caster_slot: int, casting: Array[Sacri
 
 ## The wizard of that slot in this world, or null.
 func wizard_of(slot: int) -> WizardBody:
-	for node in get_tree().get_nodes_in_group("wizard"):
+	for node in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		var wizard := node as WizardBody
 		if wizard != null and wizard.owner_slot == slot and (system.world == null or system.world.is_ancestor_of(wizard)):
 			return wizard

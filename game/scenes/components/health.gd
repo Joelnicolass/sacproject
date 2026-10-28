@@ -64,6 +64,13 @@ var damage_factor := 1.0
 ## Per kind of damage (the constants above): multiplies damage_typed on top of the resistance. The
 ## body's own effects write here, Health reads (Guardian: spells ×0.5, ranged ×0.25).
 var kind_factors: Dictionary = {}
+## The last hit was taken by the deflector's stand-ins (a building's guardians), not by this body. They are
+## creatures, so the attacker drains from what they took: LifeDrain reads it.
+var deflected_last := false
+
+var _deflecting := false
+## The match's MatchState, found on the first hit between allies.
+var _match: MatchState
 
 
 func setup(full: float) -> void:
@@ -199,15 +206,6 @@ func _base_resistance(kind: StringName) -> float:
 	return float(value) if value != null else 1.0
 
 
-var _deflecting := false
-## F164b: the last hit was taken by the deflector's stand-ins (a building's guardians), not by this body. They are
-## creatures, so the attacker drains from what they took: LifeDrain reads it.
-## Ref: sacengine damageGuardians, state.d:9119-9141.
-var deflected_last := false
-## F139: the match's MatchState, found on the first hit between allies (group `match_state`).
-var _match: MatchState
-
-
 ## RFC-053 053b: the side factor a typed hit (damage_typed: a spell, a splash) from `from_slot` gets on this body. The AI reads it to
 ## foresee what its own burst would take from its own bodies (AiSpellEval.own_splash); it changes nothing.
 func side_factor(from_slot: int) -> float:
@@ -238,7 +236,7 @@ func _match_state() -> MatchState:
 	if _match == null or not is_instance_valid(_match):
 		_match = null
 		if is_inside_tree():
-			_match = get_tree().get_first_node_in_group(&"match_state") as MatchState
+			_match = get_tree().get_first_node_in_group(MatchState.GROUP) as MatchState
 	return _match
 
 

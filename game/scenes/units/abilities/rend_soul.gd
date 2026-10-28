@@ -1,4 +1,4 @@
-class_name RendSoulAbility
+class_name RendSoul
 extends AbilityEffect
 
 ## The Styx's Rend Soul: it tears a soul apart. The body prepares its
@@ -45,13 +45,13 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	var soul := _soul_of(target)
 	var parent := user.weapons.ranged
 	if parent == null:
-		push_warning("RendSoulAbility: %s no tiene RangedWeapon." % who(user))
+		push_warning("RendSoul: %s no tiene RangedWeapon." % who(user))
 		return false
 	var node := strike_scene.instantiate()
 	var strike := node as SoulStrike
 	if strike == null:
 		node.free()
-		push_warning("RendSoulAbility: la escena no es un SoulStrike.")
+		push_warning("RendSoul: la escena no es un SoulStrike.")
 		return false
 	strike.soul = soul
 	parent.add_child(strike)

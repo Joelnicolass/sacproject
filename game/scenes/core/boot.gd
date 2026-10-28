@@ -1,11 +1,11 @@
 extends Control
 
+const ROOM_SERVER_SCENE := "res://scenes/net/room_server.tscn"
+
 ## The product rules: %AiLevel starts at their wizard_level.
 @export var rules: MatchRules
 ## RFC-031 031d (F143): the player's Options → Jugabilidad (data/ui/gameplay_prefs.tres); the matches made here take it.
 @export var gameplay_prefs: GameplayPrefs
-
-const ROOM_SERVER_SCENE := "res://scenes/net/room_server.tscn"
 
 @onready var ip: LineEdit = %Ip
 @onready var status: Label = %Status

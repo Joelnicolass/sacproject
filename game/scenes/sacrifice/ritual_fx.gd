@@ -115,7 +115,7 @@ func _ropes(shooting: bool, wizard: WizardBody) -> void:
 func _wizard() -> WizardBody:
 	if not ritual.type().drains_target_wizard:
 		return null
-	for node in get_tree().get_nodes_in_group("wizard"):
+	for node in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		var wizard := node as WizardBody
 		if wizard != null and wizard.owner_slot == ritual.target_slot:
 			return wizard

@@ -69,7 +69,7 @@ static func update_stats(perception: AiPerception) -> void:
 	perception.max_souls_seen = maxi(perception.max_souls_seen, souls)
 	perception.neutral_founts = 0
 	for t: AiTrack in perception.structures(2):
-		if t.free_fount and t.node.is_in_group(&"manafount"):
+		if t.free_fount and t.node.is_in_group(ManafountBody.GROUP):
 			perception.neutral_founts += 1
 
 

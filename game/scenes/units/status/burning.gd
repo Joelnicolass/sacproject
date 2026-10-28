@@ -46,8 +46,8 @@ static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringNam
 	if target == null or not is_instance_valid(target) or not _ROCK.is_live_body(target):
 		return null
 	var health := target.get_node_or_null("Health") as Health
-	var creature := target.is_in_group(&"unit") or target.is_in_group(&"wizard")
-	if health == null or (damage <= 0.0 and not creature and not target.is_in_group(&"structure")):
+	var creature := target.is_in_group(UnitBody.GROUP) or target.is_in_group(WizardBody.GROUP)
+	if health == null or (damage <= 0.0 and not creature and not target.is_in_group(MapBuilding.STRUCTURE_GROUP)):
 		return null
 	var frames := maxi(1, lifetime)
 	var fire := Burning.new()
@@ -81,7 +81,7 @@ func _physics_process(_delta: float) -> void:
 
 ## updateFire's order: the damage (DamageOverTime), then the mana, then the particles.
 func step(health: Health) -> bool:
-	if per_second <= 0.0 and get_parent().is_in_group(&"structure"):
+	if per_second <= 0.0 and get_parent().is_in_group(MapBuilding.STRUCTURE_GROUP):
 		updates += 1
 		return false
 	var going := super.step(health)

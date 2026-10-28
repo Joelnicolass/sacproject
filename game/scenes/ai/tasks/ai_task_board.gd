@@ -58,7 +58,7 @@ func claim_pass() -> void:
 ## summoned (it cannot take orders yet) and one a Sac Doctor holds.
 ## Ref: shiny.d:1475-1478
 static func claimable(t: AiTrack) -> bool:
-	if not t.is_valid() or t.node.is_in_group(&"doctor"):
+	if not t.is_valid() or t.node.is_in_group(DoctorBody.GROUP):
 		return false
 	if AiBody.is_dead(t.node):
 		return false

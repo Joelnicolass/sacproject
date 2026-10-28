@@ -25,7 +25,7 @@ func _fly(_shot: RangedShot, _at: Vector3) -> void:
 	pass
 
 
-## True when this node owns the shot's height (F151: GroundHug): RangedShot then skips its
+## True when this node owns the shot's height (F151: GroundHugFlight): RangedShot then skips its
 ## ground check, and the shot ends on a body or at the end of its range only. Default: false.
 func holds_height() -> bool:
 	return false

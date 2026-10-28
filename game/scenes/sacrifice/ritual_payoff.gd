@@ -50,7 +50,7 @@ func _system() -> SacrificeSystem:
 
 
 func _wizard_of(slot: int) -> WizardBody:
-	for node in get_tree().get_nodes_in_group("wizard"):
+	for node in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		var wizard := node as WizardBody
 		if wizard != null and wizard.owner_slot == slot:
 			return wizard

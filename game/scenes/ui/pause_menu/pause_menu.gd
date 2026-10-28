@@ -14,7 +14,6 @@ extends CanvasLayer
 signal opened
 signal closed
 
-const OPEN_GROUP := WorldInput.MODAL
 
 ## Title alone (the match is paused) and online (it is not).
 @export var paused_title := "UI_PAUSE_MENU_PAUSED"
@@ -43,13 +42,13 @@ func _exit_tree() -> void:
 
 
 func is_open() -> bool:
-	return is_in_group(OPEN_GROUP)
+	return is_in_group(WorldInput.MODAL)
 
 
 func open() -> void:
 	if is_open():
 		return
-	add_to_group(OPEN_GROUP)
+	add_to_group(WorldInput.MODAL)
 	var online := seat != null and seat.is_online()
 	%PauseTitle.text = tr(online_title if online else paused_title)
 	_show_confirm(false)
@@ -63,7 +62,7 @@ func open() -> void:
 func close() -> void:
 	if not is_open():
 		return
-	remove_from_group(OPEN_GROUP)
+	remove_from_group(WorldInput.MODAL)
 	%OptionsMenu.close()
 	%Dim.visible = false
 	_release_pause()

@@ -14,7 +14,7 @@ extends RefCounted
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
-const GROUPS: Array[StringName] = [&"wizard", &"unit", &"structure"]
+const GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP, MapBuilding.STRUCTURE_GROUP]
 
 
 ## Hurts every body around `center` except `direct` (which the caller already hit with the whole amount).

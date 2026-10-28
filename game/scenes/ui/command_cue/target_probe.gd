@@ -127,14 +127,14 @@ func _classify(screen: Vector2) -> StringName:
 	if not body is Node:
 		return GROUND
 	var node := body as Node
-	if node.is_in_group("soul_target"):
+	if node.is_in_group(Soul.TARGET_GROUP):
 		var soul := node.get_parent()
 		_picked = soul
 		return &"own_soul" if soul != null and _slot_of(soul) == local_slot else &"soul"
-	if node.is_in_group("corpse"):
+	if node.is_in_group(Corpse.GROUP):
 		_picked = node
 		return &"corpse"
-	if node.is_in_group("structure") or node.is_in_group(Altar.GROUP):
+	if node.is_in_group(MapBuilding.STRUCTURE_GROUP) or node.is_in_group(Altar.GROUP):
 		_picked = node
 		return _with_owner(node, "building")
 	if Attackable.is_body(node):

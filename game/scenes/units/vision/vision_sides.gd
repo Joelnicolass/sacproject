@@ -93,10 +93,10 @@ static func mark_kind(mine: int, node: Node3D, observer: Node3D) -> int:
 	_kinds[mine] = of_slot
 	var id := node.get_instance_id()
 	if not of_slot.has(id):
-		var fount := node.is_in_group(&"manafount")
+		var fount := node.is_in_group(ManafountBody.GROUP)
 		var kind := 0
 		if fount or TargetRules.is_valid_foe_of(mine, node, observer):
-			kind = 2 if fount or node.is_in_group(&"structure") else 1
+			kind = 2 if fount or node.is_in_group(MapBuilding.STRUCTURE_GROUP) else 1
 		of_slot[id] = kind
 	return of_slot[id]
 

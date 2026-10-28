@@ -14,7 +14,7 @@ extends RefCounted
 
 
 ## The groups a body must be in (one of them) to feed a drain: a mobile body, never a structure.
-const FEEDING_GROUPS: Array[StringName] = [&"unit", &"wizard"]
+const FEEDING_GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
 
 ## `attacker`: the body that dealt the blow or the shot (null or freed: nothing). `target`: the body that was hit.
@@ -37,7 +37,7 @@ static func feed(attacker: Node, target: Node, taken: float) -> float:
 
 
 static func _feeds(target: Node) -> bool:
-	if target.is_in_group(&"structure"):
+	if target.is_in_group(MapBuilding.STRUCTURE_GROUP):
 		var health := target.get_node_or_null("Health") as Health
 		return health != null and health.deflected_last
 	for group in FEEDING_GROUPS:

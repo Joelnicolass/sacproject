@@ -61,7 +61,7 @@ static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point:
 		hit: ParticleType = null) -> LightningStrike:
 	if scene == null or from == null or not from.is_inside_tree():
 		return null
-	var spawner := from.get_tree().get_first_node_in_group(&"shot_spawner")
+	var spawner := from.get_tree().get_first_node_in_group(ShotSpawner.GROUP)
 	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
 	if container == null:
 		push_warning("LightningStrike: no hay contenedor de disparos (grupo shot_spawner).")

@@ -17,6 +17,9 @@ signal mode_changed(was: Mode, now: Mode)
 ## Each mode is a UnitState child of States with the same `mode`. Replicated as an integer: a new mode goes last.
 enum Mode { IDLE, MOVE, CHASE, ATTACK, DEAD, SUMMONING, SHOOT, ROCK_FORM, HELD, REVIVING, COWER }
 
+## Every creature body in play (corpses leave it).
+const GROUP := &"unit"
+
 ## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it enters the tree: the spawner on every peer,
 ## the .tscn of a bench. It never looks the type up by text.
 @export var type: CreatureType:
@@ -95,7 +98,7 @@ var target: Node3D:
 
 
 func _ready() -> void:
-	add_to_group("unit")
+	add_to_group(GROUP)
 	floor_snap_length = 0.5
 	collision_layer = unit_layer
 	collision_mask = ground_mask

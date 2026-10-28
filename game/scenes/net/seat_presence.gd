@@ -91,13 +91,13 @@ func _on_seat_abandoned(slot: int, why: String) -> void:
 ## What the world holds for `slot`: its wizard (where it stands) and its living creatures.
 func _slot_state(slot: int, when: String) -> String:
 	var wizard := "sin mago"
-	for node in get_tree().get_nodes_in_group("wizard"):
+	for node in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		if int(node.get("owner_slot")) == slot and node is Node3D:
 			var at := (node as Node3D).global_position
 			wizard = "mago en %.1f %.1f" % [at.x, at.z]
 			break
 	var creatures := 0
-	for node in get_tree().get_nodes_in_group("unit"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		if int(node.get("owner_slot")) == slot and not node.is_queued_for_deletion():
 			creatures += 1
 	return "slot %d %s, %d criaturas (%s)" % [slot, wizard, creatures, when]

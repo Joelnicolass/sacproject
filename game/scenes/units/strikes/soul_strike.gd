@@ -5,7 +5,7 @@ extends ShotStrike
 ## once on the next: it checks canRend again; if the soul is still there it bursts
 ## (Soul.burst: severSoul dissolves the corpse), draws the StyxBolt from the shot origin to the soul's center and deals
 ## dealSplashRangedDamageAt(0, …, damageRange): that is ShotLook.impact (impacts/rend_blast_impact.tscn: nobody takes the whole
-## amount). If the soul went, nothing happens (the mana is already spent). Born from RendSoulAbility, not from RangedWeapon.
+## amount). If the soul went, nothing happens (the mana is already spent). Born from RendSoul, not from RangedWeapon.
 ## Ref: F157 (RFC-030 030t-b), sacengine updateRendShoot state.d:25867-25890.
 
 ## The beam from the shot origin to the soul's center. Empty: none.
@@ -13,7 +13,7 @@ extends ShotStrike
 ## Tick it lands on (1 = the tick after the shot).
 @export_range(0, 120) var land_tick := 1
 
-## The soul to rend. Set by RendSoulAbility before launch().
+## The soul to rend. Set by RendSoul before launch().
 var soul: Soul
 
 
@@ -25,7 +25,7 @@ static func center_of_soul(of: Soul) -> Vector3:
 func _strike_tick(age: int) -> void:
 	if age < land_tick:
 		return
-	if not RendSoulAbility.can_rend(soul, from_slot):
+	if not RendSoul.can_rend(soul, from_slot):
 		_log("golpe %s %s: el alma ya no está (tick %d)" % [tag, shooter_name(), MatchClock.now()])
 		finish()
 		return

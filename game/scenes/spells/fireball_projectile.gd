@@ -6,7 +6,6 @@ extends SpellProjectile
 
 const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
-const FPS := 60.0
 const FLYING_HEIGHT := 0.5
 const SIZE := 0.5
 const ARRIVE_DISTANCE := 0.25
@@ -65,7 +64,7 @@ func _physics_process(_delta: float) -> void:
 	var target_center := _target_center()
 	var to_target := target_center - global_position
 	velocity = _cap(velocity + to_target.normalized() * acceleration, to_target)
-	var next := global_position + velocity / FPS
+	var next := global_position + velocity / MatchClock.TICKS_PER_SECOND_F
 	var on_ground := false
 	var ground := _ground_height(global_position)
 	if is_finite(ground):
@@ -73,8 +72,8 @@ func _physics_process(_delta: float) -> void:
 		var flying_height := minf(FLYING_HEIGHT, 0.75 * flat)
 		if next.y < ground + flying_height:
 			var lifted := velocity
-			lifted.y += (ground + flying_height - next.y) * FPS
-			next = global_position + _cap(lifted, to_target) / FPS
+			lifted.y += (ground + flying_height - next.y) * MatchClock.TICKS_PER_SECOND_F
+			next = global_position + _cap(lifted, to_target) / MatchClock.TICKS_PER_SECOND_F
 			on_ground = true
 	global_position = next
 	var flat_left := Vector2(target_center.x - next.x, target_center.z - next.z).length()
@@ -94,8 +93,8 @@ func _physics_process(_delta: float) -> void:
 func _cap(v: Vector3, distance: Vector3) -> Vector3:
 	if v.length() > speed:
 		v = v.normalized() * speed
-	if v.length() > FPS * distance.length():
-		v = v.normalized() * distance.length() * FPS
+	if v.length() > MatchClock.TICKS_PER_SECOND_F * distance.length():
+		v = v.normalized() * distance.length() * MatchClock.TICKS_PER_SECOND_F
 	return v
 
 

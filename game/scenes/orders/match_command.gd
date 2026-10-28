@@ -10,6 +10,9 @@ extends Node
 ## Ref: RFC-038; sacengine dagonBackend.d:947-1300.
 ## Nothing is drawn as text (RFC-025c): what is armed goes to %Battle (CommandLog) and CommandCue draws it on the cursor.
 
+## The local player's command input (one per match).
+const GROUP := &"match_command"
+
 @export var ray: PointerRay
 @export var armed: ArmedCommand
 @export var orders: OrderCommand
@@ -17,7 +20,7 @@ extends Node
 
 
 func _ready() -> void:
-	add_to_group("match_command")
+	add_to_group(GROUP)
 
 
 ## True while the world camera counts the pointer as dragged (a click that ends it is not an order).

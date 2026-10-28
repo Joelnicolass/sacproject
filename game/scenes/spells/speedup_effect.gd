@@ -11,7 +11,6 @@ const NODE_NAME := "SpeedupEffect"
 ## The PaceFactors source of this effect.
 const SOURCE := &"speedup"
 const BONUS := 0.75
-const FPS := 60.0
 const WIZARD_DURATION_FACTOR := 0.2
 const EXTRA_S := 0.5
 
@@ -31,7 +30,7 @@ var _fx_left := 0.0
 static func duration_s(body: Node, spell: SpellType) -> float:
 	if not "speed_factor" in body or body.get_node_or_null(NODE_NAME) != null:
 		return -1.0
-	if body.is_in_group("wizard"):
+	if body.is_in_group(WizardBody.GROUP):
 		return spell.duration_s * WIZARD_DURATION_FACTOR + EXTRA_S
 	var health := body.get_node_or_null("Health")
 	if health == null or float(health.get("maximum")) <= 0.0:
@@ -40,7 +39,7 @@ static func duration_s(body: Node, spell: SpellType) -> float:
 
 
 func start(seconds: float) -> void:
-	frames_left = int(seconds * FPS)
+	frames_left = int(seconds * MatchClock.TICKS_PER_SECOND_F)
 
 
 func _physics_process(delta: float) -> void:
@@ -49,7 +48,7 @@ func _physics_process(delta: float) -> void:
 	if frames_left <= 0:
 		queue_free()
 		return
-	_give(body, 1.0 + BONUS * minf(1.0, float(frames_left) / FPS))
+	_give(body, 1.0 + BONUS * minf(1.0, float(frames_left) / MatchClock.TICKS_PER_SECOND_F))
 	_fx_left -= delta
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s

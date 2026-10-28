@@ -70,7 +70,7 @@ static func can_guard(slot: int, picked: Node3D) -> bool:
 	var unit := picked as UnitBody
 	if unit == null or not is_instance_valid(unit) or not unit.is_inside_tree() or unit.is_queued_for_deletion():
 		return false
-	if slot <= 0 or unit.owner_slot != slot or not unit.is_in_group(Captive.UNIT_GROUP):
+	if slot <= 0 or unit.owner_slot != slot or not unit.is_in_group(UnitBody.GROUP):
 		return false
 	if unit.is_dead() or unit.is_summoning() or unit.is_taken() or unit.is_in_group(GuardianBond.ROOTED):
 		return false

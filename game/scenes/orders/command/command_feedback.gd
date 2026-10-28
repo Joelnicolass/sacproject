@@ -64,7 +64,7 @@ func on_selection_changed(units: Array) -> void:
 
 ## «Sin almas» (the drop answer) is a refusal like the others: said on %Battle, it flashes `ncst`.
 func _connect_soul_messages() -> void:
-	var souls := get_tree().get_first_node_in_group("soul_system") as SoulSystem
+	var souls := get_tree().get_first_node_in_group(SoulSystem.GROUP) as SoulSystem
 	if souls:
 		souls.message.connect(_log.say)
 

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/strikes/soul_strike.tscn" id="2_strike"]
 [ext_resource type="PackedScene" path="res://data/shots/rend_soul.tscn" id="look_shot"]
 
-[node name="RendSoulAbility" type="Node"]
+[node name="RendSoul" type="Node"]
 editor_description = "F157 (RFC-030 030t-b): efecto propio del Rend Soul (dner) del Styx. AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Prepara el clip shoot0 (100 ticks, windup_clip 0), acepta un alma NORMAL o EMERGING libre o propia, no soltada, a 90 m en 3D, y al disparo lanza un SoulStrike que cae al tick siguiente. El maná (100) y el enfriamiento (10 s) se cobran aunque el alma ya no esté."
 script = ExtResource("1_ability")
 windup_from_clip = true

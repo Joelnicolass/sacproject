@@ -1,4 +1,4 @@
-class_name DevourAbility
+class_name Devour
 extends AbilityEffect
 
 ## The Netherfiend's and the Hellmouth's Devour: eating a soul. The body prepares (72 ticks for the Netherfiend, 92 for the Hellmouth)

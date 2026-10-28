@@ -34,7 +34,7 @@ func is_patient(body: UnitBody, node: Variant) -> bool:
 	if node == null or not is_instance_valid(node) or node == body or not node is Node3D:
 		return false
 	var other := node as Node3D
-	if not other.is_inside_tree() or other.is_in_group("corpse") or not "owner_slot" in other:
+	if not other.is_inside_tree() or other.is_in_group(Corpse.GROUP) or not "owner_slot" in other:
 		return false
 	if int(other.get("owner_slot")) != body.owner_slot or not _in_groups(other):
 		return false

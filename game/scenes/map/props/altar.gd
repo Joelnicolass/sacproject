@@ -19,7 +19,6 @@ signal state_changed(state: State)
 const GROUP := &"altar"
 ## Always in the group, whatever its state: how MatchState lists every altar of the map.
 const ANY_GROUP := &"altar_node"
-const MANA_GROUP := &"mana_source"
 
 ## Player slot that owns it (PlayerStart sets it). Its ManaSource follows.
 @export var owner_slot := 0:
@@ -108,7 +107,7 @@ func _apply() -> void:
 	_set_group(self, GROUP, alive)
 	if mana_source:
 		mana_source.process_mode = Node.PROCESS_MODE_INHERIT if alive else Node.PROCESS_MODE_DISABLED
-		_set_group(mana_source, MANA_GROUP, alive)
+		_set_group(mana_source, ManaSource.GROUP, alive)
 	if loop_sound:
 		loop_sound.set_active(alive)
 	if collapse:

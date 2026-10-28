@@ -40,7 +40,7 @@ func can_summon(type: CreatureType) -> bool:
 
 
 func begin(type: CreatureType) -> Node3D:
-	var spawner := get_tree().get_first_node_in_group("unit_spawner") as UnitSpawner
+	var spawner := get_tree().get_first_node_in_group(UnitSpawner.GROUP) as UnitSpawner
 	if spawner == null:
 		return null
 	var at := spawn_point()
@@ -94,7 +94,7 @@ func _ground_at(at: Vector3) -> Variant:
 func _is_clear(spot: Vector3) -> bool:
 	for group in blocker_groups:
 		for node in get_tree().get_nodes_in_group(group):
-			if not node is Node3D or (node as Node).is_in_group("corpse"):
+			if not node is Node3D or (node as Node).is_in_group(Corpse.GROUP):
 				continue
 			var d := (node as Node3D).global_position - spot
 			if absf(d.x) <= clear_half_width and absf(d.z) <= clear_half_width and absf(d.y) <= clear_half_height:

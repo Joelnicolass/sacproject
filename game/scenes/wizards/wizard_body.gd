@@ -10,6 +10,11 @@ signal pick_changed
 ## The book override changed: the Spellbook builds again.
 signal book_changed
 
+## Every wizard body in play.
+const GROUP := &"wizard"
+## The wizard of this process's player (none on a dedicated server).
+const LOCAL_GROUP := &"local_wizard"
+
 @export var step: WalkStep
 @export var owner_slot := 0:
 	set(value):
@@ -110,10 +115,12 @@ var _clip_flat_speed := 0.0
 @onready var drive: WizardDrive = $Drive
 @onready var _net: MpActor = $MpActor
 @onready var _keys: MpInput = $MpInput
+@onready var _follower: PathFollower = $PathFollower
+@onready var _warp_snap: WarpSnap = $WarpSnap
 
 
 func _ready() -> void:
-	add_to_group("wizard")
+	add_to_group(GROUP)
 	_refresh_owner()
 	floor_snap_length = 0.5
 	look_yaw = rotation.y
@@ -121,8 +128,7 @@ func _ready() -> void:
 	if _net.owner_slot != owner_slot:
 		_net.owner_slot = owner_slot
 	_wear_body()
-	if _clip_pose.has_signal("clip_looped"):
-		_clip_pose.connect("clip_looped", _on_clip_looped)
+	_clip_pose.clip_looped.connect(_on_clip_looped)
 	_present_prev_pos = global_position
 	_present_prev_ready = true
 	if MpKit.is_networked() and not MpKit.is_server():
@@ -200,9 +206,9 @@ func _refresh_owner() -> void:
 	if not is_inside_tree():
 		return
 	if is_local():
-		add_to_group("local_wizard")
-	elif is_in_group("local_wizard"):
-		remove_from_group("local_wizard")
+		add_to_group(LOCAL_GROUP)
+	elif is_in_group(LOCAL_GROUP):
+		remove_from_group(LOCAL_GROUP)
 
 
 func _apply_pick() -> void:
@@ -304,14 +310,10 @@ func request_walk(goal: Vector3) -> void:
 	walk_to(goal)
 
 
-## An order-level walk (RFC-024 024b): by the waypoints of the PathFollower child, or straight (begin_walk)
-## when the body has none. request_walk and the server side of submit_walk call this.
+## An order-level walk by the waypoints of the PathFollower child. request_walk and the server side of
+## submit_walk call this.
 func walk_to(goal: Vector3) -> void:
-	var follower := get_node_or_null("PathFollower") as PathFollower
-	if follower != null:
-		follower.go_to(goal)
-	else:
-		begin_walk(goal)
+	_follower.go_to(goal)
 
 
 func is_walking() -> bool:
@@ -342,9 +344,7 @@ func warp_to(point: Vector3) -> void:
 ## Tells the clients the body jumped, so their copy of it jumps too instead of sliding there. On a client the pose is
 ## drawn by the MpActor child; this body never writes it there.
 func _announce_jump() -> void:
-	var snap := get_node_or_null("WarpSnap") as WarpSnap
-	if snap != null:
-		snap.announce()
+	_warp_snap.announce()
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -381,7 +381,6 @@ func _seat() -> void:
 
 func _physics_process(delta: float) -> void:
 	if not _should_simulate():
-		_present_pose(delta)
 		return
 	if _seat_left > 0:
 		_seat()
@@ -407,8 +406,7 @@ func _regenerate(delta: float) -> void:
 		return
 	if drive.moving:
 		return
-	var caster := get_node_or_null("Caster") as Caster
-	if caster and caster.is_casting():
+	if _caster.is_casting():
 		return
 	if wizard_type == null:
 		return
@@ -429,7 +427,7 @@ func _return_to_altar() -> void:
 	if not is_multiplayer_authority():
 		return
 	var best: Node3D = null
-	for source in get_tree().get_nodes_in_group("mana_source"):
+	for source in get_tree().get_nodes_in_group(ManaSource.GROUP):
 		if int(source.get("kind")) != ManaSource.Kind.ALTAR or int(source.get("owner_slot")) != owner_slot:
 			continue
 		var altar := source as Node3D

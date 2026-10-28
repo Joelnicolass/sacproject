@@ -52,7 +52,7 @@ func sacrifice() -> SacrificeSystem:
 
 func scan_global() -> void:
 	scanned = true
-	for group in [Altar.GROUP, &"manafount", &"structure", &"wizard", &"unit"]:
+	for group in [Altar.GROUP, ManafountBody.GROUP, MapBuilding.STRUCTURE_GROUP, WizardBody.GROUP, UnitBody.GROUP]:
 		for node in get_tree().get_nodes_in_group(group):
 			if group == &"unit" and relation_of(node) > AiTrack.Relation.ALLY and not belief.within_map(node as Node3D): continue
 			add_node(node as Node3D, &"scan")

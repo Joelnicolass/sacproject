@@ -401,7 +401,7 @@ func _in_sight(rock: Rock, body: Node3D) -> bool:
 	var query := PhysicsRayQueryParameters3D.create(from, BodyNudge.center(body))
 	query.collision_mask = 1
 	var skip: Array[RID] = []
-	for wizard in get_tree().get_nodes_in_group(&"wizard"):
+	for wizard in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		if wizard is CollisionObject3D:
 			skip.append((wizard as CollisionObject3D).get_rid())
 	query.exclude = skip

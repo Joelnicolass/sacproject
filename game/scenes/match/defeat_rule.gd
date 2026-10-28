@@ -63,7 +63,7 @@ func defeat(slot: int) -> void:
 
 ## Every living creature of that side in this world dies.
 func kill_creatures(slot: int) -> void:
-	for node in get_tree().get_nodes_in_group("unit"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		var unit := node as UnitBody
 		if unit == null or unit.owner_slot != slot or unit.is_dead():
 			continue

@@ -21,6 +21,8 @@ enum SoulColor { BLUE, RED }
 
 ## Every soul in play.
 const GROUP := &"soul"
+## The soul's clickable Target child: the pointer and the HUD pick a soul through it.
+const TARGET_GROUP := &"soul_target"
 
 ## The state changed (every peer: the setter runs on the replicated value too). RFC-052 052h: SoulSounds listens.
 signal state_changed(was: State, now: State)
@@ -143,7 +145,7 @@ func _ready() -> void:
 		add_child(_visual)
 	var target := get_node_or_null("Target")
 	if target:
-		target.add_to_group("soul_target")
+		target.add_to_group(TARGET_GROUP)
 	_rebuild_sprites()
 	## A soul that is already full grown (a late join) does not rise again.
 	if state != State.EMERGING:
@@ -288,7 +290,7 @@ func label() -> String:
 static func on_corpse(corpse_node: Node3D) -> Soul:
 	if corpse_node == null or not corpse_node.is_inside_tree():
 		return null
-	for node in corpse_node.get_tree().get_nodes_in_group(&"soul"):
+	for node in corpse_node.get_tree().get_nodes_in_group(GROUP):
 		var soul := node as Soul
 		if soul != null and soul.corpse == corpse_node:
 			return soul

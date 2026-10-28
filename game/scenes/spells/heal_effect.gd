@@ -12,7 +12,6 @@ const NODE_NAME := "HealEffect"
 ## Heal speed.
 ## Ref: sacengine healSpeed
 const HEAL_SPEED := 240.0
-const FPS := 60.0
 ## satAdd caps the frames of heals that add up there.
 ## Ref: sacengine int.max (32 bits); state.d:10455
 const FRAMES_CAP := 2147483647
@@ -68,7 +67,7 @@ static func heal_full(body: Node, report_end := false) -> Node:
 
 
 func add(amount: float) -> void:
-	var frames := ceili(amount / HEAL_SPEED * FPS)
+	var frames := ceili(amount / HEAL_SPEED * MatchClock.TICKS_PER_SECOND_F)
 	## A heal already running gets the new frames on top, saturated.
 	## Ref: satAdd, state.d:10455
 	frames_left = mini(frames_left + frames, FRAMES_CAP)

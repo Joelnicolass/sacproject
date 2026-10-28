@@ -15,6 +15,8 @@ signal destroyed(building: MapBuilding)
 
 const GROUP := &"map_building"
 const SHELTER_GROUP := &"shelter"
+## Standing buildings that block, can be attacked and count as structures (flat ones are not).
+const STRUCTURE_GROUP := &"structure"
 
 @export var type: BuildingType:
 	set(value):
@@ -63,7 +65,7 @@ func _ready() -> void:
 	max_health = max_health_override if max_health_override > 0.0 else (type.max_health if type != null else 0.0)
 	shelter = type != null and type.shelters_peasants
 	if not flat:
-		add_to_group(&"structure")
+		add_to_group(STRUCTURE_GROUP)
 	if shelter:
 		add_to_group(SHELTER_GROUP)
 	## A tower on a client already has the maximum its synchronizer sent with the spawn: setting it again would erase the damage.
@@ -142,7 +144,7 @@ func _on_health_changed(current: float, maximum: float) -> void:
 		return
 	_gone = true
 	remove_from_group(SHELTER_GROUP)
-	remove_from_group(&"structure")
+	remove_from_group(STRUCTURE_GROUP)
 	collision_layer = 0
 	collision.set_deferred("disabled", true)
 	if trunk != null:

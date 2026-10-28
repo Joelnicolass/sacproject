@@ -6,7 +6,7 @@ extends Node
 ## the body (StalkGrip does). Server only.
 ## Ref: sacengine findMeanstalkTarget, meanstalkCheckTarget (state.d:22544-22573).
 
-const BODY_GROUPS: Array[StringName] = [&"wizard", &"unit"]
+const BODY_GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP]
 
 ## Who this cast has caught already.
 @export var roster: StalkRoster

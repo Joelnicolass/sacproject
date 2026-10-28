@@ -1,3 +1,4 @@
+class_name Selection
 extends Node
 
 ## The local player's creature selection and groups.
@@ -13,6 +14,9 @@ extends Node
 ## Ref: RFC-025; sacengine SideData (state.d:30258), canSelect (state.d:1134), numCreaturesInGroup, selectAll (state.d:29867), dagonBackend.d:1173-1198, newCreatureAddToSelection (state.d:29959), renderer.d:3890-3895.
 
 signal changed(units: Array)
+
+## The local player's selection (one per match).
+const GROUP := &"selection"
 
 ## Who looks at this screen: only this seat's creatures can be selected.
 @export var seat: MpLocalSeat
@@ -48,7 +52,7 @@ var _last_at := Vector2(-1000.0, -1000.0)
 
 
 func _ready() -> void:
-	add_to_group("selection")
+	add_to_group(GROUP)
 	for i in group_count:
 		_groups.append([])
 	hide_box()
@@ -112,7 +116,7 @@ func remove(units: Array) -> void:
 func can_select(unit: Variant) -> bool:
 	if unit == null or not is_instance_valid(unit) or not unit is Node:
 		return false
-	if not (unit as Node).is_inside_tree() or not (unit as Node).is_in_group("unit"):
+	if not (unit as Node).is_inside_tree() or not (unit as Node).is_in_group(UnitBody.GROUP):
 		return false
 	if seat == null or not seat.is_mine(int(unit.get("owner_slot"))):
 		return false
@@ -159,7 +163,7 @@ func select_rect(from: Vector2, to: Vector2, additive: bool) -> void:
 	var camera := get_viewport().get_camera_3d()
 	var picked: Array[Node3D] = []
 	if camera:
-		for node in get_tree().get_nodes_in_group("unit"):
+		for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 			if not can_select(node):
 				continue
 			var center := _center(node)
@@ -338,7 +342,7 @@ func _same_type_near(unit: Node3D) -> Array:
 	var bond := GuardianBond.of(unit)
 	var guarding := bond != null and bond.is_bound()
 	var near: Array = []
-	for node in get_tree().get_nodes_in_group("unit"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		if not can_select(node):
 			continue
 		var other := GuardianBond.of(node)

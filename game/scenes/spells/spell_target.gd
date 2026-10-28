@@ -35,7 +35,7 @@ func pick(wizard: Node3D, picked: Node3D) -> Node3D:
 		return null
 	if ground_only and BodyNudge.airborne(body):
 		return null
-	if refuse_wizards and body.is_in_group(&"wizard"):
+	if refuse_wizards and body.is_in_group(WizardBody.GROUP):
 		return null
 	if not neutral_allowed and int(body.get("owner_slot")) <= 0:
 		return null

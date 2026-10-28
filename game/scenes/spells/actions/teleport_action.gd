@@ -15,12 +15,6 @@ extends SpellAction
 ## burst, which is local presentation on every peer (nothing is drawn on the dedicated server).
 ## Ref: RFC-021c; sacengine teleport / getTeleportPosition, state.d:10213-10228, 10313-10327; canTeleport, state.d:10306-10311; updateTeleportCasting, state.d:16056-16072
 
-## A body in this group does not travel (the guardian, the captive; GuardianBond adds it).
-const NOT_CARRIED := &"rooted"
-## The Sac Doctor is never carried.
-## Ref: sacengine canTeleport; state.d:10308
-const DOCTOR_GROUP := &"doctor"
-
 ## Groups a building can be in to be aimed at. A shrine would add its own.
 @export var target_groups: PackedStringArray = PackedStringArray(["structure", "altar"])
 ## The burst at the origin and at the destination of each body (at its Center). Empty = none.
@@ -110,11 +104,11 @@ func is_building_of(slot: int, picked: Node3D) -> bool:
 ## The wizard and each creature of his side within `radius` of him on the plane that can travel.
 func travelers(wizard: WizardBody, radius: float) -> Array[Node3D]:
 	var out: Array[Node3D] = [wizard]
-	for node in get_tree().get_nodes_in_group(&"unit"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		var unit := node as UnitBody
 		if unit == null or not unit.is_inside_tree() or unit.is_queued_for_deletion() or unit.owner_slot != wizard.owner_slot:
 			continue
-		if unit.is_dead() or unit.is_taken() or unit.is_in_group(NOT_CARRIED) or unit.is_in_group(DOCTOR_GROUP):
+		if unit.is_dead() or unit.is_taken() or unit.is_in_group(GuardianBond.ROOTED) or unit.is_in_group(DoctorBody.GROUP):
 			continue
 		if TeleportMath.in_radius(unit.global_position, wizard.global_position, radius):
 			out.append(unit)

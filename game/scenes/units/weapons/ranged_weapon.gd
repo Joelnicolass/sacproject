@@ -22,8 +22,6 @@ extends Weapon
 @export var clear_shot_drop := 0.2
 @export_flags_3d_physics var ground_mask := 1
 
-const FPS := 60.0
-
 ## The ability it fires and the look of that shot (a child of this node, made again when the ability changes).
 var attack: AbilityType
 var look: ShotLook

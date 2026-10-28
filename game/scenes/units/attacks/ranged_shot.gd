@@ -13,7 +13,7 @@ extends Node3D
 ## F148: a ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the Abomination's droplets
 ## (ShotDropper, 030h3); F149: the Silverback's breath (GrowingWave), whose ShotLook.collides is off: it touches neither a
 ## body nor the ground and flies its whole range.
-## F151: an in_flight that holds the shot's height (GroundHug, ShotInFlight.holds_height) takes the ground check away: the
+## F151: an in_flight that holds the shot's height (GroundHugFlight, ShotInFlight.holds_height) takes the ground check away: the
 ## Rhinok's shot ends on a body or at the end of its range only.
 ## Ref: sacengine updateEarthflingProjectile state.d:23178-23198, earthflingProjectileCollisionTarget 23145, earthflingProjectileExplosion 23152-23154.
 
@@ -32,7 +32,7 @@ var look: ShotLook
 ## The shot's SPEL (ranges for its impact); null when GameData has no such tag.
 var ability: AbilityType
 
-## F125: the packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs (ShotSplit:
+## F125: the packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs (SplitFlight:
 ## volley_index, aim_distance). Read only.
 var spawn_data: Dictionary = {}
 
@@ -233,7 +233,7 @@ static func _is_live_body(body: Node) -> bool:
 
 
 ## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
-## left out; -INF off the map. The ground check of the flight, and GroundHug's height (F151).
+## left out; -INF off the map. The ground check of the flight, and GroundHugFlight's height (F151).
 ## Ref: sacengine getHeight.
 func ground_height(at: Vector3) -> float:
 	return RangedShot.land_height(self, at)

@@ -1,4 +1,4 @@
-class_name ShotSplit
+class_name SplitFlight
 extends ShotInFlight
 
 ## The Boulderdash's fan of three rocks (emba).

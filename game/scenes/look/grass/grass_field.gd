@@ -20,6 +20,8 @@ const HEIGHT_TEXELS := GrassHeight.SIZE
 ## The ground's color is baked finer (1.25 m per texel): in the distance fade a blade takes the color of
 ## the ground right where it stands, so what is left of it does not stand out from the ground's detail.
 const GROUND_TEXELS := 2048
+## The map's grass field (one per map).
+const GROUP := &"grass_field"
 const FAR_SEED := 7022
 ## Fraction of the radius where the grass is gone (see `fade_end` in grass.gdshader); cells are only
 ## made up to it.
@@ -79,8 +81,8 @@ var _mesh_key := ""
 
 
 func _ready() -> void:
-	add_to_group(&"grass_field")
-	add_to_group(&"vegetation_field")
+	add_to_group(GROUP)
+	add_to_group(VegetationClear.FIELD_GROUP)
 	visibility_changed.connect(_refresh)
 	set_process(false)
 

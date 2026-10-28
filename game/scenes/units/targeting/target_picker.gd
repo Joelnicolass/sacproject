@@ -148,7 +148,7 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 			var distance := _flat(center, other.global_position)
 			if distance > within:
 				continue
-			var value := score(distance, ref_range, other.is_in_group("structure"), other.get_instance_id() == last_attacker_id, other == body.target, near_slope, far_factor, creature_weight, last_attacker_weight, current_weight)
+			var value := score(distance, ref_range, other.is_in_group(MapBuilding.STRUCTURE_GROUP), other.get_instance_id() == last_attacker_id, other == body.target, near_slope, far_factor, creature_weight, last_attacker_weight, current_weight)
 			if TargetRules.is_passive(other):
 				value *= passive_weight
 			if value <= threshold:

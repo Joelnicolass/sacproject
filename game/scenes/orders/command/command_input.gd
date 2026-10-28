@@ -34,10 +34,10 @@ func _ready() -> void:
 	%View.gui_input.connect(_on_view_event)
 
 
-## True while a modal UI (pause, options) covers the world (WorldInput, RFC-031 031c) or the walk-order debug scene drives
-## the world by itself. Silences the hotkeys and the actions on the world.
+## True while a modal UI (pause, options) covers the world (WorldInput). Silences the hotkeys and the
+## actions on the world.
 static func blocked(from: Node) -> bool:
-	return from.get_tree().get_first_node_in_group("walk_order") != null or WorldInput.blocked(from)
+	return WorldInput.blocked(from)
 
 
 func _input(event: InputEvent) -> void:

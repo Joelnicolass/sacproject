@@ -211,7 +211,7 @@ func _closest_foe() -> Node3D:
 
 ## isValidTarget(target, creature): still in the world and not dead.
 func _alive(body: Node3D) -> bool:
-	if not is_instance_valid(body) or not body.is_inside_tree() or body.is_in_group("corpse"):
+	if not is_instance_valid(body) or not body.is_inside_tree() or body.is_in_group(Corpse.GROUP):
 		return false
 	var health := body.get_node_or_null("Health") as Health
 	return health != null and not health.is_dead()

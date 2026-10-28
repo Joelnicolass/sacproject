@@ -8,7 +8,7 @@ extends ShotImpact
 ##   whole amount the same way, wherever it is; the rings start where the shot stopped.
 ## The rings (SpikeWave) go to the shot's parent, so they outlive the shot; they leave out the body hurt here.
 ## The target is hurt at the end of the range only when the range is really spent (RangedShot.range_spent): with
-## GroundHug the shot never bursts on the ground (holds_height), and a burst with no body before its range ends (none
+## GroundHugFlight the shot never bursts on the ground (holds_height), and a burst with no body before its range ends (none
 ## today) would hurt nobody.
 ## Declared (review m3): the target takes the damage through Health like any hit, so a target of the shooter's own side
 ## (an order on an ally) takes 0 or ally_damage_factor by the match's friendly fire (Health._side_factor); the original

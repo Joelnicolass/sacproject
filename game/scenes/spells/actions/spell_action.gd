@@ -123,4 +123,4 @@ func aim_at_body(wizard: WizardBody, spell: SpellType, point: Vector3, funds: St
 
 ## The spawner of projectiles in the world, or null.
 func projectile_spawner() -> SpellSpawner:
-	return get_tree().get_first_node_in_group("spell_spawner") as SpellSpawner
+	return get_tree().get_first_node_in_group(SpellSpawner.GROUP) as SpellSpawner

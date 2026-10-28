@@ -1,4 +1,4 @@
-class_name GroundHug
+class_name GroundHugFlight
 extends ShotInFlight
 
 ## The Rhinok's Spikey Death (hrba) runs along the ground: on every update the shot moves and its height is then put on

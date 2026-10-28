@@ -95,7 +95,7 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 		_strike(weapon, data)
 		return
 	## ShotLook.volley shots with this one direction (one accuracy roll); each packet says
-	## which one it is and how far the aim was (ShotSplit fans them out).
+	## which one it is and how far the aim was (SplitFlight fans them out).
 	## Ref: sacengine boulderdashShoot state.d:11806-11808.
 	var half := (maxi(look.volley, 1) - 1) / 2
 	for index in range(-half, half + 1):

@@ -25,7 +25,6 @@ signal revived
 enum Release { LET_GO, CARRIER_DIED }
 
 const HELD_GROUP := &"captive"
-const UNIT_GROUP := &"unit"
 ## unit_orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
@@ -194,10 +193,10 @@ func _apply(held: bool) -> void:
 	if held:
 		_layer = body.collision_layer
 		body.collision_layer = 0
-		body.remove_from_group(UNIT_GROUP)
+		body.remove_from_group(UnitBody.GROUP)
 		body.add_to_group(HELD_GROUP)
 	else:
 		body.collision_layer = _layer if _layer != 0 else body.unit_layer
 		body.remove_from_group(HELD_GROUP)
-		body.add_to_group(UNIT_GROUP)
+		body.add_to_group(UnitBody.GROUP)
 

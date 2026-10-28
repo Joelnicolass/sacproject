@@ -14,6 +14,8 @@ signal soul_spawned(soul: Node3D)
 ## Ref: state.d:14926, CollectStance
 enum Stance { OWN, ALLY, NEUTRAL, ENEMY }
 
+## The match's soul system (one per match).
+const GROUP := &"soul_system"
 const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
 const _SOUL := preload("res://scenes/souls/soul.gd")
 const NO_SOULS := Refusal.NO_SOULS
@@ -36,7 +38,7 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	add_to_group("soul_system")
+	add_to_group(GROUP)
 	if not is_multiplayer_authority():
 		set_physics_process(false)
 		return
@@ -123,8 +125,8 @@ func _say(text: String) -> void:
 
 func _physics_process(_delta: float) -> void:
 	var facts := ReachFacts.of_rules(_rules())
-	var wizards := get_tree().get_nodes_in_group("wizard")
-	for soul in get_tree().get_nodes_in_group("soul"):
+	var wizards := get_tree().get_nodes_in_group(WizardBody.GROUP)
+	for soul in get_tree().get_nodes_in_group(Soul.GROUP):
 		if soul.state == _SOUL.State.NORMAL:
 			_try_collect(soul, wizards, facts.soul_m, facts.soul_up_m)
 
@@ -194,14 +196,14 @@ func _center(wizard: Node3D) -> Vector3:
 
 
 func _wizard_for(slot: int) -> Node3D:
-	for wizard in get_tree().get_nodes_in_group("wizard"):
+	for wizard in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		if int(wizard.get("owner_slot")) == slot:
 			return wizard as Node3D
 	return null
 
 
 func _watch_placed_units() -> void:
-	for unit in get_tree().get_nodes_in_group("unit"):
+	for unit in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		_watch(unit)
 
 
@@ -232,7 +234,7 @@ func _on_unit_died(_tag: String, slot: int, _at: Vector3, unit: Node3D) -> void:
 
 ## The origin of the souls a creature leaves: the NPCs of the map (group `npc`) are not the creatures of a wizard.
 static func origin_of(unit: Node) -> StringName:
-	return ORIGIN_NPC if unit != null and unit.is_in_group(&"npc") else ORIGIN_CREATURE
+	return ORIGIN_NPC if unit != null and unit.is_in_group(UnitSpawner.NPC_GROUP) else ORIGIN_CREATURE
 
 
 func _spawn_on_corpse(unit: Node3D, slot: int, count: int) -> void:

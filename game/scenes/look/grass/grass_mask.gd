@@ -8,8 +8,6 @@ extends RefCounted
 ## so the grass follows the ground exactly. Nothing built here is saved.
 
 const MAX_CLEARS := 48
-const ALTAR_GROUP := &"altar"
-const FOUNT_GROUP := &"manafount"
 
 ## Rows: x, z (map), radius, edge.
 var clears := PackedVector4Array()
@@ -25,8 +23,8 @@ func gather(tree: SceneTree, space: Node3D, grass_set: GrassSet) -> bool:
 		if clear and clear.is_inside_tree() and clear.radius_m > 0.0:
 			_add(found, space, clear.global_position, clear.radius_m, clear.edge_m)
 	if grass_set:
-		_add_group(found, tree, space, ALTAR_GROUP, grass_set.altar_clear_m, grass_set.altar_edge_m)
-		_add_group(found, tree, space, FOUNT_GROUP, grass_set.fount_clear_m, grass_set.fount_edge_m)
+		_add_group(found, tree, space, Altar.GROUP, grass_set.altar_clear_m, grass_set.altar_edge_m)
+		_add_group(found, tree, space, ManafountBody.GROUP, grass_set.fount_clear_m, grass_set.fount_edge_m)
 	return _store(found)
 
 

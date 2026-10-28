@@ -78,7 +78,7 @@ static func filter(candidates: Array, me: Node3D, round_shape: bool, center: Vec
 			offset.y = 0.0
 		if offset.length_squared() > limit or not in_cone(forward, offset, fov_deg):
 			continue
-		if other.is_inside_tree() and not other.is_in_group(&"corpse"):
+		if other.is_inside_tree() and not other.is_in_group(Corpse.GROUP):
 			found.append(other)
 	return found
 

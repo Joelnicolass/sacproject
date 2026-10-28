@@ -60,7 +60,7 @@ func unit_under(screen: Vector2) -> Node3D:
 	if hit.is_empty():
 		return null
 	var body: Object = hit.get("collider")
-	if body is Node3D and (body as Node).is_in_group("unit"):
+	if body is Node3D and (body as Node).is_in_group(UnitBody.GROUP):
 		return body
 	return null
 
@@ -85,7 +85,7 @@ func soul_under(screen: Vector2) -> Node3D:
 	if hit.is_empty():
 		return null
 	var body: Object = hit.get("collider")
-	if body is Node and (body as Node).is_in_group("soul_target"):
+	if body is Node and (body as Node).is_in_group(Soul.TARGET_GROUP):
 		return (body as Node).get_parent() as Node3D
 	return null
 
@@ -96,7 +96,7 @@ func corpse_under(screen: Vector2) -> Node3D:
 	if hit.is_empty():
 		return null
 	var body: Object = hit.get("collider")
-	if body is Node3D and (body as Node).is_in_group("corpse"):
+	if body is Node3D and (body as Node).is_in_group(Corpse.GROUP):
 		return body as Node3D
 	return null
 
@@ -120,8 +120,8 @@ func is_empty_at(screen: Vector2) -> bool:
 	var body: Object = hit.get("collider")
 	if body is Node:
 		var node := body as Node
-		if Attackable.is_body(node) or node.is_in_group("corpse") or node.is_in_group("soul_target") \
-				or node.is_in_group("structure") or node.is_in_group(Altar.GROUP):
+		if Attackable.is_body(node) or node.is_in_group(Corpse.GROUP) or node.is_in_group(Soul.TARGET_GROUP) \
+				or node.is_in_group(MapBuilding.STRUCTURE_GROUP) or node.is_in_group(Altar.GROUP):
 			return false
 	return true
 
@@ -134,7 +134,7 @@ func body_near(point: Vector3, own_only := false) -> Node3D:
 	var reach := minimap_pick_units * float(minimap.zoom)
 	var best: Node3D = null
 	var best_distance := reach
-	for node in get_tree().get_nodes_in_group("unit") + get_tree().get_nodes_in_group("wizard"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP) + get_tree().get_nodes_in_group(WizardBody.GROUP):
 		var body := node as Node3D
 		if body == null or not Attackable.is_body(body) or is_corpse(body):
 			continue
@@ -163,7 +163,7 @@ func cast(screen: Vector2, mask: int, skip_wizards: bool, skip: Array[RID] = [])
 	query.collision_mask = mask
 	var exclude := skip.duplicate()
 	if skip_wizards:
-		for wizard_node in get_tree().get_nodes_in_group("wizard"):
+		for wizard_node in get_tree().get_nodes_in_group(WizardBody.GROUP):
 			if wizard_node is CollisionObject3D:
 				exclude.append((wizard_node as CollisionObject3D).get_rid())
 	query.exclude = exclude
@@ -171,7 +171,7 @@ func cast(screen: Vector2, mask: int, skip_wizards: bool, skip: Array[RID] = [])
 
 
 static func is_corpse(body: Node3D) -> bool:
-	if body.is_in_group("corpse"):
+	if body.is_in_group(Corpse.GROUP):
 		return true
 	if body is UnitBody:
 		return (body as UnitBody).is_dead()
@@ -210,6 +210,6 @@ static func _targetable(body: Node3D) -> bool:
 
 static func _building_of(hit: Dictionary) -> Node3D:
 	var body: Object = null if hit.is_empty() else hit.get("collider")
-	if body is Node3D and ((body as Node).is_in_group("structure") or (body as Node).is_in_group(Altar.GROUP)):
+	if body is Node3D and ((body as Node).is_in_group(MapBuilding.STRUCTURE_GROUP) or (body as Node).is_in_group(Altar.GROUP)):
 		return body as Node3D
 	return null

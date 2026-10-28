@@ -26,7 +26,7 @@ static func surface_point(from: Node3D, at: Vector3, mask: int, exclude: Array[R
 ## The bodies of every wizard in the tree: they share the ground layer and must not be the ground of a shot or a soul.
 static func wizard_rids(tree: SceneTree) -> Array[RID]:
 	var rids: Array[RID] = []
-	for body in tree.get_nodes_in_group("wizard"):
+	for body in tree.get_nodes_in_group(WizardBody.GROUP):
 		if body is CollisionObject3D:
 			rids.append((body as CollisionObject3D).get_rid())
 	return rids

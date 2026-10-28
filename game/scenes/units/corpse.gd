@@ -67,7 +67,7 @@ func lay_down(body: UnitBody, role := "", instant := false) -> void:
 	clip_driven = not role.is_empty()
 	_body = body
 	_ticks = 0
-	body.remove_from_group("unit")
+	body.remove_from_group(UnitBody.GROUP)
 	body.add_to_group(GROUP)
 	body.collision_layer = corpse_layer
 	body.velocity = Vector3.ZERO
@@ -90,7 +90,7 @@ func stand_up(body: UnitBody) -> void:
 	dissolving = false
 	set_physics_process(false)
 	body.remove_from_group(GROUP)
-	body.add_to_group("unit")
+	body.add_to_group(UnitBody.GROUP)
 	body.collision_layer = body.unit_layer
 
 

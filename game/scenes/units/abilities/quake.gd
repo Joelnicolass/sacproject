@@ -1,4 +1,4 @@
-class_name QuakeAbility
+class_name Quake
 extends AbilityEffect
 
 ## The Jabberocky's Quake: a stunning wave from its feet. The body prepares (192 ticks), the

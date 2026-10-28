@@ -9,12 +9,12 @@ extends RefCounted
 
 ## The kind of `node` for the AI (NONE: the AI does not track it).
 static func kind_of(node: Node, mana_source: AbilityType) -> AiTrack.Kind:
-	if node.is_in_group(&"wizard"):
+	if node.is_in_group(WizardBody.GROUP):
 		return AiTrack.Kind.WIZARD
-	if node.is_in_group(&"unit"):
+	if node.is_in_group(UnitBody.GROUP):
 		var type: Variant = node.get("type")
 		return kind_of_type(type as CreatureType, mana_source) if type != null else AiTrack.Kind.CREATURE
-	if node.is_in_group(Altar.GROUP) or node.is_in_group(&"manafount"):
+	if node.is_in_group(Altar.GROUP) or node.is_in_group(ManafountBody.GROUP):
 		return AiTrack.Kind.STRUCTURE
 	if node is CastTower:
 		return AiTrack.Kind.STRUCTURE
@@ -28,7 +28,7 @@ static func kind_of_type(type: CreatureType, mana_source: AbilityType) -> AiTrac
 
 ## What a structure is: a fount, an altar, a shrine, else a Manalith.
 static func site_of(node: Node) -> AiTrack.Site:
-	if node.is_in_group(&"manafount"):
+	if node.is_in_group(ManafountBody.GROUP):
 		return AiTrack.Site.FOUNT
 	if node.is_in_group(Altar.GROUP):
 		return AiTrack.Site.ALTAR

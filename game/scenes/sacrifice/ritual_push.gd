@@ -12,7 +12,7 @@ extends Node
 
 @export var ritual: Ritual
 
-const GROUPS: Array[StringName] = [&"unit", &"wizard", &"doctor"]
+const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP, DoctorBody.GROUP]
 
 
 func _get_configuration_warnings() -> PackedStringArray:

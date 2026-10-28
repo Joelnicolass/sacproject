@@ -14,7 +14,7 @@ extends AbilityEffect
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if not is_multiplayer_authority() or halo_scene == null:
 		return false
-	var spawner := get_tree().get_first_node_in_group(&"shot_spawner")
+	var spawner := get_tree().get_first_node_in_group(ShotSpawner.GROUP)
 	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
 	if container == null:
 		push_warning("HaloOfEarthAbility: no hay contenedor de disparos (grupo shot_spawner).")

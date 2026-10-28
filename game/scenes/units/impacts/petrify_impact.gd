@@ -29,7 +29,7 @@ func _affect(_shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityTy
 ## The lifetime in physics ticks: int(duration · ticks per second), truncated as the original does.
 func lifetime_ticks(body: Node3D) -> int:
 	var seconds := wizard_s
-	if not body.is_in_group(&"wizard"):
+	if not body.is_in_group(WizardBody.GROUP):
 		var health := body.get_node_or_null("Health") as Health
 		var maximum := health.maximum if health else 0.0
 		seconds = minf(cap_s, k / maximum) if maximum > 0.0 else cap_s

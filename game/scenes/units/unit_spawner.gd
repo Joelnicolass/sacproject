@@ -6,6 +6,8 @@ extends MpSpawner
 
 ## The spawner of the match (one per world): the AI and the summons find it here.
 const GROUP := &"unit_spawner"
+## Creatures the map placed for the sides no player takes.
+const NPC_GROUP := &"npc"
 
 @export var unit_scene: PackedScene
 ## The scene of the map's villagers: unit.tscn plus a Brain (flee, cower, work) and the grudges.
@@ -45,7 +47,7 @@ func _make(data: Variant) -> Node3D:
 	var scene := villager_scene if bool(info.get("peasant", false)) and villager_scene != null else unit_scene
 	var unit: Node3D = scene.instantiate()
 	if bool(info.get("npc", false)):
-		unit.add_to_group(&"npc")
+		unit.add_to_group(NPC_GROUP)
 	unit.name = str(info["name"])
 	unit.set("type", GameData.creature(str(info["tag"])))
 	unit.set("owner_slot", int(info.get("slot", 0)))

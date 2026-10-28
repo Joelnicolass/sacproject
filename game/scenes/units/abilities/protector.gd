@@ -62,7 +62,7 @@ func _shield_allies() -> void:
 	var slot := int(user.get("owner_slot"))
 	var ticks := shield_ticks()
 	var seen: Array = []
-	for node in get_tree().get_nodes_in_group(&"unit"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		var other := node as UnitBody
 		if other == null or other == user or int(other.owner_slot) != slot or not _valid(other):
 			continue

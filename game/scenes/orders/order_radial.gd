@@ -52,7 +52,7 @@ func _input(event: InputEvent) -> void:
 		if is_open():
 			menu.point_at(_pointer)
 		return
-	if get_tree().get_first_node_in_group("walk_order") or WorldInput.blocked(self):
+	if WorldInput.blocked(self):
 		return
 	for i in catalog.formations.size() if catalog else 0:
 		if i < 8 and event.is_action_pressed("formation_%d" % (i + 1), false, true):

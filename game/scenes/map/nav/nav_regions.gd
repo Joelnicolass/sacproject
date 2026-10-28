@@ -22,6 +22,8 @@ var _polygons: Array[PackedInt32Array] = []
 var _component := PackedInt32Array()
 ## Vector2i cell -> PackedInt32Array of the polygons whose box touches it.
 var _cells := {}
+## The closest point that _nearest_in found last.
+var _q := Vector2.ZERO
 
 
 func build(navmesh: NavigationMesh) -> void:
@@ -195,9 +197,6 @@ func _index(p: int, polygon: PackedInt32Array) -> void:
 
 static func _cell_of(x: float, z: float) -> Vector2i:
 	return Vector2i(floori(x / CELL_M), floori(z / CELL_M))
-
-
-var _q := Vector2.ZERO
 
 
 ## Flat distance from `at` to the (convex) polygon, 0 inside; the closest point of the polygon is left in `_q`.

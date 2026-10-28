@@ -59,5 +59,5 @@ func collapse_altar() -> void:
 
 func _match_state() -> MatchState:
 	if _match == null or not is_instance_valid(_match):
-		_match = get_tree().get_first_node_in_group(&"match_state") as MatchState
+		_match = get_tree().get_first_node_in_group(MatchState.GROUP) as MatchState
 	return _match

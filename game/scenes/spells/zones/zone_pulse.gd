@@ -5,7 +5,7 @@ extends Node
 ## the zone. This base counts the moments and finds the bodies; what happens at each one is the work of its classes (ZoneBlast, ZoneFreeze,
 ## ZoneShatter). Server (or solo) only; a pulse draws nothing (the zone's look does, from the phase). A zone that was cancelled never pulses.
 
-const BODY_GROUPS: Array[StringName] = [&"wizard", &"unit"]
+const BODY_GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP]
 ## The original looks for bodies this far past the radius, because the ground under a zone can be uneven.
 const CANDIDATE_MARGIN_M := 15.0
 

@@ -106,9 +106,16 @@
 bg_color = Color(1, 1, 1, 0)
 
 
-[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap")]
+[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap", "camera", "selection", "nav", "wizard_spawner", "population", "graphics_applier", "match_state")]
 script = ExtResource("1_world")
 rules = ExtResource("12_rules")
+camera = NodePath("Camera")
+selection = NodePath("Selection")
+nav = NodePath("Nav")
+wizard_spawner = NodePath("WizardSpawner")
+population = NodePath("Population")
+graphics_applier = NodePath("GraphicsApplier")
+match_state = NodePath("MatchState")
 minimap = NodePath("Hud/Minimap")
 
 
@@ -253,7 +260,7 @@ unique_name_in_owner = true
 world = NodePath("..")
 
 
-[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world", "wizards") instance=ExtResource("f57_match")]
+[node name="MatchState" parent="." unique_id=1957000101 node_paths=PackedStringArray("world", "wizards") instance=ExtResource("f57_match")]
 unique_name_in_owner = true
 world = NodePath("..")
 wizards = NodePath("../Wizards")
@@ -442,13 +449,13 @@ unique_name_in_owner = true
 
 [node name="MatchResult" parent="Hud" unique_id=1957000102 node_paths=PackedStringArray("match_state", "seat") instance=ExtResource("f57_result")]
 unique_name_in_owner = true
-match_state = NodePath("../../Match")
+match_state = NodePath("../../MatchState")
 seat = NodePath("../../LocalSeat")
 
 
 [node name="LobbyReturn" parent="Hud" unique_id=803648076 node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
 unique_name_in_owner = true
-match_state = NodePath("../../Match")
+match_state = NodePath("../../MatchState")
 
 
 [node name="MatchWait" parent="Hud" instance=ExtResource("g68_wait")]
@@ -544,7 +551,7 @@ world = NodePath("..")
 seat = NodePath("../LocalSeat")
 biome = NodePath("../MatchBiome")
 gauge = NodePath("../CombatGauge")
-match_state = NodePath("../Match")
+match_state = NodePath("../MatchState")
 camera = NodePath("../Camera")
 default_music = ExtResource("a055_common_music")
 

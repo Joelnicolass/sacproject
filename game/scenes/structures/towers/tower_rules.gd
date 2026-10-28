@@ -6,7 +6,7 @@ extends RefCounted
 ## Who casts and what appears is StructureAction and StructureSpawner.
 
 ## Bodies a tower cannot be dropped on.
-const BLOCKERS: Array[StringName] = [&"structure"]
+const BLOCKERS: Array[StringName] = [MapBuilding.STRUCTURE_GROUP]
 ## Metres of free ground kept around the tower's footprint (where clear_footprint leaves the bodies it moves out).
 const MARGIN_M := 2.0
 

@@ -7,7 +7,7 @@ extends Node
 ## and 0.75·increment + 125 after; regeneration += increment/60 a second; the five resistances ×0.9; numBulks +1. The bulk is
 ## render only: 2 − 0.75ⁿ, reached by a smoothing of exp(ln 0.1/60) a tick.
 ## Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeWeapon through resistance_factor_of), UnitBody asks
-## extra_regeneration_of() when it regenerates, DevourAbility calls grow(). The cure (Rainbow) is HealEffect's.
+## extra_regeneration_of() when it regenerates, Devour calls grow(). The cure (Rainbow) is HealEffect's.
 ## `shown` (the souls eaten) is replicated (the unit's MultiplayerSynchronizer, "DevourGrowth:shown"): every peer draws the bulk
 ## from it. Declared: the bulk is a scale of the mesh, not the original's bone bulge (placeholder).
 ## Server (or solo) only for grow().

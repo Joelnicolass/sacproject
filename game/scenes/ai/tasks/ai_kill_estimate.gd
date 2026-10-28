@@ -124,7 +124,7 @@ static func seen_healing(perception: AiPerception, target: AiTrack) -> float:
 	if perception.knows_live(target):
 		var effect := target.node.get_node_or_null(HealEffect.NODE_NAME) as HealEffect
 		if effect != null and effect.frames_left > 0:
-			glow = effect.per_frame * HealEffect.FPS
+			glow = effect.per_frame * MatchClock.TICKS_PER_SECOND_F
 	return regen + maxf(healers, glow)
 
 

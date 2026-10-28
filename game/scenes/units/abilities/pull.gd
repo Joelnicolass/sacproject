@@ -127,9 +127,9 @@ func pull_frame() -> int:
 ## A live creature or wizard on the field: what a pull can hold.
 ## Ref: sacengine isValidTarget + isValidAttackTarget.
 static func is_live(node: Node) -> bool:
-	if node == null or not is_instance_valid(node) or not node.is_inside_tree() or node.is_in_group(&"corpse"):
+	if node == null or not is_instance_valid(node) or not node.is_inside_tree() or node.is_in_group(Corpse.GROUP):
 		return false
-	if not node.is_in_group(&"unit") and not node.is_in_group(&"wizard"):
+	if not node.is_in_group(UnitBody.GROUP) and not node.is_in_group(WizardBody.GROUP):
 		return false
 	if node.has_method("is_targetable") and not bool(node.call("is_targetable")):  # dynamic: a unit or a wizard
 		return false

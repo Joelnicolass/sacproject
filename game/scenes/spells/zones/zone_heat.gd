@@ -52,7 +52,7 @@ func _physics_process(_delta: float) -> void:
 			continue
 		if damage_share > 0.0:
 			SplashDamage.hurt(body, float(zone.spell.damage) * damage_share * strength / MatchClock.TICKS_PER_SECOND_F, zone.from_slot, Health.DIRECT_SPELL)
-		if body.is_in_group(&"unit") or body.is_in_group(&"wizard"):
+		if body.is_in_group(UnitBody.GROUP) or body.is_in_group(WizardBody.GROUP):
 			_ignite(body)
 			if push_m_s > 0.0 and away.length() > 0.001:
 				BodyNudge.push(body, away.normalized() * push_m_s * strength)

@@ -23,7 +23,7 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if not is_multiplayer_authority() or user == null or ability == null or eye_scene == null:
 		return false
-	var spawner := user.get_tree().get_first_node_in_group(&"shot_spawner") as ShotSpawner
+	var spawner := user.get_tree().get_first_node_in_group(ShotSpawner.GROUP) as ShotSpawner
 	if spawner == null:
 		push_warning("DivineSight: no hay ShotSpawner en el mundo.")
 		return false

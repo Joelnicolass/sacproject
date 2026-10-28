@@ -117,13 +117,13 @@ func _on_fx_played(kind: StringName, fx: Resource, at: Vector3) -> void:
 
 ## Keeps the local wizard's Health in sight (it spawns after the camera, or is replaced on a rejoin).
 func _follow_wizard(delta: float) -> void:
-	if _wizard != null and is_instance_valid(_wizard) and _wizard.is_in_group(&"local_wizard"):
+	if _wizard != null and is_instance_valid(_wizard) and _wizard.is_in_group(WizardBody.LOCAL_GROUP):
 		return
 	_looked_for_wizard -= delta
 	if _looked_for_wizard > 0.0 or not is_inside_tree():
 		return
 	_looked_for_wizard = 0.5
-	_bind_wizard(get_tree().get_first_node_in_group(&"local_wizard"))
+	_bind_wizard(get_tree().get_first_node_in_group(WizardBody.LOCAL_GROUP))
 
 
 func _bind_wizard(wizard: Node) -> void:

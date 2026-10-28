@@ -141,7 +141,7 @@ func _closest() -> Node3D:
 	var best_d := INF
 	for group in groups:
 		for node in get_tree().get_nodes_in_group(group):
-			if not TargetRules.is_valid_foe_of(-1, node, null, false) or node.is_in_group(&"wizard"):
+			if not TargetRules.is_valid_foe_of(-1, node, null, false) or node.is_in_group(WizardBody.GROUP):
 				continue
 			var d := from.distance_squared_to(BodyNudge.center(node as Node3D))
 			if d < best_d:

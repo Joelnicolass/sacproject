@@ -10,6 +10,16 @@ signal local_wizard_changed(wizard: Node3D)
 const MAP_NODE := "Map"
 
 @export var rules: MatchRules
+## The systems that take parts of the map when it is attached (set in match.tscn).
+@export var camera: WorldCamera
+@export var selection: Selection
+@export var nav: NavService
+## The wizards' MultiplayerSpawner: it takes the map's starts as its spawn points.
+@export var wizard_spawner: MpSlotSpawner
+@export var population: MapPopulation
+@export var graphics_applier: GraphicsApplier
+## The match result: when it is known the world stops taking clicks.
+@export var match_state: MatchState
 ## The minimap gets the baked terrain of the map. Empty (the minimap was removed): nothing to give it.
 @export var minimap: Minimap
 
@@ -62,19 +72,23 @@ func _attach_map() -> void:
 
 ## The sockets of the map into the exports of the systems that need its parts.
 func _bind_map() -> void:
+	if camera == null or selection == null or nav == null or wizard_spawner == null:
+		push_error("Match: camera, selection, nav and wizard_spawner must be set in match.tscn.")
+		return
+	if population == null or graphics_applier == null:
+		push_error("Match: population and graphics_applier must be set in match.tscn.")
+		return
 	var drawn := map.terrain.mesh if map.terrain != null else null
-	%Camera.set("ground", drawn)
-	%Selection.set("ground", drawn)
-	%Nav.set("terrain", map.terrain)
-	%Nav.set("region", map.nav_region)
-	var spawner := $WizardSpawner as MultiplayerSpawner
-	spawner.set("spawn_points", spawner.get_path_to(map.starts))
-	var population := %Population as MapPopulation
+	camera.ground = drawn
+	selection.ground = drawn
+	nav.terrain = map.terrain
+	nav.region = map.nav_region
+	wizard_spawner.spawn_points = wizard_spawner.get_path_to(map.starts)
 	population.buildings = map.buildings
 	population.npcs = map.npcs
 	if minimap != null:
 		minimap.terrain_bake = map.minimap_bake
-	$GraphicsApplier.set("rig", map.look)
+	graphics_applier.rig = map.look
 
 
 func _ready() -> void:
@@ -82,7 +96,6 @@ func _ready() -> void:
 	if definition:
 		map_name = definition.display_name if not definition.display_name.is_empty() else String(definition.tag)
 	print("en %s slot %d" % [map_name, MpKit.local_slot()])
-	var match_state := get_node_or_null("%Match") as MatchState
 	if match_state:
 		match_state.result_changed.connect(_on_result_changed)
 	%Wizards.child_entered_tree.connect(_on_wizard_entered)
@@ -116,7 +129,7 @@ func _check_local(node: Node) -> void:
 	if not node is WizardBody or not (node as WizardBody).is_local():
 		return
 	_local_wizard = node as Node3D
-	%Camera.set_follow(_local_wizard)
+	camera.set_follow(_local_wizard)
 	local_wizard_changed.emit(_local_wizard)
 
 

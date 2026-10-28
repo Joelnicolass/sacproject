@@ -25,7 +25,6 @@ signal released
 
 ## Group of bodies that cannot be moved by Teleport or Guardian (RFC-021 risk 3).
 const ROOTED := &"rooted"
-const SELECTION_GROUP := &"selection"
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 @export var body: UnitBody
@@ -190,7 +189,7 @@ func _apply_post() -> void:
 			_tether.retire()
 		_tether = null
 		return
-	get_tree().call_group(SELECTION_GROUP, "drop", body)
+	get_tree().call_group(Selection.GROUP, "drop", body)
 	if tether_scene == null or not BodyLook.loads_meshes():
 		return
 	if _tether != null and is_instance_valid(_tether):

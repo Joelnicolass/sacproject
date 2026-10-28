@@ -65,7 +65,7 @@ func configure(errand_kind: Ritual.Kind, slot: int, target: UnitBody, destinatio
 
 ## The creature is still the caster's, alive and free (not held by anyone).
 func creature_is_free() -> bool:
-	return _is_alive_own() and creature.is_in_group(Captive.UNIT_GROUP) and not creature.is_held()
+	return _is_alive_own() and creature.is_in_group(UnitBody.GROUP) and not creature.is_held()
 
 
 ## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse is too.

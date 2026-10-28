@@ -10,7 +10,6 @@ extends Node3D
 ## The atlas `brng` comes from the local install through tools/import/import_ui.py (assets/original/fx).
 ## Ref: RFC-021c; sacengine TeleportEffect / TeleportRing, state.d:16074-16101, renderer.d:1749-1756.
 
-const TICKS_PER_S := 60.0
 ## Where the ring height jumps, as (frame as a fraction of the effect, change in body heights).
 ## Ref: sacengine state.d:16078-16091.
 const UP_STEPS: Array[Vector2] = [Vector2(0.0, 0.8), Vector2(0.2, -0.6), Vector2(0.6, -0.8)]
@@ -67,9 +66,9 @@ func start(going_out: bool, feet: Vector3, width: float, height: float) -> void:
 	_going_out = going_out
 	_width = width
 	_height = height
-	_ring_ticks = rules.teleport_ring_s * TICKS_PER_S if rules != null else 48.0
+	_ring_ticks = rules.teleport_ring_s * MatchClock.TICKS_PER_SECOND_F if rules != null else 48.0
 	_rise = rules.teleport_ring_rise if rules != null else 0.25
-	_steps = maxi(1, roundi((rules.teleport_effect_s if rules != null else 32.0 / 60.0) * TICKS_PER_S))
+	_steps = maxi(1, roundi((rules.teleport_effect_s if rules != null else 32.0 / 60.0) * MatchClock.TICKS_PER_SECOND_F))
 	_spawn_z.resize(_steps)
 	for f in _steps:
 		_spawn_z[f] = ring_height(going_out, f, _steps) * height
@@ -87,7 +86,7 @@ func start(going_out: bool, feet: Vector3, width: float, height: float) -> void:
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint() or _spawn_z.is_empty():
 		return
-	_t += delta * TICKS_PER_S
+	_t += delta * MatchClock.TICKS_PER_SECOND_F
 	if _t >= float(_steps) + _ring_ticks:
 		queue_free()
 		return

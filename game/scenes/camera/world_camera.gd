@@ -1,3 +1,4 @@
+class_name WorldCamera
 extends Camera3D
 
 ## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the keys, the screen edges and

@@ -1,5 +1,5 @@
 @tool
-class_name MatchResultBanner
+class_name MatchResult
 extends Label
 
 ## The result of the match for the player of this process: «Victoria», «Derrota» or «Fin de partida».

@@ -15,7 +15,6 @@ const _HEALTH := preload("res://scenes/components/health.gd")
 ## Ref: sacengine rockWarmupTime
 const WARMUP_FRAMES := 15
 const FLOAT_HEIGHT := 7.0
-const FPS := 60.0
 ## Hit box of ±1 m.
 ## Ref: sacengine rockSize 2
 const HALF_SIZE := 1.0
@@ -152,14 +151,14 @@ func _fly_step() -> void:
 	var target_center := _target_center()
 	var distance := target_center - global_position
 	velocity = _cap(velocity + distance.normalized() * acceleration, distance)
-	var next := global_position + velocity / FPS
+	var next := global_position + velocity / MatchClock.TICKS_PER_SECOND_F
 	var ground := _ground_height(global_position)
 	var flat := Vector2(distance.x, distance.z).length()
 	var floating := FLOAT_HEIGHT if _frame < WARMUP_FRAMES else minf(FLOAT_HEIGHT, 0.75 * flat)
 	if next.y < ground + floating:
 		var lifted := velocity
-		lifted.y += (ground + floating - next.y) * FPS
-		next = global_position + _cap(lifted, distance) / FPS
+		lifted.y += (ground + floating - next.y) * MatchClock.TICKS_PER_SECOND_F
+		next = global_position + _cap(lifted, distance) / MatchClock.TICKS_PER_SECOND_F
 	global_position = next
 	_frame += 1
 	if _frame < WARMUP_FRAMES:
@@ -176,8 +175,8 @@ func _fly_step() -> void:
 func _cap(v: Vector3, distance: Vector3) -> Vector3:
 	if v.length() > speed:
 		v = v.normalized() * speed
-	if v.length() > FPS * distance.length():
-		v = v.normalized() * distance.length() * FPS
+	if v.length() > MatchClock.TICKS_PER_SECOND_F * distance.length():
+		v = v.normalized() * distance.length() * MatchClock.TICKS_PER_SECOND_F
 	return v
 
 

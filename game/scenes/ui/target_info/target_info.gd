@@ -31,7 +31,7 @@ static func describe(node: Node, local_slot: int) -> TargetInfo:
 		var red := (node as Soul).color_for(local_slot) == Soul.SoulColor.RED
 		info.title = UiText.t(&"TARGET_INFO_SOUL_PAGAN" if red else &"TARGET_INFO_SOUL")
 		return info
-	if node.is_in_group("corpse") or _is_dead(node):
+	if node.is_in_group(Corpse.GROUP) or _is_dead(node):
 		info.title = UiText.t(&"TARGET_INFO_CORPSE") % _name_of(node)
 		return info
 	if node is Altar:
@@ -68,7 +68,7 @@ static func _creature_title(node: Node) -> String:
 static func wizard_name(tree: SceneTree, slot: int) -> String:
 	if tree == null:
 		return ""
-	for wizard in tree.get_nodes_in_group("wizard"):
+	for wizard in tree.get_nodes_in_group(WizardBody.GROUP):
 		if wizard is WizardBody and (wizard as WizardBody).owner_slot == slot:
 			return (wizard as WizardBody).display_name()
 	return ""

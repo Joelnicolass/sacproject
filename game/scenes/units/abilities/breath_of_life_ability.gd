@@ -38,7 +38,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		if DebugLog.on(&"effects"):
 			print("aliento %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
 		return false
-	var spawner := get_tree().get_first_node_in_group(&"shot_spawner")
+	var spawner := get_tree().get_first_node_in_group(ShotSpawner.GROUP)
 	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
 	if container == null:
 		push_warning("BreathOfLifeAbility: no hay contenedor de disparos (grupo shot_spawner).")

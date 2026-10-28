@@ -25,13 +25,12 @@ extends Resource
 
 
 ## Group of the rig's FxLightLayer. No node in it (headless, dedicated, layer removed) = no light.
-const POOL_GROUP := &"fx_light_pool"
 
 
 ## Asks the rig's FxLightLayer for this light at `at`, keyed by `source` (the same source again restarts
 ## its light). The one way effects borrow a light (SpriteParticles, BeamFx, FxBus).
 func light_up(tree: SceneTree, source: Object, at: Vector3) -> void:
-	var pool := tree.get_first_node_in_group(POOL_GROUP) as FxLightLayer if tree != null else null
+	var pool := tree.get_first_node_in_group(FxLightLayer.GROUP) as FxLightLayer if tree != null else null
 	if pool != null:
 		pool.flash(source, self, at)
 

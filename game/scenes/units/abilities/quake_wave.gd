@@ -2,7 +2,7 @@ class_name QuakeWave
 extends Node3D
 
 ## The Jabberocky's Quake (and the burst of Bovine Intervention's cow): a wave of earth that goes out 50 m from the user's feet
-## in half a second, stuns the bodies it crosses near the center and bends the land while it lasts. QuakeAbility puts it in the
+## in half a second, stuns the bodies it crosses near the center and bends the land while it lasts. Quake puts it in the
 ## shot container at the user's feet on the tick the shot fires, server (or solo) only: a client never gets this node. It does
 ## not hurt, and it does not draw the ring (QuakeRing) nor shape the ground (its child Ground, quake_ground.tscn).
 ##
@@ -62,7 +62,7 @@ var _last_frame := 0
 static func launch(scene: PackedScene, from: Node, feet: Vector3, tag: String) -> QuakeWave:
 	if scene == null or from == null or not from.is_inside_tree():
 		return null
-	var spawner := from.get_tree().get_first_node_in_group(&"shot_spawner")
+	var spawner := from.get_tree().get_first_node_in_group(ShotSpawner.GROUP)
 	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
 	if container == null:
 		push_warning("QuakeWave: no hay contenedor de disparos (grupo shot_spawner).")

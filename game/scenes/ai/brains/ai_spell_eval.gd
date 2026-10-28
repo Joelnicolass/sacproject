@@ -74,7 +74,7 @@ func can_cast_on(_caster: AiTrack, target: AiTrack, spell: SpellType) -> bool:
 		return true
 	var free_fount := spell.only_free_manafounts and target.node is ManafountBody and (target.node as ManafountBody).is_free()
 	return side_allows(spell, free_fount, perception.relation_of(target.node),
-		target.kind == AiTrack.Kind.STRUCTURE and target.node.is_in_group(&"manafount"))
+		target.kind == AiTrack.Kind.STRUCTURE and target.node.is_in_group(ManafountBody.GROUP))
 
 
 ## The side rule of can_cast_on (relation: 0 own, 1 ally, 2-3 not): `only_free_manafounts`, `only_allies`, then `never_allies`.

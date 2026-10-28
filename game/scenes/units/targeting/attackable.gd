@@ -5,7 +5,7 @@ extends RefCounted
 ## (match_command), the ranged shot and the Rock. Splash spells keep their own groups.
 ## A body is one of these groups and not a corpse. Callers still check Health and is_targetable.
 
-const GROUPS: Array[StringName] = [&"wizard", &"unit", &"structure", &"doctor"]
+const GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP, MapBuilding.STRUCTURE_GROUP, DoctorBody.GROUP]
 const CORPSE := &"corpse"
 
 

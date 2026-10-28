@@ -11,6 +11,9 @@ extends Node3D
 
 enum Kind { FOUNT, ALTAR, CUSTOM }
 
+## Every mana source (founts and altars).
+const GROUP := &"mana_source"
+
 @export var kind := Kind.FOUNT
 @export var rules: MatchRules
 @export var rate := 33.333
@@ -23,7 +26,7 @@ enum Kind { FOUNT, ALTAR, CUSTOM }
 
 
 func _ready() -> void:
-	add_to_group("mana_source")
+	add_to_group(GROUP)
 	_read_rules()
 	if not is_multiplayer_authority():
 		set_physics_process(false)

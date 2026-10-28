@@ -9,7 +9,7 @@ extends RefCounted
 const LIVE_MAX := 16
 const TRAIL_MAX := 32
 const TOTAL := LIVE_MAX + TRAIL_MAX
-const GROUPS: Array[StringName] = [&"unit", &"wizard"]
+const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
 var recover_s := 2.0
 var radius_scale := 1.5
@@ -95,7 +95,7 @@ func _scan(tree: SceneTree, space: Node3D, center: Vector2, radius_m: float, gro
 	for group in GROUPS:
 		for node in tree.get_nodes_in_group(group):
 			var body := node as Node3D
-			if body == null or seen.has(body.get_instance_id()) or body.is_in_group("corpse"):
+			if body == null or seen.has(body.get_instance_id()) or body.is_in_group(Corpse.GROUP):
 				continue
 			seen[body.get_instance_id()] = true
 			var local := space.to_local(body.global_position)

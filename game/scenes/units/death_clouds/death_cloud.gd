@@ -11,7 +11,7 @@ extends Node3D
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
 ## Bodies a cloud may touch: creatures and wizards (movingObjects). SteamCloud also hits buildings itself.
-const GROUPS: Array[StringName] = [&"wizard", &"unit"]
+const GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP]
 
 ## The numbers of the cloud (DeathCloudType.ability); set by DeathCloudSpawner before burst().
 var ability: AbilityType

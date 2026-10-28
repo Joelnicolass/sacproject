@@ -39,15 +39,15 @@ func _draw() -> void:
 	# The wedge is drawn under the icons: the apex does not paint over the wizard's own icon.
 	_draw_vision()
 	var tree := get_tree()
-	for node in tree.get_nodes_in_group(&"soul"):
+	for node in tree.get_nodes_in_group(Soul.GROUP):
 		var soul := node as Soul
 		if soul == null or not soul.state in [Soul.State.NORMAL, Soul.State.EMERGING]:
 			continue
 		var kind := style.soul if soul.color_for(slot) == Soul.SoulColor.BLUE else style.soul_foe
 		_mark(soul, kind, 0, false)
-	for node in tree.get_nodes_in_group(&"manafount"):
+	for node in tree.get_nodes_in_group(ManafountBody.GROUP):
 		_mark(node as Node3D, style.manafount, 0, false)
-	for node in tree.get_nodes_in_group(&"altar"):
+	for node in tree.get_nodes_in_group(Altar.GROUP):
 		_mark(node as Node3D, style.altar, int(node.get("owner_slot")), _is_mine(int(node.get("owner_slot")), slot))
 	for node in tree.get_nodes_in_group(CastTower.TOWER_GROUP):
 		var tower := node as CastTower
@@ -58,12 +58,12 @@ func _draw() -> void:
 			continue
 		var kind := style.shrine if tower.type.role == BuildingType.Role.SHRINE else style.manalith
 		_mark(tower, kind, owner_slot, _is_mine(owner_slot, slot))
-	for node in tree.get_nodes_in_group(&"unit"):
+	for node in tree.get_nodes_in_group(UnitBody.GROUP):
 		var unit := node as UnitBody
 		if unit == null or not _unit_shows(unit, slot):
 			continue
 		_mark(unit, style.creature, unit.owner_slot, _is_mine(unit.owner_slot, slot))
-	for node in tree.get_nodes_in_group(&"wizard"):
+	for node in tree.get_nodes_in_group(WizardBody.GROUP):
 		var wizard := node as WizardBody
 		if wizard == null or not _wizard_shows(wizard, slot):
 			continue
@@ -166,7 +166,7 @@ func _draw_vision() -> void:
 
 
 func _local_wizard() -> WizardBody:
-	for node in get_tree().get_nodes_in_group(&"wizard"):
+	for node in get_tree().get_nodes_in_group(WizardBody.GROUP):
 		if node is WizardBody and (node as WizardBody).is_local():
 			return node as WizardBody
 	return null

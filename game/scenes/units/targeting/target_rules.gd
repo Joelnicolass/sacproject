@@ -13,7 +13,7 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 	if node == null or not is_instance_valid(node) or node == me or not node is Node3D:
 		return false
 	var other := node as Node3D
-	if not other.is_inside_tree() or other.is_in_group("corpse") or not "owner_slot" in other:
+	if not other.is_inside_tree() or other.is_in_group(Corpse.GROUP) or not "owner_slot" in other:
 		return false
 	if other is UnitBody and (other as UnitBody).is_summoning():
 		return false

@@ -24,8 +24,6 @@ var _layers: Array[Image] = []
 var _index: Image
 var _index_texture: ImageTexture
 var _images: Dictionary = {}  # texture -> Image (RGBA8), read once
-## The last 40 requests to paint, accepted or refused and why (the capture harness prints them).
-static var log_lines := PackedStringArray()
 
 
 ## The marks of the map `node` is in; null when none or headless.
@@ -140,10 +138,10 @@ func paint(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	return not touched.is_empty()
 
 
+## One line on a request to paint, accepted or refused and why (`--log=scars`).
 static func note(text: String) -> void:
-	log_lines.append(text)
-	if log_lines.size() > 40:
-		log_lines.remove_at(0)
+	if DebugLog.on(&"scars"):
+		print("scars ", text)
 
 
 func _paint_tile(mark: Image, origin: Vector2i, tile: Vector2i) -> void:

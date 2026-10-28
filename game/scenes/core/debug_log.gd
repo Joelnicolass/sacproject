@@ -19,6 +19,7 @@ extends RefCounted
 ## decays: --log=pace). terrain_load (TerrainShape and TerrainMesh: how long the ground's faces, index and mesh took to build).
 ## nav (NavService, MapNavRegion: the navmesh in play and each re-bake by zones; NavMeshBackend: the map that never synced).
 ## orders (Orders: «order <command> <n>» for every human order; the AI's too with Orders.log_ai_orders).
+## scars (GroundScars: every request to paint a mark on the ground, painted or refused and why).
 
 static var _on: Dictionary = {}
 static var _all := false

@@ -42,10 +42,11 @@ const TIER_BLEND := [0.0, 0.07, 0.18, 0.32, 0.48, 0.64, 0.8, 0.92]
 ## How fast the center of the field catches up with where the camera looks (per second).
 @export_range(1.0, 30.0, 0.5) var center_follow_rate := 6.0
 
-static var _height_image: Image
-static var _height_texture: ImageTexture
+## The land height of this field's map (GrassHeight), derived the first time the field loads.
+var _height_image: Image
+var _height_texture: ImageTexture
 ## Side of the square map the height image covers, in metres (the surface's `bounds()` when it was made).
-static var _map_m := 0.0
+var _map_m := 0.0
 
 var _rig: LookRig
 var _grass: GrassSet

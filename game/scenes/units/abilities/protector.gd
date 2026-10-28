@@ -9,8 +9,6 @@ extends AbilityEffect
 ## The pending tick is MatchClock's (fire tick + 1), processed in _physics_process (priority −1, before the bodies).
 ## The shield is each body's LifeShield; its time is the hsba spell's duration · 60.
 
-static var TICKS_PER_SECOND := MatchClock.TICKS_PER_SECOND
-
 ## The shield it gives (data/catalog/abilities/life_shield.tres, Life Shield): its duration is the shield's.
 @export var life_shield: AbilityType
 ## Ticks after fire() at which the allies are shielded (the effect's first update).

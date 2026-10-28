@@ -16,9 +16,6 @@ const GROUP := &"scar_marks"
 ## Not painted when the ground under it is this far (m) from the mark (a bolt that bursts in the air leaves nothing). 0 = always.
 @export_range(0.0, 40.0, 0.5, "suffix:m") var max_height_m := 0.0
 
-## Where the last mark was painted (world; INF before any).
-static var last_painted_at := Vector3.INF
-
 
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
@@ -36,10 +33,7 @@ func mark_at(point: Vector3) -> bool:
 	if scars == null:
 		GroundScars.note("refused: the map has no active GroundScars (%s)" % name)
 		return false
-	var painted := scars.stamp(texture, point, max_height_m)
-	if painted:
-		last_painted_at = point
-	return painted
+	return scars.stamp(texture, point, max_height_m)
 
 
 ## FxBus.broadcast_scene: this scene is the effect itself, played where the mark goes. Paints it and goes.

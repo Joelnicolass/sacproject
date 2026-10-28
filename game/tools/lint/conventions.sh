@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Conventions lint (see game/CONVENTIONS.md). Plain bash + grep/awk/wc/find: no Godot, ~1 s.
+# Project-specific checks that gdlint and the GDScript warnings do not cover (game/CONTRIBUTING.md §9).
+# Plain bash + grep/awk/find: no Godot, ~1 s. Script size, order and naming are gdlint's (game/gdlintrc).
 # Ratchet: every rule has a count in baseline.txt; the lint fails when a count goes UP.
 # Usage: tools/lint/conventions.sh [--verbose] [--update-baseline]
 set -u
@@ -33,14 +34,6 @@ scan() { # $1 = key, then grep args; reads the file list from $OUT/all.txt
 	xargs grep -nE "$@" < "$OUT/all.txt" > "$OUT/$key.txt" 2>/dev/null || true
 }
 
-# C1: long scripts.
-: > "$OUT/C1a.txt"; : > "$OUT/C1b.txt"
-while IFS= read -r f; do
-	n=$(wc -l < "$f" | tr -d ' ')
-	[ "$n" -gt 150 ] && echo "$f ($n lines)" >> "$OUT/C1a.txt"
-	[ "$n" -gt 300 ] && echo "$f ($n lines)" >> "$OUT/C1b.txt"
-done < "$OUT/all.txt"
-
 # C5: cross-node lookup by capitalized name.
 scan C5 'get_node(_or_null)?\("[A-Z]'
 # C6: group lookup with a literal string.
@@ -51,14 +44,6 @@ scan C7 '\.call\("|has_method\('
 # C8: raw fields in *_type.gd Resources.
 grep '_type\.gd$' "$OUT/all.txt" > "$OUT/types.txt"
 xargs grep -nE '^@export.*(var (flags[a-z0-9_]*|folder|components)\b|Dictionary)' < "$OUT/types.txt" > "$OUT/C8.txt" 2>/dev/null || true
-
-# C9: the first "##" line opens with a reference to the original instead of plain words.
-xargs awk '
-	FNR == 1 { seen = 0 }
-	!seen && /^##/ {
-		seen = 1
-		if ($0 ~ /RFC-|sacengine|\.d:|WAD|(^|[^A-Za-z0-9_])F[0-9]/) print FILENAME ":" FNR ":" $0
-	}' < "$OUT/all.txt" > "$OUT/C9.txt"
 
 # C11: own inheritance depth >= 2 (extends an own class_name that itself extends an own class_name).
 xargs awk '
@@ -94,11 +79,6 @@ grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' "$OUT/C13.txt" > "$OUT/C13.tmp" || true; 
 xargs grep -nE '(^|[^A-Za-z0-9_.])print\(' < "$OUT/all.txt" 2>/dev/null \
 	| grep -v 'DebugLog' | grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C14.txt" || true
 grep -v '/debug_log\.gd' "$OUT/C14.txt" > "$OUT/C14b.txt"; mv "$OUT/C14b.txt" "$OUT/C14.txt"
-
-# C24: citations of the original (state.d, sacengine, shiny.d, dagonBackend, file.d:line) in comment/doc lines outside a `## Ref:` line.
-# Only whole-line comments count; the citation belongs at the end of the doc, in `## Ref:`.
-xargs grep -nE '^[ 	]*#.*(state\.d|sacengine|shiny\.d|dagonBackend|[a-z_]+\.d:[0-9])' < "$OUT/all.txt" 2>/dev/null \
-	| grep -vE ':[0-9]+:[ 	]*## Ref:' > "$OUT/C24.txt" || true
 
 # C25: raw key or mouse button in code (controls live in the InputMap). Whole-line comments do not count.
 # Allowlist: the label that shows the key of an action.
@@ -205,7 +185,7 @@ xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (model|sounds|carried_fx)\b|^@ex
 	< <(grep -E '^scenes/(units/creature_type|wizards/wizard_type|gods/god_type)\.gd$' "$OUT/all.txt") 2>/dev/null \
 	| grep -vE '@export var body: PackedScene' | grep -vE '^scenes/gods/god_type\.gd:[0-9]+:@export var look: LookProfile' > "$OUT/C23.txt" || true
 
-RULES="C1a:scripts>150_lines C1b:scripts>300_lines C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C9:doc_opens_with_original C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C18c:text_instead_of_resource C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks C23:presentation_in_server_types C24:original_citation_outside_Ref C25:raw_key_or_mouse_button"
+RULES="C5:get_node(\"Cap\") C6:group_lookup_literal C7:.call/has_method C8:raw_fields_in_*_type.gd C11:inheritance_depth>=2 C12:MpKit_outside_allowlist C13:reads_original_assets C14:print() C15:content_nodes_with_new C16:height_offset_in_code C17:fx_by_text C18:content_lookup_by_text C18b:content_lookup_by_id C18c:text_instead_of_resource C19:data_tres_with_positions C20:matchrules_place_radii C21:export_file C22:time_in_ticks C23:presentation_in_server_types C25:raw_key_or_mouse_button"
 
 baseline_of() { grep -E "^$1=" "$BASELINE" 2>/dev/null | head -1 | cut -d= -f2; }
 

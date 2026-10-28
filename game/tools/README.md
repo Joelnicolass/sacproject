@@ -5,7 +5,7 @@ Herramientas de desarrollo, nunca parte del juego (el export las excluye).
 - `bake/`: scripts de Godot que hornean datos (cuerpos, catalogo, navegacion, layout, terreno). No necesitan el juego original (usan lo ya importado en `assets/original`).
 - `audit/`: chequeos (esqueletos, iconos, transforms del layout; `check_original_assets.sh` SI requiere el juego original). `check_map.tscn -- [--map=<tag>]` valida un mapa o todos: los asientos, que inicios, altares, manantiales y edificios esten sobre tierra, que cada `GroundFootprint` este a nivel (dispersion <= 0,5 m, sin vacios) y que cada altar llegue caminando a cada manantial por el `nav.res`; imprime `CHECK MAP <tag> PASS/FAIL` y sale con 0 o 1. La logica de un mapa es `map_checks.gd` (la usan tambien `terrain_cli --validate` y el boton «Validar mapa» del Terrain).
 - `migrate/`: Python portable (sin Godot ni el juego original) que cambia datos del repo. `rename_resources.py` renombra `.tres` a nombres humanos con `git mv` y reescribe cada referencia (ensayo por defecto, `--apply` escribe, falla si queda una ruta vieja); `--from-display-name <carpeta> --with <carpeta compañera>`.
-- `deploy/`: guía de despliegue en VPS, planeada para el futuro (el servidor de salas que describe se retiró).
+- `deploy/`: guía de despliegue del servidor de salas en un VPS, planeada para el futuro (el servidor está apagado: `room_server_enabled` en `sacrifice_flow.tscn`).
 - `material/`: Material Maker por consola.
 - `move_map/` y `move_map.py`: el mudador de rutas del RFC-048.
 - `skeletal_post_import.gd` queda en la raiz: lo nombran los `.import` de `assets/`.

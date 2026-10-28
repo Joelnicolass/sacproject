@@ -17,7 +17,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 ## Should y núcleo de juego, por área
 
 ### Red y salas
-- **Hecho.** Servidor dedicado con admisión por ticket, servidor de salas y lobby con cuenta regresiva (retirados el 2026-10-27: los reemplazan las «Salas online» que hospedan los jugadores), reconexión y límites, transporte WebSocket opcional, servidor local. F178-F185, F190, F191.
+- **Hecho.** Servidor dedicado con admisión por ticket, servidor de salas y lobby con cuenta regresiva (apagados desde el 2026-10-27 con `room_server_enabled`, para un VPS futuro; hoy online son las «Salas online» que hospedan los jugadores), reconexión y límites, transporte WebSocket opcional, servidor local. F178-F185, F190, F191.
 - Lo genérico vive en `addons/mp_kit`; el glue de Sacrifice en `scenes/net/`. RFC-034.
 - **RFC-068.** Puerta de arranque (`MpMatchGate`) en todos los caminos de red (host LAN, sala, «Servidor local», dedicado a mano): la partida espera pausada a que carguen sus asientos y arranca en el tick 0; después nadie entra de cero, solo vuelve un asiento caído dentro de la gracia, al mismo slot y con el mismo mago; los demás reciben un motivo (`match_started`, `grace_over`, `full`). Prueba: `agent/runs/run_068_gate.sh`. F392.
 - **Pendiente.** Port web (rama `web-port`, RFC-039).

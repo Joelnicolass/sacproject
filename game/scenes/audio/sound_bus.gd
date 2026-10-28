@@ -3,7 +3,7 @@ extends Node
 ## The one place that plays SoundCues: it owns the players (32 in the world, 8 for the UI and the voices) and hands every
 ## request to its VoiceMixer, which decides what plays and what is dropped. It decides how, never when: the Sounds/Voice/
 ## Director nodes ask. Every request, played or dropped, goes to `sound_log`, which is what the cases and the lab check.
-## With the AudioGate closed (dedicated, headless without --audio-probe) it builds nothing and every play is false.
+## With the AudioGate closed (dedicated, room server, headless without --audio-probe) it builds nothing and every play is false.
 ## Ref: RFC-052 052a-052h (F360-F367).
 
 @export_range(1, 128) var pool_3d_size := 32

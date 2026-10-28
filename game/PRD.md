@@ -6,7 +6,7 @@ Juego de escritorio en Godot 4. Fan game personal de Sacrifice (Shiny, 2000), no
 
 - Arquitectura: estándar. Escenas y scripts juntos. Sin `src/domain/`.
 - 3D.
-- Multijugador online (desde 2026-10-27, MpKit 0.18): **salas que hospedan los jugadores**. El host abre la sala desde su PC (en escritorio, un proceso de partida local); los amigos entran con el código. Todo pasa por el relay (`relay-godot.fly.dev`) con tokens cortos del emisor (`issuer-godot.fly.dev`, `data/net/online_config.tres`). Nadie escribe una IP. El servidor de salas con un dedicado por partida en un VPS (RFC-034) se retiró el 2026-10-27.
+- Multijugador online (desde 2026-10-27, MpKit 0.18): **salas que hospedan los jugadores**. El host abre la sala desde su PC (en escritorio, un proceso de partida local); los amigos entran con el código. Todo pasa por el relay (`relay-godot.fly.dev`) con tokens cortos del emisor (`issuer-godot.fly.dev`, `data/net/online_config.tres`). Nadie escribe una IP. El servidor de salas con un dedicado por partida en un VPS (RFC-034) sigue en el código, apagado (`room_server_enabled` en `sacrifice_flow.tscn`), para un despliegue futuro (`tools/deploy/`).
 - «Servidor local» sigue igual: un dedicado en la PC del host, con código por asiento y asientos de IA. El dedicado directo (`--headless -- --dedicated`) queda para pruebas de humo.
 - Sin Steam ni WebRTC. Un proceso dedicado por partida (decisión del 2026-10-17: el estado global de la simulación no admite varias partidas por proceso).
 - Sin fork de Godot. Sin fork de `addons/mp_kit`. Lo genérico de las salas es del kit (`godot-studio-skills`).

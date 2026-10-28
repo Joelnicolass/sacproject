@@ -7,7 +7,7 @@ extends Node
 ## - A trail's puffs never sound (even when their type has a sound as a burst), and a scene FX sounds through the
 ##   SoundEmitter3D inside the scene, not here.
 ## - A type with no `sound`, or a silent one, is silence (no log entry).
-## - With the AudioGate closed (dedicated server, headless bench) it connects to nothing.
+## - With the AudioGate closed (dedicated server, room server, headless bench) it connects to nothing.
 
 
 func _ready() -> void:

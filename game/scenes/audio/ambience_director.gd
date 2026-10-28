@@ -8,7 +8,7 @@ extends Node
 ## The set: `ambience` (a fixture in the lab), or the look's `ambience` of the GodType that `biome` applies (MatchBiome.applied(god)).
 ## No set (a god without one): silence. By night (the god's DayCycle at the match's sky clock, AtmosphereRules: the same hour
 ## the look shows) it plays the set's `night_one_shots` instead, when it has them.
-## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated, headless)
+## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated, room server, headless)
 ## its player stays idle and it plays nothing. No RPC, nothing written to the simulation.
 ## Ref: RFC-052 052g (F366).
 

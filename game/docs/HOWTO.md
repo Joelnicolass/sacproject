@@ -131,6 +131,7 @@ Hace falta un mapa de 4 asientos: `winter_wonder`, o `test_flat4` para probar.
 
 - **Solo, contra la IA:** en el boot elegí el modo «2 contra 2» y el mapa, y pulsá «Contra la IA». La IA juega tu aliado y los dos rivales (su dios sale del selector «Dios de la IA»). En un build de debug el boot ofrece también los mapas de prueba.
 - **En una sala online:** A pulsa «Salas online» → «Crear sala», elige modo «2 contra 2» y el mapa, y pasa el código. Los otros tres entran con «Unirse» y el código. Online son solo personas: para jugar con IA, usá «Servidor local».
+- **Servidor de salas (apagado, para un VPS futuro):** prendé `room_server_enabled` en el inspector de `scenes/core/flow/sacrifice_flow.tscn` y levantalo con `$G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps`. Con el interruptor prendido, «Salas online» abre su lobby (salas con asientos de IA, «Listo» y vuelta a la sala) en vez de las salas de jugadores.
 - **Servidor local:** en «Servidor local» → «Crear servidor local», elegí modo y mapa y, por cada asiento que no es el tuyo, una persona o una IA. Cada asiento de persona tiene su código: pasale a cada uno el suyo, con la dirección y el puerto.
 
 ## Cambiar el balance

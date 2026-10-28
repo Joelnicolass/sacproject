@@ -4,7 +4,7 @@ extends Node3D
 
 ## The appearance of one creature or wizard: the model it is drawn with, what it sounds like and the effect it carries.
 ## It is the root of `<name>_look.tscn` (next to the body scene `<name>.tscn`), the scene behind the `Look` placeholder of the body.
-## Only a client builds it (BodyMount), so the server never loads a model or a sound. The model is an instance
+## Only a client builds it (BodyMount), so the server and the room server never load a model or a sound. The model is an instance
 ## of scenes/bodies/models/<model>.tscn; the root transform is the pose that stands it on the ground (a flier that lifts itself, a
 ## model that sits low). A hybrid that no clip animates has no model: it carries `static_mesh` and the body draws that.
 ## What it does not do: size or place the body (BodyFrame), choose which look a body wears (BodyMount), play a clip (BodyRig).

@@ -1,0 +1,151 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/lobby/room_view.gd" id="1_room"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby/seat_list.tscn" id="2_seats"]
+[ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_god_picker.gd" id="5_god"]
+[ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_difficulty_picker.gd" id="6_difficulty"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby/chat_box.tscn" id="3_chat"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="4_select"]
+
+[node name="RoomView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_room")
+character_select_scene = ExtResource("4_select")
+
+[node name="Layout" type="MarginContainer" parent="."]
+theme_type_variation = &"MarginScreen"
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Row" type="HBoxContainer" parent="Layout"]
+theme_type_variation = &"HBoxColumns"
+layout_mode = 2
+
+[node name="Left" type="VBoxContainer" parent="Layout/Row"]
+theme_type_variation = &"VBoxForm"
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RoomTitle" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "UI_ROOM_VIEW_ROOM_TITLE"
+
+[node name="RoomMeta" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RoomPlayers" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RoomState" type="Label" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="BotOptions" type="HBoxContainer" parent="Layout/Row/Left"]
+theme_type_variation = &"HBoxRow"
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="BotLabel" type="Label" parent="Layout/Row/Left/BotOptions"]
+layout_mode = 2
+text = "UI_ROOM_VIEW_BOT_OPTIONS"
+
+[node name="BotGod" type="OptionButton" parent="Layout/Row/Left/BotOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("5_god")
+
+[node name="BotDifficulty" type="OptionButton" parent="Layout/Row/Left/BotOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("6_difficulty")
+
+[node name="Seats" parent="Layout/Row/Left" instance=ExtResource("2_seats")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RoomCountdown" type="Label" parent="Layout/Row/Left"]
+theme_type_variation = &"LabelTitle"
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RoomResult" type="Label" parent="Layout/Row/Left"]
+theme_type_variation = &"LabelHeading"
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="Layout/Row/Left"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Layout/Row/Left"]
+theme_type_variation = &"HBoxRow"
+layout_mode = 2
+
+[node name="PickCharacter" type="Button" parent="Layout/Row/Left/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_ROOM_VIEW_PICK_CHARACTER"
+
+[node name="ReadyButton" type="Button" parent="Layout/Row/Left/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_ROOM_VIEW_READY_BUTTON"
+
+[node name="LeaveRoom" type="Button" parent="Layout/Row/Left/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_ROOM_VIEW_LEAVE_ROOM"
+
+[node name="RejoinMatch" type="Button" parent="Layout/Row/Left"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "UI_ROOM_VIEW_REJOIN_MATCH"
+
+[node name="ChatBox" parent="Layout/Row" instance=ExtResource("3_chat")]
+layout_mode = 2
+
+[node name="PickOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.88)
+
+[node name="PickHolder" type="Control" parent="PickOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

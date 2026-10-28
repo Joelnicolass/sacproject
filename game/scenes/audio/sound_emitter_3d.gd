@@ -10,7 +10,7 @@ extends AudioStreamPlayer3D
 ## - Loop: it plays on this player (it follows the node) while `active` and within the cue's `max_distance_m` of the
 ##   listener, looking every `check_s`. SoundBus counts the loop in the 3D budget (`claim_loop`). Gapless when the stream
 ##   loops (the WAV import loop mode); a stream that does not loop is started again when it ends.
-## - No cue or a silent cue: silence. A dedicated server and a headless bench (AudioGate closed) load the
+## - No cue or a silent cue: silence. A dedicated server, the room server and a headless bench (AudioGate closed) load the
 ##   scene and its cue file, and play nothing. Presentation only: it reads nothing of the simulation.
 ## Ref: the original's one-shots do not follow their node either.
 

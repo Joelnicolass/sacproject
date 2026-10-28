@@ -14,7 +14,7 @@ const SLOT_PICKS_CHANNEL := &"slot_picks"
 
 ## Picks by MpKit slot; the server writes, the clients mirror.
 var picks: Dictionary[int, WizardPick] = {}
-## Only in the dedicated a room launched (`--match-ticket-file`).
+## Only in the dedicated a room server launched (`--match-ticket-file`).
 var ticket_glue: MatchTicketGlue
 
 ## Slots an AI plays (solo or server; set_ai fills it). No player's keys come for them.

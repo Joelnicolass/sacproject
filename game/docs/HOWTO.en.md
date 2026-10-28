@@ -135,6 +135,7 @@ You need a 4-seat map: `winter_wonder`, or `test_flat4` for testing.
 
 - **Alone, against the AI:** in the boot screen pick the «2 contra 2» (2 against 2) mode and the map, and press «Contra la IA» (Against the AI). The AI plays your ally and both rivals (their god comes from the «Dios de la IA» (AI god) picker). In a debug build the boot screen also offers the test maps.
 - **In an online room:** A presses «Salas online» (Online rooms) → «Crear sala» (Create room), picks the «2 contra 2» mode and the map, and shares the code. The other three join with «Unirse» (Join) and the code. Online rooms are people only: to play with AI, use «Servidor local» (Local server).
+- **Room server (off, for a future VPS):** turn on `room_server_enabled` in the inspector of `scenes/core/flow/sacrifice_flow.tscn` and start it with `$G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps`. With the switch on, «Salas online» (Online rooms) opens its lobby (rooms with AI seats, «Listo» (Ready) and back to the room) instead of the player-hosted rooms.
 - **Local server:** in «Servidor local» (Local server) → «Crear servidor local» (Create local server), pick mode and map and, for each seat that is not yours, a person or an AI. Each person's seat has its code: give each one theirs, with the address and the port.
 
 ## Change the balance

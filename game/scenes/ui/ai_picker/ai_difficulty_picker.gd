@@ -46,6 +46,6 @@ func is_human() -> bool:
 	return selected_difficulty().is_empty()
 
 
-## The translated name of a difficulty tag (the seat rows show it).
+## The translated name of a difficulty tag (LobbyText and the seat rows show it).
 static func difficulty_name(tag: String) -> String:
 	return UiText.t(NAMES.get(tag, NAMES["normal"]))

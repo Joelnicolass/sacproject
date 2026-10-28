@@ -1,0 +1,84 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/lobby/room_create.gd" id="1_create"]
+[ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="2_map_picker"]
+[ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="3_mode_picker"]
+[ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="4_biome_picker"]
+
+[node name="RoomCreate" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_create")
+
+[node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxMenu"
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -195.0
+offset_right = 200.0
+offset_bottom = 195.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Column"]
+theme_type_variation = &"LabelTitle"
+layout_mode = 2
+text = "UI_ROOM_CREATE_TITLE"
+horizontal_alignment = 1
+
+[node name="RoomName" type="LineEdit" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "UI_ROOM_CREATE_ROOM_NAME_HINT"
+
+[node name="RoomPrivate" type="CheckBox" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ROOM_CREATE_ROOM_PRIVATE"
+
+[node name="RoomLevel" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RoomMode" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_mode_picker")
+
+[node name="RoomMap" type="OptionButton" parent="Column" node_paths=PackedStringArray("mode_picker")]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_map_picker")
+mode_picker = NodePath("../RoomMode")
+
+[node name="RoomBiome" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("4_biome_picker")
+
+[node name="CreateConfirm" type="Button" parent="Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "UI_ROOM_CREATE_CREATE_CONFIRM"
+
+[node name="CreateCancel" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ROOM_CREATE_CREATE_CANCEL"
+
+[node name="CreateStatus" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ROOM_CREATE_CREATE_STATUS"
+horizontal_alignment = 1
+autowrap_mode = 3

@@ -6,7 +6,7 @@ extends WaveTouch
 ## the wave touched it tries at the end of the update. A building has no Frozen. The freeze is the body's own
 ## Afflictions/Frozen with the SPEL `zerf`.
 
-## The spell of the freeze a touched body may take (data/catalog/spells/zerf.tres: 20 s, 150 of spell damage when it thaws).
+## The spell of the freeze a touched body may take (data/catalog/spells/freeze.tres: 20 s, 150 of spell damage when it thaws).
 @export var freeze: SpellType
 ## The Frozen state under each body.
 @export var frozen_path := NodePath("Afflictions/Frozen")

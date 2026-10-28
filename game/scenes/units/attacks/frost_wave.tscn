@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/attacks/growing_wave.gd" id="1_wave"]
 [ext_resource type="Script" path="res://scenes/units/attacks/freeze_touch.gd" id="2_touch"]
-[ext_resource type="Resource" path="res://data/catalog/spells/zerf.tres" id="typed_zerf"]
+[ext_resource type="Resource" path="res://data/catalog/spells/freeze.tres" id="typed_zerf"]
 
 [node name="FrostWave" type="Node"]
 script = ExtResource("1_wave")

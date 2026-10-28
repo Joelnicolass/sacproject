@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
-[ext_resource type="Resource" path="res://data/catalog/spells/lwrf.tres" id="3_spell"]
+[ext_resource type="Resource" path="res://data/catalog/spells/firewall.tres" id="3_spell"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_look.gd" id="4_look"]
 [ext_resource type="Mesh" path="res://assets/custom/walls/wall_strip.obj" id="5_strip"]
 [ext_resource type="Shader" path="res://scenes/spells/walls/wall_add.gdshader" id="6_shader"]

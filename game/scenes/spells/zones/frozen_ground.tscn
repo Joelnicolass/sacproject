@@ -1,7 +1,7 @@
 [gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/zorf.tres" id="2_spell"]
+[ext_resource type="Resource" path="res://data/catalog/spells/frozen_ground.tres" id="2_spell"]
 [ext_resource type="Script" path="res://scenes/spells/zones/snowball_flight.gd" id="3_flight"]
 [ext_resource type="Resource" path="res://data/fx/snowball_trail.tres" id="4_trail"]
 [ext_resource type="Resource" path="res://data/fx/snowball_burst.tres" id="5_burst"]
@@ -11,7 +11,7 @@
 [ext_resource type="Shader" path="res://scenes/spells/zones/ice_ground.gdshader" id="9_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/icec.png" id="10_ice"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_freeze.gd" id="11_freeze"]
-[ext_resource type="Resource" path="res://data/catalog/spells/zerf.tres" id="12_zerf"]
+[ext_resource type="Resource" path="res://data/catalog/spells/freeze.tres" id="12_zerf"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_shatter.gd" id="13_shatter"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/ice_shatter.tscn" id="14_shards"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="15_sound"]

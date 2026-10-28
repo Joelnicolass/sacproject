@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
-[ext_resource type="Resource" path="res://data/catalog/spells/laws.tres" id="3_spell"]
+[ext_resource type="Resource" path="res://data/catalog/spells/wall_of_spikes.tres" id="3_spell"]
 [ext_resource type="PackedScene" path="res://scenes/fx/wall_spike.tscn" id="4_spike"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_spikes.gd" id="5_spikes"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_emitter.gd" id="6_emitter"]

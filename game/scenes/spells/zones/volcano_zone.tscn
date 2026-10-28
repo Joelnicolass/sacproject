@@ -1,7 +1,7 @@
 [gd_scene load_steps=45 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/clov.tres" id="2_spell"]
+[ext_resource type="Resource" path="res://data/catalog/spells/volcano.tres" id="2_spell"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_stamp.gd" id="3_stamp"]
 [ext_resource type="Script" path="res://scenes/map/terrain/stamp_profile.gd" id="4_profile"]
 [ext_resource type="Texture2D" path="res://assets/original/terrain/volcano_shape.png" id="5_shape"]

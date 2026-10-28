@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
-[ext_resource type="Resource" path="res://data/catalog/spells/lawv.tres" id="3_spell"]
+[ext_resource type="Resource" path="res://data/catalog/spells/vinewall.tres" id="3_spell"]
 [ext_resource type="Resource" path="res://data/afflictions/vined.tres" id="4_vined"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_vines.gd" id="5_vines"]
 [ext_resource type="Mesh" path="res://assets/custom/walls/vine_tube.obj" id="6_tube"]

@@ -1,7 +1,7 @@
 [gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/tfir.tres" id="2_spell"]
+[ext_resource type="Resource" path="res://data/catalog/spells/demonic_rift.tres" id="2_spell"]
 [ext_resource type="Script" path="res://scenes/spells/zones/rift_edge.gd" id="3_edge"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/rift_edge.gdshader" id="4_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/rif2.png" id="5_edge"]

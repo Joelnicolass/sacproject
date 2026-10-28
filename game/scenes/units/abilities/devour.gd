@@ -14,7 +14,7 @@ const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 ## Multiplies the length of the box (|(2·reach, height, 2·reach)| of the body's melee_profile).
 @export var reach_factor := 1.0
-## The spell that heals the eater after the meal (data/catalog/spells/wobr.tres, Rainbow: 600 health at 240/s, only if it is not full).
+## The spell that heals the eater after the meal (data/catalog/spells/rainbow.tres, Rainbow: 600 health at 240/s, only if it is not full).
 @export var healing: SpellType
 
 

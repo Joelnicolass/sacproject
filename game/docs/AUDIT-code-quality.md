@@ -78,7 +78,7 @@ Tarea: «más daño, que vuele más lento y cambiar su explosión».
 
 | # | Archivo | Qué aporta / qué confunde |
 |---|---|---|
-| 1 | `data/catalog/spells/brif.tres` | `damage = 625`, `speed_m_s = 30`, `damage_range_m = 10`, `effect_range_m = 10`: ¿cuál es la explosión? |
+| 1 | `data/catalog/spells/fireball.tres` | `damage = 625`, `speed_m_s = 30`, `damage_range_m = 10`, `effect_range_m = 10`: ¿cuál es la explosión? |
 | 2 | `scenes/spells/actions/fireball_action.tscn` | `ThrownAction` con `projectile_kind = "Fireball"` (texto) y `prompt = "Elegí el blanco"` (muerto, ver §3 n.º 6) |
 | 3 | `scenes/spells/actions/thrown_action.gd` | `projectile_kind` «names its scene in SpellSpawner» (línea 6) |
 | 4 | `scenes/spells/actions/spell_action.gd` | El contrato `check / begin / started / finish / cancel`; los estados son `String` |

@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
-[ext_resource type="Resource" path="res://data/catalog/spells/ruah.tres" id="2_spell"]
+[ext_resource type="Resource" path="res://data/catalog/spells/healing_aura.tres" id="2_spell"]
 [ext_resource type="Resource" path="res://data/fx/healing_aura_cast.tres" id="3_cast"]
 [ext_resource type="Shader" path="res://scenes/spells/wards/aura_sphere.gdshader" id="4_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/haur.png" id="5_veil"]

@@ -15,7 +15,7 @@ const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
 ## The passive (data/catalog/abilities/rifl.tres): its numbers give the mana cost.
 @export var passive: AbilityType
-## The fire it ignites with (data/catalog/spells/mrff.tres, fireform): the spell's amount, per second.
+## The fire it ignites with (data/catalog/spells/fireform.tres, fireform): the spell's amount, per second.
 @export var fire: SpellType
 ## Scale of the body's box about its center.
 @export var box_scale := 1.5

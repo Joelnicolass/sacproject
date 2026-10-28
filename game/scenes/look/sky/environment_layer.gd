@@ -23,11 +23,17 @@ var _sky: Sky
 var _sky_dresser := SkyDresser.new()
 var _watched: Array[Resource] = []
 var _sky_retry := false
+## The player's «Arte» values, written over everything else (ArtPrefs).
+var _art: ArtPrefs
 
 
 func _ready() -> void:
 	_base = world_environment.environment if world_environment else null
 	visibility_changed.connect(_refresh)
+	if not Engine.is_editor_hint():
+		_art = ArtPrefs.shared()
+		if _art:
+			_art.changed.connect(_on_art_changed)
 	if atmosphere:
 		atmosphere.changed.connect(_on_atmosphere_changed)
 
@@ -97,6 +103,14 @@ func _refresh() -> void:
 		_profile.glow.write_to(_env, _preset == null or _preset.glow_enabled)
 	else:
 		_env.glow_enabled = false
+	if _art:
+		_art.apply_environment(_env)
+
+
+# A value the player cleared must go back to the base: a fresh copy, then everything again.
+func _on_art_changed() -> void:
+	_env = null
+	_refresh()
 
 
 func _on_atmosphere_changed(_sample: AtmosphereSample) -> void:
@@ -127,6 +141,9 @@ func _write_atmosphere(force_sky: bool) -> void:
 	var sky_hz := atmosphere.sky_hz if atmosphere else 2.0
 	if not _sky_dresser.dress(_sky, _profile.sky, sample, moon, sky_hz, force_sky):
 		_retry_sky(sky_hz)
+	# The atmosphere rewrites fog and light every change: the player's values stay on top.
+	if _art and not force_sky:
+		_art.apply_environment(_env)
 
 
 func _write_sky(look: SkyLook) -> void:
@@ -147,7 +164,12 @@ func _write_sky(look: SkyLook) -> void:
 
 
 func _write_fog(look: SkyLook, sample: AtmosphereSample) -> void:
-	_env.fog_enabled = look.fog_enabled
+	var fog_on := look.fog_enabled and (_preset == null or _preset.fog_enabled)
+	_env.fog_enabled = fog_on
+	_env.volumetric_fog_enabled = (
+		(_base == null or _base.volumetric_fog_enabled)
+		and (_preset == null or _preset.volumetric_fog_enabled)
+	)
 	_env.fog_mode = Environment.FOG_MODE_DEPTH
 	_env.fog_light_color = AtmosphereRules.fog_color(look, sample)
 	_env.fog_density = look.fog_density * sample.fog_density
@@ -160,7 +182,7 @@ func _write_fog(look: SkyLook, sample: AtmosphereSample) -> void:
 	_env.volumetric_fog_density = look.volumetric_density
 	_env.volumetric_fog_length = look.volumetric_length_m
 	LookGlobals.publish_fx_fog(
-		_env.fog_density if look.fog_enabled else 0.0, _env.fog_depth_begin, _env.fog_depth_end
+		_env.fog_density if fog_on else 0.0, _env.fog_depth_begin, _env.fog_depth_end
 	)
 
 

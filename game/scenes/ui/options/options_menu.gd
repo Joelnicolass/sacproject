@@ -1,7 +1,7 @@
 class_name OptionsMenu
 extends CanvasLayer
 
-## The options overlay, a TabContainer (Gráficos, Jugabilidad, Sonido) and «Cerrar». It opens from
+## The options overlay, a TabContainer (Gráficos, Avanzado, Arte, Jugabilidad, Sonido) and «Cerrar». It opens from
 ## the boot and from the pause menu. While open it is in `WorldInput.MODAL`, so the world input
 ## keeps quiet; the dim eats the clicks. `pause_menu` (Esc) closes it before the pause menu sees the
 ## key (this layer is a later node in the tree, so its `_input` runs first). process_mode ALWAYS: it

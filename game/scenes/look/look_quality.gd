@@ -33,6 +33,12 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 ## Upper bound for the biome's shadow distance, in meters. 0 = no cap (the biome decides).
 @export_range(0.0, 1000.0, 1.0, "suffix:m") var shadow_distance_cap: float = 0.0
 
+@export_group("Fog")
+## The depth fog of the biome (SkyLook). Off: the far land stays clear.
+@export var fog_enabled: bool = true
+## The volumetric fog (the haze the sun and the spells shine through). Off: a froxel pass less.
+@export var volumetric_fog_enabled: bool = true
+
 @export_group("Screen-space light")
 @export var ssao_enabled: bool = true
 ## Screen-space indirect light: high preset only.

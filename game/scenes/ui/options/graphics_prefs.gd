@@ -14,6 +14,9 @@ extends Resource
 ##   reads it).
 ## - It lives in `user://settings.cfg` `[graphics]` through UserSettings.
 ##   `--quality=low|medium|high` on the command line wins for one run and is not saved.
+## - «Avanzado»: any field of the preset (LookQuality) set on its own (`set_override`); `quality()`
+##   is then a runtime copy of the preset with those values, the preset file never changes. Saved
+##   as `overrides` (field name → value) and kept when the preset changes.
 ## - «Cantidad de marcas»: how many 10 m tiles of the ground can hold a mark (burns, cracks) at
 ##   once; GroundScars reads it when the map loads.
 ## - First run: `default_quality` (medium), VSync on, windowed, no cap. The Mac safety rule: nothing
@@ -51,6 +54,10 @@ var _fullscreen := false
 var _max_fps := 0
 var _vegetation := true
 var _grass := true
+## Fields of the preset the player set by hand (LookQuality property → value).
+var _overrides := {}
+## `quality()` with the overrides, made again when the preset or an override changes.
+var _custom: LookQuality
 var _relief := true
 var _scar_tiles := 256
 
@@ -58,7 +65,59 @@ var _scar_tiles := 256
 ## The preset in use (command line, then the settings file, then `default_quality`).
 func quality() -> LookQuality:
 	_ensure_loaded()
+	var preset := preset_for(_quality)
+	if preset == null or _overrides.is_empty():
+		return preset
+	if _custom == null:
+		_custom = preset.duplicate() as LookQuality
+		for property: String in _overrides:
+			_custom.set(property, _overrides[property])
+	return _custom
+
+
+## The preset as its file holds it, without the player's overrides.
+func base_quality() -> LookQuality:
+	_ensure_loaded()
 	return preset_for(_quality)
+
+
+## The value the player set for `property` of the preset; null when it follows the preset.
+func override_of(property: StringName) -> Variant:
+	_ensure_loaded()
+	return _overrides.get(String(property))
+
+
+func set_override(property: StringName, value: Variant) -> void:
+	_ensure_loaded()
+	if _overrides.get(String(property)) == value:
+		return
+	_overrides[String(property)] = value
+	_custom = null
+	_commit()
+
+
+## `property` follows the preset again.
+func clear_override(property: StringName) -> void:
+	_ensure_loaded()
+	if not _overrides.has(String(property)):
+		return
+	_overrides.erase(String(property))
+	_custom = null
+	_commit()
+
+
+func clear_overrides() -> void:
+	_ensure_loaded()
+	if _overrides.is_empty():
+		return
+	_overrides.clear()
+	_custom = null
+	_commit()
+
+
+func has_overrides() -> bool:
+	_ensure_loaded()
+	return not _overrides.is_empty()
 
 
 func quality_id() -> StringName:
@@ -135,6 +194,7 @@ func set_quality(id: StringName) -> void:
 		return
 	_quality = id
 	_stored_quality = id
+	_custom = null
 	_commit()
 
 
@@ -196,6 +256,7 @@ func _commit() -> void:
 					"max_fps": _max_fps,
 					"vegetation": _vegetation,
 					"grass": _grass,
+					"overrides": _overrides,
 					"relief": _relief,
 					"scar_tiles": _scar_tiles,
 				}
@@ -234,6 +295,8 @@ func _ensure_loaded() -> void:
 	_fullscreen = _read_bool("fullscreen", default_fullscreen)
 	_vegetation = _read_bool("vegetation", default_vegetation)
 	_grass = _read_bool("grass", default_grass)
+	var stored: Variant = UserSettings.read_value(SECTION, "overrides", {})
+	_overrides = (stored as Dictionary).duplicate() if stored is Dictionary else {}
 	_relief = _read_bool("relief", default_relief)
 	var tiles: Variant = UserSettings.read_value(SECTION, "scar_tiles", default_scar_tiles)
 	_scar_tiles = (

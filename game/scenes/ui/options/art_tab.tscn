@@ -1,0 +1,78 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/options/art_tab.gd" id="1_tab"]
+
+[node name="ArtTab" type="VBoxContainer"]
+theme_type_variation = &"VBoxForm"
+custom_minimum_size = Vector2(520, 0)
+script = ExtResource("1_tab")
+
+[node name="Hint" type="Label" parent="."]
+layout_mode = 2
+text = "UI_ART_HINT"
+autowrap_mode = 3
+
+[node name="PartRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="PartLabel" type="Label" parent="PartRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_ART_PART"
+
+[node name="Part" type="OptionButton" parent="PartRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SaveRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SaveName" type="LineEdit" parent="SaveRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "UI_ART_NAME"
+
+[node name="Save" type="Button" parent="SaveRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ART_SAVE"
+
+[node name="Export" type="Button" parent="SaveRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ART_EXPORT"
+
+[node name="LoadRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Saved" type="OptionButton" parent="LoadRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Load" type="Button" parent="LoadRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ART_LOAD"
+
+[node name="ResetAll" type="Button" parent="LoadRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ART_RESET_ALL"
+
+[node name="Status" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3

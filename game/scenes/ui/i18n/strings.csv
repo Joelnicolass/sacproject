@@ -339,3 +339,77 @@ UI_ONLINE_NETWORK,No se puede llegar al servidor online,
 UI_ONLINE_NO_ISSUER,Este juego no tiene servidor online configurado,
 UI_FOREST,Bosque,Forest
 UI_FOREST_TIP,"Los árboles del mapa. Sin ellos la partida se juega en campo abierto (se elige antes de empezar: cambian la colisión y la navegación).","The map's trees. Without them the match is played in the open (chosen before it starts: they change collision and navigation)."
+UI_OPTIONS_TAB_ADVANCED,Avanzado,Advanced
+UI_ADVANCED_TAB,Avanzado,Advanced
+UI_ADVANCED_HINT,"Cada ajuste por separado, sobre la calidad elegida en Gráficos. Lo que cambies se marca en dorado; ↺ lo devuelve al preset.","Each setting on its own, over the quality chosen in Graphics. What you change shows in gold; ↺ gives it back to the preset."
+UI_ADVANCED_RESET,Volver al valor del preset,Back to the preset's value
+UI_ADVANCED_RESET_ALL,Todo como el preset,Everything as the preset
+UI_QUALITY_GROUP_RENDER_SCALE,Resolución de render,Render scale
+UI_QUALITY_GROUP_ANTI-ALIASING,Antialiasing,Anti-aliasing
+UI_QUALITY_GROUP_SUN_SHADOWS,Sombras del sol,Sun shadows
+UI_QUALITY_GROUP_FOG,Niebla,Fog
+UI_QUALITY_GROUP_SCREEN-SPACE_LIGHT,"Luz en pantalla (SSAO, SSIL)","Screen-space light (SSAO, SSIL)"
+UI_QUALITY_GROUP_GLOW,Brillo y destellos,Glow and flares
+UI_QUALITY_GROUP_GROUND,Suelo,Ground
+UI_QUALITY_GROUP_GRASS,Pasto,Grass
+UI_QUALITY_GROUP_VFX_AND_WEATHER,Efectos y clima,VFX and weather
+UI_QUALITY_GROUP_ACTOR_LIGHTS,Luces de criaturas,Actor lights
+UI_QUALITY_GROUP_AMBIENCE,Ambiente,Ambience
+UI_QUALITY_GROUP_RELIEF,Relieve,Relief
+UI_QUALITY_GROUP_VEGETATION,Vegetación,Vegetation
+UI_QUALITY_SCALING_MODE,Escalado,Scaling mode
+UI_QUALITY_SCALE,Escala de render,Render scale
+UI_QUALITY_FSR_SHARPNESS,Nitidez FSR,FSR sharpness
+UI_QUALITY_SCREEN_SPACE_AA,AA en pantalla (FXAA/SMAA),Screen-space AA
+UI_QUALITY_MSAA_3D,MSAA,MSAA
+UI_QUALITY_SHADOW_SPLITS,Cascadas de sombra,Shadow cascades
+UI_QUALITY_SHADOW_ATLAS_SIZE,Tamaño del mapa de sombras,Shadow map size
+UI_QUALITY_SHADOW_FILTER,Filtro de sombras,Shadow filter
+UI_QUALITY_SHADOW_DISTANCE_CAP,Distancia máxima de sombras (0 = sin tope),Shadow distance cap (0 = none)
+UI_QUALITY_FOG_ENABLED,Niebla,Fog
+UI_QUALITY_VOLUMETRIC_FOG_ENABLED,Niebla volumétrica,Volumetric fog
+UI_QUALITY_SSAO_ENABLED,SSAO (oclusión ambiental),SSAO (ambient occlusion)
+UI_QUALITY_SSIL_ENABLED,SSIL (luz indirecta),SSIL (indirect light)
+UI_QUALITY_GLOW_ENABLED,Glow (bloom),Glow (bloom)
+UI_QUALITY_LENS_FLARE,Lens flare,Lens flare
+UI_QUALITY_GROUND_LAYERS,Capas del suelo,Ground layers
+UI_QUALITY_GROUND_TRIPLANAR,Suelo triplanar (laderas),Triplanar ground (slopes)
+UI_QUALITY_GROUND_STOCHASTIC,Suelo sin repetición,Stochastic ground (no tiling)
+UI_QUALITY_GROUND_MACRO,Variación grande del suelo,Ground macro variation
+UI_QUALITY_GROUND_CLOUD_SHADOWS,Sombras de nubes,Cloud shadows
+UI_QUALITY_GRASS_ENABLED,Pasto,Grass
+UI_QUALITY_GRASS_RADIUS_M,Distancia del pasto (m),Grass distance (m)
+UI_QUALITY_GRASS_NEAR_RADIUS_M,Pasto denso cercano (m),Dense near grass (m)
+UI_QUALITY_GRASS_DENSITY_SCALE,Densidad del pasto,Grass density
+UI_QUALITY_GRASS_NEAR_SEGMENTS,Segmentos por hoja,Segments per blade
+UI_QUALITY_GRASS_CLUMPS,Mechones de pasto,Grass clumps
+UI_QUALITY_GRASS_TRAMPLE,Pasto pisado,Grass trample
+UI_QUALITY_FX_SOFT_PARTICLES,Partículas suaves,Soft particles
+UI_QUALITY_FX_FRAME_BLEND,Mezcla de cuadros de efectos,Effect frame blend
+UI_QUALITY_FX_MAX_LIGHTS,Luces de hechizos (máx.),Spell lights (max)
+UI_QUALITY_ACTOR_MAX_LIGHTS,Luces de criaturas (máx.),Creature lights (max)
+UI_QUALITY_RAIN_DENSITY_SCALE,Densidad de la lluvia,Rain density
+UI_QUALITY_LIFE_DENSITY_SCALE,Densidad de vida ambiente,Ambient life density
+UI_QUALITY_RELIEF_MAPS,Mapas de relieve,Relief maps
+UI_ART_TAB,Arte,Art
+UI_ART_HINT,"Los valores del look, uno por uno, como editar el Environment. Se aplican al instante sobre el bioma; lo que cambies se marca en dorado.","The look's own values, one by one, like editing the Environment. They apply at once over the biome; what you change shows in gold."
+UI_ART_PART,Parte,Part
+UI_ART_PART_FOG,Niebla,Fog
+UI_ART_PART_VOLUMETRIC,Niebla volumétrica,Volumetric fog
+UI_ART_PART_SSAO,SSAO,SSAO
+UI_ART_PART_SSIL,SSIL,SSIL
+UI_ART_PART_GLOW,Glow,Glow
+UI_ART_PART_TONEMAP,Tonemap y exposición,Tonemap and exposure
+UI_ART_PART_ADJUST,Ajustes de color,Color adjustment
+UI_ART_PART_AMBIENT,Luz ambiente,Ambient light
+UI_ART_PART_FLARE,Lens flare,Lens flare
+UI_ART_NAME,Nombre del set,Set name
+UI_ART_SAVE,Guardar,Save
+UI_ART_EXPORT,Exportar .tres,Export .tres
+UI_ART_LOAD,Cargar,Load
+UI_ART_RESET_ALL,Todo como el look,Everything as the look
+UI_ART_SAVED,Guardado: %s,Saved: %s
+UI_ART_LOADED,Cargado: %s,Loaded: %s
+UI_ART_LOAD_FAILED,No se pudo cargar %s,Could not load %s
+UI_ART_BAD_NAME,Escribí un nombre válido,Type a valid name
+UI_ART_EXPORTED,Environment exportado en %s,Environment exported to %s

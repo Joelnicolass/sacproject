@@ -19,10 +19,9 @@ extends Control
 signal ability_pressed
 
 ## selection.gd has no class_name (other scripts preload it).
-const _SELECTION := preload("res://scenes/orders/selection.gd")
 
 ## Local selection (`%Selection`).
-@export var selection: Node
+@export var selection: RtsSelection
 @export var cell_scene: PackedScene
 @export var columns := 2
 @export var rows := 6
@@ -92,12 +91,13 @@ func _ready() -> void:
 	%Ability.visible = false
 	if selection:
 		selection.changed.connect(_on_selection_changed)
-		_on_selection_changed((selection as _SELECTION).units())
+		_on_selection_changed(selection.units())
 	_update_visible()
 
 
-func _on_selection_changed(units: Array) -> void:
+func _on_selection_changed(selected: Array) -> void:
 	var started := Time.get_ticks_usec()
+	var units: Array = selected.map(func(unit: RtsUnit) -> Node: return unit.body)
 	_units = units
 	count = units.size()
 	mode = "unit" if count <= capacity() else "group"
@@ -170,7 +170,7 @@ func _ensure_cells(needed: int) -> void:
 
 
 func _show_ability() -> void:
-	ability = (selection as _SELECTION).ability() if selection else null
+	ability = AbilityCommand.selection_ability(selection) if selection else null
 	ability_tag = ability.tag if ability else ""
 	var button: Button = %Ability
 	button.visible = ability != null
@@ -193,10 +193,11 @@ func _on_cell_activated(cell: RosterCell, shift: bool, ctrl: bool) -> void:
 			func(unit: Variant) -> bool:
 				return is_instance_valid(unit) and str(unit.get("creature_tag")) == cell.tag
 		)
+	var picked: Array = members.map(func(body: Node) -> RtsUnit: return RtsUnit.of(body))
 	if shift:
-		(selection as _SELECTION).remove(members)
+		selection.remove(picked)
 	else:
-		(selection as _SELECTION).select_only(members)
+		selection.select_only(picked)
 
 
 func _on_refresh() -> void:

@@ -189,12 +189,20 @@ func _apply_effects(on: bool) -> void:
 func _apply_post() -> void:
 	if Engine.is_editor_hint() or not is_inside_tree():
 		return
+	if body.unit != null:
+		# A guardian is selected with the guardians of its post, whatever their type (Ctrl+click).
+		body.unit.kind = (
+			StringName(body.creature_tag)
+			if post_path.is_empty()
+			else StringName("guard:%s" % post_path)
+		)
 	if post_path.is_empty():
 		if _tether != null and is_instance_valid(_tether):
 			_tether.retire()
 		_tether = null
 		return
-	get_tree().call_group(Selection.GROUP, "drop", body)
+	if body.unit != null:
+		get_tree().call_group(RtsSelection.GROUP, "drop", body.unit)
 	if tether_scene == null or not BodyLook.loads_meshes():
 		return
 	if _tether != null and is_instance_valid(_tether):

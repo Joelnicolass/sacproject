@@ -9,7 +9,6 @@ extends Node
 ## and the minimap to MinimapPointing.
 ## It decides nothing itself: every branch is one call to a command.
 
-const _SELECTION := preload("res://scenes/orders/selection.gd")
 const CREATURE_KEYS := 11
 const SPELL_KEYS := 11
 
@@ -27,7 +26,7 @@ var _press_at := Vector2.ZERO
 var _press_ctrl := false
 var _rect := false
 
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 @onready var _inspector: StructureInspector = %Inspector
 
 
@@ -84,7 +83,7 @@ func left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 			var unit := ray.unit_under(screen)
 			var building := ray.building_first(screen) if unit == null else null
 			if unit:
-				_selection.click(unit, screen, shift, ctrl)
+				_selection.click(RtsUnit.of(unit), screen, shift, ctrl)
 			elif building:
 				# A building shows its bar (StructureInspector); the selection stays.
 				_inspector.inspect(building)

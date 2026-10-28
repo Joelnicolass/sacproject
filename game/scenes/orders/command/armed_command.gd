@@ -9,7 +9,6 @@ extends Node
 ## the original.
 
 const _WORLD := preload("res://scenes/match/match_world.gd")
-const _SELECTION := preload("res://scenes/orders/selection.gd")
 
 @export var feedback: CommandFeedback
 
@@ -27,7 +26,7 @@ var ability: AbilityType
 var caster: Caster
 
 @onready var _log: CommandLog = %Battle
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 
 
 func _ready() -> void:

@@ -6,9 +6,8 @@ extends Node
 ## Selection; this node only reads the keys.
 
 const KEYS := ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
-const _SELECTION := preload("res://scenes/orders/selection.gd")
 
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 
 
 ## True when `event` was one of the group keys (and is used up).

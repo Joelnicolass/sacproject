@@ -1,7 +1,8 @@
 class_name OrderLink
 extends Node
 
-## Connects the RtsKit orders (`orders`, an RtsOrders) to Sacrifice: who the local player is, where
+## Connects the RtsKit orders (`orders`, an RtsOrders) and selection to Sacrifice: who the local
+## player is (the selection follows `seat`), where
 ## a retreat goes (the side's wizard), which foe an attack on a creature retargets to, and how a
 ## client's order reaches the server (MpKit's custom channel `rts_order`). The server, or a game
 ## with no network, applies an order at once. Units travel by their node name under `units_root`,
@@ -19,6 +20,10 @@ const PATH_ID := "p:"
 ## An attack on a creature makes each unit take the enemy creature nearest its own slot within this
 ## range (the original's 100 m).
 @export var retarget_range := 100.0
+## The local player's selection: it picks only the units of `seat`.
+@export var selection: RtsSelection
+## Who looks at this screen (its slot follows the seat).
+@export var seat: MpLocalSeat
 
 
 func _ready() -> void:
@@ -31,6 +36,9 @@ func _ready() -> void:
 	orders.anchor_for = _wizard_of
 	orders.closest_foe = _closest_enemy_creature
 	MpKit.custom_received.connect(_on_custom)
+	if selection != null and seat != null:
+		selection.local_slot = seat.slot
+		seat.changed.connect(func(slot: int) -> void: selection.local_slot = slot)
 
 
 ## The command an attack on `target` is: `attack` on a creature (each unit retargets to the creature

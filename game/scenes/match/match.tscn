@@ -39,7 +39,7 @@
 [ext_resource type="Resource" path="res://scenes/orders/commands.tres" id="f27_commands"]
 [ext_resource type="Resource" path="res://scenes/orders/formations.tres" id="f27_formations"]
 [ext_resource type="Script" path="res://scenes/net/order_link.gd" id="f27_link"]
-[ext_resource type="Script" uid="uid://0e71ph1e726s" path="res://scenes/orders/selection.gd" id="f27_selection"]
+[ext_resource type="Script" path="res://addons/rts_kit/selection/rts_selection.gd" id="f27_selection"]
 [ext_resource type="Script" uid="uid://dx4uvidfw53j2" path="res://scenes/units/attacks/shot_spawner.gd" id="f29_shots"]
 [ext_resource type="PackedScene" path="res://scenes/souls/soul_system.tscn" id="f30_souls"]
 [ext_resource type="PackedScene" path="res://scenes/match/match_state.tscn" id="f57_match"]
@@ -282,7 +282,7 @@ visible = false
 editor_description = "Match rules and services with no body: local seat, warm-up, souls, sacrifices, result, navigation, AI and the option appliers."
 
 [node name="LocalSeat" type="Node" parent="Systems"]
-editor_description = "070 N6: quién mira esta pantalla. Un solo dueño: Selection, PointerRay, CommandFeedback, DamageNumbers, MatchResult, PauseMenu, MusicDirector y AdvisorWatch lo tienen por @export seat. Solo, preview_slot > 0 muestra la partida como ese asiento."
+editor_description = "070 N6: quién mira esta pantalla. Un solo dueño: OrderLink (lo pasa a la selección), PointerRay, CommandFeedback, DamageNumbers, MatchResult, PauseMenu, MusicDirector y AdvisorWatch lo tienen por @export seat. Solo, preview_slot > 0 muestra la partida como ese asiento."
 script = ExtResource("n6_seat")
 
 [node name="Warmup" parent="Systems" node_paths=PackedStringArray("world", "biome", "stage") instance=ExtResource("w69_warmup")]
@@ -340,11 +340,13 @@ prefs = ExtResource("h1_ui_scale")
 [node name="Input" type="Node" parent="."]
 editor_description = "What turns the local player's clicks and keys into orders: selection, orders, commands, radial menu and inspector."
 
-[node name="Selection" type="Node" parent="Input" unique_id=1294781756 node_paths=PackedStringArray("box", "seat")]
+[node name="Selection" type="Node" parent="Input" unique_id=1294781756 node_paths=PackedStringArray("box")]
+editor_description = "The RtsKit selection of the local player: click, Shift, Ctrl or double click by kind (a guardian's kind is its post), box, groups 1–0. Summoned creatures join group 0 (new_units_group 9). OrderLink sets local_slot from the LocalSeat."
 unique_name_in_owner = true
 script = ExtResource("f27_selection")
 box = NodePath("../../Hud/SelectionBox")
-seat = NodePath("../../Systems/LocalSeat")
+occluder_mask = 1
+new_units_group = 9
 
 
 [node name="Orders" type="Node" parent="Input" unique_id=1688586003]
@@ -354,11 +356,13 @@ script = ExtResource("f27_orders")
 commands = ExtResource("f27_commands")
 formations = ExtResource("f27_formations")
 
-[node name="OrderLink" type="Node" parent="Input" node_paths=PackedStringArray("orders", "units_root")]
+[node name="OrderLink" type="Node" parent="Input" node_paths=PackedStringArray("orders", "units_root", "selection", "seat")]
 editor_description = "Sacrifice's side of the orders: the local slot, the retreat anchor (the wizard), the retarget to the nearest enemy creature and the network (a client sends its orders on MpKit's custom channel rts_order; the server applies them with the sender's slot)."
 script = ExtResource("f27_link")
 orders = NodePath("../Orders")
 units_root = NodePath("../../World/Units")
+selection = NodePath("../Selection")
+seat = NodePath("../../Systems/LocalSeat")
 
 
 [node name="MatchCommand" type="Node" parent="Input" unique_id=391205645 node_paths=PackedStringArray("ray", "armed", "orders", "abilities")]

@@ -7,14 +7,12 @@ extends Node
 ## to the wizard and a formation is stored on the selection. The right button itself belongs to
 ## OrderRadial.
 
-const _SELECTION := preload("res://scenes/orders/selection.gd")
-
 @export var armed: ArmedCommand
 @export var ray: PointerRay
 @export var feedback: CommandFeedback
 
 @onready var _log: CommandLog = %Battle
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 @onready var _orders: RtsOrders = %Orders
 
 
@@ -112,7 +110,7 @@ func set_formation(id: StringName) -> void:
 	var formation: RtsFormation = _orders.formations.find(id) if _orders.formations else null
 	if formation == null:
 		return
-	var units: Array = _selection.units()
+	var units: Array = _selection.bodies()
 	if units.is_empty():
 		_log.say(Refusal.NOBODY)
 		return
@@ -121,7 +119,7 @@ func set_formation(id: StringName) -> void:
 
 
 func order(kind: String, point: Vector3, target: Node3D, formation_id := &"") -> void:
-	var units: Array = _selection.units()
+	var units: Array = _selection.bodies()
 	if units.is_empty():
 		_log.say(Refusal.NOBODY)
 		return

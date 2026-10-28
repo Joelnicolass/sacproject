@@ -25,7 +25,7 @@ const MAP_NODE := "Map"
 @export var map_parent: Node3D
 ## The systems that take parts of the map when it is attached (set in match.tscn).
 @export var camera: WorldCamera
-@export var selection: Selection
+@export var selection: RtsSelection
 @export var nav: NavService
 ## The wizards' MultiplayerSpawner: it takes the map's starts as its spawn points.
 @export var wizard_spawner: MpSlotSpawner
@@ -116,7 +116,7 @@ func _bind_map() -> void:
 		return
 	var drawn := map.terrain.mesh if map.terrain != null else null
 	camera.ground = drawn
-	selection.ground = drawn
+	selection.occluder = drawn
 	nav.terrain = map.terrain
 	nav.region = map.nav_region
 	wizard_spawner.spawn_points = wizard_spawner.get_path_to(map.starts)

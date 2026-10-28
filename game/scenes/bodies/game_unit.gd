@@ -43,6 +43,12 @@ func facing_yaw() -> float:
 	return (body as Node3D).rotation.y if body is Node3D else 0.0
 
 
+## The middle of the body (BodyFacts.center): the point a selection box projects.
+func center_point() -> Vector3:
+	var node := body as Node3D
+	return node.global_position + BodyFacts.of_body(node).center if node != null else Vector3.ZERO
+
+
 func _on_worn(facts: BodyFacts) -> void:
 	size = 2.0 * facts.half_size_m()
 

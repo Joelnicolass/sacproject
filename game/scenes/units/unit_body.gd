@@ -115,6 +115,11 @@ func _ready() -> void:
 	add_to_group(GROUP)
 	if unit != null:
 		unit.kind = StringName(creature_tag)
+		unit.selected_changed.connect(
+			func(on: bool) -> void:
+				if health_bar != null:
+					health_bar.set_selected(on)
+		)
 	_sync_unit()
 	floor_snap_length = 0.5
 	collision_layer = unit_layer

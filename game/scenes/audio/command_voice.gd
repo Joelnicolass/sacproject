@@ -17,7 +17,7 @@ extends Node
 ## are local). With the AudioGate closed (dedicated, room server, headless) it creates nothing. No
 ## RPC, nothing written to the simulation.
 
-## Emits `changed(units: Array)` (scenes/orders/selection.gd, %Selection).
+## Emits `changed(units: Array[RtsUnit])` (RtsSelection, %Selection).
 @export var selection: Node:
 	set(value):
 		selection = value
@@ -91,7 +91,8 @@ func selection_event(unit: UnitBody) -> StringName:
 	return SoundEvent.SELECTED
 
 
-func _on_selection_changed(units: Array) -> void:
+func _on_selection_changed(selected: Array) -> void:
+	var units: Array = selected.map(func(unit: RtsUnit) -> Node: return unit.body)
 	var shrank := units.size() < _last_size
 	_last_size = units.size()
 	if shrank or units.is_empty() or not is_instance_valid(units[0]):

@@ -6,8 +6,6 @@ extends Node
 ## for a body, and for souls and corpses when the ability aims at them. Every selected creature
 ## whose active ability is the armed one gets the order.
 
-const _SELECTION := preload("res://scenes/orders/selection.gd")
-
 @export var armed: ArmedCommand
 @export var ray: PointerRay
 @export var feedback: CommandFeedback
@@ -16,7 +14,7 @@ const _SELECTION := preload("res://scenes/orders/selection.gd")
 @export var roster: SelectionRoster
 
 @onready var _log: CommandLog = %Battle
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 
 
 func _ready() -> void:
@@ -26,7 +24,7 @@ func _ready() -> void:
 
 ## Ctrl+Q / Shift+B and the roster's ability icon.
 func use() -> void:
-	var ability := _selection.ability()
+	var ability := selection_ability(_selection)
 	if ability == null:
 		return
 	if ability.needs_target():
@@ -69,7 +67,7 @@ func _apply(ability: AbilityType, point: Variant, body: Node3D) -> bool:
 		return false
 	var used := 0
 	var refusal := ""
-	for node in _selection.units():
+	for node in _selection.bodies():
 		if not is_instance_valid(node) or not node is UnitBody:
 			continue
 		var unit := node as UnitBody
@@ -88,3 +86,14 @@ func _apply(ability: AbilityType, point: Variant, body: Node3D) -> bool:
 func _ability_of(unit: UnitBody) -> AbilityType:
 	var type: CreatureType = unit.type
 	return type.active_ability if type else null
+
+
+## The active ability the selection offers: the newest selected creature that has one wins (the
+## creature's CRE8 priority is not exported). Null = none. This command (Ctrl+Q) and the roster's
+## ability icon both read it, so they never disagree.
+static func selection_ability(selection: RtsSelection) -> AbilityType:
+	for unit in selection.units():
+		var body := unit.body as UnitBody
+		if body != null and body.type != null and body.type.active_ability != null:
+			return body.type.active_ability
+	return null

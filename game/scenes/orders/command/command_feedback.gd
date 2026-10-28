@@ -21,14 +21,12 @@ const ORDER_TEXT := {
 	"retreat": "Retirada",
 }
 
-const _SELECTION := preload("res://scenes/orders/selection.gd")
-
 ## Who looks at this screen: only this seat's new creatures join the selection.
 @export var seat: MpLocalSeat
 
 @onready var _log: CommandLog = %Battle
 @onready var _ping: OrderMarker = %Ping
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 
 
 func _ready() -> void:
@@ -57,7 +55,7 @@ func say_order(kind: String) -> void:
 ## What the selection is, as the line on %Battle: a creature's name, «N unidades» or «Mago».
 func on_selection_changed(units: Array) -> void:
 	if units.size() == 1:
-		_log.say((units[0] as UnitBody).display_name())
+		_log.say(((units[0] as RtsUnit).body as UnitBody).display_name())
 	elif units.size() > 1:
 		_log.say("%d unidades" % units.size())
 	else:
@@ -79,4 +77,4 @@ func _on_unit_entered(unit: Node) -> void:
 ## The owner's new creature joins the selection.
 func _on_unit_summoned(unit: Node) -> void:
 	if seat != null and is_instance_valid(unit) and seat.is_mine((unit as UnitBody).owner_slot):
-		_selection.add_summoned(unit as UnitBody)
+		_selection.add_new((unit as UnitBody).unit)

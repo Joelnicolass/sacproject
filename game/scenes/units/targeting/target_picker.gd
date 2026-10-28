@@ -15,7 +15,7 @@ extends Node
 ## candidates must also lie within that distance of the anchor, because patrolAround's threshold is ~0 at
 ## the anchor and would otherwise take any foe the side has seen at any range, making the unit leave and
 ## come back over and over. Missing («aprox.»): the DangerGrid factor (needs area spells to
-## paint danger) and the raging case. The scarab is a TargetPolicy (F136).
+## paint danger) and the raging case. A ranged attack with a target_policy (the Scarab's Healing web) picks and accepts in place of the score.
 ## A passive body (TargetRules.is_passive: aggressiveness 0 or a peasant) weighs `passive_weight` (a deviation: the original weighs
 ## them as any foe, and creatures stuck on villagers read as «they do not attack»); a melee-only walker skips flyers above its
 ## swing (maxTargetHeight); a target TargetFutility banned is skipped.
@@ -53,10 +53,8 @@ signal picked(target: Node3D)
 @export var futility: TargetFutility
 ## Keep what each pick weighed in last_scores (probes and the debug scene). Off in a match.
 @export var record_scores := false
-## F136 (RFC-030h2): target rules by ranged attack (data/targeting/<tag>.tres). The one whose tag is the body's
-## ranged attack picks and accepts in place of the enemy score; a body with none keeps this script's rules.
-@export var policies: Array[TargetPolicy] = []
-## Blind Rage: the rule of a body that is enraged, in place of everything above (data/targeting/rage.tres).
+## Blind Rage: the rule of a body that is enraged, in place of everything above and of the ranged attack's
+## target_policy (data/targeting/rage.tres).
 @export var rage_policy: TargetPolicy
 
 var last_attacker_id := 0
@@ -198,16 +196,13 @@ static func _height_above_ground(node: Node3D) -> float:
 	return unit.global_position.y - unit.air.ground_height(unit.global_position)
 
 
-## The policy for the body's ranged attack, or null (the default rules).
+## The rage policy while the body is enraged, else its ranged attack's target_policy, or null (the default rules).
 func active() -> TargetPolicy:
 	if rage_policy != null and body != null and body.afflictions.raging():
 		return rage_policy
-	if policies.is_empty() or body == null or body.type == null or body.type.ranged_attack == null:
+	if body == null or body.type == null or body.type.ranged_attack == null:
 		return null
-	for policy in policies:
-		if policy != null and policy.attack == body.type.ranged_attack:
-			return policy
-	return null
+	return body.type.ranged_attack.target_policy
 
 
 ## Something hit this body: it weighs x1.2 until the next hit (a creature only).

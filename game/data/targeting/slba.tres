@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="WoundedAllyPolicy" load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scenes/units/targeting/wounded_ally_policy.gd" id="1_policy"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/slba.tres" id="typed_slba"]
-
-[resource]
-script = ExtResource("1_policy")
-attack = ExtResource("typed_slba")

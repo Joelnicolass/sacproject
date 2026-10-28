@@ -17,12 +17,6 @@ const HEAL_SEEN_M := 30.0
 ## The shortest cadence a blow or a shot is taken to have (a type with no animation data).
 const MIN_PERIOD_S := 0.5
 
-## The targeting rules by ranged attack (TargetPicker.policies).
-const POLICY_DIR := "res://data/targeting/"
-
-## ability tag -> whether it is a healer's shot (shot_heals).
-static var _heals_by_tag := {}
-
 
 ## Pure: seconds to take `health` with `dps` against `healing` per second; INF when the damage does
 ## not outrun the healing.
@@ -42,7 +36,7 @@ static func dps_of(type: CreatureType, target_data: Resource = null) -> float:
 		return 0.0
 	if type.ranged_attack != null:
 		var attack := type.ranged_attack
-		if not shot_heals(attack.tag):
+		if not shot_heals(attack):
 			return (
 				float(attack.damage)
 				* _resistance(target_data, &"direct_ranged_resistance")
@@ -83,21 +77,13 @@ static func shot_period(type: CreatureType, attack: AbilityType) -> float:
 
 ## Pure: a creature whose ranged shot heals its side.
 static func is_healer(type: CreatureType) -> bool:
-	return type != null and type.ranged_attack != null and shot_heals(type.ranged_attack.tag)
+	return type != null and type.ranged_attack != null and shot_heals(type.ranged_attack)
 
 
-## Pure: whether the ranged attack `tag` is a healer's: its targeting rules
-## (data/targeting/<tag>.tres, TargetPicker.policies) are a WoundedAllyPolicy, it shoots the wounded
-## of its own side (the Scarab's Healing web). Read once per tag; the policy is already loaded with
-## unit.tscn, so this never loads a shot's look and its FX from disk (that cost 22 ms on the first
-## replan that met a Brainiac).
-static func shot_heals(tag: String) -> bool:
-	if tag.is_empty():
-		return false
-	if not _heals_by_tag.has(tag):
-		var path := POLICY_DIR + tag + ".tres"
-		_heals_by_tag[tag] = ResourceLoader.exists(path) and load(path) is WoundedAllyPolicy
-	return bool(_heals_by_tag[tag])
+## Pure: whether `ability` is a healer's shot: its targeting rule is a WoundedAllyPolicy, it shoots the
+## wounded of its own side (the Scarab's Healing web).
+static func shot_heals(ability: AbilityType) -> bool:
+	return ability != null and ability.target_policy is WoundedAllyPolicy
 
 
 ## The catalog data of a body (CreatureType of a creature, WizardType of a wizard), null if none.

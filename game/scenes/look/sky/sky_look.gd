@@ -49,6 +49,10 @@ func write_atmosphere(
 	copy: ShaderMaterial, sample: AtmosphereSample, moon_dir_deg: Vector2, cloud_phase: float
 ) -> void:
 	copy.set_shader_parameter(&"night_amount", sample.stars)
+	# The aurora shows by day too, and twice as strong under the stars.
+	copy.set_shader_parameter(
+		&"aurora_strength", _own(&"aurora_strength", 0.0) * (1.0 + sample.stars)
+	)
 	copy.set_shader_parameter(&"cloud_cover", sample.cloud_cover)
 	copy.set_shader_parameter(&"cloud_darken", sample.cloud_darken)
 	copy.set_shader_parameter(&"cloud_speed_mul", sample.cloud_speed_mul)

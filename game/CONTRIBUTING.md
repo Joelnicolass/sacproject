@@ -30,9 +30,8 @@ A developer should guess where a thing lives and change it by opening one or two
 
 | Folder | What lives there |
 |---|---|
-| `creatures/<name>/` | Everything only one creature uses: its type, body, look, passives, sounds, own abilities and `model/` |
-| `scenes/<system>/` | Scenes and the scripts attached to them, one folder per game system (units, spells, wizards, match, ui…) |
-| `data/` | `.tres` resources edited in the inspector (creature, spell and building types, AI tactics…) |
+| `creatures/<name>/`, `spells/<name>/`, `wizards/<name>/`, `gods/<name>/` | One folder per entity, with everything only it uses: its type (`<name>.tres`), scenes, scripts, `fx/`, `sounds/`, `model/` (a god also holds its look and `buildings/`) |
+| `scenes/<system>/` | The code of each game system (units, spells, wizards, match, ui…) and what several entities share: scenes, scripts and the `.tres` resources the system reads |
 | `assets/` | Imported art and sound. `assets/original/` comes from the original game and is read-only |
 | `addons/` | Plugins. `mp_kit`, `agent_kit` and `fsm_kit` are external kits: do not edit them here |
 | `test/unit/` | GUT tests (`test_*.gd`) |
@@ -134,7 +133,7 @@ Follow the [style guide](https://docs.godotengine.org/en/stable/tutorials/script
 ## 6. Language
 
 - Code, comments, `print`/`push_warning`/`push_error`, editor warnings and inspector group names: **English**.
-- Everything the player sees goes through `tr()` with keys in `data/i18n/strings.csv` (Spanish is the default locale).
+- Everything the player sees goes through `tr()` with keys in `scenes/ui/i18n/strings.csv` (Spanish is the default locale).
 
 ## 7. Logging and errors
 
@@ -153,8 +152,8 @@ Follow the [style guide](https://docs.godotengine.org/en/stable/tutorials/script
 
 | Check | Command (from `game/`) |
 |---|---|
-| Format | `gdformat --check scenes tools test` |
-| Lint | `gdlint scenes tools test` (settings in `gdlintrc`) |
+| Format | `gdformat --check scenes creatures spells wizards gods tools test` |
+| Lint | `gdlint scenes creatures spells wizards gods tools test` (settings in `gdlintrc`) |
 | Unit tests | `godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit` |
 | Project-specific checks | `bash tools/lint/conventions.sh` (network boundary, original assets, InputMap) |
 

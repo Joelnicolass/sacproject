@@ -3,8 +3,8 @@ extends Resource
 
 ## How one kind of body bleeds: the spray a light and a heavy hit throw, how much health it must
 ## lose before it bleeds again, and the mark the blood leaves on the ground (how many, how far from
-## the feet). Every creature and wizard bleeds red (data/fx/blood/red.tres) unless its look picks
-## another type.
+## the feet). Every creature and wizard bleeds red (scenes/fx/effects/blood/red.tres) unless its
+## look picks another type.
 ## What it does not do: decide when a body bleeds (BloodFx, BloodRules) or paint anything
 ## (GroundScars).
 

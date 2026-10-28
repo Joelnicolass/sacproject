@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="BeamType" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/beam_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/fx/beam_fx.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/locust_ray.tres" id="cue_locust_ray"]
+[ext_resource type="Texture2D" uid="uid://dhprdm32llm4j" path="res://assets/original/fx/gmfl_a.png" id="atlas_png"]
+
+[resource]
+script = ExtResource("1_type")
+scene = ExtResource("2_scene")
+atlas = ExtResource("atlas_png")
+h_frames = 2
+v_frames = 2
+frame_s = 0.06667
+bolts = 1
+segments = 2
+width_m = 0.5
+jitter_m = 0.0
+life_s = 0.26667
+travel_s = 0.0
+energy_min = 1.0
+energy_max = 1.0
+blend = 1
+sound = ExtResource("cue_locust_ray")

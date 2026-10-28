@@ -52,7 +52,7 @@ extends BookEntry
 ## (VillagerBrain).
 @export var peasant := false
 @export_group("Abilities")
-## The ranged attack of the creature (its folder, or data/catalog/abilities/ when shared), or empty
+## The ranged attack of the creature (its folder, or scenes/units/abilities/ when shared), or empty
 ## for one that only fights in melee.
 @export var ranged_attack: AbilityType
 ## The ability the player triggers with Ctrl+Q while the creature is selected (Rhinok's halo,

@@ -2,8 +2,9 @@ class_name PortalLook
 extends Resource
 
 ## Look of a flat ring + glowing center that faces the camera.
-## One .tres per colour: data/fx/portal_blue.tres (the carried creature's ring),
-## data/fx/portal_red.tres (the Sac Doctor's vortex). The two 4x4 atlases are dragged in here.
+## One .tres per colour: scenes/fx/effects/portal_blue.tres (the carried creature's ring),
+## scenes/fx/effects/portal_red.tres (the Sac Doctor's vortex). The two 4x4 atlases are dragged in
+## here.
 
 ## The 4x4 atlas of the ring (rim): ltn2.png blue, vtx1.png red. Empty (or no `center`) = a flat
 ## `fallback_color` fill.

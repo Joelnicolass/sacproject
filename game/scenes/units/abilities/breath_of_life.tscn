@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/breath_of_life.gd" id="1_breath"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/fast_revive.tscn" id="2_revive"]
-[ext_resource type="PackedScene" path="res://data/shots/breath_of_life.tscn" id="look_shot"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/breath_of_life.tscn" id="look_shot"]
 
 [node name="BreathOfLife" type="Node3D"]
 process_physics_priority = -1

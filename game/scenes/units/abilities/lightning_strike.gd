@@ -31,7 +31,7 @@ signal struck(body: Node3D, at: Vector3)
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var travel_s := 0.2
 ## The first live body on the way becomes the end.
 @export var retarget := true
-## The bolt every peer sees (a BeamType of data/fx/beams; empty = none).
+## The bolt every peer sees (a BeamType of scenes/fx/effects/beams; empty = none).
 @export var beam_type: BeamType
 ## The burst where the bolt hurts a body (reserve look). Empty = none.
 @export var hit_fx: ParticleType

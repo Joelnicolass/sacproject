@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_aanvv"]
 [ext_resource type="Texture2D" uid="uid://cmxcoa38igf0j" path="res://assets/original/ui/icons/pez_h.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/brainiac_shot.tres" id="typed_bsba"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/brainiac_shot.tres" id="typed_bsba"]
 [ext_resource type="AnimationLibrary" path="res://creatures/sara_bella/model/sara_bella_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/sara_bella/sara_bella.tscn" id="body_scene"]
 

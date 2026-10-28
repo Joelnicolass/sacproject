@@ -14,7 +14,7 @@
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/working.gd" id="10_working"]
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/dying.gd" id="11_dying"]
 [ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_actor.gd" id="12_actor"]
-[ext_resource type="Resource" path="res://data/match_rules.tres" id="13_rules"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="13_rules"]
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="14_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="14_rig"]
 [ext_resource type="Script" path="res://scenes/bodies/idle_sway.gd" id="18_sway"]
@@ -23,7 +23,7 @@
 
 [ext_resource type="Script" path="res://scenes/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
-[ext_resource type="Resource" path="res://data/fx/needle.tres" id="17_needle"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/needle.tres" id="17_needle"]
 [ext_resource type="Resource" path="res://creatures/sac_doctor/sac_doctor.tres" id="typed_dcas"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]

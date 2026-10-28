@@ -4,6 +4,6 @@
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/halo_of_earth.tscn" id="2_halo"]
 
 [node name="HaloOfEarthAbility" type="Node"]
-editor_description = "The Rhinok's Halo of Earth effect (HRba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). No preparation; it instances the HaloOfEarth coordinator in the shot container."
+editor_description = "The Rhinok's Halo of Earth effect (HRba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). No preparation; it instances the HaloOfEarth coordinator in the shot container."
 script = ExtResource("1_ability")
 halo_scene = ExtResource("2_halo")

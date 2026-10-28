@@ -5,7 +5,7 @@ extends Resource
 ## rating, its mana and state, the own wizard's souls and his threat (the groups within
 ## threat_near_m..threat_far_m of him). The tracks count these in ages (runs of the perception job,
 ## AiPlay.ages_for), so a difficulty that slows its clock stretches them the same. It does not say
-## what the side sees (Vision does). Embedded in each data/ai/tactics_*.tres; never changed while
+## what the side sees (Vision does). Embedded in each scenes/ai/tactics_*.tres; never changed while
 ## playing. The numbers are the original's.
 
 @export_group("How often")
@@ -28,7 +28,7 @@ extends Resource
 @export_group("Minimap")
 ## With AiDifficulty.Knowledge.SIGHT_AND_MAP: the AI knows where the bodies within this flat
 ## distance of its wizard are (never their health or mana), as a human reads them on the minimap.
-## Equal to the minimap's starting view radius (data/ui/minimap/view.tres,
+## Equal to the minimap's starting view radius (scenes/ui/minimap/view.tres,
 ## MinimapView.view_radius_m); ai_knowledge_cases compares the two. It also bounds the foe creatures
 ## of the first scan.
 @export_range(0.0, 2000.0, 1.0, "suffix:m") var map_sight_m := 216.0

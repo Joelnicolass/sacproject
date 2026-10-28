@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_bou3e"]
 [ext_resource type="Texture2D" uid="uid://decnulic3iwu2" path="res://assets/original/ui/icons/oham.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/manahoar_channelling.tres" id="typed_hmba"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/manahoar_channelling.tres" id="typed_hmba"]
 [ext_resource type="AnimationLibrary" path="res://creatures/manahoar/model/manahoar_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/manahoar/manahoar.tscn" id="body_scene"]
 

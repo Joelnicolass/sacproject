@@ -6,8 +6,8 @@
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="4_sound"]
 [ext_resource type="Script" path="res://scenes/spells/zones/rift_ribbon.gd" id="5_ribbon"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
-[ext_resource type="Resource" path="res://data/audio/cues/rift_hit.tres" id="cue_rift_hit"]
-[ext_resource type="Resource" path="res://data/audio/cues/rift_spawn.tres" id="cue_rift_spawn"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_hit.tres" id="cue_rift_hit"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_spawn.tres" id="cue_rift_spawn"]
 
 [sub_resource type="ShaderMaterial" id="Mat_trail"]
 shader = ExtResource("2_shader")

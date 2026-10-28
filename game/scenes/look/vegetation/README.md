@@ -6,4 +6,4 @@ or headless process.
   3D toolbar or in any image editor.
 - `VegetationPatch`: a cluster of one species in a circle. `VegetationClear` (in `look/grass/`) clears plants around a house.
 - Placement is a pure hash of seed and species tag (no RNG), so every run plants the same.
-Edit: species in `data/vegetation/species/`; LOD and fade in `data/look/vegetation/original_plants.tres` and the preset.
+Edit: species in `scenes/look/vegetation/species/`; LOD and fade in `scenes/look/vegetation/original_plants.tres` and the preset.

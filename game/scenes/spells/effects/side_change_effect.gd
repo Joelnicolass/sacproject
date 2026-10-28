@@ -8,7 +8,8 @@ extends BodyEffect
 ## the creature may be charmed in the first place (the spell's SpellTarget does) and it does not
 ## give it back.
 
-## The hearts that burst from the creature (a ParticleType under data/fx/, with its light).
+## The hearts that burst from the creature (a ParticleType under scenes/fx/effects/, with its
+## light).
 @export var hearts: ParticleType
 
 

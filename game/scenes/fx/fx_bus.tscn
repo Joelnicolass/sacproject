@@ -11,12 +11,12 @@ script = ExtResource("1_bus")
 
 [node name="Bursts" type="Node" parent="."]
 unique_name_in_owner = true
-editor_description = "One pool of emitters per ParticleType, prewarmed with all of data/fx and its folders. `max_per_type` is the cap when the type has no pool_max."
+editor_description = "One pool of emitters per ParticleType, prewarmed with every effect of FxWire.warm_dirs() (scenes/fx/effects/ and the fx/ folder of each creature, spell, wizard and god). `max_per_type` is the cap when the type has no pool_max."
 script = ExtResource("2_bursts")
 
 [node name="Beams" type="Node" parent="."]
 unique_name_in_owner = true
-editor_description = "One pool of beams per BeamType (its pool_max), prewarmed with data/fx/beams."
+editor_description = "One pool of beams per BeamType (its pool_max), prewarmed with scenes/fx/effects/beams."
 script = ExtResource("3_beams")
 
 [node name="WarmHook" type="Node" parent="."]

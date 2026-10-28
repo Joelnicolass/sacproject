@@ -52,7 +52,7 @@ signal picked(target: Node3D)
 ## Keep what each pick weighed in last_scores (probes and the debug scene). Off in a match.
 @export var record_scores := false
 ## Blind Rage: the rule of a body that is enraged, in place of everything above and of the ranged
-## attack's target_policy (data/targeting/rage.tres).
+## attack's target_policy (scenes/units/targeting/rage.tres).
 @export var rage_policy: TargetPolicy
 
 var last_attacker_id := 0

@@ -1,0 +1,11 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/strikes/warmonger_gun.tscn" id="2_strike"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="pt_script"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/warmonger_hit.tres" id="fx_warmonger_hit"]
+
+[node name="Fhga" type="Node"]
+script = ExtResource("1_look")
+impact_fx = Array[ExtResource("pt_script")]([ExtResource("fx_warmonger_hit")])
+strike = ExtResource("2_strike")

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/souls/soul.gd" id="1_soul"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/spir.png" id="2_atlas"]
 [ext_resource type="Script" path="res://scenes/audio/soul_sounds.gd" id="a052_soul_sounds"]
-[ext_resource type="Resource" path="res://data/audio/cues/soul.tres" id="a055_soul"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/soul.tres" id="a055_soul"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_soul"]
 properties/0/path = NodePath(".:position")

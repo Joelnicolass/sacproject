@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/strikes/ray_strike.gd" id="1_ray"]
-[ext_resource type="Resource" path="res://data/fx/beams/gnome_flame.tres" id="fx_gnome_flame"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/beams/gnome_flame.tres" id="fx_gnome_flame"]
 
 [node name="GnomeRay" type="Node3D"]
 process_physics_priority = -1

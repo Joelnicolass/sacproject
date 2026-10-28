@@ -38,7 +38,7 @@ const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 @export var splash_groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")
 ## The fire puffed on a burning creature (3 particles a frame). Empty = none.
-@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
+@export var fire_fx: ParticleType = preload("res://scenes/fx/effects/fire.tres")
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.1666
 ## The socket of the body the fire puffs from (inside its box, under the health bar).
 @export var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER

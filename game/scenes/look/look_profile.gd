@@ -3,11 +3,11 @@ class_name LookProfile
 extends Resource
 
 ## What one biome uses to look the way it does: references only, so each part is swapped alone.
-## `GodType.look` points at one of these (`data/look/<god>.tres`). A part left empty is neutral:
+## `GodType.look` points at one of these (`scenes/look/<god>.tres`). A part left empty is neutral:
 ## its layer simply has nothing to show.
 
 @export var display_name: String = ""
-## The god of this biome (`data/gods/<god>.tres`).
+## The god of this biome (`gods/<god>/<god>.tres`).
 @export var god: StringName = &""
 
 @export_group("Sky and light")
@@ -24,7 +24,7 @@ extends Resource
 ## How the day goes by over the approved light (night, moon, stars). Empty = no cycle: always the
 ## approved light.
 @export var day: DayCycle
-## How the weather goes (the five gods share `data/look/weather/plan.tres`). Empty = always clear.
+## How the weather goes (the five gods share `scenes/look/weather/plan.tres`). Empty = always clear.
 @export var weather: WeatherPlan
 ## Pollen, fireflies, embers...: in the air around the camera and in the map's LifeSpots. Empty = no
 ## ambient life.

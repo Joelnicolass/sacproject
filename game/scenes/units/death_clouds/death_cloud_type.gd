@@ -6,7 +6,7 @@ extends Resource
 ## does it and how it looks. A new cloud is a new .tres (and, if it does something new, a new scene)
 ## in the `clouds` of the creature's DeathCloudSpawner (its `<name>_passives.tscn`).
 
-## The numbers of the cloud (data/catalog/abilities/steam_cloud.tres, cen@.tres, tum@.tres).
+## The numbers of the cloud (scenes/units/abilities/steam_cloud.tres, cen@.tres, tum@.tres).
 @export var ability: AbilityType
 ## A DeathCloud scene: what the cloud does to the bodies around it.
 @export var scene: PackedScene

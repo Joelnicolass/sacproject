@@ -13,9 +13,9 @@ extends VBoxContainer
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_GAMEPLAY"
-## The shared instance (data/ui/gameplay_prefs.tres).
+## The shared instance (scenes/ui/gameplay_prefs.tres).
 @export var prefs: GameplayPrefs
-## The shared instance (data/ui/feel_prefs.tres).
+## The shared instance (scenes/ui/feel_prefs.tres).
 @export var feel: FeelPrefs
 ## The group MatchState joins (one per match).
 @export var match_state_group: StringName = &"match_state"

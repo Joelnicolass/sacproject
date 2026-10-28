@@ -1,7 +1,7 @@
 # spells
 
 Casting. `Spellbook` (what the wizard knows, cooldowns) and `Caster` (mana, target, range, timing) are children of the
-wizard; each spell is a `SpellAction` scene in `actions/`, named by `SpellType.action` (`data/catalog/spells/<tag>.tres`).
+wizard; each spell is a `SpellAction` scene in `actions/`, named by `SpellType.action` (`spells/<name>/<name>.tres`).
 - A client calls `Caster.request_*`, which becomes a `submit_*` RPC; the server (or solo) casts.
 - The action spawns what the spell needs through `SpellSpawner`. A projectile is dragged into the action's `projectile`
   (a `PackedScene`); a zone or wall scene is listed in the spawner's `zones` in `match.tscn` (a zone points at its

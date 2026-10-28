@@ -5,8 +5,8 @@ extends Label
 ## maná», «Ese manantial ya tiene torre»… It shows every refusal the server or the HUD says
 ## (CommandLog.said, for `flash_s` seconds) and, while an armed structure would be refused at the
 ## pointer, that reason for as long as it holds (CommandLog.aim_status). The words come from
-## `Refusal.text(key)` (data/i18n/strings.csv). It decides no reason and draws no icon (CommandCue
-## does). CommandCue hands it its `command_log` and `probe` when they are not set here.
+## `Refusal.text(key)` (scenes/ui/i18n/strings.csv). It decides no reason and draws no icon
+## (CommandCue does). CommandCue hands it its `command_log` and `probe` when they are not set here.
 
 @export var command_log: CommandLog
 @export var probe: TargetProbe

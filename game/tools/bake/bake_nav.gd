@@ -4,7 +4,7 @@ extends Node
 ## (versioned).
 ## Bakes the map's navmesh headless: the static colliders of the `nav_source` nodes of the map scene
 ## (the
-## terrain's collision, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres,
+## terrain's collision, the buildings, the manafounts) with the numbers of scenes/map/nav_bake.tres,
 ## into scenes/map/maps/<tag>/nav.res
 ## (the navmesh of the map's NavRegion; the «Bake navmesh» button of the map's NavRegion runs this).
 ## The map is `--map=<tag>` after `--` (High Noon without it).
@@ -26,7 +26,7 @@ extends Node
 ## Import again after writing. It builds the map nodes as the dedicated server does (buildings shape
 ## their boxes in _ready) but does not run the world.
 
-const SETTINGS_PATH := "res://data/nav/nav_bake.tres"
+const SETTINGS_PATH := "res://scenes/map/nav_bake.tres"
 ## The manafounts under MapProps (optional: a map may have none).
 const FOUNTS_PATH := "MapProps/Founts"
 

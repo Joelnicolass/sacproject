@@ -12,7 +12,7 @@ extends Node
 @export var wave_scene: PackedScene
 ## The thrown rocks (a scene with `play(params)`, played on every peer).
 @export var burst_scene: PackedScene
-## Bursts at the landing point (ParticleTypes under data/fx/).
+## Bursts at the landing point (ParticleTypes under scenes/fx/effects/).
 @export var effects: Array[ParticleType] = []
 ## Marks the fall leaves on the ground (ScarMark scenes under spells/marks/, played on every peer).
 @export var marks: Array[PackedScene] = []

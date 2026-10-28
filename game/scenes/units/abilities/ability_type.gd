@@ -10,8 +10,8 @@ extends BookEntry
 ## here, never a new branch in code.
 @export var effect: PackedScene
 ## How a shot of this ability looks and what it does in flight and on arrival: a scene of
-## data/shots/ whose root is a ShotLook. Required when a creature fires this ability as its ranged
-## attack (RangedWeapon); empty for every other ability.
+## scenes/units/attacks/shots/ whose root is a ShotLook. Required when a creature fires this ability
+## as its ranged attack (RangedWeapon); empty for every other ability.
 @export var shot_look: PackedScene
 ## How a creature whose ranged attack is this ability chooses and keeps its target (the Scarab's
 ## Healing web heals the wounded of its side). Empty = the usual enemy score of TargetPicker.

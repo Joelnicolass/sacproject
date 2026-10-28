@@ -262,7 +262,7 @@ GameModeCatalog (class_name, Resource)  data/modes/mode_catalog.tres
   - Los atajos son otros `.tres` de modo, no otro `.gd`.
 - **Banco (049d):** `debug/ai/ai_match.tscn`, la escena de siempre, con `--rules=res://debug/rules/ai_2v2_flat4.tres --map=test_flat4 --mode=2v2`. Es otro `.tres` de `MatchRules` con 4 `AiSeat`, no un script nuevo.
 - **Sala (049f y 049g):** no hay escena de debug.
-  - Corre la escena de producto `scenes/net/room_server.tscn` con `--lobby-config=res://data/net/lobby_config_local.tres --room-test-maps`.
+  - Corre la escena de producto `scenes/net/room_server.tscn` con `--lobby-config=res://scenes/net/lobby_config_local.tres --room-test-maps`.
   - Los clientes son los headless de `debug/net/room_e2e_client.gd`, con un `.tres` de guion nuevo (`room_e2e_2v2.tres`).
 - **Pantallas (049h):** el criterio empieza en el boot (F5) que abre el jugador. El playtester pulsa la UI y `ui_cancel`. No hay acción nueva de InputMap.
 
@@ -430,7 +430,7 @@ game/
 2. **F6 en `scenes/map/maps/test_flat4/map.tscn`:** se ven 4 inicios con altar y 4 fuentes. El `.tres` dice `player_starts = 4`.
 3. **F6 en `debug/match/team_cases.tscn`:** termina en PASS.
 4. **Solo:** boot → mapa «Test flat 4» (debug build), modo «2 contra 2», «Contra la IA». El mago propio está con un aliado IA del mismo lado. El minimapa muestra al aliado. Al ganar, el banner dice «Victoria».
-5. **En red local:** en la terminal, `Godot --headless --path game res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps`. En el editor, Run Multiple Instances (2) y F5 en cada una. A crea una sala 2v2 en `test_flat4` y pone IA en 3 y 4; B se sienta en el 2; los dos marcan «Listo». Juegan del mismo lado. Al terminar, la sala muestra «Ganó tu equipo».
+5. **En red local:** en la terminal, `Godot --headless --path game res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://scenes/net/lobby_config_local.tres --room-test-maps`. En el editor, Run Multiple Instances (2) y F5 en cada una. A crea una sala 2v2 en `test_flat4` y pone IA en 3 y 4; B se sienta en el 2; los dos marcan «Listo». Juegan del mismo lado. Al terminar, la sala muestra «Ganó tu equipo».
 6. **1v1 de siempre:** una sala 1v1 en High Noon se ve y juega igual que antes.
 
 ## 13. Preguntas abiertas (con recomendación)

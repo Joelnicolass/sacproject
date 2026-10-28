@@ -3,9 +3,9 @@ class_name GameMode
 extends Resource
 
 ## A way to play the match as a Resource: how many seats there are, which team each seat is on and
-## how it is won. A new mode is a `.tres` of this script (data/modes/), no code. The mode is the
-## room's choice, like the map; `MatchRules` stays the rules of the round (damage, times, friendly
-## fire).
+## how it is won. A new mode is a `.tres` of this script (scenes/match/modes/), no code. The mode is
+## the room's choice, like the map; `MatchRules` stays the rules of the round (damage, times,
+## friendly fire).
 
 enum Victory { LAST_TEAM_STANDING }
 

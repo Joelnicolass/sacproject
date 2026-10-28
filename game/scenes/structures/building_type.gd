@@ -3,10 +3,11 @@ class_name BuildingType
 extends Resource
 
 ## What a building of the map is: the name its panel shows, how much it takes to destroy it, whether
-## peasants hide in it and what stays when it falls. One .tres per building in data/buildings/; the
-## building you drag into a map is a scene of scenes/structures/buildings/ whose MapBuilding root
-## points here through `type`. Never changed while playing: the health lives in the building's
-## Health node. Does not place anything: MapBuilding does.
+## peasants hide in it and what stays when it falls. One .tres per building in
+## scenes/structures/buildings/; the building you drag into a map is a scene of
+## scenes/structures/buildings/ whose MapBuilding root points here through `type`. Never changed
+## while playing: the health lives in the building's Health node. Does not place anything:
+## MapBuilding does.
 
 ## What the building does in the game: nothing (scenery), a Manalith (feeds mana, the Manahoar use
 ## it) or a Shrine (feeds less mana, takes Convert rituals). Code that needs the difference asks

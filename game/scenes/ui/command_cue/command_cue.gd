@@ -46,7 +46,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if command_log == null:
 		warnings.append("Assign `command_log` (the Battle node).")
 	if cues == null:
-		warnings.append("Assign `cues` (data/ui/command_cues.tres).")
+		warnings.append("Assign `cues` (scenes/ui/command_cues.tres).")
 	elif cues.refused_icon == null:
 		warnings.append("Assign `refused_icon` in `cues`. Without it a fallback cross is drawn.")
 	return warnings

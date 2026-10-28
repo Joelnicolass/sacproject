@@ -14,7 +14,7 @@ extends Node3D
 ## Look: the breath is a golden ball with the heal trail; it does not turn the caster's head; no
 ## sound.
 
-## The breath's look (data/shots/breath_of_life.tscn). Empty = a plain ball.
+## The breath's look (scenes/units/attacks/shots/breath_of_life.tscn). Empty = a plain ball.
 @export var look: PackedScene
 ## The revival the breath starts on arrival (fast_revive.tscn).
 @export var fast_revive_scene: PackedScene

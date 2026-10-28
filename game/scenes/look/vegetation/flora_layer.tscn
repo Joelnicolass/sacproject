@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/look/vegetation/flora_field.gd" id="1_field"]
 [ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_layer_config.gd" id="2_config"]
-[ext_resource type="Resource" path="res://data/look/vegetation/original_plants.tres" id="3_plants"]
-[ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="5_medium"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/original_plants.tres" id="3_plants"]
+[ext_resource type="Resource" path="res://scenes/look/quality_medium.tres" id="5_medium"]
 
 [node name="Flora" type="Node3D"]
 process_mode = 3

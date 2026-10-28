@@ -3,7 +3,7 @@ extends Node
 
 ## The emitters of the bursts (SpriteParticles), one small pool per ParticleType: a play reuses an
 ## idle emitter instead of instancing one, and when all of a type are playing the oldest starts
-## over. The client builds every pool of data/fx (and its folders) when it loads, so a play never
+## over. The client builds every pool of FxWire.warm_dirs() when it loads, so a play never
 ## builds one (building draws from the global RNG, and it must happen before MatchSeed seeds the
 ## match). Never in a headless process.
 ## What it does not do: pick the effect or the place (FxBus), talk to the network, or sound.
@@ -33,9 +33,9 @@ func play(type: ParticleType, at: Vector3, burst_seed: int, dir: Vector3) -> voi
 		emitter.replay(at, burst_seed, dir)
 
 
-## Builds every pool of data/fx and its folders up to its cap.
+## Builds every pool of FxWire.warm_dirs() up to its cap.
 func prewarm_all() -> void:
-	for found: Resource in FxWire.all_in(FxWire.PARTICLES_DIR):
+	for found: Resource in FxWire.all_effects():
 		var type := found as ParticleType
 		if type != null and _open(type):
 			for i in cap_of(type):
@@ -52,7 +52,7 @@ func prewarm_all() -> void:
 ## emitters process meanwhile.
 func flash_all(stage: Node3D) -> void:
 	var shown: Array[SpriteParticles] = []
-	for found: Resource in FxWire.all_in(FxWire.PARTICLES_DIR):
+	for found: Resource in FxWire.all_effects():
 		var emitter := _take(found as ParticleType)
 		if emitter != null:
 			emitter.process_mode = Node.PROCESS_MODE_ALWAYS

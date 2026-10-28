@@ -26,7 +26,7 @@ const ONLINE_SCENE := "res://scenes/ui/online/online_screen.tscn"
 ## The black screen while a match loads (a child of this scene). Empty = no screen; the load is the
 ## same.
 @export var loading_screen: LoadingScreen
-## The room server of a VPS (`--room-server`, scenes/ui/lobby/, data/net/lobby_*.tres), kept for a
+## The room server of a VPS (`--room-server`, scenes/ui/lobby/, scenes/net/lobby_*.tres), kept for a
 ## future deploy (tools/deploy/).
 ## Off: «Salas online» opens the rooms the players host and `--room-server` refuses to start. On:
 ## «Salas online» opens the room-server lobby and the binary can run as the room server.
@@ -249,7 +249,8 @@ func _go_boot() -> void:
 
 
 ## The online texts of the kit (`online_texts` and the statuses of the «Online (issuer)» group in
-## sacrifice_flow.tscn) are keys of data/i18n/strings.csv: translated once, like the other statuses.
+## sacrifice_flow.tscn) are keys of scenes/ui/i18n/strings.csv: translated once, like the other
+## statuses.
 func _translate_online_texts() -> void:
 	online_working_status = tr(online_working_status)
 	online_ready_status = tr(online_ready_status)

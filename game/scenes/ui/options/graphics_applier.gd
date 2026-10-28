@@ -28,7 +28,7 @@ extends Node
 ## window (the boot's applier runs first).
 static var _launch_overrides := {}
 
-## The shared preference (data/ui/graphics_prefs.tres).
+## The shared preference (scenes/ui/graphics_prefs.tres).
 @export var prefs: GraphicsPrefs
 ## The world's look rig; empty in the boot (window settings only).
 @export var rig: LookRig

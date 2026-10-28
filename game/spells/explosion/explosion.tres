@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_a7kj3"]
+[ext_resource type="PackedScene" path="res://spells/explosion/explosion_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://djiruvyeg2jvw" path="res://assets/original/ui/icons/pxef.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_a7kj3")
+tag = "pxef"
+display_name = "Explosion"
+icon = ExtResource("icon_tex")
+mana_cost = 1000
+cast_range_m = 100.0
+cooldown_s = 30.0
+casting_time_s = 1.9753
+book_level = 5
+book_slot = 57
+damage = 600
+damage_range_m = 10.0
+effect_range_m = 20.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 3000
+structures = PackedStringArray()

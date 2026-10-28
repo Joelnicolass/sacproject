@@ -9,7 +9,7 @@ extends ShotStrike
 ## happens (the mana is already spent). Born from RendSoul, not from RangedWeapon.
 
 ## The beam from the shot origin to the soul's center. Empty: none.
-@export var beam: BeamType = preload("res://data/fx/beams/styx.tres")
+@export var beam: BeamType = preload("res://scenes/fx/effects/beams/styx.tres")
 ## Tick it lands on (1 = the tick after the shot).
 @export_range(0, 120) var land_tick := 1
 

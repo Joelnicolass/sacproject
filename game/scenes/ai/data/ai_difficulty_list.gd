@@ -2,17 +2,17 @@ class_name AiDifficultyList
 extends Resource
 
 ## The difficulties a room, a screen or a seat can name, in the order the menus list them
-## (data/ai/difficulties.tres). A difficulty's id is its file name without `difficulty_`
+## (scenes/ai/difficulties.tres). A difficulty's id is its file name without `difficulty_`
 ## (difficulty_easy.tres → «easy»), the id the rooms already send. Adding one = a new
 ## difficulty_<id>.tres dragged into this list. It does not play nor change a difficulty.
 
-const PATH := "res://data/ai/difficulties.tres"
+const PATH := "res://scenes/ai/difficulties.tres"
 const PREFIX := "difficulty_"
 
 @export var difficulties: Array[AiDifficulty] = []
 
 
-## The shared list (data/ai/difficulties.tres).
+## The shared list (scenes/ai/difficulties.tres).
 static func shared() -> AiDifficultyList:
 	return load(PATH) as AiDifficultyList
 

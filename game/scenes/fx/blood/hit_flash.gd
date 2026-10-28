@@ -21,13 +21,13 @@ const PARAM := &"hit_flash"
 	set(value):
 		visual = value
 		update_configuration_warnings()
-## The overlay (data/fx/blood/hit_flash.tres, an additive shader with `instance uniform float
-## hit_flash`).
+## The overlay (scenes/fx/effects/blood/hit_flash.tres, an additive shader with `instance uniform
+## float hit_flash`).
 @export var material: ShaderMaterial:
 	set(value):
 		material = value
 		update_configuration_warnings()
-## The player's «Sangre» (data/ui/feel_prefs.tres): off, nothing shows.
+## The player's «Sangre» (scenes/ui/feel_prefs.tres): off, nothing shows.
 @export var prefs: FeelPrefs:
 	set(value):
 		prefs = value
@@ -148,7 +148,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if visual == null:
 		out.append("Assign `visual` (its BodyVisual, Tilt/Mesh).")
 	if material == null:
-		out.append("Assign `material` (data/fx/blood/hit_flash.tres).")
+		out.append("Assign `material` (scenes/fx/effects/blood/hit_flash.tres).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		out.append(prefs_warning)

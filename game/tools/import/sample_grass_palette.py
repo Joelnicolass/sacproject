@@ -28,7 +28,7 @@ import re
 import numpy as np
 from PIL import Image
 
-MEADOW_MID = (0.28, 0.55, 0.08)  # data/look/grass/types/meadow.tres (Persephone's look, approved)
+MEADOW_MID = (0.28, 0.55, 0.08)  # scenes/look/grass/types/meadow.tres (Persephone's look, approved)
 MEADOW_TIP = (0.55, 0.8, 0.2)
 
 
@@ -52,7 +52,7 @@ def fmt(c: tuple) -> str:
 
 
 def write_palette(god: str, mid: tuple, tip: tuple) -> str:
-    path = f"data/look/grass/palettes/{god}.tres"
+    path = f"gods/{god}/{god}_grass_palette.tres"
     if os.path.exists(path):
         text = open(path).read()
         text = re.sub(r"color_mid = Color\([^)]*\)", "color_mid = " + fmt(mid), text)

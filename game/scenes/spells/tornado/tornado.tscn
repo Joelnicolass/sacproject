@@ -6,8 +6,8 @@
 [ext_resource type="Script" path="res://scenes/spells/tornado/tornado_lift.gd" id="4_lift"]
 [ext_resource type="Script" path="res://scenes/spells/tornado/tornado_look.gd" id="5_look"]
 [ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="6_emitter"]
-[ext_resource type="Resource" path="res://data/catalog/spells/tornado.tres" id="7_spell"]
-[ext_resource type="Resource" path="res://data/fx/tornado_dust.tres" id="8_dust"]
+[ext_resource type="Resource" path="res://spells/tornado/tornado.tres" id="7_spell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/tornado_dust.tres" id="8_dust"]
 [ext_resource type="Shader" path="res://scenes/spells/tornado/tornado_funnel.gdshader" id="9_shader"]
 [ext_resource type="Mesh" path="res://scenes/spells/tornado/funnel_rings.res" id="10_rings"]
 [ext_resource type="Mesh" path="res://scenes/spells/tornado/funnel_edge.res" id="11_edge"]
@@ -16,8 +16,8 @@
 [ext_resource type="Texture2D" path="res://assets/original/fx/edge.png" id="14_edge"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="15_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="16_sound"]
-[ext_resource type="Resource" path="res://data/audio/cues/tornado_cast.tres" id="cue_tornado_cast"]
-[ext_resource type="Resource" path="res://data/audio/cues/tornado_loop.tres" id="cue_tornado_loop"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/tornado_cast.tres" id="cue_tornado_cast"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/tornado_loop.tres" id="cue_tornado_loop"]
 
 [sub_resource type="ShaderMaterial" id="Material_upper"]
 resource_local_to_scene = true

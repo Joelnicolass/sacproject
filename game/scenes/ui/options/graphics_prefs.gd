@@ -20,7 +20,7 @@ extends Resource
 ## the player's choice); the values are runtime state of that instance and the exported fields are
 ## never written. Changes emit `changed`.
 
-const SHARED_PATH := "res://data/ui/graphics_prefs.tres"
+const SHARED_PATH := "res://scenes/ui/graphics_prefs.tres"
 const SECTION := "graphics"
 const ARG := "--quality="
 

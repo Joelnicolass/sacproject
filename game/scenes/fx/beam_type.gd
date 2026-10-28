@@ -60,7 +60,7 @@ enum Blend { ADD, MIX }
 
 @export_group("Tip sparks")
 ## Sprites that stay behind the tip while it travels (Rainbow's glow). Optional: empty = none. A
-## ParticleType under data/fx/.
+## ParticleType under scenes/fx/effects/.
 @export var tip_type: ParticleType
 @export_range(1.0, 240.0, 1.0, "suffix:/s") var tip_per_s := 60.0
 ## Radius of the ball around the tip they are born in.
@@ -73,8 +73,8 @@ enum Blend { ADD, MIX }
 @export_range(1, 64) var pool_max := 6
 
 @export_group("Sound")
-## What each beam of this type sounds like (a SoundCue from data/audio/cues/), played at the middle
-## of the beam. Empty = silent.
+## What each beam of this type sounds like (a SoundCue from scenes/audio/cues/), played at the
+## middle of the beam. Empty = silent.
 @export var sound: SoundCue
 
 @export_group("Camera")

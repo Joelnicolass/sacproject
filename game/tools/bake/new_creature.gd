@@ -31,7 +31,8 @@ extends SceneTree
 ##                                          in the editor to tune them.
 ##   creatures/<tag>/<tag>_look.tscn       BodyLook: the model scene, the sounds and the carried
 ##   effect (what only a client loads).
-##   creatures/<tag>/<tag>.tres            CreatureType: the stats of data/templates/creature.tres +
+## creatures/<tag>/<tag>.tres            CreatureType: the stats of
+## tools/bake/templates/creature.tres +
 ##   its `body` + its `clips` (the same library:
 ##                                          the rules read the timing of each swing, shot, stun,
 ##                                          flight and death from it).
@@ -67,7 +68,7 @@ extends SceneTree
 ##          --sounds=res://dir/ --sounds-out=res://dir/ (another source / target for the sounds,
 ##          e.g. a fixture)
 
-const TEMPLATE := "res://data/templates/creature.tres"
+const TEMPLATE := "res://tools/bake/templates/creature.tres"
 const MODEL_DIR := "res://assets/custom/models/"
 const SoundSetWriter := preload("res://tools/bake/sound_set_writer.gd")
 
@@ -1181,7 +1182,7 @@ func _report(
 	print(
 		(
 			# gdlint: ignore=max-line-length
-			"NEW_CREATURE next: put %s in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator."
+			"NEW_CREATURE next: put %s in the book of %s (gods/%s/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator."
 			% [
 				TypeRef.creature_path(tag),
 				god if not god.is_empty() else "a god",

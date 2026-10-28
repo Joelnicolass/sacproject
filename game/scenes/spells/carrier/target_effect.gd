@@ -18,8 +18,8 @@ enum When { ARRIVED, SETTLED }
 @export var reach: CollisionShape3D
 ## Who the reach takes: the creatures of any side (a wizard is not a victim of these spells).
 @export var groups: Array[StringName] = [&"unit"]
-## A flash and a sound at the carrier when it fires, once (a ParticleType under data/fx/, with its
-## light). Optional.
+## A flash and a sound at the carrier when it fires, once (a ParticleType under scenes/fx/effects/,
+## with its light). Optional.
 @export var flash: ParticleType
 
 

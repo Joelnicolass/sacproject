@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_4q8pd"]
 [ext_resource type="Texture2D" uid="uid://cjdmxibb4cbi5" path="res://assets/original/ui/icons/mtsl.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/protector.tres" id="typed_HSba"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/protector.tres" id="typed_HSba"]
 [ext_resource type="AnimationLibrary" path="res://creatures/ent/model/ent_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/ent/ent.tscn" id="body_scene"]
 

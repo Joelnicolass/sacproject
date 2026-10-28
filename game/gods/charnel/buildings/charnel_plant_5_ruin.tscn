@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://gods/charnel/buildings/ctx1.res" id="mesh_ctx1"]
+
+[node name="CharnelCat2Ruin" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+mesh = ExtResource("mesh_ctx1")

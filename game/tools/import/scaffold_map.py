@@ -17,7 +17,7 @@ ground_roles.png). For `<tag>` it writes:
   scenes/map/maps/<tag>/map.tscn                   MapRoot: sky, look, terrain (an instance of scenes/map/terrain/terrain.tscn), one PlayerStart (with its WizardSpot) per seat, the manafounts, Buildings, Npcs, navmesh, minimap
 The PlayerStart and the manafounts are the altar and manafount rows of the NTTS, placed on the ground height the game would give
 them (sac_formats.terrain.ground_height_fn); the WizardSpot of seat k is 30 m toward the closest manafount, looking at it, as sacengine puts the wizard.
-Buildings: every other structure row that has a BuildingType in data/buildings/ becomes an instance of its scene
+Buildings: every other structure row that has a BuildingType in scenes/structures/buildings/ becomes an instance of its scene
 (scenes/structures/buildings/<name>.tscn) at the ground height, turned by its facing; Npcs: every creature row becomes an NpcSpawn
 (the creature type of creatures/<name>/<name>.tres, its side) 0.2 m above the ground. Rows off the land, rows with no type and the sky dome
 `pcsb` (a 1 140 m model, not a prop) are left out and listed. The plants are --wire-flora's: one FloraLayer per species under a `Vegetation` node.
@@ -48,7 +48,7 @@ ASSETS = ROOT / "assets" / "original" / "maps" / TAG
 SCENES = ROOT / "scenes" / "map" / "maps" / TAG
 FORCE = "--force" in ARGS
 
-# The altar and the manafount of each land (flags 0x80001407 and 0x80002810 in data/buildings/). Same lists as
+# The altar and the manafount of each land (flags 0x80001407 and 0x80002810 in scenes/structures/buildings/). Same lists as
 # the plant clearings of --wire-flora: those rows are PlayerStart and Manafount nodes of the map scene, not buildings.
 ALTAR_TAGS = ("jaal", "ca_a", "pyal", "stal", "alt1")
 FOUNT_TAGS = ("jfnt", "cafn", "pfon", "stmf", "font")
@@ -110,7 +110,7 @@ MAP_HEAD = """[gd_scene format=3]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
-[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
+[ext_resource type="Resource" path="res://scenes/map/nav_bake.tres" id="14_bake"]
 [ext_resource type="NavigationMesh" path="res://scenes/map/maps/{tag}/nav.res" id="15_navmesh"]
 [ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
@@ -172,9 +172,9 @@ def turn(facing: float) -> str:
 
 
 def building_files() -> dict:
-    """BuildingType tag -> file stem of data/buildings/ (the building scene has the same stem)."""
+    """BuildingType tag -> its file stem (the building scene in scenes/structures/buildings/ has the same stem)."""
     files = {}
-    for f in (ROOT / "data/buildings").glob("*.tres"):
+    for f in sorted([*(ROOT / "scenes/structures/buildings").glob("*.tres"), *(ROOT / "gods").glob("*/buildings/*.tres")]):
         m = re.search(r'^tag = "(\w+)"', f.read_text(), re.M)
         if m:
             files[m.group(1)] = f.stem
@@ -208,12 +208,12 @@ def map_tscn(ntts: dict, seats: list) -> str:
             sys.exit("scaffold_map: %s (%s, %s) is over a hole" % (row["tag"], row["x"], row["z"]))
         return y
 
-    # data/buildings/<name>.tres: the file is named for humans, the tag is a field inside.
+    # gods/<god>/buildings/<name>.tres: the file is named for humans, the tag is a field inside.
     bldg_files = {}
-    for f in (ROOT / "data/buildings").glob("*.tres"):
+    for f in sorted([*(ROOT / "scenes/structures/buildings").glob("*.tres"), *(ROOT / "gods").glob("*/buildings/*.tres")]):
         m = re.search(r'^tag = "(\w+)"', f.read_text(), re.M)
         if m:
-            bldg_files[m.group(1)] = f.name
+            bldg_files[m.group(1)] = f.relative_to(ROOT).as_posix()
     ext = []   # (type, path, id) in order
     ext_ids = {}
 
@@ -226,7 +226,7 @@ def map_tscn(ntts: dict, seats: list) -> str:
     # The model ManafountBody draws for each fount row: the first mesh of the building scene whose type is that BLDG.
     fount_meshes = {}
     for t in sorted({row["tag"] for row in founts}):
-        type_path = 'path="res://data/buildings/%s"' % bldg_files[t]
+        type_path = 'path="res://%s"' % bldg_files[t]
         for f in sorted((ROOT / "scenes/structures/buildings").glob("*.tscn")):
             text = f.read_text()
             m = re.search(r'\[ext_resource type="ArrayMesh" path="([^"]+)"', text)
@@ -359,9 +359,9 @@ def png_l8(size: int, data: bytes) -> bytes:
 
 
 def species_files() -> dict:
-    """Original plant tag -> file stem of data/vegetation/species/."""
+    """Original plant tag -> file stem of scenes/look/vegetation/species/."""
     found = {}
-    for f in (ROOT / "data/vegetation/species").glob("*.tres"):
+    for f in (ROOT / "scenes/look/vegetation/species").glob("*.tres"):
         m = re.search(r'^tag = "([^"]*)"', f.read_text(), re.M)
         if m:
             found[m.group(1)] = f.stem
@@ -382,7 +382,7 @@ def plant_cells(rows: list, height_at, clears: list) -> list:
 def wire_flora() -> None:
     """The plants of widgets.json as FloraLayer nodes of the existing map.tscn: per species a density PNG
     (scenes/map/maps/<tag>/flora/<species>.png, v = round(count x 255 / max), max_per_cell = max) and a node under `Vegetation`. A tag with
-    no species file gets data/vegetation/species/<tag>.tres: rename it by hand. Import the project once afterwards."""
+    no species file gets scenes/look/vegetation/species/<tag>.tres: rename it by hand. Import the project once afterwards."""
     path = SCENES / "map.tscn"
     text = path.read_text()
     if '[node name="Vegetation"' in text and not FORCE:
@@ -403,8 +403,8 @@ def wire_flora() -> None:
             continue
         if tag not in known:
             known[tag] = tag.lower()
-            (ROOT / "data/vegetation/species").mkdir(parents=True, exist_ok=True)
-            (ROOT / "data/vegetation/species" / (tag.lower() + ".tres")).write_text(
+            (ROOT / "scenes/look/vegetation/species").mkdir(parents=True, exist_ok=True)
+            (ROOT / "scenes/look/vegetation/species" / (tag.lower() + ".tres")).write_text(
                 '[gd_resource type="Resource" script_class="VegetationSpecies" load_steps=2 format=3]\n\n'
                 '[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="1_species"]\n\n'
                 '[resource]\nscript = ExtResource("1_species")\ntag = "%s"\n' % tag)
@@ -412,7 +412,7 @@ def wire_flora() -> None:
         png = SCENES / "flora" / (name + ".png")
         png.parent.mkdir(parents=True, exist_ok=True)
         png.write_bytes(png_l8(PLANT_CELLS, bytes(round(c * 255 / biggest) for c in counts)))
-        heads.append('[ext_resource type="Resource" path="res://data/vegetation/species/%s.tres" id="sp_%s"]' % (name, name))
+        heads.append('[ext_resource type="Resource" path="res://scenes/look/vegetation/species/%s.tres" id="sp_%s"]' % (name, name))
         heads.append('[ext_resource type="Texture2D" path="res://scenes/map/maps/%s/flora/%s.png" id="fd_%s"]' % (TAG, name, name))
         nodes.append('\n[node name="%s" type="Node3D" parent="Vegetation"]\nscript = ExtResource("flora_layer_script")\n'
                      'species = ExtResource("sp_%s")\ndensity = ExtResource("fd_%s")\nmax_per_cell = %d' % (pascal(name), name, name, biggest))

@@ -4,8 +4,8 @@ extends Resource
 ## What the command cursor shows instead of words: the picture that goes with an armed order, the
 ## one that flashes on a refusal, which words mean «refused» and the cursor picture that goes with
 ## what lies under the pointer. Every picture is a Texture2D assigned in the inspector
-## (data/ui/command_cues.tres). It does not choose by itself what to show: CommandCue and CursorSkin
-## read it. Another variant is another .tres.
+## (scenes/ui/command_cues.tres). It does not choose by itself what to show: CommandCue and
+## CursorSkin read it. Another variant is another .tres.
 
 ## Armed order (`attack`, `advance`, `guard`, `guard_area`, `move`, `retreat`) -> the picture shown
 ## below the pointer.

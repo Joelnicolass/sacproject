@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/pull.gd" id="1_pull"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/cage_thread.tscn" id="2_thread"]
-[ext_resource type="Resource" path="res://data/fx/styx_spark.tres" id="fx_styx_spark"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/styx_spark.tres" id="fx_styx_spark"]
 
 [node name="CagePull" type="Node"]
-editor_description = "The Seraph's Cage pull effect (psaa). It is the same Pull as the Web pull; only the thread (cage_thread.tscn) and the end sparks change. It prepares 54 ticks (load on frame 27 of SPs1, 102 frames: a loop of 204 ticks, pulls at T+202+204k). It is instanced from the effect field of the AbilityType psaa (data/catalog/abilities/cage_pull.tres)."
+editor_description = "The Seraph's Cage pull effect (psaa). It is the same Pull as the Web pull; only the thread (cage_thread.tscn) and the end sparks change. It prepares 54 ticks (load on frame 27 of SPs1, 102 frames: a loop of 204 ticks, pulls at T+202+204k). It is instanced from the effect field of the AbilityType psaa (scenes/units/abilities/cage_pull.tres)."
 script = ExtResource("1_pull")
 starts_cooldown = false
 load_frame = 27

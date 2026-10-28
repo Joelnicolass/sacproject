@@ -28,7 +28,7 @@ const _HEALTH := preload("res://scenes/components/health.gd")
 ## freeze: a wizard lasts wizard_factor · the SPEL duration (s).
 @export var wizard_factor := 0.25
 ## The shards broadcast when it ends (×30), and the socket of the body they leave from.
-@export var shards_fx: ParticleType = preload("res://data/fx/freeze_shards.tres")
+@export var shards_fx: ParticleType = preload("res://scenes/fx/effects/freeze_shards.tres")
 @export var shards_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _cooldown := 0

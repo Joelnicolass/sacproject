@@ -1,0 +1,21 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/afflict_action.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="2_target"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/slimed.tres" id="3_type"]
+[ext_resource type="PackedScene" path="res://spells/slime/slime_ball.tscn" id="4_ball"]
+[ext_resource type="Resource" path="res://spells/slime/fx/slime_cast.tres" id="fx_slime_cast"]
+
+[sub_resource type="Resource" id="Target_enemy"]
+script = ExtResource("2_target")
+who = 2
+ground_only = false
+refuse_cc_protected = true
+
+[node name="Slime" type="Node"]
+script = ExtResource("1_script")
+editor_description = "cast_fx: slime_cast (cfx1, el SPEL leth) o default_cast (cst0, el valor por defecto del exe)."
+cast_fx = ExtResource("fx_slime_cast")
+affliction = ExtResource("3_type")
+target = SubResource("Target_enemy")
+cast_scene = ExtResource("4_ball")

@@ -8,9 +8,9 @@ extends RefCounted
 ## What it does not do: play anything (FxBus), pool anything (BurstPool, BeamPool), or decide who
 ## may see an effect.
 
-## Where the pools and the gallery find every type to warm up (folders, not names).
-const PARTICLES_DIR := "res://data/fx/"
-const BEAMS_DIR := "res://data/fx/beams/"
+## The effects several things share. An effect only one entity uses is in that entity's fx/
+## folder (spells/fireball/fx/); `warm_dirs()` lists both.
+const SHARED_DIR := "res://scenes/fx/effects/"
 
 ## id (resource path) -> loaded effect, or null when the path is not an effect. Never cleared: the
 ## effects are few and small.
@@ -60,7 +60,27 @@ static func label_of(fx: Resource) -> String:
 	)
 
 
-## Every resource file under `dir` and its folders (the pools warm up from this).
+## Where the pools and the gallery find every effect to warm up (folders, not names): the shared
+## library and the fx/ folder of every creature, spell, wizard and god.
+static func warm_dirs() -> PackedStringArray:
+	var dirs := PackedStringArray([SHARED_DIR])
+	for kind in GameCatalog.ENTITY_KINDS:
+		var root := "res://%s/" % kind
+		for entry in ResourceLoader.list_directory(root):
+			if entry.ends_with("/") and "fx/" in ResourceLoader.list_directory(root + entry):
+				dirs.append(root + entry + "fx/")
+	return dirs
+
+
+## Every resource file of `warm_dirs()`.
+static func all_effects() -> Array[Resource]:
+	var found: Array[Resource] = []
+	for dir in warm_dirs():
+		found.append_array(all_in(dir))
+	return found
+
+
+## Every resource file under `dir` and its folders.
 static func all_in(dir: String) -> Array[Resource]:
 	var found: Array[Resource] = []
 	for file: String in DirAccess.get_files_at(dir):

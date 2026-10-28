@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://scenes/sacrifice/errand_states/pump.gd" id="7_pump"]
 [ext_resource type="Script" path="res://scenes/sacrifice/errand_states/haul.gd" id="6_haul"]
 [ext_resource type="Script" path="res://scenes/map/nav/path_follower.gd" id="8_follower"]
-[ext_resource type="Resource" path="res://data/fx/heal.tres" id="9_heal"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/heal.tres" id="9_heal"]
 
 [node name="CarrierDoctor" node_paths=PackedStringArray("errand") instance=ExtResource("1_doctor")]
 errand = NodePath("Errand")

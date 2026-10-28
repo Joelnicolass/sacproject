@@ -4,7 +4,7 @@ extends Resource
 
 ## What falls from the sky in one weather state (rain, snow): how a drop moves and looks, how many
 ## there are at full strength and what the bed of it sounds like. Embedded in the state's `.tres`
-## (`data/look/weather/rain.tres`). PrecipitationFall shows it; the state says how much.
+## (`scenes/look/weather/rain.tres`). PrecipitationFall shows it; the state says how much.
 
 ## How a drop moves (a ParticleProcessMaterial: emission box around the camera, speed, gravity).
 @export var process_material: ParticleProcessMaterial

@@ -408,7 +408,7 @@ def lint(rows, dirs, tset, done, texts):
         base = set(open(LINT_BASELINE).read().split('\n'))
     hits = set()
     for p, t in texts.items():
-        if not p.startswith(('scenes/', 'data/')):
+        if not p.startswith(('scenes/', 'creatures/', 'spells/', 'wizards/', 'gods/')):
             continue
         for m in re.finditer(r'res://(agent|tools)/[^\s"\'<>]*', t):
             ls = t.rfind('\n', 0, m.start()) + 1

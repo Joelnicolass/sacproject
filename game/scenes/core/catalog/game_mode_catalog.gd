@@ -2,11 +2,11 @@
 class_name GameModeCatalog
 extends Resource
 
-## The modes of the game (data/modes/mode_catalog.tres, in the order the screens list them). It only
-## lists and finds; which mode this process plays is ActiveMatch's. A new mode is a `.tres` of
-## GameMode dragged into `modes`.
+## The modes of the game (scenes/match/modes/mode_catalog.tres, in the order the screens list them).
+## It only lists and finds; which mode this process plays is ActiveMatch's. A new mode is a `.tres`
+## of GameMode dragged into `modes`.
 
-const PATH := "res://data/modes/mode_catalog.tres"
+const PATH := "res://scenes/match/modes/mode_catalog.tres"
 const DEFAULT_TAG := &"1v1"
 
 @export var modes: Array[GameMode] = []

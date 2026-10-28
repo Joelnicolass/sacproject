@@ -1,0 +1,125 @@
+[gd_resource type="Resource" script_class="LookProfile" format=3]
+
+[ext_resource type="Resource" path="res://scenes/look/glow/james_glow.tres" id="1_ehq6w"]
+[ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
+[ext_resource type="Resource" path="res://scenes/look/light/james_light.tres" id="2_light"]
+[ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
+[ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/edge.png" id="22_edge"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/open.png" uid="uid://bknmcju7gm6g5" id="23_open"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/open_detail.png" uid="uid://qgmo7mecewve" id="24_open_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/earth.png" uid="uid://cbmbpc2oosgj7" id="25_earth"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/earth_detail.png" uid="uid://dhje66deq38vy" id="26_earth_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/rock.png" uid="uid://dhof6ntl6rjx0" id="27_rock"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/rock_detail.png" uid="uid://cfosytq5q8xie" id="28_rock_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/path.png" uid="uid://dfmg7rhde6q72" id="29_path"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/roles/path_detail.png" uid="uid://boesivksqcla5" id="30_path_detail"]
+[ext_resource type="Resource" path="res://scenes/look/sky/james_sky.tres" id="9_sky"]
+[ext_resource type="Resource" path="res://scenes/look/grass/james_grass.tres" id="10_grass"]
+[ext_resource type="Resource" path="res://scenes/audio/music/james.tres" id="gm_music"]
+[ext_resource type="Resource" path="res://scenes/audio/ambience/james.tres" id="gm_ambience"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
+[ext_resource type="Resource" path="res://scenes/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://scenes/look/life/dust.tres" id="58_dust"]
+[ext_resource type="Resource" path="res://scenes/look/life/fireflies.tres" id="58_fireflies"]
+[ext_resource type="Resource" path="res://scenes/look/life/gnats.tres" id="58_gnats"]
+
+[sub_resource type="Resource" id="Role_open"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("23_open")
+detail = ExtResource("24_open_detail")
+
+[sub_resource type="Resource" id="Role_earth"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("25_earth")
+detail = ExtResource("26_earth_detail")
+
+[sub_resource type="Resource" id="Role_rock"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("27_rock")
+detail = ExtResource("28_rock_detail")
+
+[sub_resource type="Resource" id="Role_path"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("29_path")
+detail = ExtResource("30_path_detail")
+
+[sub_resource type="Resource" id="GodGround_james"]
+script = ExtResource("20_god_ground")
+open = SubResource("Role_open")
+earth = SubResource("Role_earth")
+rock = SubResource("Role_rock")
+path = SubResource("Role_path")
+edge = ExtResource("22_edge")
+light_gain = 1.1
+
+[sub_resource type="Curve" id="Day_james_elevation_change_deg"]
+_limits = [-120, 60, 0.0, 24.0]
+_data = [Vector2(0, -84.098163), 0.0, 0.0, 0, 0, Vector2(2, -78.993977), 4.76227, 4.76227, 0, 0, Vector2(4, -65.049082), 8.0805, 8.0805, 0, 0, Vector2(5, -55.86053), 9.524541, 9.524541, 0, 0, Vector2(6, -46), 11.152574, 11.152574, 0, 0, Vector2(6.40178, -41), 12.345194, 12.345194, 0, 0, Vector2(7, -33.674337), 11.86573, 11.86573, 0, 0, Vector2(8, -22.188648), 10.674337, 10.674337, 0, 0, Vector2(9, -12.325663), 8.71556, 8.71556, 0, 0, Vector2(10, -4.757528), 6.162831, 6.162831, 0, 0, Vector2(11, 0), 3.190116, 3.190116, 0, 0, Vector2(12, 1.622704), 0.0, 0.0, 0, 0, Vector2(13, 0), -3.190116, -3.190116, 0, 0, Vector2(14, -4.757528), -6.162831, -6.162831, 0, 0, Vector2(15, -12.325663), -8.71556, -8.71556, 0, 0, Vector2(16, -22.188648), -10.674337, -10.674337, 0, 0, Vector2(17, -33.674337), -11.86573, -11.86573, 0, 0, Vector2(17.59822, -41), -12.345194, -12.345194, 0, 0, Vector2(18, -46), -11.152574, -11.152574, 0, 0, Vector2(19, -55.86053), -9.524541, -9.524541, 0, 0, Vector2(20, -65.049082), -8.0805, -8.0805, 0, 0, Vector2(22, -78.993977), -4.76227, -4.76227, 0, 0, Vector2(24, -84.098163), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_james_light_energy"]
+_limits = [0, 1.5, 0.0, 24.0]
+_data = [Vector2(0, 0.25), 0.0, 0.0, 0, 0, Vector2(2, 0.25), 0.0, 0.0, 0, 0, Vector2(4, 0.25), 0.0, 0.0, 0, 0, Vector2(5, 0.25), 0.0, 0.0, 0, 0, Vector2(6, 0.104167), -0.202548, -0.202548, 0, 0, Vector2(6.40178, 0), 0.0, 0.0, 0, 0, Vector2(7, 0.106582), 0.217384, 0.217384, 0, 0, Vector2(8, 0.363184), 0.260827, 0.260827, 0, 0, Vector2(9, 0.628235), 0.244334, 0.244334, 0, 0, Vector2(10, 0.851852), 0.185882, 0.185882, 0, 0, Vector2(11, 1), 0.099951, 0.099951, 0, 0, Vector2(12, 1.051754), 0.0, 0.0, 0, 0, Vector2(13, 1), -0.099951, -0.099951, 0, 0, Vector2(14, 0.851852), -0.185882, -0.185882, 0, 0, Vector2(15, 0.628235), -0.244334, -0.244334, 0, 0, Vector2(16, 0.363184), -0.260827, -0.260827, 0, 0, Vector2(17, 0.106582), -0.217384, -0.217384, 0, 0, Vector2(17.59822, 0), 0.0, 0.0, 0, 0, Vector2(18, 0.104167), 0.202548, 0.202548, 0, 0, Vector2(19, 0.25), 0.0, 0.0, 0, 0, Vector2(20, 0.25), 0.0, 0.0, 0, 0, Vector2(22, 0.25), 0.0, 0.0, 0, 0, Vector2(24, 0.25), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_james_ambient_energy"]
+_limits = [0, 1.5, 0.0, 24.0]
+_data = [Vector2(0, 0.55), 0.0, 0.0, 0, 0, Vector2(2, 0.55), 0.0, 0.0, 0, 0, Vector2(4, 0.55), 0.0, 0.0, 0, 0, Vector2(5, 0.55), 0.0, 0.0, 0, 0, Vector2(6, 0.91), 0.292002, 0.292002, 0, 0, Vector2(6.40178, 1), 0.0, 0.0, 0, 0, Vector2(7, 1), 0.0, 0.0, 0, 0, Vector2(8, 1), 0.0, 0.0, 0, 0, Vector2(9, 1), 0.0, 0.0, 0, 0, Vector2(10, 1), 0.0, 0.0, 0, 0, Vector2(11, 1), 0.0, 0.0, 0, 0, Vector2(12, 1), 0.0, 0.0, 0, 0, Vector2(13, 1), 0.0, 0.0, 0, 0, Vector2(14, 1), 0.0, 0.0, 0, 0, Vector2(15, 1), 0.0, 0.0, 0, 0, Vector2(16, 1), 0.0, 0.0, 0, 0, Vector2(17, 1), 0.0, 0.0, 0, 0, Vector2(17.59822, 1), 0.0, 0.0, 0, 0, Vector2(18, 0.91), -0.292002, -0.292002, 0, 0, Vector2(19, 0.55), 0.0, 0.0, 0, 0, Vector2(20, 0.55), 0.0, 0.0, 0, 0, Vector2(22, 0.55), 0.0, 0.0, 0, 0, Vector2(24, 0.55), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_james_night"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 1), 0.0, 0.0, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.40178, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.59822, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 1), 0.0, 0.0, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_james_stars"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 0.732566), -0.5, -0.5, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.40178, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.59822, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 0.732566), 0.5, 0.5, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_james_moon_intensity"]
+_limits = [0, 4, 0.0, 24.0]
+_data = [Vector2(0, 2.5), 0.0, 0.0, 0, 0, Vector2(2, 2.5), 0.0, 0.0, 0, 0, Vector2(4, 2.5), 0.0, 0.0, 0, 0, Vector2(5, 2.5), 0.0, 0.0, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.40178, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.59822, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 2.5), 0.0, 0.0, 0, 0, Vector2(20, 2.5), 0.0, 0.0, 0, 0, Vector2(22, 2.5), 0.0, 0.0, 0, 0, Vector2(24, 2.5), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_james_dusk"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 1), 0.0, 0.0, 0, 0, Vector2(6, 1), 0.0, 0.0, 0, 0, Vector2(6.40178, 0.666667), -0.823013, -0.823013, 0, 0, Vector2(7, 0.178289), -0.497337, -0.497337, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0.178289), 0.497337, 0.497337, 0, 0, Vector2(17.59822, 0.666667), 0.823013, 0.823013, 0, 0, Vector2(18, 1), 0.0, 0.0, 0, 0, Vector2(19, 1), 0.0, 0.0, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Resource" id="Day_james"]
+script = ExtResource("58_day")
+start_hour = 11
+elevation_change_deg = SubResource("Day_james_elevation_change_deg")
+light_energy = SubResource("Day_james_light_energy")
+ambient_energy = SubResource("Day_james_ambient_energy")
+night = SubResource("Day_james_night")
+stars = SubResource("Day_james_stars")
+moon_intensity = SubResource("Day_james_moon_intensity")
+dusk = SubResource("Day_james_dusk")
+
+[sub_resource type="Resource" id="Life_james"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_dust"), ExtResource("58_fireflies")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_gnats"), ExtResource("58_fireflies")])
+water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
+
+[resource]
+script = ExtResource("1_p")
+display_name = "James"
+god = &"james"
+sky = ExtResource("9_sky")
+light = ExtResource("2_light")
+glow = ExtResource("1_ehq6w")
+ground = SubResource("GodGround_james")
+grass = ExtResource("10_grass")
+music = ExtResource("gm_music")
+ambience = ExtResource("gm_ambience")
+day = SubResource("Day_james")
+weather = ExtResource("58_weather")
+life = SubResource("Life_james")

@@ -23,7 +23,7 @@ const TURN_RATE := PI
 const YAW_STEP := 0.0044
 
 @export var step: WalkStep
-## The wizard the player picked (data/catalog/wizards/). Every peer takes it from `seat_pick` (the
+## The wizard the player picked (wizards/). Every peer takes it from `seat_pick` (the
 ## pick is typed on each of them); a test scene without a flow sets it in its .tscn. It never looks
 ## the type up by text.
 @export var wizard_type: WizardType:
@@ -56,7 +56,7 @@ const YAW_STEP := 0.0044
 	set(value):
 		model = value
 		pick_changed.emit()
-## The god whose book the wizard casts (data/gods/). Taken from `seat_pick` on every peer (it does
+## The god whose book the wizard casts (gods/). Taken from `seat_pick` on every peer (it does
 ## not travel in the synchronizer); a test scene without a flow sets it by hand.
 @export var god_type: GodType:
 	set(value):

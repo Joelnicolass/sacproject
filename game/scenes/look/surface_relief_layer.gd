@@ -11,7 +11,7 @@ extends LookLayer
 ## saves (the .tres on disk keeps its maps). Inert in the editor. Cost: none while on.
 ## Not: which maps a material has (its .tres), how they are made (addons/surface_maps).
 
-## The shared player preference (data/ui/graphics_prefs.tres). Empty = only the preset decides (a
+## The shared player preference (scenes/ui/graphics_prefs.tres). Empty = only the preset decides (a
 ## debug scene).
 @export var prefs: GraphicsPrefs
 

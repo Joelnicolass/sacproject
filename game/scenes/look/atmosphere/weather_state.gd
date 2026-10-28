@@ -3,9 +3,9 @@ class_name WeatherState
 extends Resource
 
 ## One kind of weather (clear, fog, rain, storm, snow), a type template:
-## `data/look/weather/<state>.tres`, never written at runtime. Its numbers bend the biome's approved
-## look: multipliers (1 = as approved) and amounts (0 = nothing). Clear is all neutral. A new
-## weather = duplicate one of these and add a WeatherChance to the plan.
+## `scenes/look/weather/<state>.tres`, never written at runtime. Its numbers bend the biome's
+## approved look: multipliers (1 = as approved) and amounts (0 = nothing). Clear is all neutral. A
+## new weather = duplicate one of these and add a WeatherChance to the plan.
 
 @export var display_name: String = ""
 

@@ -20,7 +20,7 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/ikar/_i_k_a_m.ogg" id="s16"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/ikar/_i_k_a_n.ogg" id="s17"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/ikar/_i_k_a_o.ogg" id="s18"]
-[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="3_fallback"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
 
 [sub_resource type="Resource" id="cue_selected"]
 script = ExtResource("2_cue")

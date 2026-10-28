@@ -1,10 +1,10 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/units/weapons/melee_on_hit.gd" id="4_on_hit"]
-[ext_resource type="Resource" path="res://data/catalog/spells/grasping_vines.tres" id="5_vines"]
+[ext_resource type="Resource" path="res://spells/grasping_vines/grasping_vines.tres" id="5_vines"]
 [ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_spawner.gd" id="1_spawner"]
 [ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_type.gd" id="2_cloud_type"]
-[ext_resource type="Resource" path="res://data/death_clouds/mutant_cloud.tres" id="3_cloud"]
+[ext_resource type="Resource" path="res://scenes/units/death_clouds/mutant_cloud.tres" id="3_cloud"]
 
 [node name="DragonPassives" type="Node"]
 

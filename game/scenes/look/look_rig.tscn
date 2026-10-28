@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/light/fill_light.tscn" id="4_fill"]
 [ext_resource type="PackedScene" path="res://scenes/look/ground/terrain_layer.tscn" id="5_ground"]
 [ext_resource type="Script" path="res://scenes/look/sky/environment_layer.gd" id="6_environment_layer"]
-[ext_resource type="Environment" path="res://data/look/env_base.tres" id="7_env"]
+[ext_resource type="Environment" path="res://scenes/look/env_base.tres" id="7_env"]
 [ext_resource type="PackedScene" path="res://scenes/look/grass/grass_layer.tscn" id="8_grass"]
 [ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="9_fx_light"]
 [ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="10_flora"]
@@ -16,7 +16,7 @@
 [ext_resource type="PackedScene" path="res://scenes/look/atmosphere/atmosphere.tscn" id="14_atmosphere"]
 [ext_resource type="PackedScene" path="res://scenes/look/life/ambient_life.tscn" id="15_life"]
 [ext_resource type="Script" path="res://scenes/look/surface_relief_layer.gd" id="16_relief"]
-[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="17_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="17_prefs"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")

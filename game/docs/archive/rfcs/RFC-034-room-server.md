@@ -257,7 +257,7 @@ Lo arma `ticket_builder` (pegamento). El kit solo agrega `match_id`, `port`, `ro
   - Sin InputMap: headless, imprime `PASS`/`FAIL` por caso y termina con `LOBBY CASES PASS`.
   - Un atajo es otro `.tres` del mismo script (`lobby_config_local.tres`: `max_matches=1`, `countdown_s=1`, `rejoin_grace_s=5`), no otro `.gd`.
 - **Punta a punta (034e en adelante):** no hay escena de debug.
-  - El servidor de salas corre la escena de producto `scenes/net/room_server.tscn` con `--lobby-config=res://data/net/lobby_config_local.tres`.
+  - El servidor de salas corre la escena de producto `scenes/net/room_server.tscn` con `--lobby-config=res://scenes/net/lobby_config_local.tres`.
   - El jugador abre el boot (`F5`). El criterio empieza ahí.
   - El playtester pulsa los botones de la UI (no hay acción de InputMap nueva) y `ui_cancel` para salir.
 - **Cliente headless de prueba:** flows de AgentKit (`agent/flows/f18x_lobby_*.json`) que clican la UI. No hay un cliente de pruebas fuera de `agent/`. Ningún `.gd` nuevo en `agent/harness/` (todos se montan en cada flow).
@@ -422,7 +422,7 @@ Nota (2026-10-19): RFC-049 trajo dos de estas cosas. Las salas tienen los asient
 2. **F6 en `scenes/ui/lobby/room_list.tscn` y `room_view.tscn`:** se ven solas, con «Sin conexión».
 3. **F6 en `debug/net/lobby_cases.tscn`:** la salida termina en `LOBBY CASES PASS`.
 4. **Partida local (con el editor cerrado si hace falta memoria):**
-   - Terminal: `Godot --headless --path game res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres`. Imprime `salas listo puerto 7700`.
+   - Terminal: `Godot --headless --path game res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://scenes/net/lobby_config_local.tres`. Imprime `salas listo puerto 7700`.
    - Editor: Debug → Run Multiple Instances (2), F5 en cada una, «Jugar en línea». A crea la sala, B se une, los dos marcan «Listo».
    - Hay cuenta regresiva, entran a High Noon, A queda en slot 1 y B en slot 2.
    - B sale; a los 5 s, A ve «Victoria» y «Volver a salas», y vuelve a la sala con el resultado.

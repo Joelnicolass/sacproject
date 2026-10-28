@@ -1,12 +1,12 @@
 extends SceneTree
 
-## Writes the Soul Wind's funnel mesh (scenes/spells/carrier/soul_wind_funnel.res): a twisted
+## Writes the Soul Wind's funnel mesh (spells/soul_wind/soul_wind_funnel.res): a twisted
 ## whirlwind 3 m tall, narrow at the foot and wide at the top, 32 sides by 32 rings, its texture
 ## coordinates repeated twice around and twice up. It needs no original game: the shape is a
 ## formula. Run it once; the result is versioned and the scene only holds the file.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_soul_wind_funnel.gd
 
-const OUT := "res://scenes/spells/carrier/soul_wind_funnel.res"
+const OUT := "res://spells/soul_wind/soul_wind_funnel.res"
 const SIDES := 32
 const RINGS := 32
 const HEIGHT_M := 3.0

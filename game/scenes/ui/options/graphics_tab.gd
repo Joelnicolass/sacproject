@@ -10,7 +10,7 @@ extends VBoxContainer
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_GRAPHICS"
-## Shared instances (data/ui/graphics_prefs.tres, data/ui/ui_scale.tres).
+## Shared instances (scenes/ui/graphics_prefs.tres, scenes/ui/ui_scale.tres).
 @export var prefs: GraphicsPrefs
 @export var ui_scale: UiScalePrefs
 ## Text of the FPS cap 0.

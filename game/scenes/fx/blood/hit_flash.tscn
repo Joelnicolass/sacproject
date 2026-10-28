@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/blood/hit_flash.gd" id="1_flash"]
-[ext_resource type="Material" path="res://data/fx/blood/hit_flash.tres" id="2_material"]
-[ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="9_prefs"]
+[ext_resource type="Material" path="res://scenes/fx/effects/blood/hit_flash.tres" id="2_material"]
+[ext_resource type="Resource" path="res://scenes/ui/feel_prefs.tres" id="9_prefs"]
 [ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="10_warm"]
 
 [node name="HitFlash" type="Node"]

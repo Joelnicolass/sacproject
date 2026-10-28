@@ -39,7 +39,7 @@ const GROUP := &"halo_of_earth"
 ## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that
 ## adds this node hands it over.
 @export var spawner: Node
-## A rock's look (data/shots/halo_rock.tscn): its mesh, hit box and bursts.
+## A rock's look (scenes/units/attacks/shots/halo_rock.tscn): its mesh, hit box and bursts.
 @export var look: PackedScene
 @export_range(1, 12) var num_rocks := 6
 ## The Rhinok's box (BodyNudge.box) is scaled by this to place a newborn rock (1.25 for an ability,
@@ -63,7 +63,7 @@ const GROUP := &"halo_of_earth"
 ## The line of sight starts at least this high over the land (a newborn rock is buried).
 @export var los_lift := 0.5
 ## The burst played where a rock is born (empty = none).
-@export var emerge_fx: ParticleType = preload("res://data/fx/rock_emerge.tres")
+@export var emerge_fx: ParticleType = preload("res://scenes/fx/effects/rock_emerge.tres")
 ## More types played where a rock is born (the wizard's halo throws dirt and dust up too).
 @export var emerge_extra: Array[ParticleType] = []
 ## Played where a rock picks its target (the sound `halo`). Optional.

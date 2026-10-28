@@ -28,7 +28,7 @@ extends ShotStrike
 ## A body of the shooter's side that is not the intended target stops the ray and takes nothing.
 ## Off: Health decides (friendly fire, Health._side_factor).
 @export var foes_only := false
-## The bolt (a BeamType of data/fx/beams) drawn from the origin of each ray. Empty: none.
+## The bolt (a BeamType of scenes/fx/effects/beams) drawn from the origin of each ray. Empty: none.
 @export var beam: BeamType
 ## Meters of the beam along the ray: a gun flame at the muzzle (the Gnome's gun flame, length
 ## 1.7). 0: the whole ray, to where it ends.

@@ -4,7 +4,7 @@ extends Resource
 
 ## What a creature or a wizard sounds like: one cue per thing that happens to it (voice when you
 ## pick it, swing, hurt, death...). A type template (a creature's <name>_sounds.tres, or a .tres in
-## data/audio/wizards/, never written at runtime) assigned to the `sounds` of a look
+## wizards/<name>/, never written at runtime) assigned to the `sounds` of a look
 ## (`creatures/<name>/<name>_look.tscn` or `scenes/wizards/bodies/<name>_look.tscn`). An empty field
 ## is silence for that event unless the `fallback` set has it (the melee set many creatures share).
 ## It does not play anything: UnitSounds, WizardSounds and CommandVoice ask it which cue answers an

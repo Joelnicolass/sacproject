@@ -36,9 +36,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if reveal == null:
 		warnings.append("Assign `reveal` (the tower's BuildReveal: it gives the line's height).")
 	if rings == null:
-		warnings.append(
-			"Assign `rings` (the EdgeRings SpriteEmitter with data/fx/build_edge_ring.tres)."
-		)
+		warnings.append("Assign `rings` (the EdgeRings SpriteEmitter with build_edge_ring.tres).")
 	if light == null:
 		warnings.append("Assign `light` (the EdgeLight ActorLight).")
 	return warnings

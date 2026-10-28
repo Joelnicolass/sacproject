@@ -25,7 +25,7 @@ const COMMANDS := {
 }
 
 ## The formations the server accepts (a Resource never travels over the network, only its id).
-@export var catalog: FormationCatalog = preload("res://data/orders/formations.tres")
+@export var catalog: FormationCatalog = preload("res://scenes/orders/formations.tres")
 ## 0 = no limit; the original cuts at 12.
 @export var max_units := 0
 ## Unit distance = min(1.25·max(size) + 0.85, 10).

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/fx/spike_field.tscn" id="1_field"]
-[ext_resource type="Resource" path="res://data/audio/cues/wall_spike.tres" id="cue_wall_spike"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/wall_spike.tres" id="cue_wall_spike"]
 
 [node name="WallSpike" instance=ExtResource("1_field")]
 editor_description = "The spike that comes out under a body crossing the Wall of Spikes: the same spike scene (SpikeField) under its own name, so it plays the spks sound and not the Rhinok's rspk (its Sound node carries the wall_spike cue and SpikeField's the spike_field one)."

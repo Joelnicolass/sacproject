@@ -2,7 +2,7 @@ class_name NavMeshBackend
 extends RefCounted
 
 ## The navmesh side of NavService: the map's NavigationRegion3D (its baked NavigationMesh,
-## data/nav/high_noon_nav.res) queried through the engine: NavigationServer3D.map_get_path on the
+## scenes/map/high_noon_nav.res) queried through the engine: NavigationServer3D.map_get_path on the
 ## region's own navigation map. Standard Godot: the region is a node, the engine syncs the map each
 ## physics frame, and what changes at runtime (altars, structures, a fallen building) is a re-bake
 ## that swaps the region's navigation_mesh (NavRebake, driven by NavService). Nothing hand-made

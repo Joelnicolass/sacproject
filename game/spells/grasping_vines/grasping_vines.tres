@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="PackedScene" path="res://spells/grasping_vines/grasping_vines_action.tscn" id="2_action"]
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_xqura"]
+[ext_resource type="Texture2D" uid="uid://onkxx8ljgrgg" path="res://assets/original/ui/icons/eniv.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_xqura")
+tag = "eniv"
+display_name = "Grasping Vines"
+icon = ExtResource("icon_tex")
+mana_cost = 500
+cast_range_m = 100.0
+cooldown_s = 20.0
+casting_time_s = 1.2346
+book_level = 3
+book_slot = 44
+duration_s = 40.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+never_allies = true
+ai_use = 2
+ai_phase = 1
+structures = PackedStringArray()

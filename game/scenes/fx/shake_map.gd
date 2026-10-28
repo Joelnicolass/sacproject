@@ -2,7 +2,8 @@
 class_name ShakeMap
 extends Resource
 
-## How a played effect becomes camera shake (data/fx/shake_map.tres): the distance fall-off only.
+## How a played effect becomes camera shake (scenes/fx/effects/shake_map.tres): the distance
+## fall-off only.
 ## CameraShake listens to FxBus.played on every peer and adds `trauma_of(kind, fx, distance)`;
 ## presentation only, no RPC. How hard an effect shakes is the effect's own `camera_trauma`
 ## (ParticleType, BeamType, or the root of an FxScene), not a table by name.

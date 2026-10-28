@@ -12,7 +12,7 @@ extends AbilityEffect
 @export var min_duration_s := 6.0
 ## The burst every peer sees when the flag turns on, and the socket of the body it leaves from
 ## (empty = none).
-@export var fx: ParticleType = preload("res://data/fx/dirt.tres")
+@export var fx: ParticleType = preload("res://scenes/fx/effects/dirt.tres")
 @export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.FEET
 
 ## MatchClock tick at which the flag ends (0 = off).

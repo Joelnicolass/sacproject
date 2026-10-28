@@ -9,7 +9,7 @@ extends Resource
 ## saved. Every node shares the instance at `SHARED_PATH` (a copy would not follow the player's
 ## choice).
 
-const SHARED_PATH := "res://data/ui/ui_scale.tres"
+const SHARED_PATH := "res://scenes/ui/ui_scale.tres"
 const SECTION := "ui"
 const KEY := "scale"
 const ARG := "--ui-scale="

@@ -2,7 +2,7 @@
 
 # Cómo agregar y cambiar cosas
 
-Guía corta. Todas las rutas son desde `game/`. Regla general: el contenido son `.tres` en `data/` (un archivo por tipo, se edita en el inspector) y el comportamiento son escenas y nodos en `scenes/<dominio>/`. Nada de `match tag` en código. Cada carpeta tiene su `README.md`.
+Guía corta. Todas las rutas son desde `game/`. Regla general: cada criatura, hechizo, mago y dios es una carpeta (`creatures/`, `spells/`, `wizards/`, `gods/`) con todo lo que usa solo él; el código de cada sistema y lo compartido están en `scenes/<dominio>/`. Nada de `match tag` en código. Cada carpeta tiene su `README.md`.
 
 ## Una criatura
 
@@ -12,8 +12,8 @@ Para una criatura que no existe en el original, andá directo a «Crear una cria
 2. En el inspector: `tag`, `display_name`, `model` (el tag del modelo de `assets/original/models/<model>.glb`), vida, velocidad, resistencias, el grupo `Abilities` y las animaciones.
 3. El tamaño del cuerpo va en la escena `creatures/<nombre>/<nombre>.tscn` (`BodyFrame`: `Bounds/Capsule`, `Bounds/Footprint` y los marcadores `Sockets/`, entre ellos `Reach`). Si el modelo ya lo usa otra criatura, ya existe.
 4. La escena del modelo es `creatures/<nombre>/model/<nombre>_model.tscn` (o `scenes/bodies/models/` si la comparten varias). Ahí se cambia qué clip toca cada rol (`AnimationTree`).
-5. Para que el jugador la pueda convocar, ponela en el libro del dios: `data/gods/<dios>.tres` → `book` → `creatures` (y una línea en `unlocks` con el nivel de mago en que entra).
-6. Las habilidades: en el grupo `Abilities` arrastrás el `.tres` de la habilidad (en la carpeta de la criatura si es solo suya, en `data/catalog/abilities/` si es compartida) a `ranged_attack`, `active_ability` y `on_damage`, y las nubes o golpes con efecto de `data/death_clouds/` y `data/passives/` a `passives`; la lógica de cada una es un nodo en `scenes/units/abilities/`.
+5. Para que el jugador la pueda convocar, ponela en el libro del dios: `gods/<dios>/<dios>.tres` → `book` → `creatures` (y una línea en `unlocks` con el nivel de mago en que entra).
+6. Las habilidades: en el grupo `Abilities` arrastrás el `.tres` de la habilidad (en la carpeta de la criatura si es solo suya, en `scenes/units/abilities/` si es compartida) a `ranged_attack`, `active_ability` y `on_damage`, y las nubes o golpes con efecto de `scenes/units/death_clouds/` a `passives`; la lógica de cada una es un nodo en `scenes/units/abilities/`.
 
 ## Crear una criatura propia desde Blender
 
@@ -28,9 +28,9 @@ Un enemigo o personaje nuevo no necesita nada del juego original (ni `index.json
    ```bash
    $G --headless --path . --script res://tools/bake/new_creature.gd -- <tag> --name="Nombre" --god=pyro
    ```
-   Escribe todo en `creatures/<tag>/` y **no pisa nada que exista** (`--force` lo rehace): `model/<tag>_model.tscn` (el modelo con su `AnimationTree` y el evento del golpe), `<tag>.tscn` y `<tag>_look.tscn` (el cuerpo con la cápsula, la huella y los sockets medidos del mesh, y su apariencia) y `<tag>.tres` (stats de `data/templates/creature.tres` más los datos de los clips). Además dibuja el **icono del HUD** (libro y selección): si existe `assets/custom/icons/<tag>.png` lo usa tal cual (nunca lo pisa; es tuyo, 32×32), si no lo renderiza del modelo (pose de idle, cámara sobre su caja, disco oscuro con aro dorado) y lo guarda ahí. Dibujar necesita ventana: desde el plugin se abre sola un instante; por consola, quitá `--headless` (`--resolution 256x256`) o corré después `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` (`--force` lo rehace). También podés asignar una textura al campo `icon` de la criatura en el inspector (gana a todo). `--icon` lo redibuja en `new_creature.gd`; `--no-icon` lo salta. Imprime qué clip tomó cada rol y cuáles no usó.
+   Escribe todo en `creatures/<tag>/` y **no pisa nada que exista** (`--force` lo rehace): `model/<tag>_model.tscn` (el modelo con su `AnimationTree` y el evento del golpe), `<tag>.tscn` y `<tag>_look.tscn` (el cuerpo con la cápsula, la huella y los sockets medidos del mesh, y su apariencia) y `<tag>.tres` (stats de `tools/bake/templates/creature.tres` más los datos de los clips). Además dibuja el **icono del HUD** (libro y selección): si existe `assets/custom/icons/<tag>.png` lo usa tal cual (nunca lo pisa; es tuyo, 32×32), si no lo renderiza del modelo (pose de idle, cámara sobre su caja, disco oscuro con aro dorado) y lo guarda ahí. Dibujar necesita ventana: desde el plugin se abre sola un instante; por consola, quitá `--headless` (`--resolution 256x256`) o corré después `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` (`--force` lo rehace). También podés asignar una textura al campo `icon` de la criatura en el inspector (gana a todo). `--icon` lo redibuja en `new_creature.gd`; `--no-icon` lo salta. Imprime qué clip tomó cada rol y cuáles no usó.
 4. **Ajustar en el inspector.** Stats, costo de maná y almas, `display_name` en el `.tres` de la criatura; tamaño en la escena del cuerpo (arrastrá `Sockets/Reach`: es hasta dónde llega el golpe). Qué clip toca cada rol: la biblioteca `<tag>_clips.tres` del modelo (nodo `Clips` de su escena; un estado del `AnimationTree` reproduce la animación de su rol, y la duración sale de la animación); el cuadro del golpe: el marcador `hit` de esa animación (y la llamada `attack` de su pista de métodos). Si tocaste roles o el golpe, **Project > Tools > Sacrifice: Sincronizar criatura con su modelo…** (o `new_creature.gd -- <tag> --sync`) vuelve a leer la escena y actualiza los tiempos que usan las reglas (golpe, disparo, aturdimiento, vuelo); tus stats no se tocan.
-5. **Ponerla en un libro**: `data/gods/<dios>.tres` → `book` → `creatures` (arrastrá el `.tres`) y una línea en `unlocks` con el nivel de mago.
+5. **Ponerla en un libro**: `gods/<dios>/<dios>.tres` → `book` → `creatures` (arrastrá el `.tres`) y una línea en `unlocks` con el nivel de mago.
 6. **Sonidos** (opcional): dejá `death_1.wav`, `swing_1.wav`… en `assets/custom/sounds/creatures/<tag>/` antes del paso 3, o después con «Hornear sonidos». Ver «Sonidos propios».
 
 ## Sonidos propios
@@ -45,27 +45,27 @@ No necesitan nada del juego original. Funcionan para cualquier criatura (tambié
 3. **Crear el set:** **Project > Tools > Sacrifice: Nueva criatura desde modelo…** escribe `creatures/<nombre>/<nombre>_sounds.tres` (los archivos de la carpeta en sus campos; sobre el set de golpes `melee/fist.tres`) y lo asigna al campo `Sounds` de la criatura. No pisa uno que exista: `--force` lo rehace y pierde lo que editaste. Sin carpeta de sonidos el set queda vacío: arrastrá los archivos a sus campos.
 4. **Revisar:** abrí el `.tres` en el inspector. Hay un cue por evento, y ▶ en un stream lo toca. Ahí se ajustan volumen, `cooldown_s` y `max_voices`.
 
-Más detalle (sonidos de FX, música y ambiente por dios): `data/audio/README.md`.
+Más detalle (sonidos de FX, música y ambiente por dios): `scenes/audio/README.md`.
 
 ## Un hechizo
 
 Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
-1. **Dato.** Duplicá un `SpellType` de `data/catalog/spells/` como `<tag>.tres` (maná, alcance, enfriamiento, tiempo de lanzamiento, daño). Ponelo en `book` → `spells` del dios (o `structures` si es una estructura).
+1. **Dato.** Duplicá un `SpellType` de `spells/` como `<tag>.tres` (maná, alcance, enfriamiento, tiempo de lanzamiento, daño). Ponelo en `book` → `spells` del dios (o `structures` si es una estructura).
 2. **Acción.** Si el hechizo hace algo más que el lanzamiento común, creá una escena en `scenes/spells/actions/` con un script que extienda `SpellAction` (para un golpe a un cuerpo bajo el cursor, un `SpellTarget` embebido y `aim_at_body`). Completá `tag` (el del `SpellType`), `pick` (suelo, criatura propia, alma, edificio propio) y `prompt` en el inspector; el editor avisa si falta algo.
 3. **Registro.** Instanciá la escena como hijo de `Caster/Actions` en `scenes/wizards/wizard_body.tscn`. Sacar el nodo apaga el hechizo («No implementado» en el libro).
 4. Los efectos visuales se piden por nombre a `FxBus` (ver «Un FX»).
 
 ## Un dios
 
-1. Duplicá `data/gods/pyro.tres` como `<dios>.tres` (`GodType`): `tag`, `display_name`, `sort_order`, y los `.tres` de tema (`data/themes`), look (`data/look`) y FX de lanzamiento (`data/fx`).
-2. `ai_profile`: un `AiProfile` de `data/ai/` (duplicá `profile_pyro.tres`).
-3. `book`: un `GodBook` con `creatures`, `spells`, `structures` y `unlocks`. Son referencias a los `.tres` de `data/catalog/`: agregar algo al libro es arrastrarlo a la lista.
+1. Creá `gods/<dios>/` y duplicá ahí `gods/pyro/pyro.tres` como `<dios>.tres` (`GodType`): `tag`, `display_name`, `sort_order`, su look (`<dios>_look.tres`, con cielo, luz, pasto, música y ambiente) y el FX de lanzamiento.
+2. `ai_profile`: un `AiProfile` de `scenes/ai/` (duplicá `profile_pyro.tres`).
+3. `book`: un `GodBook` con `creatures`, `spells`, `structures` y `unlocks`. Son referencias a los `.tres` de las carpetas `creatures/`, `spells/` y `gods/<dios>/buildings/`: agregar algo al libro es arrastrarlo a la lista.
 4. El selector de personaje y el catálogo lo levantan solos (`GameCatalog`).
 
 ## Un edificio
 
-- **Tipo.** `data/buildings/<nombre>.tres` (`BuildingType`: nombre, vida máxima, si da refugio y la ruina). La escena del mismo nombre en `scenes/structures/buildings/` es el edificio que se arrastra al mapa (raíz `MapBuilding`, partes guardadas bajo `Visuals`). Uno nuevo se hace duplicando un `.tres` y su escena; «Fit to parts» (en la raíz) mide la caja que encierra las partes, que también se arrastra con los tiradores de `Collision`.
+- **Tipo.** `scenes/structures/buildings/<nombre>.tres` (`BuildingType`: nombre, vida máxima, si da refugio y la ruina). La escena del mismo nombre en `scenes/structures/buildings/` es el edificio que se arrastra al mapa (raíz `MapBuilding`, partes guardadas bajo `Visuals`). Uno nuevo se hace duplicando un `.tres` y su escena; «Fit to parts» (en la raíz) mide la caja que encierra las partes, que también se arrastra con los tiradores de `Collision`.
 - **En el mapa.** Arrastrá `scenes/structures/buildings/<nombre>.tscn` bajo `Buildings` en la escena del mapa. Movelo y rotalo con el gizmo: el transform es la verdad y el modelo se ve en el editor; con «Hijos editables» ves y movés las partes de esa instancia. Con `max_health` 0 es indestructible.
 - **Como hechizo de estructura** (Manalith, Shrine): el `SpellType` va en `structures` del libro y una fila `GodStructure` (hechizo + escena) en `GodType.structures`; la acción es un `StructureAction` con ese `tag` bajo `Caster/Actions`; el edificio es una escena de `buildings/` que instancia `towers/tower.tscn` (o `shrine_tower.tscn`) y se agrega a `StructureSpawner.scenes` en `match.tscn`.
 
@@ -77,10 +77,10 @@ Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
 ## Un FX
 
-- **Partículas.** Un `ParticleType` en `data/fx/<nombre>.tres` (atlas, cuadros, tamaño, vida, gravedad, cantidad). Se toca con `FxBus.play("<nombre>", posición)`; el nombre es el del archivo.
-- **Rayo.** Un `BeamType` en `data/fx/beams/` y `FxBus.play_beam(...)`.
+- **Partículas.** Un `ParticleType` en `scenes/fx/effects/<nombre>.tres` (atlas, cuadros, tamaño, vida, gravedad, cantidad). Se toca con `FxBus.play("<nombre>", posición)`; el nombre es el del archivo.
+- **Rayo.** Un `BeamType` en `scenes/fx/effects/beams/` y `FxBus.play_beam(...)`.
 - **Algo con forma propia** (anillos, púas, portal): una packed scene en `scenes/fx/` con su shader, y `FxBus.play_scene(ruta, posición, parámetros)`. Un efecto, una escena, un shader.
-- Luces del efecto: `data/fx/lights/`.
+- Luces del efecto: `scenes/fx/effects/lights/`.
 
 ## Un mapa
 
@@ -102,7 +102,7 @@ $G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # asient
 
 Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es la verdad). Ojo con `--force`: pisa lo editado. Las plantas de un mapa que no es de James quedan vacías hasta tener los modelos de sus widgets. `room_selectable = false` en la definición lo saca de las salas.
 
-**El suelo de un mapa** (plan 062): `bake_ground_roles.py` lee las baldosas del `.scp` en la tierra del propio mapa y escribe `ground_roles.png` (R abierto, G tierra, B roca, A camino); cada dios lo viste con su `GodGround` (`data/look/<dios>.tres`), en cualquier mapa. Un `.scp` fuera de la carpeta (el tutorial) se pasa con `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` deja `Npcs` vacío y `--not-playable` pone `playable = false` (ni salas ni menús lo ofrecen; `--map=<tag>` y las escenas de debug sí lo abren). Las plantas: `scaffold_map.py --map=<Nombre> --wire-flora` escribe un PNG de densidad por especie (`scenes/map/maps/<tag>/flora/`) y cuelga un `FloraLayer` por especie de un nodo `Vegetation` del map.tscn (importá el proyecto una vez después); los PNG se pintan a mano, o sumá un `VegetationPatch`.
+**El suelo de un mapa** (plan 062): `bake_ground_roles.py` lee las baldosas del `.scp` en la tierra del propio mapa y escribe `ground_roles.png` (R abierto, G tierra, B roca, A camino); cada dios lo viste con su `GodGround` (`scenes/look/<dios>.tres`), en cualquier mapa. Un `.scp` fuera de la carpeta (el tutorial) se pasa con `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` deja `Npcs` vacío y `--not-playable` pone `playable = false` (ni salas ni menús lo ofrecen; `--map=<tag>` y las escenas de debug sí lo abren). Las plantas: `scaffold_map.py --map=<Nombre> --wire-flora` escribe un PNG de densidad por especie (`scenes/map/maps/<tag>/flora/`) y cuelga un `FloraLayer` por especie de un nodo `Vegetation` del map.tscn (importá el proyecto una vez después); los PNG se pintan a mano, o sumá un `VegetationPatch`.
 
 **Hacer uno a mano** (ejemplo: `test_flat4`, el mapa de prueba de 4 asientos, en `scenes/map/maps/test_flat4/`):
 
@@ -116,11 +116,11 @@ Un mapa solo aparece en un modo si tiene un inicio por asiento: High Noon (2) of
 
 ## Un modo
 
-Un modo (cuántos asientos, de qué equipo es cada uno, cómo se gana) es un `GameMode` `.tres` en `data/modes/`. No lleva código.
+Un modo (cuántos asientos, de qué equipo es cada uno, cómo se gana) es un `GameMode` `.tres` en `scenes/match/modes/`. No lleva código.
 
 1. Duplicá uno parecido (por ejemplo `2v2.tres`) y llamalo `<tag>.tres`.
-2. En el inspector: `tag` (el de `--mode=<tag>` y de la sala), `display_name` (una clave de `data/i18n/strings.csv`, como `MODE_2V2`; agregá la tuya con su texto), `team_of_seat` (el equipo de cada asiento, el 1 primero: `[0,1]` es 1 contra 1, `[0,0,1,1]` es 2 contra 2, `[0,1,2]` tres contra todos; los equipos van de 0 sin huecos) y `room_selectable`.
-3. Sumalo a `modes` en `data/modes/mode_catalog.tres`.
+2. En el inspector: `tag` (el de `--mode=<tag>` y de la sala), `display_name` (una clave de `scenes/ui/i18n/strings.csv`, como `MODE_2V2`; agregá la tuya con su texto), `team_of_seat` (el equipo de cada asiento, el 1 primero: `[0,1]` es 1 contra 1, `[0,0,1,1]` es 2 contra 2, `[0,1,2]` tres contra todos; los equipos van de 0 sin huecos) y `room_selectable`.
+3. Sumalo a `modes` en `scenes/match/modes/mode_catalog.tres`.
 4. Si ningún mapa tiene inicios para todos los asientos del modo, las pantallas no lo ofrecen.
 
 Para probarlo sin pantallas: `--map=test_flat4 --mode=<tag>`.
@@ -131,15 +131,15 @@ Hace falta un mapa de 4 asientos: `winter_wonder`, o `test_flat4` para probar.
 
 - **Solo, contra la IA:** en el boot elegí el modo «2 contra 2» y el mapa, y pulsá «Contra la IA». La IA juega tu aliado y los dos rivales (su dios sale del selector «Dios de la IA»). En un build de debug el boot ofrece también los mapas de prueba.
 - **En una sala online:** A pulsa «Salas online» → «Crear sala», elige modo «2 contra 2» y el mapa, y pasa el código. Los otros tres entran con «Unirse» y el código. Online son solo personas: para jugar con IA, usá «Servidor local».
-- **Servidor de salas (apagado, para un VPS futuro):** prendé `room_server_enabled` en el inspector de `scenes/core/flow/sacrifice_flow.tscn` y levantalo con `$G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps`. Con el interruptor prendido, «Salas online» abre su lobby (salas con asientos de IA, «Listo» y vuelta a la sala) en vez de las salas de jugadores.
+- **Servidor de salas (apagado, para un VPS futuro):** prendé `room_server_enabled` en el inspector de `scenes/core/flow/sacrifice_flow.tscn` y levantalo con `$G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://scenes/net/lobby_config_local.tres --room-test-maps`. Con el interruptor prendido, «Salas online» abre su lobby (salas con asientos de IA, «Listo» y vuelta a la sala) en vez de las salas de jugadores.
 - **Servidor local:** en «Servidor local» → «Crear servidor local», elegí modo y mapa y, por cada asiento que no es el tuyo, una persona o una IA. Cada asiento de persona tiene su código: pasale a cada uno el suyo, con la dirección y el puerto.
 
 ## Cambiar el balance
 
-- **Una criatura, un hechizo, un mago, un edificio:** abrí su `.tres` en `data/catalog/<tipo>/` y cambiá el número en el inspector. No hay JSON ni tabla aparte; el juego lee el archivo.
-- **Reglas de la partida** (duración, fuego amigo, topes): `data/match_rules.tres` (`MatchRules`).
-- **IA y dificultad:** `data/ai/`.
-- **Calidad gráfica:** `data/look/quality_*.tres`.
+- **Una criatura, un hechizo, un mago, un edificio:** abrí su `.tres`: `creatures/<nombre>/`, `spells/<nombre>/`, `wizards/<nombre>/` o `gods/<dios>/buildings/`, y cambiá el número en el inspector. No hay JSON ni tabla aparte; el juego lee el archivo.
+- **Reglas de la partida** (duración, fuego amigo, topes): `scenes/match/match_rules.tres` (`MatchRules`).
+- **IA y dificultad:** `scenes/ai/`.
+- **Calidad gráfica:** `scenes/look/quality_*.tres`.
 - No se muta un `.tres` en runtime.
 
 ## Relieve (mapas PBR) de un modelo
@@ -217,7 +217,7 @@ Estas herramientas leen los `.wad` y los `.scp` del juego instalado; **el origin
 
 ### Importar el audio del original
 
-Casi nadie lo necesita: el audio ya importado está en el repo por Git LFS (`assets/original/audio/`: efectos WAV, voces Ogg, música MP3), con sus sets horneados en `data/audio/`. Solo se vuelve a correr si cambia el importador.
+Casi nadie lo necesita: el audio ya importado está en el repo por Git LFS (`assets/original/audio/`: efectos WAV, voces Ogg, música MP3), con sus sets horneados en `scenes/audio/`. Solo se vuelve a correr si cambia el importador.
 
 1. Necesita el juego original instalado. Indicá la carpeta con los `.wad` como en «Configurar rutas»: `SAC_INSTALL`, `tools/import/local.cfg` o **Editor Settings > sacrifice > original_install_path**.
 2. **Project > Tools > Sacrifice: Importar audio del original** (o `python3 tools/import/import_audio.py`; `--check` muestra qué cambiaría sin escribir).

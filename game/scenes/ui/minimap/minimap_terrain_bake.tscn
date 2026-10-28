@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_terrain_bake.gd" id="1_bake"]
-[ext_resource type="Resource" path="res://data/look/james.tres" id="3_look"]
+[ext_resource type="Resource" path="res://scenes/look/james.tres" id="3_look"]
 
 [sub_resource type="Environment" id="Environment_ambient"]
 background_mode = 0

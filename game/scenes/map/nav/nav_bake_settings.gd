@@ -2,7 +2,7 @@
 class_name NavBakeSettings
 extends Resource
 
-## The numbers of the map's navmesh bake: data/nav/nav_bake.tres is their only source.
+## The numbers of the map's navmesh bake: scenes/map/nav_bake.tres is their only source.
 ## tools/bake/bake_nav.gd and MapNavRegion read them; nothing else hardcodes a radius or a cell.
 ## Never mutated at runtime.
 

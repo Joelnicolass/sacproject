@@ -3,7 +3,8 @@ class_name LightLook
 extends Resource
 
 ## Light of one biome: sun, shadows, fill, ambient, exposure and SSAO. One `.tres` per god
-## (`data/look/light/<god>_light.tres`); a night is another `.tres`. Nothing here is score or copy.
+## (`scenes/look/light/<god>_light.tres`); a night is another `.tres`. Nothing here is score or
+## copy.
 ## SunLayer reads the sun, shadow and fill parts; EnvironmentLayer reads the ambient, exposure and
 ## screen-space parts. Fog belongs to the SkyLook.
 

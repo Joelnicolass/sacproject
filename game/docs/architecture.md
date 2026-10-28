@@ -8,8 +8,11 @@ step-by-step recipes (a creature, a spell, a map) in [`HOWTO.en.md`](HOWTO.en.md
 
 | Folder | What lives there |
 |---|---|
-| `scenes/<system>/` | Scenes and the scripts attached to them, one folder per game system |
-| `data/` | `.tres` resources edited in the inspector: `catalog/` (creatures, spells, wizards, abilities, buildings), `gods/`, `ai/`, `fx/`, `audio/`, `look/`, `modes/`, `net/`, `ui/`, `i18n/strings.csv`, `match_rules.tres` |
+| `creatures/<name>/` | Everything only that creature uses: type, body, look, passives, sounds, own abilities, `fx/`, `model/` |
+| `spells/<name>/` | Everything only that spell uses: type, action scene, projectile or zone, `fx/`, `sounds/` |
+| `wizards/<name>/` | Type, body, look, sounds and `model/` of one wizard |
+| `gods/<name>/` | The god's type and book, its look (sky, light, grass, music, ambience) and `buildings/` |
+| `scenes/<system>/` | The code of each system and what several entities share: scenes, scripts and the `.tres` they read (AI tactics in `ai/`, shared effects in `fx/effects/`, cues in `audio/cues/`, modes in `match/modes/`, texts in `ui/i18n/strings.csv`…) |
 | `assets/` | Imported art and sound. `original/` comes from the original game (Git LFS, read-only); `custom/` is your own content; `cc0/`, `mm/` (Material Maker) and `surfaces/` (normal maps) are extra textures |
 | `addons/` | `mp_kit` (network), `fsm_kit` (state machines), `agent_kit` (automated captures), `gut` (tests) and the editor plugins of this game (`sacrifice_tools`, `terrain_tools`, `surface_maps`) |
 | `tools/` | Import, bake, audit and lint scripts. The game never loads anything from here |
@@ -27,7 +30,7 @@ step-by-step recipes (a creature, a spell, a map) in [`HOWTO.en.md`](HOWTO.en.md
 
 State that belongs to one match never lives in an autoload: it is a node of `match.tscn`. `ActiveMatch`
 (`scenes/core/catalog/active_match.gd`) is a static holder of the map, mode and seed this process plays. The type catalog
-(`data/catalog/`, `data/gods/`) is the static `GameCatalog.shared()`, not an autoload.
+(`creatures/`, `spells/`, `wizards/`, `gods/`) is the static `GameCatalog.shared()`, not an autoload.
 
 ## The life of a match
 
@@ -62,7 +65,7 @@ The root's children are five plain group nodes; every system is placed in the sc
 
 Nodes reference each other by `@export` set in the scene or by `%UniqueName`, so a node can move between groups.
 
-Round numbers (souls, mana, times) are in `data/match_rules.tres`; the reaches of places (an altar, a fount, a soul) are
+Round numbers (souls, mana, times) are in `scenes/match/match_rules.tres`; the reaches of places (an altar, a fount, a soul) are
 shapes in `scenes/match/reach_places.tscn`.
 
 ## A creature
@@ -80,7 +83,7 @@ makes one creature different from another lives in its folder, `creatures/<name>
 | `<ability>.tres` | an ability only this creature has |
 | `model/` | the skeletal model scene, its clip library, one `.res` per clip and its materials |
 
-Something two creatures share stays in the shared folder of its kind (`data/catalog/abilities/`, `scenes/bodies/models/`).
+Something two creatures share stays in the shared folder of its kind (`scenes/units/abilities/`, `scenes/bodies/models/`).
 
 - **Type:** `UnitSpawner` sets `UnitBody.type`, a `CreatureType` from `creatures/<name>/<name>.tres` (stats, body,
   sounds, ranged attack, ability, passives), before the unit enters the tree. Types are shared: never write to them.
@@ -101,9 +104,9 @@ share most components and add `Spellbook`, `Caster`, `Summoner`, `SoulPurse`, `G
 
 ## From the book to the effect
 
-1. Each god (`GodType`, `data/gods/<god>.tres`) has a `GodBook` that lists its creatures, spells and structures and the
+1. Each god (`GodType`, `gods/<god>/<god>.tres`) has a `GodBook` that lists its creatures, spells and structures and the
    wizard level that unlocks each. `Spellbook` (child of the wizard) builds the book of the current level and owns the cooldowns.
-2. Every entry is a `BookEntry` resource: a `SpellType` (`data/catalog/spells/<tag>.tres`), a `CreatureType` or an
+2. Every entry is a `BookEntry` resource: a `SpellType` (`spells/<name>/<name>.tres`), a `CreatureType` or an
    `AbilityType`. A `SpellType` points at its `action`, a scene in `scenes/spells/actions/`.
 3. The HUD (`scenes/ui/spell_book/`) or a click through `MatchCommand` calls `Caster.request_cast` / `request_summon` /
    `request_structure`. On a client this becomes a `submit_*` RPC; the server (or solo) runs the cast.
@@ -131,7 +134,7 @@ share most components and add `Spellbook`, `Caster`, `Summoner`, `SoulPurse`, `G
 `AiRoster` (in `match.tscn`) seats one `AiSide` (`scenes/ai/ai_side.tscn`) per AI seat, only where the game is simulated.
 The side plays like a player: `Perception` keeps what its bodies saw, `Groups` and `Stance` sum up the field, `Brain`
 picks spells by phase (attack, support, convert, summon), `Tasks` give work to its creatures, and `Port` sends the
-orders and casts through `Caster` and `Orders`. It never cheats. Difficulty and tactics are `data/ai/*.tres`.
+orders and casts through `Caster` and `Orders`. It never cheats. Difficulty and tactics are `scenes/ai/*.tres`.
 
 ## Run, test, lint
 

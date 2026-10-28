@@ -14,7 +14,7 @@ enum State { HIDDEN, OK, BLOCKED }
 
 const _MATERIAL := preload("res://scenes/map/props/build_ring_material.tres")
 
-## Colours and line width (data/ui/build_area_look.tres).
+## Colours and line width (scenes/ui/build_area_look.tres).
 @export var look: BuildAreaLook:
 	set(value):
 		if look != null and look.changed.is_connected(_paint):
@@ -33,7 +33,7 @@ var state := State.HIDDEN
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if look == null:
-		warnings.append("Assign `look` (data/ui/build_area_look.tres).")
+		warnings.append("Assign `look` (scenes/ui/build_area_look.tres).")
 	if not mesh is PlaneMesh:
 		warnings.append("The ring needs a 2 x 2 m PlaneMesh: the node's scale is the radius.")
 	return warnings

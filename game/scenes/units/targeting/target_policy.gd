@@ -5,7 +5,7 @@ extends Resource
 ## Scarab heals the wounded, a raging body fights anyone). A ranged attack carries its own in
 ## AbilityType.target_policy; TargetPicker also holds the rage one. This base is the default rule:
 ## accepts() is what UnitBody accepted before, pick() has no opinion (null). A variant is a new
-## script and a .tres in data/targeting/, never an `if` on the ability.
+## script and a .tres in scenes/units/targeting/, never an `if` on the ability.
 
 
 ## Whether `body` may keep `node` as its target (UnitBody.accepts_target). `explicit`: `node` is the

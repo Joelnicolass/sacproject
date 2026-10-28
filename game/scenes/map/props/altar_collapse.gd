@@ -17,7 +17,7 @@ signal finished
 @export var sink_depth := 26.0
 ## Meters the base rises while it shrinks.
 @export var float_height := 60.0
-## What is seen where the base bursts (data/fx/wrath_explosion2.tres). Empty = no burst.
+## What is seen where the base bursts (scenes/fx/effects/wrath_explosion2.tres). Empty = no burst.
 @export var burst_fx: ParticleType
 ## Where the base bursts: a Marker3D of altar.tscn at the top of the rise (move it with the gizmo).
 @export var burst_spot: Marker3D

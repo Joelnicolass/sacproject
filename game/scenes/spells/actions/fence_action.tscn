@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scenes/spells/actions/wall_action.gd" id="1_script"]
-[ext_resource type="Resource" path="res://data/fx/default_cast.tres" id="fx_default_cast"]
-
-[node name="Fence" type="Node"]
-script = ExtResource("1_script")
-cast_fx = ExtResource("fx_default_cast")
-wall_kind = "Fence"

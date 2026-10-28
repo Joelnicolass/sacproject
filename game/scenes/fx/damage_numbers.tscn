@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/damage_numbers.gd" id="1_numbers"]
-[ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="2_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/feel_prefs.tres" id="2_prefs"]
 [ext_resource type="PackedScene" path="res://scenes/fx/damage_number.tscn" id="3_number"]
 
 [node name="DamageNumbers" type="Node3D"]

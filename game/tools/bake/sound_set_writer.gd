@@ -6,8 +6,8 @@ extends RefCounted
 ## creatures/<name>/<name>_sounds.tres. Every file of one event is a variant of its cue
 ## (`death_1.wav`, `death_2.wav`); the event names are SoundEvent.BODY (EVENT_HELP) and each one is
 ## a field of the SoundSet. A `swing` with no `shoot` of its own also sounds when the creature
-## shoots (the same cue). The set has the melee set `data/audio/melee/fist.tres` as `fallback`, so a
-## creature with only a death still swings. With no sound files it writes the set empty (the
+## shoots (the same cue). The set has the melee set `scenes/audio/melee/fist.tres` as `fallback`, so
+## a creature with only a death still swings. With no sound files it writes the set empty (the
 ## fallback only): drag the files onto its fields in the inspector. Never over an existing .tres
 ## unless `force` (it throws away what you edited by hand). The streams are referenced by path and
 ## never loaded here: it works before the editor imports the audio. Preloaded by path (no
@@ -17,7 +17,7 @@ const CUSTOM_SRC := "res://assets/custom/sounds/"
 const CUSTOM_OUT := "res://creatures/"
 const SET_SCRIPT := "res://scenes/audio/sound_set.gd"
 const CUE_SCRIPT := "res://scenes/audio/sound_cue.gd"
-const MELEE_FALLBACK := "res://data/audio/melee/fist.tres"
+const MELEE_FALLBACK := "res://scenes/audio/melee/fist.tres"
 const STREAM_EXTENSIONS := ["ogg", "wav", "mp3"]
 const _EVENTS := preload("res://scenes/audio/sound_event.gd")
 ## Events a voice says; the rest of your sounds go to SFX.

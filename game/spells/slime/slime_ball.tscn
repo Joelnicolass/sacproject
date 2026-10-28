@@ -1,0 +1,36 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://spells/slime/slime_ball.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/lthg.png" id="2_skin"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+
+[sub_resource type="StandardMaterial3D" id="Slime_skin"]
+albedo_texture = ExtResource("2_skin")
+metallic = 0.5
+metallic_specular = 1.0
+roughness = 1.0
+
+[sub_resource type="SphereMesh" id="Slime_sphere"]
+material = SubResource("Slime_skin")
+radius = 0.5
+height = 1.0
+radial_segments = 24
+rings = 25
+
+[node name="SlimeBall" type="Node3D" node_paths=PackedStringArray("ball")]
+script = ExtResource("1_script")
+ball = NodePath("Ball")
+
+[node name="Ball" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("Slime_sphere")
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+light_color = Color(0.8, 1, 0.35, 1)
+light_energy = 1.2
+omni_range = 6
+fade_in_s = 0.5
+lit_on_ready = true
+editor_description = "Sickly green light on the slime ball while it grows and falls (dominant colour of lthg.png); the Slimed state takes over on landing."

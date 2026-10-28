@@ -3,7 +3,7 @@ class_name MinimapMarkerStyle
 extends Resource
 
 ## Look of one kind of minimap icon: a creature, the wizard, an altar... One `.tres` per kind in
-## data/ui/minimap/. Sizes are canvas pixels of the 1280×720 base (Godot's stretch scales them).
+## scenes/ui/minimap/. Sizes are canvas pixels of the 1280×720 base (Godot's stretch scales them).
 ## Never mutated in a match.
 
 enum Shape { DOT, TRIANGLE, DIAMOND, SQUARE }

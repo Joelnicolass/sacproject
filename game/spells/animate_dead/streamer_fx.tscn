@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/animate_dead/streamer_fx.gd" id="1_streamer"]
+[ext_resource type="Resource" path="res://spells/animate_dead/fx/beams/animate_dead_streamer.tres" id="2_type"]
+
+[node name="StreamerFx" type="MeshInstance3D"]
+script = ExtResource("1_streamer")
+type = ExtResource("2_type")

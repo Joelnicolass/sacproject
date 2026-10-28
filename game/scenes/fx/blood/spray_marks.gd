@@ -10,14 +10,14 @@ extends Node
 ## What it does not do: decide who bursts (Gib), throw the spray (FxBus) or own the marks
 ## (GroundScars).
 
-## The bursts that leave a pool (data/fx/blood.tres).
+## The bursts that leave a pool (scenes/fx/effects/blood.tres).
 @export var sprays: Array[ParticleType] = []
-## Whose mark is painted (data/fx/blood/red.tres).
+## Whose mark is painted (scenes/fx/effects/blood/red.tres).
 @export var blood: BloodType:
 	set(value):
 		blood = value
 		update_configuration_warnings()
-## The player's «Sangre» (data/ui/feel_prefs.tres): off, nothing shows.
+## The player's «Sangre» (scenes/ui/feel_prefs.tres): off, nothing shows.
 @export var prefs: FeelPrefs:
 	set(value):
 		prefs = value
@@ -64,7 +64,7 @@ func _on_played(kind: StringName, fx: Resource, at: Vector3) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if blood == null:
-		out.append("Assign `blood` (data/fx/blood/red.tres).")
+		out.append("Assign `blood` (scenes/fx/effects/blood/red.tres).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		out.append(prefs_warning)

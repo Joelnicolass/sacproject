@@ -6,9 +6,9 @@
 [ext_resource type="Script" path="res://scenes/look/atmosphere/precipitation_fall.gd" id="4_fall"]
 [ext_resource type="Script" path="res://scenes/look/follow_camera.gd" id="5_follow"]
 [ext_resource type="Script" path="res://scenes/look/atmosphere/storm_strikes.gd" id="6_storm"]
-[ext_resource type="Resource" path="res://data/fx/beams/storm_bolt.tres" id="7_bolt"]
-[ext_resource type="Resource" path="res://data/fx/storm_flash.tres" id="8_flash"]
-[ext_resource type="Resource" path="res://data/audio/cues/thunder.tres" id="9_thunder"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/beams/storm_bolt.tres" id="7_bolt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/storm_flash.tres" id="8_flash"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/thunder.tres" id="9_thunder"]
 [ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="10_warm"]
 
 [node name="Atmosphere" type="Node3D"]

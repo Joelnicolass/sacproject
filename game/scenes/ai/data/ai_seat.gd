@@ -2,18 +2,18 @@ class_name AiSeat
 extends Resource
 
 ## A seat the AI takes: which slot, which wizard and god, how well it plays. Drag the wizard and the
-## god from the FileSystem (data/catalog/wizards, data/gods). It does not play: AiRoster (or a
+## god from the FileSystem (wizards/, gods/). It does not play: AiRoster (or a
 ## test scene) seats it and AiSide plays it.
 
 ## Normal: the difficulty of a seat that names none (drag another file here to change the default).
-const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
+const NORMAL: AiDifficulty = preload("res://scenes/ai/difficulty_normal.tres")
 
 @export var slot := 2
 ## Empty = the wizard of the menu's default pick (`SacrificeFlow.default_pick`).
 @export var wizard: WizardType
 ## Empty: AiRoster draws one per match from the gods the lobby offers («Aleatorio»).
 @export var god: GodType
-## How well it plays. Empty: Normal (data/ai/difficulty_normal.tres).
+## How well it plays. Empty: Normal (scenes/ai/difficulty_normal.tres).
 @export var difficulty: AiDifficulty
 ## A personality of its own: these tactics instead of the difficulty's. Empty: the difficulty's
 ## (AiDifficulty.tactics).
@@ -28,7 +28,7 @@ const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
 
 
 ## The difficulty with that id (a room's or a screen's: easy, normal, hard;
-## data/ai/difficulties.tres); null for an empty or unknown id (the seat then plays Normal).
+## scenes/ai/difficulties.tres); null for an empty or unknown id (the seat then plays Normal).
 static func difficulty_of(id: String) -> AiDifficulty:
 	return AiDifficultyList.shared().find(id)
 

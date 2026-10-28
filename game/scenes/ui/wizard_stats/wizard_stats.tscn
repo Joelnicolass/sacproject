@@ -31,7 +31,7 @@ _data = {
 }
 
 [node name="WizardStats" type="HBoxContainer"]
-editor_description = "Soul count, mana and health. Frames, bars and font come from data/ui/theme.tres (Hud* variations); the soul turns with SpinPlayer (8 frames of spir.png at 15 a second)."
+editor_description = "Soul count, mana and health. Frames, bars and font come from scenes/ui/theme.tres (Hud* variations); the soul turns with SpinPlayer (8 frames of spir.png at 15 a second)."
 theme_type_variation = &"HBoxFlush"
 custom_minimum_size = Vector2(154, 115)
 mouse_filter = 2

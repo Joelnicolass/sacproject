@@ -10,7 +10,7 @@ const _SPEEDUP_SCENE := preload("res://scenes/spells/speedup_effect.tscn")
 ## The shortest Speedup, in seconds (the SPEL's duration when it is longer).
 @export var min_duration_s := 1.0
 ## The burst every peer sees when it runs, and the socket of the body it leaves from (empty = none).
-@export var fx: ParticleType = preload("res://data/fx/speedup.tres")
+@export var fx: ParticleType = preload("res://scenes/fx/effects/speedup.tres")
 @export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 

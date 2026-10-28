@@ -7,7 +7,7 @@ extends Control
 signal back_requested
 
 ## Used when the text has no `:port`. Same number as `match_port_min` of
-## data/net/lobby_config_local_server.tres.
+## scenes/net/lobby_config_local_server.tres.
 @export var default_port: int = 7710
 
 ## The character selector of the menu, shown over this view while the rival chooses (the same scene

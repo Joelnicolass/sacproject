@@ -45,5 +45,5 @@ If you use a tunnel, the address the screen shows is the local one: replace it w
 
 ## What's behind it (for developers)
 
-- `scenes/net/local_server_host.tscn` (`LocalServerHost`): launches the dedicated server with `MpMatchLauncher` (`data/net/lobby_config_local_server.tres`, one seat for each seat of the chosen mode, human or AI; one code per human seat), generates the credentials and signals when it is listening.
+- `scenes/net/local_server_host.tscn` (`LocalServerHost`): launches the dedicated server with `MpMatchLauncher` (`scenes/net/lobby_config_local_server.tres`, one seat for each seat of the chosen mode, human or AI; one code per human seat), generates the credentials and signals when it is listening.
 - The dedicated server is the same as the rooms' (`MatchTicketGlue` + `MpMatchAgent`); it admits only the ticket's hashes.

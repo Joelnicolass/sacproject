@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_spirit.gd" id="1_spirit"]
-[ext_resource type="Resource" path="res://data/fx/beams/wail_spirit.tres" id="2_type"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/beams/wail_spirit.tres" id="2_type"]
 
 [node name="WallOrbit" type="Node3D"]
 script = ExtResource("1_spirit")

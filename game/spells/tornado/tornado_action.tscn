@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://spells/tornado/tornado_cast_glow.tscn" id="2_glow"]
+
+[node name="Tornado" type="Node"]
+editor_description = "Tornado (nrot): el embudo nace al empezar el lanzamiento y crece con el (0,8 de su tamano al terminar). La espiral cst0 alrededor del mago es cast_scene; la particula de las manos es la de su dios (Stratos)."
+script = ExtResource("1_script")
+kind = "Tornado"
+cast_scene = ExtResource("2_glow")

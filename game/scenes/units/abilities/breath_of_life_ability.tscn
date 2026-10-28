@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/breath_of_life.tscn" id="2_breath"]
 
 [node name="BreathOfLifeAbility" type="Node"]
-editor_description = "The Dragon's Breath of life effect (filb). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). It prepares 52 ticks (DGs2: tick 26 at 30 fps), accepts an allied soul or corpse within 40 m and releases the breath (BreathOfLife) into the shot container."
+editor_description = "The Dragon's Breath of life effect (filb). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It prepares 52 ticks (DGs2: tick 26 at 30 fps), accepts an allied soul or corpse within 40 m and releases the breath (BreathOfLife) into the shot container."
 script = ExtResource("1_ability")
 windup_s = 0.8666
 windup_from_clip = true

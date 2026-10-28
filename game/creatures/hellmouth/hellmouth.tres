@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3nw7s"]
 [ext_resource type="Texture2D" uid="uid://dkuxo3breglsc" path="res://assets/original/ui/icons/nomd.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://creatures/hellmouth/hellmouth_shot.tres" id="typed_mhba"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/devour.tres" id="typed_ifna"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/devour.tres" id="typed_ifna"]
 [ext_resource type="AnimationLibrary" path="res://creatures/hellmouth/model/hellmouth_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/hellmouth/hellmouth.tscn" id="body_scene"]
 

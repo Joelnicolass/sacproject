@@ -10,8 +10,8 @@ extends ZonePulse
 ## The burst played at the center: a scene with the flying rocks (it also carries the sound of the
 ## blast).
 @export var burst: PackedScene
-## Sprite bursts played at the center (FxBus), under data/fx/. The ones with a light light the
-## ground in their color.
+## Sprite bursts played at the center (FxBus), under scenes/fx/effects/. The ones with a light light
+## the ground in their color.
 @export var puffs: Array[ParticleType] = []
 ## Where the burst is born over the center.
 @export var burst_at: Marker3D

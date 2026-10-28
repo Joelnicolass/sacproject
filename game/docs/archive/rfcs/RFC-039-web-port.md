@@ -315,7 +315,7 @@ Cada corte usa a lo sumo 1 Godot headless (export) y nunca abre ventana de Godot
    - `quality_web.tres`: los campos de §4.1.
    - `data/web/shrink_rules.tres`: las reglas.
    - F6 sobre `debug/web/web_probe.tscn` en escritorio corre la misma partida (sirve para comparar FPS Forward+ contra web).
-5. Red: terminal 1 `Godot --headless --path game res://scenes/net/room_server.tscn -- --room-server --transport=ws --lobby-config=res://data/net/lobby_config_local.tres`. Navegador con `?lobby=ws://127.0.0.1:7700&match_url=ws://127.0.0.1:{port}`. Un cliente de escritorio con `--transport=ws`.
+5. Red: terminal 1 `Godot --headless --path game res://scenes/net/room_server.tscn -- --room-server --transport=ws --lobby-config=res://scenes/net/lobby_config_local.tres`. Navegador con `?lobby=ws://127.0.0.1:7700&match_url=ws://127.0.0.1:{port}`. Un cliente de escritorio con `--transport=ws`.
 
 ## 14. Preguntas abiertas (con recomendación)
 

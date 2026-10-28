@@ -4,9 +4,9 @@ extends Resource
 ## How well the AI plays. The original has no difficulty (aggression fixed at 1.0); Normal is its
 ## numbers. Easy and Hard change only HOW FAST it thinks, how bold it is and what it knows: never
 ## what it has. RULES.md «IA»: no bonus of mana or souls and no cheat in any difficulty. A
-## difficulty is another `.tres` (data/ai/difficulty_*.tres); it never changes while playing. Normal
-## plays the original's numbers except one deviation the user chose: it knows only what it saw last
-## of what its side does not see now (Knowledge.SIGHT).
+## difficulty is another `.tres` (scenes/ai/difficulty_*.tres); it never changes while playing.
+## Normal plays the original's numbers except one deviation the user chose: it knows only what it
+## saw last of what its side does not see now (Knowledge.SIGHT).
 
 ## What the AI may know of the bodies its side does not see now. No difficulty reads the real health
 ## or mana of one of them (RULES.md «IA»: no cheat in any difficulty); what changes is the position.
@@ -54,7 +54,7 @@ enum Knowledge {
 @export var knowledge: Knowledge = Knowledge.SIGHT
 
 @export_group("Tactics")
-## How the wizard and his creatures play this difficulty (data/ai/tactics_*.tres, with crowd and
+## How the wizard and his creatures play this difficulty (scenes/ai/tactics_*.tres, with crowd and
 ## senses). Empty: tactics_normal.tres.
 @export var tactics: AiTactics
 

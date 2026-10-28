@@ -31,7 +31,7 @@ const PACE_SOURCE := &"lightning_charge"
 
 ## The discharge's bolt (lightning_strike.tscn).
 @export var bolt_scene: PackedScene
-## The passive (data/catalog/abilities/lightning_charge.tres): its numbers give the amount 250, the
+## The passive (scenes/units/abilities/lightning_charge.tres): its numbers give the amount 250, the
 ## range 30 and the bolt's damage 250.
 @export var passive: AbilityType
 ## Frames charged per point of damage taken from an ally / from anyone else.
@@ -49,7 +49,7 @@ const PACE_SOURCE := &"lightning_charge"
 @export var ground_min_m := 5.0
 @export_group("Look")
 ## The burst over the body while charged (reserve look). Empty = none.
-@export var spark_fx: ParticleType = preload("res://data/fx/styx_spark.tres")
+@export var spark_fx: ParticleType = preload("res://scenes/fx/effects/styx_spark.tres")
 ## Sparks per second.
 @export var spark_rate := 2.0
 

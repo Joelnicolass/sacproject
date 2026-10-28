@@ -32,11 +32,11 @@ const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 ## The creature's order queue (UnitOrders), cleared every tick the oil holds. Empty on a wizard.
 @export var orders: Node
 ## The fire puffed on each body the blast lights, and how long that fire of no damage lasts.
-@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
+@export var fire_fx: ParticleType = preload("res://scenes/fx/effects/fire.tres")
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var fire_s := 1.0
 ## The fireball that blasts at the body's center (the `fire` atlas, in MIX like the Bombard's).
 ## Empty = none.
-@export var blast_fx: ParticleType = preload("res://data/fx/oil_blast.tres")
+@export var blast_fx: ParticleType = preload("res://scenes/fx/effects/oil_blast.tres")
 
 var _frame := 0
 var _ticks := 0

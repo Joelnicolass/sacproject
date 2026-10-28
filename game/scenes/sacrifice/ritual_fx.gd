@@ -19,7 +19,7 @@ extends Node3D
 ## scenes/sacrifice/red_vortex.tscn
 @export var vortex_scene: PackedScene
 @export var ritual: Ritual
-## data/fx/blood.tres: what the creature becomes when the ritual completes.
+## scenes/fx/effects/blood.tres: what the creature becomes when the ritual completes.
 @export var blood_fx: ParticleType
 @export_group("Markers")
 ## Over the altar (60 m up in the scene): where the altar ropes start from.

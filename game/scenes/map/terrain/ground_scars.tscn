@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/terrain/ground_scars.gd" id="1_scars"]
-[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="2_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="2_prefs"]
 [ext_resource type="Script" path="res://scenes/map/terrain/ground_scars_net.gd" id="3_net"]
 
 [sub_resource type="Texture2DArray" id="Tiles_scars"]

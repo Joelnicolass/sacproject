@@ -29,7 +29,8 @@ const NO_WIZARD := &"no_wizard"
 const CREATURE_LIMIT := &"creature_limit"
 
 
-## The words a player reads for `key`: the `REFUSAL_<KEY>` row of data/i18n/strings.csv, translated.
+## The words a player reads for `key`: the `REFUSAL_<KEY>` row of scenes/ui/i18n/strings.csv,
+## translated.
 ## "" when the csv has no row.
 static func text(key: StringName) -> String:
 	var msg := "REFUSAL_" + String(key).to_upper()

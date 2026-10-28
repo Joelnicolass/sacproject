@@ -7,7 +7,7 @@ The MRMM of `dfir` holds 97 vertices and 5 frames of vertex positions (the wing 
 one. This script reads all five, writes the two textures (M000 the body, M001 the wings: 128x128 with alpha) next to the model as
 props/dfir_M000.png and props/dfir_M001.png, and asks Blender (CLI, no UI) to build the mesh with 4 shape keys (frames 1..4 over frame
 0) and export it as glTF morph targets. Nothing is modelled: the dragon is the original's. The mesh has two materials named after the
-texture labels (M000, M001); the scene that uses it (scenes/spells/carrier/dragon_look.tscn) puts its own unshaded alpha material on
+texture labels (M000, M001); the scene that uses it (spells/dragonfire/dragon_look.tscn) puts its own unshaded alpha material on
 each and drives the weights with an AnimationPlayer.
 
   python3 tools/import/import_dragonfire.py            # write

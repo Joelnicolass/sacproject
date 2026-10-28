@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="SkyLook" format=3]
+
+[ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_0mfki"]
+[ext_resource type="Texture2D" path="res://scenes/look/sky/aurora_gradient.tres" id="2_sgdx0"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/charnel_skyb_tileable.png" id="3_b6ynb"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/charnel/sky.png" id="4_e3u8l"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/charnel_skyt_tileable.png" id="5_e1u1d"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/charnel/undr.png" id="7_undr"]
+[ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_u8dev"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6m8g2"]
+shader = ExtResource("1_0mfki")
+shader_parameter/background_color = Color(0.1569, 0.3529, 0.3922, 1)
+shader_parameter/energy = 1.7
+shader_parameter/top_texture = ExtResource("5_e1u1d")
+shader_parameter/bottom_texture = ExtResource("3_b6ynb")
+shader_parameter/mirror_repeat = false
+shader_parameter/band_repeats = 8
+shader_parameter/band_blend = 0.03
+shader_parameter/rotation_period_s = 512.0
+shader_parameter/clouds_texture = ExtResource("4_e3u8l")
+shader_parameter/cloud_period_s = 64.0
+shader_parameter/cloud_alpha = 1.0
+shader_parameter/ambient_top_color = Color(0.03, 0.05, 0.12, 1)
+shader_parameter/ambient_horizon_color = Color(0.2, 0.3, 0.45, 1)
+shader_parameter/ambient_ground_color = Color(0.05, 0.08, 0.1, 1)
+shader_parameter/ambient_energy = 1.0
+shader_parameter/ambient_curve = 0.2
+shader_parameter/aurora_strength = 0.35
+shader_parameter/aurora_gradient = ExtResource("2_sgdx0")
+shader_parameter/sun_color = Color(1, 0.9, 0.7, 1)
+shader_parameter/sun_radius_deg = 2.2
+shader_parameter/halo_color = Color(1, 0.7, 0.4, 1)
+shader_parameter/halo_power = 24.0
+shader_parameter/moon_color = Color(0.8, 0.88, 1, 1)
+shader_parameter/moon_radius_deg = 3.0
+shader_parameter/moon_azimuth_deg = -40.0
+shader_parameter/moon_elevation_deg = 42.0
+
+[resource]
+script = ExtResource("6_u8dev")
+label = "Cielo de Charnel: noche con luna"
+material = SubResource("ShaderMaterial_6m8g2")
+under_texture = ExtResource("7_undr")
+fog_color = Color(0.17845, 0.32645, 0.4211, 1)
+fog_begin_m = 0.0
+fog_end_m = 1250.0
+haze_tint = Color(0.7, 0.85, 1, 1)

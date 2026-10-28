@@ -12,7 +12,7 @@ extends AbilityEffect
 
 ## The coordinator's scene (lightning_strike.tscn).
 @export var bolt_scene: PackedScene
-## The spell whose amount the bolt deals (data/catalog/spells/lightning.tres, lightning).
+## The spell whose amount the bolt deals (spells/lightning/lightning.tres, lightning).
 @export var spell: SpellType
 ## Meters from the Giant's center to the point of the sky.
 @export var sky_distance := 100.0

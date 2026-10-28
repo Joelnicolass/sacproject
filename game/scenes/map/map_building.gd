@@ -56,7 +56,7 @@ var _last_health := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if type == null:
-		warnings.append("Assign `type` (data/buildings/<name>.tres).")
+		warnings.append("Assign `type` (gods/<god>/buildings/<name>.tres).")
 	if collision == null or not collision.shape is BoxShape3D:
 		warnings.append("`collision` needs a BoxShape3D: the box around the parts.")
 	return warnings

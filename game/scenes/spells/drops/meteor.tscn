@@ -5,8 +5,8 @@
 [ext_resource type="Script" path="res://scenes/fx/fx_trail.gd" id="trail"]
 [ext_resource type="Script" path="res://scenes/spells/drops/drop_blast.gd" id="blast"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
-[ext_resource type="Resource" path="res://data/fx/meteor_hit.tres" id="hit"]
-[ext_resource type="Resource" path="res://data/fx/meteor_dirt.tres" id="dirt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/meteor_hit.tres" id="hit"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/meteor_dirt.tres" id="dirt"]
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/rock_mark.tscn" id="mark_gscr"]
 [ext_resource type="PackedScene" path="res://scenes/spells/marks/crack_mark.tscn" id="mark_ecrk"]
 

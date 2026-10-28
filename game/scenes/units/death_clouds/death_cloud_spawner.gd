@@ -7,7 +7,7 @@ extends UnitPassive
 ## Phoenix); a creature without it leaves nothing. Server (or solo) only: Health.died fires there,
 ## the cloud acts there and its puff reaches every peer through FxBus.
 
-## The clouds it leaves, in order (data/death_clouds/).
+## The clouds it leaves, in order (scenes/units/death_clouds/).
 @export var clouds: Array[DeathCloudType] = []
 
 var _health: Health

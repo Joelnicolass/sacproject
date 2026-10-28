@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://spells/bovine_intervention/cast_emitters.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="2_emitter"]
+[ext_resource type="Resource" path="res://spells/bovine_intervention/fx/cow_ground.tres" id="3_dirt"]
+
+[node name="CowGround" type="Node3D"]
+editor_description = "La tierra que levanta el suelo donde saldra la vaca mientras el mago lanza Bovine Intervention (animateGroundForCow): 3 particulas dirt por tick en un radio de 3 m, sobre el punto. Lo toca FxBus.broadcast_scene en todos los pares."
+script = ExtResource("1_script")
+
+[node name="Dirt" type="CPUParticles3D" parent="."]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("3_dirt")

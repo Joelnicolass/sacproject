@@ -14,7 +14,7 @@ extends Affliction
 ## Knocked down when it ends. Optional: empty = it just stands up.
 @export var stunned: Stunned
 ## The rocks broadcast when it ends, and the socket of the body they leave from.
-@export var rocks_fx: ParticleType = preload("res://data/fx/petrify_rocks.tres")
+@export var rocks_fx: ParticleType = preload("res://scenes/fx/effects/petrify_rocks.tres")
 @export var rocks_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 ## Simulation ticks it has lived (counted in _physics_process, so a paused tree does not count).

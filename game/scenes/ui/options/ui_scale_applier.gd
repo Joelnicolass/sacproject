@@ -10,7 +10,7 @@ extends Node
 ## run starts at the project's scale unless `--ui-scale=` says otherwise. A scene that can open the
 ## options (the boot, the match) holds one; the window keeps the factor when the scene is swapped.
 
-## The shared preference (data/ui/ui_scale.tres).
+## The shared preference (scenes/ui/ui_scale.tres).
 @export var prefs: UiScalePrefs
 
 

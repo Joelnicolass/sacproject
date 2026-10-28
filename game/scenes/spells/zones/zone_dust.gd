@@ -7,7 +7,7 @@ extends Node3D
 ## phase; a dedicated server draws nothing. It does not hurt anyone.
 
 @export var zone: GroundZone
-## The puff (FxBus, under data/fx/).
+## The puff (FxBus, under scenes/fx/effects/).
 @export var type: ParticleType
 ## Puffs each tick.
 @export_range(0, 24) var per_tick := 4

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_747c0"]
 [ext_resource type="Texture2D" uid="uid://5voqoki8jq4x" path="res://assets/original/ui/icons/tbsh.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://creatures/shrike/shrike_shot.tres" id="typed_absh"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/life_shield.tres" id="typed_hsba"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/life_shield.tres" id="typed_hsba"]
 [ext_resource type="AnimationLibrary" path="res://creatures/shrike/model/shrike_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/shrike/shrike.tscn" id="body_scene"]
 

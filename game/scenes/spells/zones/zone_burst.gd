@@ -9,8 +9,8 @@ extends ZonePulse
 
 ## The burst scene played over the first point (it also carries the sound).
 @export var burst: PackedScene
-## Sprite bursts played there (FxBus), under data/fx/. The ones with a light light the ground in
-## their color.
+## Sprite bursts played there (FxBus), under scenes/fx/effects/. The ones with a light light the
+## ground in their color.
 @export var puffs: Array[ParticleType] = []
 ## Marks painted on the ground there (ScarMark scenes), on every peer.
 @export var marks: Array[PackedScene] = []

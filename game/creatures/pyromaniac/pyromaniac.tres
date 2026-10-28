@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_r4vva"]
 [ext_resource type="Texture2D" uid="uid://bo3qq5q18tv6h" path="res://assets/original/ui/icons/plff.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/pyromaniac_shot.tres" id="typed_lffa"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/pyromaniac_shot.tres" id="typed_lffa"]
 [ext_resource type="AnimationLibrary" path="res://creatures/pyromaniac/model/pyromaniac_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/pyromaniac/pyromaniac.tscn" id="body_scene"]
 

@@ -3,7 +3,7 @@ class_name VegetationSpecies
 extends Resource
 
 ## How one species of plant looks: which mesh, how big, how far it shows. A FloraLayer or a
-## VegetationPatch holds one (data/vegetation/species/<name>.tres). The mesh is a
+## VegetationPatch holds one (scenes/look/vegetation/species/<name>.tres). The mesh is a
 ## scenes/props/meshes/<tag>.res with its material saved, shared by every instance. A type template:
 ## never mutated at runtime.
 

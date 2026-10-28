@@ -26,7 +26,7 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/_hfae/_h_f_a_q.ogg" id="s22"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/_hfae/_h_f_a_o.ogg" id="s23"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/_hfae/_h_f_a_p.ogg" id="s24"]
-[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="3_fallback"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
 
 [sub_resource type="Resource" id="cue_selected"]
 script = ExtResource("2_cue")

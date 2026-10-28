@@ -7,7 +7,7 @@ extends ErrandStep
 ## CarryErrand drops the creature (it dies again and leaves its soul on its own side): the soul that
 ## was hidden while it pumped is replaced by the one its new death drops.
 
-## The burst over the corpse when it stands up (data/fx/heal.tres).
+## The burst over the corpse when it stands up (scenes/fx/effects/heal.tres).
 @export var heal_fx: ParticleType
 ## Where on the corpse it bursts (a socket of its BodyFrame: move the marker there with the gizmo).
 @export var heal_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER

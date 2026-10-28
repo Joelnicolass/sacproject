@@ -11,8 +11,8 @@ extends AbilityEffect
 
 ## The strike (strikes/soul_strike.tscn), a child of the user's RangedWeapon.
 @export var strike_scene: PackedScene
-## The shot's look (data/shots/rend_soul.tscn: the blast at the soul and its sparks). Empty = a
-## plain look with no blast.
+## The shot's look (scenes/units/attacks/shots/rend_soul.tscn: the blast at the soul and its
+## sparks). Empty = a plain look with no blast.
 @export var look: PackedScene
 
 

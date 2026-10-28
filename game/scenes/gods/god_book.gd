@@ -4,8 +4,8 @@ extends Resource
 
 ## What a god's book offers. The three lists are the book's rows in the order the game shows them;
 ## `unlocks` says at which wizard level each tag enters the book (a tag with no line enters at level
-## 0). All of it points to the per-type files of data/catalog/, so adding a creature to a book is
-## dropping it in a list.
+## 0). All of it points to the type files (creatures/, spells/, gods/<god>/buildings/), so adding a
+## creature to a book is dropping it in a list.
 
 @export var creatures: Array[CreatureType] = []
 @export var spells: Array[SpellType] = []

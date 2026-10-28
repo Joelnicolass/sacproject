@@ -10,8 +10,8 @@ extends ShotStrike
 
 ## Tick it lands on (1 = the tick after the shot).
 @export_range(0, 120) var land_tick := 1
-## The bolt (a BeamType of data/fx/beams) from the shot origin to where it lands; its end follows
-## the target while it lives. Empty: none.
+## The bolt (a BeamType of scenes/fx/effects/beams) from the shot origin to where it lands; its end
+## follows the target while it lives. Empty: none.
 @export var beam: BeamType
 
 

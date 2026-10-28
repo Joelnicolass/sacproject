@@ -21,7 +21,7 @@ signal untracked(track: AiTrack)
 const DESECRATE_RANGE_FALLBACK := 75.0
 
 ## The passive that makes a creature a Manahoar for the AI
-## (data/catalog/abilities/manahoar_channelling.tres, the Manahoar's `on_damage`).
+## (scenes/units/abilities/manahoar_channelling.tres, the Manahoar's `on_damage`).
 @export var mana_source: AbilityType
 @export var intake: AiSightIntake
 @export var belief: AiBelief

@@ -6,7 +6,7 @@ extends Resource
 ## and never the rule of a match in course (that is MatchState, decided by whoever created the
 ## match).
 ## - Friendly fire, dropping souls with P and the starting souls. The defaults are the ones of
-##   `rules` (data/match_rules.tres), which this resource only reads.
+##   `rules` (scenes/match/match_rules.tres), which this resource only reads.
 ## - It lives in `user://settings.cfg` `[partida]` through UserSettings.
 ## - to_setup sets only what the player chose explicitly (a key in the file, or touched in this
 ##   run); the rest stays -1, so a flag of the process, or else the rules, decides it: explicit
@@ -18,7 +18,7 @@ extends Resource
 ## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime
 ## state of that instance and the exported fields are never written. Changes emit `changed`.
 
-const SHARED_PATH := "res://data/ui/gameplay_prefs.tres"
+const SHARED_PATH := "res://scenes/ui/gameplay_prefs.tres"
 const SECTION := "partida"
 
 ## Where the defaults come from (the product's round rules). Read only.

@@ -10,7 +10,7 @@ extends AbilityEffect
 ## processed in _physics_process (priority −1, before the bodies). The shield is each body's
 ## LifeShield; its time is the hsba spell's duration · 60.
 
-## The shield it gives (data/catalog/abilities/life_shield.tres, Life Shield): its duration is the
+## The shield it gives (scenes/units/abilities/life_shield.tres, Life Shield): its duration is the
 ## shield's.
 @export var life_shield: AbilityType
 ## Ticks after fire() at which the allies are shielded (the effect's first update).

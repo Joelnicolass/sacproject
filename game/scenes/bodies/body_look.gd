@@ -19,14 +19,14 @@ extends Node3D
 ## Empty when `model` is set.
 @export var static_mesh: Mesh
 ## What the creature sounds like: voice, swing, hurt and death (creatures/<name>/<name>_sounds.tres,
-## or data/audio/wizards/). Empty: silent, but the summon sound of every creature (UnitSounds) still
+## or wizards/<name>/). Empty: silent, but the summon sound of every creature (UnitSounds) still
 ## plays.
 @export var sounds: SoundSet
 ## A scene the creature carries (CreatureFx adds it, tinted with the side's mana color): the
 ## Manahoar's mana flame. Empty: none.
 @export var carried_fx: PackedScene
-## How the body bleeds (data/fx/blood/). Empty: the `fallback` of its BloodFx, red like every other
-## body.
+## How the body bleeds (scenes/fx/effects/blood/). Empty: the `fallback` of its BloodFx, red like
+## every other body.
 @export var blood: BloodType
 
 

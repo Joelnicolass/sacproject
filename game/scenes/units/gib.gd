@@ -9,8 +9,8 @@ extends RefCounted
 
 ## The bursts: the cloud and the spray (the same as a creature that falls into a hole), at the
 ## body's center (`soul_anchor`, the CENTER socket of the body as it lies).
-const CLOUD: ParticleType = preload("res://data/fx/hover_blood.tres")
-const SPRAY: ParticleType = preload("res://data/fx/blood.tres")
+const CLOUD: ParticleType = preload("res://scenes/fx/effects/hover_blood.tres")
+const SPRAY: ParticleType = preload("res://scenes/fx/effects/blood.tres")
 
 
 ## Server or solo. True when `body` burst; false when it is gone, dead already or has nothing to

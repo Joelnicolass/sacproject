@@ -2,7 +2,7 @@
 class_name MusicSet
 extends Resource
 
-## The music of one god (data/audio/music/<god>.tres) or of the menu (music/menu.tres), a type
+## The music of one god (scenes/audio/music/<god>.tres) or of the menu (music/menu.tres), a type
 ## template (never written at runtime). One list of tracks per MusicMood; MusicDirector plays one of
 ## them (the battle track is drawn with its own generator). A mood with no track here is asked to
 ## `fallback` (the gods share music/common.tres: battle, sacrifice, winning, losing, victory,

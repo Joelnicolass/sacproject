@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/speedup_effect.gd" id="1_speedup"]
-[ext_resource type="Resource" path="res://data/fx/speedup.tres" id="fx_speedup"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/speedup.tres" id="fx_speedup"]
 
 [node name="SpeedupEffect" type="Node"]
 script = ExtResource("1_speedup")

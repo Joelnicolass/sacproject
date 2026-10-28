@@ -23,7 +23,7 @@ signal vegetation_toggled(enabled: bool)
 		if Engine.is_editor_hint() and is_node_ready():
 			_show_preview()
 ## The preset the editor preview wears (without one, FloraField plants nothing). Editor only.
-@export var preview_quality: LookQuality = preload("res://data/look/quality_high.tres"):
+@export var preview_quality: LookQuality = preload("res://scenes/look/quality_high.tres"):
 	set(value):
 		preview_quality = value
 		if Engine.is_editor_hint() and is_node_ready():

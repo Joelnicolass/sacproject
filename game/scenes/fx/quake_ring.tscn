@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/fx/quake_ring.gd" id="1_ring"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="sound_emitter"]
-[ext_resource type="Resource" path="res://data/audio/cues/quake_ring.tres" id="cue_quake_ring"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/quake_ring.tres" id="cue_quake_ring"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_ground.tscn" id="2_ground"]
 
 [node name="QuakeRing" type="Node3D"]

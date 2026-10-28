@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/quake_wave.gd" id="1_wave"]
 [ext_resource type="PackedScene" path="res://scenes/fx/quake_ring.tscn" id="2_ring"]
-[ext_resource type="Resource" path="res://data/fx/dirt.tres" id="fx_dirt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/dirt.tres" id="fx_dirt"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_ground.tscn" id="3_ground"]
 
 [node name="QuakeWave" type="Node3D"]

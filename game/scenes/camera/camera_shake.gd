@@ -40,7 +40,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if not prefs_warning.is_empty():
 		warnings.append(prefs_warning)
 	if shake_map == null:
-		warnings.append("Assign `shake_map` (data/fx/shake_map.tres).")
+		warnings.append("Assign `shake_map` (scenes/fx/effects/shake_map.tres).")
 	return warnings
 
 

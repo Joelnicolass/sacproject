@@ -8,7 +8,7 @@ extends Node3D
 ## Played once per puff.
 signal puffed(at: Vector3)
 
-## The burst each puff plays (a ParticleType from data/fx). Empty = no puffs.
+## The burst each puff plays (a ParticleType). Empty = no puffs.
 @export var fx: ParticleType
 ## Time between two puffs (as one puff every 2 render frames at 60 fps did).
 @export_range(0.005, 1.0, 0.0001, "suffix:s") var interval_s := 0.0333

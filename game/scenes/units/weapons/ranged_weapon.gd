@@ -4,8 +4,8 @@ extends Weapon
 ## A shot: the creature stops, turns until it faces the aim, spends mana and fires on the shoot
 ## ticks of its clip, then waits out the cooldown. What flies is the AbilityType in `attack_type`
 ## (or the creature's own); how it looks and what it does on arrival is that ability's `shot_look`
-## (a ShotLook scene of data/shots/): a breath is this weapon with a ShotLook whose in_flight is a
-## wave.
+## (a ShotLook scene of scenes/units/attacks/shots/): a breath is this weapon with a ShotLook whose
+## in_flight is a wave.
 ## Not: the flight (RangedShot) nor who to shoot (the chase state).
 ## Server (or solo) only.
 

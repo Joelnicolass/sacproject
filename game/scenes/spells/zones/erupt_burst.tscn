@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="3_mark"]
 [ext_resource type="Texture2D" path="res://assets/original/scars/escr.png" id="4_escr"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="sound_emitter"]
-[ext_resource type="Resource" path="res://data/audio/cues/erupt_burst.tres" id="cue_erupt_burst"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/erupt_burst.tres" id="cue_erupt_burst"]
 
 [node name="EruptBurst" type="Node3D" node_paths=PackedStringArray("scar")]
 editor_description = "El estallido de Erupt (FxBus.broadcast_scene): 64 rocas que salen a 30 +- 7,5 m/s en todas direcciones. Su sonido es el nodo Sound (cue erupt_burst) y su sacudida de cámara es el `camera_trauma` de esta raíz. Las partículas (rocas con luz naranja) las toca la zona al lado."

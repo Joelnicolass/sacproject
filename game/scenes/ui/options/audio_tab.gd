@@ -8,7 +8,7 @@ extends VBoxContainer
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_AUDIO"
-## The shared instance (data/ui/audio_prefs.tres).
+## The shared instance (scenes/ui/audio_prefs.tres).
 @export var prefs: AudioPrefs
 
 var _rows: Array[AudioBusRow] = []

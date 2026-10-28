@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d7ydu"]
 [ext_resource type="Texture2D" uid="uid://bmdmhxmc3m33v" path="res://assets/original/ui/icons/eht_h.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/gnome_shot.tres" id="typed_plfa"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/gnome_shot.tres" id="typed_plfa"]
 [ext_resource type="AnimationLibrary" path="res://creatures/faestus_persephone/model/faestus_persephone_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/faestus_persephone/faestus_persephone.tscn" id="body_scene"]
 

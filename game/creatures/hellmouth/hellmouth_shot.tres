@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_trfa1"]
 [ext_resource type="Texture2D" uid="uid://eo2bokqutoyl" path="res://assets/original/ui/icons/mhba.png" id="icon_tex"]
-[ext_resource type="PackedScene" path="res://data/shots/hellmouth_shot.tscn" id="shot_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/hellmouth_shot.tscn" id="shot_look"]
 
 [resource]
 script = ExtResource("1_trfa1")

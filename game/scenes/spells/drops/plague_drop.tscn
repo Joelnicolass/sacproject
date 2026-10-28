@@ -7,8 +7,8 @@
 [ext_resource type="Script" path="res://scenes/fx/fx_trail.gd" id="trail"]
 [ext_resource type="Script" path="res://scenes/spells/drops/drop_poison.gd" id="poison"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
-[ext_resource type="Resource" path="res://data/fx/plague_burst.tres" id="burst"]
-[ext_resource type="Resource" path="res://data/fx/plague_hit.tres" id="hit"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/plague_burst.tres" id="burst"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/plague_hit.tres" id="hit"]
 
 [sub_resource type="QuadMesh" id="Quad_Sprite"]
 size = Vector2(1.5, 1.5)

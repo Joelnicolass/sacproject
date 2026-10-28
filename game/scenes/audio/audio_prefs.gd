@@ -14,7 +14,7 @@ extends Resource
 ## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime
 ## state of that instance and the exported fields are never written. Changes emit `changed`.
 
-const SHARED_PATH := "res://data/ui/audio_prefs.tres"
+const SHARED_PATH := "res://scenes/ui/audio_prefs.tres"
 const SECTION := "audio"
 const MUTED_KEY := "muted"
 const AUDIO_ON_FLAG := "--audio-on"

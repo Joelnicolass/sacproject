@@ -2,7 +2,7 @@
 class_name VegetationLayerConfig
 extends Resource
 
-## One mesh vegetation layer of FloraField (data/look/vegetation/<id>.tres): how far it draws, how
+## One mesh vegetation layer of FloraField (scenes/look/vegetation/<id>.tres): how far it draws, how
 ## it fades and how its levels of detail go. WHAT it draws is not here: the FloraLayer nodes of the
 ## map (and the VegetationPatch nodes) say where each species grows. A MeshPlanter draws it. A type
 ## template: never mutated at runtime.

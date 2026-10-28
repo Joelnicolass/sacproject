@@ -16,8 +16,8 @@ extends Node3D
 @export var rig: BodyRig
 @export var tether: Tether
 @export_group("Needle sparks")
-## Sparks at the needle tip (data/fx/needle.tres), drawn by FxBus from its pool (the type's
-## `pool_max`). Empty = none.
+## Sparks at the needle tip (scenes/fx/effects/needle.tres), drawn by FxBus from its pool (the
+## type's `pool_max`). Empty = none.
 @export var spark_type: ParticleType
 ## Seconds between bursts of `spark_count`. Bursts of 4 every 1/30 s give about 120 sparks per
 ## second.

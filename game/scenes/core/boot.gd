@@ -6,7 +6,8 @@ const ROOM_SERVER_SCENE := "res://scenes/net/room_server.tscn"
 
 ## The product rules: %AiLevel starts at their wizard_level.
 @export var rules: MatchRules
-## The player's Options → Jugabilidad (data/ui/gameplay_prefs.tres); the matches made here take it.
+## The player's Options → Jugabilidad (scenes/ui/gameplay_prefs.tres); the matches made here take
+## it.
 @export var gameplay_prefs: GameplayPrefs
 
 @onready var ip: LineEdit = %Ip

@@ -2,7 +2,7 @@
 class_name AmbienceSet
 extends Resource
 
-## The ambience of one god (data/audio/ambience/<god>.tres), a type template (never written at
+## The ambience of one god (scenes/audio/ambience/<god>.tres), a type template (never written at
 ## runtime). AmbienceDirector plays `bed` in a loop on its own 2D player and, every `interval_s`
 ## (drawn with its own generator), one of the one-shots at a point around the listener. It does not
 ## say which god uses it: LookProfile.ambience points here.

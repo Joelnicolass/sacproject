@@ -28,13 +28,13 @@ extends Affliction
 @export var tilt: Node3D
 ## The trail of flames puffed while it walks, and the socket it leaves from: the muzzle, where the
 ## Warmonger's flame is.
-@export var trail_fx: ParticleType = preload("res://data/fx/firewalk_trail.tres")
+@export var trail_fx: ParticleType = preload("res://scenes/fx/effects/firewalk_trail.tres")
 @export var trail_socket: BodyFacts.Socket = BodyFacts.Socket.MUZZLE
 ## How often a trail flame is placed. The type's 14 every 2 ticks give 6 flames per tick with a
 ## quarter of the emitters.
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var trail_every_s := 0.0333
 ## The burst at the start and at the end (32 flames in the body's box), and its socket.
-@export var burst_fx: ParticleType = preload("res://data/fx/firewalk_burst.tres")
+@export var burst_fx: ParticleType = preload("res://scenes/fx/effects/firewalk_burst.tres")
 @export var burst_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 ## walk_s in ticks: the frames of the walk.

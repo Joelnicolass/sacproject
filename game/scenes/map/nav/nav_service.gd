@@ -17,7 +17,7 @@ extends Node
 signal built(ms: float)
 
 const GROUP := &"nav_service"
-const BAKE_SETTINGS := "res://data/nav/nav_bake.tres"
+const BAKE_SETTINGS := "res://scenes/map/nav_bake.tres"
 const SEARCH_LOG_MAX := 200000
 
 ## The map's ground (MapRoot.terrain): the path points take the land height from it.

@@ -14,16 +14,16 @@ extends UnitPassive
 
 const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
-## The passive (data/catalog/abilities/phoenix_fire_shield.tres): its numbers give the mana cost.
+## The passive (scenes/units/abilities/phoenix_fire_shield.tres): its numbers give the mana cost.
 @export var passive: AbilityType
-## The fire it ignites with (data/catalog/spells/fireform.tres, fireform): the spell's amount, per
+## The fire it ignites with (spells/fireform/fireform.tres, fireform): the spell's amount, per
 ## second.
 @export var fire: SpellType
 ## Scale of the body's box about its center.
 @export var box_scale := 1.5
 @export_group("Look")
 ## The fire played on a burned body every `fire_every_s` it burns (reserve look). Empty = none.
-@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
+@export var fire_fx: ParticleType = preload("res://scenes/fx/effects/fire.tres")
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.0833
 ## Where on the burned body the fire comes out.
 @export var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER

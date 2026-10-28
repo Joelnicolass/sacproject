@@ -50,7 +50,7 @@ const NO_SOULS := Refusal.NO_SOULS
 ## would be born up there, so the spot is skipped.
 @export_range(0.0, 5.0, 0.1, "suffix:m") var max_above_land_m := 0.5
 ## Played on the creature when it appears. Empty = no burst.
-@export var summon_fx: ParticleType = preload("res://data/fx/summon.tres")
+@export var summon_fx: ParticleType = preload("res://scenes/fx/effects/summon.tres")
 ## Where on the new creature's body the burst plays.
 @export var summon_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 ## The wizard that owns this node (set in wizard_body.tscn).

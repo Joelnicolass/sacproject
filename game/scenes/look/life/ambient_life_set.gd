@@ -2,11 +2,11 @@
 class_name AmbientLifeSet
 extends Resource
 
-## The ambient life of one god (embedded in `data/look/<god>.tres` -> Life): the swarms in the air
+## The ambient life of one god (embedded in `scenes/look/<god>.tres` -> Life): the swarms in the air
 ## around the camera (at most three, the rig's pool) and the ones each habitat of the map shows in
 ## its LifeSpots. In each list the first swarm that shows at this hour and weather is the one drawn
 ## (so «pollen, then fireflies» = pollen by day, fireflies by night). Swarms are shared `.tres` from
-## `data/look/life/`.
+## `scenes/look/life/`.
 
 ## Where a LifeSpot lives on the map.
 enum Habitat { MEADOW, WATER, WOODS, ROCK }

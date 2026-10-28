@@ -19,9 +19,9 @@ jobs:
       - name: Install gdtoolkit
         run: pip install "gdtoolkit==4.5.0"
       - name: gdformat
-        run: gdformat --check scenes tools test
+        run: gdformat --check scenes creatures spells wizards gods tools test
       - name: gdlint
-        run: gdlint scenes tools test
+        run: gdlint scenes creatures spells wizards gods tools test
       - name: Project-specific checks
         run: bash tools/lint/conventions.sh
 

@@ -11,9 +11,9 @@ extends Node3D
 
 const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 
-## The ring and its center (scenes/fx/portal_disc.tscn with data/fx/portal_red.tres).
+## The ring and its center (scenes/fx/portal_disc.tscn with scenes/fx/effects/portal_red.tres).
 @export var disc: PortalDisc
-## One drop of the vortex (data/fx/red_vortex.tres): falls from the ring.
+## One drop of the vortex (scenes/fx/effects/red_vortex.tres): falls from the ring.
 @export var effect: ParticleType
 ## Seconds between bursts of `effect.count` drops.
 @export_range(0.01, 1.0, 0.0001, "suffix:s") var pulse_s := 0.0333
@@ -45,7 +45,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Assign to `disc` the red PortalDisc of the vortex.")
 	if effect == null:
 		warnings.append(
-			"Assign to `effect` the ParticleType of the drops (data/fx/red_vortex.tres)."
+			"Assign to `effect` the ParticleType of the drops (scenes/fx/effects/red_vortex.tres)."
 		)
 	return warnings
 

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_cvps1"]
+[ext_resource type="PackedScene" path="res://spells/bore/bore_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://da6nytwpcp5j5" path="res://assets/original/ui/icons/erob.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_cvps1")
+tag = "erob"
+display_name = "Bore"
+icon = ExtResource("icon_tex")
+mana_cost = 1800
+cast_range_m = 100.0
+cooldown_s = 360.0
+casting_time_s = 4.4444
+book_level = 8
+book_slot = 82
+speed_m_s = 48.0
+damage = 1000
+effect_range_m = 50.0
+duration_s = 60.0
+action = ExtResource("2_action")
+targets_ground = true
+ai_worth = 10000
+structures = PackedStringArray()

@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/gargoyle_wave.tscn" id="2_wave"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rock_trail.tres" id="fx_rock_trail"]
+
+[node name="Ehba" type="Node"]
+script = ExtResource("1_look")
+hit_size = 0.5
+trail_fx = ExtResource("fx_rock_trail")
+trail_every = 1
+in_flight = ExtResource("2_wave")
+collides = false
+fallback_color = Color(0.55, 0.5, 0.45, 1)
+fallback_radius = 0.05

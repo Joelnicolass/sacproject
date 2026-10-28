@@ -59,7 +59,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if camera == null or terrain_bake == null or ground == null or markers == null:
 		warnings.append("Assign camera, terrain_bake, ground and markers.")
 	if style == null or view == null:
-		warnings.append("Assign style and view (data/ui/minimap/).")
+		warnings.append("Assign style and view (scenes/ui/minimap/).")
 	return warnings
 
 

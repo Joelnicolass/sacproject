@@ -17,7 +17,7 @@ extends NavigationRegion3D
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if bake_settings == null:
-		warnings.append("Assign bake_settings (data/nav/nav_bake.tres).")
+		warnings.append("Assign bake_settings (scenes/map/nav_bake.tres).")
 	if navigation_mesh == null or navigation_mesh.get_polygon_count() == 0:
 		warnings.append("The navmesh is empty: press «Bake navmesh».")
 	if bake_settings != null:
@@ -61,7 +61,7 @@ func bake_now() -> Error:
 	var output := []
 	if bake_settings == null or bake_settings.bake_tool.is_empty():
 		push_warning(
-			"Bake navmesh: `bake_settings` (data/nav/nav_bake.tres) with `bake_tool` is missing."
+			"Bake navmesh: `bake_settings` (scenes/map/nav_bake.tres) with `bake_tool` is missing."
 		)
 		return ERR_UNCONFIGURED
 	var args := [

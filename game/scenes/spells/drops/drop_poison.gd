@@ -9,7 +9,7 @@ extends Node
 
 @export var drop: ZoneDrop
 ## Bursts played where it ends, and the one played on the body it poisons (ParticleType under
-## data/fx/).
+## scenes/fx/effects/).
 @export var bursts: Array[ParticleType] = []
 @export var hit_burst: ParticleType
 @export_group("Dose")

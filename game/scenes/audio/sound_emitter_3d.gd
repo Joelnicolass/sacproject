@@ -4,7 +4,8 @@ extends AudioStreamPlayer3D
 
 ## A sound that belongs to a node of the world: a spell projectile when it is born, a building's
 ## loop, a ward's hum.
-## - Its `cue` is a SoundCue dropped in the inspector (data/audio/cues/fireball_cast.tres, or one
+## - Its `cue` is a SoundCue dropped in the inspector (spells/fireball/sounds/fireball_cast.tres, or
+## one
 ##   made right there); no texts, no tables, no lookups.
 ## - One-shot (`loop` off): with `play_on_ready` it plays once when it enters the tree, through
 ##   SoundBus's 3D pool at its position (cooldown, max_voices, priority, the 32-voice cap). It does
@@ -74,7 +75,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return (
 		PackedStringArray()
 		if cue != null
-		else PackedStringArray(["Assign `cue`: the SoundCue that plays (data/audio/cues/)."])
+		else PackedStringArray(["Assign `cue`: the SoundCue that plays (scenes/audio/cues/)."])
 	)
 
 

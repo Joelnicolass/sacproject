@@ -17,7 +17,7 @@ extends AbilityEffect
 ## How long the body takes to grow into the rock.
 @export var rock_grow_s := 0.5
 ## The burst on every peer when the body turns to rock, and where on the body (not verified).
-@export var emerge_fx: ParticleType = preload("res://data/fx/rock_emerge.tres")
+@export var emerge_fx: ParticleType = preload("res://scenes/fx/effects/rock_emerge.tres")
 @export var emerge_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 var _shell: Node3D

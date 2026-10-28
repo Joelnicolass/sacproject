@@ -19,11 +19,11 @@ const EMITTER := &"storm"
 ## old strikes.
 const MAX_CATCH_UP_S := 2.0
 
-## The bolt from the sky to the ground (`data/fx/beams/storm_bolt.tres`).
+## The bolt from the sky to the ground (`scenes/fx/effects/beams/storm_bolt.tres`).
 @export var bolt: BeamType
-## The flash on the ground, with its light (`data/fx/storm_flash.tres`).
+## The flash on the ground, with its light (`scenes/fx/effects/storm_flash.tres`).
 @export var flash: ParticleType
-## The thunder (`data/audio/cues/thunder.tres`), heard `distance / 343` seconds after the flash.
+## The thunder (`scenes/audio/cues/thunder.tres`), heard `distance / 343` seconds after the flash.
 @export var thunder: SoundCue
 ## How near and how far from the camera a strike falls.
 @export_range(0.0, 2000.0, 1.0, "suffix:m") var min_strike_m: float = 150.0

@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/options/graphics_tab.gd" id="1_tab"]
-[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="2_prefs"]
-[ext_resource type="Resource" path="res://data/ui/ui_scale.tres" id="3_hud"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="2_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/ui_scale.tres" id="3_hud"]
 
 [node name="GraphicsTab" type="VBoxContainer"]
 theme_type_variation = &"VBoxForm"

@@ -37,7 +37,7 @@ signal bled(at: Vector3, heavy: bool)
 	set(value):
 		fallback = value
 		update_configuration_warnings()
-## The player's «Sangre» (data/ui/feel_prefs.tres): off, nothing shows.
+## The player's «Sangre» (scenes/ui/feel_prefs.tres): off, nothing shows.
 @export var prefs: FeelPrefs:
 	set(value):
 		prefs = value
@@ -142,7 +142,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if mount == null:
 		out.append("Assign `mount` (its BodyMount: the look can bring its blood).")
 	if fallback == null:
-		out.append("Assign `fallback` (data/fx/blood/red.tres).")
+		out.append("Assign `fallback` (scenes/fx/effects/blood/red.tres).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		out.append(prefs_warning)

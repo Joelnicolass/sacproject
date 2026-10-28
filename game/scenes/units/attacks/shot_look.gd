@@ -2,10 +2,10 @@ class_name ShotLook
 extends Node
 
 ## How a creature's ranged shot looks and what it does in flight and on arrival: a scene of
-## data/shots/ whose root is this node, handed over as a PackedScene (`look` of the ability node, or
-## AbilityType.shot_look of a creature's attack). Flight and damage come from the AbilityType; no
-## scene flies as a plain ball with no particles. The shot (or the weapon, or the strike) that uses
-## it holds it as a child, so it goes when they go.
+## scenes/units/attacks/shots/ whose root is this node, handed over as a PackedScene (`look` of the
+## ability node, or AbilityType.shot_look of a creature's attack). Flight and damage come from the
+## AbilityType; no scene flies as a plain ball with no particles. The shot (or the weapon, or the
+## strike) that uses it holds it as a child, so it goes when they go.
 ## Not: the flight itself (RangedShot), who is hit (ShotImpact), nor which look an attack has
 ## (AbilityType.shot_look).
 
@@ -74,8 +74,8 @@ extends Node
 var source: PackedScene
 
 
-## A new look from `scene` (a data/shots/ scene), or a plain ball for null. The caller owns it: add
-## it as a child.
+## A new look from `scene` (a scenes/units/attacks/shots/ scene), or a plain ball for null. The
+## caller owns it: add it as a child.
 static func make(scene: PackedScene) -> ShotLook:
 	var made := scene.instantiate() as ShotLook if scene != null else null
 	if made == null:

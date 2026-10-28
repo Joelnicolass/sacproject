@@ -5,14 +5,14 @@ extends Resource
 ## from how far, when he heals or wards, when he summons, converts, builds or takes souls, and how
 ## often he replans. `crowd` says how his creatures move and `senses` how often the side looks again
 ## at what it knows; both are embedded in the same file. One file per difficulty
-## (data/ai/tactics_*.tres); a seat can bring its own (AiSeat.tactics). Nothing here gives the AI
+## (scenes/ai/tactics_*.tres); a seat can bring its own (AiSeat.tactics). Nothing here gives the AI
 ## more than a human has, and it is never changed while playing. The numbers without a mark are the
 ## original's and are the same in the three difficulties; what tells the difficulties apart is the
 ## AI's own judgment (when to heal, how long to keep a focus, how much a healer weighs, when to
 ## escape), which the original does not have. None of them cheats: they only choose what to do with
 ## what the side knows.
 
-const NORMAL := "res://data/ai/tactics_normal.tres"
+const NORMAL := "res://scenes/ai/tactics_normal.tres"
 
 ## Groups, records, guards, mana and focus of the creatures.
 @export var crowd: AiCrowdTactics

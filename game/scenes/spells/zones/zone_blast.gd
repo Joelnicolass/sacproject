@@ -9,7 +9,7 @@ extends ZonePulse
 ## The burst played at each point: a scene with the spheres and the debris (it also carries the
 ## sound of the blast).
 @export var burst: PackedScene
-## Sprite bursts played at each point (FxBus), under data/fx/.
+## Sprite bursts played at each point (FxBus), under scenes/fx/effects/.
 @export var puffs: Array[ParticleType] = []
 ## The fire a body keeps for `burn_s` (no damage: it is the look), and the sprite it puffs.
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var burn_s := 1.0

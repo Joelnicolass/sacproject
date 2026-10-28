@@ -25,8 +25,8 @@ cd "$GAME" || exit 2
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 
-# Every product script (addons are not under scenes/, so they are out).
-find scenes -name '*.gd' | sort > "$OUT/all.txt"
+# Every product script: the systems (scenes/) and the entity folders (addons are out).
+find scenes creatures spells wizards gods -name '*.gd' | sort > "$OUT/all.txt"
 
 # Lists are "path" or "path:line:text" lines, one offender each.
 scan() { # $1 = key, then grep args; reads the file list from $OUT/all.txt
@@ -110,7 +110,7 @@ xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|
 	xargs grep -nE 'SoundLibrary\.|SoundBus\.(lookup|fx_cue)\(|FxSoundMap\b' < "$OUT/all.txt" 2>/dev/null
 	xargs grep -nE '@export[a-z_]* var (cue|source|set_path|fallback_path|shared_set|ui_set|ui_click_key|one_shot_source|one_shot_keys)[ ]*(:[ ]*(String|StringName)\b|:=[ ]*&?")' < "$OUT/all.txt" 2>/dev/null
 	grep '^scenes/audio/' "$OUT/all.txt" | xargs grep -nE '@export.*Dictionary\[StringName,[ ]*(StringName|PackedStringArray|int|float)\]|@export var [a-z_]*[ ]*:=[ ]*&"[A-Za-z0-9]{4}"' 2>/dev/null
-	find scenes data \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
+	find scenes creatures spells wizards gods \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
 		| xargs grep -nE '^(cue = &"|source = "|set_path = "|fallback_path = "|metadata/ui_sound = "|one_shot_keys = )' 2>/dev/null
 } | grep -vE ':[0-9]+:[ 	]*#' >> "$OUT/C17.txt" || true
 
@@ -124,7 +124,7 @@ xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|
 {
 	xargs grep -nE '^[ 	]*(@export[a-z_]*(\([^)]*\))? )?var [a-z][a-z_0-9]*(fx|burst|puff)[a-z_0-9]*[ ]*(:=[ ]*&?"|:[ ]*(String|StringName)\b)' < "$OUT/all.txt" 2>/dev/null
 	xargs grep -nE '\.(bus_name|fx_name|cast_fx_name)\(\)|FxTrail\.attach\([^,]*,[ ]*&?"|FxBus\.[a-z_]+\(.*\.resource_path' < "$OUT/all.txt" 2>/dev/null
-	find scenes data \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
+	find scenes creatures spells wizards gods \( -name '*.tscn' -o -name '*.tres' \) 2>/dev/null | sort \
 		| xargs grep -nE '^[a-z_0-9]*(fx|burst|puff)[a-z_0-9]* = &?"[^"]+"' 2>/dev/null
 } | grep -vE ':[0-9]+:[ 	]*#' | grep -v 'editor_description' >> "$OUT/C17.txt" || true
 grep -vE '^scenes/spells/caster\.gd:[0-9]+:@export var cast_fx_shown\b' "$OUT/C17.txt" | sort -u > "$OUT/C17.sorted" || true
@@ -159,11 +159,11 @@ find scenes/units scenes/ai scenes/wizards scenes/sacrifice -name '*.gd' 2>/dev/
 	| grep -vE '^[^:]*_type\.gd:[0-9]+:@export[a-z_]* var tag\b' \
 	| grep -vE 'var (creature_tag|wizard_tag)\b|const DIFFICULTY_TAGS' > "$OUT/C18c.txt" || true
 
-# C19: data/*.tres that store positions/offsets/transforms (counted by FILE).
+# C19: content .tres (outside scenes/*.tscn) that store positions/offsets/transforms (counted by FILE).
 TRES_POS='^([a-z_0-9]*_(offset|position|origin|transform|pos)|position[a-z_0-9]*|offsets|origin|transform) = |Transform3D\('
 # Not positions: a material's roughness_offset and a Gradient's color stops (offsets = PackedFloat32Array).
 TRES_NOT_POS='^(roughness_offset|offsets = PackedFloat32Array)'
-for f in $(find data -name '*.tres' 2>/dev/null | sort); do
+for f in $(find scenes creatures spells wizards gods -name '*.tres' 2>/dev/null | sort); do
 	grep -E "$TRES_POS" "$f" 2>/dev/null | grep -qvE "$TRES_NOT_POS" && echo "$f"
 done > "$OUT/C19.txt" || true
 

@@ -8,7 +8,7 @@ extends UnitPassive
 ## per effect. Not: the blow itself (MeleeWeapon). Server (or solo) only: the weapon only swings
 ## there.
 
-## The spell the affliction takes (data/catalog/spells/).
+## The spell the affliction takes (spells/).
 @export var spell: SpellType
 ## The Affliction under the target body ("Afflictions/Frozen").
 @export var affliction_path := NodePath("")

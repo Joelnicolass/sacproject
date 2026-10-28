@@ -1,10 +1,10 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/timed_state_ability.gd" id="1_timed"]
-[ext_resource type="Resource" path="res://data/fx/spit_trail.tres" id="fx_spit_trail"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/spit_trail.tres" id="fx_spit_trail"]
 
 [node name="Stealth" type="Node"]
-editor_description = "The Sylph's Stealth effect (ivni). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (data/catalog/abilities/). SpecialForms.set_form(STEALTH) for the SPEL's duration (at least 5 s), counted in ticks."
+editor_description = "The Sylph's Stealth effect (ivni). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). SpecialForms.set_form(STEALTH) for the SPEL's duration (at least 5 s), counted in ticks."
 script = ExtResource("1_timed")
 form = 1
 min_duration_s = 5.0

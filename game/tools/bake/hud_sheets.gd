@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Builds the derived HUD sheets the Theme draws (data/ui/theme.tres, variations `Hud*`) from the
+## Builds the derived HUD sheets the Theme draws (scenes/ui/theme.tres, variations `Hud*`) from the
 ## sheets that are already in git (assets/original/ui/hud/fram.png and the six
 ## stat_*_{top,mid,bottom}.png), so the HUD frames and bars are whole images a StyleBoxTexture can
 ## draw without code. It does NOT need the original game; without that folder it only warns.

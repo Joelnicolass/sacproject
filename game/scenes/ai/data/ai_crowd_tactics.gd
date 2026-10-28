@@ -4,7 +4,7 @@ extends Resource
 ## How the AI moves its creatures: how close bodies form a group, when a record's members think
 ## alone, where followers and guards stop, how far a body looks for mana, which creature goes with
 ## the wizard to an altar, and the focus of the side. It does not choose the wizard's spells
-## (AiTactics). Embedded in each data/ai/tactics_*.tres; never changed while playing. The numbers
+## (AiTactics). Embedded in each scenes/ai/tactics_*.tres; never changed while playing. The numbers
 ## are the original's, except the deviations named on each field.
 
 @export_group("Groups")

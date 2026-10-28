@@ -3,10 +3,10 @@ class_name SkyLook
 extends Resource
 
 ## The sky of one biome and what it gives the land besides pixels: ambient light, reflections and
-## far fog. One `.tres` per god (`data/look/sky/<god>_sky.tres`). Everything the picture needs is in
-## `material` (sacrifice_sky.gdshader: the background color, the two textured bands, the clouds, the
-## aurora): open it in the inspector and the sky in the editor follows. EnvironmentLayer is the only
-## one that applies this.
+## far fog. One `.tres` per god (`scenes/look/sky/<god>_sky.tres`). Everything the picture needs is
+## in `material` (sacrifice_sky.gdshader: the background color, the two textured bands, the clouds,
+## the aurora): open it in the inspector and the sky in the editor follows. EnvironmentLayer is the
+## only one that applies this.
 
 @export var label: String = ""
 ## A ShaderMaterial of `scenes/look/sky/sacrifice_sky.gdshader`.

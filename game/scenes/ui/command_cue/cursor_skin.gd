@@ -5,8 +5,8 @@ extends Node
 ## The game's mouse cursor: `C*` of curs.FLDR while nothing is armed and `T*` while an icon waits
 ## for its target, chosen by what lies under the pointer (TargetProbe), and `blocked_cursor` while
 ## the armed icon would be refused there (%Battle.aim_status). The pictures are the ones of `cues`
-## (data/ui/command_cues.tres); without one the system cursor stays. The hardware cursor is drawn by
-## the OS in window pixels, so Godot's stretch does not scale it: its side is `cursor_px` canvas
+## (scenes/ui/command_cues.tres); without one the system cursor stays. The hardware cursor is drawn
+## by the OS in window pixels, so Godot's stretch does not scale it: its side is `cursor_px` canvas
 ## pixels times window height over canvas height, hot spot at the top center. It does nothing in a
 ## headless process or in the dedicated server (no player, no window), and nothing over the HUD
 ## beyond picking the plain arrow.
@@ -41,7 +41,7 @@ var _source: Texture2D
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if cues == null:
-		warnings.append("Assign `cues` (data/ui/command_cues.tres).")
+		warnings.append("Assign `cues` (scenes/ui/command_cues.tres).")
 	if command_log == null:
 		warnings.append("Assign `command_log` (the Battle node).")
 	if probe == null:

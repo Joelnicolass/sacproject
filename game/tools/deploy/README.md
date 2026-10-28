@@ -60,12 +60,12 @@ journalctl -u sacrifice-rooms -f      # debe decir: «salas listo puerto 7700»
 | Puerto | Protocolo | Para qué |
 |---|---|---|
 | **7700** | **UDP** (ENet, por defecto) o **TCP** (con `--transport=ws`) | el lobby: lista de salas, chat, asientos |
-| **7800-7831** | el mismo protocolo | una partida por puerto (`data/net/lobby_config.tres`: 4 partidas a la vez) |
+| **7800-7831** | el mismo protocolo | una partida por puerto (`scenes/net/lobby_config.tres`: 4 partidas a la vez) |
 
 - Abrí los dos en el firewall del VPS **y** en el panel de Vultr (Firewall Group). El rango de partidas se puede achicar con `--match-port-max` / `--max-matches`.
 - ufw: `sudo ufw allow 7700/udp && sudo ufw allow 7800:7831/udp` (con `ws`, cambiá `udp` por `tcp`).
 - El cliente entra a la partida por **la misma IP** que usó para el lobby, salvo que fijes `public_host` en `MpLobbyConfig` (`--public-host=`).
-- El servidor del lobby que usan los jugadores sale de `data/net/lobby_endpoint.tres` (hoy `127.0.0.1:7700`): **antes de exportar el cliente**, poné ahí la IP o el dominio del VPS, o abrí el juego con `--lobby=IP:7700` para probar.
+- El servidor del lobby que usan los jugadores sale de `scenes/net/lobby_endpoint.tres` (hoy `127.0.0.1:7700`): **antes de exportar el cliente**, poné ahí la IP o el dominio del VPS, o abrí el juego con `--lobby=IP:7700` para probar.
 - `wss://` (TLS) no está: para navegador hace falta un proxy inverso que termine TLS. No es parte de este corte.
 
 ## 4. Reconexión (lo que se probó en local)

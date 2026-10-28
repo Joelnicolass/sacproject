@@ -2,7 +2,7 @@ class_name MatchRules
 extends Resource
 
 ## The rules of a match: souls, mana sources, rituals, spells, guardians and friendly fire.
-## One file per rule set (data/match_rules.tres is the product's); MatchWorld reads it.
+## One file per rule set (scenes/match/match_rules.tres is the product's); MatchWorld reads it.
 
 @export var starting_souls: int = 12
 ## Live creatures a player may own at once (summons in progress count). 0 = no cap.
@@ -128,7 +128,7 @@ extends Resource
 
 @export_group("Book")
 ## Wizard level of every wizard in the match: the book keeps the entries
-## with level <= this one. The product (data/match_rules.tres) plays at 9.
+## with level <= this one. The product (scenes/match/match_rules.tres) plays at 9.
 @export_range(1, 9) var wizard_level: int = 1
 ## The level also raises the wizard: +50 health and
 ## +100 mana per level, full. Off keeps the WIZD numbers (the level-0 stats). The
@@ -145,8 +145,8 @@ extends Resource
 ## Off: a body takes nothing from its own side.
 ## On: it takes `ally_damage_factor` of every hit of its own side, melee, shot, spell, splash, cloud
 ## and buildings alike; poison ignores the side and takes ×1. The script default is off; the product
-## (data/match_rules.tres) turns it on, the default of the original. MatchState takes it from the
-## world's rules and Health asks it.
+## (scenes/match/match_rules.tres) turns it on, the default of the original. MatchState takes it
+## from the world's rules and Health asks it.
 @export var friendly_fire: bool = false
 ## Multiplier between allies.
 @export_range(0.0, 1.0, 0.05) var ally_damage_factor: float = 0.5

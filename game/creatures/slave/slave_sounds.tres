@@ -5,7 +5,7 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/slav/_s_l_a_l.ogg" id="s1"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/slav/_s_l_a_m.ogg" id="s2"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/slav/_s_l_a_n.ogg" id="s3"]
-[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="3_fallback"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
 
 [sub_resource type="Resource" id="cue_death"]
 script = ExtResource("2_cue")

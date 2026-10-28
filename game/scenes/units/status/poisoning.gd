@@ -33,7 +33,7 @@ extends DamageModifier
 @export_group("Look")
 ## The puff on the body while a dose takes health, and its socket (relativePoison: one particle
 ## every 2 frames inside the box; a puff every 30 ticks is the same rate). Empty = none.
-@export var dose_fx: ParticleType = preload("res://data/fx/poison_dose.tres")
+@export var dose_fx: ParticleType = preload("res://scenes/fx/effects/poison_dose.tres")
 @export var dose_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var fx_every_s := 0.5
 

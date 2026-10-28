@@ -104,7 +104,7 @@ zone_drop="Every drop falling from a spell zone (ZoneDrop)."
 
 [gui]
 
-theme/custom="res://data/ui/theme.tres"
+theme/custom="res://scenes/ui/theme.tres"
 
 [input]
 
@@ -478,7 +478,7 @@ camera_wheel_out={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://data/i18n/strings.es.translation")
+locale/translations=PackedStringArray("res://scenes/ui/i18n/strings.es.translation")
 locale/fallback="es"
 
 [navigation]

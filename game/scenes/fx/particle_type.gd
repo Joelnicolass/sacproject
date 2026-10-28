@@ -60,7 +60,7 @@ const RAMP_POINTS := 25
 ## cools.
 @export var color_ramp: GradientTexture1D
 ## Mix sprites only (`additive` off): shaded and fogged like the ground (blood, dirt, dust).
-## Off = the classic unshaded look. The 11 mix types of data/fx turn it on.
+## Off = the classic unshaded look. The 11 mix types of the effects turn it on.
 @export var lit: bool = false
 
 @export_group("Pool")
@@ -75,7 +75,7 @@ const RAMP_POINTS := 25
 @export var light: FxLightSpec
 
 @export_group("Sound")
-## What each burst of this type sounds like (a SoundCue from data/audio/cues/). Empty = silent. A
+## What each burst of this type sounds like (a SoundCue from scenes/audio/cues/). Empty = silent. A
 ## trail's puffs never sound.
 @export var sound: SoundCue
 

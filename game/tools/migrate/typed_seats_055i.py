@@ -7,7 +7,7 @@ Runs without Godot and without the original game: plain Python 3, no dependencie
   python3 tools/migrate/typed_seats_055i.py --dry-run  # prints what it would change
 
 Before:  wizard = "cwa0"            god = &"james"
-After:   wizard = ExtResource("..") god = ExtResource("..")   (res://data/catalog/wizards/jadugarr.tres, res://data/gods/james.tres)
+After:   wizard = ExtResource("..") god = ExtResource("..")   (res://wizards/jadugarr/jadugarr.tres, res://gods/james/james.tres)
 
 Rules:
   - the wizard is found by its `tag` field in data/catalog/wizards/*.tres (so the file name does not matter);

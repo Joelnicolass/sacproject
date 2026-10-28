@@ -6,8 +6,8 @@
 [ext_resource type="Script" path="res://scenes/structures/breaking/structure_break.gd" id="4_break"]
 [ext_resource type="PackedScene" path="res://scenes/structures/breaking/building_break.tscn" id="5_break_scene"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="6_particle_type"]
-[ext_resource type="Resource" path="res://data/fx/explosion_blast.tres" id="7_blast"]
-[ext_resource type="Resource" path="res://data/fx/explosion_blast2.tres" id="8_blast2"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/explosion_blast.tres" id="7_blast"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/explosion_blast2.tres" id="8_blast2"]
 [ext_resource type="Script" path="res://scenes/structures/breaking/building_ruin.gd" id="9_ruin"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_building"]

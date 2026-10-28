@@ -252,7 +252,7 @@ Ningún verbo pide código. «Agregar un modo» toca dos lugares (está en el l�
   - `bake_catalog.gd` escribe `<tag>.tres` si «falta»: volvería a crear los 15 viejos. Por eso se congela.
   - Los escaneos de carpeta (`bake_body_scenes.gd`, `anim_expect.gd`, `death_ragdoll_wizards.gd`) no dependen del nombre.
   - `TypeRef.creature` usa `creatures/<tag>.tres`: es de 055i-b (criaturas), no se toca.
-- **Asientos de IA:** `tools/migrate/typed_seats_055i.py` reescribe `wizard = "cwa0"` → `ExtResource` del mago (ya renombrado) y `god = &"james"` → `ExtResource("res://data/gods/james.tres")` (con su uid). `god = &""` se borra (null = sorteado). Corre una vez sobre `data/match_rules.tres`, `data/ai/seat_vs_ai.tres` y los 24 de `debug/`.
+- **Asientos de IA:** `tools/migrate/typed_seats_055i.py` reescribe `wizard = "cwa0"` → `ExtResource` del mago (ya renombrado) y `god = &"james"` → `ExtResource("res://gods/james/james.tres")` (con su uid). `god = &""` se borra (null = sorteado). Corre una vez sobre `data/match_rules.tres`, `data/ai/seat_vs_ai.tres` y los 24 de `debug/`.
 
 ## 10. Criterios medibles
 - **Lint** (`bash tools/lint/conventions.sh`):

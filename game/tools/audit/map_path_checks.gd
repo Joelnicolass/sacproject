@@ -14,7 +14,7 @@ const MapGroundChecks := preload("res://tools/audit/map_ground_checks.gd")
 ## A point this far from a walkable polygon counts as outside the navmesh (a fount stands in a hole
 ## of its own size).
 const SNAP_M := 6.0
-## Added to the bake's agent radius (1 m, data/nav/nav_bake.tres): a path that ends farther (flat)
+## Added to the bake's agent radius (1 m, scenes/map/nav_bake.tres): a path that ends farther (flat)
 ## than both from the walkable point nearest to the fount stopped short, the fount is out of reach.
 ## 2 m in all: a unit stops at its target's edge, and the nearest point of a fount hole may be a
 ## corner the path turns before.

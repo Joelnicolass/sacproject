@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3qucp"]
 [ext_resource type="Texture2D" uid="uid://0nl7lyp4p1b1" path="res://assets/original/ui/icons/ooh_h.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/protector.tres" id="typed_HSba"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/protector.tres" id="typed_HSba"]
 [ext_resource type="AnimationLibrary" path="res://creatures/toldor/model/toldor_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/toldor/toldor.tscn" id="body_scene"]
 

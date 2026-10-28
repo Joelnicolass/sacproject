@@ -6,7 +6,7 @@ Lo que se sabe que está mal o fuera de lugar y todavía no tiene corte. Cada en
 
 - Qué pasa: el dedicado de Linux (x86) avisa «2 edge errors» al sincronizar el navmesh del mapa.
 - Hipótesis (NO VERIFICADA): el navmesh unido de `NavZones` trae vértices duplicados o casi iguales en las costuras entre zonas, y con el redondeo de x86 el rasterizador del mapa ve dos aristas en la misma celda.
-- Arreglo candidato: soldar los vértices de la unión, cuantizados a `cell_size` (`data/nav/nav_bake.tres`), en la pieza que une las zonas (`NavZones` / `NavService`).
+- Arreglo candidato: soldar los vértices de la unión, cuantizados a `cell_size` (`scenes/map/nav_bake.tres`), en la pieza que une las zonas (`NavZones` / `NavService`).
 - Cómo se mide: un chequeo que cuente aristas compartidas por más de dos polígonos y vértices a menos de `cell_size / 2` en el `nav.res` de cada mapa; después, un dedicado de Linux sin el aviso.
 - Costo: hay que rehornear los `nav.res` de todos los mapas (`tools/bake/bake_nav.tscn`).
 

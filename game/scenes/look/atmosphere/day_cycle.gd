@@ -3,11 +3,11 @@ class_name DayCycle
 extends Resource
 
 ## How one biome's day goes by: the curves and colors that bend its approved light over 24 hours.
-## Embedded in the god's look (`data/look/<god>.tres` -> Day). At `start_hour` everything is neutral
-## (multipliers 1, amounts 0), so the match starts on the approved light; the night is a cold, dim
-## light that is never black. Curves run over the hour, 0..24 (a curve whose domain is 0..1 is read
-## as hour / 24). A tint is white by day, goes to its dusk color by `dusk` and to its night color by
-## `night` (two curves and six colors, not three gradients).
+## Embedded in the god's look (`scenes/look/<god>.tres` -> Day). At `start_hour` everything is
+## neutral (multipliers 1, amounts 0), so the match starts on the approved light; the night is a
+## cold, dim light that is never black. Curves run over the hour, 0..24 (a curve whose domain is
+## 0..1 is read as hour / 24). A tint is white by day, goes to its dusk color by `dusk` and to its
+## night color by `night` (two curves and six colors, not three gradients).
 ## It holds no state: AtmosphereRules reads it.
 
 ## Real seconds of a whole day. 0 = no cycle: the biome stays at `start_hour`.

@@ -14,7 +14,7 @@ extends Resource
 ## state of that instance and the exported fields (the defaults) are never written. Changes emit
 ## `changed`.
 
-const SHARED_PATH := "res://data/ui/feel_prefs.tres"
+const SHARED_PATH := "res://scenes/ui/feel_prefs.tres"
 const SECTION := "sensacion"
 
 ## When the player chose nothing.

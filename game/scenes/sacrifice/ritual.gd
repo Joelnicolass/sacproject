@@ -50,7 +50,7 @@ const GROUP := &"ritual"
 			if was_running and is_inside_tree():
 				Events.ritual_ended.emit(self, outcome == Outcome.COMPLETED)
 @export var rules: MatchRules
-## One per class of ritual (data/sacrifice/*.tres); `type()` picks the one of `kind`.
+## One per class of ritual (scenes/sacrifice/*.tres); `type()` picks the one of `kind`.
 @export var types: Array[RitualType]
 
 @export_group("Sockets")
@@ -110,7 +110,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 			warnings
 			. append(
 				# gdlint: ignore=max-line-length
-				"Assign to `types` one RitualType per kind (data/sacrifice/desecrate_ritual.tres, convert_ritual.tres)."
+				"Assign to `types` one RitualType per kind (scenes/sacrifice/desecrate_ritual.tres, convert_ritual.tres)."
 			)
 		)
 	if rules == null:

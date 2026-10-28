@@ -16,7 +16,7 @@ finds the textures the ENVI names. Run it once; the result is versioned. The gro
 Per god: edge.png (lossless texture: exact pixels, no mipmaps, no compression; the cliff walls of the GodGround),
 skyt.png / skyb.png / sky.png (mipmapped textures: the sky sampled them with Image.generate_mipmaps()), sun.png and
 undr.png (textures without mipmaps; no consumer yet). The ENVI colours (background, fog) are no longer written: they were copied once into
-data/look/sky/<god>_sky.tres, which the game and the inspector own from then on.
+scenes/look/sky/<god>_sky.tres, which the game and the inspector own from then on.
 
 The cloud/sky textures of persephone are the ones the old sky read from a duplicate (same md5).
 """

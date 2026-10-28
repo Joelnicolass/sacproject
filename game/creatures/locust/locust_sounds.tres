@@ -19,7 +19,7 @@
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_g.ogg" id="s15"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_h.ogg" id="s16"]
 [ext_resource type="AudioStream" path="res://assets/original/audio/voice/locu/_l_o_c_i.ogg" id="s17"]
-[ext_resource type="Resource" path="res://data/audio/melee/fist.tres" id="3_fallback"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
 
 [sub_resource type="Resource" id="cue_selected"]
 script = ExtResource("2_cue")

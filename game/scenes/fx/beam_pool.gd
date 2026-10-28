@@ -3,8 +3,8 @@ extends Node
 
 ## The bolts (BeamFx), one small pool per BeamType: a play reuses an idle bolt, and when all of a
 ## type (its `pool_max`) are playing the oldest starts over. The client builds them all when it
-## loads (data/fx/beams and its folders). A type without `scene` has no bolt, only the flash of its
-## `light` at the end. Never in a headless process.
+## loads (scenes/fx/effects/beams and its folders). A type without `scene` has no bolt, only the
+## flash of its `light` at the end. Never in a headless process.
 ## What it does not do: pick the effect or the place (FxBus), talk to the network, or sound.
 
 ## How long the warm-up's bolts are (`flash_all`): short enough to stay inside the camera's view.
@@ -29,9 +29,9 @@ func play(
 		beam.play(from, to, beam_seed, follow)
 
 
-## Builds every bolt of data/fx/beams and its folders up to `pool_max`.
+## Builds every bolt of FxWire.warm_dirs() up to `pool_max`.
 func prewarm_all() -> void:
-	for found: Resource in FxWire.all_in(FxWire.BEAMS_DIR):
+	for found: Resource in FxWire.all_effects():
 		var type := found as BeamType
 		if type != null and type.scene != null:
 			_open(type)
@@ -49,7 +49,7 @@ func flash_all(stage: Node3D) -> void:
 	var from := stage.global_position
 	var to := from + stage.global_basis.x * warm_span_m
 	var shown: Array[BeamFx] = []
-	for found: Resource in FxWire.all_in(FxWire.BEAMS_DIR):
+	for found: Resource in FxWire.all_effects():
 		var type := found as BeamType
 		var beam := _take(type) if type != null and type.scene != null else null
 		if beam != null:

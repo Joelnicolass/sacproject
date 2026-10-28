@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/options/audio_tab.gd" id="1_tab"]
-[ext_resource type="Resource" path="res://data/ui/audio_prefs.tres" id="2_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/audio_prefs.tres" id="2_prefs"]
 [ext_resource type="PackedScene" path="res://scenes/ui/options/audio_bus_row.tscn" id="3_row"]
 
 [node name="AudioTab" type="VBoxContainer"]

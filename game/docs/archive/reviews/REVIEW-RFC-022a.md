@@ -4,7 +4,7 @@ Veredicto: **FAIL con 1 bloqueante** (arreglo de minutos). El resto es PASS o PA
 
 ## Bloqueante
 
-1. **Los cinco `LookProfile` por dios son archivos de 0 bytes y no cargan.** `data/look/{persephone,pyro,james,stratos,charnel}.tres` pesan 0. `load("res://data/look/pyro.tres")` da `Parse Error` y `Failed loading resource` y devuelve null (reproducido headless). Rompe el «Resources vacíos» de §3/§14, el botón de vista previa (`look_rig.gd:36`, `LookApplier.profile_for` en `look_applier.gd:11-14` carga ese archivo) y cualquier corte que haga `look = load(...)`. Los themes tienen `look = null`, por eso nada falla hoy y el diff clásico no lo detecta. Corrección: escribir un `[gd_resource type="Resource" script_class="LookProfile" ...]` válido con `god` y `label`.
+1. **Los cinco `LookProfile` por dios son archivos de 0 bytes y no cargan.** `data/look/{persephone,pyro,james,stratos,charnel}.tres` pesan 0. `load("res://gods/pyro/pyro_look.tres")` da `Parse Error` y `Failed loading resource` y devuelve null (reproducido headless). Rompe el «Resources vacíos» de §3/§14, el botón de vista previa (`look_rig.gd:36`, `LookApplier.profile_for` en `look_applier.gd:11-14` carga ese archivo) y cualquier corte que haga `look = load(...)`. Los themes tienen `look = null`, por eso nada falla hoy y el diff clásico no lo detecta. Corrección: escribir un `[gd_resource type="Resource" script_class="LookProfile" ...]` válido con `god` y `label`.
 
 ## Criterios de 022a (§3)
 

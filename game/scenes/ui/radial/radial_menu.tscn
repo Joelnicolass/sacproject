@@ -1,11 +1,11 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_menu.gd" id="1_menu"]
-[ext_resource type="Resource" path="res://data/ui/radial/orders_layout.tres" id="2_layout"]
+[ext_resource type="Resource" path="res://scenes/ui/radial/orders_layout.tres" id="2_layout"]
 [ext_resource type="Script" path="res://scenes/audio/menu_sounds.gd" id="a052_menu_sounds"]
-[ext_resource type="Resource" path="res://data/audio/cues/menu_open.tres" id="a055_open"]
-[ext_resource type="Resource" path="res://data/audio/cues/ui_book_click.tres" id="a055_chosen"]
-[ext_resource type="Resource" path="res://data/audio/cues/menu_back.tres" id="a055_back"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/menu_open.tres" id="a055_open"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ui_book_click.tres" id="a055_chosen"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/menu_back.tres" id="a055_back"]
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_decor.gd" id="3_decor"]
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_rings.gd" id="4_rings"]
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_animator.gd" id="5_animator"]
@@ -104,7 +104,7 @@ mouse_filter = 2
 script = ExtResource("4_rings")
 
 [node name="MenuSounds" type="Node" parent="." node_paths=PackedStringArray("menu")]
-editor_description = "What sounds when the X menu opens, an entry is chosen and it closes without a choice: three SoundCues (data/audio/cues/). Empty one and that moment stays silent. Without audio it does nothing."
+editor_description = "What sounds when the X menu opens, an entry is chosen and it closes without a choice: three SoundCues (scenes/audio/cues/). Empty one and that moment stays silent. Without audio it does nothing."
 script = ExtResource("a052_menu_sounds")
 menu = NodePath("..")
 opened = ExtResource("a055_open")

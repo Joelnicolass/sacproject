@@ -2,18 +2,24 @@
 class_name GameCatalog
 extends Resource
 
-## The game's catalog: every type, discovered by scanning the folders. A creature is its folder,
-## creatures/<name>/<name>.tres; the other kinds are data/catalog/<kind>/<tag>.tres. There is
-## nothing to register: drop the file in and it is in the game. The files are the only source of
-## truth; this class holds no copy of them. Lists are sorted by tag so the order never depends on
-## the file system. Types are read-only at runtime.
+## The game's catalog: every type, discovered by scanning the folders. A creature, a spell, a
+## wizard and a god are each a folder, res://<kind>/<name>/<name>.tres, with everything only it
+## uses.
+## Shared abilities are in scenes/units/abilities/; buildings are in their god's folder
+## (gods/<god>/buildings/) or, when neutral, in scenes/structures/buildings/. There is nothing to
+## register: drop the file in and it is in the game. The files are the only source of truth; this
+## class holds no copy of them. Lists are sorted by tag so the order never depends on the file
+## system. Types are read-only at runtime.
 
-const DIR := "res://data/catalog/"
-## One folder per creature, with everything only that creature uses (body, look, model, sounds).
+## The kinds that are one folder per entity: res://<kind>/<name>/<name>.tres.
+const ENTITY_KINDS: Array[String] = ["creatures", "spells", "wizards", "gods"]
 const CREATURES_DIR := "res://creatures/"
-const GODS_DIR := "res://data/gods/"
-## Buildings are named for humans (james_hut.tres); the tag is a field inside.
-const BUILDINGS_DIR := "res://data/buildings/"
+const GODS_DIR := "res://gods/"
+## Abilities two or more creatures share; one only a creature has is in its folder.
+const ABILITIES_DIR := "res://scenes/units/abilities/"
+## Neutral buildings; a god's own are in gods/<god>/buildings/. Named for humans (james_hut.tres);
+## the tag is a field inside.
+const BUILDINGS_DIR := "res://scenes/structures/buildings/"
 
 static var _shared: GameCatalog
 
@@ -24,10 +30,10 @@ var abilities: Array[AbilityType] = []
 var buildings: Array[BuildingType] = []
 ## Tags that two building files claim (the catalog test fails on them).
 var duplicate_building_tags := PackedStringArray()
-## The gods of data/gods/<tag>.tres, by sort_order then tag. Each carries its theme, look and typed
+## The gods of gods/<tag>/<tag>.tres, by sort_order then tag. Each carries its theme, look and typed
 ## book.
 var gods: Array[GodType] = []
-## The game modes in the order the screens list them (data/modes/mode_catalog.tres).
+## The game modes in the order the screens list them (scenes/match/modes/mode_catalog.tres).
 var modes: Array[GameMode] = []
 
 var _building_by_tag: Dictionary = {}
@@ -64,31 +70,41 @@ func scan(reload_from_disk := false) -> void:
 	modes.assign(GameModeCatalog.shared().modes)
 
 
-## The folder of a catalog kind: data/catalog/<kind>/, except the buildings and the creatures.
-static func dir_of(folder: String) -> String:
-	match folder:
-		"buildings":
-			return BUILDINGS_DIR
-		"creatures":
-			return CREATURES_DIR
-	return DIR + folder + "/"
-
-
-## The .tres files of a catalog kind, sorted: creatures/<name>/<name>.tres for the creatures, every
-## .tres of the folder for the rest.
+## The .tres files of a catalog kind, sorted: <kind>/<name>/<name>.tres for the entity kinds, the
+## shared folder for the abilities, and the neutral folder plus every god's buildings/ for the
+## buildings.
 static func paths_of(folder: String) -> PackedStringArray:
 	var paths := PackedStringArray()
-	var dir := dir_of(folder)
-	for entry in ResourceLoader.list_directory(dir):
-		if folder == "creatures":
-			if entry.ends_with("/"):
-				var name := entry.trim_suffix("/")
-				var path := "%s%s/%s.tres" % [dir, name, name]
-				if ResourceLoader.exists(path):
-					paths.append(path)
-		elif entry.ends_with(".tres"):
-			paths.append(dir + entry)
+	match folder:
+		"abilities":
+			paths = _tres_in(ABILITIES_DIR)
+		"buildings":
+			paths = _tres_in(BUILDINGS_DIR)
+			for god in _entities_in(GODS_DIR):
+				paths.append_array(_tres_in(god.get_base_dir() + "/buildings/"))
+		_:
+			if folder in ENTITY_KINDS:
+				paths = _entities_in("res://%s/" % folder)
 	paths.sort()
+	return paths
+
+
+static func _entities_in(dir: String) -> PackedStringArray:
+	var paths := PackedStringArray()
+	for entry in ResourceLoader.list_directory(dir):
+		if entry.ends_with("/"):
+			var name := entry.trim_suffix("/")
+			var path := "%s%s/%s.tres" % [dir, name, name]
+			if ResourceLoader.exists(path):
+				paths.append(path)
+	return paths
+
+
+static func _tres_in(dir: String) -> PackedStringArray:
+	var paths := PackedStringArray()
+	for entry in ResourceLoader.list_directory(dir):
+		if entry.ends_with(".tres"):
+			paths.append(dir + entry)
 	return paths
 
 
@@ -160,12 +176,10 @@ func _load_gods(reload_from_disk: bool) -> Array:
 		ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
 	)
 	var found: Array = []
-	for entry in ResourceLoader.list_directory(GODS_DIR):
-		if not entry.ends_with(".tres"):
-			continue
-		var type := ResourceLoader.load(GODS_DIR + entry, "", mode) as GodType
+	for path in paths_of("gods"):
+		var type := ResourceLoader.load(path, "", mode) as GodType
 		if type == null:
-			push_warning("GameCatalog: gods/%s is not a GodType; skipped." % entry)
+			push_warning("GameCatalog: %s is not a GodType; skipped." % path)
 			continue
 		found.append(type)
 	found.sort_custom(
@@ -191,7 +205,7 @@ func _load_folder(folder: String, script: Script, reload_from_disk: bool) -> Arr
 
 
 # An ability only one creature has lives in that creature's folder: it is known through the
-# creature's slots. The shared ones are in data/catalog/abilities/.
+# creature's slots. The shared ones are in scenes/units/abilities/.
 func _add_creature_abilities() -> void:
 	var known := {}
 	for type in abilities:

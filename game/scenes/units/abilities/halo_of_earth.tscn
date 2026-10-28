@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/halo_of_earth.gd" id="1_halo"]
-[ext_resource type="PackedScene" path="res://data/shots/halo_rock.tscn" id="look_shot"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/halo_rock.tscn" id="look_shot"]
 
 [node name="HaloOfEarth" type="Node3D"]
 process_physics_priority = -1

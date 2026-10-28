@@ -9,7 +9,7 @@ extends Node
 ## drop (ZoneDrop) nor poison (DropPoison). Server (or solo) only.
 
 @export var drop: ZoneDrop
-## FxBus bursts played where it ends (ParticleType under data/fx/).
+## FxBus bursts played where it ends (ParticleType under scenes/fx/effects/).
 @export var bursts: Array[ParticleType] = []
 ## Marks it leaves on the ground where it ends (ScarMark scenes: a burn, a crack), painted on every
 ## peer.

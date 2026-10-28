@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d0ate"]
 [ext_resource type="Texture2D" uid="uid://b1q5o5ky24uaj" path="res://assets/original/ui/icons/grdb.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://creatures/silverback/silverback_shot.tres" id="typed_rdba"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/run_away.tres" id="typed__nur"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/lightning_charge.tres" id="typed_gcil"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/run_away.tres" id="typed__nur"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/lightning_charge.tres" id="typed_gcil"]
 [ext_resource type="AnimationLibrary" path="res://creatures/silverback/model/silverback_model_clips.tres" id="clips_lib"]
 [ext_resource type="PackedScene" path="res://creatures/silverback/silverback.tscn" id="body_scene"]
 

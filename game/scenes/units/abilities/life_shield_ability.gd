@@ -7,7 +7,7 @@ extends AbilityEffect
 
 ## The burst every peer sees when the shield starts, and the socket of the body it leaves from
 ## (empty = none).
-@export var fx: ParticleType = preload("res://data/fx/heal.tres")
+@export var fx: ParticleType = preload("res://scenes/fx/effects/heal.tres")
 @export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 

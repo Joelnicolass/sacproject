@@ -7,6 +7,5 @@
 [node name="AnimateDead" type="Node"]
 script = ExtResource("1_script")
 pick = 2
-prompt = "Elegí un alma"
 cast_fx = ExtResource("fx_animate_dead_cast")
 revive_scene = ExtResource("2_revive")

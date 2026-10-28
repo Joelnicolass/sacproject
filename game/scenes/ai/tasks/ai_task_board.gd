@@ -9,9 +9,6 @@ extends Node
 ## Manahoar's own brain. Without a child task that kind of work does not happen. How a record moves is AiRecordRunner.
 ## Ref: RFC-024 §3.1 `AiTaskBoard`; shiny.d:2096-2346 replan and claim, 2350-2440 the order bridge, 3380-3427 `recordUpdate`.
 
-## After the claim of a replan: every task with its records and members (diagnostic: the bench's decision log listens).
-signal replanned(tasks: Array[AiTask])
-
 @export var perception: AiPerception
 @export var groups: AiGroups
 @export var stance: AiStance
@@ -55,7 +52,6 @@ func claim_pass() -> void:
 			free.append(t)
 	for task in tasks:
 		task.claim(free)
-	replanned.emit(tasks)
 
 
 ## ntt vtbl[19]: any own body but a Sac Doctor or a dying one. The port also leaves out a creature being

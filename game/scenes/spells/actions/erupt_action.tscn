@@ -6,7 +6,6 @@
 [node name="Erupt" type="Node"]
 editor_description = "Erupt (tpre): la zona nace al empezar el lanzamiento (la tierra empieza a subir) y estalla a los 4,2 s del inicio (arm_from_start). Si el lanzamiento se corta, la tierra vuelve sola. Partícula del lanzamiento: la tierra de James (dirt_cast)."
 script = ExtResource("1_script")
-prompt = "Elegí el punto"
 cast_fx = ExtResource("fx_dirt_cast")
 kind = "Erupt"
 arm_s = 4.2

@@ -11,6 +11,5 @@ refuse_cc_protected = false
 
 [node name="Dragonfire" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 target = SubResource("Target_enemy")
 kind = "Dragonfire"

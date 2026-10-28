@@ -9,10 +9,6 @@ extends Node
 
 signal message(text: String)
 signal soul_spawned(soul: Node3D)
-## A wizard takes `count` souls into its purse, announced right before the purse changes. `origin` says where they
-## came from (npc / creature / wizard), for the souls ledger of the bench (RFC-024 §5.2); Convert says its own
-## on SacrificeSystem.souls_converted.
-signal soul_collected(slot: int, count: int, origin: StringName)
 
 ## Collect priority: own side first, then an ally's (RFC-049 049c), then souls with no side, then the enemy's.
 ## Ref: state.d:14926, CollectStance
@@ -168,7 +164,6 @@ func _try_collect(soul: Node3D, wizards: Array[Node], reach: float, reach_up: fl
 		return
 	var collected := soul as Soul
 	collected.begin_collect(best, int(best.get("owner_slot")))
-	soul_collected.emit(int(best.get("owner_slot")), collected.number, collected.origin)
 	(best.get_node("SoulPurse") as SoulPurse).add(collected.number)
 	collected.sever()
 

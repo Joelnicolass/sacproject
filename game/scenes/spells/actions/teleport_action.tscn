@@ -8,7 +8,6 @@
 [node name="Teleport" type="Node"]
 script = ExtResource("1_script")
 pick = 3
-prompt = "Elegí un edificio propio"
 out_fx = ExtResource("fx_teleport_out")
 in_fx = ExtResource("fx_teleport_in")
 rings_scene = ExtResource("2_rings")

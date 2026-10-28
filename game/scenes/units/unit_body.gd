@@ -179,9 +179,6 @@ func display_name() -> String: return type.display_name if type else creature_ta
 func has_clip(role: String) -> bool: return clips.has_clip(role)
 func current_state() -> UnitState: return states.current as UnitState if states != null else null
 func corpse() -> Corpse: return $Corpse as Corpse
-func debug_set_clip_state(role: String) -> void: clips.show_role(role)
-func debug_clear_clip_state() -> void: clips.set_debug_role("")
-func debug_clip_info() -> Dictionary: return clips.info()
 
 
 func melee_profile() -> Dictionary:

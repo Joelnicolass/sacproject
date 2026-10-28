@@ -6,6 +6,5 @@
 [node name="SoulMole" type="Node"]
 script = ExtResource("1_script")
 pick = 2
-prompt = "Elegí un alma"
 cast_fx = ExtResource("fx_dirt_cast")
 carrier_kind = "SoulMole"

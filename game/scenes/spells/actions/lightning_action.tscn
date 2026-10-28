@@ -10,6 +10,5 @@ who = 5
 
 [node name="Lightning" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 beam = ExtResource("fx_lightning")
 target = SubResource("Target_enemy")

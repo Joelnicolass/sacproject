@@ -10,5 +10,4 @@ alive_only = false
 
 [node name="Heal" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 target = SubResource("Target_own")

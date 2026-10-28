@@ -12,7 +12,6 @@ alive_only = false
 
 [node name="Pups" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 effect_scene = ExtResource("2_effect")
 target = SubResource("Target_own")
 start_fx = ExtResource("fx_speedup")

@@ -6,7 +6,6 @@
 [node name="Volcano" type="Node"]
 editor_description = "Volcano (clov): la zona nace al empezar el lanzamiento (el monte empieza a subir), se ancla a la cuadricula de 10 m del suelo (como el original) y erupciona a los 4,44 s del inicio (arm_from_start). Si el lanzamiento se corta, el suelo vuelve exacto."
 script = ExtResource("1_script")
-prompt = "Elegí el punto"
 cast_fx = ExtResource("fx_fire_cast")
 kind = "Volcano"
 arm_s = 4.4444

@@ -6,6 +6,5 @@
 [node name="Tornado" type="Node"]
 editor_description = "Tornado (nrot): el embudo nace al empezar el lanzamiento y crece con el (0,8 de su tamano al terminar). La espiral cst0 alrededor del mago es cast_scene (sacengine animateTornadoCasting); la particula de las manos es la de su dios (Stratos)."
 script = ExtResource("1_script")
-prompt = "Elegí el punto"
 kind = "Tornado"
 cast_scene = ExtResource("2_glow")

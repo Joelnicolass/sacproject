@@ -25,7 +25,6 @@ var captive_role := "":
 		captive_role = value
 		_update_if_ready()
 
-var _debug_role := ""
 var _lunge_tween: Tween
 
 
@@ -45,9 +44,6 @@ func update() -> void:
 		pivot.scale = want
 	var pose := clip_pose
 	if pose == null or (body.mode == UnitBody.Mode.DEAD and body.corpse().clip_driven):
-		return
-	if not _debug_role.is_empty():
-		pose.play(_debug_role)
 		return
 	var held_role := "idle" if body.special_forms.playing_dead else body.afflictions.pose_role(pose)
 	if not held_role.is_empty():
@@ -94,27 +90,6 @@ func cancel_lunge() -> void:
 
 func has_clip(role: String) -> bool:
 	return clip_pose != null and clip_pose.has_role(role)
-
-
-## Bench: shows `role` whatever the mode says ("" = back to the modes).
-func set_debug_role(role: String) -> void:
-	_debug_role = role
-
-
-func show_role(role: String) -> void:
-	set_debug_role(role)
-	update()
-
-
-func info() -> Dictionary:
-	var pose := clip_pose
-	return {
-		"role": pose.active_role() if pose else "",
-		"tag": pose.active_tag() if pose else "",
-		"frame": pose.active_frame() if pose else 0,
-		"fps": pose.active_framerate() if pose else 0,
-		"impact_frame": pose.impact_frame() if pose else -1,
-	}
 
 
 func _update_if_ready() -> void:

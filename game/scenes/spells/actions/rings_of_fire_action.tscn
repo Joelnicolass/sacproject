@@ -13,7 +13,6 @@ refuse_cc_protected = true
 
 [node name="RingsOfFire" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 cast_fx = ExtResource("fx_rings_cast")
 affliction = ExtResource("3_type")
 target = SubResource("Target_enemy")

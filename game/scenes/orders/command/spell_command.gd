@@ -77,7 +77,7 @@ func arm_spell(index: int) -> void:
 	armed.mode = "spell"
 	armed.spell_index = index
 	armed.cast_pending = ""
-	_log.arm("spell", spell.icon if spell else null, "Elegí el blanco")
+	_log.arm("spell", spell.icon if spell else null)
 
 
 ## A spell that aims at the wizard himself (a ward) starts on the key: there is nothing to click.
@@ -109,7 +109,7 @@ func arm_structure(index: int) -> void:
 	armed.structure_index = index
 	armed.cast_pending = ""
 	var spell: SpellType = book.structure_at(index)
-	_log.arm("structure", spell.icon if spell else null, action.prompt, _accepts_of(action))
+	_log.arm("structure", spell.icon if spell else null, _accepts_of(action))
 
 
 func cast_at(screen: Vector2) -> void:

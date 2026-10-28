@@ -5,4 +5,3 @@
 [node name="Desecrate" type="Node"]
 script = ExtResource("1_script")
 pick = 1
-prompt = "Elegí tu criatura"

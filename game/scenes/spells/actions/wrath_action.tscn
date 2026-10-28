@@ -12,6 +12,5 @@ who = 5
 script = ExtResource("1_script")
 projectile_kind = "Wrath"
 launch_at_finish = true
-prompt = "Elegí el blanco"
 cast_fx = ExtResource("fx_wrath_cast")
 target = SubResource("Target_enemy")

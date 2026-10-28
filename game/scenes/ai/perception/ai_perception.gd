@@ -132,11 +132,9 @@ func find(node: Node) -> AiTrack: return tracks.get(node.get_instance_id()) if n
 func bodies(category: int) -> Array: return _bodies[category]
 func structures(category: int) -> Array: return _structures[category]
 func tracks_of(category: int) -> Array: return tracks.values().filter(func(t: AiTrack) -> bool: return t.category() == category)
-func foes_count() -> int: return bodies(3).size()
 func relation_of(node: Node) -> AiTrack.Relation: return AiTrackFacts.relation(slot, owner_slot_of(node))
 static func owner_slot_of(node: Node) -> int: return VisionRules.slot_of(node)
 func tag_acc(type: CreatureType) -> PackedFloat32Array: return AiTrackFacts.tag_acc(type)
-func leak_count() -> int: return AiSightIntake.leak_count(tracks, slot)
 func sees(t: AiTrack) -> bool: return AiBelief.sees(t, slot)
 func knows_live(t: AiTrack) -> bool: return belief.knows_live(t, slot)
 func knows_where(t: AiTrack) -> bool: return belief.knows_where(t, slot)

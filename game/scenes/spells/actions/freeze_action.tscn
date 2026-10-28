@@ -13,7 +13,6 @@ refuse_cc_protected = true
 
 [node name="Freeze" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 cast_fx = ExtResource("fx_freeze_cast")
 affliction = ExtResource("3_type")
 target = SubResource("Target_enemy")

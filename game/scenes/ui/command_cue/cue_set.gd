@@ -28,7 +28,7 @@ func has_reason(text: String) -> bool:
 	return refusals.has(StringName(text))
 
 
-## The cue a message means: `refused` or &"" (unknown messages only reach CommandLog.text).
+## The cue a message means: `refused` or &"" (an unknown message has no cue).
 func cue_for(text: String) -> StringName:
 	return StringName(refusals.get(StringName(text), &""))
 

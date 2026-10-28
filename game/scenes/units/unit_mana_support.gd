@@ -53,7 +53,7 @@ func _physics_process(delta: float) -> void:
 				continue
 			var pool := target.get_node_or_null("ManaPool") as ManaPool
 			if pool:
-				pool.add(rate * delta, &"manahoar")
+				pool.add(rate * delta)
 
 
 ## Particles per second of the Manahoar's flame: the original draws one flame particle per mana point per second it gives

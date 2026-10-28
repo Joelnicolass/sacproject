@@ -6,6 +6,5 @@
 [node name="RainOfFire" type="Node"]
 editor_description = "Rain of Fire (rifr): una nube de fuego que cae al terminar el lanzamiento."
 script = ExtResource("1_script")
-prompt = "Elegí el punto"
 cast_fx = ExtResource("fx_fire_cast")
 kind = "RainOfFire"

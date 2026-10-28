@@ -58,7 +58,7 @@ func arm_order(kind: String, replace := false) -> void:
 			return
 		mode = ""
 	mode = kind
-	_log.arm(kind, _order_icon(kind), "Elegí el blanco", TargetProbe.ORDER_TARGETS)
+	_log.arm(kind, _order_icon(kind), TargetProbe.ORDER_TARGETS)
 
 
 ## The picture of an armed order on the cursor: attack, guard, move… (CueSet.aim_icons).

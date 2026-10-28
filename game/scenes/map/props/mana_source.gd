@@ -17,8 +17,6 @@ enum Kind { FOUNT, ALTAR, CUSTOM }
 @export var radius := 50.0
 ## Optional: a sphere shape drawn in the editor; when set, its radius is the reach (the `radius` above is ignored).
 @export var reach: CollisionShape3D
-## What the AI audit calls this source (&"manalith", &"shrine"). Empty: «fount» or «altar» by `kind`.
-@export var audit_name: StringName = &""
 ## -1: any body (manafount). Otherwise only that player slot (its altar).
 @export var owner_slot := -1
 @export var target_groups: PackedStringArray = PackedStringArray(["wizard", "unit"])
@@ -42,18 +40,6 @@ func _read_rules() -> void:
 		Kind.ALTAR:
 			rate = rules.altar_rate
 			radius = facts.altar_m
-
-
-## What the audit calls this source.
-func source_name() -> StringName:
-	if not audit_name.is_empty():
-		return audit_name
-	match kind:
-		Kind.FOUNT:
-			return &"fount"
-		Kind.ALTAR:
-			return &"altar"
-	return &"other"
 
 
 ## Metres from the source a body still gets mana.
@@ -90,4 +76,4 @@ func _physics_process(delta: float) -> void:
 				continue
 			var pool := body.get_node_or_null("ManaPool")
 			if pool:
-				pool.add(rate * delta, source_name())
+				pool.add(rate * delta)

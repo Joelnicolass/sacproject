@@ -5,6 +5,5 @@
 
 [node name="WallOfSpikes" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí un lugar del suelo"
 cast_fx = ExtResource("fx_dirt_cast")
 wall_kind = "WallOfSpikes"

@@ -15,11 +15,6 @@ extends Node
 ##   TAKE_SOUL  the wizard walks onto a soul
 enum AiOrder { MOVE_NEAR = 2, GUARD = 3, MOVE = 4, REFILL = 5, ATTACK = 6, ADVANCE = 7, TAKE_SOUL = 34 }
 
-@export var audit: AiAudit:
-	set(value):
-		audit = value
-		if orders != null:
-			orders.audit = value
 @export var perception: AiPerception
 ## The orders of the AI (child `Orders`).
 @export var orders: AiOrdersOut
@@ -61,8 +56,7 @@ func bind(side_slot: int, wizard_body: Node3D, orders_node: Node) -> void:
 	slot = side_slot
 	wizard = wizard_body
 	orders.bind(side_slot, wizard, orders_node)
-	var spawner := get_tree().get_first_node_in_group(UnitSpawner.GROUP) as UnitSpawner
-	casts.bind(side_slot, wizard, spawner.get_node(spawner.spawn_path) if spawner != null else null)
+	casts.bind(wizard)
 
 
 ## startCasting. Returns the answer of the Caster: the spell's name when it starts, or the reason it did not ("" = refused without a word).
@@ -75,7 +69,7 @@ func start_casting(spell: Resource, target: AiTrack, point: Vector3) -> String:
 		_cast_delayed += 1
 		return ""
 	var began := Time.get_ticks_usec()
-	var answer := casts.request(spell, target, point, audit, perception)
+	var answer := casts.request(spell, target, point, perception)
 	_cast_us += Time.get_ticks_usec() - began
 	## the casts and summons go to the same diagnostic table as the orders: «cast <tag>» -> [count, microseconds]
 	orders.note("cast " + str(spell.get("tag")), Time.get_ticks_usec() - began)
@@ -120,14 +114,12 @@ func flush() -> void:
 			refusal = "fuera de alcance"
 		if refusal.is_empty():
 			var began := Time.get_ticks_usec()
-			casts.request(spell, target, entry["point"], audit, perception)
+			casts.request(spell, target, entry["point"], perception)
 			_cast_us += Time.get_ticks_usec() - began
 		else:
 			lapsed += 1
 			var key := "%s %s" % [str(spell.get("tag")), refusal]
 			lapse_reasons[key] = int(lapse_reasons.get(key, 0)) + 1
-			if audit != null:
-				audit.record("lapse", "slot %d %s" % [slot, key])
 	orders.flush_due()
 
 

@@ -31,7 +31,7 @@ func use() -> void:
 	if ability.needs_target():
 		armed.mode = "ability"
 		armed.ability = ability
-		_log.arm("ability", ability.icon, "Elegí el blanco", TargetProbe.ORDER_TARGETS)
+		_log.arm("ability", ability.icon, TargetProbe.ORDER_TARGETS)
 		return
 	_apply(ability, null, null)
 

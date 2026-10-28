@@ -5,4 +5,3 @@
 [node name="Ward" type="Node"]
 script = ExtResource("1_script")
 pick = 4
-prompt = "Sobre vos"

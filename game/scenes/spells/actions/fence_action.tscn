@@ -5,6 +5,5 @@
 
 [node name="Fence" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí un lugar del suelo"
 cast_fx = ExtResource("fx_slime_cast_cst0")
 wall_kind = "Fence"

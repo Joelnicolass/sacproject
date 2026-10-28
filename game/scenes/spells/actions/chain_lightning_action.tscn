@@ -14,7 +14,6 @@ refuse_cc_protected = false
 
 [node name="ChainLightning" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 cast_fx = ExtResource("fx_chain_cast")
 target = SubResource("Target_enemy")
 launch_scene = ExtResource("3_launch")

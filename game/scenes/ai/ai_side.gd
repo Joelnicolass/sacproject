@@ -25,7 +25,6 @@ signal started
 @export var brain: AiWizardBrain
 @export var creature_brain: CreatureBrain
 @export var port: AiCommandPort
-@export var audit: AiAudit
 
 ## What this side plays with (tactics, difficulty, aggression, ages): made once by setup, shared by every child.
 var play: AiPlay
@@ -81,7 +80,6 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	port.can_cast = brain.casting.cast_refusal
 	brain.prepare()
 	port.bind(slot, wizard, world.get_node("%Orders"))
-	port.audit = audit
 	brain.rng = AiRand.with_seed(MatchSeed.derive(["ai_rand", slot]) if MatchSeed.is_active() else 1)
 	perception.forced.connect(clock.wake)
 	clock.job_due.connect(_run_job)
@@ -89,8 +87,6 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	for parent: Node in [world.get_node_or_null("%Units"), world.get_node_or_null("Structures")]:
 		if parent != null:
 			parent.child_entered_tree.connect(_on_unit_entered)
-	if audit != null:
-		audit.watch_ai(slot, wizard, perception)
 
 
 func _start() -> void:

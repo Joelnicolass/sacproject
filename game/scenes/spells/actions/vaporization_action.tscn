@@ -10,6 +10,5 @@ refuse_wizards = true
 
 [node name="Vaporization" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 target = SubResource("Target_aim")
 kind = "Vaporization"

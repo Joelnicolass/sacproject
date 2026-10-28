@@ -13,6 +13,5 @@ refuse_cc_protected = false
 [node name="HealingAura" type="Node"]
 editor_description = "Healing Aura (ruah): sobre la criatura aliada del clic (o el mago, si no se clica a nadie). La aura la lleva ella, no el mago."
 script = ExtResource("1_script")
-prompt = "Elegí la criatura"
 cast_fx = ExtResource("fx_healing_aura_cast")
 target = SubResource("Target_ally")

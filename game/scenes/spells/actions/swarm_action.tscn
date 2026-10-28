@@ -10,5 +10,4 @@ who = 5
 [node name="Swarm" type="Node"]
 script = ExtResource("1_script")
 projectile_kind = "Swarm"
-prompt = "Elegí el blanco"
 target = SubResource("Target_enemy")

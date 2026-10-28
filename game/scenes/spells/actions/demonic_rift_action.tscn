@@ -6,7 +6,6 @@
 [node name="DemonicRift" type="Node"]
 editor_description = "Demonic Rift (tfir): la grieta nace en los pies del mago al empezar el lanzamiento; los espiritus buscan a los enemigos alrededor del clic. Particula del lanzamiento: cfx1 (SPEL tfir: tcst = cfx1)."
 script = ExtResource("1_script")
-prompt = "Elegí el punto"
 cast_fx = ExtResource("fx_rift_cast")
 kind = "DemonicRift"
 anchor = 1

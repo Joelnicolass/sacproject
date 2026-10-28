@@ -11,6 +11,5 @@ neutral_allowed = false
 
 [node name="Charm" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí el blanco"
 target = SubResource("Target_aim")
 kind = "Charm"

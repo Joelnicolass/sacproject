@@ -23,9 +23,6 @@ class Rec extends RefCounted:
 	var acc := AiRater.new_acc()
 
 
-## After every run of update() (diagnostic: the bench's decision log listens; nothing in the game does).
-signal updated
-
 @export var perception: AiPerception
 @export var groups: AiGroups
 var play: AiPlay  # what the side plays with (AiSide.setup)
@@ -89,7 +86,6 @@ func update() -> void:
 	acc2 = AiRater.new_acc()
 	AiRater.combine(acc2, 1.0, recs[3].acc, 1.0)
 	AiRater.divide(acc2, float(_bits(recs[3].ratio_a)))
-	updated.emit()
 
 
 static func _ratio(num: int, den: int) -> float:

@@ -9,9 +9,6 @@ extends Node
 ## game (the port).
 ## Ref: shiny.d:3303-3387 wizBrain, 3330-3337 souls; RFC-024 §3.1; shiny.d:3303-3387; shiny.d:3306-3326; sacengine; shiny.d:2610-2636
 
-## After a replan of the wizard: the cast queue the phases left (diagnostic: the bench's decision log listens; nothing in the game does).
-signal replanned(wizard: AiTrack, queue: Array)
-
 @export var perception: AiPerception
 @export var stance: AiStance
 @export var groups: AiGroups
@@ -64,7 +61,6 @@ func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> int:
 		wizard.cast_queue.clear()
 		for phase in phases:
 			phase.run(wizard, w3, record if task_kind == AiTask.Kind.CAPTURE else null)
-		replanned.emit(wizard, wizard.cast_queue)
 	## Souls he can take by touching (retail: 100 + 80 m scaled by the threat; the beta 80 + 60): first what he can cast in passing
 	## (checkOnly), else he walks onto the soul.
 	var reach := AiField.f32((1.0 - wizard.threat) * tactics.soul_reach_scale + tactics.soul_reach_base)

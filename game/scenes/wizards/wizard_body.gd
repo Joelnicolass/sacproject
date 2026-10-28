@@ -93,7 +93,6 @@ var _last_health := 0.0
 var _present_prev_pos := Vector3.ZERO
 var _present_prev_ready := false
 var _present_flat_speed := 0.0
-var _debug_clip_role := ""
 var _idle_loops := 0
 var _gesturing := false
 ## The speed the last _update_clip_state saw (a gesture that ends re-picks the pose with it).
@@ -472,9 +471,6 @@ func _update_clip_state(flat_speed: float) -> void:
 	_clip_flat_speed = flat_speed
 	if _clip_pose == null:
 		return
-	if not _debug_clip_role.is_empty():
-		_clip_pose.play(_debug_clip_role)
-		return
 	var held_role := _afflictions.pose_role(_clip_pose)
 	if not held_role.is_empty():
 		_clip_pose.play(held_role)
@@ -502,22 +498,3 @@ func _on_clip_looped(role: String) -> void:
 	_gesturing = role == "idle" and posmod(hash(String(name)) + _idle_loops, GESTURE_EVERY) == 0 \
 		and _clip_pose.has_role("gesture")
 	_update_clip_state(_clip_flat_speed)
-
-
-func debug_set_clip_state(role: String) -> void:
-	_debug_clip_role = role
-	_update_clip_state(0.0)
-
-
-func debug_clear_clip_state() -> void:
-	_debug_clip_role = ""
-
-
-func debug_clip_info() -> Dictionary:
-	return {
-		"role": _clip_pose.active_role() if _clip_pose else "",
-		"tag": _clip_pose.active_tag() if _clip_pose else "",
-		"frame": _clip_pose.active_frame() if _clip_pose else 0,
-		"fps": _clip_pose.active_framerate() if _clip_pose else 0,
-		"impact_frame": _clip_pose.impact_frame() if _clip_pose else -1,
-	}

@@ -10,5 +10,4 @@ who = 5
 [node name="Fireball" type="Node"]
 script = ExtResource("1_script")
 projectile_kind = "Fireball"
-prompt = "Elegí el blanco"
 target = SubResource("Target_enemy")

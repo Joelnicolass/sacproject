@@ -69,8 +69,6 @@ static func issue(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, po
 				goal = target.cur_pos + back.normalized() * stop_m
 			else:
 				goal = t.cur_pos
-		if out.audit != null:
-			out.audit.record("order", "slot %d wizard walk %s" % [out.slot, AiAudit.fmt(goal)])
 		out.wizard.request_walk(goal)
 		out.orders_issued += 1
 		return goal
@@ -111,8 +109,6 @@ static func issue(out: AiOrdersOut, t: AiTrack, ostate: int, target: AiTrack, po
 			elif command == "attack":
 				command = "advance"
 	var point: Vector3 = (pos as Vector3) if pos != null else (goal_node.global_position if goal_node != null else seen_at)
-	if out.audit != null:
-		out.audit.record("order", "slot %d %s %s %s" % [out.slot, t.node.name, command, AiAudit.fmt(point)])
 	out.orders_issued += 1
 	(out.world_orders as _ORDERS).apply_for(out.slot, [t.node], command, point, goal_node)
 	return point

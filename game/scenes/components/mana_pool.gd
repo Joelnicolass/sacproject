@@ -9,9 +9,6 @@ signal changed(current: float, maximum: float)
 ## (a ghost heals by it even with a full pool).
 ## Ref: sacengine giveMana, state.d:8828-8832.
 signal given(amount: float)
-## add() said where the mana came from (`source`: fount, altar, manalith, manahoar; empty = nobody said).
-## The AI's audit adds these up to show that all the mana of a side comes from sources (RFC-024 024c).
-signal fed(amount: float, source: StringName)
 
 ## Only read by setup(): MatchRules.start_mana, if not negative, replaces a full pool.
 @export var rules: MatchRules
@@ -51,14 +48,13 @@ func spend(amount: float) -> bool:
 	return true
 
 
-func add(amount: float, source: StringName = &"") -> void:
+func add(amount: float) -> void:
 	if not is_multiplayer_authority() or amount <= 0.0:
 		return
 	if poisoning and poisoning.mana_blocked():
 		return
 	current = minf(current + amount, maximum)
 	given.emit(amount)
-	fed.emit(amount, source)
 
 
 

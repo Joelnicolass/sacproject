@@ -14,7 +14,6 @@ refuse_cc_protected = false
 [node name="Halo" type="Node"]
 script = ExtResource("1_script")
 pick = 4
-prompt = "Sobre vos"
 cast_fx = ExtResource("fx_dirt_cast")
 target = SubResource("Target_self")
 launch_scene = ExtResource("3_launch")

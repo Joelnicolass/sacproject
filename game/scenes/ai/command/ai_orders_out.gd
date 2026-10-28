@@ -12,8 +12,7 @@ extends Node
 ## What the side plays with (AiSide.setup): the wizard's stop distance on guard.
 var play: AiPlay
 
-## Set by the port: the side, its wizard and the world's Orders (bind), the audit, the delay and the tick (flush).
-var audit: AiAudit
+## Set by the port: the side, its wizard and the world's Orders (bind), the delay and the tick (flush).
 var slot := 0
 var wizard: WizardBody
 var world_orders: Node
@@ -81,8 +80,9 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 	if reason.is_empty():
 		return
 	var key := "%s %d %s" % [AiTrack.Kind.keys()[t.kind], ostate, reason]
-	if DebugLog.on(&"ai_order"): print("ai_order tick %d slot %d %s ost %d->%d %s goal %s" % [tick, slot, t.node.name, t.ord_state, ostate, reason,
-			AiAudit.fmt((pos as Vector3) if pos != null else (target.cur_pos if target != null else t.cur_pos))])
+	var at: Vector3 = (pos as Vector3) if pos != null else (target.cur_pos if target != null else t.cur_pos)
+	if DebugLog.on(&"ai_order"): print("ai_order tick %d slot %d %s ost %d->%d %s goal %.1f,%.1f,%.1f" % [tick, slot, t.node.name,
+			t.ord_state, ostate, reason, at.x, at.y, at.z])
 	var goal: Vector3
 	if delay_ticks > 0:
 		## The order waits its delay; a newer decision for the same body replaces it and keeps its time (else a body whose anchor
@@ -90,7 +90,7 @@ func order_if_changed(t: AiTrack, ostate: int, target: AiTrack, pos: Variant) ->
 		var waiting: Dictionary = _pending_orders.get(t.id, {})
 		_pending_orders[t.id] = {"t": t, "ostate": ostate, "target": target, "pos": pos, "key": key, "due": int(waiting.get("due", tick + delay_ticks))}
 		delayed += 1
-		goal = (pos as Vector3) if pos != null else (target.cur_pos if target != null else t.cur_pos)
+		goal = at
 	else:
 		var began := Time.get_ticks_usec()
 		goal = AiOrderIssue.issue(self, t, ostate, target, pos)

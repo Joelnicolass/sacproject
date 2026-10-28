@@ -56,7 +56,6 @@ script = ExtResource("4_source")
 kind = 2
 rate = 33.333
 reach = NodePath("Reach/Shape")
-audit_name = &"manalith"
 
 [node name="Reach" type="Area3D" parent="ManaSource" index="0"]
 collision_layer = 0

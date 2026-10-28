@@ -14,7 +14,6 @@ refuse_cc_protected = false
 
 [node name="Rainbow" type="Node"]
 script = ExtResource("1_script")
-prompt = "Elegí un aliado"
 cast_fx = ExtResource("fx_heal")
 target = SubResource("Target_ally")
 launch_scene = ExtResource("3_launch")

@@ -5,4 +5,3 @@
 [node name="Convert" type="Node"]
 script = ExtResource("1_script")
 pick = 2
-prompt = "Elegí un alma roja"

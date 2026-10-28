@@ -7,6 +7,5 @@
 [node name="Guardian" type="Node"]
 script = ExtResource("1_script")
 pick = 1
-prompt = "Elegí una criatura propia"
 cast_fx = ExtResource("fx_heal")
 rules = ExtResource("2_rules")

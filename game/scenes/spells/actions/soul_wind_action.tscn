@@ -6,6 +6,5 @@
 [node name="SoulWind" type="Node"]
 script = ExtResource("1_script")
 pick = 2
-prompt = "Elegí un alma"
 cast_fx = ExtResource("fx_soul_wind_cast")
 carrier_kind = "SoulWind"

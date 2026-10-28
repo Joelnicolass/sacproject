@@ -41,8 +41,6 @@ var tag: String:
 		return spell.tag if spell != null else ""
 ## What the click aims at: the ground, an own creature, a soul or an own building. SELF aims at nothing: the cast starts on the key.
 @export var pick := Pick.GROUND
-## What the battle line says while the spell is armed.
-@export var prompt := ""
 ## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god (GodType.cast_fx).
 @export var cast_fx: ParticleType
 ## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the end of the cast.
@@ -52,8 +50,6 @@ var tag: String:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if prompt.is_empty():
-		warnings.append("Escribí en `prompt` lo que se muestra al armar el hechizo.")
 	var parent := get_parent()
 	if parent != null and spell != null:
 		for sibling in parent.get_children():

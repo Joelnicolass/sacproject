@@ -96,14 +96,3 @@ func take_recalled(side: int) -> Array[Node3D]:
 			_lost.erase(id)
 			back.append(node)
 	return back
-
-
-## Tracks the audit calls a leak: neither from the start nor own, and side `side` does not see them.
-static func leak_count(tracks: Dictionary, side: int) -> int:
-	var leaks := 0
-	for t: AiTrack in tracks.values():
-		if t.origin == &"scan" or t.relation == AiTrack.Relation.OWN:
-			continue
-		if not t.is_valid() or (not t.seen and not VisionSides.sees(side, t.node)):
-			leaks += 1
-	return leaks

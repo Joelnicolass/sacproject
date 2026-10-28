@@ -6,6 +6,5 @@
 [node name="RainOfFrogs" type="Node"]
 editor_description = "Rain of Frogs (grfr): la nube nace al empezar el lanzamiento y suelta ranas al terminar."
 script = ExtResource("1_script")
-prompt = "Elegí el punto"
 cast_fx = ExtResource("fx_frog_cast")
 kind = "RainOfFrogs"

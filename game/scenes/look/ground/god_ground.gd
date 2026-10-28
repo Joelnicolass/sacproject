@@ -60,6 +60,33 @@ extends Resource
 		light_gain = value
 		emit_changed()
 
+@export_group("Cloud shadows")
+## How dark the shadow of a cloud makes the sun-lit part of the ground. 0 = no cloud shadows.
+@export_range(0.0, 1.0, 0.01) var cloud_shadow_strength := 0.3:
+	set(value):
+		cloud_shadow_strength = value
+		emit_changed()
+## Size of one cloud pattern over the land, in metres.
+@export_range(20.0, 600.0, 1.0, "suffix:m") var cloud_shadow_scale_m := 140.0:
+	set(value):
+		cloud_shadow_scale_m = value
+		emit_changed()
+## Speed the shadows drift at, in metres per second.
+@export_range(0.0, 20.0, 0.1, "suffix:m/s") var cloud_shadow_speed_m_s := 2.5:
+	set(value):
+		cloud_shadow_speed_m_s = value
+		emit_changed()
+## Direction the wind carries the shadows (x, z on the map).
+@export var cloud_shadow_wind := Vector2(0.82, 0.57):
+	set(value):
+		cloud_shadow_wind = value
+		emit_changed()
+## Softness of the shadow edge: 0 = hard, 1 = a smooth gradient.
+@export_range(0.05, 1.0, 0.01) var cloud_shadow_softness := 0.35:
+	set(value):
+		cloud_shadow_softness = value
+		emit_changed()
+
 
 ## The four roles in the order of the channels of ground_roles.png (R open, G earth, B rock, A
 ## path); a slot may be null.

@@ -52,6 +52,8 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 @export var ground_stochastic: bool = false
 ## Macro drift of color and roughness over hundreds of meters.
 @export var ground_macro: bool = true
+## Soft cloud shadows drifting over the ground (the god's GodGround sets how strong).
+@export var ground_cloud_shadows: bool = true
 
 @export_group("Grass")
 @export var grass_enabled: bool = true

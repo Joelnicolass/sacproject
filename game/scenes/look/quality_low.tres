@@ -28,6 +28,7 @@ ground_layers = 2
 ground_triplanar = false
 ground_stochastic = false
 ground_macro = true
+ground_cloud_shadows = false
 ssil_enabled = false
 glow_enabled = false
 grass_enabled = false

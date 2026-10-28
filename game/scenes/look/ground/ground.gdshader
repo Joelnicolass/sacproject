@@ -17,6 +17,8 @@ render_mode cull_disabled;
 #include "res://scenes/look/ground/terrain_deform.gdshaderinc"
 // The marks on the ground (burns, cracks), over the ground and under the light.
 #include "res://scenes/look/ground/ground_scars.gdshaderinc"
+// Drifting cloud shadows over the land (strength 0 = off).
+#include "res://scenes/look/ground/ground_clouds.gdshaderinc"
 
 uniform sampler2D lightmap : filter_linear, repeat_disable, hint_default_white;
 uniform float light_base : hint_range(0.0, 2.0, 0.01) = 0.3;
@@ -81,7 +83,9 @@ void fragment() {
 	}
 	albedo = ground_scar_mix(albedo, map_pos.xz, false);
 	vec3 light = texture(lightmap, map_pos.xz / roles_map_size).rgb;
-	ALBEDO = albedo * (light_base + light * light_gain);
+	// The cloud shadow dims the sun-like part only; the base (ambient) light stays.
+	float sun = cloud_shadow_strength > 0.0 ? cloud_shadow(map_pos.xz, TIME) : 1.0;
+	ALBEDO = albedo * (light_base + light * light_gain * sun);
 	ROUGHNESS = orm.g;
 	if (use_maps && !wall) {
 		// `g` came from the NORMAL Godot already flipped on a back face, so the rebuilt one needs no flip.

@@ -12,7 +12,7 @@ Known limit: Persephone's saturation gain is ~2.6x (meadow is much greener than 
 grounds (Pyro, James, Charnel) the proposal comes out far too saturated, near pure orange, even under the
 default cap. There, start from the approved Pyro palette's ratios to its ground instead and tune by hand;
 the shipped James, Stratos and Charnel palettes were tuned against the grass bench (grass vs grass-off ground,
-in sun and in shadow, agent/flows/rfc022e4b_shade_<god>.json), not taken from this proposal.
+in sun and in shadow), not taken from this proposal.
 
 The proposal is a starting point: tune the written .tres by hand in the inspector against a capture.
 --write only replaces color_mid and color_tip; every other field of an existing palette is kept.

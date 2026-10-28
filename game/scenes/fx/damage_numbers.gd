@@ -89,14 +89,6 @@ func live_count() -> int:
 	return _live.size()
 
 
-## The text of the live numbers (checks read it).
-func live_texts() -> PackedStringArray:
-	var texts := PackedStringArray()
-	for label: Label3D in _live:
-		texts.append(label.text)
-	return texts
-
-
 func _on_node_added(node: Node) -> void:
 	if node is Health:
 		_watch.call_deferred(node)

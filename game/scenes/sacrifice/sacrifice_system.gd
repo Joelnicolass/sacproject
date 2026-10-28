@@ -141,8 +141,3 @@ func cancel_cast(cast: Cast) -> void:
 ## The casting time ended: the carrier doctor drops. Returns what to tell the owner when nothing came out, or "".
 func finish_cast(cast: Cast) -> String:
 	return casts.finish_cast(cast)
-
-
-## The carrier holds its creature at the site: the ritual starts if the site is free. Returns the ritual or null.
-func start_ritual(errand: CarryErrand) -> Ritual:
-	return starter.start(errand)

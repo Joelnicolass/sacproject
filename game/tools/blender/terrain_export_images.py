@@ -12,7 +12,7 @@ It validates everything first and, on any failure, prints each reason, exits 1 a
 Not: deleting anything. void.png is written when there is a void or the map already has one (then all land is black);
 ground_roles.png only when «roles» exists. Each file is written to a temporary name and renamed over the old one.
 
-Run (from game/; BLENDER_BIN is blender in the PATH or your install, see agent/harness/env.sh):
+Run (from game/; BLENDER_BIN is blender in the PATH or your install, e.g. /Applications/Blender.app/Contents/MacOS/Blender):
   "$BLENDER_BIN" --background scenes/map/maps/<tag>/terrain_work/terrain.blend --python tools/blender/terrain_export_images.py -- --out=scenes/map/maps/<tag> [--force]
 """
 

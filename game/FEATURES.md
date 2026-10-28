@@ -77,11 +77,11 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - **Hecho.** Relieve de los modelos (RFC-067): cada textura (`scenes/bodies/materials/*.tres`) lleva un normal map en `assets/surfaces/` (LFS), generado desde su albedo con el addon de editor `addons/surface_maps` (inspector «Relieve desde albedo», Project > Tools > «Generar relieve…», `tools/bake/bake_relief.gd`; recetas `default` y `foliage`); piedra y revelado lo conservan; el PNG es la fuente y se retoca. 821/822 (falta `pct6_M000_cutout`). Prueba: rules_suite `surface_refs_cases` y `surface_maps_cases`, `debug/look/surface_lab.tscn`. F393.
 
 ### Determinismo y pruebas
-- **Hecho.** `MatchClock` por tick, un dueño del azar, plazos en ticks de partida, banco de determinismo (`agent/run_determinism.sh quick|all`) y `rules_suite` sin ventana. F6-F11, F42, F144-F147, F187, F188.
-- Las pruebas de cada dominio van en `debug/<dominio>/`; los flows de playtest en `agent/flows/`.
+- **Hecho.** `MatchClock` por tick, un dueño del azar, plazos en ticks de partida. F6-F11, F42, F144-F147, F187, F188.
+- Sin banco versionado (2026-10-27): `debug/` y `agent/` se borraron; las pruebas se regeneran con AgentKit cuando hacen falta.
 
 ### Catálogo, herramientas y estructura
-- **Hecho.** Catálogo en `.tres` por tipo (`data/catalog/`), sin JSON en runtime, validador de contenido (`debug/suite/catalog_cases.gd`). F173, F198, F224, F225.
+- **Hecho.** Catálogo en `.tres` por tipo (`data/catalog/`), sin JSON en runtime. F173, F198, F224, F225.
 - **Hecho.** Sin caché de instalación: todo es asset del repo (LFS). F167-F175.
 - **Hecho.** Carpetas por dominio con README en cada una. F251.
 - **Hecho.** Plugin «Sacrifice» del editor (Project > Tools: validar, re-hornear navmesh, hornear modelos que faltan), `bake_body_scenes` que no pisa lo editado, guías en `docs/HOWTO.md`. F270-F274.

@@ -3,7 +3,7 @@
 
 Measures two things of a capture of the ground.
 
-  Seams (needs the JSON the "ground" view of agent/harness/match_shots writes next to its PNG: where the 10 m cell borders and
+  Seams (needs a JSON written next to the PNG by the capture harness: where the 10 m cell borders and
   some lines inside the cells fall in the picture, with the screen normal of each):
     python3 -I tools/import/measure_seams.py --png=shot.png [--grid=shot.json] [--max-ratio=1.2]
   For each sample it reads the luminance along the line's normal at -3..+3 px and keeps the range (max - min): a bright line or a

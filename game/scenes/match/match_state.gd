@@ -112,14 +112,6 @@ func has_live_altar(slot: int) -> bool:
 	return false
 
 
-## An altar of that slot in play: the wizard of that side can come back as a ghost.
-func has_standing_altar(slot: int) -> bool:
-	for altar in altars_of(slot):
-		if altar.is_standing():
-			return true
-	return false
-
-
 ## The slots that own an altar and have a wizard seated, in order. A world
 ## where nobody was ever marked (a bench with no WizardSpawner) keeps every owner of an altar, as before 049b.
 ## Ref: sacengine altarSides, state.d:30494-30500, 31493-31514.
@@ -155,10 +147,6 @@ func _seat_wizards() -> void:
 func _on_wizard_entered(node: Node) -> void:
 	if node is WizardBody:
 		mark_seated((node as WizardBody).owner_slot)
-
-
-func is_seated(slot: int) -> bool:
-	return seated_slots.has(slot)
 
 
 func is_defeated(slot: int) -> bool:

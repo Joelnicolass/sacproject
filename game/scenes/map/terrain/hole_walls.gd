@@ -12,7 +12,6 @@ extends MeshInstance3D
 @export_range(0.0, 60.0, 1.0, "suffix:m") var lift_margin_m := 30.0
 
 var _built_version := 0
-var _vertices := 0
 
 
 func _ready() -> void:
@@ -22,11 +21,6 @@ func _ready() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
-
-
-## How many vertices of wall are shown now (0 with no hole).
-func wall_vertices() -> int:
-	return _vertices
 
 
 func _process(_delta: float) -> void:
@@ -39,7 +33,6 @@ func _process(_delta: float) -> void:
 	var built := HoleWallRules.arrays(terrain.index, ground.removed_ids())
 	if built.is_empty():
 		mesh = null
-		_vertices = 0
 		return
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
@@ -51,4 +44,3 @@ func _process(_delta: float) -> void:
 	var walls := ArrayMesh.new()
 	walls.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	mesh = walls
-	_vertices = (built[0] as PackedVector3Array).size()

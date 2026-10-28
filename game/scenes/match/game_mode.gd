@@ -42,13 +42,6 @@ func has_allies() -> bool:
 	return false
 
 
-func team_count() -> int:
-	var seen: Dictionary = {}
-	for team in team_of_seat:
-		seen[team] = true
-	return seen.size()
-
-
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if team_of_seat.is_empty():

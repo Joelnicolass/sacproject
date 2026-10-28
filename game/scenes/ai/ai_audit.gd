@@ -13,7 +13,7 @@ extends Node
 ## in its own _physics_process, so the order of the physics step does not change). Without one in the scene it makes its own.
 @export var recorder: DetRecorder
 
-## F371 (RFC-053): a cast the port started (not a summon), for the criteria of a bench (ExpectJudge). Reading it changes nothing.
+## F371 (RFC-053): a cast the port started (not a summon), for the criteria of a check. Reading it changes nothing.
 signal cast_noted(slot: int, tag: String, target: Node)
 ## Every request of the port the Caster started, summons included (diagnostic, for the bench probes).
 signal request_noted(slot: int, tag: String, target: Node, is_summon: bool)

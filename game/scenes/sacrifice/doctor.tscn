@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="4_bar"]
 [ext_resource type="Script" path="res://scenes/sacrifice/stuck_guard.gd" id="5_guard"]
 [ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="6_machine"]
-[ext_resource type="Script" path="res://addons/fsm_kit/fsm_state.gd" id="7_state"]
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/dropping.gd" id="8_dropping"]
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/grounded.gd" id="9_grounded"]
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/working.gd" id="10_working"]
@@ -137,13 +136,10 @@ own_only_when_selected = false
 script = ExtResource("5_guard")
 body = NodePath("..")
 
-[node name="States" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor")]
+[node name="States" type="Node" parent="." node_paths=PackedStringArray("actor")]
 script = ExtResource("6_machine")
-initial_state = NodePath("Off")
 actor = NodePath("..")
-
-[node name="Off" type="Node" parent="States"]
-script = ExtResource("7_state")
+autostart = false
 
 [node name="Dropping" type="Node" parent="States"]
 script = ExtResource("8_dropping")

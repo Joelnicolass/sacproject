@@ -4,7 +4,7 @@ extends RefCounted
 ## F376 (RFC-053 053g): how far a clip moves the body on the ground. Reads an Animation of a model's .glb AnimationPlayer and
 ## returns the most the root bone, or its first child (the hip), gets away from where it was on the clip's first frame, in
 ## X and Z of the skeleton (Y is up: a breath or a crouch does not count). A rest gesture that slides the root reads as a
-## step on the spot. The probe of debug/units/f376_idle_truth.tscn use it.
+## step on the spot.
 ## Static, no state; it does not need the scene in the tree.
 
 ## Clip sampling rate (the original's clips are 30 fps).

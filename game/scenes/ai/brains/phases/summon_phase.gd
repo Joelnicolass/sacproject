@@ -9,7 +9,7 @@ extends AiPhase
 ## BLOCK2: with threat < 0.6 and a pool of mana (maxMana x Manaliths) > 0, the creature of the book (not
 ## the Manahoar) the wizard can pay in souls with the best score `rateWithBase(creature, field) x (1 - cost/pool)` is
 ## forced. The Manaliths count because the pool is maxMana x Manaliths: with none, the original summons nothing (so a
-## match starts with its Manalith, see debug/ai_summon). The «field» is the quirky mix of acc1 and acc2 (see AiStance).
+## match starts with its Manalith). The «field» is the quirky mix of acc1 and acc2 (see AiStance).
 ## RFC-053 (deviation): in the BLOCK2 test the hostile NPC around the wizard weigh AiTactics.npc_summon_threat_weight (0 in every
 ## difficulty): measured in ai_easy_vs_normal seed 7 with NPC, two Taurocks by the East fount kept the Easy wizard's threat at
 ## 0.64-0.86 for minutes, so he never summoned again while his souls piled up («se queda quieta con muchas almas»). And the pool

@@ -10,7 +10,7 @@ Makes <map>/terrain_work/terrain.blend from a map's images, the Blender half of 
 - terrain_work/manifest.json with the hash of the images it was made from (terrain_export_images.py checks it).
 Not: writing any image (terrain_export_images.py does). It overwrites a terrain.blend of an earlier run.
 
-Run (from game/; BLENDER_BIN is blender in the PATH or your install, see agent/harness/env.sh):
+Run (from game/; BLENDER_BIN is blender in the PATH or your install, e.g. /Applications/Blender.app/Contents/MacOS/Blender):
   "$BLENDER_BIN" --background --python tools/blender/terrain_make_blend.py -- --map=scenes/map/maps/<tag>
   "$BLENDER_BIN" --background --python tools/blender/terrain_make_blend.py -- --map=<dir> --flat=<m>   (a flat ground at <m> metres, no voids; roles kept)
 """

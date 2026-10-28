@@ -3,8 +3,7 @@ extends RefCounted
 
 ## The box blockers of the map (the buildings). «does this straight line go through a building»
 ## is not something a navmesh knows (a path hugs a corner), so the boxes are kept and a line that crosses one (grown by `clearance_m`)
-## is not clear. Without it, a creature at the foot of a tipi was sent straight through the box and pressed on its face for good
-## (debug/map/crowd_tipi.tscn).
+## is not clear. Without it, a creature at the foot of a tipi was sent straight through the box and pressed on its face for good.
 ## Ref: RFC-035 035g; F88 round 2.
 
 ## One entry per box: [center (x, z), half extents (x, z), cos(yaw), sin(yaw), reach], `reach` being the radius that holds the box and the clearance.

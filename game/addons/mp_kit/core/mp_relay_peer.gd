@@ -37,12 +37,16 @@ var _refused_until_ms: int = 0
 var _retry_at_ms: int = 0
 
 
-## `url` like wss://relay.example.com (or ws://127.0.0.1:8080); `room` the room name; `secret` only for the host.
-func start(url: String, room: String, host: bool, secret: String = "", tls: TLSOptions = null) -> Error:
+## `url` like wss://relay.example.com (or ws://127.0.0.1:8080); `room` the room name; `secret` only for the host of a
+## server room; `token` (an issuer room, `p-<code>`): the one-time token for the host or a client.
+func start(url: String, room: String, host: bool, secret: String = "", tls: TLSOptions = null, token: String = "") -> Error:
 	_host = host
 	var query := "?role=%s&room=%s" % ["host" if host else "client", room.uri_encode()]
-	## The secret goes in a header, not the URL (URLs end up in access logs). Only a host sends it, and a host is
-	## never a browser (a browser cannot set headers).
+	## A token expires within a minute and works once, so it may go in the URL: a browser host cannot set headers.
+	if not token.is_empty():
+		query += "&token=" + token.uri_encode()
+	## The secret goes in a header, not the URL (URLs end up in access logs). Only the host of a server room sends it,
+	## and that host is never a browser (a browser cannot set headers): a browser hosts issuer rooms, with a token.
 	_headers = PackedStringArray(["X-Relay-Secret: " + secret]) if host and not secret.is_empty() else PackedStringArray()
 	_url = url.trim_suffix("/") + "/" + query
 	_tls = tls

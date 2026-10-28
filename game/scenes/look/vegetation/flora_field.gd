@@ -52,10 +52,6 @@ var _bound_rig: LookRig
 var _density: FloraDensity
 var _density_dirty := true
 var _density_version := 0
-## Main-thread microseconds of the planters (ring + applying cells) in the last frame, and the worst frame since the
-## planters were made.
-var _last_frame_us := 0
-var _worst_frame_us := 0
 
 
 func _ready() -> void:
@@ -157,8 +153,6 @@ func _refresh() -> void:
 		return
 	_free_planters()
 	_signature = signature
-	_last_frame_us = 0
-	_worst_frame_us = 0
 	for layer in layers:
 		var planter := MeshPlanter.new(layer["config"], layer["quality"], density(), surface, self)
 		# The editor reloads tool scripts under a running task: plan on the main thread there.
@@ -202,12 +196,9 @@ func _process(delta: float) -> void:
 	_clears.update(delta, _planters, get_tree())
 	_ground.live_every_s = live_replan_s
 	_ground.update(delta, replan_every_s, _planters, get_tree())
-	var started := Time.get_ticks_usec()
-	var deadline := started + int(build_budget_ms * 1000.0)
+	var deadline := Time.get_ticks_usec() + int(build_budget_ms * 1000.0)
 	for planter in _planters:
 		planter.update(camera.global_position, deadline)
-	_last_frame_us = Time.get_ticks_usec() - started
-	_worst_frame_us = maxi(_worst_frame_us, _last_frame_us)
 
 
 func _free_planters() -> void:
@@ -251,11 +242,6 @@ func node_count() -> int:
 
 func pending_count() -> int:
 	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.pending_count(), 0)
-
-
-## Main-thread time of the planters (microseconds, every layer): x the last frame, y the worst since they were made.
-func build_us() -> Vector2i:
-	return Vector2i(_last_frame_us, _worst_frame_us)
 
 
 ## The FloraLayer nodes of this field's map as a snapshot: the layers under the same MapRoot (or, without one, in the

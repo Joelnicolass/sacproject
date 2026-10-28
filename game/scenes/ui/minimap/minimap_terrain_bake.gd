@@ -60,10 +60,6 @@ func _ready() -> void:
 	_bake_when_ready.call_deferred()
 
 
-func is_baked() -> bool:
-	return _is_baked
-
-
 ## Texture coordinate (0…1) of a world point.
 func world_to_uv(point: Vector3) -> Vector2:
 	if side_m <= 0.0:

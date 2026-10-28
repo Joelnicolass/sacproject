@@ -15,7 +15,7 @@ Comment lines start with `#`. Directives (one per line, space separated):
 
 Rules: no file is renamed (only the directory changes); a folder row must not contain file rows. A row is "applied"
 when its old path is gone and its new path exists, so the script is idempotent. History folders (rfcs/, reviews/,
-changes/, agent/out/) and addons/ are never rewritten. See rfcs/RFC-048-folder-structure.md.
+changes/) and addons/ are never rewritten. See rfcs/RFC-048-folder-structure.md.
 """
 import argparse
 import difflib
@@ -29,7 +29,7 @@ GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO = os.path.dirname(GAME)
 TEXT_EXT = ('.gd', '.tscn', '.tres', '.gdshader', '.gdshaderinc', '.godot', '.cfg', '.json', '.txt', '.sh', '.py',
             '.md', '.service', '.import')
-SKIP_PREFIX = ('docs/AUDIT-editor-first.md', '.studio/', 'rfcs/', 'reviews/', 'changes/', 'agent/out/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
+SKIP_PREFIX = ('docs/AUDIT-editor-first.md', '.studio/', 'rfcs/', 'reviews/', 'changes/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
 EXTRA_FILES = ('../README.md', '../.gitattributes', '../.gitignore')
 MAX_BYTES = 20 * 1024 * 1024
 DANGLING_BASELINE = os.path.join(GAME, 'tools', 'move_map', 'dangling_baseline.txt')
@@ -382,7 +382,7 @@ def cmd_check(args, rows, dirs):
         fails = [f for f in fails if not f.startswith('dangling ')]
     # 3) every .gd in product/dev folders has its .uid
     for p in tset:
-        if p.endswith('.gd') and p.startswith(('scenes/', 'debug/', 'tools/', 'agent/')) and p + '.uid' not in tset:
+        if p.endswith('.gd') and p.startswith(('scenes/', 'tools/')) and p + '.uid' not in tset:
             if os.path.exists(os.path.join(GAME, p + '.uid')) is False:
                 fails.append(f'missing uid for {p}')
     # 4) autoloads and main scene
@@ -410,7 +410,7 @@ def lint(rows, dirs, tset, done, texts):
     for p, t in texts.items():
         if not p.startswith(('scenes/', 'data/')):
             continue
-        for m in re.finditer(r'res://(debug|agent|tools)/[^\s"\'<>]*', t):
+        for m in re.finditer(r'res://(agent|tools)/[^\s"\'<>]*', t):
             ls = t.rfind('\n', 0, m.start()) + 1
             le = t.find('\n', m.start())
             line = t[ls:le if le >= 0 else len(t)]

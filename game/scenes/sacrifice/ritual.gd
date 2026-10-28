@@ -87,7 +87,7 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if phases == null:
-		warnings.append("Asigná en `phases` la FsmMachine con Off, Setup, Walk, Shoot, Wait y Ended.")
+		warnings.append("Asigná en `phases` la FsmMachine con Setup, Walk, Shoot, Wait y Ended (autostart apagado: begin() la arranca).")
 	if types.is_empty():
 		warnings.append("Asigná en `types` un RitualType por clase (data/sacrifice/desecrate_ritual.tres, convert_ritual.tres).")
 	if rules == null:
@@ -122,7 +122,7 @@ func begin(unit: UnitBody, ritual_site: RitualSite, ring_doctors: Array[DoctorBo
 	if drain != null:
 		drain.mark_target(true)
 	if DebugLog.on(&"ritual"): print("ritual %s: empieza sobre el altar del slot %d (lanza el slot %d, %d almas)" % [Kind.keys()[kind].to_lower(), target_slot, caster_slot, souls])
-	phases.transition(&"Setup")
+	phases.start()  ## autostart is off: the phases begin here, in their initial_state (Setup)
 
 
 func is_running() -> bool:

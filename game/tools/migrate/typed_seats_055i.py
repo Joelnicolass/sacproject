@@ -14,7 +14,7 @@ Rules:
   - the god is found by its `tag` field in data/gods/*.tres and keeps its `uid` in the reference;
   - `god = &""` (drawn when the match starts) is deleted: an empty reference means "drawn";
   - a seat that never wrote `wizard` or `god` used the old script defaults ("cwa0", &"james"): they are written out now;
-  - the files are data/match_rules.tres, data/ai/seat_vs_ai.tres and every debug/**/*.tres that names ai_seat.gd.
+  - the files are data/match_rules.tres and data/ai/seat_vs_ai.tres.
 It is idempotent (a seat that already holds an ExtResource is left alone). Delete it in 055z with the other one-shot tools.
 """
 import argparse
@@ -46,10 +46,6 @@ def scan_tags(folder):
 
 def candidate_files():
     out = [os.path.join(GAME, 'data', 'match_rules.tres'), os.path.join(GAME, 'data', 'ai', 'seat_vs_ai.tres')]
-    for root, _dirs, files in os.walk(os.path.join(GAME, 'debug')):
-        for name in files:
-            if name.endswith('.tres'):
-                out.append(os.path.join(root, name))
     return [path for path in sorted(set(out)) if os.path.exists(path)]
 
 

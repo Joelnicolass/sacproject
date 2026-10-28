@@ -5,9 +5,11 @@ extends MpFlow
 
 signal slot_picks_changed
 
-## The room screens (the menu's «Salas online», and where a match from a room comes back to) and the «Servidor local» screen.
+## The room-server screens (where a match from a room comes back to), the «Servidor local» screen and the menu's «Salas online»
+## (rooms the players host through the issuer).
 const LOBBY_SCENE := "res://scenes/ui/lobby/lobby_screen.tscn"
 const LOCAL_SERVER_SCENE := "res://scenes/ui/local_server/local_server_screen.tscn"
+const ONLINE_SCENE := "res://scenes/ui/online/online_screen.tscn"
 
 ## The pick the menu starts with (Jadugarr, James). Change it in the inspector of `sacrifice_flow.tscn`.
 @export var default_pick: WizardPick
@@ -39,12 +41,13 @@ var _cli_setup := MatchSetup.new()
 func _ready() -> void:
 	pick = default_pick.duplicate() as WizardPick
 	boot_path = "res://scenes/core/boot.tscn"
-	## `--world=res://debug/….tscn` on the dedicated and its clients plays a debug scene online.
+	## `--world=res://<scene>.tscn` on the dedicated and its clients plays another world scene online.
 	world_path = MpBoot.user_value("world", "res://scenes/match/match.tscn")
 	joining_status = tr("UI_FLOW_JOINING")
 	join_fail_status = tr("UI_FLOW_JOIN_FAIL")
 	bad_ip_status = tr("UI_FLOW_BAD_IP")
 	server_lost_status = tr("UI_FLOW_SERVER_LOST")
+	_translate_online_texts()
 	advertise_lan = false
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT
 	## Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1 and the AI keeps slot 2.
@@ -164,6 +167,23 @@ func join_from_lobby(host: String, p_port: int, token: String) -> Error:
 	return err
 
 
+## Opens an online room this player hosts with the Sacrifice ticket (OnlineTicket: map, mode, options, the host's pick, the other
+## seats open). null when the rules refuse `options` or there is no issuer (the status says why).
+func host_online_room(options: Dictionary, room: String, listed: bool) -> MpOnline:
+	var ticket := OnlineTicket.build(pick, options)
+	if ticket.is_empty():
+		_set_status(tr("UI_ONLINE_BAD_OPTIONS"))
+		return null
+	_forget_local_match()
+	return host_online(OnlineTicket.players_of(ticket), room, listed, ticket)
+
+
+## Joins an online room by its code: nothing of a local match stays (picks, AI seats, the room mark).
+func join_online(code: String) -> Error:
+	_forget_local_match()
+	return await super.join_online(code)
+
+
 ## Joins a «Servidor local» (the host's own dedicated; the code is the seat's credential). It is not a room: out goes to the menu.
 func join_local_server(host: String, p_port: int, code: String) -> Error:
 	_forget_local_match()
@@ -196,6 +216,19 @@ func _go_boot() -> void:
 		get_tree().change_scene_to_file(LOBBY_SCENE)
 		return
 	super._go_boot()
+
+
+## The online texts of the kit (`online_texts` and the statuses of the «Online (issuer)» group in sacrifice_flow.tscn) are keys of
+## data/i18n/strings.csv: translated once, like the other statuses.
+func _translate_online_texts() -> void:
+	online_working_status = tr(online_working_status)
+	online_ready_status = tr(online_ready_status)
+	online_error_status = tr(online_error_status)
+	host_silent_status = tr(host_silent_status)
+	var texts := {}
+	for word in online_texts.keys():
+		texts[word] = tr(str(online_texts[word]))
+	online_texts = texts
 
 
 ## The dedicated of a room-server match takes its picks, options and seed from the ticket. False = unplayable ticket (it quits).

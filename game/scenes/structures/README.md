@@ -4,7 +4,6 @@ What: the building types of the map. `BuildingType` (data/buildings/<name>.tres)
 Not: health at play time (MapBuilding, scenes/map/map_building.gd); what happens when one falls (breaking/: StructureBreak, BuildingRuin). The towers a wizard casts (Manalith, Shrine) live in towers/.
 Talks to: maps instance the building scenes; ManafountBody takes its mesh from `BuildingType.base_mesh()`; code that spawns by type (debug, tools) uses `BuildingType.scene()`; GameCatalog and TypeRef find a type by `tag`.
 Edit: open the building scene, drop another `scenes/props/meshes/<tag>.res` on a part's `Mesh`, move the parts with the gizmo, drag the handles of `Collision` or press «Ajustar a las partes» on the root; on a tree, drag the radius of `Trunk` to the trunk (then «Hornear navmesh» on the maps that use it). A new building: duplicate a .tres and its scene. In a map, «Hijos editables» shows the parts of one instance.
-Check: debug/map/building_gallery.tscn (F6): the 82 types the maps use, with their name and role · debug/structures/structure_break.tscn (F6, K) · rules_suite tower_cases, tree_block_cases, structure_break_cases.
 
 ---
-Estructuras: tipos, torres, spawner e inspector. Las pruebas de este dominio van en `debug/suite/`.
+Estructuras: tipos, torres, spawner e inspector.

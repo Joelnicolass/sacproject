@@ -162,6 +162,10 @@ Si tu servidor no tiene IP pública (tu PC detrás del router) o querés un domi
 
 `MpBootMenu.offer_private_server` muestra *Private server*: arranca un dedicado en tu PC (`MpLocalServer`, mismo código que el VPS, sin servidor de salas), te une solo y el HUD de la partida (un `MpInviteLabel`, ya incluido en el `MpWorld`) muestra `ip:puerto#CÓDIGO`. Tus amigos escriben eso en el campo de dirección; sin el código no entran. Un segundo clic devuelve la partida que ya corre. Por código: `MpLocalServer.start_on(get_tree(), asientos)` y la señal `server_ready(address, port, codes)`.
 
+### Salas online que hospedan tus jugadores (sin servidor tuyo)
+
+Con el relay y el emisor (`issuer/`, un servidor Node + Express chico; los dos entran en las máquinas más chicas de Fly), el juego de un jugador hospeda cada partida: `flow.host_online(4, "Viernes a la noche")` abre una sala y su `room_ready(code)` da el código; los amigos llaman a `flow.join_online(code)` o eligen una de `flow.online_rooms()`. En `game.tres`: `issuer_url` y `game_id`. Un escritorio hospeda con un proceso de partida de su PC; un navegador hospeda en su propia pestaña y sigue simulando con la pestaña oculta. Ningún cliente lleva el secreto del relay: el emisor le da a cada host y jugador un token de un solo uso. Pasos: GUIDE 10.3, [issuer/README.md](issuer/README.md).
+
 ### Web
 
 Un navegador no puede abrir un servidor ni usar UDP, así que un juego web se une a un dedicado WebSocket (`transport = ws` en `game.tres`) o por el relay (`transport = relay`). Escritorio y web no se mezclan: un servidor WebSocket atiende clientes WebSocket. En el campo de dirección del menú sirven `192.168.1.5`, `juego.ejemplo.com`, cualquiera con `:puerto`, o una URL `wss://…`. Una página servida por `https` necesita `wss://`: el servidor lleva certificado y clave (en su `game.tres`, o en el `MpLobbyConfig` para las salas, o con `deploy.sh --tls-cert … --tls-key …`) y el cliente prende `tls_client` en `game.tres`. Un navegador pausa una pestaña oculta: el jugador web que cambia de pestaña se frena para los demás hasta que vuelve, y si tarda más que `rejoin_grace_s` cuenta como abandono.

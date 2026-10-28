@@ -18,7 +18,7 @@ import { CLOSE, HOST_ID, MSG, idMessage, isData, readHostMessage, stampSender } 
  * @typedef {{ onMessage: (msg: Buffer) => void, onClose: () => void }} Link
  */
 
-/** @typedef {{ name: string, host: Peer, clients: Map<number, Peer>, nextId: number }} Room */
+/** @typedef {{ name: string, host: Peer, clients: Map<number, Peer>, nextId: number, maxClients: number }} Room */
 
 export class Rooms {
   /** @type {Map<string, Room>} */
@@ -34,19 +34,21 @@ export class Rooms {
 
   /**
    * Makes `peer` the host of room `name`. A room with a live host is taken, like a port in use: a second host is
-   * closed (4009) and gets null.
+   * closed (4009) and gets null. `maxClients` (a host token's `max`) lowers RELAY_MAX_CLIENTS for this room.
    * @param {string} name
    * @param {Peer} peer
+   * @param {number} [maxClients]
    * @returns {Link | null}
    */
-  addHost(name, peer) {
+  addHost(name, peer, maxClients) {
     if (this.#rooms.has(name)) {
       this.#log(`host refused: ${name} is in use`);
       peer.close(CLOSE.ROOM_IN_USE, "room in use");
       return null;
     }
     /** @type {Room} */
-    const room = { name, host: peer, clients: new Map(), nextId: HOST_ID + 1 };
+    const cap = maxClients === undefined ? this.#maxClients : Math.min(maxClients, this.#maxClients);
+    const room = { name, host: peer, clients: new Map(), nextId: HOST_ID + 1, maxClients: cap };
     this.#rooms.set(name, room);
     peer.send(idMessage(MSG.WELCOME, HOST_ID));
     this.#log(`host ${name}`);
@@ -67,7 +69,7 @@ export class Rooms {
       peer.close(CLOSE.NO_HOST, "no host for this room");
       return null;
     }
-    if (room.clients.size >= this.#maxClients) {
+    if (room.clients.size >= room.maxClients) {
       peer.close(CLOSE.ROOM_FULL, "room full");
       return null;
     }

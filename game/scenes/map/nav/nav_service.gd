@@ -190,7 +190,7 @@ func _build_navmesh() -> bool:
 	rebake = NavRebake.new(settings)
 	rebake.set_stored(nav_region.navigation_mesh)
 	mesh.build(nav_region, entries, box_clearance_m)
-	print("nav: navmesh %d polígonos, %d regiones, %.0f ms" % [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms])
+	if DebugLog.on(&"nav"): print("nav: navmesh %d polígonos, %d regiones, %.0f ms" % [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms])
 	_request_rebake()
 	built.emit(mesh.build_ms)
 	return true
@@ -231,7 +231,7 @@ func _swap_rebaked() -> void:
 	if baked != null:
 		rebake.retire(mesh.swap(baked, rebake.regions))
 		rebakes += 1
-		print("nav: re-bake %d polígonos, %d regiones, %d/%d zonas (parse %.1f ms, bake %.0f ms en el worker, swap %.2f ms%s)" % [mesh.polygon_count, mesh.regions.component_count, rebake.zones_baked, rebake.zones_total, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms, (", swap %d ticks tarde" % late) if late > 0 else ""])
+		if DebugLog.on(&"nav"): print("nav: re-bake %d polígonos, %d regiones, %d/%d zonas (parse %.1f ms, bake %.0f ms en el worker, swap %.2f ms%s)" % [mesh.polygon_count, mesh.regions.component_count, rebake.zones_baked, rebake.zones_total, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms, (", swap %d ticks tarde" % late) if late > 0 else ""])
 	else:
 		push_warning("nav: the re-bake came out empty, the old navmesh stays")
 	if _dirty:

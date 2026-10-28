@@ -4,6 +4,5 @@
 
 [resource]
 script = ExtResource("1_cfg")
-transport = "relay"
-relay_url = "wss://relay-godot.fly.dev"
-relay_room = "sacrifice"
+issuer_url = "https://issuer-godot.fly.dev"
+game_id = "sacrifice"

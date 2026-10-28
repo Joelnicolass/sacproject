@@ -49,9 +49,6 @@ enum Work { PUMP, LIFT, TORTURE }
 @export var errand: CarryErrand
 
 var speed_factor := 1.0
-var landing := Vector3.ZERO
-## The errand is in a step that walks: a body that does not move then is stuck (StuckGuard).
-var errand_walks := false
 var move_speed: float:
 	get:
 		return type.run_speed_m_s if type else 0.0
@@ -81,13 +78,13 @@ func _ready() -> void:
 func stand() -> void:
 	motor.halt()
 	velocity = Vector3.ZERO
-	states.transition(&"Grounded")
+	_go(&"Grounded")
 
 
+## Falls out of the vortex to `point` (the payload of Dropping).
 func drop_to(point: Vector3) -> void:
-	landing = point
 	motor.halt()
-	states.transition(&"Dropping")
+	_go(&"Dropping", point)
 
 
 ## Walks to `point` with collision; `begin_walk` is one straight leg (what the PathFollower hands out).
@@ -109,7 +106,7 @@ func begin_work(kind: Work) -> void:
 	if is_targetable():
 		work = kind
 		motor.halt()
-		states.transition(&"Working")
+		_go(&"Working")
 
 
 func end_work() -> void:
@@ -174,7 +171,15 @@ func announce_death() -> void: died.emit(_killer_slot)
 func _die(from_slot: int) -> void:
 	_killer_slot = from_slot
 	motor.halt()
-	states.transition(&"Dying")
+	_go(&"Dying")
+
+
+## The one way into `states` (autostart is off, so a client never runs it): the first call starts it in `state_name`, the rest transition.
+func _go(state_name: StringName, payload: Variant = null) -> void:
+	if states.is_started():
+		states.transition(state_name, payload)
+	else:
+		states.start(states.get_node(NodePath(String(state_name))) as FsmState, payload)
 
 
 ## A dying doctor is not a body any more; the rest is told to whoever draws it. Not in the editor.

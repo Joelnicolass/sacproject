@@ -9,7 +9,6 @@ extends Node
 ## object from them. Presentation only: a dedicated or headless process frees the whole rig. Runs in the editor too.
 
 signal profile_applied(profile: LookProfile)
-signal layer_toggled(index: int, enabled: bool)
 ## The player's «Vegetación» switch changed; the vegetation layers listen.
 signal vegetation_toggled(enabled: bool)
 
@@ -103,25 +102,6 @@ func layer_nodes() -> Array[Node]:
 	if layers:
 		found.assign(layers.get_children())
 	return found
-
-
-func set_layer_enabled(index: int, enabled: bool) -> void:
-	var nodes := layer_nodes()
-	if index < 0 or index >= nodes.size():
-		return
-	nodes[index].set("visible", enabled)
-	layer_toggled.emit(index, enabled)
-
-
-## Bit i is set while layer i is on (layers that cannot hide count as on).
-func layer_mask() -> int:
-	var mask := 0
-	var nodes := layer_nodes()
-	for i in nodes.size():
-		var shown: Variant = nodes[i].get("visible")
-		if shown == null or bool(shown):
-			mask |= 1 << i
-	return mask
 
 
 ## True in a headless or dedicated process, where nothing of the look is drawn (the rig, and every actor light, frees itself).

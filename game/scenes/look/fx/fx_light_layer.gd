@@ -104,14 +104,6 @@ func fading_count() -> int:
 	return _fading.size()
 
 
-## Specs of the lights on now, in request order (for the labs of debug/).
-func lit_specs() -> Array[FxLightSpec]:
-	var out: Array[FxLightSpec] = []
-	for slot in _slots:
-		out.append(slot.spec)
-	return out
-
-
 func max_lights() -> int:
 	return maxi(_max_lights, 0)
 

@@ -86,10 +86,6 @@ func origin() -> Vector3:
 	return at
 
 
-func hit_bodies() -> Array[Node3D]:
-	return _hit
-
-
 func hit_count() -> int:
 	return _count
 

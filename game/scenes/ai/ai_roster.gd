@@ -15,7 +15,7 @@ signal seated(slot: int, side: AiSide)
 @export var wizard_spawner: MpSlotSpawner
 ## The scene of an AI side; a seat with its own side_scene uses that one.
 @export var side_scene: PackedScene
-## The bench (debug/ai_match) turns it off: it seats its own sides, with its audit and its pause.
+## Off: the match takes no AI seat (a check scene that seats its own sides).
 @export var enabled := true
 ## Seconds between the spawn of the wizards and the start of their sides: the wizard settles on the ground first.
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var settle_s := 0.3333

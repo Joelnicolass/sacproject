@@ -8,4 +8,3 @@
 
 **Sonidos propios.** «Nueva criatura desde modelo…» crea el `SoundSet` de la criatura (`data/audio/creatures/<nombre>.tres`, sobre `melee/fist.tres`) y lo asigna a su `sounds`; con `assets/custom/sounds/creatures/<nombre>/<evento>[_n].{ogg,wav}` lo llena (ver `data/audio/README.md`). Los archivos del audio del original viven en el repo (LFS), como los modelos: un clon sin ellos no corre mudo.
 
-**Check.** `bash agent/runs/run_audio_cases.sh` (casos en cada modo del gate, más el lab `debug/audio/f360_audio_lab.tscn` con cada `lab_<corte>.tres`), `bash agent/runs/run_audio_net.sh` (los mismos sonidos en un cliente de un dedicado) y `bash tools/lint/conventions.sh`. Buses: `default_bus_layout.tres` (Master > Music, SFX, Voice, Ambience); Opciones → Sonido: `scenes/ui/options/audio_tab.tscn`.

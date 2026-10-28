@@ -80,14 +80,6 @@ In the menu: **Cambiar personaje** (Change character) to pick a wizard and a god
 | Show or hide the minimap | `M` |
 | Pause | `Esc` |
 
-### Watch an AI vs AI match
-
-```bash
-godot --path game res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=10 --npcs --follow=1 --autostart
-```
-
-`--follow=2` follows the other wizard, and another `--seed` gives a different match.
-
 ### Dedicated server (VPS)
 
 The guide for the Linux export, ports, firewall and systemd is in [`game/tools/deploy/README.md`](game/tools/deploy/README.md). To try it locally, the room server starts with:
@@ -98,7 +90,7 @@ godot --headless --path game -- --room-server
 
 ## Useful commands
 
-Run them **from `game/`** (`cd game` after cloning). `godot` stands for your Godot 4.7.2 binary: put it in the `PATH`, or replace it with the full path (on macOS, `/Applications/Godot.app/Contents/MacOS/Godot`). The `agent/` and `tools/` scripts take it from `GODOT_BIN` (see [Configure paths](#configure-paths)). Run one Godot at a time: the scripts queue themselves through `agent/harness/godot_run.sh`.
+Run them **from `game/`** (`cd game` after cloning). `godot` stands for your Godot 4.7.2 binary: put it in the `PATH`, or replace it with the full path (on macOS, `/Applications/Godot.app/Contents/MacOS/Godot`). The `tools/` scripts take it from `GODOT_BIN` (see [Configure paths](#configure-paths)). Run one Godot at a time.
 
 **Git LFS**
 
@@ -115,61 +107,6 @@ godot --path . --import    # first import (or after pulling new assets); takes a
 godot --path .             # play the game
 godot --path . --editor    # open the project in the editor
 ```
-
-**Watch the AI**
-
-```bash
-# AI vs AI with a window: Easy vs Normal on High Noon, villagers on the field, the camera follows wizard 1, no initial pause
-godot --path . res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_easy_vs_normal.tres --seed=7 --minutes=10 --npcs --follow=1 --autostart
-
-# 2 vs 2 of Normal AIs on the 4-seat test map (seats 1+2 against 3+4)
-godot --path . res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_2v2_flat4.tres --map=test_flat4 --mode=2v2 --seed=7 --minutes=10 --follow=1 --autostart
-
-# The same match without a window: prints AI_REPORT <json> and writes the report
-godot --headless --fixed-fps 60 --path . res://debug/ai/ai_match.tscn -- --rules=res://debug/rules/ai_duel_seeded.tres --seed=7 --minutes=2 --out=agent/out/ai/duel_s7.json
-```
-
-Other `ai_match` options after `--`: `--difficulties=easy,normal` (per AI seat), `--souls=N` (starting souls), `--follow=2` (the other wizard), `--quit` (quit at the end with a window). The rules files are in `debug/rules/ai_*.tres`.
-
-**Performance**
-
-```bash
-# Flora bench (needs a window: headless has no GPU time): the high preset over the densest flora of Peaks, Flora layer off and on
-godot --path . res://debug/look/look_bench.tscn -- --map=peaks --flora
-godot --path . res://debug/look/look_bench.tscn -- --map=roads --flora
-```
-
-**Fast checks** (headless, a few seconds each)
-
-```bash
-# Rules suite
-godot --headless --fixed-fps 600 --path . res://debug/suite/rules_suite.tscn
-
-# Catalog validator: CATALOG PASS or CATALOG FAIL with the failing file
-godot --headless --path . --script res://debug/suite/catalog_cases.gd
-
-# Everyday network check (room server, 2 clients, dedicated, result back to the room): NET QUICK PASS / FAIL
-GODOT_BIN=godot bash agent/runs/run_net_quick.sh
-TRANSPORT=ws GODOT_BIN=godot bash agent/runs/run_net_quick.sh   # the same over WebSocket
-NET_TS=1 bash agent/runs/run_net_quick.sh                       # each log line prefixed with the seconds since start
-
-# Audio cases in every gate mode: AUDIO RUN PASS / FAIL (the Godot binary is an optional argument)
-bash agent/runs/run_audio_cases.sh godot
-
-# The headless cases of one RFC-053 cut (053a … 053i): RFC053 <cut> PASS / FAIL
-bash agent/runs/run_rfc053.sh 053a
-```
-
-Which network suite to run when closing a network RFC: [`game/agent/runs/README.md`](game/agent/runs/README.md).
-
-**Determinism bench**
-
-```bash
-bash agent/run_determinism.sh quick --no-window   # the quick cases against agent/det_baseline.txt
-bash agent/run_determinism.sh table               # verdict and table from agent/out/det/
-```
-
-`quick` is a **smoke test**: it says whether a change altered the simulation's fingerprint, not whether the game plays well. After a deliberate balance change the fingerprint changes on purpose; re-record the baseline only then (`agent/README.md`).
 
 **Bakers** (they do not need the original; without `--force` they never overwrite hand edits)
 
@@ -219,10 +156,7 @@ The port was built in stages. Each large change has its RFC in [`game/rfcs/`](ga
    - the orchestrator runs the tests;
    - a playtester plays with a window and takes screenshots.
 
-   The automated tests are of three kinds:
-   - **AgentKit flows**, which click and take screenshots;
-   - **windowless cases**, in `debug/rules_suite`;
-   - a **determinism bench**: seeded AI vs AI matches whose fingerprint (a hash of the positions) warns when a change altered the game by accident.
+   The checks are throwaway: an **AgentKit flow** (clicks and screenshots) or harness is regenerated under `game/agent/` when a change needs it, and is not versioned.
 
    The kit of skills and agents is [godot-studio-skills](https://github.com/Joelnicolass/godot-studio-skills).
 
@@ -234,24 +168,10 @@ game/
   assets/original/  assets extracted from the original (LFS)
   data/          catalog, quality presets, rules, navmesh, UI (.tres)
   scenes/        the game: world/, ui/, net/, fx/
-  debug/         test scenes and cases
-  agent/         AgentKit flows and the determinism bench
   rfcs/          the design of each stage
   tools/         WAD importers and baking tools
 docs/screenshots/
 ```
-
-### Running the tests
-
-```bash
-cd game && bash agent/run_determinism.sh quick
-```
-
-```bash
-godot --headless --fixed-fps 60 --path game res://debug/suite/rules_suite.tscn
-```
-
-More in [Useful commands](#useful-commands).
 
 ## Tools that need the original game
 
@@ -260,10 +180,10 @@ Paths are relative to `game/`.
 | Tool | Needs the original? | What it produces |
 |---|---|---|
 | Play (F5), `godot --path game`, the room server | **No** | Nothing: the assets are already in `game/assets/original/` (LFS) |
-| Tests: `agent/run_determinism.sh`, `rules_suite`, `agent/runs/*.sh`, AgentKit flows | **No** | PASS/FAIL, screenshots in `agent/out/` |
+| Throwaway AgentKit flows and captures | **No** | PASS/FAIL and screenshots, not versioned |
 | `tools/import/export_stats.py` | **Yes** | `assets/original/data/*.json` (creature, spell, wizard, building stats) |
 | `tools/import/export_skeletal.py` | **Yes** | `assets/original/models/*.glb` + `index.json` (skeleton and animations) |
-| `tools/import/export_skeletal_reference.py` | **Yes** | Reference OBJ in `agent/out/skeletal_ref/` (not versioned) |
+| `tools/import/export_skeletal_reference.py` | **Yes** | Reference OBJ in the system temp folder (`--out` to change it) |
 | `tools/import/import_textures.py` | **Yes** | `assets/original/textures/*.png` |
 | `tools/import/import_props.py` | **Yes** | `assets/original/props/*.glb` (buildings and plants) |
 | `tools/import/import_themes.py` | **Yes** | `assets/original/themes/<god>/` (ground, sky, light) |
@@ -294,7 +214,7 @@ export SAC_INSTALL="/path/to/Sacrifice/data"
 cd game && python3 tools/import/import_map.py --list
 ```
 
-**Godot and Blender** (the scripts in `game/agent/` and `game/tools/`). All of them read `agent/harness/env.sh`, which computes the project root from its own location and picks:
+**Godot and Blender** (the scripts in `game/tools/`). They pick:
 
 - `GODOT_BIN`: the environment variable if set; otherwise `godot` from the `PATH`; otherwise the macOS one (`/Applications/Godot.app/Contents/MacOS/Godot`).
 - `BLENDER_BIN`: the environment variable if set; otherwise `blender` from the `PATH`; otherwise the macOS one (`/Applications/Blender.app/Contents/MacOS/Blender`).

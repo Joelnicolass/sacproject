@@ -71,11 +71,6 @@ func height_at(x: float, z: float) -> float:
 	return TerrainRules.height_in(x, z, index.ground, index.cells, _field.texels, index.corners)
 
 
-## Unit normal (pointing up) of the land under (x, z); straight up over a hole or off the land.
-func normal_at(x: float, z: float) -> Vector3:
-	return TerrainRules.normal_in(x, z, index.ground, index.cells, _field.texels, index.corners)
-
-
 ## True when a land triangle lies under (x, z). Holes and the map rim have none.
 func is_on_ground(x: float, z: float) -> bool:
 	return TerrainRules.triangle_in(x, z, index.ground, index.cells, _field.texels, index.corners) >= 0

@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/PCF1.res" id="mesh_pcf1"]
-
-[node name="Plant" type="MeshInstance3D"]
-cast_shadow = 0
-mesh = ExtResource("mesh_pcf1")

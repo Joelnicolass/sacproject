@@ -8,7 +8,9 @@ jugador PC  ─┼── wss://tu-relay.up.railway.app ──── servidor God
 jugador PC  ─┘          (sala juego-7777)              se conecta como host de la sala
 ```
 
-Node 18+ y una dependencia, [`ws`](https://github.com/websockets/ws) (la librería de WebSocket habitual en Node): corré `npm install` una vez en esta carpeta. El código es corto y está separado por tarea:
+Dos clases de sala: la de un **servidor** (`<juego>-<puerto>`: un dedicado, un servidor de salas, una partida; hospedar pide `RELAY_HOST_SECRET`) y la de un **jugador** (`p-<código>`: una sala que hospeda un jugador por el [emisor de MpKit](../issuer/README.md); hospedar y entrar piden cada uno un token del emisor, sección 3b).
+
+Node 18+ y dos dependencias, [`ws`](https://github.com/websockets/ws) (la librería de WebSocket habitual en Node) y [`jose`](https://github.com/panva/jose) (chequea los tokens del emisor): corré `npm install` una vez en esta carpeta. El código es corto y está separado por tarea:
 
 | Archivo | Qué hace |
 |---|---|
@@ -17,6 +19,7 @@ Node 18+ y una dependencia, [`ws`](https://github.com/websockets/ws) (la librer�
 | `lib/protocol.mjs` | Los mensajes binarios y los códigos de cierre (sección 4) |
 | `lib/rooms.mjs` | Las reglas: quién hostea una sala, quién entra, a dónde va cada mensaje, hosts mudos |
 | `lib/relay.mjs` | HTTP, `/health`, el secreto del host, cada WebSocket entregado a las reglas |
+| `lib/tokens.mjs` | Los tokens del emisor para salas de jugadores: firma, sala, rol, vencimiento, un solo uso |
 | `test/` | `npm test`: las reglas con peers falsos, y el relay de punta a punta |
 
 ## 1. Subirlo a Railway
@@ -71,6 +74,15 @@ Flags equivalentes: `--transport=relay --relay-url=wss://… --relay-room=mi-jue
 - Topes por entorno: `RELAY_MAX_CLIENTS` por sala (64), `RELAY_MAX_MESSAGE` en bytes (262144).
 - No guarda nada, no ve el juego, no mezcla salas. Latencia: la del relay en el medio (elegí una región cerca de tus jugadores).
 
+## 3b. Salas de jugadores (los tokens del emisor)
+
+Las salas `p-<código>` son de jugadores: el [emisor de MpKit](../issuer/README.md) reparte sus códigos y firma tokens cortos con su clave privada Ed25519; el relay solo tiene la clave **pública**, así que puede chequear tokens pero nunca fabricarlos.
+
+- `RELAY_TOKEN_KEYS`: la o las claves públicas como las imprime `keys.mjs`, `{"keys":[…]}`. Sin ella se rechaza toda sala `p-`; una clave privada ahí frena el relay antes de arrancar.
+- Hospedar y entrar a una sala `p-` piden cada uno un token para esa sala y ese rol (`?token=…` o el header `X-Relay-Token`; un host en un navegador no puede poner headers, y el token muere en un minuto). El secreto no abre una sala `p-`, y un token no abre una sala de servidor.
+- Un token sirve para una conexión: se gasta cuando el peer queda sentado (un host rechazado con `4009` lo conserva para reintentar). El `max` de un token de host limita los clientes de esa sala.
+- Los rechazos quedan en el log con el motivo (sin token, vencido, de otra sala, ya usado…), nunca el token.
+
 ## 4. Protocolo (por si querés otro relay)
 
 Mensajes binarios, little-endian:
@@ -80,7 +92,7 @@ Mensajes binarios, little-endian:
 | relay → peer | `0x01 WELCOME u32 tu_id` · `0x02 JOIN u32 id` (al host) · `0x03 LEAVE u32 id` (al host) · `0x04 DATA u32 from u8 canal u8 modo bytes…` |
 | peer → relay | `0x04 DATA i32 to u8 canal u8 modo bytes…` (host: un id, `0` = todos, `-id` = todos menos id; cliente: siempre al host) · `0x05 KICK u32 id [motivo]` (solo el host; el relay cierra a ese cliente con `4007` y el motivo, así sabe por qué lo rechazaron) |
 
-Conexión: `wss://relay/?role=host&room=SALA` con el header `X-Relay-Secret: CLAVE` (también se acepta `&secret=CLAVE`), o `?role=client&room=SALA`.
+Conexión: `wss://relay/?role=host&room=SALA` con el header `X-Relay-Secret: CLAVE` (también se acepta `&secret=CLAVE`), o `?role=client&room=SALA`. Una sala de jugador (`p-<código>`): `&token=TOKEN` (o el header `X-Relay-Token: TOKEN`) para los dos roles.
 
 ## 5. Comandos útiles
 
@@ -126,7 +138,7 @@ MPKIT_RELAY_SECRET=<clave> godot --headless --path . -- --dedicated --transport=
 MPKIT_RELAY_SECRET=<clave> godot --headless --path . -- --room-server   # con relay_url / relay_room en game.tres
 ```
 
-Probar las reglas del relay desde el repo del kit: `bash mpkit_lab/run/relay.sh` (secreto del host, sala ocupada) y `bash mpkit_lab/run/relayfault.sh` (un host que muere, se congela o reinicia); todo el juego por un relay local: `TRANSPORT=relay bash mpkit_lab/run/arena.sh`.
+Probar las reglas del relay desde el repo del kit: `bash mpkit_lab/run/relay.sh` (secreto del host, sala ocupada) y `bash mpkit_lab/run/relayfault.sh` (un host que muere, se congela o reinicia); todo el juego por un relay local: `TRANSPORT=relay bash mpkit_lab/run/arena.sh`; las salas de jugadores con el emisor (un host de escritorio, un host dentro de su juego, un host en un navegador): `bash mpkit_lab/run/online.sh`.
 
 ## Verificado
 

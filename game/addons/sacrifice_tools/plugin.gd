@@ -1,12 +1,11 @@
 @tool
 extends EditorPlugin
 
-## RFC-046 (F271): the bakes and the validator from the editor, so the day to day needs no terminal. Each entry of
+## RFC-046 (F271): the bakes from the editor, so the day to day needs no terminal. Each entry of
 ## Project > Tools starts the same command the CLI documents (a headless child Godot on this project) and shows its output
 ## in a dialog. The CLI tools keep working as they were. Dev only: the export excludes `addons/sacrifice_tools/*`.
 
 const ITEMS := [
-	{"title": "Sacrifice: Validar catálogo", "args": ["--script", "res://debug/suite/catalog_cases.gd"], "rescan": false},
 	{"title": "Sacrifice: Re-hornear navmesh", "args": ["res://tools/bake/bake_nav.tscn"], "rescan": true},
 	# RFC-051: asks for a .glb of assets/custom/models/ and passes it to the tool.
 	# 055o-b: it also writes the creature's SoundSet (over the fist melee set; with its sound files when assets/custom/sounds/creatures/<tag>/ exists).

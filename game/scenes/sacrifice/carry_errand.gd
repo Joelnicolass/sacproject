@@ -41,7 +41,6 @@ func _ready() -> void:
 		steps.run_process = false
 		return
 	body.landed.connect(_on_landed)
-	steps.state_changed.connect(func(_from: StringName, to: StringName) -> void: body.errand_walks = not _done and not arrived and (to == &"Approach" or to == &"Haul"))
 	body.died.connect(_on_died)
 
 
@@ -69,8 +68,7 @@ func creature_is_free() -> bool:
 	return _is_alive_own() and creature.is_in_group(Captive.UNIT_GROUP) and not creature.is_held()
 
 
-## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse is
-## too.
+## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse is too.
 func soul_is_waiting() -> bool:
 	if soul == null or not is_instance_valid(soul) or not soul.is_inside_tree():
 		return false
@@ -86,6 +84,11 @@ func release_soul() -> void:
 		soul.release_for(caster_slot)
 
 
+## Derived, never stored: the errand wants the body to walk (Approach or Haul, not there, not over); StuckGuard reads it.
+func walks() -> bool:
+	return not _done and not arrived and (steps.is_in(&"Approach") or steps.is_in(&"Haul"))
+
+
 ## The doctor holds the creature and it is alive.
 func is_carrying() -> bool:
 	return _is_alive_own() and captive != null and creature.is_held() and captive.holder == body
@@ -97,10 +100,8 @@ func site_standing() -> bool:
 
 ## Haul: stands at the site with the creature and lets the ritual start.
 func arrive() -> void:
-	if arrived:
-		return
+	if arrived: return
 	arrived = true
-	body.errand_walks = false
 	body.stop()
 	reached_site.emit()
 
@@ -146,5 +147,4 @@ func _finish(outcome: Outcome) -> void:
 	if _done:
 		return
 	_done = true
-	body.errand_walks = false
 	finished.emit(outcome)

@@ -97,7 +97,7 @@ func is_synced() -> bool:
 	_synced = closest.distance_to(_probe) < 3.0
 	_checks += 1
 	if not _synced and _checks == DIAGNOSE_AFTER:
-		print(diagnose("NOT synced after %d checks" % _checks))
+		if DebugLog.on(&"nav"): print(diagnose("NOT synced after %d checks" % _checks))
 	return _synced
 
 

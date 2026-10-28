@@ -84,7 +84,7 @@ func retire(old: NavRegions) -> void:
 	_retired = old
 
 
-## Parse and bake EVERY zone on the calling thread (the check of debug/suite/nav_cases.gd measures this). Null when it came out empty.
+## Parse and bake EVERY zone on the calling thread. Null when it came out empty.
 func bake_now(root: Node) -> NavigationMesh:
 	if not _begin(root, [] as Array[Rect2], true):
 		return null

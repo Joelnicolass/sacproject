@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://debug/net/join_once.gd" id="1_join"]
-
-[node name="JoinOnce" type="Node"]
-script = ExtResource("1_join")

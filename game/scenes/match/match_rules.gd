@@ -37,13 +37,13 @@ extends Resource
 ## Ref: sacengine option enableDropSoul (options.d:106).
 @export var enable_drop_soul: bool = true
 ## Seats the AI takes in this match (AiRoster in high_noon). Empty = no AI (a match of humans, as before).
-## «Contra la IA» does not fill it: it comes through SacrificeFlow.solo_ai_seats. The bench (debug/ai_match) seats its own.
+## «Contra la IA» does not fill it: it comes through SacrificeFlow.solo_ai_seats. A check scene may seat its own.
 ## Ref: RFC-024 024f.
 @export var ai_seats: Array[AiSeat] = []
 
 @export_group("Sacrificios")
 ## The places of the sacrifice (ring, push, reach, hang, vortex) as a scene that is only read, never instanced (SacrificeFacts).
-## An inherited scene (debug/sacrifice/barrier_places.tscn) is a variant.
+## An inherited scene is a variant.
 @export var sacrifice_places: PackedScene = preload("res://scenes/sacrifice/sacrifice_places.tscn")
 ## How long a doctor's death takes: 70 + 50 frames at 60 fps.
 ## Ref: sacengine doctor death, state.d:13999.
@@ -94,7 +94,7 @@ extends Resource
 ## Push speed at the full-speed core of the push (the radii live in sacrifice_places.tscn: 20 m, 5 m).
 @export var ritual_push_speed: float = 20.0
 ## Push speed left at the edge. 0 = the original's. Raising it together with the push radius (for example
-## 24 m and 15 m/s, see debug/rules/ritual_barrier.tres + debug/sacrifice/barrier_places.tscn) keeps melee creatures out.
+## 24 m and 15 m/s) keeps melee creatures out.
 @export var ritual_push_edge_speed: float = 0.0
 ## Invention of the port: how long a finished ritual node stays so every peer sees how it ended.
 @export var ritual_linger_s: float = 1.5

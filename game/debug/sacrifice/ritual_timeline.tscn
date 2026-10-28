@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://debug/sacrifice/ritual_timeline.gd" id="1_timeline"]
-
-[node name="RitualTimeline" type="Node"]
-editor_description = "Headless recorder of the sacrifice ritual (055g g0). godot --headless --fixed-fps 600 res://debug/sacrifice/ritual_timeline.tscn -- --case=<case> --out=<file>. Cases: desecrate_complete, desecrate_doctor_killed, desecrate_site_falls, convert_complete, convert_pump_kill, carry_kill, push, body_facts."
-script = ExtResource("1_timeline")

@@ -77,10 +77,10 @@ xargs awk '
 	}' < "$OUT/all.txt" | sort > "$OUT/C11.txt"
 
 # C12 (plan 070 N0): network calls (`MpKit.` or the `Mp.` facade) outside the allowlist, one line per file. Whole-line comments do not
-# count. Allowlist: scenes/net/; the network screens (scenes/ui/lobby/, local_server/, match_wait/); owners of submit_*/@rpc;
+# count. Allowlist: scenes/net/; the network screens (scenes/ui/lobby/, local_server/, online/, match_wait/); owners of submit_*/@rpc;
 # MultiplayerSpawner users; subclasses of a kit node (`extends Mp<Name>`).
 : > "$OUT/C12.txt"
-grep -vE '^scenes/(net|ui/lobby|ui/local_server|ui/match_wait)/' "$OUT/all.txt" | while IFS= read -r f; do
+grep -vE '^scenes/(net|ui/lobby|ui/local_server|ui/online|ui/match_wait)/' "$OUT/all.txt" | while IFS= read -r f; do
 	grep -vE '^[[:space:]]*#' "$f" | grep -qE '(^|[^A-Za-z0-9_])Mp(Kit)?\.' || continue
 	grep -qE 'func submit_|@rpc|MultiplayerSpawner|^extends[[:space:]]+Mp[A-Z]' "$f" || echo "$f" >> "$OUT/C12.txt"
 done
@@ -175,14 +175,13 @@ find scenes/units scenes/ai scenes/wizards scenes/sacrifice -name '*.gd' 2>/dev/
 	| grep -vE '^[^:]*_type\.gd:[0-9]+:@export[a-z_]* var tag\b' \
 	| grep -vE 'var (creature_tag|wizard_tag)\b|const DIFFICULTY_TAGS' > "$OUT/C18c.txt" || true
 
-# C19: data/*.tres that store positions/offsets/transforms (counted by FILE). debug/ is reported, not ratcheted.
+# C19: data/*.tres that store positions/offsets/transforms (counted by FILE).
 TRES_POS='^([a-z_0-9]*_(offset|position|origin|transform|pos)|position[a-z_0-9]*|offsets|origin|transform) = |Transform3D\('
 # Not positions: a material's roughness_offset and a Gradient's color stops (offsets = PackedFloat32Array).
 TRES_NOT_POS='^(roughness_offset|offsets = PackedFloat32Array)'
 for f in $(find data -name '*.tres' 2>/dev/null | sort); do
 	grep -E "$TRES_POS" "$f" 2>/dev/null | grep -qvE "$TRES_NOT_POS" && echo "$f"
 done > "$OUT/C19.txt" || true
-find debug -name '*.tres' 2>/dev/null | sort | xargs grep -lE "$TRES_POS" 2>/dev/null > "$OUT/C19debug.txt" || true
 
 # C20: place/effect radii exported from MatchRules (they belong in a CollisionShape3D).
 grep -nE '^@export.*(_radius|_height|_distance)' scenes/match/match_rules.gd > "$OUT/C20.txt" 2>/dev/null || true
@@ -219,7 +218,6 @@ if [ "$UPDATE" -eq 1 ]; then
 	echo "baseline rewritten: $BASELINE"
 fi
 
-echo "info: debug/*.tres with positions/offsets (not ratcheted): $(wc -l < "$OUT/C19debug.txt" | tr -d ' ')"
 FAILED=0
 for r in $RULES; do
 	key="${r%%:*}"; label="${r#*:}"

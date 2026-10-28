@@ -2,7 +2,7 @@ old,new,tag,doubtful,evidence
 # 055i-b5: human names for the buildings that still carry their tag (plan 055i-b-rest section 3, rule <god>_<noun>[_n]).
 # One row per file: data/buildings/<name>.tres, scenes/structures/buildings/<name>.tscn and its _ruin.tscn.
 # doubtful: empty = safe, ? = probable (family of an existing name), ?? = no clear name (proposal from the render of
-# agent/out/055ib_buildings/contact_sheet.png). The `tag` (the wire id) does not change.
+# the 055ib contact sheet). The `tag` (the wire id) does not change.
 # APPROVED by the user on 2026-10-26, the whole table as it stands (16 safe, 30 ?, 45 ??); applied with:
 #   python3 tools/migrate/rename_resources.py --csv tools/migrate/055ib_building_names.csv --apply
 # Not listed (already a word): james_cave, persephone_arch, persephone_silo.

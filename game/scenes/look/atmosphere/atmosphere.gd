@@ -25,7 +25,7 @@ signal night_changed(is_night: bool)
 @export_range(-1.0, 24.0, 0.01) var frozen_hour: float = -1.0
 ## The seed when there is no match (debug scenes, the editor).
 @export var fallback_seed: int = 58
-## Debug: this plan instead of the look's (`debug/look/weather_walk.tres`).
+## Debug: this plan instead of the look's.
 @export var plan_override: WeatherPlan
 
 @export_group("Editor preview")

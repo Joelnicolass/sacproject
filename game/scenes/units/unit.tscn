@@ -739,6 +739,7 @@ clip_pose = NodePath("../ClipPose")
 script = ExtResource("c4_states")
 initial_state = NodePath("Idle")
 actor = NodePath("..")
+autostart = false
 run_process = false
 run_physics = false
 run_unhandled_input = false

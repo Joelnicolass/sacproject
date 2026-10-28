@@ -8,22 +8,25 @@ extends FsmMachine
 var _by_mode := {}
 
 
-## Once, from UnitBody._ready: maps the modes and takes the state of the mode the body was born in. The machine began in Idle; a body
-## born in another mode (a late join, a summon) takes its state without the enter.
-func begin(mode: UnitBody.Mode) -> void:
+## Maps the modes. autostart is off (unit.tscn): UnitBody._ready starts it in the state of the mode the body was born in, with
+## UnitState.JOINED (a late join, a summon: its look without the animation).
+func _ready() -> void:
+	super._ready()
 	for state: UnitState in get_children():
 		_by_mode[state.mode] = state
 	set_physics_process(false)
 	set_process(false)
 	set_process_unhandled_input(false)
-	if _by_mode.has(mode):
-		current = _by_mode[mode]
-		(current as UnitState).present(false)
+
+
+## The state that stands for `mode` (null when none does: start() then takes initial_state).
+func state_of(mode: UnitBody.Mode) -> UnitState:
+	return _by_mode.get(mode)
 
 
 ## The mode changed: the machine moves to its state (enter and exit run on every peer).
 func follow(mode: UnitBody.Mode) -> void:
-	var next: UnitState = _by_mode.get(mode)
+	var next := state_of(mode)
 	if next != null:
 		transition_to(next)
 

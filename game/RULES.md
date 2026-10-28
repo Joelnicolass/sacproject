@@ -15,8 +15,7 @@ Estándar. Escenas en `scenes/`. Sin `src/domain/`.
 Estructura por dominio (RFC-048). Cada carpeta tiene su `README.md`.
 - `scenes/<dominio>/`: código y escenas del producto (`ai`, `audio`, `bodies`, `camera`, `components`, `core`, `fx`, `gods`, `look`, `map`, `match`, `net`, `orders`, `sacrifice`, `souls`, `spells`, `structures`, `ui`, `units`, `wizards`). Nada suelto en la raíz de `scenes/`.
 - `data/`: Resources `.tres` por tipo (`data/catalog/<tipo>/`, `gods/`, `look/`, `nav/`, `maps/`, `audio/`...).
-- `debug/<dominio>/`: escenas y reglas de desarrollo (`suite/` = casos del banco, `rules/` = `MatchRules` de prueba). No entra en el export.
-- `tools/`: `import/`, `bake/`, `audit/`, `material/`, `deploy/`. `agent/`: `runs/`, `flows/`, `fixtures/`, `harness/`, `scripts/`. Ni `scenes/` ni `data/` nombran `res://debug|agent|tools`.
+- `tools/`: `import/`, `bake/`, `audit/`, `material/`, `deploy/`. No hay carpeta de pruebas versionada: un flow o harness de AgentKit se regenera en `agent/` (ignorada por git) cuando hace falta. Ni `scenes/` ni `data/` nombran `res://agent|tools`.
 - Las mudanzas de rutas se hacen con `tools/move_map.py` y un CSV (`--check --lint` debe dar 0). Los commits de mudanza están en `.git-blame-ignore-revs`.
 
 Convenciones de código en `CONVENTIONS.md`; `tools/lint/conventions.sh` es el ratchet (falla si un conteo sube; cada corte que baja uno reescribe `tools/lint/baseline.txt`).
@@ -52,6 +51,6 @@ La IA es un jugador más. Todo lo que hace pasa por un solo puerto que llama a l
 Desde el 2026-10-18 (decisión del usuario), hasta la v1 estable:
 
 - Godot estándar antes que el original. Navegación, física y animación usan lo del motor, con tolerancia amplia. Desde RFC-036, la separación entre cuerpos es la evasión de Godot (`BodyAvoidance`, NavigationAgent3D, prioridad del mago mayor que la de sus criaturas). Las animaciones son una escena por modelo con su `AnimationTree` (`scenes/bodies/models/`). El catálogo de criaturas, hechizos, magos y edificios se edita como `.tres` en `data/catalog/`. Las partículas llevan su textura en el `.tres`. Del original se copia solo lo que se nota al jugar: números de daño, hechizos y reglas. No hace falta ser 100 % fiel.
-- El banco de determinismo es una prueba de humo, no un contrato byte a byte. `quick` corre en cada corte. Si un digest cambia por un cambio hecho a propósito, se regraba la base y se anota una línea en el F. Sin informe de primer tick distinto ni los 4 modos. `all` queda para el cierre de un RFC.
+- No hay banco de determinismo versionado (se borró el 2026-10-27 con `debug/` y `agent/`). Si hace falta, se regenera con AgentKit (`addons/agent_kit/determinism/`) como prueba de humo, no como contrato byte a byte.
 - Los cortes chicos son developer y verificación del orquestador, sin review separada. La review queda para cambios grandes de comportamiento o arquitectura.
 - La exactitud byte a byte se puede retomar después de la v1.

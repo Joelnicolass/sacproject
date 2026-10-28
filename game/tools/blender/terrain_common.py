@@ -1,5 +1,5 @@
 """The one Python copy of a map ground's numbers and image formats, shared by the Blender round trip (terrain_make_blend.py,
-terrain_export_images.py) and agent/runs/run_terrain_blender.sh. No bpy: it runs inside Blender's Python and with `python3 -I`.
+terrain_export_images.py) and the terrain checks. No bpy: it runs inside Blender's Python and with `python3 -I`.
 
 What it holds:
 - the lattice (SIDE x SIDE vertices, CELL_M apart; the mirror of scenes/map/terrain/terrain_grid.gd) and its axes in Blender:

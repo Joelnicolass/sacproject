@@ -87,8 +87,7 @@ func finish_cast(cast: SacrificeSystem.Cast) -> String:
 			doctor.queue_free()
 		_release_soul(cast)
 		return BAD_TARGET
-	## 055g 9.2: the doctor holds its errand. set() until the doctor declares `errand` (g4).
-	doctor.set(&"errand", errand)
+	doctor.errand = errand  ## 055g 9.2: the doctor holds its errand.
 	errand.configure(cast.kind, cast.caster_slot, cast.creature, cast.site, cast.soul)
 	errand.reached_site.connect(starter.on_reached.bind(errand))
 	doctor.drop_to(cast.landing)

@@ -82,11 +82,6 @@ func cancel() -> void:
 	waypoints = PackedVector3Array()
 
 
-## The next waypoint, or the goal when none is left.
-func next_point() -> Vector3:
-	return waypoints[0] if not waypoints.is_empty() else goal
-
-
 ## An order to walk to `goal`. The same goal while the walk goes on is a no-op (the order layer repeats it).
 func go_to(target: Vector3) -> void:
 	var same := active and Vector2(target.x, target.z).distance_to(Vector2(goal.x, goal.z)) < 0.5 and _body_walking()

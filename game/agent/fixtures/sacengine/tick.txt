@@ -1,6 +1,0 @@
-n=60
-order=idle
-x=0
-y=0
-z=0
-life=1

@@ -26,7 +26,7 @@
 | Q9 Pasivas | Cada criatura lleva sus pasivas en `scenes/units/bodies/<criatura>_passives.tscn`. Para la furia del Firefist hoy se abre **1 archivo**; antes eran 7 y un grep |
 | Q8 Referencias | Proyectiles, disparos, gotas y espíritus elegidos por `PackedScene`, no por texto; contrato tipado `ProjectileLaunch`. La bola de fuego se cambia abriendo 2 archivos; antes eran 10 u 11 |
 | IA | Enums en vez de códigos 0/1/2; 20 helpers sueltos plegados en su dueño (35 → 15); `data/ai` sin comentarios `;` |
-| Q6 Cuerpos | Contrato `GameBody` para criatura, mago y doctor; `# dynamic:` (has_method/call) pasa de 40 a 4 |
+| Q6 Cuerpos | Contrato `GameBody` para criatura, mago y doctor; `# dynamic:` (has_method/call) pasa de 40 a 4. Después, el mago usa componentes: `WizardClips`, el `Regeneration` compartido y `GroundSeat`, con los umbrales en el inspector. `wizard_body.gd` pasa de 517 a 399 líneas |
 | Bus `Events` | `body_hurt`, `ritual_started`, `ritual_ended` y `match_ended`; audio, HUD, cámara y FX dejaron de sondear el árbol (15 búsquedas menos) |
 | Q11 Partida | `match.tscn` en 5 grupos (World, Systems, Input, Hud, Audio); fuera el autoload `GameData`; el spawner le inyecta el pick al mago |
 | Política de blanco | Cuelga de la habilidad (`target_policy`), sin ruta armada con el tag |
@@ -62,7 +62,7 @@ Los puntos de red están anotados en [`TECH-DEBT.md`](TECH-DEBT.md).
 | Tema | Qué falta |
 |---|---|
 | `wizard_body.tscn` | El kit avisa en runtime que la MpSync guardada está desactualizada; abrir la escena en el editor y guardarla |
-| Clases grandes | `UnitBody`, `WizardBody`, `DoctorBody`, `BodyRig`, `AiPerception` y `tools/bake/new_creature.gd` tienen ignores justificados de gdlint; conviene partirlas por responsabilidad |
+| Clases grandes | `UnitBody`, `DoctorBody`, `BodyRig`, `AiPerception` y `tools/bake/new_creature.gd` tienen ignores justificados de gdlint; conviene partirlas por responsabilidad (`WizardBody` ya bajó a 20 métodos públicos) |
 | Carpeta por entidad | Q14 sin hacer (el Firefist todavía vive en varias carpetas) |
 | Logs del servidor | Siguen en español los que documenta la guía de despliegue (`salas listo puerto`, `partida …`) |
 | Códigos sin identificar | `data/catalog/abilities/dhsf.tres` y `othg.tres` |

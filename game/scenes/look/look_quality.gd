@@ -41,6 +41,9 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 @export_group("Glow")
 ## Bloom of the bright parts (the biome's GlowLook). Off in low: it is a full-screen blur chain.
 @export var glow_enabled: bool = true
+## The camera's lens flare from the brightest pixels (LensFlareLayer). Off in low: a full-screen
+## pass with a dozen screen reads per pixel.
+@export var lens_flare: bool = true
 
 @export_group("Ground")
 ## 4 = the god's ground also reads its roles' normal and ORM maps; below 4 = colour only. All four

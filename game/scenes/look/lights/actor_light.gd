@@ -16,7 +16,7 @@ const GROUP := &"actor_lights"
 ## (ActorLightBudget hands it over). By day it changes nothing. The wizard's reveal light drops to 0.4 so it does not outshine the night.
 @export_range(0.0, 1.0, 0.01) var night_energy := 1.0
 
-## Off by default on units (the original has no light pool under bodies; only the wizard carries a reveal light); a human can turn it on in the inspector.
+## Off by default on units (no light pool under bodies; only the wizard carries a reveal light); a human can turn it on in the inspector.
 @export var enabled := true
 
 ## The budget never switches it off (the wizard's reveal light: a tight, neutral pool that lifts the ground around the wizard). Not counted among the budget's lights.

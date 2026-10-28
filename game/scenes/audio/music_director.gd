@@ -14,7 +14,6 @@ extends Node
 ## `menu` keeps the mood at calm. `victory` and `defeat` play once: the mood stays, the track is not restarted.
 ## Each change goes to SoundBus's log as emitter `music`, event = the mood. With the AudioGate closed (dedicated, room
 ## server, headless) its players stay idle and it plays nothing. No RPC, nothing written to the simulation.
-## Ref: RFC-052 052f (F365).
 
 signal mood_changed(mood: StringName)
 
@@ -226,7 +225,7 @@ func _ritual_near() -> bool:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if track_a == null or track_b == null:
-		out.append("Asigná `track_a` y `track_b` (los dos AudioStreamPlayer hijos): sin ellos no suena.")
+		out.append("Assign `track_a` and `track_b` (the two child AudioStreamPlayers): without them there is no music.")
 	if seat == null and not menu:
-		out.append("Asigná `seat` (el MpLocalSeat): sin él no sabe quién mira el resultado.")
+		out.append("Assign `seat` (the MpLocalSeat): without it it does not know who watches the result.")
 	return out

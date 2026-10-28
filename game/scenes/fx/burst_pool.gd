@@ -94,7 +94,7 @@ func _build(type: ParticleType) -> SpriteParticles:
 	emitter.name = "%s_%d" % [FxWire.label_of(type), (_playing[type] as Array).size() + (_idle[type] as Array).size()]
 	add_child(emitter)
 	if emitter.is_queued_for_deletion():
-		## No atlas in the catalog: the type never draws, so it keeps no pool.
+		# No atlas in the catalog: the type never draws, so it keeps no pool.
 		_idle.erase(type)
 		_playing.erase(type)
 		_dead[type] = true

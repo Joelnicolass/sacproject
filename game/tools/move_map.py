@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RFC-048: apply a path-move map to the game tree (git mv + reference rewrite + checks).
+"""Apply a path-move map to the game tree (git mv + reference rewrite + checks).
 
   python3 tools/move_map.py <csv> [--cut b] [--dry-run] [--diff] [--apply] [--check] [--lint] [--rewrite-only]
 

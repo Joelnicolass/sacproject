@@ -27,7 +27,7 @@ var occupant: Node
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if altar == null and building == null:
-		warnings.append("Asigná en `altar` o en `building` a quién pertenece este sitio.")
+		warnings.append("Assign in `altar` or in `building` who owns this site.")
 	return warnings
 
 

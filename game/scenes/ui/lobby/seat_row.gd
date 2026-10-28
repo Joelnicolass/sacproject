@@ -5,7 +5,6 @@ extends HBoxContainer
 ## when the seat is free. It shows what the view hands it (`show_seat`); the only thing it does is ask.
 ## A bot seat shows «IA» with its god and difficulty; the host sees «Agregar IA» on a free seat and «Quitar IA»
 ## on a bot seat.
-## Ref: RFC-034 034f; RFC-049 049h (F297).
 
 signal sit_requested(seat: int)
 signal bot_add_requested(seat: int)

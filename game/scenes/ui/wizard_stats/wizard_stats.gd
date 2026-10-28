@@ -4,7 +4,6 @@ extends HBoxContainer
 ## The stats block of the wizard HUD: the soul count with the spinning soul, then the mana and health bars. It only feeds
 ## values to the bars and the label; frames, bars, font and the soul's spin live in the scene and in data/ui/theme.tres. It does
 ## not read the wizard (WizardHud does) and never takes the mouse.
-## Ref: renderer.d:4770-4830 renderStats.
 
 ## Values last shown (read by the flows).
 var health_fraction := 0.0

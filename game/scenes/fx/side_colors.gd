@@ -7,7 +7,6 @@ extends RefCounted
 ## color assigned to a slot yet: slot N takes palette entry N % 8 (slot 0 = white). The sides no player takes
 ## (Farmers and Taurocks of High Noon, slots 3 and 4: SideRelations.is_npc_slot) have no player color: they get
 ## the gray the neutral side has (half white), so nothing mistakes them for a third player.
-## Ref: sacengine player colors sids.d:9-16, Manalith column state.d:30104-30116, neutral side 31.
 
 const PALETTE: Array[Color] = [
 	Color(1.0, 1.0, 1.0),

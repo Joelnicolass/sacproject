@@ -7,7 +7,7 @@ size = Vector2(0.5, 0.5)
 
 [node name="ShaderWarmup" type="Node"]
 process_mode = 3
-editor_description = "Detrás de la pantalla de carga dibuja una vez cada malla, material y escena de look que la partida puede mostrar (frente a la cámara, en Stage) y pide a cada WarmHook lo suyo; termina cuando los contadores de compilación de pipelines quedan quietos settle_s. En un proceso headless termina al instante."
+editor_description = "Behind the loading screen it draws once every mesh, material and look scene the match can show (in front of the camera, in Stage) and asks every WarmHook for its own; it finishes when the pipeline compilation counters stay still for settle_s. In a headless process it finishes at once."
 script = ExtResource("1_warmup")
 probe_mesh = SubResource("QuadMesh_probe")
 batch_size = 256

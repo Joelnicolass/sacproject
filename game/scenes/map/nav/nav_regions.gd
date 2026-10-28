@@ -6,7 +6,6 @@ extends RefCounted
 ## joint or a few millimetres of difference at a zone border); the ids go up in the order of the polygons, so the same navmesh always gives the same ids (no hash order
 ## decides anything). `component_at` finds the polygon under a point, or the nearest one within `snap_m` (NavMeshBackend.SNAP_M).
 ## Built once from the NavigationMesh resource; the server is not asked anything.
-## Ref: RFC-035 035g, plan 071 Z4.
 
 const CELL_M := 8.0
 ## Vertices are matched by position (a navmesh may repeat one), 1 cm apart is the same vertex.
@@ -96,7 +95,7 @@ func component_at(point: Vector3, snap_m: float) -> int:
 					if d < best_d or (d == best_d and p < best):
 						best_d = d
 						best = p
-		## The next ring is at least `ring` cells away: a hit that close cannot be beaten by it.
+		# The next ring is at least `ring` cells away: a hit that close cannot be beaten by it.
 		if best >= 0 and best_d <= float(ring) * CELL_M:
 			break
 	if best < 0 or best_d > snap_m:
@@ -146,7 +145,7 @@ func closest_land(point: Vector3, snap_m: float, min_size: int) -> Vector3:
 							best_d = minf(d, best_d)
 							best_q = _q
 							best_dy = dy
-		## The next ring is at least `ring` cells away: a hit that close cannot be beaten by it.
+		# The next ring is at least `ring` cells away: a hit that close cannot be beaten by it.
 		if best_p >= 0 and best_d <= float(ring) * CELL_M:
 			break
 	if best_p < 0 or best_d > snap_m:

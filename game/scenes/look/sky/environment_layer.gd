@@ -144,5 +144,5 @@ func _write_light(look: LightLook, sample: AtmosphereSample) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var missing: Array = [] if world_environment else ["Falta el socket World Environment."]
-	return PackedStringArray(missing + ([] if atmosphere else ["Sin el socket Atmosphere el entorno no sigue la hora ni el clima."]))
+	var missing: Array = [] if world_environment else ["The World Environment socket is missing."]
+	return PackedStringArray(missing + ([] if atmosphere else ["Without the Atmosphere socket the environment follows neither the hour nor the weather."]))

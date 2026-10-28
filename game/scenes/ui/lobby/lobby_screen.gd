@@ -6,7 +6,6 @@ extends Control
 ## (`SacrificeFlow.join_from_lobby`). The lobby link lives in the `MpLobby` autoload, so it survives the match: when the
 ## match ends the flow brings the player back here and the room is still there, with the result.
 ## Run alone (F6) it shows the connect view with «Sin conexión»; it never connects by itself.
-## Ref: RFC-034 034f.
 
 ## Where the room server is. `--lobby=host:port` wins over the saved values.
 @export var endpoint: MpLobbyEndpoint
@@ -35,7 +34,7 @@ func _ready() -> void:
 	_list_view.back_requested.connect(_on_menu)
 	_create_view.cancelled.connect(_on_create_cancelled)
 	var client := MpLobby.client
-	## RFC-034 034g (F184): a lobby drop (also in a match) is not the end: it comes back with its token and keeps its seat (`resume_grace_s`).
+	# A lobby drop (also in a match) is not the end: it comes back with its token and keeps its seat (`resume_grace_s`).
 	client.auto_resume = true
 	client.lobby_resuming.connect(_on_lobby_resuming)
 	client.lobby_joined.connect(_on_lobby_joined)
@@ -70,7 +69,7 @@ func _on_connect_requested(display_name: String, host_override: String) -> void:
 	var where := endpoint.resolved() if endpoint != null else MpLobbyEndpoint.new()
 	var host := host_override if not host_override.is_empty() else where.host
 	online.apply()
-	print("pantalla de salas: conectando a %s:%d (%s) como \"%s\"" % [host, where.port, MpLobby.client.transport, display_name])
+	print("lobby screen: connecting to %s:%d (%s) as \"%s\"" % [host, where.port, MpLobby.client.transport, display_name])
 	var err := MpLobby.connect_to(host, where.port, display_name)
 	if err != OK:
 		_connect_view.show_message(LobbyText.lost_text("connect_failed"))
@@ -85,7 +84,7 @@ func _on_lobby_joined(_session_id: String) -> void:
 
 
 func _on_lobby_lost(reason: String) -> void:
-	print("pantalla de salas: conexión perdida (%s)" % reason)
+	print("lobby screen: connection lost (%s)" % reason)
 	_creating = false
 	_refresh()
 	_connect_view.show_message(LobbyText.lost_text(reason))
@@ -135,7 +134,7 @@ func _on_admission_rejected(_reason: String) -> void:
 func _on_menu() -> void:
 	SacrificeFlow.from_lobby = false
 	MpLobby.client.close_connection()
-	## By path: the menu points to this screen, so the screen cannot hold the menu as a resource (cyclic).
+	# By path: the menu points to this screen, so the screen cannot hold the menu as a resource (cyclic).
 	get_tree().change_scene_to_file(SacrificeFlow.boot_path)
 
 

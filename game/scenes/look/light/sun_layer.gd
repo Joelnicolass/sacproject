@@ -99,5 +99,5 @@ func _write_sun(look: LightLook) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if sun == null or fill == null:
-		warnings.append("Faltan los sockets Sun / Fill.")
+		warnings.append("The Sun / Fill sockets are missing.")
 	return warnings

@@ -6,8 +6,6 @@ extends RefCounted
 ## vertices per triangle with its flat normal and the lattice vertex under each, all the land first, the order the game has
 ## always loaded. Pure and static, in memory only. Not: saving it, the smooth normals of the look (TerrainMeshArrays), the
 ## per-cell index (TerrainRules), the stamps and holes of a match (GroundField).
-## Ref: hntr(), get_faces() and edge_wall_exists() of tools/import/sac_formats/terrain.py up to 22edea77 (FACES PARITY
-## PASS against the triangles it wrote, on the 7 maps of the original).
 
 ## The corners of a cell as lattice id offsets from its low corner: 0 = (x, z), 1 = (x + 1, z), 2 = (x + 1, z + 1), 3 = (x, z + 1).
 const CORNER_IDS: Array[int] = [0, 1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE]

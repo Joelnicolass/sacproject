@@ -9,7 +9,7 @@ extends RefCounted
 ##   Terrain.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
 ##   them by a hash). Final transform: T·R·S (the plant's mesh stands upright already). The meshes and materials are the species',
 ##   shared by every cell.
-## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
+## - Threads: `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
 ##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a Terrain.sampler
 ##   snapshot) and touches no node. The main thread only makes the MultiMeshInstance3D from the finished buffers
 ##   (`multimesh.buffer`, no per-instance call), while the frame's deadline (FloraField.build_budget_ms) lasts; the rest
@@ -24,7 +24,6 @@ extends RefCounted
 ##   never touched) and `visibility_range_end` on the node, past which the whole cell is culled.
 ## - The ring radius is a camera distance: on the ground it is sqrt(radius² - height²), so a high camera keeps fewer cells.
 ## Presentation only: FloraField never makes one in a headless or dedicated process.
-## Ref: RFC-054 054c (F382).
 
 const CELL_M := 32.0
 const MAP_CELLS := 80

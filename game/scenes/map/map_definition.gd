@@ -25,7 +25,7 @@ extends Resource
 @export var playable := true
 
 
-## RFC-049 049d (F293): the map has a start for every seat of the mode (`player_starts >= seats`). A 2v2 does not fit High Noon.
+## The map has a start for every seat of the mode (`player_starts >= seats`). A 2v2 does not fit High Noon.
 func fits(mode: GameMode) -> bool:
 	return mode != null and playable and player_starts >= mode.seats()
 
@@ -33,7 +33,7 @@ func fits(mode: GameMode) -> bool:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if tag == &"":
-		warnings.append("Asigná `tag`.")
+		warnings.append("Assign `tag`.")
 	if map_scene == null:
-		warnings.append("Asigná `map_scene`.")
+		warnings.append("Assign `map_scene`.")
 	return warnings

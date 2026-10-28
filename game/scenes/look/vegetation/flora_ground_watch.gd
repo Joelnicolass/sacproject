@@ -6,7 +6,7 @@ extends RefCounted
 ## height, and replants the patches whose circle that part touches (no other). It remembers the moved areas in between and
 ## joins the ones that overlap. It plants nothing itself (MeshPlanter, VegetationPatch) and never touches the ground.
 ## `mark` also takes areas whose flora was painted (the map brush), under the same brake.
-## RFC-057 057e: with `live_every_s` > 0 it also follows the stamps that play (Terrain.changed while one plays: the Volcano
+## With `live_every_s` > 0 it also follows the stamps that play (Terrain.changed while one plays: the Volcano
 ## mound for 64 s). A tick only joins its rect to a list of their own; that list is planted again every `live_every_s`
 ## seconds, only the cells it touches, on the ground as it is then (Terrain.refresh_sampler). 0 ignores them (only what
 ## settles plants again).

@@ -6,7 +6,6 @@ extends LookLayer
 ## far under the map (its `Plane` child, hidden until a look brings a picture: size, depth, brightness and turn are that node
 ## and its material, in the inspector). With no picture in the look the plane stays hidden and the sky shows below. It does not draw the sky's bands or clouds (the
 ## sky material, EnvironmentLayer) nor the walls under the rim (the ground shader). Presentation only.
-## Ref: sacobject.d:1101-1107 (undr quad 0.25 * 10240 m under the sky base, itself 511 m under the map's zero).
 
 ## The plane; its material (sky_underside.gdshader) is the default: the look's picture goes on a private copy, never saved.
 @export var plane: MeshInstance3D
@@ -16,7 +15,7 @@ var _was_shown := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if plane else PackedStringArray(["Falta el socket `plane` (el MeshInstance3D del fondo)."])
+	return PackedStringArray() if plane else PackedStringArray(["The `plane` socket is missing (the background MeshInstance3D)."])
 
 
 func apply_look(profile: LookProfile, _rig: LookRig) -> void:

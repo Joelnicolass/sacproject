@@ -139,11 +139,11 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if health == null:
-		out.append("Asigná `health` (su Health).")
+		out.append("Assign `health` (its Health).")
 	if visual == null:
-		out.append("Asigná `visual` (su BodyVisual, Tilt/Mesh).")
+		out.append("Assign `visual` (its BodyVisual, Tilt/Mesh).")
 	if material == null:
-		out.append("Asigná `material` (data/fx/blood/hit_flash.tres).")
+		out.append("Assign `material` (data/fx/blood/hit_flash.tres).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		out.append(prefs_warning)

@@ -6,7 +6,6 @@ extends RefCounted
 ## lies under the texel centre (`Terrain.height_at` is not NAN), 0 over holes and the map rim. Hole texels take the
 ## height of the nearest land texel so a bilinear read near a hole edge does not dip to 0. The grass is off today, so this
 ## costs nothing at start-up; it runs once, when a grass field first loads.
-## Ref: RFC-022e; RFC-033 033f.
 
 const SIZE := 1024
 

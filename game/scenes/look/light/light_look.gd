@@ -54,7 +54,7 @@ extends Resource
 @export var tonemap_mode: Environment.ToneMapper = Environment.TONE_MAPPER_AGX
 @export_range(0.1, 4.0, 0.01) var tonemap_exposure: float = 1.0
 @export_range(0.5, 16.0, 0.1) var tonemap_white: float = 6.0
-## 1.15 at most (RFC-022).
+## 1.15 at most.
 @export_range(0.0, 1.5, 0.01) var saturation: float = 1.05
 
 @export_group("SSAO")

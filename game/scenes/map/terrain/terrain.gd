@@ -59,7 +59,7 @@ func _ready() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var wired := heights != null and ground_roles != null and mesh != null and live != null
-	return PackedStringArray() if wired else PackedStringArray(["Faltan `heights` (heights.png), `ground_roles` (ground_roles.png), `mesh` (el hijo Mesh) o `live` (el hijo Live)."])
+	return PackedStringArray() if wired else PackedStringArray(["`heights` (heights.png), `ground_roles` (ground_roles.png), `mesh` (the Mesh child) or `live` (the Live child) is missing."])
 
 
 func is_loaded() -> bool:

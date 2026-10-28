@@ -8,7 +8,7 @@ extends Node3D
 ## team above 0 are allies, 0 is alone (MapSides reads it with `slot`).
 
 const SCENE_PATH := "res://scenes/map/props/player_start.tscn"
-const LABEL_TEXT := "Jugador %d"
+const LABEL_TEXT := "Player %d"
 
 ## Player slot of this start (1 = first player).
 @export_range(1, 8) var slot := 1:
@@ -50,12 +50,12 @@ func _notification(what: int) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if get_node_or_null("%WizardSpot") == null:
-		warnings.append("Falta el hijo WizardSpot: ahí aparece el mago.")
+		warnings.append("The WizardSpot child is missing: the wizard appears there.")
 	if get_node_or_null("%Altar") == null:
-		warnings.append("Falta el hijo Altar.")
+		warnings.append("The Altar child is missing.")
 	for other in _other_starts():
 		if other.slot == slot:
-			warnings.append("El slot %d ya lo usa otro inicio (%s). Cada inicio necesita un número distinto." % [slot, other.name])
+			warnings.append("Slot %d is already used by another start (%s). Every start needs a different number." % [slot, other.name])
 	return warnings
 
 

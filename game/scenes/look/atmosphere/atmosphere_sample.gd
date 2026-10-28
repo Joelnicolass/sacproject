@@ -38,7 +38,7 @@ var mist := 0.0
 var mist_color := Color.WHITE
 ## 0..1: how much it rains (drops and the sound bed).
 var rain := 0.0
-## 0..1: the storm flash now (058-3).
+## 0..1: the storm flash now.
 var flash := 0.0
 ## How many stars show (0..1) and the moon disc's brightness added to the sky's own.
 var stars := 0.0

@@ -44,7 +44,7 @@ extends Resource
 ## What falls. Empty = nothing.
 @export var precipitation: PrecipitationLook
 
-@export_group("Storm (058-3)")
+@export_group("Storm")
 ## Lightning strikes a minute (0 = none) and how bright a flash is (sky and ambient, never the glow).
 @export_range(0.0, 20.0, 0.1) var strikes_per_min: float = 0.0
 @export_range(0.0, 1.0, 0.01) var flash_strength: float = 0.0

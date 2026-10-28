@@ -5,7 +5,7 @@ extends Resource
 ## The grass of one biome: its `GrassType` and the clearings every map gets by default (around
 ## the altar and the mana fountains). More clearings are `VegetationClear` nodes in the scene.
 
-## 022e1 draws the first type only; a second type (flowers, tufts) arrives with the scatter (022e2).
+## Only the first type is drawn; a second type (flowers, tufts) is for a later scatter.
 @export var types: Array[GrassType] = []
 ## Colors and material of this biome's grass over the shared shape. Empty = the type's own colors.
 @export var palette: GrassPalette

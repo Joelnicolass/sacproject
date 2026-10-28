@@ -2,7 +2,7 @@
 class_name BuildingFit
 extends RefCounted
 
-## Measures the parts of a building: the box its body is fitted to (MapBuilding's «Ajustar a las partes» button) and where a
+## Measures the parts of a building: the box its body is fitted to (MapBuilding's «Fit to parts» button) and where a
 ## part bursts when the building falls (StructureBreak). Does not change anything: it only answers boxes and points.
 
 

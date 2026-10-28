@@ -4,7 +4,6 @@ extends RefCounted
 ## Every text of the «Servidor local» screens that is not a label of a scene. Pure functions: no node.
 ## The reasons of the door of the match (`match_started`, `grace_over`, `full`) are read by every networked path
 ## (SacrificeFlow.rejection_text).
-## Ref: RFC-034 034m; RFC-068.
 
 const TITLE := "LOCAL_TITLE"
 const PICK_BUTTON := "LOCAL_PICK_BUTTON"
@@ -53,7 +52,7 @@ const START_ERRORS := {
 const START_ERROR_FALLBACK := "LOCAL_START_ERROR_FALLBACK"
 
 
-## RFC-049 049h: the codes to pass along, one line per seat for a person ({slot: code}); one seat keeps the 1v1 line.
+## The codes to pass along, one line per seat for a person ({slot: code}); one seat keeps the 1v1 line.
 static func codes_text(codes: Dictionary) -> String:
 	if codes.is_empty():
 		return UiText.t(INFO_NO_CODE)

@@ -22,7 +22,7 @@ var _waiting: Dictionary = {}
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if scars != null else PackedStringArray(["Falta el socket `scars` (el GroundScars del mapa)."])
+	return PackedStringArray() if scars != null else PackedStringArray(["The `scars` socket is missing (the map's GroundScars)."])
 
 
 func _ready() -> void:

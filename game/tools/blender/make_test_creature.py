@@ -1,6 +1,6 @@
-"""No necesita el juego original (genera su propio modelo).
+"""Does not need the original game (it makes its own model).
 
-RFC-051: a throwaway creature to prove the custom creature pipeline (assets/custom/models/testmonster.glb).
+A throwaway creature to prove the custom creature pipeline (assets/custom/models/testmonster.glb).
 
 Also the smallest example of what a model for `tools/bake/new_creature.gd` looks like: one armature, one skinned mesh and
 one ACTION per role, named after the role (idle, run, attack, death). `attack_at45` puts the impact at 45 % of the clip (`attack_f18`: at frame 18).

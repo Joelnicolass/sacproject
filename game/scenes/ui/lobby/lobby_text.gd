@@ -3,7 +3,6 @@ extends RefCounted
 
 ## Every text of the room screens that is not a label of a scene. The lobby of the kit speaks in stable
 ## codes (`room_full`, `rate`…); this is where they become Spanish. Pure functions: no node, no network.
-## Ref: RFC-034 034f.
 
 const OFFLINE := "LOBBY_OFFLINE"
 const CONNECTING := "LOBBY_CONNECTING"
@@ -76,7 +75,7 @@ static func pick_text(meta: Dictionary) -> String:
 	return UiText.t("LOBBY_PICK_FORMAT") % [pick.wizard.display_name, pick.god.display_name]
 
 
-## RFC-049 049h (F297): «Dios: X · Normal» of a bot seat's meta ({god, difficulty}); an empty god is drawn when the match starts.
+## «Dios: X · Normal» of a bot seat's meta ({god, difficulty}); an empty god is drawn when the match starts.
 static func bot_text(meta: Dictionary) -> String:
 	var god := str(meta.get("god", ""))
 	var god_name := UiText.t("LOBBY_BOT_RANDOM_GOD")
@@ -87,7 +86,7 @@ static func bot_text(meta: Dictionary) -> String:
 
 
 ## What a result says to the player in `my_slot` (0 = not in the match). `result` is the Dictionary the dedicated
-## reports: winner_slot, winner_slots (the whole winning team; RFC-049 049f), reason ("result", "abandon", "empty").
+## reports: winner_slot, winner_slots (the whole winning team), reason ("result", "abandon", "empty").
 static func result_text(result: Dictionary, my_slot: int) -> String:
 	if result.is_empty():
 		return ""
@@ -99,7 +98,7 @@ static func result_text(result: Dictionary, my_slot: int) -> String:
 	if winners.is_empty():
 		winners = [winner]
 	var won := my_slot > 0 and (winners.has(my_slot) or winners.has(float(my_slot)))
-	## RFC-049 049h: a winning team of two or more speaks of teams («Ganó tu equipo»).
+	# A winning team of two or more speaks of teams («Ganó tu equipo»).
 	var prefix := "LOBBY_RESULT_TEAM_" if winners.size() >= 2 else "LOBBY_RESULT_"
 	if reason == "abandon":
 		return UiText.t(prefix + ("WON_ABANDON" if won else "LOST_ABANDON"))

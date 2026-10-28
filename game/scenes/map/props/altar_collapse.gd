@@ -5,12 +5,10 @@ extends Node
 ## The visible destruction of an altar, the same on every peer: the pillars and the top sink
 ## for 4 s, the base rises and shrinks for 4 s and bursts for 3 s. It only plays: when the altar is gone
 ## is decided by MatchState's clock on the server.
-## Ref: sacengine AltarDestruction disappearDuration, floatDuration, explodeDuration, state.d:5289-5291.
 
 signal finished
 
-## The original's 4 + 4 + 3 s; MatchRules.altar_collapse_s is the server's clock.
-## Ref: sacengine state.d:5289-5291.
+## 4 + 4 + 3 s; MatchRules.altar_collapse_s is the server's clock.
 @export var duration_s := 11.0
 ## Share of the duration spent sinking (4/11) and floating (4/11); the rest is the burst.
 @export_range(0.0, 1.0) var sink_fraction := 0.3636
@@ -40,11 +38,11 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if visuals == null:
-		warnings.append("Asigná en `visuals` el nodo con los modelos del altar.")
+		warnings.append("Assign in `visuals` the node with the altar's models.")
 	if ring == null:
-		warnings.append("Asigná en `ring` el modelo de la base, que sube y se achica.")
+		warnings.append("Assign in `ring` the base model, which rises and shrinks.")
 	if burst_spot == null:
-		warnings.append("Asigná en `burst_spot` el Marker3D donde estalla la base (BurstSpot).")
+		warnings.append("Assign in `burst_spot` the Marker3D where the base bursts (BurstSpot).")
 	return warnings
 
 

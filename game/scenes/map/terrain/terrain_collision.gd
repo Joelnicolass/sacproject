@@ -30,7 +30,7 @@ var _dirty := {}  ## Vector2i -> true, in the order they were marked (the oldest
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
+	return PackedStringArray() if terrain != null else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
 
 
 func _ready() -> void:

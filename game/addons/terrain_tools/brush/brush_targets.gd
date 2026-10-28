@@ -64,7 +64,7 @@ static func _made(canvas: BrushCanvas, mode: int, pinned: bool) -> Target:
 
 
 ## A roles tool on `terrain`: its channel on the ground_roles canvas; null when the Terrain has no ground_roles. Shift
-## does nothing different (painting «Pasto» is the eraser).
+## does nothing different (painting «Grass» is the eraser).
 static func _role(history: TerrainHistory, terrain: Terrain, tool: Toolbar.Tool) -> Target:
 	var canvas := history.roles(terrain)
 	return _made(canvas, ROLE_CHANNELS[tool], false) if canvas != null else null

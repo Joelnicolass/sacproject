@@ -14,7 +14,7 @@ material = SubResource("ShaderMaterial_under")
 size = Vector2(10240, 10240)
 
 [node name="Underside" type="Node3D" node_paths=PackedStringArray("plane")]
-editor_description = "Lo que se ve debajo de la isla por el vacio y por los pozos: la imagen `under_texture` del SkyLook del dios en un plano de 10240 m, 3071 m bajo el cero del mapa, centrado en el mapa (1280, 1280), sin luz ni niebla, girando con el cielo. Tamano en el PlaneMesh, profundidad en la posicion del nodo, giro y brillo en el material."
+editor_description = "What is seen under the island through the void and the pits: the `under_texture` picture of the god's SkyLook on a 10240 m plane, 3071 m under the map's zero, centred on the map (1280, 1280), without light or fog, turning with the sky. Size in the PlaneMesh, depth in the node's position, turn and brightness in the material."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280, -3071, 1280)
 script = ExtResource("1_layer")
 plane = NodePath("Plane")

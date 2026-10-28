@@ -45,7 +45,7 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if rig != null else PackedStringArray(["Falta el socket Rig (el LookRig del mapa)."])
+	return PackedStringArray() if rig != null else PackedStringArray(["The Rig socket is missing (the map's LookRig)."])
 
 
 func _process(_delta: float) -> void:

@@ -5,7 +5,7 @@ extends Node
 ## (emitter = the button's name, event `click`). It does not decide what a button does, only what pressing it sounds like.
 ## - A button with the data `ui_sound` (a SoundCue, set in its scene: the spell book's slots) plays that cue instead.
 ## - A button with the data `no_ui_sound` (any value but false) plays nothing. Both are read on press.
-## - With the AudioGate closed (dedicated server, room server, headless bench) it connects to nothing.
+## - With the AudioGate closed (dedicated server, room server, headless run) it connects to nothing.
 
 const META_NO_UI_SOUND := &"no_ui_sound"
 const META_UI_SOUND := &"ui_sound"
@@ -18,7 +18,7 @@ func _ready() -> void:
 	if not AudioGate.is_open():
 		return
 	get_tree().node_added.connect(_on_node_added)
-	## The main scene entered the tree with the autoloads, before this _ready: its buttons are already there.
+	# The main scene entered the tree with the autoloads, before this _ready: its buttons are already there.
 	for node in get_tree().root.find_children("*", "BaseButton", true, false):
 		_on_node_added(node)
 

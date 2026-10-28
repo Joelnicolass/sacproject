@@ -18,7 +18,7 @@ func _get_importer_name() -> String:
 
 
 func _get_visible_name() -> String:
-	return "Alturas del terreno (TerrainHeights)"
+	return "Terrain heights (TerrainHeights)"
 
 
 func _get_recognized_extensions() -> PackedStringArray:
@@ -74,6 +74,6 @@ func _import(source_file: String, save_path: String, options: Dictionary, _platf
 	var scale := float(options.get(OPTION_SCALE, MapImages.DEFAULT_METRES_PER_UNIT))
 	var result := MapImages.read(source_file, scale)
 	if not result.error.is_empty():
-		push_error("Alturas del terreno: no se pudo importar. " + result.error)
+		push_error("Terrain heights: could not import. " + result.error)
 		return ERR_INVALID_DATA
 	return ResourceSaver.save(result.heights, "%s.%s" % [save_path, _get_save_extension()], ResourceSaver.FLAG_COMPRESS)

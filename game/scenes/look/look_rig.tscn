@@ -62,7 +62,7 @@ atmosphere = NodePath("../Atmosphere")
 script = ExtResource("11_budget")
 
 [node name="TerrainDeform" type="Node3D" parent="Layers" node_paths=PackedStringArray("rig")]
-editor_description = "Le da al shader del suelo cuánto se movió la tierra (textura global terrain_deform_map). Sin nada que mover no cuesta nada."
+editor_description = "Tells the ground shader how far the land moved (global texture terrain_deform_map). With nothing to move it costs nothing."
 script = ExtResource("12_deform")
 rig = NodePath("../..")
 
@@ -74,7 +74,7 @@ rig = NodePath("../..")
 atmosphere = NodePath("../Atmosphere")
 
 [node name="SurfaceRelief" type="Node3D" parent="Layers"]
-editor_description = "RFC-067: el interruptor global de los mapas de normales (preset relief_maps y la opción «Relieve»). Apagado, los apaga en memoria; nunca guarda."
+editor_description = "The global switch of the normal maps (preset relief_maps and the «Relieve» option). Off, it turns them off in memory; it never saves."
 script = ExtResource("16_relief")
 prefs = ExtResource("17_prefs")
 

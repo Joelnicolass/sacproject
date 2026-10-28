@@ -7,7 +7,7 @@
 [ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="9_prefs"]
 
 [node name="SprayMarks" type="Node"]
-editor_description = "Charco del gib: cuando suena data/fx/blood.tres, pinta 12 manchas blud en 4 m. Nada sin ventana."
+editor_description = "The gib's pool: when data/fx/blood.tres plays, it paints 12 blud stains within 4 m. Nothing without a window."
 script = ExtResource("1_marks")
 sprays = Array[ExtResource("2_ptype")]([ExtResource("3_spray")])
 blood = ExtResource("4_red")

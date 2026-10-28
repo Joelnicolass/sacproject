@@ -2,12 +2,11 @@
 class_name CursorSkin
 extends Node
 
-## The mouse cursor of the original game: `C*` of curs.FLDR while nothing is armed and
+## The game's mouse cursor: `C*` of curs.FLDR while nothing is armed and
 ## `T*` while an icon waits for its target, chosen by what lies under the pointer (TargetProbe), and `blocked_cursor` while the armed icon would be refused there (%Battle.aim_status). The pictures are the ones of `cues` (data/ui/command_cues.tres); without
 ## one the system cursor stays. The hardware cursor is drawn by the OS in window pixels, so Godot's stretch does not scale it: its
 ## side is `cursor_px` canvas pixels times window height over canvas height, hot spot at the top center. It does nothing in a
 ## headless process or in the dedicated server (no player, no window), and nothing over the HUD beyond picking the plain arrow.
-## Ref: RFC-025c; sacengine `cursor()` (state.d:30830); renderer.d:4113 renderCursor (32 units, ×1.2).
 
 ## The cursor changed: its name (`Tnme`) and image (null without cache).
 signal changed(cursor_name: String, texture: Texture2D)
@@ -39,13 +38,13 @@ var _source: Texture2D
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if cues == null:
-		warnings.append("Asigná `cues` (data/ui/command_cues.tres).")
+		warnings.append("Assign `cues` (data/ui/command_cues.tres).")
 	if command_log == null:
-		warnings.append("Asigná `command_log` (el nodo Battle).")
+		warnings.append("Assign `command_log` (the Battle node).")
 	if probe == null:
-		warnings.append("Asigná `probe` (TargetProbe).")
+		warnings.append("Assign `probe` (TargetProbe).")
 	elif cues.hud_cursor == null:
-		warnings.append("Asigná `hud_cursor` en `cues`. Sin eso queda el cursor del sistema.")
+		warnings.append("Assign `hud_cursor` in `cues`. Without it the system cursor stays.")
 	return warnings
 
 
@@ -76,7 +75,7 @@ func _refresh() -> void:
 	if probe == null or probe.local_slot <= 0:
 		if not _announced:
 			_announced = true
-			print("CursorSkin: sin jugador local, no se toca el cursor del sistema")
+			print("CursorSkin: no local player, the system cursor is left alone")
 		return
 	var armed := command_log != null and not command_log.armed.is_empty()
 	var kind: StringName = probe.kind if probe else &"none"

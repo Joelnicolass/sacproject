@@ -6,8 +6,7 @@ extends AudioListener3D
 ## make everything far; the listener sits on the local wizard (MatchWorld.local_wizard_changed) and turns with the camera,
 ## so left and right stay the screen's. Before the wizard arrives (or without one) it sits on the camera.
 ## With the AudioGate closed (dedicated, room server, headless) it does nothing. It is SoundBus.listener: the loops of the
-## SoundEmitter3D nodes measure their range from it (052d).
-## Ref: RFC-052 052c (F362).
+## SoundEmitter3D nodes measure their range from it.
 
 ## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets `target` instead.
 @export var world: MatchWorld
@@ -57,4 +56,4 @@ func _follow() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if camera != null else PackedStringArray(["Asigná `camera`: el oyente gira con ella."])
+	return PackedStringArray() if camera != null else PackedStringArray(["Assign `camera`: the listener turns with it."])

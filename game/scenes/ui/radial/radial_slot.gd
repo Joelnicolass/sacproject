@@ -4,7 +4,6 @@ extends Control
 
 ## One icon of a radial ring: the picture and a glow. It knows nothing about the menu. The hover state is tweened:
 ## the hovered icon grows and glows, the others dim while something is hovered.
-## Ref: RFC-038 038c.
 
 @export var icon_rect: TextureRect
 @export var highlight: Control
@@ -20,7 +19,7 @@ var _tween: Tween
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if icon_rect != null and highlight != null else PackedStringArray(["Asigná icon_rect y highlight."])
+	return PackedStringArray() if icon_rect != null and highlight != null else PackedStringArray(["Assign icon_rect and highlight."])
 
 
 func setup(value: RadialEntry, size_px: float) -> void:

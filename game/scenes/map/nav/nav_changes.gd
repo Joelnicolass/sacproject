@@ -5,7 +5,6 @@ extends RefCounted
 ## went (an altar, a tower, a structure, a fallen building), as rects on the ground in metres. It says WHERE to bake again,
 ## never when (NavService) or how (NavRebake). Idempotent: the same change told twice is one area, and `take` empties it.
 ## Not: the bake itself, the swap, or the groups that block.
-## Ref: RFC-071 Z2.
 
 ## The blockers the last bake holds, by hash, so a new list can be compared with it (one entry per collision shape, see
 ## NavService.blockers).

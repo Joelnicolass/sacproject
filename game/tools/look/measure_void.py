@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""No necesita el juego original: mide PNG (capturas del juego).
+"""Does not need the original game: it measures PNGs (game captures).
 
 How much of a capture is (almost) black: the void under the island and the pits should show the god's picture under the
 world (scenes/look/sky/sky_underside), never a black hole.

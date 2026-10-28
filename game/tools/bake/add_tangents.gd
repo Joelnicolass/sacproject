@@ -1,7 +1,7 @@
 extends SceneTree
 
-## No necesita el juego original: trabaja sobre las mallas ya guardadas en el proyecto.
-## RFC-067: gives tangents to the saved meshes (.res) whose surfaces lack them, so a normal map on their material draws right.
+## Does not need the original game: it works on the meshes already saved in the project.
+## Gives tangents to the saved meshes (.res) whose surfaces lack them, so a normal map on their material draws right.
 ## One-shot: run it once when rules_suite `surface_refs_cases` reports `no_tangents` > 0, then commit the rewritten .res files.
 ##
 ##   Godot --path . --script res://tools/bake/add_tangents.gd                       # scenes/props/meshes and scenes/bodies/meshes

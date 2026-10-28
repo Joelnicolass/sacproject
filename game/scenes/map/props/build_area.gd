@@ -7,7 +7,6 @@ extends CollisionShape3D
 ## less and less out to the edge; a building inside it refuses the cast (TowerRules.has_room). The shape is always off: it never
 ## collides, never feeds the navmesh and never blocks a path. It also tells its Ring what the armed preview says.
 ## Not: who may cast (StructureAction), how hard the push is at a distance (BodyNudge.push_speed), drawing the ring (BuildRing).
-## Ref: sacengine pushAll(position, 5, 15, 5) every frame of a structure cast, state.d:15259.
 
 ## Who a cast pushes, in this order (the result does not depend on the scene tree).
 const PUSHED: Array[StringName] = [&"wizard", &"unit", &"doctor"]
@@ -29,9 +28,9 @@ func _enter_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if not shape is CylinderShape3D:
-		warnings.append("BuildArea necesita un CylinderShape3D: su radio es la zona que despeja la torre.")
+		warnings.append("BuildArea needs a CylinderShape3D: its radius is the area the tower clears.")
 	if core_m >= radius_m():
-		warnings.append("`core_m` tiene que ser menor que el radio del cilindro.")
+		warnings.append("`core_m` has to be smaller than the cylinder's radius.")
 	return warnings
 
 

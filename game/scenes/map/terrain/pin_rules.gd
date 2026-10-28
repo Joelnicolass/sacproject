@@ -5,7 +5,6 @@ extends RefCounted
 ## FootprintRules.vertices_under), half on the ring of vertices around it (a soft step, not a wall), 1 everywhere else. Terrain
 ## works the weights out once from the map's footprints and multiplies every stamp by them (the live ones in TerrainLive, the kept
 ## ones in keep_stamp). Static and pure; it does not know what a spell or a base is, nor flatten the land (FootprintRules).
-## Deviation (declared): in the original a stamp moves the land under an altar or a manafount too.
 
 ## The share a stamp keeps on the ring of vertices around a base.
 const RING_SHARE := 0.5

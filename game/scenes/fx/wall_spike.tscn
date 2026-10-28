@@ -4,7 +4,7 @@
 [ext_resource type="Resource" path="res://data/audio/cues/wall_spike.tres" id="cue_wall_spike"]
 
 [node name="WallSpike" instance=ExtResource("1_field")]
-editor_description = "La pua que sale bajo un cuerpo al cruzar el Wall of Spikes: la misma escena de puas (SpikeField) con su propio nombre, para que suene el spks del original y no el rspk del Rhinok (su nodo Sound lleva el cue wall_spike y el de SpikeField el spike_field)."
+editor_description = "The spike that comes out under a body crossing the Wall of Spikes: the same spike scene (SpikeField) under its own name, so it plays the spks sound and not the Rhinok's rspk (its Sound node carries the wall_spike cue and SpikeField's the spike_field one)."
 
 [node name="Sound" parent="." index="1"]
 cue = ExtResource("cue_wall_spike")

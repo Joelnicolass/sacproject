@@ -7,7 +7,6 @@ extends Node
 ## from the replicated fall (`MapBuilding.destroyed`), local FxBus.play_scene / play: nothing goes on the wire, and a headless
 ## process only emits `played` and `broke`. A building that was already down when this peer joined does not burst (`arm_after_s`).
 ## Does not decide the fall (MapBuilding), show the ruin (BuildingRuin) nor hurt anyone. Take the node out: it falls with no FX.
-## Ref: sacengine updateBuildingDestruction and destructionAnimation (state.d:15157-15181, 27650-27660).
 
 ## A part burst at `at` (world), once per part with a mesh, on every peer.
 signal broke(at: Vector3)
@@ -33,9 +32,9 @@ var _born_tick := 0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if building == null:
-		warnings.append("Asigná `building` (la raíz MapBuilding).")
+		warnings.append("Assign `building` (the MapBuilding root).")
 	if scene == null:
-		warnings.append("Asigná `scene` (scenes/structures/breaking/building_break.tscn).")
+		warnings.append("Assign `scene` (scenes/structures/breaking/building_break.tscn).")
 	return warnings
 
 

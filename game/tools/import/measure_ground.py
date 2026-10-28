@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""No necesita el juego original: mide PNG ya versionados o capturas.
+"""Does not need the original game: it measures versioned PNGs or captures.
 
-Measures the colour of the ground against the targets of RFC-059 (Persephone's biome). Two modes.
+Measures the colour of the ground against the targets of Persephone's biome. Two modes.
 
   Role sheets, weighted by a map's ground roles (what the role ground WOULD look like before light and fog):
     python3 -I tools/import/measure_ground.py --roles=assets/original/themes/persephone/roles \
@@ -9,8 +9,8 @@ Measures the colour of the ground against the targets of RFC-059 (Persephone's b
   prints the mean of each sheet (<role>.png, open/earth/rock/path) and the mean over the map (each sheet counted as much as the
   map's RGBA weights give it; --tints are grey multipliers per role, GroundRole.tint). Against what the original paints on a map
   of the god's land: tools/import/bake_role_sheets.py --measure (needs the original; it uses roles_stats' criteria,
-  compare_roles). The classic atlases this was once compared with are gone (plan 062-3d); tools/import/ground_colour_report.json
-  keeps that measure.
+  compare_roles). tools/import/ground_colour_report.json keeps the measure against
+  the classic atlases.
 
   Capture (a screenshot of the game with a fixed camera), one box of it:
     python3 -I tools/import/measure_ground.py --png=capture.png --box=x0,y0,x1,y1 [--expect=near|mid|far]

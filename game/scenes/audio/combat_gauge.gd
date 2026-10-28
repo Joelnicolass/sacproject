@@ -9,11 +9,10 @@ extends Node
 ##   last sample.
 ## - Hysteresis: the combat turns on when the intensity reaches `enter` and turns off after it stays under `exit` for
 ##   `hold_s`, so a pause between two swings does not cut the battle music.
-## - The local wizard hurt (Events.body_hurt on that wizard) keeps the battle on for `wizard_damage_s` (the original: 120 s).
-## `is_battle()` is either of the two (RFC-052 §14.4); `battle_changed(on)` tells when it flips. It chooses no music.
+## - The local wizard hurt (Events.body_hurt on that wizard) keeps the battle on for `wizard_damage_s`.
+## `is_battle()` is either of the two; `battle_changed(on)` tells when it flips. It chooses no music.
 ## Sampled every `sample_every_s` of game time. With the AudioGate closed it does nothing. `force(value)` pins the
 ## intensity (the lab's `battle` step); `force(-1)` lets it go.
-## Ref: RFC-052 052f (F365).
 
 signal battle_changed(on: bool)
 

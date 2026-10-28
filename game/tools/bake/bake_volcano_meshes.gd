@@ -5,7 +5,6 @@ extends SceneTree
 ## (0 to 1), and the shader of each (volcano_lava / volcano_spatter.gdshader) puts every vertex in place from the
 ## knots and radii it holds as uniforms. It needs no original game. Run it once; the result is versioned and the scene only holds the files.
 ##   "$GODOT" --headless --path game --script res://tools/bake/bake_volcano_meshes.gd
-## Ref: sacengine makeVolcanoLavaMeshes, SacVolcanoSpatter.createMeshes (sacobject.d:3351-3399, 3510-3543).
 
 const DIR := "res://scenes/spells/zones/"
 const SIDES := 64

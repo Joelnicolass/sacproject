@@ -1,4 +1,4 @@
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Bakes the ground role sheets of a god: assets/original/themes/<god>/roles/<role>.png and <role>_detail.png.
 
@@ -7,7 +7,7 @@ play that role (tools/import/ground_roles_table.json, verified rows only; a land
 sheet borrows in `sheet_borrow`), laid out as a 4x4 grid of 64x64 tiles (256x256 px,
 64 px = one 10 m cell). A group with fewer than 16 tiles repeats them in order, so a tile used twice weighs twice; a role with
 more than 16 gives each tile its share of the cells its land's maps paint with it (fit_cells). A role made of several groups
-draws its sheet from the group its land's maps paint most plus the groups that look like it (one_look: plan 062's colour
+draws its sheet from the group its land's maps paint most plus the groups that look like it (one_look: the colour
 criterion against that group); a group that looks different keeps its role on the map but gets no cells of its own, because
 the shader picks a cell at random and a different-looking tile would show as loose squares (Charnel's pale spawn pockets
 MG03 among its brown open ground, Pyro's pale upper earth MG02 among MG01). The ground
@@ -16,10 +16,10 @@ layer (DTnn) the group lays over its tiles in the original, 256x256, stretched o
 
   SAC_INSTALL=/path/to/Sacrifice/data python3 -I tools/import/bake_role_sheets.py [--god=persephone] [--check] [--measure]
 
---check writes nothing and prints what it would write, and warns «hoja sin .import versionado» for a sheet whose .import is missing or not in git (import once in the editor and commit the .import). Prints, per role, the groups, the tiles and the mean RGB of the sheet.
+--check writes nothing and prints what it would write, and warns «sheet without a versioned .import» for a sheet whose .import is missing or not in git (import once in the editor and commit the .import). Prints, per role, the groups, the tiles and the mean RGB of the sheet.
 --measure writes nothing: for every imported map of the god's own land, the mean colour of the saved sheets weighted by the map's
 ground_roles.png against the mean of the tiles the original paints there (its own ids on its own land; id 0, the void, skipped),
-PASS or FAIL per criterion of plan 062 (saturation and value within 0.03, hue within 4 degrees); exit 1 on a FAIL.
+PASS or FAIL per colour criterion (saturation and value within 0.03, hue within 4 degrees); exit 1 on a FAIL.
 Ref: sacmap.d:196-206 (DT layer per MAPG group), maps.d:65 loadDTIndex (byte 55 = DT layer).
 """
 
@@ -174,7 +174,7 @@ def main() -> int:
         if "--check" in ARGS:
             for sheet_path in (out_dir / ("%s.png" % role), out_dir / ("%s_detail.png" % role)):
                 if not versioned_import(sheet_path):
-                    print("bake_role_sheets: hoja sin .import versionado: %s" % sheet_path)
+                    print("bake_role_sheets: sheet without a versioned .import: %s" % sheet_path)
             continue
         out_dir.mkdir(parents=True, exist_ok=True)
         Image.fromarray(albedo, "RGB").save(out_dir / ("%s.png" % role))

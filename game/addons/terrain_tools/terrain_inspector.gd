@@ -1,8 +1,8 @@
 @tool
 extends EditorInspectorPlugin
 
-## Puts the ground's buttons (TerrainPanel) at the top of the inspector of every Terrain: «Abrir en Blender», «Traer de
-## Blender», «Suelo plano nuevo», «Aplanar bases» and «Validar mapa». Not: what they do (TerrainActions).
+## Puts the ground's buttons (TerrainPanel) at the top of the inspector of every Terrain: «Open in Blender», «Traer de
+## Blender», «New flat ground», «Flatten bases» and «Validate map». Not: what they do (TerrainActions).
 
 const PanelScene := preload("res://addons/terrain_tools/terrain_panel.tscn")
 const TerrainActions := preload("res://addons/terrain_tools/terrain_actions.gd")

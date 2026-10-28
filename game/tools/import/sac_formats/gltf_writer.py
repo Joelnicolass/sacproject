@@ -1,4 +1,4 @@
-"""Minimal glTF 2.0 binary (.glb) writer shared by the importers (RFC-033 033c; extracted from export_skeletal.py).
+"""Minimal glTF 2.0 binary (.glb) writer shared by the importers.
 
 Written from the glTF 2.0 specification. No sacengine code. Deterministic: same input, same bytes.
 
@@ -57,9 +57,9 @@ def write_glb(path: Path, doc: dict, g: Gltf) -> None:
 
 
 def import_params(animation: bool, exact: bool = False, tangents: bool = True, import_script: str = "") -> str:
-    """The text of the .glb.import for a model: `animation` True for skeletal models (RFC-023), False for static props.
+    """The text of the .glb.import for a model: `animation` True for skeletal models, False for static props.
     `exact` keeps the vertices as float32: by default Godot stores positions in 16 bits over the mesh box (0.3 mm on a
-    14 m building), which is more than the parity of RFC-033 allows. `tangents` is ensure_tangents: only a model with a normal
+    14 m building), which is more than the import parity allows. `tangents` is ensure_tangents: only a model with a normal
     map needs them. `import_script`: res:// path of an EditorScenePostImport script (skeletal models: the scene importer
     drops a third of the animation keys and ignores its own optimizer options, so tools/skeletal_post_import.gd puts the
     clips back as the .glb stores them)."""

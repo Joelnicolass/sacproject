@@ -1,9 +1,9 @@
 extends Node
 
-## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
-## Bakes the map's navmesh headless (RFC-035 035f): the static colliders of the `nav_source` nodes of the map scene (the
+## Does not need the original game; it uses the models and data already imported in assets/original (versioned).
+## Bakes the map's navmesh headless: the static colliders of the `nav_source` nodes of the map scene (the
 ## terrain's collision, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into scenes/map/maps/<tag>/nav.res
-## (the navmesh of the map's NavRegion; the «Hornear navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it; RFC-044 044b).
+## (the navmesh of the map's NavRegion; the «Bake navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it).
 ## The map is baked by zones (NavZones) and joined; the file is one navmesh as always.
 ## The navmesh carries the source hash (NavFingerprint.source_hash) in its metadata; MapNavRegion warns when it is stale.
 ## It runs as a scene (autoloads exist, the parse needs the nodes inside the tree):

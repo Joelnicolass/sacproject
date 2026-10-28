@@ -2,7 +2,7 @@
 class_name TargetInfoPanel
 extends Control
 
-## The original's info box (described, not copied). Local presentation: no RPC, no sim.
+## The mouse-over info box. Local presentation: no RPC, no sim.
 ## - Hover: `delay_s` after TargetProbe names a new body, the box shows beside the pointer what TargetInfo says about it, and
 ##   follows the pointer while it stays on that body. It mirrors to the left of the pointer near the right edge and is clamped
 ##   inside the viewport. Another body, or none, hides it at once (on the probe's next sample, 30 a second).
@@ -11,7 +11,6 @@ extends Control
 ## - The bar and the text follow Health.changed of the body shown, not every frame.
 ## - Size: 264×84 canvas pixels, set in the .tscn with the title font; Godot's stretch scales it. The children are laid out by anchors.
 ## - FeelPrefs.hover_info off turns the hover box off; the pinned one still shows (it was clicked).
-## Ref: RFC-053 053e (F374); renderer.d:66, 5036-5230.
 
 ## Read-only views for flows and checks (AgentKit reads properties).
 var shown_title: String:
@@ -32,7 +31,6 @@ var pinned: bool:
 @export var inspector: StructureInspector
 @export var prefs: FeelPrefs
 ## Seconds the pointer stays on a body before the box shows.
-## Ref: renderer.d:66.
 @export var delay_s := 0.5
 ## Canvas pixels between the pointer and the box.
 @export var cursor_gap_px := 19.0
@@ -52,7 +50,7 @@ var _title_left := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if probe == null:
-		warnings.append("Asigná `probe` (el TargetProbe que dice qué hay bajo el puntero).")
+		warnings.append("Assign `probe` (the TargetProbe that says what is under the pointer).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		warnings.append(prefs_warning)

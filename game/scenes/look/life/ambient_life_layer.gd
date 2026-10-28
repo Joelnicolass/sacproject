@@ -133,8 +133,8 @@ func _active_spots() -> int:
 func _get_configuration_warnings() -> PackedStringArray:
 	var found := PackedStringArray()
 	if atmosphere == null:
-		found.append("Falta el socket Atmosphere.")
+		found.append("The Atmosphere socket is missing.")
 	if _set and _set.air.size() > air_slots.size():
-		found.append("El bioma tiene %d enjambres de aire y el pool solo %d (Air1..Air%d): sobran." % [
+		found.append("The biome has %d air swarms and the pool only %d (Air1..Air%d): the rest are left out." % [
 				_set.air.size(), air_slots.size(), air_slots.size()])
 	return found

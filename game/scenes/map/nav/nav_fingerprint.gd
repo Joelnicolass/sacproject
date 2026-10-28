@@ -4,7 +4,6 @@ extends RefCounted
 
 ## Hashes for the versioned navmesh. Pure functions; the editor warning (MapNavRegion) and
 ## tools/bake/bake_nav.gd call the same ones, so a bake and a check cannot disagree on what the source is.
-## Ref: RFC-035 035f, R10.
 
 ## Nodes of the map that feed the bake (their static colliders and children): the terrain, the buildings, the manafounts.
 const GROUP := &"nav_source"

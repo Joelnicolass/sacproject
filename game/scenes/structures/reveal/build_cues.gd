@@ -35,11 +35,11 @@ var _cut_at := Vector3.ZERO
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if tower == null:
-		warnings.append("Asigná `tower` (la raíz de la torre, un CastTower).")
+		warnings.append("Assign `tower` (the tower's root, a CastTower).")
 	if reveal == null:
-		warnings.append("Asigná `reveal` (el BuildReveal: el corte nace en su línea).")
+		warnings.append("Assign `reveal` (the BuildReveal: the cut starts on its line).")
 	if spot == null:
-		warnings.append("Asigná `spot` (el Marker3D BaseSpot donde nacen el inicio y el final).")
+		warnings.append("Assign `spot` (the BaseSpot Marker3D where the start and the end appear).")
 	return warnings
 
 

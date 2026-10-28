@@ -1,10 +1,10 @@
 @tool
 extends RefCounted
 
-## Every change the editor makes to a map through a brush canvas (a stroke, «Aplanar bases»), as one step of the scene's
+## Every change the editor makes to a map through a brush canvas (a stroke, «Flatten bases»), as one step of the scene's
 ## undo history: it writes the before or after patches into that canvas (BrushCanvas.write), and Ctrl+S saves every canvas
-## with changes. It keeps one canvas per thing painted: the ground's heights (`lattice`), its roles (`roles`; the flora
-## densities join in 066d). Not: what a dab does or how a canvas stores and shows it (the canvases), the mouse (BrushPainter).
+## with changes. It keeps one canvas per thing painted: the ground's heights (`lattice`), its roles (`roles`) and the flora
+## densities (`density`). Not: what a dab does or how a canvas stores and shows it (the canvases), the mouse (BrushPainter).
 
 ## A step of `canvas` was done, undone or redone over its cells `rect`.
 signal written(canvas: BrushCanvas, rect: Rect2i)
@@ -55,7 +55,7 @@ func density(layer: FloraLayer) -> DensityCanvas:
 	if not _densities.has(layer):
 		var made := DensityCanvas.of(layer)
 		if made == null:
-			push_error("Flora: no se puede leer la imagen de densidad de %s." % layer.name)
+			push_error("Flora: cannot read the density picture of %s." % layer.name)
 			return null
 		_densities[layer] = _kept(made)
 	return _densities[layer]
@@ -130,22 +130,22 @@ func _kept(canvas: BrushCanvas) -> BrushCanvas:
 
 
 ## Makes `layer`'s new picture and assigns it as an undo step; false when the editor could not import it yet.
-## WORKAROUND: EditorFileSystem is not known to import a file in a folder it has never seen (plan 066 risk 2); then the
+## WORKAROUND: EditorFileSystem is not known to import a file in a folder it has never seen; then the
 ## project is scanned and the next click uses that same file.
 func _give_picture(layer: FloraLayer) -> bool:
 	var path: String = _waiting.get(layer, "")
 	if path.is_empty():
 		path = DensityCanvas.new_picture_path(layer)
-		var error := DensityCanvas.create_picture(layer, path) if not path.is_empty() else "la capa no está en un mapa guardado"
+		var error := DensityCanvas.create_picture(layer, path) if not path.is_empty() else "the layer is not in a saved map"
 		if not error.is_empty():
-			push_error("Flora: no se pudo crear la imagen de densidad (%s)." % error)
+			push_error("Flora: could not create the density picture (%s)." % error)
 			return false
 	if not ResourceLoader.exists(path):
 		_waiting[layer] = path
 		var files: Object = CanvasFiles.filesystem()
 		if files != null:
 			files.scan()
-		push_warning("Flora: %s se está importando; volvé a hacer clic en un momento." % path)
+		push_warning("Flora: %s is being imported; click again in a moment." % path)
 		return false
 	_waiting.erase(layer)
 	_undo.create_action(DensityCanvas.NEW_PICTURE, UndoRedo.MERGE_DISABLE, layer)

@@ -61,7 +61,7 @@ xargs awk '
 		}
 	}' < "$OUT/all.txt" | sort > "$OUT/C11.txt"
 
-# C12 (plan 070 N0): network calls (`MpKit.` or the `Mp.` facade) outside the allowlist, one line per file. Whole-line comments do not
+# C12: network calls (`MpKit.` or the `Mp.` facade) outside the allowlist, one line per file. Whole-line comments do not
 # count. Allowlist: scenes/net/; the network screens (scenes/ui/lobby/, local_server/, online/, match_wait/); owners of submit_*/@rpc;
 # MultiplayerSpawner users; subclasses of a kit node (`extends Mp<Name>`).
 : > "$OUT/C12.txt"
@@ -72,7 +72,7 @@ done
 
 # C13: the product reading the original's formats.
 scan C13 'assets/original|OriginalAssets\.|res://tools'
-# Comments and doc lines that only mention a path are not reads (audit 055R, user decision 2026-10-24).
+# Comments and doc lines that only mention a path are not reads.
 grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' "$OUT/C13.txt" > "$OUT/C13.tmp" || true; mv "$OUT/C13.tmp" "$OUT/C13.txt"
 
 # C14: print( in scenes/ (DebugLog is the logger; comments do not count). A print guarded by `DebugLog.on(...)` on the same
@@ -90,7 +90,7 @@ grep -v '^scenes/ui/spell_book/action_key_label\.gd$' "$OUT/all.txt" \
 	| xargs grep -nE 'KEY_[A-Z]|MOUSE_BUTTON_[A-Z]' 2>/dev/null \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C25.txt" || true
 
-# ---- Editor-first rules (RFC-055 §15): "todo en el editor, movible con gizmo, sin capas de abstraccion". ----
+# ---- Editor-first rules: "everything in the editor, movable with a gizmo, no abstraction layers". ----
 
 # C15: content nodes built with .new() in code (allowlist: pools, buses, planters, previews).
 xargs grep -nE '[A-Z][A-Za-z0-9]*(3D|2D|Player|Timer|Light|Camera)[A-Za-z0-9]*\.new\(' < "$OUT/all.txt" 2>/dev/null \
@@ -105,7 +105,7 @@ xargs grep -nE 'Vector3\.UP[ ]*\*[ ]*([-0-9.(]|[a-z_]*(height|offset|lift|reach|
 # C17: FX/sound named by text literal or by an exported String instead of a typed Resource.
 xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|effect)[a-z_]*[ ]*:[ ]*(String|StringName)\b' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C17.txt" || true
-# C17 for sound (055o): a sound is a SoundCue/SoundSet/MusicSet assigned in the inspector, not a key looked up by text.
+# C17 for sound: a sound is a SoundCue/SoundSet/MusicSet assigned in the inspector, not a key looked up by text.
 {
 	xargs grep -nE 'SoundLibrary\.|SoundBus\.(lookup|fx_cue)\(|FxSoundMap\b' < "$OUT/all.txt" 2>/dev/null
 	xargs grep -nE '@export[a-z_]* var (cue|source|set_path|fallback_path|shared_set|ui_set|ui_click_key|one_shot_source|one_shot_keys)[ ]*(:[ ]*(String|StringName)\b|:=[ ]*&?")' < "$OUT/all.txt" 2>/dev/null
@@ -114,12 +114,12 @@ xargs grep -nE 'FxBus\.[a-z_]+\([ ]*&?"|@export[a-z_]* var [a-z_]*(fx|sfx|sound|
 		| xargs grep -nE '^(cue = &"|source = "|set_path = "|fallback_path = "|metadata/ui_sound = "|one_shot_keys = )' 2>/dev/null
 } | grep -vE ':[0-9]+:[ 	]*#' >> "$OUT/C17.txt" || true
 
-# C17 widened (055x x1): the same defect measured better. It also counts an effect named by text where the old pattern did not look:
+# C17 widened: the same defect measured better. It also counts an effect named by text where the old pattern did not look:
 #   - a `var`/`@export var` named *fx / *burst / *puff holding text (a String type or a "..." / &"..." default), private ones (`_x`) aside;
 #   - an effect turned into text to be played (`.bus_name()`, `.fx_name()`, `.cast_fx_name()`, `.resource_path` handed to FxBus,
 #     `FxTrail.attach(host, "name", ...)`);
 #   - a `.tscn` / `.tres` property named *fx / *burst / *puff set to a "..." text (an effect is an ExtResource, not a name).
-# 055x x7 took it to 0. The lines are de-duplicated with the older patterns above. Allowlist: the network id of the hand's effect
+# It is at 0. The lines are de-duplicated with the older patterns above. Allowlist: the network id of the hand's effect
 # (`Caster.cast_fx_shown`, a replicated String: FxWire.id_of on the server, FxWire.resource on each peer).
 {
 	xargs grep -nE '^[ 	]*(@export[a-z_]*(\([^)]*\))? )?var [a-z][a-z_0-9]*(fx|burst|puff)[a-z_0-9]*[ ]*(:=[ ]*&?"|:[ ]*(String|StringName)\b)' < "$OUT/all.txt" 2>/dev/null
@@ -134,7 +134,7 @@ mv "$OUT/C17.sorted" "$OUT/C17.txt"
 xargs grep -nE 'MapCatalog\.|GameModeCatalog\.' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18.txt" || true
-# C18 widened (055i-b1): which match this process plays is read once, by the world (MatchWorld hands the map and the mode to its
+# C18 widened: which match this process plays is read once, by the world (MatchWorld hands the map and the mode to its
 # systems), the flow and the screens; a system that asks ActiveMatch itself is a bridge again.
 xargs grep -nE '(^|[^A-Za-z0-9_])ActiveMatch\.' < "$OUT/all.txt" 2>/dev/null \
 	| grep -vE '^scenes/(core|net|ui)/|^scenes/match/match_world\.gd:' \
@@ -143,17 +143,17 @@ xargs grep -nE '(^|[^A-Za-z0-9_])ActiveMatch\.' < "$OUT/all.txt" 2>/dev/null \
 # C18b: lookups by id that C18 does not see (catalog god/building by tag, TypeRef, AI difficulty by id, biome look by god, wire decode).
 # Same allowlist as C18. Screens and gameplay receive the Resource; only the catalogs and the wire turn text back into one.
 # `MatchWire.decode_*` is also allowed in the flow and in the room/local-server screens: they hold the raw text the network gives
-# them (the seat metas of a room, the channels of the flow) and the wire is the one place that turns it into a Resource (RFC-055 055i-a Q3).
+# them (the seat metas of a room, the channels of the flow) and the wire is the one place that turns it into a Resource.
 {
 	xargs grep -nE 'GameCatalog\.shared\(\)\.(god|building)\(|TypeRef\.|AiSeat\.difficulty_of\(|BiomeRules\.has_look\(' < "$OUT/all.txt" 2>/dev/null
 	xargs grep -nE 'MatchWire\.decode_' < "$OUT/all.txt" 2>/dev/null | grep -vE '^scenes/core/flow/|^scenes/ui/(lobby|local_server)/'
 } | grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18b.txt" || true
 
-# C18c (055c1): a content reference exported as text where the Resource exists: `*_tag`, `*_tags`, `*_spell`, `spell`, and the old passive
+# C18c: a content reference exported as text where the Resource exists: `*_tag`, `*_tags`, `*_spell`, `spell`, and the old passive
 # slots, as String / StringName / PackedStringArray, or a `const TAGS` list of creature tags, in units, ai, wizards and sacrifice. A component
 # receives the AbilityType / SpellType by `@export`. Allowlist: the network ids (`tag` in a `*_type.gd`, `creature_tag`,
-# `wizard_tag`); the AI difficulty names are not content. (The FX by text, `look_tag`, `rock_tag`, `texture_tag`, `shot_tag`, left in 055x.)
+# `wizard_tag`); the AI difficulty names are not content. (The FX by text, `look_tag`, `rock_tag`, `texture_tag`, `shot_tag`, are left out.)
 find scenes/units scenes/ai scenes/wizards scenes/sacrifice -name '*.gd' 2>/dev/null | sort \
 	| xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (tag|[a-z_0-9]*_tags?|[a-z_0-9]*_spell|spell|passive_on_damage|passive_abilities)[ ]*(:[ ]*(String|StringName|PackedStringArray)\b|:=[ ]*(&?"|PackedStringArray))|^const [A-Z_]*TAGS?[ ]*(:[^=]*)?=[ ]*(PackedStringArray|\[)' 2>/dev/null \
 	| grep -vE '^[^:]*_type\.gd:[0-9]+:@export[a-z_]* var tag\b' \
@@ -180,11 +180,11 @@ xargs grep -nE '^@export(_[a-z]+)?(\([^)]*\))? var [a-z_0-9]*(_ticks|frames)[a-z
 	| grep -vE '^scenes/(ui|net)/' | grep -vE ':@export_storage ' \
 	| grep -vE 'var (h_frames|v_frames|frames_h|frames_v|frames_per_s|resync_ticks)\b' > "$OUT/C22.txt" || true
 
-# C23 (055s): the types the server reads (creatures, wizards, gods) carry no presentation. Their look, sounds and carried effect live in
+# C23: the types the server reads (creatures, wizards, gods) carry no presentation. Their look, sounds and carried effect live in
 # the appearance scene behind the placeholder of their body scene (BodyLook), which only a client builds. Counts `model`, `sounds`,
 # `carried_fx` and any exported SoundSet / SoundCue / AudioStream / LookProfile / MusicSet / PackedScene in those three types.
 # Allowlist: `body` (the body scene, with its placeholder) and `GodType.look` (sky, light and music of the god: it leaves the server with the
-# split of match.tscn, plan 055s question 2; kept until 2026-12-31).
+# split of match.tscn; kept until 2026-12-31).
 xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (model|sounds|carried_fx)\b|^@export[a-z_]*(\([^)]*\))? var [a-z_0-9]+[ ]*:[ ]*(Array\[)?(SoundSet|SoundCue|AudioStream[A-Za-z]*|LookProfile|MusicSet|PackedScene)\b' \
 	< <(grep -E '^scenes/(units/creature_type|wizards/wizard_type|gods/god_type)\.gd$' "$OUT/all.txt") 2>/dev/null \
 	| grep -vE '@export var body: PackedScene' | grep -vE '^scenes/gods/god_type\.gd:[0-9]+:@export var look: LookProfile' > "$OUT/C23.txt" || true

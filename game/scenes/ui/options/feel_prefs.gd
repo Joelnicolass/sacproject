@@ -10,7 +10,6 @@ extends Resource
 ## - It lives in `user://settings.cfg` `[sensacion]` through UserSettings (sandboxed under AgentKit, like the others).
 ## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that instance and
 ## the exported fields (the defaults) are never written. Changes emit `changed`.
-## Ref: RFC-053 053e/053f (F374, F375).
 
 const SHARED_PATH := "res://data/ui/feel_prefs.tres"
 const SECTION := "sensacion"
@@ -81,9 +80,9 @@ func set_blood(on: bool, save := true) -> void:
 ## Warning text for a node whose `prefs` is not the shared instance ("" when it is).
 static func socket_warning(prefs: FeelPrefs) -> String:
 	if prefs == null:
-		return "Asigná `prefs` (%s)." % SHARED_PATH
+		return "Assign `prefs` (%s)." % SHARED_PATH
 	if prefs.resource_path != SHARED_PATH:
-		return "`prefs` no es %s: este nodo no seguirá la elección del jugador." % SHARED_PATH
+		return "`prefs` is not %s: this node will not follow the player's choice." % SHARED_PATH
 	return ""
 
 

@@ -1,6 +1,6 @@
 """The WAD container: a zlib-compressed directory at the end of the file, then the (maybe compressed) payloads.
 
-The only WAD reader of the tools (RFC-033). Written from the layout: 4-byte names are stored reversed.
+The only WAD reader of the tools. Written from the layout: 4-byte names are stored reversed.
 """
 
 import zlib

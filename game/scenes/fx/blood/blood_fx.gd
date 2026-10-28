@@ -128,13 +128,13 @@ func _show(value: Vector4) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if body == null:
-		out.append("Asigná `body` (el cuerpo que sangra).")
+		out.append("Assign `body` (the body that bleeds).")
 	if health == null:
-		out.append("Asigná `health` (su Health).")
+		out.append("Assign `health` (its Health).")
 	if mount == null:
-		out.append("Asigná `mount` (su BodyMount: el look puede traer su sangre).")
+		out.append("Assign `mount` (its BodyMount: the look can bring its blood).")
 	if fallback == null:
-		out.append("Asigná `fallback` (data/fx/blood/red.tres).")
+		out.append("Assign `fallback` (data/fx/blood/red.tres).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		out.append(prefs_warning)

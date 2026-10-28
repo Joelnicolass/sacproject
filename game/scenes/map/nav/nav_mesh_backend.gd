@@ -6,7 +6,6 @@ extends RefCounted
 ## the engine syncs the map each physics frame, and what changes at runtime (altars, structures, a fallen building) is a re-bake that
 ## swaps the region's navigation_mesh (NavRebake, driven by NavService). Nothing hand-made blocks a path here.
 ## The map is empty until the engine has synced the region (one physics frame after it is in the tree): `is_synced` tells.
-## Ref: RFC-035 035g.
 
 ## Reach (6 nodes of 5 m, as the old grid) for «the nearest walkable thing».
 const SNAP_M := 30.0
@@ -140,8 +139,8 @@ var _result: NavigationPathQueryResult3D
 func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if not built:
 		return PackedVector3Array()
-	## The start is put on the land closest to it: a body on a roof, or in the box a building leaves hollow, stands over an island of the
-	## mesh, and a path asked from there goes nowhere (the closest approach of an island is inside it).
+	# The start is put on the land closest to it: a body on a roof, or in the box a building leaves hollow, stands over an island of the
+	# mesh, and a path asked from there goes nowhere (the closest approach of an island is inside it).
 	var start := nearest_free(from)
 	var raw := _query(from if is_nan(start.x) else start, to)
 	if raw.size() < 2:
@@ -204,7 +203,7 @@ func _index(navmesh: NavigationMesh) -> void:
 	polygon_count = navmesh.get_polygon_count()
 	var vertices := navmesh.get_vertices()
 	if navmesh.get_polygon_count() > 0:
-		## The middle of the first polygon: a point that is surely on the mesh (a corner may be shaved by the server's merge).
+		# The middle of the first polygon: a point that is surely on the mesh (a corner may be shaved by the server's merge).
 		var polygon := navmesh.get_polygon(0)
 		var sum := Vector3.ZERO
 		for index in polygon:

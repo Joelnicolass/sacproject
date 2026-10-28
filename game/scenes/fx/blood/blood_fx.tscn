@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="9_prefs"]
 
 [node name="BloodFx" type="Node"]
-editor_description = "El cuerpo sangra cuando baja su Health.current: salpicadura roja desde el centro y mancha en el suelo a sus pies. Al instanciarlo asigná body, health y mount."
+editor_description = "The body bleeds when its Health.current drops: a red spray from the centre and a stain on the ground at its feet. When instancing it, assign body, health and mount."
 script = ExtResource("1_blood")
 fallback = ExtResource("2_red")
 prefs = ExtResource("9_prefs")

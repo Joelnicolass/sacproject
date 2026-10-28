@@ -5,7 +5,6 @@ extends RefCounted
 ## piece): across a wall it runs by the metres walked along the rim, so it keeps its width on every wall and goes on from
 ## one wall to the next without a jump; down a wall it runs once from the rim (0) to the wall's foot (1). Pure and static:
 ## TerrainMeshArrays, HoleWallRules and FallingChunkRules put the result in the mesh's UV. It does not build walls.
-## Ref: sacmap.d appendEdgeWall (780-813: the texture once down the 50 m wall, mirrored-repeat sampler, sacmap.d:204-205).
 
 
 ## For walls given by the two ends of their rim, [a0, b0, a1, b1, ...] (x, z), the metres along the rim at each end, in the

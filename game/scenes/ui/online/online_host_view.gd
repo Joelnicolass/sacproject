@@ -28,7 +28,7 @@ func _show_form() -> void:
 func _on_create() -> void:
 	if _online != null:
 		return
-	## The mode, the map and the land go in the ticket like a room's options.
+	# The mode, the map and the land go in the ticket like a room's options.
 	var chosen := MatchSetup.new()
 	chosen.mode = (%HostMode as ModePicker).selected_mode()
 	chosen.map = (%HostMap as MapPicker).selected_map()

@@ -1,7 +1,7 @@
 @tool
 extends EditorInspectorPlugin
 
-## Puts the «Relieve desde albedo» section (surface_panel.tscn) at the top of the inspector of every BaseMaterial3D and of
+## Puts the «Relief from albedo» section (surface_panel.tscn) at the top of the inspector of every BaseMaterial3D and of
 ## any Resource with an `albedo` and a `normal` or `orm` texture (a ground role, without naming it). Hands each section
 ## the session's recipe and the editor's undo. Not: the section itself (surface_panel), the pixels, the files.
 

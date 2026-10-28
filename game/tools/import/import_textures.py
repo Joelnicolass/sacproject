@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Import the original's model textures (bodies, buildings, plants) to assets/original/textures/ as PNG.
 
-RFC-033 (033b). One PNG per unique texture, with the colour key of the model's limb records already applied to the alpha
+One PNG per unique texture, with the colour key of the model's limb records already applied to the alpha
 channel. Writes only assets/original/textures/. Deterministic and idempotent: a second run changes nothing (an existing
 .png.import is never touched: it carries the UID).
 

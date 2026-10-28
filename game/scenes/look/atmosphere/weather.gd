@@ -84,4 +84,4 @@ func _rule(state: WeatherState) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if precipitation else PackedStringArray(["Falta el socket Precipitation."])
+	return PackedStringArray() if precipitation else PackedStringArray(["The Precipitation socket is missing."])

@@ -23,16 +23,16 @@ static func folder_of(tag: String) -> String:
 ## Why a map cannot be made with that tag and name ("" = it can): the tag is the folder, the file name and `--map=<tag>`.
 static func refusal(tag: String, display_name: String) -> String:
 	if tag.is_empty():
-		return "Escribí un tag (por ejemplo mi_mapa)."
+		return "Type a tag (for example my_map)."
 	if tag.begins_with("_"):
-		return "El tag no puede empezar con «_»: esas carpetas son plantillas."
+		return "The tag cannot start with «_»: those folders are templates."
 	var pattern := RegEx.create_from_string(TAG_PATTERN)
 	if pattern.search(tag) == null:
-		return "El tag va en minúsculas, números y «_», y empieza con una letra (no «%s»)." % tag
+		return "The tag is lowercase letters, digits and «_», and starts with a letter (not «%s»)." % tag
 	if DirAccess.dir_exists_absolute(folder_of(tag)):
-		return "Ya hay un mapa «%s» (%s)." % [tag, folder_of(tag)]
+		return "There is already a map «%s» (%s)." % [tag, folder_of(tag)]
 	if display_name.strip_edges().is_empty():
-		return "Escribí un nombre (lo ven las salas)."
+		return "Type a name (the rooms show it)."
 	return ""
 
 
@@ -41,18 +41,18 @@ static func refusal(tag: String, display_name: String) -> String:
 static func write_pictures(folder: String) -> PackedStringArray:
 	var written := PackedStringArray()
 	if DirAccess.make_dir_recursive_absolute(folder) != OK:
-		push_error("Mapa nuevo: no se pudo crear %s." % folder)
+		push_error("New map: could not create %s." % folder)
 		return PackedStringArray()
 	for file in PICTURES:
 		var source := TEMPLATE_DIR.path_join(file)
 		var target := folder.path_join(file)
 		if DirAccess.copy_absolute(source, target) != OK:
-			push_error("Mapa nuevo: no se pudo copiar %s a %s." % [source, target])
+			push_error("New map: could not copy %s to %s." % [source, target])
 			return PackedStringArray()
 		var import_text := FileAccess.get_file_as_string(source + ".import")
 		var import_file := FileAccess.open(target + ".import", FileAccess.WRITE)
 		if import_text.is_empty() or import_file == null:
-			push_error("Mapa nuevo: no se pudo escribir %s.import." % target)
+			push_error("New map: could not write %s.import." % target)
 			return PackedStringArray()
 		import_file.store_string(import_for(import_text, source, target))
 		import_file.close()
@@ -73,7 +73,7 @@ static func import_for(text: String, source: String, target: String) -> String:
 ## An empty navmesh, so the scene loads before the first bake.
 static func write_nav(folder: String) -> String:
 	var path := folder.path_join(NAV_FILE)
-	return "" if ResourceSaver.save(NavigationMesh.new(), path) == OK else "no se pudo escribir %s." % path
+	return "" if ResourceSaver.save(NavigationMesh.new(), path) == OK else "could not write %s." % path
 
 
 ## The map scene of `folder`: the template's tree reading the folder's pictures (imported already) and navmesh.
@@ -83,12 +83,12 @@ static func write_scene(folder: String) -> String:
 	var light := load(folder.path_join(PICTURES[2])) as Texture2D
 	var nav := load(folder.path_join(NAV_FILE)) as NavigationMesh
 	if heights == null or roles == null or light == null or nav == null:
-		return "%s: las imágenes o el navmesh no cargan (¿se importaron?)." % folder
+		return "%s: the pictures or the navmesh do not load (were they imported?)." % folder
 	var packed := scene_for(heights, roles, nav, light)
 	if packed == null:
-		return "no se pudo armar la escena desde %s." % TEMPLATE_DIR.path_join(SCENE_FILE)
+		return "could not build the scene from %s." % TEMPLATE_DIR.path_join(SCENE_FILE)
 	var path := folder.path_join(SCENE_FILE)
-	return "" if ResourceSaver.save(packed, path) == OK else "no se pudo escribir %s." % path
+	return "" if ResourceSaver.save(packed, path) == OK else "could not write %s." % path
 
 
 ## The template's tree, packed again with its Terrain and NavRegion holding these resources (nothing is written). A null
@@ -123,6 +123,6 @@ static func write_definition(folder: String, tag: StringName, display_name: Stri
 	definition.map_scene = load(folder.path_join(SCENE_FILE)) as PackedScene
 	definition.player_starts = STARTS
 	if definition.map_scene == null:
-		return "%s: la escena no carga." % folder
+		return "%s: the scene does not load." % folder
 	var path := folder.path_join("%s.tres" % tag)
-	return "" if ResourceSaver.save(definition, path) == OK else "no se pudo escribir %s." % path
+	return "" if ResourceSaver.save(definition, path) == OK else "could not write %s." % path

@@ -1,4 +1,4 @@
-"""No necesita el juego original: shared by bake_ground_roles.py and check_ground_roles.py.
+"""Does not need the original game: shared by bake_ground_roles.py and check_ground_roles.py.
 
 A map's ground_roles.png is 256x256, one pixel per 10 m cell, RGBA = how much of each ground role the cell has:
 R open (grass), G earth, B rock, A path. The four weights of a cell add up to 255.

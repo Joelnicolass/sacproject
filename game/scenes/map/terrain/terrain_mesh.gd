@@ -35,7 +35,7 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain padre)."])
+	return PackedStringArray() if terrain != null else PackedStringArray(["The `terrain` socket is missing (the parent Terrain)."])
 
 
 func _notification(what: int) -> void:

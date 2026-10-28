@@ -10,9 +10,8 @@ extends AudioStreamPlayer3D
 ## - Loop: it plays on this player (it follows the node) while `active` and within the cue's `max_distance_m` of the
 ##   listener, looking every `check_s`. SoundBus counts the loop in the 3D budget (`claim_loop`). Gapless when the stream
 ##   loops (the WAV import loop mode); a stream that does not loop is started again when it ends.
-## - No cue or a silent cue: silence. A dedicated server, the room server and a headless bench (AudioGate closed) load the
+## - No cue or a silent cue: silence. A dedicated server, the room server and a headless run (AudioGate closed) load the
 ##   scene and its cue file, and play nothing. Presentation only: it reads nothing of the simulation.
-## Ref: the original's one-shots do not follow their node either.
 
 ## What this emitter sounds like. Empty = silence (the scene tree shows a warning).
 @export var cue: SoundCue:
@@ -66,7 +65,7 @@ func _exit_tree() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if cue != null else PackedStringArray(["Asigná `cue`: el SoundCue que suena (data/audio/cues/)."])
+	return PackedStringArray() if cue != null else PackedStringArray(["Assign `cue`: the SoundCue that plays (data/audio/cues/)."])
 
 
 ## Turns a loop on or off (a one-shot only remembers it for its next play_once).
@@ -107,7 +106,7 @@ func _in_range(found: SoundCue) -> bool:
 	return ear == Vector3.INF or global_position.distance_to(ear) <= found.max_distance_m
 
 
-## A stream that does not loop by itself starts again (a small gap; the original's loops are imported looping).
+## A stream that does not loop by itself starts again (a small gap; the imported loops already loop).
 func _on_finished() -> void:
 	if loop and SoundBus.holds_loop(self):
 		play()

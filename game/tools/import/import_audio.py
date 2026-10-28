@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
-Import the original's audio to assets/original/audio/ (RFC-052 052b, F361):
+Import the original's audio to assets/original/audio/:
   sfx/<folder>/<file>.wav            every SAMP of data/sounds.wad (combat, spells, ambience, menu); always PCM16 WAV
   voice/<folder>/<file>.<codec>      the SAMPs of data/local/sfx_english.wad that a skirmish SSET names (creatures, wizards,
                                      advisor); the rest (campaign lines) is skipped. English only.
@@ -190,16 +190,16 @@ def prune(produced: set, check: bool) -> int:
 def main() -> None:
     codec = str(ARGS.get("--codec", DEFAULT_CODEC))
     if codec not in CODECS:
-        sys.stderr.write("ERROR: --codec debe ser wav, ogg o mp3 (recibí %s).\n" % codec)
+        sys.stderr.write("ERROR: --codec must be wav, ogg or mp3 (got %s).\n" % codec)
         sys.exit(1)
     if codec != "wav" and shutil.which("ffmpeg") is None:
-        print("AVISO: no encuentro ffmpeg en el PATH; las voces se escriben en WAV (sin comprimir). Instalá ffmpeg y volvé "
-              "a correr con --codec=%s para comprimirlas." % codec)
+        print("WARNING: ffmpeg is not on the PATH; the voices are written as WAV (uncompressed). Install ffmpeg and run "
+              "again with --codec=%s to compress them." % codec)
         codec = "wav"
     check = "--check" in ARGS
     for rel in (SFX_WAD, VOICE_WAD):
         if not (INSTALL / rel).is_file():
-            sys.stderr.write("ERROR: falta %s en %s (el audio del original; solo se usa el inglés).\n" % (rel, INSTALL))
+            sys.stderr.write("ERROR: %s is missing in %s (the original's audio; only English is used).\n" % (rel, INSTALL))
             sys.exit(2)
     old_index = {}
     if (OUT / "index.json").is_file():

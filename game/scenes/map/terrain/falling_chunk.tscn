@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/map/terrain/falling_chunk.gd" id="1_chunk"]
 
 [node name="FallingChunk" type="Node3D"]
-editor_description = "El pedazo de suelo que cae cuando se quita un vertice (Bore): los triangulos que lo tocaban, con el aspecto del suelo, caen con aceleracion 30 m/s2 hasta 100 m por debajo. Lo toca FxBus.broadcast_scene con `at` (donde se fue el suelo). La sacudida de camara es el `camera_trauma` de esta raiz; la malla se arma en Mesh."
+editor_description = "The piece of ground that falls when a vertex is removed (Bore): the triangles that touched it, with the ground's look, fall at 30 m/s2 down to 100 m below. FxBus.broadcast_scene plays it with `at` (where the ground went). The camera shake is this root's `camera_trauma`; the mesh is built in Mesh."
 script = ExtResource("1_chunk")
 camera_trauma = 0.15
 

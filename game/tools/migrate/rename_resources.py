@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rename Godot resource files to human names and rewrite every reference to them (RFC-055 / 055i-a).
+"""Rename Godot resource files to human names and rewrite every reference to them.
 
 Runs without Godot and without the original game: plain Python 3, no dependencies, `git` on the PATH.
 

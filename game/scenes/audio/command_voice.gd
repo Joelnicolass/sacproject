@@ -31,7 +31,6 @@ extends Node
 ## Game seconds between two order voices.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var ack_cooldown_s := 0.3
 ## The same creature selected more than this many times in a row says `annoyed`.
-## Ref: sacengine lastSelected > 3.
 @export_range(1, 20) var annoy_after := 3
 ## Orders command -> the event the first creature answers with. A command that is not here says nothing (retreat, formation).
 @export var order_events: Dictionary[String, StringName] = {
@@ -119,9 +118,9 @@ func _on_orders_requested(units: Array, command: String) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if channel == null:
-		out.append("Asigná `channel` (el AudioStreamPlayer hijo): sin él las criaturas no contestan.")
+		out.append("Assign `channel` (the child AudioStreamPlayer): without it the creatures do not answer.")
 	if selection == null:
-		out.append("Asigná `selection` (%Selection): sin ella elegir no habla.")
+		out.append("Assign `selection` (%Selection): without it selecting says nothing.")
 	if orders == null:
-		out.append("Asigná `orders` (%Orders): sin él las órdenes no se acusan.")
+		out.append("Assign `orders` (%Orders): without it the orders are not acknowledged.")
 	return out

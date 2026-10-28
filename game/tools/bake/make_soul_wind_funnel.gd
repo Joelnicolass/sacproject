@@ -4,7 +4,6 @@ extends SceneTree
 ## and wide at the top, 32 sides by 32 rings, its texture coordinates repeated twice around and twice up. It needs no original game:
 ## the shape is a formula. Run it once; the result is versioned and the scene only holds the file.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_soul_wind_funnel.gd
-## Ref: sacengine SacSoulWind.createMeshes (sacobject.d:2711-2750).
 
 const OUT := "res://scenes/spells/carrier/soul_wind_funnel.res"
 const SIDES := 32

@@ -12,7 +12,6 @@ extends Control
 ## _on_cell_activated); the roster never owns the selection, `Selection` does.
 ## Hidden on the dedicated server (no local player). The view refreshes the bars on a timer: no
 ## per-creature signal is connected.
-## Ref: renderer.d:4400-4466 renderSelectionRoster (sizes ×1.2).
 
 ## The ability icon was pressed; MatchCommand uses the selection's ability.
 signal ability_pressed
@@ -26,7 +25,7 @@ const _SELECTION := preload("res://scenes/orders/selection.gd")
 @export var columns := 2
 @export var rows := 6
 @export var cell_size := Vector2(41.0, 38.0)
-## Bars and tooltips refresh this often (RFC-025: 10 Hz).
+## Bars and tooltips refresh this often.
 @export_range(1.0, 60.0, 1.0) var refresh_hz := 10.0
 @export var tooltips := true
 

@@ -7,7 +7,6 @@ extends RefCounted
 ## - A line of the same or a lower priority never cuts: it waits in the queue (QUEUED) while there is room (`max_queued`).
 ## - A key already speaking or waiting is DROPPED (the same warning twice in a row says nothing new).
 ## - When the line ends, `finish()` hands the next one: the highest priority waiting, the oldest among equals.
-## Ref: RFC-052 052e (F364); sacengine queueDialogSound, dialogPolicy.
 
 enum Offer { PLAY_NOW, QUEUED, DROPPED }
 

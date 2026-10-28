@@ -1,7 +1,7 @@
 class_name CreatureIconRender
 extends RefCounted
 
-## F335 (RFC-051): the HUD icon of a creature of your own, drawn from its model. A SubViewport with its own world holds the .glb in
+## The HUD icon of a creature of your own, drawn from its model. A SubViewport with its own world holds the .glb in
 ## the pose of its idle clip, a camera frames the box of the mesh, and the picture is put on a dark disc with a gold ring, at the size
 ## of the original's icons (32 x 32, assets/original/ui/icons/). The result goes to assets/custom/icons/<tag>.png, and `link` puts it in the `icon` of the creature's .tres.
 ## A PNG that already exists there is never overwritten (it may be yours): `force` draws it again.

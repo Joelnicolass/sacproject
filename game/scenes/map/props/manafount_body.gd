@@ -55,11 +55,11 @@ func _show_mesh() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if visual == null:
-		warnings.append("Asigná `visual` (el MeshInstance3D de la fuente).")
+		warnings.append("Assign `visual` (the fount's MeshInstance3D).")
 	if mesh == null:
-		warnings.append("Asigná `mesh` (el modelo de la fuente de esta tierra).")
+		warnings.append("Assign `mesh` (the fount model of this land).")
 	if build_area == null:
-		warnings.append("Asigná `build_area` (el BuildArea que despeja la torre al lanzarla).")
+		warnings.append("Assign `build_area` (the BuildArea the tower clears when cast).")
 	return warnings
 
 

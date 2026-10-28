@@ -42,7 +42,7 @@ func yaw() -> float:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if creature == null:
-		warnings.append("Elegí una criatura en `creature`: sin ella este punto no genera nada.")
+		warnings.append("Pick a creature in `creature`: without it this point spawns nothing.")
 	return warnings
 
 

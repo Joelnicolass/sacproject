@@ -6,7 +6,6 @@ signal confirmed
 
 @export var pick_button: PackedScene
 ## The confirm button says «Jugar» in the menu; the room screen says «Elegir».
-## Ref: RFC-034 034f.
 @export var confirm_text: String = "UI_CHARACTER_SELECT_PLAY"
 
 @onready var _wizard_grid: GridContainer = %WizardGrid
@@ -27,7 +26,7 @@ func _ready() -> void:
 	_wizard = current.wizard
 	_god = current.god
 	var catalog := GameCatalog.shared()
-	## The button names (`Wizard_<id>`, `God_<id>`) carry the network id, so the flows of the agent keep working.
+	# The button names (`Wizard_<id>`, `God_<id>`) carry the network id, so the flows of the agent keep working.
 	for wizard in catalog.offered_wizards():
 		_add_button(_wizard_grid, "Wizard_" + wizard.id(), wizard.display_name, _wizard_group, _on_wizard.bind(wizard))
 	for god in catalog.offered_gods():

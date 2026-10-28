@@ -4,7 +4,6 @@ extends Node3D
 ## A projectile's trail: plays an FxBus type every `interval_s` of time where its
 ## parent flies, so it leaves as many puffs per second at 30 fps as at 120. Puffs owed in a long
 ## frame are spread along the path flown during it. Presentation only: never runs headless.
-## Ref: RFC-029 029b.
 
 ## Played once per puff.
 signal puffed(at: Vector3)
@@ -57,7 +56,7 @@ func _process(delta: float) -> void:
 		return
 	_clock = fmod(_clock, interval_s)
 	for i in owed:
-		## The last puff is here; earlier ones step back along this frame's path.
+		# The last puff is here; earlier ones step back along this frame's path.
 		var at := from.lerp(here, float(i + 1) / float(owed))
 		FxBus.puff(fx, at)
 		puffed.emit(at)

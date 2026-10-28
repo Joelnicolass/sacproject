@@ -1,6 +1,6 @@
 extends SceneTree
 
-## F335: draws (or redraws) the HUD icon of a creature of your own, assets/custom/icons/<tag>.png, from its model. It needs a window (a
+## Draws (or redraws) the HUD icon of a creature of your own, assets/custom/icons/<tag>.png, from its model. It needs a window (a
 ## headless Godot has no renderer); it ends by itself after a few frames. tools/bake/new_creature.gd does the same when it runs with one.
 ##
 ##   Godot --path . --script res://tools/bake/creature_icon.gd -- testmonster [--force] [--clip=<idle clip>]

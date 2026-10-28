@@ -91,7 +91,7 @@ func input(camera: Camera3D, event: InputEvent) -> bool:
 	return false
 
 
-## Hands a waiting draft to the Terrain now (the toolbar's «Rearmar»).
+## Hands a waiting draft to the Terrain now (the toolbar's «Rebuild»).
 func rebuild() -> void:
 	if _lattice != null:
 		_lattice.rebuild()

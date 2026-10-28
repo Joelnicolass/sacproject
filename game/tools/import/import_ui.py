@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Import the original's 2D art (HUD, spell icons, cursors, X menu, particle atlases) to assets/original/{ui,fx}/.
 
-RFC-033 (033d, from the WAD in 033h). Writes only assets/original/ui/{icons,hud,cursors,xmenu}/ and assets/original/fx/.
+Writes only assets/original/ui/{icons,hud,cursors,xmenu}/ and assets/original/fx/.
 Deterministic and idempotent: a second run writes nothing, and an existing .png.import is never touched (it carries the UID).
 
   python3 tools/import/import_ui.py                 # write
@@ -55,7 +55,7 @@ HUD_SHEETS = {
     "spi2": "MAIN.WAD!/bits.FLDR",
     "spir": "MAIN.WAD!/bits.FLDR",
     "fn10": "MAIN.WAD!/font.FLDR",
-    # SacHud.minimapIcons (sacobject.d:2125): the minimap icon atlas (RFC-037 037b).
+    # SacHud.minimapIcons (sacobject.d:2125): the minimap icon atlas.
     "mmic": "MAIN.WAD!/icon.FLDR",
 }
 # SacHud mana[0..2] / health[0..2]: name of the D array -> (output file, height); all 32 wide, RGBA.
@@ -70,17 +70,17 @@ STAT_STRIPS = {
 # Sprites decoded from the install here: tag -> (wad, folder).
 EXTRA_FX = {
     "scri": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
-    # The order marker's cone texture (SacCommandCone, sacobject.d:4483-4505), F220.
+    # The order marker's cone texture (SacCommandCone, sacobject.d:4483-4505).
     "aura": ("main.wad", "MAIN.WAD!/bits.FLDR"),
-    # RFC 061b: Air Shield's bubble (shld; icec is only the exe's default and Frozen's ice), its sparks (pash) and Protective Swarm's bug.
+    # Air Shield's bubble (shld; icec is only the exe's default and Frozen's ice), its sparks (pash) and Protective Swarm's bug.
     "icec": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "shld": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "pash": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "pswm": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
-    # RFC 061b (SPEL): Protective Swarm's pus burst (puss, mix) and the common spark burst (sprk, Stratos blue stars; Ethereal Form).
+    # From the SPEL: Protective Swarm's pus burst (puss, mix) and the common spark burst (sprk, Stratos blue stars; Ethereal Form).
     "puss": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "sprk": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
-    # RFC 061c: Freeze's ice block (frez: the SPEL's ttex; icec is the exe's default and belongs to Frozen Ground), Grasping Vines' tube (vine) and its cast particle (cst1); Slime's wet skin (lthg), splash (lth2) and the cast particle
+    # Freeze's ice block (frez: the SPEL's ttex; icec is the exe's default and belongs to Frozen Ground), Grasping Vines' tube (vine) and its cast particle (cst1); Slime's wet skin (lthg), splash (lth2) and the cast particle
     # sacengine uses (cfx1, the SPEL's tcst). Daniel.wad is spelled with a capital D in the install.
     "frez": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "vine": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
@@ -88,12 +88,12 @@ EXTRA_FX = {
     "lthg": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "lth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "cfx1": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
-    # RFC 061e: the exe's own bolt texture (ltng, deeper blue than ltn2; Chain Lightning's SPEL says ltn2: a knob), Rainbow's bands (rnbw)
+    # The exe's own bolt texture (ltng, deeper blue than ltn2; Chain Lightning's SPEL says ltn2: a knob), Rainbow's bands (rnbw)
     # and the fireball sprite of Dragonfire's trail (fbal).
     "ltng": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "rnbw": ("main.wad", "MAIN.WAD!/bits.FLDR"),
-    # RFC 061f (SPEL): Explosion's casting balls (exeg), its blast particles (xplo 5x5, exp2), ash (frck), smoke (smok) and fireball (fbal); Demonic Rift's
-    # edge (rif2), swirl (rif3) and spirit trail (rift); Healing Aura's sphere (haur). cfx1 (Rift's cast) came with 061c.
+    # From the SPEL: Explosion's casting balls (exeg), its blast particles (xplo 5x5, exp2), ash (frck), smoke (smok) and fireball (fbal); Demonic Rift's
+    # edge (rif2), swirl (rif3) and spirit trail (rift); Healing Aura's sphere (haur). cfx1 (Rift's cast) is listed above.
     "exeg": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
     "frck": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
     "smok": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
@@ -104,11 +104,11 @@ EXTRA_FX = {
     "rif3": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "rift": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "haur": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
-    # RFC 061d: Animate Dead's streams (and2, 1x8 strip) and burst (cfx1); Soul Wind's funnel (swnd) and dust trail (wdst).
+    # Animate Dead's streams (and2, 1x8 strip) and burst (cfx1); Soul Wind's funnel (swnd) and dust trail (wdst).
     "and2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
     "swnd": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "wdst": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
-    # RFC 061i (SPEL): Charm's hearts (hrot, SPEL thrt/tcst/tSPK) and the big heart over a charmed creature (hart, tluv); Blind Rage's swirl (swrl: the fist,
+    # From the SPEL: Charm's hearts (hrot, SPEL thrt/tcst/tSPK) and the big heart over a charmed creature (hart, tluv); Blind Rage's swirl (swrl: the fist,
     # its trail and the rage around a creature) and the ring of its blast (per2); Intestinal Vaporization's shot (gut1) and the guts that circle the target
     # (gut2); the cloud around Death (dth2, drawn with its colors inverted).
     "hrot": ("shawn.wad", "shwn.WAD!/pers.FLDR/text.FLDR"),
@@ -118,7 +118,7 @@ EXTRA_FX = {
     "gut1": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "gut2": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "dth2": ("Daniel.wad", "DanC.WAD!/char.FLDR"),
-    # RFC 061g (SPEL): the walls. Firewall's flames (fwal, 4x4) and its rising tongues (fwpt), Wailing Wall's faces (wwal, 4x4 with alpha) and
+    # From the SPEL: the walls. Firewall's flames (fwal, 4x4) and its rising tongues (fwpt), Wailing Wall's faces (wwal, 4x4 with alpha) and
     # spirits (wlsp, 1x8), Vinewall's base sparks (pvin) and Fence's post bubble (bubl).
     "fwal": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
     "fwpt": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
@@ -126,14 +126,14 @@ EXTRA_FX = {
     "wlsp": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "pvin": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "bubl": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
-    # RFC 061j (SPEL): Meanstalks' skin (dvin = ttex, 64x64; vine = ttx2 came with 061c) and the Tornado's two skins (trn1, trn2), its edge
+    # From the SPEL: Meanstalks' skin (dvin = ttex, 64x64; vine = ttx2 is listed above) and the Tornado's two skins (trn1, trn2), its edge
     # strip (edge, 4 frames) and the dust it kicks up (tdst, 4x4).
     "dvin": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "trn1": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "trn2": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "edge": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
     "tdst": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
-    # RFC 061h (SPEL): Rain of Frogs' frog (fhop, 4x4), cast glints (frgl) and burst (brst); Rain of Fire's drop (bbrd, 4x4); Cloudkill's cloud (clou, 4x4).
+    # From the SPEL: Rain of Frogs' frog (fhop, 4x4), cast glints (frgl) and burst (brst); Rain of Fire's drop (bbrd, 4x4); Cloudkill's cloud (clou, 4x4).
     "fhop": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "brst": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "frgl": ("main.wad", "MAIN.WAD!/bits.FLDR"),
@@ -276,7 +276,7 @@ def ui_images() -> dict:
         tag = raw[0:4].decode("latin1").rstrip("\x00")
         png = icon(raw[8:12][::-1].decode("latin1").rstrip("\x00"))
         if png is None:
-            print("xmenu sin icono", tag)
+            print("xmenu without icon", tag)
         else:
             out["xmenu"][tag] = png
     for name, folder in HUD_SHEETS.items():

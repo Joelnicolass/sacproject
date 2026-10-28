@@ -9,7 +9,6 @@ extends RefCounted
 ## Terrain, the one writer of the ground, calls it once per change (one physics tick of every playing stamp together, or a kept
 ## stamp); it only moves bodies on the server (or solo): the clients get the positions. It does not decide how or when the ground
 ## moves. Deviation (declared): a body that cannot move (frozen, petrified, vined) also goes down with the land.
-## Ref: moveOnGround (state.d:14700); the immobilized ones only go up in the original (state.d:14657-14662).
 
 ## A body whose feet are this far under the land still counts as standing on it (a physics step can sink it a little), and one
 ## this far above it still stands on the land (not on a roof) when the land sinks.

@@ -73,7 +73,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600, 10, 1300)
 spots = NodePath("../../../LifeSpots")
 
 [node name="LifeSpots" type="Node3D" parent="."]
-editor_description = "Lugares con vida ambiental (RFC-058). Arrastrá life_spot.tscn acá, elegí el hábitat y escalá la caja."
+editor_description = "Places with ambient life. Drag life_spot.tscn here, pick the habitat and scale the box."
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 unique_name_in_owner = true

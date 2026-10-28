@@ -1,6 +1,6 @@
 extends RefCounted
 
-## No necesita el juego original. Writes the SoundSet of a creature of your own (the one tools/bake/new_creature.gd makes).
+## Does not need the original game. Writes the SoundSet of a creature of your own (the one tools/bake/new_creature.gd makes).
 ## Your own sounds: assets/custom/sounds/creatures/<name>/<event>[_n].{ogg,wav} -> data/audio/creatures/<name>.tres. Every file of
 ## one event is a variant of its cue (`death_1.wav`, `death_2.wav`); the event names are SoundEvent.BODY (EVENT_HELP) and each one
 ## is a field of the SoundSet. A `swing` with no `shoot` of its own also sounds when the creature shoots (the same cue).

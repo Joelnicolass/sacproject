@@ -5,7 +5,6 @@ extends VBoxContainer
 ## Every control writes the shared AudioPrefs at once; SoundBus listens to `changed` and moves the AudioServer buses,
 ## so the change is heard live. The controls also follow changes made elsewhere.
 ## HSlider and CheckButton only: AgentKit drives them with range / click.
-## Ref: RFC-052 052a (F360).
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_AUDIO"
@@ -17,7 +16,7 @@ var _rows: Array[AudioBusRow] = []
 
 func _ready() -> void:
 	if prefs == null:
-		push_warning("AudioTab: falta prefs.")
+		push_warning("AudioTab: prefs is missing.")
 		return
 	for child in get_children():
 		if child is AudioBusRow:

@@ -2,7 +2,7 @@
 class_name GrassField
 extends LookLayer
 
-## Grass layer of the rig (022e1): a ring of 16 m cells around the camera, every cell a
+## Grass layer of the rig: a ring of 16 m cells around the camera, every cell a
 ## `MultiMeshInstance3D` that points at the same MultiMesh (one for the near cells, one with fewer,
 ## wider blades for the far ones). Crossing a cell only moves the `transform` of the cells left
 ## behind: nothing is regenerated. `grass.gdshader` places, culls, bends and colors every blade, so
@@ -61,7 +61,7 @@ var _material: ShaderMaterial
 ## One MultiMesh per tier (TIER_BLEND.size() transition tiers + the far one) and the distance where each starts.
 var _tier_meshes: Array[MultiMesh] = []
 var _tier_starts := PackedFloat32Array()
-## Which cells exist and their tiers (RFC-054 054b: shared with the other vegetation layers); `_cells` holds the nodes.
+## Which cells exist and their tiers (shared with the other vegetation layers); `_cells` holds the nodes.
 var _ring := CellRing.new(CELL_M, MAP_CELLS)
 var _cells := {}
 var _mask := GrassMask.new()
@@ -487,7 +487,7 @@ func _check_rings(counts: Vector2i, near_r: float) -> void:
 	for i in _tier_meshes.size():
 		var wanted := float(counts.x) * pow(ratio, _blend_at(_tier_starts[i], near_r))
 		if float(_tier_meshes[i].instance_count) < wanted - 1.0:
-			push_warning("GrassField: el anillo %d tiene %d briznas por celda y el shader pide %.0f en su borde interior: reaparece el raleo." % [i, _tier_meshes[i].instance_count, wanted])
+			push_warning("GrassField: ring %d has %d blades per cell and the shader asks for %.0f at its inner edge: the thinning shows again." % [i, _tier_meshes[i].instance_count, wanted])
 
 
 func _multimesh(mesh: Mesh, count: int, buffer: PackedFloat32Array) -> MultiMesh:
@@ -657,9 +657,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	var type := _grass.primary() if _grass else null
 	if type and type.far_coverage() < GrassType.MIN_FAR_COVERAGE:
-		warnings.append("La cobertura lejana (%.1f) es menor que %.1f: queda suelo pelado entre briznas. Subí density_far o far_width_scale." % [type.far_coverage(), GrassType.MIN_FAR_COVERAGE])
+		warnings.append("The far coverage (%.1f) is below %.1f: bare ground shows between blades. Raise density_far or far_width_scale." % [type.far_coverage(), GrassType.MIN_FAR_COVERAGE])
 	if _grass and _grass.types.size() > 1:
-		warnings.append("022e1 dibuja solo el primer GrassType del GrassSet.")
+		warnings.append("Only the first GrassType of the GrassSet is drawn.")
 	return warnings
 
 

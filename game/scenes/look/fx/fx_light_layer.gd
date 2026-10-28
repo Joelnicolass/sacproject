@@ -13,7 +13,6 @@ extends LookLayer
 ## light falls faster than `min_decay_s`.
 ## Classic mode (null profile) and a hidden layer give no light. Presentation only: the rig, and this
 ## layer with it, is freed in a headless or dedicated process.
-## Ref: RFC-029 029c; RFC-053 053i (F379).
 
 const GROUP := &"fx_light_pool"
 

@@ -10,7 +10,6 @@ extends BodySounds
 ## - `death` when GhostForm.stage becomes DYING, `ghost` when it rises (RISING, or GHOST straight from another stage).
 ## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of his body scene). No set: silence.
 ## Does not decide when a cast starts or ends (Caster) nor pick the clip (SoundBus draws one of the cue's streams).
-## Ref: the chant repeats 0.1 s after a clip ends until the cast is over (state.d:14263-14270), never stopped (state.d:15207).
 
 @export var body: WizardBody:
 	set(value):
@@ -107,5 +106,5 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	for pair in [[body, "body"], [health, "health"], [caster, "caster"], [ghost, "ghost"]]:
 		if pair[0] == null:
-			out.append("Asigná `%s`." % pair[1])
+			out.append("Assign `%s`." % pair[1])
 	return out

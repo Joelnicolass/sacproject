@@ -1,14 +1,12 @@
 class_name TargetInfo
 extends RefCounted
 
-## What the info box says about a body (the original's mouse-over box, described, not
-## copied). `describe` is the one owner of that text and of the health the box shows; it reads the body and writes nothing.
+## What the mouse-over info box says about a body. `describe` is the one owner of that text and of the health the box shows; it reads the body and writes nothing.
 ## - Creature (or Sac Doctor): its icon and «<name> de <wizard of its side>»; an NPC side or nobody's: «<name> de la aldea».
 ## - Wizard: its name.
 ## - Building: `BuildingType.display_name`, else «Edificio». Altar and manafount have fixed names; the Manalith and the Shrine take theirs from their BuildingType.
 ## - Corpse: «Cadáver de <name>». Soul: «Alma»; a red soul for `local_slot` (another side's): «Alma pagana. Convertila.».
 ## - `fraction` = current / maximum of its Health; NaN when it has none or its maximum is 0 (indestructible): no bar.
-## Ref: RFC-053 053e (F374); sacengine renderer.d:5036-5230.
 
 var title := ""
 var icon: Texture2D

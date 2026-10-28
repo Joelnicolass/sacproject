@@ -48,13 +48,13 @@ mesh = SubResource("QuadMesh_building_bar")
 only_when_selected = true
 
 [node name="StructureBreak" type="Node" parent="." node_paths=PackedStringArray("building")]
-editor_description = "Al caer, cada parte de Visuals estalla (building_break.tscn + las partículas de bursts) en todos los peers. Sacalo y el edificio cae sin FX; cambiá scene en la escena de un edificio para otra caída."
+editor_description = "On falling, every part of Visuals bursts (building_break.tscn + the particles of bursts) on every peer. Remove it and the building falls without FX; change scene in a building's scene for another fall."
 script = ExtResource("4_break")
 building = NodePath("..")
 scene = ExtResource("5_break_scene")
 bursts = Array[ExtResource("6_particle_type")]([ExtResource("7_blast"), ExtResource("8_blast2")])
 
 [node name="BuildingRuin" type="Node3D" parent="." node_paths=PackedStringArray("building")]
-editor_description = "Al caer, oculta Visuals y agrega aquí la ruina del BuildingType (ruin_scene) como hijo normal."
+editor_description = "On falling, it hides Visuals and adds the BuildingType's ruin (ruin_scene) here as a normal child."
 script = ExtResource("9_ruin")
 building = NodePath("..")

@@ -12,7 +12,6 @@ extends Node
 ## Only for the player of this process: the sources are local (CommandLog) or filtered by MpKit.local_slot(). With the
 ## AudioGate closed (dedicated, room server, headless) it says nothing. No RPC, nothing written to the simulation, no global
 ## generator (SoundBus draws the variant).
-## Ref: RFC-052 052e (F364).
 
 ## The log's event; the log's emitter is the name of the line (`low_mana advice`), as an FX sounds as its name.
 const EVENT := SoundEvent.ADVICE
@@ -118,12 +117,12 @@ func _on_said(text: String, _cue: StringName) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if command_log == null:
-		out.append("Asigná `command_log` (%Battle): sin él los rechazos no hablan.")
+		out.append("Assign `command_log` (%Battle): without it the refusals say nothing.")
 	if channel == null:
-		out.append("Asigná `channel` (el AudioStreamPlayer hijo): sin él el consejero no habla.")
+		out.append("Assign `channel` (the child AudioStreamPlayer): without it the advisor says nothing.")
 	var refusal_script: GDScript = Refusal
 	var known: Array = refusal_script.get_script_constant_map().values()
 	for key: StringName in refusal_lines:
 		if not known.has(key):
-			out.append("`refusal_lines` tiene la clave «%s» y no existe en Refusal." % key)
+			out.append("`refusal_lines` has the key «%s», which does not exist in Refusal." % key)
 	return out

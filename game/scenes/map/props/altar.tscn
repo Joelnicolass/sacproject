@@ -88,7 +88,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 11, -20)
 shape = SubResource("CylinderShape3D_pillar")
 
 [node name="GroundFootprint" type="CollisionShape3D" parent="."]
-editor_description = "La base que tiene que quedar a nivel: la caja vista desde arriba (52 x 52 m: el anillo y los 4 pilares a +-20 m con su malla de +-5,6 m). Se ajusta con el gizmo; nunca choca."
+editor_description = "The base that has to stay level: the box seen from above (52 x 52 m: the ring and the 4 pillars at +-20 m with their +-5.6 m mesh). Adjusted with the gizmo; it never collides."
 shape = SubResource("BoxShape3D_footprint")
 disabled = true
 script = ExtResource("10_footprint")
@@ -111,7 +111,7 @@ ring = NodePath("../Visuals/Base")
 burst_spot = NodePath("../BurstSpot")
 
 [node name="BurstSpot" type="Marker3D" parent="."]
-editor_description = "Donde estalla la base del altar al final de su caida (AltarCollapse.burst_fx): arriba de la base, al tope de la subida (float_height)."
+editor_description = "Where the altar's base bursts at the end of its fall (AltarCollapse.burst_fx): above the base, at the top of the rise (float_height)."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 60, 0)
 
 [node name="AttachPoint" type="Marker3D" parent="."]

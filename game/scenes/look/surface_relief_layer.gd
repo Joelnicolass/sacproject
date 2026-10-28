@@ -9,7 +9,6 @@ extends LookLayer
 ## with its map), exactly those come back. The only runtime writer of `normal_enabled`; it never saves (the .tres on disk
 ## keeps its maps). Inert in the editor. Cost: none while on.
 ## Not: which maps a material has (its .tres), how they are made (addons/surface_maps).
-## Ref: RFC-067.
 
 ## The shared player preference (data/ui/graphics_prefs.tres). Empty = only the preset decides (a debug scene).
 @export var prefs: GraphicsPrefs

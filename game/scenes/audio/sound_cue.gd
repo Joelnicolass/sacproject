@@ -5,7 +5,6 @@ extends Resource
 ## What one event sounds like, a type template (a .tres, never written at runtime).
 ## SoundBus picks one of `streams` with its own generator (never the global one, never an AudioStreamRandomizer) and
 ## applies the rest: volume, a pitch jitter, the bus, the 3D falloff and its limits.
-## Ref: RFC-052 052a (F360).
 
 ## Variants; one is drawn per play. Empty = the cue is silent (a set may name an event it has no sound for yet).
 @export var streams: Array[AudioStream] = []
@@ -14,7 +13,7 @@ extends Resource
 @export_range(0.0, 0.5, 0.01) var pitch_jitter := 0.0
 ## Bus of default_bus_layout.tres (Music, SFX, Voice, Ambience).
 @export var bus: StringName = &"SFX"
-## 3D only: silent past this distance (linear falloff, as the original: 200 m).
+## 3D only: silent past this distance (linear falloff).
 @export_range(1.0, 1000.0, 1.0, "suffix:m") var max_distance_m := 200.0
 ## 3D only: AudioStreamPlayer3D.unit_size (the distance at which the volume starts to fall).
 @export_range(0.1, 100.0, 0.1) var unit_size := 10.0

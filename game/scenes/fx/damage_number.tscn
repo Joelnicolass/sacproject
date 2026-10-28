@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [node name="DamageNumber" type="Label3D"]
-editor_description = "RFC-053 053f: un número de daño (lo usa DamageNumbers de pool). El look se edita acá: tamaño, contorno, color."
+editor_description = "One damage number (DamageNumbers uses it as a pool). The look is edited here: size, outline, colour."
 pixel_size = 0.01
 billboard = 1
 no_depth_test = true

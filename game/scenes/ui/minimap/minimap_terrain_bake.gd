@@ -9,7 +9,6 @@ extends Node
 ## Image axes: x = world x, y = world z (top = smallest z), a view from above with +y toward the viewer.
 ## `world_to_uv` gives the texture coordinate of a world point.
 ## Run alone (F6) it shows the texture. On the dedicated server (headless) it does nothing.
-## Ref: RFC-037 037a.
 
 ## The texture is ready (or was drawn again).
 signal baked
@@ -44,7 +43,7 @@ var _is_baked := false
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if viewport == null or ground == null or camera == null:
-		warnings.append("Asigná viewport, ground y camera.")
+		warnings.append("Assign viewport, ground and camera.")
 	return warnings
 
 
@@ -75,7 +74,7 @@ func _bake_when_ready() -> void:
 
 ## Editor button: draws the ground again and shows it in `preview`, to see what the minimap will get after changing
 ## the terrain mesh or `resolution`. The game bakes by itself at every launch; nothing is saved.
-@export_tool_button("Re-hornear minimapa", "Reload") var rebake_in_editor := _rebake_in_editor
+@export_tool_button("Rebake minimap", "Reload") var rebake_in_editor := _rebake_in_editor
 
 
 func _rebake_in_editor() -> void:
@@ -95,7 +94,7 @@ func bake() -> void:
 		if look != null and look.ground != null:
 			ground.material_override = GroundMaterial.build(look.ground, terrain.ground_roles, terrain.light_map, null)
 	if ground.mesh == null:
-		push_warning("MinimapTerrainBake: no hay malla de terreno que hornear.")
+		push_warning("MinimapTerrainBake: there is no terrain mesh to bake.")
 		return
 	var box := ground.transform * ground.mesh.get_aabb()
 	var center := box.get_center()

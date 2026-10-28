@@ -4,10 +4,8 @@ extends RefCounted
 ## The shape of the piece of ground that drops when a vertex is taken away: the land triangles that touched the vertex (heights
 ## with the shift the ground had), plus a skirt of cliff hanging from the edges that border the
 ## rest of the land. Pure and static (the arrays of a mesh): FallingChunk draws and drops it. It does not remove the vertex.
-## Ref: sacengine makeFallingLandChunkMesh (sacmap.d:388-480).
 
 ## How far the skirt hangs.
-## Ref: sacengine mapDepth.
 const SKIRT_M := 50.0
 
 

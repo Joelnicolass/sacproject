@@ -58,14 +58,14 @@ script = ExtResource("4_biome_picker")
 
 [node name="RoomName" type="LineEdit" parent="Column/HostForm"]
 unique_name_in_owner = true
-editor_description = "Vacío = el room_name de sacrifice_flow.tscn."
+editor_description = "Empty = the room_name of sacrifice_flow.tscn."
 layout_mode = 2
 placeholder_text = "UI_ONLINE_HOST_NAME_HINT"
 max_length = 24
 
 [node name="Listed" type="CheckBox" parent="Column/HostForm"]
 unique_name_in_owner = true
-editor_description = "Marcado = la sala aparece en la lista de todos; desmarcado = privada, se entra solo con el código."
+editor_description = "Checked = the room shows in everyone's list; unchecked = private, joined only with the code."
 layout_mode = 2
 button_pressed = true
 text = "UI_ONLINE_HOST_LISTED"

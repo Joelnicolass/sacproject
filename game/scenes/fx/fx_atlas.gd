@@ -38,7 +38,7 @@ static func material_for(particle: ParticleType) -> ShaderMaterial:
 	return material
 
 
-## Additive glows unshaded; a mix sprite is shaded (`lit`) or unshaded like the original.
+## Additive glows unshaded; a mix sprite is shaded (`lit`) or unshaded.
 static func shader_for(particle: ParticleType) -> Shader:
 	if particle.additive:
 		return SHADER_ADD

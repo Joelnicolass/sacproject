@@ -5,7 +5,6 @@ extends CPUParticles3D
 ## Its sprites fade out at the end of their life (ParticleType.alpha_ramp): with the type's own fade_s
 ## or over `tail_fade_s` when the type has none, so no sprite vanishes at full alpha. The type's
 ## alpha_max is not applied to a burst (it never was).
-## Ref: RFC-053 053i (F379); sacengine getAlpha.
 
 @export var type: ParticleType
 ## Owned by FxBus's BurstPool: it waits hidden for `replay` and hides again when the burst

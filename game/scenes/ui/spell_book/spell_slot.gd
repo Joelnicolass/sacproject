@@ -3,7 +3,6 @@ extends Button
 
 ## One page of the book: the tab's page, the `icon` of the spell or creature shrunk and faded by mana/manaCost, the spirit mark when souls are
 ## short, and the cooldown sweep. Without an icon the name is written instead.
-## Ref: renderer.d:4912-4975 renderSpellbook.
 
 ## Side of a page in canvas pixels (the 1280×720 base).
 const SIZE := 38.0
@@ -32,7 +31,6 @@ func set_spirit(texture: Texture2D) -> void:
 
 
 ## factor = min(1, mana/manaCost) scales and fades the icon; soulCost > souls shows the spirit.
-## Ref: sacengine.
 func show_readiness(mana: float, souls: int) -> void:
 	var factor := clampf(mana / _mana_cost, 0.0, 1.0)
 	var side := SIZE * factor

@@ -44,7 +44,7 @@ func _on_lost(_reason: String) -> void:
 	_refresh()
 
 
-## The options Dictionary of the room: the `mode` of %RoomMode (049h), the `world` of %RoomMap (RFC-049 049a), the `biome` of %RoomBiome (empty = drawn) and, if chosen, the
+## The options Dictionary of the room: the `mode` of %RoomMode, the `world` of %RoomMap, the `biome` of %RoomBiome (empty = drawn) and, if chosen, the
 ## `level` (0 = the rules decide).
 func options() -> Dictionary:
 	var picker: OptionButton = %RoomLevel

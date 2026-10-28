@@ -31,9 +31,9 @@ var state := State.HIDDEN
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if look == null:
-		warnings.append("Asigná `look` (data/ui/build_area_look.tres).")
+		warnings.append("Assign `look` (data/ui/build_area_look.tres).")
 	if not mesh is PlaneMesh:
-		warnings.append("El anillo necesita un PlaneMesh de 2 x 2 m: la escala del nodo es el radio.")
+		warnings.append("The ring needs a 2 x 2 m PlaneMesh: the node's scale is the radius.")
 	return warnings
 
 

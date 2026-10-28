@@ -4,7 +4,6 @@ extends Resource
 ## The light a ParticleType burst gives off: an OmniLight3D without shadow that rises
 ## over `attack_s` and dies over `decay_s`. A template shared by every type that points to it: never
 ## edited at runtime. The rig's FxLightLayer owns the lights; without that layer nothing lights up.
-## Ref: RFC-029 029c.
 
 ## Usually the brightness-weighted mean of the type's atlas, so the light keeps the sprite's palette.
 @export var color: Color = Color.WHITE
@@ -35,7 +34,7 @@ func light_up(tree: SceneTree, source: Object, at: Vector3) -> void:
 		pool.flash(source, self, at)
 
 
-## `min_decay_s` (RFC-053 053i): the fall never takes less than this (FxLightLayer.min_decay_s), so a short spark does not read
+## `min_decay_s`: the fall never takes less than this (FxLightLayer.min_decay_s), so a short spark does not read
 ## as a light switched off.
 func total_s(min_decay_s := 0.0) -> float:
 	return attack_s + maxf(decay_s, min_decay_s)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""055x: rewrite FX named by text in .tscn / .tres files into typed ExtResource references.
+"""Rewrite FX named by text in .tscn / .tres files into typed ExtResource references.
 
     campo = "nombre"   ->   campo = ExtResource("fx_nombre")   (+ the [ext_resource] line and load_steps)
 

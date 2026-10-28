@@ -11,7 +11,6 @@ extends Node
 ## nav_blocker), a building that fell and the ground that moved change the map: NavChanges says where, NavRebake bakes only the zones
 ## there on a worker thread and the result is swapped in `rebake_swap_s` after the change (a count: the same tick on every machine
 ## while the bake is done by then, else the first tick it is, never blocking). No navmesh: not ready, callers get the straight line.
-## Ref: RFC-024 §3.1, 024b, addendum 1; RFC-035 035i.
 
 signal built(ms: float)
 
@@ -35,13 +34,13 @@ const SEARCH_LOG_MAX := 200000
 ## The groups whose colliders are in the stored bake and move on their own (the buildings, the manafounts). The nodes of the other
 ## blocker groups and the built structures join the group NavFingerprint.GROUP before a re-bake so the bake sees them.
 @export var baked_groups: PackedStringArray = PackedStringArray(["manafount", "map_building"])
-## A straight line must stay this far (m) from a box blocker (a building) to be clear (NavBoxBlockers.crosses_box, F88 round 2).
+## A straight line must stay this far (m) from a box blocker (a building) to be clear (NavBoxBlockers.crosses_box).
 @export var box_clearance_m := 0.5
 ## `cast_tower`: Manaliths and Shrines are MapBuildings raised during the match, so the stored bake never holds them; listing their
 ## own group here (and not in `baked_groups`) puts them in the re-bake signature, or a doctor walks into a tower's legs.
 @export var blocker_groups: PackedStringArray = PackedStringArray(["manafount", "altar", "map_building", "nav_blocker", "cast_tower"])
-## What the players build (Manaliths, RFC-021): their collision blocks too, and the navmesh is baked again when one
-## appears or falls (024c; the debt of F72/F73). `structures` is the node they are put under (%Structures).
+## What the players build (Manaliths): their collision blocks too, and the navmesh is baked again when one
+## appears or falls. `structures` is the node they are put under (%Structures).
 @export var built_group: StringName = &"structure"
 @export var structures: Node
 ## Frames to wait after a structure enters or leaves before building again (it needs its own _ready first).
@@ -192,7 +191,7 @@ func _build_navmesh() -> bool:
 	rebake = NavRebake.new(settings)
 	rebake.set_stored(nav_region.navigation_mesh)
 	mesh.build(nav_region, entries, box_clearance_m)
-	if DebugLog.on(&"nav"): print("nav: navmesh %d polígonos, %d regiones, %.0f ms" % [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms])
+	if DebugLog.on(&"nav"): print("nav: navmesh %d polygons, %d regions, %.0f ms" % [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms])
 	_request_rebake()
 	built.emit(mesh.build_ms)
 	return true
@@ -236,7 +235,7 @@ func _swap_rebaked() -> void:
 	if baked != null:
 		rebake.retire(mesh.swap(baked, rebake.regions))
 		rebakes += 1
-		if DebugLog.on(&"nav"): print("nav: re-bake %d polígonos, %d regiones, %d/%d zonas (parse %.1f ms, bake %.0f ms en el worker, swap %.2f ms%s)" % [mesh.polygon_count, mesh.regions.component_count, rebake.zones_baked, rebake.zones_total, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms, (", swap %d ticks tarde" % late) if late > 0 else ""])
+		if DebugLog.on(&"nav"): print("nav: re-bake %d polygons, %d regions, %d/%d zones (parse %.1f ms, bake %.0f ms on the worker, swap %.2f ms%s)" % [mesh.polygon_count, mesh.regions.component_count, rebake.zones_baked, rebake.zones_total, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms, (", swap %d ticks late" % late) if late > 0 else ""])
 	else:
 		push_warning("nav: the re-bake came out empty, the old navmesh stays")
 	if _dirty:

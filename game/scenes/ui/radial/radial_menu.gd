@@ -9,7 +9,7 @@ extends Control
 ## Pieces: `RadialDecor` draws the rings, sector, pointer and center; `RadialRings` holds the icons; `RadialAnimator` opens and
 ## closes it. Run alone (F6) the `Standalone` child drives it with the mouse.
 
-## The menu opened (open_at). RFC-052 052h: MenuSounds listens.
+## The menu opened (open_at). MenuSounds listens.
 signal opened
 ## The pointer moved onto `entry` (null: onto nothing).
 signal hovered_changed(entry: RadialEntry)
@@ -45,7 +45,7 @@ var _last_hover: RadialEntry
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if layout == null or decor == null or rings == null or animator == null:
-		warnings.append("Asigná layout, decor, rings y animator.")
+		warnings.append("Assign layout, decor, rings and animator.")
 	return warnings
 
 

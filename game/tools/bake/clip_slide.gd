@@ -1,7 +1,7 @@
 class_name ClipSlide
 extends RefCounted
 
-## F376 (RFC-053 053g): how far a clip moves the body on the ground. Reads an Animation of a model's .glb AnimationPlayer and
+## How far a clip moves the body on the ground. Reads an Animation of a model's .glb AnimationPlayer and
 ## returns the most the root bone, or its first child (the hip), gets away from where it was on the clip's first frame, in
 ## X and Z of the skeleton (Y is up: a breath or a crouch does not count). A rest gesture that slides the root reads as a
 ## step on the spot.

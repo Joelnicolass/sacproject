@@ -4,7 +4,6 @@ extends RefCounted
 ## Tells the import tools where the original's files live (res://assets/original/) and how an icon tag becomes a file name.
 ## Only the tools in tools/ use it; the game never reads the original's formats.
 ##
-## Ref: RFC-033.
 
 const ROOT := "res://assets/original/"
 

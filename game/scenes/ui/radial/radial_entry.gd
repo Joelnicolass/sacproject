@@ -4,7 +4,6 @@ extends Resource
 
 ## One choice of a radial menu. A type resource: it never changes during a match. The menu only shows it and
 ## says which one the pointer chose; what `action` means is decided by whoever listens (OrderRadial).
-## Ref: RFC-038 038c.
 
 ## CONTEXT: the center: releasing there cancels. ARM_ORDER: `order` is given at the point the menu opened.
 ## ORDER_NOW: it happens at once (retreat). FORMATION: the order of a right click at that point, in `formation`.

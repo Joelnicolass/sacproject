@@ -10,12 +10,10 @@ extends Node
 ## One StoneLook per body, owned by Afflictions (its `look`), which sets `tint` and `stone`
 ## from the states that are on (petrified grey; the ice is a block of its own, IceBlock). Skin of Stone will
 ## be one more state with a look there, not a second StoneLook on the same mesh.
-## Ref: F137 (RFC-030i-b); F149 (REVIEW-030k-b B1); sacengine effects.stoneEffect = petrified || skinOfStone, stats.d:91; dagon bone.d:189-192.
 
 @export var mesh: MeshInstance3D
 @export var shader: Shader
 ## The shader's stone_tint: the stone's (1, 1, 0.8) or the ice's; Afflictions sets it from the type that is on.
-## Ref: dagon bone.d:189-192.
 @export var tint := Color(1.0, 1.0, 0.8):
 	set(value):
 		if value == tint:
@@ -24,7 +22,7 @@ extends Node
 		if is_node_ready() and _dressing() and not Engine.is_editor_hint():
 			_dressed = null
 			_dress()
-## The shader's stone_base, stone_gain, stone_roughness and stone_metallic (F155: the oil is a dark glossy coat, not grey stone;
+## The shader's stone_base, stone_gain, stone_roughness and stone_metallic (the oil is a dark glossy coat, not grey stone;
 ## Afflictions sets them with the tint from the state that is on). The defaults are the stone's.
 @export var base := 0.3
 @export var gain := 0.7
@@ -38,7 +36,7 @@ extends Node
 		stone = value
 		if is_node_ready():
 			_refresh()
-## RFC 061c: a texture drawn on every surface instead of its own, with the surface's UV, alpha cut and light (Slime's wet skin, `lthg`).
+## A texture drawn on every surface instead of its own, with the surface's UV, alpha cut and light (Slime's wet skin, `lthg`).
 ## Afflictions sets it from the states that are on; with `stone` also on, the stone's grey is made from this texture. Null: the surfaces keep theirs.
 var swap_texture: Texture2D:
 	set(value):
@@ -53,7 +51,7 @@ var swap_texture: Texture2D:
 static var _materials: Dictionary = {}
 
 var _dressed: Mesh
-## RFC-023: when `mesh` is a BodyVisual that a BodyRig draws for, the skinned meshes of the rig are dressed instead. The
+## When `mesh` is a BodyVisual that a BodyRig draws for, the skinned meshes of the rig are dressed instead. The
 ## materials they had (the shared material overrides, not the mesh's own) are kept here to put back: instance id -> Array.
 var _dressed_root: Node
 var _saved: Dictionary = {}
@@ -92,7 +90,7 @@ func apply(new_tint: Color, new_base: float, new_gain: float, new_roughness: flo
 		_dress()
 
 
-## The look of plain stone (the original's bone shader grey): what Skin of Stone and a petrified body wear.
+## The look of plain stone (the bone shader's grey): what Skin of Stone and a petrified body wear.
 func apply_stone() -> void:
 	apply(Color(1.0, 1.0, 0.8), 0.3, 0.7, 0.5, 0.5)
 

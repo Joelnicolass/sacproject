@@ -4,7 +4,7 @@ extends Control
 ## the chat, and the result of the last match. It only reads the mirror of `MpLobby.client` and sends its commands.
 ## The wizard and god come from the same selector the menu uses (`character_select.tscn`, built the first time it is
 ## asked for). A player who never opens it takes the pick the menu left in `SacrificeFlow.pick`.
-## RFC-049 049h (F297): the seats are a SeatList (grouped by team in a mode with allies); the host sees «Agregar IA» / «Quitar IA» on
+## The seats are a SeatList (grouped by team in a mode with allies); the host sees «Agregar IA» / «Quitar IA» on
 ## the seats and, above them, the god and the difficulty of the bot he adds (%BotOptions).
 ## Run alone (F6) it says «Sin conexión».
 
@@ -83,13 +83,13 @@ func _refresh() -> void:
 	%BotOptions.visible = open and client.is_host()
 	%PickCharacter.disabled = not open
 	%ReadyButton.disabled = state > MpLobbyRooms.State.COUNTDOWN
-	## RFC-034 034g (F184): the match runs and this player is out of it (a drop): the same ticket takes the same slot back
-	## while the dedicated allows it (`rejoin_grace_s`); past that the server turns the player away.
+	# The match runs and this player is out of it (a drop): the same ticket takes the same slot back
+	# while the dedicated allows it (`rejoin_grace_s`); past that the server turns the player away.
 	%RejoinMatch.visible = state == MpLobbyRooms.State.IN_MATCH and not MpKit.is_networked() and not client.last_match().is_empty()
 	var mine := _my_seat(room)
 	var is_ready := bool(mine.get("ready", false))
 	%ReadyButton.text = tr("UI_ROOM_VIEW_NOT_READY") if is_ready else tr("UI_ROOM_VIEW_READY")
-	## The last match's result, until the next one starts.
+	# The last match's result, until the next one starts.
 	%RoomResult.text = LobbyText.result_text(room["last_result"], client.my_seat() + 1) if state != MpLobbyRooms.State.LAUNCHING and state != MpLobbyRooms.State.IN_MATCH else ""
 	_auto_pick(room, mine, open)
 	_show_progress(room)
@@ -114,7 +114,7 @@ func _meta_text(room: Dictionary) -> String:
 	if bool(room["private"]) and room.has("code"):
 		parts.append(tr("UI_ROOM_VIEW_CODE") % str(room["code"]))
 	var options: Dictionary = room["options"]
-	## RFC-049 049h: the mode and the map the room was created with.
+	# The mode and the map the room was created with.
 	var mode := MatchWire.mode_in(options)
 	if mode != null:
 		parts.append(tr("UI_ROOM_VIEW_MODE") % tr(mode.display_name))
@@ -150,7 +150,7 @@ func _on_sit(seat: int) -> void:
 	MpLobby.client.choose_seat(seat)
 
 
-## RFC-049 049h: the host puts a bot with the god and the difficulty of %BotOptions in a free seat.
+## The host puts a bot with the god and the difficulty of %BotOptions in a free seat.
 func _on_add_bot(seat: int) -> void:
 	var meta := {
 		"god": MatchWire.encode_god((%BotGod as AiGodPicker).selected_god()),
@@ -190,7 +190,7 @@ func _on_pick_pressed() -> void:
 
 func _on_pick_confirmed() -> void:
 	%PickOverlay.visible = false
-	## Free the selector with the overlay: nothing of it can keep the pointer (it is built again if asked for).
+	# Free the selector with the overlay: nothing of it can keep the pointer (it is built again if asked for).
 	if _character_select != null:
 		_character_select.queue_free()
 		_character_select = null

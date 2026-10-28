@@ -5,7 +5,6 @@ extends SceneTree
 ## 0 for the first ring). They hold topology only: TornadoLook gives the shader the seven points of the axis and their radii, and it puts
 ## every vertex in place. It needs no original game. Run it once; the result is versioned and the scene only holds the files.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_tornado_funnel.gd
-## Ref: sacengine SacTornado.ensureMeshes (sacobject.d:3638-3688).
 
 const DIR := "res://scenes/spells/tornado/"
 const RINGS := 128

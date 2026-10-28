@@ -1,8 +1,8 @@
 extends SceneTree
 
-## Requiere el juego original instalado (`--original=<carpeta del juego>` o la variable SACRIFICE_DIR; también sirve
-## SAC_ROOT). Los mapas que no vienen del original (test_flat, test_flat4 o uno propio) no pasan por acá: su heights.png
-## se edita directamente.
+## Needs the original game installed (`--original=<game folder>` or the SACRIFICE_DIR variable; SAC_ROOT also
+## works). The maps that do not come from the original (test_flat, test_flat4 or one of your own) do not go through here: their
+## heights.png is edited directly.
 ## Writes scenes/map/maps/<tag>/heights.png (grey, 16 bits, value x 0.1 m) and void.png (white = void), the one source
 ## of a map's ground (the addon terrain_tools imports the pair as its TerrainHeights), from the map's .scp in the game:
 ## the exact heights and voids of its HMAP (u16, bit 15 = void, the rest = height in steps of 0.1 m), the heights under
@@ -30,7 +30,7 @@ const VOID_BIT := 0x8000
 const HEIGHT_STEP_M := MapImages.DEFAULT_METRES_PER_UNIT
 ## How far a height may be from a whole number of HEIGHT_STEP_M and still count as one (float32 rounding).
 const EXACT_TOLERANCE_M := 1e-3
-const NEEDS_ORIGINAL := "ERROR: los mapas del original necesitan el juego original instalado. Pasá --original=<carpeta del juego, la que tiene maps/> o exportá SACRIFICE_DIR. El juego no viene en el repositorio."
+const NEEDS_ORIGINAL := "ERROR: the original's maps need the original game installed. Pass --original=<game folder, the one with maps/> or export SACRIFICE_DIR. The game is not in the repository."
 
 
 func _initialize() -> void:

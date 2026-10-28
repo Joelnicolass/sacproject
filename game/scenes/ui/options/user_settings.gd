@@ -11,7 +11,6 @@ extends RefCounted
 ## Reads give the caller's defaults and writes go to an in-memory ConfigFile, so the UI and the match setup see the
 ## changes of this run and the next run starts clean. `--user-settings=user://<file>.cfg` (a persistence test, or a
 ## playtest that must apply the preferences) uses that file instead and turns the sandbox off.
-## Ref: RFC-031 031c (F142), RFC-031 §3.5.
 
 const PATH := "user://settings.cfg"
 const PATH_ARG := "--user-settings="
@@ -56,7 +55,7 @@ static func write_values(section: String, values: Dictionary) -> bool:
 	if config == null:
 		if not _warned_write:
 			_warned_write = true
-			push_warning("UserSettings: %s no se pudo leer; los cambios valen en esta sesión y no se guardan, para no pisarlo." % path())
+			push_warning("UserSettings: %s could not be read; changes last this session and are not saved, so it is not overwritten." % path())
 		return false
 	for key in values:
 		config.set_value(section, str(key), values[key])
@@ -69,7 +68,7 @@ static func write_values(section: String, values: Dictionary) -> bool:
 	if saved == OK:
 		saved = DirAccess.rename_absolute(ProjectSettings.globalize_path(temp), ProjectSettings.globalize_path(file))
 	if saved != OK:
-		push_error("UserSettings: no se pudo guardar %s (%s)." % [file, error_string(saved)])
+		push_error("UserSettings: could not save %s (%s)." % [file, error_string(saved)])
 		return false
 	return true
 
@@ -87,5 +86,5 @@ static func _load() -> ConfigFile:
 	if loaded == OK or loaded == ERR_FILE_NOT_FOUND:
 		return config
 	_unreadable = true
-	push_warning("UserSettings: %s no se pudo leer (%s); se usan los valores por defecto y el archivo queda como está." % [path(), error_string(loaded)])
+	push_warning("UserSettings: %s could not be read (%s); the defaults are used and the file stays as it is." % [path(), error_string(loaded)])
 	return null

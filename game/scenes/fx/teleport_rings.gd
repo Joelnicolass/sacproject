@@ -8,19 +8,15 @@ extends Node3D
 ## `teleport_ring_s`, rises a little, shrinks with sqrt(1 - age) and glows with 20 * scale². One MultiMesh draws them all;
 ## it frees itself when the last ring is gone. Presentation: it is never created on the dedicated server.
 ## The atlas `brng` comes from the local install through tools/import/import_ui.py (assets/original/fx).
-## Ref: RFC-021c; sacengine TeleportEffect / TeleportRing, state.d:16074-16101, renderer.d:1749-1756.
 
 ## Where the ring height jumps, as (frame as a fraction of the effect, change in body heights).
-## Ref: sacengine state.d:16078-16091.
 const UP_STEPS: Array[Vector2] = [Vector2(0.0, 0.8), Vector2(0.2, -0.6), Vector2(0.6, -0.8)]
 const DOWN_STEPS: Array[Vector2] = [Vector2(0.0, 0.4), Vector2(0.4, 0.8), Vector2(0.8, 0.6)]
 ## The mesh side of a ring of scale 1: makeSpriteMeshes(4, 4, 28, 28) scaled by 0.08.
-## Ref: sacengine renderer.d:1754.
 const MESH_SIDE := 28.0 * 0.08
 const RING_ENERGY := 20.0
 const ATLAS_FRAMES := 16
 ## Ticks per atlas frame.
-## Ref: sacengine ringAnimationDelay * updateAnimFactor, sacobject.d:2149.
 const TICKS_PER_ATLAS_FRAME := 8.0
 
 @export var rules: MatchRules
@@ -41,14 +37,13 @@ var _rise := 0.25
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if rules == null:
-		warnings.append("Asigná en `rules` el MatchRules (duración de los anillos).")
+		warnings.append("Assign in `rules` the MatchRules (the rings' duration).")
 	if rings == null:
-		warnings.append("Asigná en `rings` el MultiMeshInstance3D que los dibuja.")
+		warnings.append("Assign in `rings` the MultiMeshInstance3D that draws them.")
 	return warnings
 
 
 ## Height over the feet of the ring born at `frame`, in body heights (replayed from frame 0).
-## Ref: sacengine state.d:16074-16091.
 static func ring_height(going_out: bool, frame: int, steps: int) -> float:
 	var table := UP_STEPS if going_out else DOWN_STEPS
 	var z := 0.0

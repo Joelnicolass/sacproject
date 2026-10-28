@@ -12,7 +12,6 @@ extends LookLayer
 ## dedicated or headless process the rig is freed, and this never builds anything there either.
 ## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`; FloraClears): only the cells it touches
 ## are rebuilt. The map brush painting a layer calls `layer_painted`: only that area plans again, the planters stay.
-## Ref: RFC-054 054c (F382).
 
 ## Group of the fields: FloraLayer calls `layers_changed` on it.
 const GROUP := &"flora_field"
@@ -34,12 +33,12 @@ const GROUP := &"flora_field"
 			_refresh()
 ## Editor only: the plants follow the 3D viewport camera (turn off to freeze them).
 @export var follow_editor_camera := true
-## Main-thread time per frame for every layer together (054e, F384): past it the finished cells wait for the next frame.
+## Main-thread time per frame for every layer together: past it the finished cells wait for the next frame.
 ## The planning itself runs on WorkerThreadPool tasks (in the editor, on the main thread inside this same budget).
 @export_range(0.1, 8.0, 0.1, "suffix:ms") var build_budget_ms := 1.0
 ## The ground moved (a spell raised it): the plants of that part are planned again at most this often.
 @export_range(0.05, 2.0, 0.05, "suffix:s") var replan_every_s := 0.25
-## RFC-057 057e: a stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 = only when settled.
+## A stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 = only when settled.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var live_replan_s := 1.0
 
 var _planters: Array[MeshPlanter] = []
@@ -71,7 +70,7 @@ func _enter_tree() -> void:
 
 
 func apply_look(_profile: LookProfile, look_rig: LookRig) -> void:
-	# The plants of the original are drawn in every look (classic or a biome): the profile does not matter.
+	# The map's plants are drawn in every look (classic or a biome): the profile does not matter.
 	if rig == null:
 		rig = look_rig
 	_refresh()
@@ -218,7 +217,7 @@ func _watch_configs() -> void:
 		resource.changed.connect(_on_config_changed)
 
 
-## Editing a config in the inspector rebuilds the layers (RFC-054 §11.2).
+## Editing a config in the inspector rebuilds the layers.
 func _on_config_changed() -> void:
 	_watch_configs()
 	_free_planters()
@@ -273,7 +272,7 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if rig == null:
-		warnings.append("Falta el socket Rig (el LookRig del mapa).")
+		warnings.append("The Rig socket is missing (the map's LookRig).")
 	if editor_quality == null:
-		warnings.append("Falta editor_quality: el editor no muestra las plantas.")
+		warnings.append("editor_quality is missing: the editor shows no plants.")
 	return warnings

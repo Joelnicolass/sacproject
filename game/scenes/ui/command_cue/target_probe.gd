@@ -9,7 +9,6 @@ extends Node
 ## `soul`, plus `hud` when the pointer is over a control that is not the world view.
 ## It is also the one owner of «which body is under the pointer» (`hovered`): the soul, the corpse, the
 ## building, the altar, the manafount or the creature the ray found, or null (sky, plain ground, HUD). TargetInfoPanel reads it.
-## Ref: RFC-025c; RFC-053 053e (F374); sacengine `cursor()` (state.d:30830).
 
 signal kind_changed(kind: StringName)
 ## The body under the pointer changed (null: none). Emitted on the sample that saw the change.
@@ -60,7 +59,7 @@ var _picked: Node
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if world_view == null:
-		warnings.append("Asigná `world_view` (el Control que recibe los clics del mundo).")
+		warnings.append("Assign `world_view` (the Control that gets the world clicks).")
 	return warnings
 
 

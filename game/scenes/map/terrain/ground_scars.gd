@@ -65,11 +65,11 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if terrain == null:
-		warnings.append("Asigná `terrain` (el Terrain del mapa).")
+		warnings.append("Assign `terrain` (the map's Terrain).")
 	if prefs == null:
 		warnings.append(GraphicsPrefs.socket_warning(prefs))
 	if tiles == null:
-		warnings.append("Asigná `tiles` (un Texture2DArray vacío).")
+		warnings.append("Assign `tiles` (an empty Texture2DArray).")
 	return warnings
 
 

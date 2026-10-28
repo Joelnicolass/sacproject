@@ -2,7 +2,6 @@ extends VBoxContainer
 
 ## The chat of the room. The log is the client's mirror (`chat_log`, cleared when the room changes);
 ## sending is a command. Rate and length errors come back through the screen's notice, not from here.
-## Ref: RFC-034 034f.
 
 @export var line_max_len: int = 200
 

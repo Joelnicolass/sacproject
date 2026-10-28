@@ -2,7 +2,7 @@
 extends RefCounted
 
 ## The terrain tools' dialogs in the editor: a message (also printed to the Output) and a question with «OK» and
-## «Cancelar». Each dialog frees itself once closed. Not: what the tools do.
+## «Cancel». Each dialog frees itself once closed. Not: what the tools do.
 
 
 ## Shows `text` under `title` and prints it.

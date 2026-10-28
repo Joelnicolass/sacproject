@@ -2,7 +2,7 @@
 class_name GrassPalette
 extends Resource
 
-## The colors and the material of a biome's grass, over one shared `GrassType` shape (022e4).
+## The colors and the material of a biome's grass, over one shared `GrassType` shape.
 ## A `GrassSet` with a palette draws its type with these values instead of the type's own; the type
 ## file is never changed (`GrassSet.resolved_type()` returns a runtime copy). Persephone has no
 ## palette: its colors live in `meadow.tres`. Edit a palette in the inspector with the world open

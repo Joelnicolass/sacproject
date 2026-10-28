@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot migration (RFC-055 / 055i-a, cut a2): AiSeat `wizard` and `god` from text to typed references.
+"""One-shot migration: AiSeat `wizard` and `god` from text to typed references.
 
 Runs without Godot and without the original game: plain Python 3, no dependencies.
 
@@ -15,7 +15,7 @@ Rules:
   - `god = &""` (drawn when the match starts) is deleted: an empty reference means "drawn";
   - a seat that never wrote `wizard` or `god` used the old script defaults ("cwa0", &"james"): they are written out now;
   - the files are data/match_rules.tres and data/ai/seat_vs_ai.tres.
-It is idempotent (a seat that already holds an ExtResource is left alone). Delete it in 055z with the other one-shot tools.
+It is idempotent (a seat that already holds an ExtResource is left alone). Delete it with the other one-shot tools.
 """
 import argparse
 import os

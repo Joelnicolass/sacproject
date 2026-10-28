@@ -7,7 +7,6 @@ extends MeshInstance3D
 ## Presentation only: it reads no simulation and the headless server draws nothing. Opens in `open_s`,
 ## closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to switch it off.
 ## The mesh and the material are made here (they are not stored in the scene).
-## Ref: sacengine SacVortex, renderer.d:1616-1677.
 
 ## Finished closing (openness reached 0).
 signal closed
@@ -16,16 +15,14 @@ signal closed
 	set(value):
 		look = value
 		_refresh()
-## Radii in meters (x, y) when fully open. The disc is flattened like the original (1.1 x 0.9).
+## Radii in meters (x, y) when fully open. A flattened disc reads better (1.1 x 0.9).
 @export var radius := Vector2(1.0, 1.0):
 	set(value):
 		radius = value
 		_apply()
 ## Seconds from closed to open.
-## Ref: sacengine vortexScale += 1/60 per tick (state.d:2697): 1 s.
 @export_range(0.05, 10.0, 0.05) var open_s := 1.0
 ## Seconds from open to closed.
-## Ref: sacengine 1/45 per tick (state.d:2698): 0.75 s.
 @export_range(0.05, 10.0, 0.05) var close_s := 0.75
 ## 0 = closed, 1 = open. In the editor it is what you see.
 @export_range(0.0, 1.0, 0.01) var openness := 1.0:
@@ -58,9 +55,9 @@ func _validate_property(property: Dictionary) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if look == null:
-		warnings.append("Asigná en `look` el PortalLook (data/fx/portal_blue.tres o portal_red.tres).")
+		warnings.append("Assign in `look` the PortalLook (data/fx/portal_blue.tres or portal_red.tres).")
 	elif _missing:
-		warnings.append("El PortalLook no tiene `rim` o `center` (las texturas del anillo y del centro): se dibuja un relleno.")
+		warnings.append("The PortalLook has no `rim` or `center` (the ring and centre textures): a fill is drawn.")
 	return warnings
 
 

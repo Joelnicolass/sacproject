@@ -5,7 +5,6 @@ extends RefCounted
 ## normals (as the triangles come), one set of smooth normals (summed per lattice vertex, so slopes read as one
 ## surface), COLOR (white on the land, alpha 0 on a wall: the ground shader's cliff texture), the place of the cliff texture
 ## on the walls in UV (WallUvRules), and the indices. What it does NOT do: hold a mesh node or answer heights.
-## Ref: sacmap.d generateNormals, appendEdgeWall.
 
 ## The arrays of a Mesh without the normals; `with_normals` completes them.
 var arrays := []

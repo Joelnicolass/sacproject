@@ -4,7 +4,7 @@ extends Label
 
 ## The result of the match for the player of this process: «Victoria», «Derrota» or «Fin de partida».
 ## Hidden while the match goes on and on the dedicated server (it has no player).
-## RFC-049 049h (F297): «Victoria» when the team of the player won (`MatchState.won`); with a team of two or more, `team_label` adds
+## «Victoria» when the team of the player won (`MatchState.won`); with a team of two or more, `team_label` adds
 ## «Ganó el equipo de A y B» with the wizards of the winning team.
 
 @export var match_state: MatchState
@@ -35,9 +35,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if match_state == null:
-		warnings.append("Asigná en `match_state` el MatchState.")
+		warnings.append("Assign in `match_state` the MatchState.")
 	if seat == null:
-		warnings.append("Asigná en `seat` el MpLocalSeat.")
+		warnings.append("Assign in `seat` the MpLocalSeat.")
 	return warnings
 
 

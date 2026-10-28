@@ -1,7 +1,7 @@
 extends SceneTree
 
-## No necesita el juego original: lee el albedo que ya está en el repo.
-## RFC-067: the relief (normal map, and an ORM if the recipe asks) of materials, from their albedo, without the editor UI.
+## Does not need the original game: it reads the albedo already in the repo.
+## The relief (normal map, and an ORM if the recipe asks) of materials, from their albedo, without the editor UI.
 ## The same ReliefBaker and MapWriter as the editor's buttons.
 ##
 ##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/eorc_001.tres

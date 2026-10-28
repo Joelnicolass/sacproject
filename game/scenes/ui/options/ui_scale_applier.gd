@@ -33,4 +33,4 @@ func _inert() -> bool:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if prefs != null else PackedStringArray(["Asigná `prefs` (%s)." % UiScalePrefs.SHARED_PATH])
+	return PackedStringArray() if prefs != null else PackedStringArray(["Assign `prefs` (%s)." % UiScalePrefs.SHARED_PATH])

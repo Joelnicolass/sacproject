@@ -6,7 +6,6 @@ extends Control
 ## mark are icons of the theme type `SpellBook`, the strip and the cap are the theme variations HudBookStrip and HudBookCap
 ## (data/ui/theme.tres). This script only counts segments and moves the cap.
 ## Pressing a creature or spell key shows its tab first. Hidden while the wizard is dying or a ghost.
-## Ref: renderer.d:4872-4975 renderSpellbook (sizes ×1.2), dagonBackend.d:80,104 switchSpellbookTab, state.d:28104 spellbookVisible.
 
 signal spell_pressed(index: int)
 signal creature_pressed(index: int)
@@ -63,7 +62,6 @@ func bind(wizard: Node) -> void:
 
 
 ## Switches the spellbook tab.
-## Ref: sacengine switchSpellbookTab.
 func show_tab(next: int) -> void:
 	if next == tab:
 		return

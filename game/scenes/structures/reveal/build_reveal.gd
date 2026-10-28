@@ -6,7 +6,6 @@ extends Node
 ## already done when it appeared, on a late join) the tower's own materials come back and this node stops working.
 ## Presentation only: it reads the replicated progress and changes nothing of the match; a headless process (the dedicated
 ## server, the suite) does nothing. The look is the knobs below; the parts are the MeshInstance3D under `visuals`.
-## Ref: state.d:15231 (the line goes from 2 m under the base to the top over the casting time), buildingSummon.d:155, 465-470.
 
 @export var tower: CastTower
 ## The tower's parts (its `Visuals`): every MeshInstance3D below it dissolves.
@@ -40,11 +39,11 @@ var _done_s := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if tower == null:
-		warnings.append("Asigná `tower` (la raíz de la torre, un CastTower).")
+		warnings.append("Assign `tower` (the tower's root, a CastTower).")
 	if visuals == null:
-		warnings.append("Asigná `visuals` (el nodo Visuals de la torre).")
+		warnings.append("Assign `visuals` (the tower's Visuals node).")
 	if shader == null:
-		warnings.append("Asigná `shader` (build_reveal.gdshader).")
+		warnings.append("Assign `shader` (build_reveal.gdshader).")
 	return warnings
 
 

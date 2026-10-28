@@ -20,7 +20,7 @@ extends Resource
 ## Color correction, one gradient per god.
 @export var grade: GradientTexture1D
 
-@export_group("Ambience (058)")
+@export_group("Ambience")
 ## How the day goes by over the approved light (night, moon, stars). Empty = no cycle: always the approved light.
 @export var day: DayCycle
 ## How the weather goes (the five gods share `data/look/weather/plan.tres`). Empty = always clear.

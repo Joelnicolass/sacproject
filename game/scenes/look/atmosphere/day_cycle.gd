@@ -59,13 +59,13 @@ func problems(sun_elevation_deg: float) -> PackedStringArray:
 	var found := PackedStringArray()
 	var start := AtmosphereRules.day_sample(self, start_hour)
 	if not start.is_neutral(1e-3):
-		found.append("El ciclo no es neutro a la hora de inicio (%.2f)." % start_hour)
+		found.append("The cycle is not neutral at the start hour (%.2f)." % start_hour)
 	for step in 240:
 		var hour := float(step) * 0.1
 		var a := sun_elevation_deg + AtmosphereRules.curve_at(elevation_change_deg, hour, 0.0)
 		var b := sun_elevation_deg + AtmosphereRules.curve_at(elevation_change_deg, hour + 0.1, 0.0)
 		if signf(a - AtmosphereRules.MOON_BELOW_DEG) != signf(b - AtmosphereRules.MOON_BELOW_DEG) \
 				and AtmosphereRules.curve_at(light_energy, hour, 1.0) > 0.05:
-			found.append("La luz no se apaga (%.2f) donde el sol cruza el horizonte (%.1f h)." % [
+			found.append("The light does not go out (%.2f) where the sun crosses the horizon (%.1f h)." % [
 					AtmosphereRules.curve_at(light_energy, hour, 1.0), hour])
 	return found

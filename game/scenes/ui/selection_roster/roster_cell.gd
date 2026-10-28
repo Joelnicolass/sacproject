@@ -6,15 +6,12 @@ extends Button
 ## health at x = 38, mana at x = 41, both rising from y = 36. Group mode puts a digit count on the
 ## icon (a share of Σhealth / Σmax for the bars). It only presents: the click goes up as `activated`
 ## with the modifiers it was pressed with, and the roster decides what that means.
-## Ref: renderer.d:4400-4466 renderSelectionRoster (sizes ×1.2).
 
 signal activated(cell: RosterCell, shift: bool, ctrl: bool)
 
 ## The health bar color.
-## Ref: sacobject.d:1155 healthColor.
 @export_color_no_alpha var health_color := Color8(192, 0, 0)
 ## The mana bar color.
-## Ref: sacobject.d:1156 manaColor.
 @export_color_no_alpha var mana_color := Color8(0, 96, 192)
 ## Pixels a full bar is tall: 36 of the 38 of the cell.
 @export var bar_height := 36.0

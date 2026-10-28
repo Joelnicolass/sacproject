@@ -9,7 +9,6 @@ extends CanvasLayer
 ##   (MpFlow.return_to_boot) to go back to the boot. A client leaves the server cleanly there (MpKit.leave), and the
 ##   server sees peer_left.
 ## «Opciones» opens the OptionsMenu child over this panel; Esc closes it first, then this menu.
-## Ref: RFC-031 031b (F141), 031c.
 
 signal opened
 signal closed
@@ -94,7 +93,7 @@ func _quit() -> void:
 	_release_pause()
 	var flow := MpFlow.find_in_tree(self)
 	if flow == null:
-		push_warning("PauseMenu: no hay MpFlow para volver al menú")
+		push_warning("PauseMenu: no MpFlow to go back to the menu")
 		return
 	flow.return_to_boot()
 

@@ -11,7 +11,7 @@ extends BrushCanvas
 
 const CanvasFiles := preload("res://addons/terrain_tools/brush/canvas_files.gd")
 const CHANNELS := 4
-const LABELS := ["Roles: pasto", "Roles: tierra", "Roles: roca", "Roles: camino"]
+const LABELS := ["Roles: grass", "Roles: dirt", "Roles: rock", "Roles: road"]
 
 var _terrain: Terrain
 var _texture: Texture2D  ## the imported ground_roles this canvas paints (null headless)
@@ -112,7 +112,7 @@ func save() -> String:
 	if not error.is_empty():
 		return error
 	_dirty = false
-	print("Roles: guardado %s" % path)
+	print("Roles: saved %s" % path)
 	CanvasFiles.reimport.call_deferred(PackedStringArray([path]))
 	return ""
 
@@ -144,7 +144,7 @@ func _load() -> void:
 	_format = image.get_format()
 	_compressed = image.is_compressed()
 	if _compressed:
-		push_warning("Roles: %s está comprimida en VRAM; la vista previa se ve al guardar." % file())
+		push_warning("Roles: %s is VRAM-compressed; the preview shows on save." % file())
 	_adopt(image)
 
 

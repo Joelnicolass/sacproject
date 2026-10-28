@@ -1,6 +1,6 @@
 extends Node
 
-## No necesita el juego original. «--to-blend» y «--from-blend» necesitan Blender (en el PATH o la variable BLENDER).
+## Does not need the original game. «--to-blend» and «--from-blend» need Blender (on the PATH or the BLENDER variable).
 ## The ground tools of a map's Terrain without the editor, the same steps its inspector buttons take:
 ##   --to-blend             the map's pictures -> <folder>/terrain_work/terrain.blend (BlenderBridge)
 ##   --from-blend [--force] terrain.blend -> heights.png + void.png (refused with the reasons, nothing written)

@@ -19,7 +19,6 @@ extends RefCounted
 ## tells it which map and mode it plays (MatchWorld calls `use` once, before any of its systems is ready); nothing here asks which
 ## match is active. Static and @tool: the editor and a headless run read it without autoloads, and the suite can load its own rows
 ## with set_rows().
-## Ref: RFC-024 addendum 1, 024b2; RFC-044 044c; RFC-049 049b (F291); sacengine sids.d, Sides.getStance (state.d), stanceSettings.
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
@@ -37,7 +36,7 @@ static var _seat_sides: Array[int] = []
 static var _npc_sides: Array[int] = []
 ## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the time).
 static var _seat_count := 2
-## Team overlay (RFC-049 049b): the team of each seat (seat 1 first). Empty = not installed.
+## Team overlay: the team of each seat (seat 1 first). Empty = not installed.
 static var _team_of_seat: PackedInt32Array = PackedInt32Array()
 
 
@@ -71,8 +70,7 @@ static func set_rows(rows: Array, seats := -1) -> void:
 			_seat_sides.append(id)
 		else:
 			_npc_sides.append(id)
-	## The seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
-	## Ref: sacengine multiplayerSide(i).
+	# The seat is the side whose `assignment & 31` is i + 1, not the n-th by id.
 	_seat_sides.sort_custom(_before_by_seat)
 	_npc_sides.sort()
 	if seats >= 0:

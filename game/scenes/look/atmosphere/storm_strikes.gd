@@ -104,7 +104,7 @@ func _thunder() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var missing := PackedStringArray()
 	if bolt == null:
-		missing.append("Sin Bolt el rayo no se ve (solo el destello y el trueno).")
+		missing.append("Without Bolt the lightning is not seen (only the flash and the thunder).")
 	if max_strike_m < min_strike_m:
-		missing.append("Max Strike M tiene que ser ≥ Min Strike M.")
+		missing.append("Max Strike M has to be ≥ Min Strike M.")
 	return missing

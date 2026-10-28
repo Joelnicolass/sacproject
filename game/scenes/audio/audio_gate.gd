@@ -7,7 +7,6 @@ extends RefCounted
 ##   any headless process, so the simulation, the benches and the servers never load an AudioStream.
 ## - `--audio-probe` opens it in a headless process (the audio cases and the lab), never in a server.
 ## The answer is fixed for the life of the process (the flags do not change), so it is computed once.
-## Ref: RFC-052 052a (F360).
 
 const PROBE_FLAG := "--audio-probe"
 

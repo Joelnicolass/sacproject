@@ -13,7 +13,7 @@ const CanvasFiles := preload("res://addons/terrain_tools/brush/canvas_files.gd")
 enum Mode { PAINT, ERASE }
 const LABELS := ["Flora: pintar", "Flora: borrar"]
 ## The undo step that gives a layer its new picture (TerrainHistory.density).
-const NEW_PICTURE := "Flora: imagen nueva"
+const NEW_PICTURE := "Flora: new picture"
 const FOLDER := "flora"
 
 var _layer: FloraLayer  ## null headless
@@ -68,7 +68,7 @@ static func create_picture(layer: FloraLayer, path: String) -> String:
 	if not error.is_empty():
 		return error
 	CanvasFiles.reimport(PackedStringArray([path]))
-	print("Flora: imagen nueva ", path)
+	print("Flora: new picture ", path)
 	return ""
 
 

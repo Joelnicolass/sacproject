@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
-Imports the animated models of the level-8 spells (RFC-061i) to assets/original/props/<tag>.glb, each frame of the original as a blend shape:
+Imports the animated models of the level-8 spells to assets/original/props/<tag>.glb, each frame of the original as a blend shape:
   rage  Blind Rage's fist  (models.wad, 12 frames)
   bovi  Bovine Intervention's cow (models.wad, 65 frames)
   deth  Death (charlie.wad Bloo.WAD!/Char.FLDR/modl.FLDR, 27 frames)

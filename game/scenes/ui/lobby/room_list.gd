@@ -3,7 +3,6 @@ extends Control
 ## The open rooms of the server. One button per room (pressing it joins), «Actualizar», «Crear sala»,
 ## a code for the private ones. It only reads `MpLobby.client` and calls its commands; the screen decides which view
 ## shows. Run alone (F6) it says «Sin conexión».
-## Ref: RFC-034 034f.
 
 signal create_requested
 signal back_requested

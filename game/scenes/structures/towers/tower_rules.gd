@@ -27,7 +27,6 @@ static func closest_fount(tree: SceneTree, point: Vector3, max_distance: float, 
 
 
 ## True when no building stands within the radius of `area` (flat distance from its middle). No area: true.
-## Ref: sacengine spellStatus checks no bodies at all (state.d:29534-29573); the port keeps buildings out of the way.
 static func has_room(tree: SceneTree, area: BuildArea) -> bool:
 	if area == null:
 		return true

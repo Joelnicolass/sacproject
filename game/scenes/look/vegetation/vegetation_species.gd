@@ -6,12 +6,12 @@ extends Resource
 ## (data/vegetation/species/<name>.tres). The mesh is a scenes/props/meshes/<tag>.res with its material saved, shared by
 ## every instance. A type template: never mutated at runtime.
 
-## The original's plant tag (CAH1, PYA2...). FloraPlacement hashes it, so it decides where the plants of a cell stand:
+## The plant tag (CAH1, PYA2...). FloraPlacement hashes it, so it decides where the plants of a cell stand:
 ## do not rename it on a species a map already uses.
 @export var tag := ""
 ## The plant it draws: drag a scenes/props/meshes/<tag>.res here.
 @export var mesh: Mesh
-## Off by default (RFC-054 §14.6): plants cast no shadow. A preset can also turn every shadow of a layer off.
+## Off by default: plants cast no shadow. A preset can also turn every shadow of a layer off.
 @export var cast_shadow := false
 ## Camera distance where this species is gone (it dithers out over the layer's `fade_m` before). 0 = the layer's radius.
 @export_range(0.0, 400.0, 1.0, "suffix:m") var visibility_end_m := 0.0

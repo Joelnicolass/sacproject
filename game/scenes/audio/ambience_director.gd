@@ -10,7 +10,6 @@ extends Node
 ## the look shows) it plays the set's `night_one_shots` instead, when it has them.
 ## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated, room server, headless)
 ## its player stays idle and it plays nothing. No RPC, nothing written to the simulation.
-## Ref: RFC-052 052g (F366).
 
 const EMITTER := &"ambience"
 
@@ -143,4 +142,4 @@ func _schedule() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if bed != null else PackedStringArray(["Asigná `bed` (el AudioStreamPlayer hijo): sin él no suena el fondo."])
+	return PackedStringArray() if bed != null else PackedStringArray(["Assign `bed` (the child AudioStreamPlayer): without it the background is silent."])

@@ -29,7 +29,7 @@ func _ready() -> void:
 func refresh() -> void:
 	%Refresh.disabled = true
 	var rooms: Array = await SacrificeFlow.online_rooms()
-	## The answer may come after this screen was left.
+	# The answer may come after this screen was left.
 	if not is_inside_tree():
 		return
 	%Refresh.disabled = false

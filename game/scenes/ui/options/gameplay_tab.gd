@@ -7,8 +7,7 @@ extends VBoxContainer
 ## - In a match it is read only: it shows the rules of this match from MatchState (the server's on a client, through the
 ##   snapshot) and says who decides them. It never reads the preferences there.
 ## CheckButton (like Gráficos) and SpinBox: AgentKit drives them with click / range.
-## Ref: RFC-031 031d (F143).
-## RFC-053 053f (F375): below, the player's combat feel (FeelPrefs): «Sacudida de cámara» 0-100 % (0 = off), «Números de daño»
+## Below, the player's combat feel (FeelPrefs): «Sacudida de cámara» 0-100 % (0 = off), «Números de daño»
 ## «Info al pasar el puntero» and «Sangre» (blood, its marks and the hit flash). A local preference, so it is editable in a match too, and saved at once.
 
 ## Tab title in the OptionsMenu.
@@ -27,7 +26,7 @@ var _syncing := false
 
 func _ready() -> void:
 	if prefs == null:
-		push_warning("GameplayTab: falta prefs.")
+		push_warning("GameplayTab: prefs is missing.")
 		return
 	var souls: SpinBox = %StartingSouls
 	souls.min_value = prefs.min_starting_souls

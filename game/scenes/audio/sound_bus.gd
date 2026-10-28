@@ -4,7 +4,6 @@ extends Node
 ## request to its VoiceMixer, which decides what plays and what is dropped. It decides how, never when: the Sounds/Voice/
 ## Director nodes ask. Every request, played or dropped, goes to `sound_log`, which is what the cases and the lab check.
 ## With the AudioGate closed (dedicated, room server, headless without --audio-probe) it builds nothing and every play is false.
-## Ref: RFC-052 052a-052h (F360-F367).
 
 @export_range(1, 128) var pool_3d_size := 32
 @export_range(1, 64) var pool_2d_size := 8
@@ -48,7 +47,7 @@ func _ready() -> void:
 		_mixer.pool_2d.add(player)
 	prefs = load(AudioPrefs.SHARED_PATH) as AudioPrefs
 	if prefs == null:
-		push_warning("SoundBus: falta %s; los buses quedan como están." % AudioPrefs.SHARED_PATH)
+		push_warning("SoundBus: %s is missing; the buses stay as they are." % AudioPrefs.SHARED_PATH)
 		return
 	prefs.changed.connect(apply_prefs)
 	apply_prefs()

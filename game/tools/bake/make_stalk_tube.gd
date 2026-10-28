@@ -5,7 +5,6 @@ extends SceneTree
 ## direction of its side (`VERTEX.xz`, also its normal) and its UV is (side / sides, t along the stalk). It needs no original game. Run it once;
 ## the result is versioned and the scene only holds the file.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_stalk_tube.gd
-## Ref: sacengine makeMeanstalkMesh (sacobject.d:3566-3604).
 
 const OUT := "res://scenes/spells/stalks/stalk_tube.res"
 const SEGMENTS := 31

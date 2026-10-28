@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
-Import what Volcano (RFC-057, 061k-2) reads from the original:
+Import what Volcano reads from the original:
 
   assets/original/terrain/volcano_shape.png   the 33x33 shape of the mound (volc.DATA of xmenu.wad), 8-bit grey, byte for byte:
                                               pixel (x, y) is the vertex x cells east and y cells south of the corner of the stamp

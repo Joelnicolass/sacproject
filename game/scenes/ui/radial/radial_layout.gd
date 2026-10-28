@@ -6,7 +6,6 @@ extends Resource
 ## scales them). Two rings around a dead zone: `inner` between `dead_zone_px` and `inner_radius_px`, `outer` between
 ## `inner_radius_px` and `outer_radius_px`. Entry 0 of a ring is at the top and the rest follow clockwise, each one owning
 ## an equal sector centered on its icon. The pointer picks by angle and distance only; this class is pure math.
-## Ref: RFC-038 038c.
 
 ## What the dead zone stands for: releasing there cancels (the menu shows the hovered name in it).
 @export var center: RadialEntry
@@ -20,8 +19,7 @@ extends Resource
 @export var outer_radius_px := 168.0
 @export var icon_px := 46.0
 @export_group("Opening")
-## Seconds the right button (or Tab) is held before the menu opens (15 frames at 60 Hz in the original).
-## Ref: sacengine xmenuTime.
+## Seconds the right button (or Tab) is held before the menu opens.
 @export var hold_s := 0.25
 
 

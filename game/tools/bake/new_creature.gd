@@ -1,7 +1,7 @@
 extends SceneTree
 
-## No necesita el juego original; usa los modelos y datos ya importados en assets/original (versionados).
-## RFC-051: a creature of your own from a .glb (Blender, or anything that exports glTF with a skeleton and animations).
+## Does not need the original game; it uses the models and data already imported in assets/original (versioned).
+## A creature of your own from a .glb (Blender, or anything that exports glTF with a skeleton and animations).
 ## Nothing here reads the original game's data (assets/original/models/index.json, the WADs): the clips, their length, the
 ## impact moment and the size all come from the .glb itself.
 ##
@@ -27,10 +27,10 @@ extends SceneTree
 ## prefix (`Armature|Run`): idle, run (or walk), attack, shoot, cast, hit, death, fly, takeoff, land, hover, knock, get_up...
 ## The impact moment of a clip is in its name: `attack_at45` = at 45 % of the clip, `attack_f18` = at frame 18. Without one it is
 ## the middle (50 %). Both are editable afterwards: the `hit` marker (and the "attack" key of the method track) of its Animation.
-## Attack variants (F336): clips named `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`, `attack_c`; each with its own `_atNN`/`_fNN`
+## Attack variants: clips named `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`, `attack_c`; each with its own `_atNN`/`_fNN`
 ## impact) become up to three melee swings, the roles `attack`, `attack2` and `attack3`. The rules pick `attack` or `attack2` at random
 ## for each swing; `attack3` is the one against a target well below (a downward blow). Each swing plays its own clip.
-## The HUD icon (F335): `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
+## The HUD icon: `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
 ## pose, the camera framing its box) with tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped (a note
 ## says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a window) makes it afterwards.
 ## Sounds: it also writes data/audio/creatures/<tag>.tres, a SoundSet over the fist melee set, and puts it in the `sounds` of the look.

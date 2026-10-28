@@ -16,7 +16,6 @@ extends Node
 ## - Under AgentKit with a window (not headless) the preset is still applied, deterministically and without touching the
 ##   player's file: `--quality=low|medium|high`, else `sandbox_quality` (high). The window settings and the vegetation switch
 ##   stay as the run started; without a preset FloraField plants nothing, so a capture would show a bare ground.
-## Ref: RFC-031 031c (F142), RFC-054 054f.
 
 ## The shared preference (data/ui/graphics_prefs.tres).
 @export var prefs: GraphicsPrefs
@@ -39,7 +38,7 @@ func _ready() -> void:
 		if not is_inside_tree():
 			return
 	if prefs == null:
-		push_warning("GraphicsApplier: falta prefs; no se aplica nada.")
+		push_warning("GraphicsApplier: prefs is missing; nothing is applied.")
 		return
 	prefs.changed.connect(apply)
 	apply()
@@ -52,7 +51,7 @@ func apply() -> void:
 	if not _owns_scene():
 		return
 	_apply_window()
-	var line := "gráficos: %s · vsync %s · pantalla completa %s · tope %s · vegetación %s" % [
+	var line := "graphics: %s · vsync %s · fullscreen %s · fps cap %s · vegetation %s" % [
 		prefs.quality_id(), _yes(prefs.vsync()), _yes(prefs.fullscreen()),
 		str(prefs.max_fps()) if prefs.max_fps() > 0 else "no", _yes(prefs.vegetation_enabled()),
 	]
@@ -62,7 +61,7 @@ func apply() -> void:
 	if _has_rig() and preset and rig.quality_preset != preset:
 		var started := Time.get_ticks_usec()
 		rig.apply_quality(preset)
-		line += " · preset aplicado en %d ms" % roundi((Time.get_ticks_usec() - started) / 1000.0)
+		line += " · preset applied in %d ms" % roundi((Time.get_ticks_usec() - started) / 1000.0)
 	print(line)
 
 
@@ -139,7 +138,7 @@ static func _snapshot_launch(window: Window) -> void:
 
 
 static func _yes(on: bool) -> String:
-	return "sí" if on else "no"
+	return "yes" if on else "no"
 
 
 func _get_configuration_warnings() -> PackedStringArray:

@@ -4,9 +4,8 @@ extends RefCounted
 ## What the hover frame decides without drawing: whether a probed target gets a frame, where it lands on the screen and which
 ## side color it takes. Static and tree-free, so a check can call it on a body without a HUD. It does not own the pointer
 ## (TargetProbe does) and it draws nothing (HoverFrame does).
-## Ref: renderer.d:3976-4021 (renderTargetFrame), dagonBackend.d:2890-2990 (the frame mesh).
 
-## Half-frame of the original mesh in the unit square (0..1 = the rect): 10 vertices (x, y), their alphas and 8 triangles.
+## Half of the frame mesh in the unit square (0..1 = the rect): 10 vertices (x, y), their alphas and 8 triangles.
 ## `SIZE` is how far a wedge reaches in/out of the side; the frame sticks out `SIZE / 2` past the rect.
 const SIZE := 0.1
 const _B := SIZE * 0.5
@@ -80,7 +79,7 @@ static func fit(rect: Rect2, min_size: Vector2, pad: float) -> Rect2:
 	return Rect2(grown.get_center() - size * 0.5, size)
 
 
-## The whole frame as 16 triangles: 48 points in the unit square and their alphas. The second half of the original mesh is the
+## The whole frame as 16 triangles: 48 points in the unit square and their alphas. The second half of the mesh is the
 ## first one mirrored through the center, so the four sides are wedges that peak near a corner and fade along the side.
 static func frame_mesh() -> Dictionary:
 	var points := PackedVector2Array()

@@ -4,7 +4,7 @@ extends CollisionShape3D
 
 ## The base of a structure that must lie level: its box, seen from above, is the land under the structure that has to be flat
 ## (size it with the box gizmo; only x and z count). The shape is always off, so it never collides, never feeds the navmesh
-## and never blocks a path. Not: flattening the ground (the editor's «Aplanar bases» through FootprintRules), checking it
+## and never blocks a path. Not: flattening the ground (the editor's «Flatten bases» through FootprintRules), checking it
 ## (tools/audit/check_map), where the structure stands. With `pins_ground`, a spell's stamp (Erupt, Volcano, a dent) leaves the
 ## land under the box as it is, with a soft ring around it (PinRules); Bore never digs under it either way (HoleRules).
 
@@ -23,7 +23,7 @@ func _enter_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if not shape is BoxShape3D:
-		warnings.append("GroundFootprint necesita un BoxShape3D: su caja vista desde arriba es la base que queda a nivel.")
+		warnings.append("GroundFootprint needs a BoxShape3D: its box seen from above is the base that stays level.")
 	return warnings
 
 

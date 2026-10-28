@@ -1,7 +1,7 @@
 @tool
 extends EditorScenePostImport
 
-## RFC-023b: import script of the skeletal models (assets/original/models/*.glb; export_skeletal.py writes it in each
+## Import script of the skeletal models (assets/original/models/*.glb; export_skeletal.py writes it in each
 ## .glb.import). The scene importer drops about a third of the keys of every clip (a linear blend of the neighbours
 ## reproduces them, error up to 0.004 rad) and ignores the per-clip `optimizer/*` options. This puts back the clips as
 ## the .glb stores them, one key per frame, so the stepped look (nearest key) shows the original's frame.

@@ -1,4 +1,4 @@
-"""Blender CLI: builds the two meshes of the walls of 061g and exports them as OBJ under assets/custom/walls/.
+"""Blender CLI: builds the two meshes of the spell walls and exports them as OBJ under assets/custom/walls/.
 
   /Applications/Blender.app/Contents/MacOS/Blender --background --python tools/bake/make_wall_meshes.py
 

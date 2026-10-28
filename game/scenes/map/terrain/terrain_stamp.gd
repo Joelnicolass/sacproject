@@ -53,9 +53,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if profile == null or not profile.is_ready():
-		warnings.append("Falta `profile` (StampProfile con radial y timeline; el anillo pide ring_travel y ring_width).")
+		warnings.append("`profile` is missing (a StampProfile with radial and timeline; the ring needs ring_travel and ring_width).")
 	if reach == null or not reach.shape is CylinderShape3D:
-		warnings.append("Falta `reach`: un CollisionShape3D con un cilindro (radio = alcance, alto = pico).")
+		warnings.append("`reach` is missing: a CollisionShape3D with a cylinder (radius = reach, height = peak).")
 	return warnings
 
 

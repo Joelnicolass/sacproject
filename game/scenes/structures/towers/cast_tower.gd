@@ -8,8 +8,6 @@ extends MapBuilding
 ## it falls on every peer the same tick (fount free, out of the tower group, no mana, no target), stays `linger_s` so every peer sees
 ## it fall, and the server frees it. Does not decide who may build one (StructureAction), how it reaches the peers (StructureSpawner),
 ## nor draw the rise or the fall (BuildReveal, StructureBreak).
-## Ref: sacengine makeBuilding(inactive | cannotDamage) at the cast start, destroy on interrupt, activate on finish (state.d:10072-10083,
-## 15259-15274).
 
 ## `build_progress` changed (every peer): what draws the rise follows it.
 signal build_progress_changed(progress: float)
@@ -49,9 +47,9 @@ var _fallen_at := -1
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super._get_configuration_warnings()
 	if mana_source == null:
-		warnings.append("Asigná en `mana_source` el ManaSource de la torre.")
+		warnings.append("Assign in `mana_source` the tower's ManaSource.")
 	if guard_post == null:
-		warnings.append("Asigná en `guard_post` el GuardPost de la torre.")
+		warnings.append("Assign in `guard_post` the tower's GuardPost.")
 	return warnings
 
 

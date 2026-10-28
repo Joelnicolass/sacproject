@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Import one multiplayer map of the installation to assets/original/maps/<tag>/ (High Noon without arguments).
 
-RFC-033 (033f, from the .scp in 033h); RFC-050 made the map a parameter. Writes only assets/original/maps/<tag>/. Deterministic and
+The map is a parameter. Writes only assets/original/maps/<tag>/. Deterministic and
 idempotent: a second run writes nothing, and an existing .png.import is never touched (it carries the UID).
 
   python3 tools/import/import_map.py                    # High Noon: light.png, ntts.json, widgets.json

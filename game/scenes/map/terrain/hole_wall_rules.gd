@@ -6,10 +6,8 @@ extends RefCounted
 ## and static (the arrays of a mesh, no node): HoleWalls draws them. The walls of the file's own holes are already in the
 ## map's mesh; these are only the ones that are new. The strips are at the heights of the FILE: the ground shader moves them
 ## with the rest of the vertices.
-## Ref: sacengine appendEdgeWall, dynamicEdgeMesh (sacmap.d:343-366, 780-813).
 
 ## How far a wall goes down.
-## Ref: sacengine mapDepth.
 const DEPTH_M := 50.0
 
 

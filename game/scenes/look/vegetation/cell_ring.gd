@@ -9,7 +9,6 @@ extends RefCounted
 ##   `tier_hysteresis_m` past it, so a cell does not flip back and forth.
 ## The ring owns only keys and tiers: `update` says what changed and the layer makes, moves or frees its own nodes.
 ## `field_center`, `fade_center` and `view_camera` are the centers and the camera (the editor viewport's or the game's).
-## Ref: RFC-054 054b (F381).
 
 ## Side of a cell in meters.
 var cell_m := 16.0

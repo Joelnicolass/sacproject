@@ -1,14 +1,13 @@
 extends SceneTree
 
-## RFC-023a: parity of the skeletal models against the baked OBJ frames.
+## Parity of the skeletal models against the baked OBJ frames.
 ## For every clip of the test models that has a baked reference, imports the .glb, seeks the AnimationPlayer to
 ## frames {0, middle, last}, skins the mesh on the CPU (skeleton global pose x skin bind) and compares every vertex
 ## with the same frame of the baked OBJ. Prints model / clip / frame / max_err_mm and fails above TOLERANCE_MM.
 ## "$GODOT" --headless --path game --script res://tools/audit/audit_skeletal.gd [-- --dir=res://other/models --models=eorc,jnwr --ref=DIR]
 ## --clips=FILE: a JSON {model: [tag]} (tools/import/export_skeletal_reference.py --unit-clips writes it): only those clips are audited.
 ## --ref=DIR: reference OBJs written by tools/import/export_skeletal_reference.py (sacengine export, every clip, frames
-## 0 / middle / last: <DIR>/<model>/<clip>/<frame>.obj). A clip without them fails. --ref is required
-## (RFC-023 023h retired the baked OBJs this audit used to fall back on).
+## 0 / middle / last: <DIR>/<model>/<clip>/<frame>.obj). A clip without them fails. --ref is required.
 ## Vertices whose raw weights do not sum to 1 (index.json unnormalized_vertices) are compared the way the game
 ## computes them (weights not normalized: p = D + sum * (p_normalized - D), D = root displacement), so a 4 mm
 ## difference there is predicted, not tolerated.
@@ -16,9 +15,9 @@ extends SceneTree
 
 ## The one place that names where the skeletal models live (same folder export_skeletal.py writes to).
 const MODELS_DIR := "res://assets/original/models"
-## Baked per-frame OBJs, only the parity reference. Retired with RFC-023h.
+## The models audited by default.
 const DEFAULT_MODELS := ["eorc", "jnwr"]
-## RFC-023 023g (user decision 2026-10-17): <= 30 mm per vertex with one bind per vertex; 1 mm is no longer required.
+## <= 30 mm per vertex with one bind per vertex; 1 mm is no longer required.
 const TOLERANCE_MM := 30.0
 
 

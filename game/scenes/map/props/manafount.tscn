@@ -47,20 +47,20 @@ position = Vector3(0, 1, 0)
 shape = SubResource("CylinderShape3D_pool")
 
 [node name="GroundFootprint" type="CollisionShape3D" parent="."]
-editor_description = "La base que tiene que quedar a nivel: la caja vista desde arriba (8 x 8 m: la pileta de la malla mide 7,4 m). Se ajusta con el gizmo; nunca choca."
+editor_description = "The base that has to stay level: the box seen from above (8 x 8 m: the mesh's basin is 7.4 m). Adjusted with the gizmo; it never collides."
 shape = SubResource("BoxShape3D_footprint")
 disabled = true
 script = ExtResource("11_footprint")
 
 [node name="BuildArea" type="CollisionShape3D" parent="." node_paths=PackedStringArray("ring")]
-editor_description = "La zona que despeja un Manalith o un Shrine al lanzarlo: mientras dura el lanzamiento empuja a las criaturas, magos y doctores hacia afuera (push_mps en core_m, 0 en el borde) y un edificio adentro rechaza el hechizo. Se ajusta el radio con el gizmo; nunca choca."
+editor_description = "The area a Manalith or a Shrine clears when cast: while the cast lasts it pushes creatures, wizards and doctors outwards (push_mps at core_m, 0 at the edge) and a building inside refuses the spell. The radius is adjusted with the gizmo; it never collides."
 shape = SubResource("CylinderShape3D_build")
 disabled = true
 script = ExtResource("12_build_area")
 ring = NodePath("Ring")
 
 [node name="Ring" type="MeshInstance3D" parent="BuildArea"]
-editor_description = "El anillo de la vista previa (BuildRing, 064 S2): oculto hasta que se arma una estructura. PlaneMesh 2x2 escalado al radio."
+editor_description = "The preview ring (BuildRing): hidden until a structure is armed. A 2x2 PlaneMesh scaled to the radius."
 transform = Transform3D(15, 0, 0, 0, 1, 0, 0, 0, 15, 0, 0.2, 0)
 visible = false
 mesh = SubResource("PlaneMesh_ring")

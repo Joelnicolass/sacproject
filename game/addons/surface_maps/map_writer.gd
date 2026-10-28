@@ -105,7 +105,7 @@ static func assign(target: Resource, paths: Dictionary, undo: EditorUndoRedoMana
 	for key: String in paths:
 		if is_imported(str(paths[key])):
 			changes.merge(_fields(target, key, load(str(paths[key])) as Texture2D))
-	return _apply(target, changes, "Relieve: asignar mapas", undo)
+	return _apply(target, changes, "Relief: assign maps", undo)
 
 
 ## Takes the maps off the target (the PNGs stay on disk); one undo step when `undo` is given.
@@ -113,7 +113,7 @@ static func clear(target: Resource, undo: EditorUndoRedoManager = null) -> bool:
 	var changes := {}
 	for key: String in SUFFIXES:
 		changes.merge(_fields(target, key, null))
-	return _apply(target, changes, "Relieve: quitar mapas", undo)
+	return _apply(target, changes, "Relief: remove maps", undo)
 
 
 ## The fields that carry map `key` on the target, with `texture` (null = off).

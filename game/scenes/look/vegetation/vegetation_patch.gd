@@ -147,4 +147,4 @@ func _show_circle() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if species != null else PackedStringArray(["Falta la especie (VegetationSpecies)."])
+	return PackedStringArray() if species != null else PackedStringArray(["The species is missing (VegetationSpecies)."])

@@ -20,7 +20,7 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
+	return PackedStringArray() if terrain != null else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
 
 
 func _process(_delta: float) -> void:

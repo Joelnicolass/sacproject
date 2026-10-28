@@ -19,7 +19,7 @@ const RATE_STEP := 0.15
 		if is_node_ready():
 			_apply()
 		update_configuration_warnings()
-## Multiplies the sprite color (the original tints Manalith smoke with the side color).
+## Multiplies the sprite color (a Manalith tints its smoke with the side color).
 @export var tint := Color.WHITE:
 	set(value):
 		tint = value
@@ -43,7 +43,7 @@ func _ready() -> void:
 	set_active(start_active)
 
 
-## RFC-053 053h (F377): a set_active() that came while out of the tree (a Manalith released in its _exit_tree after the
+## A set_active() that came while out of the tree (a Manalith released in its _exit_tree after the
 ## fount already left) is applied here.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_ENTER_TREE:
@@ -51,7 +51,7 @@ func _notification(what: int) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray(["Falta el ParticleType."]) if type == null else PackedStringArray()
+	return PackedStringArray(["The ParticleType is missing."]) if type == null else PackedStringArray()
 
 
 ## The only switch outside code should use: a dedicated process stays off. Out of the tree it only stores the state
@@ -84,13 +84,12 @@ func is_active() -> bool:
 
 
 ## `energy_scale` > 1 brightens dark tints.
-## Ref: sacengine manaEnergy.
 func set_tint(base: Color, energy_scale := 1.0) -> void:
 	tint = Color(base.r * energy_scale, base.g * energy_scale, base.b * energy_scale, base.a)
 
 
 ## The scene has `use_fixed_seed`: the seed comes from FxBus's own generator, so emitting never
-## draws from the global RNG the simulation uses (RFC-029 029a, H1). In the editor there is no FxBus.
+## draws from the global RNG the simulation uses. In the editor there is no FxBus.
 func _take_seed() -> void:
 	var bus := get_node_or_null(^"/root/FxBus")
 	if bus != null and bus.has_method(&"next_particle_seed"):  # dynamic: FxBus is an autoload without a class_name, absent in the editor

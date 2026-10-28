@@ -3,11 +3,10 @@ extends RefCounted
 ## What a map puts on its ground: every PlayerStart, Altar, Manafount and MapBuilding stands on land (not over a void), and
 ## every GroundFootprint (the base of an altar or a fount) lies level, within MAX_SPREAD_M and with no void under it. Returns
 ## the problems, each naming the node by its path from the map root. Not: the seats (MapSeatChecks), the paths
-## (MapPathChecks), flattening a base (the editor's «Aplanar bases»).
+## (MapPathChecks), flattening a base (the editor's «Flatten bases»).
 
-## The most the heights under a base may differ (decision 9 of plan 063D, NO VERIFICADO against the original, which only
-## says that the altar's four pillars stand level). Tune it here.
-const MAX_SPREAD_M := 8.0  ## the original maps lie up to 7 m off level under their bases (peaks); 1 m of margin
+## The most the heights under a base may differ. Tune it here.
+const MAX_SPREAD_M := 8.0  ## the shipped maps lie up to 7 m off level under their bases (peaks); 1 m of margin
 
 
 static func check(root: MapRoot, terrain: Terrain) -> Array[String]:

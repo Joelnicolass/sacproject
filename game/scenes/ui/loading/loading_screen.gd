@@ -27,7 +27,7 @@ func show_progress(ratio: float, phase: MpWorldLoader.Phase) -> void:
 		MpWorldLoader.Phase.FILES, MpWorldLoader.Phase.WORLD:
 			_show()
 			%Phase.text = tr(files_key if phase == MpWorldLoader.Phase.FILES else world_key)
-			## Never back: a new phase starts where the last one ended.
+			# Never back: a new phase starts where the last one ended.
 			%Bar.value = maxf(%Bar.value, ratio)
 		MpWorldLoader.Phase.READY:
 			%Bar.value = 1.0

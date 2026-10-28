@@ -9,7 +9,7 @@ extends Resource
 ## `tile_m`). Normal (OpenGL, green up) and ORM (R occlusion, G roughness, B height) are optional and follow the albedo layout.
 
 @export_group("Maps")
-## The colours as the land paints them (the shader lights them like the original's flat ground does).
+## The colours as the land paints them (the shader lights them as flat ground).
 @export var albedo: Texture2D:
 	set(value):
 		albedo = value
@@ -34,7 +34,7 @@ extends Resource
 	set(value):
 		variants_per_side = value
 		emit_changed()
-## Metres one tile (one variant) covers on the ground. 10 = one map cell, as the original paints it.
+## Metres one tile (one variant) covers on the ground. 10 = one map cell.
 @export_range(0.5, 40.0, 0.5, "suffix:m") var tile_m := 10.0:
 	set(value):
 		tile_m = value
@@ -46,7 +46,7 @@ extends Resource
 		emit_changed()
 
 @export_group("Grain")
-## 0 = no grain, 1 = as strong as the original's.
+## 0 = no grain, 1 = full strength.
 @export_range(0.0, 2.0, 0.01) var detail_strength := 1.0:
 	set(value):
 		detail_strength = value

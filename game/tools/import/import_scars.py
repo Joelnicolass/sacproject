@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Import the original's ground marks (SCAR resources: burns, cracks, craters, blood) to assets/original/scars/<tag>.png.
 
-RFC-061 (061k-5). One RGBA PNG per SCAR, every one the game ships (19). The game reads them from the effect scenes' ScarMark
+One RGBA PNG per SCAR, every one the game ships (19). The game reads them from the effect scenes' ScarMark
 nodes (scenes/spells/scar_mark.gd). Writes only assets/original/scars/. Deterministic and idempotent: a second run writes
 nothing, and an existing .png.import is never touched (it carries the UID).
 

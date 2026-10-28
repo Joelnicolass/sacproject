@@ -14,7 +14,6 @@ extends Resource
 ##   the rules and the flags of their process (LaunchFlags).
 ## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that instance
 ## and the exported fields are never written. Changes emit `changed`.
-## Ref: RFC-031 031d (F143), RFC-031 §3.5.
 
 const SHARED_PATH := "res://data/ui/gameplay_prefs.tres"
 const SECTION := "partida"

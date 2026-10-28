@@ -46,7 +46,7 @@ layout_mode = 0
 offset_right = 260.0
 offset_bottom = 22.0
 mouse_filter = 2
-editor_description = "Las palabras del motivo de un rechazo junto al puntero (Refusal.text, data/i18n/strings.csv). Sacá el nodo y quedan solo los iconos."
+editor_description = "The words of a refusal's reason beside the pointer (Refusal.text, data/i18n/strings.csv). Remove the node and only the icons stay."
 label_settings = SubResource("LabelSettings_reason")
 script = ExtResource("2_reason")
 

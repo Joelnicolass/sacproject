@@ -9,7 +9,6 @@ extends StaticBody3D
 ## it as an altar in play.
 ## DESTROYED: no model, no collision, no mana, out of the "altar" group. No manafount is left
 ## where it stood.
-## Ref: RFC-020 decision 4; sacengine updateAltarDestruction, state.d:25999-26062.
 
 enum State { STANDING, COLLAPSING, DESTROYED }
 
@@ -39,7 +38,7 @@ const ANY_GROUP := &"altar_node"
 ## Where a ritual can be held on this altar.
 @export var site: RitualSite
 @export var collapse: AltarCollapse
-## RFC-052 052d: the altar's loop (`altar_loop`), on while the altar is not destroyed. Optional.
+## The altar's loop (`altar_loop`), on while the altar is not destroyed. Optional.
 @export var loop_sound: SoundEmitter3D
 
 var _standing_layer := 1
@@ -66,13 +65,13 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if visuals == null:
-		warnings.append("Asigná en `visuals` el nodo que agrupa los modelos del altar.")
+		warnings.append("Assign in `visuals` the node that groups the altar's models.")
 	if mana_source == null:
-		warnings.append("Asigná en `mana_source` el ManaSource del altar.")
+		warnings.append("Assign in `mana_source` the altar's ManaSource.")
 	if site == null:
-		warnings.append("Asigná en `site` el RitualSite del altar.")
+		warnings.append("Assign in `site` the altar's RitualSite.")
 	if collapse == null:
-		warnings.append("Asigná en `collapse` el AltarCollapse del altar.")
+		warnings.append("Assign in `collapse` the altar's AltarCollapse.")
 	return warnings
 
 

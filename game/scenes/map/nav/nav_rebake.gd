@@ -10,7 +10,6 @@ extends RefCounted
 ## happens to end (`is_done` says when it can be collected without waiting), so the match is reproducible while the bake ends
 ## before that tick; a slower machine swaps at the first tick it is done and the match keeps the old navmesh meanwhile.
 ## Not: when to bake or what changed (NavService, NavChanges), the swap itself (NavMeshBackend.swap).
-## Ref: RFC-071 Z2.
 
 var settings: NavBakeSettings
 var parse_ms := 0.0

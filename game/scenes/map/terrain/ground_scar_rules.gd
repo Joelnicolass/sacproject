@@ -4,7 +4,6 @@ extends RefCounted
 ## The arithmetic of the marks on the ground (burns, cracks, craters), with no tree and no GPU: which 10 m tiles a mark
 ## touches, whether a mark is close enough to the ground to be drawn, how a mark is painted into a tile, and `Pool`, the
 ## fixed number of painted tiles the map can hold (the oldest one goes first). It does not own any texture (GroundScars does).
-## Ref: rfcs/research/061S-scar-ground-marks.md sections 1.2, 2.1, 2.2.
 
 ## One mark pixel is this many meters; a tile of the ground is 64 of them (10 m).
 const TEXEL_M := 0.15625

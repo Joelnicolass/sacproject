@@ -7,7 +7,6 @@ extends Node3D
 ## in `fade_out_s`. A tower that was already standing when it appeared (late join, placed by hand) shows neither.
 ## Does not mark the start, the end or the cut (BuildCues), nor tint by side, nor change the match. A headless process does
 ## nothing (the light frees itself there).
-## Ref: state.d:15237-15244 (BlueRing: rings in the band of the cut, none in the last 0.5 s).
 
 @export var tower: CastTower
 @export var reveal: BuildReveal
@@ -31,13 +30,13 @@ var _standing_s := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if tower == null:
-		warnings.append("Asigná `tower` (la raíz de la torre, un CastTower).")
+		warnings.append("Assign `tower` (the tower's root, a CastTower).")
 	if reveal == null:
-		warnings.append("Asigná `reveal` (el BuildReveal de la torre: da la altura de la línea).")
+		warnings.append("Assign `reveal` (the tower's BuildReveal: it gives the line's height).")
 	if rings == null:
-		warnings.append("Asigná `rings` (el SpriteEmitter EdgeRings con data/fx/build_edge_ring.tres).")
+		warnings.append("Assign `rings` (the EdgeRings SpriteEmitter with data/fx/build_edge_ring.tres).")
 	if light == null:
-		warnings.append("Asigná `light` (el ActorLight EdgeLight).")
+		warnings.append("Assign `light` (the EdgeLight ActorLight).")
 	return warnings
 
 

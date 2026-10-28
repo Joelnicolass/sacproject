@@ -4,7 +4,6 @@ extends OptionButton
 ## How well an AI plays (AiSeat.difficulty_ids(): easy, normal, hard). With `offer_human`, item 0 is «a person»
 ## (metadata ""): the local server uses it for each seat (a person with a code, or an AI of this difficulty). It only lists: the choice
 ## goes out through `selected_difficulty()` and `is_human()`.
-## Ref: RFC-049 049h (F297).
 
 ## Item 0 is a person instead of an AI.
 @export var offer_human := false

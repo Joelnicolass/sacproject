@@ -5,7 +5,7 @@ extends Control
 ## What a radial menu draws behind its icons: the rings, the sector the pointer is in, a line toward the pointer
 ## and, in the dead zone, the hovered name (and the shape of a formation in dots). It is the only owner of the pointer state it
 ## draws (`set_hover`); the menu only feeds it. The name is drawn with `draw_string`, not a Label: the HUD text audit
-## (RFC-025c) counts Controls with text. Canvas pixels of the 1280×720 base.
+## counts Controls with text. Canvas pixels of the 1280×720 base.
 
 @export_group("Look")
 @export var backdrop_color := Color(0.03, 0.03, 0.06, 0.5)
@@ -37,7 +37,7 @@ var _fade: Tween
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if center_rect != null else PackedStringArray(["Asigná center_rect."])
+	return PackedStringArray() if center_rect != null else PackedStringArray(["Assign center_rect."])
 
 
 func _ready() -> void:

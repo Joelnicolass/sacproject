@@ -14,7 +14,6 @@ extends Node
 ##   `sacrifice_complete`.
 ## The owner is checked when the event comes (a converted creature changes side). Reads only: no RPC, nothing written to
 ## the simulation.
-## Ref: RFC-052 052e (F364).
 
 @export var advisor: AdvisorVoice:
 	set(value):
@@ -103,7 +102,7 @@ func _slot() -> int:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if advisor == null:
-		out.append("Asigná `advisor` (el AdvisorVoice padre).")
+		out.append("Assign `advisor` (the parent AdvisorVoice).")
 	if seat == null:
-		out.append("Asigná `seat` (el MpLocalSeat): sin él no avisa.")
+		out.append("Assign `seat` (the MpLocalSeat): without it there are no warnings.")
 	return out

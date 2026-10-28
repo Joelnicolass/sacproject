@@ -1,6 +1,6 @@
 """BLDG records (buildings of the god WADs) and where their models live.
 
-Layout (RFC-024 addendum, cut 024b2): 128-byte header (flags, ground 8x8, maxHealth u32, 10 floats, tileset, numComponents u32
+Layout: 128-byte header (flags, ground 8x8, maxHealth u32, 10 floats, tileset, numComponents u32
 at 120) and 48 bytes per component.
 """
 

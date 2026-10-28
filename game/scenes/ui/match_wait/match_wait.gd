@@ -23,7 +23,7 @@ func _ready() -> void:
 func _on_waiting_changed(waiting: bool, loaded: int, expected: int) -> void:
 	visible = waiting
 	%Count.text = tr(count_key) % [loaded, expected]
-	## The gate only lets the listen host start early, and only with one client loaded; a client's gate says no.
+	# The gate only lets the listen host start early, and only with one client loaded; a client's gate says no.
 	%StartNow.visible = waiting and Mp.is_server() and Mp.gate().can_start_now()
 
 

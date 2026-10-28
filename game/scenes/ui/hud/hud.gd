@@ -1,9 +1,9 @@
 extends Control
 
-## Local wizard readout: the original's stats block in the top-right corner (WizardStats: soul count,
-## mana and health bars, RFC-028a), then name · god and «Fantasma» while the wizard is see-through
+## Local wizard readout: the stats block in the top-right corner (WizardStats: soul count,
+## mana and health bars), then name · god and «Fantasma» while the wizard is see-through
 ## (GhostForm) as text under it. `%Stats` keeps the old «Vida/Maná/Almas» line as an undrawn readout
-## for the flows. The selection lives in SelectionRoster (RFC-025).
+## for the flows. The selection lives in SelectionRoster.
 
 const STATS_TEXT := "UI_HUD_STATS_FORMAT"
 
@@ -81,6 +81,5 @@ func _refresh() -> void:
 
 
 ## The filled fraction of a bar: 0 when the maximum is 0.
-## Ref: getRelativeHealth / getRelativeMana, renderer.d:4799-4806.
 static func _fraction(current: float, maximum: float) -> float:
 	return current / maximum if maximum > 0.0 else 0.0

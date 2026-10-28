@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""No necesita el juego original: usa los assets ya importados en assets/original (versionados).
+"""Does not need the original game: it uses the assets already imported in assets/original (versioned).
 
-Proposes a biome's GrassPalette from the color of its original ground (RFC-022e §11, 022e4b).
+Proposes a biome's GrassPalette from the color of its original ground.
 
 Ground color = mean of the god's open-ground role sheet (assets/original/themes/<god>/roles/open.png, the grass the
 GodGround lays where the map's ground_roles.png is red). The palette is that color moved by the same HSV transfer that
@@ -11,7 +11,7 @@ cap. Self-check: on Persephone the proposal must equal meadow within 0.02 per ch
 Known limit: Persephone's saturation gain is ~2.6x (meadow is much greener than its ground), so on warm
 grounds (Pyro, James, Charnel) the proposal comes out far too saturated, near pure orange, even under the
 default cap. There, start from the approved Pyro palette's ratios to its ground instead and tune by hand;
-the shipped James, Stratos and Charnel palettes were tuned against the grass bench (grass vs grass-off ground,
+the shipped James, Stratos and Charnel palettes were tuned against fixed captures (grass vs grass-off ground,
 in sun and in shadow), not taken from this proposal.
 
 The proposal is a starting point: tune the written .tres by hand in the inspector against a capture.

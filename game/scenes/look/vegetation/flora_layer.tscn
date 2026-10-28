@@ -7,7 +7,7 @@
 
 [node name="Flora" type="Node3D"]
 process_mode = 3
-editor_description = "Planta la vegetación alrededor de la cámara también con el árbol en pausa (la puerta de inicio pausa mientras carga y espera jugadores)."
+editor_description = "Plants the vegetation around the camera also while the tree is paused (the start gate pauses while it loads and waits for players)."
 script = ExtResource("1_field")
 configs = Array[ExtResource("2_config")]([ExtResource("3_plants")])
 editor_quality = ExtResource("5_medium")

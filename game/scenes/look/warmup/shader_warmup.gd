@@ -56,7 +56,7 @@ func _exit_tree() -> void:
 
 
 func _on_biome_applied(god: GodType) -> void:
-	## The gods and wizards first: the body looks they lead to are read on the loader's threads while the rest is walked.
+	# The gods and wizards first: the body looks they lead to are read on the loader's threads while the rest is walked.
 	var roots: Array = world.warm_roots()
 	if not world.scene_file_path.is_empty():
 		roots.append(load(world.scene_file_path))
@@ -119,7 +119,7 @@ func _finish() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var missing := PackedStringArray()
 	if world == null or biome == null or stage == null:
-		missing.append("Faltan los sockets World, Biome o Stage: no precalienta nada.")
+		missing.append("The World, Biome or Stage sockets are missing: nothing is warmed up.")
 	if probe_mesh == null:
-		missing.append("Sin Probe Mesh los materiales sueltos no se dibujan.")
+		missing.append("Without Probe Mesh the loose materials are not drawn.")
 	return missing

@@ -14,7 +14,6 @@ extends Resource
 ##   GPU use unless the player asks for it.
 ## Like UiScalePrefs, every node must share the instance at `SHARED_PATH` (a copy would not follow the player's choice);
 ## the values are runtime state of that instance and the exported fields are never written. Changes emit `changed`.
-## Ref: RFC-031 031c (F142), RFC-054 054f, RFC-067.
 
 const SHARED_PATH := "res://data/ui/graphics_prefs.tres"
 const SECTION := "graphics"
@@ -156,9 +155,9 @@ func preset_for(id: StringName) -> LookQuality:
 ## Warning text for a node whose `graphics_prefs` is not the shared instance ("" when it is).
 static func socket_warning(prefs: GraphicsPrefs) -> String:
 	if prefs == null:
-		return "Asigná `prefs` (%s)." % SHARED_PATH
+		return "Assign `prefs` (%s)." % SHARED_PATH
 	if prefs.resource_path != SHARED_PATH:
-		return "`prefs` no es %s: este nodo no seguirá la elección del jugador." % SHARED_PATH
+		return "`prefs` is not %s: this node will not follow the player's choice." % SHARED_PATH
 	return ""
 
 
@@ -193,7 +192,7 @@ func _ensure_loaded() -> void:
 	if preset_for(stored_quality):
 		_quality = stored_quality
 	else:
-		push_warning("GraphicsPrefs: [%s] quality = %s no es un preset; se usa %s." % [SECTION, stored_quality, default_quality])
+		push_warning("GraphicsPrefs: [%s] quality = %s is not a preset; using %s." % [SECTION, stored_quality, default_quality])
 	_vsync = _read_bool("vsync", default_vsync)
 	_fullscreen = _read_bool("fullscreen", default_fullscreen)
 	_vegetation = _read_bool("vegetation", default_vegetation)
@@ -220,5 +219,5 @@ func _cli_quality() -> StringName:
 			var id := StringName(arg.substr(ARG.length()))
 			if preset_for(id):
 				return id
-			push_warning("GraphicsPrefs: %s no es un preset; se ignora." % arg)
+			push_warning("GraphicsPrefs: %s is not a preset; ignored." % arg)
 	return &""

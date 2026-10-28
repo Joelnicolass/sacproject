@@ -74,7 +74,7 @@ layout_mode = 1
 
 [node name="OnlineStatus" type="Label" parent="."]
 unique_name_in_owner = true
-editor_description = "Lo que dice SacrificeFlow (consultando, código de la sala, rechazos del emisor, conectando). Es la única línea de estado de la pantalla."
+editor_description = "What SacrificeFlow says (querying, the room code, the issuer's refusals, connecting). It is the screen's only status line."
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -91,6 +91,6 @@ autowrap_mode = 3
 
 [node name="OnlineNetwork" type="Node" parent="."]
 unique_name_in_owner = true
-editor_description = "El emisor de las salas online (data/net/online_config.tres: issuer_url y game_id). Los flags --issuer-url y --issuer-game le ganan."
+editor_description = "The issuer of the online rooms (data/net/online_config.tres: issuer_url and game_id). The --issuer-url and --issuer-game flags override it."
 script = ExtResource("4_network")
 config = ExtResource("5_config")

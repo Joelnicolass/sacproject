@@ -46,7 +46,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	for pair in [["terrain", terrain], ["nav_region", nav_region], ["starts", starts]]:
 		if pair[1] == null:
-			warnings.append("Asigná `%s`." % pair[0])
+			warnings.append("Assign `%s`." % pair[0])
 	return warnings
 
 

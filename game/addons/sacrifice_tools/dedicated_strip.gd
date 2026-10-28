@@ -80,13 +80,13 @@ func _begin_customize_resources(_platform: EditorExportPlatform, _features: Pack
 	_animations = 0
 	_tracks = 0
 	_meshes = 0
-	## The preset's "Dedicated Server" mode is not among `features` (Godot passes the platform's and the custom ones): ask the preset.
+	# The preset's "Dedicated Server" mode is not among `features` (Godot passes the platform's and the custom ones): ask the preset.
 	var preset := get_export_preset()
 	return preset != null and preset.is_dedicated_server() and OS.get_environment(ENV_OFF) != "0"
 
 
 func _end_customize_resources() -> void:
-	## A second export may serve the customized files from Godot's cache: then these are 0 and the pack is still stripped.
+	# A second export may serve the customized files from Godot's cache: then these are 0 and the pack is still stripped.
 	print("DedicatedStrip audio=%d animations=%d tracks_removed=%d meshes=%d" % [_audio, _animations, _tracks, _meshes])
 
 

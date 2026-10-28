@@ -11,7 +11,7 @@ extends Node
 ## Shows `view`: a picture of how far each vertex moved (R, metres) and the holes (G = 1). Costs a copy of the lattice per change.
 @export var show_view := false
 
-@export_group("Estado (solo lectura)")
+@export_group("State (read only)")
 ## Changes that stayed since loading (a peer that joins late compares it).
 @export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY) var rev: int:
 	get:
@@ -38,7 +38,7 @@ var _view_version := -1
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
+	return PackedStringArray() if terrain != null else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
 
 
 func _view() -> Texture2D:

@@ -4,7 +4,6 @@ extends Resource
 
 ## How much one vegetation layer draws in one quality preset. `LookQuality.vegetation` holds one per
 ## layer (`layer_id` = the VegetationLayerConfig's `id`); a preset without an entry for a layer does not draw it.
-## Ref: RFC-054 054c (F382).
 
 @export var layer_id: StringName = &"original_plants"
 @export var enabled := true

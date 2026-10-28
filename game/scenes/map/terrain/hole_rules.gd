@@ -5,12 +5,10 @@ extends RefCounted
 ## building, or one under the base of an altar or a manafount; and which vertices a hole at a point means. Static: the caller
 ## hands the places of the building parts and the bases (`parts_of`, `bases_of` gather them), so the rule itself needs no tree.
 ## It does not make the hole (Terrain does) nor choose where to dig (HoleCutter).
-## Ref: sacengine canRemoveLandVertex (state.d:28999-29026); the base is its checkGround (state.d:29013-29023).
 
 ## A vertex this close (m, on the ground plane) to a building part is never taken away.
 const BUILDING_CLEARANCE_M := 11.0
 ## A building part this far above or below the vertex is out of the way.
-## Ref: sacengine mapDepth.
 const DEPTH_BAND_M := 50.0
 
 

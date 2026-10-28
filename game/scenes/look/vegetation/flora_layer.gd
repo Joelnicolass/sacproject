@@ -125,9 +125,9 @@ func _update_overlay() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if species == null:
-		warnings.append("Falta la especie (VegetationSpecies).")
+		warnings.append("The species is missing (VegetationSpecies).")
 	if density == null:
-		warnings.append("Falta la imagen de densidad (PNG L8, 1 px = cell_m).")
+		warnings.append("The density picture is missing (PNG L8, 1 px = cell_m).")
 	if position != Vector3.ZERO:
-		warnings.append("La imagen empieza en el origen del mapa: dejá este nodo en 0, 0, 0.")
+		warnings.append("The picture starts at the map's origin: leave this node at 0, 0, 0.")
 	return warnings

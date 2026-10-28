@@ -11,7 +11,6 @@ extends Control
 ## system cursor, so a flow turns it on to see it.
 ## Without a picture (a type with no `icon`, a CueSet with none) a plain circle / cross is drawn instead.
 ## Full screen, ignores the mouse. The icons are 38×38 canvas pixels, set in the scene; Godot's stretch scales them.
-## Ref: RFC-025c; renderer.d:4113-4165 renderCursor (4/32 of the icon below the cursor).
 
 @export var command_log: CommandLog
 @export var cues: CueSet
@@ -45,11 +44,11 @@ var _flash_from_ms := 0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if command_log == null:
-		warnings.append("Asigná `command_log` (el nodo Battle).")
+		warnings.append("Assign `command_log` (the Battle node).")
 	if cues == null:
-		warnings.append("Asigná `cues` (data/ui/command_cues.tres).")
+		warnings.append("Assign `cues` (data/ui/command_cues.tres).")
 	elif cues.refused_icon == null:
-		warnings.append("Asigná `refused_icon` en `cues`. Sin eso se dibuja una cruz de respaldo.")
+		warnings.append("Assign `refused_icon` in `cues`. Without it a fallback cross is drawn.")
 	return warnings
 
 
@@ -149,7 +148,7 @@ func _place() -> void:
 		queue_redraw()
 
 
-## Respaldo sin caché: un círculo por el icono armado y una cruz por el rechazo.
+## Fallback without a cache: a circle for the armed icon and a cross for the refusal.
 func _draw() -> void:
 	if Engine.is_editor_hint():
 		return

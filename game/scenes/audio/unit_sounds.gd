@@ -30,7 +30,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint() or not _open or body == null or health == null:
 		return
 	_last_health = health.current
-	if body.weapons != null:  ## A body built in code (a bench) has no Weapons: it never swings.
+	if body.weapons != null:  # A body built in code (a test) has no Weapons: it never swings.
 		body.weapons.swung.connect(_on_swung)
 		body.weapons.shot_started.connect(_on_shot_started)
 	body.mode_changed.connect(_on_mode_changed)
@@ -76,7 +76,7 @@ func _on_health_changed(current: float, _maximum: float) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if body == null:
-		out.append("Asigná `body` (el UnitBody de esta criatura).")
+		out.append("Assign `body` (the UnitBody of this creature).")
 	if health == null:
-		out.append("Asigná `health` (su Health).")
+		out.append("Assign `health` (its Health).")
 	return out

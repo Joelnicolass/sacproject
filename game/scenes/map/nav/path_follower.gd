@@ -14,18 +14,16 @@ extends Node
 ## A path is rebuilt every `repath_s`
 ## when the line to the next waypoint is blocked or the body made no progress.
 ## Runs where the body is simulated; all counts are physics ticks, so it is reproducible.
-## Ref: RFC-024 §3.1, 024b; sacengine pops a node within sqrt(2)*5 m, state.d:607, and repaths every 2 s, state.d:593.
 
 signal path_set(points: PackedVector3Array)
 signal arrived
 
-## A pursuit keeps its path while the target stays within this (flat) of the goal it was planned for: 2 cells of 5 m (RFC-024).
+## A pursuit keeps its path while the target stays within this (flat) of the goal it was planned for: 2 cells of 5 m.
 const REPATH_GOAL_M := 10.0
 
 ## The body to move: a creature, a wizard or a Sac Doctor (begin_walk / is_walking).
 @export var body: GameBody
 ## Seconds between checks of the way and the progress.
-## Ref: sacengine 2 s.
 @export var repath_s := 2.0
 ## The final goal counts as reached this close (the body itself stops inside a step of it).
 @export var arrive_m := 1.0
@@ -68,7 +66,7 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null and not get_parent() is GameBody:
-		warnings.append("Falta el cuerpo (body).")
+		warnings.append("The body is missing (body).")
 	return warnings
 
 
@@ -140,7 +138,7 @@ func _physics_process(delta: float) -> void:
 
 
 ## The body is done with waypoints[0]: within `advance_m` of it, unless the leg after it would go through a building
-## (NavService.crosses_box, F88 round 2: the start node a path puts first beside a tipi); within `arrive_m` always, so the
+## (NavService.crosses_box: the start node a path puts first beside a tipi); within `arrive_m` always, so the
 ## leg never ends under the body (a body at the end of its leg stops, and the order with it).
 func _may_advance(here: Vector3) -> bool:
 	var gap := _flat(here, waypoints[0])

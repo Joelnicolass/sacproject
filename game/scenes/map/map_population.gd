@@ -9,7 +9,6 @@ extends Node3D
 ## UnitSpawner, in tree order, on the server or a solo game only (they replicate). Nothing respawns.
 ## The map comes before this node in the tree, so the buildings are ready (and in their groups) when this runs.
 ## Prints one line: `npc farmer 26 slot 3 · taurock 6 slot 4 · edificios 69 · refugios 11`.
-## Ref: RFC-024 addendum 1, 024b2.
 
 signal populated(report: Dictionary)
 
@@ -26,9 +25,9 @@ var report: Dictionary = {}
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if buildings == null or npcs == null:
-		warnings.append("Asigná `buildings` y `npcs`.")
+		warnings.append("Assign `buildings` and `npcs`.")
 	if spawn_creatures and unit_spawner == null:
-		warnings.append("Asigná `unit_spawner` para poner las criaturas.")
+		warnings.append("Assign `unit_spawner` to place the creatures.")
 	return warnings
 
 
@@ -39,7 +38,7 @@ func _ready() -> void:
 func populate() -> void:
 	report = {"npc_spawned": {}, "buildings_placed": 0, "shelters": 0}
 	if buildings == null or npcs == null:
-		print("poblados: faltan buildings o npcs; el campo queda sin habitantes ni casas")
+		print("villages: buildings or npcs missing; the field stays without people or houses")
 		return
 	_count_buildings()
 	if spawn_creatures and is_multiplayer_authority():

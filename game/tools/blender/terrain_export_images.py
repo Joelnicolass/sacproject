@@ -1,6 +1,6 @@
-"""No necesita el juego original: lee el terrain.blend que hizo terrain_make_blend.py.
+"""Does not need the original game: it reads the terrain.blend that terrain_make_blend.py made.
 
-Writes a map's images back from the open terrain.blend, the second half of the Blender round trip (plan 063D S4):
+Writes a map's images back from the open terrain.blend, the second half of the Blender round trip:
 heights.png (Z / M_PER_UNIT), void.png (vertex group «void», weight >= 0.5) and ground_roles.png (colour attribute
 «roles», when the .blend has it), then updates terrain_work/manifest.json (the new hash and the vertex count).
 It validates everything first and, on any failure, prints each reason, exits 1 and writes nothing:

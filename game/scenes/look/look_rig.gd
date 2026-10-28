@@ -116,7 +116,7 @@ static func is_presentationless() -> bool:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if layers == null:
-		warnings.append("Falta el socket Layers.")
+		warnings.append("The Layers socket is missing.")
 	if terrain == null:
-		warnings.append("Falta el socket Terrain (el Terrain del mapa): la capa de suelo no actua sin el.")
+		warnings.append("The Terrain socket is missing (the map's Terrain): the ground layer does nothing without it.")
 	return warnings

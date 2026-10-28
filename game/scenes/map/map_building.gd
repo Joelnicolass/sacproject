@@ -34,7 +34,7 @@ const STRUCTURE_GROUP := &"structure"
 @export var trunk: CollisionShape3D
 @export var sync: MultiplayerSynchronizer
 @export var health_bar: UnitHealthBar
-@export_tool_button("Ajustar a las partes", "Reload") var fit := _fit_to_parts
+@export_tool_button("Fit to parts", "Reload") var fit := _fit_to_parts
 
 var max_health := 0.0
 var shelter := false
@@ -51,9 +51,9 @@ var _last_health := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if type == null:
-		warnings.append("Asigná `type` (data/buildings/<nombre>.tres).")
+		warnings.append("Assign `type` (data/buildings/<name>.tres).")
 	if collision == null or not collision.shape is BoxShape3D:
-		warnings.append("`collision` necesita un BoxShape3D: la caja que encierra las partes.")
+		warnings.append("`collision` needs a BoxShape3D: the box around the parts.")
 	return warnings
 
 
@@ -68,7 +68,7 @@ func _ready() -> void:
 		add_to_group(STRUCTURE_GROUP)
 	if shelter:
 		add_to_group(SHELTER_GROUP)
-	## A tower on a client already has the maximum its synchronizer sent with the spawn: setting it again would erase the damage.
+	# A tower on a client already has the maximum its synchronizer sent with the spawn: setting it again would erase the damage.
 	if max_health > 0.0 and health.maximum <= 0.0:
 		health.setup(max_health)
 	elif max_health <= 0.0:

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Import the five gods' land images (tileset, sky, sun) to assets/original/themes/<god>/.
 
-RFC-033 (033e). Writes only assets/original/themes/. Deterministic and idempotent: a second run writes nothing, and an
+Writes only assets/original/themes/. Deterministic and idempotent: a second run writes nothing, and an
 existing .png.import is never touched (it carries the UID).
 
   python3 tools/import/import_themes.py            # write
@@ -16,7 +16,7 @@ finds the textures the ENVI names. Run it once; the result is versioned. The gro
 Per god: edge.png (lossless texture: exact pixels, no mipmaps, no compression; the cliff walls of the GodGround),
 skyt.png / skyb.png / sky.png (mipmapped textures: the sky sampled them with Image.generate_mipmaps()), sun.png and
 undr.png (textures without mipmaps; no consumer yet). The ENVI colours (background, fog) are no longer written: they were copied once into
-data/look/sky/<god>_sky.tres (055b-2), which the game and the inspector own from then on.
+data/look/sky/<god>_sky.tres, which the game and the inspector own from then on.
 
 The cloud/sky textures of persephone are the ones the old sky read from a duplicate (same md5).
 """
@@ -32,7 +32,7 @@ from sac_formats import txtr  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "themes"))
-# file -> "lossless" (texture, exact pixels, no mipmaps, never VRAM-compressed; RFC-035b), "mips" (texture with mipmaps) or "plain" (texture without)
+# file -> "lossless" (texture, exact pixels, no mipmaps, never VRAM-compressed), "mips" (texture with mipmaps) or "plain" (texture without)
 KINDS = {"edge": "lossless", "skyt": "mips", "skyb": "mips", "sky": "mips", "sun": "plain", "undr": "plain"}
 
 IMAGE_TEMPLATE = """[remap]

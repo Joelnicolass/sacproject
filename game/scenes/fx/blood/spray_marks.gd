@@ -61,7 +61,7 @@ func _on_played(kind: StringName, fx: Resource, at: Vector3) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if blood == null:
-		out.append("Asigná `blood` (data/fx/blood/red.tres).")
+		out.append("Assign `blood` (data/fx/blood/red.tres).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		out.append(prefs_warning)

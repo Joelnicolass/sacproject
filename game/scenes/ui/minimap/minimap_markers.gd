@@ -2,14 +2,13 @@ extends Control
 
 ## One icon per thing on the map, in one `_draw` per frame (no node per creature). It reads the groups the
 ## game already keeps (wizard, unit, altar, structure, manafount, soul) and each kind's look from `minimap.style`.
-## As in the original: dead or hidden foes are left out (is_targetable), your own things always show, souls take the
+## Dead or hidden foes are left out (is_targetable), your own things always show, souls take the
 ## viewer's color. What lies beyond the circle shows as an arrow at the edge only for your things and for wizards.
 ## Presentation only: the fog of war does not exist in the port, so everything shows.
-## Ref: RFC-037; sacengine minimap.
 
 @export var minimap: Minimap
 
-## Measures for flows and the bench: icons and arrows drawn last frame, microseconds the draw took, and where the
+## Measures for flows and checks: icons and arrows drawn last frame, microseconds the draw took, and where the
 ## local wizard's icon went (local canvas pixels; INF when it is not on the circle).
 var icons_drawn := 0
 var arrows_drawn := 0
@@ -72,9 +71,8 @@ func _draw() -> void:
 	draw_us = Time.get_ticks_usec() - started
 
 
-## The local slot and its allies (allied vision: the original shows what the allies see; the port has no
+## The local slot and its allies (allied vision; there is no
 ## fog, so what changes is that an ally is shown always, with the arrow at the edge for its buildings).
-## Ref: RFC-049 049c; sacengine minimapVisibleToSide, renderer.d:4641-4643.
 func _is_mine(owner_slot: int, slot: int) -> bool:
 	return owner_slot == slot or (owner_slot > 0 and slot > 0 and SideRelations.stance(slot, owner_slot) == SideRelations.Stance.ALLY)
 

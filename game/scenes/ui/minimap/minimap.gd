@@ -4,7 +4,7 @@ extends Control
 
 ## The circle at the bottom right of the HUD. It builds the frame's state (center, turn, zoom) and hands it to its children:
 ## `Ground` draws the baked terrain, `Markers` the icons. It knows no unit type.
-## Local presentation: nothing is replicated. Input (037c): the wheel over the circle zooms the map, `M` shows or hides it, and a
+## Local presentation: nothing is replicated. Input: the wheel over the circle zooms the map, `M` shows or hides it, and a
 ## click gives a ground point (`ground_pointed`); MatchCommand turns it into an order or an aim, so no order starts here.
 ##
 ## Everything is laid out in canvas pixels of the 1280×720 base, anchored to the bottom-right corner; Godot's stretch scales it.
@@ -12,7 +12,7 @@ extends Control
 ## ahead of the followed wizard. `view.heading_up = false` keeps north up and centers on the wizard.
 ## Map axes: world (x, z) → local pixels. A top view has +x right and +z down, so no flip is needed.
 
-## `Minimap.zoom` changed (037c wheel).
+## `Minimap.zoom` changed (wheel).
 signal zoom_changed(zoom: float)
 ## `select` or `order_units` was released over the circle on the ground at `point` (world; y is the ground height there).
 ## The camera does not jump: in Sacrifice it always follows the wizard.
@@ -33,7 +33,6 @@ var local_slot := 0
 @export var ground: Control
 @export var markers: Control
 ## Compass gem on the frame; it rides the edge at the map's north as the map turns. Empty = none.
-## Ref: sacengine minimapCompass.
 @export var compass: Control
 @export_group("Resources")
 @export var style: MinimapStyleSet
@@ -52,9 +51,9 @@ var _to_local := Transform2D.IDENTITY
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if camera == null or terrain_bake == null or ground == null or markers == null:
-		warnings.append("Asigná camera, terrain_bake, ground y markers.")
+		warnings.append("Assign camera, terrain_bake, ground and markers.")
 	if style == null or view == null:
-		warnings.append("Asigná style y view (data/ui/minimap/).")
+		warnings.append("Assign style and view (data/ui/minimap/).")
 	return warnings
 
 
@@ -152,7 +151,7 @@ func world_to_minimap(point: Vector3) -> Vector2:
 	return _to_local * Vector2(point.x, point.z)
 
 
-## World x/z under a local position (the inverse; 037c uses it to aim from the minimap).
+## World x/z under a local position (the inverse; used to aim from the minimap).
 func local_to_world(local: Vector2) -> Vector2:
 	return _to_local.affine_inverse() * local
 

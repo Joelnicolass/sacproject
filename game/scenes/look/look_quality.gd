@@ -3,10 +3,10 @@ class_name LookQuality
 extends Resource
 
 ## One quality preset (low / medium / high): the single place that holds render scale and AA.
-## Later cuts add their own fields (shadows, SSAO, volumetric, scatter density).
+## It also holds shadows, SSAO, volumetric and scatter density.
 ## Defaults are the engine defaults: native resolution, no AA, no upscaler.
 ##
-## Scale modes on Forward+ over Metal (4.7), measured in 022a: see RFC-022 section 3.
+## Scale modes measured on Forward+ over Metal (4.7).
 ## Temporal modes (FSR2, MetalFX temporal) are listed to measure them, not to ship them:
 ## the animation swaps the whole mesh each frame and has no motion vectors, so they ghost.
 
@@ -23,7 +23,7 @@ extends Resource
 @export var screen_space_aa: Viewport.ScreenSpaceAA = Viewport.SCREEN_SPACE_AA_DISABLED
 @export var msaa_3d: Viewport.MSAA = Viewport.MSAA_DISABLED
 
-@export_group("Sun shadows (022b)")
+@export_group("Sun shadows")
 ## 2 splits (low) or 4 (medium, high).
 @export var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 ## Resolution of the directional shadow atlas (global to the renderer).
@@ -32,7 +32,7 @@ extends Resource
 ## Upper bound for the biome's shadow distance, in meters. 0 = no cap (the biome decides).
 @export_range(0.0, 1000.0, 1.0, "suffix:m") var shadow_distance_cap: float = 0.0
 
-@export_group("Screen-space light (022b)")
+@export_group("Screen-space light")
 @export var ssao_enabled: bool = true
 ## Screen-space indirect light: high preset only.
 @export var ssil_enabled: bool = false
@@ -41,7 +41,7 @@ extends Resource
 ## Bloom of the bright parts (the biome's GlowLook). Off in low: it is a full-screen blur chain.
 @export var glow_enabled: bool = true
 
-@export_group("Ground (022c)")
+@export_group("Ground")
 ## 4 = the god's ground also reads its roles' normal and ORM maps; below 4 = colour only. All four roles always draw.
 @export_range(1, 4) var ground_layers: int = 4
 ## Rock layers project the maps from three sides (stretch-free cliffs).
@@ -51,7 +51,7 @@ extends Resource
 ## Macro drift of color and roughness over hundreds of meters.
 @export var ground_macro: bool = true
 
-@export_group("Grass (022e)")
+@export_group("Grass")
 @export var grass_enabled: bool = true
 ## Radius of the ring of grass around the point the camera looks at: where the grass has height 0
 ## is 85 % of it. The radius is what a preset saves; the far density is the type's and does not change.
@@ -68,30 +68,30 @@ extends Resource
 ## Blades flatten under the nearby units and stand up again.
 @export var grass_trample: bool = true
 
-@export_group("VFX y clima (029)")
+@export_group("VFX and weather")
 ## Sprites fade against the scene depth instead of cutting the ground (shader global `fx_soft_particles`).
 @export var fx_soft_particles: bool = true
 ## Atlas frames blend into the next one (shader global `fx_frame_blend`).
 @export var fx_frame_blend: bool = true
-## Most effect lights on at once (RFC-029 029c, FxLightLayer): shadowless OmniLight3D. 0 = none.
+## Most effect lights on at once (FxLightLayer): shadowless OmniLight3D. 0 = none.
 @export_range(0, 64) var fx_max_lights: int = 8
 
-@export_group("Actor lights (055b-3)")
+@export_group("Actor lights")
 ## Most lights of units, wizards and spells on at once (ActorLightBudget): shadowless OmniLight3D. 0 = none.
 @export_range(0, 64) var actor_max_lights: int = 12
 
-@export_group("Ambience (058)")
+@export_group("Ambience")
 ## Multiplies the drops of the rain (and the snow) of every weather state.
 @export_range(0.0, 2.0, 0.05) var rain_density_scale: float = 1.0
 ## Multiplies the particles of the ambient life (pollen, fireflies...). 0 = no ambient life at all.
 @export_range(0.0, 2.0, 0.05) var life_density_scale: float = 1.0
 
-@export_group("Relieve (067)")
+@export_group("Relief")
 ## The normal maps of the models (SurfaceReliefLayer). Off = every material draws as if it had none; the player's
 ## «Relieve» option can only turn them off on top of this.
 @export var relief_maps: bool = true
 
-@export_group("Vegetación (RFC-054)")
+@export_group("Vegetation")
 ## One entry per mesh vegetation layer (FloraField), by the layer's id. A layer without an entry is not drawn.
 @export var vegetation: Array[VegetationQuality] = []
 

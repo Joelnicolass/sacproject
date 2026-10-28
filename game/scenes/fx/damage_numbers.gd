@@ -10,7 +10,6 @@ extends Node3D
 ##   none free is dropped.
 ## - A number rises `rise_m` over `life_s` and fades out over the last `fade_s`; then it goes back to the pool (hidden).
 ## The look of a number is the `number_scene` Label3D (scenes/fx/damage_number.tscn); `own_color` tints the local side's bodies.
-## Ref: RFC-053 053f (F375).
 
 ## Group a check counts (see `is_active`).
 const GROUP := &"feel_presentation"

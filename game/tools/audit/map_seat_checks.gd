@@ -1,6 +1,6 @@
 extends RefCounted
 
-## Where the wizards of a map would stand (RFC-050): one PlayerStart per seat of the definition, each slot in 1..seats and
+## Where the wizards of a map would stand: one PlayerStart per seat of the definition, each slot in 1..seats and
 ## unique, the spot `spawn_transform()` gives on land and on the navmesh, and every spot in the same walkable region (the
 ## seats can meet). Returns the problems; prints one line per start. Not: the altars and founts on land (MapGroundChecks),
 ## the walk from altar to fount (MapPathChecks).

@@ -5,7 +5,7 @@ extends RefCounted
 ## NavZones that shares the pieces it did not touch and bakes the others; `stitched` joins every piece into the one navmesh the
 ## game uses. The pieces meet exactly on the zone lines, so a re-bake of the touched zones gives the navmesh of baking them all.
 ## Not: when to bake or what changed (NavRebake, NavChanges), the swap (NavMeshBackend). Pieces are never changed once made.
-## Ref: Godot demo navigation_mesh_chunks (filter_baking_aabb + border_size + rounded vertices); plan 071.
+## Ref: Godot demo navigation_mesh_chunks (filter_baking_aabb + border_size + rounded vertices).
 
 var _settings: NavBakeSettings
 ## Zones per side.

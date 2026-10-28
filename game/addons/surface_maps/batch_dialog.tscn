@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/surface_maps/recipe_form.gd" id="2_form"]
 
 [node name="BatchDialog" type="ConfirmationDialog"]
-title = "Generar relieve"
+title = "Generate relief"
 size = Vector2i(560, 640)
 dialog_hide_on_ok = false
 script = ExtResource("1_batch")
@@ -16,7 +16,7 @@ offset_right = 552.0
 offset_bottom = 591.0
 
 [node name="What" type="Label" parent="Body"]
-text = "Qué: carpetas (sus .tres, sin subcarpetas) o materiales, separados por coma."
+text = "What: folders (their .tres, no subfolders) or materials, comma separated."
 autowrap_mode = 3
 
 [node name="PathRow" type="HBoxContainer" parent="Body"]
@@ -28,27 +28,27 @@ placeholder_text = "res://scenes/bodies/materials/"
 
 [node name="Browse" type="Button" parent="Body/PathRow"]
 unique_name_in_owner = true
-tooltip_text = "Elegir una carpeta."
-text = "Carpeta…"
+tooltip_text = "Pick a folder."
+text = "Folder…"
 
 [node name="UseSelection" type="Button" parent="Body/PathRow"]
 unique_name_in_owner = true
-tooltip_text = "Usa los archivos y carpetas seleccionados en el panel FileSystem."
-text = "Selección"
+tooltip_text = "Uses the files and folders selected in the FileSystem dock."
+text = "Selection"
 
 [node name="Skip" type="CheckBox" parent="Body"]
 unique_name_in_owner = true
-tooltip_text = "No toca los materiales que ya tienen todos sus mapas en disco (ni los genera, ni los asigna, ni los guarda)."
+tooltip_text = "Leaves alone the materials that already have all their maps on disk (does not generate, assign or save them)."
 button_pressed = true
-text = "Saltear existentes"
+text = "Skip existing"
 
 [node name="Overwrite" type="CheckBox" parent="Body"]
 unique_name_in_owner = true
-tooltip_text = "Reemplaza los PNG que ya existen (se pierde lo retocado a mano)."
-text = "Sobrescribir"
+tooltip_text = "Replaces the PNGs that already exist (hand edits are lost)."
+text = "Overwrite"
 
 [node name="RecipeTitle" type="Label" parent="Body"]
-text = "Receta (la misma de la sección del inspector, solo por esta sesión):"
+text = "Recipe (the same as the inspector section, for this session only):"
 
 [node name="Scroll" type="ScrollContainer" parent="Body"]
 size_flags_vertical = 3
@@ -73,10 +73,10 @@ autowrap_mode = 3
 [node name="Stop" type="Button" parent="Body/StatusRow"]
 unique_name_in_owner = true
 visible = false
-tooltip_text = "Termina el material actual y para; lo ya escrito se importa y se asigna igual."
-text = "Detener"
+tooltip_text = "Finishes the current material and stops; what was written is still imported and assigned."
+text = "Stop"
 
 [node name="FolderPicker" type="EditorFileDialog" parent="."]
 unique_name_in_owner = true
-title = "Elegir carpeta"
+title = "Pick a folder"
 file_mode = 2

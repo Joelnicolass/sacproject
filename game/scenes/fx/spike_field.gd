@@ -6,22 +6,18 @@ extends FxScene
 ## d.y/d.z), that is the spike's axis is s·d, d = ((0, 0, height) + a point of the disk of radius `tilt`) · U(0.85, 1.15);
 ## s = 1 − (2·t/lifetime − 1)²: it rises out of the ground and sinks back in 2/3 s.
 ## One event (FxBus.broadcast_scene, one RPC) is many spikes: `count` of them drawn evenly over the area of the annulus
-## [inner, outer] around this node, each on the land under it (a spike off the land is not placed, as placeSpike).
+## [inner, outer] around this node, each on the land under it (a spike off the land is not placed).
 ## Presentation only: every peer, never headless; its generator is seeded by the event (`seed`), never the global one.
-## Ref: F151 (RFC-030 030n-b); sacengine Spike state.d:3875-3885, updateSpike 20473-20478, placeSpike 25008-25015; drawn as renderer.d:2627-2638, SacSpike sacobject.d:2984-2994, makeSpikeMesh(32, 0.6, 0.75, 0.3, 0.25).
 
 ## How long a spike stands.
-## Ref: sacengine Spike.lifetime, 2·60/3 updates.
 @export var lifetime_s := 0.6666
 ## How far the tip leans (m).
-## Ref: sacengine uniformDisk(…, 2.0).
 @export var tilt := 2.0
 ## makeSpikeMesh: radius at the ground, radius and height of the neck (the tip is at 1).
 @export var base_radius := 0.3
 @export var neck_radius := 0.25
 @export var neck_height := 0.75
 ## Sides of the mesh.
-## Ref: sacengine 32.
 @export_range(3, 32) var sides := 12
 ## The spike texture (jspk.png in spike_field.tscn). Empty = a flat `fallback_color`.
 @export var texture: Texture2D
@@ -40,7 +36,6 @@ static var _mesh_cache: Dictionary = {}
 
 ## `params`: inner, outer (m), count, height (2 on the way, 2,5 in the rings), seed; `life` (s)
 ## overrides lifetime_s.
-## Ref: sacengine spikeHeight.
 func play(params: Dictionary) -> void:
 	var inner := float(params.get("inner", 0.0))
 	var outer := float(params.get("outer", 1.0))
@@ -108,8 +103,7 @@ static func spike_material(albedo: Texture2D, fallback: Color) -> StandardMateri
 	return material
 
 
-## makeSpikeMesh(numV, texBase 0.6, base, baseRadius, topRadius) with numU 2: the ground ring, the neck ring and the tip
-## (y up); texture coordinates radial, as the original's.
+## The spike mesh: the ground ring, the neck ring and the tip (y up); texture coordinates radial.
 static func spike_mesh(sides: int, base_radius: float, neck_radius: float, neck_height: float) -> ArrayMesh:
 	var key := "%d/%s/%s/%s" % [sides, base_radius, neck_radius, neck_height]
 	if _mesh_cache.has(key):

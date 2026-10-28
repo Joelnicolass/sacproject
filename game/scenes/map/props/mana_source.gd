@@ -7,7 +7,6 @@ extends Node3D
 ## Every creature is fed this way, not only wizards;
 ## a body with can_take_mana() false (dead, being summoned) gets nothing (canRegenerateMana).
 ## The reach of a FOUNT and an ALTAR comes from ReachFacts.of_rules(rules), the rate from `rules`.
-## Ref: res://scenes/match/reach_facts.gd (fount_m, altar_m); sacengine updateCreatureStats state.d:14409, canRegenerateMana.
 
 enum Kind { FOUNT, ALTAR, CUSTOM }
 

@@ -13,6 +13,19 @@ Sources: [GDScript style guide](https://docs.godotengine.org/en/stable/tutorials
 [Project organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html) ·
 [gdtoolkit](https://github.com/Scony/godot-gdscript-toolkit) · [GUT](https://gut.readthedocs.io/).
 
+## 0. The rule above the rules: simple and predictable
+
+A developer should guess where a thing lives and change it by opening one or two files.
+
+- "Editor first" means the value sits **on the node that uses it**, visible in the inspector. It does not mean adding a
+  resource or a pointer for everything.
+- Create a `.tres` only when several things share it, or when a designer edits it as a type (a creature, a spell). Otherwise
+  use an `@export` on the node.
+- Never point through tags or text (a key that names another resource, a path built from a code). Reference the scene,
+  node or resource directly.
+- No chains: A → B → C to find one number is a design bug. Flatten it.
+- When two designs work, pick the one with fewer files and fewer hops, even if it is less "general".
+
 ## 1. Project layout
 
 | Folder | What lives there |

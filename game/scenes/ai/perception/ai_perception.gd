@@ -141,8 +141,10 @@ func update_nodes(dt: int) -> void:
 	if souls != null:
 		souls.prune()
 	for t: AiTrack in tracks.values():
-		var dead_body := t.kind != AiTrack.Kind.WIZARD and t.is_body() and AiBody.is_dead(t.node)
-		if not t.is_valid() or dead_body:
+		if not t.is_valid():
+			_erase(t)
+			continue
+		if t.kind != AiTrack.Kind.WIZARD and t.is_body() and AiBody.is_dead(t.node):
 			_erase(t)
 			continue
 		_update_node(t, dt)

@@ -7,8 +7,11 @@ extends RefCounted
 
 
 ## A unit or a Sac Doctor that is dying or dead (the bodies that can die; a wizard, a structure or a
-## soul answer false).
-static func is_dead(node: Node) -> bool:
+## soul answer false). A node that was already freed counts as dead. The argument is a Variant so a
+## freed instance can be passed without a typed-argument error.
+static func is_dead(node: Variant) -> bool:
+	if not is_instance_valid(node):
+		return true
 	if node is UnitBody:
 		return (node as UnitBody).is_dead()
 	if node is DoctorBody:

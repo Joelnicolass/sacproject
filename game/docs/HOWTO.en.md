@@ -134,11 +134,7 @@ To try it without the screens: `--map=test_flat4 --mode=<tag>`.
 You need a 4-seat map: `winter_wonder`, or `test_flat4` for testing.
 
 - **Alone, against the AI:** in the boot screen pick the «2 contra 2» (2 against 2) mode and the map, and press «Contra la IA» (Against the AI). The AI plays your ally and both rivals (their god comes from the «Dios de la IA» (AI god) picker). In a debug build the boot screen also offers the test maps.
-- **In a room:** start the room server (for the test maps, with `--room-test-maps`):
-  ```bash
-  $G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps
-  ```
-  In the editor, **Debug > Customize Run Instances** with 2 instances and F5. A presses «Salas online» (Online rooms), creates a room with the «2 contra 2» mode and the map. B sits in seat 2 (same team). A, the host, picks god and difficulty in «IA nueva:» (New AI) and presses «Agregar IA» (Add AI) on seats 3 and 4. Both press «Listo» (Ready). At the end, the room says «Ganó tu equipo» (Your team won) or «Ganó el otro equipo» (The other team won). Changing team is changing seat.
+- **In an online room:** A presses «Salas online» (Online rooms) → «Crear sala» (Create room), picks the «2 contra 2» mode and the map, and shares the code. The other three join with «Unirse» (Join) and the code. Online rooms are people only: to play with AI, use «Servidor local» (Local server).
 - **Local server:** in «Servidor local» (Local server) → «Crear servidor local» (Create local server), pick mode and map and, for each seat that is not yours, a person or an AI. Each person's seat has its code: give each one theirs, with the address and the port.
 
 ## Change the balance
@@ -198,7 +194,7 @@ Paths are relative to `game/`.
 
 | Tool | Needs the original? | What it produces |
 |---|---|---|
-| Play (F5), `godot --path game`, the room server | **No** | Nothing: the assets are already in `game/assets/original/` (LFS) |
+| Play (F5), `godot --path game` | **No** | Nothing: the assets are already in `game/assets/original/` (LFS) |
 | Throwaway AgentKit flows and captures | **No** | PASS/FAIL and screenshots, not versioned |
 | `tools/import/export_stats.py` | **Yes** | `assets/original/data/*.json` (creature, spell, wizard, building stats) |
 | `tools/import/export_skeletal.py` | **Yes** | `assets/original/models/*.glb` + `index.json` (skeleton and animations) |

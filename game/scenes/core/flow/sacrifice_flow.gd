@@ -5,9 +5,7 @@ extends MpFlow
 
 signal slot_picks_changed
 
-## The room-server screens (where a match from a room comes back to), the «Servidor local» screen and the menu's «Salas online»
-## (rooms the players host through the issuer).
-const LOBBY_SCENE := "res://scenes/ui/lobby/lobby_screen.tscn"
+## The «Servidor local» screen and the menu's «Salas online» (rooms the players host through the issuer).
 const LOCAL_SERVER_SCENE := "res://scenes/ui/local_server/local_server_screen.tscn"
 const ONLINE_SCENE := "res://scenes/ui/online/online_screen.tscn"
 
@@ -24,8 +22,6 @@ const ONLINE_SCENE := "res://scenes/ui/online/online_screen.tscn"
 
 ## Local choice. Never null after `_ready`.
 var pick: WizardPick
-## True while the match in course came from a room: leaving it lands in the room screens, not the menu.
-var from_lobby := false
 ## The AI seats of the match this process simulates (AiRoster reads them): «Contra la IA», or a dedicated with bots. Empty = humans only.
 var solo_ai_seats: Array[AiSeat] = []
 ## What the next match overrides of its rules (level, souls, friendly fire, seed, land, map, mode): the menu's choice over the flags.
@@ -56,9 +52,6 @@ func _ready() -> void:
 	solo_ai_seats = plan.ai_seats
 	_cli_setup = plan.setup
 	setup = _cli_setup.copy()
-	## The room server never loads a world by itself.
-	if MpBoot.role() == "room-server":
-		start_when = StartWhen.MANUAL
 	if not _arm_ticket_glue():
 		return
 	if loading_screen != null:
@@ -102,7 +95,6 @@ func play_vs_ai(god: GodType = null, chosen: MatchSetup = null) -> void:
 
 
 func _play_alone() -> void:
-	from_lobby = false
 	super.play_solo()
 	slot_picks.clear()
 	slot_picks[MpKit.local_slot()] = pick
@@ -110,7 +102,6 @@ func _play_alone() -> void:
 
 
 func host_lan() -> Error:
-	from_lobby = false
 	solo_ai_seats = []
 	setup = _cli_setup.copy()
 	return super.host_lan()
@@ -159,14 +150,6 @@ func _extra_world_loads() -> PackedStringArray:
 	return ActiveMatch.load_paths()
 
 
-## Joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the token.
-func join_from_lobby(host: String, p_port: int, token: String) -> Error:
-	_forget_local_match()
-	var err := join_endpoint(host, p_port, token)
-	from_lobby = err == OK
-	return err
-
-
 ## Opens an online room this player hosts with the Sacrifice ticket (OnlineTicket: map, mode, options, the host's pick, the other
 ## seats open). null when the rules refuse `options` or there is no issuer (the status says why).
 func host_online_room(options: Dictionary, room: String, listed: bool) -> MpOnline:
@@ -178,13 +161,13 @@ func host_online_room(options: Dictionary, room: String, listed: bool) -> MpOnli
 	return host_online(OnlineTicket.players_of(ticket), room, listed, ticket)
 
 
-## Joins an online room by its code: nothing of a local match stays (picks, AI seats, the room mark).
+## Joins an online room by its code: nothing of a local match stays (picks, AI seats).
 func join_online(code: String) -> Error:
 	_forget_local_match()
 	return await super.join_online(code)
 
 
-## Joins a «Servidor local» (the host's own dedicated; the code is the seat's credential). It is not a room: out goes to the menu.
+## Joins a «Servidor local» (the host's own dedicated; the code is the seat's credential).
 func join_local_server(host: String, p_port: int, code: String) -> Error:
 	_forget_local_match()
 	return join_endpoint(host, p_port, code)
@@ -195,9 +178,8 @@ func join_lan(ip: String) -> Error:
 	return super.join_lan(ip)
 
 
-## Joining somebody else's match: nothing of a local one stays (picks, AI seats, the room mark).
+## Joining somebody else's match: nothing of a local one stays (picks, AI seats).
 func _forget_local_match() -> void:
-	from_lobby = false
 	slot_picks.clear()
 	solo_ai_seats = []
 
@@ -207,14 +189,9 @@ func rejection_text(reason: String) -> String:
 	return LocalServerText.rejection_text(reason)
 
 
-## The way out of a match (pause menu, end, lost server): the room screens if it came from a room, else the menu.
+## The way out of a match (pause menu, end, lost server): the menu.
 func _go_boot() -> void:
 	ActiveMatch.forget()
-	print("flujo: salida de la partida, desde sala: %s" % from_lobby)
-	if from_lobby:
-		from_lobby = false
-		get_tree().change_scene_to_file(LOBBY_SCENE)
-		return
 	super._go_boot()
 
 
@@ -231,7 +208,7 @@ func _translate_online_texts() -> void:
 	online_texts = texts
 
 
-## The dedicated of a room-server match takes its picks, options and seed from the ticket. False = unplayable ticket (it quits).
+## The dedicated of a room's match takes its picks, options and seed from the ticket. False = unplayable ticket (it quits).
 func _arm_ticket_glue() -> bool:
 	var glue := MatchTicketGlue.attach(self)
 	if glue == null:

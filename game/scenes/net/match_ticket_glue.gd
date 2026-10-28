@@ -1,7 +1,7 @@
 class_name MatchTicketGlue
 extends Node
 
-## The Sacrifice side of a dedicated that the room server launched (`--match-ticket-file`).
+## The Sacrifice side of a dedicated that a room launched (`--match-ticket-file`).
 ## SacrificeFlow instances it only in that process. It gives the match agent (kit) its Sacrifice meaning:
 ## - the ticket becomes what the match needs: the pick of each slot, the options (MatchSetup) and the seed;
 ## - the result of the match (MatchState) is reported to the agent, which writes result.json and tells the clients;
@@ -11,7 +11,7 @@ extends Node
 ## - RFC-049 049f (ticket v2): `seats` has only the humans (rows with a token); the bots are `ai_seats` [{slot, god}], which
 ##   SacrificeFlow seats as AI. `mode` names the game mode.
 ## Not: who may sit, the wait for the seats to load, the grace (the gate); the story in the log (SeatPresence).
-## The pick channel of the clients is ignored (SacrificeFlow): the pick was closed in the lobby.
+## The pick channel of the clients is ignored (SacrificeFlow): the pick was closed in the room.
 ## Test hook, not a rule: `--force-defeat-slot=N[,M…] --force-defeat-after-ticks=T` defeats those slots T ticks after the
 ## match started (or after the first admission with `--no-load-hold`), so a run ends without playing the match out.
 ## `--force-defeat-when-file=PATH` (F350) defeats them as soon as that file exists, so a test that must keep the match alive
@@ -96,7 +96,7 @@ static func attach(parent: Node) -> MatchTicketGlue:
 	return glue
 
 
-## slot -> the `meta` (pick) the lobby validated for that seat. Raw wire text: the flow reads it again with MatchWire.
+## slot -> the `meta` (pick) the room validated for that seat. Raw wire text: the flow reads it again with MatchWire.
 func seat_metas() -> Dictionary:
 	return _seat_metas.duplicate(true)
 
@@ -138,7 +138,7 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 	return setup
 
 
-## RFC-049 049a: the dedicated checks the map of the ticket again (the room server already did): a ticket without `world` plays
+## RFC-049 049a: the dedicated checks the map of the ticket again (the room already did): a ticket without `world` plays
 ## the default map; one that names a map the catalog does not have is a `bad_ticket`.
 ## RFC-049 049f: the same for the `mode` (a ticket without it is a 1v1, a v1 ticket), and the map must fit it.
 static func world_is_valid(ticket: Dictionary) -> bool:

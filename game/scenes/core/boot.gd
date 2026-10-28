@@ -5,19 +5,12 @@ extends Control
 ## RFC-031 031d (F143): the player's Options → Jugabilidad (data/ui/gameplay_prefs.tres); the matches made here take it.
 @export var gameplay_prefs: GameplayPrefs
 
-const ROOM_SERVER_SCENE := "res://scenes/net/room_server.tscn"
-
 @onready var ip: LineEdit = %Ip
 @onready var status: Label = %Status
 @onready var character_select: Control = %CharacterSelect
 @onready var column: Control = %Column
 
 func _ready() -> void:
-	## RFC-034 034g: the exported binary has no scene argument; `--room-server` makes its main scene (this one) hand over to the
-	## room server, so the same binary is the room server and, with `--dedicated`, every match process.
-	if MpBoot.role() == "room-server":
-		get_tree().change_scene_to_file.call_deferred(ROOM_SERVER_SCENE)
-		return
 	SacrificeFlow.status_changed.connect(_on_status)
 	%Solo.pressed.connect(_on_solo)
 	%VsAi.pressed.connect(_on_vs_ai)

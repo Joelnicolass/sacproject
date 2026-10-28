@@ -57,7 +57,7 @@ func sounds() -> SoundSet:
 	return _saved_sounds
 
 
-## Builds the look of the worn scene and gives it to the rig. A client only: the server and the room server draw nothing.
+## Builds the look of the worn scene and gives it to the rig. A client only: the server draws nothing.
 func _dress(body: PackedScene) -> void:
 	if rig == null or not BodyLook.loads_meshes():
 		return

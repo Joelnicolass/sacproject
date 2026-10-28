@@ -42,7 +42,7 @@ Palabras simples primero; la columna de la derecha dice quién las controla.
 | C25 | Los controles viven en el InputMap: sin `KEY_*` ni `MOUSE_BUTTON_*` en el código de `scenes/` (salvo `action_key_label.gd`, que muestra la tecla de una acción). | lint (`C25`) |
 | C10 | FSM solo con ≥3 estados; command/interactor solo con ≥2 llamadores. | reviewer |
 | C11 | Herencia propia de profundidad ≤1 (`A extends Node`, `B extends A` y listo). Para más, componé. | lint (`C11`) |
-| C12 | La red (`MpKit.` o la fachada `Mp.`) solo vive en `scenes/net/`, en las pantallas de red (`scenes/ui/lobby/`, `scenes/ui/local_server/`, `scenes/ui/online/`, `scenes/ui/match_wait/`), en los dueños de `submit_*`/`@rpc`, en los que usan `MultiplayerSpawner` y en las subclases de nodos del kit (`extends Mp…`). Un componente que simula pregunta `is_multiplayer_authority()`. Las líneas de comentario no cuentan. | lint (`C12`, un renglón por archivo) |
+| C12 | La red (`MpKit.` o la fachada `Mp.`) solo vive en `scenes/net/`, en las pantallas de red (`scenes/ui/local_server/`, `scenes/ui/online/`, `scenes/ui/match_wait/`), en los dueños de `submit_*`/`@rpc`, en los que usan `MultiplayerSpawner` y en las subclases de nodos del kit (`extends Mp…`). Un componente que simula pregunta `is_multiplayer_authority()`. Las líneas de comentario no cuentan. | lint (`C12`, un renglón por archivo) |
 | C13 | El producto no lee formatos del original: nada de `assets/original`, `OriginalAssets.` ni `res://tools` en `scenes/`. | lint (`C13`) |
 | C14 | Los logs van por `DebugLog`; sin `print(` en `scenes/`. | lint (`C14`) |
 

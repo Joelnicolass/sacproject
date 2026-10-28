@@ -10,7 +10,7 @@ extends Node
 ## - The game's warnings (the local wizard attacked, a building hit, the altar desecrated...) come from the AdvisorWatch child.
 ## - `quiet_s` of a line: it is said when its event comes after that many game seconds without it.
 ## Only for the player of this process: the sources are local (CommandLog) or filtered by MpKit.local_slot(). With the
-## AudioGate closed (dedicated, room server, headless) it says nothing. No RPC, nothing written to the simulation, no global
+## AudioGate closed (dedicated, headless) it says nothing. No RPC, nothing written to the simulation, no global
 ## generator (SoundBus draws the variant).
 ## Ref: RFC-052 052e (F364).
 

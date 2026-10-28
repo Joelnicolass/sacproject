@@ -1,7 +1,7 @@
 class_name TicketPlan
 extends RefCounted
 
-## Reads the ticket a room server gave to a dedicated into a LaunchPlan: the seats of its mode, the bots as AI seats, the picks
+## Reads the ticket a room gave to its dedicated into a LaunchPlan: the seats of its mode, the bots as AI seats, the picks
 ## of the humans that are already chosen, the options and the seed. It changes nothing: SacrificeFlow applies the plan.
 ## It does not check the ticket (`MatchTicketGlue.world_is_valid` does, before this runs).
 

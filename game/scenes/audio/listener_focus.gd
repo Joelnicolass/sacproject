@@ -5,7 +5,7 @@ extends AudioListener3D
 ## Where the player hears from. The camera flies high over the field, so attenuating from it would
 ## make everything far; the listener sits on the local wizard (MatchWorld.local_wizard_changed) and turns with the camera,
 ## so left and right stay the screen's. Before the wizard arrives (or without one) it sits on the camera.
-## With the AudioGate closed (dedicated, room server, headless) it does nothing. It is SoundBus.listener: the loops of the
+## With the AudioGate closed (dedicated, headless) it does nothing. It is SoundBus.listener: the loops of the
 ## SoundEmitter3D nodes measure their range from it (052d).
 ## Ref: RFC-052 052c (F362).
 

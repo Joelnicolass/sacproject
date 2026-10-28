@@ -61,7 +61,6 @@
 [ext_resource type="Script" path="res://scenes/ui/options/ui_scale_applier.gd" id="h1_ui_applier"]
 [ext_resource type="Resource" path="res://data/ui/ui_scale.tres" id="h1_ui_scale"]
 [ext_resource type="PackedScene" path="res://scenes/units/attacks/droplet_rain.tscn" id="f148_rain"]
-[ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
 [ext_resource type="Script" uid="uid://bw6hj2y4y367k" path="res://scenes/orders/order_radial.gd" id="f218_order_radial"]
 [ext_resource type="PackedScene" path="res://scenes/ui/radial/radial_menu.tscn" id="f218_radial"]
@@ -444,11 +443,6 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 match_state = NodePath("../../Match")
 seat = NodePath("../../LocalSeat")
-
-
-[node name="LobbyReturn" parent="Hud" unique_id=803648076 node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
-unique_name_in_owner = true
-match_state = NodePath("../../Match")
 
 
 [node name="MatchWait" parent="Hud" instance=ExtResource("g68_wait")]

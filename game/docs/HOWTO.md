@@ -130,11 +130,7 @@ Para probarlo sin pantallas: `--map=test_flat4 --mode=<tag>`.
 Hace falta un mapa de 4 asientos: `winter_wonder`, o `test_flat4` para probar.
 
 - **Solo, contra la IA:** en el boot elegí el modo «2 contra 2» y el mapa, y pulsá «Contra la IA». La IA juega tu aliado y los dos rivales (su dios sale del selector «Dios de la IA»). En un build de debug el boot ofrece también los mapas de prueba.
-- **En una sala:** levantá el servidor de salas (para los mapas de prueba, con `--room-test-maps`):
-  ```bash
-  $G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps
-  ```
-  En el editor, **Debug > Customize Run Instances** con 2 instancias y F5. A pulsa «Salas online», crea una sala con modo «2 contra 2» y el mapa. B se sienta en el asiento 2 (mismo equipo). A, que es el anfitrión, elige dios y dificultad en «IA nueva:» y pulsa «Agregar IA» en los asientos 3 y 4. Los dos marcan «Listo». Al terminar, la sala dice «Ganó tu equipo» o «Ganó el otro equipo». Cambiarse de equipo es cambiarse de asiento.
+- **En una sala online:** A pulsa «Salas online» → «Crear sala», elige modo «2 contra 2» y el mapa, y pasa el código. Los otros tres entran con «Unirse» y el código. Online son solo personas: para jugar con IA, usá «Servidor local».
 - **Servidor local:** en «Servidor local» → «Crear servidor local», elegí modo y mapa y, por cada asiento que no es el tuyo, una persona o una IA. Cada asiento de persona tiene su código: pasale a cada uno el suyo, con la dirección y el puerto.
 
 ## Cambiar el balance
@@ -197,7 +193,7 @@ Las rutas son relativas a `game/`.
 
 | Herramienta | ¿Necesita el original? | Qué produce |
 |---|---|---|
-| Jugar (F5), `godot --path game`, el servidor de salas | **No** | Nada: los assets ya están en `game/assets/original/` (LFS) |
+| Jugar (F5), `godot --path game` | **No** | Nada: los assets ya están en `game/assets/original/` (LFS) |
 | Flows y capturas descartables de AgentKit | **No** | PASS/FAIL y capturas, no se versionan |
 | `tools/import/export_stats.py` | **Sí** | `assets/original/data/*.json` (estadísticas de criaturas, hechizos, magos, edificios) |
 | `tools/import/export_skeletal.py` | **Sí** | `assets/original/models/*.glb` + `index.json` (esqueleto y animaciones) |

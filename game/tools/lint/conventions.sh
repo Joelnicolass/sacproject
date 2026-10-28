@@ -77,10 +77,10 @@ xargs awk '
 	}' < "$OUT/all.txt" | sort > "$OUT/C11.txt"
 
 # C12 (plan 070 N0): network calls (`MpKit.` or the `Mp.` facade) outside the allowlist, one line per file. Whole-line comments do not
-# count. Allowlist: scenes/net/; the network screens (scenes/ui/lobby/, local_server/, online/, match_wait/); owners of submit_*/@rpc;
+# count. Allowlist: scenes/net/; the network screens (local_server/, online/, match_wait/); owners of submit_*/@rpc;
 # MultiplayerSpawner users; subclasses of a kit node (`extends Mp<Name>`).
 : > "$OUT/C12.txt"
-grep -vE '^scenes/(net|ui/lobby|ui/local_server|ui/online|ui/match_wait)/' "$OUT/all.txt" | while IFS= read -r f; do
+grep -vE '^scenes/(net|ui/local_server|ui/online|ui/match_wait)/' "$OUT/all.txt" | while IFS= read -r f; do
 	grep -vE '^[[:space:]]*#' "$f" | grep -qE '(^|[^A-Za-z0-9_])Mp(Kit)?\.' || continue
 	grep -qE 'func submit_|@rpc|MultiplayerSpawner|^extends[[:space:]]+Mp[A-Z]' "$f" || echo "$f" >> "$OUT/C12.txt"
 done
@@ -162,7 +162,7 @@ xargs grep -nE '(^|[^A-Za-z0-9_])ActiveMatch\.' < "$OUT/all.txt" 2>/dev/null \
 # them (the seat metas of a room, the channels of the flow) and the wire is the one place that turns it into a Resource (RFC-055 055i-a Q3).
 {
 	xargs grep -nE 'GameCatalog\.shared\(\)\.(god|building)\(|TypeRef\.|AiSeat\.difficulty_of\(|BiomeRules\.has_look\(' < "$OUT/all.txt" 2>/dev/null
-	xargs grep -nE 'MatchWire\.decode_' < "$OUT/all.txt" 2>/dev/null | grep -vE '^scenes/core/flow/|^scenes/ui/(lobby|local_server)/'
+	xargs grep -nE 'MatchWire\.decode_' < "$OUT/all.txt" 2>/dev/null | grep -vE '^scenes/core/flow/|^scenes/ui/local_server/'
 } | grep -vE '^scenes/(net|core/catalog)/|^scenes/[a-z_/]*[a-z_]*spawn[a-z_]*\.gd:' \
 	| grep -vE ':[0-9]+:[ 	]*#' > "$OUT/C18b.txt" || true
 

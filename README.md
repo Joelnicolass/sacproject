@@ -20,7 +20,7 @@ An unofficial, fan-made port of **Sacrifice** (Shiny Entertainment, 2000) to **G
 - **The original's sound:** 3D effects, creature, wizard and advisor voices, music per god (calm, battle, sacrifice, victory) and ambience, with per-bus volume in «Opciones → Sonido» (Options → Sound). Your own sounds go in `game/assets/custom/sounds/` (see `game/docs/HOWTO.en.md`).
 - **A radial order menu and 8 formations.** Hold the right button, pick the formation and release: the units go there in that formation.
 - **Server-authoritative multiplayer:**
-  - a room server with a lobby and one dedicated server per match;
+  - «Salas online» (Online rooms): a player hosts the room from their PC and friends join with its code, through a relay;
   - «Servidor local» (Local server) to play from your PC without a VPS;
   - ENet or WebSocket transport;
   - reconnecting to the match with the same ticket.
@@ -79,14 +79,6 @@ In the menu: **Cambiar personaje** (Change character) to pick a wizard and a god
 | Zoom | wheel (over the minimap, it zooms the minimap) |
 | Show or hide the minimap | `M` |
 | Pause | `Esc` |
-
-### Dedicated server (VPS)
-
-The guide for the Linux export, ports, firewall and systemd is in [`game/tools/deploy/README.md`](game/tools/deploy/README.md). To try it locally, the room server starts with:
-
-```bash
-godot --headless --path game -- --room-server
-```
 
 ## Useful commands
 
@@ -179,7 +171,7 @@ Paths are relative to `game/`.
 
 | Tool | Needs the original? | What it produces |
 |---|---|---|
-| Play (F5), `godot --path game`, the room server | **No** | Nothing: the assets are already in `game/assets/original/` (LFS) |
+| Play (F5), `godot --path game` | **No** | Nothing: the assets are already in `game/assets/original/` (LFS) |
 | Throwaway AgentKit flows and captures | **No** | PASS/FAIL and screenshots, not versioned |
 | `tools/import/export_stats.py` | **Yes** | `assets/original/data/*.json` (creature, spell, wizard, building stats) |
 | `tools/import/export_skeletal.py` | **Yes** | `assets/original/models/*.glb` + `index.json` (skeleton and animations) |

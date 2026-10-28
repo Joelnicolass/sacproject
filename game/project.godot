@@ -18,7 +18,6 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 [autoload]
 
 MpKit="*res://addons/mp_kit/mp_kit.gd"
-MpLobby="*res://addons/mp_kit/lobby/mp_lobby.gd"
 GameData="*res://scenes/core/catalog/game_data.gd"
 SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.tscn"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"

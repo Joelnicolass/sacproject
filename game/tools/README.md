@@ -6,7 +6,6 @@ Herramientas de desarrollo, nunca parte del juego (el export las excluye).
 - `audit/`: chequeos (esqueletos, iconos, transforms del layout; `check_original_assets.sh` SI requiere el juego original). `check_map.tscn -- [--map=<tag>]` valida un mapa o todos: los asientos, que inicios, altares, manantiales y edificios esten sobre tierra, que cada `GroundFootprint` este a nivel (dispersion <= 0,5 m, sin vacios) y que cada altar llegue caminando a cada manantial por el `nav.res`; imprime `CHECK MAP <tag> PASS/FAIL` y sale con 0 o 1. La logica de un mapa es `map_checks.gd` (la usan tambien `terrain_cli --validate` y el boton «Validar mapa» del Terrain).
 - `migrate/`: Python portable (sin Godot ni el juego original) que cambia datos del repo. `rename_resources.py` renombra `.tres` a nombres humanos con `git mv` y reescribe cada referencia (ensayo por defecto, `--apply` escribe, falla si queda una ruta vieja); `--from-display-name <carpeta> --with <carpeta compañera>`.
 - `material/`: Material Maker por consola.
-- `deploy/`: unidad systemd del servidor de salas.
 - `move_map/` y `move_map.py`: el mudador de rutas del RFC-048.
 - `skeletal_post_import.gd` queda en la raiz: lo nombran los `.import` de `assets/`.
 - `terrain/heights_from_original.gd` (requiere el juego original): escribe el `heights.png` y el `void.png` de un mapa del original, la unica fuente de su suelo.

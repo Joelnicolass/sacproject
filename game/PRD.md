@@ -6,10 +6,10 @@ Juego de escritorio en Godot 4. Fan game personal de Sacrifice (Shiny, 2000), no
 
 - Arquitectura: estándar. Escenas y scripts juntos. Sin `src/domain/`.
 - 3D.
-- Multijugador: online con **servidor de salas** (Godot headless, mismo proyecto, `--room-server`) que lanza **un dedicado por partida** (`host_dedicated()`, el de hoy) en un puerto del VPS. El peer 1 del dedicado no es un jugador. El cliente se conecta al lobby de `data/net/lobby_endpoint.tres`; no escribe la IP. (RFC-034; hasta que 034e cierre, el camino directo `join(ip)` sigue vigente.)
-- Desarrollo local: `res://scenes/net/room_server.tscn -- --room-server` y clientes al lobby `127.0.0.1:7700`; el servidor de salas lanza los dedicados en `127.0.0.1:7800+`. El VPS corre el mismo binario y abre UDP 7700 y 7800-7831. El dedicado directo (`--headless -- --dedicated`) queda para pruebas de humo y el banco.
+- Multijugador online (desde 2026-10-27, MpKit 0.18): **salas que hospedan los jugadores**. El host abre la sala desde su PC (en escritorio, un proceso de partida local); los amigos entran con el código. Todo pasa por el relay (`relay-godot.fly.dev`) con tokens cortos del emisor (`issuer-godot.fly.dev`, `data/net/online_config.tres`). Nadie escribe una IP. El servidor de salas con un dedicado por partida en un VPS (RFC-034) se retiró el 2026-10-27.
+- «Servidor local» sigue igual: un dedicado en la PC del host, con código por asiento y asientos de IA. El dedicado directo (`--headless -- --dedicated`) queda para pruebas de humo.
 - Sin Steam ni WebRTC. Un proceso dedicado por partida (decisión del 2026-10-17: el estado global de la simulación no admite varias partidas por proceso).
-- Sin fork de Godot. Sin fork de `addons/mp_kit`. El servidor de salas es genérico del kit; se sube a `godot-studio-skills` como RC cuando sea estable (RFC-034).
+- Sin fork de Godot. Sin fork de `addons/mp_kit`. Lo genérico de las salas es del kit (`godot-studio-skills`).
 - Blender no entra en el primer corte. Las mallas salen de sacengine.
 
 ## Fantasía

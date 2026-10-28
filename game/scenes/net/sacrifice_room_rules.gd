@@ -1,10 +1,8 @@
 class_name SacrificeRoomRules
 extends Node
 
-## What the room server needs to know about Sacrifice. The kit's lobby is generic; this node
-## gives it the three Callables it calls: is a pick valid (`meta_validator`), are the room options valid
-## (`options_validator`) and how the ticket of a match is built (`ticket_builder`). Nothing here opens a
-## socket or starts a process.
+## What a room needs to know about Sacrifice («Servidor local» and «Salas online»): is a pick valid, are the room
+## options valid and how the ticket of a match is built. Nothing here opens a socket or starts a process.
 ## Ref: RFC-034 034e.
 
 const LEVEL_MIN := 1
@@ -18,8 +16,8 @@ const OPTION_KEYS: PackedStringArray = ["world", "mode", "level", "friendly_fire
 const TICKET_VERSION := 2
 const BOT_KEYS: PackedStringArray = ["god", "difficulty"]
 
-## RFC-049 049a: also accept the maps that exist to test the game (`room_selectable = false`). Tests only: the server of the
-## rooms starts with `--room-test-maps` to turn it on; production rooms offer only the selectable maps.
+## RFC-049 049a: also accept the maps that exist to test the game (`room_selectable = false`). Tests only: the process
+## starts with `--room-test-maps` to turn it on; production rooms offer only the selectable maps.
 @export var include_test_maps := false
 
 var _rng := RandomNumberGenerator.new()
@@ -35,15 +33,6 @@ func _ready() -> void:
 	_rng.randomize()
 	if MpBoot.user_flag("room-test-maps"):
 		include_test_maps = true
-
-
-## Installs the Callables on the lobby server.
-func bind(server: MpLobbyServer) -> void:
-	server.meta_validator = is_valid_pick
-	server.options_validator = are_options_valid
-	server.ticket_builder = build_ticket
-	server.seat_count_for = seat_count_for
-	server.bot_validator = is_valid_bot
 
 
 ## `meta` of a seat: the wizard and the god, checked by the same function the dedicated uses.
@@ -109,7 +98,7 @@ func clean_options(options: Dictionary) -> Dictionary:
 	return out
 
 
-## `seats`: [{slot, session_id, token, meta}] as MpLobbyRooms hands them, plus bot seats `{slot, bot: true, meta}`. The slot is the
+## `seats`: [{slot, session_id, token, meta}] as the room hands them, plus bot seats `{slot, bot: true, meta}`. The slot is the
 ## seat index + 1, the pick is sanitized again, and the seed is drawn here: no client ever chooses it.
 ## RFC-049 049f (ticket v2): `seats` keeps only the rows with a token (the humans); the bots go to `ai_seats` [{slot, god, difficulty}], and
 ## the ticket names the `mode`.

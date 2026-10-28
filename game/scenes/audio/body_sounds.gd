@@ -8,7 +8,7 @@ extends Node
 ## - Where a cue comes from: the body's own set (`BodyMount.sounds()`, with its `fallback` chain: the melee set), then `default_cue`
 ##   (UnitSounds: the summon cue every creature shares). No cue anywhere: silence, no log entry, no warning.
 ## - Everything is client presentation: it reads replicated state and signals, never writes the body, never draws from the
-##   global generator (SoundBus has its own), never adds an RPC. With the AudioGate closed (dedicated, room server, headless)
+##   global generator (SoundBus has its own), never adds an RPC. With the AudioGate closed (dedicated, headless)
 ##   it connects nothing and plays nothing.
 ## The set is read at play time (the type may arrive after `_ready` on a client).
 

@@ -11,7 +11,7 @@ extends Node
 ##   starts the count of `annoyed` again.
 ## - Each kind keeps its cooldown (`cooldown_s` selections, `ack_cooldown_s` orders): clicking fast does not chain voices.
 ## The cue is the creature's own set (the `sounds` of the look it wears, with its fallback chain). No set or no cue: silence, no log entry.
-## Only the local player's (Selection and Orders.request are local). With the AudioGate closed (dedicated, room server,
+## Only the local player's (Selection and Orders.request are local). With the AudioGate closed (dedicated,
 ## headless) it creates nothing. No RPC, nothing written to the simulation.
 
 ## Emits `changed(units: Array)` (scenes/orders/selection.gd, %Selection).

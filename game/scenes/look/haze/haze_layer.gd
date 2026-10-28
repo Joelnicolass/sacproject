@@ -24,8 +24,8 @@ extends Node3D
 @export var wind_m_s := Vector2(0.6, 0.25)
 ## How fast (m/s) the mist's floor follows the land under the camera.
 @export_range(0.5, 50.0, 0.5, "suffix:m/s") var follow_m_s := 6.0
-## The sun casts god rays while its energy is above this (none by night).
-@export_range(0.0, 2.0, 0.01) var rays_min_sun_energy := 0.4
+## The sun (or the moon, ~0.28 at night) casts god rays while its energy is above this.
+@export_range(0.0, 2.0, 0.01) var rays_min_sun_energy := 0.2
 
 var _drift := Vector2.ZERO
 var _base := Vector3.ZERO

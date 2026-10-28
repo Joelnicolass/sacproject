@@ -1,10 +1,11 @@
 class_name OrderCommand
 extends Node
 
-## Orders to the selection: a right click orders by what is under the cursor (ground = move, enemy = attack, corpse =
-## guard the spot, anything else = guard it), an armed order icon (Ctrl+R / Ctrl+A, or the radial menu's entry) takes
-## the left click the same way, retreat calls every creature back to the wizard and a formation is stored on the
-## selection. The right button itself belongs to OrderRadial.
+## Orders to the selection: a right click orders by what is under the cursor (ground = move, enemy =
+## attack, corpse = guard the spot, anything else = guard it), an armed order icon (Ctrl+R / Ctrl+A,
+## or the radial menu's entry) takes the left click the same way, retreat calls every creature back
+## to the wizard and a formation is stored on the selection. The right button itself belongs to
+## OrderRadial.
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
 const _ORDERS := preload("res://scenes/orders/orders.gd")
@@ -74,8 +75,8 @@ func retreat() -> void:
 	_log.say("Retirada")
 
 
-## What a right click would order where the pointer is: `ground`, `enemy`, `own` (a creature or wizard of the local side) or
-## `corpse`. The radial menu shows the matching icon in its center.
+## What a right click would order where the pointer is: `ground`, `enemy`, `own` (a creature or
+## wizard of the local side) or `corpse`. The radial menu shows the matching icon in its center.
 func context_kind(screen: Vector2) -> StringName:
 	var body := ray.body_under(screen, false)
 	if body == null:
@@ -85,8 +86,8 @@ func context_kind(screen: Vector2) -> StringName:
 	return &"enemy" if ray.is_enemy(body) else &"own"
 
 
-## The radial menu chose an order entry: `kind` ("attack", "guard", "move") is given at the screen point the menu opened on,
-## as an armed icon clicked there (a body, else the ground spot).
+## The radial menu chose an order entry: `kind` ("attack", "guard", "move") is given at the screen
+## point the menu opened on, as an armed icon clicked there (a body, else the ground spot).
 func order_at(kind: String, screen: Vector2) -> void:
 	if not CommandFeedback.ORDER_TEXT.has(kind):
 		return
@@ -95,8 +96,8 @@ func order_at(kind: String, screen: Vector2) -> void:
 	icon_at(screen)
 
 
-## The radial menu chose a formation: the right click of that point (move, attack or guard by what is there) given in that
-## formation, in one order. Says the formation's name.
+## The radial menu chose a formation: the right click of that point (move, attack or guard by what
+## is there) given in that formation, in one order. Says the formation's name.
 func order_in_formation(id: StringName, screen: Vector2) -> void:
 	var formation: FormationType = _orders.catalog.find(id) if _orders.catalog else null
 	if formation == null:
@@ -106,8 +107,8 @@ func order_in_formation(id: StringName, screen: Vector2) -> void:
 	_log.say(formation.display_name)
 
 
-## Alt+1..8: the formation: every selected creature keeps it and nobody moves (the next order uses the one most of
-## the group has, Orders). Says the formation's name.
+## Alt+1..8: the formation: every selected creature keeps it and nobody moves (the next order uses
+## the one most of the group has, Orders). Says the formation's name.
 func set_formation(id: StringName) -> void:
 	var formation: FormationType = _orders.catalog.find(id) if _orders.catalog else null
 	if formation == null:

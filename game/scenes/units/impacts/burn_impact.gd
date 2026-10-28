@@ -3,11 +3,13 @@ extends ShotImpact
 
 ## A shot that sets bodies ablaze where it bursts (a Burning on each). The scene decides which fire:
 ##   heat_ray_impact.tscn (Tickferno): a creature or a wizard gets
-##     a fire for duration·60 frames that drains 0.5 · its max mana; a building the same with no drain.
+##     a fire for duration·60 frames that drains 0.5 · its max mana; a building the same with no
+##     drain.
 ##   rocket_impact.tscn (Pyromaniac): a fire for duration·60 frames that deals the shot's amount
 ##     and pierces shields, with no direct damage.
 ##   bombard_impact.tscn (Bombard): a fire of no damage for 60 frames on the
-##     body it hit and, through the splash callback, on every body within the damage range (any side; only the look).
+##     body it hit and, through the splash callback, on every body within the damage range (any
+##     side; only the look).
 ## Not here: no building catches fire, and no DamageMod.ignite.
 ## A fire of no damage reaches a building too (it ends on its first update).
 
@@ -17,7 +19,8 @@ enum Amount { SHOT, NONE }
 enum Lifetime { ABILITY_DURATION, FIXED }
 enum RadiusSource { NONE, DAMAGE_RANGE, EFFECT_RANGE }
 
-## What the fire deals over its life: the shot's amount (already scaled by the shooter) or nothing (a look).
+## What the fire deals over its life: the shot's amount (already scaled by the shooter) or nothing
+## (a look).
 @export var amount := Amount.SHOT
 ## How long it burns: the SPEL's duration, or `fixed_s`.
 @export var lifetime := Lifetime.ABILITY_DURATION
@@ -26,9 +29,11 @@ enum RadiusSource { NONE, DAMAGE_RANGE, EFFECT_RANGE }
 @export var kind: StringName = &"direct_ranged"
 ## Skips the body's shields and states (Health).
 @export var pierce_shield := false
-## Mana drained over its life, as a fraction of a creature's or a wizard's max mana (heat ray 0.5). A building: none.
+## Mana drained over its life, as a fraction of a creature's or a wizard's max mana (heat ray 0.5).
+## A building: none.
 @export_range(0.0, 1.0) var mana_drain_fraction := 0.0
-## Also every body (creatures and wizards) within this SPEL range of the burst, but the one it hit (the splash callback).
+## Also every body (creatures and wizards) within this SPEL range of the burst, but the one it hit
+## (the splash callback).
 @export var radius_source := RadiusSource.NONE
 @export var splash_groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")

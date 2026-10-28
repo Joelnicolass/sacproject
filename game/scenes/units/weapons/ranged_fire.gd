@@ -1,15 +1,16 @@
 class_name RangedFire
 extends RefCounted
 
-## What happens on a shoot tick of a RangedWeapon: the direction (led by the target's velocity, raised for a ballistic shot, then
-## scattered by the ranged accuracy) and the packet that spawns the shot, the volley of shots or the strike of the ShotLook.
+## What happens on a shoot tick of a RangedWeapon: the direction (led by the target's velocity,
+## raised for a ballistic shot, then scattered by the ranged accuracy) and the packet that spawns
+## the shot, the volley of shots or the strike of the ShotLook.
 ## Not: when it shoots (RangedWeapon) nor the flight (RangedShot).
 
 ## falling acceleration; 30 for every other tag.
 const FALLING_ACCELERATION := {"dkba": 10.0}
 const DEFAULT_FALLING := 30.0
-## Shots fired on a ballistic arc: earthfling, flame minion, fallen, sylph, ranger, mutant, abomination, bombard,
-## flurry, flummox. The rest fly straight.
+## Shots fired on a ballistic arc: earthfling, flame minion, fallen, sylph, ranger, mutant,
+## abomination, bombard, flurry, flummox. The rest fly straight.
 const BALLISTIC: PackedStringArray = [
 	"ekba", "fkba", "dkba", "aaba", "wobf", "babt", "tugt", "cfba", "caba", "crba"
 ]
@@ -41,8 +42,8 @@ static func loaded(weapon: RangedWeapon) -> bool:
 	return not (weapon.cooldown > 0.0 or mana_left(weapon) < mana_cost(weapon))
 
 
-## One shoot tick of the clip (the clip says how many shots it has): it drains its share of the mana (if it has that much), fires,
-## and the cooldown starts on the first shot.
+## One shoot tick of the clip (the clip says how many shots it has): it drains its share of the mana
+## (if it has that much), fires, and the cooldown starts on the first shot.
 static func tick(weapon: RangedWeapon, tick_count: int) -> void:
 	var target := weapon.shooting_at
 	if target == null or not is_instance_valid(target) or not is_live(target):
@@ -116,8 +117,9 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 		spawner.spawn_shot(shot)
 
 
-## A ShotStrike (ShotLook.strike) in place of a flying shot: the Gnome's ray, the Styx's blow. Server (or solo) only, as a child of
-## the weapon; it is not replicated (its look goes through FxBus).
+## A ShotStrike (ShotLook.strike) in place of a flying shot: the Gnome's ray, the Styx's blow.
+## Server (or solo) only, as a child of the weapon; it is not replicated (its look goes through
+## FxBus).
 static func _strike(weapon: RangedWeapon, data: Dictionary) -> void:
 	var node := weapon.look.strike.instantiate()
 	var strike := node as ShotStrike

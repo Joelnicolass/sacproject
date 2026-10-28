@@ -2,17 +2,20 @@
 class_name AfflictAction
 extends SpellAction
 
-## A spell that lays one state on one body (Freeze, Grasping Vines, Rings of Fire, Slime): the click names the body, `target` says who is
-## valid, and when the casting time ends the body's Affliction of `affliction` takes it with the spell's numbers. One script for all of
-## them; the state's behaviour is the Affliction's and what a hit does is Health's. It does not time the state nor draw it (the
-## Affliction and its look do), and it does not scale the duration: the Affliction says how long it lasts.
+## A spell that lays one state on one body (Freeze, Grasping Vines, Rings of Fire, Slime): the click
+## names the body, `target` says who is valid, and when the casting time ends the body's Affliction
+## of `affliction` takes it with the spell's numbers. One script for all of them; the state's
+## behaviour is the Affliction's and what a hit does is Health's. It does not time the state nor
+## draw it (the Affliction and its look do), and it does not scale the duration: the Affliction says
+## how long it lasts.
 
 ## The state laid on the body (the child of its Afflictions that has this type).
 @export var affliction: AfflictionType
 ## Who the spell may land on.
 @export var target: SpellTarget
-## Played on every peer on the target while the wizard casts (the Slime ball that falls on it). Its root answers play(params): `ticks` the
-## casting lasts, `target` the body's path. Optional: empty = nothing is drawn on the target.
+## Played on every peer on the target while the wizard casts (the Slime ball that falls on it). Its
+## root answers play(params): `ticks` the casting lasts, `target` the body's path. Optional: empty =
+## nothing is drawn on the target.
 @export var cast_scene: PackedScene
 
 
@@ -25,7 +28,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Funds first (cooldown, mana), then a valid body that can take the state, then the range: the order every spell of the book answers in.
+## Funds first (cooldown, mana), then a valid body that can take the state, then the range: the
+## order every spell of the book answers in.
 func check(
 	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
 ) -> Aim:
@@ -44,7 +48,8 @@ func started(_wizard: WizardBody, _spell: SpellType, aim: Aim, frames: int) -> v
 		)
 
 
-## The casting time ended: the state goes on the body if it is still a valid one (dead or already protected = nothing).
+## The casting time ended: the state goes on the body if it is still a valid one (dead or already
+## protected = nothing).
 func finish(wizard: WizardBody, spell: SpellType, picked: Node3D) -> String:
 	var body := picked if picked != null and ProjectileTargets.is_live_body(picked) else null
 	var state := _state_of(body) if body != null else null
@@ -53,7 +58,8 @@ func finish(wizard: WizardBody, spell: SpellType, picked: Node3D) -> String:
 	return ""
 
 
-## How long the state would last on `body` under `spell`, in seconds (0 = it would not take). The AI rates the spell with it.
+## How long the state would last on `body` under `spell`, in seconds (0 = it would not take). The AI
+## rates the spell with it.
 func expected_seconds(spell: SpellType, body: Node3D) -> float:
 	var state := _state_of(body)
 	return float(state.lay_ticks(spell)) / MatchClock.TICKS_PER_SECOND_F if state != null else 0.0

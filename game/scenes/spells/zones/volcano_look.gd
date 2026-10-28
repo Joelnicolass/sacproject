@@ -2,24 +2,28 @@
 class_name VolcanoLook
 extends Node3D
 
-## What the Volcano looks like on every peer once it erupts: the column of lava growing out of the mouth, the smoke umbrella over it and the
-## splash of lava on the ground. Every frame it counts the ticks since the eruption from the clock of the `eruption` stamp (the zone
-## replicates it, so a peer that joins late draws the same moment), stands on the mound, and hands each shader its frame, its growth and its
-## fade; the splash also gets a picture of the land around it, a few angles a frame. It writes nothing of the game; a dedicated server or a
-## headless run draws nothing.
+## What the Volcano looks like on every peer once it erupts: the column of lava growing out of the
+## mouth, the smoke umbrella over it and the splash of lava on the ground. Every frame it counts the
+## ticks since the eruption from the clock of the `eruption` stamp (the zone replicates it, so a
+## peer that joins late draws the same moment), stands on the mound, and hands each shader its
+## frame, its growth and its fade; the splash also gets a picture of the land around it, a few
+## angles a frame. It writes nothing of the game; a dedicated server or a headless run draws
+## nothing.
 
 const ANGLES := 64
 
 @export var zone: GroundZone
-## The stamp that digs the crater: the eruption happens when it starts, and its ticks are the zone's clock.
+## The stamp that digs the crater: the eruption happens when it starts, and its ticks are the zone's
+## clock.
 @export var eruption: TerrainStamp
-## The lava and the splash: meshes with a ShaderMaterial of volcano_lava / volcano_spatter.gdshader. `cloud` holds the smoke (the noisy
-## layers of CloudLook) and is shown from the eruption.
+## The lava and the splash: meshes with a ShaderMaterial of volcano_lava / volcano_spatter.gdshader.
+## `cloud` holds the smoke (the noisy layers of CloudLook) and is shown from the eruption.
 @export var lava: MeshInstance3D
 @export var cloud: Node3D
 @export var spatter: MeshInstance3D
 @export_group("Timing")
-## Steps of growth of the column (the baked original has 16 frames of geometry), and how long it stays on each frame of its skin.
+## Steps of growth of the column (the baked original has 16 frames of geometry), and how long it
+## stays on each frame of its skin.
 @export_range(2, 32) var growth_steps := 16
 @export_range(0.0166, 0.5, 0.0001, "suffix:s") var lava_frame_s := 0.0666
 ## The splash pulses once in this long.
@@ -27,7 +31,8 @@ const ANGLES := 64
 ## It grows in during the first second after the eruption and shrinks away during the last one.
 @export_range(0.1, 5.0, 0.05, "suffix:s") var fade_s := 1.0
 @export_group("Ground picture")
-## Metres between two columns of the picture of the land under the splash, how many it has, and how many angles of it are renewed a frame.
+## Metres between two columns of the picture of the land under the splash, how many it has, and how
+## many angles of it are renewed a frame.
 @export_range(1.0, 10.0, 0.5, "suffix:m") var ground_step_m := 2.0
 @export_range(2, 32) var ground_steps := 15
 @export_range(1, 64) var angles_per_frame := 4
@@ -105,7 +110,8 @@ func _apply(part: MeshInstance3D, values: Dictionary) -> void:
 		material.set_shader_parameter(key, values[key])
 
 
-## Asks the land for a few more angles of the picture the splash lies on (all of them in `ANGLES / angles_per_frame` frames).
+## Asks the land for a few more angles of the picture the splash lies on (all of them in `ANGLES /
+## angles_per_frame` frames).
 func _renew_ground(land: Terrain, mouth: Vector2) -> void:
 	for _n in angles_per_frame:
 		var angle := 0.5 * PI + TAU * float(_next_angle) / ANGLES

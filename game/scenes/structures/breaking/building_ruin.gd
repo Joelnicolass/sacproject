@@ -2,9 +2,10 @@
 class_name BuildingRuin
 extends Node3D
 
-## What stays of its building when it falls, on every peer: the parts under `Visuals` hide and `type.ruin_scene` (if the
-## BuildingType has one) appears as a normal child of this node, at the building's place. A peer that joins late sees it too.
-## Does not decide the fall (MapBuilding) nor burst (StructureBreak). Take the node out: the building stays whole when it falls.
+## What stays of its building when it falls, on every peer: the parts under `Visuals` hide and
+## `type.ruin_scene` (if the BuildingType has one) appears as a normal child of this node, at the
+## building's place. A peer that joins late sees it too. Does not decide the fall (MapBuilding) nor
+## burst (StructureBreak). Take the node out: the building stays whole when it falls.
 
 ## The building whose ruin this shows (the root of map_building.tscn); this node sits at its origin.
 @export var building: MapBuilding:

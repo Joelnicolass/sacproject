@@ -1,11 +1,11 @@
 class_name Pushback
 extends Node
 
-## Squall's push. A child of the
-## body it pushes (it goes with the body), server (or solo) only. For `duration_s` it pushes the body at
-## `speed` m/s along the shot (BodyNudge.push: it slides on the land, a step off the land is not taken). A thrown body
-## (Tumbling on) gets the velocity once and the push ends. Effects run before the creatures: the
-## node's physics priority is −1, so it pushes before the body moves.
+## Squall's push. A child of the body it pushes (it goes with the body), server (or solo) only. For
+## `duration_s` it pushes the body at `speed` m/s along the shot (BodyNudge.push: it slides on the
+## land, a step off the land is not taken). A thrown body (Tumbling on) gets the velocity once and
+## the push ends. Effects run before the creatures: the node's physics priority is −1, so it pushes
+## before the body moves.
 
 ## The push is 15 m in 2/3 s.
 @export var speed := 22.5

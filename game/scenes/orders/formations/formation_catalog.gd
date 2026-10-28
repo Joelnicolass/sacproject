@@ -1,8 +1,9 @@
 class_name FormationCatalog
 extends Resource
 
-## The formations a match knows, in the order of the original's menu (ties of the majority go to the first).
-## The server resolves a formation id against this list: a Resource never travels over the network.
+## The formations a match knows, in the order of the original's menu (ties of the majority go to the
+## first). The server resolves a formation id against this list: a Resource never travels over the
+## network.
 
 @export var formations: Array[FormationType] = []
 @export var default_id: StringName = &"line"

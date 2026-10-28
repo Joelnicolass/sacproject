@@ -2,15 +2,18 @@
 class_name PhaseSprite
 extends MeshInstance3D
 
-## A sprite (a quad that faces the camera, atlas_quad_*.gdshader) that shows only in some phases of its SpellCarrier: the vaporizing shot while it
-## is cast and flies, the big heart over a charmed creature while the spirits linger. It can grow when it appears, shrink before it goes (`life_s`) and
-## sit over the carrier's target instead of on the carrier. Presentation only: every peer decides from the replicated phase; a headless process
-## draws none. It does not move the carrier nor affect the target.
+## A sprite (a quad that faces the camera, atlas_quad_*.gdshader) that shows only in some phases of
+## its SpellCarrier: the vaporizing shot while it is cast and flies, the big heart over a charmed
+## creature while the spirits linger. It can grow when it appears, shrink before it goes (`life_s`)
+## and sit over the carrier's target instead of on the carrier. Presentation only: every peer
+## decides from the replicated phase; a headless process draws none. It does not move the carrier
+## nor affect the target.
 
 @export var carrier: SpellCarrier
 @export var shown_in: Array[SpellCarrier.Phase] = []
 @export_range(0.05, 10.0, 0.05, "suffix:m") var size_m := 1.0
-## It grows from nothing in this long when it appears, and (with `life_s`) shrinks to nothing in the same time at the end.
+## It grows from nothing in this long when it appears, and (with `life_s`) shrinks to nothing in the
+## same time at the end.
 @export_range(0.0, 5.0, 0.01, "suffix:s") var grow_s := 0.0
 ## 0: it stays while the phase lasts. Above: it goes this long after it appeared.
 @export_range(0.0, 60.0, 0.1, "suffix:s") var life_s := 0.0

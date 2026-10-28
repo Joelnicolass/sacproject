@@ -1,12 +1,14 @@
 class_name RiftEdge
 extends Node3D
 
-## The mouth of a Demonic Rift: an open cylinder that rises out of the ground while the wizard casts and while the rift opens, stays, and sinks
-## away when it closes; the shader draws its flames dark. Presentation only, on every peer, from the zone's phase. It frees nothing and hurts
-## nobody (RiftSpawner and RiftSpirit).
+## The mouth of a Demonic Rift: an open cylinder that rises out of the ground while the wizard casts
+## and while the rift opens, stays, and sinks away when it closes; the shader draws its flames dark.
+## Presentation only, on every peer, from the zone's phase. It frees nothing and hurts nobody
+## (RiftSpawner and RiftSpirit).
 
 @export var zone: GroundZone
-## The wall: a cylinder mesh child, standing on this node's origin (the node's height scale makes it rise out of the ground).
+## The wall: a cylinder mesh child, standing on this node's origin (the node's height scale makes it
+## rise out of the ground).
 @export var wall: MeshInstance3D
 ## How fast the mouth comes out (share of its height a second) and how fast it goes in.
 @export_range(0.1, 5.0, 0.1) var emerge_per_s := 0.5

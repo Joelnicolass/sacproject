@@ -1,11 +1,12 @@
 class_name StalkRules
 extends RefCounted
 
-## The plain numbers of a Meanstalk with no tree: the curve its body follows from the root to the tip, how the tip speeds up towards its goal,
-## which bodies it may reach and where it wanders. It does not decide when the tip moves, who it grabs nor how it is drawn (Stalk and
-## StalkLook do).
+## The plain numbers of a Meanstalk with no tree: the curve its body follows from the root to the
+## tip, how the tip speeds up towards its goal, which bodies it may reach and where it wanders. It
+## does not decide when the tip moves, who it grabs nor how it is drawn (Stalk and StalkLook do).
 
-## The hold the tip keeps on a body: the horizontal reach of the original's pick, 10 to 45 m from the root, with the height counted half.
+## The hold the tip keeps on a body: the horizontal reach of the original's pick, 10 to 45 m from
+## the root, with the height counted half.
 const PICK_MIN_M := 10.0
 const PICK_MAX_M := 45.0
 const PICK_VERTICAL_WEIGHT := 0.5
@@ -17,15 +18,17 @@ const HANDLE_M := 10.0
 const SLOW_M := 3.0
 
 
-## Radius of the stalk at `t` (0 root, 1 tip): 2 m, 1.8 m at the middle, 0 at the tip (two cubic Béziers).
+## Radius of the stalk at `t` (0 root, 1 tip): 2 m, 1.8 m at the middle, 0 at the tip (two cubic
+## Béziers).
 static func radius(t: float) -> float:
 	if t <= 0.5:
 		return _bezier(2.0, 2.0, 2.0, 1.8, 2.0 * t)
 	return _bezier(1.8, 1.6, 1.0, 0.0, 2.0 * t - 1.0)
 
 
-## The eight control points of the two cubic halves of the stalk, from `base` to `tip`, then the frame vector that remembers which way it bulges
-## (the ninth value). `frame` is the one the last call returned (start with Vector3.ONE).
+## The eight control points of the two cubic halves of the stalk, from `base` to `tip`, then the
+## frame vector that remembers which way it bulges (the ninth value). `frame` is the one the last
+## call returned (start with Vector3.ONE).
 static func curve(base: Vector3, tip: Vector3, frame: Vector3) -> PackedVector3Array:
 	var delta := tip - base
 	var length := delta.length()
@@ -60,8 +63,8 @@ static func curve(base: Vector3, tip: Vector3, frame: Vector3) -> PackedVector3A
 	)
 
 
-## One tick of the tip towards `goal`: the speed grows by `accel` m/s each second up to `rate`, and slows down inside SLOW_M of the goal.
-## Returns [new tip, new velocity].
+## One tick of the tip towards `goal`: the speed grows by `accel` m/s each second up to `rate`, and
+## slows down inside SLOW_M of the goal. Returns [new tip, new velocity].
 static func step_tip(
 	tip: Vector3, velocity: Vector3, goal: Vector3, rate: float, accel: float
 ) -> PackedVector3Array:
@@ -77,7 +80,8 @@ static func step_tip(
 	return PackedVector3Array([tip + velocity / MatchClock.TICKS_PER_SECOND_F, velocity])
 
 
-## True when a body at `at` is inside the band the stalk can take from `base` (10 to 45 m, height counted half).
+## True when a body at `at` is inside the band the stalk can take from `base` (10 to 45 m, height
+## counted half).
 static func in_pick_band(base: Vector3, at: Vector3) -> bool:
 	var delta := base - at
 	delta.y *= PICK_VERTICAL_WEIGHT
@@ -85,7 +89,8 @@ static func in_pick_band(base: Vector3, at: Vector3) -> bool:
 	return PICK_MIN_M <= gap and gap <= PICK_MAX_M
 
 
-## A point of the cone over `base` that a stalk without a prey drifts to: `lean` (-π/4..π/4) from the vertical, `turn` (0..2π) around it.
+## A point of the cone over `base` that a stalk without a prey drifts to: `lean` (-π/4..π/4) from
+## the vertical, `turn` (0..2π) around it.
 static func wander_point(
 	base: Vector3, lean: float, turn: float, radius_m: float, height_m: float
 ) -> Vector3:

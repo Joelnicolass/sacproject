@@ -1,10 +1,11 @@
 class_name StunImpact
 extends ShotImpact
 
-## The Flummox's stun. It stuns (480 ticks of cooldown) every moving body whose box is within
-## effect range of the burst, before its damage: no side filter, the shooter included (only the
-## direct target is skipped, and it is 0 here). The walk is SplashDamage's; each body's Afflictions/Stunned decides.
-## Wizards too (wizard_body.tscn has Afflictions/Stunned). A body with no Stunned is named in the log.
+## The Flummox's stun. It stuns (480 ticks of cooldown) every moving body whose box is within effect
+## range of the burst, before its damage: no side filter, the shooter included (only the direct
+## target is skipped, and it is 0 here). The walk is SplashDamage's; each body's Afflictions/Stunned
+## decides. Wizards too (wizard_body.tscn has Afflictions/Stunned). A body with no Stunned is named
+## in the log.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
@@ -15,7 +16,8 @@ const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")
 ## Stun only the body the shot hit, not the bodies around the burst. The Brainiac's bsba and the
-## Shrike's absh stun the creature or wizard they strike, then deal the ranged damage; a building takes the damage only, the ground nothing.
+## Shrike's absh stun the creature or wizard they strike, then deal the ranged damage; a building
+## takes the damage only, the ground nothing.
 ## Off: the walk of radius effect_range around the burst (the Flummox).
 @export var target_only := false
 

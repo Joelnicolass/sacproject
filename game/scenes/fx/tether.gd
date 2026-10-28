@@ -3,10 +3,10 @@ class_name Tether
 extends MeshInstance3D
 
 ## Electric rope between two points that sags and lags like a damped spring.
-## Five control points: P0 at `start`, P1 along the start's `start_axis` by `elbow` meters, P4 at `end`;
-## P2 and P3 are masses on a spring. The rope is a tube of 3 planes at 120 degrees
-## with pointed ends, drawn additive from its `atlas` (ltn2) with a brightness pulse.
-## The Sac Doctor's carry uses it with the elbow; the ritual uses it with `elbow = 0`.
+## Five control points: P0 at `start`, P1 along the start's `start_axis` by `elbow` meters, P4 at
+## `end`; P2 and P3 are masses on a spring. The rope is a tube of 3 planes at 120 degrees with
+## pointed ends, drawn additive from its `atlas` (ltn2) with a brightness pulse. The Sac Doctor's
+## carry uses it with the elbow; the ritual uses it with `elbow = 0`.
 ## Presentation only: it moves nothing. Remove the node to switch it off.
 ## Mesh and material are made here and are not stored in the scene.
 
@@ -15,7 +15,8 @@ const UV_INSET := 0.5 / 64.0
 
 ## Where the rope starts (the doctor's needle).
 @export var start: Node3D
-## Where it ends (the center of the creature). Without it the rope is hidden (in the editor: a preview).
+## Where it ends (the center of the creature). Without it the rope is hidden (in the editor: a
+## preview).
 @export var end: Node3D
 ## Axis of `start` along which the rope leaves first. Godot +Z = the doctor's forward.
 @export var start_axis := Vector3.BACK

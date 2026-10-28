@@ -1,17 +1,18 @@
 class_name ClipSlide
 extends RefCounted
 
-## How far a clip moves the body on the ground. Reads an Animation of a model's .glb AnimationPlayer and
-## returns the most the root bone, or its first child (the hip), gets away from where it was on the clip's first frame, in
-## X and Z of the skeleton (Y is up: a breath or a crouch does not count). A rest gesture that slides the root reads as a
-## step on the spot.
-## Static, no state; it does not need the scene in the tree.
+## How far a clip moves the body on the ground. Reads an Animation of a model's .glb AnimationPlayer
+## and returns the most the root bone, or its first child (the hip), gets away from where it was on
+## the clip's first frame, in X and Z of the skeleton (Y is up: a breath or a crouch does not
+## count). A rest gesture that slides the root reads as a step on the spot. Static, no state; it
+## does not need the scene in the tree.
 
 ## Clip sampling rate (the original's clips are 30 fps).
 const SAMPLE_FPS := 30.0
 
 
-## {"slide": meters (max of root and hip), "root": meters, "hip": meters, "span": Vector3 (root, per axis)}.
+## {"slide": meters (max of root and hip), "root": meters, "hip": meters, "span": Vector3 (root, per
+## axis)}.
 static func measure(
 	player: AnimationPlayer, skeleton: Skeleton3D, animation: Animation
 ) -> Dictionary:
@@ -58,11 +59,13 @@ static func measure(
 	return out
 
 
-## The skeleton and the clip player of a model instance (a BodyModel or a bare .glb): [player, skeleton], or [] without them.
+## The skeleton and the clip player of a model instance (a BodyModel or a bare .glb): [player,
+## skeleton], or [] without them.
 static func rig_of(model_root: Node) -> Array:
 	var players := model_root.find_children("*", "AnimationPlayer", true, false)
 	var skeletons := model_root.find_children("*", "Skeleton3D", true, false)
-	# A BodyModel also has a Clips player (the library by role): the one inside the Model, the .glb's own, comes first in the tree.
+	# A BodyModel also has a Clips player (the library by role): the one inside the Model, the
+	# .glb's own, comes first in the tree.
 	for node in players:
 		var player := node as AnimationPlayer
 		if (

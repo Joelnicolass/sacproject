@@ -2,9 +2,10 @@
 class_name FrogCling
 extends Node
 
-## What a frog does when it touches a creature: it sticks to it (the body's Clinging counts it and slows the body ×0.6 for each frog) and,
-## after `fuse_s`, or as soon as the body can no longer be infected, it ends where it is (DropBlast bursts it). It asks its ZoneDrop to
-## stick (attach) and to end (finish); it does not hop (FrogHop) nor hurt (DropBlast). Server (or solo) only.
+## What a frog does when it touches a creature: it sticks to it (the body's Clinging counts it and
+## slows the body ×0.6 for each frog) and, after `fuse_s`, or as soon as the body can no longer be
+## infected, it ends where it is (DropBlast bursts it). It asks its ZoneDrop to stick (attach) and
+## to end (finish); it does not hop (FrogHop) nor hurt (DropBlast). Server (or solo) only.
 
 @export var drop: ZoneDrop
 ## What each frog on a body multiplies its pace by.

@@ -1,10 +1,9 @@
 class_name PetrifyImpact
 extends ShotImpact
 
-## The Basilisk's gaze. It petrifies the
-## creature it touched and nothing else: no damage, no splash. The stone lasts 2,5 s on a wizard and
-## min(10, 10000 / max health) s on a creature; the body's Afflictions/Petrified decides whether it takes it.
-## A wizard has its Petrified too.
+## The Basilisk's gaze. It petrifies the creature it touched and nothing else: no damage, no splash.
+## The stone lasts 2,5 s on a wizard and min(10, 10000 / max health) s on a creature; the body's
+## Afflictions/Petrified decides whether it takes it. A wizard has its Petrified too.
 
 ## A creature's stone lasts min(cap_s, k / max health) seconds.
 @export var cap_s := 10.0

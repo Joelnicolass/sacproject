@@ -1,25 +1,30 @@
 class_name NavMeshBackend
 extends RefCounted
 
-## The navmesh side of NavService: the map's NavigationRegion3D (its baked NavigationMesh, data/nav/high_noon_nav.res)
-## queried through the engine: NavigationServer3D.map_get_path on the region's own navigation map. Standard Godot: the region is a node,
-## the engine syncs the map each physics frame, and what changes at runtime (altars, structures, a fallen building) is a re-bake that
-## swaps the region's navigation_mesh (NavRebake, driven by NavService). Nothing hand-made blocks a path here.
-## The map is empty until the engine has synced the region (one physics frame after it is in the tree): `is_synced` tells.
+## The navmesh side of NavService: the map's NavigationRegion3D (its baked NavigationMesh,
+## data/nav/high_noon_nav.res) queried through the engine: NavigationServer3D.map_get_path on the
+## region's own navigation map. Standard Godot: the region is a node, the engine syncs the map each
+## physics frame, and what changes at runtime (altars, structures, a fallen building) is a re-bake
+## that swaps the region's navigation_mesh (NavRebake, driven by NavService). Nothing hand-made
+## blocks a path here. The map is empty until the engine has synced the region (one physics frame
+## after it is in the tree): `is_synced` tells.
 
 ## Reach (6 nodes of 5 m, as the old grid) for «the nearest walkable thing».
 const SNAP_M := 30.0
 ## A path that ends this close (flat) to the goal ends on the goal itself.
 const END_SNAP_M := 1.0
-## The start of a line may stand this far (flat) off the navmesh (a body beside a wall is inside the erosion of the bake).
+## The start of a line may stand this far (flat) off the navmesh (a body beside a wall is inside the
+## erosion of the bake).
 const START_SLACK_M := 2.5
-## line_clear samples: one every meter (a hole is at least two agent radii wide), each within this (flat) of the mesh.
+## line_clear samples: one every meter (a hole is at least two agent radii wide), each within this
+## (flat) of the mesh.
 const LINE_STEP_M := 1.0
 const LINE_TOL_M := 0.5
 ## A point is walkable when the navmesh is this close (flat).
 const WALKABLE_M := 0.75
-## A component of the navmesh with fewer polygons is an island (the flat top of a blocker 8 m tall, a pocket the walls closed): bodies
-## do not stand there. The stored bake has 22 of them, 96 polygons in all.
+## A component of the navmesh with fewer polygons is an island (the flat top of a blocker 8 m tall,
+## a pocket the walls closed): bodies do not stand there. The stored bake has 22 of them, 96
+## polygons in all.
 const ISLAND_POLYGONS := 100
 
 var built := false
@@ -35,13 +40,14 @@ var map := RID()
 var _probe := Vector3.ZERO
 var _synced := false
 var _checks := 0
-## Checks of is_synced without an answer before the diagnostic is printed again (about 2 s of physics ticks).
+## Checks of is_synced without an answer before the diagnostic is printed again (about 2 s of
+## physics ticks).
 const DIAGNOSE_AFTER := 120
 const DIAGNOSE_POINT := Vector3(1504.9, 17.0, 1540.5)
 
 
-## Takes the region (in the tree, with its navigation_mesh) and its map. `box_entries` are the building boxes
-## ([Vector2 center, Vector2 half, yaw], NavService._blockers) for crosses_box.
+## Takes the region (in the tree, with its navigation_mesh) and its map. `box_entries` are the
+## building boxes ([Vector2 center, Vector2 half, yaw], NavService._blockers) for crosses_box.
 func build(nav_region: NavigationRegion3D, box_entries: Array, box_clearance_m: float) -> void:
 	var started := Time.get_ticks_usec()
 	region = nav_region
@@ -56,11 +62,13 @@ func build(nav_region: NavigationRegion3D, box_entries: Array, box_clearance_m: 
 	build_ms = float(Time.get_ticks_usec() - started) / 1000.0
 
 
-## Puts a re-baked navmesh and its components (built with it off the main thread, NavRebake.regions) in the region; the engine
-## syncs it on its next physics frame (the old one answers until then). Only references change hands here: the index it replaced
-## is returned, so the caller frees it off the main thread (freeing ~11k polygons costs a millisecond or more, NavRebake.retire).
-## The engine's own sync of the new region stays on the next physics step (synchronous on purpose, so the swap tick is the same on
-## every machine: project.godot navigation/world/*_async_iterations=false); on High Noon it is about 8-11 ms.
+## Puts a re-baked navmesh and its components (built with it off the main thread, NavRebake.regions)
+## in the region; the engine syncs it on its next physics frame (the old one answers until then).
+## Only references change hands here: the index it replaced is returned, so the caller frees it off
+## the main thread (freeing ~11k polygons costs a millisecond or more, NavRebake.retire). The
+## engine's own sync of the new region stays on the next physics step (synchronous on purpose, so
+## the swap tick is the same on every machine: project.godot
+## navigation/world/*_async_iterations=false); on High Noon it is about 8-11 ms.
 func swap(navmesh: NavigationMesh, components: NavRegions) -> NavRegions:
 	var started := Time.get_ticks_usec()
 	var replaced := regions
@@ -101,8 +109,9 @@ func is_synced() -> bool:
 	return _synced
 
 
-## The map the region is really on (what the server says; NavigationRegion3D.get_navigation_map is only an override). Falls back to the
-## world's map when the region has none yet, and gives that map the navmesh's cell size (a world map starts at 0.25 unless the project says 1.0).
+## The map the region is really on (what the server says; NavigationRegion3D.get_navigation_map is
+## only an override). Falls back to the world's map when the region has none yet, and gives that map
+## the navmesh's cell size (a world map starts at 0.25 unless the project says 1.0).
 func _resolve_map() -> void:
 	if region == null or not region.is_inside_tree():
 		return
@@ -121,7 +130,8 @@ func _resolve_map() -> void:
 		NavigationServer3D.map_set_cell_height(map, navmesh.cell_height)
 
 
-## One line with what the server says about the map and the region (for a run where the backend never becomes ready).
+## One line with what the server says about the map and the region (for a run where the backend
+## never becomes ready).
 func diagnose(label: String) -> String:
 	if region == null or not map.is_valid():
 		return (
@@ -131,6 +141,7 @@ func diagnose(label: String) -> String:
 	var region_rid := region.get_rid()
 	var navmesh := region.navigation_mesh
 	return (
+		# gdlint: ignore=max-line-length
 		"nav: diag %s: map_valid=%s map_regions=%d region_map_is_map=%s iteration=%d active=%s map_cell=%s mesh_cell=%s region_enabled=%s in_tree=%s polygons=%d probe=%s closest_probe=%s closest_start1=%s"
 		% [
 			label,
@@ -151,8 +162,8 @@ func diagnose(label: String) -> String:
 	)
 
 
-## Waypoints from `from` (not included) to `to`: [to] when nothing is in the way, the closest approach when `to` is off the mesh or
-## in another region. Empty only when not built.
+## Waypoints from `from` (not included) to `to`: [to] when nothing is in the way, the closest
+## approach when `to` is off the mesh or in another region. Empty only when not built.
 var _params: NavigationPathQueryParameters3D
 var _result: NavigationPathQueryResult3D
 
@@ -160,8 +171,9 @@ var _result: NavigationPathQueryResult3D
 func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if not built:
 		return PackedVector3Array()
-	# The start is put on the land closest to it: a body on a roof, or in the box a building leaves hollow, stands over an island of the
-	# mesh, and a path asked from there goes nowhere (the closest approach of an island is inside it).
+	# The start is put on the land closest to it: a body on a roof, or in the box a building leaves
+	# hollow, stands over an island of the mesh, and a path asked from there goes nowhere (the
+	# closest approach of an island is inside it).
 	var start := nearest_free(from)
 	var raw := _query(from if is_nan(start.x) else start, to)
 	if raw.size() < 2:
@@ -174,11 +186,12 @@ func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	return out
 
 
-## True when the straight line from `a` to `b` is on the navmesh from end to end: samples every LINE_STEP_M
-## are all within LINE_TOL_M (flat) of the mesh. The ends may stand off it, a body beside a wall is inside the erosion of the bake:
-## the allowance (START_SLACK_M at `a`, END_SNAP_M at `b`) shrinks to nothing as the line leaves them. A hole is at least two agent
-## radii wide, so a sample lands at least LINE_TOL_M inside it. (A path query would not do: its A* corridor is not the shortest, a
-## leg of a funnel path asked again can come back with a detour.)
+## True when the straight line from `a` to `b` is on the navmesh from end to end: samples every
+## LINE_STEP_M are all within LINE_TOL_M (flat) of the mesh. The ends may stand off it, a body
+## beside a wall is inside the erosion of the bake: the allowance (START_SLACK_M at `a`, END_SNAP_M
+## at `b`) shrinks to nothing as the line leaves them. A hole is at least two agent radii wide, so a
+## sample lands at least LINE_TOL_M inside it. (A path query would not do: its A* corridor is not
+## the shortest, a leg of a funnel path asked again can come back with a detour.)
 func line_clear(a: Vector3, b: Vector3) -> bool:
 	if not built:
 		return true
@@ -204,9 +217,9 @@ func component_at(point: Vector3) -> int:
 	return regions.component_at(point, SNAP_M)
 
 
-## The closest point of the navmesh within SNAP_M of `point`, or (NAN, NAN, NAN). An island (the walkable top of a blocker, the floor
-## inside a hollow box) is not land. Answered from the polygons NavRegions holds, not from the server (whose closest-point queries walk
-## the whole map).
+## The closest point of the navmesh within SNAP_M of `point`, or (NAN, NAN, NAN). An island (the
+## walkable top of a blocker, the floor inside a hollow box) is not land. Answered from the polygons
+## NavRegions holds, not from the server (whose closest-point queries walk the whole map).
 func nearest_free(point: Vector3) -> Vector3:
 	return regions.closest_land(point, SNAP_M, ISLAND_POLYGONS)
 
@@ -226,7 +239,8 @@ func _index(navmesh: NavigationMesh) -> void:
 	polygon_count = navmesh.get_polygon_count()
 	var vertices := navmesh.get_vertices()
 	if navmesh.get_polygon_count() > 0:
-		# The middle of the first polygon: a point that is surely on the mesh (a corner may be shaved by the server's merge).
+		# The middle of the first polygon: a point that is surely on the mesh (a corner may be
+		# shaved by the server's merge).
 		var polygon := navmesh.get_polygon(0)
 		var sum := Vector3.ZERO
 		for index in polygon:
@@ -245,9 +259,10 @@ func _query(from: Vector3, to: Vector3) -> PackedVector3Array:
 	return query_path(map, from, to, _params, _result)
 
 
-## The path the units walk from `from` to `to` on `map`, through `params` and `result` (reused by the caller). The only place
-## that sets the search limits: map_get_path caps the search at 4096 polygons (NavigationPathQueryParameters3D default) and
-## returns a partial path past that; a map has ~10k, so long paths stopped short. Here there is no cap on polygons or distance.
+## The path the units walk from `from` to `to` on `map`, through `params` and `result` (reused by
+## the caller). The only place that sets the search limits: map_get_path caps the search at 4096
+## polygons (NavigationPathQueryParameters3D default) and returns a partial path past that; a map
+## has ~10k, so long paths stopped short. Here there is no cap on polygons or distance.
 ## tools/audit/map_path_checks.gd asks the same.
 static func query_path(
 	on_map: RID,

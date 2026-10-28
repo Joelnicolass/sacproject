@@ -2,15 +2,18 @@
 class_name TornadoLook
 extends Node3D
 
-## What the tornado looks like on every peer: every frame it computes the axis of the funnel (500 m tall, its top fixed, its foot where the
-## tornado is, bent by the winds) and hands it, with the turn and the fade, to the shader of each part (upper wall, lower wall, ragged edge);
-## it raises dust where the foot touches the ground (its light is a StateLight of the scene that follows the zone). Presentation only: it reads the
-## replicated position and size and writes nothing of the game. A dedicated server or a headless run draws nothing.
+## What the tornado looks like on every peer: every frame it computes the axis of the funnel (500 m
+## tall, its top fixed, its foot where the tornado is, bent by the winds) and hands it, with the
+## turn and the fade, to the shader of each part (upper wall, lower wall, ragged edge); it raises
+## dust where the foot touches the ground (its light is a StateLight of the scene that follows the
+## zone). Presentation only: it reads the replicated position and size and writes nothing of the
+## game. A dedicated server or a headless run draws nothing.
 
 @export var zone: GroundZone
 @export var drift: TornadoDrift
 @export var winds: TornadoWinds
-## The meshes of the funnel, with a ShaderMaterial of tornado_funnel.gdshader each: the upper wall, the lower wall and the edge, in that order.
+## The meshes of the funnel, with a ShaderMaterial of tornado_funnel.gdshader each: the upper wall,
+## the lower wall and the edge, in that order.
 @export var parts: Array[MeshInstance3D] = []
 ## The dust at the foot (rate set here from how high the foot is).
 @export var dust: SpriteEmitter
@@ -18,7 +21,8 @@ extends Node3D
 @export_range(1.0, 60.0, 0.5, "suffix:/s") var edge_fps := 15.0
 ## Seconds the funnel takes to turn once around its axis.
 @export_range(0.2, 20.0, 0.1, "suffix:s") var turn_s := 1.0
-## Dust a tick at a foot on the ground (the original: up to 2), and the height above which there is none, m.
+## Dust a tick at a foot on the ground (the original: up to 2), and the height above which there is
+## none, m.
 @export_range(0.0, 10.0, 0.1) var dust_per_tick := 2.0
 @export_range(0.5, 20.0, 0.5, "suffix:m") var dust_height_m := 5.0
 

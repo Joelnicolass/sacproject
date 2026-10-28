@@ -1,9 +1,10 @@
 class_name SpellSpawner
 extends MpSpawner
 
-## Spawns what a spell puts into the world (projectiles, carriers, drops, zones, walls) under spawn_path: on the server
-## (replicated) or in solo. The caller hands it the scene to make, dragged into the caller's own inspector; the wire carries
-## that scene's resource path, which is the same file on every peer of the same build. Zones are the exception: see `zones`.
+## Spawns what a spell puts into the world (projectiles, carriers, drops, zones, walls) under
+## spawn_path: on the server (replicated) or in solo. The caller hands it the scene to make, dragged
+## into the caller's own inspector; the wire carries that scene's resource path, which is the same
+## file on every peer of the same build. Zones are the exception: see `zones`.
 
 ## The group the spawner joins, for whoever starts a spell that raises something (a zone).
 const GROUP := &"spell_spawner"
@@ -12,8 +13,9 @@ const _SCENE_KEY := "scene"
 ## Spawn-data key with the kind of a zone in `zones`.
 const _ZONE_KEY := "zone"
 
-## Zone and wall scenes by kind, assigned in match.tscn. A zone scene points at its SpellType, the SpellType at its action
-## scene, so the action cannot point back at the zone scene: it names its kind here. Root extends SpellProjectile.
+## Zone and wall scenes by kind, assigned in match.tscn. A zone scene points at its SpellType, the
+## SpellType at its action scene, so the action cannot point back at the zone scene: it names its
+## kind here. Root extends SpellProjectile.
 @export var zones: Dictionary[String, PackedScene] = {}
 
 var _serial := 0
@@ -30,8 +32,9 @@ func _ready() -> void:
 	super._ready()
 
 
-## Makes `scene` (its root extends SpellProjectile) with `data`, the keys its `setup` reads. Returns the node on the server
-## and in solo (a spell that must arm or cancel it keeps it), null on a client or when `scene` is missing.
+## Makes `scene` (its root extends SpellProjectile) with `data`, the keys its `setup` reads. Returns
+## the node on the server and in solo (a spell that must arm or cancel it keeps it), null on a
+## client or when `scene` is missing.
 func spawn_scene(scene: PackedScene, data: Dictionary) -> Node:
 	if scene == null or scene.resource_path.is_empty():
 		push_error("SpellSpawner: no scene file to spawn (data %s)" % [data])

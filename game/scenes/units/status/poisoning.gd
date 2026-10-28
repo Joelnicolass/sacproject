@@ -1,21 +1,23 @@
 class_name Poisoning
 extends DamageModifier
 
-## The one owner of the poison on a body (creature or wizard). Its children are the doses (Poisoned);
-## it runs them once per physics tick in the order they came, frees the ones that end, and is the only one that answers
-## what they add up to:
-##   resistance_bonus()     1e-3 · Σ ires, added inside max(0, resistance + bonus) for every kind of damage
+## The one owner of the poison on a body (creature or wizard). Its children are the doses
+## (Poisoned); it runs them once per physics tick in the order they came, frees the ones that end,
+## and is the only one that answers what they add up to:
+##   resistance_bonus()     1e-3 · Σ ires, added inside max(0, resistance + bonus) for every kind of
+##   damage
 ##   regeneration_factor()  Π freg of the live doses
 ##   mana_blocked()         a dose past its 2 s blocks mana income
 ##   damage_sum()           Σ int(per second) (what an infection passes on)
-## Health, ManaPool and MeleeWeapon ask it, never a dose. Server (or solo) only: on a client it does nothing.
+## Health, ManaPool and MeleeWeapon ask it, never a dose. Server (or solo) only: on a client it does
+## nothing.
 ##
-## Infection: every tick, each infectious dose touches every live creature and wizard
-## whose box meets the body's box grown `infection_margin_m`, of any side, the body excepted. One with no infection
-## cooldown gets a dose of damage_sum() per second for the frames this dose has left, infectious, with its debuffs, its kind
-## and its attacker, and keeps an infection cooldown of those frames + `infection_cooldown_extra_s` (ticks of
-## MatchClock). The body that infected it has no cooldown of its own, so the first victim is infected back once.
-## Checked on every tick.
+## Infection: every tick, each infectious dose touches every live creature and wizard whose box
+## meets the body's box grown `infection_margin_m`, of any side, the body excepted. One with no
+## infection cooldown gets a dose of damage_sum() per second for the frames this dose has left,
+## infectious, with its debuffs, its kind and its attacker, and keeps an infection cooldown of those
+## frames + `infection_cooldown_extra_s` (ticks of MatchClock). The body that infected it has no
+## cooldown of its own, so the first victim is infected back once. Checked on every tick.
 
 ## The body the doses act on (its Health, its box). Empty = the parent.
 @export var body: Node3D
@@ -29,8 +31,8 @@ extends DamageModifier
 ## Who an infection may touch.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 @export_group("Look")
-## The puff on the body while a dose takes health, and its socket (relativePoison: one particle every 2
-## frames inside the box; a puff every 30 ticks is the same rate). Empty = none.
+## The puff on the body while a dose takes health, and its socket (relativePoison: one particle
+## every 2 frames inside the box; a puff every 30 ticks is the same rate). Empty = none.
 @export var dose_fx: ParticleType = preload("res://data/fx/poison_dose.tres")
 @export var dose_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var fx_every_s := 0.5
@@ -45,7 +47,8 @@ static func of(node: Node) -> Poisoning:
 	return (node.get_node_or_null("Poisoning") as Poisoning) if node else null
 
 
-## The poison's resistance bonus of `node` (0 without Poisoning). For callers that apply the resistance themselves (melee).
+## The poison's resistance bonus of `node` (0 without Poisoning). For callers that apply the
+## resistance themselves (melee).
 static func resistance_bonus_of(node: Node) -> float:
 	var poisoning := of(node)
 	return poisoning.resistance_bonus() if poisoning else 0.0
@@ -87,8 +90,8 @@ func _ready() -> void:
 	set_physics_process(is_multiplayer_authority())
 
 
-## Adds one dose of `per_second` for `lifetime` frames (lifetime + 1 updates).
-## `resistance_debuff` is the SPEL's `ires`, `regen_factor` its `freg`. Server (or solo) only; null elsewhere.
+## Adds one dose of `per_second` for `lifetime` frames (lifetime + 1 updates). `resistance_debuff`
+## is the SPEL's `ires`, `regen_factor` its `freg`. Server (or solo) only; null elsewhere.
 func dose(
 	per_second: float,
 	lifetime: int,
@@ -245,7 +248,8 @@ func _log_regeneration(before: float) -> void:
 		print("%s regeneration ×%.2f" % [_who(body), now])
 
 
-## The block of each dose is logged where it starts (_physics_process); here, the body's mana coming back.
+## The block of each dose is logged where it starts (_physics_process); here, the body's mana coming
+## back.
 func _log_mana() -> void:
 	var now := mana_blocked()
 	if now == _blocked:

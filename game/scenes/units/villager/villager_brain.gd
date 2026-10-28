@@ -1,10 +1,13 @@
 class_name VillagerBrain
 extends FsmMachine
 
-## What a villager does with no order: with a shelter within reach it looks for the closest scare (an enemy, or a side it holds a grudge
-## against) and runs the other way, and with none it stands still (Work); with no shelter near it crouches (Cower). A hit from another side
-## makes it run from whoever hit it for a while (the panic), shelter or not. It thinks every `think_interval_s` and never attacks.
-## Not: what it notices (VillagerSenses) nor what each state does (the states, one child each). Server or solo only.
+## What a villager does with no order: with a shelter within reach it looks for the closest scare
+## (an enemy, or a side it holds a grudge against) and runs the other way, and with none it stands
+## still (Work); with no shelter near it crouches (Cower). A hit from another side makes it run from
+## whoever hit it for a while (the panic), shelter or not. It thinks every `think_interval_s` and
+## never attacks.
+## Not: what it notices (VillagerSenses) nor what each state does (the states, one child each).
+## Server or solo only.
 
 @export var senses: VillagerSenses
 ## How often the brain decides: a fixed period.
@@ -13,7 +16,8 @@ extends FsmMachine
 ## How far ahead of the villager the point it runs
 ## to lies, straight away from the scare.
 @export var flee_leg_m := 30.0
-## How far the panic leg reaches before it re-decides (longer than a calm flee: it is running for its life).
+## How far the panic leg reaches before it re-decides (longer than a calm flee: it is running for
+## its life).
 @export var panic_leg_m := 40.0
 @export_group("Look")
 ## A calm villager (mode IDLE) plays `work_role` instead of
@@ -34,15 +38,18 @@ func _ready() -> void:
 	set_process(false)
 	set_process_unhandled_input(false)
 	if work_when_calm:
-		body.clips.idle_role = work_role  # IDLE is the calm mode of a villager (flee = MOVE, cower = COWER): every peer shows it the same way.
+		# IDLE is the calm mode of a villager (flee = MOVE, cower = COWER): every peer shows it the
+		# same way.
+		body.clips.idle_role = work_role
 	if not body.simulates():
 		set_physics_process(false)
 		return
 	senses.panicked.connect(_on_panicked)
 
 
-## One step: the panic wears off and, every `think_interval_s`, it thinks. Only an idle, walking or cowering villager thinks; a dead, held
-## or revived one is somebody else's, and so is one under an order.
+## One step: the panic wears off and, every `think_interval_s`, it thinks. Only an idle, walking or
+## cowering villager thinks; a dead, held or revived one is somebody else's, and so is one under an
+## order.
 func _physics_process(delta: float) -> void:
 	if (
 		body.ordered

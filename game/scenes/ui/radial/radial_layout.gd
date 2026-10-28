@@ -2,14 +2,16 @@
 class_name RadialLayout
 extends Resource
 
-## What a radial menu holds and how big it is. All sizes are canvas pixels of the 1280×720 base (Godot's stretch
-## scales them). Two rings around a dead zone: `inner` between `dead_zone_px` and `inner_radius_px`, `outer` between
-## `inner_radius_px` and `outer_radius_px`. Entry 0 of a ring is at the top and the rest follow clockwise, each one owning
-## an equal sector centered on its icon. The pointer picks by angle and distance only; this class is pure math.
+## What a radial menu holds and how big it is. All sizes are canvas pixels of the 1280×720 base
+## (Godot's stretch scales them). Two rings around a dead zone: `inner` between `dead_zone_px` and
+## `inner_radius_px`, `outer` between `inner_radius_px` and `outer_radius_px`. Entry 0 of a ring is
+## at the top and the rest follow clockwise, each one owning an equal sector centered on its icon.
+## The pointer picks by angle and distance only; this class is pure math.
 
 ## What the dead zone stands for: releasing there cancels (the menu shows the hovered name in it).
 @export var center: RadialEntry
-## Center icon by what was under the pointer when the menu opened (`ground`, `enemy`, `own`, `corpse`); `center.icon` otherwise.
+## Center icon by what was under the pointer when the menu opened (`ground`, `enemy`, `own`,
+## `corpse`); `center.icon` otherwise.
 @export var center_icons: Dictionary = {}
 @export var inner: Array[RadialEntry] = []
 @export var outer: Array[RadialEntry] = []
@@ -23,8 +25,9 @@ extends Resource
 @export var hold_s := 0.25
 
 
-## Where `offset` (canvas pixels from the menu center) falls: x = ring (0 the dead zone, 1 inner, 2 outer, -1 outside), y = the
-## index of the entry in that ring (0 for the dead zone, -1 when there is none).
+## Where `offset` (canvas pixels from the menu center) falls: x = ring (0 the dead zone, 1 inner, 2
+## outer, -1 outside), y = the index of the entry in that ring (0 for the dead zone, -1 when there
+## is none).
 func locate(offset: Vector2) -> Vector2i:
 	var distance := offset.length()
 	if distance < dead_zone_px:
@@ -36,8 +39,8 @@ func locate(offset: Vector2) -> Vector2i:
 	return Vector2i(-1, -1)
 
 
-## The entry under `offset`: the center in the dead zone, a ring entry, or null outside the outer ring or on an empty ring
-## (releasing there aborts).
+## The entry under `offset`: the center in the dead zone, a ring entry, or null outside the outer
+## ring or on an empty ring (releasing there aborts).
 func entry_at(offset: Vector2) -> RadialEntry:
 	return entry_of(locate(offset))
 
@@ -63,7 +66,8 @@ func outer_mid() -> float:
 	return 0.5 * (inner_radius_px + outer_radius_px)
 
 
-## Index of the sector `offset` falls in, for a ring of `count` entries (entry 0 at the top, clockwise); -1 when empty.
+## Index of the sector `offset` falls in, for a ring of `count` entries (entry 0 at the top,
+## clockwise); -1 when empty.
 static func sector_index(count: int, offset: Vector2) -> int:
 	if count <= 0:
 		return -1

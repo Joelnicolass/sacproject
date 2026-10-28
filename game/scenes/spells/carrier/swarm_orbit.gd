@@ -2,13 +2,16 @@
 class_name SwarmOrbit
 extends Node3D
 
-## A few things (its children) that circle what their SpellCarrier is about: Charm's three spirits (the wizard while he casts, the creature while it is being
-## charmed), Intestinal Vaporization's seven guts (the creature that swells). Each member wanders: every so often it picks a point of a disc around
-## the center and a push, and glides there on a smooth curve. While the carrier flies they fly with it, a little apart. Presentation only: every
-## peer moves its own from the replicated phase and positions, and a headless process moves none. It hurts nobody and picks no target.
+## A few things (its children) that circle what their SpellCarrier is about: Charm's three spirits
+## (the wizard while he casts, the creature while it is being charmed), Intestinal Vaporization's
+## seven guts (the creature that swells). Each member wanders: every so often it picks a point of a
+## disc around the center and a push, and glides there on a smooth curve. While the carrier flies
+## they fly with it, a little apart. Presentation only: every peer moves its own from the replicated
+## phase and positions, and a headless process moves none. It hurts nobody and picks no target.
 
 @export var carrier: SpellCarrier
-## The phases in which they circle the carrier (the target); in CASTING they circle the wizard, in the others they stay by the carrier.
+## The phases in which they circle the carrier (the target); in CASTING they circle the wizard, in
+## the others they stay by the carrier.
 @export var circle_in: Array[SpellCarrier.Phase] = [
 	SpellCarrier.Phase.HOLDING, SpellCarrier.Phase.LINGERING
 ]
@@ -17,7 +20,8 @@ extends Node3D
 ## While the carrier flies they fly with it (Charm's spirits); off: they are not seen then.
 @export var flies_along := true
 @export_group("Disc")
-## The radius of the disc is `radius_base_m` + `radius_per_size` times the half diagonal of the box of what they circle.
+## The radius of the disc is `radius_base_m` + `radius_per_size` times the half diagonal of the box
+## of what they circle.
 @export_range(0.0, 10.0, 0.05, "suffix:m") var radius_base_m := 1.0
 @export_range(0.0, 10.0, 0.05) var radius_per_size := 1.1
 ## The push of each leg, as a multiple of the radius.
@@ -31,7 +35,8 @@ extends Node3D
 ## While the carrier flies, the members are spread round it at this distance.
 @export_range(0.0, 3.0, 0.05, "suffix:m") var flight_spread_m := 0.2
 
-## The things that circle: its children (the node itself moves, its own children draw: a ribbon, a sprite).
+## The things that circle: its children (the node itself moves, its own children draw: a ribbon, a
+## sprite).
 var members: Array[Node3D] = []
 var _from: Array[Vector3] = []
 var _to: Array[Vector3] = []
@@ -138,7 +143,8 @@ func _wander(i: int, center: Vector3, radius: float, delta: float) -> void:
 	members[i].global_position = at
 
 
-## What they circle in this phase: the wizard while he casts, the target in `circle_in`, the carrier while it flies; null when they are not seen.
+## What they circle in this phase: the wizard while he casts, the target in `circle_in`, the carrier
+## while it flies; null when they are not seen.
 func _focus(phase: SpellCarrier.Phase) -> Node3D:
 	if phase == SpellCarrier.Phase.CASTING or phase == SpellCarrier.Phase.WAITING:
 		return carrier.wizard() if circles_wizard else null

@@ -1,24 +1,27 @@
 class_name WallSpirit
 extends FxScene
 
-## A spirit of the Wailing Wall: a glowing green comet that drags a ribbon of the last 90 ticks of its flight (the ribbon of Animate Dead's
-## streams, with `wlsp`). A PATROL spirit (twelve in the wall's scene) flies from point to point along the wall, at any height of it, appears
-## while the wall grows and goes out, one after another over 4 s, once it sinks. An ORBIT spirit (FxBus plays its own scene on the body
-## the wall slowed) circles that body for `ticks`, closing in at the end. Presentation only, on every peer; it does not slow anybody
-## (WallTouch). Its dice are its own.
+## A spirit of the Wailing Wall: a glowing green comet that drags a ribbon of the last 90 ticks of
+## its flight (the ribbon of Animate Dead's streams, with `wlsp`). A PATROL spirit (twelve in the
+## wall's scene) flies from point to point along the wall, at any height of it, appears while the
+## wall grows and goes out, one after another over 4 s, once it sinks. An ORBIT spirit (FxBus plays
+## its own scene on the body the wall slowed) circles that body for `ticks`, closing in at the end.
+## Presentation only, on every peer; it does not slow anybody (WallTouch). Its dice are its own.
 
 enum Mode { PATROL, ORBIT }
 
 @export var mode := Mode.PATROL
 @export var wall: SpellWall
-## PATROL: which of `count` spirits this is; it is born when the wall has grown `index / count` of the way and goes out in that order.
+## PATROL: which of `count` spirits this is; it is born when the wall has grown `index / count` of
+## the way and goes out in that order.
 @export var index := 0
 @export var count := 12
 ## The ribbon: atlas strip, links, width and brightness.
 @export var type: BeamType
 @export_range(0.0, 200.0, 1.0) var acceleration := 90.0
 @export_range(0.0, 100.0, 1.0) var speed := 20.0
-## PATROL: it looks for a new place when it is this close to the one it flies to, and picks one up to `hop_m` along the wall.
+## PATROL: it looks for a new place when it is this close to the one it flies to, and picks one up
+## to `hop_m` along the wall.
 @export_range(0.5, 20.0, 0.5, "suffix:m") var arrive_m := 5.0
 @export_range(1.0, 60.0, 1.0, "suffix:m") var hop_m := 20.0
 @export_range(0.0166, 10.0, 0.0001, "suffix:s") var trail_s := 1.5
@@ -119,7 +122,8 @@ func _fly(step: float) -> void:
 	_trail.insert(0, _here)
 
 
-## The point of the circle round the body's box now; the circle closes in over the last third of the time.
+## The point of the circle round the body's box now; the circle closes in over the last third of the
+## time.
 func _orbit() -> Vector3:
 	var box := BodyNudge.box(_target)
 	var radius := (
@@ -133,7 +137,8 @@ func _orbit() -> Vector3:
 	)
 
 
-## A point of the wall within `hop_m` of metre `from` (or anywhere along it), at any height of it and over its thickness.
+## A point of the wall within `hop_m` of metre `from` (or anywhere along it), at any height of it
+## and over its thickness.
 func _pick(from: float, anywhere := false) -> Vector3:
 	var low := wall.left * 1.2
 	var high := wall.right * 1.2

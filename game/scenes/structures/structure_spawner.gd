@@ -1,9 +1,10 @@
 class_name StructureSpawner
 extends MpSpawner
 
-## Puts the towers wizards cast into the match: on the server (replicated to every peer) or in solo. The ten tower scenes are
-## listed in `scenes`; the spawn message carries the index of the scene, the fount and the side, so every peer builds the same
-## tower. Does not decide where a tower may stand: StructureAction does.
+## Puts the towers wizards cast into the match: on the server (replicated to every peer) or in solo.
+## The ten tower scenes are listed in `scenes`; the spawn message carries the index of the scene,
+## the fount and the side, so every peer builds the same tower. Does not decide where a tower may
+## stand: StructureAction does.
 
 const GROUP := &"structure_spawner"
 
@@ -18,8 +19,9 @@ func _ready() -> void:
 	super._ready()
 
 
-## Raises `scene` (one of `scenes`) over `fount` for `slot`. `rising`: it is born at build_progress 0 (a cast that starts; the cast
-## raises it), else standing. Returns the tower, or null on a client or an unknown scene.
+## Raises `scene` (one of `scenes`) over `fount` for `slot`. `rising`: it is born at build_progress
+## 0 (a cast that starts; the cast raises it), else standing. Returns the tower, or null on a client
+## or an unknown scene.
 func spawn_tower(
 	scene: PackedScene, fount: ManafountBody, slot: int, yaw: float, rising := false
 ) -> CastTower:

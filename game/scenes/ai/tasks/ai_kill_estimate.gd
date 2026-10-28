@@ -79,8 +79,8 @@ static func is_healer(type: CreatureType) -> bool:
 	return type != null and type.ranged_attack != null and shot_heals(type.ranged_attack)
 
 
-## Pure: whether `ability` is a healer's shot: its targeting rule is a WoundedAllyPolicy, it shoots the
-## wounded of its own side (the Scarab's Healing web).
+## Pure: whether `ability` is a healer's shot: its targeting rule is a WoundedAllyPolicy, it shoots
+## the wounded of its own side (the Scarab's Healing web).
 static func shot_heals(ability: AbilityType) -> bool:
 	return ability != null and ability.target_policy is WoundedAllyPolicy
 

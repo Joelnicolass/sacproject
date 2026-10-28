@@ -2,8 +2,9 @@
 class_name RadialAnimator
 extends AnimationPlayer
 
-## Opens and closes the radial menu (its parent) with the `open` clip (scale + fade in) and the `close` clip (fade out): their
-## length and the starting scale are keys in the animation, not code. In the editor it snaps (no animation there).
+## Opens and closes the radial menu (its parent) with the `open` clip (scale + fade in) and the
+## `close` clip (fade out): their length and the starting scale are keys in the animation, not code.
+## In the editor it snaps (no animation there).
 
 ## The `close` clip ended: the menu can hide.
 signal closed

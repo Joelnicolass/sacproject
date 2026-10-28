@@ -1,20 +1,23 @@
 class_name RowFormation
 extends FormationType
 
-## The formations laid in rows: line, flanks, phalanx and skirmish. Rows of `row_size` bodies stand one
-## behind the other, `spacing` apart (an extension: the original cuts at 12 bodies); 0 = a single row.
+## The formations laid in rows: line, flanks, phalanx and skirmish. Rows of `row_size` bodies stand
+## one behind the other, `spacing` apart (an extension: the original cuts at 12 bodies); 0 = a
+## single row.
 
 enum Anchor { CENTER, LEFT, RIGHT }
 
 @export var row_size := 0
-## CENTER: the row is centered on the order point. LEFT / RIGHT: it stands beside it (the flanks); a guarded or
-## followed body (not an attack) pushes it further out.
+## CENTER: the row is centered on the order point. LEFT / RIGHT: it stands beside it (the flanks); a
+## guarded or followed body (not an attack) pushes it further out.
 @export var anchor := Anchor.CENTER
-## Every other body stands half a step behind (skirmish). Guarding pushes the whole line ahead of the guarded body.
+## Every other body stands half a step behind (skirmish). Guarding pushes the whole line ahead of
+## the guarded body.
 @export var stagger := false
 ## Guarding opens the first row around the guarded body (line).
 @export var guard_flank := false
-## Guarding stands the rows behind the guarded body, `guard_back_m` plus the target distance (phalanx).
+## Guarding stands the rows behind the guarded body, `guard_back_m` plus the target distance
+## (phalanx).
 @export var guard_behind := false
 @export var guard_back_m := 6.0
 

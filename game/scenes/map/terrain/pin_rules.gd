@@ -1,17 +1,19 @@
 class_name PinRules
 extends RefCounted
 
-## How much a spell's stamp may move each lattice vertex so the bases of the map stay level: 0 under a base (the vertices of
-## FootprintRules.vertices_under), half on the ring of vertices around it (a soft step, not a wall), 1 everywhere else. Terrain
-## works the weights out once from the map's footprints and multiplies every stamp by them (the live ones in TerrainLive, the kept
-## ones in keep_stamp). Static and pure; it does not know what a spell or a base is, nor flatten the land (FootprintRules).
+## How much a spell's stamp may move each lattice vertex so the bases of the map stay level: 0 under
+## a base (the vertices of FootprintRules.vertices_under), half on the ring of vertices around it (a
+## soft step, not a wall), 1 everywhere else. Terrain works the weights out once from the map's
+## footprints and multiplies every stamp by them (the live ones in TerrainLive, the kept ones in
+## keep_stamp). Static and pure; it does not know what a spell or a base is, nor flatten the land
+## (FootprintRules).
 
 ## The share a stamp keeps on the ring of vertices around a base.
 const RING_SHARE := 0.5
 
 
-## One weight per lattice vertex (row by row, TerrainGrid.SIDE²) for the ground areas (x, z in metres) of the bases. Empty when
-## there is no base: then nothing is multiplied.
+## One weight per lattice vertex (row by row, TerrainGrid.SIDE²) for the ground areas (x, z in
+## metres) of the bases. Empty when there is no base: then nothing is multiplied.
 static func weights(areas: Array[Rect2]) -> PackedFloat32Array:
 	var out := PackedFloat32Array()
 	if areas.is_empty():
@@ -36,7 +38,8 @@ static func of_tree(tree: SceneTree) -> PackedFloat32Array:
 	return weights(areas)
 
 
-## `values` (row by row over the lattice vertices of `rect`) times the weight of each vertex. Nothing without weights.
+## `values` (row by row over the lattice vertices of `rect`) times the weight of each vertex.
+## Nothing without weights.
 static func apply(values: PackedFloat32Array, rect: Rect2i, weights: PackedFloat32Array) -> void:
 	if weights.is_empty() or values.size() != rect.get_area():
 		return

@@ -2,15 +2,16 @@ class_name BreathOfLifeAbility
 extends AbilityEffect
 
 ## The Dragon's Breath of life, an ally revival. The body prepares and at the shoot tick the effect
-## drains the mana and adds the BreathOfLife effect; the cooldown
-## (4 s) is set if it was 0. The preparation is AbilityWindup's (UsingAbility + windup()), the flight is BreathOfLife's and
-## the revival is FastRevive's: this effect only judges the target and launches the breath.
+## drains the mana and adds the BreathOfLife effect; the cooldown (4 s) is set if it was 0. The
+## preparation is AbilityWindup's (UsingAbility + windup()), the flight is BreathOfLife's and the
+## revival is FastRevive's: this effect only judges the target and launches the breath.
 ##
 ## Target (applicable → range): a soul is resolved to its corpse. It must be dead,
 ## of the caster's slot, with its soul NORMAL or EMERGING
 ## and within the spell's range of the caster's feet (40 m, 3D: obj.position to target.position).
 
-## BreathOfLife scene (breath_of_life.tscn): the coordinator the shot container holds while the breath flies.
+## BreathOfLife scene (breath_of_life.tscn): the coordinator the shot container holds while the
+## breath flies.
 @export var breath_scene: PackedScene
 
 
@@ -28,8 +29,8 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## The breath leaves the shot origin toward the corpse. False = nothing launched (the target is gone by the
-## shoot tick): AbilitySlot spends the mana all the same.
+## The breath leaves the shot origin toward the corpse. False = nothing launched (the target is gone
+## by the shoot tick): AbilitySlot spends the mana all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority() or breath_scene == null:
 		return false
@@ -53,7 +54,8 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	return true
 
 
-## A soul's corpse, or the corpse itself. Null when the node is neither (a free soul has no creature).
+## A soul's corpse, or the corpse itself. Null when the node is neither (a free soul has no
+## creature).
 static func corpse_of(target: Node3D) -> UnitBody:
 	if target == null or not is_instance_valid(target):
 		return null

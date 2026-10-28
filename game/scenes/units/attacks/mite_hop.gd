@@ -1,24 +1,28 @@
 class_name MiteHop
 extends ShotInFlight
 
-## The Bilemite (liba) hops (the branch of a mite that has not stuck
-## yet): on every update position += v/60 and then v.z -= g/60 (g = the ability's falling acceleration, 20; RangedShot does both
-## and calls fly() after them), and when the land is above it (on the land and the ground higher than the mite):
+## The Bilemite (liba) hops (the branch of a mite that has not stuck yet): on every update position
+## += v/60 and then v.z -= g/60 (g = the ability's falling acceleration, 20; RangedShot does both
+## and calls fly() after them), and when the land is above it (on the land and the ground higher
+## than the mite):
 ##   - it is put on the ground and its jump count goes up by 1;
-##   - the 5th touch (5 jumps) stops it (v = 0): it stays there and is gone 30 updates later (it fades out);
-##   - else it hops towards the closest creature (range: the ability's effect range,
-##     15; only bodies whose feet are at most 10 m over the land, any side, the shooter too): the intended target when it is
-##     within the range instead of that one: v = 4.5·direction + 0.5·a uniform direction, then
-##     v.z += 0.5·g·|direction| / |v| and v.z = min(v.z, 10);
+##   - the 5th touch (5 jumps) stops it (v = 0): it stays there and is gone 30 updates later (it
+##     fades out);
+##   - else it hops towards the closest creature (range: the ability's effect range, 15; only bodies
+##     whose feet are at most 10 m over the land, any side, the shooter too): the intended target
+##     when it is within the range instead of that one: v = 4.5·direction + 0.5·a uniform direction,
+##     then v.z += 0.5·g·|direction| / |v| and v.z = min(v.z, 10);
 ##   - with nobody there: v = 5·a uniform direction and v.z = 10.
-## This node owns the shot's height (holds_height): RangedShot does not burst it on the ground, the mite ends on the 5th touch
-## (spent()) or when RangedShot's box finds a body (ShotLook.hits_every_side: StickImpact sticks it to whoever it touches).
-## The stream is MatchSeed.rng(["mites", shot name]): the same match gives the same hops (R11). A uniform direction is the cube
-## [-1, 1]^3 normalized, 3 draws, as LobAbility's.
-## The intended target comes in the packet (spawn_data "intended": the path of the body the ability was aimed at, "" = none).
-## Limits: the land is the terrain's (a roof is not ground); a mite over a hole (no land) never touches and flies
-## until RangedShot's range ends; a stopped mite can still stick to a body that touches it in its last 30 ticks.
-## Server (or solo) only: RangedShot instances this node there only.
+## This node owns the shot's height (holds_height): RangedShot does not burst it on the ground, the
+## mite ends on the 5th touch (spent()) or when RangedShot's box finds a body
+## (ShotLook.hits_every_side: StickImpact sticks it to whoever it touches). The stream is
+## MatchSeed.rng(["mites", shot name]): the same match gives the same hops (R11). A uniform
+## direction is the cube [-1, 1]^3 normalized, 3 draws, as LobAbility's. The intended target comes
+## in the packet (spawn_data "intended": the path of the body the ability was aimed at, "" = none).
+## Limits: the land is the terrain's (a roof is not ground); a mite over a hole (no land) never
+## touches and flies until RangedShot's range ends; a stopped mite can still stick to a body that
+## touches it in its last 30 ticks. Server (or solo) only: RangedShot instances this node there
+## only.
 
 ## The mite stops on this touch number.
 @export var jumps := 5
@@ -50,7 +54,8 @@ func holds_height() -> bool:
 	return true
 
 
-## True once the mite has been stopped for `rest_s`. RangedShot frees the shot when it is (ShotInFlight.spent()).
+## True once the mite has been stopped for `rest_s`. RangedShot frees the shot when it is
+## (ShotInFlight.spent()).
 func spent() -> bool:
 	if _stopped_at < 0 or ticks - _stopped_at < MatchClock.ticks_for(rest_s):
 		return false
@@ -114,7 +119,8 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		)
 
 
-## The closest live creature or wizard within the range, any side, whose feet are at most max_target_height over the land.
+## The closest live creature or wizard within the range, any side, whose feet are at most
+## max_target_height over the land.
 func _closest(shot: RangedShot, from: Vector3, shape: Terrain) -> Node3D:
 	var reach := _reach(shot)
 	var best: Node3D = null

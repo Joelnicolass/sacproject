@@ -2,17 +2,21 @@ class_name ShotImpact
 extends Node
 
 ## What a creature's ranged shot does where it bursts, in place of the plain direct hit. The scene
-## is ShotLook.impact; RangedShot instances it on the server (or solo) only, as a child of the shot, calls apply() once
-## and frees it with the shot. A shot whose ShotLook has no impact keeps the direct ranged hit.
+## is ShotLook.impact; RangedShot instances it on the server (or solo) only, as a child of the shot,
+## calls apply() once and frees it with the shot. A shot whose ShotLook has no impact keeps the
+## direct ranged hit.
 ##
-## Composition: apply() runs this node's _affect() and then apply() of every ShotImpact child, so one scene can splash
-## and stun (Flummox) without a new script per pair. Variants override _affect().
+## Composition: apply() runs this node's _affect() and then apply() of every ShotImpact child, so
+## one scene can splash and stun (Flummox) without a new script per pair. Variants override
+## _affect().
 
-## land() is the one owner of what a shot or a strike does where it lands (RangedShot._burst, ShotStrike._land).
+## land() is the one owner of what a shot or a strike does where it lands (RangedShot._burst,
+## ShotStrike._land).
 
 
-## `shot`: the bursting RangedShot (damage and from_slot already scaled by the shooter). `target`: the body it hit, or
-## null on the ground. `point`: where it burst. `ability`: the shot's SPEL (ranges), or null if the catalog has no such tag.
+## `shot`: the bursting RangedShot (damage and from_slot already scaled by the shooter). `target`:
+## the body it hit, or null on the ground. `point`: where it burst. `ability`: the shot's SPEL
+## (ranges), or null if the catalog has no such tag.
 func apply(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType) -> void:
 	_affect(shot, target, point, ability)
 	for child in get_children():
@@ -31,7 +35,8 @@ static func mods_of(holder: Node) -> int:
 	return int(value) if value != null else 0
 
 
-## The body that fired `holder` (a RangedShot or a ShotStrike), or null when it is gone or was never set.
+## The body that fired `holder` (a RangedShot or a ShotStrike), or null when it is gone or was never
+## set.
 static func shooter_of(holder: Node) -> Node:
 	var path: Variant = holder.get("shooter_path") if holder != null else null
 	if not path is NodePath or (path as NodePath).is_empty():
@@ -39,11 +44,11 @@ static func shooter_of(holder: Node) -> Node:
 	return holder.get_node_or_null(path as NodePath)
 
 
-## What a creature's shot or strike does where it lands: the ShotLook.impact scene (as a child of `holder`, freed with
-## it), or without one the whole amount as direct ranged damage to the body hit;
-## then the look's impact_fx at `point` on every
-## peer. `holder`: the RangedShot or ShotStrike (damage and from_slot already scaled by the shooter). `target`: the body
-## hit, or null (ground, range end). Server (or solo) only. Returns the damage the body took from the direct hit; 0 when
+## What a creature's shot or strike does where it lands: the ShotLook.impact scene (as a child of
+## `holder`, freed with it), or without one the whole amount as direct ranged damage to the body
+## hit; then the look's impact_fx at `point` on every peer. `holder`: the RangedShot or ShotStrike
+## (damage and from_slot already scaled by the shooter). `target`: the body hit, or null (ground,
+## range end). Server (or solo) only. Returns the damage the body took from the direct hit; 0 when
 ## it took none or an impact scene decided.
 static func land(
 	holder: Node3D, look: ShotLook, target: Node3D, point: Vector3, ability: AbilityType

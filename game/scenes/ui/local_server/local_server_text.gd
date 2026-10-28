@@ -1,9 +1,9 @@
 class_name LocalServerText
 extends RefCounted
 
-## Every text of the «Servidor local» screens that is not a label of a scene. Pure functions: no node.
-## The reasons of the door of the match (`match_started`, `grace_over`, `full`) are read by every networked path
-## (SacrificeFlow.rejection_text).
+## Every text of the «Servidor local» screens that is not a label of a scene. Pure functions: no
+## node. The reasons of the door of the match (`match_started`, `grace_over`, `full`) are read by
+## every networked path (SacrificeFlow.rejection_text).
 
 const TITLE := "LOCAL_TITLE"
 const PICK_BUTTON := "LOCAL_PICK_BUTTON"
@@ -52,7 +52,8 @@ const START_ERRORS := {
 const START_ERROR_FALLBACK := "LOCAL_START_ERROR_FALLBACK"
 
 
-## The codes to pass along, one line per seat for a person ({slot: code}); one seat keeps the 1v1 line.
+## The codes to pass along, one line per seat for a person ({slot: code}); one seat keeps the 1v1
+## line.
 static func codes_text(codes: Dictionary) -> String:
 	if codes.is_empty():
 		return UiText.t(INFO_NO_CODE)
@@ -82,7 +83,8 @@ static func address_text(address: String) -> String:
 	return UiText.t(INFO_ADDRESS) % address if not address.is_empty() else UiText.t(INFO_NO_ADDRESS)
 
 
-## «UDP (ENet)» / «TCP (WebSocket)» in `picker`, each item with its kind as metadata; the one of MpKit selected.
+## «UDP (ENet)» / «TCP (WebSocket)» in `picker`, each item with its kind as metadata; the one of
+## MpKit selected.
 static func fill_transports(picker: OptionButton) -> void:
 	picker.clear()
 	for kind: String in [MpTransport.ENET, MpTransport.WS]:

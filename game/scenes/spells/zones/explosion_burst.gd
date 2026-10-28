@@ -1,9 +1,11 @@
 class_name ExplosionBurst
 extends FxScene
 
-## The look of one blast, played on every peer by FxBus.broadcast_scene at each point of an Explosion: two spheres of fire that swell (a big one
-## and a small one), and the rocks it throws. The sprites of the blast (xplo, exp2, ash, smoke) are bursts the zone plays beside it; the sound
-## is the one of this scene's file name in the sound table. Presentation only; it frees itself. It does not hurt anyone (ZoneBlast).
+## The look of one blast, played on every peer by FxBus.broadcast_scene at each point of an
+## Explosion: two spheres of fire that swell (a big one and a small one), and the rocks it throws.
+## The sprites of the blast (xplo, exp2, ash, smoke) are bursts the zone plays beside it; the sound
+## is the one of this scene's file name in the sound table. Presentation only; it frees itself. It
+## does not hurt anyone (ZoneBlast).
 
 ## The spheres, scaled from nothing: each is a unit-diameter sphere.
 @export var big: MeshInstance3D

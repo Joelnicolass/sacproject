@@ -1,10 +1,12 @@
 class_name VillagerSenses
 extends Node
 
-## What a villager notices: the closest shelter that is still standing, the closest body that scares it (an enemy by stance, or a side it
-## holds a grudge against), and the side that hit it last (the panic). It only answers; the Brain decides what to do with it.
-## A shelter is a building with the shelter flag or an altar, as long as its side is not an enemy of the villager's side.
-## Not: what to do about it (VillagerBrain and its states) nor who bears the grudges (GrudgeMemory). Server or solo only.
+## What a villager notices: the closest shelter that is still standing, the closest body that scares
+## it (an enemy by stance, or a side it holds a grudge against), and the side that hit it last (the
+## panic). It only answers; the Brain decides what to do with it. A shelter is a building with the
+## shelter flag or an altar, as long as its side is not an enemy of the villager's side.
+## Not: what to do about it (VillagerBrain and its states) nor who bears the grudges (GrudgeMemory).
+## Server or solo only.
 
 ## A hit from another side started the panic: the Brain thinks at once.
 signal panicked

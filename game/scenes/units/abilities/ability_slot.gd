@@ -1,9 +1,10 @@
 class_name AbilitySlot
 extends Node
 
-## A creature's active ability, used on command (Ctrl+Q / Shift+B). It checks that the ability can be used (cooldown, mana, a target,
-## range, the effect's own rule), then pays the mana and starts the cooldown. What the ability does is the AbilityEffect scene of its
-## AbilityType (`effect`); an ability whose type has none is «No implementado».
+## A creature's active ability, used on command (Ctrl+Q / Shift+B). It checks that the ability can
+## be used (cooldown, mana, a target, range, the effect's own rule), then pays the mana and starts
+## the cooldown. What the ability does is the AbilityEffect scene of its AbilityType (`effect`); an
+## ability whose type has none is «No implementado».
 ## Not: the preparation before the effect fires (AbilityWindup) nor who may order it (AbilityPort).
 ## Time is MatchClock ticks, not the render delta: the cooldown is «until tick N».
 
@@ -115,7 +116,8 @@ func using_ability() -> Affliction:
 	return body.get_node_or_null("Afflictions/UsingAbility") as Affliction if body else null
 
 
-## Every peer, from UnitBody's mode setter: the Rockform effect draws the shell (any other creature has none).
+## Every peer, from UnitBody's mode setter: the Rockform effect draws the shell (any other creature
+## has none).
 func show_rock_form(on: bool) -> void:
 	var rock := effect as Rockform
 	if rock:

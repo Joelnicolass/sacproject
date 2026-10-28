@@ -1,10 +1,12 @@
 class_name UnitManaSupport
 extends UnitPassive
 
-## The Manahoar's mana aura: the body gives mana to its own side's wizards and creatures within the aura, at a rate that grows with
-## the allied Manaliths around it (a triangular ramp peaking at `MatchRules.manahoar_rate`). The aura radius and the ramp distances
-## come from ReachFacts.of_rules(body.rules), read at every use. A node of `manahoar_passives.tscn`; attach() hands it to the
-## creature's CreatureFx (its flame follows the rate). Server (or solo) only for the giving.
+## The Manahoar's mana aura: the body gives mana to its own side's wizards and creatures within the
+## aura, at a rate that grows with the allied Manaliths around it (a triangular ramp peaking at
+## `MatchRules.manahoar_rate`). The aura radius and the ramp distances come from
+## ReachFacts.of_rules(body.rules), read at every use. A node of `manahoar_passives.tscn`; attach()
+## hands it to the creature's CreatureFx (its flame follows the rate). Server (or solo) only for the
+## giving.
 
 @export var target_groups: PackedStringArray = PackedStringArray(["wizard", "unit"])
 
@@ -44,8 +46,9 @@ func _physics_process(delta: float) -> void:
 				pool.add(rate * delta)
 
 
-## Particles per second of the Manahoar's flame: one flame particle per mana point per second it gives, so it is 0 when no allied manalith is around. Every peer
-## can ask (it only reads the structures); a body that gives no mana (dead, or not a Manahoar) answers 0.
+## Particles per second of the Manahoar's flame: one flame particle per mana point per second it
+## gives, so it is 0 when no allied manalith is around. Every peer can ask (it only reads the
+## structures); a body that gives no mana (dead, or not a Manahoar) answers 0.
 func flame_rate() -> float:
 	if body == null or body.is_dead():
 		return 0.0

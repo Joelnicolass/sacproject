@@ -2,11 +2,12 @@
 class_name VegetationPatch
 extends Node3D
 
-## A cluster of one species in one place: drop it on the map, set the species, radius and count (`radius_m` is a circle in
-## the editor). It plants its own MultiMesh (internal, never saved): spots from the hash of (seed, tag, i), heights from the
-## terrain, none inside a VegetationClear, the density and «Vegetación» switch of the map's FloraField (found by its group);
-## again when it moves, is edited, a clear moves, the preset changes or the ground under it settles. Presentation only (never
-## headless or dedicated). For a whole map's worth of plants paint a FloraLayer instead.
+## A cluster of one species in one place: drop it on the map, set the species, radius and count
+## (`radius_m` is a circle in the editor). It plants its own MultiMesh (internal, never saved):
+## spots from the hash of (seed, tag, i), heights from the terrain, none inside a VegetationClear,
+## the density and «Vegetación» switch of the map's FloraField (found by its group); again when it
+## moves, is edited, a clear moves, the preset changes or the ground under it settles. Presentation
+## only (never headless or dedicated). For a whole map's worth of plants paint a FloraLayer instead.
 
 const GROUP := &"vegetation_patch"
 
@@ -68,7 +69,8 @@ func field_changed() -> void:
 	_queue()
 
 
-## FloraGroundWatch calls this when the ground under its circle settled: it plants again at the new heights.
+## FloraGroundWatch calls this when the ground under its circle settled: it plants again at the new
+## heights.
 func ground_moved() -> void:
 	_signature = ""
 	_queue()

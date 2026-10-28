@@ -1,19 +1,21 @@
 class_name TicketPlan
 extends RefCounted
 
-## Reads the ticket a room server gave to a dedicated into a LaunchPlan: the seats of its mode, the bots as AI seats, the picks
-## of the humans that are already chosen, the options and the seed. It changes nothing: SacrificeFlow applies the plan.
-## It does not check the ticket (`MatchTicketGlue.world_is_valid` does, before this runs).
+## Reads the ticket a room server gave to a dedicated into a LaunchPlan: the seats of its mode, the
+## bots as AI seats, the picks of the humans that are already chosen, the options and the seed. It
+## changes nothing: SacrificeFlow applies the plan. It does not check the ticket
+## (`MatchTicketGlue.world_is_valid` does, before this runs).
 
 
-## `ai_seat` is the seat an AI takes; `fallback` the pick of a seat whose pick the ticket cannot read; `seats` the seats to keep when
-## the ticket does not name a mode.
+## `ai_seat` is the seat an AI takes; `fallback` the pick of a seat whose pick the ticket cannot
+## read; `seats` the seats to keep when the ticket does not name a mode.
 static func read(
 	glue: MatchTicketGlue, ai_seat: AiSeat, fallback: WizardPick, seats: int
 ) -> LaunchPlan:
 	var plan := LaunchPlan.new()
-	# The seats are those of the ticket's mode (the humans take the slots of their tokens, so the transport has room for all of
-	# them), and the bots of the ticket are the AI seats of this match.
+	# The seats are those of the ticket's mode (the humans take the slots of their tokens, so the
+	# transport has room for all of them), and the bots of the ticket are the AI seats of this
+	# match.
 	var ticket_seats := GameModeCatalog.seats_of(glue.mode_tag())
 	plan.max_players = ticket_seats if ticket_seats > 0 else seats
 	var match_id := glue.agent.match_id

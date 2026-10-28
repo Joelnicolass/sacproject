@@ -2,9 +2,10 @@
 class_name BoltLauncher
 extends Node
 
-## Cloudkill's bolt: when its ZoneDropper says where, a lightning bolt leaves the cloud for the body (or the point of the land) and, when
-## it arrives, its splash hurts what stands near. The bolt (LightningStrike) does the flight and the damage to the body it reaches; this
-## adds only the splash. It does not choose where (ZoneDropper). Server (or solo) only.
+## Cloudkill's bolt: when its ZoneDropper says where, a lightning bolt leaves the cloud for the body
+## (or the point of the land) and, when it arrives, its splash hurts what stands near. The bolt
+## (LightningStrike) does the flight and the damage to the body it reaches; this adds only the
+## splash. It does not choose where (ZoneDropper). Server (or solo) only.
 
 @export var zone: GroundZone
 @export var dropper: ZoneDropper
@@ -34,7 +35,8 @@ func _launch(point: Vector3, body: Node3D) -> void:
 		strike.struck.connect(_splash)
 
 
-## The splash of the bolt on whatever is within the spell's damage range of where it arrived, but the body it hit.
+## The splash of the bolt on whatever is within the spell's damage range of where it arrived, but
+## the body it hit.
 func _splash(body: Node3D, at: Vector3) -> void:
 	SplashDamage.deal(
 		get_tree(),

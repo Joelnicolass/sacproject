@@ -1,11 +1,12 @@
 class_name GrassHeight
 extends RefCounted
 
-## The land height the grass layer reads, derived from the terrain when the grass loads instead of read from a
-## baked height.exr. RG float, 1024x1024 over the whole map (2.5 m per texel on a 2560 m map): R = height, G = 1 where land
-## lies under the texel centre (`Terrain.height_at` is not NAN), 0 over holes and the map rim. Hole texels take the
-## height of the nearest land texel so a bilinear read near a hole edge does not dip to 0. The grass is off today, so this
-## costs nothing at start-up; it runs once, when a grass field first loads.
+## The land height the grass layer reads, derived from the terrain when the grass loads instead of
+## read from a baked height.exr. RG float, 1024x1024 over the whole map (2.5 m per texel on a 2560 m
+## map): R = height, G = 1 where land lies under the texel centre (`Terrain.height_at` is not NAN),
+## 0 over holes and the map rim. Hole texels take the height of the nearest land texel so a bilinear
+## read near a hole edge does not dip to 0. The grass is off today, so this costs nothing at
+## start-up; it runs once, when a grass field first loads.
 
 const SIZE := 1024
 
@@ -36,8 +37,9 @@ static func from_shape(shape: Terrain) -> Image:
 	return Image.create_from_data(SIZE, SIZE, false, Image.FORMAT_RGF, data)
 
 
-## Breadth-first fill, ring by ring: each hole texel copies a land neighbour (first of +x, -x, +z, -z) that an EARLIER ring
-## filled. Only the frontier is visited each ring, so the cost is one pass over the holes, not one pass per ring.
+## Breadth-first fill, ring by ring: each hole texel copies a land neighbour (first of +x, -x, +z,
+## -z) that an EARLIER ring filled. Only the frontier is visited each ring, so the cost is one pass
+## over the holes, not one pass per ring.
 static func _fill_holes(heights: PackedFloat32Array, land: PackedByteArray) -> void:
 	var filled := land.duplicate()
 	var queued := PackedByteArray()

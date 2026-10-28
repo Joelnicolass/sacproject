@@ -1,8 +1,9 @@
 class_name VillagerFleeState
 extends VillagerState
 
-## FLEE: runs straight away from the threat, `leg_m` ahead of it each time the Brain thinks. The Brain sends both as the transition payload
-## ({"threat": Node3D, "leg_m": float}); a repeat of Flee with a new payload runs again without exit / enter.
+## FLEE: runs straight away from the threat, `leg_m` ahead of it each time the Brain thinks. The
+## Brain sends both as the transition payload ({"threat": Node3D, "leg_m": float}); a repeat of Flee
+## with a new payload runs again without exit / enter.
 
 
 func enter() -> void:

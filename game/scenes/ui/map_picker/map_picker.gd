@@ -1,14 +1,16 @@
 class_name MapPicker
 extends OptionButton
 
-## The picker of the map of a match. It lists the maps a room can offer (`room_selectable` in their `MapDefinition`); the test maps
-## only when this process was started with `--room-test-maps`, or, with `offer_test_maps`, in a debug build (the boot). The metadata of
-## each item is the MapDefinition itself, so `selected_map()` hands it over and the screens never read a tag. It starts on the map
-## `ActiveMatch` plays (the one of `--map`) when it is listed.
-## With a ModePicker in `mode_picker`, it lists only the maps with a start for each seat of the chosen mode, and fills again when
-## the mode changes (keeping the chosen map if it still fits).
+## The picker of the map of a match. It lists the maps a room can offer (`room_selectable` in their
+## `MapDefinition`); the test maps only when this process was started with `--room-test-maps`, or,
+## with `offer_test_maps`, in a debug build (the boot). The metadata of each item is the
+## MapDefinition itself, so `selected_map()` hands it over and the screens never read a tag. It
+## starts on the map `ActiveMatch` plays (the one of `--map`) when it is listed. With a ModePicker
+## in `mode_picker`, it lists only the maps with a start for each seat of the chosen mode, and fills
+## again when the mode changes (keeping the chosen map if it still fits).
 
-## Offer the test maps too in a debug build (the boot, to try them alone). Rooms never do: they need `--room-test-maps`.
+## Offer the test maps too in a debug build (the boot, to try them alone). Rooms never do: they need
+## `--room-test-maps`.
 @export var offer_test_maps := false
 ## Format of an item; `%s` is the display name of the map.
 @export var item_text := "UI_MAP_PICKER_ITEM"
@@ -24,7 +26,8 @@ func _ready() -> void:
 	fill()
 
 
-## True when a screen lists `definition`: a room map, or any playable one with `--room-test-maps` or (`with_test_maps`) in a debug build.
+## True when a screen lists `definition`: a room map, or any playable one with `--room-test-maps` or
+## (`with_test_maps`) in a debug build.
 static func offers(definition: MapDefinition, with_test_maps: bool) -> bool:
 	var all := MpBoot.user_flag("room-test-maps") or (with_test_maps and OS.is_debug_build())
 	return definition.playable and (definition.room_selectable or all)

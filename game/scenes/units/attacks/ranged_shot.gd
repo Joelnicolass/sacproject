@@ -1,26 +1,25 @@
 class_name RangedShot
 extends Node3D
 
-## A creature's ranged shot. Each frame
-## position += velocity/fps and, for ballistic shots, velocity.z −= falling acceleration/fps. It bursts
-## on the first body in its hit box that is the intended target or not of the shooter's side
-##, or under the ground, and deals the ability's
-## amount as direct ranged damage. Straight shots
-## fly their ability range and vanish.
-## The server (or solo) moves it; clients get the position and play the trail locally.
-## A ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash).
-## ShotLook.hits_allies turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range ends.
-## A ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the Abomination's droplets
-## (ShotDropper); the Silverback's breath (GrowingWave), whose ShotLook.collides is off: it touches neither a
-## body nor the ground and flies its whole range.
-## An in_flight that holds the shot's height (GroundHugFlight, ShotInFlight.holds_height) takes the ground check away: the
-## Rhinok's shot ends on a body or at the end of its range only.
+## A creature's ranged shot. Each frame position += velocity/fps and, for ballistic shots,
+## velocity.z −= falling acceleration/fps. It bursts on the first body in its hit box that is the
+## intended target or not of the shooter's side , or under the ground, and deals the ability's
+## amount as direct ranged damage. Straight shots fly their ability range and vanish. The server (or
+## solo) moves it; clients get the position and play the trail locally. A ShotLook with an `impact`
+## scene (ShotImpact) decides the damage where it bursts instead (splash). ShotLook.hits_allies
+## turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range
+## ends. A ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the
+## Abomination's droplets (ShotDropper); the Silverback's breath (GrowingWave), whose
+## ShotLook.collides is off: it touches neither a body nor the ground and flies its whole range. An
+## in_flight that holds the shot's height (GroundHugFlight, ShotInFlight.holds_height) takes the
+## ground check away: the Rhinok's shot ends on a body or at the end of its range only.
 
 const TRAIL_FPS := 60.0
 
 var damage := 0.0
 var from_slot := 0
-## The DamageMod bits its hit carries (Health.IGNITE when its ShotLook ignites). ShotImpact.mods_of reads it.
+## The DamageMod bits its hit carries (Health.IGNITE when its ShotLook ignites). ShotImpact.mods_of
+## reads it.
 var mods := 0
 var gravity := 0.0
 var max_distance := INF
@@ -31,8 +30,8 @@ var look: ShotLook
 ## The shot's SPEL (ranges for its impact); null when the catalog has no such tag.
 var ability: AbilityType
 
-## The packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs (SplitFlight:
-## volley_index, aim_distance). Read only.
+## The packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs
+## (SplitFlight: volley_index, aim_distance). Read only.
 var spawn_data: Dictionary = {}
 
 var _traveled := 0.0
@@ -41,8 +40,9 @@ var _spin_rate := 0.0
 var _in_flight: ShotInFlight
 
 
-## `shot_ability`: the ability the packet's `tag` names, or null for a shot that is not one; `look_scene`: the scene its `look`
-## names (null = a plain ball). ShotSpawner turns both texts into them.
+## `shot_ability`: the ability the packet's `tag` names, or null for a shot that is not one;
+## `look_scene`: the scene its `look` names (null = a plain ball). ShotSpawner turns both texts into
+## them.
 func setup(
 	data: Dictionary, shot_ability: AbilityType = null, look_scene: PackedScene = null
 ) -> void:
@@ -94,8 +94,9 @@ func _add_visual() -> void:
 	add_child(visual)
 
 
-## Server (or solo) only, like the impact: what it does in flight is simulation (ShotLook.in_flight). Added once the shot is in
-## the tree, where it knows whether it is the authority.
+## Server (or solo) only, like the impact: what it does in flight is simulation
+## (ShotLook.in_flight). Added once the shot is in the tree, where it knows whether it is the
+## authority.
 func _add_in_flight() -> void:
 	if look == null or look.in_flight == null:
 		return
@@ -168,7 +169,8 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
-## The live body not of this shot's side that its box touches now (a coordinator that moves the shot asks it).
+## The live body not of this shot's side that its box touches now (a coordinator that moves the shot
+## asks it).
 func touching() -> Node3D:
 	return _collision_target()
 
@@ -235,13 +237,14 @@ func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
 	)
 
 
-## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
-## left out; -INF off the map. The ground check of the flight, and GroundHugFlight's height.
+## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`,
+## wizards left out; -INF off the map. The ground check of the flight, and GroundHugFlight's height.
 func ground_height(at: Vector3) -> float:
 	return RangedShot.land_height(self, at)
 
 
-## The same for any node in the tree (the Divine Sight eye flies over it). `from` only gives the tree and the physics world.
+## The same for any node in the tree (the Divine Sight eye flies over it). `from` only gives the
+## tree and the physics world.
 static func land_height(from: Node3D, at: Vector3) -> float:
 	return GroundRay.surface_y(from, at, 1, GroundRay.wizard_rids(from.get_tree()), -INF)
 

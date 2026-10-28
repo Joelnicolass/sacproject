@@ -2,11 +2,16 @@ class_name VoiceQueue
 extends RefCounted
 
 ## Who speaks next on a voice channel that says one line at a time (AdvisorVoice). Pure: it knows
-## keys and priorities, never a stream nor a player, so the cases try it without audio. The rules (simplified):
-## - A line of a higher priority than the one speaking cuts it (PLAY_NOW) and drops the queued lines below its own.
-## - A line of the same or a lower priority never cuts: it waits in the queue (QUEUED) while there is room (`max_queued`).
-## - A key already speaking or waiting is DROPPED (the same warning twice in a row says nothing new).
-## - When the line ends, `finish()` hands the next one: the highest priority waiting, the oldest among equals.
+## keys and priorities, never a stream nor a player, so the cases try it without audio. The rules
+## (simplified):
+## - A line of a higher priority than the one speaking cuts it (PLAY_NOW) and drops the queued lines
+##   below its own.
+## - A line of the same or a lower priority never cuts: it waits in the queue (QUEUED) while there
+##   is room (`max_queued`).
+## - A key already speaking or waiting is DROPPED (the same warning twice in a row says nothing
+##   new).
+## - When the line ends, `finish()` hands the next one: the highest priority waiting, the oldest
+##   among equals.
 
 enum Offer { PLAY_NOW, QUEUED, DROPPED }
 
@@ -22,7 +27,8 @@ func _init(p_max_queued := 3) -> void:
 	max_queued = maxi(p_max_queued, 0)
 
 
-## What happens to the line `key` of `priority`. PLAY_NOW: the caller (re)starts the channel with it (it is `current`).
+## What happens to the line `key` of `priority`. PLAY_NOW: the caller (re)starts the channel with it
+## (it is `current`).
 func offer(key: StringName, priority: int) -> Offer:
 	if key.is_empty() or is_speaking(key) or is_waiting(key):
 		return Offer.DROPPED

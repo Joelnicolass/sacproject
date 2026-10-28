@@ -1,23 +1,28 @@
 class_name GroundField
 extends RefCounted
 
-## How far the ground has moved from the map file, vertex by vertex of a regular lattice: what stays (a mound, a crater),
-## what moves right now (playing stamps) and which vertices were taken away (holes). It only keeps numbers and adds them up;
-## who writes and who answers the height is Terrain. A new shift of a playing stamp adds its difference; its end (or a
-## commit) sums the rect again from what stays and the stamps left, so dropping it leaves the ground exactly as it was.
+## How far the ground has moved from the map file, vertex by vertex of a regular lattice: what stays
+## (a mound, a crater), what moves right now (playing stamps) and which vertices were taken away
+## (holes). It only keeps numbers and adds them up; who writes and who answers the height is
+## Terrain. A new shift of a playing stamp adds its difference; its end (or a commit) sums the rect
+## again from what stays and the stamps left, so dropping it leaves the ground exactly as it was.
 
-## Vertices per side (x, z) and metres between two of them: the ground covers `size * cell_m` from the origin.
+## Vertices per side (x, z) and metres between two of them: the ground covers `size * cell_m` from
+## the origin.
 var size := Vector2i(TerrainGrid.SIDE, TerrainGrid.SIDE)
 var cell_m := TerrainGrid.CELL_M
-## Two floats per vertex (the layout the ground shader reads): [0] how far it is raised (permanent + live), [1] 1 if taken away.
+## Two floats per vertex (the layout the ground shader reads): [0] how far it is raised (permanent +
+## live), [1] 1 if taken away.
 var texels := PackedFloat32Array()
 ## What stays (floats, one per vertex). Only `commit` changes it.
 var permanent := PackedFloat32Array()
-## Count of changes made to what stays; a peer that joins late compares it with the commits it receives.
+## Count of changes made to what stays; a peer that joins late compares it with the commits it
+## receives.
 var rev := 0
 ## Count of times the visible sum changed (live stamps included).
 var version := 0
-## Count of times the ground settled: a commit, a hole, a stamp that ended, a snapshot. `snapshot()` copies once per count.
+## Count of times the ground settled: a commit, a hole, a stamp that ended, a snapshot. `snapshot()`
+## copies once per count.
 var settled_version := 0
 ## The vertices taken away, as a list (`texels` holds the same in its second float).
 var holes := TerrainHoles.new()
@@ -31,8 +36,8 @@ func _init() -> void:
 	permanent.resize(TerrainGrid.COUNT)
 
 
-## Adds `delta` (row by row over `rect`) to what stays and, in the same step, takes away the live stamp `drop_key` (the
-## ground does not blink between the two). Returns the rect that changed.
+## Adds `delta` (row by row over `rect`) to what stays and, in the same step, takes away the live
+## stamp `drop_key` (the ground does not blink between the two). Returns the rect that changed.
 func commit(rect: Rect2i, delta: PackedFloat32Array, drop_key: Variant = null) -> Rect2i:
 	GroundSumRules.add(permanent, rect, delta)
 	var changed := rect
@@ -45,8 +50,9 @@ func commit(rect: Rect2i, delta: PackedFloat32Array, drop_key: Variant = null) -
 	return changed
 
 
-## A stamp that is playing: its shift over `rect`, replacing the one it had under `key`. Returns the rect that changed.
-## Over the same rect only the difference is added (exactly what stays + the shift when no other stamp overlaps it).
+## A stamp that is playing: its shift over `rect`, replacing the one it had under `key`. Returns the
+## rect that changed. Over the same rect only the difference is added (exactly what stays + the
+## shift when no other stamp overlaps it).
 func set_live(key: Variant, rect: Rect2i, values: PackedFloat32Array) -> Rect2i:
 	var old: Array = _live.get(key, [])
 	_live[key] = [rect, values]
@@ -62,7 +68,8 @@ func set_live(key: Variant, rect: Rect2i, values: PackedFloat32Array) -> Rect2i:
 	return rect
 
 
-## The stamp under `key` is over: the ground goes back to what stays. Returns the rect that changed (empty if none).
+## The stamp under `key` is over: the ground goes back to what stays. Returns the rect that changed
+## (empty if none).
 func drop_live(key: Variant) -> Rect2i:
 	if not _live.has(key):
 		return Rect2i()
@@ -82,8 +89,9 @@ func live_keys() -> PackedStringArray:
 	return PackedStringArray(_live.keys())
 
 
-## A copy of `texels` as they were at the last settle, for a task on another thread (packed arrays are shared by
-## reference). A live stamp's tick never copies; a stamp playing when the ground settled is in the copy.
+## A copy of `texels` as they were at the last settle, for a task on another thread (packed arrays
+## are shared by reference). A live stamp's tick never copies; a stamp playing when the ground
+## settled is in the copy.
 func snapshot() -> PackedFloat32Array:
 	if _snapshot_version != settled_version:
 		_snapshot = texels.duplicate()
@@ -91,7 +99,8 @@ func snapshot() -> PackedFloat32Array:
 	return _snapshot
 
 
-## The next `snapshot` copies `texels` as they are now, live stamps included (once; then it waits for a settle again).
+## The next `snapshot` copies `texels` as they are now, live stamps included (once; then it waits
+## for a settle again).
 func drop_snapshot() -> void:
 	_snapshot_version = -1
 
@@ -121,7 +130,8 @@ func removed_ids() -> PackedInt32Array:
 	return holes.ids()
 
 
-## Sums what stays and the live stamps again over `rect` (stamp by stamp, in the order they started).
+## Sums what stays and the live stamps again over `rect` (stamp by stamp, in the order they
+## started).
 func refresh(rect: Rect2i) -> void:
 	version += 1
 	GroundSumRules.sum(texels, permanent, _live.values(), rect)

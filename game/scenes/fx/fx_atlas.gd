@@ -2,9 +2,10 @@
 class_name FxAtlas
 extends RefCounted
 
-## The shared look of a ParticleType: its material (shader, atlas and knobs) and its quad, cached per type. Every effect holds its
-## own Texture2D (ParticleType.atlas, BeamType.atlas, a node's `atlas`); nothing here looks an atlas up by name. Static and @tool so
-## the editor and a headless run can use it without autoloads.
+## The shared look of a ParticleType: its material (shader, atlas and knobs) and its quad, cached
+## per type. Every effect holds its own Texture2D (ParticleType.atlas, BeamType.atlas, a node's
+## `atlas`); nothing here looks an atlas up by name. Static and @tool so the editor and a headless
+## run can use it without autoloads.
 
 const SHADER_ADD := preload("res://scenes/fx/sprite_particle_add.gdshader")
 const SHADER_MIX := preload("res://scenes/fx/sprite_particle_mix.gdshader")
@@ -45,7 +46,8 @@ static func shader_for(particle: ParticleType) -> Shader:
 	return SHADER_MIX_LIT if particle.lit else SHADER_MIX
 
 
-## One quad per (size, flat): a flat type gets a quad lying on the ground (FACE_Y), the rest face the camera (FACE_Z).
+## One quad per (size, flat): a flat type gets a quad lying on the ground (FACE_Y), the rest face
+## the camera (FACE_Z).
 static func quad_for(particle: ParticleType) -> QuadMesh:
 	var key := Vector3(particle.size.x, particle.size.y, 1.0 if particle.flat else 0.0)
 	if not _meshes.has(key):

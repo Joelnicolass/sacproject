@@ -1,9 +1,10 @@
 class_name UnitHealthBar
 extends MeshInstance3D
 
-## Floating bar over a body. Green for the local slot, red for anyone else. Reads the Health component's `changed`
-## signal, so it works the same on server and clients. It is the only one that shows or hides itself: never over a
-## dead body, nor over one a Sac Doctor has taken (carried or being pumped back to life).
+## Floating bar over a body. Green for the local slot, red for anyone else. Reads the Health
+## component's `changed` signal, so it works the same on server and clients. It is the only one that
+## shows or hides itself: never over a dead body, nor over one a Sac Doctor has taken (carried or
+## being pumped back to life).
 
 @export var own_color := Color(0.2, 0.85, 0.25)
 @export var enemy_color := Color(0.9, 0.18, 0.12)
@@ -25,13 +26,15 @@ var _selected := false
 var _owner_slot := -1
 
 
-## The bar can get its side before it is in the tree (no seat to ask yet): it asks again when it enters.
+## The bar can get its side before it is in the tree (no seat to ask yet): it asks again when it
+## enters.
 func _ready() -> void:
 	if _owner_slot >= 0:
 		set_owner_slot(_owner_slot)
 
 
-## `body`: the creature the bar floats over, if it can be taken by a doctor (the bar hides while it is).
+## `body`: the creature the bar floats over, if it can be taken by a doctor (the bar hides while it
+## is).
 func bind(health: Health, owner_slot: int, body: UnitBody = null) -> void:
 	if _health and _health.changed.is_connected(_on_changed):
 		_health.changed.disconnect(_on_changed)

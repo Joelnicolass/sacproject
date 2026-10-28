@@ -1,18 +1,19 @@
 class_name MeleeWeapon
 extends Weapon
 
-## A blow with the body: one swing at a time, timed by the creature's attack clip. It starts when the target touches the melee box
-## (scaled by `start_factor`) and the blow lands only if the target still touches the unscaled box on the clip's blow frame.
-## Not: choosing who to hit (the chase state) nor what a blow adds afterwards (the creature's MeleeOnHit passives).
-## Server (or solo) only.
+## A blow with the body: one swing at a time, timed by the creature's attack clip. It starts when
+## the target touches the melee box (scaled by `start_factor`) and the blow lands only if the target
+## still touches the unscaled box on the clip's blow frame.
+## Not: choosing who to hit (the chase state) nor what a blow adds afterwards (the creature's
+## MeleeOnHit passives). Server (or solo) only.
 
 ## The share of the melee box a target must touch to start a swing.
 @export var start_factor := 0.8
 ## How far ahead of the body the box sits, in reaches.
 @export var forward_factor := 1.3
 @export var height_factor := 1.5
-## With the target inside the box the body keeps walking in until its centre is this share of the box's forward offset from the
-## target's near edge.
+## With the target inside the box the body keeps walking in until its centre is this share of the
+## box's forward offset from the target's near edge.
 @export var close_in_factor := 0.8
 ## A target whose centre is this far below ours is hit with the downward swing (attack3).
 @export var downward_threshold := 0.25
@@ -133,6 +134,7 @@ func _land() -> void:
 	if DebugLog.on(&"melee"):
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"blow %s → %s accuracy %.1f evasion %.1f facing %.6f slope %.6f p %.6f roll %.6f strength %d scale %.4f resistance %.4f factor %.4f amount %.4f (tick %d)"
 				% [
 					body.name,

@@ -8,16 +8,14 @@ extends RefCounted
 const SEARCH_STEPS := 5
 
 
-## Where the vortex hangs and the doctor lands for a Desecrate:
-## the vortex hangs `distance` from the target, on the wizard's side (the offset points from the
-## target back toward the caster); the doctor lands halfway between vortex and target. If the landing
-## is not on the ground, the offset turns ±45°, ±90°, ±135° and 180° in that order (one side, then the
-## other). With no good
-## landing the vortex hangs at half the distance and the doctor lands on the target.
-## `on_ground` is a Callable(Vector3) -> bool. Positions come back at the height of `target`.
-## `beyond`: the vortex hangs past the target as seen from the
-## caster instead of on the caster's side.
-## Returns {"vortex": Vector3, "landing": Vector3, "step": int (-1 = fallback), "side": int}.
+## Where the vortex hangs and the doctor lands for a Desecrate: the vortex hangs `distance` from the
+## target, on the wizard's side (the offset points from the target back toward the caster); the
+## doctor lands halfway between vortex and target. If the landing is not on the ground, the offset
+## turns ±45°, ±90°, ±135° and 180° in that order (one side, then the other). With no good landing
+## the vortex hangs at half the distance and the doctor lands on the target. `on_ground` is a
+## Callable(Vector3) -> bool. Positions come back at the height of `target`. `beyond`: the vortex
+## hangs past the target as seen from the caster instead of on the caster's side. Returns {"vortex":
+## Vector3, "landing": Vector3, "step": int (-1 = fallback), "side": int}.
 static func drop_positions(
 	target: Vector3, caster: Vector3, distance: float, on_ground: Callable, beyond := false
 ) -> Dictionary:
@@ -38,9 +36,9 @@ static func drop_positions(
 # --- The ritual ---
 
 
-## Ring position for the k-th doctor (`index` may pass 3: round r
-## starts one quarter turn further). `progress` 0..1 is how far
-## into the walk phase it is. The radius is 20 m, shrinking by `shrink` in the last fifth of the walk.
+## Ring position for the k-th doctor (`index` may pass 3: round r starts one quarter turn further).
+## `progress` 0..1 is how far into the walk phase it is. The radius is 20 m, shrinking by `shrink`
+## in the last fifth of the walk.
 static func ring_point(
 	center: Vector3, index: int, progress: float, radius := 20.0, shrink := 3.0
 ) -> Vector3:
@@ -74,8 +72,9 @@ static func convert_rounds(max_health: float, per_round := 550.0) -> int:
 	return int(max_health / per_round) + 1
 
 
-## Where in the schedule `time_s` seconds after the ritual started falls: {"phase": &"setup"|&"walk"|
-## &"shoot"|&"wait", "round": int, "t": seconds into that phase}. Pure, for the suite.
+## Where in the schedule `time_s` seconds after the ritual started falls: {"phase":
+## &"setup"|&"walk"| &"shoot"|&"wait", "round": int, "t": seconds into that phase}. Pure, for the
+## suite.
 static func schedule(
 	time_s: float, setup_s := 5.0, walk_s := 4.5, shoot_s := 4.5, wait_s := 4.5
 ) -> Dictionary:

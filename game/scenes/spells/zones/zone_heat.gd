@@ -1,19 +1,23 @@
 class_name ZoneHeat
 extends Node
 
-## A ring of heat around a zone: while the zone acts, every body between `full_m` and `reach_m` of its center is hurt at a rate that
-## falls from full to nothing across the ring, and every creature there is set alight (the look of burning) and pushed away from the
-## center, a little more the closer it is. One tick at a time, server (or solo) only. The same node does the volcano's burn (hurts,
-## lights and pushes along the ground) and its slow push (pushes only). It does not time the zone (GroundZone) nor draw the fire (Burning).
+## A ring of heat around a zone: while the zone acts, every body between `full_m` and `reach_m` of
+## its center is hurt at a rate that falls from full to nothing across the ring, and every creature
+## there is set alight (the look of burning) and pushed away from the center, a little more the
+## closer it is. One tick at a time, server (or solo) only. The same node does the volcano's burn
+## (hurts, lights and pushes along the ground) and its slow push (pushes only). It does not time the
+## zone (GroundZone) nor draw the fire (Burning).
 
 @export var zone: GroundZone
-## Between the center and `full_m` the effect is at full strength; it falls to nothing at `reach_m` (flat distance).
+## Between the center and `full_m` the effect is at full strength; it falls to nothing at `reach_m`
+## (flat distance).
 @export_range(0.0, 200.0, 0.5, "suffix:m") var full_m := 20.0
 @export_range(1.0, 200.0, 0.5, "suffix:m") var reach_m := 50.0
 @export_group("Hurt")
 ## Damage per second at full strength, as a share of the spell's damage (0 = it does not hurt).
 @export_range(0.0, 4.0, 0.01) var damage_share := 0.0
-## The fire a creature keeps (no damage: it is the look), and the sprite it puffs. 0 = it does not light anyone.
+## The fire a creature keeps (no damage: it is the look), and the sprite it puffs. 0 = it does not
+## light anyone.
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var burn_s := 0.0
 @export var burn_look: ParticleType
 @export_group("Push")
@@ -66,7 +70,8 @@ func _physics_process(_delta: float) -> void:
 				BodyNudge.push(body, away.normalized() * push_m_s * strength)
 
 
-## A fire of no damage (the look of burning) that is renewed when it runs out, never one on top of another.
+## A fire of no damage (the look of burning) that is renewed when it runs out, never one on top of
+## another.
 func _ignite(body: Node3D) -> void:
 	var id := body.get_instance_id()
 	var burn_ticks := MatchClock.ticks_for(burn_s)

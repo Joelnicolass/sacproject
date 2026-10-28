@@ -1,10 +1,11 @@
 extends ErrandStep
 
-## The doctor walks to the ritual site with the creature hanging behind it (Captive follows it).
-## If the creature is gone or the site fell, the doctor dies; on the ground and closer than `carrier_stop_m` of SacrificeFacts (3D) it
-## stops and says `reached_site`. From then on it waits holding the creature: the ritual starts from that signal (and takes the errand
-## over); until then, and while the site is busy, the carrier stays. If the doctor dies here the creature is let go: alive, its
-## original owner's, falling to the ground.
+## The doctor walks to the ritual site with the creature hanging behind it (Captive follows it). If
+## the creature is gone or the site fell, the doctor dies; on the ground and closer than
+## `carrier_stop_m` of SacrificeFacts (3D) it stops and says `reached_site`. From then on it waits
+## holding the creature: the ritual starts from that signal (and takes the errand over); until then,
+## and while the site is busy, the carrier stays. If the doctor dies here the creature is let go:
+## alive, its original owner's, falling to the ground.
 
 
 func physics_update(_delta: float) -> void:

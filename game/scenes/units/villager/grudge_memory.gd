@@ -1,12 +1,11 @@
 class_name GrudgeMemory
 extends Node
 
-## The grudges of a peasant.
-## The first hit that takes health from a full bar writes the side of the
-## attacker into the mask; a peasant flees from every side in its mask as if it were an enemy. The herd
-## shares it: every `herd_interval_s` the peasant takes the mask of each member of its own side within
-## `herd_range` that costs the same mana (all the Farmers do), so a grudge reaches the others within a
-## second. Server or solo only; the mask is not replicated (the clients only draw).
+## The grudges of a peasant. The first hit that takes health from a full bar writes the side of the
+## attacker into the mask; a peasant flees from every side in its mask as if it were an enemy. The
+## herd shares it: every `herd_interval_s` the peasant takes the mask of each member of its own side
+## within `herd_range` that costs the same mana (all the Farmers do), so a grudge reaches the others
+## within a second. Server or solo only; the mask is not replicated (the clients only draw).
 
 signal grudge_added(slot: int)
 

@@ -2,13 +2,13 @@
 class_name ActorLightBudget
 extends LookLayer
 
-## Actor-lights layer of the rig: a map can hold hundreds of `ActorLight`s (every unit, wizard and spell) but only
-## `LookQuality.actor_max_lights` of them are on. Every `refresh_s` it ranks the lights by
-## `priority / max(distance to the camera, min_distance_m)` and turns the best ones on. A light that is on keeps its place
-## unless another beats it by `hysteresis` (no flicker between two almost equal lights). Lights past their own fade
-## distance and lights whose owner is gone (`lit` false) never take a place.
-## Classic mode (null profile), a hidden layer and a cap of 0 leave every light off. Presentation only: freed with the rig
-## in a headless or dedicated process.
+## Actor-lights layer of the rig: a map can hold hundreds of `ActorLight`s (every unit, wizard and
+## spell) but only `LookQuality.actor_max_lights` of them are on. Every `refresh_s` it ranks the
+## lights by `priority / max(distance to the camera, min_distance_m)` and turns the best ones on. A
+## light that is on keeps its place unless another beats it by `hysteresis` (no flicker between two
+## almost equal lights). Lights past their own fade distance and lights whose owner is gone (`lit`
+## false) never take a place. Classic mode (null profile), a hidden layer and a cap of 0 leave every
+## light off. Presentation only: freed with the rig in a headless or dedicated process.
 
 const GROUP := &"actor_light_budget"
 
@@ -20,7 +20,8 @@ const GROUP := &"actor_light_budget"
 ## Closer than this to the camera counts as this distance in the score (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_distance_m: float = 4.0
 
-## The atmosphere whose `night` dims the lights (0 = day, 1 = full night); empty = they keep their energy.
+## The atmosphere whose `night` dims the lights (0 = day, 1 = full night); empty = they keep their
+## energy.
 @export var atmosphere: Atmosphere
 
 var _max_lights := -1

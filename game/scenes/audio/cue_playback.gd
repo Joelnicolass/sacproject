@@ -1,9 +1,10 @@
 class_name CuePlayback
 extends RefCounted
 
-## How one cue plays: whether it may play now (silent, too soon after its last play, too many at once), which of its variants
-## and what pitch, and how a player is set up for it. It has its own random generator and clock: never randf()/randi() nor an
-## AudioStreamRandomizer, which draw from the global generator that MatchSeed seeds for the simulation. It starts nothing.
+## How one cue plays: whether it may play now (silent, too soon after its last play, too many at
+## once), which of its variants and what pitch, and how a player is set up for it. It has its own
+## random generator and clock: never randf()/randi() nor an AudioStreamRandomizer, which draw from
+## the global generator that MatchSeed seeds for the simulation. It starts nothing.
 
 ## Game time in seconds; the owner advances it, so cooldowns follow --fixed-fps and a paused match.
 var clock := 0.0
@@ -17,8 +18,8 @@ func reseed(value: int) -> void:
 	_rng.seed = value
 
 
-## Why `cue` may not play now (&"silent", &"cooldown", &"max_voices"), or &"" when it may. `active` is how many of its
-## voices play; a negative one skips that limit.
+## Why `cue` may not play now (&"silent", &"cooldown", &"max_voices"), or &"" when it may. `active`
+## is how many of its voices play; a negative one skips that limit.
 func refusal(cue: SoundCue, active := -1, with_cooldown := true) -> StringName:
 	if cue.is_silent():
 		return &"silent"

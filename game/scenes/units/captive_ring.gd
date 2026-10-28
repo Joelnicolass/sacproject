@@ -2,10 +2,11 @@
 class_name CaptiveRing
 extends Node
 
-## The ring drawn around a creature while a Sac Doctor holds it (UnitBody.mode HELD), centred on the body's `Center`
-## (`mount.facts.center`). Local presentation on every peer, drawn from replicated state only: the server never creates it,
-## and neither does the dedicated server (no meshes). It changes no simulation. Remove the node and the creature is held without a ring.
-## The radii are 0.65 * (1.1, 0.9) * the diagonal of the creature's box.
+## The ring drawn around a creature while a Sac Doctor holds it (UnitBody.mode HELD), centred on the
+## body's `Center` (`mount.facts.center`). Local presentation on every peer, drawn from replicated
+## state only: the server never creates it, and neither does the dedicated server (no meshes). It
+## changes no simulation. Remove the node and the creature is held without a ring. The radii are
+## 0.65 * (1.1, 0.9) * the diagonal of the creature's box.
 
 ## The creature that wears the ring.
 @export var body: UnitBody
@@ -38,7 +39,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## The ring while the creature is held (and closing), or null outside HELD and on the dedicated server.
+## The ring while the creature is held (and closing), or null outside HELD and on the dedicated
+## server.
 func ring() -> Node3D:
 	if _portal == null or not is_instance_valid(_portal) or _portal.is_closing():
 		return null

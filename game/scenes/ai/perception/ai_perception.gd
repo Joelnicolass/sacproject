@@ -17,8 +17,8 @@ signal untracked(track: AiTrack)
 ## The Desecrate reach when the match has no rules (MatchRules.desecrate_altar_range).
 const DESECRATE_RANGE_FALLBACK := 75.0
 
-## The passive that makes a creature a Manahoar for the AI (data/catalog/abilities/manahoar_channelling.tres, the
-## Manahoar's `on_damage`).
+## The passive that makes a creature a Manahoar for the AI
+## (data/catalog/abilities/manahoar_channelling.tres, the Manahoar's `on_damage`).
 @export var mana_source: AbilityType
 @export var intake: AiSightIntake
 @export var belief: AiBelief

@@ -2,11 +2,13 @@
 class_name SprayMarks
 extends Node
 
-## A creature that bursts leaves a pool of blood: when one of `sprays` plays (the gib's spray, on every peer), `marks` marks of
-## `blood.mark` are painted on the ground within `radius_m` of it. One per match, next to DamageNumbers.
-## The marks are drawn from the match seed and the burst's place, so every peer paints the same pool.
+## A creature that bursts leaves a pool of blood: when one of `sprays` plays (the gib's spray, on
+## every peer), `marks` marks of `blood.mark` are painted on the ground within `radius_m` of it. One
+## per match, next to DamageNumbers. The marks are drawn from the match seed and the burst's place,
+## so every peer paints the same pool.
 ## Presentation only: nothing headless (the dedicated server), never a write to the simulation.
-## What it does not do: decide who bursts (Gib), throw the spray (FxBus) or own the marks (GroundScars).
+## What it does not do: decide who bursts (Gib), throw the spray (FxBus) or own the marks
+## (GroundScars).
 
 ## The bursts that leave a pool (data/fx/blood.tres).
 @export var sprays: Array[ParticleType] = []
@@ -22,7 +24,8 @@ extends Node
 		update_configuration_warnings()
 @export_range(0, 64) var marks := 12
 @export_range(0.0, 20.0, 0.1, "suffix:m") var radius_m := 4.0
-## No mark when the ground is this far under the burst (it bursts at the body's center, over a hole it paints nothing).
+## No mark when the ground is this far under the burst (it bursts at the body's center, over a hole
+## it paints nothing).
 @export_range(0.0, 20.0, 0.1, "suffix:m") var max_height_m := 4.0
 
 ## How many marks were painted (the checks read it).

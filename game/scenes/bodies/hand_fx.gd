@@ -1,10 +1,12 @@
 class_name HandFx
 extends Node
 
-## The casting particle of a wizard, played at its hands while it casts. The hand points come from the BodyRig: the sockets of the
-## model (HandL, HandR: BoneAttachment3D nodes placed in the editor) that the clip shows. A body with none gets the burst at its Center.
-## The Caster says which particle shows (`cast_changed`, from its replicated `cast_fx_shown`); this node only draws it, on every peer. It is
-## presentation: nothing here reads or writes the simulation, and a dedicated server (no meshes) plays nothing.
+## The casting particle of a wizard, played at its hands while it casts. The hand points come from
+## the BodyRig: the sockets of the model (HandL, HandR: BoneAttachment3D nodes placed in the editor)
+## that the clip shows. A body with none gets the burst at its Center. The Caster says which
+## particle shows (`cast_changed`, from its replicated `cast_fx_shown`); this node only draws it, on
+## every peer. It is presentation: nothing here reads or writes the simulation, and a dedicated
+## server (no meshes) plays nothing.
 
 ## Emits `cast_changed(casting, fx)`; `cast_fx()` is the particle showing now.
 @export var caster: Caster
@@ -47,8 +49,9 @@ func _on_cast_changed(_casting: bool, fx: ParticleType) -> void:
 	set_process(fx != null)
 
 
-## true when something played. A skeletal wizard whose spellcast pose has not arrived yet (the body is still blending in from
-## the rest pose, which has no hands) waits for it instead of playing at the center.
+## true when something played. A skeletal wizard whose spellcast pose has not arrived yet (the body
+## is still blending in from the rest pose, which has no hands) waits for it instead of playing at
+## the center.
 func _burst() -> bool:
 	var points := rig.hand_points() if rig != null else PackedVector3Array()
 	if points.is_empty():

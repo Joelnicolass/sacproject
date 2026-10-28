@@ -1,10 +1,11 @@
 class_name WallLightFollow
 extends Node
 
-## Keeps the one light of a wall (a StateLight, the spell's colour) where it is seen: a wall is up to 110 m long and a light has a short
-## range, so it stands at the point of the wall closest to the listener (or, for the Fence, at the post closest to him), half way up,
-## lit while the wall stands and fading out when it sinks. The budget decides whether it shows (ActorLightBudget). Presentation only, on every
-## peer; it does not draw the wall (the look) nor hurt anybody.
+## Keeps the one light of a wall (a StateLight, the spell's colour) where it is seen: a wall is up
+## to 110 m long and a light has a short range, so it stands at the point of the wall closest to the
+## listener (or, for the Fence, at the post closest to him), half way up, lit while the wall stands
+## and fading out when it sinks. The budget decides whether it shows (ActorLightBudget).
+## Presentation only, on every peer; it does not draw the wall (the look) nor hurt anybody.
 
 @export var wall: SpellWall
 @export var light: StateLight

@@ -2,12 +2,14 @@
 class_name EnvironmentLayer
 extends LookLayer
 
-## Environment layer of the rig: the only writer of the map's Environment and of its sky. From the profile it draws the
-## sky, the ambient light and reflections, the fog (and the `fx_fog_*` globals the additive sprites fade with, through
-## LookGlobals), tonemapper, exposure, screen-space light and glow; the atmosphere's sample (night, weather) bends the
-## ambient, the fog and the sky. It works on private copies of the shared `env_base.tres` and of the SkyLook's material
-## and recomputes all of it from (profile, quality preset, visible, sample) every time: nothing is saved or restored.
-## Hidden or without a profile it shows the base as it is. Presentation only: freed in a headless or dedicated process.
+## Environment layer of the rig: the only writer of the map's Environment and of its sky. From the
+## profile it draws the sky, the ambient light and reflections, the fog (and the `fx_fog_*` globals
+## the additive sprites fade with, through LookGlobals), tonemapper, exposure, screen-space light
+## and glow; the atmosphere's sample (night, weather) bends the ambient, the fog and the sky. It
+## works on private copies of the shared `env_base.tres` and of the SkyLook's material and
+## recomputes all of it from (profile, quality preset, visible, sample) every time: nothing is saved
+## or restored. Hidden or without a profile it shows the base as it is. Presentation only: freed in
+## a headless or dedicated process.
 
 @export var world_environment: WorldEnvironment
 ## The rig's atmosphere layer. Empty = always the approved look.
@@ -54,7 +56,8 @@ func _notification(what: int) -> void:
 		_refresh()
 
 
-## Editing a SkyLook (or its material), LightLook or GlowLook in the inspector refreshes the preview.
+## Editing a SkyLook (or its material), LightLook or GlowLook in the inspector refreshes the
+## preview.
 func _watch_parts() -> void:
 	for resource in _watched:
 		if is_instance_valid(resource) and resource.changed.is_connected(_refresh):
@@ -100,7 +103,8 @@ func _on_atmosphere_changed(_sample: AtmosphereSample) -> void:
 		_write_atmosphere(false)
 
 
-## The parts the atmosphere bends: fog and light every time; the sky at most `atmosphere.sky_hz` (its cubemap re-bakes).
+## The parts the atmosphere bends: fog and light every time; the sky at most `atmosphere.sky_hz`
+## (its cubemap re-bakes).
 func _write_atmosphere(force_sky: bool) -> void:
 	var sample := atmosphere.current() if atmosphere else AtmosphereSample.neutral()
 	_write_fog(_profile.sky, sample)
@@ -119,7 +123,8 @@ func _write_atmosphere(force_sky: bool) -> void:
 func _write_sky(look: SkyLook) -> void:
 	if _sky == null:
 		_sky = Sky.new()
-		_sky.process_mode = Sky.PROCESS_MODE_QUALITY  # the shader reads TIME: Automatic would rebake the cubemap every frame
+		# the shader reads TIME: Automatic would rebake the cubemap every frame
+		_sky.process_mode = Sky.PROCESS_MODE_QUALITY
 	_sky.radiance_size = look.radiance_size
 	_env.background_mode = Environment.BG_SKY
 	_env.sky = _sky
@@ -152,7 +157,8 @@ func _write_fog(look: SkyLook, sample: AtmosphereSample) -> void:
 
 func _write_light(look: LightLook, sample: AtmosphereSample) -> void:
 	_env.ambient_light_color = look.ambient_color * sample.ambient_tint
-	_env.ambient_light_energy = look.ambient_energy * sample.ambient_energy * (1.0 + sample.flash)  # a storm flash lights it
+	# a storm flash lights it
+	_env.ambient_light_energy = look.ambient_energy * sample.ambient_energy * (1.0 + sample.flash)
 	_env.tonemap_mode = look.tonemap_mode
 	_env.tonemap_exposure = look.tonemap_exposure
 	_env.tonemap_white = look.tonemap_white
@@ -178,6 +184,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 				[]
 				if atmosphere
 				else [
+					# gdlint: ignore=max-line-length
 					"Without the Atmosphere socket the environment follows neither the hour nor the weather."
 				]
 			)

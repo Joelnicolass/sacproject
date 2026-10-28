@@ -1,12 +1,14 @@
 class_name RagdollBaker
 extends RefCounted
 
-## Gives a model scene the physical skeleton its body falls and hangs with: a `PhysicalBoneSimulator3D` "Ragdoll" under the model's
-## Skeleton3D (the bodies come from RagdollBones), and the two exports of the root, `ragdoll` and `hang_bone` (the body without a
-## joint, the one a carrier holds the creature by). Does NOT run in a match; the simulator stays disabled until RagdollDriver wakes it.
-## With `variant_b` it also adds `Ragdoll/Hook` (a body that follows the carrier, no shape, no layers) and `Hook/Pin` (a joint with
-## every axis locked); the driver points the Pin at the hang bone while the creature hangs.
-## An edit made by hand inside "Ragdoll" survives: `add_to` is for a model without one, `complete` only fills what is missing.
+## Gives a model scene the physical skeleton its body falls and hangs with: a
+## `PhysicalBoneSimulator3D` "Ragdoll" under the model's Skeleton3D (the bodies come from
+## RagdollBones), and the two exports of the root, `ragdoll` and `hang_bone` (the body without a
+## joint, the one a carrier holds the creature by). Does NOT run in a match; the simulator stays
+## disabled until RagdollDriver wakes it. With `variant_b` it also adds `Ragdoll/Hook` (a body that
+## follows the carrier, no shape, no layers) and `Hook/Pin` (a joint with every axis locked); the
+## driver points the Pin at the hang bone while the creature hangs. An edit made by hand inside
+## "Ragdoll" survives: `add_to` is for a model without one, `complete` only fills what is missing.
 
 const SIMULATOR_NAME := "Ragdoll"
 const HOOK_NAME := "Hook"
@@ -17,8 +19,8 @@ static func has_ragdoll(root: Node) -> bool:
 	return _simulator(root) != null
 
 
-## Bakes a fresh "Ragdoll" (the old one, if any, is replaced) and sets the exports. Returns how many bodies it has, -1 when the
-## model has no skeleton.
+## Bakes a fresh "Ragdoll" (the old one, if any, is replaced) and sets the exports. Returns how many
+## bodies it has, -1 when the model has no skeleton.
 static func add_to(root: Node, variant_b := false) -> int:
 	var skeleton := _skeleton(root)
 	if skeleton == null:
@@ -40,8 +42,8 @@ static func add_to(root: Node, variant_b := false) -> int:
 	return count
 
 
-## Sets what the root misses (the exports, and the hook with `variant_b`) on a model that already has its "Ragdoll".
-## True when something changed.
+## Sets what the root misses (the exports, and the hook with `variant_b`) on a model that already
+## has its "Ragdoll". True when something changed.
 static func complete(root: Node, variant_b := false) -> bool:
 	var simulator := _simulator(root)
 	if simulator == null:
@@ -69,7 +71,8 @@ static func hang_bone(simulator: Node) -> PhysicalBone3D:
 	return null
 
 
-## Saves `root` to `path` and reloads it to compare every body with what was in memory. "" when it is the same, else the problem.
+## Saves `root` to `path` and reloads it to compare every body with what was in memory. "" when it
+## is the same, else the problem.
 static func save(root: Node, path: String) -> String:
 	var simulator := _simulator(root)
 	if simulator == null:
@@ -81,8 +84,9 @@ static func save(root: Node, path: String) -> String:
 	return RagdollCheck.compare(before, path)
 
 
-## The Hook follows the carrier (sync_to_physics) from the rest pose of the hang bone; the Pin holds it with every axis locked.
-## Pin.node_b stays empty: RagdollDriver sets it only while the creature hangs.
+## The Hook follows the carrier (sync_to_physics) from the rest pose of the hang bone; the Pin holds
+## it with every axis locked. Pin.node_b stays empty: RagdollDriver sets it only while the creature
+## hangs.
 static func _add_hook(root: Node, simulator: Node, hang: PhysicalBone3D) -> void:
 	var hook := AnimatableBody3D.new()
 	hook.name = HOOK_NAME
@@ -107,7 +111,8 @@ static func _add_hook(root: Node, simulator: Node, hang: PhysicalBone3D) -> void
 	root.set("hang_pin", pin)
 
 
-## A node added inside an instanced scene (the .glb) is only saved when the instance is "editable children".
+## A node added inside an instanced scene (the .glb) is only saved when the instance is "editable
+## children".
 static func _open_instances(from: Node, root: Node) -> void:
 	var node := from
 	while node != null and node != root:

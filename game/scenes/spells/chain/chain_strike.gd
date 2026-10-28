@@ -1,9 +1,10 @@
 class_name ChainStrike
 extends ChainEffect
 
-## One bolt of a chain of lightning: each jump launches a LightningStrike from the last point to the next body (or to a point on the
-## land), which hurts it with the spell's amount a few ticks later and draws the bolt on every peer. It does not choose whom (ChainHop)
-## and it does not retarget on the way: a bolt hits who the chain chose.
+## One bolt of a chain of lightning: each jump launches a LightningStrike from the last point to the
+## next body (or to a point on the land), which hurts it with the spell's amount a few ticks later
+## and draws the bolt on every peer. It does not choose whom (ChainHop) and it does not retarget on
+## the way: a bolt hits who the chain chose.
 
 ## The bolt (lightning_strike.tscn).
 @export var strike_scene: PackedScene

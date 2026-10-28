@@ -1,20 +1,20 @@
 class_name Tumbling
 extends Affliction
 
-## A body thrown through the air. The Vortick's vortex
-## and the Flurry's implosion throw it; Squall's Pushback adds to a body already thrown.
-## The throw refuses a flier in the air (it hangs, or falls with petrify) and a body that cannot be thrown (dead,
-## landing, being summoned, held by a doctor); the mode becomes stunned, so it ends a stun (the type's `cancels`).
+## A body thrown through the air. The Vortick's vortex and the Flurry's implosion throw it; Squall's
+## Pushback adds to a body already thrown. The throw refuses a flier in the air (it hangs, or falls
+## with petrify) and a body that cannot be thrown (dead, landing, being summoned, held by a doctor);
+## the mode becomes stunned, so it ends a stun (the type's `cancels`).
 ##
 ## While it lasts (the type holds the body) this state gives the body its velocity (steer): on the
-## ground and going down, vz = 0; else vz −= falling acceleration/60 unless an effect lifted it this tick;
-## then vxy ×0.99 and vz ×0.998 per tick. It lands when vz ≤ 0 and pos + vz/60 is under the ground,
-## or when it rests on a building or another body (is_on_floor after move_and_slide):
-## fall damage max(0, −vz − 3)·20 with no resistance and it lies hit_floor +
-## get_up (Stunned.fall_down; the stun cooldown is not touched).
-## A hybrid flier leaves the tumble at the top of its arc but
+## ground and going down, vz = 0; else vz −= falling acceleration/60 unless an effect lifted it this
+## tick; then vxy ×0.99 and vz ×0.998 per tick. It lands when vz ≤ 0 and pos + vz/60 is under the
+## ground, or when it rests on a building or another body (is_on_floor after move_and_slide): fall
+## damage max(0, −vz − 3)·20 with no resistance and it lies hit_floor + get_up (Stunned.fall_down;
+## the stun cooldown is not touched). A hybrid flier leaves the tumble at the top of its arc but
 ## does not take off again; it comes down with the body's own gravity.
-## Look: Tilt rolls while it flies (Tween), as Stunned does; the mesh clips tumble/falling/hit_floor are not exported.
+## Look: Tilt rolls while it flies (Tween), as Stunned does; the mesh clips tumble/falling/hit_floor
+## are not exported.
 ## WORKAROUND: Tween on Tilt rotation:z in place of the tumble mesh clip (disk, same as Stunned).
 
 ## A body within this of the ground stands on it (the capsule rests a hair above the land).
@@ -52,7 +52,8 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-## Server (or solo): sets the fall velocity `v` of a body already thrown (the pull sets it each tick of its window).
+## Server (or solo): sets the fall velocity `v` of a body already thrown (the pull sets it each tick
+## of its window).
 func drive(v: Vector3) -> void:
 	if is_on():
 		velocity = v
@@ -80,6 +81,7 @@ func catapult(push: Vector3, side: int) -> bool:
 	var box := BodyNudge.box(body)
 	print(
 		(
+			# gdlint: ignore=max-line-length
 			"tumble %s from (%.2f, %.2f, %.2f) ground %.2f v (%.3f, %.3f, %.3f) box (%.2f, %.2f, %.2f) center +%.2f (frame %d)"
 			% [
 				_body_name(),
@@ -152,7 +154,8 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 	return velocity
 
 
-## Server, after the body moved this tick (a child runs after its body): the top of the arc and the landing.
+## Server, after the body moved this tick (a child runs after its body): the top of the arc and the
+## landing.
 func _physics_process(_delta: float) -> void:
 	if not is_on():
 		set_physics_process(false)
@@ -204,6 +207,7 @@ func _land(body: Node3D, at: Vector3, on: String) -> void:
 	var flat := Vector2(at.x - _from.x, at.z - _from.z)
 	print(
 		(
+			# gdlint: ignore=max-line-length
 			"lands %s on %s at (%.2f, %.2f, %.2f) at %.2f m (dx %.2f, dz %.2f) after %d ticks, apex %.2f m, vz %.2f, fall %.1f (frame %d)"
 			% [
 				_body_name(),

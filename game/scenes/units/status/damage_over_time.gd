@@ -1,14 +1,15 @@
 class_name DamageOverTime
 extends Node
 
-## What a lasting dose of damage on a body shares (Poisoned, Burning). It updates
-## once per frame: it deals `per_second / 60` and ends **after** the update whose frame reached `lifetime`
-## (deal, then `if(frame>=lifetime) remove`, then `frame+=1`), so a dose of `lifetime`
-## frames deals lifetime + 1 times.
+## What a lasting dose of damage on a body shares (Poisoned, Burning). It updates once per frame: it
+## deals `per_second / 60` and ends **after** the update whose frame reached `lifetime` (deal, then
+## `if(frame>=lifetime) remove`, then `frame+=1`), so a dose of `lifetime` frames deals lifetime + 1
+## times.
 ##
-## Someone calls step() once per physics tick and frees the dose when step() returns false: the owner of the doses when
-## they add up (Poisoning runs the poison's in the order it keeps), or the dose itself when nothing adds up (Burning).
-## Server (or solo) only; Health is replicated, the puff goes through FxBus.
+## Someone calls step() once per physics tick and frees the dose when step() returns false: the
+## owner of the doses when they add up (Poisoning runs the poison's in the order it keeps), or the
+## dose itself when nothing adds up (Burning). Server (or solo) only; Health is replicated, the puff
+## goes through FxBus.
 
 ## Health per second and the frames it lasts; set before the owner adds it.
 var per_second := 0.0
@@ -18,14 +19,15 @@ var frame := 0
 ## Health kind (Health.DIRECT_RANGED, SPLASH_SPELL…) the damage is dealt as.
 var kind: StringName = &"splash_spell"
 var from_slot := 0
-## The creature that dealt the dose (absolute path; empty = nobody drains). Each tick it feeds LifeDrain with what the
-## dose took.
+## The creature that dealt the dose (absolute path; empty = nobody drains). Each tick it feeds
+## LifeDrain with what the dose took.
 var attacker_path := NodePath()
 ## DamageMod.ignoreFriendly: an ally takes ×1 with friendly fire on (Health._side_factor).
 var ignore_friendly := true
 ## DamageMod.pierce-shield (the Pyromaniac's fire): Health skips the body's shields and states.
 var pierce_shield := false
-## The burst puffed on the body (at `fx_socket`) every `fx_every_ticks` updates, if the dose took health since the last puff. Null = none.
+## The burst puffed on the body (at `fx_socket`) every `fx_every_ticks` updates, if the dose took
+## health since the last puff. Null = none.
 var fx: ParticleType
 var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 var fx_every_ticks := 30
@@ -52,7 +54,8 @@ func step(health: Health) -> bool:
 		LifeDrain.feed(health.get_node_or_null(attacker_path), health.get_parent(), dealt)
 	_dealt_since_fx += dealt
 	if fx_every_ticks > 0 and frame % fx_every_ticks == 0:
-		# Puff only if Health took it: a body it spares (own side with friendly fire off) must not look poisoned.
+		# Puff only if Health took it: a body it spares (own side with friendly fire off) must not
+		# look poisoned.
 		var on := health.get_parent() as Node3D
 		if _dealt_since_fx > 0.0 and fx != null and on:
 			FxBus.broadcast(fx, BodyFacts.point(on, fx_socket))

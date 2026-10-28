@@ -1,9 +1,10 @@
 class_name WizardBody
 extends GameBody
 
-## One per player slot (WizardSpawner). The server (or solo) simulates the body. The player's keys travel as the values `forward` and
-## `yaw` of the MpInput child; `mp_move` (the kit runs it on the server, on the owner and when the owner reconciles) hands them to
-## `Drive`, the one writer of the movement. An AI seat has no predict: `_physics_process` steps `Drive` with no keys.
+## One per player slot (WizardSpawner). The server (or solo) simulates the body. The player's keys
+## travel as the values `forward` and `yaw` of the MpInput child; `mp_move` (the kit runs it on the
+## server, on the owner and when the owner reconciles) hands them to `Drive`, the one writer of the
+## movement. An AI seat has no predict: `_physics_process` steps `Drive` with no keys.
 
 signal walk_changed(walking: bool)
 signal pick_changed
@@ -16,37 +17,43 @@ const GROUP := &"wizard"
 const LOCAL_GROUP := &"local_wizard"
 
 @export var step: WalkStep
-## The wizard the player picked (data/catalog/wizards/). Every peer takes it from `seat_pick` (the pick is typed on each of
-## them); a test scene without a flow sets it in its .tscn. It never looks the type up by text.
+## The wizard the player picked (data/catalog/wizards/). Every peer takes it from `seat_pick` (the
+## pick is typed on each of them); a test scene without a flow sets it in its .tscn. It never looks
+## the type up by text.
 @export var wizard_type: WizardType:
 	set(value):
 		wizard_type = value
 		_apply_type()
 		if value != null and wizard_tag != value.id():
 			wizard_tag = value.id()
-## Wears the body scene of `wizard_type` (BodyFrame): its size and sockets. It is the one place that says which body this is.
+## Wears the body scene of `wizard_type` (BodyFrame): its size and sockets. It is the one place that
+## says which body this is.
 @export var mount: BodyMount
-## What he sees (Vision): its range comes from `wizard_type.vision_m`; the side's sight is the union of these (VisionSides).
+## What he sees (Vision): its range comes from `wizard_type.vision_m`; the side's sight is the union
+## of these (VisionSides).
 @export var vision: Vision
-## The id of `wizard_type` on the network (it travels in the synchronizer). Derived from the type: set the type, not this.
+## The id of `wizard_type` on the network (it travels in the synchronizer). Derived from the type:
+## set the type, not this.
 @export var wizard_tag := "":
 	set(value):
 		wizard_tag = value
 		pick_changed.emit()
-## The model id on the network: the one of the body scene `wizard_type` wears. Derived from the type.
+## The model id on the network: the one of the body scene `wizard_type` wears. Derived from the
+## type.
 @export var model := "":
 	set(value):
 		model = value
 		pick_changed.emit()
-## The god whose book the wizard casts (data/gods/). Taken from `seat_pick` on every peer (it does not travel in the
-## synchronizer); a test scene without a flow sets it by hand.
+## The god whose book the wizard casts (data/gods/). Taken from `seat_pick` on every peer (it does
+## not travel in the synchronizer); a test scene without a flow sets it by hand.
 @export var god_type: GodType:
 	set(value):
 		if value == god_type:
 			return
 		god_type = value
 		pick_changed.emit()
-## Book of THIS wizard (a test scene, a solo game, the server). Empty: the book of `god_type`. It does not travel on the network.
+## Book of THIS wizard (a test scene, a solo game, the server). Empty: the book of `god_type`. It
+## does not travel on the network.
 @export var book: GodBook:
 	set(value):
 		if value == book:
@@ -65,8 +72,9 @@ const LOCAL_GROUP := &"local_wizard"
 ## WizardSpawner fills them from MatchRules (wizard_level_stats); 0 keeps the WIZD numbers.
 @export var level_health_bonus := 0.0
 @export var level_mana_bonus := 0.0
-## The pick of this wizard's seat (wizard and god). WizardSpawner sets it on every peer when the wizard spawns and when the
-## picks change; the body wears it once it is ready. Null (a test scene): the types of the .tscn stay.
+## The pick of this wizard's seat (wizard and god). WizardSpawner sets it on every peer when the
+## wizard spawns and when the picks change; the body wears it once it is ready. Null (a test scene):
+## the types of the .tscn stay.
 var seat_pick: WizardPick:
 	set(value):
 		seat_pick = value
@@ -79,7 +87,8 @@ var seat_pick: WizardPick:
 @export var regen_pause_s := 0.5
 
 const TURN_RATE := PI
-## The yaw is sent again when the camera turned this much (radians, about 0.25 degrees): a value per frame would cost three times the bytes.
+## The yaw is sent again when the camera turned this much (radians, about 0.25 degrees): a value per
+## frame would cost three times the bytes.
 const YAW_STEP := 0.0044
 ## 1 rest loop in GESTURE_EVERY ends in the idle0 gesture, like the units.
 const GESTURE_EVERY := 5
@@ -107,7 +116,8 @@ var _clip_flat_speed := 0.0
 @onready var souls: SoulPurse = $SoulPurse
 @onready var ghost: GhostForm = $GhostForm
 @onready var _clip_pose: ClipPlayback = $ClipPose
-## The cast in progress as every peer sees it (`is_casting()` reads the replicated `cast_fx_shown` on a client), so the pose follows it.
+## The cast in progress as every peer sees it (`is_casting()` reads the replicated `cast_fx_shown`
+## on a client), so the pose follows it.
 @onready var _caster: Caster = $Caster
 ## The one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
@@ -123,7 +133,8 @@ func _ready() -> void:
 	_refresh_owner()
 	floor_snap_length = 0.5
 	look_yaw = rotation.y
-	# A body placed in a scene (a test scene) has the slot here and not in its MpActor: the keys are read where the owner is.
+	# A body placed in a scene (a test scene) has the slot here and not in its MpActor: the keys are
+	# read where the owner is.
 	if _net.owner_slot != owner_slot:
 		_net.owner_slot = owner_slot
 	_wear_body()
@@ -203,8 +214,8 @@ func _refresh_owner() -> void:
 		remove_from_group(LOCAL_GROUP)
 
 
-## Wears `seat_pick`: the wizard and god types on every peer. The one who simulates also writes the replicated `model`;
-## a client gets it (and `wizard_tag`) from the server by replication.
+## Wears `seat_pick`: the wizard and god types on every peer. The one who simulates also writes the
+## replicated `model`; a client gets it (and `wizard_tag`) from the server by replication.
 func _wear_pick() -> void:
 	var chosen := seat_pick
 	var complete := chosen != null and chosen.is_complete()
@@ -247,7 +258,8 @@ func _wear_body() -> void:
 		mount.wear(wizard_type.body)
 
 
-## How far the soles of the feet are below the origin of the body (the Feet marker of its body scene).
+## How far the soles of the feet are below the origin of the body (the Feet marker of its body
+## scene).
 func feet_drop() -> float:
 	return mount.facts.feet.y
 
@@ -259,7 +271,8 @@ func _process(delta: float) -> void:
 		_send_keys()
 
 
-## The owner's keys, as the values of its MpInput (they travel exactly): the stride every frame, the heading when it changed.
+## The owner's keys, as the values of its MpInput (they travel exactly): the stride every frame, the
+## heading when it changed.
 func _send_keys() -> void:
 	_keys.set_value(&"forward", _read_forward())
 	if is_nan(_sent_yaw) or absf(angle_difference(_sent_yaw, look_yaw)) > YAW_STEP:
@@ -279,7 +292,8 @@ func _read_forward() -> float:
 	return clampf(forward, -1.0, 1.0)
 
 
-## The kit's movement hook: the server runs it for each frame of the owner's keys, the owner right away and again when it reconciles.
+## The kit's movement hook: the server runs it for each frame of the owner's keys, the owner right
+## away and again when it reconciles.
 func mp_move(keys: MpInput, delta: float) -> void:
 	# A test scene that freezes the body (set_physics_process(false)) freezes it here too.
 	if is_physics_processing():
@@ -293,8 +307,8 @@ func request_walk(goal: Vector3) -> void:
 	walk_to(goal)
 
 
-## An order-level walk by the waypoints of the PathFollower child. request_walk and the server side of
-## submit_walk call this.
+## An order-level walk by the waypoints of the PathFollower child. request_walk and the server side
+## of submit_walk call this.
 func walk_to(goal: Vector3) -> void:
 	_follower.go_to(goal)
 
@@ -303,8 +317,9 @@ func is_walking() -> bool:
 	return drive.walking
 
 
-## The player's link dropped. The wizard keeps its place, health and creatures but takes no step: the kit
-## simulates the seat with no keys held, and no walk order goes on without a player. It answers to the player again when he comes back.
+## The player's link dropped. The wizard keeps its place, health and creatures but takes no step:
+## the kit simulates the seat with no keys held, and no walk order goes on without a player. It
+## answers to the player again when he comes back.
 func stand_still() -> void:
 	drive.cancel_orders()
 
@@ -323,8 +338,8 @@ func warp_to(point: Vector3) -> void:
 	_announce_jump()
 
 
-## Tells the clients the body jumped, so their copy of it jumps too instead of sliding there. On a client the pose is
-## drawn by the MpActor child; this body never writes it there.
+## Tells the clients the body jumped, so their copy of it jumps too instead of sliding there. On a
+## client the pose is drawn by the MpActor child; this body never writes it there.
 func _announce_jump() -> void:
 	_warp_snap.announce()
 
@@ -342,8 +357,9 @@ func _should_simulate() -> bool:
 	return MpKit.is_server()
 
 
-## The seating is not over: the body waits on the air for the land under it (Drive does not step meanwhile).
-## The tick that finds the land seats and nothing else (as before the kit stepped him): Drive comes after this body in the same tick.
+## The seating is not over: the body waits on the air for the land under it (Drive does not step
+## meanwhile). The tick that finds the land seats and nothing else (as before the kit stepped him):
+## Drive comes after this body in the same tick.
 func is_seating() -> bool:
 	return _seat_left > 0 or _seated_frame == Engine.get_physics_frames()
 
@@ -367,14 +383,16 @@ func _physics_process(delta: float) -> void:
 	if _seat_left > 0:
 		_seat()
 		return
-	# A seat that predicts is stepped by the kit (mp_move), with its player's keys or with none; an AI seat is stepped here.
+	# A seat that predicts is stepped by the kit (mp_move), with its player's keys or with none; an
+	# AI seat is stepped here.
 	if not _net.predict:
 		drive.step(null, delta)
 	_since_damage += delta
 	_regenerate(delta)
 
 
-## Server or solo: the step ended. A client (the owner predicts, and replays) draws its pose from `_present_pose`.
+## Server or solo: the step ended. A client (the owner predicts, and replays) draws its pose from
+## `_present_pose`.
 func _on_moved() -> void:
 	if _should_simulate():
 		_update_clip_state(Vector2(velocity.x, velocity.z).length())
@@ -465,7 +483,8 @@ func _update_clip_state(flat_speed: float) -> void:
 		_clip_pose.play(held_role)
 		return
 	var moving := flat_speed > 0.1 and ghost.can_move()
-	# The spellcast loop while the Caster casts (the server says so, it is replicated), standing or walking.
+	# The spellcast loop while the Caster casts (the server says so, it is replicated), standing or
+	# walking.
 	if _caster.is_casting():
 		_gesturing = false
 		_clip_pose.play("cast_run" if moving else "cast")
@@ -478,8 +497,8 @@ func _update_clip_state(flat_speed: float) -> void:
 	_clip_pose.play("run" if moving else "idle")
 
 
-## A rest loop ended: a gesture is rolled after each stance loop, (hash(name) + loops) % 5, the same on every peer
-## and every run. The gesture ends and the body goes back to the rest pose.
+## A rest loop ended: a gesture is rolled after each stance loop, (hash(name) + loops) % 5, the same
+## on every peer and every run. The gesture ends and the body goes back to the rest pose.
 func _on_clip_looped(role: String) -> void:
 	if role != "idle" and role != "gesture":
 		return

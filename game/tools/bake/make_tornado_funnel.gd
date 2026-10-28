@@ -1,15 +1,18 @@
 extends SceneTree
 
-## Writes the Tornado's two meshes: funnel_rings.res (the wall: 128 rings of 64 sides, UV = (around, t along one half of the axis)) and
-## funnel_edge.res (the ragged edge: 4 vertices per ring, UV2.x = which of the four, UV.x = the left or right of a frame, UV.y = t, COLOR.a
-## 0 for the first ring). They hold topology only: TornadoLook gives the shader the seven points of the axis and their radii, and it puts
-## every vertex in place. It needs no original game. Run it once; the result is versioned and the scene only holds the files.
+## Writes the Tornado's two meshes: funnel_rings.res (the wall: 128 rings of 64 sides, UV = (around,
+## t along one half of the axis)) and funnel_edge.res (the ragged edge: 4 vertices per ring, UV2.x =
+## which of the four, UV.x = the left or right of a frame, UV.y = t, COLOR.a 0 for the first ring).
+## They hold topology only: TornadoLook gives the shader the seven points of the axis and their
+## radii, and it puts every vertex in place. It needs no original game. Run it once; the result is
+## versioned and the scene only holds the files.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_tornado_funnel.gd
 
 const DIR := "res://scenes/spells/tornado/"
 const RINGS := 128
 const SIDES := 64
-## The shader moves the vertices far from here: the box says where the funnel can be (500 m up, 350 m to each side).
+## The shader moves the vertices far from here: the box says where the funnel can be (500 m up, 350
+## m to each side).
 const BOUNDS := AABB(Vector3(-400.0, -50.0, -400.0), Vector3(800.0, 600.0, 800.0))
 
 

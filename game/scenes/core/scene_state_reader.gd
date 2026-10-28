@@ -1,14 +1,18 @@
 class_name SceneStateReader
 extends RefCounted
 
-## Reads the nodes a saved scene keeps (its paths, properties, shapes and marker positions) from its SceneState, so a rule can ask
-## "how wide is this ring" without instantiating the scene: an instanced Area3D registers a physics object, even outside the tree,
-## and that alone moves the simulation. The scene keeps 32-bit numbers; `mm` decodes a measure to the double the rules always read.
-## What it does not do: decide which facts a scene means (BodyFacts, SacrificeFacts) or cache anything.
+## Reads the nodes a saved scene keeps (its paths, properties, shapes and marker positions) from its
+## SceneState, so a rule can ask "how wide is this ring" without instantiating the scene: an
+## instanced Area3D registers a physics object, even outside the tree, and that alone moves the
+## simulation. The scene keeps 32-bit numbers; `mm` decodes a measure to the double the rules always
+## read.
+## What it does not do: decide which facts a scene means (BodyFacts, SacrificeFacts) or cache
+## anything.
 
 
-## Every node the scene saves, by path ("." is the root, "Ritual/Bounds/Ring" a descendant), each with its saved properties by name.
-## An inherited scene reads its base first: the properties it overrides replace the base ones, the rest are kept.
+## Every node the scene saves, by path ("." is the root, "Ritual/Bounds/Ring" a descendant), each
+## with its saved properties by name. An inherited scene reads its base first: the properties it
+## overrides replace the base ones, the rest are kept.
 static func nodes_of(state: SceneState) -> Dictionary:
 	var nodes := {}
 	var base := state.get_base_scene_state()
@@ -34,7 +38,8 @@ static func shape(nodes: Dictionary, root: Dictionary, prop: String) -> Shape3D:
 	return props.get("shape") as Shape3D
 
 
-## The local position of the Marker3D the root's `prop` points at (zero when it is not saved or has no transform).
+## The local position of the Marker3D the root's `prop` points at (zero when it is not saved or has
+## no transform).
 static func marker(nodes: Dictionary, root: Dictionary, prop: String) -> Vector3:
 	if not root.has(prop):
 		return Vector3.ZERO
@@ -43,7 +48,8 @@ static func marker(nodes: Dictionary, root: Dictionary, prop: String) -> Vector3
 	return (xform as Transform3D).origin if xform is Transform3D else Vector3.ZERO
 
 
-## The radius of the sphere or cylinder the root's `prop` points at, in mm; `fallback` when the scene does not save it.
+## The radius of the sphere or cylinder the root's `prop` points at, in mm; `fallback` when the
+## scene does not save it.
 static func radius(nodes: Dictionary, root: Dictionary, prop: String, fallback: float) -> float:
 	var found := shape(nodes, root, prop)
 	if found is SphereShape3D:
@@ -53,8 +59,8 @@ static func radius(nodes: Dictionary, root: Dictionary, prop: String, fallback: 
 	return fallback
 
 
-## Half the height of the cylinder the root's `prop` points at (how far it reaches up and down from its centre), in mm; `fallback`
-## when the scene does not save a cylinder.
+## Half the height of the cylinder the root's `prop` points at (how far it reaches up and down from
+## its centre), in mm; `fallback` when the scene does not save a cylinder.
 static func half_height(
 	nodes: Dictionary, root: Dictionary, prop: String, fallback: float
 ) -> float:
@@ -64,7 +70,8 @@ static func half_height(
 	return fallback
 
 
-## The scene instanced at the node the root's `prop` points at (a child saved as an instance of another scene), or null.
+## The scene instanced at the node the root's `prop` points at (a child saved as an instance of
+## another scene), or null.
 static func instance(state: SceneState, root: Dictionary, prop: String) -> PackedScene:
 	if not root.has(prop):
 		return null

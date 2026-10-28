@@ -1,6 +1,7 @@
 extends RitualStep
 
-## The doctors let go and rest (rules.ritual_wait_s, 4.5 s); then the next round starts a quarter turn on.
+## The doctors let go and rest (rules.ritual_wait_s, 4.5 s); then the next round starts a quarter
+## turn on.
 
 
 func enter() -> void:

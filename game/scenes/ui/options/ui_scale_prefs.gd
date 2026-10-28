@@ -2,10 +2,12 @@
 class_name UiScalePrefs
 extends Resource
 
-## The player's choice of interface size, saved in `user://settings.cfg` `[ui] scale`. It only holds the number: UiScaleApplier
-## puts it on the window (Window.content_scale_factor) and Options → Gráficos moves it. It draws and scales nothing itself.
-## Without a choice the value is Project Settings › Display › Window › Stretch › Scale. `--ui-scale=<n>` wins for one run and is not
-## saved. Every node shares the instance at `SHARED_PATH` (a copy would not follow the player's choice).
+## The player's choice of interface size, saved in `user://settings.cfg` `[ui] scale`. It only holds
+## the number: UiScaleApplier puts it on the window (Window.content_scale_factor) and Options →
+## Gráficos moves it. It draws and scales nothing itself. Without a choice the value is Project
+## Settings › Display › Window › Stretch › Scale. `--ui-scale=<n>` wins for one run and is not
+## saved. Every node shares the instance at `SHARED_PATH` (a copy would not follow the player's
+## choice).
 
 const SHARED_PATH := "res://data/ui/ui_scale.tres"
 const SECTION := "ui"
@@ -13,7 +15,8 @@ const KEY := "scale"
 const ARG := "--ui-scale="
 const PROJECT_SETTING := "display/window/stretch/scale"
 
-## The smallest and the biggest interface the player can pick. At 1.4 the roster still clears the book (canvas 514 px high).
+## The smallest and the biggest interface the player can pick. At 1.4 the roster still clears the
+## book (canvas 514 px high).
 @export var min_scale := 0.75
 @export var max_scale := 1.4
 

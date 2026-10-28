@@ -2,32 +2,35 @@
 class_name Caster
 extends Node
 
-## Casts the wizard's book. The owner calls request_cast() or
-## request_summon(); in a networked match the server validates the slot and runs the cast.
-## Spells check mana, target, range, then cooldown (a cooling spell answers «Enfriando» even
-## without mana). Creatures check souls, mana, then cooldown, and need no target: the
-## Summoner puts them in front of the wizard when the cast starts. Starting sets every
-## cooldown, then mana drains at cast_drain_per_s during the casting frames.
-## Every spell of the book (combat or structure) is a SpellAction child of `actions`, instanced from `SpellType.action` and found by `spell`:
-## Caster does the common part and asks the action to check, begin, start, finish and cancel. A creature needs
-## no action: the Summoner puts it in front of the wizard when the cast starts and finishes it when it ends.
+## Casts the wizard's book. The owner calls request_cast() or request_summon(); in a networked match
+## the server validates the slot and runs the cast. Spells check mana, target, range, then cooldown
+## (a cooling spell answers «Enfriando» even without mana). Creatures check souls, mana, then
+## cooldown, and need no target: the Summoner puts them in front of the wizard when the cast starts.
+## Starting sets every cooldown, then mana drains at cast_drain_per_s during the casting frames.
+## Every spell of the book (combat or structure) is a SpellAction child of `actions`, instanced from
+## `SpellType.action` and found by `spell`: Caster does the common part and asks the action to
+## check, begin, start, finish and cancel. A creature needs no action: the Summoner puts it in front
+## of the wizard when the cast starts and finishes it when it ends.
 
 signal feedback(text: String)
-## A cast began (`casting` true; `fx` is the particle of the hands, null for a god without one) or ended or was cut (false, null).
-## Every peer emits it, from the replicated `cast_fx_shown`: HandFx, WizardSounds, Ward and the pose follow it.
+## A cast began (`casting` true; `fx` is the particle of the hands, null for a god without one) or
+## ended or was cut (false, null). Every peer emits it, from the replicated `cast_fx_shown`: HandFx,
+## WizardSounds, Ward and the pose follow it.
 signal cast_changed(casting: bool, fx: ParticleType)
 
 ## Mana tolerance.
 const MANA_EPSILON := 0.01
 ## Every spell costs at least this much: cost = max(1, cost).
 const MIN_MANA_COST := 1.0
-## `cast_fx_shown` of a cast without a particle (a god without one): the pose and the incantation still follow it.
+## `cast_fx_shown` of a cast without a particle (a god without one): the pose and the incantation
+## still follow it.
 const BARE := "-"
 
 @export var rules: MatchRules
 @export var spellbook: Spellbook
 @export var summoner: Summoner
-## Holds the SpellAction children. Without it, or without the child, the spell answers «No implementado».
+## Holds the SpellAction children. Without it, or without the child, the spell answers «No
+## implementado».
 @export var actions: Node
 ## The wizard that owns this node (set in wizard_body.tscn).
 @export var wizard: WizardBody
@@ -40,11 +43,13 @@ var _drain_left := 0
 var _drain_per_frame := 0.0
 ## The action whose cast is running, or null.
 var _active: SpellAction
-## What `cast_fx_shown` says while the cast in progress lasts (an FxWire id or BARE), taken when it starts.
+## What `cast_fx_shown` says while the cast in progress lasts (an FxWire id or BARE), taken when it
+## starts.
 var _shown_id := ""
 
-## The cast in progress as every peer sees it: the FxWire id of the hands' particle, BARE without one, "" while idle. The server
-## writes it and the body's synchronizer replicates it; nothing in the simulation reads it. Presentation only.
+## The cast in progress as every peer sees it: the FxWire id of the hands' particle, BARE without
+## one, "" while idle. The server writes it and the body's synchronizer replicates it; nothing in
+## the simulation reads it. Presentation only.
 @export var cast_fx_shown := "":
 	set(value):
 		if value == cast_fx_shown:
@@ -152,8 +157,9 @@ static func of(node: Node) -> Caster:
 	return null
 
 
-## The action of the spell `tag`, or null (the spell is not implemented). The scene in the SpellType's `action` is instanced
-## under `actions` the first time and kept; its `spell` says which spell it casts.
+## The action of the spell `tag`, or null (the spell is not implemented). The scene in the
+## SpellType's `action` is instanced under `actions` the first time and kept; its `spell` says which
+## spell it casts.
 func action_for(tag: String) -> SpellAction:
 	if actions == null:
 		return null
@@ -175,8 +181,9 @@ func action_for(tag: String) -> SpellAction:
 	return made
 
 
-## Read only: where a cast of the spell `tag` would land at `point` / `picked`, or why it would not start (`status`). The one answer
-## `_try_action`, the AI and the armed preview share: a preview and the server never disagree on the same state.
+## Read only: where a cast of the spell `tag` would land at `point` / `picked`, or why it would not
+## start (`status`). The one answer `_try_action`, the AI and the armed preview share: a preview and
+## the server never disagree on the same state.
 func aim_for(tag: String, point: Vector3, picked: Node3D) -> SpellAction.Aim:
 	var action := action_for(tag)
 	var spell := _spell_of(tag)
@@ -196,7 +203,8 @@ func action_status(tag: String, point: Vector3, picked: Node3D) -> String:
 	return aim_for(tag, point, picked).status
 
 
-## The cast in progress keeps the wizard standing (a structure): WizardBody neither walks nor turns while it is true. Server or solo.
+## The cast in progress keeps the wizard standing (a structure): WizardBody neither walks nor turns
+## while it is true. Server or solo.
 func holds_wizard() -> bool:
 	return _active != null and _active.stationary
 
@@ -353,7 +361,8 @@ func _try_action(action: SpellAction, spell: SpellType, point: Vector3, path: No
 	return spell.display_name
 
 
-## Takes the cast: counts the casting frames and the drain, sets the cooldowns. Returns the casting frames.
+## Takes the cast: counts the casting frames and the drain, sets the cooldowns. Returns the casting
+## frames.
 func _start(entry: BookEntry, target: Node3D) -> int:
 	# The wizard level shortens the cast (CastTime).
 	var frames := floori(MatchClock.TICKS_PER_SECOND_F * CastTime.seconds(entry, wizard.level))
@@ -385,8 +394,8 @@ func _physics_process(_delta: float) -> void:
 		_finish()
 
 
-## The wizard died, or was stunned or petrified, while casting: the spell does not land and a creature being
-## summoned goes.
+## The wizard died, or was stunned or petrified, while casting: the spell does not land and a
+## creature being summoned goes.
 func _interrupt() -> void:
 	print("cast cut %s slot %d" % [_entry.display_name, wizard.owner_slot])
 	if _entry is CreatureType and is_instance_valid(_target):
@@ -419,8 +428,8 @@ func _finish() -> void:
 			_tell_owner(text)
 
 
-## The id of the hands' particle: the action's own (Rock throws dirt, Wrath its sparks), else the god's, a summon included (a
-## creature only comes out of its god's book). BARE when there is none.
+## The id of the hands' particle: the action's own (Rock throws dirt, Wrath its sparks), else the
+## god's, a summon included (a creature only comes out of its god's book). BARE when there is none.
 func _cast_fx_id() -> String:
 	var fx: ParticleType = _active.cast_fx if _active != null else null
 	if fx == null and wizard.god_type != null:
@@ -437,7 +446,8 @@ func _spell_of(tag: String) -> SpellType:
 	return spell
 
 
-## Mana and cooldown of a spell with an action: "", Refusal.NO_MANA, or Refusal.COOLING (which wins).
+## Mana and cooldown of a spell with an action: "", Refusal.NO_MANA, or Refusal.COOLING (which
+## wins).
 func _funds(spell: SpellType) -> String:
 	var status := ""
 	if _cost(spell) > _mana() + MANA_EPSILON:

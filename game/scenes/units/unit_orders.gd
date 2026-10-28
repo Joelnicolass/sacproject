@@ -22,9 +22,10 @@ enum Command { NONE, MOVE, ATTACK, GUARD, GUARD_AREA, ADVANCE, RETREAT }
 ## MOVE stops inside this distance (0.5 m).
 @export var arrive_distance := 0.5
 @export var think_interval_s := 0.25
-## The same order again (same command and target, GUARD / GUARD_AREA / ADVANCE): the unit takes the new point and thinks at its
-## next physics tick (once), not at once and again on the next tick. The AI repeats the order of a follower each time its leader
-## moves: each repeat cost two target searches, one inside the AI's tick. Off = every order thinks at once.
+## The same order again (same command and target, GUARD / GUARD_AREA / ADVANCE): the unit takes the
+## new point and thinks at its next physics tick (once), not at once and again on the next tick. The
+## AI repeats the order of a follower each time its leader moves: each repeat cost two target
+## searches, one inside the AI's tick. Off = every order thinks at once.
 @export var defer_repeat_think := true
 ## The creature that owns this node (set in unit.tscn).
 @export var body: UnitBody
@@ -36,8 +37,8 @@ var point := Vector3.ZERO
 ## Formation slot (right, forward) in meters, turned by `facing`.
 var offset := Vector2.ZERO
 var facing := 0.0
-## The formation this creature keeps; the group's next order uses the one most of its creatures have. Server only,
-## not replicated.
+## The formation this creature keeps; the group's next order uses the one most of its creatures
+## have. Server only, not replicated.
 var formation_id: StringName = &"line"
 
 var _think_left := 0.0

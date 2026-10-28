@@ -1,16 +1,19 @@
 class_name TerrainFaces
 extends RefCounted
 
-## Turns a map's heights and voids into the triangles of its ground: up to two land triangles per 10 m cell (with one void
-## corner the diagonal is picked so the land half stays) and the cliff walls that drop under every rim. Three unshared
-## vertices per triangle with its flat normal and the lattice vertex under each, all the land first, the order the game has
-## always loaded. Pure and static, in memory only. Not: saving it, the smooth normals of the look (TerrainMeshArrays), the
+## Turns a map's heights and voids into the triangles of its ground: up to two land triangles per 10
+## m cell (with one void corner the diagonal is picked so the land half stays) and the cliff walls
+## that drop under every rim. Three unshared vertices per triangle with its flat normal and the
+## lattice vertex under each, all the land first, the order the game has always loaded. Pure and
+## static, in memory only. Not: saving it, the smooth normals of the look (TerrainMeshArrays), the
 ## per-cell index (TerrainRules), the stamps and holes of a match (GroundField).
 
-## The corners of a cell as lattice id offsets from its low corner: 0 = (x, z), 1 = (x + 1, z), 2 = (x + 1, z + 1), 3 = (x, z + 1).
+## The corners of a cell as lattice id offsets from its low corner: 0 = (x, z), 1 = (x + 1, z), 2 =
+## (x + 1, z + 1), 3 = (x, z + 1).
 const CORNER_IDS: Array[int] = [0, 1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE]
-## For each mask of land corners (bit k = corner k), the lattice ids (from the low corner, as CORNER_IDS) of its land triangles' corners in
-## order: two in a full cell, one when exactly one corner is void (the diagonal so the land half stays), none otherwise.
+## For each mask of land corners (bit k = corner k), the lattice ids (from the low corner, as
+## CORNER_IDS) of its land triangles' corners in order: two in a full cell, one when exactly one
+## corner is void (the diagonal so the land half stays), none otherwise.
 const LAND_CORNER_IDS: Array[Array] = [
 	[],
 	[],
@@ -29,19 +32,22 @@ const LAND_CORNER_IDS: Array[Array] = [
 	[1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE],
 	[0, 1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE, 0],
 ]
-## A side wall of a cell: [top end a, top end b, the two vertices just outside]; it stands when both of those are void.
+## A side wall of a cell: [top end a, top end b, the two vertices just outside]; it stands when both
+## of those are void.
 const SIDE_WALLS: Array[Array] = [
 	[0, 1, Vector2i(0, -1), Vector2i(1, -1)],
 	[2, 3, Vector2i(1, 2), Vector2i(0, 2)],
 	[3, 0, Vector2i(-1, 1), Vector2i(-1, 0)],
 	[1, 2, Vector2i(2, 0), Vector2i(2, 1)],
 ]
-## Lattice vertices of void added around the map, so the outside-of-side test never leaves the array.
+## Lattice vertices of void added around the map, so the outside-of-side test never leaves the
+## array.
 const PAD := 2
 const PADDED_SIDE := TerrainGrid.SIDE + 2 * PAD
 
 
-## The ground of `heights` as triangles (see the class doc). Empty when `heights` is missing or not valid.
+## The ground of `heights` as triangles (see the class doc). Empty when `heights` is missing or not
+## valid.
 static func build(heights: TerrainHeights) -> MapTerrainData:
 	var faces := MapTerrainData.new()
 	if heights != null and heights.is_valid():
@@ -55,7 +61,8 @@ static func build(heights: TerrainHeights) -> MapTerrainData:
 			for x in TerrainGrid.SIDE - 1:
 				var land := lands[z * TerrainGrid.SIDE + x]
 				var at := row + x
-				# Walls stand on cells with three or four land corners; a full one needs a void just outside a side.
+				# Walls stand on cells with three or four land corners; a full one needs a void just
+				# outside a side.
 				if (
 					land == 15
 					and voids[at - PADDED_SIDE] == 0
@@ -69,7 +76,8 @@ static func build(heights: TerrainHeights) -> MapTerrainData:
 	return faces
 
 
-## The land triangles of every cell in order, written into arrays sized for them (as MapTerrainData.add, without a call each).
+## The land triangles of every cell in order, written into arrays sized for them (as
+## MapTerrainData.add, without a call each).
 static func _add_lands(
 	faces: MapTerrainData, heights_m: PackedFloat32Array, lands: PackedByteArray
 ) -> void:
@@ -115,7 +123,8 @@ static func _add_lands(
 	faces.land_cells = cells
 
 
-## The side walls of a cell with three or four land corners, then the wall across it when exactly one corner is void.
+## The side walls of a cell with three or four land corners, then the wall across it when exactly
+## one corner is void.
 static func _add_walls(
 	faces: MapTerrainData,
 	heights_m: PackedFloat32Array,
@@ -144,7 +153,8 @@ static func _add_walls(
 		_add_wall(faces, heights_m, x, z, (gone + 3) % 4, (gone + 1) % 4)
 
 
-## A strip that drops HoleWallRules.DEPTH_M under the rim from corner a to corner b, as two triangles.
+## A strip that drops HoleWallRules.DEPTH_M under the rim from corner a to corner b, as two
+## triangles.
 static func _add_wall(
 	faces: MapTerrainData, heights_m: PackedFloat32Array, x: int, z: int, a: int, b: int
 ) -> void:
@@ -165,7 +175,8 @@ static func _add_wall(
 	faces.add(top_b + down, top_a, top_a + down, id_b, id_a, id_a, true)
 
 
-## One byte per cell (z * SIDE + x): bit k set when corner k of the cell is land (0 for the last row and column).
+## One byte per cell (z * SIDE + x): bit k set when corner k of the cell is land (0 for the last row
+## and column).
 static func _land_corners(voids: PackedByteArray) -> PackedByteArray:
 	var lands := PackedByteArray()
 	lands.resize(TerrainGrid.SIDE * TerrainGrid.SIDE)

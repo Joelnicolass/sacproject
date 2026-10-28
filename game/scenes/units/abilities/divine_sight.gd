@@ -1,13 +1,14 @@
 class_name DivineSight
 extends AbilityEffect
 
-## The Ranger's Divine Sight: it sends an eye. No target and no preparation. The eye is born 2 m ahead of the user (along its facing), on the
-## land (or a building top) there, with velocity speed · facing, and the ability applies (AbilitySlot spends the 50 mana and starts
-## the 25 s cooldown). What the eye does is DivineSightEye's. The spell has flags 0, so the UI sends
-## the use at once, without arming a target (MatchCommand._use_ability).
-## No sound at the cast.
+## The Ranger's Divine Sight: it sends an eye. No target and no preparation. The eye is born 2 m
+## ahead of the user (along its facing), on the land (or a building top) there, with velocity speed
+## · facing, and the ability applies (AbilitySlot spends the 50 mana and starts the 25 s cooldown).
+## What the eye does is DivineSightEye's. The spell has flags 0, so the UI sends the use at once,
+## without arming a target (MatchCommand._use_ability). No sound at the cast.
 
-## The eye (divine_sight_eye.tscn), put in the shot container through the ShotSpawner (replicated like a shot).
+## The eye (divine_sight_eye.tscn), put in the shot container through the ShotSpawner (replicated
+## like a shot).
 @export var eye_scene: PackedScene
 ## How far ahead of the user the eye is born (m).
 @export var spawn_ahead := 2.0

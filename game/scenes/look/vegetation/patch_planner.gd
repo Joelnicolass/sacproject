@@ -1,13 +1,14 @@
 class_name PatchPlanner
 extends RefCounted
 
-## What a VegetationPatch plants and shows: the instances (pure: the same inputs give the same floats) and the editor ring.
-## Spot i of a patch has its place, yaw and scale from the hash of (seed, tag, i), so a lower density keeps a prefix of
-## the same plants. Presentation only.
+## What a VegetationPatch plants and shows: the instances (pure: the same inputs give the same
+## floats) and the editor ring. Spot i of a patch has its place, yaw and scale from the hash of
+## (seed, tag, i), so a lower density keeps a prefix of the same plants. Presentation only.
 
 
-## World-space MultiMesh buffer (MeshPlanter.XFORM_STRIDE floats each): the spots of the disc around `patch_xform` that
-## are on the ground of `shape` (placed at `map_xform`) and outside every clear (rows x, z, radius, edge in world coordinates).
+## World-space MultiMesh buffer (MeshPlanter.XFORM_STRIDE floats each): the spots of the disc around
+## `patch_xform` that are on the ground of `shape` (placed at `map_xform`) and outside every clear
+## (rows x, z, radius, edge in world coordinates).
 static func plan(
 	species: VegetationSpecies,
 	seed: int,
@@ -68,7 +69,8 @@ static func _unit(seed: int, salt: int, tag_h: int, i: int) -> float:
 	return FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ salt, tag_h, 0, 0, i))
 
 
-## The MultiMeshInstance3D of a buffer from `plan`: world space (top level), culled past `range_end_m`.
+## The MultiMeshInstance3D of a buffer from `plan`: world space (top level), culled past
+## `range_end_m`.
 static func instance(
 	mesh: Mesh, buffer: PackedFloat32Array, material: Material, shadows: bool, range_end_m: float
 ) -> MultiMeshInstance3D:

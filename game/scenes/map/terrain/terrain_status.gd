@@ -2,13 +2,15 @@
 class_name TerrainStatus
 extends Node
 
-## What the ground of the map holds right now, read only in the inspector (Remote → Terrain/Status during a match): how many
-## changes stayed, how many times it moved, the stamps playing, the holes, and a picture of it. It only reads its `terrain`;
-## it changes nothing and costs nothing until the inspector asks (the picture only with `show_view`).
+## What the ground of the map holds right now, read only in the inspector (Remote → Terrain/Status
+## during a match): how many changes stayed, how many times it moved, the stamps playing, the holes,
+## and a picture of it. It only reads its `terrain`; it changes nothing and costs nothing until the
+## inspector asks (the picture only with `show_view`).
 
 ## The ground it reads (its parent Terrain).
 @export var terrain: Terrain
-## Shows `view`: a picture of how far each vertex moved (R, metres) and the holes (G = 1). Costs a copy of the lattice per change.
+## Shows `view`: a picture of how far each vertex moved (R, metres) and the holes (G = 1). Costs a
+## copy of the lattice per change.
 @export var show_view := false
 
 @export_group("State (read only)")

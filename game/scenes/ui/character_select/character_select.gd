@@ -26,7 +26,8 @@ func _ready() -> void:
 	_wizard = current.wizard
 	_god = current.god
 	var catalog := GameCatalog.shared()
-	# The button names (`Wizard_<id>`, `God_<id>`) carry the network id, so the flows of the agent keep working.
+	# The button names (`Wizard_<id>`, `God_<id>`) carry the network id, so the flows of the agent
+	# keep working.
 	for wizard in catalog.offered_wizards():
 		_add_button(
 			_wizard_grid,

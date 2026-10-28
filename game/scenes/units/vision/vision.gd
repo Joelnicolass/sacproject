@@ -2,16 +2,19 @@
 class_name Vision
 extends Area3D
 
-## What one body sees: who stands inside its sight shape (and cone), reported in name order, and what its side keeps in mind of them.
-## It does not choose targets (TargetPicker) nor decide what the AI knows (AiPerception); the sight of a side is the union of the
-## Visions of its bodies (VisionSides). Resize it with the gizmo of its Shape or set `radius_m`; what it can see sits in `seen_groups`.
+## What one body sees: who stands inside its sight shape (and cone), reported in name order, and
+## what its side keeps in mind of them. It does not choose targets (TargetPicker) nor decide what
+## the AI knows (AiPerception); the sight of a side is the union of the Visions of its bodies
+## (VisionSides). Resize it with the gizmo of its Shape or set `radius_m`; what it can see sits in
+## `seen_groups`.
 
 ## Who came into sight / left it on the last refresh, and who hurt this body (VisionSides.reveal).
 signal seen(node: Node3D)
 signal lost(node: Node3D)
 signal hurt_by(attacker: Node3D)
 
-## A mark that never lapses (a structure or fount stands still); groups with no physics body, which the area cannot see.
+## A mark that never lapses (a structure or fount stands still); groups with no physics body, which
+## the area cannot see.
 const FOREVER := 1 << 30
 const BODILESS: Array[StringName] = [&"manafount"]
 
@@ -40,7 +43,8 @@ const BODILESS: Array[StringName] = [&"manafount"]
 @export_range(0.0166, 600.0, 0.0001, "suffix:s") var forget_s := 6.4
 ## How often it looks again; every body looks on its own tick of the cycle.
 @export_range(0.0166, 10.0, 0.0001, "suffix:s") var refresh_s := 0.5
-## true: the physics area narrows the candidates (only bodies on its collision mask); false: walks the groups. The same answer.
+## true: the physics area narrows the candidates (only bodies on its collision mask); false: walks
+## the groups. The same answer.
 @export var use_area := false
 ## Off while the body cannot look (dead, summoning, taken, or a client that does not simulate).
 @export var watching := true:
@@ -123,7 +127,8 @@ func sees(node: Node3D) -> bool:
 	return node != null and _ids.has(node.get_instance_id())
 
 
-## Looks again: tells who came in and who left (each in name order) and keeps the foes in mind for the side.
+## Looks again: tells who came in and who left (each in name order) and keeps the foes in mind for
+## the side.
 func refresh() -> void:
 	var before := _sight
 	var was := _ids

@@ -1,37 +1,38 @@
 class_name LightningCharge
 extends UnitPassive
 
-## The Storm Giant's Lightning Charge (gcil). The one owner of how charged a body
-## is: the frames it still holds, the ramp of its discharges, what it multiplies (pace, blow, accuracy) and the bolts it throws.
-## A node of the creature's `<name>_passives.tscn`, next to the DamagePassive whose `charge` it is (that one asks it on every hit
-## and blow); a creature without it is never charged.
+## The Storm Giant's Lightning Charge (gcil). The one owner of how charged a body is: the frames it
+## still holds, the ramp of its discharges, what it multiplies (pace, blow, accuracy) and the bolts
+## it throws. A node of the creature's `<name>_passives.tscn`, next to the DamagePassive whose
+## `charge` it is (that one asks it on every hit and blow); a creature without it is never charged.
 ##
 ## Charging: a hit with DamageMod.lightning charges `int(f · damage)` frames (f = 4 when the
-## attacker is an ally, 2 otherwise; the damage is the one already scaled by side, resistance and shields) and the body takes a
-## quarter of it. absorb() does both; add() is the bare charge: a new charge (it was off) starts its
-## ramp at 0.
-## Once per tick of a charged body, in this order:
-##   frames −= 1; at 0 the charge is over. ramp += 1/60 (cap 1).
-##   frames ≥ the SPEL's amount (250) and uniform < ramp / 60: a discharge. It picks with uniform(n + 4) among the n bodies whose
-##   center is within the SPEL's range (30 m; creatures and wizards, not dead; the body itself among them) and the land (a random
-##   2D direction, 5 m to the range, at the land's height). A pick over n, or a body that is no longer valid, is the land; the body
-##   itself is nothing (no discharge, no cost). Otherwise frames −= amount >> 1 (125), ramp = 0 and a LightningStrike `gcil`
-##   (the SPEL's 250) flies from its center to the pick, without bouncing.
-##   Sparks over the body: probability 1 − e^(−2/60) per tick (presentation only).
-## While charged: pace ×1.5, blow ×1.5 and accuracy ×1.5
-##. The pace goes to PaceFactors under its own source; the other two are asked of melee_factor().
-## The simulation is MatchSeed's stream ["charge", body, tick] (drawn only on a tick that can discharge); the sparks have a stream
-## of their own, so they never move it. `shown` is replicated by the `Sync` child of this scene: its root is the creature, so the node
-## has to keep the name `LightningCharge` as a direct child of the creature's `Passives`.
-## The candidates go in the order of the groups (wizards, then units); a
-## body that dies loses its charge at once; the sparks are a reserve look.
+## attacker is an ally, 2 otherwise; the damage is the one already scaled by side, resistance and
+## shields) and the body takes a quarter of it. absorb() does both; add() is the bare charge: a new
+## charge (it was off) starts its ramp at 0. Once per tick of a charged body, in this order:
+##   frames −= 1; at 0 the charge is over. ramp += 1/60 (cap 1). frames ≥ the SPEL's amount (250)
+##   and uniform < ramp / 60: a discharge. It picks with uniform(n + 4) among the n bodies whose
+##   center is within the SPEL's range (30 m; creatures and wizards, not dead; the body itself among
+##   them) and the land (a random 2D direction, 5 m to the range, at the land's height). A pick over
+##   n, or a body that is no longer valid, is the land; the body itself is nothing (no discharge, no
+##   cost). Otherwise frames −= amount >> 1 (125), ramp = 0 and a LightningStrike `gcil` (the SPEL's
+##   250) flies from its center to the pick, without bouncing. Sparks over the body: probability 1 −
+##   e^(−2/60) per tick (presentation only).
+## While charged: pace ×1.5, blow ×1.5 and accuracy ×1.5 . The pace goes to PaceFactors under its
+## own source; the other two are asked of melee_factor(). The simulation is MatchSeed's stream
+## ["charge", body, tick] (drawn only on a tick that can discharge); the sparks have a stream of
+## their own, so they never move it. `shown` is replicated by the `Sync` child of this scene: its
+## root is the creature, so the node has to keep the name `LightningCharge` as a direct child of the
+## creature's `Passives`. The candidates go in the order of the groups (wizards, then units); a body
+## that dies loses its charge at once; the sparks are a reserve look.
 
 ## The PaceFactors source of the charge.
 const PACE_SOURCE := &"lightning_charge"
 
 ## The discharge's bolt (lightning_strike.tscn).
 @export var bolt_scene: PackedScene
-## The passive (data/catalog/abilities/lightning_charge.tres): its numbers give the amount 250, the range 30 and the bolt's damage 250.
+## The passive (data/catalog/abilities/lightning_charge.tres): its numbers give the amount 250, the
+## range 30 and the bolt's damage 250.
 @export var passive: AbilityType
 ## Frames charged per point of damage taken from an ally / from anyone else.
 @export var ally_factor := 4.0
@@ -91,8 +92,9 @@ func add(amount: int) -> void:
 	_refresh()
 
 
-## A hit with DamageMod.lightning that reached the body: `damage` is what is left after side, resistance and shields, `ally` that
-## the attacker is of the body's side. Charges f · damage frames and returns what the body takes of the hit.
+## A hit with DamageMod.lightning that reached the body: `damage` is what is left after side,
+## resistance and shields, `ally` that the attacker is of the body's side. Charges f · damage frames
+## and returns what the body takes of the hit.
 func absorb(damage: float, ally: bool) -> float:
 	add(int((ally_factor if ally else foe_factor) * damage))
 	return absorbed_factor
@@ -180,8 +182,8 @@ func _discharge(rng: RandomNumberGenerator, spell: AbilityType) -> void:
 	)
 
 
-## The bodies within `radius` of `center` (center to center) that a discharge can pick: creatures and wizards that are not
-## dead, the charged body itself among them (collect). Group order.
+## The bodies within `radius` of `center` (center to center) that a discharge can pick: creatures
+## and wizards that are not dead, the charged body itself among them (collect). Group order.
 func _candidates(center: Vector3, radius: float) -> Array[Node3D]:
 	var found: Array[Node3D] = []
 	var seen := {}
@@ -217,7 +219,8 @@ func _wake() -> void:
 	set_physics_process(shown or frames > 0 or DebugLog.on(&"charge"))
 
 
-## Bench only: `marcha body ×pace (x, y, z)` on every tick the carrier moved, for the replica to measure the step.
+## Bench only: `marcha body ×pace (x, y, z)` on every tick the carrier moved, for the replica to
+## measure the step.
 func _trace_walk() -> void:
 	if not DebugLog.on(&"charge") or body == null:
 		return
@@ -234,7 +237,8 @@ func _trace_walk() -> void:
 	)
 
 
-## 48 sparks over the body's box at `spark_rate` per second; the stream is the look's, not the simulation's.
+## 48 sparks over the body's box at `spark_rate` per second; the stream is the look's, not the
+## simulation's.
 func _spark() -> void:
 	if body == null or spark_fx == null:
 		return

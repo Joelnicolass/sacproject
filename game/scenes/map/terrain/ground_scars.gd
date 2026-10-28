@@ -1,10 +1,13 @@
 class_name GroundScars
 extends Node3D
 
-## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one owner of `marks` (what was
-## painted, in order) and of the tiles drawn from it. A mark is a picture painted INTO the ground, 0.15625 m per pixel, centered, never turned, over
-## what is there; marks on a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago is cleaned (ground_scars.gdshaderinc reads it).
-## Presentation only: headless (dedicated) it holds nothing. ScarMark decides when; GroundScarsNet merges a donor's `marks` into a peer back from a drop.
+## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one
+## owner of `marks` (what was painted, in order) and of the tiles drawn from it. A mark is a picture
+## painted INTO the ground, 0.15625 m per pixel, centered, never turned, over what is there; marks
+## on a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago
+## is cleaned (ground_scars.gdshaderinc reads it).
+## Presentation only: headless (dedicated) it holds nothing. ScarMark decides when; GroundScarsNet
+## merges a donor's `marks` into a peer back from a drop.
 
 const GROUP := &"ground_scars"
 const INDEX_PARAM := &"scar_index"
@@ -46,14 +49,16 @@ func _ready() -> void:
 				GroundScarRules.TILE_TEXELS, GroundScarRules.TILE_TEXELS, false, Image.FORMAT_RGBA8
 			)
 		)
-	var grid := GroundScarRules.grid_for(terrain.bounds())  # one index texel per 10 m tile of the map
+	# one index texel per 10 m tile of the map
+	var grid := GroundScarRules.grid_for(terrain.bounds())
 	_index = Image.create_empty(grid.x, grid.y, false, Image.FORMAT_RGBA8)
 	tiles.create_from_images(_layers)
 	_index_texture = ImageTexture.create_from_image(_index)
 	_publish()
 
 
-## Reparenting leaves and enters the tree without a new `_ready`: the shaders get the textures again.
+## Reparenting leaves and enters the tree without a new `_ready`: the shaders get the textures
+## again.
 func _enter_tree() -> void:
 	if _pool != null:
 		_publish()
@@ -89,8 +94,9 @@ func painted_tiles() -> int:
 	return _pool.size() if _pool != null else 0
 
 
-## Paints `texture` centered at the world point `at`. `max_height_m`: not drawn when the ground under it is that far from
-## the point (0 = always). False when nothing was painted, or while catching up when the donor already gave it (`marks`).
+## Paints `texture` centered at the world point `at`. `max_height_m`: not drawn when the ground
+## under it is that far from the point (0 = always). False when nothing was painted, or while
+## catching up when the donor already gave it (`marks`).
 func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	if (
 		_pool == null
@@ -101,7 +107,8 @@ func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	return paint(texture, at, max_height_m)
 
 
-## `stamp` without asking `marks` first: the catch-up (GroundScarsNet, `marks.merge`) already decided how many times.
+## `stamp` without asking `marks` first: the catch-up (GroundScarsNet, `marks.merge`) already
+## decided how many times.
 func paint(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	if _pool == null or texture == null:
 		return false

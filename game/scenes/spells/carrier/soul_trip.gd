@@ -1,10 +1,12 @@
 class_name SoulTrip
 extends RefCounted
 
-## The trip of the Soul Mole's rock and the Soul Wind's funnel for its SpellCarrier: it walks the ground from the wizard to a soul in half
-## of `roundtrip_s`, turns there (`reached`), and comes back in the other half. It ends when the soul is gone or no longer waiting. It
-## moves the carrier it is given and nothing else: who takes the soul is SoulFetch, who is stunned on the way is CarrierPulse.
-## At the turn it also sets the carrier's `phase` to LEAVING, which is replicated, so every peer can tell the rock took the soul.
+## The trip of the Soul Mole's rock and the Soul Wind's funnel for its SpellCarrier: it walks the
+## ground from the wizard to a soul in half of `roundtrip_s`, turns there (`reached`), and comes
+## back in the other half. It ends when the soul is gone or no longer waiting. It moves the carrier
+## it is given and nothing else: who takes the soul is SoulFetch, who is stunned on the way is
+## CarrierPulse. At the turn it also sets the carrier's `phase` to LEAVING, which is replicated, so
+## every peer can tell the rock took the soul.
 
 var _carrier: SpellCarrier
 var _turn := Vector3.ZERO

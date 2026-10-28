@@ -1,9 +1,9 @@
 class_name CommandFeedback
 extends Node
 
-## What the player's commands answer with: the ping a cast or an order leaves at its point (a cone, local only), the
-## line on %Battle (CommandLog: the cue flashes `ncst` for a refusal) and the creatures that join the selection when
-## they are summoned. It decides no order and no cast.
+## What the player's commands answer with: the ping a cast or an order leaves at its point (a cone,
+## local only), the line on %Battle (CommandLog: the cue flashes `ncst` for a refusal) and the
+## creatures that join the selection when they are summoned. It decides no order and no cast.
 
 ## The cone's color by order.
 const ORDER_TONE := {
@@ -34,6 +34,7 @@ const _SELECTION := preload("res://scenes/orders/selection.gd")
 func _ready() -> void:
 	if seat == null:
 		push_warning(
+			# gdlint: ignore=max-line-length
 			"CommandFeedback: assign `seat` (the MpLocalSeat); summoned creatures will not join the selection"
 		)
 	_log.say("Mago")

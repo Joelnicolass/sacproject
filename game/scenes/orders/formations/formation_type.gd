@@ -1,8 +1,8 @@
 class_name FormationType
 extends Resource
 
-## A formation of a group order. A type resource: it never changes during a match; the formation a creature keeps is a
-## StringName on its UnitOrders.
+## A formation of a group order. A type resource: it never changes during a match; the formation a
+## creature keeps is a StringName on its UnitOrders.
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 
@@ -13,8 +13,9 @@ const UnitOrders := preload("res://scenes/units/unit_orders.gd")
 @export var icon: Texture2D
 
 
-## Slots (right, forward) in meters for `count` bodies. `spacing` is the distance between two neighbors,
-## `target_distance` the distance from a guarded or attacked body (0 = no target), `command` a UnitOrders.Command.
+## Slots (right, forward) in meters for `count` bodies. `spacing` is the distance between two
+## neighbors, `target_distance` the distance from a guarded or attacked body (0 = no target),
+## `command` a UnitOrders.Command.
 func slots(_count: int, _spacing: float, _target_distance: float, _command: int) -> Array[Vector2]:
 	return []
 

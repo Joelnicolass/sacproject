@@ -2,12 +2,13 @@
 class_name RitualPush
 extends Node
 
-## The barrier that keeps melee creatures from reaching the doctors. Every frame, everything alive within the push radius of
-## the site (`Push` in sacrifice_places.tscn, SacrificeFacts.push_m) is pushed out along the ground, except the ritual's doctors
-## and creature: `ritual_push_speed` m/s inside the core (`PushCore`), less and less out to the edge. The doctors of someone else
-## are pushed hard (superpush: 1.1 times their pace). Bodies move with move_and_collide, like a hit would; ground and holes are
-## respected (SacrificeGround). Server only.
-## Take this node out of ritual.tscn and nothing is pushed: then melee creatures can kill doctors.
+## The barrier that keeps melee creatures from reaching the doctors. Every frame, everything alive
+## within the push radius of the site (`Push` in sacrifice_places.tscn, SacrificeFacts.push_m) is
+## pushed out along the ground, except the ritual's doctors and creature: `ritual_push_speed` m/s
+## inside the core (`PushCore`), less and less out to the edge. The doctors of someone else are
+## pushed hard (superpush: 1.1 times their pace). Bodies move with move_and_collide, like a hit
+## would; ground and holes are respected (SacrificeGround). Server only. Take this node out of
+## ritual.tscn and nothing is pushed: then melee creatures can kill doctors.
 
 @export var ritual: Ritual
 

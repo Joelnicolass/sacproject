@@ -1,19 +1,22 @@
 class_name BuildCues
 extends Node
 
-## The three moments of a tower being cast, each a list of effects (ParticleType: look, light, sound, camera shake) played on
-## this peer only:
-## - start: the tower appears still at the bottom (`build_progress` <= `start_max_progress` on its first frame), at `spot`;
+## The three moments of a tower being cast, each a list of effects (ParticleType: look, light,
+## sound, camera shake) played on this peer only:
+## - start: the tower appears still at the bottom (`build_progress` <= `start_max_progress` on its
+##   first frame), at `spot`;
 ## - done: the progress reaches 1 after this peer saw it rise, at `spot`;
-## - cut: the tower goes away still rising while the match goes on (the cast was cut), at the cut line of `reveal`.
-## A tower that appears already high (late join) shows no start; one already standing shows nothing. Leaving the match (the
-## scene going away) shows no cut. Everything comes from the replicated progress, the spawn and the despawn: no RPC.
-## Does not decide when a tower rises or is cut (StructureAction), nor draw the rise (BuildReveal, BuildEdge). A headless
-## process does nothing.
+## - cut: the tower goes away still rising while the match goes on (the cast was cut), at the cut
+##   line of `reveal`.
+## A tower that appears already high (late join) shows no start; one already standing shows nothing.
+## Leaving the match (the scene going away) shows no cut. Everything comes from the replicated
+## progress, the spawn and the despawn: no RPC. Does not decide when a tower rises or is cut
+## (StructureAction), nor draw the rise (BuildReveal, BuildEdge). A headless process does nothing.
 
 signal start_shown(at: Vector3)
 signal done_shown(at: Vector3)
-## Emitted when the tower leaves still rising; the effects themselves wait one frame to know the match goes on.
+## Emitted when the tower leaves still rising; the effects themselves wait one frame to know the
+## match goes on.
 signal cut_shown(at: Vector3)
 
 @export var tower: CastTower
@@ -23,12 +26,14 @@ signal cut_shown(at: Vector3)
 @export var start_fx: Array[ParticleType] = []
 @export var done_fx: Array[ParticleType] = []
 @export var cut_fx: Array[ParticleType] = []
-## A tower whose first frame is above this progress was already rising before this peer saw it: no start.
+## A tower whose first frame is above this progress was already rising before this peer saw it: no
+## start.
 @export_range(0.0, 1.0, 0.01) var start_max_progress := 0.05
 
 var _seen_rising := false
 var _done := false
-## Where a cut would be born, kept while the tower is in the tree: when it leaves, its parts are out of the tree already.
+## Where a cut would be born, kept while the tower is in the tree: when it leaves, its parts are out
+## of the tree already.
 var _cut_at := Vector3.ZERO
 
 
@@ -82,8 +87,9 @@ func _on_tower_leaving() -> void:
 	if not _seen_rising or _done or not tower.is_rising():
 		return
 	cut_shown.emit(_cut_at)
-	# This node leaves with the tower: the check runs on the script, a frame later, when a despawn and a scene going away
-	# differ. The home goes by id: a scene going away frees it before the call.
+	# This node leaves with the tower: the check runs on the script, a frame later, when a despawn
+	# and a scene going away differ. The home goes by id: a scene going away frees it before the
+	# call.
 	var home := tower.get_parent()
 	Callable(BuildCues, &"_play_if_alive").call_deferred(
 		cut_fx, _cut_at, home.get_instance_id() if home != null else 0
@@ -98,7 +104,8 @@ func _keep_cut_spot() -> void:
 	_cut_at.y = maxf(_cut_at.y, reveal.line_y())
 
 
-## The cut plays only if the place the tower lived in is still in the tree (it was despawned, the match goes on).
+## The cut plays only if the place the tower lived in is still in the tree (it was despawned, the
+## match goes on).
 static func _play_if_alive(effects: Array[ParticleType], at: Vector3, home_id: int) -> void:
 	var home := instance_from_id(home_id) as Node
 	if home != null and home.is_inside_tree():

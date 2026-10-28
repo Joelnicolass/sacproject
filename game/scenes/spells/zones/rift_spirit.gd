@@ -1,9 +1,11 @@
 class_name RiftSpirit
 extends SpellProjectile
 
-## A spirit of a Demonic Rift: it leaves the rift toward one creature, hits it once, spirals up around it for four seconds, flies to a point
-## in the air, comes back to the rift and sinks into it. The server (or solo) moves it and does the hit; `position`, `scale` and `status`
-## are replicated, and its RiftRibbon child draws the trail on every peer. It does not choose its target (RiftSpawner) nor open the rift.
+## A spirit of a Demonic Rift: it leaves the rift toward one creature, hits it once, spirals up
+## around it for four seconds, flies to a point in the air, comes back to the rift and sinks into
+## it. The server (or solo) moves it and does the hit; `position`, `scale` and `status` are
+## replicated, and its RiftRibbon child draws the trail on every peer. It does not choose its target
+## (RiftSpawner) nor open the rift.
 
 enum Status { TARGETING, RISING, MOVING_AWAY, MOVING_BACK, VANISHING }
 
@@ -109,7 +111,8 @@ func _steer() -> void:
 		_arrived()
 
 
-## Where it flies this tick: the creature (or the point it was given), the spiral around it, the point in the air or the rift.
+## Where it flies this tick: the creature (or the point it was given), the spiral around it, the
+## point in the air or the rift.
 func _aim() -> Vector3:
 	var body := get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null
 	if status == Status.TARGETING and body != null:

@@ -1,19 +1,22 @@
 class_name StoneLook
 extends Node
 
-## A body turned to stone, in the bone shader's grey. Presentation only, on every peer: while `stone` is on, every surface
-## of `mesh` gets a stone override built from that surface's own material (its texture and alpha scissor), so the
-## textures still show through as grey. Reusable: Skin of Stone is one more owner with its own StoneLook.
+## A body turned to stone, in the bone shader's grey. Presentation only, on every peer: while
+## `stone` is on, every surface of `mesh` gets a stone override built from that surface's own
+## material (its texture and alpha scissor), so the textures still show through as grey. Reusable:
+## Skin of Stone is one more owner with its own StoneLook.
 ##
-## The mesh may be swapped under it (a clip frame, a model set up late on a client): it re-dresses whatever mesh is
-## there each frame it is on, so it does not matter whether the clip froze before or after the stone came on.
-## One StoneLook per body, owned by Afflictions (its `look`), which sets `tint` and `stone`
-## from the states that are on (petrified grey; the ice is a block of its own, IceBlock). Skin of Stone will
-## be one more state with a look there, not a second StoneLook on the same mesh.
+## The mesh may be swapped under it (a clip frame, a model set up late on a client): it re-dresses
+## whatever mesh is there each frame it is on, so it does not matter whether the clip froze before
+## or after the stone came on. One StoneLook per body, owned by Afflictions (its `look`), which sets
+## `tint` and `stone` from the states that are on (petrified grey; the ice is a block of its own,
+## IceBlock). Skin of Stone will be one more state with a look there, not a second StoneLook on the
+## same mesh.
 
 @export var mesh: MeshInstance3D
 @export var shader: Shader
-## The shader's stone_tint: the stone's (1, 1, 0.8) or the ice's; Afflictions sets it from the type that is on.
+## The shader's stone_tint: the stone's (1, 1, 0.8) or the ice's; Afflictions sets it from the type
+## that is on.
 @export var tint := Color(1.0, 1.0, 0.8):
 	set(value):
 		if value == tint:
@@ -22,8 +25,9 @@ extends Node
 		if is_node_ready() and _dressing() and not Engine.is_editor_hint():
 			_dressed = null
 			_dress()
-## The shader's stone_base, stone_gain, stone_roughness and stone_metallic (the oil is a dark glossy coat, not grey stone;
-## Afflictions sets them with the tint from the state that is on). The defaults are the stone's.
+## The shader's stone_base, stone_gain, stone_roughness and stone_metallic (the oil is a dark glossy
+## coat, not grey stone; Afflictions sets them with the tint from the state that is on). The
+## defaults are the stone's.
 @export var base := 0.3
 @export var gain := 0.7
 @export var roughness := 0.5
@@ -36,8 +40,9 @@ extends Node
 		stone = value
 		if is_node_ready():
 			_refresh()
-## A texture drawn on every surface instead of its own, with the surface's UV, alpha cut and light (Slime's wet skin, `lthg`).
-## Afflictions sets it from the states that are on; with `stone` also on, the stone's grey is made from this texture. Null: the surfaces keep theirs.
+## A texture drawn on every surface instead of its own, with the surface's UV, alpha cut and light
+## (Slime's wet skin, `lthg`). Afflictions sets it from the states that are on; with `stone` also
+## on, the stone's grey is made from this texture. Null: the surfaces keep theirs.
 var swap_texture: Texture2D:
 	set(value):
 		if value == swap_texture:
@@ -47,12 +52,14 @@ var swap_texture: Texture2D:
 			_dressed = null
 			_refresh()
 
-## One stone material per source material (or per shader with no source) and tint, shared by every body.
+## One stone material per source material (or per shader with no source) and tint, shared by every
+## body.
 static var _materials: Dictionary = {}
 
 var _dressed: Mesh
-## When `mesh` is a BodyVisual that a BodyRig draws for, the skinned meshes of the rig are dressed instead. The
-## materials they had (the shared material overrides, not the mesh's own) are kept here to put back: instance id -> Array.
+## When `mesh` is a BodyVisual that a BodyRig draws for, the skinned meshes of the rig are dressed
+## instead. The materials they had (the shared material overrides, not the mesh's own) are kept here
+## to put back: instance id -> Array.
 var _dressed_root: Node
 var _saved: Dictionary = {}
 
@@ -70,13 +77,15 @@ func _process(_delta: float) -> void:
 		_dress()
 
 
-## The BodyRig that draws `mesh`'s body while it shows a skeleton, else null (the mesh itself is what shows).
+## The BodyRig that draws `mesh`'s body while it shows a skeleton, else null (the mesh itself is
+## what shows).
 func _rig() -> BodyRig:
 	var visual := mesh as BodyVisual
 	return visual.rig if visual != null and visual.rig != null and visual.rig.is_loaded() else null
 
 
-## Every knob of the look at once (one redress, whatever changed). Afflictions calls it with the state that is on.
+## Every knob of the look at once (one redress, whatever changed). Afflictions calls it with the
+## state that is on.
 func apply(
 	new_tint: Color, new_base: float, new_gain: float, new_roughness: float, new_metallic: float
 ) -> void:

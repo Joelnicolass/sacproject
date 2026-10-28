@@ -1,9 +1,11 @@
 class_name UnitClips
 extends Node
 
-## What a UnitBody shows: picks the clip each step (playing dead, held, captive, flight, then the role of the state of its mode), the
-## pose scale, the lunge of a swing or a shot and the debug clip. Presentation only, on every peer.
-## Not: what the creature does (States) nor when to update (the body, its modes and its forms ask `update`).
+## What a UnitBody shows: picks the clip each step (playing dead, held, captive, flight, then the
+## role of the state of its mode), the pose scale, the lunge of a swing or a shot and the debug
+## clip. Presentation only, on every peer.
+## Not: what the creature does (States) nor when to update (the body, its modes and its forms ask
+## `update`).
 
 @export var body: UnitBody
 @export var clip_pose: ClipPlayback
@@ -14,12 +16,14 @@ extends Node
 @export var lunge_forward_s := 0.08
 @export var lunge_recover_s := 0.25
 
-## The clip role played in IDLE ("idle" = the CRE8 idle0): a calm peasant digs ("work"). A role the model has no clip for falls back to idle.
+## The clip role played in IDLE ("idle" = the CRE8 idle0): a calm peasant digs ("work"). A role the
+## model has no clip for falls back to idle.
 var idle_role := "idle":
 	set(value):
 		idle_role = value if not value.is_empty() else "idle"
 		_update_if_ready()
-## The clip role of a creature a Sac Doctor holds or revives (rise, held, thrash); CaptiveLook writes it on every peer. "" = none.
+## The clip role of a creature a Sac Doctor holds or revives (rise, held, thrash); CaptiveLook
+## writes it on every peer. "" = none.
 var captive_role := "":
 	set(value):
 		captive_role = value

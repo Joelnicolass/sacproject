@@ -1,8 +1,9 @@
 class_name RitualStarter
 extends Node
 
-## Starts the ritual when a carrier reaches its site holding the creature: it spawns the ritual and the four doctors of the ring and hands
-## the creature over. If the site is taken the carrier waits and is tried again every frame (SacrificeSystem calls retry_waiting first).
+## Starts the ritual when a carrier reaches its site holding the creature: it spawns the ritual and
+## the four doctors of the ring and hands the creature over. If the site is taken the carrier waits
+## and is tried again every frame (SacrificeSystem calls retry_waiting first).
 ## What it does not do: run the rounds (Ritual does), choose the site or open the cast.
 
 @export var system: SacrificeSystem
@@ -37,7 +38,8 @@ func retry_waiting() -> void:
 	_waiting = still
 
 
-## The carrier holds its creature at the site: the ritual starts if the site is free. Returns the ritual, or null if it has to wait.
+## The carrier holds its creature at the site: the ritual starts if the site is free. Returns the
+## ritual, or null if it has to wait.
 func start(errand: CarryErrand) -> Ritual:
 	var site := errand.site
 	if site == null or not errand.is_carrying() or not site.is_standing() or not site.is_free():

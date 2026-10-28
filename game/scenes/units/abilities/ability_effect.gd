@@ -1,24 +1,27 @@
 class_name AbilityEffect
 extends Node
 
-## The own part of one active ability: what the ability does when it is used. AbilitySlot
-## checks cooldown → mana, then asks status() for the ability's own rule, calls fire() and, when
-## it returns true, spends the mana and starts the cooldown. The effect never touches mana or cooldown.
-## The AbilityType says which scene is its effect (`AbilityType.effect`).
-## Server (or solo): on a client AbilitySlot does not call it and its _physics_process stays off.
+## The own part of one active ability: what the ability does when it is used. AbilitySlot checks
+## cooldown → mana, then asks status() for the ability's own rule, calls fire() and, when it returns
+## true, spends the mana and starts the cooldown. The effect never touches mana or cooldown. The
+## AbilityType says which scene is its effect (`AbilityType.effect`). Server (or solo): on a client
+## AbilitySlot does not call it and its _physics_process stays off.
 
 ## How long the body prepares before fire(). 0 = at once (Protector, Life Shield).
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var windup_s := 0.0
 ## Starts the cooldown when it fires. Off = none (the pull).
 @export var starts_cooldown := true
-## The preparation comes from the creature's ability clip (see windup()). Off = windup_s as is (Protector, Halo: none).
+## The preparation comes from the creature's ability clip (see windup()). Off = windup_s as is
+## (Protector, Halo: none).
 @export var windup_from_clip := false
-## Which of the creature's two ability clips the preparation reads (SHOOT_ROLES[windup_clip]). 1 = `shoot2` (Firewalk, Breath
-## of life, Pull, Sticky bomb: they must not change); 0 = `shoot` (the Styx's Rend Soul prepares its attack clip, 100 ticks).
+## Which of the creature's two ability clips the preparation reads (SHOOT_ROLES[windup_clip]). 1 =
+## `shoot2` (Firewalk, Breath of life, Pull, Sticky bomb: they must not change); 0 = `shoot` (the
+## Styx's Rend Soul prepares its attack clip, 100 ticks).
 @export_range(0, 1) var windup_clip := 1
-## The mana is paid when the preparation starts, not at the shoot tick (the Jabberocky's
-## Quake). At the shoot tick AbilitySlot does not check the mana again: fire() and, if it was 0, the cooldown. If the preparation is cut the mana
-## is gone and there is no cooldown. Off = the mana is paid at the shoot tick (Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour, Rend).
+## The mana is paid when the preparation starts, not at the shoot tick (the Jabberocky's Quake). At
+## the shoot tick AbilitySlot does not check the mana again: fire() and, if it was 0, the cooldown.
+## If the preparation is cut the mana is gone and there is no cooldown. Off = the mana is paid at
+## the shoot tick (Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour, Rend).
 @export var pays_upfront := false
 
 ## Ticks one animation frame lasts (the game updates 60 times a second, the clips run at 30).
@@ -40,9 +43,11 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-## Ticks from the order to fire(). 0 = fire() in the same tick. With `windup_from_clip` the creature prepares until the shoot
-## tick of its ability clip (SHOOT_ROLES[windup_clip]: its first `shoot` marker at the clip's rate → 60 ticks/s, or its last frame if it has none); windup_s is the fallback when
-## it has no such clip (or the flag is off). The one owner of the lookup: Firewalk (shoot1) and Breath of life (shoot2).
+## Ticks from the order to fire(). 0 = fire() in the same tick. With `windup_from_clip` the creature
+## prepares until the shoot tick of its ability clip (SHOOT_ROLES[windup_clip]: its first `shoot`
+## marker at the clip's rate → 60 ticks/s, or its last frame if it has none); windup_s is the
+## fallback when it has no such clip (or the flag is off). The one owner of the lookup: Firewalk
+## (shoot1) and Breath of life (shoot2).
 func windup() -> int:
 	if windup_from_clip:
 		var type: CreatureType = user.type if user else null
@@ -64,7 +69,8 @@ func status(_target_pos: Vector3, _target: Node3D) -> String:
 	return ""
 
 
-## Does it. True = applied: AbilitySlot spends the mana and starts the cooldown. False = nothing happened, nothing spent.
+## Does it. True = applied: AbilitySlot spends the mana and starts the cooldown. False = nothing
+## happened, nothing spent.
 func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	return false
 

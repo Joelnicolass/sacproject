@@ -6,11 +6,11 @@ extends Node
 ## No limit by default (max_size 0). With max_size = 12 the classic
 ## mode returns: the newest goes first and pushes the last one out.
 ##
-## Click selects; Shift+click toggles; Ctrl+click selects that type within 50 m, Ctrl+Shift adds them; a double click
-## acts like Ctrl+click. A left drag of 3 px or more draws a rectangle (Shift adds).
-## Groups 1–0: Ctrl+N defines, N selects (an empty group changes nothing), Shift+N adds.
-## Summoned creatures join the selection and group 0.
-## Own creatures show their health bar only while selected.
+## Click selects; Shift+click toggles; Ctrl+click selects that type within 50 m, Ctrl+Shift adds
+## them; a double click acts like Ctrl+click. A left drag of 3 px or more draws a rectangle (Shift
+## adds). Groups 1–0: Ctrl+N defines, N selects (an empty group changes nothing), Shift+N adds.
+## Summoned creatures join the selection and group 0. Own creatures show their health bar only while
+## selected.
 
 signal changed(units: Array)
 
@@ -234,9 +234,9 @@ func select_group(index: int) -> bool:
 	return true
 
 
-## A creature that was tied to a building leaves the selection and every group (unselect + leave the groups).
-## GuardianBond calls it on every peer when its `post_path` fills; the
-## creature can be selected again afterwards (selecting does not exclude guardians).
+## A creature that was tied to a building leaves the selection and every group (unselect + leave the
+## groups). GuardianBond calls it on every peer when its `post_path` fills; the creature can be
+## selected again afterwards (selecting does not exclude guardians).
 func drop(unit: Node3D) -> void:
 	var was_selected := has(unit)
 	_units.erase(unit)

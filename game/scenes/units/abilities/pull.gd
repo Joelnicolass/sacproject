@@ -1,22 +1,24 @@
 class_name Pull
 extends AbilityEffect
 
-## The Gremlin's Web pull and the Seraph's Cage pull: they drag a foe to the caster. The same mechanic,
-## two scenes (web_pull.tscn, cage_pull.tscn) that only change the look. The body prepares up to the load tick
-## `liba` of its clip, frame 27, i.e. 2 · 27 = 54 ticks; there the pull starts and drains
-## the mana. The pull has no cooldown (`starts_cooldown` off).
-## This effect judges the target and starts the pull; the simulation of the pull is Pulling's (the user's state).
+## The Gremlin's Web pull and the Seraph's Cage pull: they drag a foe to the caster. The same
+## mechanic, two scenes (web_pull.tscn, cage_pull.tscn) that only change the look. The body prepares
+## up to the load tick `liba` of its clip, frame 27, i.e. 2 · 27 = 54 ticks; there the pull starts
+## and drains the mana. The pull has no cooldown (`starts_cooldown` off). This effect judges the
+## target and starts the pull; the simulation of the pull is Pulling's (the user's state).
 ##
-## Target (flags: creatures, wizards, no ally): a live
-## creature or wizard that is not an ally, within the spell's range (50 m, feet to feet), and not shielded: the crowd control
-## flag refuses a cc-protected body that is shielded (Life Shield); a petrified or frozen one, cc-protected but not shielded, is
-## pulled all the same.
-## fire(): a ray from the shot origin to the target's center; the first valid body on the way, of any
-## side, becomes the target. A body, not a structure or a soul (declared in Pulling).
+## Target (flags: creatures, wizards, no ally): a live creature or wizard that is not an ally,
+## within the spell's range (50 m, feet to feet), and not shielded: the crowd control flag refuses a
+## cc-protected body that is shielded (Life Shield); a petrified or frozen one, cc-protected but not
+## shielded, is pulled all the same. fire(): a ray from the shot origin to the target's center; the
+## first valid body on the way, of any side, becomes the target. A body, not a structure or a soul
+## (declared in Pulling).
 
-## The frame of the clip where the pull is loaded (`liba`, not exported: SPs1 and LSs1 have it at 27).
+## The frame of the clip where the pull is loaded (`liba`, not exported: SPs1 and LSs1 have it at
+## 27).
 @export var load_frame := 27
-## Which of the creature's shoot clips it plays (AbilityEffect.SHOOT_ROLES): 0 = `shoot`, 1 = `shoot2`.
+## Which of the creature's shoot clips it plays (AbilityEffect.SHOOT_ROLES): 0 = `shoot`, 1 =
+## `shoot2`.
 @export var clip_index := 0
 ## How fast the target is pulled (m/s).
 @export var pull_speed := 16.5
@@ -30,12 +32,14 @@ extends AbilityEffect
 @export var max_pulls := 4
 ## The thread (pull_thread.tscn / cage_thread.tscn), played by Pulling with FxBus.broadcast_scene.
 @export var thread_scene: PackedScene
-## The burst played at the target when it ends (64 particles), and the socket of the target it leaves from. Empty = none.
+## The burst played at the target when it ends (64 particles), and the socket of the target it
+## leaves from. Empty = none.
 @export var break_fx: ParticleType
 @export var break_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 
-## 2 ticks per frame up to the load frame. The one owner of the preparation of a pull (AbilitySlot asks).
+## 2 ticks per frame up to the load frame. The one owner of the preparation of a pull (AbilitySlot
+## asks).
 func windup() -> int:
 	return FRAME_TICKS * load_frame
 
@@ -50,7 +54,8 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## True even if the target is gone by the load tick: the mana is drained there all the same (AbilitySlot spends).
+## True even if the target is gone by the load tick: the mana is drained there all the same
+## (AbilitySlot spends).
 func fire(_target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority():
 		return false
@@ -70,8 +75,8 @@ func fire(_target_pos: Vector3, target: Node3D) -> bool:
 	return pulling.start(hit, self, loop_ticks(), pull_frame())
 
 
-## The rules that apply to the target of the ability and to the pull at each of its pulls: range, mana and
-## cooldown do not count after the start.
+## The rules that apply to the target of the ability and to the pull at each of its pulls: range,
+## mana and cooldown do not count after the start.
 func applicable(target: Node3D) -> bool:
 	if not is_live(target) or target == user:
 		return false
@@ -81,8 +86,9 @@ func applicable(target: Node3D) -> bool:
 	return wards == null or not wards.shielded()
 
 
-## A ray from the shot origin to the target's center: the nearest valid body (any side, not the user) whose
-## box the segment crosses. The target itself is one of them, so the ray only changes it for a body in front of it.
+## A ray from the shot origin to the target's center: the nearest valid body (any side, not the
+## user) whose box the segment crosses. The target itself is one of them, so the ray only changes it
+## for a body in front of it.
 func first_body_on_path(target: Node3D) -> Node3D:
 	var from := _origin()
 	var to := BodyNudge.center(target)
@@ -103,7 +109,8 @@ func first_body_on_path(target: Node3D) -> Node3D:
 	return best
 
 
-## Frames of the user's clip (LSs1 82, SPs1 102), from its CreatureType. 0 = the creature has no such clip.
+## Frames of the user's clip (LSs1 82, SPs1 102), from its CreatureType. 0 = the creature has no
+## such clip.
 func frames() -> int:
 	var type: CreatureType = user.get("type") if user else null
 	if type == null or clip_index >= SHOOT_ROLES.size():
@@ -111,7 +118,8 @@ func frames() -> int:
 	return type.clip_facts().frames(SHOOT_ROLES[clip_index])
 
 
-## The loop of the clip in ticks, and the tick of the loop where it pulls (its last frame; no `lrba`).
+## The loop of the clip in ticks, and the tick of the loop where it pulls (its last frame; no
+## `lrba`).
 func loop_ticks() -> int:
 	return FRAME_TICKS * frames()
 

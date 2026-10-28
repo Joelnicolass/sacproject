@@ -2,10 +2,12 @@
 class_name SoulAction
 extends SpellAction
 
-## A spell that sends something walking to a soul and back (Soul Mole, Soul Wind). The click names a soul the wizard may fetch: blue for
-## his side, not dropped with P, still waiting. The thing is born at his feet when the cast starts and already walks while he casts;
-## when the casting time ends it starts to act (stun, hurt), and if the wizard is interrupted it vanishes. One scene per spell: the
-## kind of carrier and the numbers change, not the script. It does not walk the route (SpellCarrier) nor take the soul (SoulFetch).
+## A spell that sends something walking to a soul and back (Soul Mole, Soul Wind). The click names a
+## soul the wizard may fetch: blue for his side, not dropped with P, still waiting. The thing is
+## born at his feet when the cast starts and already walks while he casts; when the casting time
+## ends it starts to act (stun, hurt), and if the wizard is interrupted it vanishes. One scene per
+## spell: the kind of carrier and the numbers change, not the script. It does not walk the route
+## (SpellCarrier) nor take the soul (SoulFetch).
 
 ## The carrier scene that walks to the soul (its root is a SpellCarrier).
 @export var carrier: PackedScene

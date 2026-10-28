@@ -3,20 +3,22 @@ class_name CombatGauge
 extends Node
 
 ## How much fighting the player hears, from what every peer already has (no RPC, nothing written).
-## - `intensity` 0..1: the creatures (group «unit») within `radius_m` of the listener (SoundBus.listener_position:
-##   ListenerFocus on the local wizard) that fight, over `full_at`. A creature fights when its replicated `mode` is a
-##   fighting one (CHASE, ATTACK, SHOOT: a swing is shorter than a sample) or its `swings`/`shots` counters moved since the
-##   last sample.
-## - Hysteresis: the combat turns on when the intensity reaches `enter` and turns off after it stays under `exit` for
-##   `hold_s`, so a pause between two swings does not cut the battle music.
-## - The local wizard hurt (Events.body_hurt on that wizard) keeps the battle on for `wizard_damage_s`.
-## `is_battle()` is either of the two; `battle_changed(on)` tells when it flips. It chooses no music.
-## Sampled every `sample_every_s` of game time. With the AudioGate closed it does nothing. `force(value)` pins the
-## intensity (the lab's `battle` step); `force(-1)` lets it go.
+## - `intensity` 0..1: the creatures (group «unit») within `radius_m` of the listener
+##   (SoundBus.listener_position: ListenerFocus on the local wizard) that fight, over `full_at`. A
+##   creature fights when its replicated `mode` is a fighting one (CHASE, ATTACK, SHOOT: a swing is
+##   shorter than a sample) or its `swings`/`shots` counters moved since the last sample.
+## - Hysteresis: the combat turns on when the intensity reaches `enter` and turns off after it stays
+##   under `exit` for `hold_s`, so a pause between two swings does not cut the battle music.
+## - The local wizard hurt (Events.body_hurt on that wizard) keeps the battle on for
+##   `wizard_damage_s`.
+## `is_battle()` is either of the two; `battle_changed(on)` tells when it flips. It chooses no
+## music. Sampled every `sample_every_s` of game time. With the AudioGate closed it does nothing.
+## `force(value)` pins the intensity (the lab's `battle` step); `force(-1)` lets it go.
 
 signal battle_changed(on: bool)
 
-## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets `wizard`.
+## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets
+## `wizard`.
 @export var world: MatchWorld
 @export var wizard: Node3D
 @export_range(1.0, 500.0, 1.0, "suffix:m") var radius_m := 40.0
@@ -70,7 +72,8 @@ func _process(delta: float) -> void:
 	sample()
 
 
-## True while the music should be the battle's: combat near the listener, or the local wizard hurt lately.
+## True while the music should be the battle's: combat near the listener, or the local wizard hurt
+## lately.
 func is_battle() -> bool:
 	return _battle
 
@@ -85,13 +88,15 @@ func since_wizard_hit() -> float:
 	return _clock - _wizard_hit_at
 
 
-## Pins the intensity at `value` (0..1) from now on; a negative value lets it be measured again. Samples at once.
+## Pins the intensity at `value` (0..1) from now on; a negative value lets it be measured again.
+## Samples at once.
 func force(value: float) -> void:
 	_forced = value
 	sample()
 
 
-## The local wizard whose health keeps the battle on (MatchWorld.local_wizard_changed; the lab sets it).
+## The local wizard whose health keeps the battle on (MatchWorld.local_wizard_changed; the lab sets
+## it).
 func bind_wizard(node: Node3D) -> void:
 	wizard = node
 
@@ -118,7 +123,8 @@ func sample() -> void:
 		battle_changed.emit(on)
 
 
-## The intensity now, from the replicated modes of the creatures near the listener (0 without a listener).
+## The intensity now, from the replicated modes of the creatures near the listener (0 without a
+## listener).
 func measure() -> float:
 	var at: Vector3 = SoundBus.listener_position()
 	if at == Vector3.INF:

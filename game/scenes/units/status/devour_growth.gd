@@ -1,16 +1,17 @@
 class_name DevourGrowth
 extends DamageModifier
 
-## What a creature that ate souls (Devour: Netherfiend crpd, Hellmouth nomd) has become. The one owner
-## of the souls eaten, the regeneration they added, the resistance they took and the bulk the body draws.
-## Per soul eaten: health and maximum +500; the regeneration increment is 0.25·maximum the first time
-## and 0.75·increment + 125 after; regeneration += increment/60 a second; the five resistances ×0.9; numBulks +1. The bulk is
-## render only: 2 − 0.75ⁿ, reached by a smoothing of exp(ln 0.1/60) a tick.
-## Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeWeapon through resistance_factor_of), UnitBody asks
-## extra_regeneration_of() when it regenerates, Devour calls grow(). The cure (Rainbow) is HealEffect's.
-## `shown` (the souls eaten) is replicated (the unit's MultiplayerSynchronizer, "DevourGrowth:shown"): every peer draws the bulk
-## from it. The bulk is a scale of the mesh (placeholder).
-## Server (or solo) only for grow().
+## What a creature that ate souls (Devour: Netherfiend crpd, Hellmouth nomd) has become. The one
+## owner of the souls eaten, the regeneration they added, the resistance they took and the bulk the
+## body draws.
+## Per soul eaten: health and maximum +500; the regeneration increment is 0.25·maximum the first
+## time and 0.75·increment + 125 after; regeneration += increment/60 a second; the five resistances
+## ×0.9; numBulks +1. The bulk is render only: 2 − 0.75ⁿ, reached by a smoothing of exp(ln 0.1/60) a
+## tick. Nobody else keeps these numbers: Health asks resistance_factor() (and MeleeWeapon through
+## resistance_factor_of), UnitBody asks extra_regeneration_of() when it regenerates, Devour calls
+## grow(). The cure (Rainbow) is HealEffect's. `shown` (the souls eaten) is replicated (the unit's
+## MultiplayerSynchronizer, "DevourGrowth:shown"): every peer draws the bulk from it. The bulk is a
+## scale of the mesh (placeholder). Server (or solo) only for grow().
 
 ## The body that grows (its name goes in the log). Empty = the parent.
 @export var body: Node3D
@@ -20,11 +21,13 @@ extends DamageModifier
 @export var visual: Node3D
 @export_group("Per soul")
 @export var health_per_soul := 500.0
-## The first increment is this fraction of the maximum (after the +500), the next ones increment·keep + add.
+## The first increment is this fraction of the maximum (after the +500), the next ones
+## increment·keep + add.
 @export var first_increment := 0.25
 @export var increment_keep := 0.75
 @export var increment_add := 125.0
-## The increment heals over this long: regeneration per second goes up by increment / regeneration_over_s.
+## The increment heals over this long: regeneration per second goes up by increment /
+## regeneration_over_s.
 @export_range(1.0, 600.0, 0.0001, "suffix:s") var regeneration_over_s := 60.0
 @export var resistance_step := 0.9
 @export_group("Bulk")
@@ -32,7 +35,8 @@ extends DamageModifier
 @export var bulk_step := 0.75
 ## Smoothing per tick: 1 − exp(ln(0.1)/60).
 @export var bulk_blend := 0.0376494
-## The swelling of Intestinal Vaporization adds up to this much to the bulk when `inflation` is 1 (maxBulk 2.5 − 1).
+## The swelling of Intestinal Vaporization adds up to this much to the bulk when `inflation` is 1
+## (maxBulk 2.5 − 1).
 @export var inflate_by := 1.5
 
 ## Replicated: souls eaten. The setter is the one place the bulk is asked.
@@ -43,7 +47,8 @@ extends DamageModifier
 		shown = value
 		set_physics_process(is_inside_tree() and _bulk_moving())
 
-## Replicated: how swollen the body is, 0..1 (Intestinal Vaporization writes it each tick it lasts; nobody else). Drawn at once, with no smoothing.
+## Replicated: how swollen the body is, 0..1 (Intestinal Vaporization writes it each tick it lasts;
+## nobody else). Drawn at once, with no smoothing.
 @export_range(0.0, 1.0) var inflation := 0.0:
 	set(value):
 		value = clampf(value, 0.0, 1.0)
@@ -69,7 +74,8 @@ static func resistance_factor_of(node: Node) -> float:
 	return growth.resistance_factor() if growth else 1.0
 
 
-## What the souls added to the regeneration per second (0 with none). UnitBody adds it to the type's.
+## What the souls added to the regeneration per second (0 with none). UnitBody adds it to the
+## type's.
 static func extra_regeneration_of(node: Node) -> float:
 	var growth := of(node)
 	return growth.extra_regeneration() if growth else 0.0
@@ -89,7 +95,8 @@ func extra_regeneration() -> float:
 	return _extra
 
 
-## Server (or solo). The body eats `souls` souls (the soul.number of what it devoured). `from` is what the log calls them.
+## Server (or solo). The body eats `souls` souls (the soul.number of what it devoured). `from` is
+## what the log calls them.
 func grow(souls: int, from := "") -> void:
 	if not is_multiplayer_authority() or souls <= 0 or health == null:
 		return
@@ -108,6 +115,7 @@ func grow(souls: int, from := "") -> void:
 	if DebugLog.on(&"devour"):
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"devours %s soul %s n %d health %d->%d max %d->%d increment %.3f regeneration +%.3f/s resistance %.4f (tick %d)"
 				% [
 					AbilityEffect.who(body),

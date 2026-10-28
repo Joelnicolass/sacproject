@@ -2,13 +2,15 @@
 class_name BuildingType
 extends Resource
 
-## What a building of the map is: the name its panel shows, how much it takes to destroy it, whether peasants hide in it
-## and what stays when it falls. One .tres per building in data/buildings/; the building you drag into a map is a scene of
-## scenes/structures/buildings/ whose MapBuilding root points here through `type`. Never changed while playing: the health
-## lives in the building's Health node. Does not place anything: MapBuilding does.
+## What a building of the map is: the name its panel shows, how much it takes to destroy it, whether
+## peasants hide in it and what stays when it falls. One .tres per building in data/buildings/; the
+## building you drag into a map is a scene of scenes/structures/buildings/ whose MapBuilding root
+## points here through `type`. Never changed while playing: the health lives in the building's
+## Health node. Does not place anything: MapBuilding does.
 
-## What the building does in the game: nothing (scenery), a Manalith (feeds mana, the Manahoar use it) or a Shrine (feeds
-## less mana, takes Convert rituals). Code that needs the difference asks this, never the tag.
+## What the building does in the game: nothing (scenery), a Manalith (feeds mana, the Manahoar use
+## it) or a Shrine (feeds less mana, takes Convert rituals). Code that needs the difference asks
+## this, never the tag.
 enum Role { SCENERY, MANALITH, SHRINE }
 
 ## The name the info panel shows («Casa», «Lápida»). Empty: the generic «Edificio».
@@ -19,7 +21,8 @@ enum Role { SCENERY, MANALITH, SHRINE }
 @export_range(0.0, 20000.0, 1.0, "or_greater") var max_health := 0.0
 ## Peasants run to it when they are scared.
 @export var shelters_peasants := false
-## The land is changed under it and it has no box body (not a target); a tree's `trunk` (MapBuilding) still stops bodies.
+## The land is changed under it and it has no box body (not a target); a tree's `trunk`
+## (MapBuilding) still stops bodies.
 @export var flattens_ground := false
 ## What stays when it falls: the destroyed models, placed like the parts. Empty: nothing.
 @export var ruin_scene: PackedScene

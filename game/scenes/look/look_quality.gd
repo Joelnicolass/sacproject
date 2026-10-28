@@ -43,7 +43,8 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 @export var glow_enabled: bool = true
 
 @export_group("Ground")
-## 4 = the god's ground also reads its roles' normal and ORM maps; below 4 = colour only. All four roles always draw.
+## 4 = the god's ground also reads its roles' normal and ORM maps; below 4 = colour only. All four
+## roles always draw.
 @export_range(1, 4) var ground_layers: int = 4
 ## Rock layers project the maps from three sides (stretch-free cliffs).
 @export var ground_triplanar: bool = true
@@ -54,8 +55,8 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 
 @export_group("Grass")
 @export var grass_enabled: bool = true
-## Radius of the ring of grass around the point the camera looks at: where the grass has height 0
-## is 85 % of it. The radius is what a preset saves; the far density is the type's and does not change.
+## Radius of the ring of grass around the point the camera looks at: where the grass has height 0 is
+## 85 % of it. The radius is what a preset saves; the far density is the type's and does not change.
 @export_range(10.0, 150.0, 1.0, "suffix:m") var grass_radius_m: float = 45.0
 ## Inside this radius the blades are at their densest and have the most vertices.
 @export_range(5.0, 80.0, 1.0, "suffix:m") var grass_near_radius_m: float = 15.0
@@ -70,7 +71,8 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 @export var grass_trample: bool = true
 
 @export_group("VFX and weather")
-## Sprites fade against the scene depth instead of cutting the ground (shader global `fx_soft_particles`).
+## Sprites fade against the scene depth instead of cutting the ground (shader global
+## `fx_soft_particles`).
 @export var fx_soft_particles: bool = true
 ## Atlas frames blend into the next one (shader global `fx_frame_blend`).
 @export var fx_frame_blend: bool = true
@@ -78,7 +80,8 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 @export_range(0, 64) var fx_max_lights: int = 8
 
 @export_group("Actor lights")
-## Most lights of units, wizards and spells on at once (ActorLightBudget): shadowless OmniLight3D. 0 = none.
+## Most lights of units, wizards and spells on at once (ActorLightBudget): shadowless OmniLight3D. 0
+## = none.
 @export_range(0, 64) var actor_max_lights: int = 12
 
 @export_group("Ambience")
@@ -88,12 +91,13 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 @export_range(0.0, 2.0, 0.05) var life_density_scale: float = 1.0
 
 @export_group("Relief")
-## The normal maps of the models (SurfaceReliefLayer). Off = every material draws as if it had none; the player's
-## «Relieve» option can only turn them off on top of this.
+## The normal maps of the models (SurfaceReliefLayer). Off = every material draws as if it had none;
+## the player's «Relieve» option can only turn them off on top of this.
 @export var relief_maps: bool = true
 
 @export_group("Vegetation")
-## One entry per mesh vegetation layer (FloraField), by the layer's id. A layer without an entry is not drawn.
+## One entry per mesh vegetation layer (FloraField), by the layer's id. A layer without an entry is
+## not drawn.
 @export var vegetation: Array[VegetationQuality] = []
 
 

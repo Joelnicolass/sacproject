@@ -4,7 +4,8 @@ extends Node3D
 
 ## Contract of one look layer (a child of `LookRig/Layers`). The rig hands it the profile and the
 ## quality preset; hiding the layer turns it off (`restore`). Layers know nothing of each other.
-## Presentation only: the rig is freed in a dedicated or headless process, so none of this runs there.
+## Presentation only: the rig is freed in a dedicated or headless process, so none of this runs
+## there.
 
 
 ## Show this profile (null = classic mode: put everything back). Reads `rig.quality_preset`.

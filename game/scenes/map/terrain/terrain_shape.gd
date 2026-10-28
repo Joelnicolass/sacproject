@@ -1,14 +1,15 @@
 class_name TerrainShape
 extends RefCounted
 
-## The land a map's TerrainHeights makes, derived in one go and held in memory: its triangles (TerrainFaces) and their
-## per-cell index (TerrainRules). In the editor it follows the heights and derives them again once they have been still
-## for DELAY_S after a change (a reimport, a brush stroke), so a stroke never waits on it; then it tells `derived` with the
-## vertices that changed since the last time.
+## The land a map's TerrainHeights makes, derived in one go and held in memory: its triangles
+## (TerrainFaces) and their per-cell index (TerrainRules). In the editor it follows the heights and
+## derives them again once they have been still for DELAY_S after a change (a reimport, a brush
+## stroke), so a stroke never waits on it; then it tells `derived` with the vertices that changed
+## since the last time.
 ## Not: the match state (GroundField), the answers (Terrain), the mesh (TerrainMesh).
 
-## The triangles and the index were made again; `moved` holds the lattice vertices whose height or void changed since the
-## last derive (editor only; empty the first time and in a match).
+## The triangles and the index were made again; `moved` holds the lattice vertices whose height or
+## void changed since the last derive (editor only; empty the first time and in a match).
 signal derived(moved: Rect2i)
 ## Editor: how long the heights must stay still before they are derived again.
 const DELAY_S := 0.4
@@ -23,7 +24,8 @@ var _last_heights := PackedFloat32Array()
 var _last_voids := PackedByteArray()
 
 
-## Derives `heights` now and, in the editor, again after each change of it. `clock` (the Terrain) gives the timers.
+## Derives `heights` now and, in the editor, again after each change of it. `clock` (the Terrain)
+## gives the timers.
 func follow(heights: TerrainHeights, clock: Node) -> void:
 	if _heights != null and _heights.changed.is_connected(_on_changed):
 		_heights.changed.disconnect(_on_changed)
@@ -70,7 +72,8 @@ func _on_changed() -> void:
 		derive()
 
 
-## Editor: the vertices whose height or void differ from the last derive (whole rows are compared first), then remembers these.
+## Editor: the vertices whose height or void differ from the last derive (whole rows are compared
+## first), then remembers these.
 func _moved() -> Rect2i:
 	if not Engine.is_editor_hint() or _heights == null or not _heights.is_valid():
 		return Rect2i()

@@ -1,7 +1,7 @@
 extends FsmState
 
-## On the ground: walks to the goal of `body.motor` when it has one, else stands. Regenerates all the time.
-## Server only.
+## On the ground: walks to the goal of `body.motor` when it has one, else stands. Regenerates all
+## the time. Server only.
 
 var body: DoctorBody:
 	get:

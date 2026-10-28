@@ -2,10 +2,12 @@
 class_name ShakeMap
 extends Resource
 
-## How a played effect becomes camera shake (data/fx/shake_map.tres): the distance fall-off only. CameraShake listens to FxBus.played on every
-## peer and adds `trauma_of(kind, fx, distance)`; presentation only, no RPC. How hard an effect shakes is the effect's own `camera_trauma`
+## How a played effect becomes camera shake (data/fx/shake_map.tres): the distance fall-off only.
+## CameraShake listens to FxBus.played on every peer and adds `trauma_of(kind, fx, distance)`;
+## presentation only, no RPC. How hard an effect shakes is the effect's own `camera_trauma`
 ## (ParticleType, BeamType, or the root of an FxScene), not a table by name.
-## - Full trauma within `full_within_m`, falling linearly to 0 at `max_distance_m` (horizontal distance from the camera); nothing beyond.
+## - Full trauma within `full_within_m`, falling linearly to 0 at `max_distance_m` (horizontal
+##   distance from the camera); nothing beyond.
 ## - Only the kinds in `felt_kinds` count (a trail's puffs never shake).
 
 @export var full_within_m := 8.0
@@ -13,7 +15,8 @@ extends Resource
 @export var felt_kinds: Array[StringName] = [&"burst", &"scene"]
 
 
-## Trauma an effect of `kind` adds at `distance_m` (0 when it has no `camera_trauma`, is not a felt kind or is too far).
+## Trauma an effect of `kind` adds at `distance_m` (0 when it has no `camera_trauma`, is not a felt
+## kind or is too far).
 func trauma_of(kind: StringName, fx: Resource, distance_m: float) -> float:
 	if not felt_kinds.has(kind) or distance_m >= max_distance_m:
 		return 0.0

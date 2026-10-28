@@ -2,16 +2,21 @@
 class_name WizardDrive
 extends Node
 
-## The one writer of a wizard's movement each tick. `step` is what `WizardBody.mp_move` runs: the kit runs it on the server for every
-## frame of the owner's keys, on the owner at once with its own keys and again when it reconciles, and an AI seat or a test-scene body
-## runs it with no keys at all. A step reads only what travels in the MpSync (the pose, `velocity`, `speed_factor`, `locked`) and the
-## keys, so the server, the owner and a replay get the same answer; the walk orders (`walking`, `goal`) are the server's alone.
-## Owns `locked`: the server derives it every step from what holds the wizard (a stun or a tumble, a structure cast, a ghost that
-## cannot move, the seating), and the owner reads the copy that arrived, because `Caster.holds_wizard` is not true on a client.
-## Not: where the keys come from (`WizardBody` sets the values `forward` and `yaw` of its MpInput), the slide and the fall
-## (Locomotion), the pose of a client (MpActor), nor what a fall means (the body).
+## The one writer of a wizard's movement each tick. `step` is what `WizardBody.mp_move` runs: the
+## kit runs it on the server for every frame of the owner's keys, on the owner at once with its own
+## keys and again when it reconciles, and an AI seat or a test-scene body runs it with no keys at
+## all. A step reads only what travels in the MpSync (the pose, `velocity`, `speed_factor`,
+## `locked`) and the keys, so the server, the owner and a replay get the same answer; the walk
+## orders (`walking`, `goal`) are the server's alone. Owns `locked`: the server derives it every
+## step from what holds the wizard (a stun or a tumble, a structure cast, a ghost that cannot move,
+## the seating), and the owner reads the copy that arrived, because `Caster.holds_wizard` is not
+## true on a client.
+## Not: where the keys come from (`WizardBody` sets the values `forward` and `yaw` of its MpInput),
+## the slide and the fall (Locomotion), the pose of a client (MpActor), nor what a fall means (the
+## body).
 
-## The keys' `forward` and `yaw` are the only inputs; anything else a peer sends is dropped by `_forward_of` and `_yaw_of`.
+## The keys' `forward` and `yaw` are the only inputs; anything else a peer sends is dropped by
+## `_forward_of` and `_yaw_of`.
 @export var body: WizardBody
 @export var locomotion: Locomotion
 @export var afflictions: Afflictions
@@ -20,12 +25,14 @@ extends Node
 ## The path of an order-level walk (go_to); `cancel_orders` stops it.
 @export var follower: PathFollower
 
-## Held, ghost that cannot move or seating: it neither walks nor turns. Server writes, clients read (MpSync).
+## Held, ghost that cannot move or seating: it neither walks nor turns. Server writes, clients read
+## (MpSync).
 var locked := false
 ## A walk order is on (server only): `goal` is its leg.
 var walking := false
 var goal := Vector3.ZERO
-## The last step set a flat velocity (the wizard was walking, by keys or by order). Server only: regeneration reads it.
+## The last step set a flat velocity (the wizard was walking, by keys or by order). Server only:
+## regeneration reads it.
 var moving := false
 
 
@@ -35,7 +42,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return PackedStringArray()
 
 
-## One tick of movement. `keys` carries `forward` (-1..1) and `yaw`; null = no player (an AI seat, a walk order only).
+## One tick of movement. `keys` carries `forward` (-1..1) and `yaw`; null = no player (an AI seat, a
+## walk order only).
 func step(keys: MpInput, delta: float) -> void:
 	var authority := is_multiplayer_authority()
 	var held := false
@@ -70,7 +78,8 @@ func step(keys: MpInput, delta: float) -> void:
 	locomotion.finish_now(delta, body.is_obstacle)
 
 
-## Meters per second at full stride: the type's run speed (or the walk cycle's), times the speed factors.
+## Meters per second at full stride: the type's run speed (or the walk cycle's), times the speed
+## factors.
 func pace_m_s() -> float:
 	var base := body.move_speed
 	if base <= 0.0 and body.step != null:
@@ -78,7 +87,8 @@ func pace_m_s() -> float:
 	return base * body.speed_factor * ghost.speed_factor()
 
 
-## Server: a straight leg of a walk order (what the PathFollower hands out). It ends within one step of `point`.
+## Server: a straight leg of a walk order (what the PathFollower hands out). It ends within one step
+## of `point`.
 func begin_walk(point: Vector3) -> void:
 	goal = point
 	if walking:

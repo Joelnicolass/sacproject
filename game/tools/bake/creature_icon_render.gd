@@ -1,10 +1,12 @@
 class_name CreatureIconRender
 extends RefCounted
 
-## The HUD icon of a creature of your own, drawn from its model. A SubViewport with its own world holds the .glb in
-## the pose of its idle clip, a camera frames the box of the mesh, and the picture is put on a dark disc with a gold ring, at the size
-## of the original's icons (32 x 32, assets/original/ui/icons/). The result goes to assets/custom/icons/<tag>.png, and `link` puts it in the `icon` of the creature's .tres.
-## A PNG that already exists there is never overwritten (it may be yours): `force` draws it again.
+## The HUD icon of a creature of your own, drawn from its model. A SubViewport with its own world
+## holds the .glb in the pose of its idle clip, a camera frames the box of the mesh, and the picture
+## is put on a dark disc with a gold ring, at the size of the original's icons (32 x 32,
+## assets/original/ui/icons/). The result goes to assets/custom/icons/<tag>.png, and `link` puts it
+## in the `icon` of the creature's .tres. A PNG that already exists there is never overwritten (it
+## may be yours): `force` draws it again.
 ## It needs a renderer: a headless run has none, so `ensure` says so and writes nothing.
 
 const MODEL_DIR := "res://assets/custom/models/"
@@ -15,7 +17,8 @@ const SHOT := 256
 const FOV_DEG := 28.0
 ## The box fills the picture this much (1 = touching the edges).
 const FILL := 0.86
-## From where the camera looks at the model, in the model's axes (it faces +Z): a little to the side and above.
+## From where the camera looks at the model, in the model's axes (it faces +Z): a little to the side
+## and above.
 const VIEW := Vector3(0.45, 0.3, 1.0)
 const GOLD := Color8(173, 109, 19)
 const BLUE := Color8(54, 76, 160)
@@ -26,7 +29,8 @@ static func path_for(tag: String) -> String:
 	return ICON_DIR + tag + ".png"
 
 
-## The .glb clip the creature rests on: the one behind its `gesture` role, else its `idle` ("" without a library).
+## The .glb clip the creature rests on: the one behind its `gesture` role, else its `idle` (""
+## without a library).
 static func idle_clip_of(type: CreatureType) -> String:
 	if type == null or type.clips == null:
 		return ""
@@ -36,8 +40,8 @@ static func idle_clip_of(type: CreatureType) -> String:
 	return ""
 
 
-## Makes assets/custom/icons/<tag>.png if it is missing (or `force`). `host` is a node inside the tree (it holds the viewport for a
-## few frames). Returns a line saying what happened.
+## Makes assets/custom/icons/<tag>.png if it is missing (or `force`). `host` is a node inside the
+## tree (it holds the viewport for a few frames). Returns a line saying what happened.
 static func ensure(host: Node, tag: String, idle_clip: String, force := false) -> String:
 	var path := path_for(tag)
 	if not force and FileAccess.file_exists(path):
@@ -48,6 +52,7 @@ static func ensure(host: Node, tag: String, idle_clip: String, force := false) -
 	var image := await render(host, glb, idle_clip)
 	if image == null:
 		return (
+			# gdlint: ignore=max-line-length
 			"not drawn: no renderer here (a headless run has none). Run `Godot --path . --script res://tools/bake/creature_icon.gd -- %s` with a window, or put your own %s"
 			% [tag, path]
 		)
@@ -58,8 +63,9 @@ static func ensure(host: Node, tag: String, idle_clip: String, force := false) -
 	return "wrote %s (%d x %d)" % [path, SIZE, SIZE]
 
 
-## Puts the PNG of `tag` in the `icon` of data/catalog/creatures/<tag>.tres. Godot has to have imported the PNG first (open the editor or run
-## `--import` once); until then it says so and `tools/bake/fill_type_icons.gd` does it later. A creature that already has an icon keeps it.
+## Puts the PNG of `tag` in the `icon` of data/catalog/creatures/<tag>.tres. Godot has to have
+## imported the PNG first (open the editor or run `--import` once); until then it says so and
+## `tools/bake/fill_type_icons.gd` does it later. A creature that already has an icon keeps it.
 static func link(tag: String) -> String:
 	var type_path := TypeRef.creature_path(tag)
 	var type := (
@@ -72,6 +78,7 @@ static func link(tag: String) -> String:
 	var path := path_for(tag)
 	if not ResourceLoader.exists(path):
 		return (
+			# gdlint: ignore=max-line-length
 			"not linked: %s is not imported yet (open the editor or run --import once, then tools/bake/fill_type_icons.gd)"
 			% path
 		)
@@ -157,8 +164,9 @@ static func _box(root: Node3D) -> AABB:
 	return box
 
 
-## How far from the center of `box` a camera looking along `direction` (from the center) has to be for the whole box to be
-## inside the picture, FILL of it. The corners are projected on the camera's axes: one by one is exact for any box.
+## How far from the center of `box` a camera looking along `direction` (from the center) has to be
+## for the whole box to be inside the picture, FILL of it. The corners are projected on the camera's
+## axes: one by one is exact for any box.
 static func _distance(box: AABB, direction: Vector3, fov_deg: float) -> float:
 	var basis := Basis.looking_at(-direction, Vector3.UP)
 	var reach := tan(deg_to_rad(fov_deg) * 0.5) * FILL
@@ -166,12 +174,14 @@ static func _distance(box: AABB, direction: Vector3, fov_deg: float) -> float:
 	for corner in 8:
 		var offset := box.get_endpoint(corner) - box.get_center()
 		var local := basis.inverse() * offset
-		# The camera looks down -Z of its basis: a corner `local.z` toward it is closer by that much.
+		# The camera looks down -Z of its basis: a corner `local.z` toward it is closer by that
+		# much.
 		distance = maxf(distance, local.z + maxf(absf(local.x), absf(local.y)) / reach)
 	return distance
 
 
-## The portrait over a dark disc with the ring of the original's icons (gold outside, a thin blue one inside).
+## The portrait over a dark disc with the ring of the original's icons (gold outside, a thin blue
+## one inside).
 static func _framed(portrait: Image) -> Image:
 	var out := Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 	var middle := (SIZE - 1) * 0.5

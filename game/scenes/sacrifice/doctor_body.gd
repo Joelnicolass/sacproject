@@ -2,17 +2,22 @@
 class_name DoctorBody
 extends GameBody
 
-## A Sac Doctor: falls out of a vortex, walks to a point, stands working and dies. Not a UnitBody: no orders, attack, corpse or soul;
-## creatures, shots and spells can still attack it (group «doctor»). It keeps the pose, the work and the health and offers the verbs;
-## it does not walk (its `motor`, DoctorMotor) or draw (DoctorLook listens to `pose_changed`); `errand` is what a carrier came for.
-## The server (or solo) runs the States machine; clients get the pose (drawn smoothly by its MpActor, BUFFERED), `pose`, `work`, `carried` and Health from the MpActor's MpSync (doctor.tscn) and only present them.
+## A Sac Doctor: falls out of a vortex, walks to a point, stands working and dies. Not a UnitBody:
+## no orders, attack, corpse or soul; creatures, shots and spells can still attack it (group
+## «doctor»). It keeps the pose, the work and the health and offers the verbs; it does not walk (its
+## `motor`, DoctorMotor) or draw (DoctorLook listens to `pose_changed`); `errand` is what a carrier
+## came for. The server (or solo) runs the States machine; clients get the pose (drawn smoothly by
+## its MpActor, BUFFERED), `pose`, `work`, `carried` and Health from the MpActor's MpSync
+## (doctor.tscn) and only present them.
 
-## Server only: the drop is over (the bounce included) / walk_to reached its goal / it died (no corpse, no soul) / the StuckGuard gave up.
+## Server only: the drop is over (the bounce included) / walk_to reached its goal / it died (no
+## corpse, no soul) / the StuckGuard gave up.
 signal landed
 signal arrived(goal: Vector3)
 signal died(from_slot: int)
 signal stuck
-## The pose or the work changed (on every peer, and once when it is ready): whoever draws the doctor shows the clip.
+## The pose or the work changed (on every peer, and once when it is ready): whoever draws the doctor
+## shows the clip.
 signal pose_changed(pose: Pose, work: Work)
 
 const GROUP := &"doctor"
@@ -92,7 +97,8 @@ func drop_to(point: Vector3) -> void:
 	_go(&"Dropping", point)
 
 
-## Walks to `point` with collision; `begin_walk` is one straight leg (what the PathFollower hands out).
+## Walks to `point` with collision; `begin_walk` is one straight leg (what the PathFollower hands
+## out).
 func walk_to(point: Vector3) -> void:
 	motor.walk_to(point)
 
@@ -159,7 +165,8 @@ func is_dropping() -> bool:
 	return pose == Pose.FALLING or pose == Pose.LANDING
 
 
-## Not a target while it falls or dies (the bounce makes it invulnerable). Health.damage and every target search ask this.
+## Not a target while it falls or dies (the bounce makes it invulnerable). Health.damage and every
+## target search ask this.
 func is_targetable() -> bool:
 	return not is_dropping() and pose != Pose.DYING
 
@@ -205,7 +212,8 @@ func _die(from_slot: int) -> void:
 	_go(&"Dying")
 
 
-## The one way into `states` (autostart is off, so a client never runs it): the first call starts it in `state_name`, the rest transition.
+## The one way into `states` (autostart is off, so a client never runs it): the first call starts it
+## in `state_name`, the rest transition.
 func _go(state_name: StringName, payload: Variant = null) -> void:
 	if states.is_started():
 		states.transition(state_name, payload)

@@ -2,17 +2,20 @@ class_name LocalServerHost
 extends Node
 
 ## «Servidor local». The player's own PC runs ONE dedicated match with the same code as the VPS
-## (`MpMatchLauncher` + `MatchTicketGlue` in the dedicated), without a room server: no list, no UPnP, no fallback.
-## The ticket has two seats. The host seat's token stays here (the host joins as a normal client with it); the other
-## token is the rival's CODE, shown to the host to pass along with the address and the port. The dedicated only keeps
-## the sha256 of both (`MpMatchAgent`), so a third player without the code is rejected, and a code opens one seat.
-## The rival chooses his own wizard and god: the ticket leaves seat 2 without a pick (`open_picks`), the rival sends it when he is
-## admitted, the dedicated checks it with the rules of the game (`SacrificeFlow`) and the world does not start until it has it.
-## This node lives under `root` (it survives `change_scene`) and frees itself when the match ends or the host leaves.
-## `--match-args=--flag=1,--other` adds user args to the dedicated (tests only, same hook as the room server).
-## The options carry the map (`world`) and the mode (`mode`); the ticket has one seat per seat of the mode. The host
-## is seat 1; each other seat is an AI (`ai_seats` of `start`, {slot: {god, difficulty}}) or a person with a code of its own
-## (`codes`, {slot: code}). `rival_code` is the code of the lowest seat for a person (the only one in a 1v1).
+## (`MpMatchLauncher` + `MatchTicketGlue` in the dedicated), without a room server: no list, no
+## UPnP, no fallback. The ticket has two seats. The host seat's token stays here (the host joins as
+## a normal client with it); the other token is the rival's CODE, shown to the host to pass along
+## with the address and the port. The dedicated only keeps the sha256 of both (`MpMatchAgent`), so a
+## third player without the code is rejected, and a code opens one seat. The rival chooses his own
+## wizard and god: the ticket leaves seat 2 without a pick (`open_picks`), the rival sends it when
+## he is admitted, the dedicated checks it with the rules of the game (`SacrificeFlow`) and the
+## world does not start until it has it. This node lives under `root` (it survives `change_scene`)
+## and frees itself when the match ends or the host leaves. `--match-args=--flag=1,--other` adds
+## user args to the dedicated (tests only, same hook as the room server). The options carry the map
+## (`world`) and the mode (`mode`); the ticket has one seat per seat of the mode. The host is seat
+## 1; each other seat is an AI (`ai_seats` of `start`, {slot: {god, difficulty}}) or a person with a
+## code of its own (`codes`, {slot: code}). `rival_code` is the code of the lowest seat for a person
+## (the only one in a 1v1).
 
 signal server_ready(address: String, port: int, code: String)
 signal server_failed(reason: String)
@@ -30,7 +33,8 @@ const LOOPBACK := "127.0.0.1"
 ## What the host needs after `server_ready`.
 var match_id: String = ""
 var port: int = 0
-## LAN address to give to the rival (empty if this PC has none; the loopback still works for the host).
+## LAN address to give to the rival (empty if this PC has none; the loopback still works for the
+## host).
 var address: String = ""
 var rival_code: String = ""
 ## Code of each seat for a person (slot -> code); the host's seat is not in it.
@@ -62,10 +66,12 @@ func _ready() -> void:
 	set_process(false)
 
 
-## Launches the dedicated. `host_pick` is what the host chose (MatchWire writes it into the ticket); `transport` empty = the one of the config / flag; `options` the room options
-## (`world`, `mode`…); `ai_seats` {slot: {god, difficulty}} the seats an AI plays (slot 1 is the host's and never an AI).
-## `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already hosts; ERR_INVALID_PARAMETER for options
-## or an AI seat the rules refuse (a map with fewer starts than the mode, an unknown god).
+## Launches the dedicated. `host_pick` is what the host chose (MatchWire writes it into the ticket);
+## `transport` empty = the one of the config / flag; `options` the room options (`world`, `mode`…);
+## `ai_seats` {slot: {god, difficulty}} the seats an AI plays (slot 1 is the host's and never an
+## AI). `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already
+## hosts; ERR_INVALID_PARAMETER for options or an AI seat the rules refuse (a map with fewer starts
+## than the mode, an unknown god).
 func start(
 	host_pick: WizardPick,
 	transport: String = "",
@@ -74,7 +80,8 @@ func start(
 ) -> Error:
 	if hosting:
 		return ERR_ALREADY_IN_USE
-	# Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
+	# Not in the tree yet (added while its parent is busy, or never added): say so, do not break on
+	# Nil.
 	if not is_inside_tree() or launcher == null or launcher.config == null or rules == null:
 		push_error(
 			"LocalServerHost.start: the node is not in the tree (add it to root and wait a frame)"
@@ -131,8 +138,9 @@ func _process(_delta: float) -> void:
 		_on_host_gone()
 
 
-## The host's link is gone. After the match the dedicated quits by itself (`result_quit_delay_s`) and that drops the host first: if
-## `result.json` is there, that is the end of the match, not a failure. Without it, the host left a match in course: kill the dedicated.
+## The host's link is gone. After the match the dedicated quits by itself (`result_quit_delay_s`)
+## and that drops the host first: if `result.json` is there, that is the end of the match, not a
+## failure. Without it, the host left a match in course: kill the dedicated.
 func _on_host_gone() -> void:
 	set_process(false)
 	var result := MpMatchFiles.read_json(

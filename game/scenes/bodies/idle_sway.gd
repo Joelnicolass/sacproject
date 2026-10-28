@@ -2,10 +2,11 @@
 class_name IdleSway
 extends Node
 
-## A body that stands still breathes: while its clip player is on the idle role, `pivot` bobs up and down and leans a few
-## degrees side to side; on any other role the motion eases out. Add it to a body whose idle clip is missing or a held pose
-## (the Sac Doctor) and point `pivot` at the node that carries only the drawing (the BodyRig under the visual).
-## It moves the pivot's local transform and nothing else: never the body, its collision or the simulation.
+## A body that stands still breathes: while its clip player is on the idle role, `pivot` bobs up and
+## down and leans a few degrees side to side; on any other role the motion eases out. Add it to a
+## body whose idle clip is missing or a held pose (the Sac Doctor) and point `pivot` at the node
+## that carries only the drawing (the BodyRig under the visual). It moves the pivot's local
+## transform and nothing else: never the body, its collision or the simulation.
 ## Presentation only: the dedicated server draws nothing, so the node switches itself off there.
 
 ## The clip player of the body (BodyAnimator): its active role says when the body is idle.

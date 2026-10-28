@@ -2,13 +2,16 @@
 class_name MorphModel
 extends Node3D
 
-## Plays the animations of a model whose frames are blend shapes (the cow, Death, Blind Rage's fist: tools/import/import_morph_models.py): each
-## MorphClip names the poses to go through and how long each lasts, and the weights of the shapes blend one into the next. It follows its
-## SpellCarrier: `phase_clips` says which clip each phase plays (a finished clip goes on to its `next`). It moves nothing and hurts nobody;
-## every peer plays its own from the replicated phase, and a headless process plays none.
+## Plays the animations of a model whose frames are blend shapes (the cow, Death, Blind Rage's fist:
+## tools/import/import_morph_models.py): each MorphClip names the poses to go through and how long
+## each lasts, and the weights of the shapes blend one into the next. It follows its
+## SpellCarrier: `phase_clips` says which clip each phase plays (a finished clip goes on to its
+## `next`). It moves nothing and hurts nobody; every peer plays its own from the replicated phase,
+## and a headless process plays none.
 
 @export var carrier: SpellCarrier
-## The mesh that has the blend shapes (the glb's own MeshInstance3D); empty: the first one found below this node.
+## The mesh that has the blend shapes (the glb's own MeshInstance3D); empty: the first one found
+## below this node.
 @export var mesh: MeshInstance3D
 @export var clips: Array[MorphClip] = []
 ## The clip each SpellCarrier.Phase plays (the key is the phase as an integer).

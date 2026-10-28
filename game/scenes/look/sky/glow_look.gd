@@ -3,9 +3,9 @@ class_name GlowLook
 extends Resource
 
 ## How much the bright parts of a biome bleed light around them: magic, fountains, the sun on water.
-## One `.tres` per god (`data/look/glow/<god>_glow.tres`); EnvironmentLayer is the only one that puts it on
-## the Environment. The defaults are the engine's own, which is what the game drew before this existed.
-## The low quality preset turns glow off whatever is set here.
+## One `.tres` per god (`data/look/glow/<god>_glow.tres`); EnvironmentLayer is the only one that
+## puts it on the Environment. The defaults are the engine's own, which is what the game drew before
+## this existed. The low quality preset turns glow off whatever is set here.
 
 @export var enabled: bool = true
 ## How strong the glow is when it is added (the overall volume knob).

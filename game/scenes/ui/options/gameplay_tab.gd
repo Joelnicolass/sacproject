@@ -2,13 +2,14 @@ class_name GameplayTab
 extends VBoxContainer
 
 ## Options → Jugabilidad. Friendly fire, dropping souls with P and the starting souls.
-## - In the boot (no match in the tree) it edits the player's GameplayPrefs, saved at once; the next match the player
-##   creates takes them (the boot's MatchSetup).
-## - In a match it is read only: it shows the rules of this match from MatchState (the server's on a client, through the
-##   snapshot) and says who decides them. It never reads the preferences there.
-## CheckButton (like Gráficos) and SpinBox: AgentKit drives them with click / range.
-## Below, the player's combat feel (FeelPrefs): «Sacudida de cámara» 0-100 % (0 = off), «Números de daño»
-## «Info al pasar el puntero» and «Sangre» (blood, its marks and the hit flash). A local preference, so it is editable in a match too, and saved at once.
+## - In the boot (no match in the tree) it edits the player's GameplayPrefs, saved at once; the next
+##   match the player creates takes them (the boot's MatchSetup).
+## - In a match it is read only: it shows the rules of this match from MatchState (the server's on a
+##   client, through the snapshot) and says who decides them. It never reads the preferences there.
+## CheckButton (like Gráficos) and SpinBox: AgentKit drives them with click / range. Below, the
+## player's combat feel (FeelPrefs): «Sacudida de cámara» 0-100 % (0 = off), «Números de daño» «Info
+## al pasar el puntero» and «Sangre» (blood, its marks and the hit flash). A local preference, so it
+## is editable in a match too, and saved at once.
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_GAMEPLAY"
@@ -113,7 +114,8 @@ func _on_starting_souls(value: float) -> void:
 	prefs.set_starting_souls(roundi(value))
 
 
-## The feel rows show the preference (never the match's: it is the player's own), without echoing it back.
+## The feel rows show the preference (never the match's: it is the player's own), without echoing it
+## back.
 func _sync_feel() -> void:
 	if feel == null:
 		for row: Control in [%ShakeScale.get_parent(), %DamageNumbers, %HoverInfo, %Blood]:

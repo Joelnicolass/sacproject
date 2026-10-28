@@ -1,19 +1,23 @@
 extends RefCounted
 
-## Whether every altar of a map can walk to every manafount on its saved navmesh, asked the way a unit asks it
-## (NavMeshBackend.find_path): both ends on the ground, the start on the nearest land that is not an island, the same query
-## with no search cap (NavMeshBackend.query_path). It passes when both are in the same walkable region (NavRegions) and the
-## path ends within the agent radius plus END_SLACK_M of the walkable point nearest to the fount. The navmesh is the map's
-## baked nav.res, handed as it is to a navigation map of its own on NavigationServer3D (nothing is baked here; the world's map
-## is not touched). Returns the problems, each naming the two nodes. Not: the seats (MapSeatChecks), what stands on land (MapGroundChecks).
+## Whether every altar of a map can walk to every manafount on its saved navmesh, asked the way a
+## unit asks it (NavMeshBackend.find_path): both ends on the ground, the start on the nearest land
+## that is not an island, the same query with no search cap (NavMeshBackend.query_path). It passes
+## when both are in the same walkable region (NavRegions) and the path ends within the agent radius
+## plus END_SLACK_M of the walkable point nearest to the fount. The navmesh is the map's baked
+## nav.res, handed as it is to a navigation map of its own on NavigationServer3D (nothing is baked
+## here; the world's map is not touched). Returns the problems, each naming the two nodes. Not: the
+## seats (MapSeatChecks), what stands on land (MapGroundChecks).
 
 const MapGroundChecks := preload("res://tools/audit/map_ground_checks.gd")
 
-## A point this far from a walkable polygon counts as outside the navmesh (a fount stands in a hole of its own size).
+## A point this far from a walkable polygon counts as outside the navmesh (a fount stands in a hole
+## of its own size).
 const SNAP_M := 6.0
-## Added to the bake's agent radius (1 m, data/nav/nav_bake.tres): a path that ends farther (flat) than both from the walkable
-## point nearest to the fount stopped short, the fount is out of reach. 2 m in all: a unit stops at its target's edge, and the
-## nearest point of a fount hole may be a corner the path turns before.
+## Added to the bake's agent radius (1 m, data/nav/nav_bake.tres): a path that ends farther (flat)
+## than both from the walkable point nearest to the fount stopped short, the fount is out of reach.
+## 2 m in all: a unit stops at its target's edge, and the nearest point of a fount hole may be a
+## corner the path turns before.
 const END_SLACK_M := 1.0
 
 ## Physics frames to wait for the navigation map's first sync.
@@ -95,6 +99,7 @@ static func _walk(
 	var reach := navmesh.agent_radius + END_SLACK_M
 	if not is_finite(length) or short > reach:
 		return (
+			# gdlint: ignore=max-line-length
 			"%s: no walking path (%d points, %.0f m, ends %.1f m from the walkable point nearest to the fount, max %.1f m)"
 			% [names, path.size(), length, short, reach]
 		)
@@ -107,7 +112,8 @@ static func _walk(
 	return ""
 
 
-## `point` at the height of the ground under it (NavService._grounded); the point itself over a void.
+## `point` at the height of the ground under it (NavService._grounded); the point itself over a
+## void.
 static func _grounded(terrain: Terrain, point: Vector3) -> Vector3:
 	var height := terrain.height_at(point.x, point.z)
 	return point if is_nan(height) else Vector3(point.x, height, point.z)

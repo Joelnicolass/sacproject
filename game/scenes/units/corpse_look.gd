@@ -1,9 +1,10 @@
 class_name CorpseLook
 extends Node
 
-## How a death looks. A model with a physical skeleton falls like a rag doll (RagdollDriver); one without it plays its death
-## animation once; one with neither tips over (TippingFall). The corpse fades out while it dissolves. A creature that a Convert
-## doctor brings back is CaptiveLook's. It only listens to Corpse and never writes to the simulation: nothing in the sim reads it.
+## How a death looks. A model with a physical skeleton falls like a rag doll (RagdollDriver); one
+## without it plays its death animation once; one with neither tips over (TippingFall). The corpse
+## fades out while it dissolves. A creature that a Convert doctor brings back is CaptiveLook's. It
+## only listens to Corpse and never writes to the simulation: nothing in the sim reads it.
 
 ## The unit that dies.
 @export var body: UnitBody
@@ -31,8 +32,9 @@ func _ready() -> void:
 		_on_dissolving_changed(true)
 
 
-## The body died. Who lays it down, in this order: the physical skeleton, the death clip, the tip-over. A body that joined
-## late (`instant`) never ragdolls: there is no fall to play, so it lies at once.
+## The body died. Who lays it down, in this order: the physical skeleton, the death clip, the
+## tip-over. A body that joined late (`instant`) never ragdolls: there is no fall to play, so it
+## lies at once.
 func _on_laid_down(instant: bool) -> void:
 	if _can_ragdoll(instant):
 		ragdoll.set_pose(RagdollDriver.Pose.FALL, -body.facing_flat())

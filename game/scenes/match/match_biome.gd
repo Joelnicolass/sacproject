@@ -1,23 +1,26 @@
 class_name MatchBiome
 extends Node
 
-## The land of the match: the god whose look the map wears. The one who simulates (solo, host, dedicated) takes the god the
-## setup chose (rules.biome) or draws one per match (BiomeRules) and starts the sky's clock (MatchSky); a client is told both
-## by BiomeLink and calls `adopt`. Every peer with a screen then hands that god's look to the map's LookRig, after the world's
-## _ready (the rig exists). It does not talk to the network (BiomeLink does) and does not work out the hour or the weather
-## (AtmosphereRules, from MatchSky).
+## The land of the match: the god whose look the map wears. The one who simulates (solo, host,
+## dedicated) takes the god the setup chose (rules.biome) or draws one per match (BiomeRules) and
+## starts the sky's clock (MatchSky); a client is told both by BiomeLink and calls `adopt`. Every
+## peer with a screen then hands that god's look to the map's LookRig, after the world's _ready (the
+## rig exists). It does not talk to the network (BiomeLink does) and does not work out the hour or
+## the weather (AtmosphereRules, from MatchSky).
 
-## The land is on the map's look rig: the GodType whose `look` (with its music and ambience) the match uses (MusicDirector and
-## AmbienceDirector listen).
+## The land is on the map's look rig: the GodType whose `look` (with its music and ambience) the
+## match uses (MusicDirector and AmbienceDirector listen).
 signal applied(god: GodType)
 
 @export var world: MatchWorld
 ## The sky clock of the match (Context/Sky): the authority starts it here.
 @export var sky: MatchSky
 
-## The god of the land; null until it is drawn (the authority) or adopted (a client), or when the draw gave a god with no look.
+## The god of the land; null until it is drawn (the authority) or adopted (a client), or when the
+## draw gave a god with no look.
 var god: GodType
-## False on a process with no screen (the dedicated server, BiomeLink says): it keeps the god but shows no land.
+## False on a process with no screen (the dedicated server, BiomeLink says): it keeps the god but
+## shows no land.
 var shows_look := true
 var _world_ready := false
 
@@ -37,7 +40,8 @@ func _draw() -> void:
 		forced = rules.biome
 		match_seed = rules.biome_seed
 	if match_seed == 0:
-		match_seed = MatchSeed.rng(["biome"]).seed  # the biome stream of the match (randomized without one)
+		# the biome stream of the match (randomized without one)
+		match_seed = MatchSeed.rng(["biome"]).seed
 	if forced != null and forced.look == null:
 		push_warning("MatchBiome: '%s' has no land; one is drawn." % forced.id())
 	var picked := BiomeRules.choose(forced, match_seed, GameCatalog.shared().gods)
@@ -61,7 +65,8 @@ func _begin_sky() -> void:
 		print("atmosphere seed %d" % MatchSky.sky_seed())
 
 
-## A client: the land the server sent (BiomeLink adopted the sky's clock first). A god with no look is ignored.
+## A client: the land the server sent (BiomeLink adopted the sky's clock first). A god with no look
+## is ignored.
 func adopt(received: GodType) -> void:
 	if received == null or received.look == null:
 		return

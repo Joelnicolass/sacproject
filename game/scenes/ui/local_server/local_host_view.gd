@@ -1,10 +1,12 @@
 extends Control
 
-## Creates a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he chooses
-## the transport (the rival chooses his own wizard and god when he joins). «Crear» launches the dedicated on this PC (`LocalServerHost`); when it listens the
-## view shows the address, the port, the transport and the rival's code. «Entrar a la partida» joins it as a normal client.
-## The host also chooses the mode and the map (the map picker lists the maps that fit the mode) and, for each
-## seat but his, a person or an AI (one `seat_row_scene` per seat, rebuilt when the mode changes); each seat for a person gets a code.
+## Creates a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he
+## chooses the transport (the rival chooses his own wizard and god when he joins). «Crear» launches
+## the dedicated on this PC (`LocalServerHost`); when it listens the view shows the address, the
+## port, the transport and the rival's code. «Entrar a la partida» joins it as a normal client. The
+## host also chooses the mode and the map (the map picker lists the maps that fit the mode) and, for
+## each seat but his, a person or an AI (one `seat_row_scene` per seat, rebuilt when the mode
+## changes); each seat for a person gets a code.
 
 signal back_requested
 

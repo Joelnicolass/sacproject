@@ -2,9 +2,10 @@
 class_name RitualLift
 extends Node
 
-## The captive goes up to the hanging point over the site, slowing in so it is there when the setup ends, and is held there after.
-## What it does not do: decide when the ritual runs (Ritual calls `step` once a tick, before Watch) or move the doctors.
-## Take this node out of ritual.tscn and the creature stays where it was taken.
+## The captive goes up to the hanging point over the site, slowing in so it is there when the setup
+## ends, and is held there after.
+## What it does not do: decide when the ritual runs (Ritual calls `step` once a tick, before Watch)
+## or move the doctors. Take this node out of ritual.tscn and the creature stays where it was taken.
 
 @export var ritual: Ritual
 

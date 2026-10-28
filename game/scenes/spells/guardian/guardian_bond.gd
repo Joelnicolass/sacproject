@@ -2,9 +2,9 @@
 class_name GuardianBond
 extends Node
 
-## The creature tied to a building (Guardian `ndrg`). A child of unit.tscn; free, it does
-## nothing. Tied, the server applies what a guardian gains and keeps the bond honest each frame; every
-## peer draws the beam. Take the child out and the creature cannot be made a guardian.
+## The creature tied to a building (Guardian `ndrg`). A child of unit.tscn; free, it does nothing.
+## Tied, the server applies what a guardian gains and keeps the bond honest each frame; every peer
+## draws the beam. Take the child out and the creature cannot be made a guardian.
 ##
 ## What a guardian gains: hits ×rules.guardian_attack_factor
 ## takes ×guardian_spell_factor of spell damage and ×guardian_ranged_factor
@@ -96,8 +96,8 @@ func is_valid_guard() -> bool:
 	return body.owner_slot == post.owner_slot()
 
 
-## Server or solo. Ties the creature to `target`. False if it is already tied, cannot be (dead, taken)
-## or the post is closed.
+## Server or solo. Ties the creature to `target`. False if it is already tied, cannot be (dead,
+## taken) or the post is closed.
 func bind(target: GuardPost) -> bool:
 	if not is_multiplayer_authority() or target == null or not target.is_open() or is_bound():
 		return false
@@ -111,7 +111,8 @@ func bind(target: GuardPost) -> bool:
 	return true
 
 
-## Server or solo. Lets it go: the effects end and the post forgets it; the beam retires on every peer.
+## Server or solo. Lets it go: the effects end and the post forgets it; the beam retires on every
+## peer.
 func release() -> void:
 	if not is_bound() and post == null:
 		return

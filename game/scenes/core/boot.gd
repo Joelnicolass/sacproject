@@ -16,9 +16,10 @@ const ROOM_SERVER_SCENE := "res://scenes/net/room_server.tscn"
 
 
 func _ready() -> void:
-	# The exported binary has no scene argument; `--room-server` makes its main scene (this one) hand over to the
-	# room server, so the same binary is the room server and, with `--dedicated`, every match process.
-	# Only with `SacrificeFlow.room_server_enabled` (inspector of sacrifice_flow.tscn).
+	# The exported binary has no scene argument; `--room-server` makes its main scene (this one)
+	# hand over to the room server, so the same binary is the room server and, with `--dedicated`,
+	# every match process. Only with `SacrificeFlow.room_server_enabled` (inspector of
+	# sacrifice_flow.tscn).
 	if MpBoot.role() == "room-server":
 		if not SacrificeFlow.room_server_enabled:
 			push_error(
@@ -33,11 +34,13 @@ func _ready() -> void:
 	%VsAi.pressed.connect(_on_vs_ai)
 	_fill_ai_levels()
 	%Join.pressed.connect(_on_join)
-	# «Salas online»: rooms the players host through the issuer (scenes/ui/online/; the issuer is in data/net/online_config.tres),
-	# or the room-server lobby when `SacrificeFlow.room_server_enabled` is on.
-	# The field for an IP and «Unirse» (direct to a dedicated or a LAN host) stay only in debug builds.
+	# «Salas online»: rooms the players host through the issuer (scenes/ui/online/; the issuer is in
+	# data/net/online_config.tres), or the room-server lobby when
+	# `SacrificeFlow.room_server_enabled` is on. The field for an IP and «Unirse» (direct to a
+	# dedicated or a LAN host) stay only in debug builds.
 	%Online.pressed.connect(_on_online)
-	# «Servidor local» is a door of its own (create on this PC / join an address), visible in every build.
+	# «Servidor local» is a door of its own (create on this PC / join an address), visible in every
+	# build.
 	%LocalServer.pressed.connect(_on_local_server)
 	ip.visible = OS.is_debug_build()
 	%Join.visible = OS.is_debug_build()
@@ -63,7 +66,8 @@ func _on_solo() -> void:
 	SacrificeFlow.play_solo(_setup(0))
 
 
-## «Contra la IA»: solo with the AI in every other seat of the mode; the god of %AiGod, or drawn with «Aleatorio».
+## «Contra la IA»: solo with the AI in every other seat of the mode; the god of %AiGod, or drawn
+## with «Aleatorio».
 func _on_vs_ai() -> void:
 	var level: OptionButton = %AiLevel
 	SacrificeFlow.play_vs_ai(
@@ -71,7 +75,8 @@ func _on_vs_ai() -> void:
 	)
 
 
-## The match this boot creates: Options → Jugabilidad and `level` (0 = the rules'). Without prefs, only the level.
+## The match this boot creates: Options → Jugabilidad and `level` (0 = the rules'). Without prefs,
+## only the level.
 func _setup(level: int) -> MatchSetup:
 	var setup: MatchSetup
 	if gameplay_prefs:
@@ -80,10 +85,12 @@ func _setup(level: int) -> MatchSetup:
 		push_warning("Boot: gameplay_prefs is missing; the match uses the rules and the flags.")
 		setup = MatchSetup.new()
 		setup.level = level
-	# The map of %MapPicker and the mode of %ModePicker (in «Contra la IA» the AI takes every other seat); the flow plays them.
+	# The map of %MapPicker and the mode of %ModePicker (in «Contra la IA» the AI takes every other
+	# seat); the flow plays them.
 	setup.map = (%MapPicker as MapPicker).selected_map()
 	setup.mode = (%ModePicker as ModePicker).selected_mode()
-	# The land of %BiomePicker (null = drawn from the seed; the authority of the match draws it and sends it to the clients).
+	# The land of %BiomePicker (null = drawn from the seed; the authority of the match draws it and
+	# sends it to the clients).
 	setup.biome = (%BiomePicker as BiomePicker).selected_god()
 	return setup
 

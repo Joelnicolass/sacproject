@@ -2,13 +2,15 @@
 class_name StructureAction
 extends SpellAction
 
-## A structure spell (Manalith, Shrine): the wizard's own tower over the closest free manafount. It looks for the fount near the
-## clicked point (up to 20 m) or, failing that, near the wizard (cast range + 1); a fount that already has a tower answers
-## FOUNT_TAKEN, a building on its BuildArea OCCUPIED. Creatures and wizards never refuse it. The tower is born on the fount when the
-## cast starts and rises while it lasts (the wizard stands still, the BuildArea pushes everyone out); a cut cast frees it, an ended
-## one makes it stand. The tower scene comes from the wizard's god (GodType.structures), so the same node serves every structure
-## spell. Does not build anything itself (StructureSpawner does) nor draw or sound the rise: every peer derives that from the replicated
-## CastTower.build_progress (BuildReveal, ManafountBody), so the cast sends no FX.
+## A structure spell (Manalith, Shrine): the wizard's own tower over the closest free manafount. It
+## looks for the fount near the clicked point (up to 20 m) or, failing that, near the wizard (cast
+## range + 1); a fount that already has a tower answers FOUNT_TAKEN, a building on its BuildArea
+## OCCUPIED. Creatures and wizards never refuse it. The tower is born on the fount when the cast
+## starts and rises while it lasts (the wizard stands still, the BuildArea pushes everyone out); a
+## cut cast frees it, an ended one makes it stand. The tower scene comes from the wizard's god
+## (GodType.structures), so the same node serves every structure spell. Does not build anything
+## itself (StructureSpawner does) nor draw or sound the rise: every peer derives that from the
+## replicated CastTower.build_progress (BuildReveal, ManafountBody), so the cast sends no FX.
 
 const NO_FOUNT := Refusal.NO_FOUNT
 const FOUNT_TAKEN := Refusal.FOUNT_TAKEN
@@ -88,7 +90,8 @@ func finish(_wizard_body: WizardBody, _spell: SpellType, _target: Node3D) -> Str
 	return ""
 
 
-## The cast was cut: the rising tower goes (on every peer: the spawner despawns it) and the fount is free again.
+## The cast was cut: the rising tower goes (on every peer: the spawner despawns it) and the fount is
+## free again.
 func cancel() -> void:
 	if _tower != null and is_instance_valid(_tower) and _tower.is_rising():
 		_tower.queue_free()
@@ -103,7 +106,8 @@ func _forget() -> void:
 	_frames_done = 0
 
 
-## The fount closest to the click (within POINT_FOUNT_RANGE_M), else to the wizard (cast range + 1); only free ones with `free_only`.
+## The fount closest to the click (within POINT_FOUNT_RANGE_M), else to the wizard (cast range + 1);
+## only free ones with `free_only`.
 func _near_fount(
 	wizard: WizardBody, spell: SpellType, point: Vector3, free_only: bool
 ) -> ManafountBody:

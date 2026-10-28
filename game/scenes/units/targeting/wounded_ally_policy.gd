@@ -1,11 +1,11 @@
 class_name WoundedAllyPolicy
 extends TargetPolicy
 
-## The Scarab (slba, Healing web): by itself it takes the
-## creature of its own side with the lowest relative health that is not full (a moving
-## body, not itself, valid), first within its ranged attack's range of the center and then within its sight;
-## it never picks a foe. Under an ATTACK order it keeps the foe it was told to attack, as any creature (attack).
-## A wounded ally stays a valid target until its bar is full, then the body drops it and stops shooting.
+## The Scarab (slba, Healing web): by itself it takes the creature of its own side with the lowest
+## relative health that is not full (a moving body, not itself, valid), first within its ranged
+## attack's range of the center and then within its sight; it never picks a foe. Under an ATTACK
+## order it keeps the foe it was told to attack, as any creature (attack). A wounded ally stays a
+## valid target until its bar is full, then the body drops it and stops shooting.
 
 const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
@@ -46,7 +46,8 @@ func is_patient(body: UnitBody, node: Variant) -> bool:
 	return _HEAL.can_heal(other)
 
 
-## The patient of the lowest current/maximum within `radius` of `center` (flat); ties go to the closer one.
+## The patient of the lowest current/maximum within `radius` of `center` (flat); ties go to the
+## closer one.
 func _most_wounded(body: UnitBody, center: Vector3, radius: float) -> Node3D:
 	var best: Node3D = null
 	var best_ratio := INF

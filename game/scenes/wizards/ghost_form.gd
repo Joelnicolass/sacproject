@@ -1,13 +1,13 @@
 class_name GhostForm
 extends Node
 
-## A wizard's death and ghost. At health 0 the wizard plays a death
-## animation; if its side has an altar it rises as a ghost (mana set to 0, alpha 1 → 0.36), else it disappears.
-## A ghost moves 1.75× faster, takes no damage and is no target, cannot cast or collect souls, and each point
-## of mana a source gives it heals 4.2 health, even with a full pool. With full health it turns back where it
-## stands (alpha 0.36 → 1). Other sides do not see a ghost. The server (or solo) runs the stages; `stage` is
-## replicated and every peer fades the body on its own. A see-through wizard is drawn shadeless with energy
-## 1 → GHOST_ENERGY and, being in the transparent pass, casts no shadow.
+## A wizard's death and ghost. At health 0 the wizard plays a death animation; if its side has an
+## altar it rises as a ghost (mana set to 0, alpha 1 → 0.36), else it disappears. A ghost moves
+## 1.75× faster, takes no damage and is no target, cannot cast or collect souls, and each point of
+## mana a source gives it heals 4.2 health, even with a full pool. With full health it turns back
+## where it stands (alpha 0.36 → 1). Other sides do not see a ghost. The server (or solo) runs the
+## stages; `stage` is replicated and every peer fades the body on its own. A see-through wizard is
+## drawn shadeless with energy 1 → GHOST_ENERGY and, being in the transparent pass, casts no shadow.
 
 enum Stage { ALIVE, DYING, RISING, GHOST, UNGHOSTING, GONE }
 
@@ -17,7 +17,8 @@ signal stage_changed(stage: Stage)
 const GHOST_ALPHA := 0.36
 ## Shader energy of the ghost.
 const GHOST_ENERGY := 10.0
-const ETHEREAL_FADE_S := 0.5  ## Ethereal Form fades the living wizard to the ghost's alpha and back in 30 ticks.
+## Ethereal Form fades the living wizard to the ghost's alpha and back in 30 ticks.
+const ETHEREAL_FADE_S := 0.5
 ## One animation frame lasts 2 ticks at 60 fps.
 const ANIM_FPS := 30.0
 ## Group of every GhostForm: DefeatRule finds the wizards that already exist.
@@ -31,7 +32,8 @@ const STAGE_NAMES: PackedStringArray = ["alive", "dies", "rises", "ghost", "retu
 @export var visual: GeometryInstance3D
 @export var health: Health
 @export var mana: ManaPool
-## Lays the body down when it dies and stands it up for the ghost (empty = the body just stays as it is).
+## Lays the body down when it dies and stands it up for the ghost (empty = the body just stays as it
+## is).
 @export var death_look: WizardDeathLook
 ## Converts a shadeless energy to Godot's light scale. Shadeless is texture · energy like
 ## the ambient, so it takes the ambient's ratio: π/14.
@@ -76,7 +78,8 @@ func _ready() -> void:
 	mana.given.connect(_on_mana_given)
 
 
-## Ethereal Form went on or off (its Ward says so on every peer): the living body fades to the ghost's look and back.
+## Ethereal Form went on or off (its Ward says so on every peer): the living body fades to the
+## ghost's look and back.
 func set_ethereal(on: bool) -> void:
 	_ethereal = on
 	if is_node_ready():
@@ -170,8 +173,8 @@ func _physics_process(delta: float) -> void:
 			if _left <= 0.0:
 				_enter(Stage.GHOST, 0.0)
 		Stage.GHOST:
-			# A ritual on the altar brings the ghost back to the body so it can be drained and killed;
-			# with at least 1 life so it does not die on the way.
+			# A ritual on the altar brings the ghost back to the body so it can be drained and
+			# killed; with at least 1 life so it does not die on the way.
 			if desecrations > 0 and health.current < 1.0:
 				health.current = 1.0
 			if desecrations > 0 or health.is_full():

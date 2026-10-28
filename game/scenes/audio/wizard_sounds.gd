@@ -3,13 +3,16 @@ class_name WizardSounds
 extends BodySounds
 
 ## Child of wizards/wizard_body.tscn. A wizard's sounds from replicated state:
-## - the chant: `incantation` when a cast starts (Caster.cast_changed goes to casting, from its replicated `cast_fx_shown`), and
-##   again `chant_gap_s` after the longest clip of the cue ends, while the cast lasts. Once the cast ends or is cut nothing new
-##   starts; the clip that is playing is never cut. Every cast chants, spells and summons alike;
+## - the chant: `incantation` when a cast starts (Caster.cast_changed goes to casting, from its
+##   replicated `cast_fx_shown`), and again `chant_gap_s` after the longest clip of the cue ends,
+##   while the cast lasts. Once the cast ends or is cut nothing new starts; the clip that is playing
+##   is never cut. Every cast chants, spells and summons alike;
 ## - `damaged` when Health.current goes down while alive (BodySounds limits it);
-## - `death` when GhostForm.stage becomes DYING, `ghost` when it rises (RISING, or GHOST straight from another stage).
-## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of his body scene). No set: silence.
-## Does not decide when a cast starts or ends (Caster) nor pick the clip (SoundBus draws one of the cue's streams).
+## - `death` when GhostForm.stage becomes DYING, `ghost` when it rises (RISING, or GHOST straight
+##   from another stage).
+## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of his body
+## scene). No set: silence. Does not decide when a cast starts or ends (Caster) nor pick the clip
+## (SoundBus draws one of the cue's streams).
 
 @export var body: WizardBody:
 	set(value):
@@ -73,7 +76,8 @@ func _on_cast_changed(casting: bool, _fx: ParticleType) -> void:
 	set_physics_process(casting and _next_chant_s > 0.0)
 
 
-## While the cast lasts, the next clip of the chant when the previous one is over (game time: follows --fixed-fps).
+## While the cast lasts, the next clip of the chant when the previous one is over (game time:
+## follows --fixed-fps).
 func _physics_process(_delta: float) -> void:
 	if Engine.is_editor_hint() or caster == null or not caster.is_casting():
 		set_physics_process(false)

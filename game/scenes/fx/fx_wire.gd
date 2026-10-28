@@ -1,23 +1,28 @@
 class_name FxWire
 extends RefCounted
 
-## The one place where text and effects meet, for the wire only: the network id of an effect is the path of its resource, and this
-## turns it back into the resource on the receiving peer (loaded once, then cached). Gameplay never names an effect with text: it holds
-## the ParticleType, BeamType or PackedScene in an `@export`.
-## What it does not do: play anything (FxBus), pool anything (BurstPool, BeamPool), or decide who may see an effect.
+## The one place where text and effects meet, for the wire only: the network id of an effect is the
+## path of its resource, and this turns it back into the resource on the receiving peer (loaded
+## once, then cached). Gameplay never names an effect with text: it holds the ParticleType, BeamType
+## or PackedScene in an `@export`.
+## What it does not do: play anything (FxBus), pool anything (BurstPool, BeamPool), or decide who
+## may see an effect.
 
 ## Where the pools and the gallery find every type to warm up (folders, not names).
 const PARTICLES_DIR := "res://data/fx/"
 const BEAMS_DIR := "res://data/fx/beams/"
 
-## id (resource path) -> loaded effect, or null when the path is not an effect. Never cleared: the effects are few and small.
+## id (resource path) -> loaded effect, or null when the path is not an effect. Never cleared: the
+## effects are few and small.
 static var _by_id: Dictionary[String, Resource] = {}
 static var _warned: Dictionary[String, bool] = {}
-## How many ids did not turn into an effect since the process started (the net probe reads it; 0 is healthy).
+## How many ids did not turn into an effect since the process started (the net probe reads it; 0 is
+## healthy).
 static var unresolved := 0
 
 
-## The id an effect travels as: its resource path. "" (and an error) for an effect saved inside another resource.
+## The id an effect travels as: its resource path. "" (and an error) for an effect saved inside
+## another resource.
 static func id_of(fx: Resource) -> String:
 	if fx == null:
 		return ""
@@ -28,7 +33,8 @@ static func id_of(fx: Resource) -> String:
 	return path
 
 
-## The effect with this id: a ParticleType, a BeamType or a PackedScene under res://. Null for anything else.
+## The effect with this id: a ParticleType, a BeamType or a PackedScene under res://. Null for
+## anything else.
 static func resource(id: String) -> Resource:
 	if not id.begins_with("res://"):
 		return null

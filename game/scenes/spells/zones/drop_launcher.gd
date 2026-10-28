@@ -2,9 +2,10 @@
 class_name DropLauncher
 extends Node
 
-## Makes the drop of a cloud: when its ZoneDropper says where, it spawns `drop` (a ZoneDrop scene) at its start, with the point it
-## must reach, the time it takes and the numbers of the spell. It does not choose where (ZoneDropper) nor move or hurt (ZoneDrop and its
-## children). Server (or solo) only.
+## Makes the drop of a cloud: when its ZoneDropper says where, it spawns `drop` (a ZoneDrop scene)
+## at its start, with the point it must reach, the time it takes and the numbers of the spell. It
+## does not choose where (ZoneDropper) nor move or hurt (ZoneDrop and its children). Server (or
+## solo) only.
 
 enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK, ZONE_COLUMN }
 
@@ -21,9 +22,11 @@ enum Start { ABOVE_POINT, CLOUD_DISK, CASTER_DISK, ZONE_COLUMN }
 @export_range(0.0, 5.0, 0.1, "suffix:m") var buried_m := 1.0
 ## The seconds from its start to its goal.
 @export_range(0.1, 30.0, 0.1, "suffix:s") var fall_s := 2.0
-## ZONE_COLUMN: it starts over the zone's center, at a random height up to this much over the land (a volcano's mouth).
+## ZONE_COLUMN: it starts over the zone's center, at a random height up to this much over the land
+## (a volcano's mouth).
 @export_range(0.0, 400.0, 1.0, "suffix:m") var column_m := 120.0
-## The drop is shot at the spell's speed, leaning up for its gravity, instead of flying for `fall_s` (a lava ball).
+## The drop is shot at the spell's speed, leaning up for its gravity, instead of flying for `fall_s`
+## (a lava ball).
 @export var shoots := false
 
 var _rng: RandomNumberGenerator

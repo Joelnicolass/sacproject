@@ -1,26 +1,30 @@
 class_name SpellAffliction
 extends Affliction
 
-## A temporary state a spell lays on a body, one layer for each cast (Rings of Fire, Slime): each layer has its own clock, damage and
-## side; the bit is on while any layer is left. What the layers do to the body is knobs: a pace factor per layer, swings and shots that
-## take longer, a worse aim, a higher resistance, damage over time. It does not decide who may be targeted (SpellTarget) nor draw
-## itself (the looks under it listen to `shown_changed`). The server (or solo) runs the layers; `shown` (the bit) is what every peer sees.
+## A temporary state a spell lays on a body, one layer for each cast (Rings of Fire, Slime): each
+## layer has its own clock, damage and side; the bit is on while any layer is left. What the layers
+## do to the body is knobs: a pace factor per layer, swings and shots that take longer, a worse aim,
+## a higher resistance, damage over time. It does not decide who may be targeted (SpellTarget) nor
+## draw itself (the looks under it listen to `shown_changed`). The server (or solo) runs the layers;
+## `shown` (the bit) is what every peer sees.
 
 enum Duration { FIXED, BY_LIFE }
 
-## FIXED: the spell's duration in seconds. BY_LIFE: creature_k / max health · duration (a wizard: wizard_factor · duration), like the other
-## crowd control (Affliction.cc_ticks).
+## FIXED: the spell's duration in seconds. BY_LIFE: creature_k / max health · duration (a wizard:
+## wizard_factor · duration), like the other crowd control (Affliction.cc_ticks).
 @export var duration_mode := Duration.FIXED
 @export var creature_k := 1000.0
 @export var wizard_factor := 0.25
 ## Layers the body can have at once; a cast over this many does nothing.
 @export_range(1, 16) var max_stacks := 1
 @export_group("Per layer")
-## The body's speed on the ground is this to the power of the layers (a flier is not slowed). 1 = no change.
+## The body's speed on the ground is this to the power of the layers (a flier is not slowed). 1 = no
+## change.
 @export var pace_per_stack := 1.0
 ## Its swings and shots take this to the power of the layers times as long.
 @export var attack_time_per_stack := 1.0
-## Its melee accuracy and the evasion it has against a blow are multiplied by this to the power of the layers.
+## Its melee accuracy and the evasion it has against a blow are multiplied by this to the power of
+## the layers.
 @export var accuracy_per_stack := 1.0
 ## Added to every resistance for each layer.
 @export var resistance_bonus_per_stack := 0.0
@@ -104,7 +108,9 @@ func _physics_process(_delta: float) -> void:
 		if _hits[i] > 0.0 and health != null:
 			health.damage_typed(_hits[i], damage_kind, _slots[i], false, pierce_shield)
 			if i >= _left.size():
-				return  # the hit killed the body: Afflictions ended every state and _shown cleared the layers
+				# the hit killed the body: Afflictions ended every state and _shown cleared the
+				# layers
+				return
 		_left[i] -= 1
 		if _left[i] > 0:
 			_left[kept] = _left[i]
@@ -120,7 +126,8 @@ func _physics_process(_delta: float) -> void:
 		_afflictions().mark(self, false)
 
 
-## Every peer, when the bit changes. On the server a bit turned off from outside (the body died) clears the layers.
+## Every peer, when the bit changes. On the server a bit turned off from outside (the body died)
+## clears the layers.
 func _shown(on: bool) -> void:
 	if on or not is_multiplayer_authority() or _left.is_empty():
 		return
@@ -131,7 +138,8 @@ func _shown(on: bool) -> void:
 	set_physics_process(false)
 
 
-## PaceFactors is the one owner of the body's speed: this gives it the factor of the layers under the state's name.
+## PaceFactors is the one owner of the body's speed: this gives it the factor of the layers under
+## the state's name.
 func _apply_pace() -> void:
 	var pace := PaceFactors.of(_body())
 	if pace != null and pace_per_stack != 1.0:

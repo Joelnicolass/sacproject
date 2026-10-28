@@ -5,7 +5,8 @@ extends Resource
 ## over `attack_s` and dies over `decay_s`. A template shared by every type that points to it: never
 ## edited at runtime. The rig's FxLightLayer owns the lights; without that layer nothing lights up.
 
-## Usually the brightness-weighted mean of the type's atlas, so the light keeps the sprite's palette.
+## Usually the brightness-weighted mean of the type's atlas, so the light keeps the sprite's
+## palette.
 @export var color: Color = Color.WHITE
 ## Peak `light_energy` of the OmniLight3D.
 @export_range(0.0, 32.0, 0.05) var energy: float = 2.0
@@ -25,8 +26,8 @@ extends Resource
 ## Group of the rig's FxLightLayer. No node in it (headless, dedicated, layer removed) = no light.
 
 
-## Asks the rig's FxLightLayer for this light at `at`, keyed by `source` (the same source again restarts
-## its light). The one way effects borrow a light (SpriteParticles, BeamFx, FxBus).
+## Asks the rig's FxLightLayer for this light at `at`, keyed by `source` (the same source again
+## restarts its light). The one way effects borrow a light (SpriteParticles, BeamFx, FxBus).
 func light_up(tree: SceneTree, source: Object, at: Vector3) -> void:
 	var pool := (
 		tree.get_first_node_in_group(FxLightLayer.GROUP) as FxLightLayer if tree != null else null
@@ -35,8 +36,8 @@ func light_up(tree: SceneTree, source: Object, at: Vector3) -> void:
 		pool.flash(source, self, at)
 
 
-## `min_decay_s`: the fall never takes less than this (FxLightLayer.min_decay_s), so a short spark does not read
-## as a light switched off.
+## `min_decay_s`: the fall never takes less than this (FxLightLayer.min_decay_s), so a short spark
+## does not read as a light switched off.
 func total_s(min_decay_s := 0.0) -> float:
 	return attack_s + maxf(decay_s, min_decay_s)
 

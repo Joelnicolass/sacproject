@@ -1,9 +1,9 @@
 class_name Quake
 extends AbilityEffect
 
-## The Jabberocky's Quake: a stunning wave from its feet. The body prepares (192 ticks), the
-## mana is paid when it starts (pays_upfront) and at the shoot tick the effect is added; the cooldown is set then if
-## it was 0. No target: the wave leaves the user's feet. What the wave does is QuakeWave's.
+## The Jabberocky's Quake: a stunning wave from its feet. The body prepares (192 ticks), the mana is
+## paid when it starts (pays_upfront) and at the shoot tick the effect is added; the cooldown is set
+## then if it was 0. No target: the wave leaves the user's feet. What the wave does is QuakeWave's.
 ## No sound.
 
 ## The wave (abilities/quake_wave.tscn), put in the shot container at the user's feet.

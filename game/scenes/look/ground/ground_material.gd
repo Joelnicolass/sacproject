@@ -1,14 +1,17 @@
 class_name GroundMaterial
 extends RefCounted
 
-## Turns a god's `GodGround`, a map's ground roles and its baked light into the uniforms of `ground.gdshader`, so the terrain
-## knows nothing of roles. Everything built here is runtime-only (texture arrays, noise): none of it is stored in a scene.
-## What it does NOT do: choose which ground a map wears (TerrainLayer does) or pack the textures (GroundTextures does).
+## Turns a god's `GodGround`, a map's ground roles and its baked light into the uniforms of
+## `ground.gdshader`, so the terrain knows nothing of roles. Everything built here is runtime-only
+## (texture arrays, noise): none of it is stored in a scene.
+## What it does NOT do: choose which ground a map wears (TerrainLayer does) or pack the textures
+## (GroundTextures does).
 
 const SHADER := preload("res://scenes/look/ground/ground.gdshader")
 
 
-## `roles`: the map's ground_roles.png (Terrain.ground_roles); `light`: its baked light (Terrain.light_map). Either may be null.
+## `roles`: the map's ground_roles.png (Terrain.ground_roles); `light`: its baked light
+## (Terrain.light_map). Either may be null.
 static func build(
 	ground: GodGround, roles: Texture2D, light: Texture2D, preset: LookQuality
 ) -> ShaderMaterial:
@@ -21,7 +24,8 @@ static func build(
 	return mat
 
 
-## Pushes the ground's tunables, its texture arrays and the preset's switches. The arrays are cached per GodGround.
+## Pushes the ground's tunables, its texture arrays and the preset's switches. The arrays are cached
+## per GodGround.
 static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) -> void:
 	mat.set_shader_parameter(
 		"role_albedo", GroundTextures.array_of(ground, GroundTextures.Kind.ALBEDO)
@@ -82,8 +86,9 @@ static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) 
 	mat.set_shader_parameter("has_edge", ground.edge != null)
 
 
-## Gives the ground the average colour of the grass where the grass grows (see `grass_paint.gdshaderinc`). amount 0 removes it.
-## `roles`: the share of the paint per role (x..w = open, earth, rock, path).
+## Gives the ground the average colour of the grass where the grass grows (see
+## `grass_paint.gdshaderinc`). amount 0 removes it. `roles`: the share of the paint per role (x..w =
+## open, earth, rock, path).
 static func set_grass_paint(
 	mat: ShaderMaterial,
 	color: Color,

@@ -17,8 +17,8 @@ const GROUP := &"soul_system"
 const SOUL_SCENE := preload("res://scenes/souls/soul.tscn")
 const _SOUL := preload("res://scenes/souls/soul.gd")
 const NO_SOULS := Refusal.NO_SOULS
-## Where a soul comes from (adenda 1, ledger `by_origin`): the dead of the map's NPC sides, any other creature,
-## and the soul a wizard dropped with P.
+## Where a soul comes from (adenda 1, ledger `by_origin`): the dead of the map's NPC sides, any
+## other creature, and the soul a wizard dropped with P.
 const ORIGIN_NPC := &"npc"
 const ORIGIN_CREATURE := &"creature"
 const ORIGIN_WIZARD := &"wizard"
@@ -41,8 +41,8 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	get_tree().node_added.connect(_watch)
-	# A unit placed in the scene joins the group in its own _ready, which runs after this one when it
-	# comes later in the tree: look for those once everything is ready.
+	# A unit placed in the scene joins the group in its own _ready, which runs after this one when
+	# it comes later in the tree: look for those once everything is ready.
 	_watch_placed_units.call_deferred()
 
 
@@ -72,8 +72,8 @@ func drop_allowed() -> bool:
 	return rules == null or rules.enable_drop_soul
 
 
-## Drops a soul: one soul off the purse, emerging at the wizard's feet with its side. Nothing (and no answer)
-## when the match does not allow it.
+## Drops a soul: one soul off the purse, emerging at the wizard's feet with its side. Nothing (and
+## no answer) when the match does not allow it.
 func drop_soul(slot: int) -> bool:
 	if not drop_allowed():
 		print("soul drop disabled: slot %d does not drop" % slot)
@@ -137,8 +137,8 @@ func _physics_process(_delta: float) -> void:
 			_try_collect(soul, wizards, facts.soul_m, facts.soul_up_m)
 
 
-## Nearest wizard within `reach` on the ground and `reach_up` up and down, best stance first; a tie leaves it.
-## See res://scenes/match/reach_facts.gd (soul_m, soul_up_m).
+## Nearest wizard within `reach` on the ground and `reach_up` up and down, best stance first; a tie
+## leaves it. See res://scenes/match/reach_facts.gd (soul_m, soul_up_m).
 func _try_collect(soul: Node3D, wizards: Array[Node], reach: float, reach_up: float) -> void:
 	var best: Node3D = null
 	var best_stance := Stance.ENEMY + 1
@@ -241,7 +241,8 @@ func _on_unit_died(_tag: String, slot: int, _at: Vector3, unit: Node3D) -> void:
 	_spawn_on_corpse(unit, slot, count)
 
 
-## The origin of the souls a creature leaves: the NPCs of the map (group `npc`) are not the creatures of a wizard.
+## The origin of the souls a creature leaves: the NPCs of the map (group `npc`) are not the
+## creatures of a wizard.
 static func origin_of(unit: Node) -> StringName:
 	return (
 		ORIGIN_NPC if unit != null and unit.is_in_group(UnitSpawner.NPC_GROUP) else ORIGIN_CREATURE

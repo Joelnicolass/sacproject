@@ -1,17 +1,18 @@
 class_name MatchSeed
 extends Node
 
-## The seed of the running match and the one owner of chance in the simulation. It is the node `Context/Seed` of
-## match.tscn: MatchWorld calls begin() from its _enter_tree on every peer, before any child is ready (online they all
-## take the seed the server announced, so the marks and the debris draw the same on every peer), and the seed is live
-## from then until this node leaves the tree (`Context` leaves last). Every source of chance then asks for a stream of its own by
-## name: rng([system, stable id]) or seed_rng(rng, [system, stable id]); derive([...]) = hash([seed, ...parts]) for the
-## few that need a bare number. The stable id is a node name or a slot, never an instance_id (it differs between a window
-## and headless). The global RNG (randf, randi, shuffle, pick_random) is for presentation only: begin seeds it from its
-## own stream, so no simulation stream moves when an effect draws from it.
-## The static functions are the way everybody reads it: they forward to the seed in the tree. Without a match the seed
-## is 0 and rng() / seed_rng() randomize.
-## Reproducible with the same binary on the same machine; not across architectures.
+## The seed of the running match and the one owner of chance in the simulation. It is the node
+## `Context/Seed` of match.tscn: MatchWorld calls begin() from its _enter_tree on every peer, before
+## any child is ready (online they all take the seed the server announced, so the marks and the
+## debris draw the same on every peer), and the seed is live from then until this node leaves the
+## tree (`Context` leaves last). Every source of chance then asks for a stream of its own by name:
+## rng([system, stable id]) or seed_rng(rng, [system, stable id]); derive([...]) = hash([seed,
+## ...parts]) for the few that need a bare number. The stable id is a node name or a slot, never an
+## instance_id (it differs between a window and headless). The global RNG (randf, randi, shuffle,
+## pick_random) is for presentation only: begin seeds it from its own stream, so no simulation
+## stream moves when an effect draws from it. The static functions are the way everybody reads it:
+## they forward to the seed in the tree. Without a match the seed is 0 and rng() / seed_rng()
+## randomize. Reproducible with the same binary on the same machine; not across architectures.
 
 ## The seed of the running match (set by begin, cleared in _exit_tree); null = no match.
 static var _live: MatchSeed
@@ -25,9 +26,10 @@ func _exit_tree() -> void:
 		_live = null
 
 
-## Takes `announced` (the seed every peer of a networked match shares, SacrificeFlow.active_match.match_seed()) when it
-## is not 0, else `rules.match_seed`, else draws one; seeds the global RNG (presentation), prints `seed <n>` and returns
-## it. From now on this is the seed everybody reads.
+## Takes `announced` (the seed every peer of a networked match shares,
+## SacrificeFlow.active_match.match_seed()) when it is not 0, else `rules.match_seed`, else draws
+## one; seeds the global RNG (presentation), prints `seed <n>` and returns it. From now on this is
+## the seed everybody reads.
 func begin(rules: Variant, announced := 0) -> int:
 	var wanted := announced
 	if wanted <= 0:
@@ -69,8 +71,9 @@ static func rng(parts: Array) -> RandomNumberGenerator:
 	return made
 
 
-## Seeds a generator that already exists (one a node hands to its children before it is ready): `override` when it is
-## not 0 (an @export seed of the instance), else the stream of `parts` in this match, else randomized.
+## Seeds a generator that already exists (one a node hands to its children before it is ready):
+## `override` when it is not 0 (an @export seed of the instance), else the stream of `parts` in this
+## match, else randomized.
 static func seed_rng(target: RandomNumberGenerator, parts: Array, override := 0) -> void:
 	if override != 0:
 		target.seed = override

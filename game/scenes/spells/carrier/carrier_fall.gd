@@ -2,11 +2,13 @@
 class_name CarrierFall
 extends Node
 
-## The fall of Bovine Intervention's cow for its SpellCarrier: it is born buried at the cast point, and in `travel_s` it goes from there to the
-## center of its target along an arc that peaks `peak_m` up (it says `arrived` when it is there), then it keeps falling and, going through the
-## land, says `landed` and ends. The horizontal pace is the distance left over the ticks left (twice that until the last two ticks), so it always
-## arrives on time, however the target runs. It does not hurt (TargetEffect on `arrived`, CarrierLanding on `landed`) and it does not draw.
-## Server (or solo) only.
+## The fall of Bovine Intervention's cow for its SpellCarrier: it is born buried at the cast point,
+## and in `travel_s` it goes from there to the center of its target along an arc that peaks `peak_m`
+## up (it says `arrived` when it is there), then it keeps falling and, going through the land, says
+## `landed` and ends. The horizontal pace is the distance left over the ticks left (twice that until
+## the last two ticks), so it always arrives on time, however the target runs. It does not hurt
+## (TargetEffect on `arrived`, CarrierLanding on `landed`) and it does not draw. Server (or solo)
+## only.
 
 ## Below this under the void it is gone.
 const _VOID_DEPTH_M := 25.0
@@ -30,7 +32,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	)
 
 
-## Server or solo. The fall starts on the carrier's place (buried), aimed at `target`; the cow looks at it.
+## Server or solo. The fall starts on the carrier's place (buried), aimed at `target`; the cow looks
+## at it.
 func begin(target: Node3D) -> void:
 	_target = target
 	_goal = _center()

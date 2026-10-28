@@ -2,10 +2,12 @@
 class_name AnimateDeadAction
 extends SpellAction
 
-## Animate Dead: the click names the soul of a dead creature the wizard may take back; the creature starts to rise as soon as the cast
-## starts (it does not wait for the casting time, and an interruption does not undo it). It climbs, turns and stands up on its own
-## (FastRevive with the slow knobs), and a replicated effect shows the streams from the wizard to it. A soul without a corpse (a
-## dropped one, a free one) is refused before any mana is spent. It does not decide how long the revival takes (the FastRevive scene).
+## Animate Dead: the click names the soul of a dead creature the wizard may take back; the creature
+## starts to rise as soon as the cast starts (it does not wait for the casting time, and an
+## interruption does not undo it). It climbs, turns and stands up on its own (FastRevive with the
+## slow knobs), and a replicated effect shows the streams from the wizard to it. A soul without a
+## corpse (a dropped one, a free one) is refused before any mana is spent. It does not decide how
+## long the revival takes (the FastRevive scene).
 
 ## The revival the creature goes through (a FastRevive scene with the normal, slow knobs).
 @export var revive_scene: PackedScene

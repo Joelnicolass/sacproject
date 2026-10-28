@@ -1,15 +1,15 @@
 class_name SplitFlight
 extends ShotInFlight
 
-## The Boulderdash's fan of three rocks (emba).
-## RangedWeapon fires ShotLook.volley shots with the same direction (one accuracy roll) and writes in each spawn packet
-## its `volley_index` (−1, 0, +1) and `aim_distance` (|aim point − origin|). This node counts
-## distanceUntilSplit = max(0, aim_distance − before_target_m) down by speed/60 on every tick of the flight; on the tick
-## it goes under 0 the side rocks turn volley_index · angle_deg around `axis`, after the
-## move of that tick, so the new direction counts from the next move
-## The middle rock (index 0) never turns. Without `aim_distance` in the packet nothing splits.
-## Limits: the turn is around Vector3.UP, not the shooter's own up (a ground shooter stands upright); with
-## Godot's axes it may come out mirrored, and the fan is symmetric.
+## The Boulderdash's fan of three rocks (emba). RangedWeapon fires ShotLook.volley shots with the
+## same direction (one accuracy roll) and writes in each spawn packet its `volley_index` (−1, 0, +1)
+## and `aim_distance` (|aim point − origin|). This node counts distanceUntilSplit = max(0,
+## aim_distance − before_target_m) down by speed/60 on every tick of the flight; on the tick it goes
+## under 0 the side rocks turn volley_index · angle_deg around `axis`, after the move of that tick,
+## so the new direction counts from the next move The middle rock (index 0) never turns. Without
+## `aim_distance` in the packet nothing splits.
+## Limits: the turn is around Vector3.UP, not the shooter's own up (a ground shooter stands
+## upright); with Godot's axes it may come out mirrored, and the fan is symmetric.
 
 ## The turn of each side rock (θ = 3.5°).
 @export var angle_deg := 3.5
@@ -57,6 +57,7 @@ func _split(shot: RangedShot) -> void:
 		var direction := shot.velocity.normalized()
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"fan ±%s° at %.3f m: %s index %d tick %d angle %.4f° seen from above dir (%.5f, %.5f, %.5f) (frame %d)"
 				% [
 					_comma(angle_deg),
@@ -74,7 +75,8 @@ func _split(shot: RangedShot) -> void:
 		)
 
 
-## The distance left until the split goes down by the attack's speed/60; without a SPEL, by the shot's own speed.
+## The distance left until the split goes down by the attack's speed/60; without a SPEL, by the
+## shot's own speed.
 func _step_m(shot: RangedShot) -> float:
 	var speed := shot.ability.speed_m_s if shot.ability else shot.velocity.length()
 	return speed / MatchClock.TICKS_PER_SECOND_F
@@ -85,8 +87,8 @@ func _split_at(shot: RangedShot) -> float:
 	return maxf(0.0, float(shot.spawn_data.get("aim_distance", 0.0)) - before_target_m)
 
 
-## The turn seen from above, in degrees (sign by Godot's axes): the rotation is around UP, so this is exactly
-## index · angle_deg whatever the rock's slope.
+## The turn seen from above, in degrees (sign by Godot's axes): the rotation is around UP, so this
+## is exactly index · angle_deg whatever the rock's slope.
 static func _flat_angle_deg(from: Vector3, to: Vector3) -> float:
 	return rad_to_deg(Vector2(from.x, from.z).angle_to(Vector2(to.x, to.z)))
 
@@ -105,6 +107,7 @@ func _log_start(shot: RangedShot, at: Vector3, aim: float) -> void:
 	)
 	print(
 		(
+			# gdlint: ignore=max-line-length
 			"fan %s index %d tick 1 at (%.3f, %.3f, %.3f) dir (%.5f, %.5f, %.5f) step %.4f aimed %.3f m turn at %.3f m range %.1f box %.2f target %s shooter %s side %d (frame %d)"
 			% [
 				shot.name,
@@ -129,7 +132,8 @@ func _log_start(shot: RangedShot, at: Vector3, aim: float) -> void:
 	)
 	if _index != 0:
 		return
-	# The bodies the rocks may hit, once per volley (the middle rock): the replica walks the same boxes.
+	# The bodies the rocks may hit, once per volley (the middle rock): the replica walks the same
+	# boxes.
 	for group: StringName in [&"wizard", &"unit"]:
 		for node in get_tree().get_nodes_in_group(group):
 			var body := node as Node3D
@@ -157,8 +161,8 @@ func _log_start(shot: RangedShot, at: Vector3, aim: float) -> void:
 			)
 
 
-## The rock's last tick: where it was when it burst (or reached its range), and the body its box touches there (the log
-## only: RangedShot decides the hit).
+## The rock's last tick: where it was when it burst (or reached its range), and the body its box
+## touches there (the log only: RangedShot decides the hit).
 func _exit_tree() -> void:
 	if ticks == 0 or not DebugLog.on(&"split"):
 		return

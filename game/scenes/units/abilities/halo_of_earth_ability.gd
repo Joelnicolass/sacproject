@@ -1,10 +1,10 @@
 class_name HaloOfEarthAbility
 extends AbilityEffect
 
-## The Rhinok's Halo of Earth. It always applies
-## (the cooldown, 40 s, outlives the rocks, 35 s): no preparation, no rule of its own. AbilitySlot spends the 650 mana and
-## starts the cooldown when fire() returns true. fire() puts a HaloOfEarth coordinator in the shot container (the node
-## the shot spawner spawns into), which makes the 6 rocks from the next tick.
+## The Rhinok's Halo of Earth. It always applies (the cooldown, 40 s, outlives the rocks, 35 s): no
+## preparation, no rule of its own. AbilitySlot spends the 650 mana and starts the cooldown when
+## fire() returns true. fire() puts a HaloOfEarth coordinator in the shot container (the node the
+## shot spawner spawns into), which makes the 6 rocks from the next tick.
 
 ## The coordinator's scene (halo_of_earth.tscn).
 @export var halo_scene: PackedScene

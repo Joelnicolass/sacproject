@@ -1,9 +1,10 @@
 class_name StalkHunt
 extends Node
 
-## What a stalk hunts and how fast it moves while it does: which body it may take (alive, not frozen, not caught by this cast before, inside
-## the 10 to 45 m band of its root), the nearest such body in reach, and the speeds of its tip. It does not move the tip (Stalk does) nor hold
-## the body (StalkGrip does). Server only.
+## What a stalk hunts and how fast it moves while it does: which body it may take (alive, not
+## frozen, not caught by this cast before, inside the 10 to 45 m band of its root), the nearest such
+## body in reach, and the speeds of its tip. It does not move the tip (Stalk does) nor hold the body
+## (StalkGrip does). Server only.
 
 const BODY_GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP]
 
@@ -14,7 +15,8 @@ const BODY_GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP]
 @export_range(0.01, 5.0, 0.01, "suffix:m") var catch_m := 0.1
 ## The held body is thrown when the tip is this close to the top.
 @export_range(0.0, 50.0, 0.1, "suffix:m") var release_m := 7.0
-## Without prey the tip drifts inside a cone of this radius over the root, at this speed and acceleration.
+## Without prey the tip drifts inside a cone of this radius over the root, at this speed and
+## acceleration.
 @export_range(1.0, 100.0, 0.5, "suffix:m") var wander_m := 30.0
 @export_range(0.1, 50.0, 0.1, "suffix:m/s") var wander_speed := 6.0
 @export_range(0.1, 50.0, 0.1) var wander_accel := 0.6

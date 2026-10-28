@@ -1,15 +1,15 @@
 class_name Poisoned
 extends DamageOverTime
 
-## One dose of poison, a child of the body's Poisoning (the one owner of what the doses
-## add up to, and of their order). Each dose deals its damage/60 per frame, always ignoring
-## friendly fire, and ends after the update whose frame reached `lifetime`: lifetime + 1 updates (DamageOverTime.step).
+## One dose of poison, a child of the body's Poisoning (the one owner of what the doses add up to,
+## and of their order). Each dose deals its damage/60 per frame, always ignoring friendly fire, and
+## ends after the update whose frame reached `lifetime`: lifetime + 1 updates (DamageOverTime.step).
 ##
 ## What a dose carries besides the damage: it may be `infectious` (the Necryl's Disease), it adds
-## `resistance_debuff` to the body's poison resistance (×1e-3 to every resistance) and multiplies its
-## regeneration by `regeneration_factor`. From its update at frame `mana_block_frame` (Poison.manaBlockDelay,
-## 2 s) until it ends it blocks the body's mana. Poisoning reads these
-## to answer Health, ManaPool and MeleeWeapon; the dose itself only deals its damage.
+## `resistance_debuff` to the body's poison resistance (×1e-3 to every resistance) and multiplies
+## its regeneration by `regeneration_factor`. From its update at frame `mana_block_frame`
+## (Poison.manaBlockDelay, 2 s) until it ends it blocks the body's mana. Poisoning reads these to
+## answer Health, ManaPool and MeleeWeapon; the dose itself only deals its damage.
 
 var infectious := false
 ## Resistance debuff (SPEL `ires`): poison resistance += it while the dose lasts.

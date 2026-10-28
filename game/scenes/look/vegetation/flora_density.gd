@@ -1,14 +1,16 @@
 class_name FloraDensity
 extends RefCounted
 
-## A snapshot of the FloraLayer nodes of a map, as MeshPlanter reads it: per layer its species tag, its density image
-## (L8 bytes, 1 px = `cell_m`) and `max_per_cell`. Plain arrays of values, so WorkerThreadPool tasks can read it while the
-## main thread does not touch it (a layer that changes makes a new snapshot). Count of a pixel: round(value x max / 255),
-## exact for the images the migration wrote (value = round(count x 255 / max), max <= 255).
+## A snapshot of the FloraLayer nodes of a map, as MeshPlanter reads it: per layer its species tag,
+## its density image (L8 bytes, 1 px = `cell_m`) and `max_per_cell`. Plain arrays of values, so
+## WorkerThreadPool tasks can read it while the main thread does not touch it (a layer that changes
+## makes a new snapshot). Count of a pixel: round(value x max / 255), exact for the images the
+## migration wrote (value = round(count x 255 / max), max <= 255).
 ## Presentation data: the simulation never reads it.
 
 var tags := PackedStringArray()
-## The FloraLayer (get_instance_id) of each entry, so a painted layer swaps only its own bytes (`with_layer_bytes`).
+## The FloraLayer (get_instance_id) of each entry, so a painted layer swaps only its own bytes
+## (`with_layer_bytes`).
 var layer_ids := PackedInt64Array()
 var species: Array[VegetationSpecies] = []
 var _cell_m := PackedFloat32Array()
@@ -51,8 +53,9 @@ static func gather(scope: Node) -> FloraDensity:
 	return from_layers(layers)
 
 
-## A new snapshot like this one with the bytes of the layer `layer_id` replaced (same size: the brush only repaints), so
-## the planters' tasks that still read this one see it unchanged. The same snapshot back when that layer is not here.
+## A new snapshot like this one with the bytes of the layer `layer_id` replaced (same size: the
+## brush only repaints), so the planters' tasks that still read this one see it unchanged. The same
+## snapshot back when that layer is not here.
 func with_layer_bytes(layer_id: int, bytes: PackedByteArray) -> FloraDensity:
 	var index := layer_ids.find(layer_id)
 	if index < 0 or bytes.size() != _width[index] * _height[index]:

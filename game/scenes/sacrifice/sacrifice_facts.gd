@@ -1,35 +1,41 @@
 class_name SacrificeFacts
 extends RefCounted
 
-## The distances of the sacrifice the rules need (the ring of the doctors, the push, how far a doctor reaches, where the creature hangs,
-## where the vortex opens), read once from the scene `sacrifice_places.tscn` and kept. The measures are decoded to the mm
-## (SceneStateReader.mm), the doubles `MatchRules` held before they moved into the scene.
-## Read from the scene's SceneState, NEVER instantiated: an instance of its Area3D would move the simulation.
-## What it does not do: move anything, choose a scene (MatchRules.sacrifice_places does) or know the ritual's phases.
+## The distances of the sacrifice the rules need (the ring of the doctors, the push, how far a
+## doctor reaches, where the creature hangs, where the vortex opens), read once from the scene
+## `sacrifice_places.tscn` and kept. The measures are decoded to the mm (SceneStateReader.mm), the
+## doubles `MatchRules` held before they moved into the scene. Read from the scene's SceneState,
+## NEVER instantiated: an instance of its Area3D would move the simulation.
+## What it does not do: move anything, choose a scene (MatchRules.sacrifice_places does) or know the
+## ritual's phases.
 
 const _DEFAULT_SCENE := preload("res://scenes/sacrifice/sacrifice_places.tscn")
 
 static var _cache: Dictionary[PackedScene, SacrificeFacts] = {}
 
-## Ritual: the ring of the doctors, the same ring closed in, the push and its full-speed core, the carrier's stop, the hang over the site.
+## Ritual: the ring of the doctors, the same ring closed in, the push and its full-speed core, the
+## carrier's stop, the hang over the site.
 var ring_m := 20.0
 var ring_end_m := 17.0
 var push_m := 20.0
 var push_core_m := 5.0
 var carrier_stop_m := 20.0
 var hang_up_m := 15.0
-## Carry: how far up and behind the doctor the body hangs, how far a doctor reaches to pick up a soul and to pump the captive.
+## Carry: how far up and behind the doctor the body hangs, how far a doctor reaches to pick up a
+## soul and to pump the captive.
 var carry_up_m := 3.5
 var carry_back_m := 2.7
 var pickup_m := 10.0
 var pump_reach_m := 2.0
-## Drop: how far out and up the vortex opens from the target, and how far below it the doctor leaves it.
+## Drop: how far out and up the vortex opens from the target, and how far below it the doctor leaves
+## it.
 var drop_out_m := 20.0
 var drop_up_m := 15.0
 var exit_down_m := 2.25
 
 
-## The facts of the places scene `scene` (built once and shared). Null reads the default places. A dictionary lookup after the first call.
+## The facts of the places scene `scene` (built once and shared). Null reads the default places. A
+## dictionary lookup after the first call.
 static func of(scene: PackedScene) -> SacrificeFacts:
 	if scene == null:
 		scene = _DEFAULT_SCENE

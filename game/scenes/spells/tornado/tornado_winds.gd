@@ -1,9 +1,10 @@
 class_name TornadoWinds
 extends Node
 
-## The four winds that bend the funnel: each starts at a random angle of this cast and turns at its own rate; every peer counts its own ticks,
-## so the bend is the same everywhere with nothing replicated (a peer that joins late is a few ticks off, which nobody can see). The only
-## source of the winds' angles: TornadoLift reads them to find the axis and TornadoLook to draw it.
+## The four winds that bend the funnel: each starts at a random angle of this cast and turns at its
+## own rate; every peer counts its own ticks, so the bend is the same everywhere with nothing
+## replicated (a peer that joins late is a few ticks off, which nobody can see). The only source of
+## the winds' angles: TornadoLift reads them to find the axis and TornadoLook to draw it.
 
 @export var zone: GroundZone
 

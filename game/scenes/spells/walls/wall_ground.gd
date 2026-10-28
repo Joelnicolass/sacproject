@@ -1,12 +1,14 @@
 class_name WallGround
 extends RefCounted
 
-## What a wall asks of the world around it: the land under a point, whether an end may stand there, and which bodies are inside it now.
-## It holds no state of the wall (SpellWall) and hurts nobody (WallTouch). Without a map (a bare debug floor) the land is flat at the
-## wall's own height and everywhere.
+## What a wall asks of the world around it: the land under a point, whether an end may stand there,
+## and which bodies are inside it now. It holds no state of the wall (SpellWall) and hurts nobody
+## (WallTouch). Without a map (a bare debug floor) the land is flat at the wall's own height and
+## everywhere.
 
 
-## The land height under (x, z), or the wall's own height when there is no map or the point is a hole.
+## The land height under (x, z), or the wall's own height when there is no map or the point is a
+## hole.
 static func ground_y(wall: Node3D, fallback: float, x: float, z: float) -> float:
 	var shape := Terrain.of(wall)
 	if shape == null:
@@ -15,7 +17,8 @@ static func ground_y(wall: Node3D, fallback: float, x: float, z: float) -> float
 	return fallback if is_nan(land) else land
 
 
-## One tick of growth: each end that has not stopped moves out a step, or stops where it may not stand.
+## One tick of growth: each end that has not stopped moves out a step, or stops where it may not
+## stand.
 static func grow(wall: SpellWall) -> void:
 	if wall.vanish_at >= 0 or (wall.left_stopped and wall.right_stopped):
 		return

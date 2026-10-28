@@ -1,19 +1,23 @@
 class_name TerrainLive
 extends Node
 
-## The stamps playing on the ground, gathered once per physics tick. `put` and `drop` (what Terrain.stamp and Terrain.unstamp
-## ask) only note the last request of each stamp; at the tick it works out the new shift of every stamp that moved by at
-## least `min_step_m` and tells `ticked` once, with those shifts and the stamps that ended. Terrain, the one writer of the
-## ground, applies them. Not: the sums (GroundField), what stays (Terrain.keep_stamp), the network (each peer plays its own).
+## The stamps playing on the ground, gathered once per physics tick. `put` and `drop` (what
+## Terrain.stamp and Terrain.unstamp ask) only note the last request of each stamp; at the tick it
+## works out the new shift of every stamp that moved by at least `min_step_m` and tells `ticked`
+## once, with those shifts and the stamps that ended. Terrain, the one writer of the ground, applies
+## them. Not: the sums (GroundField), what stays (Terrain.keep_stamp), the network (each peer plays
+## its own).
 
-## Once per tick with something to show: the new shift of each stamp that moved and the keys of the stamps that ended.
+## Once per tick with something to show: the new shift of each stamp that moved and the keys of the
+## stamps that ended.
 signal ticked(shifts: Array, ended: PackedStringArray)
 
-## A stamp is drawn again only when its height moved by this many metres, or its ring travelled this far (a slow decline
-## is not redrawn every tick).
+## A stamp is drawn again only when its height moved by this many metres, or its ring travelled this
+## far (a slow decline is not redrawn every tick).
 @export_range(0.0, 2.0, 0.01, "suffix:m") var min_step_m := 0.1
 
-## How much a stamp may move each lattice vertex (PinRules.weights: 0 under a base); empty = all of it. Terrain sets it once.
+## How much a stamp may move each lattice vertex (PinRules.weights: 0 under a base); empty = all of
+## it. Terrain sets it once.
 var pins := PackedFloat32Array()
 
 
@@ -43,7 +47,8 @@ var _ended := PackedStringArray()
 var _due := 0
 
 
-## Stamp `key` shows its shift at `at_s` s of its profile (in place of its last one) from the next tick.
+## Stamp `key` shows its shift at `at_s` s of its profile (in place of its last one) from the next
+## tick.
 func put(
 	key: String,
 	profile: StampProfile,
@@ -77,7 +82,8 @@ func drop(key: String) -> void:
 	_ended.append(key)
 
 
-## Stamp `key` is gone already (its end was kept for good): nothing of it is shown or taken away again.
+## Stamp `key` is gone already (its end was kept for good): nothing of it is shown or taken away
+## again.
 func forget(key: String) -> void:
 	var request: Request = _requests.get(key)
 	if request != null and request.due:
@@ -106,7 +112,8 @@ func _physics_process(_delta: float) -> void:
 		ticked.emit(shifts, ended)
 
 
-## The shift `request` shows now, or null when it moved less than `min_step_m` (or a picture stamp has no pattern yet).
+## The shift `request` shows now, or null when it moved less than `min_step_m` (or a picture stamp
+## has no pattern yet).
 func _shift_of(key: String, request: Request) -> Shift:
 	var profile := request.profile
 	var share := profile.timeline.sample(request.at_s)

@@ -2,33 +2,39 @@
 class_name Minimap
 extends Control
 
-## The circle at the bottom right of the HUD. It builds the frame's state (center, turn, zoom) and hands it to its children:
-## `Ground` draws the baked terrain, `Markers` the icons. It knows no unit type.
-## Local presentation: nothing is replicated. Input: the wheel over the circle zooms the map, `M` shows or hides it, and a
-## click gives a ground point (`ground_pointed`); MatchCommand turns it into an order or an aim, so no order starts here.
+## The circle at the bottom right of the HUD. It builds the frame's state (center, turn, zoom) and
+## hands it to its children: `Ground` draws the baked terrain, `Markers` the icons. It knows no unit
+## type.
+## Local presentation: nothing is replicated. Input: the wheel over the circle zooms the map, `M`
+## shows or hides it, and a click gives a ground point (`ground_pointed`); MatchCommand turns it
+## into an order or an aim, so no order starts here.
 ##
-## Everything is laid out in canvas pixels of the 1280×720 base, anchored to the bottom-right corner; Godot's stretch scales it.
-## Heading up (the default) turns the map with the camera so up is where it looks; the center is `lead_factor` camera distances
-## ahead of the followed wizard. `view.heading_up = false` keeps north up and centers on the wizard.
+## Everything is laid out in canvas pixels of the 1280×720 base, anchored to the bottom-right
+## corner; Godot's stretch scales it. Heading up (the default) turns the map with the camera so up
+## is where it looks; the center is `lead_factor` camera distances ahead of the followed wizard.
+## `view.heading_up = false` keeps north up and centers on the wizard.
 ## Map axes: world (x, z) → local pixels. A top view has +x right and +z down, so no flip is needed.
 
 ## `Minimap.zoom` changed (wheel).
 signal zoom_changed(zoom: float)
-## `select` or `order_units` was released over the circle on the ground at `point` (world; y is the ground height there).
+## `select` or `order_units` was released over the circle on the ground at `point` (world; y is the
+## ground height there).
 ## The camera does not jump: in Sacrifice it always follows the wizard.
 signal ground_pointed(point: Vector3, action: StringName)
 
 ## Height the ground ray starts from (meters); the map is far lower.
 const GROUND_RAY_TOP := 1500.0
 
-## Slot of the player of this process (0 until `bind`); the markers read it to tell your things from the foe's.
+## Slot of the player of this process (0 until `bind`); the markers read it to tell your things from
+## the foe's.
 var local_slot := 0
 
 @export_group("Sockets")
 ## The world camera (WorldCamera). Reads its turn and the wizard it follows.
 @export var camera: Camera3D
 @export var terrain_bake: MinimapTerrainBake
-## Parent of the structures a player builds (%Structures): the Manaliths. The map's own buildings (hundreds of houses) are not on the map.
+## Parent of the structures a player builds (%Structures): the Manaliths. The map's own buildings
+## (hundreds of houses) are not on the map.
 @export var structures_root: Node
 @export var ground: Control
 @export var markers: Control
@@ -90,7 +96,8 @@ func _process(_delta: float) -> void:
 		markers.queue_redraw()
 
 
-## The wheel zooms the map and a button gives a ground point. The event is consumed here (`mouse_filter` STOP over the circle).
+## The wheel zooms the map and a button gives a ground point. The event is consumed here
+## (`mouse_filter` STOP over the circle).
 func _gui_input(event: InputEvent) -> void:
 	if WorldInput.blocked(self):
 		return
@@ -134,7 +141,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## The ground point under a world x/z: a ray straight down on the ground layer. Null when there is none (off the map).
+## The ground point under a world x/z: a ray straight down on the ground layer. Null when there is
+## none (off the map).
 func _ground_at(xz: Vector2) -> Variant:
 	if camera == null or not camera.is_inside_tree() or camera.get_world_3d() == null:
 		return null
@@ -188,7 +196,8 @@ func _update_state() -> void:
 		var eye := Vector2(camera.global_position.x, camera.global_position.z)
 		target = eye
 		var followed: Variant = camera.get("follow") if "follow" in camera else null
-		# The followed wizard can be freed (e.g. after leaving the match) before the camera drops it.
+		# The followed wizard can be freed (e.g. after leaving the match) before the camera drops
+		# it.
 		if (
 			is_instance_valid(followed)
 			and followed is Node3D

@@ -2,13 +2,15 @@
 class_name CameraShake
 extends Node
 
-## The camera's shake, a child of WorldCamera. It only computes; WorldCamera._place composes `offset()` and
-## `roll()` on top of its own placement. Presentation only: no RPC, no sim writes, no global RNG (its own FastNoiseLite with a
-## fixed seed). In a headless or dedicated process it does nothing (`run_headless` lets a check run it).
-## - Trauma (0…1) from the hits to the local wizard (the `local_wizard` group): lost fraction × `wizard_hit_trauma_per_max`,
-##   heard from Events.body_hurt (every peer tells it), and from the `camera_trauma` of the FX near the camera (FxBus.played; `shake_map` gives the fall-off).
-## - Trauma falls by `decay_per_s` a second. Offset = trauma² × `max_offset_m` × noise, roll = trauma² × `max_roll_deg` × noise,
-##   both × FeelPrefs.shake_scale (0 = none, exactly).
+## The camera's shake, a child of WorldCamera. It only computes; WorldCamera._place composes
+## `offset()` and `roll()` on top of its own placement. Presentation only: no RPC, no sim writes, no
+## global RNG (its own FastNoiseLite with a fixed seed). In a headless or dedicated process it does
+## nothing (`run_headless` lets a check run it).
+## - Trauma (0…1) from the hits to the local wizard (the `local_wizard` group): lost fraction ×
+##   `wizard_hit_trauma_per_max`, heard from Events.body_hurt (every peer tells it), and from the
+##   `camera_trauma` of the FX near the camera (FxBus.played; `shake_map` gives the fall-off).
+## - Trauma falls by `decay_per_s` a second. Offset = trauma² × `max_offset_m` × noise, roll =
+##   trauma² × `max_roll_deg` × noise, both × FeelPrefs.shake_scale (0 = none, exactly).
 
 ## Group a check counts (see `is_active`).
 const GROUP := &"feel_presentation"
@@ -57,7 +59,8 @@ func _ready() -> void:
 	Events.body_hurt.connect(_on_body_hurt)
 
 
-## False in headless and dedicated processes (unless `run_headless`): nothing listens and the offset stays 0.
+## False in headless and dedicated processes (unless `run_headless`): nothing listens and the offset
+## stays 0.
 func is_active() -> bool:
 	return _active
 

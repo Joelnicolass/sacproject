@@ -1,10 +1,11 @@
 class_name SpeedupEffect
 extends Node
 
-## Speed boost: on a wizard it lasts duration * 0.2 + 0.5 s, on a creature
-## duration * 1000 / max health + 0.5 s. The factor is 1 + 0.75 * min(1, frames_left / 60):
-## ×1.75, easing back to ×1 in the last second. Gives its factor to the body's PaceFactors (the one owner of speed_factor); a body without it (the Sac Doctor) gets speed_factor written directly.
-## Server (or solo) only: the body is simulated there.
+## Speed boost: on a wizard it lasts duration * 0.2 + 0.5 s, on a creature duration * 1000 / max
+## health + 0.5 s. The factor is 1 + 0.75 * min(1, frames_left / 60): ×1.75, easing back to ×1 in
+## the last second. Gives its factor to the body's PaceFactors (the one owner of speed_factor); a
+## body without it (the Sac Doctor) gets speed_factor written directly. Server (or solo) only: the
+## body is simulated there.
 
 const NODE_NAME := "SpeedupEffect"
 ## The PaceFactors source of this effect.
@@ -58,7 +59,8 @@ func _exit_tree() -> void:
 	_give(get_parent(), 1.0)
 
 
-## The pace goes through PaceFactors when the body has it; else (the doctor) it is written as it always was.
+## The pace goes through PaceFactors when the body has it; else (the doctor) it is written as it
+## always was.
 func _give(body: Node, factor: float) -> void:
 	var pace := PaceFactors.of(body)
 	if pace != null:

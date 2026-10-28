@@ -8,11 +8,11 @@ extends Node3D
 ## or its corpse is gone) falls at 1 m/s to the ground. It grows in over 3 s (EMERGING) before
 ## anyone can take it, and shrinks toward the collector at 4/s (COLLECTING).
 ## Color is per viewer (`color_for`): blue if it has no side or it is the viewer's, else red.
-## Convert: a red soul can be converted by the other side; while a Sac Doctor revives its
-## corpse the soul is REVIVING (nobody collects or converts it, it is not drawn).
-## A creature with Devour eats it (DEVOURING): it shrinks at 3/s toward the eater's shot origin and
-## the corpse dissolves. This script owns what a soul
-## is and what can be done to it: the corpse it leaves (`sever`), who may eat it, which soul waits on a corpse.
+## Convert: a red soul can be converted by the other side; while a Sac Doctor revives its corpse the
+## soul is REVIVING (nobody collects or converts it, it is not drawn). A creature with Devour eats
+## it (DEVOURING): it shrinks at 3/s toward the eater's shot origin and the corpse dissolves. This
+## script owns what a soul is and what can be done to it: the corpse it leaves (`sever`), who may
+## eat it, which soul waits on a corpse.
 
 ## REVIVING and DEVOURING go last: `state` is replicated as an integer.
 enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
@@ -63,8 +63,9 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export var collect_shrink_per_s := 4.0
 ## Devour: 3/60 a tick.
 @export var devour_shrink_per_s := 3.0
-## A free soul in the air falls like a thing: it speeds up by `fall_gravity` (m/s²) up to `max_fall_speed` (m/s), so a
-## soul freed high in the air (a creature the Volcano threw) does not hang there out of reach.
+## A free soul in the air falls like a thing: it speeds up by `fall_gravity` (m/s²) up to
+## `max_fall_speed` (m/s), so a soul freed high in the air (a creature the Volcano threw) does not
+## hang there out of reach.
 @export_range(0.0, 50.0, 0.1, "suffix:m/s²") var fall_gravity := 9.8
 @export_range(0.1, 100.0, 0.1, "suffix:m/s") var max_fall_speed := 20.0
 ## A soul that falls through a hole is gone this far under the last ground it had.
@@ -75,7 +76,8 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export_flags_3d_physics var ground_mask := 1
 
 @export_group("Rise")
-## How far under its hover height the soul starts when it appears (it only moves the drawing, never the soul).
+## How far under its hover height the soul starts when it appears (it only moves the drawing, never
+## the soul).
 @export_range(0.0, 3.0, 0.05, "suffix:m") var rise_m := 0.8
 ## Seconds the soul takes to rise from the corpse to its hover height.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var rise_s := 1.2
@@ -89,9 +91,11 @@ const SPRITE_LIFT := 1.25 * 1.6
 
 var corpse: Node3D
 var collector: Node3D
-## The spell that drags it (Soul Mole, Soul Wind): while it lives the soul sits on it. Server only; the clients get the position.
+## The spell that drags it (Soul Mole, Soul Wind): while it lives the soul sits on it. Server only;
+## the clients get the position.
 var carrier: Node3D
-## Where it came from (SoulSystem.ORIGIN_*), for the debug ledger. Not replicated: the clients only draw.
+## Where it came from (SoulSystem.ORIGIN_*), for the debug ledger. Not replicated: the clients only
+## draw.
 var origin: StringName = &"creature"
 
 ## Server only: bit `slot` set = a Convert of that slot is underway on this soul.
@@ -162,8 +166,9 @@ func can_be_collected_by(slot: int) -> bool:
 	return state == State.NORMAL and (not attached or color_for(slot) == SoulColor.BLUE)
 
 
-## A red soul in the open, grown or still growing in, that no doctor of that side is already coming for. A soul that just
-## appeared can be converted right away, like the end of the cast and the carrier already allow.
+## A red soul in the open, grown or still growing in, that no doctor of that side is already coming
+## for. A soul that just appeared can be converted right away, like the end of the cast and the
+## carrier already allow.
 func can_convert_by(slot: int) -> bool:
 	return (
 		(state == State.NORMAL or state == State.EMERGING)
@@ -232,15 +237,17 @@ func sever() -> void:
 		print("corpse %s dissolved (tick %d)" % [dead.name, MatchClock.now()])
 
 
-## A soul a spell can fetch for `slot`: not dropped with P, blue for that side, and still waiting (not being taken, eaten or revived).
+## A soul a spell can fetch for `slot`: not dropped with P, blue for that side, and still waiting
+## (not being taken, eaten or revived).
 func fetchable_by(slot: int) -> bool:
 	return (
 		not dropped and is_free_or_own(slot) and (state == State.NORMAL or state == State.EMERGING)
 	)
 
 
-## Server or solo. Soul Mole and Soul Wind take the soul: it lets go of its corpse (which dissolves), prefers the wizard's side
-## when somebody collects it, and follows `by` until `by` is gone.
+## Server or solo. Soul Mole and Soul Wind take the soul: it lets go of its corpse (which
+## dissolves), prefers the wizard's side when somebody collects it, and follows `by` until `by` is
+## gone.
 func release_to(slot: int, by: Node3D) -> void:
 	if _remains == null:
 		_remains = corpse
@@ -275,7 +282,8 @@ func label() -> String:
 	return _who if not _who.is_empty() else str(name)
 
 
-## The soul that waits on `corpse` (Soul.corpse), or null. A soul being eaten or collected has let go of it.
+## The soul that waits on `corpse` (Soul.corpse), or null. A soul being eaten or collected has let
+## go of it.
 static func on_corpse(corpse_node: Node3D) -> Soul:
 	if corpse_node == null or not corpse_node.is_inside_tree():
 		return null
@@ -315,9 +323,10 @@ func _follow_corpse() -> void:
 	)
 
 
-## A free soul comes down to the land under it, faster and faster (`fall_gravity`, `max_fall_speed`). Over a hole (no land under
-## it on the map) it keeps falling and is gone once it is `vanish_depth_m` under the last ground it had. Without ground and without a hole (the terrain not built yet) it
-## stays put.
+## A free soul comes down to the land under it, faster and faster (`fall_gravity`,
+## `max_fall_speed`). Over a hole (no land under it on the map) it keeps falling and is gone once it
+## is `vanish_depth_m` under the last ground it had. Without ground and without a hole (the terrain
+## not built yet) it stays put.
 func _settle(delta: float) -> void:
 	var at := global_position
 	var ground := GroundRay.surface_y(self, at, ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
@@ -413,7 +422,8 @@ func _process(delta: float) -> void:
 		_place(_sprites[k], offset + lift, each, cell)
 
 
-## Presentation only: the drawing starts `rise_m` under the soul and climbs to it; the soul itself does not move.
+## Presentation only: the drawing starts `rise_m` under the soul and climbs to it; the soul itself
+## does not move.
 func _rise(delta: float) -> void:
 	_rise_t = minf(_rise_t + delta, rise_s)
 	var progress := 1.0 if rise_s <= 0.0 else smoothstep(0.0, 1.0, _rise_t / rise_s)

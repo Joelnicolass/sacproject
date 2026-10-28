@@ -3,13 +3,16 @@ class_name TargetInfoPanel
 extends Control
 
 ## The mouse-over info box. Local presentation: no RPC, no sim.
-## - Hover: `delay_s` after TargetProbe names a new body, the box shows beside the pointer what TargetInfo says about it, and
-##   follows the pointer while it stays on that body. It mirrors to the left of the pointer near the right edge and is clamped
-##   inside the viewport. Another body, or none, hides it at once (on the probe's next sample, 30 a second).
-## - Pinned: with nothing hovered and a building inspected by click (StructureInspector), the box shows that building, fixed at
-##   `pinned_margin_px` from the bottom-left corner, until the inspection ends.
+## - Hover: `delay_s` after TargetProbe names a new body, the box shows beside the pointer what
+##   TargetInfo says about it, and follows the pointer while it stays on that body. It mirrors to
+##   the left of the pointer near the right edge and is clamped inside the viewport. Another body,
+##   or none, hides it at once (on the probe's next sample, 30 a second).
+## - Pinned: with nothing hovered and a building inspected by click (StructureInspector), the box
+##   shows that building, fixed at `pinned_margin_px` from the bottom-left corner, until the
+##   inspection ends.
 ## - The bar and the text follow Health.changed of the body shown, not every frame.
-## - Size: 264×84 canvas pixels, set in the .tscn with the title font; Godot's stretch scales it. The children are laid out by anchors.
+## - Size: 264×84 canvas pixels, set in the .tscn with the title font; Godot's stretch scales it.
+##   The children are laid out by anchors.
 ## - FeelPrefs.hover_info off turns the hover box off; the pinned one still shows (it was clicked).
 
 ## Read-only views for flows and checks (AgentKit reads properties).
@@ -34,7 +37,8 @@ var pinned: bool:
 @export var delay_s := 0.5
 ## Canvas pixels between the pointer and the box.
 @export var cursor_gap_px := 19.0
-## Where the pinned box sits: canvas pixels from the left and from the bottom edge (above the spell book).
+## Where the pinned box sits: canvas pixels from the left and from the bottom edge (above the spell
+## book).
 @export var pinned_margin_px := Vector2(10.0, 144.0)
 
 ## The body hovered and waiting for the delay, the one shown, and how long it has waited.
@@ -88,8 +92,9 @@ func _process(delta: float) -> void:
 		)
 
 
-## Top-left corner of a box of `box` pixels beside `pointer` inside a `view`-sized screen: `gap` to the right and below the
-## pointer; to the left when it would leave the right edge, above when it would leave the bottom; then clamped inside.
+## Top-left corner of a box of `box` pixels beside `pointer` inside a `view`-sized screen: `gap` to
+## the right and below the pointer; to the left when it would leave the right edge, above when it
+## would leave the bottom; then clamped inside.
 static func place(pointer: Vector2, box: Vector2, view: Vector2, gap: float) -> Vector2:
 	var at := pointer + Vector2(gap, gap)
 	if at.x + box.x > view.x:

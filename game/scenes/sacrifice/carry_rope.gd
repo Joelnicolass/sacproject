@@ -2,21 +2,25 @@
 class_name CarryRope
 extends Node3D
 
-## What joins a Sac Doctor to the creature it carries: a rope (`tether`) from the tip of the needle to the center of the creature's
-## ring, and sparks at the tip. The needle is a node of the doctor's model (BodyModel.tool_socket, `Needle/Tip` in
-## sac_doctor_model.tscn): move it there with the gizmo. Without one the rope starts at this node's own origin and a warning says so once.
-## Local presentation on every peer, drawn from replicated state only: `doctor.carried` (the creature's
-## path) and the creature's own ring (CaptiveRing.ring(), which exists while it is held). It changes no
-## simulation. The dedicated server draws nothing. Remove the node from doctor.tscn to switch it off.
+## What joins a Sac Doctor to the creature it carries: a rope (`tether`) from the tip of the needle
+## to the center of the creature's ring, and sparks at the tip. The needle is a node of the doctor's
+## model (BodyModel.tool_socket, `Needle/Tip` in sac_doctor_model.tscn): move it there with the
+## gizmo. Without one the rope starts at this node's own origin and a warning says so once. Local
+## presentation on every peer, drawn from replicated state only: `doctor.carried` (the creature's
+## path) and the creature's own ring (CaptiveRing.ring(), which exists while it is held). It changes
+## no simulation. The dedicated server draws nothing. Remove the node from doctor.tscn to switch it
+## off.
 
 @export var doctor: DoctorBody
 ## The rig that wears the doctor's model: it hands out the needle tip (BodyRig.tool_socket).
 @export var rig: BodyRig
 @export var tether: Tether
 @export_group("Needle sparks")
-## Sparks at the needle tip (data/fx/needle.tres), drawn by FxBus from its pool (the type's `pool_max`). Empty = none.
+## Sparks at the needle tip (data/fx/needle.tres), drawn by FxBus from its pool (the type's
+## `pool_max`). Empty = none.
 @export var spark_type: ParticleType
-## Seconds between bursts of `spark_count`. Bursts of 4 every 1/30 s give about 120 sparks per second.
+## Seconds between bursts of `spark_count`. Bursts of 4 every 1/30 s give about 120 sparks per
+## second.
 @export_range(0.01, 1.0, 0.0001, "suffix:s") var spark_period_s := 0.0333
 
 var _spark_left := 0.0
@@ -77,6 +81,7 @@ func _needle() -> Node3D:
 		_warned = true
 		push_warning(
 			(
+				# gdlint: ignore=max-line-length
 				"CarryRope: the model of %s has no tool_socket (BodyModel.tool_socket): the rope starts at the doctor's origin."
 				% doctor.name
 			)
@@ -91,7 +96,8 @@ func _spark(delta: float, needle: Node3D) -> void:
 	if _spark_left > 0.0:
 		return
 	_spark_left = spark_period_s
-	# A pooled burst on this peer only (every peer draws its own from `doctor.carried`); the sparks stay where they were born.
+	# A pooled burst on this peer only (every peer draws its own from `doctor.carried`); the sparks
+	# stay where they were born.
 	FxBus.play(
 		spark_type, needle.global_position, (needle.global_basis * tether.start_axis).normalized()
 	)

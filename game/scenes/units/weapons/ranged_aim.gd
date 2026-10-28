@@ -1,11 +1,13 @@
 class_name RangedAim
 extends RefCounted
 
-## The decisions of a ranged weapon before it shoots: whether this foe is for shooting or for striking, and, once the foe is in
-## range with a clear line, whether the body already faces the aim and the weapon is loaded. Not: the shot itself (RangedFire).
+## The decisions of a ranged weapon before it shoots: whether this foe is for shooting or for
+## striking, and, once the foe is in range with a clear line, whether the body already faces the aim
+## and the weapon is loaded. Not: the shot itself (RangedFire).
 
 
-## Shoot unless the foe is in melee contact. A body of the weapon's own side (a Scarab's patient) is always shot, never struck.
+## Shoot unless the foe is in melee contact. A body of the weapon's own side (a Scarab's patient) is
+## always shot, never struck.
 static func wants(weapon: RangedWeapon, target: Node3D) -> bool:
 	var body := weapon.body
 	if weapon.attack == null or target == null or body.afflictions.raging():
@@ -18,7 +20,8 @@ static func wants(weapon: RangedWeapon, target: Node3D) -> bool:
 	return ShotAim.box_gap(body, target) > weapon.melee_distance
 
 
-## It stops to shoot at max(range_factor·range, range − range_margin) from the body to the target's box.
+## It stops to shoot at max(range_factor·range, range − range_margin) from the body to the target's
+## box.
 static func reach(weapon: RangedWeapon) -> float:
 	var attack := weapon.attack
 	if attack == null:
@@ -28,7 +31,8 @@ static func reach(weapon: RangedWeapon) -> float:
 	)
 
 
-## APPROACH out of range or without a clear line, HOLD while it turns or reloads, FIRE once it can start the shot.
+## APPROACH out of range or without a clear line, HOLD while it turns or reloads, FIRE once it can
+## start the shot.
 static func step(weapon: RangedWeapon, target: Node3D) -> Weapon.Step:
 	var body := weapon.body
 	if body.global_position.distance_to(ShotAim.box_point(body, target)) > reach(weapon):

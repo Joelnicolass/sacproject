@@ -2,14 +2,16 @@
 class_name FloraLayer
 extends Node3D
 
-## Where one kind of plant grows on a map (child of the map's `Vegetation` node). Paint `density` with the map brush
-## (select this node, «Flora» in the 3D bar; it makes the PNG when there is none) or in any image editor (L8 PNG, white =
-## `max_per_cell` plants in the cell); 1 px = `cell_m` meters and the image starts at the map origin
-## (keep this node at 0, 0, 0). While the brush paints, the field draws the picture being painted (`show_painting`, editor
-## only, never saved) until the PNG is saved and imported again. The FloraField of the map's look draws it around the camera: FloraPlacement scatters the
-## cell's plants (same tag, cell and seed: same spots), heights from the terrain, none inside a VegetationClear.
-## For a few plants in one place use a VegetationPatch instead. Nothing here is simulation: a headless or dedicated
-## process never draws it. In the editor `show_overlay` tints the cells where it grows.
+## Where one kind of plant grows on a map (child of the map's `Vegetation` node). Paint `density`
+## with the map brush (select this node, «Flora» in the 3D bar; it makes the PNG when there is none)
+## or in any image editor (L8 PNG, white = `max_per_cell` plants in the cell); 1 px = `cell_m`
+## meters and the image starts at the map origin (keep this node at 0, 0, 0). While the brush
+## paints, the field draws the picture being painted (`show_painting`, editor only, never saved)
+## until the PNG is saved and imported again. The FloraField of the map's look draws it around the
+## camera: FloraPlacement scatters the cell's plants (same tag, cell and seed: same spots), heights
+## from the terrain, none inside a VegetationClear. For a few plants in one place use a
+## VegetationPatch instead. Nothing here is simulation: a headless or dedicated process never draws
+## it. In the editor `show_overlay` tints the cells where it grows.
 
 const GROUP := &"flora_layer"
 
@@ -53,7 +55,8 @@ func _exit_tree() -> void:
 	get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFERRED, FloraField.GROUP, &"layers_changed")
 
 
-## The brush painted `area_m` (map x, z) of `image` (L8, the size of `density`): the field replants that area from it.
+## The brush painted `area_m` (map x, z) of `image` (L8, the size of `density`): the field replants
+## that area from it.
 func show_painting(image: Image, area_m: Rect2) -> void:
 	_painting = image
 	if is_inside_tree():
@@ -68,7 +71,8 @@ func stop_painting() -> void:
 	_update_overlay()
 
 
-## A copy of where it grows as an L8 picture: the brush's painting if one is on, else `density`. Null without one.
+## A copy of where it grows as an L8 picture: the brush's painting if one is on, else `density`.
+## Null without one.
 func density_image() -> Image:
 	if _painting != null:
 		return _painting.duplicate() as Image

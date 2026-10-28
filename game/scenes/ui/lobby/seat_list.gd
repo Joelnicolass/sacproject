@@ -1,9 +1,10 @@
 class_name SeatList
 extends VBoxContainer
 
-## The seats of a room, grouped by team when the room's mode has allies (2v2: «Equipo 1» with seats 1 and 2,
-## «Equipo 2» with 3 and 4); one group with no title otherwise (1v1, all against all). One `seat_scene` row per seat, inside a
-## `team_scene` group. It only shows the room Dictionary of the lobby mirror and passes on what the rows ask.
+## The seats of a room, grouped by team when the room's mode has allies (2v2: «Equipo 1» with seats
+## 1 and 2, «Equipo 2» with 3 and 4); one group with no title otherwise (1v1, all against all). One
+## `seat_scene` row per seat, inside a `team_scene` group. It only shows the room Dictionary of the
+## lobby mirror and passes on what the rows ask.
 
 signal sit_requested(seat: int)
 signal bot_add_requested(seat: int)
@@ -21,7 +22,8 @@ var _rows: Array[SeatRow] = []
 var _layout := ""
 
 
-## `room`: the room view of the server (empty = no room). `am_host`: this player may add and remove bots.
+## `room`: the room view of the server (empty = no room). `am_host`: this player may add and remove
+## bots.
 func show_room(room: Dictionary, am_host: bool) -> void:
 	var seats: Array = room.get("seats", [])
 	var options := room.get("options", {}) as Dictionary

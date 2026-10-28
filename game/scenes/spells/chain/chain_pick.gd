@@ -1,15 +1,17 @@
 class_name ChainPick
 extends RefCounted
 
-## The choosing of a chain, with no state of its own: from a point, inside a radius, the body that comes next (the nearest one, or the one
-## with the lowest health), and the point a jump falls on when nobody is in reach. It does not remember who was hit (ChainHop) nor what a
-## jump does (ChainEffect).
+## The choosing of a chain, with no state of its own: from a point, inside a radius, the body that
+## comes next (the nearest one, or the one with the lowest health), and the point a jump falls on
+## when nobody is in reach. It does not remember who was hit (ChainHop) nor what a jump does
+## (ChainEffect).
 
 enum Order { CLOSEST, LOWEST_HEALTH }
 
 
-## The nearest (or weakest) live body of the right side inside `radius` of `from`, not in `taken`; null when there is none. Ties go to the
-## name, so the answer does not depend on the order of the tree.
+## The nearest (or weakest) live body of the right side inside `radius` of `from`, not in `taken`;
+## null when there is none. Ties go to the name, so the answer does not depend on the order of the
+## tree.
 static func next(
 	tree: SceneTree,
 	from: Vector3,
@@ -49,8 +51,8 @@ static func next(
 	return best
 
 
-## Where a jump with nobody in reach falls: past the last body (`previous` to `current` goes on), within lerp(limit_min, 1, U) of the range,
-## drifted a little by chance, and over the land.
+## Where a jump with nobody in reach falls: past the last body (`previous` to `current` goes on),
+## within lerp(limit_min, 1, U) of the range, drifted a little by chance, and over the land.
 static func fallback(
 	from_node: Node3D,
 	current: Vector3,

@@ -2,11 +2,12 @@
 class_name SoulSounds
 extends BodySounds
 
-## Child of souls/soul.tscn. `collected_cue` when a wizard takes the soul: its replicated `state` becomes COLLECTING
-## (Soul.state_changed, the setter, on every peer). A soul that leaves
-## the tree while COLLECTING and never played (its state and its despawn arrived together) plays then. Eaten (DEVOURING),
-## burst or revived: silence. A Convert sounds through RitualSounds when it ends. No RPC, nothing written. With the AudioGate
-## closed it connects nothing. Remove the node to silence every soul.
+## Child of souls/soul.tscn. `collected_cue` when a wizard takes the soul: its replicated `state`
+## becomes COLLECTING (Soul.state_changed, the setter, on every peer). A soul that leaves the tree
+## while COLLECTING and never played (its state and its despawn arrived together) plays then. Eaten
+## (DEVOURING), burst or revived: silence. A Convert sounds through RitualSounds when it ends. No
+## RPC, nothing written. With the AudioGate closed it connects nothing. Remove the node to silence
+## every soul.
 
 @export var soul: Soul:
 	set(value):

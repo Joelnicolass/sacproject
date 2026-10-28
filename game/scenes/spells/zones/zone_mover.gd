@@ -2,10 +2,11 @@
 class_name ZoneMover
 extends Node
 
-## A zone that chases its target: once it acts, every tick it moves toward the middle of the body the wizard clicked, at the spell's speed
-## (it speeds up by the spell's acceleration each tick), and stays still when it arrives, when the body is gone, or when the click was the
-## ground. Cloudkill's cloud hangs over it at a fixed height (a child marker of the zone). The only writer of the zone's position; the zone
-## replicates it (`replicates_position`). Server (or solo) only.
+## A zone that chases its target: once it acts, every tick it moves toward the middle of the body
+## the wizard clicked, at the spell's speed (it speeds up by the spell's acceleration each tick),
+## and stays still when it arrives, when the body is gone, or when the click was the ground.
+## Cloudkill's cloud hangs over it at a fixed height (a child marker of the zone). The only writer
+## of the zone's position; the zone replicates it (`replicates_position`). Server (or solo) only.
 
 @export var zone: GroundZone
 

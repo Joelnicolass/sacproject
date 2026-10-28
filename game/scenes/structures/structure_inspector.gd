@@ -1,10 +1,10 @@
 class_name StructureInspector
 extends Node
 
-## The building, cactus or Manalith the local player clicked shows its health bar over
-## the model, one at a time, without touching the selection. Local presentation: no RPC. The body must carry a `HealthBar`
-## (unit_health_bar.tscn with `only_when_selected`) and a `Health` with maximum > 0; an altar or an
-## indestructible building has no bar and just clears the inspection.
+## The building, cactus or Manalith the local player clicked shows its health bar over the model,
+## one at a time, without touching the selection. Local presentation: no RPC. The body must carry a
+## `HealthBar` (unit_health_bar.tscn with `only_when_selected`) and a `Health` with maximum > 0; an
+## altar or an indestructible building has no bar and just clears the inspection.
 
 signal inspected_changed(body: Node3D)
 
@@ -25,7 +25,8 @@ var visible_bar_count: int:
 		return visible_bars()
 
 
-## Shows `body`'s bar and hides the last one. Returns false (and clears) when the body has no bar to show.
+## Shows `body`'s bar and hides the last one. Returns false (and clears) when the body has no bar to
+## show.
 func inspect(body: Node3D) -> bool:
 	if body == inspected:
 		return true

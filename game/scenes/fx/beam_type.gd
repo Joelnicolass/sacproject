@@ -7,7 +7,8 @@ extends Resource
 
 ## Drawing of the beam. Empty = no bolt: only the flash (`light`) at the end.
 @export var scene: PackedScene
-## The atlas of the ribbon (ltn2.png for the lightning bolts; elec.png also fits). Empty = a flat fill.
+## The atlas of the ribbon (ltn2.png for the lightning bolts; elec.png also fits). Empty = a flat
+## fill.
 @export var atlas: Texture2D
 @export_range(1, 8) var h_frames := 4
 @export_range(1, 8) var v_frames := 4
@@ -16,9 +17,11 @@ extends Resource
 
 @export_group("Shape")
 enum Path { BOLT, ARC }
-## BOLT: the jagged bolt of the lightning. ARC: a vertical half circle from end to end, with no jitter (Rainbow).
+## BOLT: the jagged bolt of the lightning. ARC: a vertical half circle from end to end, with no
+## jitter (Rainbow).
 @export var path := Path.BOLT
-## ARC: the height of the middle of the arc as a share of the distance between the ends (0.5 = a half circle).
+## ARC: the height of the middle of the arc as a share of the distance between the ends (0.5 = a
+## half circle).
 @export_range(0.0, 2.0, 0.05) var arc_height := 0.5
 ## Bolts drawn at once between the same ends, each with its own shape.
 @export_range(1, 4) var bolts := 2
@@ -34,15 +37,15 @@ enum Path { BOLT, ARC }
 @export_group("Timing")
 ## Seconds the beam lasts.
 @export_range(0.05, 5.0, 0.0001, "suffix:s") var life_s := 1.0666
-## Seconds the tip takes to reach the end, and the tail to leave the start at the close. The flash goes off when the tip
-## arrives.
+## Seconds the tip takes to reach the end, and the tail to leave the start at the close. The flash
+## goes off when the tip arrives.
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var travel_s := 0.2
 
 @export_group("Look")
 enum Blend { ADD, MIX }
-## ADD: the atlas adds light (the spell bolts). MIX: the atlas is a straight-alpha overlay (*_a.png of
-## tools/import/import_ui.py) drawn over the scene, for a glow that has to keep its hue over the snow (the Gnome's
-## flame); its alpha times the brightness (clamped to 1) is the coverage.
+## ADD: the atlas adds light (the spell bolts). MIX: the atlas is a straight-alpha overlay (*_a.png
+## of tools/import/import_ui.py) drawn over the scene, for a glow that has to keep its hue over the
+## snow (the Gnome's flame); its alpha times the brightness (clamped to 1) is the coverage.
 @export var blend := Blend.ADD
 ## Brightness pulse 0.375 + 14.625 · (0.5 + 0.25 cos 7a + 0.25 sin 11a), a = π · t / life
 ## between `energy_min` and `energy_max`.
@@ -50,11 +53,13 @@ enum Blend { ADD, MIX }
 @export var energy_max := 15.0
 ## Multiplies the whole brightness. 1 = the reference numbers.
 @export_range(0.0, 4.0, 0.01) var energy_scale := 1.0
-## Meters over which the ribbon fades in front of the scene depth (with the preset's `fx_soft_particles`).
+## Meters over which the ribbon fades in front of the scene depth (with the preset's
+## `fx_soft_particles`).
 @export_range(0.0, 4.0, 0.05, "suffix:m") var soft_distance_m := 0.3
 
 @export_group("Tip sparks")
-## Sprites that stay behind the tip while it travels (Rainbow's glow). Optional: empty = none. A ParticleType under data/fx/.
+## Sprites that stay behind the tip while it travels (Rainbow's glow). Optional: empty = none. A
+## ParticleType under data/fx/.
 @export var tip_type: ParticleType
 @export_range(1.0, 240.0, 1.0, "suffix:/s") var tip_per_s := 60.0
 ## Radius of the ball around the tip they are born in.
@@ -67,11 +72,13 @@ enum Blend { ADD, MIX }
 @export_range(1, 64) var pool_max := 6
 
 @export_group("Sound")
-## What each beam of this type sounds like (a SoundCue from data/audio/cues/), played at the middle of the beam. Empty = silent.
+## What each beam of this type sounds like (a SoundCue from data/audio/cues/), played at the middle
+## of the beam. Empty = silent.
 @export var sound: SoundCue
 
 @export_group("Camera")
-## How hard the camera shakes near each beam of this type, 0 to 1 (at the middle of the beam). 0 = none.
+## How hard the camera shakes near each beam of this type, 0 to 1 (at the middle of the beam). 0 =
+## none.
 @export_range(0.0, 1.0, 0.01) var camera_trauma := 0.0
 
 

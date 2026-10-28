@@ -1,10 +1,11 @@
 class_name RiftSpawner
 extends Node
 
-## The mouth of a Demonic Rift: while the rift is open it lets a spirit out every third of a second, up to 24. Each spirit goes for the closest
-## creature that is not an ally, inside the spell's range of a point drawn around the click and that no spirit went for yet; when there is
-## none, it flies to the ground and the next one waits a second. When the last spirit is gone the rift closes. It does not move or hit
-## (RiftSpirit) nor draw the rift (the zone's look). Server (or solo) only.
+## The mouth of a Demonic Rift: while the rift is open it lets a spirit out every third of a second,
+## up to 24. Each spirit goes for the closest creature that is not an ally, inside the spell's range
+## of a point drawn around the click and that no spirit went for yet; when there is none, it flies
+## to the ground and the next one waits a second. When the last spirit is gone the rift closes. It
+## does not move or hit (RiftSpirit) nor draw the rift (the zone's look). Server (or solo) only.
 
 @export var zone: GroundZone
 ## The spirit scene it lets out (its root is a RiftSpirit).
@@ -13,7 +14,8 @@ extends Node
 @export_range(0.05, 5.0, 0.0001, "suffix:s") var every_s := 0.3333
 ## The wait after a spirit that found no creature.
 @export_range(0.05, 5.0, 0.01, "suffix:s") var retry_s := 1.0
-## The spirit comes out of the rift's edge, this share of the rift's radius from its middle, toward its target.
+## The spirit comes out of the rift's edge, this share of the rift's radius from its middle, toward
+## its target.
 @export_range(0.0, 1.0, 0.05) var exit_share := 0.6
 ## The rift's wall, whose mesh gives its radius.
 @export var wall: MeshInstance3D
@@ -95,7 +97,8 @@ func _release() -> bool:
 	return body != null
 
 
-## The closest living creature or wizard that is not an ally, within the spell's range of `point`, that no spirit went for yet.
+## The closest living creature or wizard that is not an ally, within the spell's range of `point`,
+## that no spirit went for yet.
 func _closest_foe(point: Vector3) -> Node3D:
 	var best: Node3D
 	var best_d := INF

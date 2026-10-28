@@ -1,15 +1,17 @@
 class_name TimedStateAbility
 extends AbilityEffect
 
-## An ability that turns one of the SpecialForms of a UnitBody on for a time and off again: Play Dead (dedp) and Stealth (ivni). Which form
-## is `form`; the time is «until tick N» on MatchClock, the SPEL's duration but never less than `min_duration_s`. Refused while it is on.
-## Server only (fire() needs authority).
+## An ability that turns one of the SpecialForms of a UnitBody on for a time and off again: Play
+## Dead (dedp) and Stealth (ivni). Which form is `form`; the time is «until tick N» on MatchClock,
+## the SPEL's duration but never less than `min_duration_s`. Refused while it is on. Server only
+## (fire() needs authority).
 
 ## Which form of the creature it turns on.
 @export var form := SpecialForms.Form.PLAYING_DEAD
 ## The shortest time the flag stays on, in seconds (the SPEL's duration when it is longer).
 @export var min_duration_s := 6.0
-## The burst every peer sees when the flag turns on, and the socket of the body it leaves from (empty = none).
+## The burst every peer sees when the flag turns on, and the socket of the body it leaves from
+## (empty = none).
 @export var fx: ParticleType = preload("res://data/fx/dirt.tres")
 @export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.FEET
 

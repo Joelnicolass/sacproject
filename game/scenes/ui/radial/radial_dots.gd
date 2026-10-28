@@ -1,10 +1,12 @@
 class_name RadialDots
 extends RefCounted
 
-## Drawing helpers of the radial center: a formation as dots and the two-line wrap of a name. Pure functions.
+## Drawing helpers of the radial center: a formation as dots and the two-line wrap of a name. Pure
+## functions.
 
 
-## `formation`'s slots for eight bodies as dots on `canvas`: forward is up, the group fitted in a `box` square around `center`.
+## `formation`'s slots for eight bodies as dots on `canvas`: forward is up, the group fitted in a
+## `box` square around `center`.
 static func draw(
 	canvas: CanvasItem,
 	formation: FormationType,

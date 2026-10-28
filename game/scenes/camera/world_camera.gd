@@ -1,20 +1,24 @@
 class_name WorldCamera
 extends Camera3D
 
-## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the keys, the screen edges and
-## free look, and zooms with the wheel (except over `wheel_blockers`). Controls are InputMap actions: `camera_orbit` (middle
-## button, or `camera_orbit_modifier` Ctrl + `select`) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are the keys.
+## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the
+## keys, the screen edges and free look, and zooms with the wheel (except over `wheel_blockers`).
+## Controls are InputMap actions: `camera_orbit` (middle button, or `camera_orbit_modifier` Ctrl +
+## `select`) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are
+## the keys.
 
 @export var follow: Node3D
-## Only this ground counts for the ray under the camera (props on layer 1 are skipped). The live land (Terrain.height_at,
-## playing stamps included) always counts too, so a Volcano that rises before its collision is remade never buries the view.
+## Only this ground counts for the ray under the camera (props on layer 1 are skipped). The live
+## land (Terrain.height_at, playing stamps included) always counts too, so a Volcano that rises
+## before its collision is remade never buries the view.
 @export var ground: Node3D
 ## The eye never goes lower than this over the live land under it.
 @export var ground_clearance_m := 0.5
 ## Edges only scroll while the pointer hovers this control (the HUD bar is excluded).
 @export var edge_area: Control
-## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms itself). A control with a
-## `covers(screen)` method (Minimap: its circle) decides by that; any other counts by its rectangle.
+## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms
+## itself). A control with a `covers(screen)` method (Minimap: its circle) decides by that; any
+## other counts by its rectangle.
 @export var wheel_blockers: Array[Control] = []
 ## The shake this camera adds on top of its placement (a CameraShake child). Empty: no shake.
 @export var shake: CameraShake
@@ -50,7 +54,8 @@ extends Camera3D
 @export_group("Free look")
 ## Degrees per pixel. Negative = the original "grab the world" feel.
 @export var look_deg_per_px := -0.25
-## Absolute limits of view_pitch_deg. Basis.looking_at degenerates at ±90°, so the view stops short of vertical.
+## Absolute limits of view_pitch_deg. Basis.looking_at degenerates at ±90°, so the view stops short
+## of vertical.
 @export var look_down_max_deg := 85.0
 @export var look_up_max_deg := 80.0
 @export var drag_px := 3.0
@@ -64,7 +69,8 @@ var zoom := 0.125
 var target_zoom := 0.125
 ## Free-look pitch on top of the follow angle. Negative looks up.
 var free_pitch_deg := 0.0
-## Resulting view pitch below the horizon, in [-look_up_max_deg, look_down_max_deg]. Negative looks up.
+## Resulting view pitch below the horizon, in [-look_up_max_deg, look_down_max_deg]. Negative looks
+## up.
 var view_pitch_deg := 0.0
 var _dragged := false
 var _drag_travel := 0.0
@@ -211,7 +217,8 @@ func _edge_pointer() -> Variant:
 		return null
 	if edge_area and get_viewport().gui_get_hovered_control() != edge_area:
 		return null
-	# The pointer the GUI hover saw, not the OS cursor, which can sit over a window the game never got events for.
+	# The pointer the GUI hover saw, not the OS cursor, which can sit over a window the game never
+	# got events for.
 	return _pointer
 
 
@@ -239,7 +246,8 @@ func _place() -> void:
 		focus_factor = focus_min_factor + (1.0 - focus_min_factor) * zoom / focus_full_zoom
 	var distance := base_distance * (distance_zoom_base + distance_zoom_scale * zoom)
 	var height := floating * (height_zoom_base + height_zoom_scale * zoom)
-	# The drawn place of the body (DrawnPose), not the tick it simulates in: the camera runs from _process, after the kit.
+	# The drawn place of the body (DrawnPose), not the tick it simulates in: the camera runs from
+	# _process, after the kit.
 	var origin := DrawnPose.origin(follow)
 	var ahead := Vector3(sin(yaw), 0.0, cos(yaw))
 	var spot := origin - ahead * distance

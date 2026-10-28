@@ -1,10 +1,11 @@
 class_name Regeneration
 extends Node
 
-## How a creature heals by itself: at rest, once the pause after a hit is over, in proportion to the mana it has left; a creature that
-## regenerates always (the Troll) heals in any mode that can heal, with no pause. A blocked body (Afflictions) heals nothing in either case.
-## Not: when to heal (the body asks once per physics step, in its own order: this node never processes by itself) nor what heals it
-## from outside (spells, auras).
+## How a creature heals by itself: at rest, once the pause after a hit is over, in proportion to the
+## mana it has left; a creature that regenerates always (the Troll) heals in any mode that can heal,
+## with no pause. A blocked body (Afflictions) heals nothing in either case.
+## Not: when to heal (the body asks once per physics step, in its own order: this node never
+## processes by itself) nor what heals it from outside (spells, auras).
 
 @export var body: UnitBody
 @export var health: Health
@@ -12,7 +13,8 @@ extends Node
 ## Seconds after a hit before it heals again.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var pause_s := 0.5
 
-## The health the last change left it with; a drop below it is a hit and starts the pause. Creature seeds it with the full health.
+## The health the last change left it with; a drop below it is a hit and starts the pause. Creature
+## seeds it with the full health.
 var last_health := 0.0
 
 var _since_damage := INF
@@ -27,7 +29,8 @@ func age(delta: float) -> void:
 	_since_damage += delta
 
 
-## Once per step, after the state ran. `resting`: the state of its mode (or playing dead) is one that regenerates.
+## Once per step, after the state ran. `resting`: the state of its mode (or playing dead) is one
+## that regenerates.
 func step(delta: float, resting: bool) -> void:
 	if resting:
 		heal(delta, true)
@@ -41,7 +44,8 @@ func step(delta: float, resting: bool) -> void:
 		heal(delta, false)
 
 
-## Regeneration per second times mana over full mana (1 without mana). `paused`: not during `pause_s` after a hit.
+## Regeneration per second times mana over full mana (1 without mana). `paused`: not during
+## `pause_s` after a hit.
 func heal(delta: float, paused := true) -> void:
 	var type := body.type
 	if type == null or (paused and _since_damage < pause_s) or health.is_full():

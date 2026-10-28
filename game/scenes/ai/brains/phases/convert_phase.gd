@@ -5,10 +5,10 @@ extends AiPhase
 ## included: the cast of Convert (`ccas`) on the best of them, within v = (1 - own share of souls) *
 ## (1 - threat) * aggression * 500 m. Conditions: he has an altar of his own standing (where the
 ## creature is taken), the book has Convert and that altar is not being desecrated. The entry is
-## queued with `(1 - threat) * w3[2] * 0.9`, target and obj the soul (the original passes obj 0 and never
-## approaches; the original gates the range, so it approaches). The cast waits for mana (800) like
-## any other: `lightCanCast`. Take the node out and the AI never converts: its souls would come only
-## from its creatures' deaths (the blue ones) and from the souls it touches.
+## queued with `(1 - threat) * w3[2] * 0.9`, target and obj the soul (the original passes obj 0 and
+## never approaches; the original gates the range, so it approaches). The cast waits for mana (800)
+## like any other: `lightCanCast`. Take the node out and the AI never converts: its souls would come
+## only from its creatures' deaths (the blue ones) and from the souls it touches.
 
 
 func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:

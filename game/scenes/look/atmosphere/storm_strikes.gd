@@ -2,11 +2,12 @@
 class_name StormStrikes
 extends Node
 
-## The storm's lightning, drawn on this screen. Weather tells it the ruling weather and the match second; it asks
-## AtmosphereRules which strikes fell since the last time (the same instant, heading and distance from each player's
-## camera on every peer), draws each one (a bolt and a flash with its light from the rig's pool, through FxBus), plays
-## the thunder later by the distance (sound at 343 m/s) and says `struck(at)`. For a moment after a strike it gives the
-## sky and the ambient their flash amount (never the glow). It never decides when lightning falls, does nothing in the
+## The storm's lightning, drawn on this screen. Weather tells it the ruling weather and the match
+## second; it asks AtmosphereRules which strikes fell since the last time (the same instant, heading
+## and distance from each player's camera on every peer), draws each one (a bolt and a flash with
+## its light from the rig's pool, through FxBus), plays the thunder later by the distance (sound at
+## 343 m/s) and says `struck(at)`. For a moment after a strike it gives the sky and the ambient
+## their flash amount (never the glow). It never decides when lightning falls, does nothing in the
 ## editor and touches no simulation: a strike hurts nobody.
 
 ## A strike hit the ground at `at` (Weather says it again as `strike`).
@@ -14,7 +15,8 @@ signal struck(at: Vector3)
 
 const SOUND_MPS := 343.0
 const EMITTER := &"storm"
-## A gap longer than this between two calls (a hitch, a rejoin) starts over from now: no backlog of old strikes.
+## A gap longer than this between two calls (a hitch, a rejoin) starts over from now: no backlog of
+## old strikes.
 const MAX_CATCH_UP_S := 2.0
 
 ## The bolt from the sky to the ground (`data/fx/beams/storm_bolt.tres`).
@@ -30,8 +32,9 @@ const MAX_CATCH_UP_S := 2.0
 @export_range(10.0, 500.0, 1.0, "suffix:m") var bolt_top_m: float = 120.0
 ## Least time between two strikes (photosensitivity): no two flashes come closer than this.
 @export_range(1.0, 30.0, 0.1, "suffix:s") var min_gap_s: float = 4.0
-## How long the sky's flash lasts after a strike (at most 150 ms), and how strong it is (× the weather's
-## `flash_strength`; the sky is 1 + this times brighter at the peak). 0 = no flash on the sky.
+## How long the sky's flash lasts after a strike (at most 150 ms), and how strong it is (× the
+## weather's `flash_strength`; the sky is 1 + this times brighter at the peak). 0 = no flash on the
+## sky.
 @export_range(0.02, 0.15, 0.005, "suffix:s") var flash_s: float = 0.12
 @export_range(0.0, 1.0, 0.01) var flash_scale: float = 1.0
 
@@ -40,7 +43,8 @@ var _flash_usec := -1
 var _flash_peak := 0.0
 
 
-## Draws the strikes of `state` that fell since the last call, up to match second `t_s`, and returns the sky's flash now.
+## Draws the strikes of `state` that fell since the last call, up to match second `t_s`, and returns
+## the sky's flash now.
 func follow(state: WeatherState, sky_seed: int, t_s: float) -> float:
 	if Engine.is_editor_hint():
 		return 0.0
@@ -87,7 +91,8 @@ func _strike(strike: Vector3, strength: float) -> void:
 	struck.emit(at)
 
 
-## The ground `distance_m` away from `from` toward `heading_deg` (0 = -Z, 90 = +X). Off the land: the height under `from`.
+## The ground `distance_m` away from `from` toward `heading_deg` (0 = -Z, 90 = +X). Off the land:
+## the height under `from`.
 func _ground(from: Vector3, heading_deg: float, distance_m: float) -> Vector3:
 	var angle := deg_to_rad(heading_deg)
 	var at := Vector3(from.x + sin(angle) * distance_m, 0.0, from.z - cos(angle) * distance_m)

@@ -1,21 +1,22 @@
 class_name Frozen
 extends Affliction
 
-## A creature turned into ice: the Silverback's Icy Breath and the Freeze spell.
-## A try refuses a body protected from crowd control (a frozen or petrified one among them)
-## and one whose mode cannot take crowd control (dead…); while its own freeze cooldown runs
-## it freezes only when cooldown ≤ uniform(600) (one stream per body, MatchSeed ["freeze", body name]); once
-## the roll lets it try, frozen or not, it leaves the cooldown at 600, which counts down every tick.
-## The freeze itself refuses a frozen body and one that cannot be immobilized; a
-## stunned body is frozen all the same (the type's `cancels`), a thrown one is not. It lasts ceil(60 · 1000 / max health · duration) ticks on a creature and
-## ceil(60 · 0.25 · duration) on a wizard. While it lasts the type's flags say the rest: held, not pushed, a flier falls,
-## no regeneration (the body does not regenerate while held), refuses crowd control.
-## The end: its timer runs out, or a hit breaks the ice (any damage that is not a fall, even 0, and a fall that takes
-## more than 0). Then the spell's amount lands as direct spell damage from the
+## A creature turned into ice: the Silverback's Icy Breath and the Freeze spell. A try refuses a
+## body protected from crowd control (a frozen or petrified one among them) and one whose mode
+## cannot take crowd control (dead…); while its own freeze cooldown runs it freezes only when
+## cooldown ≤ uniform(600) (one stream per body, MatchSeed ["freeze", body name]); once the roll
+## lets it try, frozen or not, it leaves the cooldown at 600, which counts down every tick. The
+## freeze itself refuses a frozen body and one that cannot be immobilized; a stunned body is frozen
+## all the same (the type's `cancels`), a thrown one is not. It lasts ceil(60 · 1000 / max health ·
+## duration) ticks on a creature and ceil(60 · 0.25 · duration) on a wizard. While it lasts the
+## type's flags say the rest: held, not pushed, a flier falls, no regeneration (the body does not
+## regenerate while held), refuses crowd control.
+## The end: its timer runs out, or a hit breaks the ice (any damage that is not a fall, even 0, and
+## a fall that takes more than 0). Then the spell's amount lands as direct spell damage from the
 ## side that froze it, and 30 shards burst from its box; it goes back to idle with no knock-down.
-## Limits: a hit of 0 does not break the ice (Health.hit only reports what was taken; a fall of more than
-## 0 does); a broken ice shatters on the next tick. The ice is the translucent block of its child IceBlock (`icec`), the
-## same for the spell and for the Yeti's and the Silverback's breath.
+## Limits: a hit of 0 does not break the ice (Health.hit only reports what was taken; a fall of more
+## than 0 does); a broken ice shatters on the next tick. The ice is the translucent block of its
+## child IceBlock (`icec`), the same for the spell and for the Yeti's and the Silverback's breath.
 ## The duration uses plain floats: it may differ by one tick from float32 (a Trogg 1251, not 1250).
 
 const _HEALTH := preload("res://scenes/components/health.gd")
@@ -41,7 +42,8 @@ var _start_frame := -1
 var _running := false
 ## Server: it is ending by its own timer (the shards and the damage go now, not on the next tick).
 var _ending := false
-## Server: the tick the ice broke from outside (a hit, a death); it shatters on the next one. -1 = nothing pending.
+## Server: the tick the ice broke from outside (a hit, a death); it shatters on the next one. -1 =
+## nothing pending.
 var _thaw_at := -1
 ## The side that froze it and the SPEL amount it takes when it thaws.
 var _from_slot := 0
@@ -67,12 +69,14 @@ static func is_frozen(node: Node) -> bool:
 	return frozen != null and frozen.is_on()
 
 
-## The on-hit freeze (Yeti). Same as try_freeze_with_cooldown, and it logs the cooldown and the one roll it drew.
+## The on-hit freeze (Yeti). Same as try_freeze_with_cooldown, and it logs the cooldown and the one
+## roll it drew.
 func inflict(spell: SpellType, from_slot: int) -> bool:
 	return _try(spell, from_slot, true)
 
 
-## The Freeze spell: the cast already refused a cc-protected body, and freeze() takes no Yeti cooldown.
+## The Freeze spell: the cast already refused a cc-protected body, and freeze() takes no Yeti
+## cooldown.
 func lay(spell: SpellType, from_slot: int) -> bool:
 	return freeze(spell, from_slot)
 
@@ -151,8 +155,8 @@ func freeze(spell: SpellType, from_slot: int) -> bool:
 	return true
 
 
-## The lifetime in physics ticks: ceil(ticks per second · duration), duration = (wizard ? 0.25 : 1000 / max health)
-## · the spell's duration.
+## The lifetime in physics ticks: ceil(ticks per second · duration), duration = (wizard ? 0.25 :
+## 1000 / max health) · the spell's duration.
 func lifetime_ticks(body: Node3D, spell: SpellType) -> int:
 	var health := _afflictions().health
 	return cc_ticks(
@@ -250,7 +254,8 @@ func _shatter() -> void:
 func _shown(on: bool) -> void:
 	if on or not is_multiplayer_authority() or not _running or _ending:
 		return
-	# Ended from outside while the server still ran it (a hit broke the ice, or the body died): it shatters next tick.
+	# Ended from outside while the server still ran it (a hit broke the ice, or the body died): it
+	# shatters next tick.
 	_running = false
 	_thaw_at = MatchClock.now()
 	set_physics_process(true)

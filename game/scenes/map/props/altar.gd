@@ -83,8 +83,8 @@ func is_destroyed() -> bool:
 	return state == State.DESTROYED
 
 
-## Starts the destruction. `total_s` 0 uses the duration of AltarCollapse; `elapsed_s` is how much of
-## it already passed (a peer that joins halfway).
+## Starts the destruction. `total_s` 0 uses the duration of AltarCollapse; `elapsed_s` is how much
+## of it already passed (a peer that joins halfway).
 func start_collapse(total_s := 0.0, elapsed_s := 0.0) -> void:
 	_collapse_total = total_s
 	_collapse_elapsed = elapsed_s

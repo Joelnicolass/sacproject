@@ -2,9 +2,10 @@
 class_name CarrierLanding
 extends Node
 
-## What happens where a falling SpellCarrier goes through the land (`landed`): the wave of earth that stuns what it crosses (a QuakeWave), the
-## rocks it throws (a scene every peer plays) and the sprite bursts (rocks, dust, a flash with its light). It does not hurt anyone: the cow
-## already gibbed its target on the way (TargetEffect). Server (or solo) only.
+## What happens where a falling SpellCarrier goes through the land (`landed`): the wave of earth
+## that stuns what it crosses (a QuakeWave), the rocks it throws (a scene every peer plays) and the
+## sprite bursts (rocks, dust, a flash with its light). It does not hurt anyone: the cow already
+## gibbed its target on the way (TargetEffect). Server (or solo) only.
 
 @export var carrier: SpellCarrier
 ## The wave of earth (a QuakeWave scene; Bovine Intervention's stuns up to 25 m).

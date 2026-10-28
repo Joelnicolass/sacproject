@@ -1,17 +1,18 @@
 class_name RendSoul
 extends AbilityEffect
 
-## The Styx's Rend Soul: it tears a soul apart. The body prepares its
-## attack clip (windup_clip 0: 100 ticks) and at the shoot tick the effect is added
-## only if the soul can be rent: a soul that is NORMAL or EMERGING, free or of the user's side, not dropped. The mana
-## and the cooldown are paid at the shoot tick whether or not the soul is still there (AbilitySlot does it).
-## This effect only judges the soul and throws the SoulStrike; what happens the tick after is the strike's.
+## The Styx's Rend Soul: it tears a soul apart. The body prepares its attack clip (windup_clip 0:
+## 100 ticks) and at the shoot tick the effect is added only if the soul can be rent: a soul that is
+## NORMAL or EMERGING, free or of the user's side, not dropped. The mana and the cooldown are paid
+## at the shoot tick whether or not the soul is still there (AbilitySlot does it). This effect only
+## judges the soul and throws the SoulStrike; what happens the tick after is the strike's.
 ## Range: the spell's cast_range (90) in 3D, to the soul's center.
 ## Limits: the body does not walk closer or turn; out of range is refused.
 
 ## The strike (strikes/soul_strike.tscn), a child of the user's RangedWeapon.
 @export var strike_scene: PackedScene
-## The shot's look (data/shots/rend_soul.tscn: the blast at the soul and its sparks). Empty = a plain look with no blast.
+## The shot's look (data/shots/rend_soul.tscn: the blast at the soul and its sparks). Empty = a
+## plain look with no blast.
 @export var look: PackedScene
 
 
@@ -39,7 +40,8 @@ static func can_rend(soul: Soul, slot: int) -> bool:
 	)
 
 
-## Shoots at the soul. False = the soul is gone by the shoot tick: nothing flies; the mana is spent all the same.
+## Shoots at the soul. False = the soul is gone by the shoot tick: nothing flies; the mana is spent
+## all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority() or user == null or strike_scene == null:
 		return false

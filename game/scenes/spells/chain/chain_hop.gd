@@ -1,11 +1,14 @@
 class_name ChainHop
 extends SpellLaunch
 
-## A chain of jumps (Chain Lightning, Rainbow, the jumps of Dragonfire): who was already hit, and the clock of the jumps. Every jump leaves
-## the last point, takes `hop_s` and lands on the next body (ChainPick: the nearest one, or the one with the lowest health) inside a radius
-## that shrinks with each hit ((shrink_steps - n) / shrink_steps of the spell's range). With nobody in reach the jump goes on to a point on
-## the land and the chain goes on. It does not know what a jump does (its ChainEffect) nor how a hit hurts (Health). With `hop_s` 0 it keeps
-## no clock: whoever owns the flight (the dragon) calls `add_hit` and `pick_next`. Server (or solo) only; it frees itself after the last landing.
+## A chain of jumps (Chain Lightning, Rainbow, the jumps of Dragonfire): who was already hit, and
+## the clock of the jumps. Every jump leaves the last point, takes `hop_s` and lands on the next
+## body (ChainPick: the nearest one, or the one with the lowest health) inside a radius that shrinks
+## with each hit ((shrink_steps - n) / shrink_steps of the spell's range). With nobody in reach the
+## jump goes on to a point on the land and the chain goes on. It does not know what a jump does (its
+## ChainEffect) nor how a hit hurts (Health). With `hop_s` 0 it keeps no clock: whoever owns the
+## flight (the dragon) calls `add_hit` and `pick_next`. Server (or solo) only; it frees itself after
+## the last landing.
 
 ## A jump left toward `body` (null: a point on the land).
 signal hopped(from: Vector3, body: Node3D, point: Vector3, index: int)
@@ -17,7 +20,8 @@ signal landed(body: Node3D, point: Vector3, index: int)
 @export_range(1, 12) var hits := 7
 ## Seconds from a jump leaving to its landing. 0 = the owner drives the chain.
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var hop_s := 0.3333
-## After hit n the search radius is (shrink_steps - n) / shrink_steps of the spell's effect range. 0 = it stays whole.
+## After hit n the search radius is (shrink_steps - n) / shrink_steps of the spell's effect range. 0
+## = it stays whole.
 @export_range(0, 12) var shrink_steps := 6
 ## Jump to own side (Rainbow) or to whoever is not an ally (Chain Lightning, Dragonfire).
 @export var allies := false
@@ -27,7 +31,8 @@ signal landed(body: Node3D, point: Vector3, index: int)
 @export_range(0.0, 3.0, 0.05, "suffix:m") var origin_lift_m := 0.5
 @export_range(0.0, 3.0, 0.05, "suffix:m") var origin_ahead_m := 0.75
 @export_group("No body in reach")
-## The point the jump falls on lies within lerp(fallback_limit_min, 1, U) of the range from the last body, drifted by `fallback_drift`.
+## The point the jump falls on lies within lerp(fallback_limit_min, 1, U) of the range from the last
+## body, drifted by `fallback_drift`.
 @export_range(0.0, 1.0, 0.05) var fallback_limit_min := 0.25
 @export_range(0.0, 3.0, 0.05) var fallback_drift := 1.5
 

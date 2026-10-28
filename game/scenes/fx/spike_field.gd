@@ -1,13 +1,15 @@
 class_name SpikeField
 extends FxScene
 
-## The Rhinok's spikes: each one is a ring of radius 0.3 on the ground, 0.25 at 0.75, the tip at 1, with the
-## texture jspk (shwn.WAD jams/text, tools/import/fx_catalog.py). Model matrix: translate · scale(s, s, s·d.z) · shear(d.x/d.z,
-## d.y/d.z), that is the spike's axis is s·d, d = ((0, 0, height) + a point of the disk of radius `tilt`) · U(0.85, 1.15);
-## s = 1 − (2·t/lifetime − 1)²: it rises out of the ground and sinks back in 2/3 s.
-## One event (FxBus.broadcast_scene, one RPC) is many spikes: `count` of them drawn evenly over the area of the annulus
-## [inner, outer] around this node, each on the land under it (a spike off the land is not placed).
-## Presentation only: every peer, never headless; its generator is seeded by the event (`seed`), never the global one.
+## The Rhinok's spikes: each one is a ring of radius 0.3 on the ground, 0.25 at 0.75, the tip at 1,
+## with the texture jspk (shwn.WAD jams/text, tools/import/fx_catalog.py). Model matrix: translate ·
+## scale(s, s, s·d.z) · shear(d.x/d.z, d.y/d.z), that is the spike's axis is s·d, d = ((0, 0,
+## height) + a point of the disk of radius `tilt`) · U(0.85, 1.15); s = 1 − (2·t/lifetime − 1)²: it
+## rises out of the ground and sinks back in 2/3 s. One event (FxBus.broadcast_scene, one RPC) is
+## many spikes: `count` of them drawn evenly over the area of the annulus [inner, outer] around this
+## node, each on the land under it (a spike off the land is not placed).
+## Presentation only: every peer, never headless; its generator is seeded by the event (`seed`),
+## never the global one.
 
 ## How long a spike stands.
 @export var lifetime_s := 0.6666
@@ -94,7 +96,8 @@ func _pose() -> void:
 		multimesh.set_instance_transform(i, Transform3D(basis, _bases[i]))
 
 
-## The material of a spike: `albedo` (jspk) lit, or `fallback` when there is none. The Wall of Spikes draws its own with it.
+## The material of a spike: `albedo` (jspk) lit, or `fallback` when there is none. The Wall of
+## Spikes draws its own with it.
 static func spike_material(albedo: Texture2D, fallback: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.roughness = 1.0

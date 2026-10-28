@@ -1,15 +1,17 @@
 extends SceneTree
 
-## Writes the Meanstalk's tube mesh (scenes/spells/stalks/stalk_tube.res): 31 segments by 24 sides of a unit ring, no height. The shader puts each
-## ring on the curve of the stalk and scales it by the radius at its `t`, so this file only holds the topology: each vertex is the unit
-## direction of its side (`VERTEX.xz`, also its normal) and its UV is (side / sides, t along the stalk). It needs no original game. Run it once;
-## the result is versioned and the scene only holds the file.
+## Writes the Meanstalk's tube mesh (scenes/spells/stalks/stalk_tube.res): 31 segments by 24 sides
+## of a unit ring, no height. The shader puts each ring on the curve of the stalk and scales it by
+## the radius at its `t`, so this file only holds the topology: each vertex is the unit direction of
+## its side (`VERTEX.xz`, also its normal) and its UV is (side / sides, t along the stalk). It needs
+## no original game. Run it once; the result is versioned and the scene only holds the file.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_stalk_tube.gd
 
 const OUT := "res://scenes/spells/stalks/stalk_tube.res"
 const SEGMENTS := 31
 const SIDES := 24
-## The shader moves the vertices far from here: the box says where the stalk can be (a root, 60 m up and a bulge of 30 m).
+## The shader moves the vertices far from here: the box says where the stalk can be (a root, 60 m up
+## and a bulge of 30 m).
 const BOUNDS := AABB(Vector3(-40.0, -70.0, -40.0), Vector3(80.0, 140.0, 80.0))
 
 

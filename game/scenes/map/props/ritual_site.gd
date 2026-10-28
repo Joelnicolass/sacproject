@@ -2,8 +2,8 @@
 class_name RitualSite
 extends Node3D
 
-## "A ritual can be held here": whose it is, where its center is, and whether another ritual
-## already uses it. The altar has one and so has every Shrine. Only the server calls occupy() and release().
+## "A ritual can be held here": whose it is, where its center is, and whether another ritual already
+## uses it. The altar has one and so has every Shrine. Only the server calls occupy() and release().
 
 enum Kind { ALTAR, SHRINE }
 

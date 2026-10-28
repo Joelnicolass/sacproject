@@ -1,9 +1,10 @@
 class_name CarrierSync
 extends RefCounted
 
-## What a SpellCarrier reads from its spawn data and what it replicates to the clients: a soul-trip carrier its position (the look is a rock or
-## a funnel walking) and its phase (it turns to LEAVING when it takes the soul: the clients hear it); every other one also its rotation and
-## scale (the look follows them). Nothing else.
+## What a SpellCarrier reads from its spawn data and what it replicates to the clients: a soul-trip
+## carrier its position (the look is a rock or a funnel walking) and its phase (it turns to LEAVING
+## when it takes the soul: the clients hear it); every other one also its rotation and scale (the
+## look follows them). Nothing else.
 
 const PROPS_SOUL_TRIP: Array[String] = [".:position", ".:phase"]
 const PROPS_OTHER: Array[String] = [".:position", ".:rotation", ".:scale", ".:phase"]
@@ -20,7 +21,8 @@ static func attach(carrier: SpellCarrier) -> void:
 	carrier.add_child(net)
 
 
-## Reads the carrier's ProjectileLaunch: where it starts, who casts it, what it goes for, the spell's numbers.
+## Reads the carrier's ProjectileLaunch: where it starts, who casts it, what it goes for, the
+## spell's numbers.
 static func read(carrier: SpellCarrier, data: Dictionary) -> void:
 	var launch := ProjectileLaunch.from_dict(data)
 	carrier.name = launch.name

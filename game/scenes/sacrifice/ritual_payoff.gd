@@ -2,9 +2,10 @@
 class_name RitualPayoff
 extends Node
 
-## What a completed ritual gives: the creature disintegrates in blood and its souls go to the caster's purse (a conversion also
-## announces them). What it does not do: end the ritual or free the doctors (Ritual does, right after). Take this node out and a
-## completed ritual pays nothing and leaves the creature alone.
+## What a completed ritual gives: the creature disintegrates in blood and its souls go to the
+## caster's purse (a conversion also announces them). What it does not do: end the ritual or free
+## the doctors (Ritual does, right after). Take this node out and a completed ritual pays nothing
+## and leaves the creature alone.
 
 @export var ritual: Ritual
 
@@ -39,7 +40,8 @@ func pay() -> void:
 		)
 
 
-## A hanging rag doll is handed back to its clips before the body goes (a body that simulates is never freed with `free()`).
+## A hanging rag doll is handed back to its clips before the body goes (a body that simulates is
+## never freed with `free()`).
 func _free(creature: UnitBody) -> void:
 	for node in creature.find_children("*", "RagdollDriver", true, false):
 		var driver := node as RagdollDriver

@@ -43,7 +43,8 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> bool:
 				)
 			return true
 		AiTask.Kind.CAPTURE:
-			# (1 - value6c) * interact_reach_m, with value6c the wizard's threat (a creature's is 0).
+			# (1 - value6c) * interact_reach_m, with value6c the wizard's threat (a creature's is
+			# 0).
 			var reach := AiField.f32((1.0 - t.value_6c()) * play.tactics.crowd.interact_reach_m)
 			port.orders.order_interact(t, record.anchor, record.target, reach)
 			return true

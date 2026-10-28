@@ -1,21 +1,23 @@
 class_name UserSettings
 extends RefCounted
 
-## The one reader and writer of the player's local preferences, `user://settings.cfg`.
-## Each owner keeps its own section (`[ui]` UiScalePrefs, `[graphics]` GraphicsPrefs); a write loads the file first,
-## so the other sections stay as they are.
-## A file that exists but cannot be read (corrupt, no permission) is never overwritten: the reads fall back to the
-## caller's defaults and the writes are refused, with one warning each. After a failed load the file is not read again in this run:
-## the choices made then apply live but are not saved.
-## Sandbox: under AgentKit (`--agent=…` in the user args) the player's file is never read nor written.
-## Reads give the caller's defaults and writes go to an in-memory ConfigFile, so the UI and the match setup see the
-## changes of this run and the next run starts clean. `--user-settings=user://<file>.cfg` (a persistence test, or a
-## playtest that must apply the preferences) uses that file instead and turns the sandbox off.
+## The one reader and writer of the player's local preferences, `user://settings.cfg`. Each owner
+## keeps its own section (`[ui]` UiScalePrefs, `[graphics]` GraphicsPrefs); a write loads the file
+## first, so the other sections stay as they are. A file that exists but cannot be read (corrupt, no
+## permission) is never overwritten: the reads fall back to the caller's defaults and the writes are
+## refused, with one warning each. After a failed load the file is not read again in this run: the
+## choices made then apply live but are not saved.
+## Sandbox: under AgentKit (`--agent=…` in the user args) the player's file is never read nor
+## written. Reads give the caller's defaults and writes go to an in-memory ConfigFile, so the UI and
+## the match setup see the changes of this run and the next run starts clean.
+## `--user-settings=user://<file>.cfg` (a persistence test, or a playtest that must apply the
+## preferences) uses that file instead and turns the sandbox off.
 
 const PATH := "user://settings.cfg"
 const PATH_ARG := "--user-settings="
 
-## Set when the file failed to load: it is not parsed again in this run (the engine logs each parse error).
+## Set when the file failed to load: it is not parsed again in this run (the engine logs each parse
+## error).
 static var _unreadable := false
 static var _warned_write := false
 ## The sandbox's file (in memory).
@@ -49,7 +51,8 @@ static func read_value(section: String, key: String, default: Variant) -> Varian
 	return config.get_value(section, key, default)
 
 
-## Writes the pairs of `values` under `[section]` and keeps the rest of the file. False when nothing was written.
+## Writes the pairs of `values` under `[section]` and keeps the rest of the file. False when nothing
+## was written.
 static func write_values(section: String, values: Dictionary) -> bool:
 	var config := _load()
 	if config == null:
@@ -57,6 +60,7 @@ static func write_values(section: String, values: Dictionary) -> bool:
 			_warned_write = true
 			push_warning(
 				(
+					# gdlint: ignore=max-line-length
 					"UserSettings: %s could not be read; changes last this session and are not saved, so it is not overwritten."
 					% path()
 				)
@@ -67,7 +71,8 @@ static func write_values(section: String, values: Dictionary) -> bool:
 	if sandboxed():
 		return true
 	var file := path()
-	# Atomic: write a sibling file, then rename it over the real one (a crash never leaves half a file).
+	# Atomic: write a sibling file, then rename it over the real one (a crash never leaves half a
+	# file).
 	var temp := file + ".tmp"
 	var saved := config.save(temp)
 	if saved == OK:
@@ -95,6 +100,7 @@ static func _load() -> ConfigFile:
 	_unreadable = true
 	push_warning(
 		(
+			# gdlint: ignore=max-line-length
 			"UserSettings: %s could not be read (%s); the defaults are used and the file stays as it is."
 			% [path(), error_string(loaded)]
 		)

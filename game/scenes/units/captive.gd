@@ -2,16 +2,17 @@
 class_name Captive
 extends Node
 
-## A creature taken by a Sac Doctor. While it is held it is not a creature of the match:
-## out of the group «unit» (so it cannot be selected, ordered, targeted or separated from), without
-## collision, hanging behind the doctor. The ring around it is `CaptiveRing`. Let go, it is the same creature again, alive and with its owner.
-## `UnitBody.mode = HELD` is what every peer sees (it is replicated); this node reacts to it. Only the
-## server (or solo) calls take()/release() and moves the body. Remove the child and the creature
-## cannot be taken: the Desecrate cast answers «Blanco inválido».
-## A Convert doctor also revives a corpse with it (revive(), mode REVIVING: stood up, still
-## taken, nobody's target) and, if the doctor dies then, release(CARRIER_DIED) kills it again.
-## Numbers: SacrificeFacts.carry_up_m / carry_back_m (the Carry/Hang marker of the places scene), rules.carry_speed_factor.
-## The creature does not use move_and_slide: it follows a point without colliding.
+## A creature taken by a Sac Doctor. While it is held it is not a creature of the match: out of the
+## group «unit» (so it cannot be selected, ordered, targeted or separated from), without collision,
+## hanging behind the doctor. The ring around it is `CaptiveRing`. Let go, it is the same creature
+## again, alive and with its owner. `UnitBody.mode = HELD` is what every peer sees (it is
+## replicated); this node reacts to it. Only the server (or solo) calls take()/release() and moves
+## the body. Remove the child and the creature cannot be taken: the Desecrate cast answers «Blanco
+## inválido». A Convert doctor also revives a corpse with it (revive(), mode REVIVING: stood up,
+## still taken, nobody's target) and, if the doctor dies then, release(CARRIER_DIED) kills it again.
+## Numbers: SacrificeFacts.carry_up_m / carry_back_m (the Carry/Hang marker of the places scene),
+## rules.carry_speed_factor. The creature does not use move_and_slide: it follows a point without
+## colliding.
 
 ## The doctor took it.
 signal taken(holder: DoctorBody)
@@ -20,7 +21,8 @@ signal freed
 ## A Convert doctor brought the corpse back to life; it is REVIVING until the doctor takes it.
 signal revived
 
-## Why a creature is let go: the doctor chose to (or the ritual ended), or the doctor died holding it.
+## Why a creature is let go: the doctor chose to (or the ritual ended), or the doctor died holding
+## it.
 enum Release { LET_GO, CARRIER_DIED }
 
 const HELD_GROUP := &"captive"
@@ -28,7 +30,8 @@ const HELD_GROUP := &"captive"
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
 @export var body: UnitBody
-## The creature's own Health and Orders (it is emptied of orders when taken, its health is set when revived).
+## The creature's own Health and Orders (it is emptied of orders when taken, its health is set when
+## revived).
 @export var health: Health
 @export var orders: _ORDERS
 
@@ -89,8 +92,9 @@ func hand_to_ritual() -> void:
 	holder = null
 
 
-## Server or solo. Lets the creature go where it is. LET_GO: it falls to the ground, alive and with its owner, and
-## answers orders again. CARRIER_DIED: DeathRules says if it lands alive or dies in the air and falls as a corpse.
+## Server or solo. Lets the creature go where it is. LET_GO: it falls to the ground, alive and with
+## its owner, and answers orders again. CARRIER_DIED: DeathRules says if it lands alive or dies in
+## the air and falls as a corpse.
 func release(reason := Release.LET_GO) -> void:
 	if (
 		not is_held()
@@ -113,10 +117,9 @@ func release(reason := Release.LET_GO) -> void:
 	freed.emit()
 
 
-## Server or solo. A Convert doctor starts to pump the corpse: it stands up with
-## min(max(min_health, fraction * max health), max health) and is not
-## a target, nobody's creature and without collision until the doctor takes it (take()) or it dies again.
-## False if it is not a corpse.
+## Server or solo. A Convert doctor starts to pump the corpse: it stands up with min(max(min_health,
+## fraction * max health), max health) and is not a target, nobody's creature and without collision
+## until the doctor takes it (take()) or it dies again. False if it is not a corpse.
 func revive(min_health: float, fraction: float) -> bool:
 	if body == null or not body.is_dead():
 		return false
@@ -131,8 +134,9 @@ func revive(min_health: float, fraction: float) -> bool:
 	return true
 
 
-## Server or solo. The fast revival ends (FastRevive): REVIVING → IDLE, still, alive and with its owner.
-## `taken_changed(false)` gives back the unit layer and the group «unit». False if it was not REVIVING.
+## Server or solo. The fast revival ends (FastRevive): REVIVING → IDLE, still, alive and with its
+## owner. `taken_changed(false)` gives back the unit layer and the group «unit». False if it was not
+## REVIVING.
 func finish_revive() -> bool:
 	if body == null or not body.is_reviving():
 		return false
@@ -149,7 +153,8 @@ func _kill() -> void:
 	health.died.emit(0)
 
 
-## The match rule: does a dropped creature die? The doctor's rules win, then the body's; without any, yes.
+## The match rule: does a dropped creature die? The doctor's rules win, then the body's; without
+## any, yes.
 func _dies_when_dropped() -> bool:
 	var rules: MatchRules = (
 		holder.rules if is_instance_valid(holder) and holder.rules else body.rules

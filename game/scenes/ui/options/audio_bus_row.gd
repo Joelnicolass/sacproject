@@ -1,8 +1,9 @@
 class_name AudioBusRow
 extends HBoxContainer
 
-## One row of Options → Sonido: the name of a bus, its slider (0..1, linear) and the value in %.
-## The AudioTab binds it to the shared AudioPrefs; the row writes the preference at once and follows its changes.
+## One row of Options → Sonido: the name of a bus, its slider (0..1, linear) and the value in %. The
+## AudioTab binds it to the shared AudioPrefs; the row writes the preference at once and follows its
+## changes.
 
 ## One of AudioPrefs.BUSES.
 @export var bus: StringName = &"Master"

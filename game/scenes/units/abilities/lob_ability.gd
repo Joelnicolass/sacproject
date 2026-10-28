@@ -5,18 +5,19 @@ extends AbilityEffect
 ## spread 0.2), the Pyrodactyl's Viscous oil (1 shot, spread 0) and the Bilemites (030 later).
 ## The body prepares (AbilitySlot's windup()) and at the shoot tick
 ## the shots fly and the mana is drained (the cooldown if it was 0).
-## Each shot: direction = the way to the target, plus 0.5·g·d/speed² up, with
-## the ranged accuracy (ShotAim.scatter: 2 draws), plus `spread` · a uniform direction (3 draws; a point of the cube [−1, 1]³,
-## normalized); v = direction · speed, NOT normalized (the bomb flies a little faster or slower than
-## the spell's speed). The stream is MatchSeed.rng(["lob", user, tick]): the same match and tick give the same volley.
+## Each shot: direction = the way to the target, plus 0.5·g·d/speed² up, with the ranged accuracy
+## (ShotAim.scatter: 2 draws), plus `spread` · a uniform direction (3 draws; a point of the cube
+## [−1, 1]³, normalized); v = direction · speed, NOT normalized (the bomb flies a little faster or
+## slower than the spell's speed). The stream is MatchSeed.rng(["lob", user, tick]): the same match
+## and tick give the same volley.
 ## The target: an enemy creature is aimed at by its center led by its pace (like RangedWeapon);
 ## anything else is the point (the ground): an ally as the target is treated as the ground.
-## Range: the spell's cast_range, to the aimed point.
-## The shots are RangedShot of the shot container with the look `look` (gravity `falling`:
-## 20 for mites, sticky bombs, oil, bombardment); what each does where it lands is that look's ShotImpact (StickImpact).
-## They carry no intended target, so one of the shooter's own side is never hit.
-## Limits: the shot leaves from ShotAim.origin (the body's front at shot_height, not the animation's hand); a
-## shot that flies off the map ends at flight_limit meters.
+## Range: the spell's cast_range, to the aimed point. The shots are RangedShot of the shot container
+## with the look `look` (gravity `falling`: 20 for mites, sticky bombs, oil, bombardment); what each
+## does where it lands is that look's ShotImpact (StickImpact). They carry no intended target, so
+## one of the shooter's own side is never hit.
+## Limits: the shot leaves from ShotAim.origin (the body's front at shot_height, not the animation's
+## hand); a shot that flies off the map ends at flight_limit meters.
 
 ## Shots per use (the Sticky bomb fires 10, the oil one).
 @export var shots := 10
@@ -24,7 +25,8 @@ extends AbilityEffect
 @export var spread := 0.2
 ## The shots' gravity in m/s². Also what the aim lifts the direction by.
 @export var falling := 20.0
-## The shot leaves from the body's front at this fraction of its height (as RangedWeapon.shot_height).
+## The shot leaves from the body's front at this fraction of its height (as
+## RangedWeapon.shot_height).
 @export var shot_height := 0.7
 ## The shots' look (data/shots/sticky_bomb.tscn); empty = the ability's own `shot_look`.
 @export var look: PackedScene
@@ -40,7 +42,8 @@ func status(target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## True once the volley left (the mana is spent even if every shot misses). False when there is nothing to shoot with.
+## True once the volley left (the mana is spent even if every shot misses). False when there is
+## nothing to shoot with.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority() or ability == null or user == null:
 		return false
@@ -86,6 +89,7 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		if DebugLog.on(&"effects"):
 			print(
 				(
+					# gdlint: ignore=max-line-length
 					"lob %s %s shot %d/%d %s v (%.4f, %.4f, %.4f) origin (%.4f, %.4f, %.4f) (tick %d)"
 					% [
 						who(user),
@@ -119,7 +123,8 @@ static func uniform_direction(rng: RandomNumberGenerator) -> Vector3:
 	)
 
 
-## What the volley aims at: an enemy creature's center, led by its pace; anything else (ground, ally, nothing) the point.
+## What the volley aims at: an enemy creature's center, led by its pace; anything else (ground,
+## ally, nothing) the point.
 func _aim_point(target_pos: Vector3, target: Node3D) -> Vector3:
 	if not _is_foe(target):
 		return target_pos

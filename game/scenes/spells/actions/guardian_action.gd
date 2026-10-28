@@ -2,14 +2,13 @@
 class_name GuardianAction
 extends SpellAction
 
-## Guardian (ndrg): the wizard ties one of his own creatures to a building. The click is
-## the creature (OWN_UNIT). To arm it he needs a standing building of his own (altar, shrine, Manalith)
-## within ReachFacts guardian_arm_m on the plane; the
-## creature has to be free, alive, his and within the cast range. When the casting ends it is tied to
-## the open post closest to the CREATURE, whatever the distance;
-## who sets the bond is GuardianBond. Not the wizard, a hero, a familiar, a Sac
-## Doctor, one that is already a guardian (exclusion_tags «ndrg») nor a captive. The beam, the damage
-## split and the factors live in GuardianTether, GuardPost and GuardianBond, not here.
+## Guardian (ndrg): the wizard ties one of his own creatures to a building. The click is the
+## creature (OWN_UNIT). To arm it he needs a standing building of his own (altar, shrine, Manalith)
+## within ReachFacts guardian_arm_m on the plane; the creature has to be free, alive, his and within
+## the cast range. When the casting ends it is tied to the open post closest to the CREATURE,
+## whatever the distance; who sets the bond is GuardianBond. Not the wizard, a hero, a familiar, a
+## Sac Doctor, one that is already a guardian (exclusion_tags «ndrg») nor a captive. The beam, the
+## damage split and the factors live in GuardianTether, GuardPost and GuardianBond, not here.
 
 const FAR_FROM_BUILDING := Refusal.FAR_FROM_BUILDING
 
@@ -52,8 +51,8 @@ func check(
 	return aim
 
 
-## The casting ended. The creature may have died or been taken meanwhile (`target` is then null or no
-## longer valid) or the building may be gone: the cast is lost.
+## The casting ended. The creature may have died or been taken meanwhile (`target` is then null or
+## no longer valid) or the building may be gone: the cast is lost.
 func finish(wizard: WizardBody, _spell: SpellType, target: Node3D) -> String:
 	if not can_guard(wizard.owner_slot, target):
 		return BAD_TARGET

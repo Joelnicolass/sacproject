@@ -2,9 +2,10 @@
 class_name FrogLook
 extends Node
 
-## The frog's picture, on every peer, from its replicated state: the falling frame while it falls, the jump's sixteen frames (30 a second)
-## while it jumps, the sitting frame while it sits or is stuck to a body; and a croak on one jump in five. It does not move the frog nor
-## decide when it jumps (FrogHop). A dedicated server or a headless run draws nothing.
+## The frog's picture, on every peer, from its replicated state: the falling frame while it falls,
+## the jump's sixteen frames (30 a second) while it jumps, the sitting frame while it sits or is
+## stuck to a body; and a croak on one jump in five. It does not move the frog nor decide when it
+## jumps (FrogHop). A dedicated server or a headless run draws nothing.
 
 @export var drop: ZoneDrop
 @export var sprite: AtlasSprite

@@ -2,19 +2,18 @@
 class_name GuardianTether
 extends Node3D
 
-## The beam between a guardian and its building, drawn on every peer with a window; the
-## dedicated server never instantiates it. GuardianBond creates it when `post_path` changes and calls
-## retire() when it empties. Port of the original beam: 19 segments, a wobbly line of 5 control points that
-## reshapes every second, it grows from the creature to the
-## building in a second, pulses at 0.75-1 of its width
-## and withdraws in a second, toward the building if the creature is gone or toward the creature if the
-## building is.
-## Look: the tube of 3 planes with pointed ends that the original draws (19 segments, 4 sides, 4 points, 1.5, 1.0,
-## pointy)), additive and shadeless with energy 5, from the
-## `grdn` atlas that tools/import/import_ui.py puts in assets/original/fx/. One
-## cell of the 4x4 per 2 ticks (16 cells). Without the atlas it falls back to a flat soft color.
-## The beam waits for the building while `post_path` is set and the building has not arrived on this peer
-## (a late client); it only withdraws when the bond ends (retire()).
+## The beam between a guardian and its building, drawn on every peer with a window; the dedicated
+## server never instantiates it. GuardianBond creates it when `post_path` changes and calls retire()
+## when it empties. Port of the original beam: 19 segments, a wobbly line of 5 control points that
+## reshapes every second, it grows from the creature to the building in a second, pulses at 0.75-1
+## of its width and withdraws in a second, toward the building if the creature is gone or toward the
+## creature if the building is.
+## Look: the tube of 3 planes with pointed ends that the original draws (19 segments, 4 sides, 4
+## points, 1.5, 1.0, pointy)), additive and shadeless with energy 5, from the `grdn` atlas that
+## tools/import/import_ui.py puts in assets/original/fx/. One cell of the 4x4 per 2 ticks (16
+## cells). Without the atlas it falls back to a flat soft color. The beam waits for the building
+## while `post_path` is set and the building has not arrived on this peer (a late client); it only
+## withdraws when the bond ends (retire()).
 ## Only presentation: nothing here reads or writes game state.
 
 enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE }
@@ -39,7 +38,8 @@ enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE
 @export var color := Color(0.35, 1.0, 0.55, 1.0)
 ## Draws the ribbon. Its material is the look; a missing one warns in the inspector.
 @export var beam: MeshInstance3D
-## The light on the middle of the beam: it follows the ends while the beam is there and goes out when it withdraws. Optional.
+## The light on the middle of the beam: it follows the ends while the beam is there and goes out
+## when it withdraws. Optional.
 @export var glow: StateLight
 
 var phase := Phase.APPEARING
@@ -138,7 +138,8 @@ func _process(delta: float) -> void:
 	_phase_clock += delta
 	_sample()
 	if not _building_known:
-		# A late client: the building has not been replicated yet. Wait for it while the bond stands.
+		# A late client: the building has not been replicated yet. Wait for it while the bond
+		# stands.
 		if phase == Phase.WITHDRAWING_AT_CREATURE or phase == Phase.WITHDRAWING_AT_BUILDING:
 			queue_free()
 			return

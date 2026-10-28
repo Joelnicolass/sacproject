@@ -1,13 +1,14 @@
 class_name CastTime
 extends RefCounted
 
-## Casting time of a book entry for a wizard level:
-## the entry's frames (counted at 1.35 x 60 per second) lose 10 % per level the wizard has over the entry's level
-## (book_level), at most 5 levels, with integer division. A creature with a `cast_time_factor` below 1 (the Basilisk, 0.95)
-## first keeps that share of its frames, rounded down.
-## With no bonus and no factor it is the exported casting_time_s untouched.
+## Casting time of a book entry for a wizard level: the entry's frames (counted at 1.35 x 60 per
+## second) lose 10 % per level the wizard has over the entry's level (book_level), at most 5 levels,
+## with integer division. A creature with a `cast_time_factor` below 1 (the Basilisk, 0.95) first
+## keeps that share of its frames, rounded down. With no bonus and no factor it is the exported
+## casting_time_s untouched.
 
-## Cast frames per second: `frames/(1.35f*60.0f)`; tools/import/export_stats.py CAST_FRAMES_PER_SECOND.
+## Cast frames per second: `frames/(1.35f*60.0f)`; tools/import/export_stats.py
+## CAST_FRAMES_PER_SECOND.
 const FRAMES_PER_SECOND := 1.35 * 60.0
 const MAX_BONUS := 5
 
@@ -37,7 +38,8 @@ static func bonus_levels(entry: BookEntry, wizard_level: int) -> int:
 	return mini(MAX_BONUS, maxi(0, wizard_level - BookOrder.level(entry)))
 
 
-## The creature's cast_time_factor in whole thousandths (0.95 -> 950), so the frames are cut with integer division; 1000 for a spell.
+## The creature's cast_time_factor in whole thousandths (0.95 -> 950), so the frames are cut with
+## integer division; 1000 for a spell.
 static func _factor_milli(entry: BookEntry) -> int:
 	var creature := entry as CreatureType
 	return roundi(creature.cast_time_factor * 1000.0) if creature != null else 1000

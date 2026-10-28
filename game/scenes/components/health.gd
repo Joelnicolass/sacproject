@@ -8,8 +8,8 @@ signal changed(current: float, maximum: float)
 signal died(from_slot: int)
 ## After damage_typed(): what was really taken (0 = immune, an ally with no friendly fire, or dead).
 signal hurt(amount: float, kind: StringName, from_slot: int)
-## Every hit that took health, whatever called (a blow, a shot, a spell, a ritual): what was taken, who
-## took it and whether the bar was full before.
+## Every hit that took health, whatever called (a blow, a shot, a spell, a ritual): what was taken,
+## who took it and whether the bar was full before.
 signal hit(amount: float, from_slot: int, was_full: bool)
 
 ## The kinds of damage, each the resistance the body uses against it.
@@ -30,7 +30,8 @@ const IGNITE := 1 << 6
 	set(value):
 		maximum = maxf(value, 0.0)
 		changed.emit(current, maximum)
-## Every drop on any peer (a hit here, or the replicated value on a client) is also told game-wide as Events.body_hurt.
+## Every drop on any peer (a hit here, or the replicated value on a client) is also told game-wide
+## as Events.body_hurt.
 @export var current: float = 0.0:
 	set(value):
 		var before := current
@@ -47,14 +48,14 @@ const IGNITE := 1 << 6
 ## Empty = every hit ×1 with the plain resistance.
 @export var modifiers: Array[DamageModifier] = []
 
-## Multiplies damage_typed on top of the resistance: the body's own effects, as the original's damage
-## stacks them; Rockform sets 0.05.
+## Multiplies damage_typed on top of the resistance: the body's own effects, as the original's
+## damage stacks them; Rockform sets 0.05.
 var damage_factor := 1.0
 ## Per kind of damage (the constants above): multiplies damage_typed on top of the resistance. The
 ## body's own effects write here, Health reads (Guardian: spells ×0.5, ranged ×0.25).
 var kind_factors: Dictionary = {}
-## The last hit was taken by the deflector's stand-ins (a building's guardians), not by this body. They are
-## creatures, so the attacker drains from what they took: LifeDrain reads it.
+## The last hit was taken by the deflector's stand-ins (a building's guardians), not by this body.
+## They are creatures, so the attacker drains from what they took: LifeDrain reads it.
 var deflected_last := false
 
 var _deflecting := false
@@ -68,7 +69,8 @@ func setup(full: float) -> void:
 	current = minf(rules.start_health, full) if rules and rules.start_health >= 0.0 else full
 
 
-## Server or solo. The maximum goes up by `amount` and so does the health (health += 500, max health += 500).
+## Server or solo. The maximum goes up by `amount` and so does the health (health += 500, max health
+## += 500).
 func raise_maximum(amount: float) -> void:
 	if not is_multiplayer_authority() or amount <= 0.0:
 		return
@@ -92,10 +94,10 @@ func is_full() -> bool:
 	return current >= maximum
 
 
-## A hit whose caller already applied the body's damage_factor and resistance (melee, rituals). The states the body is
-## in still scale it (_state_factor).
-## Returns the damage taken (capped at the health left, like damage_typed); 0 when nothing reached the body. With a
-## deflector, the damage its stand-ins took. LifeDrain.feed reads it; callers that ignore it do not change.
+## A hit whose caller already applied the body's damage_factor and resistance (melee, rituals). The
+## states the body is in still scale it (_state_factor). Returns the damage taken (capped at the
+## health left, like damage_typed); 0 when nothing reached the body. With a deflector, the damage
+## its stand-ins took. LifeDrain.feed reads it; callers that ignore it do not change.
 func damage(amount: float, from_slot: int = 0) -> float:
 	deflected_last = false
 	if not is_multiplayer_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
@@ -114,8 +116,8 @@ func damage(amount: float, from_slot: int = 0) -> float:
 	return taken
 
 
-## Server or solo. The health goes to 0 whatever the body wears: no resistance, shield or side rule (Death's blow, a gib). A dead body
-## or one that cannot be hurt (maximum 0) takes nothing.
+## Server or solo. The health goes to 0 whatever the body wears: no resistance, shield or side rule
+## (Death's blow, a gib). A dead body or one that cannot be hurt (maximum 0) takes nothing.
 func kill(from_slot: int = 0) -> void:
 	if is_multiplayer_authority() and not is_dead() and maximum > 0.0:
 		_hit(current, from_slot)
@@ -129,17 +131,14 @@ func _hit(amount: float, from_slot: int) -> void:
 		died.emit(from_slot)
 
 
-## The damage a hit does to this body:
-## amount · side factor · max(0, resistance) · damage_factor of the body's CRE8/WIZD data · its states, capped at the
-## health left.
-## The side factor is the match's friendly fire (_side_factor): an ally takes nothing with it off
-## and ally_damage_factor with it on; `ignore_friendly`
-## (poison) takes ×1 then. A dead body takes nothing.
-## Melee callers still apply the original's extra 0.4 themselves (melee_weapon.gd).
-## Returns the damage taken.
-## `mods`: the DamageMod bits of the hit (LIGHTNING, IGNITE). The body's passive and the oil read them.
-## `pierce_shield`: the body's shields and states (damage_factor:
-## Rockform, Life Shield; _state_factor: petrified) do not scale it. The Pyromaniac's fire.
+## The damage a hit does to this body: amount · side factor · max(0, resistance) · damage_factor of
+## the body's CRE8/WIZD data · its states, capped at the health left. The side factor is the match's
+## friendly fire (_side_factor): an ally takes nothing with it off and ally_damage_factor with it
+## on; `ignore_friendly` (poison) takes ×1 then. A dead body takes nothing. Melee callers still
+## apply the original's extra 0.4 themselves (melee_weapon.gd). Returns the damage taken. `mods`:
+## the DamageMod bits of the hit (LIGHTNING, IGNITE). The body's passive and the oil read them.
+## `pierce_shield`: the body's shields and states (damage_factor: Rockform, Life Shield;
+## _state_factor: petrified) do not scale it. The Pyromaniac's fire.
 func damage_typed(
 	amount: float,
 	kind: StringName,
@@ -207,17 +206,18 @@ func _base_resistance(kind: StringName) -> float:
 	return float(value) if value != null else 1.0
 
 
-## The side factor a typed hit (damage_typed: a spell, a splash) from `from_slot` gets on this body. The AI reads it to
-## foresee what its own burst would take from its own bodies (AiSpellEval.own_splash); it changes nothing.
+## The side factor a typed hit (damage_typed: a spell, a splash) from `from_slot` gets on this body.
+## The AI reads it to foresee what its own burst would take from its own bodies
+## (AiSpellEval.own_splash); it changes nothing.
 func side_factor(from_slot: int) -> float:
 	return _side_factor(from_slot, false, 0.0)
 
 
 ## The one place that decides how much of a hit from `from_slot` this body takes for its side.
-## Another side, or no side (0): ×1. The same side, or an ally by the stance (2v2 teams): 0 with friendly fire off; with it on, ×1 if the hit
-## ignores it (poison) and the match's ally_damage_factor otherwise.
-## The rule is the one MatchState took from the world's rules. With no MatchState (a test scene) it is `unruled`
-## (damage_typed 0, damage ×1).
+## Another side, or no side (0): ×1. The same side, or an ally by the stance (2v2 teams): 0 with
+## friendly fire off; with it on, ×1 if the hit ignores it (poison) and the match's
+## ally_damage_factor otherwise. The rule is the one MatchState took from the world's rules. With no
+## MatchState (a test scene) it is `unruled` (damage_typed 0, damage ×1).
 func _side_factor(from_slot: int, ignore_friendly: bool, unruled: float) -> float:
 	if from_slot <= 0:
 		return 1.0

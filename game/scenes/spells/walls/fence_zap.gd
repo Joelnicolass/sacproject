@@ -2,18 +2,21 @@
 class_name FenceZap
 extends Node
 
-## The lightning of a Fence: the posts hold a charge that leaks as bolts. A post strikes every creature or wizard (not the caster) within
-## `strike_range_m` with chance `strike_per_s` a second, for the spell's damage as lightning; neighbours arc to each other when one holds
-## more charge than the other (waiting 1 to 2 s between arcs); and a post sometimes discharges to the ground 5 to 15 m away. Charge moves
-## with every bolt and the posts share what is left. A new post throws three to five bolts at itself from 10 m. It does not make or place the
-## posts (FencePosts) and the bolt is drawn by FxBus. Server (or solo) only; its dice are the match's, seeded by the wall.
+## The lightning of a Fence: the posts hold a charge that leaks as bolts. A post strikes every
+## creature or wizard (not the caster) within `strike_range_m` with chance `strike_per_s` a second,
+## for the spell's damage as lightning; neighbours arc to each other when one holds more charge than
+## the other (waiting 1 to 2 s between arcs); and a post sometimes discharges to the ground 5 to 15
+## m away. Charge moves with every bolt and the posts share what is left. A new post throws three to
+## five bolts at itself from 10 m. It does not make or place the posts (FencePosts) and the bolt is
+## drawn by FxBus. Server (or solo) only; its dice are the match's, seeded by the wall.
 
 @export var wall: SpellWall
 @export var posts: FencePosts
 @export var bolt: BeamType
 @export var strike_range_m := 10.0
 @export_range(0.0, 3.0, 0.05) var strike_per_s := 0.9
-## Chance per second of an arc between neighbours and of a discharge to the ground, per post, at no charge (shared out among the other posts).
+## Chance per second of an arc between neighbours and of a discharge to the ground, per post, at no
+## charge (shared out among the other posts).
 @export_range(0.0, 3.0, 0.05) var arc_per_s := 0.3
 @export_range(0.0, 3.0, 0.05) var discharge_per_s := 0.3
 @export var ground_reach_m := Vector2(5.0, 15.0)
@@ -79,7 +82,8 @@ func _physics_process(_delta: float) -> void:
 		_charge[key] = float(_charge[key]) + excess
 
 
-## A bolt from post `from` to its neighbour `to`: some charge moves over and both wait 1 to 2 s before the next arc on the sides that met.
+## A bolt from post `from` to its neighbour `to`: some charge moves over and both wait 1 to 2 s
+## before the next arc on the sides that met.
 func _arc(from: Vector2, to: Vector2) -> void:
 	_zap(posts.position_of(from), posts.position_of(to), null)
 	var moved := _rng.randf_range(0.01, 0.02)
@@ -91,7 +95,8 @@ func _arc(from: Vector2, to: Vector2) -> void:
 	(_right if going_left else _left)[to] = _rng.randi_range(wait, 2 * wait)
 
 
-## The post lets its charge go: half to a post at random, half to the air; a bolt to the ground. Returns what goes to the air.
+## The post lets its charge go: half to a post at random, half to the air; a bolt to the ground.
+## Returns what goes to the air.
 func _discharge(key: Vector2, list: PackedVector2Array, charge: float) -> float:
 	_charge[key] = 0.0
 	var spilt := 0.0
@@ -111,7 +116,8 @@ func _discharge(key: Vector2, list: PackedVector2Array, charge: float) -> float:
 	return spilt
 
 
-## Strikes the bodies near a post (not the caster, who only sees the bolt); returns the charge they took.
+## Strikes the bodies near a post (not the caster, who only sees the bolt); returns the charge they
+## took.
 func _strike(key: Vector2) -> float:
 	var at := posts.position_of(key)
 	var taken := 0.0

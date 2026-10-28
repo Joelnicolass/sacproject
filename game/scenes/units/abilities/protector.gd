@@ -1,15 +1,17 @@
 class_name Protector
 extends AbilityEffect
 
-## The Ent's Protector: a life shield for the Ent and the allies around it. It is refused while the Ent
-## already has a life shield (nothing spent); else the Ent takes the life shield and a Protector effect is added.
-## The effect runs once, on the next tick: every creature whose center is within effect range (30 m,
-## 3D, center to center) of the Ent's, of its side, not itself, valid (alive, on the field) and not a wizard, takes
-## the life shield, which refuses one that already has a shield. Statics (buildings) are not creatures.
-## The pending tick is MatchClock's (fire tick + 1), processed in _physics_process (priority −1, before the bodies).
-## The shield is each body's LifeShield; its time is the hsba spell's duration · 60.
+## The Ent's Protector: a life shield for the Ent and the allies around it. It is refused while the
+## Ent already has a life shield (nothing spent); else the Ent takes the life shield and a Protector
+## effect is added. The effect runs once, on the next tick: every creature whose center is within
+## effect range (30 m, 3D, center to center) of the Ent's, of its side, not itself, valid (alive, on
+## the field) and not a wizard, takes the life shield, which refuses one that already has a shield.
+## Statics (buildings) are not creatures. The pending tick is MatchClock's (fire tick + 1),
+## processed in _physics_process (priority −1, before the bodies). The shield is each body's
+## LifeShield; its time is the hsba spell's duration · 60.
 
-## The shield it gives (data/catalog/abilities/life_shield.tres, Life Shield): its duration is the shield's.
+## The shield it gives (data/catalog/abilities/life_shield.tres, Life Shield): its duration is the
+## shield's.
 @export var life_shield: AbilityType
 ## Ticks after fire() at which the allies are shielded (the effect's first update).
 @export var allies_delay_ticks := 1

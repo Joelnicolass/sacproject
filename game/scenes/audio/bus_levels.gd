@@ -1,7 +1,8 @@
 class_name BusLevels
 extends RefCounted
 
-## Puts the player's volumes (AudioPrefs) on the AudioServer buses: the level of each one and whether it is muted.
+## Puts the player's volumes (AudioPrefs) on the AudioServer buses: the level of each one and
+## whether it is muted.
 
 
 ## A bus the layout lacks is skipped.

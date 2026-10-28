@@ -2,16 +2,18 @@ class_name SpikeImpact
 extends ShotImpact
 
 ## Where the Rhinok's Spikey Death stops:
-## - on a body (its 5 m box met one: the target, or a body not of the shooter's side): that body takes the whole amount
-##   as splash ranged damage and the rings start under its center;
-## - at the end of its range (ShotLook.burst_at_range_end): if the shot's target is still a valid target it takes the
-##   whole amount the same way, wherever it is; the rings start where the shot stopped.
-## The rings (SpikeWave) go to the shot's parent, so they outlive the shot; they leave out the body hurt here.
-## The target is hurt at the end of the range only when the range is really spent (RangedShot.range_spent): with
-## GroundHugFlight the shot never bursts on the ground (holds_height), and a burst with no body before its range ends (none
-## today) would hurt nobody.
+## - on a body (its 5 m box met one: the target, or a body not of the shooter's side): that body
+##   takes the whole amount as splash ranged damage and the rings start under its center;
+## - at the end of its range (ShotLook.burst_at_range_end): if the shot's target is still a valid
+##   target it takes the whole amount the same way, wherever it is; the rings start where the shot
+##   stopped.
+## The rings (SpikeWave) go to the shot's parent, so they outlive the shot; they leave out the body
+## hurt here. The target is hurt at the end of the range only when the range is really spent
+## (RangedShot.range_spent): with GroundHugFlight the shot never bursts on the ground
+## (holds_height), and a burst with no body before its range ends (none today) would hurt nobody.
 ## The target takes the damage through Health like any hit, so a target of the shooter's own side
-## (an order on an ally) takes 0 or ally_damage_factor by the match's friendly fire (Health._side_factor).
+## (an order on an ally) takes 0 or ally_damage_factor by the match's friendly fire
+## (Health._side_factor).
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")

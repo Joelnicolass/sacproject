@@ -2,11 +2,13 @@
 class_name BuildRing
 extends MeshInstance3D
 
-## The ring on the ground that shows the area a structure spell clears around a manafount: green when the tower can rise there,
-## red when the cast would be refused, hidden otherwise. The editor always shows it (green) so the area can be seen while it
-## is moved; in the game it stays hidden until a preview asks for it. Presentation only: it reads nothing of the match.
-## Does not decide the state (ArmedPreview, through BuildArea) nor the radius (BuildArea calls `set_radius`).
-## The mesh is a 2 x 2 PlaneMesh: the node's scale is the radius. Without `material_override` it takes build_ring_material.tres.
+## The ring on the ground that shows the area a structure spell clears around a manafount: green
+## when the tower can rise there, red when the cast would be refused, hidden otherwise. The editor
+## always shows it (green) so the area can be seen while it is moved; in the game it stays hidden
+## until a preview asks for it. Presentation only: it reads nothing of the match. Does not decide
+## the state (ArmedPreview, through BuildArea) nor the radius (BuildArea calls `set_radius`). The
+## mesh is a 2 x 2 PlaneMesh: the node's scale is the radius. Without `material_override` it takes
+## build_ring_material.tres.
 
 enum State { HIDDEN, OK, BLOCKED }
 

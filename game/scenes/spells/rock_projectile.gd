@@ -142,8 +142,9 @@ static func cast_position(caster: Node3D) -> Vector3:
 	return caster.global_position + ahead * (front + CAST_AHEAD)
 
 
-## The reach as the millimetre double the rules have always read: the body scene keeps it in 32 bits and every body measure has at
-## most three decimals, so dividing the rounded millimetres gives the same double (the cast position stays bit for bit).
+## The reach as the millimetre double the rules have always read: the body scene keeps it in 32 bits
+## and every body measure has at most three decimals, so dividing the rounded millimetres gives the
+## same double (the cast position stays bit for bit).
 static func _reach_mm(reach_m: float) -> float:
 	return roundi(reach_m * 1000.0) / 1000.0
 

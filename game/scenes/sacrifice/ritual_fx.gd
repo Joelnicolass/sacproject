@@ -2,16 +2,19 @@
 class_name RitualFx
 extends Node3D
 
-## What is seen of a ritual, on every peer with meshes (the dedicated server draws nothing), derived only from replicated state:
-## `ritual.phase`, the creature path, the wizards by slot. It moves nothing.
-## - The red vortex over the drained wizard (a type that `drains_target_wizard`), 12.5 m from him toward the altar, 15 m up, for
-##   the whole ritual.
-## - While the doctors shoot: the `altar_ropes` go from the `AltarTop` marker (60 m over the altar) to the creature, and the
-##   `drain_ropes` from the vortex to the wizard. They are the spring ropes of Tether (the same ltn2 atlas). Markers, start points and ropes are nodes of ritual.tscn:
-##   drag them, add a rope by instancing tether.tscn and listing it.
+## What is seen of a ritual, on every peer with meshes (the dedicated server draws nothing), derived
+## only from replicated state: `ritual.phase`, the creature path, the wizards by slot. It moves
+## nothing.
+## - The red vortex over the drained wizard (a type that `drains_target_wizard`), 12.5 m from him
+##   toward the altar, 15 m up, for the whole ritual.
+## - While the doctors shoot: the `altar_ropes` go from the `AltarTop` marker (60 m over the altar)
+##   to the creature, and the `drain_ropes` from the vortex to the wizard. They are the spring ropes
+##   of Tether (the same ltn2 atlas). Markers, start points and ropes are nodes of ritual.tscn: drag
+##   them, add a rope by instancing tether.tscn and listing it.
 ## - The blood of a completed ritual (`blood_fx`), when RitualPayoff asks for it.
 ## - The doctors' own ropes to the creature are drawn by their CarryRope (`doctor.carried`).
-## Remove this node from ritual.tscn to switch all of it off; the brightness is the `energy_scale` of the ropes.
+## Remove this node from ritual.tscn to switch all of it off; the brightness is the `energy_scale`
+## of the ropes.
 
 ## scenes/sacrifice/red_vortex.tscn
 @export var vortex_scene: PackedScene
@@ -25,10 +28,12 @@ extends Node3D
 @export var vortex_aim: Marker3D
 ## Moved to the creature's soul anchor while shooting: where the altar ropes end.
 @export var creature_aim: Marker3D
-## Moved to the drained wizard's center socket (BodyFacts) while shooting: where the drain ropes end.
+## Moved to the drained wizard's center socket (BodyFacts) while shooting: where the drain ropes
+## end.
 @export var wizard_aim: Marker3D
 @export_group("Ropes")
-## Each one starts at its own marker child of `altar_top` / `vortex_aim`, so the bolts do not overlap.
+## Each one starts at its own marker child of `altar_top` / `vortex_aim`, so the bolts do not
+## overlap.
 @export var altar_ropes: Array[Tether]
 @export var drain_ropes: Array[Tether]
 @export_group("Vortex")
@@ -131,7 +136,8 @@ func _ropes(shooting: bool, wizard: WizardBody) -> void:
 		rope.end = wizard_aim if shooting and wizard != null and _vortex != null else null
 
 
-## The wizard being drained: only a type that drains has one (Convert drains nobody, no vortex over anyone).
+## The wizard being drained: only a type that drains has one (Convert drains nobody, no vortex over
+## anyone).
 func _wizard() -> WizardBody:
 	if not ritual.type().drains_target_wizard:
 		return null

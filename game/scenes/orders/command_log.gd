@@ -1,16 +1,17 @@
 class_name CommandLog
 extends Node
 
-## What the local command is doing, as state and not as words: nothing here is drawn.
-## `armed` says which icon waits for its target (`""`, `spell`, `structure`, `ability`, `attack`,
-## `guard`, `move`) and `armed_icon` its picture (the `icon` of the spell, ability or creature, or a picture of CueSet).
-## CommandCue and CursorSkin draw from the signals.
-## The name stays `Battle` in the scenes so the flows that read `%Battle` keep working.
+## What the local command is doing, as state and not as words: nothing here is drawn. `armed` says
+## which icon waits for its target (`""`, `spell`, `structure`, `ability`, `attack`, `guard`,
+## `move`) and `armed_icon` its picture (the `icon` of the spell, ability or creature, or a picture
+## of CueSet). CommandCue and CursorSkin draw from the signals. The name stays `Battle` in the
+## scenes so the flows that read `%Battle` keep working.
 
 signal armed_changed(kind: String, icon: Texture2D)
 signal said(text: String, cue: StringName)
-## The live answer for the armed icon at the pointer changed (`status` = a Refusal key or &"" when it would start; `site` = where
-## it would build or land, or null). Only ArmedPreview writes it; the cursor, the cue and the words read it.
+## The live answer for the armed icon at the pointer changed (`status` = a Refusal key or &"" when
+## it would start; `site` = where it would build or land, or null). Only ArmedPreview writes it; the
+## cursor, the cue and the words read it.
 signal aim_changed(status: StringName, site: Node3D)
 
 ## Words -> cue («Sin maná» is a refusal). Without it every message is only text.

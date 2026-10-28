@@ -2,13 +2,15 @@
 class_name Ritual
 extends Node3D
 
-## A sacrifice ritual in progress: four Sac Doctors on a ring around the site, the creature hanging over it, rounds of walk /
-## shoot / wait. Desecrate and Convert are the same node with another `RitualType` (`types`, picked by `kind`): no branch here.
-## Cancelled (a doctor dies, the site falls, the creature is lost): the doctors die, the creature is let go alive and its owner's.
-## The server (or solo) simulates: `Phases` runs the phases; each tick `Lift` and then `Watch` step, in that order. `Drain` takes
-## the wizard's life (Shoot), `Payoff` pays the souls at the end, `Push` and `Fx` are the barrier and what is seen. Take a part
-## out of ritual.tscn and that thing stops happening. Replicated: phase, round_index and outcome. Numbers: MatchRules.
-## Every peer tells its start and its end game-wide (Events.ritual_started / ritual_ended).
+## A sacrifice ritual in progress: four Sac Doctors on a ring around the site, the creature hanging
+## over it, rounds of walk / shoot / wait. Desecrate and Convert are the same node with another
+## `RitualType` (`types`, picked by `kind`): no branch here. Cancelled (a doctor dies, the site
+## falls, the creature is lost): the doctors die, the creature is let go alive and its owner's. The
+## server (or solo) simulates: `Phases` runs the phases; each tick `Lift` and then `Watch` step, in
+## that order. `Drain` takes the wizard's life (Shoot), `Payoff` pays the souls at the end, `Push`
+## and `Fx` are the barrier and what is seen. Take a part out of ritual.tscn and that thing stops
+## happening. Replicated: phase, round_index and outcome. Numbers: MatchRules. Every peer tells its
+## start and its end game-wide (Events.ritual_started / ritual_ended).
 
 signal phase_changed(phase: Phase)  ## every peer
 signal round_tortured(round_index: int)  ## server only
@@ -99,6 +101,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		(
 			warnings
 			. append(
+				# gdlint: ignore=max-line-length
 				"Assign to `phases` the FsmMachine with Setup, Walk, Shoot, Wait and Ended (autostart off: begin() starts it)."
 			)
 		)
@@ -106,6 +109,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		(
 			warnings
 			. append(
+				# gdlint: ignore=max-line-length
 				"Assign to `types` one RitualType per kind (data/sacrifice/desecrate_ritual.tres, convert_ritual.tres)."
 			)
 		)
@@ -176,7 +180,8 @@ func target_is_gone() -> bool:
 	return health == null or health.is_dead()
 
 
-## End of a shooting round (Shoot): this was the last one and the ritual is complete, or another round.
+## End of a shooting round (Shoot): this was the last one and the ritual is complete, or another
+## round.
 func finish_round() -> void:
 	round_tortured.emit(round_index)
 	if type().is_last_round(self):
@@ -197,7 +202,8 @@ func complete() -> void:
 	_wind_down()
 
 
-## Cancelled: doctors die, the creature falls alive and free, the wizard is not under ritual any more.
+## Cancelled: doctors die, the creature falls alive and free, the wizard is not under ritual any
+## more.
 func abort() -> void:
 	if outcome != Outcome.RUNNING:
 		return

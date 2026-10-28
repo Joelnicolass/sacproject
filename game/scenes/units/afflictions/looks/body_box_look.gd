@@ -1,10 +1,12 @@
 class_name BodyBoxLook
 extends MeshInstance3D
 
-## A translucent box around a body while one of its states is on, the size of the body's hit box, that grows from nothing and vanishes at
-## once when the state ends (Freeze's ice). It does not decide when the state is on (Affliction) nor break into shards (Frozen).
-## It is not turned with the body: it stays aligned to the world. Presentation only, on every peer, from the
-## replicated mask. The mesh and the material are the scene's: a BoxMesh of 1 m and a material to tune in the editor.
+## A translucent box around a body while one of its states is on, the size of the body's hit box,
+## that grows from nothing and vanishes at once when the state ends (Freeze's ice). It does not
+## decide when the state is on (Affliction) nor break into shards (Frozen). It is not turned with
+## the body: it stays aligned to the world. Presentation only, on every peer, from the replicated
+## mask. The mesh and the material are the scene's: a BoxMesh of 1 m and a material to tune in the
+## editor.
 
 ## The state that shows it.
 @export var affliction: Affliction

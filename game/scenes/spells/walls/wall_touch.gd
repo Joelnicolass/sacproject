@@ -2,11 +2,13 @@
 class_name WallTouch
 extends Node
 
-## What a SpellWall does to the creatures and wizards inside it, once its casting time is over. One script, many walls: damage and mana
-## drained every tick while a body is inside (Firewall burns, Wailing Wall saps), and, no more than once per `cooldown_s` for each body,
-## a touch: a hit, a stun, a slowdown, a state (Wall of Spikes stuns, hurts and slows; Wailing Wall slows; Vinewall ties). The knobs of
-## the scene say which. It does not move, grow or draw the wall (SpellWall and the look) nor make the states it lays (Vined, Stunned,
-## PaceFactors, Health). Server (or solo) only.
+## What a SpellWall does to the creatures and wizards inside it, once its casting time is over. One
+## script, many walls: damage and mana drained every tick while a body is inside (Firewall burns,
+## Wailing Wall saps), and, no more than once per `cooldown_s` for each body, a touch: a hit, a
+## stun, a slowdown, a state (Wall of Spikes stuns, hurts and slows; Wailing Wall slows; Vinewall
+## ties). The knobs of the scene say which. It does not move, grow or draw the wall (SpellWall and
+## the look) nor make the states it lays (Vined, Stunned, PaceFactors, Health). Server (or solo)
+## only.
 
 ## A body took its touch this tick (a hit, a stun, a state or a slowdown). Server only.
 signal touched(body: Node3D)
@@ -15,15 +17,18 @@ enum Affects { EVERYBODY, NOT_ALLIES }
 
 @export var wall: SpellWall
 @export var affects := Affects.EVERYBODY
-## The wall hurts only while it stands (Wall of Spikes, Vinewall); off: also while it sinks (Firewall, Wailing Wall).
+## The wall hurts only while it stands (Wall of Spikes, Vinewall); off: also while it sinks
+## (Firewall, Wailing Wall).
 @export var only_while_standing := false
-## Only the part of the thickness within this fraction of the axis touches (Wall of Spikes 0.4, Vinewall 0.35); 0 = all of it.
+## Only the part of the thickness within this fraction of the axis touches (Wall of Spikes 0.4,
+## Vinewall 0.35); 0 = all of it.
 @export_range(0.0, 1.0, 0.05) var core_fraction := 0.0
 @export_group("Every tick")
 ## The spell's `damage` is dealt per second (Firewall); or this much per second (0 = none).
 @export var spell_damage_per_s := false
 @export var damage_per_s := 0.0
-## The damage ramps 0 to 1 over this long (0 = no ramp), from `ramp_start_s` (negative = once the wall is at full height); one ramp for the whole wall.
+## The damage ramps 0 to 1 over this long (0 = no ramp), from `ramp_start_s` (negative = once the
+## wall is at full height); one ramp for the whole wall.
 @export_range(0.0, 20.0, 0.1, "suffix:s") var ramp_s := 0.0
 @export var ramp_start_s := -1.0
 @export var kind: StringName = Health.DIRECT_SPELL
@@ -45,7 +50,8 @@ enum Affects { EVERYBODY, NOT_ALLIES }
 @export var pace_source: StringName = &"wall"
 ## The state laid with the wall's remaining time as a cap (Grasping Vines).
 @export var affliction: AfflictionType
-## Played on every peer at the body's feet (`target` and `ticks` go with `hit_params`): the spike that rises, the spirit that orbits.
+## Played on every peer at the body's feet (`target` and `ticks` go with `hit_params`): the spike
+## that rises, the spirit that orbits.
 @export var hit_scene: PackedScene
 @export var hit_params: Dictionary = {}
 @export var stunned_path := NodePath("Afflictions/Stunned")

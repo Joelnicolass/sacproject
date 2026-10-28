@@ -3,10 +3,13 @@ extends RefCounted
 
 ## Does this process have audio? The one rule every audio piece asks before it loads or creates
 ## anything (SoundBus and the Sounds/Voice/Director nodes).
-## - Closed in the dedicated server (`--dedicated` or the export feature), in the room server (`--room-server`) and in
-##   any headless process, so the simulation, the benches and the servers never load an AudioStream.
-## - `--audio-probe` opens it in a headless process (the audio cases and the lab), never in a server.
-## The answer is fixed for the life of the process (the flags do not change), so it is computed once.
+## - Closed in the dedicated server (`--dedicated` or the export feature), in the room server
+##   (`--room-server`) and in any headless process, so the simulation, the benches and the servers
+##   never load an AudioStream.
+## - `--audio-probe` opens it in a headless process (the audio cases and the lab), never in a
+##   server.
+## The answer is fixed for the life of the process (the flags do not change), so it is computed
+## once.
 
 const PROBE_FLAG := "--audio-probe"
 
@@ -25,8 +28,8 @@ static func is_open() -> bool:
 	return _cached == 1
 
 
-## The rule itself, pure (the cases try every combination): `args` are the process flags, `headless` its display server
-## and `dedicated` MpBoot's answer (it also reads the export features).
+## The rule itself, pure (the cases try every combination): `args` are the process flags, `headless`
+## its display server and `dedicated` MpBoot's answer (it also reads the export features).
 static func decide(args: PackedStringArray, headless: bool, dedicated: bool) -> bool:
 	if dedicated or _has_flag(args, "--dedicated") or _has_flag(args, "--room-server"):
 		return false

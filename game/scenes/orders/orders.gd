@@ -1,13 +1,13 @@
 extends Node
 
-## RTS orders, server-authoritative.
-## The owner calls request(); a client sends submit_order and the server checks every unit's
-## owner_slot. The selection stands in the formation most of its creatures keep (the default is the line) turned by the
-## camera facing; units are matched to slots greedily by distance. The "formation" command stores a formation on each
-## creature and moves nobody. Retreat orders every creature of the side, not the selection.
+## RTS orders, server-authoritative. The owner calls request(); a client sends submit_order and the
+## server checks every unit's owner_slot. The selection stands in the formation most of its
+## creatures keep (the default is the line) turned by the camera facing; units are matched to slots
+## greedily by distance. The "formation" command stores a formation on each creature and moves
+## nobody. Retreat orders every creature of the side, not the selection.
 
-## The local player asked for an order (request(), the owner side, before it is sent or applied). Presentation only;
-## the AI's apply_for and the server's submit_order do not emit it.
+## The local player asked for an order (request(), the owner side, before it is sent or applied).
+## Presentation only; the AI's apply_for and the server's submit_order do not emit it.
 signal requested(units: Array, command: String)
 
 const UnitOrders := preload("res://scenes/units/unit_orders.gd")
@@ -35,8 +35,8 @@ const COMMANDS := {
 ## An attack on a creature retargets each unit to the enemy
 ## creature closest to its own slot within this range.
 @export var retarget_range := 100.0
-## With the DebugLog category `orders` on, every applied human order prints «order <command> <n>». The AI's orders
-## (`apply_for`) print too only with `log_ai_orders`: thousands per match.
+## With the DebugLog category `orders` on, every applied human order prints «order <command> <n>».
+## The AI's orders (`apply_for`) print too only with `log_ai_orders`: thousands per match.
 @export var log_ai_orders := false
 
 ## Microseconds the last _apply took, and the last formation (rows, widest row in meters),
@@ -46,7 +46,8 @@ var last_rows := 0
 var last_width := 0.0
 
 
-## Owner side. `facing` is the camera yaw (forward = (sin, 0, cos)). `formation_id` only matters for "formation".
+## Owner side. `facing` is the camera yaw (forward = (sin, 0, cos)). `formation_id` only matters for
+## "formation".
 func request(
 	units: Array,
 	command: String,
@@ -67,9 +68,9 @@ func request(
 
 
 ## The orders of a side that has no peer behind it (the AI): server or solo only, no RPC. It is
-## `request` with the slot given instead of read from MpKit.local_slot(); _apply still checks that every unit
-## belongs to `slot`, so the AI can order exactly what a human of that slot could.
-## The AI does not choose formations: its creatures keep the line.
+## `request` with the slot given instead of read from MpKit.local_slot(); _apply still checks that
+## every unit belongs to `slot`, so the AI can order exactly what a human of that slot could. The AI
+## does not choose formations: its creatures keep the line.
 func apply_for(
 	slot: int,
 	units: Array,
@@ -81,7 +82,8 @@ func apply_for(
 ) -> void:
 	if slot <= 0 or (MpKit.is_networked() and not MpKit.is_server()):
 		return
-	# The nodes go straight in: the AI orders thousands of times per match and the roundtrip through NodePaths cost half of each order.
+	# The nodes go straight in: the AI orders thousands of times per match and the roundtrip through
+	# NodePaths cost half of each order.
 	_apply(slot, PackedStringArray(), command, point, "", facing, formation_id, units, target)
 
 
@@ -124,7 +126,8 @@ func _apply(
 		return
 	if not COMMANDS.has(command):
 		return
-	# An order that carries a formation (the radial menu's pick) stores it first: the order itself already uses it.
+	# An order that carries a formation (the radial menu's pick) stores it first: the order itself
+	# already uses it.
 	if formation_id != &"":
 		_set_formation(slot, unit_paths, formation_id, unit_nodes)
 	var started := Time.get_ticks_usec()
@@ -176,8 +179,8 @@ func _apply(
 			print("order %s %d" % [command, units.size()])
 
 
-## "formation": keeps `formation_id` on each creature of the slot that was asked for. Nobody moves; an id the catalog does
-## not know changes nothing.
+## "formation": keeps `formation_id` on each creature of the slot that was asked for. Nobody moves;
+## an id the catalog does not know changes nothing.
 func _set_formation(
 	slot: int, unit_paths: PackedStringArray, formation_id: StringName, unit_nodes: Array
 ) -> void:
@@ -190,7 +193,8 @@ func _set_formation(
 			print("order formation %s" % formation_id)
 
 
-## The formation most of the group keeps; a tie goes to the one first in the catalog (the original's order).
+## The formation most of the group keeps; a tie goes to the one first in the catalog (the original's
+## order).
 func _majority_formation(units: Array[Node3D]) -> FormationType:
 	var counts := {}
 	for unit in units:
@@ -259,7 +263,8 @@ func _can_order(unit: Node, slot: int) -> bool:
 	)
 
 
-## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes them.
+## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes
+## them.
 func _formation(
 	formation: FormationType, units: Array[Node3D], kind: int, target: Node3D
 ) -> Array[Vector2]:
@@ -323,11 +328,12 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 	return result
 
 
-## The rows of a formation larger than one line (the port's extension, `RowFormation.row_size`): the original matches one
-## line of at most 12 creatures greedily, and greedy over 150 bodies crossed the formation: the front of the
-## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots.
-## Here the units furthest along `yaw` take the front row, the next ones the row
-## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
+## The rows of a formation larger than one line (the port's extension, `RowFormation.row_size`): the
+## original matches one line of at most 12 creatures greedily, and greedy over 150 bodies crossed
+## the formation: the front of the crowd took the back rows and everyone else walked through the
+## bodies already parked, which carried them off their slots. Here the units furthest along `yaw`
+## take the front row, the next ones the row behind, and so on; inside a row they keep their order
+## across (left to right). No two paths cross. Ties go by index.
 func _match_rows(
 	units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int
 ) -> PackedInt32Array:

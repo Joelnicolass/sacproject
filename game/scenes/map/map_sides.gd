@@ -2,16 +2,18 @@
 class_name MapSides
 extends RefCounted
 
-## Who is allied or enemy of whom on a map, read from the nodes the map already has instead of a table: every PlayerStart is
-## a seat (side = slot - 1; `team` above 0 allies the seats that share it, 0 stands alone), every other side an NpcSpawn
-## names (Farmers, Taurocks) is a side no player takes, and side 31 is the neutral owner of the houses. All sides are enemies
-## of each other except teammates; nobody is an enemy of the neutral side. SideRelations reads the rows.
+## Who is allied or enemy of whom on a map, read from the nodes the map already has instead of a
+## table: every PlayerStart is a seat (side = slot - 1; `team` above 0 allies the seats that share
+## it, 0 stands alone), every other side an NpcSpawn names (Farmers, Taurocks) is a side no player
+## takes, and side 31 is the neutral owner of the houses. All sides are enemies of each other except
+## teammates; nobody is an enemy of the neutral side. SideRelations reads the rows.
 ## Does not instance the map: it reads the stored properties of the scene (PackedScene.get_state).
 
 const NEUTRAL_SIDE := 31
 
 
-## The rows SideRelations.use reads: [{id, allies, enemies, assignment}]. Empty when the scene has no PlayerStart.
+## The rows SideRelations.use reads: [{id, allies, enemies, assignment}]. Empty when the scene has
+## no PlayerStart.
 static func rows_of(scene: PackedScene) -> Array:
 	var seats: Dictionary = {}
 	var npc_sides: Dictionary = {}
@@ -55,7 +57,8 @@ static func rows_of(scene: PackedScene) -> Array:
 	return rows
 
 
-## The value a node of the scene stores for `property`, or `fallback` when it keeps the default of its scene.
+## The value a node of the scene stores for `property`, or `fallback` when it keeps the default of
+## its scene.
 static func _stored(
 	state: SceneState, node: int, property: StringName, fallback: Variant
 ) -> Variant:

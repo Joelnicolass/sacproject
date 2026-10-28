@@ -1,10 +1,11 @@
 class_name CastBolts
 extends FxScene
 
-## The little bolts that climb around a wizard while he casts Chain Lightning: at each tick, half the time, a short bolt is born at a
-## random point of his box (a bit larger than it) and rises a few metres. FxBus plays it on this peer only; the scene frees itself when
-## the casting ends. It is a presentation that LaunchAction hands to FxBus.broadcast_scene (`play`); it hurts nothing and the cast does
-## not wait for it.
+## The little bolts that climb around a wizard while he casts Chain Lightning: at each tick, half
+## the time, a short bolt is born at a random point of his box (a bit larger than it) and rises a
+## few metres. FxBus plays it on this peer only; the scene frees itself when the casting ends. It is
+## a presentation that LaunchAction hands to FxBus.broadcast_scene (`play`); it hurts nothing and
+## the cast does not wait for it.
 
 ## The little bolt (a BeamType under data/fx/beams/).
 @export var beam: BeamType

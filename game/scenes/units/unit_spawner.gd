@@ -32,8 +32,9 @@ func spawn_unit(data: Dictionary) -> Node3D:
 	return spawn_here(data) as Node3D
 
 
-## A creature the map puts on the field (MapPopulation): a type with `peasant` gets villager_scene, and every one
-## joins the group `npc` (SoulSystem and the ledger read it). `slot` is the side of the map plus one.
+## A creature the map puts on the field (MapPopulation): a type with `peasant` gets villager_scene,
+## and every one joins the group `npc` (SoulSystem and the ledger read it). `slot` is the side of
+## the map plus one.
 func spawn_map_creature(type: CreatureType, slot: int, at: Vector3, yaw: float) -> Node3D:
 	return spawn_unit(
 		{

@@ -1,10 +1,11 @@
 class_name OilImpact
 extends ShotImpact
 
-## Where the Pyrodactyl's Viscous oil bursts. No
-## damage: it smears every body in the spell's effect_range (15 m) that is not
-## already oiled and can be oiled, of ANY side (the shooter's own too). Each body keeps its own Oiled (the body's component), which owns
-## the oil: this node only asks it to start. The shot itself bursts on any creature but its shooter or on the ground (ShotLook.hits_every_side).
+## Where the Pyrodactyl's Viscous oil bursts. No damage: it smears every body in the spell's
+## effect_range (15 m) that is not already oiled and can be oiled, of ANY side (the shooter's own
+## too). Each body keeps its own Oiled (the body's component), which owns the oil: this node only
+## asks it to start. The shot itself bursts on any creature but its shooter or on the ground
+## (ShotLook.hits_every_side).
 ## Look: the shot's impact_fx (oil_splash). Not here: the scar on the ground.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")

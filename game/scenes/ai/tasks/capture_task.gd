@@ -4,9 +4,9 @@ extends AiTask
 ## What the side wants to take. Three kinds of record, each with a score `lerp(s1, s2, s3)` (s1 the
 ## worth of the target, s2 the weight of the side's aggression, s3 = 1 - the influence of the enemy
 ## groups within 140 m):
-##   - a free manafount (`free_fount`): the wizard builds a Manalith over it (his capture block). The free bodies must count the wizard (required status 2).
-##     s1 = node_value_score(f1): the more fronts the enemy has taken (f1 = 1 - own Manaliths / free
-##     founts) the more it is worth.
+##   - a free manafount (`free_fount`): the wizard builds a Manalith over it (his capture block).
+##     The free bodies must count the wizard (required status 2). s1 = node_value_score(f1): the
+##     more fronts the enemy has taken (f1 = 1 - own Manaliths / free founts) the more it is worth.
 ##   - an enemy Manalith (or shrine): the creatures attack it. Only if the AI has territory there
 ##     (territorial_score) or no Manalith of its own. The free bodies must count one that fights
 ##     (required status 1). s1 = node_value_score(max(f1, f2)) * 0.99 * aggression.
@@ -17,8 +17,9 @@ extends AiTask
 ##     The wizard leads the army and, once at the altar, Desecrates it (AiWizardBrain).
 ## Not ported: the record that hunts an enemy wizard and the first-pass guardian-bound creatures.
 ## The claim hands every free body that fights to the best record that the army can beat
-## (AiRater.rate_with_base >= 0), until the souls they hold pass `own souls * share * 0.9 * aggression`; with
-## a Desecrate of the side underway it claims nothing, so the army stays where it is.
+## (AiRater.rate_with_base >= 0), until the souls they hold pass `own souls * share * 0.9 *
+## aggression`; with a Desecrate of the side underway it claims nothing, so the army stays where it
+## is.
 
 ## The claim stops once the souls taken pass own souls * share * this * aggression (0.9, stored as
 ## the original's float32).

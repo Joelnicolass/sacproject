@@ -2,12 +2,12 @@
 class_name DesecrateAction
 extends SpellAction
 
-## Desecrate (ucas): the wizard sacrifices one of his own creatures to profane the closest enemy altar.
-## The click is the creature (OWN_UNIT). It needs a standing enemy altar within rules.desecrate_altar_range
-## of the wizard; the creature must be his own, alive and within the cast range. The red vortex opens when
-## the casting starts; when it ends, a carrier doctor drops by the creature, lifts it and takes it to the
-## altar. If the cast is interrupted there is no doctor and the creature stays free. All the rules live
-## in SacrificeSystem; this action is only the
+## Desecrate (ucas): the wizard sacrifices one of his own creatures to profane the closest enemy
+## altar. The click is the creature (OWN_UNIT). It needs a standing enemy altar within
+## rules.desecrate_altar_range of the wizard; the creature must be his own, alive and within the
+## cast range. The red vortex opens when the casting starts; when it ends, a carrier doctor drops by
+## the creature, lifts it and takes it to the altar. If the cast is interrupted there is no doctor
+## and the creature stays free. All the rules live in SacrificeSystem; this action is only the
 ## contract with the Caster. The ritual itself is Ritual.Kind.DESECRATE.
 
 var _system: SacrificeSystem

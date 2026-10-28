@@ -1,9 +1,10 @@
 class_name CarrierPath
 extends RefCounted
 
-## The route of a carrier: for the one that walks to a soul and brings it back, two curves that bend to one side, so it never goes in a
-## straight line. It only does the arithmetic (no tree, no ground): the SpellCarrier asks where to be at tick `f` and puts the
-## result on the ground. Out and back take the same number of ticks.
+## The route of a carrier: for the one that walks to a soul and brings it back, two curves that bend
+## to one side, so it never goes in a straight line. It only does the arithmetic (no tree, no
+## ground): the SpellCarrier asks where to be at tick `f` and puts the result on the ground. Out and
+## back take the same number of ticks.
 
 
 ## Hermite curve through `p0` (leaving with `m0`) and `p1` (arriving with `m1`), at `t` in [0, 1].
@@ -18,19 +19,21 @@ static func hermite(p0: Vector3, m0: Vector3, p1: Vector3, m1: Vector3, t: float
 	)
 
 
-## The sideways push of the trip: flat, at right angles to the line `from` -> `to`, `bend` times as long as that line.
+## The sideways push of the trip: flat, at right angles to the line `from` -> `to`, `bend` times as
+## long as that line.
 static func side_velocity(from: Vector3, to: Vector3, bend: float) -> Vector3:
 	var line := to - from
 	return bend * line.length() * Vector3.UP.cross(line).normalized()
 
 
-## Tick `f` (1..leg_ticks) of the way from `start` to the soul: leaves straight, arrives with the sideways push.
+## Tick `f` (1..leg_ticks) of the way from `start` to the soul: leaves straight, arrives with the
+## sideways push.
 static func out_at(start: Vector3, soul: Vector3, side: Vector3, f: int, leg_ticks: int) -> Vector3:
 	return hermite(start, Vector3.ZERO, soul, side, clampf(float(f) / float(leg_ticks), 0.0, 1.0))
 
 
-## Tick `f` (1..leg_ticks, counted from the turn) of the way from `turn` back to the wizard: leaves with the sideways push, arrives
-## slowing down.
+## Tick `f` (1..leg_ticks, counted from the turn) of the way from `turn` back to the wizard: leaves
+## with the sideways push, arrives slowing down.
 static func back_at(
 	turn: Vector3, wizard: Vector3, side: Vector3, f: int, leg_ticks: int
 ) -> Vector3:
@@ -39,8 +42,9 @@ static func back_at(
 	)
 
 
-## Where a guided carrier is `progress` (0 to 1) of the way through the casting: one turn around the wizard, climbing from his feet to
-## `height_m` over his head, in a circle that opens as it goes (`cast_s` and `speed` size the circle). Dragonfire's dragon.
+## Where a guided carrier is `progress` (0 to 1) of the way through the casting: one turn around the
+## wizard, climbing from his feet to `height_m` over his head, in a circle that opens as it goes
+## (`cast_s` and `speed` size the circle). Dragonfire's dragon.
 static func spiral(
 	wizard: Node3D, cast_s: float, speed: float, height_m: float, progress: float
 ) -> Vector3:

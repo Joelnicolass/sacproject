@@ -1,8 +1,9 @@
 class_name SpellSlot
 extends Button
 
-## One page of the book: the tab's page, the `icon` of the spell or creature shrunk and faded by mana/manaCost, the spirit mark when souls are
-## short, and the cooldown sweep. Without an icon the name is written instead.
+## One page of the book: the tab's page, the `icon` of the spell or creature shrunk and faded by
+## mana/manaCost, the spirit mark when souls are short, and the cooldown sweep. Without an icon the
+## name is written instead.
 
 ## Side of a page in canvas pixels (the 1280×720 base).
 const SIZE := 38.0

@@ -1,10 +1,12 @@
 class_name AtmosphereRules
 extends RefCounted
 
-## The atmosphere's arithmetic, with no tree and no state: the hour, its light, the weather and the lightning at a
-## match second. The same (cycle, seed, seconds) give the same answer on every peer, the dedicated server included, so
-## a rules node can follow them from here without asking the look (which a server never builds).
-## Uses no random generator: chance comes from `hash_int`, an integer hash of its own (the same on every machine).
+## The atmosphere's arithmetic, with no tree and no state: the hour, its light, the weather and the
+## lightning at a match second. The same (cycle, seed, seconds) give the same answer on every peer,
+## the dedicated server included, so a rules node can follow them from here without asking the look
+## (which a server never builds).
+## Uses no random generator: chance comes from `hash_int`, an integer hash of its own (the same on
+## every machine).
 
 ## Under this sun elevation the one light is the moon (shadows of a lower sun are too long to read).
 const MOON_BELOW_DEG := 5.0
@@ -12,7 +14,8 @@ const MOON_BELOW_DEG := 5.0
 const SUN_TOP_DEG := 89.0
 
 
-## Hour of the day at match second `t_s`: `start_hour` at 0, a whole day every `length_s`. No cycle: 10.
+## Hour of the day at match second `t_s`: `start_hour` at 0, a whole day every `length_s`. No cycle:
+## 10.
 static func hour_at(cycle: DayCycle, t_s: float) -> float:
 	if cycle == null:
 		return 10.0
@@ -45,7 +48,8 @@ static func day_sample(cycle: DayCycle, hour: float) -> AtmosphereSample:
 	return out
 
 
-## The sun's elevation for a biome whose approved sun is at `sun_elevation_deg`, and whether the light is the moon.
+## The sun's elevation for a biome whose approved sun is at `sun_elevation_deg`, and whether the
+## light is the moon.
 static func light_elevation(sun_elevation_deg: float, sample: AtmosphereSample) -> float:
 	return clampf(sun_elevation_deg + sample.elevation_change_deg, MOON_BELOW_DEG, SUN_TOP_DEG)
 
@@ -62,12 +66,14 @@ static func curve_at(curve: Curve, hour: float, fallback: float) -> float:
 	return curve.sample(x)
 
 
-## White by day, the dusk color by `dusk`, then the night color by `night` (both 0 = white, exactly).
+## White by day, the dusk color by `dusk`, then the night color by `night` (both 0 = white,
+## exactly).
 static func tint(dusk_color: Color, night_color: Color, dusk: float, night: float) -> Color:
 	return Color.WHITE.lerp(dusk_color, dusk).lerp(night_color, night)
 
 
-## The weather's part of the atmosphere at match second `t_s` (blending at the start of a segment). No plan: neutral.
+## The weather's part of the atmosphere at match second `t_s` (blending at the start of a segment).
+## No plan: neutral.
 static func weather_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> AtmosphereSample:
 	var now := states_at(plan, sky_seed, t_s)
 	if now[0] == null:
@@ -86,8 +92,8 @@ static func state_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> WeatherSta
 	return now[1] if now[2] >= 0.5 else now[0]
 
 
-## [from: WeatherState, to: WeatherState, w: float]: the previous segment's weather, this one's and how far the blend
-## between them is (1 = done). [null, null, 1] without a plan.
+## [from: WeatherState, to: WeatherState, w: float]: the previous segment's weather, this one's and
+## how far the blend between them is (1 = done). [null, null, 1] without a plan.
 static func states_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> Array:
 	if plan == null:
 		return [null, null, 1.0]
@@ -101,7 +107,8 @@ static func states_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> Array:
 	return [segment_state(plan, sky_seed, k - 1), to, w]
 
 
-## The weather of segment `k`: the plan's first for k = 0, then a weighted draw by the sky's seed (or the list in order).
+## The weather of segment `k`: the plan's first for k = 0, then a weighted draw by the sky's seed
+## (or the list in order).
 static func segment_state(plan: WeatherPlan, sky_seed: int, k: int) -> WeatherState:
 	var usable := plan.chances.filter(
 		func(c: WeatherChance) -> bool: return c != null and c.state != null and c.weight > 0.0
@@ -126,10 +133,11 @@ static func state_sample(state: WeatherState) -> AtmosphereSample:
 	return state.to_sample() if state else AtmosphereSample.neutral()
 
 
-## The lightning strikes in (t0_s, t1_s] as (match second, heading_deg, distance_m): the same on every peer and for any
-## split of the span. Time is cut in slots of 2 × `min_gap_s`; `per_min` picks evenly which slots strike (a minute gets
-## its share, never a burst or a long silence) and the strike falls in the middle half of its slot, so two are never
-## closer than `min_gap_s` (photosensitivity; `per_min` tops out at 30 / `min_gap_s`).
+## The lightning strikes in (t0_s, t1_s] as (match second, heading_deg, distance_m): the same on
+## every peer and for any split of the span. Time is cut in slots of 2 × `min_gap_s`; `per_min`
+## picks evenly which slots strike (a minute gets its share, never a burst or a long silence) and
+## the strike falls in the middle half of its slot, so two are never closer than `min_gap_s`
+## (photosensitivity; `per_min` tops out at 30 / `min_gap_s`).
 static func strikes_between(
 	sky_seed: int,
 	t0_s: float,
@@ -160,7 +168,8 @@ static func strikes_between(
 
 
 ## How much of the land at `d_m` shows through the depth fog (1 = all). Godot's depth fog: amount =
-## smoothstep(begin, end, d) ^ curve * density (curve 1, as EnvironmentLayer leaves it), with the sample's multipliers.
+## smoothstep(begin, end, d) ^ curve * density (curve 1, as EnvironmentLayer leaves it), with the
+## sample's multipliers.
 static func fog_transmittance(sky: SkyLook, sample: AtmosphereSample, d_m: float) -> float:
 	if sky == null or not sky.fog_enabled:
 		return 1.0
@@ -169,14 +178,16 @@ static func fog_transmittance(sky: SkyLook, sample: AtmosphereSample, d_m: float
 	return 1.0 - clampf(amount, 0.0, 1.0)
 
 
-## Where the depth fog begins and where it is thickest (m) for the sky's fog bent by the sample: the weather pulls the
-## far end in (`fog_end`), the near end in (`fog_begin`) and keeps the play clear (`fog_clear_m`). EnvironmentLayer writes exactly this.
+## Where the depth fog begins and where it is thickest (m) for the sky's fog bent by the sample: the
+## weather pulls the far end in (`fog_end`), the near end in (`fog_begin`) and keeps the play clear
+## (`fog_clear_m`). EnvironmentLayer writes exactly this.
 static func fog_range(sky: SkyLook, sample: AtmosphereSample) -> Vector2:
 	var begin_m := maxf(sky.fog_begin_m * sample.fog_begin, sample.fog_clear_m)
 	return Vector2(begin_m, maxf(sky.fog_end_m * sample.fog_end, begin_m + 1.0))
 
 
-## The fog's color for the sky's fog bent by the sample: greyed by `sky_grey`, paled by the mist, tinted like the sky.
+## The fog's color for the sky's fog bent by the sample: greyed by `sky_grey`, paled by the mist,
+## tinted like the sky.
 static func fog_color(sky: SkyLook, sample: AtmosphereSample) -> Color:
 	var luma := sky.fog_color.get_luminance()
 	var color := (
@@ -190,7 +201,8 @@ static func fog_color(sky: SkyLook, sample: AtmosphereSample) -> Color:
 	)
 
 
-## Integer hash of two numbers (splitmix64's finalizer): the same on every architecture, unlike `hash()`.
+## Integer hash of two numbers (splitmix64's finalizer): the same on every architecture, unlike
+## `hash()`.
 static func hash_int(a: int, b: int) -> int:
 	var z := a * -7046029254386353131 + b  # a * 0x9E3779B97F4A7C15 + b (wraps at 64 bits)
 	z = (z ^ (z >> 30) & 0x3FFFFFFFF) * -4658895280553007687  # 0xBF58476D1CE4E5B9

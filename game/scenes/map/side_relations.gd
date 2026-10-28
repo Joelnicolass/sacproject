@@ -2,24 +2,26 @@
 class_name SideRelations
 extends Node
 
-## Who is the enemy of whom. The matrix is the SIDS of the map:
-## each side has a bit mask of allies and one of enemies, and the
-## stance is read from the first side towards the second; a side is its own ally. Slot = side + 1
-## (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side 31, the owner of the map's houses,
-## which has no relations and which nobody has as an enemy (High Noon: enemies 0xe and 0x7ffffffd… skip bit 31).
-## That is the rule for High Noon, which has two seats. A seat (a player slot) and a side of the map are
-## different things: the seats are the first `MapDefinition.player_starts` slots and take the sides players can take
-## (assignment != 0) in order; the sides no player takes (NPCs) come after the seats. With two seats this is the old
-## slot = side + 1, so a map with four seats puts its NPCs in slots 5 and up instead of on the seats of players 3 and 4.
-## On top of the SIDS goes the team overlay of the game mode, applied after seating the
-## wizards: two seats of the mode are allies when they share a team and enemies when they do not; NPCs and houses keep the SIDS.
-## The overlay is installed only when the mode has allies or more than two seats, so 1v1 follows the old path untouched.
-## The map's rows come from its scene (MapSides.rows_of: the PlayerStart seats with their `team` and the sides its NpcSpawns
-## name). Without them, or for a side the map does not describe, «another slot is an enemy» (what the port did before).
-## It is the node `Context/Sides` of match.tscn: MatchWorld calls `use(map, mode)` from its _enter_tree, before any of its
-## systems is ready, and the relations hold until this node leaves the tree. The static functions are how everybody asks
-## (bodies, spells, the HUD; @tool code in the editor too): they forward to the relations of the match in the tree, and
-## without a match they answer with no rows (every other slot an enemy).
+## Who is the enemy of whom. The matrix is the SIDS of the map: each side has a bit mask of allies
+## and one of enemies, and the stance is read from the first side towards the second; a side is its
+## own ally. Slot = side + 1 (players 1 and 2, Farmers 3, Taurocks 4); slot 0 is the neutral side
+## 31, the owner of the map's houses, which has no relations and which nobody has as an enemy (High
+## Noon: enemies 0xe and 0x7ffffffd… skip bit 31). That is the rule for High Noon, which has two
+## seats. A seat (a player slot) and a side of the map are different things: the seats are the first
+## `MapDefinition.player_starts` slots and take the sides players can take (assignment != 0) in
+## order; the sides no player takes (NPCs) come after the seats. With two seats this is the old slot
+## = side + 1, so a map with four seats puts its NPCs in slots 5 and up instead of on the seats of
+## players 3 and 4. On top of the SIDS goes the team overlay of the game mode, applied after seating
+## the wizards: two seats of the mode are allies when they share a team and enemies when they do
+## not; NPCs and houses keep the SIDS. The overlay is installed only when the mode has allies or
+## more than two seats, so 1v1 follows the old path untouched. The map's rows come from its scene
+## (MapSides.rows_of: the PlayerStart seats with their `team` and the sides its NpcSpawns name).
+## Without them, or for a side the map does not describe, «another slot is an enemy» (what the port
+## did before). It is the node `Context/Sides` of match.tscn: MatchWorld calls `use(map, mode)` from
+## its _enter_tree, before any of its systems is ready, and the relations hold until this node
+## leaves the tree. The static functions are how everybody asks (bodies, spells, the HUD; @tool code
+## in the editor too): they forward to the relations of the match in the tree, and without a match
+## they answer with no rows (every other slot an enemy).
 
 enum Stance { NEUTRAL, ALLY, ENEMY }
 
@@ -35,8 +37,9 @@ static var _no_rows := Table.new()
 var _table := Table.new()
 
 
-## The sides of `map` (MapSides.rows_of its scene, its seats) and the team overlay of `mode`, from now on: this becomes the
-## relations everybody asks. A null map leaves no rows (every slot an enemy).
+## The sides of `map` (MapSides.rows_of its scene, its seats) and the team overlay of `mode`, from
+## now on: this becomes the relations everybody asks. A null map leaves no rows (every slot an
+## enemy).
 func use(map: MapDefinition, mode: GameMode) -> void:
 	_table = Table.new()
 	_table.set_rows(
@@ -57,8 +60,9 @@ static func has_teams() -> bool:
 	return not _rows().team_of_seat.is_empty()
 
 
-## The team of a slot: the mode's for a seat of the mode, else `-slot` (its own team: NPCs, the neutral side, or no overlay).
-## With `-slot` for everybody (1v1) the team rules give back the old «every slot for itself».
+## The team of a slot: the mode's for a seat of the mode, else `-slot` (its own team: NPCs, the
+## neutral side, or no overlay). With `-slot` for everybody (1v1) the team rules give back the old
+## «every slot for itself».
 static func team_of(slot: int) -> int:
 	return _rows().team_of(slot)
 
@@ -87,7 +91,8 @@ static func stance(from_slot: int, to_slot: int) -> Stance:
 	return _rows().stance(from_slot, to_slot)
 
 
-## The seats that are allies of `slot` (not itself): who shares its sight (MatchRules.allied_vision). Empty in a 1v1.
+## The seats that are allies of `slot` (not itself): who shares its sight
+## (MatchRules.allied_vision). Empty in a 1v1.
 static func allies_of(slot: int) -> Array[int]:
 	var rows := _rows()
 	var found: Array[int] = []
@@ -120,7 +125,8 @@ static func _rows() -> Table:
 	return _no_rows
 
 
-## The rows of one map and the team overlay of one mode: the data of the relations and the questions on it.
+## The rows of one map and the team overlay of one mode: the data of the relations and the questions
+## on it.
 class Table:
 	extends RefCounted
 
@@ -129,14 +135,17 @@ class Table:
 	var assignment: Dictionary = {}
 	## Side ids a player can take (assignment != 0), in order: seat k is `seat_sides[k - 1]`.
 	var seat_sides: Array[int] = []
-	## Side ids no player takes and that are not the neutral one, in order: NPC k is the slot `seats + k + 1`.
+	## Side ids no player takes and that are not the neutral one, in order: NPC k is the slot `seats
+	## + k + 1`.
 	var npc_sides: Array[int] = []
-	## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the time).
+	## MapDefinition.player_starts of the map the rows were read for (the hot paths ask it all the
+	## time).
 	var seat_count := 2
 	## Team overlay: the team of each seat (seat 1 first). Empty = not installed.
 	var team_of_seat: PackedInt32Array = PackedInt32Array()
 
-	## `rows`: [{id, allies, enemies, assignment}] as MapSides.rows_of gives them; `seats` = how many are players.
+	## `rows`: [{id, allies, enemies, assignment}] as MapSides.rows_of gives them; `seats` = how
+	## many are players.
 	func set_rows(rows: Array, seats: int) -> void:
 		for row: Variant in rows:
 			if not row is Dictionary:

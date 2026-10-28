@@ -1,14 +1,14 @@
 class_name TargetRules
 extends RefCounted
 
-## Who a body of a player may fight. TargetPicker, Vision and UnitBody share it, so what is visible and what is
-## attackable never drift apart.
+## Who a body of a player may fight. TargetPicker, Vision and UnitBody share it, so what is visible
+## and what is attackable never drift apart.
 
 
-## Whether `node` is a creature, wizard or structure that a body of player `slot` may fight (`me` is that
-## body, never its own foe).
-## `by_stance`: also ask SideRelations (the SIDS of the map) whether the body's side is an enemy of `slot`. Only the target
-## of an explicit ATTACK order is asked without it (UnitBody.accepts_target).
+## Whether `node` is a creature, wizard or structure that a body of player `slot` may fight (`me` is
+## that body, never its own foe). `by_stance`: also ask SideRelations (the SIDS of the map) whether
+## the body's side is an enemy of `slot`. Only the target of an explicit ATTACK order is asked
+## without it (UnitBody.accepts_target).
 static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance := true) -> bool:
 	if node == null or not is_instance_valid(node) or node == me or not node is Node3D:
 		return false
@@ -35,7 +35,8 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 
 
 ## Whether `node` is a creature that never picks a fight: CRE8 aggressiveness 0 or a villager, whose
-## Brain never attacks whatever its data says. One owner: TargetPicker weighs these `passive_weight`.
+## Brain never attacks whatever its data says. One owner: TargetPicker weighs these
+## `passive_weight`.
 static func is_passive(node: Node) -> bool:
 	if not node is UnitBody:
 		return false
@@ -46,15 +47,17 @@ static func is_passive(node: Node) -> bool:
 	)
 
 
-## A passive body (is_passive) of an NPC slot (SideRelations.is_npc_slot): a Farmer of the map. AttackPhase weighs these
-## AiTactics.npc_passive_weight; hostile NPC (Taurocks) are not passive and count as any foe.
+## A passive body (is_passive) of an NPC slot (SideRelations.is_npc_slot): a Farmer of the map.
+## AttackPhase weighs these AiTactics.npc_passive_weight; hostile NPC (Taurocks) are not passive and
+## count as any foe.
 static func is_passive_npc(node: Node) -> bool:
 	if node == null or not is_instance_valid(node) or not "owner_slot" in node:
 		return false
 	return SideRelations.is_npc_slot(int(node.get("owner_slot"))) and is_passive(node)
 
 
-## The closest foe of `body` within its sight range of `center`, over the groups it targets (a body with no TargetPicker).
+## The closest foe of `body` within its sight range of `center`, over the groups it targets (a body
+## with no TargetPicker).
 static func closest_in_sight(body: UnitBody, center: Vector3) -> Node3D:
 	var best: Node3D = null
 	var best_d := body.vision.range_m()

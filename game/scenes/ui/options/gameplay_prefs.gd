@@ -2,18 +2,21 @@
 class_name GameplayPrefs
 extends Resource
 
-## The player's choice for the matches the player creates (solo, «Contra la IA»), a local
-## preference and never the rule of a match in course (that is MatchState, decided by whoever created the match).
-## - Friendly fire, dropping souls with P and the starting souls. The defaults are the ones of `rules`
-##   (data/match_rules.tres), which this resource only reads.
+## The player's choice for the matches the player creates (solo, «Contra la IA»), a local preference
+## and never the rule of a match in course (that is MatchState, decided by whoever created the
+## match).
+## - Friendly fire, dropping souls with P and the starting souls. The defaults are the ones of
+##   `rules` (data/match_rules.tres), which this resource only reads.
 ## - It lives in `user://settings.cfg` `[partida]` through UserSettings.
-## - to_setup sets only what the player chose explicitly (a key in the file, or touched in this run); the rest stays -1,
-##   so a flag of the process, or else the rules, decides it: explicit choice > flag > rules.
-## - Under AgentKit UserSettings is a sandbox: a playtest starts from the defaults and never writes the player's file.
-## - Only the boot reads it (to_setup). The dedicated server and the benches never go through the boot, so they keep
-##   the rules and the flags of their process (LaunchFlags).
-## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that instance
-## and the exported fields are never written. Changes emit `changed`.
+## - to_setup sets only what the player chose explicitly (a key in the file, or touched in this
+##   run); the rest stays -1, so a flag of the process, or else the rules, decides it: explicit
+##   choice > flag > rules.
+## - Under AgentKit UserSettings is a sandbox: a playtest starts from the defaults and never writes
+##   the player's file.
+## - Only the boot reads it (to_setup). The dedicated server and the benches never go through the
+##   boot, so they keep the rules and the flags of their process (LaunchFlags).
+## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime
+## state of that instance and the exported fields are never written. Changes emit `changed`.
 
 const SHARED_PATH := "res://data/ui/gameplay_prefs.tres"
 const SECTION := "partida"
@@ -72,8 +75,8 @@ func set_starting_souls(value: int) -> void:
 	_commit()
 
 
-## The setup of a match the player creates: `level` (1-9; 0 = the rules' wizard_level) and, of these three, only the
-## ones the player chose explicitly (-1 the others: the flag or the rules decide).
+## The setup of a match the player creates: `level` (1-9; 0 = the rules' wizard_level) and, of these
+## three, only the ones the player chose explicitly (-1 the others: the flag or the rules decide).
 func to_setup(level := 0) -> MatchSetup:
 	_ensure_loaded()
 	var setup := MatchSetup.new()

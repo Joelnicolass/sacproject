@@ -2,13 +2,16 @@
 class_name Atmosphere
 extends LookLayer
 
-## The atmosphere layer of the rig: the hour and the weather now, as one AtmosphereSample the sun, the environment and
-## the ambient life read (`changed`); it writes no light, sky or fog itself. Hour and weather come from the match's sky
-## clock and seed (MatchSky) with the look's DayCycle and WeatherPlan, so every peer sees the same. Hidden: neutral (the
-## approved look, exactly). Its events (`hour_changed`, `night_changed`, Weather's `weather_changed` / `strike`) are
-## presentation; a rules node derives the same state with AtmosphereRules on any peer. Freed with the rig on a server.
+## The atmosphere layer of the rig: the hour and the weather now, as one AtmosphereSample the sun,
+## the environment and the ambient life read (`changed`); it writes no light, sky or fog itself.
+## Hour and weather come from the match's sky clock and seed (MatchSky) with the look's DayCycle and
+## WeatherPlan, so every peer sees the same. Hidden: neutral (the approved look, exactly). Its
+## events (`hour_changed`, `night_changed`, Weather's `weather_changed` / `strike`) are
+## presentation; a rules node derives the same state with AtmosphereRules on any peer. Freed with
+## the rig on a server.
 
-## The atmosphere moved (at most `update_hz` times a second, every frame during a storm flash; only on a change).
+## The atmosphere moved (at most `update_hz` times a second, every frame during a storm flash; only
+## on a change).
 signal changed(sample: AtmosphereSample)
 ## A new whole hour began (0..23).
 signal hour_changed(hour: int)
@@ -19,7 +22,8 @@ signal night_changed(is_night: bool)
 @export_range(1.0, 60.0, 1.0, "suffix:Hz") var update_hz: float = 10.0
 ## How often the sky (and its reflection cubemap, which re-bakes) follows it.
 @export_range(0.5, 30.0, 0.5, "suffix:Hz") var sky_hz: float = 2.0
-## Debug only: how many times faster the day goes (60 = a day in 24 s; not the weather). Networked: keep it at 1.
+## Debug only: how many times faster the day goes (60 = a day in 24 s; not the weather). Networked:
+## keep it at 1.
 @export_range(0.0, 600.0, 1.0) var time_scale: float = 1.0
 ## Debug: pins the hour (0..24, captures). -1 = the clock's hour.
 @export_range(-1.0, 24.0, 0.01) var frozen_hour: float = -1.0
@@ -29,7 +33,8 @@ signal night_changed(is_night: bool)
 @export var plan_override: WeatherPlan
 
 @export_group("Editor preview")
-## Editor only: shows this hour in the viewport (-1 = the biome's start hour, the approved light). Never saved into the look.
+## Editor only: shows this hour in the viewport (-1 = the biome's start hour, the approved light).
+## Never saved into the look.
 @export_range(-1.0, 24.0, 0.01) var preview_hour: float = -1.0:
 	set(value):
 		preview_hour = value
@@ -83,7 +88,8 @@ func _process(delta: float) -> void:
 	_own_s += delta
 	_since_update += delta
 	_since_log += delta
-	if _since_update >= 1.0 / update_hz or _current.flash > 0.0:  # every frame while a storm flash lasts
+	# every frame while a storm flash lasts
+	if _since_update >= 1.0 / update_hz or _current.flash > 0.0:
 		_since_update = 0.0
 		publish()
 	if _since_log >= 10.0:

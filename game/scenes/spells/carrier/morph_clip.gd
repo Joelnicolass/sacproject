@@ -2,18 +2,22 @@
 class_name MorphClip
 extends Resource
 
-## One animation of a model whose frames are blend shapes (MorphModel): the poses it goes through, one after another, each for `pose_s`, blending from
-## one to the next. A type template: never edited at runtime.
+## One animation of a model whose frames are blend shapes (MorphModel): the poses it goes through,
+## one after another, each for `pose_s`, blending from one to the next. A type template: never
+## edited at runtime.
 
 @export var id: StringName = &""
-## The frames of the glb in order (0 is the mesh as it stands; 1 and up are the blend shapes f1, f2…).
+## The frames of the glb in order (0 is the mesh as it stands; 1 and up are the blend shapes f1,
+## f2…).
 @export var poses := PackedInt32Array()
 @export_range(0.005, 5.0, 0.005, "suffix:s") var pose_s := 0.2
-## It goes round again after the last pose (the last blends into the first). Off: it stops on the last pose, or goes to `next`.
+## It goes round again after the last pose (the last blends into the first). Off: it stops on the
+## last pose, or goes to `next`.
 @export var loop := true
 ## The clip that follows when this one (not a loop) ends.
 @export var next: StringName = &""
-## A shader parameter `reveal` of the model goes from x to y over the clip (x < 0: it is left alone).
+## A shader parameter `reveal` of the model goes from x to y over the clip (x < 0: it is left
+## alone).
 @export var reveal := Vector2(-1.0, -1.0)
 
 

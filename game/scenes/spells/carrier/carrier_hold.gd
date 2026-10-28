@@ -2,10 +2,11 @@
 class_name CarrierHold
 extends Node
 
-## What a SpellCarrier does after arriving: it waits on its target (following it) for `hold_s`, says `settled` and stays `linger_s` more before it
-## ends. Charm's spirits wait the spell's duration around the creature; Blind Rage's fist forms 82 ticks four metres over the land and comes down
-## in the last half second; Intestinal Vaporization's guts turn around the target while it swells. It does not act on the target (TargetEffect does)
-## and it does not draw. Server (or solo) only.
+## What a SpellCarrier does after arriving: it waits on its target (following it) for `hold_s`, says
+## `settled` and stays `linger_s` more before it ends. Charm's spirits wait the spell's duration
+## around the creature; Blind Rage's fist forms 82 ticks four metres over the land and comes down in
+## the last half second; Intestinal Vaporization's guts turn around the target while it swells. It
+## does not act on the target (TargetEffect does) and it does not draw. Server (or solo) only.
 
 @export var carrier: SpellCarrier
 @export_range(0.0, 120.0, 0.01, "suffix:s") var hold_s := 0.0
@@ -74,7 +75,8 @@ func _settle() -> void:
 		carrier.stop()
 
 
-## The carrier stays on the target: at its center, or `ride_height_m` over the land under it, coming down at the end.
+## The carrier stays on the target: at its center, or `ride_height_m` over the land under it, coming
+## down at the end.
 func _follow() -> void:
 	if not is_instance_valid(_target) or not _target.is_inside_tree():
 		return

@@ -1,17 +1,20 @@
 class_name BloodRules
 extends RefCounted
 
-## The sums of bleeding, with no tree: whether a drop of health bleeds (none, light or heavy) and where the marks of a spray land.
-## It also packs a wound for the wire (wound_of / index_of / is_heavy).
-## What it does not do: touch nodes, FxBus or GroundScars, or use the global random generator (the caller hands its own).
+## The sums of bleeding, with no tree: whether a drop of health bleeds (none, light or heavy) and
+## where the marks of a spray land. It also packs a wound for the wire (wound_of / index_of /
+## is_heavy).
+## What it does not do: touch nodes, FxBus or GroundScars, or use the global random generator (the
+## caller hands its own).
 
 enum Kind { NONE, LIGHT, HEAVY }
 
 
-## `drop_share`: this drop over the maximum health. `lost_share`: what was lost since the last spray, this drop included.
-## `since_spray_s` / `since_drop_s`: seconds since the last spray / the drop before this one (INF when none).
-## A drop bleeds once `every_s` has passed since the last spray, and only if it is isolated (no other drop within `every_s`) or the
-## drops close together add up to `min_lost`: a blow always bleeds, a poison bleeds now and then.
+## `drop_share`: this drop over the maximum health. `lost_share`: what was lost since the last
+## spray, this drop included. `since_spray_s` / `since_drop_s`: seconds since the last spray / the
+## drop before this one (INF when none). A drop bleeds once `every_s` has passed since the last
+## spray, and only if it is isolated (no other drop within `every_s`) or the drops close together
+## add up to `min_lost`: a blow always bleeds, a poison bleeds now and then.
 static func kind_for(
 	drop_share: float, lost_share: float, since_spray_s: float, since_drop_s: float, type: BloodType
 ) -> Kind:
@@ -37,7 +40,8 @@ static func mark_points(
 	return points
 
 
-## A wound as the network carries it: xyz = the feet where it landed, w = 2 * index + heavy (exact in a float up to 2^23 wounds).
+## A wound as the network carries it: xyz = the feet where it landed, w = 2 * index + heavy (exact
+## in a float up to 2^23 wounds).
 static func wound_of(feet: Vector3, index: int, heavy: bool) -> Vector4:
 	return Vector4(feet.x, feet.y, feet.z, float(maxi(index, 0) * 2 + (1 if heavy else 0)))
 

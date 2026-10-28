@@ -2,10 +2,11 @@
 class_name SunLayer
 extends LookLayer
 
-## Sun layer of the rig: the only writer of the map's sun and fill lights. From the biome's `LightLook`, the
-## quality preset and the atmosphere's sample it aims them and sets color, energy, shadows and splits, all recomputed
-## on every call. At night the same light is the moon (no second light, no pop: the day's energy is ~0 at the switch).
-## Hiding the layer hides both lights (they are its children); a profile without light turns them off.
+## Sun layer of the rig: the only writer of the map's sun and fill lights. From the biome's
+## `LightLook`, the quality preset and the atmosphere's sample it aims them and sets color, energy,
+## shadows and splits, all recomputed on every call. At night the same light is the moon (no second
+## light, no pop: the day's energy is ~0 at the switch). Hiding the layer hides both lights (they
+## are its children); a profile without light turns them off.
 ## Presentation only: the rig, and this layer with it, is freed in a headless or dedicated process.
 
 ## The map's sun: casts the shadows and is the sky's sun.
@@ -54,14 +55,16 @@ func _on_atmosphere_changed(_sample: AtmosphereSample) -> void:
 		_write_atmosphere(look)
 
 
-## What the hour and the weather bend: where the light comes from (sun or moon), its color, energy and shadows, and the fill's.
+## What the hour and the weather bend: where the light comes from (sun or moon), its color, energy
+## and shadows, and the fill's.
 func _write_atmosphere(look: LightLook) -> void:
 	var sample := atmosphere.current() if atmosphere else AtmosphereSample.neutral()
 	if sun:
 		sun.basis = Basis.looking_at(-_light_direction(look, sample), Vector3.UP)
 		sun.light_color = look.sun_color * sample.light_tint
 		sun.light_energy = look.sun_energy * sample.light_energy
-		# An overcast sky (the weather's `shadow_mul`) makes the shadows faint and soft, not just the light dimmer.
+		# An overcast sky (the weather's `shadow_mul`) makes the shadows faint and soft, not just
+		# the light dimmer.
 		sun.shadow_opacity = look.shadow_opacity * sample.shadow
 		sun.shadow_blur = look.shadow_blur * (1.0 + 2.0 * (1.0 - sample.shadow))
 	if fill:

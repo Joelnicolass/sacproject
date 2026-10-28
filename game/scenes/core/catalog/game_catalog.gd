@@ -2,10 +2,10 @@
 class_name GameCatalog
 extends Resource
 
-## The game's catalog: every type of data/catalog/<folder>/<tag>.tres, discovered by scanning the folders.
-## There is nothing to register: drop a .tres in a folder and it is in the game. The files are the only source of truth;
-## this class holds no copy of them. Lists are sorted by tag so the order never depends on the file system.
-## Types are read-only at runtime.
+## The game's catalog: every type of data/catalog/<folder>/<tag>.tres, discovered by scanning the
+## folders. There is nothing to register: drop a .tres in a folder and it is in the game. The files
+## are the only source of truth; this class holds no copy of them. Lists are sorted by tag so the
+## order never depends on the file system. Types are read-only at runtime.
 
 const DIR := "res://data/catalog/"
 const GODS_DIR := "res://data/gods/"
@@ -22,7 +22,8 @@ var duplicate_building_tags := PackedStringArray()
 var _building_by_tag: Dictionary = {}
 var _creature_by_id: Dictionary = {}
 var _ability_by_tag: Dictionary[String, AbilityType] = {}
-## The gods of data/gods/<tag>.tres, by sort_order then tag. Each carries its theme, look and typed book.
+## The gods of data/gods/<tag>.tres, by sort_order then tag. Each carries its theme, look and typed
+## book.
 var gods: Array[GodType] = []
 ## The game modes in the order the screens list them (data/modes/mode_catalog.tres).
 var modes: Array[GameMode] = []
@@ -30,7 +31,8 @@ var modes: Array[GameMode] = []
 static var _shared: GameCatalog
 
 
-## The catalog, built once from the folders. `refresh` rescans and reloads the files from disk (tools, tests, the editor).
+## The catalog, built once from the folders. `refresh` rescans and reloads the files from disk
+## (tools, tests, the editor).
 static func shared(refresh := false) -> GameCatalog:
 	if _shared == null or refresh:
 		_shared = GameCatalog.new()
@@ -38,7 +40,8 @@ static func shared(refresh := false) -> GameCatalog:
 	return _shared
 
 
-## Fills the lists from the folders. Files that are not the folder's type are skipped with a warning.
+## Fills the lists from the folders. Files that are not the folder's type are skipped with a
+## warning.
 func scan(reload_from_disk := false) -> void:
 	creatures.assign(_load_folder("creatures", CreatureType, reload_from_disk))
 	_creature_by_id.clear()
@@ -91,7 +94,8 @@ func _index_buildings() -> void:
 		_building_by_tag[type.tag] = type
 
 
-## The creature with that id (its `tag`, or the file name when the tag is empty), or null. Indexed in scan().
+## The creature with that id (its `tag`, or the file name when the tag is empty), or null. Indexed
+## in scan().
 func creature(id: String) -> CreatureType:
 	return _creature_by_id.get(id)
 
@@ -113,7 +117,8 @@ func wizard(id: String) -> WizardType:
 	return found[0] if not found.is_empty() else null
 
 
-## Every map, the default first and the test maps last. Loads them all: ask for it from a screen, not from the autoload.
+## Every map, the default first and the test maps last. Loads them all: ask for it from a screen,
+## not from the autoload.
 func maps() -> Array[MapDefinition]:
 	return MapCatalog.shared().maps
 

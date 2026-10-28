@@ -1,11 +1,12 @@
 class_name RingsLook
 extends Node3D
 
-## The rings of flame around a body while Rings of Fire lasts: every 25 ticks (and now and then in between) a circle of 30 flames appears
-## around it at a random height, as wide as the height, and closes down to its feet. When the state ends three more rings fall where the
-## body stood. The flames are the scene's SpriteEmitter children, used in turn: each one is a single burst of 30. It does not decide
-## when the state is on (Affliction) nor burn anyone (SpellAffliction). Presentation only, on every peer, from the replicated mask; its
-## dice are a stream of their own.
+## The rings of flame around a body while Rings of Fire lasts: every 25 ticks (and now and then in
+## between) a circle of 30 flames appears around it at a random height, as wide as the height, and
+## closes down to its feet. When the state ends three more rings fall where the body stood. The
+## flames are the scene's SpriteEmitter children, used in turn: each one is a single burst of 30. It
+## does not decide when the state is on (Affliction) nor burn anyone (SpellAffliction). Presentation
+## only, on every peer, from the replicated mask; its dice are a stream of their own.
 
 ## The state that shows it, and the body it surrounds.
 @export var affliction: Affliction
@@ -14,7 +15,8 @@ extends Node3D
 ## A ring is born every this long, and with chance 1 in `extra_chance` on any tick.
 @export_range(0.0166, 4.0, 0.0001, "suffix:s") var every_s := 0.4166
 @export_range(1, 500) var extra_chance := 50
-## Height of a ring over the body's box (a fraction of it; above 1 is over the head) and how long it takes to close.
+## Height of a ring over the body's box (a fraction of it; above 1 is over the head) and how long it
+## takes to close.
 @export var height_range := Vector2(0.4, 1.2)
 @export var close_range_s := Vector2(0.8, 1.2)
 ## Radius = this range times the box's half diagonal times the height.

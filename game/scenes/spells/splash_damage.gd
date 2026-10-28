@@ -1,22 +1,21 @@
 class_name SplashDamage
 extends RefCounted
 
-## Splash damage: every live wizard, creature
-## and building within `radius` of the burst takes amount·(1 − d/radius) as splash spell damage, d being
-## the distance from the point to its hit box. The side is not filtered here: the rule of the side lives in Health
-## (Health._side_factor: an ally takes 0 or ally_damage_factor by the match's friendly fire), and the attacker
-## stands in its own radius like any body. A body with no
-## health is skipped. Used by Wrath,
-## Fireball and Swarm. Wizards and creatures go first, in the order of their groups, so the
-## damage they take does not depend on the buildings around.
+## Splash damage: every live wizard, creature and building within `radius` of the burst takes
+## amount·(1 − d/radius) as splash spell damage, d being the distance from the point to its hit box.
+## The side is not filtered here: the rule of the side lives in Health (Health._side_factor: an ally
+## takes 0 or ally_damage_factor by the match's friendly fire), and the attacker stands in its own
+## radius like any body. A body with no health is skipped. Used by Wrath, Fireball and Swarm.
+## Wizards and creatures go first, in the order of their groups, so the damage they take does not
+## depend on the buildings around.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP, MapBuilding.STRUCTURE_GROUP]
 
 
-## Hurts every body around `center` except `direct` (which the caller already hit with the whole amount).
-## `kind` is the Health damage kind: splash spell (Wrath, Fireball, Swarm, Steam Cloud) or splash ranged
-## (a creature's shot). `mods`: the DamageMod bits (IGNITE).
+## Hurts every body around `center` except `direct` (which the caller already hit with the whole
+## amount). `kind` is the Health damage kind: splash spell (Wrath, Fireball, Swarm, Steam Cloud) or
+## splash ranged (a creature's shot). `mods`: the DamageMod bits (IGNITE).
 static func deal(
 	tree: SceneTree,
 	center: Vector3,
@@ -41,9 +40,9 @@ static func deal(
 		)
 
 
-## The one walk of a splash: live bodies of `groups`
-## whose hit box is within `radius` of `center`, but `except`, in group order (so the result does not depend on the
-## scene tree). Wizards and creatures go first. DeathCloud asks with creatures and wizards only.
+## The one walk of a splash: live bodies of `groups` whose hit box is within `radius` of `center`,
+## but `except`, in group order (so the result does not depend on the scene tree). Wizards and
+## creatures go first. DeathCloud asks with creatures and wizards only.
 static func bodies_within(
 	tree: SceneTree,
 	center: Vector3,
@@ -71,9 +70,10 @@ static func bodies_within(
 	return found
 
 
-## `mods`: the DamageMod bits the hit carries (Health.IGNITE: Fireball, Steam Cloud, fkba/cfba shots, the oil's blast).
-## F164b: `attacker` is the creature that fired the shot (null: a spell or an effect with no drain); LifeDrain.feed gives it
-## back `taken · its drain`.
+## `mods`: the DamageMod bits the hit carries (Health.IGNITE: Fireball, Steam Cloud, fkba/cfba
+## shots, the oil's blast).
+## F164b: `attacker` is the creature that fired the shot (null: a spell or an effect with no drain);
+## LifeDrain.feed gives it back `taken · its drain`.
 static func hurt(
 	body: Node3D,
 	amount: float,
@@ -89,10 +89,10 @@ static func hurt(
 	LifeDrain.feed(attacker, body, taken)
 
 
-## From the point to the body's hit box. A map building gives its model box
-## (`hit_box()`, before the collision inset), measured in the building's own frame: decision of the port,
-## the original measures against a world AABB, so a turned house keeps its corners here. A capsule
-## (creatures, wizards) is its axis-aligned box; a cylinder (placed structures) too.
+## From the point to the body's hit box. A map building gives its model box (`hit_box()`, before the
+## collision inset), measured in the building's own frame: decision of the port, the original
+## measures against a world AABB, so a turned house keeps its corners here. A capsule (creatures,
+## wizards) is its axis-aligned box; a cylinder (placed structures) too.
 static func box_distance(body: Node3D, point: Vector3) -> float:
 	if body is MapBuilding:
 		var box := (body as MapBuilding).hit_box()

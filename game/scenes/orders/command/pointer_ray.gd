@@ -1,15 +1,16 @@
 class_name PointerRay
 extends Node
 
-## Screen -> world for the player's commands: the ground point, the body, soul, corpse or building under a pixel, the
-## body nearest a minimap point, and the facts about a body the commands ask (corpse? enemy?). It reads the physics
-## space and the camera only; it arms, orders and says nothing. Layers: 1 ground and structures, 2 units, 4 souls,
-## 8 corpses (mask 15 = all four).
+## Screen -> world for the player's commands: the ground point, the body, soul, corpse or building
+## under a pixel, the body nearest a minimap point, and the facts about a body the commands ask
+## (corpse? enemy?). It reads the physics space and the camera only; it arms, orders and says
+## nothing. Layers: 1 ground and structures, 2 units, 4 souls, 8 corpses (mask 15 = all four).
 
 const _WORLD := preload("res://scenes/match/match_world.gd")
 const _CAMERA := preload("res://scenes/camera/world_camera.gd")
 
-## A click on the minimap finds a body within this many minimap pixels of it (meters = pixels × the minimap zoom).
+## A click on the minimap finds a body within this many minimap pixels of it (meters = pixels × the
+## minimap zoom).
 @export var minimap_pick_units := 3.6
 ## The minimap a click is found on. Empty (the minimap was removed): there is no minimap pick.
 @export var minimap: Minimap
@@ -67,7 +68,8 @@ func unit_under(screen: Vector2) -> Node3D:
 	return null
 
 
-## A wizard, creature or structure under the cursor, or null. `skip_own_wizard` ignores the local wizard.
+## A wizard, creature or structure under the cursor, or null. `skip_own_wizard` ignores the local
+## wizard.
 func body_under(screen: Vector2, skip_own_wizard: bool) -> Node3D:
 	var skip: Array[RID] = []
 	var own := wizard()
@@ -133,8 +135,9 @@ func is_empty_at(screen: Vector2) -> bool:
 	return true
 
 
-## The body (wizard or creature, not a corpse) closest to a world point and within `minimap_pick_units` minimap pixels of the
-## minimap at its current zoom; an enemy that cannot be targeted (stealth) is not found. `own_only`: only the local side's.
+## The body (wizard or creature, not a corpse) closest to a world point and within
+## `minimap_pick_units` minimap pixels of the minimap at its current zoom; an enemy that cannot be
+## targeted (stealth) is not found. `own_only`: only the local side's.
 func body_near(point: Vector3, own_only := false) -> Node3D:
 	if minimap == null:
 		return null
@@ -194,7 +197,8 @@ static func is_corpse(body: Node3D) -> bool:
 	return false
 
 
-## True when the body is not this seat's (a corpse, a neutral and a stranger count; with no seat, everything does).
+## True when the body is not this seat's (a corpse, a neutral and a stranger count; with no seat,
+## everything does).
 func is_enemy(body: Node3D) -> bool:
 	return seat == null or owner_slot_of(body) != seat.slot
 

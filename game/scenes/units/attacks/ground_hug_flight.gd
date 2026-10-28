@@ -1,20 +1,21 @@
 class_name GroundHugFlight
 extends ShotInFlight
 
-## The Rhinok's Spikey Death (hrba) runs along the ground: on every update the shot moves and its height is then put on
-## the top of the land or of a building under it. RangedShot moves the shot and calls fly() before
-## it checks its hit, so this node puts the shot back on that height in the same tick (+ `lift`) and the 5 m box
-## (ShotLook.hit_size) looks for its body there. This node owns the shot's height
-## (holds_height): RangedShot does not burst it on the ground, it ends on a body or at the end of its range.
-## The velocity is not touched: the shot counts its range by the same step as its flight.
-## The spikes it raises on its way (movingSpikeRate 3 per update in a disk of movingRange 2.5 m, Spike effects)
-## are presentation: one SpikeField event (FxBus.broadcast_scene) every `spike_every_s` with
-## 3 · that many spikes, on every peer.
-## It flies `lift` m over the ground; off the map it keeps its height.
+## The Rhinok's Spikey Death (hrba) runs along the ground: on every update the shot moves and its
+## height is then put on the top of the land or of a building under it. RangedShot moves the shot
+## and calls fly() before it checks its hit, so this node puts the shot back on that height in the
+## same tick (+ `lift`) and the 5 m box (ShotLook.hit_size) looks for its body there. This node owns
+## the shot's height (holds_height): RangedShot does not burst it on the ground, it ends on a body
+## or at the end of its range. The velocity is not touched: the shot counts its range by the same
+## step as its flight. The spikes it raises on its way (movingSpikeRate 3 per update in a disk of
+## movingRange 2.5 m, Spike effects) are presentation: one SpikeField event (FxBus.broadcast_scene)
+## every `spike_every_s` with 3 · that many spikes, on every peer. It flies `lift` m over the
+## ground; off the map it keeps its height.
 
 ## Meters over the ground (land or building top).
 @export var lift := 0.05
-## The spikes along the way: spike_field.tscn (an FxScene) played by FxBus on every peer (empty: none).
+## The spikes along the way: spike_field.tscn (an FxScene) played by FxBus on every peer (empty:
+## none).
 @export var spike_scene: PackedScene
 ## One event every this long of flight (0: none).
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var spike_every_s := 0.1

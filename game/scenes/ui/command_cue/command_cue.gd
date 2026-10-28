@@ -2,15 +2,15 @@
 class_name CommandCue
 extends Control
 
-## What replaces the words of the old battle line, drawn at the pointer:
-## `Aim` = the icon of the armed spell, structure, order or ability, a little below the cursor (`aim_offset_px`);
-## `Invalid` = the `ncst` icon, flashed when something
-## is refused (CommandLog.said with a refusal cue) and held while the armed icon cannot take what lies under the pointer
-## (an order over the sky) or would be refused there (CommandLog.aim_status: a fount too far); `Reason` = the words (RefusalReason);
-## `Mirror` = a copy of the hardware cursor, off by default: a window capture does not include the
-## system cursor, so a flow turns it on to see it.
-## Without a picture (a type with no `icon`, a CueSet with none) a plain circle / cross is drawn instead.
-## Full screen, ignores the mouse. The icons are 38×38 canvas pixels, set in the scene; Godot's stretch scales them.
+## What replaces the words of the old battle line, drawn at the pointer: `Aim` = the icon of the
+## armed spell, structure, order or ability, a little below the cursor (`aim_offset_px`); `Invalid`
+## = the `ncst` icon, flashed when something is refused (CommandLog.said with a refusal cue) and
+## held while the armed icon cannot take what lies under the pointer (an order over the sky) or
+## would be refused there (CommandLog.aim_status: a fount too far); `Reason` = the words
+## (RefusalReason); `Mirror` = a copy of the hardware cursor, off by default: a window capture does
+## not include the system cursor, so a flow turns it on to see it. Without a picture (a type with no
+## `icon`, a CueSet with none) a plain circle / cross is drawn instead. Full screen, ignores the
+## mouse. The icons are 38×38 canvas pixels, set in the scene; Godot's stretch scales them.
 
 @export var command_log: CommandLog
 @export var cues: CueSet
@@ -122,7 +122,8 @@ func _on_cursor_changed(_cursor_name: String, texture: Texture2D) -> void:
 	_place()
 
 
-## The armed icon cannot take what lies under the pointer (empty `accepts` = anything) or would be refused there (aim_status).
+## The armed icon cannot take what lies under the pointer (empty `accepts` = anything) or would be
+## refused there (aim_status).
 func _check_hover() -> void:
 	_hover_invalid = false
 	if (

@@ -2,13 +2,15 @@
 class_name KillEffect
 extends BodyEffect
 
-## Death's blow: the body dies at once whatever it wears (a shield, a resistance), the normal way (corpse and soul stay), with `bolts` bolts of
-## lightning through its center and a flash. It does not gib (GibEffect) and it does not choose who (the carrier's hunt).
+## Death's blow: the body dies at once whatever it wears (a shield, a resistance), the normal way
+## (corpse and soul stay), with `bolts` bolts of lightning through its center and a flash. It does
+## not gib (GibEffect) and it does not choose who (the carrier's hunt).
 
 ## The bolt (FxBus beam type) and how many of them cross the body.
 @export var beam: BeamType
 @export_range(0, 8) var bolts := 3
-## Each bolt is this long at least; a big body gets longer ones (1.5 times the cube root of its volume).
+## Each bolt is this long at least; a big body gets longer ones (1.5 times the cube root of its
+## volume).
 @export_range(0.0, 30.0, 0.5, "suffix:m") var min_length_m := 6.0
 ## The flash at the body: a ParticleType with a light and a sound.
 @export var strike: ParticleType

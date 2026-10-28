@@ -1,18 +1,20 @@
 extends SceneTree
 
-## Needs the original game installed (`--original=<game folder>` or the SACRIFICE_DIR variable; SAC_ROOT also
-## works). The maps that do not come from the original (test_flat, test_flat4 or one of your own) do not go through here: their
-## heights.png is edited directly.
-## Writes scenes/map/maps/<tag>/heights.png (grey, 16 bits, value x 0.1 m) and void.png (white = void), the one source
-## of a map's ground (the addon terrain_tools imports the pair as its TerrainHeights), from the map's .scp in the game:
-## the exact heights and voids of its HMAP (u16, bit 15 = void, the rest = height in steps of 0.1 m), the heights under
-## the voids included, all lowered by the lowest land (as tools/import/import_map.py lowers the land). A height under a
-## void that lies below the lowest land cannot be stored (heights.png has no sign): it is kept at the lowest land and
-## counted. Only a filled void of the map would show it, and nothing in a match fills one.
-## The maps of the original are listed in ORIGINAL_SCP; a new one is `--map=<tag> --scp=<.scp relative to the game's
-## maps folder>`. Checks the written pictures read back the same. Idempotent: an unchanged picture is not written.
-## Import again after it (`--import`) so the new pictures become TerrainHeights.
-## "$GODOT" --headless --path game --script res://tools/terrain/heights_from_original.gd -- [--original=<dir>] [--map=<tag> [--scp=<file>]]
+## Needs the original game installed (`--original=<game folder>` or the SACRIFICE_DIR variable;
+## SAC_ROOT also works). The maps that do not come from the original (test_flat, test_flat4 or one
+## of your own) do not go through here: their heights.png is edited directly. Writes
+## scenes/map/maps/<tag>/heights.png (grey, 16 bits, value x 0.1 m) and void.png (white = void), the
+## one source of a map's ground (the addon terrain_tools imports the pair as its TerrainHeights),
+## from the map's .scp in the game: the exact heights and voids of its HMAP (u16, bit 15 = void, the
+## rest = height in steps of 0.1 m), the heights under the voids included, all lowered by the lowest
+## land (as tools/import/import_map.py lowers the land). A height under a void that lies below the
+## lowest land cannot be stored (heights.png has no sign): it is kept at the lowest land and
+## counted. Only a filled void of the map would show it, and nothing in a match fills one. The maps
+## of the original are listed in ORIGINAL_SCP; a new one is `--map=<tag> --scp=<.scp relative to the
+## game's maps folder>`. Checks the written pictures read back the same. Idempotent: an unchanged
+## picture is not written. Import again after it (`--import`) so the new pictures become
+## TerrainHeights. "$GODOT" --headless --path game --script
+## res://tools/terrain/heights_from_original.gd -- [--original=<dir>] [--map=<tag> [--scp=<file>]]
 
 const MapImages := preload("res://addons/terrain_tools/map_images.gd")
 const MAPS_DIR := "res://scenes/map/maps"
@@ -28,8 +30,10 @@ const ORIGINAL_SCP := {
 }
 const VOID_BIT := 0x8000
 const HEIGHT_STEP_M := MapImages.DEFAULT_METRES_PER_UNIT
-## How far a height may be from a whole number of HEIGHT_STEP_M and still count as one (float32 rounding).
+## How far a height may be from a whole number of HEIGHT_STEP_M and still count as one (float32
+## rounding).
 const EXACT_TOLERANCE_M := 1e-3
+# gdlint: ignore=max-line-length
 const NEEDS_ORIGINAL := "ERROR: the original's maps need the original game installed. Pass --original=<game folder, the one with maps/> or export SACRIFICE_DIR. The game is not in the repository."
 
 
@@ -55,6 +59,7 @@ func _initialize() -> void:
 	if tags.is_empty() or not DirAccess.dir_exists_absolute(MAPS_DIR.path_join(tags[0])):
 		push_error(
 			(
+				# gdlint: ignore=max-line-length
 				"heights: '%s' is no map of the original in %s (a map of your own: edit its heights.png)."
 				% [only, MAPS_DIR]
 			)
@@ -73,7 +78,8 @@ func _initialize() -> void:
 	quit(1 if failed > 0 else 0)
 
 
-## The heights of a .scp in the game's maps folder (`root` may be the game folder, its maps/ or its data/).
+## The heights of a .scp in the game's maps folder (`root` may be the game folder, its maps/ or its
+## data/).
 func _from_original(root: String, relative: String) -> TerrainHeights:
 	var hmap := PackedByteArray()
 	for candidate: String in [
@@ -114,11 +120,13 @@ func _from_original(root: String, relative: String) -> TerrainHeights:
 		push_error("heights: %s has no land." % relative)
 		return null
 	for v in TerrainHeights.COUNT:
-		heights_m[v] = raw_m[v] - base  # in double, then stored as float32 (as the game has always loaded them)
+		# in double, then stored as float32 (as the game has always loaded them)
+		heights_m[v] = raw_m[v] - base
 	return _make(heights_m, void_mask)
 
 
-## The HMAP payload of a .scp (a WAD: a zlib directory at the offset in bytes 4-7, 4-byte names stored reversed).
+## The HMAP payload of a .scp (a WAD: a zlib directory at the offset in bytes 4-7, 4-byte names
+## stored reversed).
 ## Ref: tools/import/sac_formats/wad.py extract().
 static func _hmap(path: String) -> PackedByteArray:
 	var bytes := FileAccess.get_file_as_bytes(path)
@@ -153,8 +161,8 @@ static func _make(heights_m: PackedFloat32Array, void_mask: PackedByteArray) -> 
 	return heights
 
 
-## Writes the pictures of `heights` into `folder`, after checking every height is a whole step, and reads them back to
-## check they give the same ground.
+## Writes the pictures of `heights` into `folder`, after checking every height is a whole step, and
+## reads them back to check they give the same ground.
 static func _write(heights: TerrainHeights, folder: String, tag: String) -> bool:
 	var units := MapImages.units(heights, HEIGHT_STEP_M)
 	var inexact := 0
@@ -167,6 +175,7 @@ static func _write(heights: TerrainHeights, folder: String, tag: String) -> bool
 	if inexact > 0:
 		push_error(
 			(
+				# gdlint: ignore=max-line-length
 				"heights %s: %d heights are not a whole number of %s m; heights.png cannot keep them exact."
 				% [tag, inexact, HEIGHT_STEP_M]
 			)

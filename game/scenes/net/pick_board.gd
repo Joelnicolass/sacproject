@@ -1,9 +1,11 @@
 class_name PickBoard
 extends Node
 
-## The picks of the match by MpKit slot. The server stores what each client sends (checked by MatchWire) and publishes the table;
-## a client keeps the one it receives. It does not choose the local pick (SacrificeFlow) and does not decide who may pick (the room
-## rules do). In the dedicated of a room, the ticket brings the picks, so the clients' own are ignored and not erased when they leave.
+## The picks of the match by MpKit slot. The server stores what each client sends (checked by
+## MatchWire) and publishes the table; a client keeps the one it receives. It does not choose the
+## local pick (SacrificeFlow) and does not decide who may pick (the room rules do). In the dedicated
+## of a room, the ticket brings the picks, so the clients' own are ignored and not erased when they
+## leave.
 
 signal changed
 ## Every seat the ticket left open has sent its pick: the world can start.
@@ -78,8 +80,9 @@ func _store(data: Dictionary, from_peer: int) -> void:
 	_publish()
 
 
-## The pick of a seat the ticket left open, checked by the same rules as a room's. An invalid one is rejected (the player is told
-## `bad_pick` and may come back with the same credential and choose again). With every pick in, the world starts.
+## The pick of a seat the ticket left open, checked by the same rules as a room's. An invalid one is
+## rejected (the player is told `bad_pick` and may come back with the same credential and choose
+## again). With every pick in, the world starts.
 func _accept_open(from_peer: int, slot: int, data: Dictionary) -> void:
 	var chosen: WizardPick = MatchWire.decode_pick(data, true)
 	if chosen == null:

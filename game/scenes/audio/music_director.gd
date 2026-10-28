@@ -2,24 +2,27 @@
 class_name MusicDirector
 extends Node
 
-## The music of this process. Two AudioStreamPlayer of the scene (TrackA, TrackB; bus of the set: Music) that crossfade in the
-## set's `crossfade_s` (0.5 s); the track of a mood is drawn with its own generator (the battle one among battle1-5),
-## never the global one. MusicMood decides the mood; this node only gathers its inputs and plays:
+## The music of this process. Two AudioStreamPlayer of the scene (TrackA, TrackB; bus of the set:
+## Music) that crossfade in the set's `crossfade_s` (0.5 s); the track of a mood is drawn with its
+## own generator (the battle one among battle1-5), never the global one. MusicMood decides the mood;
+## this node only gathers its inputs and plays:
 ## - battle: `gauge` (CombatGauge.is_battle; it computes the intensity, not this node);
 ## - the result: Events.match_ended (won = the seat's slot is among the winners);
-## - rituals (Events.ritual_started / ritual_ended, on every peer): one running within `ritual_radius_m` of the camera,
-##   and the desecrations that involve the local side.
-## The set: `music` (the menu's in boot.tscn, a fixture in the lab), or the look's `music` of the GodType that `biome` applies
-## (MatchBiome.applied(god)); a god with no set of its own uses `default_music` (music/common.tres in the match).
-## `menu` keeps the mood at calm. `victory` and `defeat` play once: the mood stays, the track is not restarted.
-## Each change goes to SoundBus's log as emitter `music`, event = the mood. With the AudioGate closed (dedicated, room
-## server, headless) its players stay idle and it plays nothing. No RPC, nothing written to the simulation.
+## - rituals (Events.ritual_started / ritual_ended, on every peer): one running within
+##   `ritual_radius_m` of the camera, and the desecrations that involve the local side.
+## The set: `music` (the menu's in boot.tscn, a fixture in the lab), or the look's `music` of the
+## GodType that `biome` applies (MatchBiome.applied(god)); a god with no set of its own uses
+## `default_music` (music/common.tres in the match). `menu` keeps the mood at calm. `victory` and
+## `defeat` play once: the mood stays, the track is not restarted. Each change goes to SoundBus's
+## log as emitter `music`, event = the mood. With the AudioGate closed (dedicated, room server,
+## headless) its players stay idle and it plays nothing. No RPC, nothing written to the simulation.
 
 signal mood_changed(mood: StringName)
 
 const EMITTER := &"music"
 
-## The set there is before a biome applies (the menu's, or the lab's). Empty: silence until a god comes.
+## The set there is before a biome applies (the menu's, or the lab's). Empty: silence until a god
+## comes.
 @export var music: MusicSet
 ## What a god with no `music` of its own plays. Empty: silence.
 @export var default_music: MusicSet
@@ -29,7 +32,8 @@ const EMITTER := &"music"
 ## Emits `applied(god)` with the GodType of the land (MatchBiome). Optional.
 @export var biome: MatchBiome
 @export var gauge: CombatGauge
-## Who looks at this screen (its slot decides the result and the desecrations). Empty: nobody (the menu in boot.tscn).
+## Who looks at this screen (its slot decides the result and the desecrations). Empty: nobody (the
+## menu in boot.tscn).
 @export var seat: MpLocalSeat
 ## The camera the rituals are measured from. Optional: else the viewport's.
 @export var camera: Camera3D
@@ -111,7 +115,8 @@ func restart() -> void:
 	look()
 
 
-## Decides the mood now and switches when it changed (the gauge's flips and the lab call it so as not to wait).
+## Decides the mood now and switches when it changed (the gauge's flips and the lab call it so as
+## not to wait).
 func look() -> void:
 	if not _open or music_set == null or _players.size() < 2 or not SoundBus.can_play():
 		return
@@ -243,6 +248,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		(
 			out
 			. append(
+				# gdlint: ignore=max-line-length
 				"Assign `track_a` and `track_b` (the two child AudioStreamPlayers): without them there is no music."
 			)
 		)

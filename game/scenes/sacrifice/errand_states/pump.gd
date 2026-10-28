@@ -1,10 +1,11 @@
 extends ErrandStep
 
-## Convert: the doctor stands over the corpse and pumps it back to life. When it starts the creature stands up with
-## max(400, 50 % of its max health) and is nobody's target; the doctor works (soul number + 1) times
-## rules.convert_pump_s_per_soul seconds, then the soul is gone, the creature is taken and goes on to
-## Haul. If the site falls the doctor dies. If the doctor dies here, CarryErrand drops the creature (it dies again and
-## leaves its soul on its own side): the soul that was hidden while it pumped is replaced by the one its new death drops.
+## Convert: the doctor stands over the corpse and pumps it back to life. When it starts the creature
+## stands up with max(400, 50 % of its max health) and is nobody's target; the doctor works (soul
+## number + 1) times rules.convert_pump_s_per_soul seconds, then the soul is gone, the creature is
+## taken and goes on to Haul. If the site falls the doctor dies. If the doctor dies here,
+## CarryErrand drops the creature (it dies again and leaves its soul on its own side): the soul that
+## was hidden while it pumped is replaced by the one its new death drops.
 
 ## The burst over the corpse when it stands up (data/fx/heal.tres).
 @export var heal_fx: ParticleType

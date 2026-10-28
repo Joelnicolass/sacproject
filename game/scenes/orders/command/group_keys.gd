@@ -1,8 +1,9 @@
 class_name GroupKeys
 extends Node
 
-## The keys 1..9, 0 of the selection groups: `group_set_N` (Ctrl+N) stores the selection, `group_N` selects the group and
-## Shift+`group_N` adds it to the selection. The groups themselves belong to Selection; this node only reads the keys.
+## The keys 1..9, 0 of the selection groups: `group_set_N` (Ctrl+N) stores the selection, `group_N`
+## selects the group and Shift+`group_N` adds it to the selection. The groups themselves belong to
+## Selection; this node only reads the keys.
 
 const KEYS := ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
 const _SELECTION := preload("res://scenes/orders/selection.gd")

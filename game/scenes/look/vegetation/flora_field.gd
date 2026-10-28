@@ -3,15 +3,18 @@ class_name FloraField
 extends LookLayer
 
 ## The mesh vegetation of a map (Look/Layers/Flora). One MeshPlanter per VegetationLayerConfig of
-## `configs` (original_plants.tres), each drawing the FloraLayer nodes of the map (the `Vegetation` node of its map.tscn;
-## a snapshot, FloraDensity) around the camera: the 3D viewport's in the editor, the game's when playing.
-## How much each layer draws comes from the quality preset (`LookQuality.vegetation_for(config.id)`; the editor uses
-## `editor_quality`); a preset without an entry for a layer, the rig's «Vegetación» switch off (GraphicsPrefs), the node
-## hidden or a map without FloraLayers draws nothing. A FloraLayer that changes calls `layers_changed` (group `GROUP`).
-## Presentation only: no collision, no RPC, no shared RNG. Every node it makes is an internal child, never saved. In a
-## dedicated or headless process the rig is freed, and this never builds anything there either.
-## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`; FloraClears): only the cells it touches
-## are rebuilt. The map brush painting a layer calls `layer_painted`: only that area plans again, the planters stay.
+## `configs` (original_plants.tres), each drawing the FloraLayer nodes of the map (the `Vegetation`
+## node of its map.tscn; a snapshot, FloraDensity) around the camera: the 3D viewport's in the
+## editor, the game's when playing. How much each layer draws comes from the quality preset
+## (`LookQuality.vegetation_for(config.id)`; the editor uses `editor_quality`); a preset without an
+## entry for a layer, the rig's «Vegetación» switch off (GraphicsPrefs), the node hidden or a map
+## without FloraLayers draws nothing. A FloraLayer that changes calls `layers_changed` (group
+## `GROUP`).
+## Presentation only: no collision, no RPC, no shared RNG. Every node it makes is an internal child,
+## never saved. In a dedicated or headless process the rig is freed, and this never builds anything
+## there either. A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`;
+## FloraClears): only the cells it touches are rebuilt. The map brush painting a layer calls
+## `layer_painted`: only that area plans again, the planters stay.
 
 ## Group of the fields: FloraLayer calls `layers_changed` on it.
 const GROUP := &"flora_field"
@@ -33,12 +36,15 @@ const GROUP := &"flora_field"
 			_refresh()
 ## Editor only: the plants follow the 3D viewport camera (turn off to freeze them).
 @export var follow_editor_camera := true
-## Main-thread time per frame for every layer together: past it the finished cells wait for the next frame.
-## The planning itself runs on WorkerThreadPool tasks (in the editor, on the main thread inside this same budget).
+## Main-thread time per frame for every layer together: past it the finished cells wait for the next
+## frame. The planning itself runs on WorkerThreadPool tasks (in the editor, on the main thread
+## inside this same budget).
 @export_range(0.1, 8.0, 0.1, "suffix:ms") var build_budget_ms := 1.0
-## The ground moved (a spell raised it): the plants of that part are planned again at most this often.
+## The ground moved (a spell raised it): the plants of that part are planned again at most this
+## often.
 @export_range(0.05, 2.0, 0.05, "suffix:s") var replan_every_s := 0.25
-## A stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 = only when settled.
+## A stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 =
+## only when settled.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var live_replan_s := 1.0
 
 var _planters: Array[MeshPlanter] = []
@@ -47,7 +53,8 @@ var _signature := ""
 var _clears := FloraClears.new()
 var _watching: Array[Resource] = []
 var _bound_rig: LookRig
-## What the FloraLayer nodes of the map say now (rebuilt when one changes) and how many times it was rebuilt.
+## What the FloraLayer nodes of the map say now (rebuilt when one changes) and how many times it was
+## rebuilt.
 var _density: FloraDensity
 var _density_dirty := true
 var _density_version := 0
@@ -57,7 +64,8 @@ func _ready() -> void:
 	add_to_group(VegetationClear.FIELD_GROUP)
 	add_to_group(GROUP)
 	visibility_changed.connect(_refresh)
-	# The rig can push its saved preset before this node is ready (planters already made): keep them running.
+	# The rig can push its saved preset before this node is ready (planters already made): keep them
+	# running.
 	set_process(not _planters.is_empty())
 	_watch_configs()
 	# After the map (terrain, rig sockets) is ready.
@@ -91,8 +99,9 @@ func clears_changed() -> void:
 	_clears.mark()
 
 
-## The map brush painted `layer` over `area_m` (map x, z; FloraLayer.show_painting): a new snapshot with its bytes goes to
-## the same planters, which plan that area again under the ground's brake. A layer not drawn yet makes the full rebuild.
+## The map brush painted `layer` over `area_m` (map x, z; FloraLayer.show_painting): a new snapshot
+## with its bytes goes to the same planters, which plan that area again under the ground's brake. A
+## layer not drawn yet makes the full rebuild.
 func layer_painted(layer: FloraLayer, area_m: Rect2) -> void:
 	var id := layer.get_instance_id()
 	if _density == null or _density_dirty or not _density.layer_ids.has(id):
@@ -116,8 +125,9 @@ func preset() -> LookQuality:
 	return rig.quality_preset if rig else null
 
 
-## The layers this field draws with the current rig, preset and switch: [{config, quality}]. The process kind (headless,
-## dedicated) is not part of it: `presentationless` stops the building on top.
+## The layers this field draws with the current rig, preset and switch: [{config, quality}]. The
+## process kind (headless, dedicated) is not part of it: `presentationless` stops the building on
+## top.
 func active_layers() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if (
@@ -273,8 +283,8 @@ func pending_count() -> int:
 	)
 
 
-## The FloraLayer nodes of this field's map as a snapshot: the layers under the same MapRoot (or, without one, in the
-## tree), taken again after one changed.
+## The FloraLayer nodes of this field's map as a snapshot: the layers under the same MapRoot (or,
+## without one, in the tree), taken again after one changed.
 func density() -> FloraDensity:
 	if _density == null or _density_dirty:
 		_density_dirty = false

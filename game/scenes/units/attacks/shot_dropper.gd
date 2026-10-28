@@ -1,12 +1,13 @@
 class_name ShotDropper
 extends ShotInFlight
 
-## The droplets an Abomination's gut drops while it flies: every
-## frame of flight, with probability 3/4, one droplet is added at the shot's new position,
-## with velocity 0. The droplet's fall and hit belong to DropletRain (one pool in the world, server only).
+## The droplets an Abomination's gut drops while it flies: every frame of flight, with probability
+## 3/4, one droplet is added at the shot's new position, with velocity 0. The droplet's fall and hit
+## belong to DropletRain (one pool in the world, server only).
 ##
-## The scene is ShotLook.in_flight (a ShotInFlight). RangedShot instances it on the server (or solo) only, as a
-## child of the shot, and calls fly() once per physics tick, after it moved and before it checks its hit. Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
+## The scene is ShotLook.in_flight (a ShotInFlight). RangedShot instances it on the server (or solo)
+## only, as a child of the shot, and calls fly() once per physics tick, after it moved and before it
+## checks its hit. Chance comes from MatchSeed: one stream per shot, ["drops", shot name].
 
 ## A droplet unless the roll is 0, i.e. (one_in − 1) / one_in of the ticks.
 @export_range(1, 16) var one_in := 4
@@ -36,8 +37,8 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 	drop(at, shot.from_slot)
 
 
-## One roll per tick of flight (fly() already counted it); on a hit of the roll, a droplet at `at` for the shooter's
-## side `from_slot`.
+## One roll per tick of flight (fly() already counted it); on a hit of the roll, a droplet at `at`
+## for the shooter's side `from_slot`.
 func drop(at: Vector3, from_slot: int) -> void:
 	if ticks == 1:
 		first_at = at

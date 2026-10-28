@@ -1,8 +1,9 @@
 class_name RockBurst
 extends FxScene
 
-## Rocks thrown up and out from a point, played on every peer by FxBus.broadcast_scene: the cow bursting on the land. Each rock is a DebrisPiece
-## that flies, spins and bounces. Presentation only; it frees itself. It hurts nobody (the quake wave stuns, CarrierLanding).
+## Rocks thrown up and out from a point, played on every peer by FxBus.broadcast_scene: the cow
+## bursting on the land. Each rock is a DebrisPiece that flies, spins and bounces. Presentation
+## only; it frees itself. It hurts nobody (the quake wave stuns, CarrierLanding).
 
 @export var piece: PackedScene
 @export_range(0, 64) var pieces := 16

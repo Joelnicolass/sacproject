@@ -1,14 +1,17 @@
 class_name IcePatch
 extends MeshInstance3D
 
-## The ice of Frozen Ground as a ring of mesh glued to the land: built once when the ice starts to grow, with every vertex on the height of
-## the land under it, and drawn by ice_ground.gdshader, which shows only the band between what already broke and how far the ice grew.
-## Presentation only, on every peer, from the zone's phase. It freezes nobody (ZoneFreeze) and hurts nobody (ZoneShatter).
+## The ice of Frozen Ground as a ring of mesh glued to the land: built once when the ice starts to
+## grow, with every vertex on the height of the land under it, and drawn by ice_ground.gdshader,
+## which shows only the band between what already broke and how far the ice grew. Presentation only,
+## on every peer, from the zone's phase. It freezes nobody (ZoneFreeze) and hurts nobody
+## (ZoneShatter).
 
 @export var zone: GroundZone
 @export_range(8, 64) var sides := 32
 @export_range(4, 64) var rings := 32
-## The texture goes round the circle this many times, and repeats this many times from the centre to the rim.
+## The texture goes round the circle this many times, and repeats this many times from the centre to
+## the rim.
 @export_range(1.0, 32.0, 1.0) var turns := 12.0
 @export_range(1.0, 32.0, 1.0) var repeats := 6.0
 ## How far over the land the ice floats, above the blades of grass.
@@ -45,7 +48,8 @@ func _process(_delta: float) -> void:
 	set_instance_shader_parameter(&"inner", ZoneRules.ring_radius(broken, break_steps, _radius))
 
 
-## The ring at the full radius, every vertex at the height of the land under it (the centre's height where there is none).
+## The ring at the full radius, every vertex at the height of the land under it (the centre's height
+## where there is none).
 func _build() -> void:
 	_radius = zone.spell.effect_range_m
 	var center := zone.points[0]

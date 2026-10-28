@@ -2,10 +2,12 @@
 class_name WallAction
 extends SpellAction
 
-## A spell that raises a wall on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence): the click names a point of the land
-## within range; the wall is born there when the cast starts, perpendicular to the line from the wizard to the point, grows while he casts and
-## starts to act when the casting time ends; if he is interrupted it sinks at once. One scene per spell: the kind of wall and the cast
-## particle change, not the script. It does not grow the wall nor hurt anybody (SpellWall and WallTouch do).
+## A spell that raises a wall on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall,
+## Fence): the click names a point of the land within range; the wall is born there when the cast
+## starts, perpendicular to the line from the wizard to the point, grows while he casts and starts
+## to act when the casting time ends; if he is interrupted it sinks at once. One scene per spell:
+## the kind of wall and the cast particle change, not the script. It does not grow the wall nor hurt
+## anybody (SpellWall and WallTouch do).
 
 ## The kind of the wall scene in SpellSpawner.zones (match.tscn).
 @export var wall_kind := ""

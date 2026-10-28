@@ -2,14 +2,17 @@
 class_name BodyAura
 extends Node3D
 
-## What a body does to the bodies around it while its Ward is on: burns them, stings them and heals the owner with the sting,
-## pushes them away (Fireform, Protective Swarm, Air Shield) or heals them (Healing Aura). It does not protect the owner (Ward) nor start
-## itself: it runs only while `ward` is on, and only on the server (or solo).
-## Reach is a sphere drawn in the editor: its radius is the distance, measured between the two boxes (BOX_GAP) or from the
-## owner's centre to the other body's centre (CENTER). Only bodies that move are touched (wizards and creatures), as the Phoenix.
-## Damage type: the SPEL of Fireform and Protective Swarm says «direct spell» (type byte 1 at record offset 64), pierce or not.
+## What a body does to the bodies around it while its Ward is on: burns them, stings them and heals
+## the owner with the sting, pushes them away (Fireform, Protective Swarm, Air Shield) or heals them
+## (Healing Aura). It does not protect the owner (Ward) nor start itself: it runs only while `ward`
+## is on, and only on the server (or solo). Reach is a sphere drawn in the editor: its radius is the
+## distance, measured between the two boxes (BOX_GAP) or from the owner's centre to the other body's
+## centre (CENTER). Only bodies that move are touched (wizards and creatures), as the Phoenix.
+## Damage type: the SPEL of Fireform and Protective Swarm says «direct spell» (type byte 1 at record
+## offset 64), pierce or not.
 
-## The aura hurt `victim` this tick. Server (or solo) only; AuraImpact turns it into the mark and the sound on every peer.
+## The aura hurt `victim` this tick. Server (or solo) only; AuraImpact turns it into the mark and
+## the sound on every peer.
 signal stung(victim: Node3D)
 
 enum Affects { ENEMIES, NOT_OWN, ALLIES, OWN_SIDE }
@@ -30,8 +33,9 @@ enum Measure { BOX_GAP, CENTER }
 ## The owner heals this fraction of what the sting took (Protective Swarm 0.5).
 @export_range(0.0, 1.0, 0.05) var heal_owner_fraction := 0.0
 @export_group("Heal")
-## Health a second it gives to every body it reaches that can be healed (Healing Aura 60). The heal keeps running `heal_hold_s` after
-## the body leaves, and every tick in reach renews it (it does not add up).
+## Health a second it gives to every body it reaches that can be healed (Healing Aura 60). The heal
+## keeps running `heal_hold_s` after the body leaves, and every tick in reach renews it (it does not
+## add up).
 @export var heal_per_s := 0.0
 @export_range(0.0, 10.0, 0.05, "suffix:s") var heal_hold_s := 4.267
 ## The owner is healed too (the creature that carries the aura).
@@ -131,7 +135,8 @@ func _push(body: Node3D, other: Node3D, mine: AABB, radius: float, delta: float)
 	BodyNudge.slide(other, away / distance * strength * delta)
 
 
-## Renews the heal of `other` (HealEffect keeps the better rate and the longer time; a body that cannot be healed is left alone).
+## Renews the heal of `other` (HealEffect keeps the better rate and the longer time; a body that
+## cannot be healed is left alone).
 func _mend(other: Node3D) -> void:
 	if heal_per_s > 0.0 and HealEffect.can_heal(other):
 		(HealEffect.on(other) as HealEffect).renew(

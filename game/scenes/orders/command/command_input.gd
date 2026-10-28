@@ -1,11 +1,12 @@
 class_name CommandInput
 extends Node
 
-## Routes the player's input in the world to the command that owns it. Keys: creature
-## and spell keys (SpellCommand), group keys (GroupKeys), Ctrl+R / Ctrl+A arm attack / guard, Ctrl+Space retreats,
-## Ctrl+Q / Shift+B uses the ability, the order and select actions work through the crosshair. Left button on %View: a spell,
-## ability or order icon waiting for its target takes the click; otherwise it selects (click, or a box past
-## `rect_threshold_px`). The right button belongs to OrderRadial and the minimap to MinimapPointing.
+## Routes the player's input in the world to the command that owns it. Keys: creature and spell keys
+## (SpellCommand), group keys (GroupKeys), Ctrl+R / Ctrl+A arm attack / guard, Ctrl+Space retreats,
+## Ctrl+Q / Shift+B uses the ability, the order and select actions work through the crosshair. Left
+## button on %View: a spell, ability or order icon waiting for its target takes the click; otherwise
+## it selects (click, or a box past `rect_threshold_px`). The right button belongs to OrderRadial
+## and the minimap to MinimapPointing.
 ## It decides nothing itself: every branch is one call to a command.
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
@@ -34,8 +35,8 @@ func _ready() -> void:
 	%View.gui_input.connect(_on_view_event)
 
 
-## True while a modal UI (pause, options) covers the world (WorldInput). Silences the hotkeys and the
-## actions on the world.
+## True while a modal UI (pause, options) covers the world (WorldInput). Silences the hotkeys and
+## the actions on the world.
 static func blocked(from: Node) -> bool:
 	return WorldInput.blocked(from)
 
@@ -67,7 +68,8 @@ func _input(event: InputEvent) -> void:
 		left_at(ray.action_pointer(), false, false)
 
 
-## The left click on a point of the screen: the armed command takes it, else it selects what is there.
+## The left click on a point of the screen: the armed command takes it, else it selects what is
+## there.
 func left_at(screen: Vector2, shift: bool, ctrl: bool) -> void:
 	match armed.mode:
 		"spell":

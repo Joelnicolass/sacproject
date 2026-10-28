@@ -1,19 +1,30 @@
 extends Node
 
-## Does not need the original game; it uses the models and data already imported in assets/original (versioned).
-## Bakes the map's navmesh headless: the static colliders of the `nav_source` nodes of the map scene (the
-## terrain's collision, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres, into scenes/map/maps/<tag>/nav.res
-## (the navmesh of the map's NavRegion; the «Bake navmesh» button of the map's NavRegion runs this). The map is `--map=<tag>` after `--` (High Noon without it).
+## Does not need the original game; it uses the models and data already imported in assets/original
+## (versioned).
+## Bakes the map's navmesh headless: the static colliders of the `nav_source` nodes of the map scene
+## (the
+## terrain's collision, the buildings, the manafounts) with the numbers of data/nav/nav_bake.tres,
+## into scenes/map/maps/<tag>/nav.res
+## (the navmesh of the map's NavRegion; the «Bake navmesh» button of the map's NavRegion runs this).
+## The map is `--map=<tag>` after `--` (High Noon without it).
 ## The map is baked by zones (NavZones) and joined; the file is one navmesh as always.
-## The navmesh carries the source hash (NavFingerprint.source_hash) in its metadata; MapNavRegion warns when it is stale.
+## The navmesh carries the source hash (NavFingerprint.source_hash) in its metadata; MapNavRegion
+## warns when it is stale.
 ## It runs as a scene (autoloads exist, the parse needs the nodes inside the tree):
-## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn [-- --map=test_flat]           bakes and saves
-## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn -- [--map=test_flat] --restamp writes the source hash of the map as it is now into the
-##   saved navmesh without baking (after moving nodes of the map without changing what the bake reads; check first).
-## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn -- [--map=test_flat] --check bakes again and compares with the saved file:
-##   same source hash and same geometry, or it fails (exit 1). Run it twice to prove the bake is reproducible.
-## Needs the project imported once (class names NavFingerprint, NavBakeSettings, MapNavRegion). Import again after writing.
-## It builds the map nodes as the dedicated server does (buildings shape their boxes in _ready) but does not run the world.
+## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn [-- --map=test_flat]
+## bakes and saves
+## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn -- [--map=test_flat] --restamp
+## writes the source hash of the map as it is now into the
+##   saved navmesh without baking (after moving nodes of the map without changing what the bake
+##   reads; check first).
+## "$GODOT" --headless --path game res://tools/bake/bake_nav.tscn -- [--map=test_flat] --check bakes
+## again and compares with the saved file:
+##   same source hash and same geometry, or it fails (exit 1). Run it twice to prove the bake is
+##   reproducible.
+## Needs the project imported once (class names NavFingerprint, NavBakeSettings, MapNavRegion).
+## Import again after writing. It builds the map nodes as the dedicated server does (buildings shape
+## their boxes in _ready) but does not run the world.
 
 const SETTINGS_PATH := "res://data/nav/nav_bake.tres"
 ## The manafounts under MapProps (optional: a map may have none).
@@ -46,7 +57,8 @@ func _run() -> void:
 		if check:
 			_fail("%s does not exist: bake first" % _nav_path)
 			return
-		# the map scene references the file, so the scene cannot load without it: an empty navmesh stands in until the bake.
+		# the map scene references the file, so the scene cannot load without it: an empty navmesh
+		# stands in until the bake.
 		ResourceSaver.save(NavigationMesh.new(), _nav_path)
 		print("bake_nav: created an empty %s so the scene loads" % _nav_path)
 	var baked := await _bake(settings)
@@ -108,7 +120,8 @@ func _restamp(settings: NavBakeSettings) -> void:
 	get_tree().quit(0)
 
 
-## The navmesh baked from the map now, with the source hash in its metadata; null (after _fail) when it cannot be built.
+## The navmesh baked from the map now, with the source hash in its metadata; null (after _fail) when
+## it cannot be built.
 func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	var world: Node = _map.map_scene.instantiate()
 	if world == null:
@@ -136,7 +149,8 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 		part.get_parent().remove_child(part)
 		bake_root.add_child(part)
 	world.free()
-	# The tree is entered once: the terrain builds its Collision, the buildings shape their boxes in _ready.
+	# The tree is entered once: the terrain builds its Collision, the buildings shape their boxes in
+	# _ready.
 	add_child(bake_root)
 	await get_tree().physics_frame
 	await get_tree().physics_frame
@@ -147,7 +161,8 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	if not geometry.has_data():
 		_fail("no source geometry: no static collider in the group %s" % NavFingerprint.GROUP)
 		return null
-	# Every zone of the fixed grid (several at once on the worker pool), joined into the one navmesh of the map.
+	# Every zone of the fixed grid (several at once on the worker pool), joined into the one navmesh
+	# of the map.
 	var started := Time.get_ticks_usec()
 	var zones := NavZones.new(settings).bake_all(geometry)
 	navmesh = zones.stitched()

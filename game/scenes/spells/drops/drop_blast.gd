@@ -2,19 +2,22 @@
 class_name DropBlast
 extends Node
 
-## What a drop does where its flight ends: the spell's damage to the body it ended on, the same damage falling off with distance to every
-## body within the spell's damage range, and (by knob) a fire of a moment on all of them and a stun on those it only splashed. It plays the
-## bursts of the place, whose sounds, shakes and lights are the ones of each burst's name. It does not fly the drop (ZoneDrop) nor poison
-## (DropPoison). Server (or solo) only.
+## What a drop does where its flight ends: the spell's damage to the body it ended on, the same
+## damage falling off with distance to every body within the spell's damage range, and (by knob) a
+## fire of a moment on all of them and a stun on those it only splashed. It plays the bursts of the
+## place, whose sounds, shakes and lights are the ones of each burst's name. It does not fly the
+## drop (ZoneDrop) nor poison (DropPoison). Server (or solo) only.
 
 @export var drop: ZoneDrop
 ## FxBus bursts played where it ends (ParticleType under data/fx/).
 @export var bursts: Array[ParticleType] = []
-## Marks it leaves on the ground where it ends (ScarMark scenes: a burn, a crack), painted on every peer.
+## Marks it leaves on the ground where it ends (ScarMark scenes: a burn, a crack), painted on every
+## peer.
 @export var ground_marks: Array[PackedScene] = []
 @export_group("Fire")
 @export var ignites := false
-## The fire a reached body keeps (no damage of its own: the damage is the blast's) and the sprite it puffs.
+## The fire a reached body keeps (no damage of its own: the damage is the blast's) and the sprite it
+## puffs.
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var burn_s := 1.0
 @export var burn_look: ParticleType
 @export_group("Stun")

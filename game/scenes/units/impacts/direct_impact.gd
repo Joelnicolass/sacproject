@@ -1,8 +1,9 @@
 class_name DirectImpact
 extends ShotImpact
 
-## The shot's whole amount as direct ranged damage to the body it hit. What RangedShot does with no impact,
-## as a child, so an impact scene can push or spin a vortex and still hit. A building takes it too; the ground nothing.
+## The shot's whole amount as direct ranged damage to the body it hit. What RangedShot does with no
+## impact, as a child, so an impact scene can push or spin a vortex and still hit. A building takes
+## it too; the ground nothing.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 

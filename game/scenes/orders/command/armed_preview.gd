@@ -1,11 +1,13 @@
 class_name ArmedPreview
 extends Node
 
-## While a structure spell that aims at the ground is armed, a few times a second it asks the local Caster what a click at
-## the pointer would answer (Caster.aim_for, the same rule the server runs, read only) and writes that answer to %Battle
-## (`show_aim`). It also lights the ring of the fount it would build on: green when it would start, red when not. Local to
-## the player's process: no RPC, it casts nothing and draws no cursor (CursorSkin, CommandCue and RefusalReason read %Battle).
-## Common spells get no preview. Without this node only the flash after a refused click is left.
+## While a structure spell that aims at the ground is armed, a few times a second it asks the local
+## Caster what a click at the pointer would answer (Caster.aim_for, the same rule the server runs,
+## read only) and writes that answer to %Battle (`show_aim`). It also lights the ring of the fount
+## it would build on: green when it would start, red when not. Local to the player's process: no
+## RPC, it casts nothing and draws no cursor (CursorSkin, CommandCue and RefusalReason read
+## %Battle). Common spells get no preview. Without this node only the flash after a refused click is
+## left.
 
 @export var armed: ArmedCommand
 @export var ray: PointerRay
@@ -60,8 +62,8 @@ func preview() -> void:
 		_show(StringName(aim.status), aim.site)
 
 
-## The answer of the armed structure at the pointer, or null when there is nothing to preview (another icon, an action that
-## aims at a body, the pointer over the HUD or the sky, no wizard).
+## The answer of the armed structure at the pointer, or null when there is nothing to preview
+## (another icon, an action that aims at a body, the pointer over the HUD or the sky, no wizard).
 func _aim_at_pointer() -> SpellAction.Aim:
 	if armed == null or armed.mode != "structure" or probe == null or probe.kind == TargetProbe.HUD:
 		return null

@@ -2,10 +2,11 @@
 class_name LobbyReturn
 extends VBoxContainer
 
-## «Volver a salas», under the result banner of a match that came from a room. It shows when the match
-## ends (the world's `MatchState` has a result, or the dedicated reports the end: an abandon has no banner) and only
-## in a match from a room. The line above the button tells an abandon or a closed match; a normal result is already
-## in the banner. The button asks the session flow to leave; the flow lands in the room screens.
+## «Volver a salas», under the result banner of a match that came from a room. It shows when the
+## match ends (the world's `MatchState` has a result, or the dedicated reports the end: an abandon
+## has no banner) and only in a match from a room. The line above the button tells an abandon or a
+## closed match; a normal result is already in the banner. The button asks the session flow to
+## leave; the flow lands in the room screens.
 
 @export var match_state: MatchState
 

@@ -1,7 +1,7 @@
 extends Control
 
-## The minimap's floor: the circle's background color and the baked terrain, turned and scaled by the
-## Minimap's frame state. Drawn once per frame; the circle shape comes from the parent mask.
+## The minimap's floor: the circle's background color and the baked terrain, turned and scaled by
+## the Minimap's frame state. Drawn once per frame; the circle shape comes from the parent mask.
 
 @export var minimap: Minimap
 

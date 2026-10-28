@@ -1,10 +1,11 @@
 class_name Devour
 extends AbilityEffect
 
-## The Netherfiend's and the Hellmouth's Devour: eating a soul. The body prepares (72 ticks for the Netherfiend, 92 for the Hellmouth)
-## and at the shoot tick the soul is devoured. It costs no mana and has no cooldown, so AbilitySlot spends 0.
-## The preparation is AbilityWindup's (UsingAbility + windup()); what the soul goes through is Soul's (begin_devour); what the
-## eater becomes is DevourGrowth's; the cure is HealEffect's. This effect only judges the target and tells them.
+## The Netherfiend's and the Hellmouth's Devour: eating a soul. The body prepares (72 ticks for the
+## Netherfiend, 92 for the Hellmouth) and at the shoot tick the soul is devoured. It costs no mana
+## and has no cooldown, so AbilitySlot spends 0. The preparation is AbilityWindup's (UsingAbility +
+## windup()); what the soul goes through is Soul's (begin_devour); what the eater becomes is
+## DevourGrowth's; the cure is HealEffect's. This effect only judges the target and tells them.
 ##
 ## Target: a soul (or the corpse it waits on) that is blue for the eater's slot (free or
 ## its own), NORMAL or EMERGING, within the length of the eater's box measured in 2D.
@@ -14,7 +15,8 @@ const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
 ## Multiplies the length of the box (|(2·reach, height, 2·reach)| of the body's melee_profile).
 @export var reach_factor := 1.0
-## The spell that heals the eater after the meal (data/catalog/spells/rainbow.tres, Rainbow: 600 health at 240/s, only if it is not full).
+## The spell that heals the eater after the meal (data/catalog/spells/rainbow.tres, Rainbow: 600
+## health at 240/s, only if it is not full).
 @export var healing: SpellType
 
 
@@ -33,7 +35,8 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## Eats the soul. False = nothing happened (the soul is gone by the shoot tick): the cost is 0 all the same.
+## Eats the soul. False = nothing happened (the soul is gone by the shoot tick): the cost is 0 all
+## the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority():
 		return false

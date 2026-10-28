@@ -2,10 +2,11 @@
 class_name MapCatalog
 extends RefCounted
 
-## The maps of the game, found by scanning the folder scenes/map/maps/<tag>/ (its scene and a MapDefinition `<tag>.tres`):
-## adding a map edits no list. It only lists and finds; which map this process plays is ActiveMatch's.
-## A definition loads its scene, ground and navmesh: only the ones asked for are loaded (`find`); `maps` and the tag lists that
-## need a flag of each one (`room_tags`) load them all.
+## The maps of the game, found by scanning the folder scenes/map/maps/<tag>/ (its scene and a
+## MapDefinition `<tag>.tres`): adding a map edits no list. It only lists and finds; which map this
+## process plays is ActiveMatch's. A definition loads its scene, ground and navmesh: only the ones
+## asked for are loaded (`find`); `maps` and the tag lists that need a flag of each one
+## (`room_tags`) load them all.
 
 const DIR := "res://scenes/map/maps"
 const DEFAULT_TAG := &"high_noon"
@@ -33,7 +34,8 @@ static func path_of(tag: StringName) -> String:
 	return "%s/%s/%s.tres" % [DIR, tag, tag]
 
 
-## True when the folder has a definition with that tag. Loads nothing (a definition brings its scene, ground and navmesh: seconds).
+## True when the folder has a definition with that tag. Loads nothing (a definition brings its
+## scene, ground and navmesh: seconds).
 func has(tag: StringName) -> bool:
 	return ResourceLoader.exists(path_of(tag))
 
@@ -55,7 +57,8 @@ func room_tags() -> PackedStringArray:
 	return tags
 
 
-## The maps a screen offers with the test maps on: all of them but the ones only there to look at (`playable` off).
+## The maps a screen offers with the test maps on: all of them but the ones only there to look at
+## (`playable` off).
 func playable_tags() -> PackedStringArray:
 	var tags := PackedStringArray()
 	for tag in all_tags():
@@ -65,7 +68,8 @@ func playable_tags() -> PackedStringArray:
 	return tags
 
 
-## Every tag, the test maps included (a room server started with `--room-test-maps`, the debug boot).
+## Every tag, the test maps included (a room server started with `--room-test-maps`, the debug
+## boot).
 func all_tags() -> PackedStringArray:
 	var tags := Array(DirAccess.get_directories_at(DIR))
 	tags = tags.filter(

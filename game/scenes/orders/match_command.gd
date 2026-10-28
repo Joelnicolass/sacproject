@@ -1,13 +1,15 @@
 class_name MatchCommand
 extends Node
 
-## The player's commands in the world, as a coordinator of small children
-## (scenes/orders/command/): CommandInput routes keys and the left button, MinimapPointing the minimap, ArmedCommand holds
-## what waits for its target, SpellCommand / AbilityCommand / OrderCommand apply it, PointerRay turns pixels into bodies,
-## GroupKeys reads the group keys and CommandFeedback pings and says. Take a child out and that command is gone.
-## The right button belongs to OrderRadial: a tap calls `right_at`, a hold opens the radial menu, whose
-## entries call `order_at`, `order_in_formation`, `retreat`, `use_ability` and `set_formation` here.
-## Nothing is drawn as text: what is armed goes to %Battle (CommandLog) and CommandCue draws it on the cursor.
+## The player's commands in the world, as a coordinator of small children (scenes/orders/command/):
+## CommandInput routes keys and the left button, MinimapPointing the minimap, ArmedCommand holds
+## what waits for its target, SpellCommand / AbilityCommand / OrderCommand apply it, PointerRay
+## turns pixels into bodies, GroupKeys reads the group keys and CommandFeedback pings and says. Take
+## a child out and that command is gone. The right button belongs to OrderRadial: a tap calls
+## `right_at`, a hold opens the radial menu, whose entries call `order_at`, `order_in_formation`,
+## `retreat`, `use_ability` and `set_formation` here.
+## Nothing is drawn as text: what is armed goes to %Battle (CommandLog) and CommandCue draws it on
+## the cursor.
 
 ## The local player's command input (one per match).
 const GROUP := &"match_command"
@@ -47,7 +49,8 @@ func order_in_formation(id: StringName, screen: Vector2) -> void:
 	orders.order_in_formation(id, screen)
 
 
-## Arms an order icon (`kind`: "attack", "guard" or "move") for the next left click; `replace` wins over what was armed.
+## Arms an order icon (`kind`: "attack", "guard" or "move") for the next left click; `replace` wins
+## over what was armed.
 func arm_order(kind: String, replace := false) -> void:
 	armed.arm_order(kind, replace)
 

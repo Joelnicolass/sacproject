@@ -1,10 +1,10 @@
 class_name LightningBolt
 extends RefCounted
 
-## Shape of one bolt: `segments + 1` points in the
-## bolt's own frame, where +Z runs from the start (z = 0) to the end (z = 1) and X/Y are meters to the side.
-## Every inner point is pushed inside a box of side `jitter` (the ends stay on the axis). The caller hands a
-## generator of its own, so a beam never moves the match.
+## Shape of one bolt: `segments + 1` points in the bolt's own frame, where +Z runs from the start (z
+## = 0) to the end (z = 1) and X/Y are meters to the side. Every inner point is pushed inside a box
+## of side `jitter` (the ends stay on the axis). The caller hands a generator of its own, so a beam
+## never moves the match.
 ##
 ## z is stored as 10·k/n plus the push and scaled by 0.1·length when drawing:
 ## the push along the axis is jitter/10 of the whole length, the push to the side is in meters.

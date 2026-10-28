@@ -2,14 +2,15 @@ class_name LocalServerEndpoint
 extends RefCounted
 
 ## The text a rival types to reach a local server. Pure functions: no node, no network.
-## `192.168.1.5:7710`, `mi-pc.example.com:7710` or only `192.168.1.5` (then the default port is used).
+## `192.168.1.5:7710`, `mi-pc.example.com:7710` or only `192.168.1.5` (then the default port is
+## used).
 
 const PORT_MIN := 1
 const PORT_MAX := 65535
 
 
-## `{ok, host, port}`. `ok` is false when the host is not an IPv4 or a hostname, or the port is out of range.
-## Without `:port`, `default_port` is used.
+## `{ok, host, port}`. `ok` is false when the host is not an IPv4 or a hostname, or the port is out
+## of range. Without `:port`, `default_port` is used.
 static func parse(text: String, default_port: int) -> Dictionary:
 	var trimmed := text.strip_edges()
 	var host := trimmed

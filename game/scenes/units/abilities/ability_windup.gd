@@ -1,25 +1,29 @@
 class_name AbilityWindup
 extends Node
 
-## The preparation of an ability that is not instant (Firewalk, Breath of life, Quake...): the body is held (UsingAbility) and the
-## effect fires at `now + windup`. If something cuts it (stunned, frozen) the preparation is over at that tick; the mana is spent
-## when the effect fires, even if it did nothing, unless the effect pays upfront (the Jabberocky's Quake), which pays at the start.
-## Not: the checks, the mana and the cooldown (AbilitySlot) nor what the effect does (AbilityEffect).
-## Server (or solo) only.
+## The preparation of an ability that is not instant (Firewalk, Breath of life, Quake...): the body
+## is held (UsingAbility) and the effect fires at `now + windup`. If something cuts it (stunned,
+## frozen) the preparation is over at that tick; the mana is spent when the effect fires, even if it
+## did nothing, unless the effect pays upfront (the Jabberocky's Quake), which pays at the start.
+## Not: the checks, the mana and the cooldown (AbilitySlot) nor what the effect does
+## (AbilityEffect). Server (or solo) only.
 
 @export var slot: AbilitySlot
 
-## MatchClock tick at which the effect fires (-1 = none), where it was ordered and the target it was ordered on.
+## MatchClock tick at which the effect fires (-1 = none), where it was ordered and the target it was
+## ordered on.
 var _fire_at := -1
 var _fire_pos := Vector3.ZERO
 var _fire_target: Node3D
 
 
-## Only the server begins a preparation (`_fire_at` stays -1 on a client), so a client's step does nothing.
+## Only the server begins a preparation (`_fire_at` stays -1 on a client), so a client's step does
+## nothing.
 func _physics_process(_delta: float) -> void:
 	var now := MatchClock.now()
 	if _fire_at >= 0:
-		# A preparation that something cut (stunned, frozen…) is over at that tick, not at the shoot tick.
+		# A preparation that something cut (stunned, frozen…) is over at that tick, not at the shoot
+		# tick.
 		var using := slot.using_ability()
 		if using == null or not using.is_on():
 			_cut()
@@ -64,7 +68,8 @@ func _cut() -> void:
 		)
 
 
-## The effect's tick: if the preparation survived, it fires and the mana is spent even when fire() did nothing.
+## The effect's tick: if the preparation survived, it fires and the mana is spent even when fire()
+## did nothing.
 func _finish() -> void:
 	_fire_at = -1
 	var using := slot.using_ability()

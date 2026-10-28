@@ -1,13 +1,15 @@
 class_name ShotAim
 extends RefCounted
 
-## Where a creature's shot starts and where it goes: the origin, the target's centre and box, the point to lead, the clear line and
-## the scatter of the ranged accuracy (the one owner of it: RangedFire draws it once per shot; a RayStrike that rerolls, the
-## Warmonger's, draws it again for every ray). Not: when to shoot (RangedWeapon).
+## Where a creature's shot starts and where it goes: the origin, the target's centre and box, the
+## point to lead, the clear line and the scatter of the ranged accuracy (the one owner of it:
+## RangedFire draws it once per shot; a RayStrike that rerolls, the Warmonger's, draws it again for
+## every ray). Not: when to shoot (RangedWeapon).
 
 
-## The scatter of a shot: angle = atan(accuracy·0.001·0.14 + 0.03), azimuth angle·r³ and
-## elevation 0.1·angle·r³ with r uniform in [−1, 1], azimuth drawn first. The order of the draws is the simulation's: do not swap them.
+## The scatter of a shot: angle = atan(accuracy·0.001·0.14 + 0.03), azimuth angle·r³ and elevation
+## 0.1·angle·r³ with r uniform in [−1, 1], azimuth drawn first. The order of the draws is the
+## simulation's: do not swap them.
 static func scatter(direction: Vector3, accuracy: float, rng: RandomNumberGenerator) -> Vector3:
 	var angle := atan(accuracy * 0.001 * 0.14 + 0.03)
 	var azimuth_roll := rng.randf_range(-1.0, 1.0)
@@ -17,8 +19,9 @@ static func scatter(direction: Vector3, accuracy: float, rng: RandomNumberGenera
 	return direction.rotated(Vector3.RIGHT, elevation).rotated(Vector3.UP, azimuth)
 
 
-## Where a shot leaves a body: its front (melee_profile reach along facing_flat) at `height_fraction` of its height. The one
-## owner of the origin: RangedWeapon.shot_origin (its shot_height) and LobAbility (its own).
+## Where a shot leaves a body: its front (melee_profile reach along facing_flat) at
+## `height_fraction` of its height. The one owner of the origin: RangedWeapon.shot_origin (its
+## shot_height) and LobAbility (its own).
 static func origin(body: UnitBody, height_fraction: float) -> Vector3:
 	var profile := body.melee_profile()
 	var facing := body.facing_flat()
@@ -29,8 +32,8 @@ static func origin(body: UnitBody, height_fraction: float) -> Vector3:
 	)
 
 
-## The shot origin of `unit`'s ranged weapon, or its feet lifted when it has none. Breath of life and
-## Devour (the soul shrinks toward it) both ask it.
+## The shot origin of `unit`'s ranged weapon, or its feet lifted when it has none. Breath of life
+## and Devour (the soul shrinks toward it) both ask it.
 static func shot_position(unit: Node3D) -> Vector3:
 	var shooter := unit as UnitBody
 	if shooter != null and shooter.weapons.ranged != null:

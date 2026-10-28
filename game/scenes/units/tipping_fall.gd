@@ -1,10 +1,10 @@
 class_name TippingFall
 extends Node
 
-## A body with no death animation falls over backwards like a plank: it leans a little the other way, tips onto its
-## back and settles with a small bounce. Standing up is the same fall played softly the other way. Only the model
-## moves (the body, its collision and its soul stay where the simulation put them). It is for models without
-## a death clip.
+## A body with no death animation falls over backwards like a plank: it leans a little the other
+## way, tips onto its back and settles with a small bounce. Standing up is the same fall played
+## softly the other way. Only the model moves (the body, its collision and its soul stay where the
+## simulation put them). It is for models without a death clip.
 
 ## The model that tips over (feet at its origin): the unit's `Tilt/Mesh`.
 @export var mesh: Node3D
@@ -27,8 +27,8 @@ extends Node
 var _tween: Tween
 
 
-## The body lies from now on. `radius` lifts the model so half of it does not sink into the floor. `animate` false: it
-## already lies (it joined late).
+## The body lies from now on. `radius` lifts the model so half of it does not sink into the floor.
+## `animate` false: it already lies (it joined late).
 func lay_down(radius: float, animate := true) -> void:
 	if mesh == null:
 		return

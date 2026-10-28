@@ -36,7 +36,8 @@ func _ready() -> void:
 func _on_died(_from_slot: int) -> void:
 	if body == null:
 		return
-	# The center is taken now, where the body died; the cloud acts after the hit that killed it is over.
+	# The center is taken now, where the body died; the cloud acts after the hit that killed it is
+	# over.
 	var center := _center()
 	for cloud_type in clouds:
 		if cloud_type == null or cloud_type.scene == null or cloud_type.ability == null:

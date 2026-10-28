@@ -1,8 +1,9 @@
 class_name RagdollCheck
 extends RefCounted
 
-## The round trip of a baked model: what the editor holds before saving against what the saved file gives back (capsule radius and
-## height, transforms, body_offset, joint limits). Does NOT fix anything: it only says what differs.
+## The round trip of a baked model: what the editor holds before saving against what the saved file
+## gives back (capsule radius and height, transforms, body_offset, joint limits). Does NOT fix
+## anything: it only says what differs.
 
 const TOLERANCE := 1e-5
 const LIMITS: PackedStringArray = ["joint_constraints/swing_span", "joint_constraints/twist_span"]

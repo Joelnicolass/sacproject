@@ -1,11 +1,13 @@
 class_name ZoneBlast
 extends ZonePulse
 
-## What an explosion zone does when it goes off, at each of its points: splash damage that falls off with distance, a fire of no damage on
-## every body it reaches, the burst everybody sees, and then the throw of every body near the first point. It does not time the blast (the
-## zone and ZonePulse do) nor draw the balls (the zone's look).
+## What an explosion zone does when it goes off, at each of its points: splash damage that falls off
+## with distance, a fire of no damage on every body it reaches, the burst everybody sees, and then
+## the throw of every body near the first point. It does not time the blast (the zone and ZonePulse
+## do) nor draw the balls (the zone's look).
 
-## The burst played at each point: a scene with the spheres and the debris (it also carries the sound of the blast).
+## The burst played at each point: a scene with the spheres and the debris (it also carries the
+## sound of the blast).
 @export var burst: PackedScene
 ## Sprite bursts played at each point (FxBus), under data/fx/.
 @export var puffs: Array[ParticleType] = []
@@ -47,7 +49,8 @@ func _fire(_step: int) -> void:
 		_throw_all()
 
 
-## Every body near the first point leaves from the closest blast it answers to (the first one when it is in range).
+## Every body near the first point leaves from the closest blast it answers to (the first one when
+## it is in range).
 func _throw_all() -> void:
 	var spell := zone.spell
 	for body in bodies_near(zone.points[0], spell.effect_range_m + spell.damage_range_m):

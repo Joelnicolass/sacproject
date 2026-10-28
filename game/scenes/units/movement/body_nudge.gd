@@ -1,16 +1,17 @@
 class_name BodyNudge
 extends RefCounted
 
-## What the effects that move a creature or a wizard from outside share (Squall's Pushback, the Flurry's
-## implosion, Tumbling). A body on the ground slides on the land (a step that
-## leaves the land is not taken, and the height is the ground's); one in the air takes the step as it is. The server
-## (or solo) calls it; the clients get the position. Without terrain data (a bare debug scene) the land is everywhere
-## and the ground is where the body stands.
+## What the effects that move a creature or a wizard from outside share (Squall's Pushback, the
+## Flurry's implosion, Tumbling). A body on the ground slides on the land (a step that leaves the
+## land is not taken, and the height is the ground's); one in the air takes the step as it is. The
+## server (or solo) calls it; the clients get the position. Without terrain data (a bare debug
+## scene) the land is everywhere and the ground is where the body stands.
 
 
-## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in a line to `edge` at `radius`, 0 from
-## `radius` out; under `inner` it keeps growing (1.5 times `speed` at the middle with inner 5 and radius 15). The ritual and a tower
-## being cast push with it.
+## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in
+## a line to `edge` at `radius`, 0 from `radius` out; under `inner` it keeps growing (1.5 times
+## `speed` at the middle with inner 5 and radius 15). The ritual and a tower being cast push with
+## it.
 static func push_speed(
 	distance: float, inner: float, radius: float, speed: float, edge := 0.0
 ) -> float:
@@ -37,8 +38,9 @@ static func slide(body: Node3D, offset: Vector3) -> bool:
 	return true
 
 
-## The one place that puts a body somewhere else in one go (the server, or solo) without a WarpSnap: it writes the pose and tells
-## physics interpolation not to slide the picture from the old place to the new one.
+## The one place that puts a body somewhere else in one go (the server, or solo) without a WarpSnap:
+## it writes the pose and tells physics interpolation not to slide the picture from the old place to
+## the new one.
 static func place(body: Node3D, to: Vector3) -> void:
 	body.global_position = to
 	body.reset_physics_interpolation()
@@ -70,9 +72,9 @@ static func ground_y(body: Node3D, at: Vector3) -> float:
 	return body.global_position.y if is_nan(height) else height
 
 
-## The height a body on the ground stands at near `at`: the land's, or the body's own when it rests on a
-## building or another body above the land (building tops count). Off its edge, move_and_slide and
-## gravity take it down.
+## The height a body on the ground stands at near `at`: the land's, or the body's own when it rests
+## on a building or another body above the land (building tops count). Off its edge, move_and_slide
+## and gravity take it down.
 static func floor_y(body: Node3D, at: Vector3) -> float:
 	var land := ground_y(body, at)
 	var character := body as CharacterBody3D
@@ -120,7 +122,8 @@ static func bodies_in(
 	return found
 
 
-## Alive and on the field (a corpse, a ghost or a body being summoned is not moved): each effect asks the rest.
+## Alive and on the field (a corpse, a ghost or a body being summoned is not moved): each effect
+## asks the rest.
 static func _alive(body: Node3D) -> bool:
 	if not Attackable.is_body(body):
 		return false

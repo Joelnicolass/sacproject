@@ -2,9 +2,10 @@
 class_name ZoneDropper
 extends Node
 
-## What a cloud lets go: while its zone acts, `rate_per_s` times a second it picks where something falls, a point of a disk around the
-## zone or, when a body is near, that body, and says so with `chosen`. It does not make what falls (DropLauncher, BoltLauncher) nor time
-## the zone (GroundZone). Server (or solo) only; every draw comes from MatchSeed, so one seed gives one rain.
+## What a cloud lets go: while its zone acts, `rate_per_s` times a second it picks where something
+## falls, a point of a disk around the zone or, when a body is near, that body, and says so with
+## `chosen`. It does not make what falls (DropLauncher, BoltLauncher) nor time the zone
+## (GroundZone). Server (or solo) only; every draw comes from MatchSeed, so one seed gives one rain.
 
 ## `point` stands on the land; `body` is the creature the drop was pulled to (null = a plain point).
 signal chosen(point: Vector3, body: Node3D)
@@ -15,14 +16,16 @@ signal chosen(point: Vector3, body: Node3D)
 @export_range(0.0, 2.0, 0.01) var reach_share := 1.0
 enum Pick { PULL_TO_NEAREST, BODY_OR_RING }
 
-## How it chooses: a point of the disk that a body near it pulls (rain, meteorites), or a random body of the disk (with a chance
-## that falls as the bodies are few) and otherwise a point of the ring between `ring_min_m` and the disk's edge (a volcano's lava).
+## How it chooses: a point of the disk that a body near it pulls (rain, meteorites), or a random
+## body of the disk (with a chance that falls as the bodies are few) and otherwise a point of the
+## ring between `ring_min_m` and the disk's edge (a volcano's lava).
 @export var pick := Pick.PULL_TO_NEAREST
 @export_range(0.0, 100.0, 0.5, "suffix:m") var ring_min_m := 30.0
 ## BODY_OR_RING: a body is chosen with chance n / (n + decoys), n being the bodies in the disk.
 @export_range(0, 16) var decoys := 4
 @export_group("Pull to bodies")
-## A body this close (flat distance) to the chosen point takes the drop; a body up to `far_m` takes it with `far_chance`.
+## A body this close (flat distance) to the chosen point takes the drop; a body up to `far_m` takes
+## it with `far_chance`.
 @export_range(0.0, 100.0, 0.5, "suffix:m") var near_m := 10.0
 @export_range(0.0, 100.0, 0.5, "suffix:m") var far_m := 25.0
 @export_range(0.0, 1.0, 0.01) var far_chance := 0.667
@@ -72,7 +75,8 @@ func _choose() -> void:
 	chosen.emit(spot, body)
 
 
-## The closest body to `spot` among those within the spell's range of the zone, if it is near enough to take the drop.
+## The closest body to `spot` among those within the spell's range of the zone, if it is near enough
+## to take the drop.
 func _pulled(centre: Vector3, spot: Vector3) -> Node3D:
 	var best: Node3D
 	var best_d := INF

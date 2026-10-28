@@ -1,10 +1,11 @@
 class_name ZoneStunRing
 extends ZonePulse
 
-## A wave that runs out from the center of the zone and stuns whoever it crosses between two distances: one pulse each
-## tick, the ring at `wave_range_m` over `wave_s` seconds, and every creature and wizard standing within `band` ticks of
-## travel of it (and farther than `stun_min_m`) is stunned, once per its own cooldown. No damage, no throw. The crest the
-## player sees is the zone's wave stamp; this one only decides who falls. Server (or solo) only.
+## A wave that runs out from the center of the zone and stuns whoever it crosses between two
+## distances: one pulse each tick, the ring at `wave_range_m` over `wave_s` seconds, and every
+## creature and wizard standing within `band` ticks of travel of it (and farther than `stun_min_m`)
+## is stunned, once per its own cooldown. No damage, no throw. The crest the player sees is the
+## zone's wave stamp; this one only decides who falls. Server (or solo) only.
 
 ## How far the ring goes and how long it takes.
 @export_range(1.0, 300.0, 0.5, "suffix:m") var wave_range_m := 90.0

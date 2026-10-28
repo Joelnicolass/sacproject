@@ -1,10 +1,10 @@
 class_name AtmosphereSample
 extends RefCounted
 
-## The atmosphere at one moment, as numbers the look layers read: how the hour and the weather change the approved
-## light, the sky and the fog. A value, never saved. `neutral()` changes nothing (the biome's approved look, exactly);
-## the multipliers are 1 there and the amounts 0.
-## The day and the weather each give one; `mix` joins them (commutative, with the neutral as its identity).
+## The atmosphere at one moment, as numbers the look layers read: how the hour and the weather
+## change the approved light, the sky and the fog. A value, never saved. `neutral()` changes nothing
+## (the biome's approved look, exactly); the multipliers are 1 there and the amounts 0. The day and
+## the weather each give one; `mix` joins them (commutative, with the neutral as its identity).
 
 ## Hour of the day, 0..24. -1 = no hour (the weather's sample, or no cycle).
 var hour := -1.0
@@ -29,9 +29,11 @@ var sky_grey := 0.0
 ## Multipliers of the fog's density and of its far end.
 var fog_density := 1.0
 var fog_end := 1.0
-## The fog starts no closer than this (0 = where the sky says): a mist that hides the far land, not the play.
+## The fog starts no closer than this (0 = where the sky says): a mist that hides the far land, not
+## the play.
 var fog_clear_m := 0.0
-## Multiplier of where the fog begins (below 1 the mist comes closer, never closer than `fog_clear_m`).
+## Multiplier of where the fog begins (below 1 the mist comes closer, never closer than
+## `fog_clear_m`).
 var fog_begin := 1.0
 ## 0..1: how far the fog color goes to the pale `mist_color` (a white mist over any biome's fog).
 var mist := 0.0
@@ -43,7 +45,8 @@ var flash := 0.0
 ## How many stars show (0..1) and the moon disc's brightness added to the sky's own.
 var stars := 0.0
 var moon_intensity := 0.0
-## Extra cloud cover (0 = the sky's own clouds), how much darker they are, and how much faster they drift.
+## Extra cloud cover (0 = the sky's own clouds), how much darker they are, and how much faster they
+## drift.
 var cloud_cover := 0.0
 var cloud_darken := 0.0
 var cloud_speed_mul := 1.0
@@ -55,7 +58,8 @@ static func neutral() -> AtmosphereSample:
 	return AtmosphereSample.new()
 
 
-## The day and the weather together: product of the multipliers, max of the amounts, sum (capped) of the flash.
+## The day and the weather together: product of the multipliers, max of the amounts, sum (capped) of
+## the flash.
 static func mix(a: AtmosphereSample, b: AtmosphereSample) -> AtmosphereSample:
 	var out := AtmosphereSample.new()
 	out.hour = maxf(a.hour, b.hour)
@@ -184,8 +188,8 @@ func _take(n: PackedFloat32Array) -> void:
 	mist_color = Color(n[28], n[29], n[30])
 
 
-## The same moment with the look left as it is (hour and weather kept): Atmosphere snaps a sample within a hair of
-## neutral to this, so the start of a match shows the approved look byte for byte.
+## The same moment with the look left as it is (hour and weather kept): Atmosphere snaps a sample
+## within a hair of neutral to this, so the start of a match shows the approved look byte for byte.
 func as_neutral() -> AtmosphereSample:
 	var plain := neutral()
 	plain.hour = hour

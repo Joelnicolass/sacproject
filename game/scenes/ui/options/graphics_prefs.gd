@@ -3,17 +3,22 @@ class_name GraphicsPrefs
 extends Resource
 
 ## The player's graphics choice, a local preference (not a match rule).
-## - The quality is one of `presets` (the existing LookQuality .tres); this resource never copies their fields.
+## - The quality is one of `presets` (the existing LookQuality .tres); this resource never copies
+##   their fields.
 ## - VSync, fullscreen and the FPS cap are the window's.
-## - «Vegetación»: off, the mesh vegetation layers (FloraField) draw nothing whatever the preset says.
-## - «Relieve»: off, no model draws its normal maps whatever the preset says (SurfaceReliefLayer reads it).
-## - It lives in `user://settings.cfg` `[graphics]` through UserSettings. `--quality=low|medium|high` on the command
-##   line wins for one run and is not saved.
-## - «Cantidad de marcas»: how many 10 m tiles of the ground can hold a mark (burns, cracks) at once; GroundScars reads it when the map loads.
-## - First run: `default_quality` (medium), VSync on, windowed, no cap. The Mac safety rule: nothing here raises the
-##   GPU use unless the player asks for it.
-## Like UiScalePrefs, every node must share the instance at `SHARED_PATH` (a copy would not follow the player's choice);
-## the values are runtime state of that instance and the exported fields are never written. Changes emit `changed`.
+## - «Vegetación»: off, the mesh vegetation layers (FloraField) draw nothing whatever the preset
+##   says.
+## - «Relieve»: off, no model draws its normal maps whatever the preset says (SurfaceReliefLayer
+##   reads it).
+## - It lives in `user://settings.cfg` `[graphics]` through UserSettings.
+##   `--quality=low|medium|high` on the command line wins for one run and is not saved.
+## - «Cantidad de marcas»: how many 10 m tiles of the ground can hold a mark (burns, cracks) at
+##   once; GroundScars reads it when the map loads.
+## - First run: `default_quality` (medium), VSync on, windowed, no cap. The Mac safety rule: nothing
+##   here raises the GPU use unless the player asks for it.
+## Like UiScalePrefs, every node must share the instance at `SHARED_PATH` (a copy would not follow
+## the player's choice); the values are runtime state of that instance and the exported fields are
+## never written. Changes emit `changed`.
 
 const SHARED_PATH := "res://data/ui/graphics_prefs.tres"
 const SECTION := "graphics"
@@ -139,7 +144,8 @@ func set_max_fps(value: int) -> void:
 	_commit()
 
 
-## The preset `--quality=` asked for in this run, or null (the sandboxed runs use it over their default).
+## The preset `--quality=` asked for in this run, or null (the sandboxed runs use it over their
+## default).
 func forced_quality() -> LookQuality:
 	return preset_for(_cli_quality())
 

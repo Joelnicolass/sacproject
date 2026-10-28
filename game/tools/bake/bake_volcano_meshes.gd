@@ -1,9 +1,12 @@
 extends SceneTree
 
-## Writes the two meshes of the Volcano's look: volcano_lava_tube.res (the column of lava, 48 rings of 64 sides) and volcano_spatter_ring.res (the splash of lava on the ground, 24 rings of 64
-## sides). They hold topology only: UV.x is the turn around the axis (0 to 1) and UV.y how far along the tube or out from the center
-## (0 to 1), and the shader of each (volcano_lava / volcano_spatter.gdshader) puts every vertex in place from the
-## knots and radii it holds as uniforms. It needs no original game. Run it once; the result is versioned and the scene only holds the files.
+## Writes the two meshes of the Volcano's look: volcano_lava_tube.res (the column of lava, 48 rings
+## of 64 sides) and volcano_spatter_ring.res (the splash of lava on the ground, 24 rings of 64
+## sides). They hold topology only: UV.x is the turn around the axis (0 to 1) and UV.y how far along
+## the tube or out from the center (0 to 1), and the shader of each (volcano_lava /
+## volcano_spatter.gdshader) puts every vertex in place from the knots and radii it holds as
+## uniforms. It needs no original game. Run it once; the result is versioned and the scene only
+## holds the files.
 ##   "$GODOT" --headless --path game --script res://tools/bake/bake_volcano_meshes.gd
 
 const DIR := "res://scenes/spells/zones/"
@@ -19,7 +22,8 @@ func _initialize() -> void:
 	quit(0 if ok else 1)
 
 
-## `rings` + 1 rings of SIDES + 1 vertices; ring i is at UV.y = i / rings (the spatter has one ring more than the original's 24).
+## `rings` + 1 rings of SIDES + 1 vertices; ring i is at UV.y = i / rings (the spatter has one ring
+## more than the original's 24).
 func _tube(rings: int, bounds: AABB) -> ArrayMesh:
 	var vertices := PackedVector3Array()
 	var uvs := PackedVector2Array()

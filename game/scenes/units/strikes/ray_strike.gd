@@ -1,15 +1,15 @@
 class_name RayStrike
 extends ShotStrike
 
-## Instant rays, cast on given ticks. The Gnome (gnome_ray.tscn: one ray on tick 0) and the Warmonger's gun
-## (warmonger_gun.tscn: 16 bursts of 2 rays from tick 2, one every
-## 4).
+## Instant rays, cast on given ticks. The Gnome (gnome_ray.tscn: one ray on tick 0) and the
+## Warmonger's gun (warmonger_gun.tscn: 16 bursts of 2 rays from tick 2, one every 4).
 ##
-## A ray (`_cast`) goes `max_distance` from the
-## shot origin and stops on the first live body that is not the shooter, of any side, or on the ground or a structure
-## (`stop_mask`). The damage is ShotImpact.land on the body it stopped on; with `foes_only` a body of the shooter's side
-## that is not the intended target stops the ray and takes nothing (Health is not asked). The hit FX (ShotLook.impact_fx)
-## plays where the ray ends, hit or not, and `beam` (FxBus) goes from the origin to there, or `beam_length` along it.
+## A ray (`_cast`) goes `max_distance` from the shot origin and stops on the first live body that is
+## not the shooter, of any side, or on the ground or a structure (`stop_mask`). The damage is
+## ShotImpact.land on the body it stopped on; with `foes_only` a body of the shooter's side that is
+## not the intended target stops the ray and takes nothing (Health is not asked). The hit FX
+## (ShotLook.impact_fx) plays where the ray ends, hit or not, and `beam` (FxBus) goes from the
+## origin to there, or `beam_length` along it.
 
 ## How many bursts the strike fires before it ends.
 @export_range(1, 64) var bursts := 1
@@ -19,22 +19,22 @@ extends ShotStrike
 @export_range(0.0166, 2.0, 0.0001, "suffix:s") var period_s := 0.0666
 ## Rays per burst.
 @export_range(1, 8) var rays_per_burst := 1
-## Each ray draws the accuracy again around the aimed point (ShotAim.scatter with a stream of its own). Off: every ray
-## goes along the shot's direction (accuracy drawn once by RangedWeapon).
+## Each ray draws the accuracy again around the aimed point (ShotAim.scatter with a stream of its
+## own). Off: every ray goes along the shot's direction (accuracy drawn once by RangedWeapon).
 @export var reroll := false
-## Every burst leaves from the shooter's shot origin of that tick, and the strike ends when the shooter is no longer
-## live. Off: from the origin of the shot.
+## Every burst leaves from the shooter's shot origin of that tick, and the strike ends when the
+## shooter is no longer live. Off: from the origin of the shot.
 @export var follow := false
-## A body of the shooter's side that is not the intended target stops the ray and takes nothing. Off: Health decides
-## (friendly fire, Health._side_factor).
+## A body of the shooter's side that is not the intended target stops the ray and takes nothing.
+## Off: Health decides (friendly fire, Health._side_factor).
 @export var foes_only := false
 ## The bolt (a BeamType of data/fx/beams) drawn from the origin of each ray. Empty: none.
 @export var beam: BeamType
 ## Meters of the beam along the ray: a gun flame at the muzzle (the Gnome's gun flame, length
 ## 1.7). 0: the whole ray, to where it ends.
 @export_range(0.0, 200.0, 0.1, "suffix:m") var beam_length := 0.0
-## A ray that meets nothing (no body, no ground, no structure) is drawn only this fraction of its length: the Locust's
-## zbba shows 0.5 * range when it finds no target. Only the beam: where the ray
+## A ray that meets nothing (no body, no ground, no structure) is drawn only this fraction of its
+## length: the Locust's zbba shows 0.5 * range when it finds no target. Only the beam: where the ray
 ## ends for the log and the damage is not touched. 1 = the whole ray (the Gnome's).
 @export_range(0.0, 1.0, 0.01) var miss_fraction := 1.0
 ## Word for the strike in the log of a cut (`<label> <tag> cortada: …`).

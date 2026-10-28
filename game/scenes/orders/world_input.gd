@@ -1,10 +1,11 @@
 class_name WorldInput
 extends RefCounted
 
-## The one owner of «does the player's input reach the world?».
-## A node that covers the world with a modal UI (PauseMenu, OptionsMenu) joins the group `MODAL` while it is open;
-## the readers of world input (MatchCommand, WizardBody._read_forward, WorldCamera, SoulSystem) ask `blocked(self)`.
-## Per-channel policies (a chat that blocks keys but not the camera) get added here when one is needed.
+## The one owner of «does the player's input reach the world?». A node that covers the world with a
+## modal UI (PauseMenu, OptionsMenu) joins the group `MODAL` while it is open; the readers of world
+## input (MatchCommand, WizardBody._read_forward, WorldCamera, SoulSystem) ask `blocked(self)`.
+## Per-channel policies (a chat that blocks keys but not the camera) get added here when one is
+## needed.
 ##
 ## The group is named `menu_open`: AgentKit flows count it.
 

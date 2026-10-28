@@ -2,9 +2,10 @@
 class_name AuraImpact
 extends Node
 
-## The mark an aura leaves on a body it hurts: a burst of sprites on the victim (and the `sound` that goes with that burst's
-## ParticleType), at most once every `every_s` per victim. The server (or solo) decides when; FxBus draws it on every peer.
-## It does not hurt anyone (BodyAura) nor draw the ward itself (WardEmitter).
+## The mark an aura leaves on a body it hurts: a burst of sprites on the victim (and the `sound`
+## that goes with that burst's ParticleType), at most once every `every_s` per victim. The server
+## (or solo) decides when; FxBus draws it on every peer. It does not hurt anyone (BodyAura) nor draw
+## the ward itself (WardEmitter).
 
 @export var aura: BodyAura
 ## What is drawn on the victim (its own file, so it can travel).

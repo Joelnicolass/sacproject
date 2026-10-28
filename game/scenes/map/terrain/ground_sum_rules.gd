@@ -1,12 +1,14 @@
 class_name GroundSumRules
 extends RefCounted
 
-## How the ground's visible shift is added up from what stays and the stamps that play, over a rect of lattice vertices:
-## the plain loops GroundField runs on its arrays (`texels` two floats per vertex, `permanent` one). Pure and static.
+## How the ground's visible shift is added up from what stays and the stamps that play, over a rect
+## of lattice vertices: the plain loops GroundField runs on its arrays (`texels` two floats per
+## vertex, `permanent` one). Pure and static.
 ## Not: which stamps play or what stays (GroundField), what a stamp's shift is (StampRules).
 
 
-## Writes over `rect` what stays plus every stamp of `stamps` ([rect, values] each, values row by row), in their order.
+## Writes over `rect` what stays plus every stamp of `stamps` ([rect, values] each, values row by
+## row), in their order.
 static func sum(
 	texels: PackedFloat32Array, permanent: PackedFloat32Array, stamps: Array, rect: Rect2i
 ) -> void:
@@ -30,8 +32,9 @@ static func sum(
 				texels[id * 2] += values[at + id]
 
 
-## One stamp's new shift `values` over the same `rect` as its old one `before`: with no other stamp over the rect (`alone`)
-## it writes what stays plus `values` exactly; otherwise it adds the difference.
+## One stamp's new shift `values` over the same `rect` as its old one `before`: with no other stamp
+## over the rect (`alone`) it writes what stays plus `values` exactly; otherwise it adds the
+## difference.
 static func replace(
 	texels: PackedFloat32Array,
 	permanent: PackedFloat32Array,

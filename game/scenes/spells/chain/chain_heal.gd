@@ -1,9 +1,10 @@
 class_name ChainHeal
 extends ChainEffect
 
-## One arc of Rainbow: each jump draws an arch from the last point to the next ally (it follows the ally while it travels) and when it
-## lands it cures all the ally's health through HealEffect (the same cure in time as Heal) and throws a burst of colored sparks.
-## It does not choose whom (ChainHop) nor heal by itself: HealEffect owns the cure.
+## One arc of Rainbow: each jump draws an arch from the last point to the next ally (it follows the
+## ally while it travels) and when it lands it cures all the ally's health through HealEffect (the
+## same cure in time as Heal) and throws a burst of colored sparks. It does not choose whom
+## (ChainHop) nor heal by itself: HealEffect owns the cure.
 
 ## The arch (a BeamType with path ARC under data/fx/beams/).
 @export var beam: BeamType

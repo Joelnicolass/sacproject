@@ -2,24 +2,27 @@
 class_name AdvisorWatch
 extends Node
 
-## The game's warnings for the advisor (child of AdvisorVoice). It hears what every peer already tells game-wide
-## (Events.body_hurt, ritual_started, ritual_ended) and asks `advisor.say(line)`; the line carries its priority and quiet
-## time and the advisor decides the queue. Only the side of the seat that looks at this screen (0 on a dedicated: nothing).
-## Remove the node and only the refusals speak.
-## - The local wizard (MatchWorld.local_wizard_changed, or `wizard` set by hand) hurt -> `wizard_attacked`;
-##   below `low_health_ratio` of its bar -> `wizard_low_health`.
+## The game's warnings for the advisor (child of AdvisorVoice). It hears what every peer already
+## tells game-wide (Events.body_hurt, ritual_started, ritual_ended) and asks `advisor.say(line)`;
+## the line carries its priority and quiet time and the advisor decides the queue. Only the side of
+## the seat that looks at this screen (0 on a dedicated: nothing). Remove the node and only the
+## refusals speak.
+## - The local wizard (MatchWorld.local_wizard_changed, or `wizard` set by hand) hurt ->
+##   `wizard_attacked`; below `low_health_ratio` of its bar -> `wizard_low_health`.
 ## - Own creatures (UnitBody) hurt -> `creatures_attacked`; health to 0 -> `creature_died`.
-## - Own buildings (group «structure»: Manaliths, map buildings) hurt -> `building_attacked`; to 0 -> `building_destroyed`.
-## - Rituals: a Desecrate that starts on this side's altar -> `desecrated`; one this side cast ends completed ->
-##   `sacrifice_complete`.
-## The owner is checked when the event comes (a converted creature changes side). Reads only: no RPC, nothing written to
-## the simulation.
+## - Own buildings (group «structure»: Manaliths, map buildings) hurt -> `building_attacked`; to 0
+##   -> `building_destroyed`.
+## - Rituals: a Desecrate that starts on this side's altar -> `desecrated`; one this side cast ends
+##   completed -> `sacrifice_complete`.
+## The owner is checked when the event comes (a converted creature changes side). Reads only: no
+## RPC, nothing written to the simulation.
 
 @export var advisor: AdvisorVoice:
 	set(value):
 		advisor = value
 		update_configuration_warnings()
-## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets `wizard`.
+## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets
+## `wizard`.
 @export var world: MatchWorld
 @export var wizard: Node3D
 ## Who looks at this screen: only this seat's side is warned.

@@ -2,9 +2,11 @@
 class_name FrogHop
 extends Node
 
-## How a frog of Rain of Frogs moves once it is down: it sits half a second, jumps toward the closest creature in range (or anywhere, if
-## none), and sits again, up to seven jumps; in the middle of the seventh it bursts. It asks its ZoneDrop to fly (launch) and to end
-## (finish); it never moves it. It does not stick to anybody (FrogCling) nor draw (FrogLook). Server (or solo) only.
+## How a frog of Rain of Frogs moves once it is down: it sits half a second, jumps toward the
+## closest creature in range (or anywhere, if none), and sits again, up to seven jumps; in the
+## middle of the seventh it bursts. It asks its ZoneDrop to fly (launch) and to end (finish); it
+## never moves it. It does not stick to anybody (FrogCling) nor draw (FrogLook). Server (or solo)
+## only.
 
 @export var drop: ZoneDrop
 @export_range(0.0, 5.0, 0.05, "suffix:s") var sit_s := 0.5

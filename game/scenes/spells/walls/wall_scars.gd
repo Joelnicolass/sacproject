@@ -1,10 +1,12 @@
 class_name WallScars
 extends Node
 
-## The cracks a wall leaves in the ground as its ends advance: every `every_s` of the wall's age, while the ends can still be going out,
-## it asks its ScarMark to paint at each end, somewhere across the thickness and up to `behind_m` behind the front. The Firewall leaves
-## `quk1`, the Wall of Spikes `gscr`. Presentation only, on every peer (each one sees the wall grow and paints it), never at a dedicated or
-## headless process (ScarMark); it does not touch the rules. Its dice are its own.
+## The cracks a wall leaves in the ground as its ends advance: every `every_s` of the wall's age,
+## while the ends can still be going out, it asks its ScarMark to paint at each end, somewhere
+## across the thickness and up to `behind_m` behind the front. The Firewall leaves `quk1`, the Wall
+## of Spikes `gscr`. Presentation only, on every peer (each one sees the wall grow and paints it),
+## never at a dedicated or headless process (ScarMark); it does not touch the rules. Its dice are
+## its own.
 
 @export var wall: SpellWall
 ## The mark and the picture (texture, height limit) that is painted.

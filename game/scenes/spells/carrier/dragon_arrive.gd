@@ -1,10 +1,12 @@
 class_name DragonArrive
 extends CarrierArrive
 
-## The work of Dragonfire's dragon: it burns whatever its box passes through (a share of the spell's amount per second, ignoring shields),
-## and when it reaches a body it hurts everything around with the spell's splash, sets it ablaze for a second and flies on to a point
-## before it looks for another target. Its ChainHop says who was hit and whom to fly to next (a fixed radius, up to `hits`); after
-## `misses_allowed` failed searches, or with the chain full, the dragon shrinks away. It does not fly (SpellCarrier).
+## The work of Dragonfire's dragon: it burns whatever its box passes through (a share of the spell's
+## amount per second, ignoring shields), and when it reaches a body it hurts everything around with
+## the spell's splash, sets it ablaze for a second and flies on to a point before it looks for
+## another target. Its ChainHop says who was hit and whom to fly to next (a fixed radius, up to
+## `hits`); after `misses_allowed` failed searches, or with the chain full, the dragon shrinks away.
+## It does not fly (SpellCarrier).
 
 ## Who was hit and who is next.
 @export var chain: ChainHop
@@ -16,7 +18,8 @@ extends CarrierArrive
 @export_range(0, 5) var misses_allowed := 1
 ## How far it flies on to look for the next target, as a share of the spell's range.
 @export_range(0.0, 1.0, 0.05) var wander_share := 0.5
-## The sound of the dragon at a new target and at each hit (a ParticleType with no sprites under data/fx/).
+## The sound of the dragon at a new target and at each hit (a ParticleType with no sprites under
+## data/fx/).
 @export var roar: ParticleType
 
 var _spell: SpellType

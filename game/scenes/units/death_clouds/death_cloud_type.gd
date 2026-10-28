@@ -1,9 +1,10 @@
 class_name DeathCloudType
 extends Resource
 
-## What a creature leaves when it dies: a cloud that hurts or heals the bodies around it. The numbers (amount, damage range,
-## effect range, duration) are the `ability`'s; here only which scene does it and how it looks. A new cloud is a new .tres (and, if
-## it does something new, a new scene) in the `clouds` of the creature's DeathCloudSpawner (its `<name>_passives.tscn`).
+## What a creature leaves when it dies: a cloud that hurts or heals the bodies around it. The
+## numbers (amount, damage range, effect range, duration) are the `ability`'s; here only which scene
+## does it and how it looks. A new cloud is a new .tres (and, if it does something new, a new scene)
+## in the `clouds` of the creature's DeathCloudSpawner (its `<name>_passives.tscn`).
 
 ## The numbers of the cloud (data/catalog/abilities/steam_cloud.tres, cen@.tres, tum@.tres).
 @export var ability: AbilityType

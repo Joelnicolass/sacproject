@@ -1,14 +1,16 @@
 class_name TargetFutility
 extends Node
 
-## The futile targets of a creature: a target it fights that does not lose at least `futile_min_loss` of
-## its maximum health within `futile_window_s` is banned for `futile_forget_s`, and TargetPicker passes over it. A Shrike that
-## stuns a Farmer misses the next shot at the lying body and the Farmer regenerates in between: without this the creature
-## stays on it for good (the user's «mis criaturas no atacan»).
-## The window is a rolling one: it starts at the first swing or shot on the target (ATTACK or SHOOT), runs while the body
-## keeps it and is read every `sample_s` (the health `futile_window_s` ago against now); a new target starts it again.
-## The target of an explicit ATTACK order is never measured (the player's order ignores the ban). Bench log: `targets`.
-## Server (or solo) only; counts MatchClock ticks. Removing this child turns the rule off.
+## The futile targets of a creature: a target it fights that does not lose at least
+## `futile_min_loss` of its maximum health within `futile_window_s` is banned for `futile_forget_s`,
+## and TargetPicker passes over it. A Shrike that stuns a Farmer misses the next shot at the lying
+## body and the Farmer regenerates in between: without this the creature stays on it for good (the
+## user's «mis criaturas no atacan»). The window is a rolling one: it starts at the first swing or
+## shot on the target (ATTACK or SHOOT), runs while the body keeps it and is read every `sample_s`
+## (the health `futile_window_s` ago against now); a new target starts it again. The target of an
+## explicit ATTACK order is never measured (the player's order ignores the ban). Bench log:
+## `targets`. Server (or solo) only; counts MatchClock ticks. Removing this child turns the rule
+## off.
 
 ## The body that fights (a UnitBody).
 @export var body: UnitBody
@@ -16,7 +18,8 @@ extends Node
 @export_range(0.0, 1.0, 0.005) var futile_min_loss := 0.05
 @export var futile_window_s := 6.0
 @export var futile_forget_s := 15.0
-## The targets measured: creatures and wizards. Buildings are not (their guardians take the hits for them).
+## The targets measured: creatures and wizards. Buildings are not (their guardians take the hits for
+## them).
 @export var groups: Array[StringName] = [&"unit", &"wizard"]
 ## How often the target's health is sampled for the rolling window.
 @export var sample_s := 0.25

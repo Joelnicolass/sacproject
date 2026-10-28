@@ -1,11 +1,12 @@
 class_name TerrainGrid
 extends RefCounted
 
-## Where the vertices of a map's ground lie: a square lattice of SIDE x SIDE vertices, CELL_M metres apart, from the origin
-## (x, z >= 0), and the arithmetic between a point in metres, a vertex (column, row) and its id (row * SIDE + column; a 10 m
-## cell has the id of its low corner). The one place of these numbers: the ground shader keeps one mirror
-## (look/ground/terrain_deform.gdshaderinc) that must change with it. Not: how high a vertex is, whether
-## it is land or a hole (GroundField, TerrainRules). Pure and static.
+## Where the vertices of a map's ground lie: a square lattice of SIDE x SIDE vertices, CELL_M metres
+## apart, from the origin (x, z >= 0), and the arithmetic between a point in metres, a vertex
+## (column, row) and its id (row * SIDE + column; a 10 m cell has the id of its low corner). The one
+## place of these numbers: the ground shader keeps one mirror
+## (look/ground/terrain_deform.gdshaderinc) that must change with it. Not: how high a vertex is,
+## whether it is land or a hole (GroundField, TerrainRules). Pure and static.
 
 ## Vertices per side of the lattice (and 10 m cells per side of a map's tile index).
 const SIDE := 256

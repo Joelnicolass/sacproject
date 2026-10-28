@@ -1,8 +1,9 @@
 extends FsmState
 
-## Invulnerable (the body is not targetable while it falls or lands). It leaves the vortex going up at
-## `body.launch_up_m_s`, falls under the engine gravity to the landing point (the transition payload, a Vector3) holding the last frame of the
-## expelled clip, plays the hit-floor clip once on touching the ground and then `landed` fires. Server only.
+## Invulnerable (the body is not targetable while it falls or lands). It leaves the vortex going up
+## at `body.launch_up_m_s`, falls under the engine gravity to the landing point (the transition
+## payload, a Vector3) holding the last frame of the expelled clip, plays the hit-floor clip once on
+## touching the ground and then `landed` fires. Server only.
 
 var body: DoctorBody:
 	get:

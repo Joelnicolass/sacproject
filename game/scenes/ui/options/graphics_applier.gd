@@ -3,19 +3,24 @@ class_name GraphicsApplier
 extends Node
 
 ## Puts the player's GraphicsPrefs on screen, at start and live on every change.
-## - Only where this node's owner is the running scene: the boot, or the world in a match. A debug scene that
-##   instances the world (look_bench, biome_gallery with F6) keeps its own window settings and preset.
-## - Window: fullscreen or windowed, VSync and `Engine.max_fps`. An engine flag of this run (`--max-fps`, `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the preference and is left alone.
-## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none), and the «Vegetación»
-##   switch: `rig.set_vegetation_enabled`.
-## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated server and under
-##   AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the player and the agents' runs, so a
-##   test never inherits the player's choice (no VSync off / no cap in a playtest). The rule is UserSettings.sandboxed():
-##   `--user-settings=user://<file>.cfg` (a playtest of the preferences) turns it back on with that file; the engine
-##   flags of the run still win.
-## - Under AgentKit with a window (not headless) the preset is still applied, deterministically and without touching the
-##   player's file: `--quality=low|medium|high`, else `sandbox_quality` (high). The window settings and the vegetation switch
-##   stay as the run started; without a preset FloraField plants nothing, so a capture would show a bare ground.
+## - Only where this node's owner is the running scene: the boot, or the world in a match. A debug
+##   scene that instances the world (look_bench, biome_gallery with F6) keeps its own window
+##   settings and preset.
+## - Window: fullscreen or windowed, VSync and `Engine.max_fps`. An engine flag of this run
+##   (`--max-fps`, `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the
+##   preference and is left alone.
+## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none), and
+##   the «Vegetación» switch: `rig.set_vegetation_enabled`.
+## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated
+##   server and under AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the
+##   player and the agents' runs, so a test never inherits the player's choice (no VSync off / no
+##   cap in a playtest). The rule is UserSettings.sandboxed(): `--user-settings=user://<file>.cfg`
+##   (a playtest of the preferences) turns it back on with that file; the engine flags of the run
+##   still win.
+## - Under AgentKit with a window (not headless) the preset is still applied, deterministically and
+##   without touching the player's file: `--quality=low|medium|high`, else `sandbox_quality` (high).
+##   The window settings and the vegetation switch stay as the run started; without a preset
+##   FloraField plants nothing, so a capture would show a bare ground.
 
 ## The shared preference (data/ui/graphics_prefs.tres).
 @export var prefs: GraphicsPrefs
@@ -31,8 +36,9 @@ func _ready() -> void:
 		return
 	if _inert():
 		return
-	# A scene the flow swaps in (change_scene) enters the tree BEFORE it becomes the current scene, so `_owns_scene()` is
-	# false here and the player's preset would never reach the rig (no vegetation until the options change): wait for it.
+	# A scene the flow swaps in (change_scene) enters the tree BEFORE it becomes the current scene,
+	# so `_owns_scene()` is false here and the player's preset would never reach the rig (no
+	# vegetation until the options change): wait for it.
 	if not _owns_scene():
 		await get_tree().process_frame
 		if not is_inside_tree():
@@ -71,8 +77,10 @@ func apply() -> void:
 	print(line)
 
 
-## Sandboxed run with a window: the deterministic preset on the rig, nothing read from or written to the player's file.
-## Waits a frame: the map binds `rig` and the flow makes this world the current scene while it enters the tree.
+## Sandboxed run with a window: the deterministic preset on the rig, nothing read from or written to
+## the player's file.
+## Waits a frame: the map binds `rig` and the flow makes this world the current scene while it
+## enters the tree.
 func apply_sandbox_preset() -> void:
 	await get_tree().process_frame
 	if not _sandbox_preset_only() or prefs == null or not _owns_scene() or not _has_rig():
@@ -111,7 +119,8 @@ func _apply_window() -> void:
 		Engine.max_fps = prefs.max_fps()
 
 
-## The scene that owns this node is the running one: the boot, or the world the flow (or F6 on it) is running.
+## The scene that owns this node is the running one: the boot, or the world the flow (or F6 on it)
+## is running.
 func _owns_scene() -> bool:
 	return owner != null and is_inside_tree() and owner == get_tree().current_scene
 
@@ -128,9 +137,10 @@ func _inert() -> bool:
 	return UserSettings.sandboxed()
 
 
-## What the engine's own command line set for this run. Godot consumes its flags (--max-fps, --disable-vsync,
-## -f/-w) before OS.get_cmdline_args(), so they are detected by comparing the state at launch with the project
-## settings, once per process and before this node ever touches the window (the boot's applier runs first).
+## What the engine's own command line set for this run. Godot consumes its flags (--max-fps,
+## --disable-vsync, -f/-w) before OS.get_cmdline_args(), so they are detected by comparing the state
+## at launch with the project settings, once per process and before this node ever touches the
+## window (the boot's applier runs first).
 static var _launch_overrides := {}
 
 

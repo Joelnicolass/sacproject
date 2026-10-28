@@ -2,9 +2,11 @@
 class_name AfflictionEmitter
 extends SpriteEmitter
 
-## The sprites of a state, in the volume of the body's box: a burst that sprays outward and up when the state starts and ends (Slime's
-## splash), or a drizzle in the upper half of the box while it lasts (Slime's drips). The ParticleType says what and how many; this only says
-## where and when. It does not decide when the state is on (Affliction). Presentation only, on every peer, from the replicated mask.
+## The sprites of a state, in the volume of the body's box: a burst that sprays outward and up when
+## the state starts and ends (Slime's splash), or a drizzle in the upper half of the box while it
+## lasts (Slime's drips). The ParticleType says what and how many; this only says where and when. It
+## does not decide when the state is on (Affliction). Presentation only, on every peer, from the
+## replicated mask.
 
 enum Shape { SPRAY, DRIZZLE }
 

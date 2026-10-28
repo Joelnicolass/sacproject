@@ -1,16 +1,19 @@
 class_name ZoneDrop
 extends SpellProjectile
 
-## Something a cloud lets go: a frog, a drop of fire or of plague, a meteorite. It flies under a pull of `gravity_m_s2`, and its children
-## say what it does where it ends (DropBlast, DropPoison) or what else it does on the way (FrogHop, FrogCling). It owns its position,
-## velocity and state (flying, resting on the ground, stuck to a body); it never hurts anyone itself. The server (or solo) moves it and
-## replicates `position` and `status`; every peer draws it. A cloud's DropLauncher makes it.
+## Something a cloud lets go: a frog, a drop of fire or of plague, a meteorite. It flies under a
+## pull of `gravity_m_s2`, and its children say what it does where it ends (DropBlast, DropPoison)
+## or what else it does on the way (FrogHop, FrogCling). It owns its position, velocity and state
+## (flying, resting on the ground, stuck to a body); it never hurts anyone itself. The server (or
+## solo) moves it and replicates `position` and `status`; every peer draws it. A cloud's
+## DropLauncher makes it.
 
 ## It touched the ground and stays there (only with `rests`).
 signal landed(at: Vector3)
 ## A body that can be infected is inside its box.
 signal touched(body: Node3D, at: Vector3)
-## Its flight is over: it hit the ground or a body (`body` null = the ground), or was told to finish. It frees itself right after.
+## Its flight is over: it hit the ground or a body (`body` null = the ground), or was told to
+## finish. It frees itself right after.
 signal ended(body: Node3D, at: Vector3)
 
 enum Status { FLYING, RESTING, ATTACHED }
@@ -19,7 +22,8 @@ const GROUP := &"zone_drop"
 
 @export_group("Flight")
 @export_range(0.0, 100.0, 0.5, "suffix:m/s²") var gravity_m_s2 := 30.0
-## Side of the box that touches bodies (0 = never). Only checked this close to the land: a drop high in the sky asks nothing.
+## Side of the box that touches bodies (0 = never). Only checked this close to the land: a drop high
+## in the sky asks nothing.
 @export_range(0.0, 10.0, 0.1, "suffix:m") var contact_m := 1.5
 @export_range(1.0, 100.0, 1.0, "suffix:m") var contact_height_m := 30.0
 ## It touches ground and bodies only while it goes down (a meteorite rises out of the land first).
@@ -28,7 +32,8 @@ const GROUP := &"zone_drop"
 @export var ends_on_contact := true
 ## It stays on the ground when it lands (a frog sits) instead of ending.
 @export var rests := false
-## It leaves in the arc that lands on its goal at the time given (a meteorite); else the straight line of that time, under its pull.
+## It leaves in the arc that lands on its goal at the time given (a meteorite); else the straight
+## line of that time, under its pull.
 @export var lobbed := false
 ## Seconds after which a drop that never ended goes away.
 @export_range(1.0, 120.0, 1.0, "suffix:s") var max_age_s := 60.0

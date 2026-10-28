@@ -1,9 +1,11 @@
 class_name Stalk
 extends Node3D
 
-## One stalk of Meanstalks: it grows while the wizard casts, then stretches its tip to the nearest body it can reach, hits it, lifts it to
-## the top and throws it, and starts again; it shrinks when the zone ends. The only owner of its tip, growth and prey; the server replicates
-## `tip`, `growth` and `mode`. It does not time the spell (GroundZone), choose the prey (StalkHunt), hold the body (StalkGrip) or draw (StalkLook).
+## One stalk of Meanstalks: it grows while the wizard casts, then stretches its tip to the nearest
+## body it can reach, hits it, lifts it to the top and throws it, and starts again; it shrinks when
+## the zone ends. The only owner of its tip, growth and prey; the server replicates `tip`, `growth`
+## and `mode`. It does not time the spell (GroundZone), choose the prey (StalkHunt), hold the body
+## (StalkGrip) or draw (StalkLook).
 
 ## The stalk entered mode `mode` (every peer): the look plays its sounds from it.
 signal mode_changed(mode: int)
@@ -87,7 +89,8 @@ func _top() -> Vector3:
 	return _base() + Vector3.UP * height_m
 
 
-## How much of the stalk should be out: the cast's progress while the wizard casts, 0 when it shrinks, else all of it.
+## How much of the stalk should be out: the cast's progress while the wizard casts, 0 when it
+## shrinks, else all of it.
 func _want() -> float:
 	if mode == Mode.SHRINKING:
 		return 0.0
@@ -117,7 +120,8 @@ func _look() -> void:
 		_goal = hunt.wander_goal(_base(), height_m)
 
 
-## Follows the body; at the catch it hits it, throws it up and starts to lift. Returns the prey while it still stretches.
+## Follows the body; at the catch it hits it, throws it up and starts to lift. Returns the prey
+## while it still stretches.
 func _approach() -> Node3D:
 	if not StalkRules.is_live(_prey):
 		_begin_search()

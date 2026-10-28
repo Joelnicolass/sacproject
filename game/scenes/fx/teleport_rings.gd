@@ -3,11 +3,11 @@ class_name TeleportRings
 extends Node3D
 
 ## The blue rings of a body that jumps, at the origin (it goes up) or at the destination (it comes
-## down). For `teleport_effect_s`
-## a ring is born each frame at a height that moves in steps along the body (up_steps / down_steps), lives
-## `teleport_ring_s`, rises a little, shrinks with sqrt(1 - age) and glows with 20 * scale². One MultiMesh draws them all;
-## it frees itself when the last ring is gone. Presentation: it is never created on the dedicated server.
-## The atlas `brng` comes from the local install through tools/import/import_ui.py (assets/original/fx).
+## down). For `teleport_effect_s` a ring is born each frame at a height that moves in steps along
+## the body (up_steps / down_steps), lives `teleport_ring_s`, rises a little, shrinks with sqrt(1 -
+## age) and glows with 20 * scale². One MultiMesh draws them all; it frees itself when the last ring
+## is gone. Presentation: it is never created on the dedicated server. The atlas `brng` comes from
+## the local install through tools/import/import_ui.py (assets/original/fx).
 
 ## Where the ring height jumps, as (frame as a fraction of the effect, change in body heights).
 const UP_STEPS: Array[Vector2] = [Vector2(0.0, 0.8), Vector2(0.2, -0.6), Vector2(0.6, -0.8)]

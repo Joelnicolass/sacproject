@@ -2,8 +2,9 @@
 class_name CarryErrand
 extends Node
 
-## The errand of a carrier doctor: which creature it came for and which site it takes it to. The body is the DoctorBody (it only walks and dies);
-## the errand is what makes this doctor a carrier, and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor has no errand.
+## The errand of a carrier doctor: which creature it came for and which site it takes it to. The
+## body is the DoctorBody (it only walks and dies); the errand is what makes this doctor a carrier,
+## and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor has no errand.
 ## Server only: the clients get the doctor and the creature through their synchronizers.
 
 ## The carrier reached the site and holds the creature there. The ritual starts from here.
@@ -75,7 +76,8 @@ func creature_is_free() -> bool:
 	return _is_alive_own() and creature.is_in_group(UnitBody.GROUP) and not creature.is_held()
 
 
-## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse is too.
+## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse
+## is too.
 func soul_is_waiting() -> bool:
 	if soul == null or not is_instance_valid(soul) or not soul.is_inside_tree():
 		return false
@@ -97,7 +99,8 @@ func release_soul() -> void:
 		soul.release_for(caster_slot)
 
 
-## Derived, never stored: the errand wants the body to walk (Approach or Haul, not there, not over); StuckGuard reads it.
+## Derived, never stored: the errand wants the body to walk (Approach or Haul, not there, not over);
+## StuckGuard reads it.
 func walks() -> bool:
 	return not _done and not arrived and (steps.is_in(&"Approach") or steps.is_in(&"Haul"))
 
@@ -151,8 +154,9 @@ func _on_landed() -> void:
 		steps.transition(&"Approach")
 
 
-## The doctor died, in whatever step: the soul it came for is free again (or goes, if the creature already took it) and
-## the creature it holds is dropped by one rule (DeathRules.on_carrier_lost, through Captive).
+## The doctor died, in whatever step: the soul it came for is free again (or goes, if the creature
+## already took it) and the creature it holds is dropped by one rule (DeathRules.on_carrier_lost,
+## through Captive).
 func _on_died(_from_slot: int) -> void:
 	if _done:
 		return

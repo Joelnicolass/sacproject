@@ -1,8 +1,9 @@
 class_name SoulPurse
 extends Node
 
-## Blue souls carried by a wizard. Starts at MatchRules.starting_souls on the server (or solo). `rules` is the world's
-## (WizardSpawner injects it), so the match setup (boot, --souls) reaches it; the scene default is only for F6.
+## Blue souls carried by a wizard. Starts at MatchRules.starting_souls on the server (or solo).
+## `rules` is the world's (WizardSpawner injects it), so the match setup (boot, --souls) reaches it;
+## the scene default is only for F6.
 
 signal changed(count: int)
 

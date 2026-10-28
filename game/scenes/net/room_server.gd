@@ -1,12 +1,13 @@
 extends Node
 
-## The scene the VPS runs (and the tests, with a local config):
-## `godot --headless --path game res://scenes/net/room_server.tscn -- --room-server [--lobby-config=res://…tres] [--max-matches=2]`
-## (or, as in an export, without the scene: the boot sends a `--room-server` process here)
-## It puts the kit's pieces together: the launcher (one dedicated process per match), the rules of Sacrifice
-## (picks, options, ticket) and the lobby server. Every number is a flag of `MpLobbyConfig` (`--lobby-port=7700`, …).
-## It prints one line per event so a log tells the story: `salas listo puerto N`, `partida <id> sala "x" puerto P semilla S`,
-## `sala "x" resultado {…}`. `--match-args=` passes extra user args to the dedicated processes (tests).
+## The scene the VPS runs (and the tests, with a local config): `godot --headless --path game
+## res://scenes/net/room_server.tscn -- --room-server [--lobby-config=res://…tres]
+## [--max-matches=2]` (or, as in an export, without the scene: the boot sends a `--room-server`
+## process here) It puts the kit's pieces together: the launcher (one dedicated process per match),
+## the rules of Sacrifice (picks, options, ticket) and the lobby server. Every number is a flag of
+## `MpLobbyConfig` (`--lobby-port=7700`, …). It prints one line per event so a log tells the story:
+## `salas listo puerto N`, `partida <id> sala "x" puerto P semilla S`, `sala "x" resultado {…}`.
+## `--match-args=` passes extra user args to the dedicated processes (tests).
 
 @onready var launcher: MpMatchLauncher = %Launcher
 @onready var rules: SacrificeRoomRules = %Rules
@@ -15,7 +16,8 @@ var _announced: Dictionary = {}
 var _result_seen: Dictionary = {}
 
 
-## Before the launcher's own _ready: `--lobby-config=res://….tres` replaces the config it was saved with.
+## Before the launcher's own _ready: `--lobby-config=res://….tres` replaces the config it was saved
+## with.
 func _enter_tree() -> void:
 	var path := MpBoot.user_value("lobby-config", "")
 	if path.is_empty():
@@ -29,18 +31,21 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	if launcher.base_args.is_empty():
-		# An exported binary carries its project (no `--path`); from the editor's binary it needs the folder.
+		# An exported binary carries its project (no `--path`); from the editor's binary it needs
+		# the folder.
 		launcher.base_args = PackedStringArray(["--headless"])
 		if not OS.has_feature("template"):
 			launcher.base_args.append_array(
 				PackedStringArray(["--path", ProjectSettings.globalize_path("res://")])
 			)
-	# `--match-engine-args=--fixed-fps,600` adds ENGINE args (before the `--`) to every dedicated: the tests run the match without waiting
-	# for real time. Comma-separated; a flag with a value is two items.
+	# `--match-engine-args=--fixed-fps,600` adds ENGINE args (before the `--`) to every dedicated:
+	# the tests run the match without waiting for real time. Comma-separated; a flag with a value is
+	# two items.
 	var engine_extra := MpBoot.user_value("match-engine-args", "")
 	if not engine_extra.is_empty():
 		launcher.base_args.append_array(engine_extra.split(",", false))
-	# `--match-args=--flag=1,--other` adds user args to every dedicated this server launches (tests only).
+	# `--match-args=--flag=1,--other` adds user args to every dedicated this server launches (tests
+	# only).
 	var extra := MpBoot.user_value("match-args", "")
 	if not extra.is_empty():
 		launcher.agent_args.append_array(extra.split(",", false))

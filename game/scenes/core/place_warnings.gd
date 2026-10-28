@@ -1,12 +1,15 @@
 class_name PlaceWarnings
 extends RefCounted
 
-## The editor warnings every "places" frame shares: a shape that is missing or is not a sphere or cylinder, an Area3D that is still
-## alive (an active one would move the simulation) and a marker that is missing. The texts are the ones the sacrifice frame always gave.
-## What it does not do: read a SceneState (SceneStateReader), hold the sockets or know what a place means.
+## The editor warnings every "places" frame shares: a shape that is missing or is not a sphere or
+## cylinder, an Area3D that is still alive (an active one would move the simulation) and a marker
+## that is missing. The texts are the ones the sacrifice frame always gave.
+## What it does not do: read a SceneState (SceneStateReader), hold the sockets or know what a place
+## means.
 
 
-## Warnings for the shapes (by socket name) and markers (by socket name) of a frame; empty when it is complete.
+## Warnings for the shapes (by socket name) and markers (by socket name) of a frame; empty when it
+## is complete.
 static func check(
 	shapes: Dictionary[String, CollisionShape3D], marks: Dictionary[String, Marker3D]
 ) -> PackedStringArray:

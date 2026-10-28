@@ -2,10 +2,12 @@
 class_name TerrainLayer
 extends LookLayer
 
-## Ground layer of the rig: the only writer of the map's terrain material. A look with a `GodGround` lays the god's ground on the
-## map's ground roles and baked light (`ground.gdshader`, built by GroundMaterial); a look without one, a null profile or the
-## node hidden gives the terrain back its own plain material («no look»). Heights and collision are untouched (the mesh is the
-## same). The material is rebuilt on every load and never saved (TerrainMesh keeps its own when the scene is saved).
+## Ground layer of the rig: the only writer of the map's terrain material. A look with a `GodGround`
+## lays the god's ground on the map's ground roles and baked light (`ground.gdshader`, built by
+## GroundMaterial); a look without one, a null profile or the node hidden gives the terrain back its
+## own plain material («no look»). Heights and collision are untouched (the mesh is the same). The
+## material is rebuilt on every load and never saved (TerrainMesh keeps its own when the scene is
+## saved).
 
 var _rig: LookRig
 var _ground: GodGround

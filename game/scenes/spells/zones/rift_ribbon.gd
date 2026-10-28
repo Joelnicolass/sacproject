@@ -1,9 +1,10 @@
 class_name RiftRibbon
 extends MeshInstance3D
 
-## The trail of a spirit of a Demonic Rift: a ribbon that faces the camera along the last positions of the node it follows (one in every few
-## ticks, 120 ticks back), as wide as that node is scaled. Presentation only: every peer draws its own, a headless process none. It moves
-## nothing and hurts nobody.
+## The trail of a spirit of a Demonic Rift: a ribbon that faces the camera along the last positions
+## of the node it follows (one in every few ticks, 120 ticks back), as wide as that node is scaled.
+## Presentation only: every peer draws its own, a headless process none. It moves nothing and hurts
+## nobody.
 
 ## The node whose positions it draws (a RiftSpirit); it keeps drawing from where that node is.
 @export var follows: Node3D

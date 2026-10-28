@@ -1,10 +1,12 @@
 class_name GroundZone
 extends SpellProjectile
 
-## A place on the ground with a clock: it goes through CASTING (the wizard is still casting it), ARMING (the cast ended, it waits), ACTIVE
-## (it acts, for the spell's duration or until it is told it is done) and ENDING (it goes away), and its children do what their phase asks:
-## pulses hurt or freeze the bodies near it, the look draws the balls, the ice or the rift. It does not know what the spell does to a body
-## (ZonePulse and its classes do) nor how to draw (the scene does). The server (or solo) runs the clock and replicates `phase`; every peer counts the ticks of the phase.
+## A place on the ground with a clock: it goes through CASTING (the wizard is still casting it),
+## ARMING (the cast ended, it waits), ACTIVE (it acts, for the spell's duration or until it is told
+## it is done) and ENDING (it goes away), and its children do what their phase asks: pulses hurt or
+## freeze the bodies near it, the look draws the balls, the ice or the rift. It does not know what
+## the spell does to a body (ZonePulse and its classes do) nor how to draw (the scene does). The
+## server (or solo) runs the clock and replicates `phase`; every peer counts the ticks of the phase.
 
 ## The zone entered phase `phase` (every peer, from the replicated `phase`).
 signal phase_changed(phase: int)
@@ -15,7 +17,8 @@ const GROUP := &"ground_zone"
 ## The spell whose numbers the zone uses: damage, ranges, duration.
 @export var spell: SpellType
 @export_group("Timeline")
-## After the cast ends, seconds before it acts, unless the action says its own (`arm_ticks` in the spawn data).
+## After the cast ends, seconds before it acts, unless the action says its own (`arm_ticks` in the
+## spawn data).
 @export_range(0.0, 10.0, 0.01, "suffix:s") var arm_s := 0.0
 ## How long it acts. Ignored when it lasts the spell's duration or until `finish()`.
 @export_range(0.0, 120.0, 0.1, "suffix:s") var hold_s := 0.0
@@ -24,9 +27,11 @@ const GROUP := &"ground_zone"
 @export var open_ended := false
 ## The zone itself moves (a cloud that follows its target, a tornado): its position is replicated.
 @export var replicates_position := false
-## Properties of its children the server replicates with the zone, as paths from the zone (`Stalk1:tip`).
+## Properties of its children the server replicates with the zone, as paths from the zone
+## (`Stalk1:tip`).
 @export var synced := PackedStringArray()
-## Same, for what changes rarely and is big (a volcano's shape): sent when it changes and with the spawn, not at every sync.
+## Same, for what changes rarely and is big (a volcano's shape): sent when it changes and with the
+## spawn, not at every sync.
 @export var synced_on_change := PackedStringArray()
 ## It takes this long to go away, and frees itself after.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var end_s := 0.5
@@ -39,12 +44,14 @@ var from_slot := 0
 var caster_path := NodePath()
 ## Where the wizard clicked (a rift's spirits look around it).
 var aim_point := Vector3.ZERO
-## The body the wizard clicked, when the spell follows it (a cloud that chases its target); empty = the ground.
+## The body the wizard clicked, when the spell follows it (a cloud that chases its target); empty =
+## the ground.
 var follow_path := NodePath()
 ## Ticks the cast lasts (the balls grow in that time), and the wait after it.
 var cast_ticks := 0
 var arm_ticks := 0
-## Ticks counted in the current phase, on every peer. The ENDING of a zone ended by `cancel()` has `cancelled` set.
+## Ticks counted in the current phase, on every peer. The ENDING of a zone ended by `cancel()` has
+## `cancelled` set.
 var phase_ticks := 0
 ## Replicated. The server writes it; every peer draws from it.
 var phase := Phase.CASTING:
@@ -136,7 +143,8 @@ func end_ticks() -> int:
 	return MatchClock.ticks_for(end_s)
 
 
-## The radius of ground the zone has reached for a full radius of `max_m`: nothing before ACTIVE, growing during `grow_s`, all after.
+## The radius of ground the zone has reached for a full radius of `max_m`: nothing before ACTIVE,
+## growing during `grow_s`, all after.
 func grown_m(max_m: float) -> float:
 	if phase < Phase.ACTIVE:
 		return 0.0

@@ -2,14 +2,19 @@
 class_name DamageNumbers
 extends Node3D
 
-## Floating damage numbers. Presentation only: no RPC, no sim writes, no RNG; nothing in a headless or
-## dedicated process (`run_headless` lets a check run it). FeelPrefs.damage_numbers turns them off.
-## - It hears Events.body_hurt (every peer tells it) for the bodies in `body_groups`: the drop is the damage.
-## - Only bodies the local player sees: visible in the tree, inside `camera`'s frustum and within `max_distance_m` of it.
-## - Hits on the same body within `merge_s` add up in one number (no spam). At most `pool_size` numbers at once: a hit with
-##   none free is dropped.
-## - A number rises `rise_m` over `life_s` and fades out over the last `fade_s`; then it goes back to the pool (hidden).
-## The look of a number is the `number_scene` Label3D (scenes/fx/damage_number.tscn); `own_color` tints the local side's bodies.
+## Floating damage numbers. Presentation only: no RPC, no sim writes, no RNG; nothing in a headless
+## or dedicated process (`run_headless` lets a check run it). FeelPrefs.damage_numbers turns them
+## off.
+## - It hears Events.body_hurt (every peer tells it) for the bodies in `body_groups`: the drop is
+##   the damage.
+## - Only bodies the local player sees: visible in the tree, inside `camera`'s frustum and within
+##   `max_distance_m` of it.
+## - Hits on the same body within `merge_s` add up in one number (no spam). At most `pool_size`
+##   numbers at once: a hit with none free is dropped.
+## - A number rises `rise_m` over `life_s` and fades out over the last `fade_s`; then it goes back
+##   to the pool (hidden).
+## The look of a number is the `number_scene` Label3D (scenes/fx/damage_number.tscn); `own_color`
+## tints the local side's bodies.
 
 ## Group a check counts (see `is_active`).
 const GROUP := &"feel_presentation"
@@ -28,14 +33,16 @@ const GROUP := &"feel_presentation"
 @export var life_s := 0.9
 @export var fade_s := 0.35
 @export var rise_m := 1.4
-## Meters over the Top marker of a body (or over the top of a building's mesh) where the number starts.
+## Meters over the Top marker of a body (or over the top of a building's mesh) where the number
+## starts.
 @export var head_gap_m := 0.4
 ## Height of the number over a thing that has neither a body scene nor a mesh.
 @export var default_height_m := 2.0
 @export var max_distance_m := 90.0
 ## Damage below this is not shown (a sliver of poison or a rounding).
 @export var min_amount := 1.0
-## The local side's bodies (the player's own losses) read in this color; empty alpha keeps the scene's.
+## The local side's bodies (the player's own losses) read in this color; empty alpha keeps the
+## scene's.
 @export var own_color := Color(1.0, 0.42, 0.32, 1.0)
 ## Debug: run in a headless process too (the --feel-script check). The product leaves it off.
 @export var run_headless := false
@@ -159,8 +166,8 @@ func _release(label: Label3D, entry: Dictionary) -> void:
 	_free.append(label)
 
 
-## Over the head: the Top marker of the body scene it wears, and `head_gap_m` more. A thing with no body scene (a building, a pillar)
-## uses the top of its mesh, or `default_height_m` without one.
+## Over the head: the Top marker of the body scene it wears, and `head_gap_m` more. A thing with no
+## body scene (a building, a pillar) uses the top of its mesh, or `default_height_m` without one.
 func _head(body: Node3D) -> Vector3:
 	var top := (
 		BodyFacts.of_body(body).top if "mount" in body else Vector3(0.0, _mesh_top(body), 0.0)

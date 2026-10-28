@@ -2,8 +2,8 @@
 class_name AltarCollapse
 extends Node
 
-## The visible destruction of an altar, the same on every peer: the pillars and the top sink
-## for 4 s, the base rises and shrinks for 4 s and bursts for 3 s. It only plays: when the altar is gone
+## The visible destruction of an altar, the same on every peer: the pillars and the top sink for 4
+## s, the base rises and shrinks for 4 s and bursts for 3 s. It only plays: when the altar is gone
 ## is decided by MatchState's clock on the server.
 
 signal finished

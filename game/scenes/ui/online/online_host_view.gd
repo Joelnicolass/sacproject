@@ -1,9 +1,10 @@
 extends Control
 
-## Creates an online room. The host's pick comes from the menu (`SacrificeFlow.pick`); here he chooses the mode, the map, the land,
-## the room's name and whether it shows in the list. «Crear» asks SacrificeFlow for the room (the seats are those of the mode, all of
-## them people); when it is up the view shows the code friends type. The host joins his own match by himself: the world starts when
-## every seat is in. Not: the ticket (OnlineTicket), the room's life (MpOnline).
+## Creates an online room. The host's pick comes from the menu (`SacrificeFlow.pick`); here he
+## chooses the mode, the map, the land, the room's name and whether it shows in the list. «Crear»
+## asks SacrificeFlow for the room (the seats are those of the mode, all of them people); when it is
+## up the view shows the code friends type. The host joins his own match by himself: the world
+## starts when every seat is in. Not: the ticket (OnlineTicket), the room's life (MpOnline).
 
 signal back_requested
 
@@ -50,7 +51,8 @@ func _on_room_ready(code: String) -> void:
 	_info.visible = true
 
 
-## The issuer refused, the match could not start, or the room closed: the form again (the status line says why).
+## The issuer refused, the match could not start, or the room closed: the form again (the status
+## line says why).
 func _on_closed() -> void:
 	_online = null
 	_show_form()

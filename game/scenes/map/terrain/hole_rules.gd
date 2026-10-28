@@ -1,10 +1,11 @@
 class_name HoleRules
 extends RefCounted
 
-## When the ground may lose a vertex (a hole): never one at the rim of the map, one that is already gone, one close to a
-## building, or one under the base of an altar or a manafount; and which vertices a hole at a point means. Static: the caller
-## hands the places of the building parts and the bases (`parts_of`, `bases_of` gather them), so the rule itself needs no tree.
-## It does not make the hole (Terrain does) nor choose where to dig (HoleCutter).
+## When the ground may lose a vertex (a hole): never one at the rim of the map, one that is already
+## gone, one close to a building, or one under the base of an altar or a manafount; and which
+## vertices a hole at a point means. Static: the caller hands the places of the building parts and
+## the bases (`parts_of`, `bases_of` gather them), so the rule itself needs no tree. It does not
+## make the hole (Terrain does) nor choose where to dig (HoleCutter).
 
 ## A vertex this close (m, on the ground plane) to a building part is never taken away.
 const BUILDING_CLEARANCE_M := 11.0
@@ -12,8 +13,8 @@ const BUILDING_CLEARANCE_M := 11.0
 const DEPTH_BAND_M := 50.0
 
 
-## True when the vertex at (column, row) may be taken away. `parts` are the world places of the parts of every building, `bases`
-## the lattice vertices under every base (`bases_of`).
+## True when the vertex at (column, row) may be taken away. `parts` are the world places of the
+## parts of every building, `bases` the lattice vertices under every base (`bases_of`).
 static func can_remove(
 	shape: Terrain, vertex: Vector2i, parts: PackedVector3Array, bases: Array[Rect2i] = []
 ) -> bool:
@@ -45,7 +46,8 @@ static func is_under_base(vertex: Vector2i, bases: Array[Rect2i]) -> bool:
 	return false
 
 
-## True when a part stands within `BUILDING_CLEARANCE_M` of `spot` (and not far above or below `height`).
+## True when a part stands within `BUILDING_CLEARANCE_M` of `spot` (and not far above or below
+## `height`).
 static func is_near_part(spot: Vector2, height: float, parts: PackedVector3Array) -> bool:
 	for part in parts:
 		if not is_nan(height) and absf(part.y - height) > DEPTH_BAND_M:
@@ -58,7 +60,8 @@ static func is_near_part(spot: Vector2, height: float, parts: PackedVector3Array
 	return false
 
 
-## The lattice vertices a hole at `center` (x, z in metres) means: the nearest one when `radius_m` is 0, else every one within it.
+## The lattice vertices a hole at `center` (x, z in metres) means: the nearest one when `radius_m`
+## is 0, else every one within it.
 static func around(center: Vector2, radius_m: float) -> Array[Vector2i]:
 	var found: Array[Vector2i] = []
 	var lattice := Rect2i(0, 0, TerrainGrid.SIDE, TerrainGrid.SIDE)
@@ -76,7 +79,8 @@ static func around(center: Vector2, radius_m: float) -> Array[Vector2i]:
 	return found
 
 
-## The vertices of `around` that may be taken away now. The building parts and bases are gathered only once a vertex passes the rest.
+## The vertices of `around` that may be taken away now. The building parts and bases are gathered
+## only once a vertex passes the rest.
 static func removable(shape: Terrain, center: Vector2, radius_m: float) -> Array[Vector2i]:
 	var found: Array[Vector2i] = []
 	var parts := PackedVector3Array()
@@ -94,8 +98,9 @@ static func removable(shape: Terrain, center: Vector2, radius_m: float) -> Array
 	return found
 
 
-## The vertex on the ground, never NAN: once its neighbours are gone no land triangle touches it, so it tries a little inside each
-## of the four cells around it, then the vertex's own height as the file and the stamps left it, then the lowest land.
+## The vertex on the ground, never NAN: once its neighbours are gone no land triangle touches it, so
+## it tries a little inside each of the four cells around it, then the vertex's own height as the
+## file and the stamps left it, then the lowest land.
 static func point_on(shape: Terrain, vertex: Vector2i) -> Vector3:
 	var spot := TerrainGrid.point_of(vertex)
 	var height := shape.height_at(spot.x, spot.y)
@@ -129,7 +134,8 @@ static func parts_of(tree: SceneTree) -> PackedVector3Array:
 	return parts
 
 
-## The lattice vertices under every base of `tree` (each GroundFootprint, FootprintRules.vertices_under): a hole there cuts a base.
+## The lattice vertices under every base of `tree` (each GroundFootprint,
+## FootprintRules.vertices_under): a hole there cuts a base.
 static func bases_of(tree: SceneTree) -> Array[Rect2i]:
 	var bases: Array[Rect2i] = []
 	for node in tree.get_nodes_in_group(GroundFootprint.GROUP):

@@ -2,17 +2,20 @@
 class_name CommandVoice
 extends Node
 
-## The creatures answer the local player, on one voice channel of their own (an AudioStreamPlayer; the newest answer cuts the
-## one speaking).
-## - Selecting: Selection.changed -> the first selected creature says `selected`. Selecting the same creature again and again: past `annoy_after` times in a row it says `annoyed` instead, when its set has one.
-##   A selection that only shrank (a creature died, was dropped) says nothing.
-## - Ordering: Orders.requested(units, command) (the local order path, before it is sent) -> the first one says
-##   `order_events[command]`: `ack` for move and guard, `attack_ack` for attack and advance. An order
-##   starts the count of `annoyed` again.
-## - Each kind keeps its cooldown (`cooldown_s` selections, `ack_cooldown_s` orders): clicking fast does not chain voices.
-## The cue is the creature's own set (the `sounds` of the look it wears, with its fallback chain). No set or no cue: silence, no log entry.
-## Only the local player's (Selection and Orders.request are local). With the AudioGate closed (dedicated, room server,
-## headless) it creates nothing. No RPC, nothing written to the simulation.
+## The creatures answer the local player, on one voice channel of their own (an AudioStreamPlayer;
+## the newest answer cuts the one speaking).
+## - Selecting: Selection.changed -> the first selected creature says `selected`. Selecting the same
+##   creature again and again: past `annoy_after` times in a row it says `annoyed` instead, when its
+##   set has one. A selection that only shrank (a creature died, was dropped) says nothing.
+## - Ordering: Orders.requested(units, command) (the local order path, before it is sent) -> the
+##   first one says `order_events[command]`: `ack` for move and guard, `attack_ack` for attack and
+##   advance. An order starts the count of `annoyed` again.
+## - Each kind keeps its cooldown (`cooldown_s` selections, `ack_cooldown_s` orders): clicking fast
+##   does not chain voices.
+## The cue is the creature's own set (the `sounds` of the look it wears, with its fallback chain).
+## No set or no cue: silence, no log entry. Only the local player's (Selection and Orders.request
+## are local). With the AudioGate closed (dedicated, room server, headless) it creates nothing. No
+## RPC, nothing written to the simulation.
 
 ## Emits `changed(units: Array)` (scenes/orders/selection.gd, %Selection).
 @export var selection: Node:
@@ -32,7 +35,8 @@ extends Node
 @export_range(0.0, 5.0, 0.05, "suffix:s") var ack_cooldown_s := 0.3
 ## The same creature selected more than this many times in a row says `annoyed`.
 @export_range(1, 20) var annoy_after := 3
-## Orders command -> the event the first creature answers with. A command that is not here says nothing (retreat, formation).
+## Orders command -> the event the first creature answers with. A command that is not here says
+## nothing (retreat, formation).
 @export var order_events: Dictionary[String, StringName] = {
 	"move": SoundEvent.ACK,
 	"guard": SoundEvent.ACK,
@@ -68,7 +72,8 @@ func cue_for(unit: UnitBody, event: StringName) -> SoundCue:
 	return BodySounds.resolve(unit.mount.sounds(), event)
 
 
-## `unit` says `event` on the channel now (cutting the line speaking). False when it is silent or was dropped.
+## `unit` says `event` on the channel now (cutting the line speaking). False when it is silent or
+## was dropped.
 func speak(unit: UnitBody, event: StringName) -> bool:
 	var cue := cue_for(unit, event)
 	if cue == null:
@@ -76,7 +81,8 @@ func speak(unit: UnitBody, event: StringName) -> bool:
 	return SoundBus.play_on(channel, cue, StringName(unit.name), event)
 
 
-## The event the next selection of `unit` would say (`annoyed` past the count, when there is a cue for it).
+## The event the next selection of `unit` would say (`annoyed` past the count, when there is a cue
+## for it).
 func selection_event(unit: UnitBody) -> StringName:
 	var count := _count + 1 if unit != null and unit.get_instance_id() == _last_unit_id else 1
 	if count > annoy_after and cue_for(unit, SoundEvent.ANNOYED) != null:
@@ -121,6 +127,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		(
 			out
 			. append(
+				# gdlint: ignore=max-line-length
 				"Assign `channel` (the child AudioStreamPlayer): without it the creatures do not answer."
 			)
 		)

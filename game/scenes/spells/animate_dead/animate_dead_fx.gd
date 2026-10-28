@@ -1,16 +1,19 @@
 class_name AnimateDeadFx
 extends SpellProjectile
 
-## What everybody sees while Animate Dead brings a creature back: a burst of violet sparks over it when it starts, and, while it rises, about
-## fifteen streams a second from the wizard to it (StreamerFx), in the original's rhythm: every second tick, one time in two. It lasts as
-## long as the revival and frees itself. Presentation only, on every peer: it never touches the creature (FastRevive does) and makes
-## nothing in a headless process.
+## What everybody sees while Animate Dead brings a creature back: a burst of violet sparks over it
+## when it starts, and, while it rises, about fifteen streams a second from the wizard to it
+## (StreamerFx), in the original's rhythm: every second tick, one time in two. It lasts as long as
+## the revival and frees itself. Presentation only, on every peer: it never touches the creature
+## (FastRevive does) and makes nothing in a headless process.
 
 ## One stream. Its look is its own BeamType.
 @export var streamer_scene: PackedScene
-## The burst over the creature (a one-shot SpriteEmitter child). The effect is born on the creature, so its sound plays there too.
+## The burst over the creature (a one-shot SpriteEmitter child). The effect is born on the creature,
+## so its sound plays there too.
 @export var burst: SpriteEmitter
-## A stream is born every this long, with `chance` of it really being born (30 rolls a second, half of them).
+## A stream is born every this long, with `chance` of it really being born (30 rolls a second, half
+## of them).
 @export_range(0.0166, 0.5, 0.0001, "suffix:s") var every_s := 0.0333
 @export_range(0.0, 1.0, 0.05) var chance := 0.5
 

@@ -1,10 +1,11 @@
 class_name SpellCommand
 extends Node
 
-## The spellbook's side of the player's input: a creature key summons at once, a spell or a structure is armed (an
-## unaffordable or cooling one is not) and the next left click, on the screen or on the minimap, casts it where the
-## cursor points. What a structure's click aims at (ground, own creature, soul, own building) is the `pick` of the
-## entry's SpellAction. The server answers; `ArmedCommand` ends the wait when it does.
+## The spellbook's side of the player's input: a creature key summons at once, a spell or a
+## structure is armed (an unaffordable or cooling one is not) and the next left click, on the screen
+## or on the minimap, casts it where the cursor points. What a structure's click aims at (ground,
+## own creature, soul, own building) is the `pick` of the entry's SpellAction. The server answers;
+## `ArmedCommand` ends the wait when it does.
 
 const _SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 
@@ -118,7 +119,8 @@ func cast_at(screen: Vector2) -> void:
 	)
 
 
-## The armed spell aims at a soul (Soul Mole, Animate Dead, Soul Wind): the click looks for souls, not bodies.
+## The armed spell aims at a soul (Soul Mole, Animate Dead, Soul Wind): the click looks for souls,
+## not bodies.
 func _armed_picks_soul() -> bool:
 	var book := _spellbook()
 	var spell: SpellType = book.spell_at(armed.spell_index) if book else null
@@ -167,7 +169,8 @@ func structure_at(screen: Vector2) -> void:
 			_structure_on_body(spell, ray.building_under(screen))
 
 
-## The minimap only gives a ground point: a structure that aims at a creature finds one near it, the others do not apply.
+## The minimap only gives a ground point: a structure that aims at a creature finds one near it, the
+## others do not apply.
 func structure_at_point(point: Vector3) -> void:
 	var book := _spellbook()
 	var spell: SpellType = book.structure_at(armed.structure_index) if book else null
@@ -206,7 +209,8 @@ func _structure_on_body(spell: SpellType, body: Node3D) -> void:
 	armed.caster.request_cast(spell.tag, body.global_position, body)
 
 
-## The local Caster when the wizard can cast, else null (and a refusal said when there is no wizard).
+## The local Caster when the wizard can cast, else null (and a refusal said when there is no
+## wizard).
 func _caster_ready() -> Caster:
 	var caster := armed.caster
 	if caster == null or not is_instance_valid(caster):

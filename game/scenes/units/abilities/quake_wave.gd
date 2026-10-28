@@ -1,23 +1,26 @@
 class_name QuakeWave
 extends Node3D
 
-## The Jabberocky's Quake (and the burst of Bovine Intervention's cow): a wave of earth that goes out 50 m from the user's feet
-## in half a second, stuns the bodies it crosses near the center and bends the land while it lasts. Quake puts it in the
-## shot container at the user's feet on the tick the shot fires, server (or solo) only: a client never gets this node. It does
-## not hurt, and it does not draw the ring (QuakeRing) nor shape the ground (its child Ground, quake_ground.tscn).
+## The Jabberocky's Quake (and the burst of Bovine Intervention's cow): a wave of earth that goes
+## out 50 m from the user's feet in half a second, stuns the bodies it crosses near the center and
+## bends the land while it lasts. Quake puts it in the shot container at the user's feet on the tick
+## the shot fires, server (or solo) only: a client never gets this node. It does not hurt, and it
+## does not draw the ring (QuakeRing) nor shape the ground (its child Ground, quake_ground.tscn).
 ##
-## Its frame is MatchClock.now() − the tick it was born; the birth tick is discarded (the first update is the next one,
-## frame 1). On every frame:
+## Its frame is MatchClock.now() − the tick it was born; the birth tick is discarded (the first
+## update is the next one, frame 1). On every frame:
 ## - frame 1: the explosion (64 dirt particles and the shake: the look, FxBus);
 ## - the wave is at wave_range · (frame / 60) / wave_s (1,667 m per frame, float32);
-## - while stun_min < wave < stun_max (frames 1 to 5), every moving body of `groups`, any side (wizards too, the user
-##   if it stood there), whose hit box is within wave + 0,1 and whose feet are, seen from above, farther than stun_min
-##   and within `band`·wave_range / (wave_s · 60) (2,5 m) of the wave takes Stunned.stun_with_cooldown(cooldown_s).
-##   No damage;
-## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31 (and Ground with it).
+## - while stun_min < wave < stun_max (frames 1 to 5), every moving body of `groups`, any side
+##   (wizards too, the user if it stood there), whose hit box is within wave + 0,1 and whose feet
+##   are, seen from above, farther than stun_min and within `band`·wave_range / (wave_s · 60) (2,5
+##   m) of the wave takes Stunned.stun_with_cooldown(cooldown_s). No damage;
+## - the effect ends when the frame goes past life_s (30 ticks): the node is freed on frame 31 (and
+##   Ground with it).
 ## The stun is each body's Afflictions/Stunned (its own cooldown): a stunned one is skipped by it.
-## The land: Ground's two TerrainStamps (the sinking and the wave) play here on the server, so the bodies follow the ground;
-## a client sees the copy in quake_ring.tscn (on_clients_only). Priority −1: effects update before creatures.
+## The land: Ground's two TerrainStamps (the sinking and the wave) play here on the server, so the
+## bodies follow the ground; a client sees the copy in quake_ring.tscn (on_clients_only). Priority
+## −1: effects update before creatures.
 ##
 ## Limits: the look is quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
 
@@ -27,7 +30,8 @@ extends Node3D
 ## The wave stuns only between these two distances (m).
 @export var stun_min := 0.5
 @export var stun_max := 10.0
-## The band the wave stuns, in frames of travel: 1,5 (1.5·wave_range/(wave_s·ticks per second) = 2,5 m).
+## The band the wave stuns, in frames of travel: 1,5 (1.5·wave_range/(wave_s·ticks per second) = 2,5
+## m).
 @export var band := 1.5
 ## How long a stunned body cannot be stunned again.
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var cooldown_s := 8.0
@@ -37,7 +41,8 @@ extends Node3D
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 ## The path of the Stunned state under each body.
 @export var stunned_path := NodePath("Afflictions/Stunned")
-## The ring of earth (quake_ring.tscn, an FxScene played on every peer) and the dust of the explosion. Empty: none.
+## The ring of earth (quake_ring.tscn, an FxScene played on every peer) and the dust of the
+## explosion. Empty: none.
 @export var ring_scene: PackedScene
 @export var dust_fx: ParticleType
 
@@ -48,8 +53,8 @@ var _born := -1
 var _last_frame := 0
 
 
-## The wave of `scene` in the shot container at `feet`, or null (and a warning) when there is none. `from` is any node of
-## the tree.
+## The wave of `scene` in the shot container at `feet`, or null (and a warning) when there is none.
+## `from` is any node of the tree.
 static func launch(scene: PackedScene, from: Node, feet: Vector3, tag: String) -> QuakeWave:
 	if scene == null or from == null or not from.is_inside_tree():
 		return null
@@ -78,6 +83,7 @@ func begin() -> void:
 		var at := global_position
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"wave %s at (%.3f, %.3f, %.3f) range %.1f m %.2f s stuns from %.1f to %.1f m band %.3f m for %d (frame %d)"
 				% [
 					label,

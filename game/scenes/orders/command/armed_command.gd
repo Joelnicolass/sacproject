@@ -1,11 +1,12 @@
 class_name ArmedCommand
 extends Node
 
-## What waits for the next left click: a spell, a structure, an ability or an order icon (`mode`, in the words
-## %Battle uses for `armed`), with the index or tag it was armed with, and the local wizard's Caster whose answers end
-## the wait. Arming and clearing live here; each kind of command reads the state and applies its own click.
-## Disarming (`mode = ""`) also clears %Battle, so the cursor icon goes away with it. An armed spell or ability stays
-## armed after a refused click, as in the original.
+## What waits for the next left click: a spell, a structure, an ability or an order icon (`mode`, in
+## the words %Battle uses for `armed`), with the index or tag it was armed with, and the local
+## wizard's Caster whose answers end the wait. Arming and clearing live here; each kind of command
+## reads the state and applies its own click. Disarming (`mode = ""`) also clears %Battle, so the
+## cursor icon goes away with it. An armed spell or ability stays armed after a refused click, as in
+## the original.
 
 const _WORLD := preload("res://scenes/match/match_world.gd")
 const _SELECTION := preload("res://scenes/orders/selection.gd")
@@ -49,8 +50,8 @@ func cancel() -> bool:
 	return true
 
 
-## Ctrl+R / Ctrl+A only arm while no other icon waits (mouse.status == standard). The radial menu passes `replace`: its choice
-## wins over what was armed. `kind` is "attack", "guard" or "move".
+## Ctrl+R / Ctrl+A only arm while no other icon waits (mouse.status == standard). The radial menu
+## passes `replace`: its choice wins over what was armed. `kind` is "attack", "guard" or "move".
 func arm_order(kind: String, replace := false) -> void:
 	if not mode.is_empty():
 		if not replace:
@@ -78,7 +79,8 @@ func _on_local_wizard(wizard: Node3D) -> void:
 
 
 func _on_feedback(text: String) -> void:
-	# The answer to the pending cast is the one that is not a refusal (by key, never by the spell's words).
+	# The answer to the pending cast is the one that is not a refusal (by key, never by the spell's
+	# words).
 	if (
 		(mode == "spell" or mode == "structure")
 		and not cast_pending.is_empty()

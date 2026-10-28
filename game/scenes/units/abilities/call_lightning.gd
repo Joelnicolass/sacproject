@@ -1,14 +1,14 @@
 class_name CallLightning
 extends AbilityEffect
 
-## The Storm Giant's Call lightning. It always applies
-## (50 mana, no cooldown, no preparation): it throws a lightning with the spell `ntil` (750) from
-## center + 100 · normalize(a uniform direction + (0, 0, 6)) (a point of the sky) to the Giant's own center. The bolt bounces on the
-## first body it crosses, the Giant excepted (LightningStrike), so with nobody in the way it hurts the Giant: with friendly fire off
-## that is 0 and no charge (it is faithful: the damage returns before the passive); on, ally_damage_factor of 750
-## and the Lightning Charge takes it.
-## The random direction is MatchSeed's stream ["call_lightning", user, tick]: three draws of [-1, 1) read as (x, z, y up).
-## Server (or solo) only: AbilitySlot does not call fire() on a client.
+## The Storm Giant's Call lightning. It always applies (50 mana, no cooldown, no preparation): it
+## throws a lightning with the spell `ntil` (750) from center + 100 · normalize(a uniform direction
+## + (0, 0, 6)) (a point of the sky) to the Giant's own center. The bolt bounces on the first body
+## it crosses, the Giant excepted (LightningStrike), so with nobody in the way it hurts the Giant:
+## with friendly fire off that is 0 and no charge (it is faithful: the damage returns before the
+## passive); on, ally_damage_factor of 750 and the Lightning Charge takes it. The random direction
+## is MatchSeed's stream ["call_lightning", user, tick]: three draws of [-1, 1) read as (x, z, y
+## up). Server (or solo) only: AbilitySlot does not call fire() on a client.
 
 ## The coordinator's scene (lightning_strike.tscn).
 @export var bolt_scene: PackedScene

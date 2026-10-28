@@ -1,20 +1,23 @@
 class_name FireShield
 extends UnitPassive
 
-## The Phoenix's Shield (rifl): every frame, it burns every non-allied body that touches the Phoenix, costing its mana per burn.
-## A body that can shield (not dying, dead, reviving or a ghost) and holds the mana the SPEL asks (rifl: 0) takes every moving
-## body whose box meets its own box scaled ×1.5 from the center (the Phoenix itself apart). A body that is not an ally of the
-## Phoenix's side burns: fireform.amount / 60 as a direct spell hit that skips the Life Shield / Rockform / petrified
-## factors (Health.damage_typed, pierce_shield) plus three fire particles. If it burned someone it drains the mana cost
-## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched.
-## A node of the Phoenix's `phoenix_passives.tscn`: only a creature that has it burns. Server (or solo) only.
-## The particles are the reserve look (`fire_fx` at the burned body's `fire_socket` every `fire_every_s`).
+## The Phoenix's Shield (rifl): every frame, it burns every non-allied body that touches the
+## Phoenix, costing its mana per burn. A body that can shield (not dying, dead, reviving or a ghost)
+## and holds the mana the SPEL asks (rifl: 0) takes every moving body whose box meets its own box
+## scaled ×1.5 from the center (the Phoenix itself apart). A body that is not an ally of the
+## Phoenix's side burns: fireform.amount / 60 as a direct spell hit that skips the Life Shield /
+## Rockform / petrified factors (Health.damage_typed, pierce_shield) plus three fire particles. If
+## it burned someone it drains the mana cost (ManaPool.drain; 0 for rifl) and puffs the shield
+## particles. Buildings are not touched. A node of the Phoenix's `phoenix_passives.tscn`: only a
+## creature that has it burns. Server (or solo) only. The particles are the reserve look (`fire_fx`
+## at the burned body's `fire_socket` every `fire_every_s`).
 
 const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
 ## The passive (data/catalog/abilities/phoenix_fire_shield.tres): its numbers give the mana cost.
 @export var passive: AbilityType
-## The fire it ignites with (data/catalog/spells/fireform.tres, fireform): the spell's amount, per second.
+## The fire it ignites with (data/catalog/spells/fireform.tres, fireform): the spell's amount, per
+## second.
 @export var fire: SpellType
 ## Scale of the body's box about its center.
 @export var box_scale := 1.5
@@ -87,6 +90,7 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 		var at := target.global_position
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"shield %s burns %s %.4f health %.4f (tick %d) mana %.3f box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) other (%.3f, %.3f, %.3f) ± (%.3f, %.3f)"
 				% [
 					body.name,
@@ -129,7 +133,8 @@ func _scaled_box() -> Array:
 	return [Vector3(at.x, at.y + box.y * 0.5, at.z), box.x * box_scale, box.y * 0.5 * box_scale]
 
 
-## Whether the target's box (feet at its position, its height up) meets the scaled one; touching is not meeting.
+## Whether the target's box (feet at its position, its height up) meets the scaled one; touching is
+## not meeting.
 func _meets(mine: Array, target: Node3D) -> bool:
 	var box := BodyBox.box_of(target)
 	var center: Vector3 = mine[0]
@@ -153,15 +158,16 @@ func _mana_cost() -> float:
 	return float(passive.mana_cost) if passive != null else 0.0
 
 
-## Stunned, cowering, casting, Rockform, firewalk and stealth keep the shield; dying, dead, summoning,
-## reviving and taken by a Doctor do not.
+## Stunned, cowering, casting, Rockform, firewalk and stealth keep the shield; dying, dead,
+## summoning, reviving and taken by a Doctor do not.
 func _can_shield() -> bool:
 	if health != null and health.is_dead():
 		return false
 	return _present(body)
 
 
-## A moving body the shield can burn: any creature or wizard that is not dead (stealth and firewalk included).
+## A moving body the shield can burn: any creature or wizard that is not dead (stealth and firewalk
+## included).
 func _burnable(target: Node3D) -> bool:
 	if not Attackable.is_body(target) or target.is_in_group(MapBuilding.STRUCTURE_GROUP):
 		return false

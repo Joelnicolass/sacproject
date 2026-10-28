@@ -1,16 +1,15 @@
 class_name TeleportMath
 extends RefCounted
 
-## The sums of Teleport, with no world: where the group lands and where each body goes.
-## Positions are compared on the plane (x, z); the height is the body's business (see warp_to), because the
-## spot is on the land, never on a pillar or inside a building. `on_ground` is a Callable(x: float, z: float) -> bool
-## (Terrain.is_on_ground); an empty one means «everything is land».
+## The sums of Teleport, with no world: where the group lands and where each body goes. Positions
+## are compared on the plane (x, z); the height is the body's business (see warp_to), because the
+## spot is on the land, never on a pillar or inside a building. `on_ground` is a Callable(x: float,
+## z: float) -> bool (Terrain.is_on_ground); an empty one means «everything is land».
 
 
-## `radius` from the building toward where the wizard
-## stands; if that spot has no land (or the wizard is right over the building and there is no side to
-## come from), the building's own position.
-## Y is the building's.
+## `radius` from the building toward where the wizard stands; if that spot has no land (or the
+## wizard is right over the building and there is no side to come from), the building's own
+## position. Y is the building's.
 static func landing(
 	start: Vector3, building: Vector3, radius: float, on_ground: Callable = Callable()
 ) -> Vector3:
@@ -23,9 +22,9 @@ static func landing(
 	return spot
 
 
-## teleport: `new = body - start + target`, the formation
-## is kept. A walker whose slot has no land goes to the landing spot itself (a quirk the original marks with a
-## `// TODO: fix`); a flier keeps the shifted position wherever it falls.
+## teleport: `new = body - start + target`, the formation is kept. A walker whose slot has no land
+## goes to the landing spot itself (a quirk the original marks with a `// TODO: fix`); a flier keeps
+## the shifted position wherever it falls.
 static func carried(
 	position: Vector3,
 	start: Vector3,

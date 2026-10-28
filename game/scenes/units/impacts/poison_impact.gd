@@ -14,7 +14,8 @@ const _HEALTH := preload("res://scenes/components/health.gd")
 
 ## The factor that softens the poison.
 @export var nerf_factor := 1.3
-## The dose spreads to the bodies around the target (Poison.infectuous): only the Necryl's Disease (disease_impact.tscn).
+## The dose spreads to the bodies around the target (Poison.infectuous): only the Necryl's Disease
+## (disease_impact.tscn).
 @export var infectious := false
 ## The Health kind of the dose: DamageMod.ranged of a direct shot.
 @export var kind: StringName = &"direct_ranged"
@@ -29,7 +30,8 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, ability: AbilityType
 	if _is_building(target):
 		var health := target.get_node_or_null("Health") as Health
 		if health:
-			# A building with guardians sends the hit to them: the shooter drains from what they took.
+			# A building with guardians sends the hit to them: the shooter drains from what they
+			# took.
 			LifeDrain.feed(
 				shooter_of(shot),
 				target,

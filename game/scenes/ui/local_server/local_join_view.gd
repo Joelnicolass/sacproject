@@ -1,14 +1,17 @@
 extends Control
 
-## Join a friend's «Servidor local». Visible outside debug builds too (it is the only door to a direct address).
-## The rival types `address:port`, the code the host gave him and the transport. The code is the ticket of his seat.
+## Join a friend's «Servidor local». Visible outside debug builds too (it is the only door to a
+## direct address). The rival types `address:port`, the code the host gave him and the transport.
+## The code is the ticket of his seat.
 
 signal back_requested
 
-## Used when the text has no `:port`. Same number as `match_port_min` of data/net/lobby_config_local_server.tres.
+## Used when the text has no `:port`. Same number as `match_port_min` of
+## data/net/lobby_config_local_server.tres.
 @export var default_port: int = 7710
 
-## The character selector of the menu, shown over this view while the rival chooses (the same scene the room screens use).
+## The character selector of the menu, shown over this view while the rival chooses (the same scene
+## the room screens use).
 @export var character_select_scene: PackedScene
 
 var _joining: bool = false

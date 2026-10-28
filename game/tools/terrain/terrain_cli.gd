@@ -1,22 +1,30 @@
 extends Node
 
-## Does not need the original game. «--to-blend» and «--from-blend» need Blender (on the PATH or the BLENDER variable).
-## The ground tools of a map's Terrain without the editor, the same steps its inspector buttons take:
-##   --to-blend             the map's pictures -> <folder>/terrain_work/terrain.blend (BlenderBridge)
-##   --from-blend [--force] terrain.blend -> heights.png + void.png (refused with the reasons, nothing written)
+## Does not need the original game. «--to-blend» and «--from-blend» need Blender (on the PATH or the
+## BLENDER variable). The ground tools of a map's Terrain without the editor, the same steps its
+## inspector buttons take:
+##   --to-blend             the map's pictures -> <folder>/terrain_work/terrain.blend
+##   (BlenderBridge)
+##   --from-blend [--force] terrain.blend -> heights.png + void.png (refused with the reasons,
+##   nothing written)
 ##   --flat=<m>             a new flat ground at <m> metres, no void (heights.png, void.png goes)
-##   --flatten-bases        levels the land under every GroundFootprint of the map scene (TerrainEdits) and writes it
-##   --validate             checks the map scene as check_map does (MapChecks); prints TERRAIN VALIDATE <scene> PASS/FAIL
-## The map is `--map=<tag>` (scenes/map/maps/<tag>/) or `--scene=<res://…tscn>` (any map scene, e.g. the edit bed); the
-## pictures are those its Terrain reads (`--out=<folder>` writes --flat and --flatten-bases there instead). Exit 0 when it worked, 1 when it failed, 2 on bad arguments. It writes pictures
-## but does not import them: run `--import` (or focus the editor) after a write. Not: brushes (the editor only).
-## "$GODOT" --headless --path game res://tools/terrain/terrain_cli.tscn -- --map=<tag> --validate
+##   --flatten-bases        levels the land under every GroundFootprint of the map scene
+##   (TerrainEdits) and writes it
+##   --validate             checks the map scene as check_map does (MapChecks); prints TERRAIN
+##   VALIDATE <scene> PASS/FAIL
+## The map is `--map=<tag>` (scenes/map/maps/<tag>/) or `--scene=<res://…tscn>` (any map scene, e.g.
+## the edit bed); the pictures are those its Terrain reads (`--out=<folder>` writes --flat and
+## --flatten-bases there instead). Exit 0 when it worked, 1 when it failed, 2 on bad arguments. It
+## writes pictures but does not import them: run `--import` (or focus the editor) after a write.
+## Not: brushes (the editor only). "$GODOT" --headless --path game
+## res://tools/terrain/terrain_cli.tscn -- --map=<tag> --validate
 
 const BlenderBridge := preload("res://addons/terrain_tools/blender_bridge.gd")
 const TerrainEdits := preload("res://addons/terrain_tools/terrain_edits.gd")
 const MapImages := preload("res://addons/terrain_tools/map_images.gd")
 const MapChecks := preload("res://tools/audit/map_checks.gd")
 const MAPS_DIR := "res://scenes/map/maps"
+# gdlint: ignore=max-line-length
 const USAGE := "usage: -- (--map=<tag> | --scene=<res://map.tscn>) (--to-blend | --from-blend [--force] | --flat=<m> | --flatten-bases | --validate) [--out=<folder>]"
 
 
@@ -28,7 +36,8 @@ func _quit() -> void:
 	get_tree().quit(await run(OS.get_cmdline_user_args(), self))
 
 
-## Does what `arguments` ask, with `host` (a node in the tree) to hold a map scene. Returns the exit code.
+## Does what `arguments` ask, with `host` (a node in the tree) to hold a map scene. Returns the exit
+## code.
 static func run(arguments: PackedStringArray, host: Node) -> int:
 	var options := {}
 	for argument in arguments:

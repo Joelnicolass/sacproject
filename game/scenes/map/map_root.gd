@@ -2,15 +2,17 @@
 class_name MapRoot
 extends Node3D
 
-## The root of a map scene (scenes/map/maps/<tag>/map.tscn): the ground, the buildings and the creature spawns, the
-## navmesh region, the starts and founts, the sky and the look of one map, and nothing of the match. The match scene
-## (scenes/match/match.tscn) instances it and binds its own systems to these sockets. A map you make in the editor
-## fills the sockets it has; the required ones warn.
+## The root of a map scene (scenes/map/maps/<tag>/map.tscn): the ground, the buildings and the
+## creature spawns, the navmesh region, the starts and founts, the sky and the look of one map, and
+## nothing of the match. The match scene (scenes/match/match.tscn) instances it and binds its own
+## systems to these sockets. A map you make in the editor fills the sockets it has; the required
+## ones warn.
 
-## The map's ground: heights, holes, size, and the mesh that draws it (`terrain.mesh`). Everyone asks it.
+## The map's ground: heights, holes, size, and the mesh that draws it (`terrain.mesh`). Everyone
+## asks it.
 @export var terrain: Terrain
-## The map lies far from where the editor camera opens: in the editor only, the root is shifted so the map's centre shows
-## at the origin (the shift is taken off while saving).
+## The map lies far from where the editor camera opens: in the editor only, the root is shifted so
+## the map's centre shows at the origin (the shift is taken off while saving).
 @export var editor_recenter := true:
 	set(value):
 		editor_recenter = value
@@ -26,8 +28,8 @@ extends Node3D
 @export var buildings: Node3D
 ## Holds the NpcSpawn nodes; empty in a map without inhabitants.
 @export var npcs: Node3D
-## Holds the decoration scenes you drag in (scenes/props/<name>.tscn: arches, rocks, pillars that do not block and have no
-## health); empty in a map without any.
+## Holds the decoration scenes you drag in (scenes/props/<name>.tscn: arches, rocks, pillars that do
+## not block and have no health); empty in a map without any.
 @export var props: Node3D
 
 

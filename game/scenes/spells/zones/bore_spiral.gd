@@ -1,10 +1,11 @@
 class_name BoreSpiral
 extends RefCounted
 
-## The path of a Bore: a spiral that opens around the click from 5 m out to the spell's reach, `step_m` along the turn each tick
-## (the radius grows with the angle, so the turns get further apart as it goes). `advance()` gives the place for this tick and
-## moves on; `arrived` is true once the last place was given. The drill that bores and the cutter that opens the holes both walk
-## it, each at its own pace. It knows nothing of the ground.
+## The path of a Bore: a spiral that opens around the click from 5 m out to the spell's reach,
+## `step_m` along the turn each tick (the radius grows with the angle, so the turns get further
+## apart as it goes). `advance()` gives the place for this tick and moves on; `arrived` is true once
+## the last place was given. The drill that bores and the cutter that opens the holes both walk it,
+## each at its own pace. It knows nothing of the ground.
 
 ## The inner end of the spiral.
 const START_RADIUS_M := 5.0

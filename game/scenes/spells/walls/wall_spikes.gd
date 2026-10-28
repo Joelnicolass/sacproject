@@ -1,11 +1,13 @@
 class_name WallSpikes
 extends MultiMeshInstance3D
 
-## The spikes of a Wall of Spikes: `count` of them are born one after another while the wall's ends grow, each near an end that is still
-## moving and somewhere across the thickness, grow in half a second, stand leaning every which way and sink in a second when the wall does.
-## They are the mesh of the Rhinok's spikes (SpikeField); their skin is the `material_override` of this node in the scene (the texture is a
-## Texture2D dragged onto that material). Presentation only, on every peer, from the wall's age
-## and ends; it does not hurt anybody (WallTouch) and its dice are its own. The wall must be the parent.
+## The spikes of a Wall of Spikes: `count` of them are born one after another while the wall's ends
+## grow, each near an end that is still moving and somewhere across the thickness, grow in half a
+## second, stand leaning every which way and sink in a second when the wall does. They are the mesh
+## of the Rhinok's spikes (SpikeField); their skin is the `material_override` of this node in the
+## scene (the texture is a Texture2D dragged onto that material). Presentation only, on every peer,
+## from the wall's age and ends; it does not hurt anybody (WallTouch) and its dice are its own. The
+## wall must be the parent.
 
 @export var wall: SpellWall
 @export_range(1, 400) var count := 180

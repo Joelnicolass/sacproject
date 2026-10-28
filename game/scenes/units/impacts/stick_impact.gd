@@ -2,11 +2,11 @@ class_name StickImpact
 extends ShotImpact
 
 ## A shot that sticks to the creature it touches instead of hurting it: the Ikarus's Sticky bomb
-## (×0.75) and the Bilemites (×0.8). The bomb that touches the ground or a
-## building (not a creature) vanishes; the one that touches a creature of another side that can be stuck to
-## sticks to it for ability.duration_s seconds: it is gone at `duration · 60 + 1` updates. No damage.
-## The pieces are Clinging's (the body's component): this node only asks it to stick one. The slowdown is PaceFactors'.
-## A creature that cannot be stuck to (dying, summoning) stops the bomb.
+## (×0.75) and the Bilemites (×0.8). The bomb that touches the ground or a building (not a creature)
+## vanishes; the one that touches a creature of another side that can be stuck to sticks to it for
+## ability.duration_s seconds: it is gone at `duration · 60 + 1` updates. No damage. The pieces are
+## Clinging's (the body's component): this node only asks it to stick one. The slowdown is
+## PaceFactors'. A creature that cannot be stuck to (dying, summoning) stops the bomb.
 
 ## Which pile on the body it joins (Clinging.STICKY / Clinging.MITES).
 @export var kind: StringName = &"sticky"
@@ -14,7 +14,8 @@ extends ShotImpact
 @export var factor := 0.75
 ## Seconds it lasts when the shot has no SPEL (ability.duration_s is the rule).
 @export var fallback_seconds := 10.0
-## Updates past duration · 60 at which it lets go (the `++infectionTime` runs once more than the frames it holds).
+## Updates past duration · 60 at which it lets go (the `++infectionTime` runs once more than the
+## frames it holds).
 @export var extra_ticks := 1
 
 

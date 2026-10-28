@@ -1,9 +1,9 @@
 class_name IdleState
 extends UnitState
 
-## IDLE (idle + patrol): regenerates. The scan for an enemy with no order is
-## TargetRefresh's, which also runs while the body fights. The rest loop ends in the idle gesture 1 time in GESTURE_EVERY (1/5),
-## picked as (hash(name) + loops) % 5: the same on every peer, no randi().
+## IDLE (idle + patrol): regenerates. The scan for an enemy with no order is TargetRefresh's, which
+## also runs while the body fights. The rest loop ends in the idle gesture 1 time in GESTURE_EVERY
+## (1/5), picked as (hash(name) + loops) % 5: the same on every peer, no randi().
 
 const GESTURE_EVERY := 5
 

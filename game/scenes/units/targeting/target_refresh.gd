@@ -1,12 +1,13 @@
 class_name TargetRefresh
 extends Node
 
-## The target refresh of a creature , also while it fights:
-## every `interval_s`, a body with no order that is idle, chasing, swinging or shooting asks its picker again
-## (UnitBody.closest_foe). The current target weighs x1.3 there and the last attacker x1.2, so a creature hit by a real enemy
-## while it beats a Farmer turns to the enemy. A target the picker no longer takes (TargetFutility banned it) and nothing
-## else: the body stops. The one owner of the scan without orders; under an order
-## UnitOrders thinks instead. Server (or solo) only; counts MatchClock ticks. Removing this child: no aggro without orders.
+## The target refresh of a creature , also while it fights: every `interval_s`, a body with no order
+## that is idle, chasing, swinging or shooting asks its picker again (UnitBody.closest_foe). The
+## current target weighs x1.3 there and the last attacker x1.2, so a creature hit by a real enemy
+## while it beats a Farmer turns to the enemy. A target the picker no longer takes (TargetFutility
+## banned it) and nothing else: the body stops. The one owner of the scan without orders; under an
+## order UnitOrders thinks instead. Server (or solo) only; counts MatchClock ticks. Removing this
+## child: no aggro without orders.
 
 ## The body that fights (a UnitBody).
 @export var body: UnitBody

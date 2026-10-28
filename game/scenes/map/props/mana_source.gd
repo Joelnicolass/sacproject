@@ -1,12 +1,12 @@
 class_name ManaSource
 extends Node3D
 
-## Gives mana to bodies within reach (3D distance). A source with an owner feeds that side and its allies.
-## Sources add up. The server (or solo) feeds ManaPool.add(); clients only see the replicated value.
-## FOUNT and ALTAR read rate and radius from `rules`; CUSTOM keeps the exported values.
-## Every creature is fed this way, not only wizards;
-## a body with can_take_mana() false (dead, being summoned) gets nothing (canRegenerateMana).
-## The reach of a FOUNT and an ALTAR comes from ReachFacts.of_rules(rules), the rate from `rules`.
+## Gives mana to bodies within reach (3D distance). A source with an owner feeds that side and its
+## allies. Sources add up. The server (or solo) feeds ManaPool.add(); clients only see the
+## replicated value. FOUNT and ALTAR read rate and radius from `rules`; CUSTOM keeps the exported
+## values. Every creature is fed this way, not only wizards; a body with can_take_mana() false
+## (dead, being summoned) gets nothing (canRegenerateMana). The reach of a FOUNT and an ALTAR comes
+## from ReachFacts.of_rules(rules), the rate from `rules`.
 
 enum Kind { FOUNT, ALTAR, CUSTOM }
 
@@ -17,7 +17,8 @@ const GROUP := &"mana_source"
 @export var rules: MatchRules
 @export var rate := 33.333
 @export var radius := 50.0
-## Optional: a sphere shape drawn in the editor; when set, its radius is the reach (the `radius` above is ignored).
+## Optional: a sphere shape drawn in the editor; when set, its radius is the reach (the `radius`
+## above is ignored).
 @export var reach: CollisionShape3D
 ## -1: any body (manafount). Otherwise only that player slot (its altar).
 @export var owner_slot := -1

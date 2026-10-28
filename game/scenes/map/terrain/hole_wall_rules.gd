@@ -1,18 +1,20 @@
 class_name HoleWallRules
 extends RefCounted
 
-## The walls around the holes the ground has now: along every edge where land meets a triangle that lost a corner, a vertical
-## strip drops `DEPTH_M` below the land, with the cliff texture, so a hole shows a pit and not the sky under the map. Pure
-## and static (the arrays of a mesh, no node): HoleWalls draws them. The walls of the file's own holes are already in the
-## map's mesh; these are only the ones that are new. The strips are at the heights of the FILE: the ground shader moves them
-## with the rest of the vertices.
+## The walls around the holes the ground has now: along every edge where land meets a triangle that
+## lost a corner, a vertical strip drops `DEPTH_M` below the land, with the cliff texture, so a hole
+## shows a pit and not the sky under the map. Pure and static (the arrays of a mesh, no node):
+## HoleWalls draws them. The walls of the file's own holes are already in the map's mesh; these are
+## only the ones that are new. The strips are at the heights of the FILE: the ground shader moves
+## them with the rest of the vertices.
 
 ## How far a wall goes down.
 const DEPTH_M := 50.0
 
 
-## The arrays (positions, normals, COLOR, indices, UV) of the walls for `removed` vertex ids, ready for ArrayMesh. Empty when
-## none. COLOR alpha 0 marks a wall for the ground shader; UV places the cliff texture (WallUvRules).
+## The arrays (positions, normals, COLOR, indices, UV) of the walls for `removed` vertex ids, ready
+## for ArrayMesh. Empty when none. COLOR alpha 0 marks a wall for the ground shader; UV places the
+## cliff texture (WallUvRules).
 static func arrays(index: TerrainRules.Index, removed: PackedInt32Array) -> Array:
 	var edges := boundary(index, removed)
 	if edges.is_empty():
@@ -48,7 +50,8 @@ static func arrays(index: TerrainRules.Index, removed: PackedInt32Array) -> Arra
 	return [vertices, normals, colors, indices, uvs]
 
 
-## The edges between a land triangle and one that lost a corner, each as [from, to, normal toward the hole] (positions of the file).
+## The edges between a land triangle and one that lost a corner, each as [from, to, normal toward
+## the hole] (positions of the file).
 static func boundary(index: TerrainRules.Index, removed: PackedInt32Array) -> Array:
 	var gone := {}
 	for id in removed:
@@ -102,7 +105,8 @@ static func _lost(index: TerrainRules.Index, gone: Dictionary, triangle: int) ->
 	)
 
 
-## [from, to, normal] of the side of `land` ([triangle, corner]) that faces the lost triangle `hole`.
+## [from, to, normal] of the side of `land` ([triangle, corner]) that faces the lost triangle
+## `hole`.
 static func _wall(index: TerrainRules.Index, land: Array, hole: int) -> Array:
 	var a := index.ground[land[0] * 3 + land[1]]
 	var b := index.ground[land[0] * 3 + (land[1] + 1) % 3]

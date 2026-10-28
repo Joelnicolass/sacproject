@@ -1,15 +1,18 @@
 class_name OnlineTicket
 extends RefCounted
 
-## The Sacrifice part of the ticket of an online room this player hosts, built like a «Servidor local»'s: the map, the mode,
-## the options and the seed, the host's pick in seat 1 and every other seat of the mode left open (each friend sends his own pick
-## when he is admitted, PickBoard checks it). The kit adds the tokens of the seats and the relay. Only people: no AI seats online.
-## Not: the room (MpOnline), the check of a pick on admission (PickBoard), the reading of the ticket in the match (TicketPlan).
+## The Sacrifice part of the ticket of an online room this player hosts, built like a «Servidor
+## local»'s: the map, the mode, the options and the seed, the host's pick in seat 1 and every other
+## seat of the mode left open (each friend sends his own pick when he is admitted, PickBoard checks
+## it). The kit adds the tokens of the seats and the relay. Only people: no AI seats online.
+## Not: the room (MpOnline), the check of a pick on admission (PickBoard), the reading of the ticket
+## in the match (TicketPlan).
 
 const HOST_SLOT := 1
 
 
-## Empty when the rules refuse `options` (a map without a start for each seat of the mode, an unknown key).
+## Empty when the rules refuse `options` (a map without a start for each seat of the mode, an
+## unknown key).
 static func build(host_pick: WizardPick, options: Dictionary) -> Dictionary:
 	var rules := SacrificeRoomRules.new()
 	# Not in the tree, so its _ready does not run: the test maps follow the same flag here.

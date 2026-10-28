@@ -2,11 +2,13 @@
 class_name CarrierHunt
 extends Node
 
-## The hunt of Death for its SpellCarrier. While the wizard casts it only stands there (the look rises out of the land); when the casting ends it
-## looks for the closest creature of any side that is not a wizard, turns to it, walks to it, strikes (`arrived` at the blow, TargetEffect does the
-## killing) and goes on to the next, until it has struck `SpellType.max_targets` of them or the spell's duration is over; then it leaves. Each tick it
-## looks again, so it changes its mind if something comes closer. It does not kill (TargetEffect) and it does not draw (the look follows `phase`:
-## CASTING, FLYING = walking, STRIKING, LEAVING). Server (or solo) only.
+## The hunt of Death for its SpellCarrier. While the wizard casts it only stands there (the look
+## rises out of the land); when the casting ends it looks for the closest creature of any side that
+## is not a wizard, turns to it, walks to it, strikes (`arrived` at the blow, TargetEffect does the
+## killing) and goes on to the next, until it has struck `SpellType.max_targets` of them or the
+## spell's duration is over; then it leaves. Each tick it looks again, so it changes its mind if
+## something comes closer. It does not kill (TargetEffect) and it does not draw (the look follows
+## `phase`: CASTING, FLYING = walking, STRIKING, LEAVING). Server (or solo) only.
 
 @export var carrier: SpellCarrier
 @export var groups: Array[StringName] = [&"unit"]
@@ -14,7 +16,8 @@ extends Node
 @export_range(1.0, 30.0, 0.5, "suffix:m") var height_m := 12.0
 @export_range(0.1, 12.0, 0.1, "suffix:rad/s") var turn_rate := PI
 @export_group("Reach")
-## It stops walking nearer than the prey's size plus `move_radius_m`, strikes within `attack_radius_m`, and the blow lands within `hit_radius_m`.
+## It stops walking nearer than the prey's size plus `move_radius_m`, strikes within
+## `attack_radius_m`, and the blow lands within `hit_radius_m`.
 @export_range(0.0, 10.0, 0.1, "suffix:m") var move_radius_m := 2.0
 @export_range(0.0, 10.0, 0.1, "suffix:m") var attack_radius_m := 4.0
 @export_range(0.0, 20.0, 0.1, "suffix:m") var hit_radius_m := 6.0
@@ -41,7 +44,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	)
 
 
-## Server or solo. The cast started: it appears where it is and looks where the wizard looks, for `cast_ticks`.
+## Server or solo. The cast started: it appears where it is and looks where the wizard looks, for
+## `cast_ticks`.
 func begin(wizard: Node3D, cast_ticks: int) -> void:
 	_lifetime = (
 		MatchClock.ticks_for(carrier.spell.duration_s) + cast_ticks

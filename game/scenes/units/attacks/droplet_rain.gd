@@ -1,9 +1,9 @@
 class_name DropletRain
 extends Node3D
 
-## Every falling droplet of the Abomination's gut in the world, in one pool (packed arrays, no node per drop).
-## Server (or solo) only; clients see the drops as the shot's trail (ShotLook.trail_fx), drawn locally by FxTrail.
-## ShotDropper adds them. Each physics tick, for each drop:
+## Every falling droplet of the Abomination's gut in the world, in one pool (packed arrays, no node
+## per drop). Server (or solo) only; clients see the drops as the shot's trail (ShotLook.trail_fx),
+## drawn locally by FxTrail. ShotDropper adds them. Each physics tick, for each drop:
 ## - position += velocity/fps, then velocity.z −= gravity/fps (10 m/s², starting at rest);
 ## - collision: the first live body whose collider touches the drop's box (0.25 m).
 ##   The filter is only «a body that stops a shot»: any side, the shooter too. Several: a foe of the
@@ -12,8 +12,8 @@ extends Node3D
 ##   through Health.damage_typed, so resistance, friendly fire and passives apply; the drop ends;
 ## - below the ground it ends without damage («TODO: scar»). Off the map (no ground under it,
 ##   the fallLimit branch) it ends after `max_fall_s`.
-## The drop falls straight down (velocity has only a vertical part), so the ground under it is measured once, when
-## it is added: one shape query per drop per tick, no ray.
+## The drop falls straight down (velocity has only a vertical part), so the ground under it is
+## measured once, when it is added: one shape query per drop per tick, no ray.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const GROUP := &"droplet_rain"
@@ -26,7 +26,8 @@ const GROUP := &"droplet_rain"
 @export_range(0.0, 60.0, 0.0001, "suffix:s") var max_fall_s := 10.0
 ## Most drops alive at once; past it a new drop is not added (counted in `over_cap`).
 @export var max_drops := 1024
-## Prints one `gota <body> <taken> vida <current>` line per hit, and a summary at exit. Off in the product.
+## Prints one `gota <body> <taken> vida <current>` line per hit, and a summary at exit. Off in the
+## product.
 @export var log_hits := false
 
 ## Totals of the match, for the debug scenes.
@@ -113,8 +114,8 @@ func _physics_process(delta: float) -> void:
 		peak_us = spent
 
 
-## The body the drop's box touches, by stance order (foe, neutral, own side; then the closest; then the name,
-## so the pick does not depend on the order the physics server lists them in).
+## The body the drop's box touches, by stance order (foe, neutral, own side; then the closest; then
+## the name, so the pick does not depend on the order the physics server lists them in).
 func _target_at(
 	space: PhysicsDirectSpaceState3D, at: Vector3, size: float, from_slot: int
 ) -> Node3D:
@@ -193,7 +194,8 @@ func _shape(size: float) -> BoxShape3D:
 	return shape
 
 
-## The ground under `at` (RangedShot.ground_height: terrain and buildings, wizards left out), or -INF off the map.
+## The ground under `at` (RangedShot.ground_height: terrain and buildings, wizards left out), or
+## -INF off the map.
 func _ground_height(at: Vector3) -> float:
 	return GroundRay.surface_y(self, at, ground_mask, GroundRay.wizard_rids(get_tree()), -INF)
 
@@ -202,6 +204,7 @@ func _exit_tree() -> void:
 	if log_hits and added > 0:
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"rain drops %d hits %d ground %d over_cap %d peak %d (%.3f ms) tick_max %.3f ms mean %.3f ms over %d ticks"
 				% [
 					added,

@@ -1,10 +1,12 @@
 class_name WallVines
 extends MultiMeshInstance3D
 
-## The vines of a Vinewall: `count` of them are born one after another while the wall's ends grow, each near an end and somewhere across the
-## thickness, and rise to the height of the wall swaying and twisting until the wall sinks and they shrink back. One tube mesh drawn
-## `count` times; the shader (wall_vine.gdshader) bends each by its own phase and growth, so no vine needs a skeleton. Presentation only,
-## on every peer, from the wall's age and ends; it does not tie anybody (WallTouch).
+## The vines of a Vinewall: `count` of them are born one after another while the wall's ends grow,
+## each near an end and somewhere across the thickness, and rise to the height of the wall swaying
+## and twisting until the wall sinks and they shrink back. One tube mesh drawn `count` times; the
+## shader (wall_vine.gdshader) bends each by its own phase and growth, so no vine needs a skeleton.
+## Presentation only, on every peer, from the wall's age and ends; it does not tie anybody
+## (WallTouch).
 
 @export var wall: SpellWall
 @export_range(1, 400) var count := 180

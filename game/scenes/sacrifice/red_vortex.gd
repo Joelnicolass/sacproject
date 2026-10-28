@@ -2,12 +2,12 @@
 class_name RedVortex
 extends Node3D
 
-## The red vortex the Sac Doctor falls out of (radius 2.5 m):
-## a flat red ring with a glowing center that faces the camera (`disc`, vtx1 + vtx2, 2 s to open, 1 s
-## to close) and drops that fall from under it (`effect`, vtx2). It exists from the start of the cast
-## until the doctor comes out or the cast is interrupted; the SacrificeSystem spawns and frees it on
-## the server and the spawner shows it on every peer. Only the drawing is here: the dedicated server
-## draws nothing. When it is freed it leaves a closing copy of the ring behind (1 s).
+## The red vortex the Sac Doctor falls out of (radius 2.5 m): a flat red ring with a glowing center
+## that faces the camera (`disc`, vtx1 + vtx2, 2 s to open, 1 s to close) and drops that fall from
+## under it (`effect`, vtx2). It exists from the start of the cast until the doctor comes out or the
+## cast is interrupted; the SacrificeSystem spawns and frees it on the server and the spawner shows
+## it on every peer. Only the drawing is here: the dedicated server draws nothing. When it is freed
+## it leaves a closing copy of the ring behind (1 s).
 
 const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 
@@ -21,8 +21,8 @@ const SPRITES := preload("res://scenes/fx/sprite_particles.tscn")
 @export_range(0.0, 1.0, 0.05) var drops_after := 0.3
 ## Where the drops come out under the center, as a fraction of the radius.
 @export var drops_depth := 0.8
-## The server frees it after this long if nobody did (a wizard freed mid-cast). 0 = never. Counted in ticks of the
-## match (MatchClock.ticks_for), not with the render delta.
+## The server frees it after this long if nobody did (a wizard freed mid-cast). 0 = never. Counted
+## in ticks of the match (MatchClock.ticks_for), not with the render delta.
 @export var max_life_s := 0.0
 
 var _pulse_left := 0.0

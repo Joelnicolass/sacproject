@@ -1,14 +1,16 @@
 class_name Implosion
 extends Node3D
 
-## The Flurry's implosion that draws bodies in.
-## ImplosionImpact puts it in the shots' container where the shot burst; server (or solo) only. Its scale
-## starts at effect range and shrinks at effect range/duration per second; it ends when it reaches 0. Every tick, every
-## live creature and wizard whose box meets the cube ±scale and whose center is within effect range of the burst (no
+## The Flurry's implosion that draws bodies in. ImplosionImpact puts it in the shots' container
+## where the shot burst; server (or solo) only. Its scale starts at effect range and shrinks at
+## effect range/duration per second; it ends when it reaches 0. Every tick, every live creature and
+## wizard whose box meets the cube ±scale and whose center is within effect range of the burst (no
 ## side filter) is drawn in:
-##   speed = √(max(10, d)·max(10, scale)) / effect range · influence_speed / 60  (meters this tick, toward the center)
-## - not thrown: the step speed·direction; if it ends at most influence_speed/120 over the ground it slides
-##   (BodyNudge.slide, on the land only), else it is thrown with 2·speed·direction (vz ≥ −1/60) as its velocity;
+##   speed = √(max(10, d)·max(10, scale)) / effect range · influence_speed / 60  (meters this tick,
+##   toward the center)
+## - not thrown: the step speed·direction; if it ends at most influence_speed/120 over the ground it
+##   slides (BodyNudge.slide, on the land only), else it is thrown with 2·speed·direction (vz ≥
+##   −1/60) as its velocity;
 ## - thrown: position += 2·speed·direction, and a body going down that this lifts has vz = 0.
 ## Effects run before creatures: priority −1.
 

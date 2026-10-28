@@ -2,13 +2,17 @@
 class_name UnitSounds
 extends BodySounds
 
-## Child of units/unit.tscn. A creature's sounds from what every peer already has (replicated state):
-## - `summon` when its mode becomes SUMMONING, or when it is born in it (a summon spawned on a client);
-## - `swing` and `shoot` on Weapons.swung / shot_started (the setters of the replicated `swings` and `shots`);
+## Child of units/unit.tscn. A creature's sounds from what every peer already has (replicated
+## state):
+## - `summon` when its mode becomes SUMMONING, or when it is born in it (a summon spawned on a
+##   client);
+## - `swing` and `shoot` on Weapons.swung / shot_started (the setters of the replicated `swings` and
+##   `shots`);
 ## - `damaged` when Health.current goes down and the body is alive (BodySounds limits it per body);
 ## - `death` when its mode becomes DEAD.
-## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of its body scene). No set: silence, except `summon`: the
-## `summon` cue below sounds for every creature that has none of its own. Remove the node to silence every creature.
+## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of its body
+## scene). No set: silence, except `summon`: the `summon` cue below sounds for every creature that
+## has none of its own. Remove the node to silence every creature.
 
 @export var body: UnitBody:
 	set(value):

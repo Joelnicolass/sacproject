@@ -1,15 +1,16 @@
 class_name SplashImpact
 extends ShotImpact
 
-## Splash of a creature's shot: every live body whose hit box is within the radius of the burst takes
-## amount·(1 − d/radius) as splash ranged damage. SplashDamage owns the walk.
+## Splash of a creature's shot: every live body whose hit box is within the radius of the burst
+## takes amount·(1 − d/radius) as splash ranged damage. SplashDamage owns the walk.
 ##
-## - Mutant babt / Abomination tugt: the body it hit takes the whole amount as ranged|splash (splash ranged resistance),
-##   and the rest of the damage range the falloff: `direct_hit` on, `radius_source` DAMAGE_RANGE.
-## - Flummox crba: nobody is hit whole, the body it hit included takes the falloff: `direct_hit` off,
-##   `radius_source` EFFECT_RANGE.
-## The side is Health's rule (Health._side_factor): the shooter's own side takes 0 or ally_damage_factor by the
-## match's friendly fire, the shooter included if it stands in the radius.
+## - Mutant babt / Abomination tugt: the body it hit takes the whole amount as ranged|splash (splash
+##   ranged resistance), and the rest of the damage range the falloff: `direct_hit` on,
+##   `radius_source` DAMAGE_RANGE.
+## - Flummox crba: nobody is hit whole, the body it hit included takes the falloff: `direct_hit`
+##   off, `radius_source` EFFECT_RANGE.
+## The side is Health's rule (Health._side_factor): the shooter's own side takes 0 or
+## ally_damage_factor by the match's friendly fire, the shooter included if it stands in the radius.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")

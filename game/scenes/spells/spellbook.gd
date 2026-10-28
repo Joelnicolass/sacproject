@@ -1,13 +1,13 @@
 class_name Spellbook
 extends Node
 
-## Book of a wizard: the god's creatures and spells up to the wizard's level in one
-## list sorted by level and position (BookOrder). Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
-## creature_2 (Shift+Q)…; spell entry 0 is spell_1 (X), 1 spell_2 (R)…
-## Cooldowns are derived state: each entry keeps the MatchClock tick it is ready again, and
-## cooldown() = (ready − now) / 60. Nothing writes them per tick, so they follow the ticks of the match, not the render
-## delta, and stand still while the game is paused. The server sets them (over the whole book) and pushes
-## the seconds left to the owner client, which turns them into ticks of its own clock.
+## Book of a wizard: the god's creatures and spells up to the wizard's level in one list sorted by
+## level and position (BookOrder). Two tabs read it: creature entry 0 is creature_1 (Q), 1 is
+## creature_2 (Shift+Q)…; spell entry 0 is spell_1 (X), 1 spell_2 (R)… Cooldowns are derived state:
+## each entry keeps the MatchClock tick it is ready again, and cooldown() = (ready − now) / 60.
+## Nothing writes them per tick, so they follow the ticks of the match, not the render delta, and
+## stand still while the game is paused. The server sets them (over the whole book) and pushes the
+## seconds left to the owner client, which turns them into ticks of its own clock.
 
 signal book_changed
 signal cooldowns_changed
@@ -168,7 +168,8 @@ func _max_cooldown_at(rows: PackedInt32Array, index: int) -> float:
 	return _max_cooldowns[rows[index]] if index >= 0 and index < rows.size() else 0.0
 
 
-## A cooldown of `value` seconds from now, rounded up to whole ticks; a running one is never shortened.
+## A cooldown of `value` seconds from now, rounded up to whole ticks; a running one is never
+## shortened.
 func _raise(index: int, value: float) -> void:
 	var now := MatchClock.now()
 	if _ready_tick[index] <= now or value > _max_cooldowns[index]:
@@ -188,8 +189,8 @@ func _push_to_owner() -> void:
 		_receive_cooldowns.rpc_id(peer, remaining, _max_cooldowns)
 
 
-## The seconds left on the server, turned into ticks of this peer's MatchClock (the countdown is local; up to 1 tick
-## of rounding).
+## The seconds left on the server, turned into ticks of this peer's MatchClock (the countdown is
+## local; up to 1 tick of rounding).
 @rpc("authority", "call_remote", "reliable")
 func _receive_cooldowns(remaining: PackedFloat32Array, maximum: PackedFloat32Array) -> void:
 	if remaining.size() != _ready_tick.size():
@@ -209,8 +210,8 @@ func _rebuild() -> void:
 	_built_from = book
 	_level = level
 	_warn_if_override()
-	# TODO: a level change rebuilds the book and clears every cooldown. Today the level is fixed for the
-	# match; when XP raises it mid-match, keep the cooldowns of the entries that stay (by tag).
+	# TODO: a level change rebuilds the book and clears every cooldown. Today the level is fixed for
+	# the match; when XP raises it mid-match, keep the cooldowns of the entries that stay (by tag).
 	var rows: Dictionary = book.up_to(level) if book != null else {}
 	var sorted: Array[BookEntry] = []
 	for creature in rows.get("creatures", []):

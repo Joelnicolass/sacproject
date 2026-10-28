@@ -2,9 +2,11 @@
 class_name SideChangeEffect
 extends BodyEffect
 
-## Charm's change: the creature is, from now on and for good, of the wizard's side. It forgets its orders and its target, is told to follow the
-## wizard (`retreat`) and bursts into hearts. It refuses a wizard, a creature of the same side and one that is not alive; it does not ask whether
-## the creature may be charmed in the first place (the spell's SpellTarget does) and it does not give it back.
+## Charm's change: the creature is, from now on and for good, of the wizard's side. It forgets its
+## orders and its target, is told to follow the wizard (`retreat`) and bursts into hearts. It
+## refuses a wizard, a creature of the same side and one that is not alive; it does not ask whether
+## the creature may be charmed in the first place (the spell's SpellTarget does) and it does not
+## give it back.
 
 ## The hearts that burst from the creature (a ParticleType under data/fx/, with its light).
 @export var hearts: ParticleType

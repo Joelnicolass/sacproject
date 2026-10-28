@@ -1,7 +1,8 @@
 extends RitualStep
 
-## Each doctor walks a quarter turn around the site; the ring (`Ring` / `RingEnd` of sacrifice_places.tscn, SacrificeFacts) shrinks
-## from 20 to 17 m in the last fifth. Rounds start one quarter further.
+## Each doctor walks a quarter turn around the site; the ring (`Ring` / `RingEnd` of
+## sacrifice_places.tscn, SacrificeFacts) shrinks from 20 to 17 m in the last fifth. Rounds start
+## one quarter further.
 
 
 func enter() -> void:

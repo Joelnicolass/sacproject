@@ -2,16 +2,17 @@
 class_name TeleportAction
 extends SpellAction
 
-## Teleport (elet): the wizard and the creatures of his side near him jump to an own building.
-## The click is a standing building of his own (OWN_BUILDING: Manalith, altar, shrine) at any distance
-## (an own structure, range 5000). When the casting ends, he and every creature of
-## his within `effect_range` (30) of him go to `effect_range` from the building, on the side he came from,
+## Teleport (elet): the wizard and the creatures of his side near him jump to an own building. The
+## click is a standing building of his own (OWN_BUILDING: Manalith, altar, shrine) at any distance
+## (an own structure, range 5000). When the casting ends, he and every creature of his within
+## `effect_range` (30) of him go to `effect_range` from the building, on the side he came from,
 ## keeping their formation.
-## Not carried: the dead, Sac Doctors, guardians and, a port decision, any creature in group «rooted» or held by a doctor. The destination follows the
-## building until the casting ends; if it falls meanwhile, the last one is used.
-## A wizard who dies in the middle moves nobody (the Caster calls cancel()).
-## The arithmetic is TeleportMath; the body moves itself (warp_to). Here only the rules, and the cosmetic
-## burst, which is local presentation on every peer (nothing is drawn on the dedicated server).
+## Not carried: the dead, Sac Doctors, guardians and, a port decision, any creature in group
+## «rooted» or held by a doctor. The destination follows the building until the casting ends; if it
+## falls meanwhile, the last one is used. A wizard who dies in the middle moves nobody (the Caster
+## calls cancel()). The arithmetic is TeleportMath; the body moves itself (warp_to). Here only the
+## rules, and the cosmetic burst, which is local presentation on every peer (nothing is drawn on the
+## dedicated server).
 
 ## Groups a building can be in to be aimed at. A shrine would add its own.
 @export var target_groups: PackedStringArray = PackedStringArray(["structure", "altar"])
@@ -86,8 +87,8 @@ func cancel() -> void:
 	_has_destination = false
 
 
-## A standing building of `slot` that can be aimed at. Altars count while they stand; any other building,
-## while it has life. `picked` comes from the client.
+## A standing building of `slot` that can be aimed at. Altars count while they stand; any other
+## building, while it has life. `picked` comes from the client.
 func is_building_of(slot: int, picked: Node3D) -> bool:
 	if (
 		picked == null
@@ -141,8 +142,8 @@ func _landing(start: Vector3, building: Node3D, radius: float) -> Vector3:
 	return spot
 
 
-## The land under a spot (the terrain, never the first collision from above: that is a pillar or a roof),
-## or `fallback` where there is no terrain data.
+## The land under a spot (the terrain, never the first collision from above: that is a pillar or a
+## roof), or `fallback` where there is no terrain data.
 func _land_y(shape: Terrain, spot: Vector3, fallback: float) -> float:
 	if shape == null:
 		return fallback
@@ -161,8 +162,9 @@ func _feet_of(body: Node3D) -> Vector3:
 	return body.global_position + BodyFacts.of_body(body).feet
 
 
-## Server or solo: every peer shows the same burst at the origin and at the destination of each body.
-## `centers` is the y of the Center marker of each body, over its feet: where the particle goes.
+## Server or solo: every peer shows the same burst at the origin and at the destination of each
+## body. `centers` is the y of the Center marker of each body, over its feet: where the particle
+## goes.
 func _announce(
 	froms: PackedVector3Array,
 	tos: PackedVector3Array,

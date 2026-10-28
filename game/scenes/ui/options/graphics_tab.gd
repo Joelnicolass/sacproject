@@ -2,9 +2,11 @@ class_name GraphicsTab
 extends VBoxContainer
 
 ## Options → Gráficos. Quality (one of the GraphicsPrefs presets), fullscreen, VSync, the FPS cap,
-## the vegetation switch, the relief switch, the number of ground marks and the interface size (UiScalePrefs). Every control writes the shared preference at once; the GraphicsApplier and the
-## UiScaleApplier of the running scene listen to `changed`, so the change shows live. The controls also follow changes made elsewhere.
-## OptionButton, CheckButton and HSlider only: AgentKit drives them with select / click / range (no popups needed).
+## the vegetation switch, the relief switch, the number of ground marks and the interface size
+## (UiScalePrefs). Every control writes the shared preference at once; the GraphicsApplier and the
+## UiScaleApplier of the running scene listen to `changed`, so the change shows live. The controls
+## also follow changes made elsewhere. OptionButton, CheckButton and HSlider only: AgentKit drives
+## them with select / click / range (no popups needed).
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_GRAPHICS"

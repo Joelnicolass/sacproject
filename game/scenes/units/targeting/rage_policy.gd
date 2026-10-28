@@ -1,9 +1,10 @@
 class_name RagePolicy
 extends TargetPolicy
 
-## Blind Rage: while it lasts a creature fights the closest creature of any side, its own included (not itself), and keeps whatever it
-## is fighting if it is still such a creature. It does not pick for a body that is not enraged (TargetPicker asks it only then) and it
-## does not stop the orders (UnitOrders ignores them).
+## Blind Rage: while it lasts a creature fights the closest creature of any side, its own included
+## (not itself), and keeps whatever it is fighting if it is still such a creature. It does not pick
+## for a body that is not enraged (TargetPicker asks it only then) and it does not stop the orders
+## (UnitOrders ignores them).
 
 ## Groups of the bodies it may fight: creatures and wizards.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]

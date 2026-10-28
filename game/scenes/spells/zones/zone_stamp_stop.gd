@@ -1,9 +1,10 @@
 class_name ZoneStampStop
 extends Node
 
-## When its zone is cut (the cast was interrupted) it tells the zone's stamps to take back, at once, the ground they were lifting, on every
-## peer (the zone replicates `cancelled`). Without it a stamp keeps playing until the zone is freed. It does not decide when a zone is cut
-## (GroundZone) nor what a stamp keeps (TerrainStamp). A zone that ends well keeps what its stamps kept.
+## When its zone is cut (the cast was interrupted) it tells the zone's stamps to take back, at once,
+## the ground they were lifting, on every peer (the zone replicates `cancelled`). Without it a stamp
+## keeps playing until the zone is freed. It does not decide when a zone is cut (GroundZone) nor
+## what a stamp keeps (TerrainStamp). A zone that ends well keeps what its stamps kept.
 
 @export var zone: GroundZone
 @export var stamps: Array[TerrainStamp] = []

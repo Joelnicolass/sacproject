@@ -1,8 +1,10 @@
 extends Control
 
-## Joins an online room: by the code a friend passed (typed as he likes: lower case and dashes are fine), or by a row of the list
-## of public rooms of this game and version (refreshed each time the view shows). The pick is the menu's (`SacrificeFlow.pick`):
-## the host's match takes it on admission. Not: the seat or the relay (MpFlow.join_online), the texts of a refusal (the status line).
+## Joins an online room: by the code a friend passed (typed as he likes: lower case and dashes are
+## fine), or by a row of the list of public rooms of this game and version (refreshed each time the
+## view shows). The pick is the menu's (`SacrificeFlow.pick`): the host's match takes it on
+## admission. Not: the seat or the relay (MpFlow.join_online), the texts of a refusal (the status
+## line).
 
 signal back_requested
 

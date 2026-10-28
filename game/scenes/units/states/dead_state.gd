@@ -1,9 +1,10 @@
 class_name DeadState
 extends UnitState
 
-## DEAD: the body stops acting (no target, no attacks) and becomes a corpse that falls until it rests on the floor.
-## Leaving it (a Convert doctor pumped the creature back to life) makes it a creature again. It does not touch the
-## health bar (the bar hides itself) and it does not animate the body: CorpseLook decides how the death looks.
+## DEAD: the body stops acting (no target, no attacks) and becomes a corpse that falls until it
+## rests on the floor. Leaving it (a Convert doctor pumped the creature back to life) makes it a
+## creature again. It does not touch the health bar (the bar hides itself) and it does not animate
+## the body: CorpseLook decides how the death looks.
 
 
 func present(animate: bool) -> void:

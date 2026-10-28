@@ -1,17 +1,17 @@
 class_name ShotStrike
 extends Node3D
 
-## A creature's ranged attack with no flight, in place of a RangedShot: the Gnome's ray (plfa),
-## the Styx's bolt at the next tick (dhga) and the
-## Warmonger's gun (fhga). The scene is ShotLook.strike; RangedFire instances it on the server (or solo) only,
-## as its own child, and calls launch() once. The strike is not replicated: what peers see goes through FxBus.
+## A creature's ranged attack with no flight, in place of a RangedShot: the Gnome's ray (plfa), the
+## Styx's bolt at the next tick (dhga) and the Warmonger's gun (fhga). The scene is ShotLook.strike;
+## RangedFire instances it on the server (or solo) only, as its own child, and calls launch() once.
+## The strike is not replicated: what peers see goes through FxBus.
 ##
-## Ticks: launch() runs tick 0 in the tick of the shot; then every physics tick runs the ticks MatchClock advanced
-## since (1, 2, …). The scene's process_physics_priority is −1: effects update before creatures.
-## Variants override _strike_tick() and call finish() when done.
+## Ticks: launch() runs tick 0 in the tick of the shot; then every physics tick runs the ticks
+## MatchClock advanced since (1, 2, …). The scene's process_physics_priority is −1: effects update
+## before creatures. Variants override _strike_tick() and call finish() when done.
 ##
-## Same names as RangedShot, so a ShotImpact reads either: damage, from_slot, velocity, ability, target_path,
-## shooter_path.
+## Same names as RangedShot, so a ShotImpact reads either: damage, from_slot, velocity, ability,
+## target_path, shooter_path.
 
 ## Already scaled by the shooter (attack_factor).
 var damage := 0.0
@@ -32,7 +32,8 @@ var accuracy := 0.0
 var max_distance := 0.0
 ## The ability tag, for the log.
 var tag := ""
-## The RangedWeapon that fired it (its shot_origin() for a strike that follows the shooter). Injected by launch().
+## The RangedWeapon that fired it (its shot_origin() for a strike that follows the shooter).
+## Injected by launch().
 var source: RangedWeapon
 
 var _born_tick := 0
@@ -40,9 +41,9 @@ var _done_tick := 0
 var _finished := false
 
 
-## `data`: the keys of RangedFire.fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy). Call it once the
-## strike is in the tree: tick 0 may already cast against the world. `from`: the RangedWeapon that fired it. A look nobody holds yet
-## becomes a child of the strike.
+## `data`: the keys of RangedFire.fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy).
+## Call it once the strike is in the tree: tick 0 may already cast against the world. `from`: the
+## RangedWeapon that fired it. A look nobody holds yet becomes a child of the strike.
 func launch(
 	data: Dictionary, shot_look: ShotLook, shot_ability: AbilityType, from: RangedWeapon = null
 ) -> void:
@@ -122,7 +123,8 @@ func _log(line: String) -> void:
 		print(line)
 
 
-## What lands at `point` on `target` (or on nothing): ShotImpact.land. Returns the direct damage taken.
+## What lands at `point` on `target` (or on nothing): ShotImpact.land. Returns the direct damage
+## taken.
 func _land(target: Node3D, point: Vector3) -> float:
 	return ShotImpact.land(self, look, target, point, ability)
 

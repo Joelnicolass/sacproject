@@ -2,9 +2,10 @@
 class_name RitualDrain
 extends Node
 
-## What a ritual takes from the wizard whose altar it is: `apply` removes a fraction of a round's life and mana (Shoot calls it with
-## the time that passed), and `collapse_altar` starts the fall of his altar, once. Only a type that `drains_target_wizard` takes
-## anything. What it does not do: decide when a round is or who wins (Ritual). Take this node out and the wizard is never touched.
+## What a ritual takes from the wizard whose altar it is: `apply` removes a fraction of a round's
+## life and mana (Shoot calls it with the time that passed), and `collapse_altar` starts the fall of
+## his altar, once. Only a type that `drains_target_wizard` takes anything. What it does not do:
+## decide when a round is or who wins (Ritual). Take this node out and the wizard is never touched.
 
 @export var ritual: Ritual
 
@@ -44,7 +45,8 @@ func apply(fraction: float) -> void:
 	mana.set("current", maxf(float(mana.get("current")) - wanted, 0.0))
 
 
-## The wizard counts a desecration on his ghost form while the ritual lasts (begin) and stops counting it (cancelled).
+## The wizard counts a desecration on his ghost form while the ritual lasts (begin) and stops
+## counting it (cancelled).
 func mark_target(on: bool) -> void:
 	var wizard := ritual.target_wizard
 	var ghost := wizard.ghost as GhostForm if wizard != null and is_instance_valid(wizard) else null

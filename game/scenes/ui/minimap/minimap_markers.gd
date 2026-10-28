@@ -1,15 +1,16 @@
 extends Control
 
-## One icon per thing on the map, in one `_draw` per frame (no node per creature). It reads the groups the
-## game already keeps (wizard, unit, altar, structure, manafount, soul) and each kind's look from `minimap.style`.
-## Dead or hidden foes are left out (is_targetable), your own things always show, souls take the
-## viewer's color. What lies beyond the circle shows as an arrow at the edge only for your things and for wizards.
+## One icon per thing on the map, in one `_draw` per frame (no node per creature). It reads the
+## groups the game already keeps (wizard, unit, altar, structure, manafount, soul) and each kind's
+## look from `minimap.style`. Dead or hidden foes are left out (is_targetable), your own things
+## always show, souls take the viewer's color. What lies beyond the circle shows as an arrow at the
+## edge only for your things and for wizards.
 ## Presentation only: the fog of war does not exist in the port, so everything shows.
 
 @export var minimap: Minimap
 
-## Measures for flows and checks: icons and arrows drawn last frame, microseconds the draw took, and where the
-## local wizard's icon went (local canvas pixels; INF when it is not on the circle).
+## Measures for flows and checks: icons and arrows drawn last frame, microseconds the draw took, and
+## where the local wizard's icon went (local canvas pixels; INF when it is not on the circle).
 var icons_drawn := 0
 var arrows_drawn := 0
 var draw_us := 0
@@ -19,7 +20,8 @@ var vision_direction := Vector2.ZERO
 
 ## Arrows to draw after the icons: [direction, color, style].
 var _arrows: Array = []
-## Side colors looked up this frame (a match has a handful of slots; 150 creatures ask for the same two).
+## Side colors looked up this frame (a match has a handful of slots; 150 creatures ask for the same
+## two).
 var _side_colors := {}
 
 
@@ -76,8 +78,8 @@ func _draw() -> void:
 	draw_us = Time.get_ticks_usec() - started
 
 
-## The local slot and its allies (allied vision; there is no
-## fog, so what changes is that an ally is shown always, with the arrow at the edge for its buildings).
+## The local slot and its allies (allied vision; there is no fog, so what changes is that an ally is
+## shown always, with the arrow at the edge for its buildings).
 func _is_mine(owner_slot: int, slot: int) -> bool:
 	return (
 		owner_slot == slot
@@ -99,7 +101,8 @@ func _wizard_shows(wizard: WizardBody, slot: int) -> bool:
 	return _is_mine(wizard.owner_slot, slot) or wizard.is_targetable()
 
 
-## Draws `node`'s icon, or queues its arrow when it lies past the circle and `arrow_ok` (or the kind shows arrows for all).
+## Draws `node`'s icon, or queues its arrow when it lies past the circle and `arrow_ok` (or the kind
+## shows arrows for all).
 func _mark(node: Node3D, kind: MinimapMarkerStyle, side_slot: int, arrow_ok: bool) -> void:
 	if node == null or kind == null:
 		return

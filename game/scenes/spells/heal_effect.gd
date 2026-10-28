@@ -20,7 +20,8 @@ const FRAMES_CAP := 2147483647
 ## Seconds between `heal_fx` bursts on the target.
 @export var fx_interval_s := 0.5
 
-## Prints «heal <who> total N health V» when it ends (the Healing Shower's log). Off for the Heal spell.
+## Prints «heal <who> total N health V» when it ends (the Healing Shower's log). Off for the Heal
+## spell.
 var report_end := false
 ## Prints «heal <who> +N health V» each tick it heals (Devour's cure). Off for every other heal.
 var report_each := false
@@ -47,8 +48,8 @@ static func on(target: Node) -> HealEffect:
 	return effect
 
 
-## Heal with an infinite amount (Healing Shower tum@, Scarab slba): the body's
-## the maximum health in total. Skips a body that cannot heal and returns null; else the HealEffect it added to.
+## Heal with an infinite amount (Healing Shower tum@, Scarab slba): the body's the maximum health in
+## total. Skips a body that cannot heal and returns null; else the HealEffect it added to.
 ## `report_end` prints «heal <who> total N health V» when that heal ends.
 static func heal_full(body: Node, report_end := false) -> Node:
 	if not can_heal(body):
@@ -67,8 +68,8 @@ func add(amount: float) -> void:
 	per_frame = maxf(per_frame, amount / float(frames))
 
 
-## The timer goes back to `frames` and the rate to the better of the two; nothing is added. A body that
-## is carried by the aura calls it every tick.
+## The timer goes back to `frames` and the rate to the better of the two; nothing is added. A body
+## that is carried by the aura calls it every tick.
 func renew(rate_per_frame: float, frames: int) -> void:
 	frames_left = maxi(frames_left, frames)
 	per_frame = maxf(per_frame, rate_per_frame)

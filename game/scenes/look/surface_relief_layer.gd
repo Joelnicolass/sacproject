@@ -2,15 +2,17 @@
 class_name SurfaceReliefLayer
 extends LookLayer
 
-## The one global switch of the relief maps. On when the preset's `relief_maps` and the player's «Relieve» option
-## (GraphicsPrefs; ignored under AgentKit like GraphicsApplier, so a test never inherits the player's file) both say so.
-## Off, it turns off in memory the normal map of every material drawn (shared .tres or a copy) and of every mesh that enters
-## the tree later, and the relief of the StoneLook / BuildReveal copies (`use_relief`); on again (or when the layer leaves
-## with its map), exactly those come back. The only runtime writer of `normal_enabled`; it never saves (the .tres on disk
-## keeps its maps). Inert in the editor. Cost: none while on.
+## The one global switch of the relief maps. On when the preset's `relief_maps` and the player's
+## «Relieve» option (GraphicsPrefs; ignored under AgentKit like GraphicsApplier, so a test never
+## inherits the player's file) both say so. Off, it turns off in memory the normal map of every
+## material drawn (shared .tres or a copy) and of every mesh that enters the tree later, and the
+## relief of the StoneLook / BuildReveal copies (`use_relief`); on again (or when the layer leaves
+## with its map), exactly those come back. The only runtime writer of `normal_enabled`; it never
+## saves (the .tres on disk keeps its maps). Inert in the editor. Cost: none while on.
 ## Not: which maps a material has (its .tres), how they are made (addons/surface_maps).
 
-## The shared player preference (data/ui/graphics_prefs.tres). Empty = only the preset decides (a debug scene).
+## The shared player preference (data/ui/graphics_prefs.tres). Empty = only the preset decides (a
+## debug scene).
 @export var prefs: GraphicsPrefs
 
 var _preset_on := true
@@ -83,7 +85,8 @@ func _dress(node: Node) -> void:
 			_copies.append(material)
 
 
-## Every material a mesh draws with: its override, its surface overrides and its mesh's own surfaces.
+## Every material a mesh draws with: its override, its surface overrides and its mesh's own
+## surfaces.
 static func _materials_of(node: Node) -> Array[Material]:
 	var out: Array[Material] = []
 	var geometry := node as GeometryInstance3D

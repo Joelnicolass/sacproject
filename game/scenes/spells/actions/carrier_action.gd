@@ -2,11 +2,13 @@
 class_name CarrierAction
 extends SpellAction
 
-## A spell that sends a carrier (Dragonfire's dragon, Charm's spirits, Blind Rage's fist, the vaporizing shot, Bovine Intervention's cow, Death).
-## The click names the body (`target` says who is valid; a spell that also takes a click on the ground says so with `ground_ok`). The carrier is
-## made through the SpellSpawner (so every peer draws it) when the cast starts or ends (`spawn_when`), where `spawn_at` says; when the casting time
-## ends it is let go toward the body. If the wizard is cut it goes away. It does not fly nor hurt (SpellCarrier and its children) and it does not
-## know which spell it is.
+## A spell that sends a carrier (Dragonfire's dragon, Charm's spirits, Blind Rage's fist, the
+## vaporizing shot, Bovine Intervention's cow, Death). The click names the body (`target` says who
+## is valid; a spell that also takes a click on the ground says so with `ground_ok`). The carrier is
+## made through the SpellSpawner (so every peer draws it) when the cast starts or ends
+## (`spawn_when`), where `spawn_at` says; when the casting time ends it is let go toward the body.
+## If the wizard is cut it goes away. It does not fly nor hurt (SpellCarrier and its children) and
+## it does not know which spell it is.
 
 enum When { START, FINISH }
 enum Where { WIZARD, AHEAD_OF_WIZARD, AIM }
@@ -19,12 +21,14 @@ enum Where { WIZARD, AHEAD_OF_WIZARD, AIM }
 @export var ground_ok := false
 @export_group("Birth")
 @export var spawn_when := When.START
-## WIZARD: on the wizard. AHEAD_OF_WIZARD: `ahead_m` in front of him, on the land. AIM: where the click landed (on a body, `ahead_m` in front of the wizard from its feet).
+## WIZARD: on the wizard. AHEAD_OF_WIZARD: `ahead_m` in front of him, on the land. AIM: where the
+## click landed (on a body, `ahead_m` in front of the wizard from its feet).
 @export var spawn_at := Where.WIZARD
 @export_range(0.0, 50.0, 0.5, "suffix:m") var ahead_m := 0.0
 ## It is born this far under the land (the cow).
 @export_range(0.0, 20.0, 0.5, "suffix:m") var depth_m := 0.0
-## Played on every peer at the aim while the wizard casts (the earth that rises under the cow). Its root answers play(params): `ticks`, `target`.
+## Played on every peer at the aim while the wizard casts (the earth that rises under the cow). Its
+## root answers play(params): `ticks`, `target`.
 @export var cast_scene: PackedScene
 
 var _carrier: SpellCarrier
@@ -42,7 +46,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Funds first, then a valid body (or the ground), then the range: the order every spell of the book answers in.
+## Funds first, then a valid body (or the ground), then the range: the order every spell of the book
+## answers in.
 func check(
 	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
 ) -> Aim:

@@ -7,8 +7,8 @@ extends Resource
 @export var starting_souls: int = 12
 ## Live creatures a player may own at once (summons in progress count). 0 = no cap.
 @export var max_creatures_per_player: int = 0
-## Where the reaches (souls, mana of a fount and an altar, the Manahoar aura, arming and leashing a Guardian) live as shapes.
-## The radii live there, not here.
+## Where the reaches (souls, mana of a fount and an altar, the Manahoar aura, arming and leashing a
+## Guardian) live as shapes. The radii live there, not here.
 @export var reach_places: PackedScene = preload("res://scenes/match/reach_places.tscn")
 @export var manafount_rate: float = 33.333
 @export var altar_rate: float = 16.667
@@ -22,7 +22,8 @@ extends Resource
 @export var cast_drain_per_s: float = 500.0
 @export var extra_cooldown_s: float = 1.5
 @export var other_spell_cooldown_s: float = 1.0
-## The land of the match (the god whose look the map wears). Empty: the server draws a god per match. Debug rules force one.
+## The land of the match (the god whose look the map wears). Empty: the server draws a god per
+## match. Debug rules force one.
 @export var biome: GodType
 ## 0: random seed per match. Otherwise BiomeRules.pick_god(biome_seed, gods). With a match_seed
 ## and biome_seed 0 the biome follows the match seed (MatchSeed.derive).
@@ -35,12 +36,13 @@ extends Resource
 ## P drops one soul.
 @export var enable_drop_soul: bool = true
 ## Seats the AI takes in this match (AiRoster in high_noon). Empty = no AI (a match of humans).
-## «Contra la IA» does not fill it: it comes through SacrificeFlow.solo_ai_seats. A test scene may seat its own.
+## «Contra la IA» does not fill it: it comes through SacrificeFlow.solo_ai_seats. A test scene may
+## seat its own.
 @export var ai_seats: Array[AiSeat] = []
 
 @export_group("Sacrifices")
-## The places of the sacrifice (ring, push, reach, hang, vortex) as a scene that is only read, never instanced (SacrificeFacts).
-## An inherited scene is a variant.
+## The places of the sacrifice (ring, push, reach, hang, vortex) as a scene that is only read, never
+## instanced (SacrificeFacts). An inherited scene is a variant.
 @export var sacrifice_places: PackedScene = preload("res://scenes/sacrifice/sacrifice_places.tscn")
 ## How long a doctor's death takes: 70 + 50 frames at 60 fps.
 @export var doctor_death_s: float = 2.0
@@ -61,7 +63,8 @@ extends Resource
 @export var desecrate_altar_range: float = 75.0
 ## The carried creature catches up at this multiple of the doctor's pace.
 @export var carry_speed_factor: float = 1.1
-## A creature a doctor carries (or pumps back to life) dies when the doctor dies and drops it; its soul stays where it lands.
+## A creature a doctor carries (or pumps back to life) dies when the doctor dies and drops it; its
+## soul stays where it lands.
 ## Off: it lands alive and stunned, as the original does.
 @export var carried_dies_when_dropped: bool = true
 
@@ -71,26 +74,27 @@ extends Resource
 @export var ritual_walk_s: float = 4.5
 @export var ritual_shoot_s: float = 4.5
 @export var ritual_wait_s: float = 4.5
-## The drain of the wizard is spread over a window of the shoot phase: it starts 20 ticks in (0.33 s)
-## and lasts 250 ticks (4.17 s).
+## The drain of the wizard is spread over a window of the shoot phase: it starts 20 ticks in (0.33
+## s) and lasts 250 ticks (4.17 s).
 @export var ritual_drain_start_s: float = 0.3333
 @export var ritual_drain_s: float = 4.1667
 ## Per round, times (1 + souls of the creature). The unit conversion of the
 ## original executable could not be reconciled with these numbers (RESEARCH-victory section 3).
 @export var desecrate_health_per_round: float = 200.0
 @export var desecrate_mana_per_round: float = 40.0
-## Push speed at the full-speed core of the push (the radii live in sacrifice_places.tscn: 20 m, 5 m).
+## Push speed at the full-speed core of the push (the radii live in sacrifice_places.tscn: 20 m, 5
+## m).
 @export var ritual_push_speed: float = 20.0
-## Push speed left at the edge. 0 = the original's. Raising it together with the push radius (for example
-## 24 m and 15 m/s) keeps melee creatures out.
+## Push speed left at the edge. 0 = the original's. Raising it together with the push radius (for
+## example 24 m and 15 m/s) keeps melee creatures out.
 @export var ritual_push_edge_speed: float = 0.0
 ## Invention of the port: how long a finished ritual node stays so every peer sees how it ended.
 @export var ritual_linger_s: float = 1.5
 
 ## The pump lasts (souls of the corpse + 1) times this.
 @export var convert_pump_s_per_soul: float = 5.0
-## The creature stands up with min(max(convert_revive_min_health, convert_revive_fraction * max health),
-## max health). The original marks it `TODO: ok?`.
+## The creature stands up with min(max(convert_revive_min_health, convert_revive_fraction * max
+## health), max health). The original marks it `TODO: ok?`.
 @export var convert_revive_min_health: float = 400.0
 @export var convert_revive_fraction: float = 0.5
 ## Rounds of the Convert ritual: int(max health / this) + 1.
@@ -105,8 +109,8 @@ extends Resource
 ## A guardian takes this much of a spell's damage and of a ranged attack's; melee goes through.
 @export var guardian_spell_factor: float = 0.5
 @export var guardian_ranged_factor: float = 0.25
-## It heals 1000 per minute on top of its own regeneration: 16.667 per second, written to the last digit because the
-## simulation multiplies it by the tick's delta.
+## It heals 1000 per minute on top of its own regeneration: 16.667 per second, written to the last
+## digit because the simulation multiplies it by the tick's delta.
 @export var guardian_heal_per_s: float = 16.666666666666668
 ## Farther than this from the post's attach point the guardian gets a move order back
 ## to this distance from the building. The original leaves `TODO: bind creature to
@@ -139,10 +143,10 @@ extends Resource
 ## Only matters when a mode has allies (2v2); in a 1v1 nobody is an ally.
 @export var allied_vision: bool = true
 ## Off: a body takes nothing from its own side.
-## On: it takes `ally_damage_factor` of every hit of its own side, melee, shot, spell, splash, cloud and
-## buildings alike; poison ignores the side and
-## takes ×1. The script default is off; the product
-## (data/match_rules.tres) turns it on, the default of the original. MatchState takes it from the world's rules and Health asks it.
+## On: it takes `ally_damage_factor` of every hit of its own side, melee, shot, spell, splash, cloud
+## and buildings alike; poison ignores the side and takes ×1. The script default is off; the product
+## (data/match_rules.tres) turns it on, the default of the original. MatchState takes it from the
+## world's rules and Health asks it.
 @export var friendly_fire: bool = false
 ## Multiplier between allies.
 @export_range(0.0, 1.0, 0.05) var ally_damage_factor: float = 0.5

@@ -1,7 +1,8 @@
 extends Control
 
-## The form that creates a room: name, private or open, the mode, the map, the land and the level of both wizards. It calls `MpLobby.client.create_room`; the screen moves to the room
-## when the server answers. Run alone (F6) it says «Sin conexión».
+## The form that creates a room: name, private or open, the mode, the map, the land and the level of
+## both wizards. It calls `MpLobby.client.create_room`; the screen moves to the room when the server
+## answers. Run alone (F6) it says «Sin conexión».
 
 signal cancelled
 
@@ -44,8 +45,8 @@ func _on_lost(_reason: String) -> void:
 	_refresh()
 
 
-## The options Dictionary of the room: the `mode` of %RoomMode, the `world` of %RoomMap, the `biome` of %RoomBiome (empty = drawn) and, if chosen, the
-## `level` (0 = the rules decide).
+## The options Dictionary of the room: the `mode` of %RoomMode, the `world` of %RoomMap, the `biome`
+## of %RoomBiome (empty = drawn) and, if chosen, the `level` (0 = the rules decide).
 func options() -> Dictionary:
 	var picker: OptionButton = %RoomLevel
 	var chosen := MatchSetup.new()

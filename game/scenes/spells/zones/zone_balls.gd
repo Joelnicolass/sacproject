@@ -2,9 +2,10 @@
 class_name ZoneBalls
 extends Node3D
 
-## The balls of a zone: each child stands on one point of the zone and grows from nothing to its size while the wizard casts. They go when
-## the zone acts (the burst takes their place) and shrink away if the cast is cut. Presentation only, on every peer, from the zone's phase.
-## It does not hurt anyone (ZoneBlast).
+## The balls of a zone: each child stands on one point of the zone and grows from nothing to its
+## size while the wizard casts. They go when the zone acts (the burst takes their place) and shrink
+## away if the cast is cut. Presentation only, on every peer, from the zone's phase. It does not
+## hurt anyone (ZoneBlast).
 
 ## How fast a cut cast's balls shrink, as a share of their size per second.
 @export_range(0.1, 10.0, 0.1) var shrink_per_s := 2.0

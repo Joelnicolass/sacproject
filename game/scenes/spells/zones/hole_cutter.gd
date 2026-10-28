@@ -1,11 +1,13 @@
 class_name HoleCutter
 extends Node
 
-## The part of a Bore that opens the ground. From the moment its zone acts it walks the spiral and asks the map's Terrain to
-## take away the ground under it (`cut_hole`: the Terrain says when it may), throws what is left over the hole so it falls, and
-## lets a piece of ground drop. When it reaches the end of the spiral it waits, then gives the holes back one at a time, the last
-## one first (`fill_hole`); when none is left the zone is done. Server (or solo) only; the clients get the holes from the
-## Terrain and the effects from FxBus. It draws nothing itself (the zone's look does) and knows no lattice.
+## The part of a Bore that opens the ground. From the moment its zone acts it walks the spiral and
+## asks the map's Terrain to take away the ground under it (`cut_hole`: the Terrain says when it
+## may), throws what is left over the hole so it falls, and lets a piece of ground drop. When it
+## reaches the end of the spiral it waits, then gives the holes back one at a time, the last one
+## first (`fill_hole`); when none is left the zone is done. Server (or solo) only; the clients get
+## the holes from the Terrain and the effects from FxBus. It draws nothing itself (the zone's look
+## does) and knows no lattice.
 
 signal hole_cut(at: Vector3)
 signal hole_filled(at: Vector3)
@@ -13,17 +15,21 @@ signal hole_filled(at: Vector3)
 enum Stage { CUTTING, RESTORING }
 
 @export var zone: GroundZone
-## How fast it walks, against the spell's `speed` (the drill that bores ahead of it goes a little slower).
+## How fast it walks, against the spell's `speed` (the drill that bores ahead of it goes a little
+## slower).
 @export_range(0.1, 3.0, 0.01) var scribe_speed := 1.0
 ## After the last hole, the wait before the first one closes (3 s and 2 ticks).
 @export_range(0.0, 20.0, 0.01, "suffix:s") var restore_delay_s := 3.0333
 ## Between two holes that close.
 @export_range(0.0, 20.0, 0.01, "suffix:s") var restore_every_s := 0.5
-## What is on the ground within this of a new hole and is not over land any more is thrown (it has to fall).
+## What is on the ground within this of a new hole and is not over land any more is thrown (it has
+## to fall).
 @export_range(1.0, 100.0, 0.5, "suffix:m") var fling_reach_m := 30.0
-## The piece of ground that drops with each hole (FxBus.broadcast_scene; its root answers play(params): `at`).
+## The piece of ground that drops with each hole (FxBus.broadcast_scene; its root answers
+## play(params): `at`).
 @export var chunk: PackedScene
-## The earth that bursts where a hole opens and where it closes (FxBus; the ones with a light light the ground).
+## The earth that bursts where a hole opens and where it closes (FxBus; the ones with a light light
+## the ground).
 @export var dig_burst: ParticleType
 @export var restore_burst: ParticleType
 
@@ -67,7 +73,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func _exit_tree() -> void:
-	# A zone that goes while the map stays leaves the ground whole (when the map goes too there is nothing to mend).
+	# A zone that goes while the map stays leaves the ground whole (when the map goes too there is
+	# nothing to mend).
 	if (
 		_terrain != null
 		and is_instance_valid(_terrain)
@@ -107,7 +114,8 @@ func _give_back() -> void:
 	_next_at = _ticks + maxi(1, MatchClock.ticks_for(restore_every_s))
 
 
-## What stood over the new hole and is not on land any more falls: a body on the ground is thrown with no speed.
+## What stood over the new hole and is not on land any more falls: a body on the ground is thrown
+## with no speed.
 func _fling(at: Vector3) -> void:
 	for body in SplashDamage.bodies_within(
 		get_tree(), at, fling_reach_m, null, ZonePulse.BODY_GROUPS

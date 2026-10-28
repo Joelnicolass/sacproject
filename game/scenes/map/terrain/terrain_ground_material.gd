@@ -1,9 +1,10 @@
 class_name TerrainGroundMaterial
 extends RefCounted
 
-## Which material the ground mesh shows: its own (the plain «no look» one terrain.tscn stores) or the one a look layer gives,
-## which wins until it is cleared. In the editor the scene always saves its own material, never a preview. What it does NOT do:
-## decide the look (TerrainLayer does) or touch the mesh.
+## Which material the ground mesh shows: its own (the plain «no look» one terrain.tscn stores) or
+## the one a look layer gives, which wins until it is cleared. In the editor the scene always saves
+## its own material, never a preview. What it does NOT do: decide the look (TerrainLayer does) or
+## touch the mesh.
 
 var _target: GeometryInstance3D
 ## The scene's own material, taken the first time a ground is worn.

@@ -1,14 +1,14 @@
 class_name Vortex
 extends Node3D
 
-## The Vortick's vortex that throws bodies up.
-## VortexImpact puts it in the shots' container where the shot burst; server (or solo) only, it lives
-## `duration_s`·60 + 1 ticks. While frame < influence_share·duration·60 it touches every live creature and wizard whose
-## box meets its own (±√2·radius on the ground plane, −¼·height to +height), with no side filter:
-## - frame < catapult_s·60 and not thrown: catapult with `tangent_speed` along the circle and `lift_speed` up
-##   (direction = (center − body).normalized·1.5 turned −90°);
-## - thrown: the force field adds field·(−y−x, x−y) and `field` up per second, relative to the center,
-##   only below `height`; vz ≥ `min_rise`; no gravity that tick.
+## The Vortick's vortex that throws bodies up. VortexImpact puts it in the shots' container where
+## the shot burst; server (or solo) only, it lives `duration_s`·60 + 1 ticks. While frame <
+## influence_share·duration·60 it touches every live creature and wizard whose box meets its own
+## (±√2·radius on the ground plane, −¼·height to +height), with no side filter:
+## - frame < catapult_s·60 and not thrown: catapult with `tangent_speed` along the circle and
+##   `lift_speed` up (direction = (center − body).normalized·1.5 turned −90°);
+## - thrown: the force field adds field·(−y−x, x−y) and `field` up per second, relative to the
+##   center, only below `height`; vz ≥ `min_rise`; no gravity that tick.
 ## Effects run before creatures: physics priority −1.
 ## The swirl itself (particles) is not drawn yet: its FxBus puff is the shot's impact_fx.
 

@@ -2,11 +2,12 @@
 class_name GameBody
 extends CharacterBody3D
 
-## A body that plays in a match: a creature (UnitBody), a wizard (WizardBody) or a Sac Doctor (DoctorBody). It answers the
-## questions every other system asks a body: whose it is, whether it is dead, whether it can be picked or hit, whether the
-## others steer around it, whether it takes mana, where it faces, what it is called and whether it walks. Each answer has a
-## default a subclass overrides. It does not move, draw or decide anything: its children do.
-## Buildings are not GameBody (they are StaticBody3D); `targetable()` also asks a CastTower.
+## A body that plays in a match: a creature (UnitBody), a wizard (WizardBody) or a Sac Doctor
+## (DoctorBody). It answers the questions every other system asks a body: whose it is, whether it is
+## dead, whether it can be picked or hit, whether the others steer around it, whether it takes mana,
+## where it faces, what it is called and whether it walks. Each answer has a default a subclass
+## overrides. It does not move, draw or decide anything: its children do. Buildings are not GameBody
+## (they are StaticBody3D); `targetable()` also asks a CastTower.
 
 ## Player slot the body belongs to (0 = nobody).
 @export var owner_slot := 0:
@@ -47,7 +48,8 @@ func facing_flat() -> Vector3:
 	return Vector3.BACK if ahead.length_squared() < 0.000001 else ahead.normalized()
 
 
-## Walks one straight leg to `goal` (PathFollower hands each leg here). A body that does not walk ignores it.
+## Walks one straight leg to `goal` (PathFollower hands each leg here). A body that does not walk
+## ignores it.
 func begin_walk(_goal: Vector3) -> void:
 	pass
 
@@ -64,7 +66,8 @@ static func name_of(node: Node) -> String:
 	return str(node.name)
 
 
-## Whether `node` may be picked or hit: a GameBody or a CastTower answers; any other node (or null) may.
+## Whether `node` may be picked or hit: a GameBody or a CastTower answers; any other node (or null)
+## may.
 static func targetable(node: Node) -> bool:
 	if node is GameBody:
 		return (node as GameBody).is_targetable()

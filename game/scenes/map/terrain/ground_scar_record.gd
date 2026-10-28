@@ -1,12 +1,14 @@
 class_name GroundScarRecord
 extends RefCounted
 
-## The marks painted on the ground so far, in order, as the least that paints them again: which picture, where, and how far
-## from the ground it may be. The painted tiles are derived from it; a peer that comes back after a drop gets the list of a donor
-## (GroundScarsNet) and, while it catches up, merges it with what it paints itself (`merge`). Only the newest `limit` marks are kept.
+## The marks painted on the ground so far, in order, as the least that paints them again: which
+## picture, where, and how far from the ground it may be. The painted tiles are derived from it; a
+## peer that comes back after a drop gets the list of a donor (GroundScarsNet) and, while it catches
+## up, merges it with what it paints itself (`merge`). Only the newest `limit` marks are kept.
 ## What it does not do: paint (GroundScars) or send (GroundScarsNet). No tree, no GPU.
 
-## A mark was kept: `ordinal` is how many marks of that picture at that place the list holds now (1 = the first).
+## A mark was kept: `ordinal` is how many marks of that picture at that place the list holds now (1
+## = the first).
 signal added(path: String, at: Vector3, max_height_m: float, ordinal: int)
 
 const PATHS := "paths"
@@ -22,7 +24,8 @@ const SAME_PLACE_M := 0.01
 
 ## How many of the newest marks are kept.
 var limit := 2048
-## While this peer catches up after a drop (GroundScarsNet), how its own marks and the donor's merge; null otherwise.
+## While this peer catches up after a drop (GroundScarsNet), how its own marks and the donor's
+## merge; null otherwise.
 var merge: GroundScarMerge
 
 var _paths := PackedStringArray()
@@ -30,7 +33,8 @@ var _marks := PackedFloat32Array()
 var _counts: Dictionary = {}  # place key -> marks with it in the list
 
 
-## Keeps a mark that was painted. A picture with no file of its own (made in code, embedded) cannot travel and is left out.
+## Keeps a mark that was painted. A picture with no file of its own (made in code, embedded) cannot
+## travel and is left out.
 func add(texture: Texture2D, at: Vector3, max_height_m: float) -> void:
 	var path := texture.resource_path if texture != null else ""
 	if limit <= 0 or not travels(path):
@@ -60,7 +64,8 @@ func clear() -> void:
 	_counts.clear()
 
 
-## A peer back from a drop starts merging a donor's list (GroundScarsNet): what it painted so far counts as its own.
+## A peer back from a drop starts merging a donor's list (GroundScarsNet): what it painted so far
+## counts as its own.
 func begin_catch_up() -> void:
 	merge = GroundScarMerge.new(_counts)
 
@@ -105,8 +110,9 @@ static func count(wire: Dictionary) -> int:
 	return (marks as PackedFloat32Array).size() / STRIDE if marks is PackedFloat32Array else 0
 
 
-## The marks of a wire list as [texture, point, max_height_m, ordinal], in order. It comes from another peer: a mark whose
-## picture is not an imported texture of the project is skipped; with no ordinals each mark counts as a first one.
+## The marks of a wire list as [texture, point, max_height_m, ordinal], in order. It comes from
+## another peer: a mark whose picture is not an imported texture of the project is skipped; with no
+## ordinals each mark counts as a first one.
 static func entries(wire: Dictionary) -> Array:
 	var out: Array = []
 	var paths: Variant = wire.get(PATHS)

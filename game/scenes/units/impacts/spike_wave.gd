@@ -1,23 +1,23 @@
 class_name SpikeWave
 extends Node3D
 
-## The Rhinok's rings of spikes. SpikeImpact puts it in the shots' container where the shot burst (on the land),
-## server (or solo) only. Its frame is MatchClock.now() − the tick it was born (frame 0 is the update of
-## the hit). At damage_at_s[i] (14, 29, 44, 59, 89 ticks) ring i hurts; at `life_s` (90 ticks) it ends.
-## Ring i goes from min_radius + i·offset to that + strip, offset = (effect_range − strip − min_radius) / (rings − 1):
-## with hrba (effect range 30) [1, 7], [6,75, 12,75], [12,5, 18,5], [18,25, 24,25], [24, 30].
-## Who a ring hurts: every live creature, wizard and building whose hit box
-## is within the ring's outer radius of the center and whose feet are, seen from above, between
-## its two radii; on the land and at most `max_height` over it; not the body the shot hit; not an ally of the shooter
-## unless it is the shot's target (skipped here, before Health, whatever the friendly fire). Each takes the whole
-## amount as splash ranged damage: one hit per ring; a body that stands where two
-## rings overlap (6,75 to 7 m, …) takes both.
-## Effects run before creatures: priority −1.
-## An ally is a body of the shooter's slot; the spikes
-## (spread at 30 per update on the growing circle) are presentation and are drawn
-## ring by ring: on each damage frame one SpikeField event (FxBus.broadcast_scene, one RPC) fills that ring's strip
-## with `spikes_per_m2` spikes (at most `max_spikes`), so the strip that hurts is the strip that bristles; they stand
-## `spike_life_s`, so one ring stands at a time.
+## The Rhinok's rings of spikes. SpikeImpact puts it in the shots' container where the shot burst
+## (on the land), server (or solo) only. Its frame is MatchClock.now() − the tick it was born (frame
+## 0 is the update of the hit). At damage_at_s[i] (14, 29, 44, 59, 89 ticks) ring i hurts; at
+## `life_s` (90 ticks) it ends. Ring i goes from min_radius + i·offset to that + strip, offset =
+## (effect_range − strip − min_radius) / (rings − 1): with hrba (effect range 30) [1, 7], [6,75,
+## 12,75], [12,5, 18,5], [18,25, 24,25], [24, 30].
+## Who a ring hurts: every live creature, wizard and building whose hit box is within the ring's
+## outer radius of the center and whose feet are, seen from above, between its two radii; on the
+## land and at most `max_height` over it; not the body the shot hit; not an ally of the shooter
+## unless it is the shot's target (skipped here, before Health, whatever the friendly fire). Each
+## takes the whole amount as splash ranged damage: one hit per ring; a body that stands where two
+## rings overlap (6,75 to 7 m, …) takes both. Effects run before creatures: priority −1. An ally is
+## a body of the shooter's slot; the spikes (spread at 30 per update on the growing circle) are
+## presentation and are drawn ring by ring: on each damage frame one SpikeField event
+## (FxBus.broadcast_scene, one RPC) fills that ring's strip with `spikes_per_m2` spikes (at most
+## `max_spikes`), so the strip that hurts is the strip that bristles; they stand `spike_life_s`, so
+## one ring stands at a time.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
@@ -33,7 +33,8 @@ var damage_at_s: PackedFloat64Array = PackedFloat64Array([0.2333, 0.4833, 0.7333
 @export var max_height := 10.0
 ## How long the wave lasts (it ends after it).
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var life_s := 1.5
-## The SPEL's effect range (hrba: 30 m); SpikeImpact writes it. The outer radius of the last ring and of the spikes.
+## The SPEL's effect range (hrba: 30 m); SpikeImpact writes it. The outer radius of the last ring
+## and of the spikes.
 @export var effect_range := 30.0
 ## The spikes of a ring: spike_field.tscn (an FxScene) played by FxBus on every peer (empty: none).
 @export var spike_scene: PackedScene
@@ -42,13 +43,15 @@ var damage_at_s: PackedFloat64Array = PackedFloat64Array([0.2333, 0.4833, 0.7333
 @export_range(0, 2000) var max_spikes := 1000
 ## How tall a spike is while spreading.
 @export var spike_height := 2.5
-## How long a ring's spikes stand (s). A ring is one event every 15 frames, so 0,4 s (24 frames) keeps one ring standing at a time and the ring reads from above.
+## How long a ring's spikes stand (s). A ring is one event every 15 frames, so 0,4 s (24 frames)
+## keeps one ring standing at a time and the ring reads from above.
 @export var spike_life_s := 0.4
 
 ## What SpikeImpact hands over (before begin()).
 var amount := 0.0
 var from_slot := 0
-## The creature that fired the shot, as an absolute path (the shot may be gone); its drain feeds on every ring.
+## The creature that fired the shot, as an absolute path (the shot may be gone); its drain feeds on
+## every ring.
 var attacker_path := NodePath()
 ## The shot's target and the body the shot hurt, or null.
 var intended: Node3D
@@ -175,6 +178,7 @@ func _log_start() -> void:
 	var at := global_position
 	print(
 		(
+			# gdlint: ignore=max-line-length
 			"rings %s at (%.3f, %.3f, %.3f) range %.1f m damage %d side %d intended %s touched %s rings %s (frame %d)"
 			% [
 				label,

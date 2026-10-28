@@ -1,15 +1,17 @@
 class_name FallingChunkRules
 extends RefCounted
 
-## The shape of the piece of ground that drops when a vertex is taken away: the land triangles that touched the vertex (heights
-## with the shift the ground had), plus a skirt of cliff hanging from the edges that border the
-## rest of the land. Pure and static (the arrays of a mesh): FallingChunk draws and drops it. It does not remove the vertex.
+## The shape of the piece of ground that drops when a vertex is taken away: the land triangles that
+## touched the vertex (heights with the shift the ground had), plus a skirt of cliff hanging from
+## the edges that border the rest of the land. Pure and static (the arrays of a mesh): FallingChunk
+## draws and drops it. It does not remove the vertex.
 
 ## How far the skirt hangs.
 const SKIRT_M := 50.0
 
 
-## The arrays (positions, normals, COLOR, UV, indices) of the piece around lattice vertex `id`; [] when the vertex touches no land.
+## The arrays (positions, normals, COLOR, UV, indices) of the piece around lattice vertex `id`; []
+## when the vertex touches no land.
 static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, id: int) -> Array:
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
@@ -69,7 +71,8 @@ static func _touches(index: TerrainRules.Index, triangle: int, id: int) -> bool:
 	)
 
 
-## A hanging wall under every side only one triangle of the piece has (the rest of the land is on its other side).
+## A hanging wall under every side only one triangle of the piece has (the rest of the land is on
+## its other side).
 static func _skirt(
 	sides: Dictionary,
 	middle: Vector3,

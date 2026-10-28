@@ -7,13 +7,14 @@ extends AiPhase
 ## souls/2; and either none is ready or the mana deficit per Manalith and ready Manahoar is above
 ## 1400. A forced Manahoar is the only thing queued this replan. BLOCK2: with threat < 0.6 and a
 ## pool of mana (max mana x Manaliths) > 0, the creature of the book (not the Manahoar) the wizard
-## can pay in souls with the best score `AiRater.rate_with_base(creature, field) x (1 - cost/pool)` is forced.
-## The Manaliths count because the pool is max mana x Manaliths: with none, the original summons
-## nothing (so a match starts with its Manalith). The «field» is the quirky mix of acc1 and acc2
-## (see AiStance). In the threat that stops the summons the hostile NPC around the wizard weigh
-## AiTactics.npc_summon_threat_weight (0 in every difficulty), so two Taurocks by a fount do not keep
-## him from summoning while his souls pile up. And the pool counts at least
-## AiTactics.summon_min_manaliths Manaliths (1), so a side whose Manaliths fell can still summon (BLOCK1, the Manahoar, still needs a
+## can pay in souls with the best score `AiRater.rate_with_base(creature, field) x (1 - cost/pool)`
+## is forced. The Manaliths count because the pool is max mana x Manaliths: with none, the original
+## summons nothing (so a match starts with its Manalith). The «field» is the quirky mix of acc1 and
+## acc2 (see AiStance). In the threat that stops the summons the hostile NPC around the wizard weigh
+## AiTactics.npc_summon_threat_weight (0 in every difficulty), so two Taurocks by a fount do not
+## keep him from summoning while his souls pile up. And the pool counts at least
+## AiTactics.summon_min_manaliths Manaliths (1), so a side whose Manaliths fell can still summon
+## (BLOCK1, the Manahoar, still needs a
 ## Manalith to channel: unchanged).
 
 

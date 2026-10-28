@@ -3,13 +3,16 @@ class_name AudioPrefs
 extends Resource
 
 ## The player's volumes, a local preference (not a match rule).
-## - One linear value 0..1 per bus of default_bus_layout.tres (Master, Music, SFX, Voice, Ambience) and «Silenciar»
-##   (mutes Master, keeps the values). 0 is silence (the bus is muted); the rest goes through linear_to_db.
+## - One linear value 0..1 per bus of default_bus_layout.tres (Master, Music, SFX, Voice, Ambience)
+##   and «Silenciar» (mutes Master, keeps the values). 0 is silence (the bus is muted); the rest
+##   goes through linear_to_db.
 ## - It lives in `user://settings.cfg` `[audio]` through UserSettings (sandboxed under AgentKit).
-## - Under AgentKit (`--agent=…`) Master starts at 0 for this run unless `--audio-on`: a playtest is silent by default.
-## - SoundBus applies it to the AudioServer at start and on every `changed`; this resource never touches the server.
-## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that
-## instance and the exported fields are never written. Changes emit `changed`.
+## - Under AgentKit (`--agent=…`) Master starts at 0 for this run unless `--audio-on`: a playtest is
+##   silent by default.
+## - SoundBus applies it to the AudioServer at start and on every `changed`; this resource never
+##   touches the server.
+## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime
+## state of that instance and the exported fields are never written. Changes emit `changed`.
 
 const SHARED_PATH := "res://data/ui/audio_prefs.tres"
 const SECTION := "audio"

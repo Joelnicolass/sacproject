@@ -1,15 +1,17 @@
 extends Control
 
-## The room screens of Sacrifice. It owns no state: the views read `MpLobby.client` (the kit's mirror of
-## the room server) and this node only decides which one shows (connect, list, create, room), turns the client's
-## errors into one notice, and takes the player into the match when the server says it is ready
-## (`SacrificeFlow.join_from_lobby`). The lobby link lives in the `MpLobby` autoload, so it survives the match: when the
-## match ends the flow brings the player back here and the room is still there, with the result.
-## Run alone (F6) it shows the connect view with «Sin conexión»; it never connects by itself.
+## The room screens of Sacrifice. It owns no state: the views read `MpLobby.client` (the kit's
+## mirror of the room server) and this node only decides which one shows (connect, list, create,
+## room), turns the client's errors into one notice, and takes the player into the match when the
+## server says it is ready (`SacrificeFlow.join_from_lobby`). The lobby link lives in the `MpLobby`
+## autoload, so it survives the match: when the match ends the flow brings the player back here and
+## the room is still there, with the result. Run alone (F6) it shows the connect view with «Sin
+## conexión»; it never connects by itself.
 
 ## Where the room server is. `--lobby=host:port` wins over the saved values.
 @export var endpoint: MpLobbyEndpoint
-## How the online rooms are reached (the relay); applied here, so solo, LAN and «Servidor local» keep ENet.
+## How the online rooms are reached (the relay); applied here, so solo, LAN and «Servidor local»
+## keep ENet.
 @export var online: OnlineNetwork
 ## Seconds a notice stays on screen.
 @export var notice_s: float = 4.0
@@ -34,7 +36,8 @@ func _ready() -> void:
 	_list_view.back_requested.connect(_on_menu)
 	_create_view.cancelled.connect(_on_create_cancelled)
 	var client := MpLobby.client
-	# A lobby drop (also in a match) is not the end: it comes back with its token and keeps its seat (`resume_grace_s`).
+	# A lobby drop (also in a match) is not the end: it comes back with its token and keeps its seat
+	# (`resume_grace_s`).
 	client.auto_resume = true
 	client.lobby_resuming.connect(_on_lobby_resuming)
 	client.lobby_joined.connect(_on_lobby_joined)
@@ -139,7 +142,8 @@ func _on_admission_rejected(_reason: String) -> void:
 func _on_menu() -> void:
 	SacrificeFlow.from_lobby = false
 	MpLobby.client.close_connection()
-	# By path: the menu points to this screen, so the screen cannot hold the menu as a resource (cyclic).
+	# By path: the menu points to this screen, so the screen cannot hold the menu as a resource
+	# (cyclic).
 	get_tree().change_scene_to_file(SacrificeFlow.boot_path)
 
 

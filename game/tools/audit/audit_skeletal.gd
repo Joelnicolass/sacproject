@@ -1,19 +1,21 @@
 extends SceneTree
 
-## Parity of the skeletal models against the baked OBJ frames.
-## For every clip of the test models that has a baked reference, imports the .glb, seeks the AnimationPlayer to
-## frames {0, middle, last}, skins the mesh on the CPU (skeleton global pose x skin bind) and compares every vertex
-## with the same frame of the baked OBJ. Prints model / clip / frame / max_err_mm and fails above TOLERANCE_MM.
-## "$GODOT" --headless --path game --script res://tools/audit/audit_skeletal.gd [-- --dir=res://other/models --models=eorc,jnwr --ref=DIR]
-## --clips=FILE: a JSON {model: [tag]} (tools/import/export_skeletal_reference.py --unit-clips writes it): only those clips are audited.
-## --ref=DIR: reference OBJs written by tools/import/export_skeletal_reference.py (sacengine export, every clip, frames
-## 0 / middle / last: <DIR>/<model>/<clip>/<frame>.obj). A clip without them fails. --ref is required.
-## Vertices whose raw weights do not sum to 1 (index.json unnormalized_vertices) are compared the way the game
-## computes them (weights not normalized: p = D + sum * (p_normalized - D), D = root displacement), so a 4 mm
-## difference there is predicted, not tolerated.
-## Ends with SKELETAL AUDIT PASS, or SKELETAL AUDIT FAIL and exit code 1.
+## Parity of the skeletal models against the baked OBJ frames. For every clip of the test models
+## that has a baked reference, imports the .glb, seeks the AnimationPlayer to frames {0, middle,
+## last}, skins the mesh on the CPU (skeleton global pose x skin bind) and compares every vertex
+## with the same frame of the baked OBJ. Prints model / clip / frame / max_err_mm and fails above
+## TOLERANCE_MM. "$GODOT" --headless --path game --script res://tools/audit/audit_skeletal.gd [--
+## --dir=res://other/models --models=eorc,jnwr --ref=DIR] --clips=FILE: a JSON {model: [tag]}
+## (tools/import/export_skeletal_reference.py --unit-clips writes it): only those clips are audited.
+## --ref=DIR: reference OBJs written by tools/import/export_skeletal_reference.py (sacengine export,
+## every clip, frames 0 / middle / last: <DIR>/<model>/<clip>/<frame>.obj). A clip without them
+## fails. --ref is required. Vertices whose raw weights do not sum to 1 (index.json
+## unnormalized_vertices) are compared the way the game computes them (weights not normalized: p = D
+## + sum * (p_normalized - D), D = root displacement), so a 4 mm difference there is predicted, not
+## tolerated. Ends with SKELETAL AUDIT PASS, or SKELETAL AUDIT FAIL and exit code 1.
 
-## The one place that names where the skeletal models live (same folder export_skeletal.py writes to).
+## The one place that names where the skeletal models live (same folder export_skeletal.py writes
+## to).
 const MODELS_DIR := "res://assets/original/models"
 ## The models audited by default.
 const DEFAULT_MODELS := ["eorc", "jnwr"]
@@ -37,6 +39,7 @@ func _initialize() -> void:
 			only = JSON.parse_string(FileAccess.get_file_as_string(arg.trim_prefix("--clips=")))
 	if ref_dir == "":
 		push_error(
+			# gdlint: ignore=max-line-length
 			"audit_skeletal: --ref=DIR is required (tools/import/export_skeletal_reference.py writes it)"
 		)
 		quit(1)
@@ -51,6 +54,7 @@ func _initialize() -> void:
 	var clips_audited := 0
 	var clips_total := 0
 	print(
+		# gdlint: ignore=max-line-length
 		"model\tclip\tframe\tmax_err_mm\tverts_over_tol\tunnorm\tunnorm_pred_mm\tunnorm_raw_mm\tresult"
 	)
 	for model: String in models:
@@ -59,8 +63,9 @@ func _initialize() -> void:
 			failed = true
 			continue
 		var glb: String = dir.path_join(index[model]["glb"])
-		# The editor import regenerates tangents (mikktspace), which reorders and merges vertices, so the
-		# per-vertex comparison reads the glb itself; the imported scene is only checked for loading.
+		# The editor import regenerates tangents (mikktspace), which reorders and merges vertices,
+		# so the per-vertex comparison reads the glb itself; the imported scene is only checked for
+		# loading.
 		var imported: PackedScene = load(glb)
 		if imported == null:
 			print("%s\t-\t-\t-\t-\tFAIL (glb does not import)" % model)
@@ -138,7 +143,8 @@ func _initialize() -> void:
 					clip_dir.path_join("%d.obj" % frame), index[model].get("dropped_vertices", [])
 				)
 				player.stop()
-				# Constant tracks equal to the rest pose are dropped by the glTF importer: start every seek from rest.
+				# Constant tracks equal to the rest pose are dropped by the glTF importer: start
+				# every seek from rest.
 				skeleton.reset_bone_poses()
 				player.play(clip)
 				player.seek(float(frame) / framerate, true)
@@ -247,7 +253,8 @@ func _skin(mesh_node: MeshInstance3D, skeleton: Skeleton3D) -> PackedVector3Arra
 	var skin := mesh_node.skin
 	var binds := skin.get_bind_count()
 	var matrices: Array[Transform3D] = []
-	# Global poses from the local poses, parents first: independent of the skeleton's cached global poses.
+	# Global poses from the local poses, parents first: independent of the skeleton's cached global
+	# poses.
 	var globals: Array[Transform3D] = []
 	for b in skeleton.get_bone_count():
 		var parent := skeleton.get_bone_parent(b)

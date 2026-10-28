@@ -1,13 +1,17 @@
 extends SceneTree
 
-## Gives the models of scenes/bodies/models/ the physical skeleton their bodies fall and hang with (RagdollBaker does the work).
-## A model that already has its "Ragdoll" keeps it (an edit made by hand is safe) and only gets the exports of its root completed;
-## `--force` bakes it again from scratch. Walks the model files by name, never by tag. Needs no autoload.
+## Gives the models of scenes/bodies/models/ the physical skeleton their bodies fall and hang with
+## (RagdollBaker does the work). A model that already has its "Ragdoll" keeps it (an edit made by
+## hand is safe) and only gets the exports of its root completed; `--force` bakes it again from
+## scratch. Walks the model files by name, never by tag. Needs no autoload.
 ##
-## Run:  Godot --headless --path . --script res://tools/bake/bake_ragdolls.gd -- <stem|res://...tscn>... [--missing] [--skip=<stem>] [--force]
-##   --missing   every model of the folder (the ones without a Ragdoll are baked, the others only completed)
+## Run:  Godot --headless --path . --script res://tools/bake/bake_ragdolls.gd --
+## <stem|res://...tscn>... [--missing] [--skip=<stem>] [--force]
+##   --missing   every model of the folder (the ones without a Ragdoll are baked, the others only
+##   completed)
 ##   --skip=X    leave the model with stem X out (repeatable)
-## Prints one line per model and `RAGDOLL BAKE baked=N completed=M failed=K`; exits 1 when something failed.
+## Prints one line per model and `RAGDOLL BAKE baked=N completed=M failed=K`; exits 1 when something
+## failed.
 
 const MODEL_DIR := "res://scenes/bodies/models/"
 
@@ -45,7 +49,8 @@ func _init() -> void:
 	quit(1 if counts["failed"] > 0 else 0)
 
 
-## Bakes or completes one model file. Returns which count it adds to: "baked", "completed" or "failed".
+## Bakes or completes one model file. Returns which count it adds to: "baked", "completed" or
+## "failed".
 func _bake(path: String, stem: String, force: bool) -> String:
 	var packed := ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
 	if packed == null:

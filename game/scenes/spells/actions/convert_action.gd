@@ -2,13 +2,13 @@
 class_name ConvertAction
 extends SpellAction
 
-## Convert (ccas): the wizard steals the souls of a dead enemy creature. The click is a red soul within the
-## cast range (SOUL); he needs an own altar standing. The red vortex opens past the soul when the casting
-## starts; when it ends a carrier doctor drops by the corpse, pumps it back to life and takes it to the
-## own altar closest to the wizard, where a ritual of Convert turns it into souls for him. If the cast is
-## interrupted there is no doctor and the soul stays red and convertible. All the rules live in
-## SacrificeSystem; this action is only the contract with
-## the Caster. The ritual itself is Ritual.Kind.CONVERT.
+## Convert (ccas): the wizard steals the souls of a dead enemy creature. The click is a red soul
+## within the cast range (SOUL); he needs an own altar standing. The red vortex opens past the soul
+## when the casting starts; when it ends a carrier doctor drops by the corpse, pumps it back to life
+## and takes it to the own altar closest to the wizard, where a ritual of Convert turns it into
+## souls for him. If the cast is interrupted there is no doctor and the soul stays red and
+## convertible. All the rules live in SacrificeSystem; this action is only the contract with the
+## Caster. The ritual itself is Ritual.Kind.CONVERT.
 
 var _system: SacrificeSystem
 var _cast: SacrificeSystem.Cast
@@ -21,7 +21,8 @@ func arm_status(wizard: WizardBody, _spell: SpellType) -> String:
 	return system.convert_arm_status(wizard.owner_slot, wizard.global_position)
 
 
-## `picked` and `point` come from the client: the soul is validated here and its own position is the aim.
+## `picked` and `point` come from the client: the soul is validated here and its own position is the
+## aim.
 func check(
 	wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String
 ) -> Aim:

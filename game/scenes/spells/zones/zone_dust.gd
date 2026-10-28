@@ -1,9 +1,10 @@
 class_name ZoneDust
 extends Node3D
 
-## Dust that rises from the ground around a zone while it is in some of its phases: a few puffs each tick at random spots
-## of the disc, most of them near the center, each on the ground where the ground is at that moment (so it follows a mound
-## as it lifts). On every peer, from the zone's phase; a dedicated server draws nothing. It does not hurt anyone.
+## Dust that rises from the ground around a zone while it is in some of its phases: a few puffs each
+## tick at random spots of the disc, most of them near the center, each on the ground where the
+## ground is at that moment (so it follows a mound as it lifts). On every peer, from the zone's
+## phase; a dedicated server draws nothing. It does not hurt anyone.
 
 @export var zone: GroundZone
 ## The puff (FxBus, under data/fx/).

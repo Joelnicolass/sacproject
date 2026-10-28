@@ -2,14 +2,14 @@
 class_name SpellAction
 extends Node
 
-## Contract of a spell with its own procedure. Instanced by Caster under the wizard's `Caster/Actions`
-## from `SpellType.action`; Caster finds it by `spell`, runs the common part (mana, cooldown, casting frames, drain) and asks
-## the action for the rest: whether it can be armed, where it lands, what happens when the casting
-## time ends and what to undo if the wizard dies midway. `pick` tells the click handler what to
-## aim at, so neither Caster nor MatchCommand names a tag. Taking the child out turns the spell
-## off: its icon answers «No implementado».
-## Only the server (or solo) runs begin/finish/cancel. This base holds no game logic, so the editor
-## can run it for the configuration warnings.
+## Contract of a spell with its own procedure. Instanced by Caster under the wizard's
+## `Caster/Actions` from `SpellType.action`; Caster finds it by `spell`, runs the common part (mana,
+## cooldown, casting frames, drain) and asks the action for the rest: whether it can be armed, where
+## it lands, what happens when the casting time ends and what to undo if the wizard dies midway.
+## `pick` tells the click handler what to aim at, so neither Caster nor MatchCommand names a tag.
+## Taking the child out turns the spell off: its icon answers «No implementado». Only the server (or
+## solo) runs begin/finish/cancel. This base holds no game logic, so the editor can run it for the
+## configuration warnings.
 
 enum Pick { GROUND, OWN_UNIT, SOUL, OWN_BUILDING, SELF }
 
@@ -27,23 +27,28 @@ class Aim:
 	var status := ""
 	var point := Vector3.ZERO
 	var target: Node3D
-	## Where the cast builds or lands when it is not `target` (a fount); previews draw there. Null = none.
+	## Where the cast builds or lands when it is not `target` (a fount); previews draw there. Null =
+	## none.
 	var site: Node3D
 	## What `begin` needs from `check` (an action keeps its own keys).
 	var data := {}
 
 
-## The spell this action casts. Caster sets it when it instances `spell.action`; an action scene does not know its spell.
+## The spell this action casts. Caster sets it when it instances `spell.action`; an action scene
+## does not know its spell.
 var spell: SpellType
 ## Network id of the spell (read only: `spell.tag`), "" before Caster sets it.
 var tag: String:
 	get:
 		return spell.tag if spell != null else ""
-## What the click aims at: the ground, an own creature, a soul or an own building. SELF aims at nothing: the cast starts on the key.
+## What the click aims at: the ground, an own creature, a soul or an own building. SELF aims at
+## nothing: the cast starts on the key.
 @export var pick := Pick.GROUND
-## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god (GodType.cast_fx).
+## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god
+## (GodType.cast_fx).
 @export var cast_fx: ParticleType
-## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the end of the cast.
+## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the
+## end of the cast.
 @export var stationary := false
 
 
@@ -85,8 +90,8 @@ func begin(_wizard: WizardBody, _spell: SpellType, _aim: Aim) -> void:
 	pass
 
 
-## Right after the common part started the cast (cooldown applied, `frames` of casting counted): a spell that
-## launches something while it casts (Rock, Fireball, Speedup) does it here.
+## Right after the common part started the cast (cooldown applied, `frames` of casting counted): a
+## spell that launches something while it casts (Rock, Fireball, Speedup) does it here.
 func started(_wizard: WizardBody, _spell: SpellType, _aim: Aim, _frames: int) -> void:
 	pass
 
@@ -110,8 +115,8 @@ func standing_status(funds: String, wizard: WizardBody, spell: SpellType, point:
 	return ""
 
 
-## The shared answer of a spell aimed at one body: funds first (cooldown, mana), then a valid body (`body`, already picked with the
-## action's SpellTarget; null = not valid), then the cast range.
+## The shared answer of a spell aimed at one body: funds first (cooldown, mana), then a valid body
+## (`body`, already picked with the action's SpellTarget; null = not valid), then the cast range.
 func aim_at_body(
 	wizard: WizardBody, spell: SpellType, point: Vector3, funds: String, body: Node3D
 ) -> Aim:

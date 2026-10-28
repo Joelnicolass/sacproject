@@ -2,12 +2,13 @@
 class_name HoverFrame
 extends Control
 
-## The frame around the unit, building or soul under the pointer, in its side color (soul colors for a soul):
-## four wedges (one per side, peak alpha near a corner, fading to zero along the side and across its width) that
-## stick out of the rect by 5% and scale with it. Plain alpha blending, no animation. It reads what is hovered from TargetProbe
-## (the one owner of that ray), projects the body's box with the active camera each frame and never shows over a corpse, the sky,
-## the ground, the HUD or while a drag (camera or selection rectangle) runs. Local presentation only: no sim reads it. The name
-## box beside the pointer is TargetInfoPanel's.
+## The frame around the unit, building or soul under the pointer, in its side color (soul colors for
+## a soul): four wedges (one per side, peak alpha near a corner, fading to zero along the side and
+## across its width) that stick out of the rect by 5% and scale with it. Plain alpha blending, no
+## animation. It reads what is hovered from TargetProbe (the one owner of that ray), projects the
+## body's box with the active camera each frame and never shows over a corpse, the sky, the ground,
+## the HUD or while a drag (camera or selection rectangle) runs. Local presentation only: no sim
+## reads it. The name box beside the pointer is TargetInfoPanel's.
 
 @export var probe: TargetProbe
 ## Optional: while an icon waits for a target (spell, order) buildings are framed too.

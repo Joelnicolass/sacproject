@@ -1,11 +1,12 @@
 class_name ProjectileLaunch
 extends RefCounted
 
-## What a guided spell projectile (or a carrier) is told when it leaves: where it starts, what it aims at, who cast it and the
-## spell's numbers. It travels as a Dictionary only inside SpellSpawner (`to_dict` on the server, `from_dict` in the
-## projectile's `setup` on every peer).
+## What a guided spell projectile (or a carrier) is told when it leaves: where it starts, what it
+## aims at, who cast it and the spell's numbers. It travels as a Dictionary only inside SpellSpawner
+## (`to_dict` on the server, `from_dict` in the projectile's `setup` on every peer).
 
-## The node name SpellSpawner gave it, the same on every peer. Set by the spawner, not by the caller.
+## The node name SpellSpawner gave it, the same on every peer. Set by the spawner, not by the
+## caller.
 var name := ""
 ## Where it starts, in world space.
 var from := Vector3.ZERO
@@ -26,7 +27,8 @@ var damage_range_m := 0.0
 var cast_ticks := 0
 
 
-## A launch of `spell` by `wizard` from `at` toward `body` (or toward `point` when there is no body).
+## A launch of `spell` by `wizard` from `at` toward `body` (or toward `point` when there is no
+## body).
 static func toward(
 	wizard: WizardBody, spell: SpellType, at: Vector3, body: Node3D, point: Vector3
 ) -> ProjectileLaunch:

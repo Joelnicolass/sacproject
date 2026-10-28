@@ -1,10 +1,11 @@
 class_name FallingChunk
 extends FxScene
 
-## The piece of ground that drops when a vertex is taken away: the triangles that touched it, in the ground's own look, fall
-## straight down faster and faster and go out of sight. Played on every peer by FxBus.broadcast_scene (params `at`: where the
-## ground went, Terrain.cut_hole). It is only what you see: the hole is already in the ground's numbers and in the collision. Presentation only: a headless
-## process shows none. The shape of the piece is FallingChunkRules.
+## The piece of ground that drops when a vertex is taken away: the triangles that touched it, in the
+## ground's own look, fall straight down faster and faster and go out of sight. Played on every peer
+## by FxBus.broadcast_scene (params `at`: where the ground went, Terrain.cut_hole). It is only what
+## you see: the hole is already in the ground's numbers and in the collision. Presentation only: a
+## headless process shows none. The shape of the piece is FallingChunkRules.
 
 ## How fast it speeds up.
 @export_range(0.0, 100.0, 0.5, "suffix:m/s²") var gravity := 30.0
@@ -43,8 +44,8 @@ func play(params: Dictionary) -> void:
 	piece.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, built)
 	_mesh.mesh = piece
 	_mesh.material_override = terrain.mesh.material_override
-	# The piece carries its own heights and the ground shader reads the light and the marks from map coordinates: the mesh is in
-	# them, and this node stays at the origin and only goes down.
+	# The piece carries its own heights and the ground shader reads the light and the marks from map
+	# coordinates: the mesh is in them, and this node stays at the origin and only goes down.
 	_mesh.set_instance_shader_parameter(&"deform_follow", 0.0)
 	global_position = Vector3.ZERO
 	_gone_at = piece.get_aabb().position.y + FallingChunkRules.SKIRT_M - fall_depth_m

@@ -2,10 +2,11 @@
 class_name WallSound
 extends SoundEmitter3D
 
-## The sound of a wall, on every peer, from its replicated age: one shot when it is raised or when it begins to sink, or a loop for as long
-## as it stands. It names a key of the sound table (SoundEmitter3D) and plays it at the point of the wall closest to the listener (a wall
-## is up to 110 m long, the sound does not come from its middle). It does not decide when a wall starts or ends (SpellWall). A dedicated
-## server or a headless run plays nothing.
+## The sound of a wall, on every peer, from its replicated age: one shot when it is raised or when
+## it begins to sink, or a loop for as long as it stands. It names a key of the sound table
+## (SoundEmitter3D) and plays it at the point of the wall closest to the listener (a wall is up to
+## 110 m long, the sound does not come from its middle). It does not decide when a wall starts or
+## ends (SpellWall). A dedicated server or a headless run plays nothing.
 
 enum When { WHEN_RAISED, WHEN_SINKS, WHILE_STANDING }
 

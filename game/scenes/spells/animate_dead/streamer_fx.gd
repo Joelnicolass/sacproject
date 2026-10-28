@@ -1,20 +1,25 @@
 class_name StreamerFx
 extends MeshInstance3D
 
-## One stream of Animate Dead: a ghostly comet that leaves the wizard, arcs up and falls on the creature coming back to life. A ribbon of
-## `type.segments` links with three fins, its texture stretched along its whole length (a strip of frames, one every `type.frame_s`).
-## Only a part of the curve shows at once (`length` of it), and that part travels from the wizard to the creature in `travel_s`. The two
-## ends follow their bodies. Presentation only: no sound, no damage, no state; AnimateDeadFx makes it and it frees itself.
+## One stream of Animate Dead: a ghostly comet that leaves the wizard, arcs up and falls on the
+## creature coming back to life. A ribbon of `type.segments` links with three fins, its texture
+## stretched along its whole length (a strip of frames, one every `type.frame_s`). Only a part of
+## the curve shows at once (`length` of it), and that part travels from the wizard to the creature
+## in `travel_s`. The two ends follow their bodies. Presentation only: no sound, no damage, no
+## state; AnimateDeadFx makes it and it frees itself.
 
 const UV_INSET := 0.5 / 256.0
 
-## The look: atlas strip (`h_frames` x `v_frames`), segments, width of the fins, frame time and brightness.
+## The look: atlas strip (`h_frames` x `v_frames`), segments, width of the fins, frame time and
+## brightness.
 @export var type: BeamType
 ## Seconds the head takes to go from the wizard to the creature (and the tail to arrive after it).
 @export_range(0.1, 10.0, 0.0001, "suffix:s") var travel_s := 2.1333
-## The part of the curve that shows at once, between these two fractions (each stream picks its own).
+## The part of the curve that shows at once, between these two fractions (each stream picks its
+## own).
 @export var length_range := Vector2(0.15, 0.5)
-## How steeply the stream leaves the wizard and falls on the creature (up and down, against the random side push).
+## How steeply the stream leaves the wizard and falls on the creature (up and down, against the
+## random side push).
 @export_range(0.0, 8.0, 0.1) var arc := 3.0
 @export_range(0.0, 8.0, 0.1) var side_push := 2.0
 
@@ -37,7 +42,8 @@ func _ready() -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
-## Starts the stream from `from` to `to` (bodies: their centers are the ends). `stream_seed` picks its arc.
+## Starts the stream from `from` to `to` (bodies: their centers are the ends). `stream_seed` picks
+## its arc.
 func play(from: Node3D, to: Node3D, stream_seed: int) -> void:
 	_from = from
 	_to = to
@@ -96,8 +102,9 @@ func _draw() -> void:
 	_mesh.surface_end()
 
 
-## The quad of fin `j` between link `i` and `i + 1` of a ribbon: the axis along the bottom of the cell, the fin's edge along the top. The
-## ribbons of the Wailing Wall's spirits are drawn with it too.
+## The quad of fin `j` between link `i` and `i + 1` of a ribbon: the axis along the bottom of the
+## cell, the fin's edge along the top. The ribbons of the Wailing Wall's spirits are drawn with it
+## too.
 static func add_fin(
 	mesh: ImmediateMesh,
 	points: PackedVector3Array,

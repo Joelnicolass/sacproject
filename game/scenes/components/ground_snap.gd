@@ -46,7 +46,8 @@ func snap() -> void:
 	var terrain := _terrain()
 	if terrain == null:
 		return
-	# Terrain-local = map coordinates. In the editor the map root is shifted (MapRoot.editor_recenter).
+	# Terrain-local = map coordinates. In the editor the map root is shifted
+	# (MapRoot.editor_recenter).
 	var at := terrain.to_local(body.global_position)
 	var height := terrain.height_at(at.x, at.z)
 	if is_nan(height):

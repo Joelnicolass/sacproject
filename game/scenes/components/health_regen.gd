@@ -2,8 +2,9 @@
 class_name HealthRegen
 extends Node
 
-## Gives a body's health back at a steady pace: a bar that was empty is full again after `refill_s` seconds. Take the node
-## out and the body stops healing. Does not decide who may heal or when: only the side with authority changes Health.
+## Gives a body's health back at a steady pace: a bar that was empty is full again after `refill_s`
+## seconds. Take the node out and the body stops healing. Does not decide who may heal or when: only
+## the side with authority changes Health.
 
 @export var health: Health
 ## Seconds to go from 0 to full. 0 = off.

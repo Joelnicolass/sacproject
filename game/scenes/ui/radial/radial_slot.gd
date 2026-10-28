@@ -2,8 +2,8 @@
 class_name RadialSlot
 extends Control
 
-## One icon of a radial ring: the picture and a glow. It knows nothing about the menu. The hover state is tweened:
-## the hovered icon grows and glows, the others dim while something is hovered.
+## One icon of a radial ring: the picture and a glow. It knows nothing about the menu. The hover
+## state is tweened: the hovered icon grows and glows, the others dim while something is hovered.
 
 @export var icon_rect: TextureRect
 @export var highlight: Control
@@ -35,7 +35,8 @@ func setup(value: RadialEntry, size_px: float) -> void:
 	set_state(false, false, false)
 
 
-## `hovered`: the pointer is on this entry. `dimmed`: it is on another one. `animate` false snaps (opening, editor).
+## `hovered`: the pointer is on this entry. `dimmed`: it is on another one. `animate` false snaps
+## (opening, editor).
 func set_state(hovered: bool, dimmed: bool, animate := true) -> void:
 	var tint := Color.WHITE if hovered else (dim_tint if dimmed else idle_tint)
 	var grown := Vector2.ONE * (highlight_scale if hovered else 1.0)

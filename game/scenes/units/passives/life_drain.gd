@@ -1,21 +1,23 @@
 class_name LifeDrain
 extends RefCounted
 
-## Life drain, called with the damage the
-## target really took: a live creature heals `taken · its CRE8 drain` at once, capped at its maximum.
-## The one owner of the rule: the melee blow, the direct shot, the DirectImpact, the splash per body (SplashDamage.hurt) and
-## the poison (PoisonImpact's burst, each tick of a Poisoned dose) only call feed() with what Health reported; none of
-## them knows the drain. A building never feeds it (the target must be a unit or a wizard) ...
-## ... unless its guardians stood in for it: the hit goes to each guardian and the attacker drains from
-## what the guardians took, not from the building (Health.deflected_last tells the two apart).
-## And the fire (Burning, a DamageOverTime with the attacker's path), each update, with what it took.
+## Life drain, called with the damage the target really took: a live creature heals `taken · its
+## CRE8 drain` at once, capped at its maximum.
+## The one owner of the rule: the melee blow, the direct shot, the DirectImpact, the splash per body
+## (SplashDamage.hurt) and the poison (PoisonImpact's burst, each tick of a Poisoned dose) only call
+## feed() with what Health reported; none of them knows the drain. A building never feeds it (the
+## target must be a unit or a wizard) ... ... unless its guardians stood in for it: the hit goes to
+## each guardian and the attacker drains from what the guardians took, not from the building
+## (Health.deflected_last tells the two apart). And the fire (Burning, a DamageOverTime with the
+## attacker's path), each update, with what it took.
 
 ## The groups a body must be in (one of them) to feed a drain: a mobile body, never a structure.
 const FEEDING_GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
 
-## `attacker`: the body that dealt the blow or the shot (null or freed: nothing). `target`: the body that was hit.
-## `taken`: the damage its Health took. Server (or solo) only: Health.heal has the authority check. Returns the health gained.
+## `attacker`: the body that dealt the blow or the shot (null or freed: nothing). `target`: the body
+## that was hit. `taken`: the damage its Health took. Server (or solo) only: Health.heal has the
+## authority check. Returns the health gained.
 static func feed(attacker: Node, target: Node, taken: float) -> float:
 	if taken <= 0.0 or attacker == null or target == null or attacker == target:
 		return 0.0

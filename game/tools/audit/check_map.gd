@@ -1,10 +1,12 @@
 extends Node
 
-## Whether the maps of the catalog can be played as they are saved (MapChecks: the seats, what stands on land, the level
-## bases, every altar walking to every manafount). With `--map=<tag>` after `--` it checks that map, else every map of the catalog. Prints the problems and one `CHECK MAP <tag> PASS` / `CHECK MAP <tag> FAIL` per map;
-## exit 0 when all pass, 1 otherwise. It enters each map scene as the bake does (autoloads exist) and does not run the match.
-## Not: fixing anything (the bases are flattened in the editor, the navmesh is baked by MapNavRegion).
-## "$GODOT" --headless --path game res://tools/audit/check_map.tscn -- --map=peaks
+## Whether the maps of the catalog can be played as they are saved (MapChecks: the seats, what
+## stands on land, the level bases, every altar walking to every manafount). With `--map=<tag>`
+## after `--` it checks that map, else every map of the catalog. Prints the problems and one `CHECK
+## MAP <tag> PASS` / `CHECK MAP <tag> FAIL` per map; exit 0 when all pass, 1 otherwise. It enters
+## each map scene as the bake does (autoloads exist) and does not run the match.
+## Not: fixing anything (the bases are flattened in the editor, the navmesh is baked by
+## MapNavRegion). "$GODOT" --headless --path game res://tools/audit/check_map.tscn -- --map=peaks
 
 const MapChecks := preload("res://tools/audit/map_checks.gd")
 

@@ -2,9 +2,11 @@
 class_name DoctorLook
 extends Node
 
-## What every peer shows of a Sac Doctor: the clip of its pose (and, while it works, of what it does) and the fade-out when it dies.
-## It listens to `body.pose_changed`; it changes no state and the server (no meshes) draws nothing.
-## What it does not do: move the body (DoctorMotor), keep the pose (DoctorBody) or play the clips itself (the ClipPlayback does).
+## What every peer shows of a Sac Doctor: the clip of its pose (and, while it works, of what it
+## does) and the fade-out when it dies. It listens to `body.pose_changed`; it changes no state and
+## the server (no meshes) draws nothing.
+## What it does not do: move the body (DoctorMotor), keep the pose (DoctorBody) or play the clips
+## itself (the ClipPlayback does).
 
 ## Seconds of the fade when the rules do not say (a doctor without `rules`).
 const _DEFAULT_FADE_S := 2.0
@@ -14,8 +16,8 @@ const _DEFAULT_FADE_S := 2.0
 @export var visual: BodyVisual
 
 @export_group("Pose clips")
-## Role of the BodyRig for each pose. A pose without a clip keeps the one it had. Falling holds the last frame of «expelled»;
-## landing plays «hit floor» once and then idle.
+## Role of the BodyRig for each pose. A pose without a clip keeps the one it had. Falling holds the
+## last frame of «expelled»; landing plays «hit floor» once and then idle.
 @export var idle_clip := &"idle"
 @export var falling_clip := &"fall"
 @export var landing_clip := &"hit_floor"
@@ -23,8 +25,8 @@ const _DEFAULT_FADE_S := 2.0
 @export var dying_clip := &"idle"
 
 @export_group("Work clips")
-## The rig has one state per role of BodyModel.ROLES and the doctor has no states of its own, so each work borrows the role closest
-## to what it does.
+## The rig has one state per role of BodyModel.ROLES and the doctor has no states of its own, so
+## each work borrows the role closest to what it does.
 @export var pump_clip := &"work"
 @export var lift_clip := &"cast"
 @export var torture_clip := &"attack"

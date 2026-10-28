@@ -1,25 +1,27 @@
 class_name GrowingWave
 extends ShotInFlight
 
-## A creature's wave that grows while it flies. The Silverback's
-## Icy Breath (rdba), the Spitfire's fire wave (fhba) and the Gargoyle's wave (ehba) are the
-## same walk; only what a touched body takes besides the damage changes, and that is a WaveTouch child.
-## The wave flies straight through everything (ShotLook.collides off: no body, no ground) for its range and grows:
-## on its update number n (frame = n − 1) its radius is final_radius · frame / (60 · range / speed). Every update it
-## walks the bodies whose hit box is within that radius (a splash with the callback of the shooter) and each body is
-## taken once in the whole flight:
+## A creature's wave that grows while it flies. The Silverback's Icy Breath (rdba), the Spitfire's
+## fire wave (fhba) and the Gargoyle's wave (ehba) are the same walk; only what a touched body takes
+## besides the damage changes, and that is a WaveTouch child. The wave flies straight through
+## everything (ShotLook.collides off: no body, no ground) for its range and grows: on its update
+## number n (frame = n − 1) its radius is final_radius · frame / (60 · range / speed). Every update
+## it walks the bodies whose hit box is within that radius (a splash with the callback of the
+## shooter) and each body is taken once in the whole flight:
 ##   the shot's target: the whole amount as direct ranged damage with the shot's mods;
 ##   a body of the shooter's side: nothing;
 ##   any other body: amount · (1 − d / radius) as splash ranged damage with the shot's mods.
-## Each WaveTouch child adds its effect: before_hit and after_hit around the damage of every body that takes it, and
-## settled() at the end of the update (FreezeTouch: Silverback, IgniteTouch: Spitfire; the Gargoyle's wave has none).
-## The wave's mist is presentation: ShotLook.trail_fx on every peer.
-## On its first update the radius is 0 and the walk (SplashDamage.bodies_within) takes nobody.
+## Each WaveTouch child adds its effect: before_hit and after_hit around the damage of every body
+## that takes it, and settled() at the end of the update (FreezeTouch: Silverback, IgniteTouch:
+## Spitfire; the Gargoyle's wave has none). The wave's mist is presentation: ShotLook.trail_fx on
+## every peer. On its first update the radius is 0 and the walk (SplashDamage.bodies_within) takes
+## nobody.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
-## The radius at the end of the range (m) (final*ProjectileSize). Silverback and Spitfire 7,5, Gargoyle 6.
+## The radius at the end of the range (m) (final*ProjectileSize). Silverback and Spitfire 7,5,
+## Gargoyle 6.
 @export var final_radius := 7.5
 ## A body in one of these groups takes the damage only (TargetType.building).
 @export var building_groups: Array[StringName] = [&"structure"]
@@ -35,7 +37,8 @@ func _ready() -> void:
 			_touches.append(child)
 
 
-## One update: the radius of this frame, the walk (damage and the touches around it), then settled().
+## One update: the radius of this frame, the walk (damage and the touches around it), then
+## settled().
 func _fly(shot: RangedShot, at: Vector3) -> void:
 	var amount := shot.damage
 	var from_slot := shot.from_slot
@@ -74,8 +77,8 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		touch.settled(shot)
 
 
-## The radius on `frame` (0 on the first update): final_radius · frame / (60 · range / speed), from the shot's SPEL;
-## without one, from the shot's own range and speed.
+## The radius on `frame` (0 on the first update): final_radius · frame / (60 · range / speed), from
+## the shot's SPEL; without one, from the shot's own range and speed.
 func radius_at(frame: int, shot: RangedShot) -> float:
 	var ability := shot.ability
 	var reach := ability.cast_range_m if ability else shot.max_distance
@@ -97,7 +100,8 @@ func is_building(body: Node) -> bool:
 	return false
 
 
-## The states the touches read before the damage (WaveTouch.before_hit), in the order of the children.
+## The states the touches read before the damage (WaveTouch.before_hit), in the order of the
+## children.
 func _before(body: Node3D, direct: bool, shot: RangedShot) -> Array:
 	var states := []
 	for touch in _touches:
@@ -120,6 +124,7 @@ func _log_start(shot: RangedShot, at: Vector3) -> void:
 	var target := _intended(shot)
 	print(
 		(
+			# gdlint: ignore=max-line-length
 			"wave %s tick 1 at (%.3f, %.3f, %.3f) dir (%.5f, %.5f, %.5f) step %.4f final radius %.2f in %.4f ticks at %s (frame %d)"
 			% [
 				shot.name,
@@ -163,7 +168,8 @@ func _log_touch(
 	)
 
 
-## The hit box SplashDamage measures against, for the log (a capsule, cylinder or box under Collision, axis-aligned).
+## The hit box SplashDamage measures against, for the log (a capsule, cylinder or box under
+## Collision, axis-aligned).
 static func _box_text(body: Node3D) -> String:
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
 	if body is MapBuilding or col == null or col.shape == null or col.shape is BoxShape3D:

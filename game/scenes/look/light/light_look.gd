@@ -49,8 +49,9 @@ extends Resource
 @export_range(0.0, 3.0, 0.01) var ambient_energy: float = 0.7
 
 @export_group("Exposure")
-## The tonemapper of this biome. The default (AgX) is the one `env_base.tres` has; a biome whose ground must keep its
-## saturation (Persephone's green) picks another. Only EnvironmentLayer writes it.
+## The tonemapper of this biome. The default (AgX) is the one `env_base.tres` has; a biome whose
+## ground must keep its saturation (Persephone's green) picks another. Only EnvironmentLayer writes
+## it.
 @export var tonemap_mode: Environment.ToneMapper = Environment.TONE_MAPPER_AGX
 @export_range(0.1, 4.0, 0.01) var tonemap_exposure: float = 1.0
 @export_range(0.5, 16.0, 0.1) var tonemap_white: float = 6.0
@@ -80,7 +81,8 @@ func fill_direction() -> Vector3:
 	return direction_of(sun_azimuth_deg + fill_azimuth_offset_deg, fill_elevation_deg)
 
 
-## Unit vector from the ground toward a body at this compass azimuth (0 = +Z) and elevation, in degrees.
+## Unit vector from the ground toward a body at this compass azimuth (0 = +Z) and elevation, in
+## degrees.
 static func direction_of(azimuth_deg: float, elevation_deg: float) -> Vector3:
 	var az := deg_to_rad(azimuth_deg)
 	var el := deg_to_rad(elevation_deg)

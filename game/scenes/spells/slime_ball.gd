@@ -1,13 +1,15 @@
 class_name SlimeBall
 extends FxScene
 
-## The ball of slime that grows ten metres over a body while the wizard casts Slime and then falls on it. It is a presentation that FxBus
-## plays on every peer (`play`), follows the body it was thrown at and frees itself when it lands (the state that lands is Slimed's). It does
-## not apply the state nor splash: the Slimed state draws the splash when it goes on.
+## The ball of slime that grows ten metres over a body while the wizard casts Slime and then falls
+## on it. It is a presentation that FxBus plays on every peer (`play`), follows the body it was
+## thrown at and frees itself when it lands (the state that lands is Slimed's). It does not apply
+## the state nor splash: the Slimed state draws the splash when it goes on.
 
 ## The ball, a 1 m sphere under this node.
 @export var ball: MeshInstance3D
-## How high it hangs over the body's centre while it grows, and the share of the cast it takes to grow before it falls.
+## How high it hangs over the body's centre while it grows, and the share of the cast it takes to
+## grow before it falls.
 @export_range(1.0, 30.0, 0.5, "suffix:m") var height_m := 10.0
 @export_range(0.1, 0.99) var grow_share := 0.85
 

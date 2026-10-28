@@ -3,17 +3,19 @@ class_name LookRig
 extends Node
 
 ## Holds the look layers of a map: one line in the world scene (`%Look`). Each layer is a packed
-## scene or a node under `Layers`; removing one removes that layer. It also holds the world's sun and
-## Environment inside their layers, and the atmosphere (hour and weather) the other layers read.
+## scene or a node under `Layers`; removing one removes that layer. It also holds the world's sun
+## and Environment inside their layers, and the atmosphere (hour and weather) the other layers read.
 ## The rig hands every `LookLayer` the profile and the quality preset; the layer works out its own
-## object from them. Presentation only: a dedicated or headless process frees the whole rig. Runs in the editor too.
+## object from them. Presentation only: a dedicated or headless process frees the whole rig. Runs in
+## the editor too.
 
 signal profile_applied(profile: LookProfile)
 ## The player's «Vegetación» switch changed; the vegetation layers listen.
 signal vegetation_toggled(enabled: bool)
 
 @export_group("Editor preview")
-## Pick a god and the map shows its look in the editor, live (sky, light, glow, ground, plants). Empty = the map as it is.
+## Pick a god and the map shows its look in the editor, live (sky, light, glow, ground, plants).
+## Empty = the map as it is.
 ## Editor only: in the running game it is ignored and the match's god wins.
 @export var preview_god: GodType:
 	set(value):
@@ -38,8 +40,8 @@ signal vegetation_toggled(enabled: bool)
 var profile: LookProfile
 ## Last preset handed to `apply_quality` (or the one the Quality socket holds).
 var quality_preset: LookQuality
-## The player's «Vegetación» switch (GraphicsPrefs, through GraphicsApplier): off, the mesh vegetation draws nothing
-## whatever the preset says. On by default (the editor, debug scenes).
+## The player's «Vegetación» switch (GraphicsPrefs, through GraphicsApplier): off, the mesh
+## vegetation draws nothing whatever the preset says. On by default (the editor, debug scenes).
 var vegetation_enabled := true
 
 
@@ -76,8 +78,8 @@ func set_vegetation_enabled(on: bool) -> void:
 	vegetation_toggled.emit(on)
 
 
-## Editor only: the preview god's profile through the layers, with the preview preset. Nothing of it is saved: the layers
-## draw it from the profile each time.
+## Editor only: the preview god's profile through the layers, with the preview preset. Nothing of it
+## is saved: the layers draw it from the profile each time.
 func _show_preview() -> void:
 	if quality and preview_quality != null:
 		apply_quality(preview_quality)
@@ -104,13 +106,15 @@ func layer_nodes() -> Array[Node]:
 	return found
 
 
-## True in a headless or dedicated process, where nothing of the look is drawn (the rig, and every actor light, frees itself).
+## True in a headless or dedicated process, where nothing of the look is drawn (the rig, and every
+## actor light, frees itself).
 static func is_presentationless() -> bool:
 	if DisplayServer.get_name() == "headless":
 		return true
 	var tree := Engine.get_main_loop() as SceneTree
 	var kit := tree.root.get_node_or_null("/root/MpKit") if tree else null
-	return kit != null and kit.has_method("is_dedicated") and bool(kit.call("is_dedicated"))  # dynamic: the MpKit autoload has no class_name and is absent in the editor
+	# dynamic: the MpKit autoload has no class_name and is absent in the editor
+	return kit != null and kit.has_method("is_dedicated") and bool(kit.call("is_dedicated"))
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -121,6 +125,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		(
 			warnings
 			. append(
+				# gdlint: ignore=max-line-length
 				"The Terrain socket is missing (the map's Terrain): the ground layer does nothing without it."
 			)
 		)

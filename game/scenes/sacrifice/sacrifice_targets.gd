@@ -1,8 +1,9 @@
 class_name SacrificeTargets
 extends Node
 
-## The questions of the sacrifice, answered on any peer (the owner arms the icon with them, the server decides): which enemy altar is
-## closest, which own site a Convert goes to, what can be sacrificed or converted, whether a Desecrate is underway, who the wizard of a slot is.
+## The questions of the sacrifice, answered on any peer (the owner arms the icon with them, the
+## server decides): which enemy altar is closest, which own site a Convert goes to, what can be
+## sacrificed or converted, whether a Desecrate is underway, who the wizard of a slot is.
 ## What it does not do: write any state, spawn or run a cast.
 
 const NO_ALTAR := Refusal.NO_ALTAR
@@ -13,7 +14,8 @@ const BAD_TARGET := SpellAction.BAD_TARGET
 @export var system: SacrificeSystem
 
 
-## The closest standing enemy altar to `from` within `max_range` on the plane, or null. A destroyed or collapsing altar is not there.
+## The closest standing enemy altar to `from` within `max_range` on the plane, or null. A destroyed
+## or collapsing altar is not there.
 func closest_enemy_altar(slot: int, from: Vector3, max_range := INF) -> Altar:
 	var best: Altar = null
 	var best_d := max_range
@@ -47,8 +49,9 @@ func altar_status(slot: int, from: Vector3) -> String:
 	return ""
 
 
-## "" when `picked` can be sacrificed by the wizard of `slot`: one of the caster's own creatures, alive, free and able to be taken.
-## Not a wizard, a doctor, an enemy, a corpse or one that is already held. `picked` comes from the client: nothing about it is trusted.
+## "" when `picked` can be sacrificed by the wizard of `slot`: one of the caster's own creatures,
+## alive, free and able to be taken. Not a wizard, a doctor, an enemy, a corpse or one that is
+## already held. `picked` comes from the client: nothing about it is trusted.
 func sacrifice_status(slot: int, picked: Node3D) -> String:
 	var unit := picked as UnitBody
 	if unit == null or not is_instance_valid(unit) or not unit.is_inside_tree():
@@ -60,8 +63,8 @@ func sacrifice_status(slot: int, picked: Node3D) -> String:
 	return ""
 
 
-## The standing ritual site of `slot` closest to `from` on the plane, or null: where a Convert takes the creature. It is the
-## site of an altar or of a Shrine, whichever is closer, with no range.
+## The standing ritual site of `slot` closest to `from` on the plane, or null: where a Convert takes
+## the creature. It is the site of an altar or of a Shrine, whichever is closer, with no range.
 func closest_own_site(slot: int, from: Vector3) -> RitualSite:
 	var best: RitualSite = null
 	var best_d := INF
@@ -81,8 +84,9 @@ func convert_arm_status(slot: int, from: Vector3) -> String:
 	return "" if closest_own_site(slot, from) != null else NO_ALTAR
 
 
-## "" when `picked` is a soul the wizard of `slot` can convert: red for him, in the open, on the corpse of a creature that can be
-## revived and that no doctor of his is already coming for. `picked` comes from the client.
+## "" when `picked` is a soul the wizard of `slot` can convert: red for him, in the open, on the
+## corpse of a creature that can be revived and that no doctor of his is already coming for.
+## `picked` comes from the client.
 func convert_status(slot: int, picked: Node3D) -> String:
 	var soul := picked as Soul
 	if soul == null or not is_instance_valid(soul) or not soul.is_inside_tree() or slot <= 0:
@@ -102,9 +106,10 @@ func convert_status(slot: int, picked: Node3D) -> String:
 	return ""
 
 
-## Is a Desecrate underway against the altars of `altar_slot` (0 = any) cast by `caster_slot` (0 = any): a wizard casting it (one of
-## `casting`, the casts the caller holds), a carrier on its way or a ritual running. The AI reads it to guard its altar, to leave a
-## target alone and to stop claiming creatures.
+## Is a Desecrate underway against the altars of `altar_slot` (0 = any) cast by `caster_slot` (0 =
+## any): a wizard casting it (one of `casting`, the casts the caller holds), a carrier on its way or
+## a ritual running. The AI reads it to guard its altar, to leave a target alone and to stop
+## claiming creatures.
 func desecration_matches(
 	altar_slot: int, caster_slot: int, casting: Array[SacrificeSystem.Cast]
 ) -> bool:

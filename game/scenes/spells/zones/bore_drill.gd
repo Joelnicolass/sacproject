@@ -1,10 +1,12 @@
 class_name BoreDrill
 extends Node3D
 
-## The rock that bores: from the moment the zone is born it walks the spiral over the ground, a little behind the cutter's pace,
-## throwing earth and leaving a mark on the ground at each step; when the spiral ends it is gone. Every peer walks it from its own
-## count of ticks, and the server's count is sent so one that joins late is where the others are. Presentation only: a headless
-## process keeps its count and draws nothing. It does not open the ground (HoleCutter) and hurts nobody.
+## The rock that bores: from the moment the zone is born it walks the spiral over the ground, a
+## little behind the cutter's pace, throwing earth and leaving a mark on the ground at each step;
+## when the spiral ends it is gone. Every peer walks it from its own count of ticks, and the
+## server's count is sent so one that joins late is where the others are. Presentation only: a
+## headless process keeps its count and draws nothing. It does not open the ground (HoleCutter) and
+## hurts nobody.
 
 @export var zone: GroundZone
 ## How fast it goes, against the spell's `speed`.

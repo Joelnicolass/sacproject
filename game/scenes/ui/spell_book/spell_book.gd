@@ -1,11 +1,13 @@
 extends Control
 
-## The local wizard's book at the bottom-left corner: three 58×58 tabs (creatures, spells, structures) over the pages of the
-## active tab, 38×38 each, along the bottom edge on a frame strip of max(10, 2·n) segments with a cap at its end. Sizes are
-## canvas pixels of the 1280×720 base; Godot's stretch scales them, so nothing here reads the window. Tabs, pages and the spirit
-## mark are icons of the theme type `SpellBook`, the strip and the cap are the theme variations HudBookStrip and HudBookCap
-## (data/ui/theme.tres). This script only counts segments and moves the cap.
-## Pressing a creature or spell key shows its tab first. Hidden while the wizard is dying or a ghost.
+## The local wizard's book at the bottom-left corner: three 58×58 tabs (creatures, spells,
+## structures) over the pages of the active tab, 38×38 each, along the bottom edge on a frame strip
+## of max(10, 2·n) segments with a cap at its end. Sizes are canvas pixels of the 1280×720 base;
+## Godot's stretch scales them, so nothing here reads the window. Tabs, pages and the spirit mark
+## are icons of the theme type `SpellBook`, the strip and the cap are the theme variations
+## HudBookStrip and HudBookCap (data/ui/theme.tres). This script only counts segments and moves the
+## cap. Pressing a creature or spell key shows its tab first. Hidden while the wizard is dying or a
+## ghost.
 
 signal spell_pressed(index: int)
 signal creature_pressed(index: int)

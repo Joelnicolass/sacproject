@@ -1,21 +1,26 @@
 class_name WarmCollect
 extends RefCounted
 
-## What the warm-up draws, found by walking the typed resources under some roots (a god goes to its book, its spells, their scenes;
-## a body scene to the `<name>_look.tscn` next to it, a script to what it preloads): every mesh, every 3D material, every bare
-## spatial shader (its material is made at runtime) and every scene whose root is a look (BodyLook, FxScene), which is safe to
-## instance because it simulates nothing (as is a scene of bare engine geometry, like a pooled Label3D). Adding content adds no line
-## here. The looks it finds are read all at once on the loader's threads while the walk goes on (`read_looks`).
-## What it does not do: draw, instance or load files of its own (only the look scene of a body, BodyLook.path_of_body), or keep
-## anything beyond what it found (whoever holds it keeps those loaded).
+## What the warm-up draws, found by walking the typed resources under some roots (a god goes to its
+## book, its spells, their scenes; a body scene to the `<name>_look.tscn` next to it, a script to
+## what it preloads): every mesh, every 3D material, every bare spatial shader (its material is made
+## at runtime) and every scene whose root is a look (BodyLook, FxScene), which is safe to instance
+## because it simulates nothing (as is a scene of bare engine geometry, like a pooled Label3D).
+## Adding content adds no line here. The looks it finds are read all at once on the loader's threads
+## while the walk goes on (`read_looks`).
+## What it does not do: draw, instance or load files of its own (only the look scene of a body,
+## BodyLook.path_of_body), or keep anything beyond what it found (whoever holds it keeps those
+## loaded).
 
 var meshes: Array[Mesh] = []
 var materials: Array[Material] = []
-## Spatial shaders kept bare (an `@export var shader`, a script's `preload`): their material is made at runtime.
+## Spatial shaders kept bare (an `@export var shader`, a script's `preload`): their material is made
+## at runtime.
 var shaders: Array[Shader] = []
 var scenes: Array[PackedScene] = []
-## Materials worn by an ImmediateMesh a script fills every frame (a ribbon, a thread): ShaderWarmup draws them on stroke probes,
-## whose vertex format and primitives are those of such a mesh, not of a mesh on disk.
+## Materials worn by an ImmediateMesh a script fills every frame (a ribbon, a thread): ShaderWarmup
+## draws them on stroke probes, whose vertex format and primitives are those of such a mesh, not of
+## a mesh on disk.
 var strokes: Array[Material] = []
 
 var _seen: Dictionary[int, bool] = {}
@@ -26,7 +31,8 @@ var _looks_asked: Dictionary[String, bool] = {}
 var _read_looks := true
 
 
-## The body looks under `roots`, listed and not read (the flow reads them on its loading thread beside the map).
+## The body looks under `roots`, listed and not read (the flow reads them on its loading thread
+## beside the map).
 static func look_paths(roots: Array) -> PackedStringArray:
 	var found := WarmCollect.new()
 	found._read_looks = false
@@ -34,15 +40,15 @@ static func look_paths(roots: Array) -> PackedStringArray:
 	return found._looks_due
 
 
-## Walks `roots` (Resources, Arrays or Dictionaries of them). Each body look found on the way is asked to ResourceLoader's threads at
-## once; `read_looks` walks them once they are read.
+## Walks `roots` (Resources, Arrays or Dictionaries of them). Each body look found on the way is
+## asked to ResourceLoader's threads at once; `read_looks` walks them once they are read.
 func add(roots: Array) -> void:
 	for root: Variant in roots:
 		_visit(root)
 
 
-## Walks the body looks the loader finished reading (they may lead to more). True when none is left to read: call it again a frame
-## later until then, so the screen keeps drawing while they load.
+## Walks the body looks the loader finished reading (they may lead to more). True when none is left
+## to read: call it again a frame later until then, so the screen keeps drawing while they load.
 func read_looks() -> bool:
 	var due := _looks_due
 	_looks_due = PackedStringArray()
@@ -54,7 +60,8 @@ func read_looks() -> bool:
 	return _looks_due.is_empty()
 
 
-## Meshes, materials, the bare shaders no found material wears, then scenes: what ShaderWarmup draws, in order.
+## Meshes, materials, the bare shaders no found material wears, then scenes: what ShaderWarmup
+## draws, in order.
 func items() -> Array:
 	var all: Array = []
 	all.append_array(meshes)
@@ -113,8 +120,8 @@ func _visit_resource(resource: Resource) -> void:
 		_visit(resource.get(field))
 
 
-## What a script preloads (a shader it builds a material from, a scene it spawns: its constants and the defaults of its properties,
-## which a scene does not save), and its base script's.
+## What a script preloads (a shader it builds a material from, a scene it spawns: its constants and
+## the defaults of its properties, which a scene does not save), and its base script's.
 func _visit_script(script: Script) -> void:
 	_visit(script.get_script_constant_map().values())
 	for property in script.get_script_property_list():
@@ -123,7 +130,8 @@ func _visit_script(script: Script) -> void:
 	_visit(script.get_base_script())
 
 
-## A scene is read from its saved state (nothing is instanced): its nodes' values, the scenes it instances and, for a body, its look.
+## A scene is read from its saved state (nothing is instanced): its nodes' values, the scenes it
+## instances and, for a body, its look.
 func _visit_scene(packed: PackedScene) -> void:
 	var state := packed.get_state()
 	if state.get_node_count() == 0:

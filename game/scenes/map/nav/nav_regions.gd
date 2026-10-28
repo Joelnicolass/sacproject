@@ -2,10 +2,12 @@ class_name NavRegions
 extends RefCounted
 
 ## The connected components of a navmesh: which region two points are in. Two polygons that share an
-## edge are one component, and so are two whose sides lie along each other within Godot's edge connection margin (NavEdgeJoins: a T
-## joint or a few millimetres of difference at a zone border); the ids go up in the order of the polygons, so the same navmesh always gives the same ids (no hash order
-## decides anything). `component_at` finds the polygon under a point, or the nearest one within `snap_m` (NavMeshBackend.SNAP_M).
-## Built once from the NavigationMesh resource; the server is not asked anything.
+## edge are one component, and so are two whose sides lie along each other within Godot's edge
+## connection margin (NavEdgeJoins: a T joint or a few millimetres of difference at a zone border);
+## the ids go up in the order of the polygons, so the same navmesh always gives the same ids (no
+## hash order decides anything). `component_at` finds the polygon under a point, or the nearest one
+## within `snap_m` (NavMeshBackend.SNAP_M). Built once from the NavigationMesh resource; the server
+## is not asked anything.
 
 const CELL_M := 8.0
 ## Vertices are matched by position (a navmesh may repeat one), 1 cm apart is the same vertex.
@@ -79,7 +81,8 @@ func build(navmesh: NavigationMesh) -> void:
 		sizes[_component[p]] += 1
 
 
-## Component id of the polygon under `point` (flat), else of the nearest polygon within `snap_m`; -1 when there is none.
+## Component id of the polygon under `point` (flat), else of the nearest polygon within `snap_m`; -1
+## when there is none.
 func component_at(point: Vector3, snap_m: float) -> int:
 	var best := -1
 	var best_d := INF
@@ -113,10 +116,11 @@ func component_size_at(point: Vector3, snap_m: float) -> int:
 	return sizes[id] if id >= 0 else 0
 
 
-## The point of the land closest (flat) to `point` within `snap_m`: the polygons of components of at least `min_size` polygons (no islands).
-## (NAN, NAN, NAN) when there is none. Of two layers at the same flat distance the one nearer to the height of `point` wins. The height
-## of the answer is the polygon's own at that spot. Replaces NavigationServer3D.map_get_closest_point*, which walks every polygon of the
-## map (half a millisecond at 10k polygons).
+## The point of the land closest (flat) to `point` within `snap_m`: the polygons of components of at
+## least `min_size` polygons (no islands). (NAN, NAN, NAN) when there is none. Of two layers at the
+## same flat distance the one nearer to the height of `point` wins. The height of the answer is the
+## polygon's own at that spot. Replaces NavigationServer3D.map_get_closest_point*, which walks every
+## polygon of the map (half a millisecond at 10k polygons).
 func closest_land(point: Vector3, snap_m: float, min_size: int) -> Vector3:
 	var best_p := -1
 	var best_d := INF
@@ -159,7 +163,8 @@ func closest_land(point: Vector3, snap_m: float, min_size: int) -> Vector3:
 	return Vector3(best_q.x, _height_at(best_p, best_q), best_q.y)
 
 
-## Height of polygon `p` at the flat spot `at` (barycentric in the fan triangle that holds it; the nearest corner's when none does).
+## Height of polygon `p` at the flat spot `at` (barycentric in the fan triangle that holds it; the
+## nearest corner's when none does).
 func _height_at(p: int, at: Vector2) -> float:
 	var polygon := _polygons[p]
 	var v0 := _vertices[polygon[0]]
@@ -204,7 +209,8 @@ static func _cell_of(x: float, z: float) -> Vector2i:
 	return Vector2i(floori(x / CELL_M), floori(z / CELL_M))
 
 
-## Flat distance from `at` to the (convex) polygon, 0 inside; the closest point of the polygon is left in `_q`.
+## Flat distance from `at` to the (convex) polygon, 0 inside; the closest point of the polygon is
+## left in `_q`.
 func _nearest_in(at: Vector2, polygon: PackedInt32Array) -> float:
 	var positive := false
 	var negative := false

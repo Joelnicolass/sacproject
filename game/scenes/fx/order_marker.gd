@@ -1,10 +1,11 @@
 class_name OrderMarker
 extends Node3D
 
-## The mark an order leaves on the ground: a narrow 8-sided cone, apex on the ordered point, drawn with the `aura` texture plus 8 white
-## shells that turn against each other. It lasts 0.5 s: alpha 1 - t, width grows to 3x and height to 1.25x. White for a
-## move or retreat, blue for guard, red for attack and advance. Client-local presentation: no RPC, never in headless.
-## One instance is reused (`play` restarts it), so no node is created or freed per order.
+## The mark an order leaves on the ground: a narrow 8-sided cone, apex on the ordered point, drawn
+## with the `aura` texture plus 8 white shells that turn against each other. It lasts 0.5 s: alpha 1
+## - t, width grows to 3x and height to 1.25x. White for a move or retreat, blue for guard, red for
+## attack and advance. Client-local presentation: no RPC, never in headless. One instance is reused
+## (`play` restarts it), so no node is created or freed per order.
 
 enum Tone { WHITE, RED, BLUE }
 
@@ -23,7 +24,8 @@ static var _cone_mesh: ArrayMesh
 @export_range(0.1, 4.0, 0.05) var size_scale := 1.0
 ## Extra tint multiplied over the tone's color (white = the tone's own color).
 @export var color := Color.WHITE
-## The texture of the cone (aura.png in order_marker.tscn). Empty = the cone reads plain white, like the shells.
+## The texture of the cone (aura.png in order_marker.tscn). Empty = the cone reads plain white, like
+## the shells.
 @export var aura: Texture2D
 ## Meters over the ground, so the apex does not z-fight the land.
 @export var lift := 0.1

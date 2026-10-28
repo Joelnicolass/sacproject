@@ -21,15 +21,18 @@ extends Resource
 @export var grade: GradientTexture1D
 
 @export_group("Ambience")
-## How the day goes by over the approved light (night, moon, stars). Empty = no cycle: always the approved light.
+## How the day goes by over the approved light (night, moon, stars). Empty = no cycle: always the
+## approved light.
 @export var day: DayCycle
 ## How the weather goes (the five gods share `data/look/weather/plan.tres`). Empty = always clear.
 @export var weather: WeatherPlan
-## Pollen, fireflies, embers...: in the air around the camera and in the map's LifeSpots. Empty = no ambient life.
+## Pollen, fireflies, embers...: in the air around the camera and in the map's LifeSpots. Empty = no
+## ambient life.
 @export var life: AmbientLifeSet
 
 @export_group("Ground and plants")
-## The god's four kinds of ground (open, earth, rock, path), laid on each map's ground roles. Empty = the plain «no look» ground.
+## The god's four kinds of ground (open, earth, rock, path), laid on each map's ground roles. Empty
+## = the plain «no look» ground.
 @export var ground: GodGround
 ## The stylized grass around the camera.
 @export var grass: GrassSet

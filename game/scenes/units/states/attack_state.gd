@@ -18,6 +18,7 @@ func physics_update(delta: float) -> void:
 		transition(&"Chase")
 
 
-## The clip of the swing that was picked (MeleeWeapon): attack, attack2 or attack3 when the model has them, else attack.
+## The clip of the swing that was picked (MeleeWeapon): attack, attack2 or attack3 when the model
+## has them, else attack.
 func clip_role() -> String:
 	return body.weapons.melee.clip_role()

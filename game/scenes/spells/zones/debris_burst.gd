@@ -1,10 +1,11 @@
 class_name DebrisBurst
 extends FxScene
 
-## A shower of rocks thrown from one point, played on every peer by FxBus.broadcast_scene: each rock is a DebrisPiece
-## scene flying in a random direction at about `speed`, spinning. The sprites of the burst (rock dust, the light) are
-## bursts the zone plays beside it; the sound is the one of this scene's file name in the sound table. Presentation only;
-## it frees itself. It does not hurt anyone (ZoneErupt).
+## A shower of rocks thrown from one point, played on every peer by FxBus.broadcast_scene: each rock
+## is a DebrisPiece scene flying in a random direction at about `speed`, spinning. The sprites of
+## the burst (rock dust, the light) are bursts the zone plays beside it; the sound is the one of
+## this scene's file name in the sound table. Presentation only; it frees itself. It does not hurt
+## anyone (ZoneErupt).
 
 ## The rock that flies off, and how many.
 @export var piece: PackedScene

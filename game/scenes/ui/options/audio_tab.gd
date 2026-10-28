@@ -2,8 +2,8 @@ class_name AudioTab
 extends VBoxContainer
 
 ## Options → Sonido. One AudioBusRow per bus (Master, Music, SFX, Voice, Ambience) and «Silenciar».
-## Every control writes the shared AudioPrefs at once; SoundBus listens to `changed` and moves the AudioServer buses,
-## so the change is heard live. The controls also follow changes made elsewhere.
+## Every control writes the shared AudioPrefs at once; SoundBus listens to `changed` and moves the
+## AudioServer buses, so the change is heard live. The controls also follow changes made elsewhere.
 ## HSlider and CheckButton only: AgentKit drives them with range / click.
 
 ## Tab title in the OptionsMenu.

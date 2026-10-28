@@ -1,10 +1,12 @@
 class_name NavZones
 extends RefCounted
 
-## The map's navmesh as a fixed grid of zone pieces (from (0, 0), `zone_m` squares over the map's footprint). `baked` returns a new
-## NavZones that shares the pieces it did not touch and bakes the others; `stitched` joins every piece into the one navmesh the
-## game uses. The pieces meet exactly on the zone lines, so a re-bake of the touched zones gives the navmesh of baking them all.
-## Not: when to bake or what changed (NavRebake, NavChanges), the swap (NavMeshBackend). Pieces are never changed once made.
+## The map's navmesh as a fixed grid of zone pieces (from (0, 0), `zone_m` squares over the map's
+## footprint). `baked` returns a new NavZones that shares the pieces it did not touch and bakes the
+## others; `stitched` joins every piece into the one navmesh the game uses. The pieces meet exactly
+## on the zone lines, so a re-bake of the touched zones gives the navmesh of baking them all.
+## Not: when to bake or what changed (NavRebake, NavChanges), the swap (NavMeshBackend). Pieces are
+## never changed once made.
 ## Ref: Godot demo navigation_mesh_chunks (filter_baking_aabb + border_size + rounded vertices).
 
 var _settings: NavBakeSettings
@@ -24,7 +26,8 @@ func zone_count() -> int:
 	return _side * _side
 
 
-## The zones (indexes, ascending) whose bake box (the zone grown by `zone_border_m`) overlaps `rect` (x, z in metres), cut to the grid.
+## The zones (indexes, ascending) whose bake box (the zone grown by `zone_border_m`) overlaps `rect`
+## (x, z in metres), cut to the grid.
 func zones_touching(rect: Rect2) -> PackedInt32Array:
 	var out := PackedInt32Array()
 	var grown := rect.grow(_settings.zone_border_m)
@@ -37,7 +40,8 @@ func zones_touching(rect: Rect2) -> PackedInt32Array:
 	return out
 
 
-## Cuts `navmesh` (the joined one, e.g. the saved nav.res) into pieces: each polygon goes to the zone of its centroid.
+## Cuts `navmesh` (the joined one, e.g. the saved nav.res) into pieces: each polygon goes to the
+## zone of its centroid.
 func split(navmesh: NavigationMesh) -> void:
 	var source := navmesh.get_vertices()
 	var polygons := []
@@ -71,8 +75,8 @@ func split(navmesh: NavigationMesh) -> void:
 		_pieces[zone] = piece
 
 
-## A NavZones with these pieces, the ones in `zones` baked again from `geometry` (several at once on the worker pool). Safe to call
-## from a worker thread; `geometry` is only read.
+## A NavZones with these pieces, the ones in `zones` baked again from `geometry` (several at once on
+## the worker pool). Safe to call from a worker thread; `geometry` is only read.
 func baked(geometry: NavigationMeshSourceGeometryData3D, zones: PackedInt32Array) -> NavZones:
 	var out := NavZones.new(_settings)
 	out._pieces = _pieces.duplicate()
@@ -98,8 +102,9 @@ func bake_all(geometry: NavigationMeshSourceGeometryData3D) -> NavZones:
 	return baked(geometry, all)
 
 
-## The pieces joined into one navmesh: vertices rounded to a tenth of a cell and shared by position, pieces in zone order, so the same
-## pieces always give the same navmesh (same hash). The caller stamps the metadata it needs.
+## The pieces joined into one navmesh: vertices rounded to a tenth of a cell and shared by position,
+## pieces in zone order, so the same pieces always give the same navmesh (same hash). The caller
+## stamps the metadata it needs.
 func stitched() -> NavigationMesh:
 	var out := NavigationMesh.new()
 	_settings.apply_to(out)

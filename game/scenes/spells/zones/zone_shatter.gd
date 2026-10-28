@@ -1,10 +1,12 @@
 class_name ZoneShatter
 extends ZonePulse
 
-## What an ice zone does when it breaks: in `count` steps, from the centre outwards, every body on the ground inside the broken part takes the
-## spell's damage once. It does not freeze (ZoneFreeze) nor draw the ice (the zone's look); the shards of each step come from `shards`.
+## What an ice zone does when it breaks: in `count` steps, from the centre outwards, every body on
+## the ground inside the broken part takes the spell's damage once. It does not freeze (ZoneFreeze)
+## nor draw the ice (the zone's look); the shards of each step come from `shards`.
 
-## One scene per step with the shards that fly off the broken ring: its root answers play({inner, outer}).
+## One scene per step with the shards that fly off the broken ring: its root answers play({inner,
+## outer}).
 @export var shards: PackedScene
 
 var _hit := {}

@@ -1,15 +1,18 @@
 class_name BreathOfLife
 extends Node3D
 
-## The flight of the Dragon's Breath of life. The effect is added at the shoot tick and runs from the next tick: each tick
-## velocity = 60·(target − position), capped at the spell's speed (60), position += velocity / 60. When that velocity is under
-## 0.01 the breath has arrived and the target revives fast (FastRevive). So it takes ⌈d⌉ ticks to land and one more to notice:
-## ⌈d⌉ + 1 from the shoot tick. The target is the corpse's center, followed every tick (a soul was resolved to its corpse).
-## This node is the coordinator; the body of the breath is a RangedShot of the shot container (ShotLook breath_of_life:
-## collides off), which only draws it and replicates its position. Server (or solo) only; priority −1: it moves the shot
-## before the bodies move, like Protector and HaloOfEarth.
+## The flight of the Dragon's Breath of life. The effect is added at the shoot tick and runs from
+## the next tick: each tick velocity = 60·(target − position), capped at the spell's speed (60),
+## position += velocity / 60. When that velocity is under 0.01 the breath has arrived and the target
+## revives fast (FastRevive). So it takes ⌈d⌉ ticks to land and one more to notice: ⌈d⌉ + 1 from the
+## shoot tick. The target is the corpse's center, followed every tick (a soul was resolved to its
+## corpse). This node is the coordinator; the body of the breath is a RangedShot of the shot
+## container (ShotLook breath_of_life: collides off), which only draws it and replicates its
+## position. Server (or solo) only; priority −1: it moves the shot before the bodies move, like
+## Protector and HaloOfEarth.
 ##
-## Look: the breath is a golden ball with the heal trail; it does not turn the caster's head; no sound.
+## Look: the breath is a golden ball with the heal trail; it does not turn the caster's head; no
+## sound.
 
 ## The breath's look (data/shots/breath_of_life.tscn). Empty = a plain ball.
 @export var look: PackedScene
@@ -90,8 +93,8 @@ func _physics_process(_delta: float) -> void:
 		_arrive()
 
 
-## Arrival: the target revives fast. A corpse that cannot be revived any more (its soul was taken) just
-## ends the breath.
+## Arrival: the target revives fast. A corpse that cannot be revived any more (its soul was taken)
+## just ends the breath.
 func _arrive() -> void:
 	_say("breath %s reaches %s (tick %d)" % [_who, AbilityEffect.who(corpse), MatchClock.now()])
 	var fast := fast_revive_scene.instantiate() as FastRevive if fast_revive_scene != null else null

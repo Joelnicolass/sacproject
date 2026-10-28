@@ -1,8 +1,9 @@
 extends DeathCloud
 
-## Steam Cloud (goc@, Cog and Phoenix). It is a splash of spell damage with the
-## SPEL amount over its damage range, from the dead body's center, once (amount·(1 − d/r), splash spell).
-## SplashDamage is that same call (it also hits buildings). It carries DamageMod.ignite: it only matters on oiled bodies.
+## Steam Cloud (goc@, Cog and Phoenix). It is a splash of spell damage with the SPEL amount over its
+## damage range, from the dead body's center, once (amount·(1 − d/r), splash spell). SplashDamage is
+## that same call (it also hits buildings). It carries DamageMod.ignite: it only matters on oiled
+## bodies.
 
 
 func _affect(center: Vector3) -> void:

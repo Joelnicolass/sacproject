@@ -1,12 +1,13 @@
 extends Control
 
-## The room the player is in: players and their seats, the wizard and god, «Estoy listo», the countdown,
-## the chat, and the result of the last match. It only reads the mirror of `MpLobby.client` and sends its commands.
-## The wizard and god come from the same selector the menu uses (`character_select.tscn`, built the first time it is
-## asked for). A player who never opens it takes the pick the menu left in `SacrificeFlow.pick`.
-## The seats are a SeatList (grouped by team in a mode with allies); the host sees «Agregar IA» / «Quitar IA» on
-## the seats and, above them, the god and the difficulty of the bot he adds (%BotOptions).
-## Run alone (F6) it says «Sin conexión».
+## The room the player is in: players and their seats, the wizard and god, «Estoy listo», the
+## countdown, the chat, and the result of the last match. It only reads the mirror of
+## `MpLobby.client` and sends its commands. The wizard and god come from the same selector the menu
+## uses (`character_select.tscn`, built the first time it is asked for). A player who never opens it
+## takes the pick the menu left in `SacrificeFlow.pick`. The seats are a SeatList (grouped by team
+## in a mode with allies); the host sees «Agregar IA» / «Quitar IA» on the seats and, above them,
+## the god and the difficulty of the bot he adds (%BotOptions). Run alone (F6) it says «Sin
+## conexión».
 
 @export var character_select_scene: PackedScene
 ## What the selector's button says here (in the menu it says «Jugar»).
@@ -200,7 +201,8 @@ func _on_pick_pressed() -> void:
 
 func _on_pick_confirmed() -> void:
 	%PickOverlay.visible = false
-	# Free the selector with the overlay: nothing of it can keep the pointer (it is built again if asked for).
+	# Free the selector with the overlay: nothing of it can keep the pointer (it is built again if
+	# asked for).
 	if _character_select != null:
 		_character_select.queue_free()
 		_character_select = null

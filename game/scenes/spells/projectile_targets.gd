@@ -1,9 +1,9 @@
 class_name ProjectileTargets
 extends RefCounted
 
-## Who a spell can hit and where it aims on a body: the live-body test, the body's center, and the pick of the body a
-## projectile's hit box touches (enemies first, then neutrals, then allies; the closest wins). Pure queries plus the damage
-## log line; it holds no state and moves nothing.
+## Who a spell can hit and where it aims on a body: the live-body test, the body's center, and the
+## pick of the body a projectile's hit box touches (enemies first, then neutrals, then allies; the
+## closest wins). Pure queries plus the damage log line; it holds no state and moves nothing.
 
 ## The layers a projectile's hit box looks at: the ground and buildings (1) and the creatures (2).
 const HIT_MASK := 3
@@ -19,8 +19,9 @@ static func query_for(shape: Shape3D) -> PhysicsShapeQueryParameters3D:
 	return query
 
 
-## The living body that `query`'s shape touches at `at`, except `skip`; enemies of `slot` first, then neutrals, then its own
-## side, the closest of a rank wins. `skip_own_side` drops the bodies of `slot`. Null when none.
+## The living body that `query`'s shape touches at `at`, except `skip`; enemies of `slot` first,
+## then neutrals, then its own side, the closest of a rank wins. `skip_own_side` drops the bodies of
+## `slot`. Null when none.
 static func pick_body(
 	from: Node3D,
 	query: PhysicsShapeQueryParameters3D,

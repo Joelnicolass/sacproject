@@ -1,19 +1,22 @@
 class_name TerrainRules
 extends RefCounted
 
-## The ground's arithmetic with no tree: which land triangle lies under a point, how high the land is there, and how
-## the raw triangles of a MapTerrainData become the per-cell index. Pure and static, so a WorkerThreadPool task can
-## call it on copies of an index. A ground that was raised, dug or holed passes its `shift` (two floats per 10 m vertex:
-## how far it moved, and 1 when it was taken away): a corner moves with it, and a triangle with a removed corner is no
-## land. What it does NOT do: hold the data (Terrain), build the mesh (TerrainMesh) or say where the lattice lies (TerrainGrid).
+## The ground's arithmetic with no tree: which land triangle lies under a point, how high the land
+## is there, and how the raw triangles of a MapTerrainData become the per-cell index. Pure and
+## static, so a WorkerThreadPool task can call it on copies of an index. A ground that was raised,
+## dug or holed passes its `shift` (two floats per 10 m vertex: how far it moved, and 1 when it was
+## taken away): a corner moves with it, and a triangle with a removed corner is no land. What it
+## does NOT do: hold the data (Terrain), build the mesh (TerrainMesh) or say where the lattice lies
+## (TerrainGrid).
 
 ## Edge tolerance of the inside test; a point on an edge counts as inside.
 const EDGE_TOLERANCE := 0.0001
 
 
-## The land of a map ready to be asked: `ground` holds three vertices per land triangle; `cells` two triangle ids per
-## 10 m cell (-1 when the cell has fewer); `corners` the lattice vertex (TerrainGrid.vertex_id) of each of those corners;
-## `lowest` is the lowest land vertex (0 without land); `land` has 1 for each grid vertex a land triangle uses.
+## The land of a map ready to be asked: `ground` holds three vertices per land triangle; `cells` two
+## triangle ids per 10 m cell (-1 when the cell has fewer); `corners` the lattice vertex
+## (TerrainGrid.vertex_id) of each of those corners; `lowest` is the lowest land vertex (0 without
+## land); `land` has 1 for each grid vertex a land triangle uses.
 class Index:
 	var ground := PackedVector3Array()
 	var cells := PackedInt32Array()
@@ -22,8 +25,9 @@ class Index:
 	var lowest := 0.0
 
 
-## Files the land triangles of `data` (its first `land_triangles`, each under its `land_cells` cell) two per cell at most;
-## the ground and corner arrays are its land vertices and their lattice ids, copied at once.
+## Files the land triangles of `data` (its first `land_triangles`, each under its `land_cells` cell)
+## two per cell at most; the ground and corner arrays are its land vertices and their lattice ids,
+## copied at once.
 static func index(data: MapTerrainData) -> Index:
 	var result := Index.new()
 	result.cells.resize(TerrainGrid.COUNT * 2)
@@ -49,7 +53,8 @@ static func index(data: MapTerrainData) -> Index:
 	return result
 
 
-## Land height under (x, z) in world units, NAN over a hole or off the map. `shift`/`corners`: see the class doc.
+## Land height under (x, z) in world units, NAN over a hole or off the map. `shift`/`corners`: see
+## the class doc.
 static func height_in(
 	x: float,
 	z: float,

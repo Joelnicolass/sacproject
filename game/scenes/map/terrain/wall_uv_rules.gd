@@ -1,15 +1,16 @@
 class_name WallUvRules
 extends RefCounted
 
-## Where the cliff texture lies on the walls that hang under the edge of the land (the map's rim, a Bore pit, a falling
-## piece): across a wall it runs by the metres walked along the rim, so it keeps its width on every wall and goes on from
-## one wall to the next without a jump; down a wall it runs once from the rim (0) to the wall's foot (1). Pure and static:
-## TerrainMeshArrays, HoleWallRules and FallingChunkRules put the result in the mesh's UV. It does not build walls.
+## Where the cliff texture lies on the walls that hang under the edge of the land (the map's rim, a
+## Bore pit, a falling piece): across a wall it runs by the metres walked along the rim, so it keeps
+## its width on every wall and goes on from one wall to the next without a jump; down a wall it runs
+## once from the rim (0) to the wall's foot (1). Pure and static: TerrainMeshArrays, HoleWallRules
+## and FallingChunkRules put the result in the mesh's UV. It does not build walls.
 
 
-## For walls given by the two ends of their rim, [a0, b0, a1, b1, ...] (x, z), the metres along the rim at each end, in the
-## same order. Walls that share an end continue each other's count; a run starts at an end only one wall touches (or
-## anywhere on a closed loop).
+## For walls given by the two ends of their rim, [a0, b0, a1, b1, ...] (x, z), the metres along the
+## rim at each end, in the same order. Walls that share an end continue each other's count; a run
+## starts at an end only one wall touches (or anywhere on a closed loop).
 static func rim_metres(ends: PackedVector2Array) -> PackedFloat32Array:
 	var at := {}
 	for i in ends.size():

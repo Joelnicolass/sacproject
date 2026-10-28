@@ -1,7 +1,8 @@
 class_name RockFormState
 extends UnitState
 
-## ROCK_FORM, the Earthfling's Rockform (AbilitySlot): still, regenerating, 5 % damage and hidden from enemy AI.
+## ROCK_FORM, the Earthfling's Rockform (AbilitySlot): still, regenerating, 5 % damage and hidden
+## from enemy AI.
 
 ## Damage x0.05 in Rockform.
 const ROCK_FORM_DAMAGE := 0.05

@@ -2,39 +2,48 @@
 class_name ZoneAction
 extends SpellAction
 
-## A spell that raises a zone on the ground (Explosion, Frozen Ground, Demonic Rift, and the clouds: Rain of Frogs, Rain of Fire, Plague,
-## Cloudkill, Bombardment): the click names the ground, the zone is born when the cast starts (it is drawn while the wizard casts), the
-## cast's end releases it and an interrupted cast cancels it. One script for all of them; the zone's scene says what happens there. It
-## does not act on bodies (the zone's children do) nor time the zone (GroundZone does).
+## A spell that raises a zone on the ground (Explosion, Frozen Ground, Demonic Rift, and the clouds:
+## Rain of Frogs, Rain of Fire, Plague, Cloudkill, Bombardment): the click names the ground, the
+## zone is born when the cast starts (it is drawn while the wizard casts), the cast's end releases
+## it and an interrupted cast cancels it. One script for all of them; the zone's scene says what
+## happens there. It does not act on bodies (the zone's children do) nor time the zone (GroundZone
+## does).
 
 enum Anchor { CLICK, WIZARD }
 
 ## The kind of the zone scene in SpellSpawner.zones (match.tscn).
 @export var kind := ""
-## Where the zone stands: on the click, or under the wizard (a rift opens at his feet and looks around the click).
+## Where the zone stands: on the click, or under the wizard (a rift opens at his feet and looks
+## around the click).
 @export var anchor := Anchor.CLICK
 ## Extra points scattered around the click inside the spell's effect range (Explosion: 4).
 @export_range(0, 8) var scatter := 0
-## Seconds between the cast's end and the moment the zone acts (Frozen Ground's snowball flies 2 s). 0 = at once.
+## Seconds between the cast's end and the moment the zone acts (Frozen Ground's snowball flies 2 s).
+## 0 = at once.
 @export_range(0.0, 10.0, 0.01, "suffix:s") var arm_s := 0.0
 ## `arm_s` counts from the start of the cast instead (Explosion goes off 3.8 s after it begins).
 @export var arm_from_start := false
-## More than 0: the zone stands on the nearest point of a grid of this many metres (a volcano is fixed to the ground's 10 m lattice).
+## More than 0: the zone stands on the nearest point of a grid of this many metres (a volcano is
+## fixed to the ground's 10 m lattice).
 @export_range(0.0, 20.0, 0.5, "suffix:m") var snap_m := 0.0
 @export_group("Ring of roots")
-## More than 0: the zone stands on the click and its points are this many roots around it, one per equal slice of a turn (Meanstalks: 4).
+## More than 0: the zone stands on the click and its points are this many roots around it, one per
+## equal slice of a turn (Meanstalks: 4).
 @export_range(0, 12) var ring_count := 0
 @export_range(0.0, 100.0, 0.1, "suffix:m") var ring_inner_m := 9.0
 @export_range(0.0, 100.0, 0.1, "suffix:m") var ring_outer_m := 21.6
 ## Each root may stray this far from the middle of its slice.
 @export_range(0.0, 180.0, 0.5, "suffix:°") var ring_jitter_deg := 22.5
-## A root that falls off the land is tried again this many times at random inside this radius (the original: 32 tries within 18 m).
+## A root that falls off the land is tried again this many times at random inside this radius (the
+## original: 32 tries within 18 m).
 @export_range(0, 64) var ring_retries := 32
 @export_range(0.0, 100.0, 0.1, "suffix:m") var ring_retry_m := 18.0
 @export_group("Look")
-## Played on every peer while the wizard casts (FxBus.broadcast_scene; its root answers play(params): `ticks` and `wizard`). Optional.
+## Played on every peer while the wizard casts (FxBus.broadcast_scene; its root answers
+## play(params): `ticks` and `wizard`). Optional.
 @export var cast_scene: PackedScene
-## A creature or wizard the click names is the zone's target: the zone follows it (Cloudkill's cloud chases it).
+## A creature or wizard the click names is the zone's target: the zone follows it (Cloudkill's cloud
+## chases it).
 @export var follows_target := false
 
 var _zone: GroundZone
@@ -47,7 +56,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Funds first (cooldown, mana), then the range: the order every spell of the book answers in. The click only needs to be a point.
+## Funds first (cooldown, mana), then the range: the order every spell of the book answers in. The
+## click only needs to be a point.
 func check(
 	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
 ) -> Aim:
@@ -86,7 +96,8 @@ func cancel() -> void:
 	_zone = null
 
 
-## What the zone's `setup` reads: where it stands, its points, who cast it and how long the cast and the wait are.
+## What the zone's `setup` reads: where it stands, its points, who cast it and how long the cast and
+## the wait are.
 func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) -> Dictionary:
 	var points := PackedVector3Array()
 	var rng := MatchSeed.rng(["zone", spell.tag, String(wizard.name), MatchClock.now()])
@@ -123,7 +134,8 @@ func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) ->
 	}
 
 
-## The roots of a ring on the ground: a root off the land is drawn again around where it fell (the zone keeps the last one when none fits).
+## The roots of a ring on the ground: a root off the land is drawn again around where it fell (the
+## zone keeps the last one when none fits).
 func _roots(rng: RandomNumberGenerator, click: Vector3) -> PackedVector3Array:
 	var roots := ZoneRules.ring_points(
 		rng, click, ring_count, ring_inner_m, ring_outer_m, deg_to_rad(ring_jitter_deg)

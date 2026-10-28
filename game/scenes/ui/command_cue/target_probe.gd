@@ -1,14 +1,14 @@
 class_name TargetProbe
 extends Node
 
-## Names what lies under the pointer, a few times a second. CursorSkin and CommandCue
-## read it; it decides nothing and draws nothing. The pointer is the camera's `debug_pointer` when a
-## flow set it (the same one the `select` action aims with), else the mouse. The classes are
-## `none` (sky), `ground`, `corpse`, `own_unit`,
-## `neutral_unit`, `enemy_unit`, `own_building`, `neutral_building`, `enemy_building`, `own_soul`,
-## `soul`, plus `hud` when the pointer is over a control that is not the world view.
-## It is also the one owner of «which body is under the pointer» (`hovered`): the soul, the corpse, the
-## building, the altar, the manafount or the creature the ray found, or null (sky, plain ground, HUD). TargetInfoPanel reads it.
+## Names what lies under the pointer, a few times a second. CursorSkin and CommandCue read it; it
+## decides nothing and draws nothing. The pointer is the camera's `debug_pointer` when a flow set it
+## (the same one the `select` action aims with), else the mouse. The classes are `none` (sky),
+## `ground`, `corpse`, `own_unit`, `neutral_unit`, `enemy_unit`, `own_building`, `neutral_building`,
+## `enemy_building`, `own_soul`, `soul`, plus `hud` when the pointer is over a control that is not
+## the world view. It is also the one owner of «which body is under the pointer» (`hovered`): the
+## soul, the corpse, the building, the altar, the manafount or the creature the ray found, or null
+## (sky, plain ground, HUD). TargetInfoPanel reads it.
 
 signal kind_changed(kind: StringName)
 ## The body under the pointer changed (null: none). Emitted on the sample that saw the change.
@@ -38,22 +38,24 @@ const ORDER_TARGETS: PackedStringArray = [
 
 ## Samples per second.
 @export var hover_hz := 30.0
-## The Control that takes the clicks of the world (`%View`). Over any other control the pointer is on the HUD.
+## The Control that takes the clicks of the world (`%View`). Over any other control the pointer is
+## on the HUD.
 @export var world_view: Control
-## Controls whose rectangle is HUD even where their own mouse filter ignores the pointer (the spell book
-## and the roster frame leave gaps between their buttons).
+## Controls whose rectangle is HUD even where their own mouse filter ignores the pointer (the spell
+## book and the roster frame leave gaps between their buttons).
 @export var hud_controls: Array[Control] = []
 ## The world camera: its `debug_pointer` is where flows aim.
 @export var camera: Camera3D
 
-## Slot of the player of this process; 0 until `bind` (and for good on the dedicated server: it never binds).
+## Slot of the player of this process; 0 until `bind` (and for good on the dedicated server: it
+## never binds).
 var local_slot := 0
 ## Class under the pointer at the last sample.
 var kind: StringName = NONE
 ## Where it was sampled (screen pixels).
 var pointer := Vector2(-1.0, -1.0)
-## Body under the pointer at the last sample (a Soul, not its target area), or null. Never a freed body: one that dies
-## between samples reads as null at once.
+## Body under the pointer at the last sample (a Soul, not its target area), or null. Never a freed
+## body: one that dies between samples reads as null at once.
 var hovered: Node:
 	get:
 		if not is_instance_valid(hovered):
@@ -71,7 +73,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## The local wizard arrived (MatchWorld.local_wizard_changed): from now on the pointer is sampled for its side.
+## The local wizard arrived (MatchWorld.local_wizard_changed): from now on the pointer is sampled
+## for its side.
 func bind(wizard: WizardBody) -> void:
 	local_slot = wizard.owner_slot if wizard != null else 0
 	local_slot_changed.emit(local_slot)
@@ -157,8 +160,8 @@ func _classify(screen: Vector2) -> StringName:
 	return GROUND
 
 
-## The pointer is over the HUD when the control under it is not the world view, or it left the window.
-## A flow's forced pointer is a coordinate of the world, so it never counts as HUD.
+## The pointer is over the HUD when the control under it is not the world view, or it left the
+## window. A flow's forced pointer is a coordinate of the world, so it never counts as HUD.
 func _over_hud(screen: Vector2) -> bool:
 	var cam := _camera_node()
 	if cam != null and "debug_pointer" in cam and (cam.get("debug_pointer") as Vector2).x >= 0.0:

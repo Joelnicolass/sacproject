@@ -1,18 +1,24 @@
 extends SceneTree
 
-## Does not need the original game: it reads the albedo already in the repo.
-## The relief (normal map, and an ORM if the recipe asks) of materials, from their albedo, without the editor UI.
-## The same ReliefBaker and MapWriter as the editor's buttons.
+## Does not need the original game: it reads the albedo already in the repo. The relief (normal map,
+## and an ORM if the recipe asks) of materials, from their albedo, without the editor UI. The same
+## ReliefBaker and MapWriter as the editor's buttons.
 ##
-##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/eorc_001.tres
-##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- res://scenes/bodies/materials/ --force
-##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- <folder|material> --recipe=res://addons/surface_maps/recipes/foliage.tres   (plants, leaves)
+##   Godot --headless --path . --script res://tools/bake/bake_relief.gd --
+##   res://scenes/bodies/materials/eorc_001.tres
+##   Godot --headless --path . --script res://tools/bake/bake_relief.gd --
+##   res://scenes/bodies/materials/ --force
+##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- <folder|material>
+##   --recipe=res://addons/surface_maps/recipes/foliage.tres   (plants, leaves)
 ##
-## A folder takes every .tres in it (not its subfolders) that is a BaseMaterial3D (or has an `albedo`) with an albedo.
-## It never replaces a map PNG that exists (`--force` does, and throws away what you retouched) and then assigns the maps
-## to the material and saves it. A map PNG written now is not imported yet, so it cannot be assigned in the same run:
-## run `Godot --headless --path . --import` (or open the editor) and the same command again (it keeps the PNGs, assigns them).
-## Options: --force  --recipe=res://<a ReliefRecipe>.tres (default: ReliefRecipe's defaults, normal only)
+## A folder takes every .tres in it (not its subfolders) that is a BaseMaterial3D (or has an
+## `albedo`) with an albedo. It never replaces a map PNG that exists (`--force` does, and throws
+## away what you retouched) and then assigns the maps to the material and saves it. A map PNG
+## written now is not imported yet, so it cannot be assigned in the same run: run `Godot --headless
+## --path . --import` (or open the editor) and the same command again (it keeps the PNGs, assigns
+## them).
+## Options: --force  --recipe=res://<a ReliefRecipe>.tres (default: ReliefRecipe's defaults, normal
+## only)
 
 
 func _init() -> void:
@@ -43,6 +49,7 @@ func _init() -> void:
 	)
 	if counts.pending > 0:
 		print(
+			# gdlint: ignore=max-line-length
 			"bake_relief: run `Godot --headless --path . --import` and the same command again to assign the new maps"
 		)
 	quit()

@@ -1,9 +1,11 @@
 class_name BurstPool
 extends Node
 
-## The emitters of the bursts (SpriteParticles), one small pool per ParticleType: a play reuses an idle emitter instead of instancing one, and
-## when all of a type are playing the oldest starts over. The client builds every pool of data/fx (and its folders) when it loads, so a play
-## never builds one (building draws from the global RNG, and it must happen before MatchSeed seeds the match). Never in a headless process.
+## The emitters of the bursts (SpriteParticles), one small pool per ParticleType: a play reuses an
+## idle emitter instead of instancing one, and when all of a type are playing the oldest starts
+## over. The client builds every pool of data/fx (and its folders) when it loads, so a play never
+## builds one (building draws from the global RNG, and it must happen before MatchSeed seeds the
+## match). Never in a headless process.
 ## What it does not do: pick the effect or the place (FxBus), talk to the network, or sound.
 
 const SPRITE_PARTICLES := preload("res://scenes/fx/sprite_particles.tscn")
@@ -11,7 +13,8 @@ const SPRITE_PARTICLES := preload("res://scenes/fx/sprite_particles.tscn")
 ## Emitters per type when its ParticleType has no `pool_max`.
 @export_range(1, 256) var max_per_type: int = 12
 
-## type -> Array[SpriteParticles] idle (hidden) / playing (oldest first). A type with no atlas is `_dead`: it never draws.
+## type -> Array[SpriteParticles] idle (hidden) / playing (oldest first). A type with no atlas is
+## `_dead`: it never draws.
 var _idle: Dictionary[ParticleType, Array] = {}
 var _playing: Dictionary[ParticleType, Array] = {}
 var _dead: Dictionary[ParticleType, bool] = {}
@@ -22,7 +25,8 @@ func cap_of(type: ParticleType) -> int:
 	return type.pool_max if type != null and type.pool_max > 0 else max_per_type
 
 
-## Plays `type` at `at` (a new emitter while under the cap, else the oldest). `dir` ZERO = the type's own direction.
+## Plays `type` at `at` (a new emitter while under the cap, else the oldest). `dir` ZERO = the
+## type's own direction.
 func play(type: ParticleType, at: Vector3, burst_seed: int, dir: Vector3) -> void:
 	var emitter := _take(type)
 	if emitter != null:
@@ -41,9 +45,10 @@ func prewarm_all() -> void:
 				_idle[type].push_back(emitter)
 
 
-## Warm-up (WarmHook in fx_bus.tscn): one burst of every type at `stage` for one drawn frame, then hidden. FxBus says nothing (no
-## `played`: no sound, no shake); its own seed, so the global RNG is not drawn. The start gate pauses the tree while the world loads
-## and a paused emitter never places its sprites (they stay at the world's origin, out of view, and nothing is drawn): the flashed
+## Warm-up (WarmHook in fx_bus.tscn): one burst of every type at `stage` for one drawn frame, then
+## hidden. FxBus says nothing (no `played`: no sound, no shake); its own seed, so the global RNG is
+## not drawn. The start gate pauses the tree while the world loads and a paused emitter never places
+## its sprites (they stay at the world's origin, out of view, and nothing is drawn): the flashed
 ## emitters process meanwhile.
 func flash_all(stage: Node3D) -> void:
 	var shown: Array[SpriteParticles] = []

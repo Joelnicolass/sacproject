@@ -1,16 +1,18 @@
 class_name AbilityCommand
 extends Node
 
-## The selection's active ability. One that needs a target (its target flags are not 0) arms the next left click; any
-## other is used at once with no target. The click (screen or minimap) looks for a body, and for souls and corpses when
-## the ability aims at them. Every selected creature whose active ability is the armed one gets the order.
+## The selection's active ability. One that needs a target (its target flags are not 0) arms the
+## next left click; any other is used at once with no target. The click (screen or minimap) looks
+## for a body, and for souls and corpses when the ability aims at them. Every selected creature
+## whose active ability is the armed one gets the order.
 
 const _SELECTION := preload("res://scenes/orders/selection.gd")
 
 @export var armed: ArmedCommand
 @export var ray: PointerRay
 @export var feedback: CommandFeedback
-## The roster whose ability icon uses the ability. Empty (the roster was removed): only the keys use it.
+## The roster whose ability icon uses the ability. Empty (the roster was removed): only the keys use
+## it.
 @export var roster: SelectionRoster
 
 @onready var _log: CommandLog = %Battle
@@ -37,7 +39,8 @@ func use() -> void:
 
 func click_at(screen: Vector2) -> void:
 	var body := ray.body_under(screen, false)
-	# An ability that aims at souls or corpses (Breath of life) looks for them after the living body.
+	# An ability that aims at souls or corpses (Breath of life) looks for them after the living
+	# body.
 	if body == null and _aims_at_dead(armed.ability):
 		body = ray.soul_under(screen)
 		if body == null:

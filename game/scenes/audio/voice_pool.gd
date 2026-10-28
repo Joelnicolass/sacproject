@@ -1,10 +1,10 @@
 class_name VoicePool
 extends RefCounted
 
-## A fixed set of audio players and what each one is playing right now. SoundBus keeps one pool for the world (3D), one for
-## the UI and the voices (2D) and one for the loops of the emitters. It only counts and chooses: it never starts a sound.
-## When every voice is busy, the one of the lowest priority (the oldest among equals) is the one to take over, unless it
-## is above the newcomer.
+## A fixed set of audio players and what each one is playing right now. SoundBus keeps one pool for
+## the world (3D), one for the UI and the voices (2D) and one for the loops of the emitters. It only
+## counts and chooses: it never starts a sound. When every voice is busy, the one of the lowest
+## priority (the oldest among equals) is the one to take over, unless it is above the newcomer.
 
 
 class Voice:
@@ -48,8 +48,8 @@ func active(cue: SoundCue = null) -> int:
 	return count
 
 
-## An idle voice while fewer than `budget` play, else the playing one of the lowest priority (oldest among equals) when it
-## is not above `priority`, else null.
+## An idle voice while fewer than `budget` play, else the playing one of the lowest priority (oldest
+## among equals) when it is not above `priority`, else null.
 func pick(priority: int, budget: int) -> Voice:
 	var victim: Voice = null
 	var idle: Voice = null

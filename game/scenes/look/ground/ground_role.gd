@@ -2,11 +2,13 @@
 class_name GroundRole
 extends Resource
 
-## What one kind of ground of a god looks like (open grass, earth, rock or path): its pictures, how big they are on the map and
-## how it meets the others. Where each kind lies on a map is the map's `ground_roles.png`, not this. Lives embedded in a
-## `GodGround`; editing it refreshes the editor preview.
-## Albedo: a sheet of `variants_per_side` x `variants_per_side` tiles, one picked per 10 m cell (1 = one picture tiled every
-## `tile_m`). Normal (OpenGL, green up) and ORM (R occlusion, G roughness, B height) are optional and follow the albedo layout.
+## What one kind of ground of a god looks like (open grass, earth, rock or path): its pictures, how
+## big they are on the map and how it meets the others. Where each kind lies on a map is the map's
+## `ground_roles.png`, not this. Lives embedded in a `GodGround`; editing it refreshes the editor
+## preview.
+## Albedo: a sheet of `variants_per_side` x `variants_per_side` tiles, one picked per 10 m cell (1 =
+## one picture tiled every `tile_m`). Normal (OpenGL, green up) and ORM (R occlusion, G roughness, B
+## height) are optional and follow the albedo layout.
 
 @export_group("Maps")
 ## The colours as the land paints them (the shader lights them as flat ground).
@@ -29,7 +31,8 @@ extends Resource
 		emit_changed()
 
 @export_group("Layout")
-## Tiles per side of the albedo sheet: 4 = 16 variants, one per 10 m cell; 1 = the albedo is one picture.
+## Tiles per side of the albedo sheet: 4 = 16 variants, one per 10 m cell; 1 = the albedo is one
+## picture.
 @export_range(1, 8) var variants_per_side := 4:
 	set(value):
 		variants_per_side = value
@@ -72,7 +75,8 @@ extends Resource
 	set(value):
 		roughness = value
 		emit_changed()
-## Above this slope the role takes the ground whatever the map says (rock on the cliffs). 90 = never.
+## Above this slope the role takes the ground whatever the map says (rock on the cliffs). 90 =
+## never.
 @export_range(0.0, 90.0, 0.5, "suffix:deg") var takes_slope_deg := 90.0:
 	set(value):
 		takes_slope_deg = value

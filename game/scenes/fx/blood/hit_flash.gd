@@ -2,10 +2,13 @@
 class_name HitFlash
 extends Node
 
-## A body lights up for a blink when it loses health: `material` goes over its meshes as `material_overlay` and its `hit_flash`
-## falls from `peak` to 0 in `flash_s`; then the overlay comes off. Every peer sees it (Health.current is replicated).
-## It does not blink with «Sangre» off (FeelPrefs.blood), nor a body that is hidden or faded (stealth, playing dead, a ghost, summoning), and nothing headless.
-## What it does not do: change the body's own materials (StoneLook owns the surface overrides) or its rig's speed (no hit-stop).
+## A body lights up for a blink when it loses health: `material` goes over its meshes as
+## `material_overlay` and its `hit_flash` falls from `peak` to 0 in `flash_s`; then the overlay
+## comes off. Every peer sees it (Health.current is replicated). It does not blink with «Sangre» off
+## (FeelPrefs.blood), nor a body that is hidden or faded (stealth, playing dead, a ghost,
+## summoning), and nothing headless.
+## What it does not do: change the body's own materials (StoneLook owns the surface overrides) or
+## its rig's speed (no hit-stop).
 
 const PARAM := &"hit_flash"
 
@@ -18,7 +21,8 @@ const PARAM := &"hit_flash"
 	set(value):
 		visual = value
 		update_configuration_warnings()
-## The overlay (data/fx/blood/hit_flash.tres, an additive shader with `instance uniform float hit_flash`).
+## The overlay (data/fx/blood/hit_flash.tres, an additive shader with `instance uniform float
+## hit_flash`).
 @export var material: ShaderMaterial:
 	set(value):
 		material = value
@@ -86,7 +90,8 @@ func _flash() -> void:
 		_tween.tween_callback(_clear)
 
 
-## Warm-up (the WarmHook child): the overlay over this body for one drawn frame, so the first hit compiles nothing (not counted).
+## Warm-up (the WarmHook child): the overlay over this body for one drawn frame, so the first hit
+## compiles nothing (not counted).
 func warm(_stage: Node3D) -> void:
 	if is_active() and visual.is_visible_in_tree() and _lay():
 		await RenderingServer.frame_post_draw

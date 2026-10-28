@@ -2,10 +2,11 @@
 class_name WardAction
 extends SpellAction
 
-## A spell that switches on one of the wards of a body (Skin of Stone, Air Shield, Ethereal Form, Fireform, Protective Swarm on the wizard
-## himself: the key starts the cast, no click; Healing Aura on a creature the click names). When the casting time ends the Ward of that
-## spell runs for the spell's duration. One scene for all of them; the numbers are the SpellType's and the Ward's. It does not scale damage
-## (Wards) nor push, burn or heal anyone (BodyAura).
+## A spell that switches on one of the wards of a body (Skin of Stone, Air Shield, Ethereal Form,
+## Fireform, Protective Swarm on the wizard himself: the key starts the cast, no click; Healing Aura
+## on a creature the click names). When the casting time ends the Ward of that spell runs for the
+## spell's duration. One scene for all of them; the numbers are the SpellType's and the Ward's. It
+## does not scale damage (Wards) nor push, burn or heal anyone (BodyAura).
 
 ## Who carries the ward. Empty = the wizard himself.
 @export var target: SpellTarget
@@ -18,7 +19,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Funds first, then the carrier (valid, in range), then the ward: missing = NOT_IMPLEMENTED, already on = BAD_TARGET (nothing is spent).
+## Funds first, then the carrier (valid, in range), then the ward: missing = NOT_IMPLEMENTED,
+## already on = BAD_TARGET (nothing is spent).
 func check(
 	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
 ) -> Aim:
@@ -45,7 +47,8 @@ func check(
 	return aim
 
 
-## The hands throw the particle of the ward's own type, so every peer knows which spell is being cast (Ward.cast_type).
+## The hands throw the particle of the ward's own type, so every peer knows which spell is being
+## cast (Ward.cast_type).
 func begin(wizard: WizardBody, spell: SpellType, aim: Aim) -> void:
 	var ward := _ward(aim.target if aim.target != null else wizard, spell)
 	cast_fx = ward.cast_type if ward != null else null

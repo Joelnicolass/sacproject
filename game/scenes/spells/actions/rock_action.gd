@@ -2,9 +2,9 @@
 class_name RockAction
 extends SpellAction
 
-## Rock (kcor): the rock rises out of the ground while the wizard casts and flies when the casting ends.
-## The projectile is spawned when the cast starts and knows how many casting frames
-## it has to wait; what it does after that is the projectile's.
+## Rock (kcor): the rock rises out of the ground while the wizard casts and flies when the casting
+## ends. The projectile is spawned when the cast starts and knows how many casting frames it has to
+## wait; what it does after that is the projectile's.
 
 ## The rock scene (its root is a RockProjectile).
 @export var projectile: PackedScene

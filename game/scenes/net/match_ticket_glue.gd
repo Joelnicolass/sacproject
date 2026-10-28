@@ -2,27 +2,33 @@ class_name MatchTicketGlue
 extends Node
 
 ## The Sacrifice side of a dedicated that the room server launched (`--match-ticket-file`).
-## SacrificeFlow instances it only in that process. It gives the match agent (kit) its Sacrifice meaning:
-## - the ticket becomes what the match needs: the pick of each slot, the options (MatchSetup) and the seed;
-## - the result of the match (MatchState) is reported to the agent, which writes result.json and tells the clients;
-## - a seat the door of the match (`Mp.gate()`) gives up (past `rejoin_grace_s`, never loaded, never picked) loses: SeatPresence
-##   defeats it and the result is an `abandon`; with every human gone the match is `empty`. With no world yet the teams of the
-##   mode decide here.
-## - Ticket v2: `seats` has only the humans (rows with a token); the bots are `ai_seats` [{slot, god}], which
-##   SacrificeFlow seats as AI. `mode` names the game mode.
-## Not: who may sit, the wait for the seats to load, the grace (the gate); the story in the log (SeatPresence).
-## The pick channel of the clients is ignored (SacrificeFlow): the pick was closed in the lobby.
-## Test hook, not a rule: `--force-defeat-slot=N[,M…] --force-defeat-after-ticks=T` defeats those slots T ticks after the
-## match started (or after the first admission with `--no-load-hold`), so a run ends without playing the match out.
-## `--force-defeat-when-file=PATH` defeats them as soon as that file exists, so a test that must keep the match alive
-## until some other process finishes does not depend on how many ticks per second the machine runs.
+## SacrificeFlow instances it only in that process. It gives the match agent (kit) its Sacrifice
+## meaning:
+## - the ticket becomes what the match needs: the pick of each slot, the options (MatchSetup) and
+##   the seed;
+## - the result of the match (MatchState) is reported to the agent, which writes result.json and
+##   tells the clients;
+## - a seat the door of the match (`Mp.gate()`) gives up (past `rejoin_grace_s`, never loaded, never
+##   picked) loses: SeatPresence defeats it and the result is an `abandon`; with every human gone
+##   the match is `empty`. With no world yet the teams of the mode decide here.
+## - Ticket v2: `seats` has only the humans (rows with a token); the bots are `ai_seats` [{slot,
+##   god}], which SacrificeFlow seats as AI. `mode` names the game mode.
+## Not: who may sit, the wait for the seats to load, the grace (the gate); the story in the log
+## (SeatPresence). The pick channel of the clients is ignored (SacrificeFlow): the pick was closed
+## in the lobby. Test hook, not a rule: `--force-defeat-slot=N[,M…] --force-defeat-after-ticks=T`
+## defeats those slots T ticks after the match started (or after the first admission with
+## `--no-load-hold`), so a run ends without playing the match out. `--force-defeat-when-file=PATH`
+## defeats them as soon as that file exists, so a test that must keep the match alive until some
+## other process finishes does not depend on how many ticks per second the machine runs.
 
 ## Why this glue gives up on a seat whose pick never came (the gate tells SeatPresence).
 const NO_PICK := "no_pick"
 
-## The agent of the kit (identity of the seats, heartbeat, result.json). Null if the ticket was not usable.
+## The agent of the kit (identity of the seats, heartbeat, result.json). Null if the ticket was not
+## usable.
 var agent: MpMatchAgent
-## True when the ticket names a map or a mode the catalog does not have: `bad_ticket` was reported and the process quits.
+## True when the ticket names a map or a mode the catalog does not have: `bad_ticket` was reported
+## and the process quits.
 var rejected := false
 ## The flow's SeatPresence: the forced defeat of the test hook goes through its rule.
 var presence: SeatPresence
@@ -38,8 +44,9 @@ var _force_slots: Array[int] = []
 var _force_ticks: int = 0
 var _force_file: String = ""
 var _forced: bool = false
-## Slots whose pick the ticket leaves open (the seat chooses its own on admission). The world does not start
-## until every one is in; a seat that never sends a valid pick is given up after `load_timeout_s`.
+## Slots whose pick the ticket leaves open (the seat chooses its own on admission). The world does
+## not start until every one is in; a seat that never sends a valid pick is given up after
+## `load_timeout_s`.
 var _open_picks: Dictionary = {}
 
 
@@ -68,7 +75,8 @@ func _ready() -> void:
 	gate.started.connect(_on_started)
 	gate.seat_abandoned.connect(_on_seat_abandoned)
 	gate.all_gone.connect(_on_all_gone)
-	# ALWAYS: this node and its agent (heartbeat, idle, result) keep working while the gate holds the simulation.
+	# ALWAYS: this node and its agent (heartbeat, idle, result) keep working while the gate holds
+	# the simulation.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().node_added.connect(_on_node_added)
 	print(
@@ -90,8 +98,9 @@ func _ready() -> void:
 	)
 
 
-## The glue of this process's ticket (`--match-ticket-file`), added under `parent`; null when there is no usable ticket. A ticket
-## the catalog cannot play is reported as `bad_ticket` and the process quits (`rejected`).
+## The glue of this process's ticket (`--match-ticket-file`), added under `parent`; null when there
+## is no usable ticket. A ticket the catalog cannot play is reported as `bad_ticket` and the process
+## quits (`rejected`).
 static func attach(parent: Node) -> MatchTicketGlue:
 	if MpBoot.user_value("match-ticket-file", "").is_empty():
 		return null
@@ -114,7 +123,8 @@ static func attach(parent: Node) -> MatchTicketGlue:
 	return glue
 
 
-## slot -> the `meta` (pick) the lobby validated for that seat. Raw wire text: the flow reads it again with MatchWire.
+## slot -> the `meta` (pick) the lobby validated for that seat. Raw wire text: the flow reads it
+## again with MatchWire.
 func seat_metas() -> Dictionary:
 	return _seat_metas.duplicate(true)
 
@@ -156,8 +166,8 @@ static func setup_from_ticket(ticket: Dictionary) -> MatchSetup:
 	return setup
 
 
-## The dedicated checks the map of the ticket again (the room server already did): a ticket without `world` plays
-## the default map; one that names a map the catalog does not have is a `bad_ticket`.
+## The dedicated checks the map of the ticket again (the room server already did): a ticket without
+## `world` plays the default map; one that names a map the catalog does not have is a `bad_ticket`.
 ## The same for the `mode` (a ticket without it is a 1v1, a v1 ticket), and the map must fit it.
 static func world_is_valid(ticket: Dictionary) -> bool:
 	var world := str(ticket.get("world", ""))
@@ -169,7 +179,8 @@ static func world_is_valid(ticket: Dictionary) -> bool:
 	return GameModeCatalog.map_fits_mode(StringName(world), StringName(mode))
 
 
-## The bots of the ticket as [{slot, god, difficulty}] (a v1 ticket has none; an empty difficulty plays Normal).
+## The bots of the ticket as [{slot, god, difficulty}] (a v1 ticket has none; an empty difficulty
+## plays Normal).
 func ai_seats() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if agent == null:
@@ -224,8 +235,8 @@ func _physics_process(_delta: float) -> void:
 		rule.defeat(slot)
 
 
-## The count of the forced defeat starts when the match starts; without the wait (`--no-load-hold`: the gate says `no_hold`)
-## it starts at the first admission.
+## The count of the forced defeat starts when the match starts; without the wait (`--no-load-hold`:
+## the gate says `no_hold`) it starts at the first admission.
 func _on_started(why: String) -> void:
 	if why == "no_hold":
 		_no_hold = true
@@ -254,7 +265,8 @@ func _on_result_changed() -> void:
 		return
 	var out := _match_state.result()
 	var defeated: Array = out["defeated_slots"]
-	# The abandon of a seat defeated the last team standing against the winners: the room reads it as an abandon.
+	# The abandon of a seat defeated the last team standing against the winners: the room reads it
+	# as an abandon.
 	if not defeated.is_empty() and Mp.gate().is_abandoned(int(defeated.back())):
 		out["reason"] = "abandon"
 	_report(out)
@@ -271,8 +283,9 @@ func _on_all_gone() -> void:
 	_report({"winner_slot": 0, "winner_slots": [], "defeated_slots": gone, "reason": "empty"})
 
 
-## With a world, SeatPresence defeats the seat and the rule of the mode decides. Before the world exists (a seat that never
-## picked or loaded) the seats that did not abandon (humans and AI) decide here by the teams of the mode.
+## With a world, SeatPresence defeats the seat and the rule of the mode decides. Before the world
+## exists (a seat that never picked or loaded) the seats that did not abandon (humans and AI) decide
+## here by the teams of the mode.
 func _on_seat_abandoned(_slot: int, _why: String) -> void:
 	if agent.finished or _match_state != null:
 		return
@@ -305,7 +318,8 @@ func _on_seat_abandoned(_slot: int, _why: String) -> void:
 
 func _report(data: Dictionary) -> void:
 	var out := data.duplicate(true)
-	# What each seat played with (JSON keys are strings): lets the clients and the tests see the picks the dedicated applied.
+	# What each seat played with (JSON keys are strings): lets the clients and the tests see the
+	# picks the dedicated applied.
 	var played := {}
 	var picks: Dictionary[int, WizardPick] = SacrificeFlow.slot_picks
 	for slot in picks.keys():

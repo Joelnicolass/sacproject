@@ -1,26 +1,33 @@
 class_name NavEdgeJoins
 extends RefCounted
 
-## Which polygons of a navmesh touch along a border even though they do not share the same two vertices. The navmesh baked by zones
-## can split a long side of one polygon in two on the other side of a zone border (a T joint), or leave its vertices a few millimetres
-## apart. Godot connects those polygons anyway (edge merge plus the edge connection margin), so NavRegions has to count them as one
+## Which polygons of a navmesh touch along a border even though they do not share the same two
+## vertices. The navmesh baked by zones can split a long side of one polygon in two on the other
+## side of a zone border (a T joint), or leave its vertices a few millimetres apart. Godot connects
+## those polygons anyway (edge merge plus the edge connection margin), so NavRegions has to count
+## them as one
 ## region too, or the AI would call a reachable target unreachable.
-## Only the loose sides (the ones with no identical twin) are looked at: on a flat map that is the map border, the holes and the zone
-## seams, a small part of all the sides. They go in a grid of cells, and each one is compared only with the loose sides near it.
-## Two sides join when both ends of the second are within MERGE_MARGIN_M (flat) of the line of the first, they overlap along it by more
-## than MERGE_MARGIN_M, and their heights differ by at most VERTICAL_MARGIN_M. The answer comes out in the order of the sides, which
-## follow the order of the polygons, so it is the same every time.
-## Ref: Godot NavigationServer3D map_get_edge_connection_margin, project setting navigation/3d/default_edge_connection_margin.
+## Only the loose sides (the ones with no identical twin) are looked at: on a flat map that is the
+## map border, the holes and the zone seams, a small part of all the sides. They go in a grid of
+## cells, and each one is compared only with the loose sides near it. Two sides join when both ends
+## of the second are within MERGE_MARGIN_M (flat) of the line of the first, they overlap along it by
+## more than MERGE_MARGIN_M, and their heights differ by at most VERTICAL_MARGIN_M. The answer comes
+## out in the order of the sides, which follow the order of the polygons, so it is the same every
+## time.
+## Ref: Godot NavigationServer3D map_get_edge_connection_margin, project setting
+## navigation/3d/default_edge_connection_margin.
 
-## Godot's default edge connection margin (navigation/3d/default_edge_connection_margin, 0.25 m; the project does not change it).
+## Godot's default edge connection margin (navigation/3d/default_edge_connection_margin, 0.25 m; the
+## project does not change it).
 const MERGE_MARGIN_M := 0.25
-## How far apart in height two sides may be: the default cell height of the navigation map (navigation/3d/default_cell_height, 0.25 m,
-## the same as NavBakeSettings.cell_height).
+## How far apart in height two sides may be: the default cell height of the navigation map
+## (navigation/3d/default_cell_height, 0.25 m, the same as NavBakeSettings.cell_height).
 const VERTICAL_MARGIN_M := 0.25
 
 
-## Pairs (p0, q0, p1, q1, ...) of polygons joined by a side. `canon` maps each vertex to its first copy by position; `matched` holds the
-## edge keys (min << 32 | max, of canonical vertices) that two polygons already share. `cell_m` is the size of the lookup cells.
+## Pairs (p0, q0, p1, q1, ...) of polygons joined by a side. `canon` maps each vertex to its first
+## copy by position; `matched` holds the edge keys (min << 32 | max, of canonical vertices) that two
+## polygons already share. `cell_m` is the size of the lookup cells.
 static func pairs(
 	vertices: PackedVector3Array,
 	polygons: Array[PackedInt32Array],
@@ -79,7 +86,8 @@ static func _high(a: Vector3, b: Vector3) -> Vector2:
 	return Vector2(maxf(a.x, b.x), maxf(a.z, b.z))
 
 
-## True when side b lies along side a (within the margins) over more than MERGE_MARGIN_M of its length. Flat distances, then heights.
+## True when side b lies along side a (within the margins) over more than MERGE_MARGIN_M of its
+## length. Flat distances, then heights.
 static func _overlap(a0: Vector3, a1: Vector3, b0: Vector3, b1: Vector3) -> bool:
 	var origin := Vector2(a0.x, a0.z)
 	var along := Vector2(a1.x, a1.z) - origin

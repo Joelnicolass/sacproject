@@ -1,9 +1,10 @@
 extends SceneTree
 
-## Gives every creature, spell and ability in data/catalog/ its `icon`: the picture the book, the roster, the info box and the
-## armed cursor show. It reads the versioned PNGs and needs no original game; without `assets/original/ui/icons/` it says so and writes nothing.
-## A creature of your own uses `assets/custom/icons/<tag>.png` (tools/bake/creature_icon.gd draws it); the rest, the PNG of the original.
-## A type that already has an icon is kept (it may be yours): `--force` replaces it.
+## Gives every creature, spell and ability in data/catalog/ its `icon`: the picture the book, the
+## roster, the info box and the armed cursor show. It reads the versioned PNGs and needs no original
+## game; without `assets/original/ui/icons/` it says so and writes nothing. A creature of your own
+## uses `assets/custom/icons/<tag>.png` (tools/bake/creature_icon.gd draws it); the rest, the PNG of
+## the original. A type that already has an icon is kept (it may be yours): `--force` replaces it.
 ##
 ##   Godot --headless --path . --script res://tools/bake/fill_type_icons.gd [-- --force]
 ##
@@ -20,6 +21,7 @@ func _init() -> void:
 	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(ICONS_DIR)):
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"FILL_TYPE_ICONS: %s is missing (the icons come with the project; run tools/import/import_ui.py if you have the original). Nothing written."
 				% ICONS_DIR
 			)

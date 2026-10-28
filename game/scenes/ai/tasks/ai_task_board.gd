@@ -106,8 +106,8 @@ func distances_to_altars(from: AiTrack, relation: AiTrack.Relation) -> PackedFlo
 	return out
 
 
-## The density of the groups without the soul groups (slot 5): the soul worth of the enemy and neutral body
-## groups near `pos`, over the most souls the side has seen.
+## The density of the groups without the soul groups (slot 5): the soul worth of the enemy and
+## neutral body groups near `pos`, over the most souls the side has seen.
 func density(pos: Vector3, near: float, far: float) -> float:
 	var acc := 0.0
 	for relation in [AiTrack.Relation.NEUTRAL, AiTrack.Relation.ENEMY]:

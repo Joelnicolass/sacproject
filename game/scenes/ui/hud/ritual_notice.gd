@@ -2,18 +2,20 @@
 class_name RitualNotice
 extends Label
 
-## The notices of the ritual for the player of this process, from Events.ritual_started / ritual_ended (every peer
-## tells them) and nothing else: no RPC. «Están profanando tu altar» while a Desecrate ritual runs on
-## your altar; «Ritual interrumpido» (to the caster and the owner of the altar) and «Altar profanado» (to
-## everybody) for a few seconds when one ends. Nothing on the dedicated server (slot 0). `%Battle` is
-## taken by the next order, this has its own place. Remove the node and the notices are gone.
+## The notices of the ritual for the player of this process, from Events.ritual_started /
+## ritual_ended (every peer tells them) and nothing else: no RPC. «Están profanando tu altar» while
+## a Desecrate ritual runs on your altar; «Ritual interrumpido» (to the caster and the owner of the
+## altar) and «Altar profanado» (to everybody) for a few seconds when one ends. Nothing on the
+## dedicated server (slot 0). `%Battle` is taken by the next order, this has its own place. Remove
+## the node and the notices are gone.
 
 @export var profaning_text := "UI_RITUAL_PROFANING"
 @export var interrupted_text := "UI_RITUAL_INTERRUPTED"
 @export var profaned_text := "UI_RITUAL_PROFANED"
 @export var flash_s := 4.0
 
-## Slot of the player of this process; 0 until `bind` (the dedicated server never binds: nothing shows).
+## Slot of the player of this process; 0 until `bind` (the dedicated server never binds: nothing
+## shows).
 var local_slot := 0
 var _flash_left := 0.0
 var _flash_text := ""

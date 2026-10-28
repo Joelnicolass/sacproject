@@ -17,8 +17,9 @@ const BAKE_SHADER := preload("res://scenes/look/grass/grass_bake.gdshader")
 const CELL_M := 16.0
 const MAP_CELLS := 160
 const HEIGHT_TEXELS := GrassHeight.SIZE
-## The ground's color is baked finer (1.25 m per texel): in the distance fade a blade takes the color of
-## the ground right where it stands, so what is left of it does not stand out from the ground's detail.
+## The ground's color is baked finer (1.25 m per texel): in the distance fade a blade takes the
+## color of the ground right where it stands, so what is left of it does not stand out from the
+## ground's detail.
 const GROUND_TEXELS := 2048
 ## The map's grass field (one per map).
 const GROUP := &"grass_field"
@@ -29,11 +30,11 @@ const FADE_END := 0.85
 ## The far density starts at `near radius x FAR_START_FACTOR`; between the near radius and there the
 ## shader moves density and width with one smoothstep (`blend`).
 const FAR_START_FACTOR := 2.2
-## Tiers of the cells by distance. Every tier's MultiMesh is a prefix of the same blades, so a cell of
-## tier i holds at least the density the shader asks for at the INNER edge of the tier (the density
-## only goes down with the distance): if a ring held less, it would cut blades and the density LOD
-## would come back. The values are the `blend` where each transition tier starts; after the last one
-## there is the far tier (the constant far density, 3-vertex blades).
+## Tiers of the cells by distance. Every tier's MultiMesh is a prefix of the same blades, so a cell
+## of tier i holds at least the density the shader asks for at the INNER edge of the tier (the
+## density only goes down with the distance): if a ring held less, it would cut blades and the
+## density LOD would come back. The values are the `blend` where each transition tier starts; after
+## the last one there is the far tier (the constant far density, 3-vertex blades).
 const TIER_BLEND := [0.0, 0.07, 0.18, 0.32, 0.48, 0.64, 0.8, 0.92]
 
 @export_group("Follow")
@@ -45,7 +46,8 @@ const TIER_BLEND := [0.0, 0.07, 0.18, 0.32, 0.48, 0.64, 0.8, 0.92]
 ## The land height of this field's map (GrassHeight), derived the first time the field loads.
 var _height_image: Image
 var _height_texture: ImageTexture
-## Side of the square map the height image covers, in metres (the surface's `bounds()` when it was made).
+## Side of the square map the height image covers, in metres (the surface's `bounds()` when it was
+## made).
 var _map_m := 0.0
 
 var _rig: LookRig
@@ -59,10 +61,12 @@ var _palette: GrassPalette
 var _reference := 0.15
 var _preset: LookQuality
 var _material: ShaderMaterial
-## One MultiMesh per tier (TIER_BLEND.size() transition tiers + the far one) and the distance where each starts.
+## One MultiMesh per tier (TIER_BLEND.size() transition tiers + the far one) and the distance where
+## each starts.
 var _tier_meshes: Array[MultiMesh] = []
 var _tier_starts := PackedFloat32Array()
-## Which cells exist and their tiers (shared with the other vegetation layers); `_cells` holds the nodes.
+## Which cells exist and their tiers (shared with the other vegetation layers); `_cells` holds the
+## nodes.
 var _ring := CellRing.new(CELL_M, MAP_CELLS)
 var _cells := {}
 var _mask := GrassMask.new()
@@ -202,11 +206,11 @@ func _refresh() -> void:
 
 
 ## Bakes, once, what the grass shader needs per blade and would otherwise compute per vertex, the
-## same for every biome: the zone data (where it grows, how tall, hillsides: grass_bake.gdshader, from
-## the map's ground_roles.png and the height map) and the color of the ground, rendered from above from
-## the terrain's own material with no light (so the roots have exactly the color the ground shows,
-## whatever ground the biome has). Reads them back into plain textures and frees the viewports.
-## Never saved.
+## same for every biome: the zone data (where it grows, how tall, hillsides: grass_bake.gdshader,
+## from the map's ground_roles.png and the height map) and the color of the ground, rendered from
+## above from the terrain's own material with no light (so the roots have exactly the color the
+## ground shows, whatever ground the biome has). Reads them back into plain textures and frees the
+## viewports. Never saved.
 func _bake(terrain: MeshInstance3D) -> void:
 	_generation += 1
 	var generation := _generation
@@ -286,8 +290,8 @@ func _zone_view(mode: int) -> SubViewport:
 
 
 ## The ground pass: the terrain mesh with `material` (the ground the biome shows) seen from straight
-## above with an orthographic camera, unlit (albedo only), GROUND_TEXELS px over the map. Image row 0
-## is z = 0 and column 0 is x = 0, like every map texture.
+## above with an orthographic camera, unlit (albedo only), GROUND_TEXELS px over the map. Image row
+## 0 is z = 0 and column 0 is x = 0, like every map texture.
 func _ground_view(terrain: MeshInstance3D, material: ShaderMaterial) -> SubViewport:
 	var view := SubViewport.new()
 	view.size = Vector2i(GROUND_TEXELS, GROUND_TEXELS)
@@ -383,7 +387,8 @@ func _paint_into(mat: ShaderMaterial) -> void:
 	)
 
 
-## The ground the terrain shows takes the paint if its shader has it (the plain «no look» one has not).
+## The ground the terrain shows takes the paint if its shader has it (the plain «no look» one has
+## not).
 func _push_paint(terrain: MeshInstance3D) -> void:
 	var mat := _paintable(terrain.material_override if terrain else null)
 	if mat:
@@ -400,8 +405,8 @@ func _paintable(material: Variant) -> ShaderMaterial:
 	return null
 
 
-## Back to no paint on the ground the terrain shows (a profile change, the layer hidden, leaving the tree). A ground
-## with amount 0 is the same as before the grass.
+## Back to no paint on the ground the terrain shows (a profile change, the layer hidden, leaving the
+## tree). A ground with amount 0 is the same as before the grass.
 func _clear_paint() -> void:
 	var terrain := _ground_mesh()
 	if terrain == null or not is_instance_valid(terrain):
@@ -474,8 +479,8 @@ func _apply_preset() -> void:
 	_material.set_shader_parameter("use_trample", bool(_preset_value(&"grass_trample", true)))
 
 
-## Instances of the near MultiMesh per cell (the preset's detail scale) and of the far one (the type's
-## constant far density: the preset does not lower it).
+## Instances of the near MultiMesh per cell (the preset's detail scale) and of the far one (the
+## type's constant far density: the preset does not lower it).
 func _counts() -> Vector2i:
 	var scale := float(_preset_value(&"grass_density_scale", 1.0))
 	var near := maxi(roundi(_type.density_near * scale * CELL_M * CELL_M), 64)
@@ -539,6 +544,7 @@ func _check_rings(counts: Vector2i, near_r: float) -> void:
 		if float(_tier_meshes[i].instance_count) < wanted - 1.0:
 			push_warning(
 				(
+					# gdlint: ignore=max-line-length
 					"GrassField: ring %d has %d blades per cell and the shader asks for %.0f at its inner edge: the thinning shows again."
 					% [i, _tier_meshes[i].instance_count, wanted]
 				)
@@ -588,8 +594,9 @@ func _process(delta: float) -> void:
 	_update_trample(delta, radius)
 
 
-## A cell exists while it is inside the radius around the fade center (the shader fades the grass by the distance to
-## it); its tier (how many blades) goes by the distance to the field's center, like the density in the shader.
+## A cell exists while it is inside the radius around the fade center (the shader fades the grass by
+## the distance to it); its tier (how many blades) goes by the distance to the field's center, like
+## the density in the shader.
 func _update_cells(radius: float, eye: Vector2) -> void:
 	var changes := _ring.update(radius, eye, _center)
 	for key: Vector2i in changes["added"]:
@@ -701,7 +708,8 @@ func _height_range(key: Vector2i) -> Vector2:
 	return Vector2(low, high)
 
 
-## The land height, derived from the terrain the first time a field loads (GrassHeight): not stored anywhere.
+## The land height, derived from the terrain the first time a field loads (GrassHeight): not stored
+## anywhere.
 func _load_height(terrain: Object) -> bool:
 	if _height_texture:
 		return true
@@ -725,6 +733,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 			warnings
 			. append(
 				(
+					# gdlint: ignore=max-line-length
 					"The far coverage (%.1f) is below %.1f: bare ground shows between blades. Raise density_far or far_width_scale."
 					% [type.far_coverage(), GrassType.MIN_FAR_COVERAGE]
 				)

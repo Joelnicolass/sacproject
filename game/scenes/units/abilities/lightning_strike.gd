@@ -1,24 +1,30 @@
 class_name LightningStrike
 extends Node3D
 
-## One lightning bolt. The one owner of "a bolt flies from here to there and hurts what it meets": Call lightning (gsba) and each
-## discharge of the Lightning Charge (gcil) put one of these in the shot container (the node the shot spawner spawns into).
-## Server (or solo) only: a client never gets this node (LightningStrike.launch adds it on the server); the look reaches every peer
-## through FxBus.broadcast_beam(beam_type). Priority −1: it hurts before the bodies move, like Protector and HaloOfEarth.
+## One lightning bolt. The one owner of "a bolt flies from here to there and hurts what it meets":
+## Call lightning (gsba) and each discharge of the Lightning Charge (gcil) put one of these in the
+## shot container (the node the shot spawner spawns into). Server (or solo) only: a client never
+## gets this node (LightningStrike.launch adds it on the server); the look reaches every peer
+## through FxBus.broadcast_beam(beam_type). Priority −1: it hurts before the bodies move, like
+## Protector and HaloOfEarth.
 ##
 ## - It is born in the tick of the order. With `retarget` the segment from the start to the end's
-##   center is cut at the first live body it crosses, the shooter left out: that body is the new end (it "bounces"). The charge's
-##   discharges do not (the end was picked by the charge).
-## - `travel_s` later (12 ticks; the node counts from the tick after it was born) the end's center is
-##   read again (the bolt follows its target) and, if the end is a valid body, it takes the SPEL's amount as direct spell damage
-##   with DamageMod.lightning. A ground end (a discharge into the land) hurts nothing.
-## - The damage goes through Health.damage_typed: the side factor (friendly fire off: an ally takes nothing; on: ally_damage_factor),
-##   the resistance (a Trogg's is 0) and the Lightning Charge's passive of the body that takes it are all Health's.
+##   center is cut at the first live body it crosses, the shooter left out: that body is the new end
+##   (it "bounces"). The charge's discharges do not (the end was picked by the charge).
+## - `travel_s` later (12 ticks; the node counts from the tick after it was born) the end's center
+##   is read again (the bolt follows its target) and, if the end is a valid body, it takes the
+##   SPEL's amount as direct spell damage with DamageMod.lightning. A ground end (a discharge into
+##   the land) hurts nothing.
+## - The damage goes through Health.damage_typed: the side factor (friendly fire off: an ally takes
+##   nothing; on: ally_damage_factor), the resistance (a Trogg's is 0) and the Lightning Charge's
+##   passive of the body that takes it are all Health's.
 ##
-## Limits: buildings do not stop the ray (only creatures and wizards); the bolt does not keep its 64 frames of
-## life (the look has its own): the node is freed after it strikes; the scar and the sound are not here.
+## Limits: buildings do not stop the ray (only creatures and wizards); the bolt does not keep its 64
+## frames of life (the look has its own): the node is freed after it strikes; the scar and the sound
+## are not here.
 
-## The bolt arrived: on `body` (a valid end) or on the land (null), at `at`. For whoever launched it and adds something of its own (the splash).
+## The bolt arrived: on `body` (a valid end) or on the land (null), at `at`. For whoever launched it
+## and adds something of its own (the splash).
 signal struck(body: Node3D, at: Vector3)
 
 ## Time from the order to the damage.
@@ -47,10 +53,11 @@ var _age := 0
 var _ended := false
 
 
-## The bolt of `scene` in the shot container, or null (and a warning) when there is none. `from` is any node of the tree.
-## `with_retarget` overrides the scene's knob (the charge's discharges say false).
-## A chain of lightning gives its own `beam`, `hit` burst and `travel_s` instead of the scene's (null / -1 = the scene's);
-## `seat` the slot it hurts in the name of when `shooting` is gone (-1 = the shooter's).
+## The bolt of `scene` in the shot container, or null (and a warning) when there is none. `from` is
+## any node of the tree. `with_retarget` overrides the scene's knob (the charge's discharges say
+## false). A chain of lightning gives its own `beam`, `hit` burst and `travel_s` instead of the
+## scene's (null / -1 = the scene's); `seat` the slot it hurts in the name of when `shooting` is
+## gone (-1 = the shooter's).
 static func launch(
 	scene: PackedScene,
 	from: Node,
@@ -93,7 +100,8 @@ static func launch(
 	return bolt
 
 
-## Alive and on the field (and targetable). The one answer for the retarget ray, the damage and the charge's picks.
+## Alive and on the field (and targetable). The one answer for the retarget ray, the damage and the
+## charge's picks.
 static func is_valid_target(body: Node) -> bool:
 	if (
 		body == null
@@ -198,7 +206,8 @@ func _retarget() -> void:
 		end_point = BodyNudge.center(best)
 
 
-## On the travel frame: the SPEL's amount as direct spell damage with DamageMod.lightning to a valid end.
+## On the travel frame: the SPEL's amount as direct spell damage with DamageMod.lightning to a valid
+## end.
 func _strike() -> void:
 	struck.emit(end_body if end_body != null and is_valid_target(end_body) else null, end_point)
 	if end_body == null:

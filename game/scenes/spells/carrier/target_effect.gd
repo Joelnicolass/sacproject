@@ -2,10 +2,12 @@
 class_name TargetEffect
 extends Node3D
 
-## What a SpellCarrier does to a body when something happens to it: on `arrived` (it got there; Death's every blow) or on `settled` (the wait is
-## over) it applies its BodyEffect to the target, or, with a `reach`, to every creature whose box is inside that sphere around the carrier
-## (Blind Rage's 30 m). One script for gibbing, killing, turning to the wizard's side or laying a state: the effect is a Resource inside the scene.
-## It does not choose when (the carrier's signals), who the target is (the spell) nor what the effect does. Server (or solo) only.
+## What a SpellCarrier does to a body when something happens to it: on `arrived` (it got there;
+## Death's every blow) or on `settled` (the wait is over) it applies its BodyEffect to the target,
+## or, with a `reach`, to every creature whose box is inside that sphere around the carrier (Blind
+## Rage's 30 m). One script for gibbing, killing, turning to the wizard's side or laying a state:
+## the effect is a Resource inside the scene. It does not choose when (the carrier's signals), who
+## the target is (the spell) nor what the effect does. Server (or solo) only.
 
 enum When { ARRIVED, SETTLED }
 
@@ -16,7 +18,8 @@ enum When { ARRIVED, SETTLED }
 @export var reach: CollisionShape3D
 ## Who the reach takes: the creatures of any side (a wizard is not a victim of these spells).
 @export var groups: Array[StringName] = [&"unit"]
-## A flash and a sound at the carrier when it fires, once (a ParticleType under data/fx/, with its light). Optional.
+## A flash and a sound at the carrier when it fires, once (a ParticleType under data/fx/, with its
+## light). Optional.
 @export var flash: ParticleType
 
 

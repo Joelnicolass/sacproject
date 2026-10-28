@@ -2,9 +2,10 @@
 class_name DropDent
 extends Node
 
-## When its drop ends (a meteorite hits the ground) it leaves the dent of its `manual` TerrainStamp under the drop for good
-## (`leave_now`): the server works the numbers out and keeps them, and every client applies the same bytes. It does not fly
-## the drop (ZoneDrop) nor shape the dent (the stamp's StampProfile and Reach cylinder). Server (or solo) only.
+## When its drop ends (a meteorite hits the ground) it leaves the dent of its `manual` TerrainStamp
+## under the drop for good (`leave_now`): the server works the numbers out and keeps them, and every
+## client applies the same bytes. It does not fly the drop (ZoneDrop) nor shape the dent (the
+## stamp's StampProfile and Reach cylinder). Server (or solo) only.
 
 @export var drop: ZoneDrop
 @export var stamp: TerrainStamp
@@ -25,6 +26,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		if drop != null and stamp != null
 		else PackedStringArray(
 			[
+				# gdlint: ignore=max-line-length
 				"The drop (ZoneDrop) and the stamp of the dent (TerrainStamp with manual) are missing."
 			]
 		)

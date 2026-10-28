@@ -2,9 +2,11 @@
 class_name SelectionRoster
 extends Control
 
-## The selected creatures at the left edge. Laid out in canvas pixels of the 1280×720 base (Godot's stretch scales them): the
-## `Frame` panel (166×307 at x = -41, drawn by the theme variation HudRosterFrame) centered vertically, 41×38 cells (column 0 at
-## x = -1, column 1 at x = 43, rows every 38 from y = 38) and the active ability's 41×41 icon at x = 85. The frame shows even when empty.
+## The selected creatures at the left edge. Laid out in canvas pixels of the 1280×720 base (Godot's
+## stretch scales them): the `Frame` panel (166×307 at x = -41, drawn by the theme variation
+## HudRosterFrame) centered vertically, 41×38 cells (column 0 at x = -1, column 1 at x = 43, rows
+## every 38 from y = 38) and the active ability's 41×41 icon at x = 85. The frame shows even when
+## empty.
 ##
 ## Up to `capacity` (columns × rows) creatures: one cell each, the newest first, with its bars.
 ## More than that: one cell per type (largest group first) with the number of members, and the
@@ -44,11 +46,13 @@ var ability_tag := ""
 var summary: String:
 	get:
 		return _summary()
-## Slot of the player of this process; 0 until `bind` (the dedicated server never binds: the roster stays hidden).
+## Slot of the player of this process; 0 until `bind` (the dedicated server never binds: the roster
+## stays hidden).
 var local_slot := 0
 ## Cells on show (visible), readable by flows.
 var cells_shown := 0
-## Lowest health fraction among the cells on show after the last refresh (-1 with none); flows read it.
+## Lowest health fraction among the cells on show after the last refresh (-1 with none); flows read
+## it.
 var min_health := -1.0
 
 var _units: Array = []

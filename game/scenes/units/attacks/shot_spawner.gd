@@ -1,10 +1,12 @@
 class_name ShotSpawner
 extends MpSpawner
 
-## Spawns creature ranged shots under spawn_path: on the server (replicated) or in solo. A packet names its look by the
-## resource path of the scene (`"look"`: FxWire.id_of of the ShotLook scene the caller holds, "" = a plain ball) and its ability
-## by `"tag"`; only here, on each peer, do they turn back into the resources.
-## Not: what a shot does (RangedShot, ShotLook), when a creature shoots (RangedWeapon), which look a shot has (AbilityType.shot_look).
+## Spawns creature ranged shots under spawn_path: on the server (replicated) or in solo. A packet
+## names its look by the resource path of the scene (`"look"`: FxWire.id_of of the ShotLook scene
+## the caller holds, "" = a plain ball) and its ability by `"tag"`; only here, on each peer, do they
+## turn back into the resources.
+## Not: what a shot does (RangedShot, ShotLook), when a creature shoots (RangedWeapon), which look a
+## shot has (AbilityType.shot_look).
 
 const _SHOT := preload("res://scenes/units/attacks/ranged_shot.gd")
 const GROUP := &"shot_spawner"
@@ -28,16 +30,17 @@ func _ready() -> void:
 	super._ready()
 
 
-## `data` = ranged_shot.setup() keys without `name`. Returns the shot (null on a client, which spawns nothing).
+## `data` = ranged_shot.setup() keys without `name`. Returns the shot (null on a client, which
+## spawns nothing).
 func spawn_shot(data: Dictionary) -> RangedShot:
 	_serial += 1
 	data["name"] = "Shot%d" % _serial
 	return spawn_here(data) as RangedShot
 
 
-## A scene that is not a RangedShot but flies in the same container and replicates the same way (the Divine Sight eye).
-## `data["scene"]` is its resource path, `data["name"]` is set here; the scene's root has setup(data). Returns it (null on a
-## client).
+## A scene that is not a RangedShot but flies in the same container and replicates the same way (the
+## Divine Sight eye). `data["scene"]` is its resource path, `data["name"]` is set here; the scene's
+## root has setup(data). Returns it (null on a client).
 func spawn_scene(data: Dictionary) -> Node3D:
 	_serial += 1
 	if not data.has("name"):
@@ -56,7 +59,8 @@ func _make(data: Variant) -> Node:
 			empty.queue_free.call_deferred()
 			return empty
 		var node := scene.instantiate()
-		node.call("setup", data, GameCatalog.shared().ability(str(data.get("tag", ""))))  # dynamic: the root of any spawnable scene answers setup(data, ability)
+		# dynamic: the root of any spawnable scene answers setup(data, ability)
+		node.call("setup", data, GameCatalog.shared().ability(str(data.get("tag", ""))))
 		return node
 	var shot: RangedShot = _SHOT.new()
 	shot.setup(
@@ -67,7 +71,8 @@ func _make(data: Variant) -> Node:
 	return shot
 
 
-## The scene a packet names by its resource path, or null when the path is not a scene of this build.
+## The scene a packet names by its resource path, or null when the path is not a scene of this
+## build.
 func _scene_of(path: String) -> PackedScene:
 	if not path.begins_with("res://") or not ResourceLoader.exists(path, "PackedScene"):
 		return null

@@ -2,11 +2,11 @@
 class_name PortalDisc
 extends MeshInstance3D
 
-## A flat ring with a glowing center that always faces the camera: the portal around a creature carried
-## by a Sac Doctor (blue) and the red vortex the doctor falls out of.
-## Presentation only: it reads no simulation and the headless server draws nothing. Opens in `open_s`,
-## closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to switch it off.
-## The mesh and the material are made here (they are not stored in the scene).
+## A flat ring with a glowing center that always faces the camera: the portal around a creature
+## carried by a Sac Doctor (blue) and the red vortex the doctor falls out of.
+## Presentation only: it reads no simulation and the headless server draws nothing. Opens in
+## `open_s`, closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to
+## switch it off. The mesh and the material are made here (they are not stored in the scene).
 
 ## Finished closing (openness reached 0).
 signal closed
@@ -35,7 +35,8 @@ var _target := 1.0
 var _material: ShaderMaterial
 var _missing := false
 var _started := false
-## Own generator seeded per instance: the global RNG is the match's (MatchSeed), a window-only effect must not move it.
+## Own generator seeded per instance: the global RNG is the match's (MatchSeed), a window-only
+## effect must not move it.
 var _rng := RandomNumberGenerator.new()
 
 
@@ -62,6 +63,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		(
 			warnings
 			. append(
+				# gdlint: ignore=max-line-length
 				"The PortalLook has no `rim` or `center` (the ring and centre textures): a fill is drawn."
 			)
 		)

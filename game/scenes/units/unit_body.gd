@@ -1,34 +1,41 @@
 class_name UnitBody
 extends GameBody
 
-## A creature on the map: the physics body, the ids that travel on the network (`creature_tag`, `model`, `mode`), the commands other
-## systems give it and the explicit order of its physics step. What it is and does lives in its children: Creature, Locomotion, Engagement,
-## Weapons, Abilities, SpecialForms, Regeneration, Clips and States (one per mode). Clients only present what the synchronizer brings.
+## A creature on the map: the physics body, the ids that travel on the network (`creature_tag`,
+## `model`, `mode`), the commands other systems give it and the explicit order of its physics step.
+## What it is and does lives in its children: Creature, Locomotion, Engagement, Weapons, Abilities,
+## SpecialForms, Regeneration, Clips and States (one per mode). Clients only present what the
+## synchronizer brings.
 
 signal died(tag: String, owner_slot: int, at: Vector3)
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 signal summoned  ## The summon cast ended; it acts now and joins its owner's selection.
 signal held_changed(held: bool)  ## A Sac Doctor holds it (true) or lets go (false).
-signal taken_changed(taken: bool)  ## Held or being revived by a Sac Doctor (true) or neither (false).
+## Held or being revived by a Sac Doctor (true) or neither (false).
+signal taken_changed(taken: bool)
 signal mode_changed(was: Mode, now: Mode)
 
-## Each mode is a UnitState child of States with the same `mode`. Replicated as an integer: a new mode goes last.
+## Each mode is a UnitState child of States with the same `mode`. Replicated as an integer: a new
+## mode goes last.
 enum Mode { IDLE, MOVE, CHASE, ATTACK, DEAD, SUMMONING, SHOOT, ROCK_FORM, HELD, REVIVING, COWER }
 
 ## Every creature body in play (corpses leave it).
 const GROUP := &"unit"
 
-## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it enters the tree: the spawner on every peer,
-## the .tscn of a test scene. It never looks the type up by text.
+## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it
+## enters the tree: the spawner on every peer, the .tscn of a test scene. It never looks the type up
+## by text.
 @export var type: CreatureType:
 	set(value):
 		type = value
 		creature_tag = value.id() if value != null else ""
 		if creature != null:
 			creature.adopt()
-## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the type, not this.
+## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the
+## type, not this.
 var creature_tag := ""
-## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived from `type`: set the type, not this.
+## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived
+## from `type`: set the type, not this.
 @export var model := "":
 	set(value):
 		model = value
@@ -72,13 +79,16 @@ var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "str
 @export var idle_aggro := true
 @export var rules: MatchRules
 
-## Speedup sets it on the server (or solo); the pace is multiplied by it. GuardianBond writes `attack_factor`.
+## Speedup sets it on the server (or solo); the pace is multiplied by it. GuardianBond writes
+## `attack_factor`.
 var speed_factor := 1.0
 var attack_factor := 1.0
 var move_speed := 0.0
-## Gib sets it right before the body dies: it bursts, so it leaves no corpse and its soul stays free (SoulSystem).
+## Gib sets it right before the body dies: it bursts, so it leaves no corpse and its soul stays free
+## (SoulSystem).
 var gibbed := false
-## Set by the Orders child while an RTS order steers the body: no idle aggro, and a chase does not give up at sight range.
+## Set by the Orders child while an RTS order steers the body: no idle aggro, and a chase does not
+## give up at sight range.
 var ordered := false
 ## Owned by Engagement; every state reads and writes it here.
 var target: Node3D:
@@ -111,8 +121,9 @@ func _ready() -> void:
 		creature.start_simulation()
 
 
-## One simulated step, in this order and no other (no child processes by itself): vertical motion, time since the last hit, the state of
-## the mode (unless playing dead or held), regeneration, then Locomotion steers, avoids and slides.
+## One simulated step, in this order and no other (no child processes by itself): vertical motion,
+## time since the last hit, the state of the mode (unless playing dead or held), regeneration, then
+## Locomotion steers, avoids and slides.
 func _physics_process(delta: float) -> void:
 	if not simulates() or is_taken():  # A client presents; a held creature is carried by Captive.
 		clips.update()
@@ -129,7 +140,8 @@ func _physics_process(delta: float) -> void:
 			and (is_dead() or (not locomotion.airborne_step and is_on_floor()))
 		):
 			return
-		resting = state.regenerates()  # asked before the update: a mode it leaves this tick does not regenerate in it
+		# asked before the update: a mode it leaves this tick does not regenerate in it
+		resting = state.regenerates()
 		state.physics_update(delta)
 	regeneration.step(delta, resting)
 	locomotion.finish(delta, not special_forms.playing_dead, is_obstacle)
@@ -146,7 +158,8 @@ func _on_died(_from_slot: int) -> void:
 	died.emit.call_deferred(creature_tag, owner_slot, global_position)
 
 
-## Commands (Engagement does them) and the abilities (the Port of Abilities). The summon cast begins before the body enters the tree.
+## Commands (Engagement does them) and the abilities (the Port of Abilities). The summon cast begins
+## before the body enters the tree.
 func engage(foe: Node3D) -> void:
 	engagement.engage(foe)
 
@@ -180,9 +193,10 @@ func finish_summon() -> void:
 		mode = Mode.IDLE
 
 
-## Questions. A body held or revived by a Sac Doctor is not a creature of the match meanwhile; an obstacle is not dead, not summoning, not
-## taken and not hidden by an affliction; flying is a creature that must fly or a hybrid with its Flight up.
-## Mana does not regenerate while dead or still being summoned.
+## Questions. A body held or revived by a Sac Doctor is not a creature of the match meanwhile; an
+## obstacle is not dead, not summoning, not taken and not hidden by an affliction; flying is a
+## creature that must fly or a hybrid with its Flight up. Mana does not regenerate while dead or
+## still being summoned.
 func is_dead() -> bool:
 	return mode == Mode.DEAD
 
@@ -267,7 +281,8 @@ func melee_profile() -> Dictionary:
 	}
 
 
-## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright).
+## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays
+## upright).
 func soul_anchor() -> Vector3:
 	var pivot := get_node_or_null("Tilt") as Node3D
 	var visual := get_node_or_null("Tilt/Mesh") as BodyVisual

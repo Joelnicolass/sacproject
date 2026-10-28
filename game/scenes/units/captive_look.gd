@@ -2,10 +2,11 @@
 class_name CaptiveLook
 extends Node
 
-## How a creature that a doctor holds looks. If its model has a physical skeleton it dangles as a rag doll (RagdollDriver); if
-## not it plays the clips rise, held and thrash. A pumped corpse stays where it fell until the doctor takes it. It only listens
-## to the body's mode and never writes to the simulation: the only thing it writes is `captive_role`, which nothing in the sim reads.
-## What to show for each change of mode is CaptiveRules.
+## How a creature that a doctor holds looks. If its model has a physical skeleton it dangles as a
+## rag doll (RagdollDriver); if not it plays the clips rise, held and thrash. A pumped corpse stays
+## where it fell until the doctor takes it. It only listens to the body's mode and never writes to
+## the simulation: the only thing it writes is `captive_role`, which nothing in the sim reads. What
+## to show for each change of mode is CaptiveRules.
 
 ## The clips of a held creature, in order: it rises, floats into the thrash and
 ## thrashes until it is let go. A revived corpse only rises.
@@ -23,7 +24,8 @@ const SEQUENCE: PackedStringArray = ["rise", "held", "thrash"]
 @export var clip_pose: ClipPlayback
 ## The unit's light: comes back when the creature stands up.
 @export var light: ActorLight
-## true (the default): a model with a physical skeleton and a hang bone hangs as a rag doll. Off: every model uses its clips.
+## true (the default): a model with a physical skeleton and a hang bone hangs as a rag doll. Off:
+## every model uses its clips.
 @export var hangs := true
 ## Seconds a creature that stands up or hangs out of a corpse takes to appear.
 @export_range(0.0, 3.0, 0.05, "suffix:s") var appear_s := 0.6
@@ -79,7 +81,8 @@ func _drop_ragdoll() -> bool:
 	return true
 
 
-## A pumped corpse stands up where it lies (or, let go alive, in its place) and appears out of thin air.
+## A pumped corpse stands up where it lies (or, let go alive, in its place) and appears out of thin
+## air.
 func _stand_up(now: UnitBody.Mode) -> void:
 	if _drop_ragdoll() and clip_pose != null:
 		clip_pose.play("idle", true)
@@ -96,8 +99,8 @@ func _appear() -> void:
 	visual.fade_to(0.0, appear_s)
 
 
-## A clip of the sequence ended: the next one that the model has (rise -> held -> thrash). The last loops; a revived corpse
-## stands after its rise.
+## A clip of the sequence ended: the next one that the model has (rise -> held -> thrash). The last
+## loops; a revived corpse stands after its rise.
 func _on_clip_looped(role: String) -> void:
 	if role != body.clips.captive_role or role == SEQUENCE[SEQUENCE.size() - 1]:
 		return
@@ -107,7 +110,8 @@ func _on_clip_looped(role: String) -> void:
 		body.clips.captive_role = ""
 
 
-## The first role of the sequence from `from` on that the model has a clip for ("" when none). A revived corpse only rises.
+## The first role of the sequence from `from` on that the model has a clip for ("" when none). A
+## revived corpse only rises.
 func _first_clip(from: int) -> String:
 	var last := SEQUENCE.size() if body.is_held() else 1
 	for i in range(from, last):

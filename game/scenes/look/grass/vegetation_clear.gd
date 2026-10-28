@@ -42,7 +42,8 @@ func _notify_changed() -> void:
 		get_tree().call_group(FIELD_GROUP, &"clears_changed")
 
 
-## Every clear of the tree in world coordinates (rows x, z, radius, edge): what a patch of plants avoids.
+## Every clear of the tree in world coordinates (rows x, z, radius, edge): what a patch of plants
+## avoids.
 static func world_rows(tree: SceneTree) -> PackedVector4Array:
 	var found := PackedVector4Array()
 	for node in tree.get_nodes_in_group(GROUP):

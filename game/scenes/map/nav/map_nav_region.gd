@@ -2,10 +2,12 @@
 class_name MapNavRegion
 extends NavigationRegion3D
 
-## The map's walkable surface: the NavRegion of a map scene, holding the versioned navmesh next to it (maps/<tag>/nav.res).
-## The «Bake navmesh» button bakes it from the `nav_source` nodes of the map (tools/bake/bake_nav.gd runs as a headless
-## subprocess) and reloads it. NavService answers from the same resource: it queries this region's navigation map, and swaps
-## the region's navigation_mesh after a re-bake (NavRebake). The inspector warns when the navmesh no longer matches the map.
+## The map's walkable surface: the NavRegion of a map scene, holding the versioned navmesh next to
+## it (maps/<tag>/nav.res). The «Bake navmesh» button bakes it from the `nav_source` nodes of the
+## map (tools/bake/bake_nav.gd runs as a headless subprocess) and reloads it. NavService answers
+## from the same resource: it queries this region's navigation map, and swaps the region's
+## navigation_mesh after a re-bake (NavRebake). The inspector warns when the navmesh no longer
+## matches the map.
 
 ## The numbers the navmesh was baked with; also part of the source hash.
 @export var bake_settings: NavBakeSettings
@@ -29,6 +31,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		(
 			warnings
 			. append(
+				# gdlint: ignore=max-line-length
 				"Turn use_edge_connections off: the zones fit exactly, and with it on every change costs ~850 ms on the main thread."
 			)
 		)
@@ -46,8 +49,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Editor: bakes this map's navmesh in a headless Godot (the map must be saved first) and loads the new data. The
-## «Bake navmesh» button and «New map» call it; OK, or the error (the Output says why).
+## Editor: bakes this map's navmesh in a headless Godot (the map must be saved first) and loads the
+## new data. The «Bake navmesh» button and «New map» call it; OK, or the error (the Output says
+## why).
 func bake_now() -> Error:
 	var scene := owner.scene_file_path if owner != null else ""
 	if scene.is_empty():

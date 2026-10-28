@@ -1,15 +1,17 @@
 class_name BeamFx
 extends MeshInstance3D
 
-## A lightning bolt between two points:
-## `type.bolts` ribbons of 3 fins at 120°, each following its own LightningBolt, that change shape every
-## `change_s`, travel in from the start, pulse in brightness and leave from the start before dying.
-## The end can follow a node (the target's center moves while it burns).
-## Presentation only: FxBus plays it, it moves nothing, and the shape comes from a generator of its own.
-## Frees itself at the end of its life, unless FxBus pools it (then it hides and says `finished`).
+## A lightning bolt between two points: `type.bolts` ribbons of 3 fins at 120°, each following its
+## own LightningBolt, that change shape every `change_s`, travel in from the start, pulse in
+## brightness and leave from the start before dying. The end can follow a node (the target's center
+## moves while it burns).
+## Presentation only: FxBus plays it, it moves nothing, and the shape comes from a generator of its
+## own. Frees itself at the end of its life, unless FxBus pools it (then it hides and says
+## `finished`).
 
 signal finished
-## The bolt reached its end (once per play), at that point: a ScarMark of the scene can burn the ground there.
+## The bolt reached its end (once per play), at that point: a ScarMark of the scene can burn the
+## ground there.
 signal struck(at: Vector3)
 
 const SHADER := preload("res://scenes/fx/beam.gdshader")
@@ -17,7 +19,8 @@ const SHADER_MIX := preload("res://scenes/fx/beam_mix.gdshader")
 const UV_INSET := 0.5 / 64.0
 
 @export var type: BeamType
-## Owned by FxBus's pool: it waits hidden for `play` and hides again at the end instead of freeing itself.
+## Owned by FxBus's pool: it waits hidden for `play` and hides again at the end instead of freeing
+## itself.
 @export var pooled := false
 
 static var _materials: Dictionary = {}
@@ -96,7 +99,8 @@ func _process(delta: float) -> void:
 	_draw()
 
 
-## Ends the bolt now, as if its life were over (the warm-up's flash). Nothing when it is not playing.
+## Ends the bolt now, as if its life were over (the warm-up's flash). Nothing when it is not
+## playing.
 func stop() -> void:
 	if _live:
 		_stop()
@@ -119,7 +123,8 @@ func _flash() -> void:
 		type.light.light_up(get_tree(), self, _end_point())
 
 
-## While the tip travels, sprites stay behind it (Rainbow's glow): a few every tick, in a ball around the tip.
+## While the tip travels, sprites stay behind it (Rainbow's glow): a few every tick, in a ball
+## around the tip.
 func _sparkle_tip(delta: float) -> void:
 	if type.tip_type == null or _t >= type.travel_s:
 		return
@@ -137,8 +142,9 @@ func _sparkle_tip(delta: float) -> void:
 		FxBus.puff(type.tip_type, tip + around.limit_length(1.0) * type.tip_spread_m)
 
 
-## The point at `t` (0 = start, 1 = end) of a vertical half circle from `a` to `b`: the ground track runs along the chord with the
-## speed of a half circle, the height is the arc over the straight mix of the ends' heights.
+## The point at `t` (0 = start, 1 = end) of a vertical half circle from `a` to `b`: the ground track
+## runs along the chord with the speed of a half circle, the height is the arc over the straight mix
+## of the ends' heights.
 func _arc_point(a: Vector3, b: Vector3, t: float) -> Vector3:
 	var angle := PI * clampf(t, 0.0, 1.0)
 	var along := 0.5 * (1.0 - cos(angle))
@@ -186,8 +192,8 @@ func _draw() -> void:
 	_imesh.surface_end()
 
 
-## Builds the ribbon: per segment and fin a quad from the axis to the fin's
-## edge, pointed at both ends; u flips every segment, v = 1 on the axis (the bright row of the cell).
+## Builds the ribbon: per segment and fin a quad from the axis to the fin's edge, pointed at both
+## ends; u flips every segment, v = 1 on the axis (the bright row of the cell).
 func _add_ribbon(points: PackedVector3Array, fins: Array[Vector3], n: int) -> void:
 	for i in n:
 		for j in 3:

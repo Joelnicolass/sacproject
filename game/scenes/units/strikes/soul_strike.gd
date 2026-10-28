@@ -1,11 +1,12 @@
 class_name SoulStrike
 extends ShotStrike
 
-## The blow of the Styx's Rend Soul. It is an effect born in the tick of the shot and updated
-## once on the next: it checks the Rend rule again; if the soul is still there it bursts
-## (Soul.burst dissolves the corpse), draws the StyxBolt from the shot origin to the soul's center and deals
-## a splash of ranged damage over the damage range: that is ShotLook.impact (impacts/rend_blast_impact.tscn: nobody
-## takes the whole amount). If the soul went, nothing happens (the mana is already spent). Born from RendSoul, not from RangedWeapon.
+## The blow of the Styx's Rend Soul. It is an effect born in the tick of the shot and updated once
+## on the next: it checks the Rend rule again; if the soul is still there it bursts (Soul.burst
+## dissolves the corpse), draws the StyxBolt from the shot origin to the soul's center and deals a
+## splash of ranged damage over the damage range: that is ShotLook.impact
+## (impacts/rend_blast_impact.tscn: nobody takes the whole amount). If the soul went, nothing
+## happens (the mana is already spent). Born from RendSoul, not from RangedWeapon.
 
 ## The beam from the shot origin to the soul's center. Empty: none.
 @export var beam: BeamType = preload("res://data/fx/beams/styx.tres")

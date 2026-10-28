@@ -1,9 +1,11 @@
 class_name TornadoLift
 extends Node
 
-## What the tornado does to the bodies near it while it is active: every tick, each creature or wizard on the ground inside the reach of the
-## funnel's wall is pulled a little towards a spiral around the axis and held up for that tick, so it climbs, turns, and is thrown by Tumbling.
-## It does no damage (the fall does). It does not move the tornado (TornadoDrift) or draw it (TornadoLook). Server only.
+## What the tornado does to the bodies near it while it is active: every tick, each creature or
+## wizard on the ground inside the reach of the funnel's wall is pulled a little towards a spiral
+## around the axis and held up for that tick, so it climbs, turns, and is thrown by Tumbling. It
+## does no damage (the fall does). It does not move the tornado (TornadoDrift) or draw it
+## (TornadoLook). Server only.
 
 @export var zone: GroundZone
 @export var drift: TornadoDrift

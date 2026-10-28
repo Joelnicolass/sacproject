@@ -16,14 +16,16 @@ signal puffed(at: Vector3)
 @export var emitting := true
 ## Puffs owed after a hitch beyond this many are dropped.
 @export_range(1, 16) var max_per_frame := 4
-## Puffs only while the host moves at least this fast, in m/s (a Halo rock trails dust while it chases, not while it orbits). 0 = always.
+## Puffs only while the host moves at least this fast, in m/s (a Halo rock trails dust while it
+## chases, not while it orbits). 0 = always.
 @export_range(0.0, 100.0, 0.5, "suffix:m/s") var min_speed_m_s := 0.0
 
 var _clock := 0.0
 var _last := Vector3.INF
 
 
-## Adds a trail of `burst` puffs to `host` (also before it enters the tree). Null in a headless process or without a burst.
+## Adds a trail of `burst` puffs to `host` (also before it enters the tree). Null in a headless
+## process or without a burst.
 static func attach(host: Node3D, burst: ParticleType, seconds: float) -> FxTrail:
 	if DisplayServer.get_name() == "headless" or burst == null:
 		return null

@@ -2,15 +2,17 @@
 class_name CarrierPulse
 extends Node3D
 
-## What a SpellCarrier does to the bodies it passes near, once its casting time is over: every creature and wizard whose box is inside
-## `Reach` is stunned, and with `damage_foes` the foes of the wizard also take the spell's damage and a bolt, once each per trip.
-## Soul Mole stuns everybody but its wizard and hurts nobody; Soul Wind stuns and hurts only the foes, once. It does not move, does not
-## take the soul (SoulFetch) and does not draw the carrier. Server (or solo) only.
+## What a SpellCarrier does to the bodies it passes near, once its casting time is over: every
+## creature and wizard whose box is inside `Reach` is stunned, and with `damage_foes` the foes of
+## the wizard also take the spell's damage and a bolt, once each per trip. Soul Mole stuns everybody
+## but its wizard and hurts nobody; Soul Wind stuns and hurts only the foes, once. It does not move,
+## does not take the soul (SoulFetch) and does not draw the carrier. Server (or solo) only.
 
 enum Affects { ALL_BUT_WIZARD, FOES }
 
 @export var carrier: SpellCarrier
-## The sphere of the effect, in the carrier's frame; its radius is how far from the carrier a body feels it.
+## The sphere of the effect, in the carrier's frame; its radius is how far from the carrier a body
+## feels it.
 @export var reach: CollisionShape3D
 @export var affects := Affects.ALL_BUT_WIZARD
 ## The stun's own cooldown for the body.

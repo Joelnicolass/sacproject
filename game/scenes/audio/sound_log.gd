@@ -1,9 +1,10 @@
 class_name SoundLog
 extends RefCounted
 
-## A ring of the last `capacity` sound requests, played or dropped, for the cases and the lab
-## (the audio is never judged by ear: the criterion is an entry here). Each entry is a Dictionary:
-## {emitter, event, stream (resource path or ""), tick (process frame), played (bool), reason (&"" or why it was dropped)}.
+## A ring of the last `capacity` sound requests, played or dropped, for the cases and the lab (the
+## audio is never judged by ear: the criterion is an entry here). Each entry is a Dictionary:
+## {emitter, event, stream (resource path or ""), tick (process frame), played (bool), reason (&""
+## or why it was dropped)}.
 
 var capacity := 64
 var _entries: Array[Dictionary] = []

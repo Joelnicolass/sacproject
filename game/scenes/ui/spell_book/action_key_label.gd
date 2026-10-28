@@ -1,7 +1,8 @@
 class_name ActionKeyLabel
 extends RefCounted
 
-## The text of the first key bound to an InputMap action («Q», «Shift+1»), or "" when it has none. Presentation only.
+## The text of the first key bound to an InputMap action («Q», «Shift+1»), or "" when it has none.
+## Presentation only.
 
 
 static func of(action: String) -> String:

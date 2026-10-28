@@ -2,11 +2,13 @@
 class_name SacrificeFrame
 extends Node3D
 
-## The places of the sacrifice as nodes you can drag in the editor: the ring the doctors stand on, how far the push reaches, where
-## the carrier asks for the ritual, where the creature hangs, how far a doctor lifts a soul and where the red vortex opens.
-## It only holds them: nothing here moves, draws or decides (SacrificeFacts reads the numbers once). The scene is never instanced
-## by the game (its Area3D would move the simulation); it is read from its SceneState. To change a place, open
-## `sacrifice_places.tscn` (or an inherited scene of it) and drag the shape or the marker.
+## The places of the sacrifice as nodes you can drag in the editor: the ring the doctors stand on,
+## how far the push reaches, where the carrier asks for the ritual, where the creature hangs, how
+## far a doctor lifts a soul and where the red vortex opens.
+## It only holds them: nothing here moves, draws or decides (SacrificeFacts reads the numbers once).
+## The scene is never instanced by the game (its Area3D would move the simulation); it is read from
+## its SceneState. To change a place, open `sacrifice_places.tscn` (or an inherited scene of it) and
+## drag the shape or the marker.
 
 @export_group("Ritual")
 ## The ring the four doctors stand on (a cylinder around the site).

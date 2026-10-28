@@ -3,8 +3,9 @@ class_name AmbientSwarm
 extends Resource
 
 ## One kind of ambient life (pollen, fireflies, gnats, dust, embers, ash, spores), a type template:
-## `data/look/life/<name>.tres`, never written at runtime. How its motes move and look, how many there are, and when
-## they show. A god's AmbientLifeSet says where (in the air around the camera, or in which habitat of the map).
+## `data/look/life/<name>.tres`, never written at runtime. How its motes move and look, how many
+## there are, and when they show. A god's AmbientLifeSet says where (in the air around the camera,
+## or in which habitat of the map).
 
 ## How a mote moves (a ParticleProcessMaterial; a LifeSpot fits its emission box to the spot's box).
 @export var process_material: ParticleProcessMaterial

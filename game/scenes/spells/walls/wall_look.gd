@@ -1,10 +1,12 @@
 class_name WallLook
 extends MeshInstance3D
 
-## The body of a Firewall or a Wailing Wall: the unit strip (wall_strip.obj) drawn with the wall shader, which stretches it from the wall's
-## ends, thickness and height. Every frame it hands the shader where the ends are and how tall the wall stands now; once it lays down the
-## land height along the wall (129 samples) so the strip follows the ground. The material is the scene's own, copied per wall, so two walls
-## do not share their ends. Presentation only, on every peer; it does not hurt anybody (WallTouch).
+## The body of a Firewall or a Wailing Wall: the unit strip (wall_strip.obj) drawn with the wall
+## shader, which stretches it from the wall's ends, thickness and height. Every frame it hands the
+## shader where the ends are and how tall the wall stands now; once it lays down the land height
+## along the wall (129 samples) so the strip follows the ground. The material is the scene's own,
+## copied per wall, so two walls do not share their ends. Presentation only, on every peer; it does
+## not hurt anybody (WallTouch).
 
 @export var wall: SpellWall
 ## Samples of the land (the strip has one section more than this minus one).
@@ -34,7 +36,8 @@ func _process(_delta: float) -> void:
 	shader.set_shader_parameter(&"top", wall.top())
 
 
-## The height of the land under each sample of the strip, over the wall's own height, as a texture of one row.
+## The height of the land under each sample of the strip, over the wall's own height, as a texture
+## of one row.
 func _land_along(reach: float) -> ImageTexture:
 	var image := Image.create(samples, 1, false, Image.FORMAT_RF)
 	for i in samples:

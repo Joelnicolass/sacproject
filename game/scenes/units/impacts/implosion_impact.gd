@@ -1,9 +1,9 @@
 class_name ImplosionImpact
 extends ShotImpact
 
-## The Flurry's shot: after the damage (its SplashImpact
-## sibling) an implosion of effect range that shrinks over the spell's duration starts where the shot burst. It goes to
-## the shot's parent, so it outlives the shot.
+## The Flurry's shot: after the damage (its SplashImpact sibling) an implosion of effect range that
+## shrinks over the spell's duration starts where the shot burst. It goes to the shot's parent, so
+## it outlives the shot.
 
 @export var implosion_scene: PackedScene
 

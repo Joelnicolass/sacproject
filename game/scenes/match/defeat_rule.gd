@@ -2,11 +2,11 @@
 class_name DefeatRule
 extends Node
 
-## The server's rule for losing. A side is defeated when its last altar is destroyed. A wizard that vanishes (GhostForm GONE:
-## it died with no altar in play, or under ritual) takes its side down: its altars fall and its
-## creatures die (lose(side) = destroy the altars + kill all; run when the
-## disappearance ends). When one side is left, it wins.
-## Other ways to win or lose are other children of Match; taking this one out turns it off.
+## The server's rule for losing. A side is defeated when its last altar is destroyed. A wizard that
+## vanishes (GhostForm GONE: it died with no altar in play, or under ritual) takes its side down:
+## its altars fall and its creatures die (lose(side) = destroy the altars + kill all; run when the
+## disappearance ends). When one side is left, it wins. Other ways to win or lose are other children
+## of Match; taking this one out turns it off.
 
 @export var match_state: MatchState
 
@@ -99,7 +99,8 @@ func _on_stage_changed(stage: GhostForm.Stage, ghost: GhostForm) -> void:
 	_vanishing.append({"slot": ghost.owner_slot(), "left": ghost.vanish_seconds()})
 
 
-## lose(side): its altars fall and its creatures die; with no altar left there is nothing to wait for.
+## lose(side): its altars fall and its creatures die; with no altar left there is nothing to wait
+## for.
 func _lose(slot: int) -> void:
 	kill_creatures(slot)
 	match_state.begin_altar_collapse(slot, 0)
@@ -112,8 +113,8 @@ func _on_altar_state_changed(altar: Altar, state: Altar.State) -> void:
 		defeat(altar.owner_slot)
 
 
-## One team left among the seated sides that own an altar wins (no
-## enemy side alive among the altar sides); none left, a match with no winner. The winners are the whole team, also the ally that
+## One team left among the seated sides that own an altar wins (no enemy side alive among the altar
+## sides); none left, a match with no winner. The winners are the whole team, also the ally that
 ## fell earlier. With every slot its own team (1v1) this is «one side left wins».
 func _decide_winner() -> void:
 	if match_state.has_result():

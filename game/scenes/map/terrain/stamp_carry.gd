@@ -1,17 +1,21 @@
 class_name StampCarry
 extends RefCounted
 
-## Keeps the creatures and wizards on a ground that moves under them, up and down: before the ground over a rect moves,
-## `standing` notes the bodies there that are not under it, with the land under each one; after, `follow` puts back on the
-## surface every one the new ground now covers, and brings down with it every one that stood on the land when it sank (a quake,
-## a dent, a crater). A body under the land before the change (a buried one, one in a pit) is left alone, and so are one that
-## flies, one thrown through the air when the land sinks, and one on a roof or another body above the land. Any stamp, any speed.
-## Terrain, the one writer of the ground, calls it once per change (one physics tick of every playing stamp together, or a kept
-## stamp); it only moves bodies on the server (or solo): the clients get the positions. It does not decide how or when the ground
-## moves. Deviation (declared): a body that cannot move (frozen, petrified, vined) also goes down with the land.
+## Keeps the creatures and wizards on a ground that moves under them, up and down: before the ground
+## over a rect moves, `standing` notes the bodies there that are not under it, with the land under
+## each one; after, `follow` puts back on the surface every one the new ground now covers, and
+## brings down with it every one that stood on the land when it sank (a quake, a dent, a crater). A
+## body under the land before the change (a buried one, one in a pit) is left alone, and so are one
+## that flies, one thrown through the air when the land sinks, and one on a roof or another body
+## above the land. Any stamp, any speed. Terrain, the one writer of the ground, calls it once per
+## change (one physics tick of every playing stamp together, or a kept stamp); it only moves bodies
+## on the server (or solo): the clients get the positions. It does not decide how or when the ground
+## moves. Deviation (declared): a body that cannot move (frozen, petrified, vined) also goes down
+## with the land.
 
-## A body whose feet are this far under the land still counts as standing on it (a physics step can sink it a little), and one
-## this far above it still stands on the land (not on a roof) when the land sinks.
+## A body whose feet are this far under the land still counts as standing on it (a physics step can
+## sink it a little), and one this far above it still stands on the land (not on a roof) when the
+## land sinks.
 const SINK_M := 0.5
 
 
@@ -22,8 +26,8 @@ class Standing:
 	var ground_y := PackedFloat32Array()
 
 
-## The bodies over `rect` (lattice vertices) of `shape` standing on or above the land right now, with the land under them; none on
-## a client or off the tree.
+## The bodies over `rect` (lattice vertices) of `shape` standing on or above the land right now,
+## with the land under them; none on a client or off the tree.
 static func standing(shape: Terrain, rect: Rect2i) -> Standing:
 	var found := Standing.new()
 	if not rect.has_area() or not shape.is_inside_tree() or not shape.is_authority():
@@ -36,7 +40,8 @@ static func standing(shape: Terrain, rect: Rect2i) -> Standing:
 		for node: Node in tree.get_nodes_in_group(group):
 			var body := node as Node3D
 			var at := body.global_position if body != null else Vector3(NAN, NAN, NAN)
-			# The cheap test first: most bodies of the map are outside the rect (NAN never is inside).
+			# The cheap test first: most bodies of the map are outside the rect (NAN never is
+			# inside).
 			if (
 				not (at.x >= low.x and at.x < high.x and at.z >= low.y and at.z < high.y)
 				or BodyNudge.airborne(body)
@@ -49,8 +54,8 @@ static func standing(shape: Terrain, rect: Rect2i) -> Standing:
 	return found
 
 
-## Every body of `standing` (taken before the change) that the land of `shape` now covers stands on it again; every one that stood
-## on the land and is not thrown goes down with it where it sank.
+## Every body of `standing` (taken before the change) that the land of `shape` now covers stands on
+## it again; every one that stood on the land and is not thrown goes down with it where it sank.
 static func follow(standing: Standing, shape: Terrain) -> void:
 	for k in standing.bodies.size():
 		var body := standing.bodies[k]

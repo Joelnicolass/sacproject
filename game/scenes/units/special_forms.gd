@@ -1,9 +1,11 @@
 class_name SpecialForms
 extends Node
 
-## The shapes a creature takes on purpose: playing dead (it lies still, half faded, and heals), stealth (faded out, nobody can target it,
-## shown to every peer through the replicated `stealth`) and stone (rock form: it drops its orders and stands as a rock until told to move).
-## Not: how long a form lasts (the ability that turns it on: TimedStateAbility, Rockform) nor what a form does to damage.
+## The shapes a creature takes on purpose: playing dead (it lies still, half faded, and heals),
+## stealth (faded out, nobody can target it, shown to every peer through the replicated `stealth`)
+## and stone (rock form: it drops its orders and stands as a rock until told to move).
+## Not: how long a form lasts (the ability that turns it on: TimedStateAbility, Rockform) nor what a
+## form does to damage.
 
 enum Form { PLAYING_DEAD, STEALTH }
 
@@ -13,7 +15,8 @@ const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 @export var orders: _ORDERS
 ## The model that fades.
 @export var visual: BodyVisual
-## Only the server writes `stealth`; the setter shows it on every peer. Replicated by the synchronizer of unit.tscn.
+## Only the server writes `stealth`; the setter shows it on every peer. Replicated by the
+## synchronizer of unit.tscn.
 var stealth := false:
 	set(value):
 		if stealth == value:

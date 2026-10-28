@@ -1,21 +1,22 @@
 class_name Clinging
 extends Node3D
 
-## The things stuck to a body that slow it down:
-## the Ikarus's Sticky bombs (×0.75 each, 10 s) and the Bilemites (×0.8 each). The one owner of how many
-## there are and when each lets go. stick() adds one piece of a kind for a number of MatchClock ticks; each piece lets go at
-## its own tick (gone at duration·60 + 1
-## updates after it stuck); every piece of every body lets go at once when the body can no longer be poisoned: it dies, is being summoned…
-## The slowdown is not written here: for each kind Clinging gives PaceFactors the factor `factor ^ count` under its own source
-## (&"cling_sticky", &"cling_mites"), and PaceFactors writes speed_factor. It is derived from the lists on every change, so a
-## piece that lets go in the same tick as another one is the same as the two one after the other.
-## `shown` is replicated (the unit's MultiplayerSynchronizer, "Clinging:shown"): x = bombs, y = mites, z = frogs. Every peer draws that
-## many of the look scenes at fixed places on the body.
-## Server (or solo) only for stick(); the look runs on every peer.
+## The things stuck to a body that slow it down: the Ikarus's Sticky bombs (×0.75 each, 10 s) and
+## the Bilemites (×0.8 each). The one owner of how many there are and when each lets go. stick()
+## adds one piece of a kind for a number of MatchClock ticks; each piece lets go at its own tick
+## (gone at duration·60 + 1 updates after it stuck); every piece of every body lets go at once when
+## the body can no longer be poisoned: it dies, is being summoned… The slowdown is not written here:
+## for each kind Clinging gives PaceFactors the factor `factor ^ count` under its own source
+## (&"cling_sticky", &"cling_mites"), and PaceFactors writes speed_factor. It is derived from the
+## lists on every change, so a piece that lets go in the same tick as another one is the same as the
+## two one after the other. `shown` is replicated (the unit's MultiplayerSynchronizer,
+## "Clinging:shown"): x = bombs, y = mites, z = frogs. Every peer draws that many of the look scenes
+## at fixed places on the body. Server (or solo) only for stick(); the look runs on every peer.
 
 const STICKY := &"sticky"
 const MITES := &"mites"
-## A frog of Rain of Frogs (×0.6 each): the frog is its own look, a node that rides the body (ZoneDrop attached to it).
+## A frog of Rain of Frogs (×0.6 each): the frog is its own look, a node that rides the body
+## (ZoneDrop attached to it).
 const FROGS := &"frogs"
 const KINDS: Array[StringName] = [STICKY, MITES, FROGS]
 ## The PaceFactors source of each kind.
@@ -32,12 +33,14 @@ const SOURCES := {STICKY: &"cling_sticky", MITES: &"cling_mites", FROGS: &"cling
 @export var mite_look: PackedScene
 ## No more than this many looks of each kind are drawn.
 @export var max_looks := 12
-## Where the pieces sit: a ring at this fraction of the body's reach, climbing over this fraction of its height.
+## Where the pieces sit: a ring at this fraction of the body's reach, climbing over this fraction of
+## its height.
 @export var ring_reach := 0.8
 @export var min_height := 0.45
 @export var height_step := 0.1
 
-## Replicated. x = Sticky bombs, y = Blight mites, z = frogs. The setter is the one place that draws.
+## Replicated. x = Sticky bombs, y = Blight mites, z = frogs. The setter is the one place that
+## draws.
 @export var shown := Vector3i.ZERO:
 	set(value):
 		if value == shown:
@@ -65,8 +68,8 @@ func _ready() -> void:
 	_draw_looks()
 
 
-## Server (or solo). One more piece of `kind` that lets go `ticks` after now, each slowing the body ×`factor`. False when it
-## is not the server or the arguments mean nothing.
+## Server (or solo). One more piece of `kind` that lets go `ticks` after now, each slowing the body
+## ×`factor`. False when it is not the server or the arguments mean nothing.
 func stick(kind: StringName, ticks: int, factor: float) -> bool:
 	if not is_multiplayer_authority() or ticks <= 0 or not KINDS.has(kind):
 		return false
@@ -185,7 +188,8 @@ func _fit(kind: StringName, scene: PackedScene, count: int) -> void:
 	_looks[kind] = list
 
 
-## A fixed place on the body for the piece number `index` of a kind (the golden angle around it, climbing).
+## A fixed place on the body for the piece number `index` of a kind (the golden angle around it,
+## climbing).
 func _place(kind_index: int, index: int) -> Vector3:
 	var reach := 0.35
 	var height := 1.8

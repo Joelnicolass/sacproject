@@ -1,34 +1,44 @@
 class_name Pulling
 extends Affliction
 
-## The user of Web pull and Cage pull while it pulls, and the pull effect that runs beside it. The one owner of the simulation
-## of the pull: the thread, the pulls, the 25-tick window, the extra pull and the end. Pull (the AbilityEffect) only judges
-## the target and calls start(); the target's own states (Stunned, Tumbling) keep what they own and are asked by their API.
+## The user of Web pull and Cage pull while it pulls, and the pull effect that runs beside it. The
+## one owner of the simulation of the pull: the thread, the pulls, the 25-tick window, the extra
+## pull and the end. Pull (the AbilityEffect) only judges the target and calls start(); the target's
+## own states (Stunned, Tumbling) keep what they own and are asked by their API.
 ##
-## One update per tick from the tick after start() (frame 1, 2, …), before the bodies move (process priority −1,
-## like the other effects): nothing is checked while the first 20 ticks last. Then, each tick:
+## One update per tick from the tick after start() (frame 1, 2, …), before the bodies move (process
+## priority −1, like the other effects): nothing is checked while the first 20 ticks last. Then,
+## each tick:
 ##   1. the user must still be pulling and the target a valid body; at a pull tick the target must
-##      still be applicable to the ability (range, mana and cooldown do not count for a ranged ability);
-##   2. thread = target center − (user center + 0.5 · forward); velocity = −pull_speed · thread/|thread|;
-##   3. it ends when it already pulled once, the target's box is within `min_thread` of the user's center and the window ran
-##      out or the thread does not go below −0.5 · min_thread (a pulled body that is not far under the user);
-##   4. a tumbling target that goes away (farther than 1.05 · the smallest radius so far and moving along the thread
-##      faster than 1.5, or backwards faster than 0.2 of its climb) is pulled at once (the extra pull);
-##   5. at a pull tick (the clip's last frame, every `loop_ticks`, or the extra pull): numPulls += 1,
-##      velocity.y += 5 · falling acceleration / 60, Stunned.stun_with_cooldown(stun_s) (only the first one stuns: the
-##      cooldown runs), Tumbling.catapult(velocity), window = pull_s. Else, for the next pull_s (in ticks) − 1 ticks: a
-##      tumbling target takes `velocity` (Tumbling.drive), one on the ground is pushed by velocity / 60 (BodyNudge.push);
-##   6. with max_pulls pulls done it ends at the last tick of the clip loop (frame + 1 >= numFrames · 2).
-## Ending (a thread cut, the target gone, the user stunned or dead…) always goes through _finish(): the break FX at the
-## target, the bit off, and the user is free again (idle).
+##      still be applicable to the ability (range, mana and cooldown do not count for a ranged
+##      ability);
+##   2. thread = target center − (user center + 0.5 · forward); velocity = −pull_speed ·
+##      thread/|thread|;
+##   3. it ends when it already pulled once, the target's box is within `min_thread` of the user's
+##      center and the window ran out or the thread does not go below −0.5 · min_thread (a pulled
+##      body that is not far under the user);
+##   4. a tumbling target that goes away (farther than 1.05 · the smallest radius so far and moving
+##      along the thread faster than 1.5, or backwards faster than 0.2 of its climb) is pulled at
+##      once (the extra pull);
+##   5. at a pull tick (the clip's last frame, every `loop_ticks`, or the extra pull): numPulls +=
+##      1, velocity.y += 5 · falling acceleration / 60, Stunned.stun_with_cooldown(stun_s) (only the
+##      first one stuns: the cooldown runs), Tumbling.catapult(velocity), window = pull_s. Else, for
+##      the next pull_s (in ticks) − 1 ticks: a tumbling target takes `velocity` (Tumbling.drive),
+##      one on the ground is pushed by velocity / 60 (BodyNudge.push);
+##   6. with max_pulls pulls done it ends at the last tick of the clip loop (frame + 1 >= numFrames
+##      · 2).
+## Ending (a thread cut, the target gone, the user stunned or dead…) always goes through _finish():
+## the break FX at the target, the bit off, and the user is free again (idle).
 ##
-## The thread (hilo) is a presentation scene (Pull.thread_scene) played on every peer by FxBus.broadcast_scene once; it
-## follows the two bodies by itself while this state's bit is on.
+## The thread (hilo) is a presentation scene (Pull.thread_scene) played on every peer by
+## FxBus.broadcast_scene once; it follows the two bodies by itself while this state's bit is on.
 ##
-## Rules: a structure or a soul on the way does not become the target; the user does not walk closer or turn to the target; the web / cage around the target is
-## not drawn; the user keeps its idle pose (no shoot clip while it pulls).
+## Rules: a structure or a soul on the way does not become the target; the user does not walk closer
+## or turn to the target; the web / cage around the target is not drawn; the user keeps its idle
+## pose (no shoot clip while it pulls).
 ##
-## Server (or solo) only: the clients get the bit and the positions. The user's own velocity is 0 while it lasts (steer).
+## Server (or solo) only: the clients get the bit and the positions. The user's own velocity is 0
+## while it lasts (steer).
 
 ## No check while the thread flies out.
 const SHOOT_FRAMES := 20
@@ -43,7 +53,8 @@ const LIFT_FACTOR := 5.0
 var _effect: Pull
 var _target: Node3D
 var _fired := 0
-## MatchClock tick at which the user's clip began (the order): its frame is (now − _clip_origin) mod _loop.
+## MatchClock tick at which the user's clip began (the order): its frame is (now − _clip_origin) mod
+## _loop.
 var _clip_origin := 0
 var _loop := 1
 var _next_pull := 0
@@ -64,8 +75,9 @@ func _ready() -> void:
 
 
 ## Server (or solo): starts the pull. `loop_ticks`: the user's clip loop (frames · 2). `pull_frame`:
-## the tick of the clip (counted from the order) at which it pulls, its last frame ((frames − 1) · 2). The first pull falls
-## at the fire tick − effect.windup() + pull_frame. True when it started (it ends a UsingAbility, the type's `cancels`).
+## the tick of the clip (counted from the order) at which it pulls, its last frame ((frames − 1) ·
+## 2). The first pull falls at the fire tick − effect.windup() + pull_frame. True when it started
+## (it ends a UsingAbility, the type's `cancels`).
 func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bool:
 	var body := _body()
 	if (
@@ -181,6 +193,7 @@ func _physics_process(_delta: float) -> void:
 		if DebugLog.on(&"pull"):
 			print(
 				(
+					# gdlint: ignore=max-line-length
 					"pull %d %s → %s v (%.4f, %.4f, %.4f) thread (%.4f, %.4f, %.4f) stuns %s (tick %d)"
 					% [
 						_pulls,
@@ -208,6 +221,7 @@ func _physics_process(_delta: float) -> void:
 	if DebugLog.on(&"pull") and _pulls >= 1:
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"step %s → %s center (%.3f, %.3f, %.3f) thread y %.4f box %.4f window %d action %s (tick %d)"
 				% [
 					AbilityEffect.who(body),
@@ -251,6 +265,7 @@ func _finish(reason: String, box := NAN, thread_y := 0.0) -> void:
 	if DebugLog.on(&"pull"):
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"pull end %s → %s by %s pulls %d box %.4f thread y %.4f window %d bit %d center (%.3f, %.3f, %.3f) (tick %d)"
 				% [
 					AbilityEffect.who(body),
@@ -276,7 +291,8 @@ func _finish(reason: String, box := NAN, thread_y := 0.0) -> void:
 	_effect = null
 
 
-## Presentation: the thread, once, on every peer. It follows the bodies and ends with this state's bit.
+## Presentation: the thread, once, on every peer. It follows the bodies and ends with this state's
+## bit.
 func _throw_thread(body: Node3D) -> void:
 	var scene := _effect.thread_scene
 	if scene == null or not body.is_inside_tree() or not _target.is_inside_tree():
@@ -301,7 +317,8 @@ func _stun() -> bool:
 	return stunned != null and stunned.stun_with_cooldown(MatchClock.ticks_for(_effect.stun_s))
 
 
-## The target's falling acceleration (CreatureStats): its Tumbling's, else the default of a creature.
+## The target's falling acceleration (CreatureStats): its Tumbling's, else the default of a
+## creature.
 static func _fall_acceleration(tumbling: Tumbling) -> float:
 	return tumbling.falling_acceleration if tumbling != null else 9.81
 

@@ -1,16 +1,19 @@
 class_name BiomeLink
 extends Node
 
-## The one owner of the network channel "biome". The server sends each client, once that client's world is ready (a seat that
-## comes back too), the land of the match (the god MatchBiome drew) and the sky's clock and seed (MatchSky.message()); a client
-## turns the text back into a GodType, adopts the sky and hands the god to MatchBiome (`adopt`). It does not draw the god nor
-## apply its look. Offline it only tells MatchBiome that this process has a screen.
+## The one owner of the network channel "biome". The server sends each client, once that client's
+## world is ready (a seat that comes back too), the land of the match (the god MatchBiome drew) and
+## the sky's clock and seed (MatchSky.message()); a client turns the text back into a GodType,
+## adopts the sky and hands the god to MatchBiome (`adopt`). It does not draw the god nor apply its
+## look. Offline it only tells MatchBiome that this process has a screen.
 
 const CHANNEL := &"biome"
 
-## The land of this match (the MatchBiome of the world; it must be ready first: put it above this node).
+## The land of this match (the MatchBiome of the world; it must be ready first: put it above this
+## node).
 @export var biome: MatchBiome
-## The sky clock of the match (Context/Sky): the server reads its message, a client adopts the server's.
+## The sky clock of the match (Context/Sky): the server reads its message, a client adopts the
+## server's.
 @export var sky: MatchSky
 
 

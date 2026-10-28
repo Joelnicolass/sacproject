@@ -1,11 +1,13 @@
 class_name WarmKinds
 extends RefCounted
 
-## What a resource or a saved scene is to the warm-up's walk (WarmCollect): a leaf with nothing to draw under it, a material a 3D
-## mesh can wear, a value that can hold more resources, or a scene safe to instance on the stage (a look: it simulates nothing).
+## What a resource or a saved scene is to the warm-up's walk (WarmCollect): a leaf with nothing to
+## draw under it, a material a 3D mesh can wear, a value that can hold more resources, or a scene
+## safe to instance on the stage (a look: it simulates nothing).
 ## What it does not do: walk, load or keep anything (only the field names of each kind).
 
-## Engine resources with nothing to draw under them: the walk stops there (they are big and hold no mesh or material).
+## Engine resources with nothing to draw under them: the walk stops there (they are big and hold no
+## mesh or material).
 const LEAVES: Array[StringName] = [
 	&"Script",
 	&"Texture",
@@ -21,11 +23,13 @@ const LEAVES: Array[StringName] = [
 	&"Gradient"
 ]
 
-## A kind of resource (its script, or its engine class) -> its fields that can hold resources (`fields_of`).
+## A kind of resource (its script, or its engine class) -> its fields that can hold resources
+## (`fields_of`).
 static var _by_kind: Dictionary = {}
 
 
-## True for the types that can hold a resource (the walk skips numbers, strings, vectors and packed arrays without a call).
+## True for the types that can hold a resource (the walk skips numbers, strings, vectors and packed
+## arrays without a call).
 static func holds(type: int) -> bool:
 	return type == TYPE_OBJECT or type == TYPE_ARRAY or type == TYPE_DICTIONARY
 
@@ -37,9 +41,10 @@ static func is_leaf(resource: Resource) -> bool:
 	return false
 
 
-## The stored properties of `resource`'s kind (its script, else its engine class) that can hold more resources, listed once per
-## kind; null for a leaf. A shader's own parameters are only textures (leaves), so one list serves every ShaderMaterial. A mesh's
-## `_surfaces` is left out: reading it copies every vertex back from the RenderingServer (its materials come from
+## The stored properties of `resource`'s kind (its script, else its engine class) that can hold more
+## resources, listed once per kind; null for a leaf. A shader's own parameters are only textures
+## (leaves), so one list serves every ShaderMaterial. A mesh's `_surfaces` is left out: reading it
+## copies every vertex back from the RenderingServer (its materials come from
 ## `surface_get_material`).
 static func fields_of(resource: Resource) -> Variant:
 	var script := resource.get_script() as Script
@@ -74,8 +79,9 @@ static func is_drawable(resource: Resource) -> bool:
 	)
 
 
-## True when the root of the scene is (or extends) BodyLook or FxScene, or when the scene is only engine geometry (a GeometryInstance3D
-## root and no script anywhere, like a Label3D the code pools): neither simulates anything.
+## True when the root of the scene is (or extends) BodyLook or FxScene, or when the scene is only
+## engine geometry (a GeometryInstance3D root and no script anywhere, like a Label3D the code
+## pools): neither simulates anything.
 static func is_look(state: SceneState) -> bool:
 	var script := _root_script(state)
 	while script != null:

@@ -2,9 +2,10 @@
 class_name PrecipitationFall
 extends Node3D
 
-## Shows what falls from the sky (rain, snow) in the amount it is told: the drops around the camera (`Drops`, a
-## GPUParticles3D under a FollowCamera) and the bed loop (`Bed`), louder the stronger it falls. It never decides when
-## it rains: Weather tells it. Amount 0 = no emitter on and the bed stopped. The editor shows the drops, never the sound.
+## Shows what falls from the sky (rain, snow) in the amount it is told: the drops around the camera
+## (`Drops`, a GPUParticles3D under a FollowCamera) and the bed loop (`Bed`), louder the stronger it
+## falls. It never decides when it rains: Weather tells it. Amount 0 = no emitter on and the bed
+## stopped. The editor shows the drops, never the sound.
 
 const EMITTER := &"weather"
 
@@ -40,8 +41,9 @@ func set_density(scale: float) -> void:
 		_apply(true)
 
 
-## Warm-up: `look` falls at full for one drawn frame, silent, then what fell before falls again. The drops follow the camera and
-## fall with the tree paused too (their FollowCamera always processes), so they are drawn while the start gate waits.
+## Warm-up: `look` falls at full for one drawn frame, silent, then what fell before falls again. The
+## drops follow the camera and fall with the tree paused too (their FollowCamera always processes),
+## so they are drawn while the start gate waits.
 func flash(look: PrecipitationLook) -> void:
 	if drops == null or look == null:
 		return
@@ -64,8 +66,9 @@ func _apply(rebuild: bool) -> void:
 	_play_bed()
 
 
-## The drops take `look`'s motion, mesh and life, and `count` drops (0 = as they are). Set up stopped, then restarted: a running
-## emitter given another material or amount kept no uniform set (the same as LifeSpot).
+## The drops take `look`'s motion, mesh and life, and `count` drops (0 = as they are). Set up
+## stopped, then restarted: a running emitter given another material or amount kept no uniform set
+## (the same as LifeSpot).
 func _fit(look: PrecipitationLook, count: int) -> void:
 	drops.emitting = false
 	drops.process_material = look.process_material

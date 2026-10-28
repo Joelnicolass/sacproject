@@ -3,20 +3,22 @@ class_name MinimapTerrainBake
 extends Node
 
 ## Draws the map's ground seen from straight above, once, into a texture. Own 3D world (no plants,
-## buildings, sky or fog), an orthographic camera over the mesh's bounding box, ambient light only. It draws nothing
-## else and knows nothing of the minimap: `Minimap` reads `texture`, `origin_xz` and `side_m`.
+## buildings, sky or fog), an orthographic camera over the mesh's bounding box, ambient light only.
+## It draws nothing else and knows nothing of the minimap: `Minimap` reads `texture`, `origin_xz`
+## and `side_m`.
 ##
-## Image axes: x = world x, y = world z (top = smallest z), a view from above with +y toward the viewer.
-## `world_to_uv` gives the texture coordinate of a world point.
-## Run alone (F6) it shows the texture. On the dedicated server (headless) it does nothing.
+## Image axes: x = world x, y = world z (top = smallest z), a view from above with +y toward the
+## viewer. `world_to_uv` gives the texture coordinate of a world point. Run alone (F6) it shows the
+## texture. On the dedicated server (headless) it does nothing.
 
 ## The texture is ready (or was drawn again).
 signal baked
 
-## Optional: the map's ground; its mesh is drawn instead of the one in `ground`, on its ground roles and baked light.
+## Optional: the map's ground; its mesh is drawn instead of the one in `ground`, on its ground roles
+## and baked light.
 @export var terrain: Terrain
-## The god whose ground the minimap shows on every map, whatever the match's biome (James's: the land reads the same in every
-## match). Empty = the mesh keeps the material `ground` has.
+## The god whose ground the minimap shows on every map, whatever the match's biome (James's: the
+## land reads the same in every match). Empty = the mesh keeps the material `ground` has.
 @export var look: LookProfile
 @export_group("Parts")
 @export var viewport: SubViewport
@@ -66,14 +68,16 @@ func world_to_uv(point: Vector3) -> Vector2:
 	return (Vector2(point.x, point.z) - origin_xz) / side_m
 
 
-## The terrain is a sibling that readies after this node; draw one frame later so its mesh is in place.
+## The terrain is a sibling that readies after this node; draw one frame later so its mesh is in
+## place.
 func _bake_when_ready() -> void:
 	await get_tree().process_frame
 	await bake()
 
 
-## Editor button: draws the ground again and shows it in `preview`, to see what the minimap will get after changing
-## the terrain mesh or `resolution`. The game bakes by itself at every launch; nothing is saved.
+## Editor button: draws the ground again and shows it in `preview`, to see what the minimap will get
+## after changing the terrain mesh or `resolution`. The game bakes by itself at every launch;
+## nothing is saved.
 @export_tool_button("Rebake minimap", "Reload") var rebake_in_editor := _rebake_in_editor
 
 

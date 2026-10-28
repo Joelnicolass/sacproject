@@ -1,10 +1,12 @@
 class_name VineLook
 extends Node3D
 
-## The vines that hold a body: sixteen skinned tubes (the scene's `vine.glb` instances) rooted at its feet, tip in the upper half of its box.
-## Each follows a spline through four control points; the two middle ones are damped springs that are pushed again when they rest, so the
-## vines never stop twisting. They grow when the state goes on and shrink when it ends. It does not decide when the state is on
-## (Affliction) nor hold the body (Vined). Presentation only, on every peer, from the replicated mask; its shapes use a stream of their own.
+## The vines that hold a body: sixteen skinned tubes (the scene's `vine.glb` instances) rooted at
+## its feet, tip in the upper half of its box. Each follows a spline through four control points;
+## the two middle ones are damped springs that are pushed again when they rest, so the vines never
+## stop twisting. They grow when the state goes on and shrink when it ends. It does not decide when
+## the state is on (Affliction) nor hold the body (Vined). Presentation only, on every peer, from
+## the replicated mask; its shapes use a stream of their own.
 
 ## The state that shows it, and the body whose box it fills.
 @export var affliction: Affliction
@@ -13,7 +15,8 @@ extends Node3D
 @export var material: Material
 @export_range(0.0166, 5.0, 0.0001, "suffix:s") var grow_s := 1.0
 @export_group("Springs")
-## Acceleration of a control point toward its place is this over the vine's scale; the speed halves every `half_life_s` and stops at `max_speed`.
+## Acceleration of a control point toward its place is this over the vine's scale; the speed halves
+## every `half_life_s` and stops at `max_speed`.
 @export var spring := 90.0
 @export var half_life_s := 1.0
 @export var max_speed := 20.0
@@ -127,7 +130,8 @@ func _move(index: int, delta: float) -> void:
 	_pose(_skeletons[index], root, root, points[0], points[1], root.lerp(tip, _length), scale_m)
 
 
-## The bones on the cubic spline root -> two springs -> tip (the tip at `_length` of the way); each bone looks along the curve.
+## The bones on the cubic spline root -> two springs -> tip (the tip at `_length` of the way); each
+## bone looks along the curve.
 func _pose(
 	skeleton: Skeleton3D,
 	root: Vector3,

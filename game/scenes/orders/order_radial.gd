@@ -1,13 +1,15 @@
 class_name OrderRadial
 extends Node
 
-## The one owner of the `order_units` button in the world, and of the keys that open the radial menu.
-## A short tap on `view` is the order of always (`MatchCommand.right_at`). Holding the button still for `layout.hold_s`
-## (0.25 s) opens the radial menu where it was pressed; the entry the pointer is on when it is
-## released runs AT THE PRESS POINT: an order entry gives that order there, a formation entry gives the right click of that point in
-## that formation, in one submit. Releasing in the center cancels. Holding `order_menu` (Tab) the same time opens it at the pointer and releasing it runs the entry. `formation_1`..`formation_8`
-## (Alt+1..8) store a formation of the catalog on the selection without the menu.
-## The menu draws and picks; this node turns an entry into a call to MatchCommand. It knows no order rule.
+## The one owner of the `order_units` button in the world, and of the keys that open the radial
+## menu. A short tap on `view` is the order of always (`MatchCommand.right_at`). Holding the button
+## still for `layout.hold_s` (0.25 s) opens the radial menu where it was pressed; the entry the
+## pointer is on when it is released runs AT THE PRESS POINT: an order entry gives that order there,
+## a formation entry gives the right click of that point in that formation, in one submit. Releasing
+## in the center cancels. Holding `order_menu` (Tab) the same time opens it at the pointer and
+## releasing it runs the entry. `formation_1`..`formation_8` (Alt+1..8) store a formation of the
+## catalog on the selection without the menu. The menu draws and picks; this node turns an entry
+## into a call to MatchCommand. It knows no order rule.
 
 enum Source { NONE, MOUSE, KEY }
 
@@ -44,7 +46,8 @@ func is_open() -> bool:
 	return menu != null and menu.is_open()
 
 
-## Seen before the world and the HUD: the pointer for the menu, and the formation keys (Alt+digit must not also pick a group).
+## Seen before the world and the HUD: the pointer for the menu, and the formation keys (Alt+digit
+## must not also pick a group).
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_pointer = (event as InputEventMouseMotion).position

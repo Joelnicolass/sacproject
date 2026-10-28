@@ -2,12 +2,14 @@
 class_name RadialMenu
 extends Control
 
-## A radial menu (the X menu): two rings of icons around the point where it opened. It shows the entries of its
-## `layout`, says which one the pointer is on (by angle and distance, `RadialLayout.locate`) and emits `entry_chosen` or `cancelled`.
-## It knows no order and no network. Whoever opens it feeds the pointer (`point_at`) and ends it (`confirm` on release, `cancel`).
+## A radial menu (the X menu): two rings of icons around the point where it opened. It shows the
+## entries of its `layout`, says which one the pointer is on (by angle and distance,
+## `RadialLayout.locate`) and emits `entry_chosen` or `cancelled`. It knows no order and no network.
+## Whoever opens it feeds the pointer (`point_at`) and ends it (`confirm` on release, `cancel`).
 ## Everything is laid out in canvas pixels of the 1280×720 base; Godot's stretch scales it.
-## Pieces: `RadialDecor` draws the rings, sector, pointer and center; `RadialRings` holds the icons; `RadialAnimator` opens and
-## closes it. Run alone (F6) the `Standalone` child drives it with the mouse.
+## Pieces: `RadialDecor` draws the rings, sector, pointer and center; `RadialRings` holds the icons;
+## `RadialAnimator` opens and closes it. Run alone (F6) the `Standalone` child drives it with the
+## mouse.
 
 ## The menu opened (open_at). MenuSounds listens.
 signal opened
@@ -66,7 +68,8 @@ func is_open() -> bool:
 	return _open
 
 
-## Opens the menu centered on the screen point `screen` (pixels). `center_icon` replaces the one of the layout's center.
+## Opens the menu centered on the screen point `screen` (pixels). `center_icon` replaces the one of
+## the layout's center.
 func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 	if layout == null:
 		return
@@ -105,7 +108,8 @@ func entry_at(screen: Vector2) -> RadialEntry:
 	return layout.entry_at(screen - _origin) if layout else null
 
 
-## Ends the menu where the pointer is: `entry_chosen` with its entry, or `cancelled` over nothing. Returns the entry.
+## Ends the menu where the pointer is: `entry_chosen` with its entry, or `cancelled` over nothing.
+## Returns the entry.
 func confirm() -> RadialEntry:
 	var chosen := hovered
 	_close()

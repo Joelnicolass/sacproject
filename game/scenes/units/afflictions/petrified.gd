@@ -1,11 +1,11 @@
 class_name Petrified
 extends Affliction
 
-## A creature turned to stone. Petrifying refuses a cc-protected body (a petrified one
-## among them) and one that cannot be immobilized (dying, dead, reviving…); a stunned body
-## is petrified all the same (the type's `cancels`). While it lasts the type's flags say the rest: held, not pushed,
-## a flier falls, every hit ×0.2, refuses crowd control. The pose and the grey belong to
-## Afflictions (its clip_pose and look, from the type's look_tint: one owner for petrified and frozen).
+## A creature turned to stone. Petrifying refuses a cc-protected body (a petrified one among them)
+## and one that cannot be immobilized (dying, dead, reviving…); a stunned body is petrified all the
+## same (the type's `cancels`). While it lasts the type's flags say the rest: held, not pushed, a
+## flier falls, every hit ×0.2, refuses crowd control. The pose and the grey belong to Afflictions
+## (its clip_pose and look, from the type's look_tint: one owner for petrified and frozen).
 ## The end: the stun cooldown is cleared and the stun knocks it down with 4 s of
 ## cooldown (Stunned.knock); 32 rocks burst from its box.
 
@@ -20,7 +20,8 @@ extends Affliction
 ## Simulation ticks it has lived (counted in _physics_process, so a paused tree does not count).
 var _elapsed := 0
 var _lifetime := 0
-## The physics frame it started on: that tick is not one of its updates, whatever the order of processing.
+## The physics frame it started on: that tick is not one of its updates, whatever the order of
+## processing.
 var _start_frame := -1
 
 
@@ -47,9 +48,9 @@ func petrify(lifetime_ticks: int) -> bool:
 	return true
 
 
-## Can it be immobilized (the same answer as petrified and frozen), in this game's terms: not dead, not still
-## summoned, not held by a doctor. Playing dead and Rockform may be petrified. A wizard only alive: dying, dead
-## and every ghost stage say no. Frozen asks here too.
+## Can it be immobilized (the same answer as petrified and frozen), in this game's terms: not dead,
+## not still summoned, not held by a doctor. Playing dead and Rockform may be petrified. A wizard
+## only alive: dying, dead and every ghost stage say no. Frozen asks here too.
 static func can_be_immobilized(body: Node3D) -> bool:
 	var unit := body as UnitBody
 	if unit == null:
@@ -57,8 +58,8 @@ static func can_be_immobilized(body: Node3D) -> bool:
 	return not unit.is_dead() and not unit.is_taken() and unit.mode != UnitBody.Mode.SUMMONING
 
 
-## Server only: _physics_process is on from petrify() until it ends. `if(frame++>=lifetime)` ends it on its
-## update lifetime + 1.
+## Server only: _physics_process is on from petrify() until it ends. `if(frame++>=lifetime)` ends it
+## on its update lifetime + 1.
 func _physics_process(_delta: float) -> void:
 	if not is_on():
 		set_physics_process(false)

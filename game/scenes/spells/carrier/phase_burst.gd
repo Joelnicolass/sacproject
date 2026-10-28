@@ -2,9 +2,10 @@
 class_name PhaseBurst
 extends Node
 
-## Sprite bursts (FxBus types) at the carrier when its SpellCarrier enters a phase: the earth and rocks that fly up where Bovine Intervention's cow
-## comes out of the land. `lift_m` raises the place above the carrier (the cow is born buried). It does not hurt and does not draw by itself (the
-## types do). Server (or solo) only: FxBus carries the burst to every peer.
+## Sprite bursts (FxBus types) at the carrier when its SpellCarrier enters a phase: the earth and
+## rocks that fly up where Bovine Intervention's cow comes out of the land. `lift_m` raises the
+## place above the carrier (the cow is born buried). It does not hurt and does not draw by itself
+## (the types do). Server (or solo) only: FxBus carries the burst to every peer.
 
 @export var carrier: SpellCarrier
 @export var phase := SpellCarrier.Phase.FLYING

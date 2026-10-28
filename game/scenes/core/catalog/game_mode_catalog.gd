@@ -2,8 +2,9 @@
 class_name GameModeCatalog
 extends Resource
 
-## The modes of the game (data/modes/mode_catalog.tres, in the order the screens list them). It only lists and finds; which mode
-## this process plays is ActiveMatch's. A new mode is a `.tres` of GameMode dragged into `modes`.
+## The modes of the game (data/modes/mode_catalog.tres, in the order the screens list them). It only
+## lists and finds; which mode this process plays is ActiveMatch's. A new mode is a `.tres` of
+## GameMode dragged into `modes`.
 
 const PATH := "res://data/modes/mode_catalog.tres"
 const DEFAULT_TAG := &"1v1"
@@ -19,14 +20,15 @@ static func shared() -> GameModeCatalog:
 	return catalog
 
 
-## Seats of the mode with that tag (empty = the default mode); 0 if there is no such mode. Plain ints and bools, for
-## callers that must not name GameMode (autoloads, the room glue).
+## Seats of the mode with that tag (empty = the default mode); 0 if there is no such mode. Plain
+## ints and bools, for callers that must not name GameMode (autoloads, the room glue).
 static func seats_of(tag: StringName) -> int:
 	var mode := shared().find(DEFAULT_TAG if tag == &"" else tag)
 	return mode.seats() if mode != null else 0
 
 
-## Team of `slot` (1-based) in the mode with that tag (empty = default); an unknown mode or slot gives `-slot`, every one for itself.
+## Team of `slot` (1-based) in the mode with that tag (empty = default); an unknown mode or slot
+## gives `-slot`, every one for itself.
 static func team_of_slot(tag: StringName, slot: int) -> int:
 	var mode := shared().find(DEFAULT_TAG if tag == &"" else tag)
 	return mode.team_of(slot) if mode != null else -slot
@@ -37,7 +39,8 @@ static func is_room_mode(tag: StringName) -> bool:
 	return shared().room_tags().has(String(tag))
 
 
-## True when the map has a start for each seat of the mode. Empty tags are the defaults (High Noon, 1v1); an unknown tag is false.
+## True when the map has a start for each seat of the mode. Empty tags are the defaults (High Noon,
+## 1v1); an unknown tag is false.
 static func map_fits_mode(map_tag: StringName, mode_tag: StringName) -> bool:
 	var definition := MapCatalog.shared().find(
 		MapCatalog.DEFAULT_TAG if map_tag == &"" else map_tag
@@ -53,7 +56,8 @@ func find(tag: StringName) -> GameMode:
 	return null
 
 
-## The tags of the maps (of `maps`) that have a start for each seat of `mode`; `only_rooms` leaves out the test maps.
+## The tags of the maps (of `maps`) that have a start for each seat of `mode`; `only_rooms` leaves
+## out the test maps.
 func map_tags_for(mode: GameMode, catalog: MapCatalog, only_rooms := false) -> PackedStringArray:
 	var tags := PackedStringArray()
 	for definition in catalog.maps:

@@ -2,17 +2,20 @@
 class_name BodyRig
 extends Node3D
 
-## A skeletal body: it holds the look the body wears (BodyMount hands it over: the model's scene scenes/bodies/models/<model>.tscn, a
-## BodyModel with the .glb, its library of clips by role and the AnimationTree with one state per ROLE) under %ModelSlot and plays
-## ROLES (idle, run, attack...) through that tree. Which clip a role plays, and how the animations look, is edited in the model's
-## scene in the editor; this node only asks the tree to travel to a role.
-## A look without a model (a hybrid drawn as a static mesh) is held too, and nothing plays.
-## On the dedicated server (headless) nothing is mounted: the rig is inert.
-## Presentation only: the simulation never reads the rig (it reads the same clips through ClipFacts).
+## A skeletal body: it holds the look the body wears (BodyMount hands it over: the model's scene
+## scenes/bodies/models/<model>.tscn, a BodyModel with the .glb, its library of clips by role and
+## the AnimationTree with one state per ROLE) under %ModelSlot and plays ROLES (idle, run,
+## attack...) through that tree. Which clip a role plays, and how the animations look, is edited in
+## the model's scene in the editor; this node only asks the tree to travel to a role. A look without
+## a model (a hybrid drawn as a static mesh) is held too, and nothing plays. On the dedicated server
+## (headless) nothing is mounted: the rig is inert.
+## Presentation only: the simulation never reads the rig (it reads the same clips through
+## ClipFacts).
 
 ## A look with a model was mounted under the rig (its skeleton and sockets exist now).
 signal model_loaded
-## A look was mounted (with or without a model): whoever draws the body can pick its mesh or its skeleton.
+## A look was mounted (with or without a model): whoever draws the body can pick its mesh or its
+## skeleton.
 signal look_mounted(look: BodyLook)
 
 ## Role shown after loading (the editor preview and the starting role).
@@ -29,7 +32,8 @@ var _skeleton: Skeleton3D
 var _fade := 0.0
 var _paused := false
 var _role := ""
-## The hands of the model (BoneAttachment3D named Hand*) and the Marker3D under each: a hand shows only in the clips that have it.
+## The hands of the model (BoneAttachment3D named Hand*) and the Marker3D under each: a hand shows
+## only in the clips that have it.
 var _hands: Array[BoneAttachment3D] = []
 var _sockets: Array[Node3D] = []
 
@@ -46,7 +50,8 @@ func _ready() -> void:
 		_adopt(waiting)
 
 
-## Puts `look` under the rig, in place of the one it had. Safe before the rig is ready: the look waits for it.
+## Puts `look` under the rig, in place of the one it had. Safe before the rig is ready: the look
+## waits for it.
 func mount(look: BodyLook) -> void:
 	if not is_node_ready():
 		if _pending != null:
@@ -103,12 +108,14 @@ func impact_frame() -> int:
 	return _model_root.impact_frame(_role) if _model_root != null and not _role.is_empty() else -1
 
 
-## The node the model scene gives for the sprite effect a creature carries (BodyModel.carried_fx_socket); null without one.
+## The node the model scene gives for the sprite effect a creature carries
+## (BodyModel.carried_fx_socket); null without one.
 func carried_fx_socket() -> Node3D:
 	return _model_root.carried_fx_socket if _model_root != null else null
 
 
-## The node the model scene gives for the tool the body works with (BodyModel.tool_socket); null without one.
+## The node the model scene gives for the tool the body works with (BodyModel.tool_socket); null
+## without one.
 func tool_socket() -> Node3D:
 	return _model_root.tool_socket if _model_root != null else null
 
@@ -121,9 +128,9 @@ func is_loaded() -> bool:
 	return _model_root != null
 
 
-## World positions of the hands the active clip has (where a wizard's casting particles go). A hand shows only in the
-## clips that have it (a `visible` track of the clip), so these are the sockets whose hand is visible now. Empty when the clip has none
-## or the model is not loaded.
+## World positions of the hands the active clip has (where a wizard's casting particles go). A hand
+## shows only in the clips that have it (a `visible` track of the clip), so these are the sockets
+## whose hand is visible now. Empty when the clip has none or the model is not loaded.
 func hand_points() -> PackedVector3Array:
 	var points := PackedVector3Array()
 	for i in _hands.size():
@@ -137,7 +144,8 @@ func model_root() -> BodyModel:
 	return _model_root
 
 
-## The skinned MeshInstance3D nodes of the loaded model (empty before it loads): what StoneLook dresses and set_fade fades.
+## The skinned MeshInstance3D nodes of the loaded model (empty before it loads): what StoneLook
+## dresses and set_fade fades.
 func skinned_meshes() -> Array[MeshInstance3D]:
 	var found: Array[MeshInstance3D] = []
 	if _model_root != null:
@@ -146,8 +154,8 @@ func skinned_meshes() -> Array[MeshInstance3D]:
 	return found
 
 
-## GeometryInstance3D.transparency of the whole body (0 opaque, 1 invisible). It does not inherit, so it goes mesh by mesh;
-## a model that loads later gets it too.
+## GeometryInstance3D.transparency of the whole body (0 opaque, 1 invisible). It does not inherit,
+## so it goes mesh by mesh; a model that loads later gets it too.
 func set_fade(value: float) -> void:
 	_fade = value
 	for mesh in skinned_meshes():
@@ -167,8 +175,9 @@ func set_paused(on: bool) -> void:
 	_model_root.tree().callback_mode_process = mode
 
 
-## Plays `role` through the state machine (travel: it blends with xfade). `restart` starts it again from frame 0.
-## `at` > 0 moves the new clip that many seconds in (a body that shows up when its clip is already running).
+## Plays `role` through the state machine (travel: it blends with xfade). `restart` starts it again
+## from frame 0. `at` > 0 moves the new clip that many seconds in (a body that shows up when its
+## clip is already running).
 func play(role: String, restart := false, at := 0.0) -> void:
 	if _model_root == null:
 		return
@@ -191,9 +200,9 @@ func play(role: String, restart := false, at := 0.0) -> void:
 		tree.advance(at)
 
 
-## Holds the body at `seconds` of `role`'s clip, outside the state machine (comparisons and captures). The skeleton
-## starts from its rest pose first: the glTF importer drops constant tracks equal to the rest, so a bone the clip
-## does not animate would keep the previous clip's pose.
+## Holds the body at `seconds` of `role`'s clip, outside the state machine (comparisons and
+## captures). The skeleton starts from its rest pose first: the glTF importer drops constant tracks
+## equal to the rest, so a bone the clip does not animate would keep the previous clip's pose.
 func pose_at(role: String, seconds: float) -> void:
 	if _model_root == null:
 		return
@@ -207,7 +216,8 @@ func pose_at(role: String, seconds: float) -> void:
 	_role = wanted
 
 
-## Steps the state machine by hand (tests and, later, a body-LOD that updates far bodies less often).
+## Steps the state machine by hand (tests and, later, a body-LOD that updates far bodies less
+## often).
 func advance(delta: float) -> void:
 	if _model_root != null and _model_root.tree().active:
 		_model_root.tree().advance(delta)
@@ -255,7 +265,8 @@ func _clear() -> void:
 	_role = ""
 
 
-## The hands are nodes of the model scene (BoneAttachment3D HandL, HandR... under its skeleton), placed in the editor.
+## The hands are nodes of the model scene (BoneAttachment3D HandL, HandR... under its skeleton),
+## placed in the editor.
 func _collect_hands() -> void:
 	for child in _skeleton.get_children():
 		var hand := child as BoneAttachment3D

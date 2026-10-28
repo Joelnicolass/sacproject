@@ -1,10 +1,11 @@
 class_name LaunchFlags
 extends RefCounted
 
-## Reads the command line of this process into a LaunchPlan: the overrides of the rules (`--level`, `--souls`, `--friendly-fire`,
-## `--drop-soul`, `--match-seed`, `--biome`) and the AI seats of a dedicated (`--ai-slots`, `--ai-god`). The map and the mode
-## (`--map`, `--mode`) are ActiveMatch's. It changes nothing: SacrificeFlow applies the plan it returns.
-## Every flag it takes is told in the log. A bad value is a warning and the rules decide.
+## Reads the command line of this process into a LaunchPlan: the overrides of the rules (`--level`,
+## `--souls`, `--friendly-fire`, `--drop-soul`, `--match-seed`, `--biome`) and the AI seats of a
+## dedicated (`--ai-slots`, `--ai-god`). The map and the mode (`--map`, `--mode`) are ActiveMatch's.
+## It changes nothing: SacrificeFlow applies the plan it returns. Every flag it takes is told in the
+## log. A bad value is a warning and the rules decide.
 ##
 
 
@@ -17,9 +18,9 @@ static func read(ai_seat: AiSeat, seats: int) -> LaunchPlan:
 	return plan
 
 
-## `--ai-slots=2,3,4 [--ai-god=pyro]` on the dedicated. Several slots, each inside the seats of the mode. The humans take the lowest
-## slots, so the AI slots have to be the tail of the seats; `max_players` is the first AI slot - 1 (the seats an AI holds are never
-## admitted to a person).
+## `--ai-slots=2,3,4 [--ai-god=pyro]` on the dedicated. Several slots, each inside the seats of the
+## mode. The humans take the lowest slots, so the AI slots have to be the tail of the seats;
+## `max_players` is the first AI slot - 1 (the seats an AI holds are never admitted to a person).
 static func _read_ai_slots(plan: LaunchPlan, ai_seat: AiSeat) -> void:
 	if not MpBoot.is_dedicated_process():
 		return
@@ -43,6 +44,7 @@ static func _read_ai_slots(plan: LaunchPlan, ai_seat: AiSeat) -> void:
 	if slots.size() != plan.max_players - slots[0] + 1:
 		push_warning(
 			(
+				# gdlint: ignore=max-line-length
 				"--ai-slots=%s: the AI slots should be the tail of the %d seats; the humans take the lowest"
 				% [raw, plan.max_players]
 			)

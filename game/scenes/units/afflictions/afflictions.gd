@@ -2,32 +2,42 @@
 class_name Afflictions
 extends Node3D
 
-## The one owner of «can this creature act?». Its Affliction children are the states (Stunned; later Petrified, Frozen), each with its AfflictionType.
-## The body and the rest ask here, never a child: holds() (no AI, attack, turn or ability), immobilized() (not even pushed), drops_fliers(), damage_factor(),
-## cc_protected() and clip_role(). Who wins between two states is the data's (`AfflictionType.cancels`), not the order of the children.
-## The server (or solo) decides; `shown` (one bit per type) is replicated, so on a client a state is on exactly when
-## its bit is, and the children draw it from there. It is a Node3D (like its children) so the looks under a state follow the body.
+## The one owner of «can this creature act?». Its Affliction children are the states (Stunned; later
+## Petrified, Frozen), each with its AfflictionType. The body and the rest ask here, never a child:
+## holds() (no AI, attack, turn or ability), immobilized() (not even pushed), drops_fliers(),
+## damage_factor(), cc_protected() and clip_role(). Who wins between two states is the data's
+## (`AfflictionType.cancels`), not the order of the children. The server (or solo) decides; `shown`
+## (one bit per type) is replicated, so on a client a state is on exactly when its bit is, and the
+## children draw it from there. It is a Node3D (like its children) so the looks under a state follow
+## the body.
 
-## The state that holds the body started (true) or the last one ended (false), or one that ends its special mode started or ended
-## (a Rockform already held by the oil that is petrified changes `holds()` not at all). Idempotent for the listeners (the body cancels its attacks and closes Rockform). Every peer.
+## The state that holds the body started (true) or the last one ended (false), or one that ends its
+## special mode started or ended (a Rockform already held by the oil that is petrified changes
+## `holds()` not at all). Idempotent for the listeners (the body cancels its attacks and closes
+## Rockform). Every peer.
 signal held_changed(held: bool)
 
-## What a layer of a spell state (SpellAffliction) multiplies in a fight: how long swings and shots take, how well the body hits.
+## What a layer of a spell state (SpellAffliction) multiplies in a fight: how long swings and shots
+## take, how well the body hits.
 enum Stat { ATTACK_TIME, ACCURACY }
 
 @export var body: Node3D
 ## On its death every state ends (a dying creature leaves stunned).
 @export var health: Health
-## The one owner of the frozen pose. While a state that immobilizes is on (petrified, frozen) the clip holds,
-## on every peer from the replicated mask. Optional: empty = no pose to hold.
+## The one owner of the frozen pose. While a state that immobilizes is on (petrified, frozen) the
+## clip holds, on every peer from the replicated mask. Optional: empty = no pose to hold.
 @export var clip_pose: ClipPlayback
-## The one owner of the mesh look. The tint of the state with a look (AfflictionType.has_look) and the highest look_priority
-## among the ones that are on (petrified over frozen); none = off. A ward that turns the skin to stone (Skin of Stone) is plain stone when no state has a look.
-## Every peer, from the mask, so two states that change in the same tick cannot undress each other. Optional: empty = no look.
+## The one owner of the mesh look. The tint of the state with a look (AfflictionType.has_look) and
+## the highest look_priority among the ones that are on (petrified over frozen); none = off. A ward
+## that turns the skin to stone (Skin of Stone) is plain stone when no state has a look. Every peer,
+## from the mask, so two states that change in the same tick cannot undress each other. Optional:
+## empty = no look.
 @export var look: StoneLook
-## The body's wards. While one that counts as a shield is on the body is cc-protected. Optional: empty = a shield does not protect.
+## The body's wards. While one that counts as a shield is on the body is cc-protected. Optional:
+## empty = a shield does not protect.
 @export var wards: Wards
-## The bits of the states that are on (AfflictionType.bit). Replicated by the unit's MultiplayerSynchronizer.
+## The bits of the states that are on (AfflictionType.bit). Replicated by the unit's
+## MultiplayerSynchronizer.
 @export var shown := 0:
 	set(value):
 		if value == shown:
@@ -37,8 +47,9 @@ enum Stat { ATTACK_TIME, ACCURACY }
 		if is_node_ready() and not Engine.is_editor_hint():
 			_show(was)
 
-## The mask as it was before the last change of `shown` (every peer). A state that takes over from another in the same
-## tick reads it (Stunned after a Tumbling that landed lies hit_floor + get_up, not knock + get_up).
+## The mask as it was before the last change of `shown` (every peer). A state that takes over from
+## another in the same tick reads it (Stunned after a Tumbling that landed lies hit_floor + get_up,
+## not knock + get_up).
 var previous := 0
 
 
@@ -61,7 +72,8 @@ static func of(node: Node) -> Afflictions:
 	return null
 
 
-## What `node`'s spell states multiply `stat` by (1 without Afflictions): melee swing and shot time x5 a layer, melee accuracy and evasion x0.2.
+## What `node`'s spell states multiply `stat` by (1 without Afflictions): melee swing and shot time
+## x5 a layer, melee accuracy and evasion x0.2.
 static func stat_factor_of(node: Node, stat: Stat) -> float:
 	var owner_node := of(node)
 	return owner_node.stat_factor(stat) if owner_node else 1.0
@@ -100,7 +112,8 @@ func fixed() -> bool:
 	return immobilized() or pins()
 
 
-## A body that is immobilized (petrified, frozen) or has a state that is on that stops its regeneration (Vined, Rings of Fire, Slime). Health.regenerate asks.
+## A body that is immobilized (petrified, frozen) or has a state that is on that stops its
+## regeneration (Vined, Rings of Fire, Slime). Health.regenerate asks.
 func blocks_regeneration() -> bool:
 	return immobilized() or _any(&"blocks_regeneration")
 
@@ -119,8 +132,8 @@ func breaks_special_modes() -> bool:
 	return _any(&"breaks_special_modes")
 
 
-## Product of the factors of the states that are on (1 with none). Health multiplies every hit by it, on both of its
-## paths (damage and damage_typed): petrified ×0.2, stunned ×1.
+## Product of the factors of the states that are on (1 with none). Health multiplies every hit by
+## it, on both of its paths (damage and damage_typed): petrified ×0.2, stunned ×1.
 func damage_factor() -> float:
 	if shown == 0:
 		return 1.0
@@ -139,7 +152,8 @@ func child_for(type: AfflictionType) -> Affliction:
 	return null
 
 
-## Product of what the states that are on make `stat` (1 with none). Server: the layers are counted there.
+## Product of what the states that are on make `stat` (1 with none). Server: the layers are counted
+## there.
 func stat_factor(stat: Stat) -> float:
 	var factor := 1.0
 	for affliction in _on() if shown != 0 else []:
@@ -163,8 +177,9 @@ func cc_protected() -> bool:
 	return _any(&"cc_protects")
 
 
-## Server: the body's velocity for this tick, as the states that are on say (a Tumbling body flies its ballistic path). With none, `velocity` as it came.
-## The body calls it once per tick, after its own gravity and before BodyAvoidance and move_and_slide.
+## Server: the body's velocity for this tick, as the states that are on say (a Tumbling body flies
+## its ballistic path). With none, `velocity` as it came. The body calls it once per tick, after its
+## own gravity and before BodyAvoidance and move_and_slide.
 func steer(velocity: Vector3, delta: float) -> Vector3:
 	if shown == 0:
 		return velocity
@@ -184,8 +199,9 @@ func clip_role() -> String:
 	return ""
 
 
-## The role `clip_pose` shows while a state says one: that role when the model has its clip, else idle (the Tween of
-## the state draws the rest). "" = no state says one. UnitBody and WizardBody both play this.
+## The role `clip_pose` shows while a state says one: that role when the model has its clip, else
+## idle (the Tween of the state draws the rest). "" = no state says one. UnitBody and WizardBody
+## both play this.
 func pose_role(clip_pose: ClipPlayback) -> String:
 	var role := clip_role()
 	if role.is_empty() or clip_pose == null or clip_pose.has_role(role):
@@ -193,8 +209,10 @@ func pose_role(clip_pose: ClipPlayback) -> String:
 	return "idle"
 
 
-## Server: may `affliction` start? Every state that is on must be one it cancels (so a stunned body refuses a second stun). The ones it cancels end here.
-## A type that `coexists` (Oiled) skips the states that are on, and a state that is on and coexists is skipped by the others (neither direction refuses or cancels).
+## Server: may `affliction` start? Every state that is on must be one it cancels (so a stunned body
+## refuses a second stun). The ones it cancels end here. A type that `coexists` (Oiled) skips the
+## states that are on, and a state that is on and coexists is skipped by the others (neither
+## direction refuses or cancels).
 func admit(affliction: Affliction) -> bool:
 	if affliction.type == null or (body and not body.is_inside_tree()):
 		return false
@@ -216,7 +234,8 @@ func mark(affliction: Affliction, on: bool) -> void:
 	shown = (shown | bit) if on else (shown & ~bit)
 
 
-## Is a state that is on flagged `flag` (a bool of its AfflictionType)? The one loop behind holds(), hides(), pins()...
+## Is a state that is on flagged `flag` (a bool of its AfflictionType)? The one loop behind holds(),
+## hides(), pins()...
 func _any(flag: StringName) -> bool:
 	if shown == 0:
 		return false

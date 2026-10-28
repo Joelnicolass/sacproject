@@ -2,16 +2,20 @@ class_name Flight
 extends Node
 
 ## Take off, fly and land of a hybrid flier (can fly and need not: Blight, Gremlin, Ikarus,
-## Pyrodactyl, Seraph, Dragon, Hellmouth, Silverback, Phoenix). A child of unit.tscn; take it away and every hybrid walks.
-## A creature that must fly (CreatureType.is_flying) or has no fly clip never leaves GROUND here.
+## Pyrodactyl, Seraph, Dragon, Hellmouth, Silverback, Phoenix). A child of unit.tscn; take it away
+## and every hybrid walks. A creature that must fly (CreatureType.is_flying) or has no fly clip
+## never leaves GROUND here.
 ##
-## GROUND   walks. On a walk it takes off when flying gets there first: takeoffTime + d/fly < d/ground
+## GROUND   walks. On a walk it takes off when flying gets there first: takeoffTime + d/fly <
+## d/ground
 ## TAKEOFF  the takeoff clip on the spot, takeoff frames / 30 s.
-## FLYING   straight to the goal at the flying speed, climbing to `flying_height` at takeoffSpeed = flying speed
+## FLYING   straight to the goal at the flying speed, climbing to `flying_height` at takeoffSpeed =
+## flying speed
 ##          Not walking any more: it comes down at landingSpeed = ½ flying speed.
 ## LANDING  touched the ground: the land clip on the spot, then GROUND.
 ## A flier that stops lands.
-## The server (or solo) runs it; `state` is replicated and the body picks its clip and speed from it on every peer.
+## The server (or solo) runs it; `state` is replicated and the body picks its clip and speed from it
+## on every peer.
 
 signal state_changed(state: State)
 
@@ -25,7 +29,8 @@ enum State { GROUND, TAKEOFF, FLYING, LANDING }
 @export var downward_hover_speed := 3.0
 ## landingSpeed = 0.5 · flying speed.
 @export_range(0.0, 1.0) var landing_speed_factor := 0.5
-## While a state holds the body (stunned, petrified) its movement does not change: no takeoff, no landing, and a flier keeps its height.
+## While a state holds the body (stunned, petrified) its movement does not change: no takeoff, no
+## landing, and a flier keeps its height.
 ## Optional: empty = nothing holds it.
 @export var afflictions: Afflictions
 ## Height over the ground at which a flier coming down has touched it.
@@ -68,8 +73,8 @@ func holds_still() -> bool:
 	return state == State.TAKEOFF or state == State.LANDING
 
 
-## Server: a walk of `distance` meters to its goal. True when it goes by air (it already flies or takes off now): the
-## body then goes straight, with no waypoints (the path of a flier is reset).
+## Server: a walk of `distance` meters to its goal. True when it goes by air (it already flies or
+## takes off now): the body then goes straight, with no waypoints (the path of a flier is reset).
 func goes_by_air(distance: float) -> bool:
 	if state == State.FLYING or state == State.TAKEOFF:
 		return true
@@ -85,9 +90,10 @@ func goes_by_air(distance: float) -> bool:
 	return true
 
 
-## Server, once per physics tick before the body moves. `walking`: the body is on its way to a goal. `above`: its height
-## over the ground under its center, `on_floor`: its capsule rests on something (a slope holds it above `above`); both only
-## read while FLYING. Returns the vertical speed of a flier; 0 on the ground.
+## Server, once per physics tick before the body moves. `walking`: the body is on its way to a goal.
+## `above`: its height over the ground under its center, `on_floor`: its capsule rests on something
+## (a slope holds it above `above`); both only read while FLYING. Returns the vertical speed of a
+## flier; 0 on the ground.
 func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float:
 	if is_dropped():
 		return _fall(delta, above, on_floor)
@@ -108,9 +114,9 @@ func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float
 	return 0.0
 
 
-## A state that drops fliers (AfflictionType.drops_fliers: petrified) lets gravity take this flier down while it
-## lasts, a hybrid or one that must fly alike; its state waits. The body
-## then asks advance() for its vertical speed, even one that must fly.
+## A state that drops fliers (AfflictionType.drops_fliers: petrified) lets gravity take this flier
+## down while it lasts, a hybrid or one that must fly alike; its state waits. The body then asks
+## advance() for its vertical speed, even one that must fly.
 func is_dropped() -> bool:
 	# A dead flier falls too: its corpse (and the soul that leaves it) belongs on the ground.
 	if body != null and body.is_dead():

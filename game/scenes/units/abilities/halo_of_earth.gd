@@ -1,38 +1,43 @@
 class_name HaloOfEarth
 extends SpellLaunch
 
-## The Rhinok's Halo of Earth: rocks that orbit it and fly at foes. The effect is added at
-## once and runs from the next tick: while the Rhinok can carry it
-## it makes rocks until there are 6, and when it cannot it blows up the free ones;
-## it ends when every rock it made is gone. This node is that coordinator and simulates the 6 rocks; each rock's body is a
-## RangedShot of the shot container (ShotLook halo_rock: collides off), which only draws it and replicates its position.
-## Server (or solo) only: a client never gets this node (HaloOfEarthAbility adds it on the server). Priority −1: it moves the
-## rocks before the bodies move, like Protector.
+## The Rhinok's Halo of Earth: rocks that orbit it and fly at foes. The effect is added at once and
+## runs from the next tick: while the Rhinok can carry it it makes rocks until there are 6, and when
+## it cannot it blows up the free ones; it ends when every rock it made is gone. This node is that
+## coordinator and simulates the 6 rocks; each rock's body is a RangedShot of the shot container
+## (ShotLook halo_rock: collides off), which only draws it and replicates its position. Server (or
+## solo) only: a client never gets this node (HaloOfEarthAbility adds it on the server). Priority
+## −1: it moves the rocks before the bodies move, like Protector.
 ##
 ## Per rock and tick (an ability is never casting):
-## - free: Hermite interpolation between points of a ball of `orbit_radius` around the center
-##   (the top of the Rhinok's box + `orbit_height`), `orbit_speed` per second; it is born buried inside the Rhinok's box
-##   scaled by `spawn_box_scale`, so it rises into the orbit.
-## - with a target: velocity += acceleration toward the target's center, capped at the SPEL's speed and at 60 · distance;
-##   it blows up on the target when the distance (before the step) is under `arrive_distance`.
-## - then, whatever it does: it blows up on the first live body not of its side its `ShotLook.hit_size` box touches, on the
-##   land from `ground_grace_s` of life, and at `life_s` (the SPEL duration, 35 s) with no target.
+## - free: Hermite interpolation between points of a ball of `orbit_radius` around the center (the
+##   top of the Rhinok's box + `orbit_height`), `orbit_speed` per second; it is born buried inside
+##   the Rhinok's box scaled by `spawn_box_scale`, so it rises into the orbit.
+## - with a target: velocity += acceleration toward the target's center, capped at the SPEL's speed
+##   and at 60 · distance; it blows up on the target when the distance (before the step) is under
+##   `arrive_distance`.
+## - then, whatever it does: it blows up on the first live body not of its side its
+##   `ShotLook.hit_size` box touches, on the land from `ground_grace_s` of life, and at `life_s`
+##   (the SPEL duration, 35 s) with no target.
 ## - free ones look for a target: the closest non-ally creature or wizard within
 ##   effect range (50 m), alive, targetable, in sight, that no other rock chases.
 ## Blowing up = the SPEL's amount as direct spell damage to the body it hit.
 ##
-## The wizard's Halo of Earth (olah) is the same node. LaunchAction makes it when the cast starts (`begin_cast`: the numbers
-## come from the SpellType): the rocks come out staggered while the wizard casts, floor((progress + 0.1) × 6) of them by the share of the
-## casting that has gone, and only orbit until `release` (no target, no hit, no ground, no clock); `abort` blows the free ones up.
+## The wizard's Halo of Earth (olah) is the same node. LaunchAction makes it when the cast starts
+## (`begin_cast`: the numbers come from the SpellType): the rocks come out staggered while the
+## wizard casts, floor((progress + 0.1) × 6) of them by the share of the casting that has gone, and
+## only orbit until `release` (no target, no hit, no ground, no clock); `abort` blows the free ones
+## up.
 ##
-## Rules: the line of sight is a ray to the target's center; an ally is the same slot;
-## the rocks use MatchSeed's stream, not the engine's; the dust trail is always there; no screen shake, no sound, no
-## particles of its own (the look's FxBus types); a rock that blows up does not make the rock after it move twice in the
-## same tick; buildings without Health do not stop a rock.
+## Rules: the line of sight is a ray to the target's center; an ally is the same slot; the rocks use
+## MatchSeed's stream, not the engine's; the dust trail is always there; no screen shake, no sound,
+## no particles of its own (the look's FxBus types); a rock that blows up does not make the rock
+## after it move twice in the same tick; buildings without Health do not stop a rock.
 
 const GROUP := &"halo_of_earth"
 
-## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that adds this node hands it over.
+## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that
+## adds this node hands it over.
 @export var spawner: Node
 ## A rock's look (data/shots/halo_rock.tscn): its mesh, hit box and bursts.
 @export var look: PackedScene
@@ -68,7 +73,8 @@ const GROUP := &"halo_of_earth"
 var user: Node3D
 var ability: AbilityType
 
-## The numbers of the SPEL the rocks use, whatever type holds them (AbilityType of the Rhinok, SpellType of the wizard).
+## The numbers of the SPEL the rocks use, whatever type holds them (AbilityType of the Rhinok,
+## SpellType of the wizard).
 var _damage := 0.0
 var _speed := 0.0
 var _acceleration := 0.0
@@ -123,7 +129,8 @@ func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	name = "Halo%s_%d" % [_who, _born]
 
 
-## The wizard's halo: the cast started. The rocks come out as the casting goes on and wait for `release` to look for targets.
+## The wizard's halo: the cast started. The rocks come out as the casting goes on and wait for
+## `release` to look for targets.
 func begin_cast(
 	caster: Node3D, spell: SpellType, _target: Node3D, _point: Vector3, cast_ticks: int
 ) -> void:
@@ -199,7 +206,8 @@ func _physics_process(_delta: float) -> void:
 		_finish()
 
 
-## How many rocks are out by now: all at once for an ability, floor((progress + 0.1) × rocks) while the wizard casts.
+## How many rocks are out by now: all at once for an ability, floor((progress + 0.1) × rocks) while
+## the wizard casts.
 func _rocks_due() -> int:
 	if _armed:
 		return num_rocks
@@ -447,7 +455,8 @@ func _seek(rock: Rock) -> void:
 			return
 
 
-## A ray from the rock (lifted off the land) to the target's center meets no land or building (layer 1, wizards left out).
+## A ray from the rock (lifted off the land) to the target's center meets no land or building (layer
+## 1, wizards left out).
 func _in_sight(rock: Rock, body: Node3D) -> bool:
 	var from := rock.position
 	from.y = maxf(from.y, BodyNudge.ground_y(user, from) + los_lift)

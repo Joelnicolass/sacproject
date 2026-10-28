@@ -2,10 +2,13 @@
 class_name HoldBody
 extends Node
 
-## While a SpellCarrier waits on its target (CarrierHold) this keeps the target stunned (every time its own stun cooldown allows it) and swells
-## it a little more each tick, from 0 to 1 of `DevourGrowth.inflation`, so the body is at its biggest when the wait ends. Intestinal Vaporization:
-## the carrier's TargetEffect gibs it then. If the wait ends in some other way the body goes back to its size. It does not wait (CarrierHold)
-## and it does not burst the body (GibEffect). Server (or solo) only; every peer draws the swelling from the replicated `inflation`.
+## While a SpellCarrier waits on its target (CarrierHold) this keeps the target stunned (every time
+## its own stun cooldown allows it) and swells it a little more each tick, from 0 to 1 of
+## `DevourGrowth.inflation`, so the body is at its biggest when the wait ends. Intestinal
+## Vaporization: the carrier's TargetEffect gibs it then. If the wait ends in some other way the
+## body goes back to its size. It does not wait (CarrierHold) and it does not burst the body
+## (GibEffect). Server (or solo) only; every peer draws the swelling from the replicated
+## `inflation`.
 
 @export var carrier: SpellCarrier
 ## The stun's own cooldown for the body, in seconds.

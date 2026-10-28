@@ -2,24 +2,28 @@
 class_name WardEmitter
 extends SpriteEmitter
 
-## The sprites of a ward: a SpriteEmitter that follows its Ward (all the time it is on, one burst when it starts or ends, or while its
-## spell is being cast) and draws on the surface or inside of an ellipsoid around the body, so a bigger body gets a bigger shell. The
-## ParticleType says what and how many; this only says where and when. Presentation only, on every peer, from the Ward's replicated
-## `shown` and the wizard's replicated cast particle.
+## The sprites of a ward: a SpriteEmitter that follows its Ward (all the time it is on, one burst
+## when it starts or ends, or while its spell is being cast) and draws on the surface or inside of
+## an ellipsoid around the body, so a bigger body gets a bigger shell. The ParticleType says what
+## and how many; this only says where and when. Presentation only, on every peer, from the Ward's
+## replicated `shown` and the wizard's replicated cast particle.
 
 enum When { WHILE_ON, WHEN_STARTS, WHEN_ENDS, WHILE_CASTING }
 
 const POINTS := 192
 const GOLDEN_ANGLE := 2.399963
-## The rate of a ramp climbs in this many steps (a smaller change would resize the particle pool for nothing).
+## The rate of a ramp climbs in this many steps (a smaller change would resize the particle pool for
+## nothing).
 const RAMP_STEPS := 4.0
 
 @export var ward: Ward
 @export var when := When.WHILE_ON
-## Off: the emitter does nothing (an alternative look left in the scene for whoever wants to try it).
+## Off: the emitter does nothing (an alternative look left in the scene for whoever wants to try
+## it).
 @export var enabled := true
-## Half axes of the ellipsoid in metres, centred on this node (move the node with the gizmo to centre it on the body). With y = 0
-## the sprites are born on a flat ring of that radius (Skin of Stone's ring on the ground).
+## Half axes of the ellipsoid in metres, centred on this node (move the node with the gizmo to
+## centre it on the body). With y = 0 the sprites are born on a flat ring of that radius (Skin of
+## Stone's ring on the ground).
 @export var half_axes_m := Vector3.ONE:
 	set(value):
 		half_axes_m = value
@@ -32,14 +36,18 @@ const RAMP_STEPS := 4.0
 		if is_node_ready():
 			_apply()
 @export_group("Fade")
-## After the ward goes off it keeps emitting this long, so the look thins out instead of being cut (Ethereal Form: 30 ticks).
+## After the ward goes off it keeps emitting this long, so the look thins out instead of being cut
+## (Ethereal Form: 30 ticks).
 @export_range(0.0, 5.0, 0.05, "suffix:s") var linger_s := 0.0
 @export_group("Casting")
-## WHILE_CASTING: the rate climbs from nothing to the type's over the casting time (Fireform's flames grow while it is cast).
+## WHILE_CASTING: the rate climbs from nothing to the type's over the casting time (Fireform's
+## flames grow while it is cast).
 @export var ramp := false
-## WHILE_CASTING: the ellipsoid closes to this fraction of its axes over the casting time (Skin of Stone's ring of dirt). 1 = it stays.
+## WHILE_CASTING: the ellipsoid closes to this fraction of its axes over the casting time (Skin of
+## Stone's ring of dirt). 1 = it stays.
 @export_range(0.0, 1.0, 0.05) var shrink_to := 1.0
-## Sprites are pulled toward the centre of the ellipsoid at this m/s² (Air Shield's sparks converge on the wizard). 0 = no pull.
+## Sprites are pulled toward the centre of the ellipsoid at this m/s² (Air Shield's sparks converge
+## on the wizard). 0 = no pull.
 @export_range(0.0, 100.0, 0.5, "suffix:m/s²") var pull_m_s2 := 0.0
 
 var _cast_tween: Tween
@@ -102,7 +110,8 @@ func _cast_progress(t: float) -> void:
 		_set_points(half_axes_m.lerp(half_axes_m * shrink_to, t))
 
 
-## The sprites are born at the points of the ellipsoid (a Fibonacci spiral: the same on every peer, with no random draw).
+## The sprites are born at the points of the ellipsoid (a Fibonacci spiral: the same on every peer,
+## with no random draw).
 func _apply() -> void:
 	super()
 	if type == null:
@@ -112,7 +121,8 @@ func _apply() -> void:
 	radial_accel_max = -pull_m_s2
 
 
-## Only the emission points: cheap enough to run every frame while the ellipsoid closes (it never restarts the particles).
+## Only the emission points: cheap enough to run every frame while the ellipsoid closes (it never
+## restarts the particles).
 func _set_points(axes: Vector3) -> void:
 	var points := PackedVector3Array()
 	for i in POINTS:

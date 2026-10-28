@@ -1,11 +1,13 @@
 class_name ModelPaths
 extends Resource
 
-## Where the files of each skeletal model of scenes/bodies/models/ are, for the bake tools and the audits: the model tag
-## (the id that travels on the wire, "eorc") -> the stem of its files ("trogg_model": trogg_model.tscn, trogg_model_clips.tres,
-## trogg_model_clips/). A tag that is not listed is its own stem (a custom model keeps the name of its .glb).
-## Not for the game: a look scene holds its model as a PackedScene and a type holds its clips as an AnimationLibrary, so nothing
-## of scenes/ looks a model up by tag. The table (model_paths.tres) is written by tools/migrate/rename_body_models.py, never by hand.
+## Where the files of each skeletal model of scenes/bodies/models/ are, for the bake tools and the
+## audits: the model tag (the id that travels on the wire, "eorc") -> the stem of its files
+## ("trogg_model": trogg_model.tscn, trogg_model_clips.tres, trogg_model_clips/). A tag that is not
+## listed is its own stem (a custom model keeps the name of its .glb).
+## Not for the game: a look scene holds its model as a PackedScene and a type holds its clips as an
+## AnimationLibrary, so nothing of scenes/ looks a model up by tag. The table (model_paths.tres) is
+## written by tools/migrate/rename_body_models.py, never by hand.
 
 const SCENE_DIR := "res://scenes/bodies/models/"
 const TABLE_PATH := "res://tools/bake/model_paths.tres"

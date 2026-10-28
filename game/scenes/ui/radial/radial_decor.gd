@@ -2,10 +2,11 @@
 class_name RadialDecor
 extends Control
 
-## What a radial menu draws behind its icons: the rings, the sector the pointer is in, a line toward the pointer
-## and, in the dead zone, the hovered name (and the shape of a formation in dots). It is the only owner of the pointer state it
-## draws (`set_hover`); the menu only feeds it. The name is drawn with `draw_string`, not a Label: the HUD text audit
-## counts Controls with text. Canvas pixels of the 1280×720 base.
+## What a radial menu draws behind its icons: the rings, the sector the pointer is in, a line toward
+## the pointer and, in the dead zone, the hovered name (and the shape of a formation in dots). It is
+## the only owner of the pointer state it draws (`set_hover`); the menu only feeds it. The name is
+## drawn with `draw_string`, not a Label: the HUD text audit counts Controls with text. Canvas
+## pixels of the 1280×720 base.
 
 @export_group("Look")
 @export var backdrop_color := Color(0.03, 0.03, 0.06, 0.5)
@@ -65,8 +66,8 @@ func set_active(active: bool) -> void:
 	queue_redraw()
 
 
-## `spot`: where the pointer is (`RadialLayout.locate`); `offset`: from the menu center; `entry`: what is under it.
-## `restart`: the entry changed, so the sector fades in again.
+## `spot`: where the pointer is (`RadialLayout.locate`); `offset`: from the menu center; `entry`:
+## what is under it. `restart`: the entry changed, so the sector fades in again.
 func set_hover(spot: Vector2i, offset: Vector2, entry: RadialEntry, restart: bool) -> void:
 	_spot = spot
 	_offset = offset
@@ -129,7 +130,8 @@ func _draw_pointer(middle: Vector2) -> void:
 	draw_circle(tip, 3.0, pointer_color)
 
 
-## The hovered name (and the shape of a formation) in the dead zone; the context picture when nothing is hovered.
+## The hovered name (and the shape of a formation) in the dead zone; the context picture when
+## nothing is hovered.
 func _draw_center(middle: Vector2) -> void:
 	center_rect.visible = true
 	var dead := layout.dead_zone_px

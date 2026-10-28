@@ -1,11 +1,11 @@
 class_name DeathCloud
 extends Node3D
 
-## The cloud a creature leaves when it dies: a
-## SteamCloud / PoisonCloud / HealingShower effect that acts once, on its first update, and is gone;
-## what lasts is on the bodies it touched (a Poisoned dose, a HealEffect). So does this node: burst() acts
-## on the bodies around the dead one's center, plays its puff through FxBus (clients see it there) and frees itself.
-## Server (or solo) only. The variants override _affect(); the numbers come from the SPEL of `ability`.
+## The cloud a creature leaves when it dies: a SteamCloud / PoisonCloud / HealingShower effect that
+## acts once, on its first update, and is gone; what lasts is on the bodies it touched (a Poisoned
+## dose, a HealEffect). So does this node: burst() acts on the bodies around the dead one's center,
+## plays its puff through FxBus (clients see it there) and frees itself. Server (or solo) only. The
+## variants override _affect(); the numbers come from the SPEL of `ability`.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
@@ -42,6 +42,7 @@ func _affect(_center: Vector3) -> void:
 	pass
 
 
-## Live creatures and wizards whose hit box is within `radius` of `center`, but the dead one (SplashDamage owns the walk).
+## Live creatures and wizards whose hit box is within `radius` of `center`, but the dead one
+## (SplashDamage owns the walk).
 func bodies_within(center: Vector3, radius: float) -> Array[Node3D]:
 	return _SPLASH.bodies_within(get_tree(), center, radius, dead, GROUPS)

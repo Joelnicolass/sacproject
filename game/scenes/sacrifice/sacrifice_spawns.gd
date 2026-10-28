@@ -2,10 +2,12 @@
 class_name SacrificeSpawns
 extends Node
 
-## Builds and replicates what the sacrifice puts in the world: the doctors, the red vortices and the rituals. Each has its
-## MultiplayerSpawner and its root (they stay where the network paths expect them) and one counter that names its nodes
-## (Doctor%d, Vortex%d, Ritual%d). The server (or solo) spawns; clients only receive through the spawners.
-## What it does not do: decide where or when something spawns (SacrificeCasts and RitualStarter do) or hold the rules.
+## Builds and replicates what the sacrifice puts in the world: the doctors, the red vortices and the
+## rituals. Each has its MultiplayerSpawner and its root (they stay where the network paths expect
+## them) and one counter that names its nodes (Doctor%d, Vortex%d, Ritual%d). The server (or solo)
+## spawns; clients only receive through the spawners.
+## What it does not do: decide where or when something spawns (SacrificeCasts and RitualStarter do)
+## or hold the rules.
 
 const CARRIER := preload("res://scenes/sacrifice/carrier_doctor.tscn")
 const RITUAL_DOCTOR := preload("res://scenes/sacrifice/ritual_doctor.tscn")
@@ -53,7 +55,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-## Does this peer run the simulation (solo, or the server of a networked match)? The sacrifice asks here instead of the network kit.
+## Does this peer run the simulation (solo, or the server of a networked match)? The sacrifice asks
+## here instead of the network kit.
 func simulates() -> bool:
 	return not MpKit.is_networked() or MpKit.is_server()
 
@@ -123,7 +126,8 @@ func _make_ritual(data: Variant) -> Node:
 	ritual.target_slot = int(info.get("target", 0))
 	ritual.creature_path = NodePath(str(info.get("creature", "")))
 	ritual.rules = system.active_rules()
-	# The ritual asks its system what a finished Convert announces. set() until the ritual declares `system`.
+	# The ritual asks its system what a finished Convert announces. set() until the ritual declares
+	# `system`.
 	ritual.set(&"system", system)
 	return ritual
 

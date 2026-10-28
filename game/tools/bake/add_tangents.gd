@@ -1,15 +1,20 @@
 extends SceneTree
 
-## Does not need the original game: it works on the meshes already saved in the project.
-## Gives tangents to the saved meshes (.res) whose surfaces lack them, so a normal map on their material draws right.
-## One-shot: run it once when rules_suite `surface_refs_cases` reports `no_tangents` > 0, then commit the rewritten .res files.
+## Does not need the original game: it works on the meshes already saved in the project. Gives
+## tangents to the saved meshes (.res) whose surfaces lack them, so a normal map on their material
+## draws right.
+## One-shot: run it once when rules_suite `surface_refs_cases` reports `no_tangents` > 0, then
+## commit the rewritten .res files.
 ##
-##   Godot --path . --script res://tools/bake/add_tangents.gd                       # scenes/props/meshes and scenes/bodies/meshes
-##   Godot --path . --script res://tools/bake/add_tangents.gd -- res://scenes/props/meshes/casp.res --dry
+##   Godot --path . --script res://tools/bake/add_tangents.gd                       #
+##   scenes/props/meshes and scenes/bodies/meshes
+##   Godot --path . --script res://tools/bake/add_tangents.gd -- res://scenes/props/meshes/casp.res
+##   --dry
 ##
-## Each surface is rebuilt with SurfaceTool.generate_tangents(); its material, name, primitive and the mesh's custom AABB stay
-## (the mesh is rewritten in place, so its uid and every reference to it stay too). A surface that already has tangents is left
-## alone. A mesh with blend shapes is skipped (it says so). `--dry` only lists what it would change.
+## Each surface is rebuilt with SurfaceTool.generate_tangents(); its material, name, primitive and
+## the mesh's custom AABB stay (the mesh is rewritten in place, so its uid and every reference to it
+## stay too). A surface that already has tangents is left alone. A mesh with blend shapes is skipped
+## (it says so). `--dry` only lists what it would change.
 ## Not: the animated models (.glb): their import already has meshes/ensure_tangents=true.
 
 const DEFAULT_DIRS: PackedStringArray = [

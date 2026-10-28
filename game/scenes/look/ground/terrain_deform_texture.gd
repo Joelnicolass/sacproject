@@ -2,12 +2,14 @@
 class_name TerrainDeformTexture
 extends LookLayer
 
-## Hands the ground shader how far the land has moved, two floats per 10 m vertex (how high, and 1 where a vertex was taken
-## away), in two textures: the whole map (`terrain_deform_map`, 256x256), sent again only when what stays or the holes
-## change, and a small one (`terrain_live_map`) over the rect `terrain_live_rect` where stamps are playing, sent every frame
-## they move. Inside that rect the shader reads the small one. The mesh of the map is never rebuilt: the shader moves its
-## vertices. The first change also turns `terrain_deform_on` on, so a match that never deforms the ground pays nothing. It
-## does not decide how the ground moves (Terrain). Presentation only: the rig is freed in a dedicated or headless process.
+## Hands the ground shader how far the land has moved, two floats per 10 m vertex (how high, and 1
+## where a vertex was taken away), in two textures: the whole map (`terrain_deform_map`, 256x256),
+## sent again only when what stays or the holes change, and a small one (`terrain_live_map`) over
+## the rect `terrain_live_rect` where stamps are playing, sent every frame they move. Inside that
+## rect the shader reads the small one. The mesh of the map is never rebuilt: the shader moves its
+## vertices. The first change also turns `terrain_deform_on` on, so a match that never deforms the
+## ground pays nothing. It does not decide how the ground moves (Terrain). Presentation only: the
+## rig is freed in a dedicated or headless process.
 
 const MAP := &"terrain_deform_map"
 const LIVE_MAP := &"terrain_live_map"
@@ -26,15 +28,19 @@ var _shape: Terrain
 var _map_image: Image
 var _map: ImageTexture
 var _live_image: Image
-var _strip := Image.create_empty(1, 1, false, Image.FORMAT_RGF)  ## the whole rows the live rect spans
+## the whole rows the live rect spans
+var _strip := Image.create_empty(1, 1, false, Image.FORMAT_RGF)
 var _live: ImageTexture
-## The vertices the small texture covers: every stamp that played since none was playing. Empty = none plays.
+## The vertices the small texture covers: every stamp that played since none was playing. Empty =
+## none plays.
 var _live_rect := Rect2i()
-## (rev, holes version) of the field at the last change seen: a change that moves it is one of what stays.
+## (rev, holes version) of the field at the last change seen: a change that moves it is one of what
+## stays.
 var _settled := Vector2i(-1, -1)
 var _map_dirty := false
 var _live_dirty := false
-## The map was sent while a stamp was playing, so it holds that shift: it goes again when the last stamp is over.
+## The map was sent while a stamp was playing, so it holds that shift: it goes again when the last
+## stamp is over.
 var _map_has_live := false
 var _shown_rect := Rect2i()
 var _on := false
@@ -118,8 +124,9 @@ func _upload() -> void:
 		RenderingServer.global_shader_parameter_set(ON, 1.0)
 
 
-## Copies `_live_rect` out of the field into the small texture (or empties the rect when no stamp plays). The whole rows it
-## spans go over in one slice and the rect is cut out natively: a slice per row costs three times as much in GDScript.
+## Copies `_live_rect` out of the field into the small texture (or empties the rect when no stamp
+## plays). The whole rows it spans go over in one slice and the rect is cut out natively: a slice
+## per row costs three times as much in GDScript.
 func _upload_live(field: GroundField) -> void:
 	var rect := _live_rect
 	if rect.has_area():

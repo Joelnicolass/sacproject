@@ -1,20 +1,24 @@
 extends SceneTree
 
-## Builds the derived HUD sheets the Theme draws (data/ui/theme.tres, variations `Hud*`) from the sheets that are already in git
-## (assets/original/ui/hud/fram.png and the six stat_*_{top,mid,bottom}.png), so the HUD frames and bars are whole images a
-## StyleBoxTexture can draw without code. It does NOT need the original game; without that folder it only warns.
+## Builds the derived HUD sheets the Theme draws (data/ui/theme.tres, variations `Hud*`) from the
+## sheets that are already in git (assets/original/ui/hud/fram.png and the six
+## stat_*_{top,mid,bottom}.png), so the HUD frames and bars are whole images a StyleBoxTexture can
+## draw without code. It does NOT need the original game; without that folder it only warns.
 ##
 ##   Godot --headless --path . --script res://tools/bake/hud_sheets.gd
 ##
-## Writes next to the sources: stats_frame, soul_frame, roster_frame, minimap_frame, book_cap, stat_mana_bar, stat_health_bar,
-## health_strip (.png) and fn10.fnt (the soul-count font: each glyph is as wide as its ink, as in the original).
-## Every step is a copy, a flip, a quarter turn or a nearest-row pick, so the result is the same in any tool that follows these steps.
+## Writes next to the sources: stats_frame, soul_frame, roster_frame, minimap_frame, book_cap,
+## stat_mana_bar, stat_health_bar, health_strip (.png) and fn10.fnt (the soul-count font: each glyph
+## is as wide as its ink, as in the original). Every step is a copy, a flip, a quarter turn or a
+## nearest-row pick, so the result is the same in any tool that follows these steps.
 
 const DIR := "res://assets/original/ui/hud/"
-## A bar's end caps are drawn ×1.2 (the HUD is laid out in 1280×720 canvas pixels, the original at 600): 4 → 5 and 6 → 7 rows.
+## A bar's end caps are drawn ×1.2 (the HUD is laid out in 1280×720 canvas pixels, the original at
+## 600): 4 → 5 and 6 → 7 rows.
 const CAP_TOP_ROWS := 5
 const CAP_BOTTOM_ROWS := 7
-## The horizontal health strip of the target box is 16.8 px thick: its caps are 3 and 2 columns long (6 and 4 at 32 thick).
+## The horizontal health strip of the target box is 16.8 px thick: its caps are 3 and 2 columns long
+## (6 and 4 at 32 thick).
 const STRIP_CAP_BOTTOM := 3
 const STRIP_CAP_TOP := 2
 const GLYPH_GRID := 16
@@ -27,6 +31,7 @@ func _initialize() -> void:
 	if not FileAccess.file_exists(folder + "fram.png"):
 		push_warning(
 			(
+				# gdlint: ignore=max-line-length
 				"hud_sheets: %s has no fram.png; nothing written (the sheets in git are used as they are)."
 				% folder
 			)
@@ -56,7 +61,8 @@ func _initialize() -> void:
 	for stat in ["mana", "health"]:
 		var stack := _stack(folder, "stat_" + stat, CAP_TOP_ROWS, CAP_BOTTOM_ROWS)
 		_save(stack, folder, "stat_%s_bar" % stat)
-	# The strip lies down: its last row (the bottom cap) is the bar's left end, a clockwise quarter turn.
+	# The strip lies down: its last row (the bottom cap) is the bar's left end, a clockwise quarter
+	# turn.
 	var strip := _stack(folder, "stat_health", STRIP_CAP_TOP, STRIP_CAP_BOTTOM)
 	strip.rotate_90(CLOCKWISE)
 	_save(strip, folder, "health_strip")
@@ -88,7 +94,8 @@ func _vertical_pair(top: Image, bottom: Image) -> Image:
 	return out
 
 
-## The left half of `fram` mirrored left-right, then the same row mirrored top-bottom: the whole selection frame.
+## The left half of `fram` mirrored left-right, then the same row mirrored top-bottom: the whole
+## selection frame.
 func _roster(half: Image) -> Image:
 	var side := half.get_width()
 	var row := Image.create_empty(side * 2, half.get_height(), false, Image.FORMAT_RGBA8)
@@ -117,8 +124,9 @@ func _quarters(quarter: Image) -> Image:
 	return out
 
 
-## `<name>_top`, `<name>_mid` and `<name>_bottom` stacked in that order, the caps shortened or lengthened to the given rows by
-## picking the nearest source row (no blending, so the result is exact).
+## `<name>_top`, `<name>_mid` and `<name>_bottom` stacked in that order, the caps shortened or
+## lengthened to the given rows by picking the nearest source row (no blending, so the result is
+## exact).
 func _stack(folder: String, sheet: String, top_rows: int, bottom_rows: int) -> Image:
 	var top := _rows(_load(folder, sheet + "_top"), top_rows)
 	var mid := _load(folder, sheet + "_mid")
@@ -143,7 +151,8 @@ func _rows(source: Image, rows: int) -> Image:
 	return out
 
 
-## A BMFont text file for the 16×16 glyph sheet: each glyph is as wide as its rightmost inked column + 1 and advances one more.
+## A BMFont text file for the 16×16 glyph sheet: each glyph is as wide as its rightmost inked column
+## + 1 and advances one more.
 func _write_font(sheet: Image, path: String) -> void:
 	var cell := sheet.get_width() / GLYPH_GRID
 	var lines := PackedStringArray()
@@ -151,6 +160,7 @@ func _write_font(sheet: Image, path: String) -> void:
 		lines
 		. append(
 			(
+				# gdlint: ignore=max-line-length
 				'info face="fn10" size=%d bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=0,0'
 				% LINE_HEIGHT
 			)
@@ -171,6 +181,7 @@ func _write_font(sheet: Image, path: String) -> void:
 			lines
 			. append(
 				(
+					# gdlint: ignore=max-line-length
 					"char id=%d x=%d y=%d width=%d height=%d xoffset=0 yoffset=0 xadvance=%d page=0 chnl=15"
 					% [code, origin.x, origin.y, width, cell, width + 1]
 				)

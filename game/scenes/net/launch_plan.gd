@@ -1,9 +1,10 @@
 class_name LaunchPlan
 extends RefCounted
 
-## What a process starts a match with, read from its command line (LaunchFlags) or from the ticket of a room (TicketPlan): the
-## setup over the rules, the AI seats, the picks already known, how many humans fit and whether the world waits for picks.
-## It is plain data. SacrificeFlow applies it; nothing here touches the flow, the network or the tree.
+## What a process starts a match with, read from its command line (LaunchFlags) or from the ticket
+## of a room (TicketPlan): the setup over the rules, the AI seats, the picks already known, how many
+## humans fit and whether the world waits for picks. It is plain data. SacrificeFlow applies it;
+## nothing here touches the flow, the network or the tree.
 
 ## The overrides of the rules (level, souls, friendly fire, seed, land, map and mode).
 var setup := MatchSetup.new()

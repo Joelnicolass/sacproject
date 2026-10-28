@@ -2,9 +2,10 @@
 class_name AtlasSprite
 extends MeshInstance3D
 
-## One sprite of an atlas that faces the camera: a quad whose material (atlas_sprite_add or _mix) shows the cell `frame`. It cycles its
-## cells by itself when `fps` says so; otherwise whoever animates it sets `frame`. It does not move or hurt. Its size is the quad's size
-## times the node's scale. A headless or dedicated process draws nothing.
+## One sprite of an atlas that faces the camera: a quad whose material (atlas_sprite_add or _mix)
+## shows the cell `frame`. It cycles its cells by itself when `fps` says so; otherwise whoever
+## animates it sets `frame`. It does not move or hurt. Its size is the quad's size times the node's
+## scale. A headless or dedicated process draws nothing.
 
 ## The cell shown (left to right, then down).
 @export var frame := 0:

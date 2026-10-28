@@ -1,9 +1,10 @@
 class_name IceShatter
 extends FxScene
 
-## One step of the breaking of Frozen Ground's ice, played on every peer by FxBus.broadcast_scene: a burst of shards that rise from the
-## ring of ground that broke, between the radius `inner` and the radius `outer` around this node (its sound is the one of this scene's name
-## in the sound table). Presentation only; it frees itself. It hurts nobody (ZoneShatter).
+## One step of the breaking of Frozen Ground's ice, played on every peer by FxBus.broadcast_scene: a
+## burst of shards that rise from the ring of ground that broke, between the radius `inner` and the
+## radius `outer` around this node (its sound is the one of this scene's name in the sound table).
+## Presentation only; it frees itself. It hurts nobody (ZoneShatter).
 
 @export var shards: SpriteEmitter
 @export_range(0.5, 10.0, 0.5, "suffix:s") var life_s := 3.0

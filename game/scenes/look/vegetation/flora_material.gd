@@ -1,13 +1,14 @@
 class_name FloraMaterial
 extends RefCounted
 
-## The material a flora MultiMesh draws with. The mesh's own material is a saved file shared by every plant, so it is never touched:
-## a copy multiplies its albedo by the instance color (`vertex_color_use_as_albedo`, MultiMesh.use_colors) and, when
-## `fade_m` > 0, dithers out between end - fade and end (camera distance). Presentation only.
+## The material a flora MultiMesh draws with. The mesh's own material is a saved file shared by
+## every plant, so it is never touched: a copy multiplies its albedo by the instance color
+## (`vertex_color_use_as_albedo`, MultiMesh.use_colors) and, when `fade_m` > 0, dithers out between
+## end - fade and end (camera distance). Presentation only.
 
 
-## A copy of the mesh's only material for the whole MultiMesh. Null for a mesh with several surfaces (use `mesh_for`) or a
-## material that is not a BaseMaterial3D.
+## A copy of the mesh's only material for the whole MultiMesh. Null for a mesh with several surfaces
+## (use `mesh_for`) or a material that is not a BaseMaterial3D.
 static func for_mesh(mesh: Mesh, end_m: float, fade_m: float) -> Material:
 	if mesh == null or mesh.get_surface_count() != 1:
 		return null
@@ -24,8 +25,8 @@ static func for_mesh(mesh: Mesh, end_m: float, fade_m: float) -> Material:
 	return copy
 
 
-## The mesh to draw: itself when `for_mesh` covers it; for several surfaces a copy whose materials take the instance color
-## (no distance fade: the node's visibility range still ends it).
+## The mesh to draw: itself when `for_mesh` covers it; for several surfaces a copy whose materials
+## take the instance color (no distance fade: the node's visibility range still ends it).
 static func mesh_for(mesh: Mesh) -> Mesh:
 	if mesh == null or mesh.get_surface_count() == 1:
 		return mesh

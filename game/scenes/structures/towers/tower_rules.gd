@@ -1,17 +1,20 @@
 class_name TowerRules
 extends RefCounted
 
-## Where a tower can go: the closest manafount (free, or any) and whether a building stands on its BuildArea. Pure questions over the
-## tree: they change nothing. Creatures and wizards never block a tower: the cast pushes them out (BuildArea.push_bodies).
-## Who casts and what appears is StructureAction and StructureSpawner.
+## Where a tower can go: the closest manafount (free, or any) and whether a building stands on its
+## BuildArea. Pure questions over the tree: they change nothing. Creatures and wizards never block a
+## tower: the cast pushes them out (BuildArea.push_bodies). Who casts and what appears is
+## StructureAction and StructureSpawner.
 
 ## Bodies a tower cannot be dropped on.
 const BLOCKERS: Array[StringName] = [MapBuilding.STRUCTURE_GROUP]
-## Metres of free ground kept around the tower's footprint (where clear_footprint leaves the bodies it moves out).
+## Metres of free ground kept around the tower's footprint (where clear_footprint leaves the bodies
+## it moves out).
 const MARGIN_M := 2.0
 
 
-## The fount closest to `point` within `max_distance` (only the free ones with `free_only`), or null.
+## The fount closest to `point` within `max_distance` (only the free ones with `free_only`), or
+## null.
 static func closest_fount(
 	tree: SceneTree, point: Vector3, max_distance: float, free_only := true
 ) -> ManafountBody:
@@ -28,7 +31,8 @@ static func closest_fount(
 	return best
 
 
-## True when no building stands within the radius of `area` (flat distance from its middle). No area: true.
+## True when no building stands within the radius of `area` (flat distance from its middle). No
+## area: true.
 static func has_room(tree: SceneTree, area: BuildArea) -> bool:
 	if area == null:
 		return true

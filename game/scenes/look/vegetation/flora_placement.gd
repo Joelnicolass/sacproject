@@ -3,14 +3,16 @@ extends RefCounted
 
 ## Where the plants of one cell stand. Pure functions of (seed, tag, cell, count): no randi(), no
 ## global RNG, no match RNG, so the editor, every client and every run plant the same thing.
-## - `instance_count`: n = round_stochastic(count x density_scale), the rounding decided by the cell's hash, so a cell
-##   never differs from count x scale by 1 or more.
-## - `cell_instances`: instance i of a cell has its offset, yaw and scale from the hash of (seed, tag, tx, tz, i).
-##   The offsets are stratified by the index: the base-4 digits of i, lowest first, pick nested quadrants of the cell
-##   (each level's choice shuffled by a hash of the path so far, Owen scrambling), plus a hashed jitter inside the
-##   smallest box. So instances 0-3 fall in the four quadrants, 0-15 in the sixteen sub-quadrants, and so on: any prefix
-##   is an even sample of the cell, which is what lets the LOD draw a prefix (`visible_instance_count`).
-## Integers are kept to 32 bits with `MASK`; `_mul32` splits the product so it never overflows 64 bits.
+## - `instance_count`: n = round_stochastic(count x density_scale), the rounding decided by the
+##   cell's hash, so a cell never differs from count x scale by 1 or more.
+## - `cell_instances`: instance i of a cell has its offset, yaw and scale from the hash of (seed,
+##   tag, tx, tz, i). The offsets are stratified by the index: the base-4 digits of i, lowest first,
+##   pick nested quadrants of the cell (each level's choice shuffled by a hash of the path so far,
+##   Owen scrambling), plus a hashed jitter inside the smallest box. So instances 0-3 fall in the
+##   four quadrants, 0-15 in the sixteen sub-quadrants, and so on: any prefix is an even sample of
+##   the cell, which is what lets the LOD draw a prefix (`visible_instance_count`).
+## Integers are kept to 32 bits with `MASK`; `_mul32` splits the product so it never overflows 64
+## bits.
 
 const MASK := 0xFFFFFFFF
 ## Floats per instance in `cell_instances`: x, z (map meters), yaw (radians), scale.
@@ -25,7 +27,8 @@ const SALT_YAW := 0x68E31DA4
 const SALT_SCALE := 0x0B4F2E1D
 
 
-## Stable hash of a tag (FNV-1a over its UTF-8 bytes); String.hash() is not promised to stay the same across versions.
+## Stable hash of a tag (FNV-1a over its UTF-8 bytes); String.hash() is not promised to stay the
+## same across versions.
 static func tag_hash(tag: String) -> int:
 	var h := 0x811C9DC5
 	for byte in tag.to_utf8_buffer():
@@ -47,8 +50,8 @@ static func unit(h: int) -> float:
 	return float((h & MASK) >> 8) / 16777216.0
 
 
-## How many of the cell's `count` plants a density scale keeps: floor(count x scale), plus one with a probability equal to
-## the fraction, decided by the cell's own hash.
+## How many of the cell's `count` plants a density scale keeps: floor(count x scale), plus one with
+## a probability equal to the fraction, decided by the cell's own hash.
 static func instance_count(
 	seed: int, tag: String, tx: int, tz: int, count: int, density_scale: float
 ) -> int:
@@ -62,8 +65,9 @@ static func instance_count(
 	return whole
 
 
-## The first `n` instances of cell (tx, tz) of a `texel_m` grid, STRIDE floats each: x, z in map meters, yaw in [0, TAU),
-## scale in [scale_range.x, scale_range.y]. Any prefix of the result is the result for a smaller n.
+## The first `n` instances of cell (tx, tz) of a `texel_m` grid, STRIDE floats each: x, z in map
+## meters, yaw in [0, TAU), scale in [scale_range.x, scale_range.y]. Any prefix of the result is the
+## result for a smaller n.
 static func cell_instances(
 	seed: int, tag: String, tx: int, tz: int, n: int, texel_m: float, scale_range := Vector2.ONE
 ) -> PackedFloat32Array:
@@ -90,7 +94,8 @@ static func _stratified(seed: int, tag_h: int, tx: int, tz: int, i: int) -> Vect
 	var path := 1
 	var digits := i
 	for level in LEVELS:
-		# The permutation of this level depends on the quadrants chosen above it (path), so sibling boxes shuffle apart.
+		# The permutation of this level depends on the quadrants chosen above it (path), so sibling
+		# boxes shuffle apart.
 		var shuffle := cell_hash(seed ^ SALT_PATH, tag_h, tx, tz, path * 8 + level) & 3
 		var quadrant := (digits & 3) ^ shuffle
 		u += size * float(quadrant & 1)

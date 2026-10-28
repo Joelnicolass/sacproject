@@ -1,17 +1,19 @@
 class_name FloraGroundWatch
 extends RefCounted
 
-## Listens to the ground of the map settling (Terrain.settled: a kept stamp, a stamp's end, a hole, a brush stroke in the
-## editor) and, at most every `every_s` seconds, tells the planters which part of it moved so they plant it again at the new
-## height, and replants the patches whose circle that part touches (no other). It remembers the moved areas in between and
-## joins the ones that overlap. It plants nothing itself (MeshPlanter, VegetationPatch) and never touches the ground.
-## `mark` also takes areas whose flora was painted (the map brush), under the same brake.
-## With `live_every_s` > 0 it also follows the stamps that play (Terrain.changed while one plays: the Volcano
-## mound for 64 s). A tick only joins its rect to a list of their own; that list is planted again every `live_every_s`
-## seconds, only the cells it touches, on the ground as it is then (Terrain.refresh_sampler). 0 ignores them (only what
-## settles plants again).
+## Listens to the ground of the map settling (Terrain.settled: a kept stamp, a stamp's end, a hole,
+## a brush stroke in the editor) and, at most every `every_s` seconds, tells the planters which part
+## of it moved so they plant it again at the new height, and replants the patches whose circle that
+## part touches (no other). It remembers the moved areas in between and joins the ones that overlap.
+## It plants nothing itself (MeshPlanter, VegetationPatch) and never touches the ground. `mark` also
+## takes areas whose flora was painted (the map brush), under the same brake. With `live_every_s` >
+## 0 it also follows the stamps that play (Terrain.changed while one plays: the Volcano mound for 64
+## s). A tick only joins its rect to a list of their own; that list is planted again every
+## `live_every_s` seconds, only the cells it touches, on the ground as it is then
+## (Terrain.refresh_sampler). 0 ignores them (only what settles plants again).
 
-## Seconds between two replans of what the playing stamps moved (FloraField.live_replan_s); 0 = never.
+## Seconds between two replans of what the playing stamps moved (FloraField.live_replan_s); 0 =
+## never.
 var live_every_s := 0.0
 
 var _shape: Terrain
@@ -38,8 +40,9 @@ func follow(shape: Terrain) -> void:
 		_shape.changed.connect(_on_changed)
 
 
-## Counts `delta` seconds; when `every_s` have passed since the last time and something settled, the planters replan it and
-## the patches of `tree` it touches plant again. What the playing stamps moved goes the same way every `live_every_s`.
+## Counts `delta` seconds; when `every_s` have passed since the last time and something settled, the
+## planters replan it and the patches of `tree` it touches plant again. What the playing stamps
+## moved goes the same way every `live_every_s`.
 func update(delta: float, every_s: float, planters: Array[MeshPlanter], tree: SceneTree) -> void:
 	_left -= delta
 	_live_left -= delta
@@ -55,7 +58,8 @@ func update(delta: float, every_s: float, planters: Array[MeshPlanter], tree: Sc
 		_replan(_live, planters, tree)
 
 
-## How many areas the playing stamps left waiting (joined when they overlap: a stamp playing for a minute keeps one).
+## How many areas the playing stamps left waiting (joined when they overlap: a stamp playing for a
+## minute keeps one).
 func live_waiting() -> int:
 	return _live.size()
 
@@ -85,9 +89,10 @@ func _touches(patch: VegetationPatch, areas: Array[Rect2]) -> bool:
 	return false
 
 
-## `area` (the ground's x, z) has to be planted again: the ground under it settled (Terrain.settled) or its flora was
-## painted (FloraField.layer_painted). It waits for the next `update`, joined to an overlapping area already waiting; a live
-## area inside it is dropped (the settled replan reads the same ground, sooner).
+## `area` (the ground's x, z) has to be planted again: the ground under it settled (Terrain.settled)
+## or its flora was painted (FloraField.layer_painted). It waits for the next `update`, joined to an
+## overlapping area already waiting; a live area inside it is dropped (the settled replan reads the
+## same ground, sooner).
 func mark(area: Rect2) -> void:
 	_join(_moved, area)
 	for i in range(_live.size() - 1, -1, -1):
@@ -95,7 +100,8 @@ func mark(area: Rect2) -> void:
 			_live.remove_at(i)
 
 
-## Terrain.changed: every tick a stamp plays (and before each `settled`). Only the rect is kept, never any work.
+## Terrain.changed: every tick a stamp plays (and before each `settled`). Only the rect is kept,
+## never any work.
 func _on_changed(rect: Rect2) -> void:
 	if live_every_s > 0.0:
 		_join(_live, rect)

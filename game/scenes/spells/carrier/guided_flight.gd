@@ -1,9 +1,11 @@
 class_name GuidedFlight
 extends RefCounted
 
-## The flight of a guided SpellCarrier (Dragonfire's dragon), with the state it needs and no node of its own: it climbs a spiral around the
-## wizard while he casts, flies to its target when the casting ends (a body it follows, or a point), turning at a limited rate and never
-## under a height, and shrinks away at the end. It moves the carrier it is given; what an arrival does is the carrier's CarrierArrive.
+## The flight of a guided SpellCarrier (Dragonfire's dragon), with the state it needs and no node of
+## its own: it climbs a spiral around the wizard while he casts, flies to its target when the
+## casting ends (a body it follows, or a point), turning at a limited rate and never under a height,
+## and shrinks away at the end. It moves the carrier it is given; what an arrival does is the
+## carrier's CarrierArrive.
 
 var wizard: Node3D
 var target: Node3D

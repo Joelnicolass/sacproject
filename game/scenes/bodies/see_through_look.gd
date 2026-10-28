@@ -1,10 +1,10 @@
 class_name SeeThroughLook
 extends RefCounted
 
-## The see-through look of ONE body (the ghost of a wizard): transparency, no shadow and the shadeless
-## material with energy that follows the fade.
-## It works on the meshes of that instance only: a BodyVisual with a BodyRig draws with the skeleton's skinned meshes,
-## a baked body with its own mesh. The materials the other bodies share (scenes/bodies/materials/) are never touched: the
+## The see-through look of ONE body (the ghost of a wizard): transparency, no shadow and the
+## shadeless material with energy that follows the fade. It works on the meshes of that instance
+## only: a BodyVisual with a BodyRig draws with the skeleton's skinned meshes, a baked body with its
+## own mesh. The materials the other bodies share (scenes/bodies/materials/) are never touched: the
 ## shadeless copy goes on each MeshInstance3D as a surface override.
 
 var visual: GeometryInstance3D
@@ -27,7 +27,8 @@ func _init(target: GeometryInstance3D = null) -> void:
 	visual = target
 
 
-## Transparency of the whole body (the rig's meshes too: GeometryInstance3D.transparency does not inherit).
+## Transparency of the whole body (the rig's meshes too: GeometryInstance3D.transparency does not
+## inherit).
 func set_transparency(value: float) -> void:
 	transparency = value
 	if visual == null:
@@ -57,8 +58,8 @@ func set_shadeless(on: bool) -> void:
 			_dress(instance)
 
 
-## Energy follows the fade: 1 at alpha 1, ghost_energy at ghost_alpha. A mesh that loaded after the stage began
-## (the rig shows its model later) is dressed here.
+## Energy follows the fade: 1 at alpha 1, ghost_energy at ghost_alpha. A mesh that loaded after the
+## stage began (the rig shows its model later) is dressed here.
 func update() -> void:
 	if not _shadeless or visual == null:
 		return
@@ -97,8 +98,8 @@ func _undress() -> void:
 	_dressed_meshes.clear()
 
 
-## The unshaded copy of what the surface shows (its override, as the skeleton's meshes carry the shared material there, or
-## the mesh's own); the previous overrides are kept to put back.
+## The unshaded copy of what the surface shows (its override, as the skeleton's meshes carry the
+## shared material there, or the mesh's own); the previous overrides are kept to put back.
 func _dress(instance: MeshInstance3D) -> void:
 	if instance.mesh == null:
 		return

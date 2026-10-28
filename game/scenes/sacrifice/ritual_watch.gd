@@ -2,9 +2,11 @@
 class_name RitualWatch
 extends Node
 
-## Watches what cancels a ritual: a doctor dies, the creature is lost, the site stops standing (unless the altar is already falling
-## because its wizard died). It also starts that fall once the wizard is gone. What it does not do: drain, pay or end the ritual
-## itself (it calls `ritual.abort()`). Ritual calls `step` once a tick, after Lift. Take this node out and nothing cancels it.
+## Watches what cancels a ritual: a doctor dies, the creature is lost, the site stops standing
+## (unless the altar is already falling because its wizard died). It also starts that fall once the
+## wizard is gone. What it does not do: drain, pay or end the ritual itself (it calls
+## `ritual.abort()`). Ritual calls `step` once a tick, after Lift. Take this node out and nothing
+## cancels it.
 
 @export var ritual: Ritual
 

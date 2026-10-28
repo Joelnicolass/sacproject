@@ -1,15 +1,19 @@
 class_name NavRebake
 extends RefCounted
 
-## Re-bakes the navmesh of the zones a change touches when something that blocks changes: an altar or a structure came or
-## went, a building fell, the ground moved. The map is a grid of zones (NavZones). The static colliders of the `nav_source`
-## nodes under `root` are parsed on the main thread (NavigationServer3D.parse_source_geometry_data; a fallen building has its
-## collision off and is not parsed), and on a worker thread only the zones the changed areas touch are baked again, stitched into
-## one navmesh and indexed (NavRegions.build, pure data: the main thread only swaps references). The zone pieces in force belong
-## to this class and the new ones count from `finish`. The caller swaps the result in at a TICK it chose, not when the thread
-## happens to end (`is_done` says when it can be collected without waiting), so the match is reproducible while the bake ends
-## before that tick; a slower machine swaps at the first tick it is done and the match keeps the old navmesh meanwhile.
-## Not: when to bake or what changed (NavService, NavChanges), the swap itself (NavMeshBackend.swap).
+## Re-bakes the navmesh of the zones a change touches when something that blocks changes: an altar
+## or a structure came or went, a building fell, the ground moved. The map is a grid of zones
+## (NavZones). The static colliders of the `nav_source` nodes under `root` are parsed on the main
+## thread (NavigationServer3D.parse_source_geometry_data; a fallen building has its collision off
+## and is not parsed), and on a worker thread only the zones the changed areas touch are baked
+## again, stitched into one navmesh and indexed (NavRegions.build, pure data: the main thread only
+## swaps references). The zone pieces in force belong to this class and the new ones count from
+## `finish`. The caller swaps the result in at a TICK it chose, not when the thread happens to end
+## (`is_done` says when it can be collected without waiting), so the match is reproducible while the
+## bake ends before that tick; a slower machine swaps at the first tick it is done and the match
+## keeps the old navmesh meanwhile.
+## Not: when to bake or what changed (NavService, NavChanges), the swap itself
+## (NavMeshBackend.swap).
 
 var settings: NavBakeSettings
 var parse_ms := 0.0
@@ -18,7 +22,8 @@ var bake_ms := 0.0
 ## How many zones the last bake did and how many the map has; reports only.
 var zones_baked := 0
 var zones_total := 0
-## The components of the navmesh the last `finish` returned, built on the worker with it (null when it came out empty).
+## The components of the navmesh the last `finish` returned, built on the worker with it (null when
+## it came out empty).
 var regions: NavRegions
 
 var _task := -1
@@ -42,13 +47,15 @@ func is_running() -> bool:
 	return _task >= 0
 
 
-## The stored navmesh of the map: the first bake cuts its pieces from it, so only the touched zones are baked.
+## The stored navmesh of the map: the first bake cuts its pieces from it, so only the touched zones
+## are baked.
 func set_stored(navmesh: NavigationMesh) -> void:
 	_seed = navmesh
 
 
-## Parses `root` and starts the bake of the zones that `areas` (rects x, z in metres) touch on a worker thread. False (nothing
-## started) when a bake runs or there is no geometry. Without pieces to start from (no `set_stored`) every zone is baked.
+## Parses `root` and starts the bake of the zones that `areas` (rects x, z in metres) touch on a
+## worker thread. False (nothing started) when a bake runs or there is no geometry. Without pieces
+## to start from (no `set_stored`) every zone is baked.
 func start(root: Node, areas: Array[Rect2]) -> bool:
 	return _begin(root, areas, _zones == null and _seed == null)
 
@@ -58,7 +65,8 @@ func is_done() -> bool:
 	return not is_running() or WorkerThreadPool.is_task_completed(_task)
 
 
-## Waits for the bake (blocks the caller: use `is_done` first in the match) and returns its navmesh (null when it came out empty); `regions` then holds its components.
+## Waits for the bake (blocks the caller: use `is_done` first in the match) and returns its navmesh
+## (null when it came out empty); `regions` then holds its components.
 func finish() -> NavigationMesh:
 	if not is_running():
 		return null
@@ -78,7 +86,8 @@ func finish() -> NavigationMesh:
 	return null if empty else out
 
 
-## Keeps `old` (an index swapped out) until the next bake lets it go on the worker thread, so its memory is not freed on the main one.
+## Keeps `old` (an index swapped out) until the next bake lets it go on the worker thread, so its
+## memory is not freed on the main one.
 func retire(old: NavRegions) -> void:
 	_retired = old
 

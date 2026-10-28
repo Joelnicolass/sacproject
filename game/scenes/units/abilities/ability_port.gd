@@ -1,16 +1,17 @@
 class_name AbilityPort
 extends Node
 
-## The door of a creature's active ability: the owner's click (`request`) is checked here and sent to the server, which uses the
-## ability (`use`) after checking again. A creature that is dead, being summoned, taken or held refuses at once.
+## The door of a creature's active ability: the owner's click (`request`) is checked here and sent
+## to the server, which uses the ability (`use`) after checking again. A creature that is dead,
+## being summoned, taken or held refuses at once.
 ## Not: the cost, the cooldown and the effect (AbilitySlot).
 
 @export var body: UnitBody
 @export var slot: AbilitySlot
 
 
-## The input calls this for Ctrl+Q / Shift+B on the owner's peer. Returns the local refusal (mana, no ability, «No implementado»), or ""
-## once sent. The server checks the cooldown again.
+## The input calls this for Ctrl+Q / Shift+B on the owner's peer. Returns the local refusal (mana,
+## no ability, «No implementado»), or "" once sent. The server checks the cooldown again.
 func request(target_pos: Vector3, foe: Node3D = null) -> String:
 	var reason := status(target_pos, foe)
 	if not reason.is_empty() or not MpAuthority.should_send_command():

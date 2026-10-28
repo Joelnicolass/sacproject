@@ -2,13 +2,17 @@
 class_name ShaderWarmup
 extends Node
 
-## Behind the loading screen, draws once every mesh, material, bare shader and look scene the match can show (WarmCollect finds them
-## under the match scene, `world.warm_roots()` and the biome's look), a batch a frame at `stage` in front of the camera (a look scene
-## twice: as it is and faded); then asks each WarmHook to draw its own and waits until the pipeline counters stay still for `settle_s`.
-## So the first fireball does not stall. What it found stays held while the match lives: a summon does not read its look from disk.
-## Says `progressed` (0..1) on the way and `finished` once. A headless process (the dedicated server) finishes as soon as the world
-## is ready. The start gate pauses the tree meanwhile: `stage` always processes, so the particles and skeletons of a look move.
-## What it does not do: load files (the flow; only the looks the walk finds), know the network (LoadReport tells it), or name what it warms.
+## Behind the loading screen, draws once every mesh, material, bare shader and look scene the match
+## can show (WarmCollect finds them under the match scene, `world.warm_roots()` and the biome's
+## look), a batch a frame at `stage` in front of the camera (a look scene twice: as it is and
+## faded); then asks each WarmHook to draw its own and waits until the pipeline counters stay still
+## for `settle_s`. So the first fireball does not stall. What it found stays held while the match
+## lives: a summon does not read its look from disk. Says `progressed` (0..1) on the way and
+## `finished` once. A headless process (the dedicated server) finishes as soon as the world is
+## ready. The start gate pauses the tree meanwhile: `stage` always processes, so the particles and
+## skeletons of a look move.
+## What it does not do: load files (the flow; only the looks the walk finds), know the network
+## (LoadReport tells it), or name what it warms.
 
 signal progressed(ratio: float)
 signal finished
@@ -17,20 +21,24 @@ signal finished
 @export var world: MatchWorld
 ## The land arrives here: the warm-up begins when its look is on the map (MatchBiome.applied).
 @export var biome: MatchBiome
-## Where it draws: a Marker3D a few meters in front of the match camera, hidden by the loading screen.
+## Where it draws: a Marker3D a few meters in front of the match camera, hidden by the loading
+## screen.
 @export var stage: Marker3D
 ## A material with no mesh of its own is drawn on this one.
 @export var probe_mesh: Mesh
 ## Things drawn per frame: more loads faster, fewer keeps each frame short.
 @export_range(1, 512) var batch_size: int = 48
-## Drawn frames a look scene stays on the stage: its skeleton and its particles take a frame to be placed before they draw as in play.
+## Drawn frames a look scene stays on the stage: its skeleton and its particles take a frame to be
+## placed before they draw as in play.
 @export_range(1, 8) var scene_draws: int = 2
-## Each look scene is staged twice: as it is, and with this GeometryInstance3D.transparency (a body fades when it is summoned, goes
-## stealthy or plays dead, and a faded material draws in the transparent pass, another pipeline). 0 = only as it is.
+## Each look scene is staged twice: as it is, and with this GeometryInstance3D.transparency (a body
+## fades when it is summoned, goes stealthy or plays dead, and a faded material draws in the
+## transparent pass, another pipeline). 0 = only as it is.
 @export_range(0.0, 0.99, 0.01) var faded: float = 0.5
 ## The pipeline counters must stay still this long before it says `finished`.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var settle_s: float = 0.25
-## Never waits longer than this (a land that never arrives, a slow GPU); keep it under the gate's load timeout.
+## Never waits longer than this (a land that never arrives, a slow GPU); keep it under the gate's
+## load timeout.
 @export_range(1.0, 120.0, 0.5, "suffix:s") var max_s: float = 20.0
 
 var _over := false
@@ -56,7 +64,8 @@ func _exit_tree() -> void:
 
 
 func _on_biome_applied(god: GodType) -> void:
-	# The gods and wizards first: the body looks they lead to are read on the loader's threads while the rest is walked.
+	# The gods and wizards first: the body looks they lead to are read on the loader's threads while
+	# the rest is walked.
 	var roots: Array = world.warm_roots()
 	if not world.scene_file_path.is_empty():
 		roots.append(load(world.scene_file_path))

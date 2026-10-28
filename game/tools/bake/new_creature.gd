@@ -1,45 +1,68 @@
 extends SceneTree
 
-## Does not need the original game; it uses the models and data already imported in assets/original (versioned).
-## A creature of your own from a .glb (Blender, or anything that exports glTF with a skeleton and animations).
-## Nothing here reads the original game's data (assets/original/models/index.json, the WADs): the clips, their length, the
-## impact moment and the size all come from the .glb itself.
+## Does not need the original game; it uses the models and data already imported in assets/original
+## (versioned). A creature of your own from a .glb (Blender, or anything that exports glTF with a
+## skeleton and animations). Nothing here reads the original game's data
+## (assets/original/models/index.json, the WADs): the clips, their length, the impact moment and the
+## size all come from the .glb itself.
 ##
-##   Godot --headless --path . --script res://tools/bake/new_creature.gd -- testmonster
-##   Godot --headless --path . --script res://tools/bake/new_creature.gd -- res://assets/custom/models/testmonster.glb --name="Test Monster" --god=pyro
+##   Godot --headless --path . --script res://tools/bake/new_creature.gd -- testmonster Godot
+##   --headless --path . --script res://tools/bake/new_creature.gd --
+##   res://assets/custom/models/testmonster.glb --name="Test Monster" --god=pyro
 ##
-## It writes these files, never over an existing one (`--force` rewrites them all and throws away what you edited):
-##   scenes/bodies/models/<tag>.tscn       BodyModel: the .glb, a Clips player with the library, an AnimationTree with one state per role, and a
-##                                          hidden HandL / HandR (BoneAttachment3D + Marker3D Socket) for each empty of that name in the .glb
-##                                          (parent it to a bone in Blender; it shows in the `cast` and `cast_run` clips, where HandFx plays).
-##   scenes/bodies/models/<tag>_clips.tres the AnimationLibrary: role -> Animation, and <tag>_clips/<clip>.res, one Animation per clip
-##                                          (bone tracks, exact length, the `hit`/`shoot` marker and the method track at the impact).
-##   scenes/units/bodies/<tag>.tscn        BodyFrame: the capsule, the footprint and the sockets (Reach, Center, Top) measured from the mesh,
-##                                          and a placeholder where the look goes. Drag the handles in the editor to tune them.
-##   scenes/units/bodies/<tag>_look.tscn   BodyLook: the model scene, the sounds and the carried effect (what only a client loads).
-##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres + its `body` + its `clips` (the same library:
-##                                          the rules read the timing of each swing, shot, stun, flight and death from it).
-## `--sync` copies the bone tracks of the .glb again into the Animations of the library (after a new export from Blender; the length is the
-## clip's, the markers and the method track stay) and checks the creature points at the library (keeps your stats). The rules follow the
-## library, so a marker you move in the model scene is already what they read.
+## It writes these files, never over an existing one (`--force` rewrites them all and throws away
+## what you edited):
+##   scenes/bodies/models/<tag>.tscn       BodyModel: the .glb, a Clips player with the library, an
+##   AnimationTree with one state per role, and a
+##                                          hidden HandL / HandR (BoneAttachment3D + Marker3D
+##                                          Socket) for each empty of that name in the .glb (parent
+##                                          it to a bone in Blender; it shows in the `cast` and
+##                                          `cast_run` clips, where HandFx plays).
+##   scenes/bodies/models/<tag>_clips.tres the AnimationLibrary: role -> Animation, and
+##   <tag>_clips/<clip>.res, one Animation per clip
+##                                          (bone tracks, exact length, the `hit`/`shoot` marker and
+##                                          the method track at the impact).
+##   scenes/units/bodies/<tag>.tscn        BodyFrame: the capsule, the footprint and the sockets
+##   (Reach, Center, Top) measured from the mesh,
+##                                          and a placeholder where the look goes. Drag the handles
+##                                          in the editor to tune them.
+##   scenes/units/bodies/<tag>_look.tscn   BodyLook: the model scene, the sounds and the carried
+##   effect (what only a client loads).
+##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres +
+##   its `body` + its `clips` (the same library:
+##                                          the rules read the timing of each swing, shot, stun,
+##                                          flight and death from it).
+## `--sync` copies the bone tracks of the .glb again into the Animations of the library (after a new
+## export from Blender; the length is the clip's, the markers and the method track stay) and checks
+## the creature points at the library (keeps your stats). The rules follow the library, so a marker
+## you move in the model scene is already what they read.
 ##
-## Roles are found by the NAME of each animation, tolerant of case, separators, a Blender suffix (`Attack.001`) and an armature
-## prefix (`Armature|Run`): idle, run (or walk), attack, shoot, cast, hit, death, fly, takeoff, land, hover, knock, get_up...
-## The impact moment of a clip is in its name: `attack_at45` = at 45 % of the clip, `attack_f18` = at frame 18. Without one it is
-## the middle (50 %). Both are editable afterwards: the `hit` marker (and the "attack" key of the method track) of its Animation.
-## Attack variants: clips named `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`, `attack_c`; each with its own `_atNN`/`_fNN`
-## impact) become up to three melee swings, the roles `attack`, `attack2` and `attack3`. The rules pick `attack` or `attack2` at random
-## for each swing; `attack3` is the one against a target well below (a downward blow). Each swing plays its own clip.
-## The HUD icon: `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one is drawn from the model (the idle
-## pose, the camera framing its box) with tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped (a note
-## says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a window) makes it afterwards.
-## Sounds: it also writes data/audio/creatures/<tag>.tres, a SoundSet over the fist melee set, and puts it in the `sounds` of the look.
-## When assets/custom/sounds/creatures/<tag>/ exists, its files (`death_1.wav`, `swing_1.ogg`...: the event names of SoundEvent.BODY)
-## fill the fields of the set; without that folder the set is empty (drag the files onto it in the inspector). Never over an
+## Roles are found by the NAME of each animation, tolerant of case, separators, a Blender suffix
+## (`Attack.001`) and an armature prefix (`Armature|Run`): idle, run (or walk), attack, shoot, cast,
+## hit, death, fly, takeoff, land, hover, knock, get_up... The impact moment of a clip is in its
+## name: `attack_at45` = at 45 % of the clip, `attack_f18` = at frame 18. Without one it is the
+## middle (50 %). Both are editable afterwards: the `hit` marker (and the "attack" key of the method
+## track) of its Animation.
+## Attack variants: clips named `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`,
+## `attack_c`; each with its own `_atNN`/`_fNN` impact) become up to three melee swings, the roles
+## `attack`, `attack2` and `attack3`. The rules pick `attack` or `attack2` at random for each swing;
+## `attack3` is the one against a target well below (a downward blow). Each swing plays its own
+## clip.
+## The HUD icon: `assets/custom/icons/<tag>.png` if it exists (yours, never overwritten); else one
+## is drawn from the model (the idle pose, the camera framing its box) with
+## tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped
+## (a note says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a
+## window) makes it afterwards.
+## Sounds: it also writes data/audio/creatures/<tag>.tres, a SoundSet over the fist melee set, and
+## puts it in the `sounds` of the look. When assets/custom/sounds/creatures/<tag>/ exists, its files
+## (`death_1.wav`, `swing_1.ogg`...: the event names of SoundEvent.BODY) fill the fields of the set;
+## without that folder the set is empty (drag the files onto it in the inspector). Never over an
 ## existing one (`--force` rewrites it). Also with `--sync`.
-## Options: --name="Display name"  --god=<god tag>  --fps=<n> (default: the animation's own step, 30)  --force  --force-sounds  --sync
+## Options: --name="Display name"  --god=<god tag>  --fps=<n> (default: the animation's own step,
+## 30)  --force  --force-sounds  --sync
 ##          --icon (draw the icon again even if the PNG exists)  --no-icon (do not draw one)
-##          --sounds=res://dir/ --sounds-out=res://dir/ (another source / target for the sounds, e.g. a fixture)
+##          --sounds=res://dir/ --sounds-out=res://dir/ (another source / target for the sounds,
+##          e.g. a fixture)
 
 const TEMPLATE := "res://data/templates/creature.tres"
 const MODEL_DIR := "res://assets/custom/models/"
@@ -53,8 +76,8 @@ const GRID_ORIGIN := Vector2(260.0, 40.0)
 const GRID_COLUMNS := 4
 const DEFAULT_IMPACT := 0.5
 
-## Words that name a role. The first word of a list is the preferred one when a model has several clips for the same role
-## (`run` before `walk`).
+## Words that name a role. The first word of a list is the preferred one when a model has several
+## clips for the same role (`run` before `walk`).
 const WORDS := {
 	"idle": ["idle", "stand", "stance", "rest", "breath", "breathe"],
 	"run": ["run", "sprint", "gallop", "trot", "jog", "walk", "move", "locomotion", "charge"],
@@ -89,7 +112,8 @@ const WORDS := {
 	"rise": ["rise", "revive"],
 	"gesture": ["gesture", "taunt", "emote"],
 }
-## Role -> the word groups a clip name must have ALL of. Compound roles come first so `fly_death` is not taken by `death`.
+## Role -> the word groups a clip name must have ALL of. Compound roles come first so `fly_death` is
+## not taken by `death`.
 const RULES := [
 	["fly_death", ["fly", "death"]],
 	["fly_damage", ["fly", "hit"]],
@@ -115,7 +139,8 @@ const RULES := [
 	["run", ["run"]],
 	["idle", ["idle"]],
 ]
-## A role with no clip of its own plays another role's (the rig itself rests on idle for the rest, e.g. `hit`).
+## A role with no clip of its own plays another role's (the rig itself rests on idle for the rest,
+## e.g. `hit`).
 const FALLBACKS := {
 	"shoot": ["attack"], "hover": ["fly"], "fly_death": ["death"], "fly_damage": ["hit"]
 }
@@ -125,15 +150,18 @@ const FLIGHT_FALLBACKS: PackedStringArray = ["hover", "fly_death", "fly_damage"]
 ## The roles whose clip shows the hands (the casting pose: HandFx plays the particles there).
 const HAND_ROLES: PackedStringArray = ["cast", "cast_run"]
 const RESET := &"RESET"
-## Smallest capsule a body gets, and the widest it may be compared with its height (the rule the physics capsule always followed).
+## Smallest capsule a body gets, and the widest it may be compared with its height (the rule the
+## physics capsule always followed).
 const MIN_CAPSULE_M := 0.6
 const RADIUS_PER_HEIGHT := 0.45
 
-## Role of each swing (MeleeRules.SWING_ROLES): the rules pick `attack` or `attack2` at random, `attack3` is the downward blow.
+## Role of each swing (MeleeRules.SWING_ROLES): the rules pick `attack` or `attack2` at random,
+## `attack3` is the downward blow.
 const ATTACK_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 
 var _force := false
-## Rewrites only the sound set (a test refreshing its output), never the creature's type, scene or icon.
+## Rewrites only the sound set (a test refreshing its output), never the creature's type, scene or
+## icon.
 var _force_sounds := false
 var _sync := false
 var _fps_arg := 0
@@ -175,6 +203,7 @@ func _initialize() -> void:
 			positional = arg
 	if positional.is_empty():
 		push_error(
+			# gdlint: ignore=max-line-length
 			"new_creature: pass the model tag or the .glb path: ... --script res://tools/bake/new_creature.gd -- testmonster"
 		)
 		quit(1)
@@ -187,7 +216,8 @@ func _initialize() -> void:
 		)
 		quit(1)
 		return
-	# BodyModel answers only once it is ready, and the root is not in the tree yet during _initialize: work on the first frame.
+	# BodyModel answers only once it is ready, and the root is not in the tree yet during
+	# _initialize: work on the first frame.
 	_job = _sync_creature.bind(tag) if _sync else _create.bind(tag, glb_path, display, god)
 
 
@@ -203,13 +233,14 @@ func _run_job() -> void:
 	quit(code)
 
 
-# --- create ------------------------------------------------------------------------------------------------------------
+# --- create ---------------------------------------------------------------------------------------
 
 
 func _create(tag: String, glb_path: String, display: String, god: String) -> int:
 	if not ResourceLoader.exists(glb_path):
 		push_error(
 			(
+				# gdlint: ignore=max-line-length
 				"new_creature: %s is not imported. Open the project in the editor once, or run `Godot --headless --path . --import`."
 				% glb_path
 			)
@@ -224,6 +255,7 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 	if players.is_empty():
 		push_error(
 			(
+				# gdlint: ignore=max-line-length
 				"new_creature: %s has no animations (export with the animations on; one action per clip)"
 				% glb_path
 			)
@@ -285,7 +317,8 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 		kept.append(type_path)
 	instance.free()
 
-	# The rules read the clips from the library of the saved model, the one a human edits: the same path as --sync.
+	# The rules read the clips from the library of the saved model, the one a human edits: the same
+	# path as --sync.
 	if wrote.has(type_path) and _link_clips(tag) != OK:
 		return 1
 
@@ -318,10 +351,11 @@ func _clips(player: AnimationPlayer) -> Dictionary:
 	return out
 
 
-# --- names -> roles ----------------------------------------------------------------------------------------------------
+# --- names -> roles -------------------------------------------------------------------------------
 
 
-## {roles: role -> clip name, impacts: clip name -> fraction of the clip (0..1), unused: clips no role took}.
+## {roles: role -> clip name, impacts: clip name -> fraction of the clip (0..1), unused: clips no
+## role took}.
 func _roles(clips: Dictionary) -> Dictionary:
 	var parsed := {}
 	var impacts := {}
@@ -349,7 +383,8 @@ func _roles(clips: Dictionary) -> Dictionary:
 		roles[ATTACK_ROLES[variant]] = swings[variant]["name"]
 		taken[swings[variant]["name"]] = true
 	if not roles.has("attack") and not swings.is_empty():
-		roles["attack"] = roles[ATTACK_ROLES[swings.keys().min()]]  # only an `attack2`: it is the creature's attack
+		# only an `attack2`: it is the creature's attack
+		roles["attack"] = roles[ATTACK_ROLES[swings.keys().min()]]
 	for rule: Array in RULES:
 		var role: String = rule[0]
 		var groups: Array = rule[1]
@@ -381,9 +416,9 @@ func _roles(clips: Dictionary) -> Dictionary:
 	return {"roles": roles, "impacts": impacts, "unused": unused}
 
 
-## The lower-case name without its decorations: tokens, the flat (no separators) form, the impact if the name has one and, for a
-## melee clip, its `variant` (0 attack, 1 attack2, 2 attack3; -1 for any other clip). Tokens and flat are those of the name without the
-## variant suffix.
+## The lower-case name without its decorations: tokens, the flat (no separators) form, the impact if
+## the name has one and, for a melee clip, its `variant` (0 attack, 1 attack2, 2 attack3; -1 for any
+## other clip). Tokens and flat are those of the name without the variant suffix.
 func _parse(name: String) -> Dictionary:
 	var text := name.to_lower()
 	if text.contains("|"):
@@ -450,8 +485,9 @@ func _is_attack(tokens: PackedStringArray, flat: String) -> bool:
 	return true
 
 
-## -1: the clip is not this role's. Higher is a closer name: the name IS a word, then its first token is, then any token is.
-## Within a level the earlier word of the list wins (`run` over `walk`).
+## -1: the clip is not this role's. Higher is a closer name: the name IS a word, then its first
+## token is, then any token is. Within a level the earlier word of the list wins (`run` over
+## `walk`).
 func _score(tokens: PackedStringArray, flat: String, groups: Array) -> int:
 	var total := 0
 	for group: String in groups:
@@ -482,10 +518,11 @@ func _token_is(token: String, word: String) -> bool:
 	if not token.begins_with(word):
 		return false
 	var rest := token.substr(word.length())
-	return rest.is_valid_int() or (word.length() >= 4 and rest.length() <= 4)  # attack2, attacking, running
+	# attack2, attacking, running
+	return rest.is_valid_int() or (word.length() >= 4 and rest.length() <= 4)
 
 
-# --- size --------------------------------------------------------------------------------------------------------------
+# --- size -----------------------------------------------------------------------------------------
 
 
 ## {aabb: the skinned meshes' rest-pose box in model space, raw: the union of their own boxes}.
@@ -509,8 +546,9 @@ func _measure(root: Node3D) -> Dictionary:
 	return {"aabb": box, "raw": raw}
 
 
-## The empties named HandL / HandR of the .glb: [{name, bone, offset}]. An empty parented to a bone arrives as a child of a
-## BoneAttachment3D; its position is the offset in the bone's space. One that hangs from nothing is left out (with a note).
+## The empties named HandL / HandR of the .glb: [{name, bone, offset}]. An empty parented to a bone
+## arrives as a child of a BoneAttachment3D; its position is the offset in the bone's space. One
+## that hangs from nothing is left out (with a note).
 func _hands_of(root: Node3D) -> Array[Dictionary]:
 	var found: Array[Dictionary] = []
 	for hand_name: String in ["HandL", "HandR"]:
@@ -521,6 +559,7 @@ func _hands_of(root: Node3D) -> Array[Dictionary]:
 		if attachment == null:
 			print(
 				(
+					# gdlint: ignore=max-line-length
 					"NEW_CREATURE note: the empty %s hangs from no bone, so it is left out (parent it to a bone in Blender)"
 					% hand_name
 				)
@@ -530,12 +569,13 @@ func _hands_of(root: Node3D) -> Array[Dictionary]:
 	return found
 
 
-# --- body scene (size and sockets) and look ------------------------------------------------------------------------------
+# --- body scene (size and sockets) and look -------------------------------------------------------
 
 
-## scenes/units/bodies/<tag>.tscn: a BodyFrame measured from the mesh. height = the box's; footprint radius = half its narrow side;
-## reach = half its long side (the melee box); the physics capsule is the footprint with the floor and the width limit the capsule always
-## had. The `Look` node is a placeholder of <tag>_look.tscn, so loading this scene does not load the model nor the sounds.
+## scenes/units/bodies/<tag>.tscn: a BodyFrame measured from the mesh. height = the box's; footprint
+## radius = half its narrow side; reach = half its long side (the melee box); the physics capsule is
+## the footprint with the floor and the width limit the capsule always had. The `Look` node is a
+## placeholder of <tag>_look.tscn, so loading this scene does not load the model nor the sounds.
 ## Tune everything with the handles in the editor.
 func _save_body(tag: String, measure: Dictionary) -> bool:
 	var box: AABB = measure["aabb"]
@@ -608,8 +648,9 @@ func _marker(root: Node3D, parent: Node, node_name: String, at: Vector3) -> Mark
 	return node
 
 
-## scenes/units/bodies/<tag>_look.tscn: the model scene as `Model` and the sounds `set_path` (empty: silent). A client is the only one that
-## loads it. A look with a carried effect or a pose of its own is never rewritten here (_assign_sounds edits it in place).
+## scenes/units/bodies/<tag>_look.tscn: the model scene as `Model` and the sounds `set_path` (empty:
+## silent). A client is the only one that loads it. A look with a carried effect or a pose of its
+## own is never rewritten here (_assign_sounds edits it in place).
 func _save_look(tag: String, set_path: String) -> bool:
 	var root := BodyLook.new()
 	root.name = tag.capitalize().replace(" ", "") + "Look"
@@ -648,7 +689,7 @@ func _mm(value: float) -> float:
 	return roundf(value * 1000.0) / 1000.0
 
 
-# --- model scene -------------------------------------------------------------------------------------------------------
+# --- model scene ----------------------------------------------------------------------------------
 
 
 func _save_scene(
@@ -668,7 +709,8 @@ func _save_scene(
 	var instance := glb.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
 	instance.name = "Model"
 	instance.unique_name_in_owner = true
-	# A custom model is already in the game's axes (glTF faces +Z): no mirror, unlike the original's.
+	# A custom model is already in the game's axes (glTF faces +Z): no mirror, unlike the
+	# original's.
 	root.add_child(instance)
 	instance.owner = root
 	var found := instance.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
@@ -703,7 +745,8 @@ func _save_scene(
 	root.add_child(sink)
 	sink.owner = root
 
-	# The physical skeleton the body falls and hangs with (and its hang bone), written once with the model.
+	# The physical skeleton the body falls and hangs with (and its hang bone), written once with the
+	# model.
 	if RagdollBaker.add_to(root) < 0:
 		push_warning("new_creature: %s has no skeleton, so it gets no ragdoll" % tag)
 
@@ -721,8 +764,9 @@ func _save_scene(
 	return true
 
 
-## A hidden BoneAttachment3D (HandL, HandR) under the skeleton for each hand, with a Marker3D `Socket` at the offset of the empty. The clips
-## of HAND_ROLES show it (see _animation); BodyRig reads the sockets of the visible ones.
+## A hidden BoneAttachment3D (HandL, HandR) under the skeleton for each hand, with a Marker3D
+## `Socket` at the offset of the empty. The clips of HAND_ROLES show it (see _animation); BodyRig
+## reads the sockets of the visible ones.
 func _add_hands(root: Node3D, model: Node3D, hands: Array[Dictionary]) -> void:
 	var skeletons := model.find_children("*", "Skeleton3D", true, false)
 	if hands.is_empty() or skeletons.is_empty():
@@ -756,7 +800,8 @@ func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 	for role in BodyModel.ROLES:
 		if not roles.has(role):
 			continue
-		# The state plays the Animation of its role; the Animation says whether it repeats (loop mode) and how long it lasts.
+		# The state plays the Animation of its role; the Animation says whether it repeats (loop
+		# mode) and how long it lasts.
 		var clip := AnimationNodeAnimation.new()
 		clip.animation = StringName(role)
 		var at := names.size()
@@ -779,10 +824,11 @@ func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 	return machine
 
 
-## The model's AnimationLibrary, saved as <tag>_clips.tres with one Animation per clip in <tag>_clips/<clip>.res: the .glb's bone
-## tracks, the clip's own length, the loop mode its role needs, and, for attack / shoot / cast, the method track at the impact
-## (attack, attack2 and attack3 -> "attack", shoot -> "shoot", cast -> "cast") with the `hit` / `shoot` marker there. No mark in
-## the clip's name = the middle of the clip. Null when it could not be saved.
+## The model's AnimationLibrary, saved as <tag>_clips.tres with one Animation per clip in
+## <tag>_clips/<clip>.res: the .glb's bone tracks, the clip's own length, the loop mode its role
+## needs, and, for attack / shoot / cast, the method track at the impact (attack, attack2 and
+## attack3 -> "attack", shoot -> "shoot", cast -> "cast") with the `hit` / `shoot` marker there. No
+## mark in the clip's name = the middle of the clip. Null when it could not be saved.
 func _save_library(
 	tag: String,
 	source: AnimationPlayer,
@@ -794,7 +840,8 @@ func _save_library(
 	var dir := "%s%s_clips" % [SCENE_DIR, tag]
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var library := AnimationLibrary.new()
-	var made := {}  # "<clip>|<kind>" -> Animation: roles that play the same clip the same way share it
+	# "<clip>|<kind>" -> Animation: roles that play the same clip the same way share it
+	var made := {}
 	var files := {}
 	for role: String in BodyModel.ROLES:
 		if not roles.has(role):
@@ -843,7 +890,8 @@ func _save_library(
 	return library
 
 
-## One Animation of the library: the clip of the .glb with its length, step, loop mode, method track and marker.
+## One Animation of the library: the clip of the .glb with its length, step, loop mode, method track
+## and marker.
 func _animation(
 	source: AnimationPlayer,
 	clip_name: String,
@@ -884,7 +932,8 @@ func _visible_track(anim: Animation, hand_name: String, shown: bool) -> void:
 	anim.track_insert_key(track, 0.0, shown)
 
 
-## `--sync`: copies the bone tracks of the .glb again into the Animations of the library and keeps the markers and the method track.
+## `--sync`: copies the bone tracks of the .glb again into the Animations of the library and keeps
+## the markers and the method track.
 func _refresh_library(tag: String) -> int:
 	var library := (
 		ResourceLoader.load(ModelPaths.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE)
@@ -934,7 +983,7 @@ func _refresh_library(tag: String) -> int:
 	return OK
 
 
-# --- clip facts for the rules ------------------------------------------------------------------------------------------
+# --- clip facts for the rules ---------------------------------------------------------------------
 
 
 func _sync_creature(tag: String) -> int:
@@ -949,6 +998,7 @@ func _sync_creature(tag: String) -> int:
 	if code == OK:
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"NEW_CREATURE synced %s: data/catalog/creatures/%s.tres reads the clips of scenes/bodies/models/%s_clips.tres"
 				% [tag, tag, tag]
 			)
@@ -967,8 +1017,8 @@ func _sync_creature(tag: String) -> int:
 	return code
 
 
-## Points the creature of `tag` at the library of its model (`clips`), so the rules read the timing a human edits there. Saves it only
-## when it was not already pointing at it.
+## Points the creature of `tag` at the library of its model (`clips`), so the rules read the timing
+## a human edits there. Saves it only when it was not already pointing at it.
 func _link_clips(tag: String) -> int:
 	var type := (
 		ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE)
@@ -991,10 +1041,11 @@ func _link_clips(tag: String) -> int:
 	return OK
 
 
-# --- icon ---------------------------------------------------------------------------------------------------------------
+# --- icon -----------------------------------------------------------------------------------------
 
 
-## Draws assets/custom/icons/<tag>.png when it is missing (or `--icon`), keeps yours when it is there. Returns what happened.
+## Draws assets/custom/icons/<tag>.png when it is missing (or `--icon`), keeps yours when it is
+## there. Returns what happened.
 func _make_icon(tag: String, idle_clip: String) -> String:
 	if _no_icon:
 		return "skipped (--no-icon)"
@@ -1004,11 +1055,12 @@ func _make_icon(tag: String, idle_clip: String) -> String:
 	)
 
 
-# --- sounds -------------------------------------------------------------------------------------------------------------
+# --- sounds ---------------------------------------------------------------------------------------
 
 
-## The creature's SoundSet (tools/bake/sound_set_writer.gd): the files of `_sounds_src`/creatures/<tag>/ as its fields, or an empty
-## set over the fist melee set when there are none. {code: OK or 1, path: where the set is}. It becomes the `sounds` of the look when the
+## The creature's SoundSet (tools/bake/sound_set_writer.gd): the files of
+## `_sounds_src`/creatures/<tag>/ as its fields, or an empty set over the fist melee set when there
+## are none. {code: OK or 1, path: where the set is}. It becomes the `sounds` of the look when the
 ## set went to data/audio/ (_assign_sounds, or _save_look on a new creature).
 func _bake_sounds(tag: String) -> Dictionary:
 	var folder := _sounds_src.path_join("creatures").path_join(tag)
@@ -1031,6 +1083,7 @@ func _bake_sounds(tag: String) -> Dictionary:
 		if not has_files:
 			print(
 				(
+					# gdlint: ignore=max-line-length
 					"NEW_CREATURE sounds: the set is empty (it uses the fist melee sounds); drag .ogg or .wav files onto its fields, or put <event>_1.wav in %s/ and run again with --force"
 					% folder
 				)
@@ -1040,8 +1093,9 @@ func _bake_sounds(tag: String) -> Dictionary:
 	return {"code": OK, "path": path}
 
 
-## `sounds = set` in the look of the creature (scenes/units/bodies/<tag>_look.tscn) when the set is a product file (not a test output)
-## and the look has none. The look is read, changed and saved again; its model, effect and pose stay.
+## `sounds = set` in the look of the creature (scenes/units/bodies/<tag>_look.tscn) when the set is
+## a product file (not a test output) and the look has none. The look is read, changed and saved
+## again; its model, effect and pose stay.
 func _assign_sounds(tag: String, set_path: String) -> void:
 	var look_path := BODY_DIR + tag + "_look.tscn"
 	if not set_path.begins_with(SoundSetWriter.CUSTOM_OUT) or not FileAccess.file_exists(look_path):
@@ -1057,7 +1111,7 @@ func _assign_sounds(tag: String, set_path: String) -> void:
 		print("NEW_CREATURE sounds: %s uses %s" % [look_path, set_path])
 
 
-# --- output ------------------------------------------------------------------------------------------------------------
+# --- output ---------------------------------------------------------------------------------------
 
 
 func _report(
@@ -1089,6 +1143,7 @@ func _report(
 	if not (found["unused"] as PackedStringArray).is_empty():
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"NEW_CREATURE clips no role took (rename them like a role, or point a state of the model scene at them): %s"
 				% ", ".join(found["unused"])
 			)
@@ -1119,12 +1174,14 @@ func _report(
 	if not kept.is_empty():
 		print(
 			(
+				# gdlint: ignore=max-line-length
 				"NEW_CREATURE kept (exist; --force rewrites them, --sync refreshes the clips only): %s"
 				% ", ".join(kept)
 			)
 		)
 	print(
 		(
+			# gdlint: ignore=max-line-length
 			"NEW_CREATURE next: put data/catalog/creatures/%s.tres in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator."
 			% [tag, god if not god.is_empty() else "a god", god if not god.is_empty() else "<god>"]
 		)

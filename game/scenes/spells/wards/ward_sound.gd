@@ -2,9 +2,10 @@
 class_name WardSound
 extends SoundEmitter3D
 
-## The sound of a ward, on every peer, from its replicated `shown` and the cast: one shot when the cast begins, when the ward starts or
-## when it ends, or a loop from the start of the cast until the ward ends. It names a key of the sound table (SoundEmitter3D) and plays
-## it at the body; it does not decide when a ward starts (Ward). A dedicated server or a headless run plays nothing.
+## The sound of a ward, on every peer, from its replicated `shown` and the cast: one shot when the
+## cast begins, when the ward starts or when it ends, or a loop from the start of the cast until the
+## ward ends. It names a key of the sound table (SoundEmitter3D) and plays it at the body; it does
+## not decide when a ward starts (Ward). A dedicated server or a headless run plays nothing.
 
 enum When { WHEN_STARTS, WHEN_ENDS, WHILE_ON, WHEN_CAST_STARTS }
 

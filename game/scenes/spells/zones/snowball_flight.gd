@@ -1,9 +1,10 @@
 class_name SnowballFlight
 extends Node3D
 
-## The snowball of Frozen Ground, from the wizard's hands to the ground: while he casts it grows in front of him and rises to over his head,
-## spinning; when the cast ends it flies a parabola to the point of the click in the zone's arming time, leaving a trail; when it lands it
-## bursts into shards. Presentation only, on every peer, from the zone's phase. It freezes nobody (ZoneFreeze).
+## The snowball of Frozen Ground, from the wizard's hands to the ground: while he casts it grows in
+## front of him and rises to over his head, spinning; when the cast ends it flies a parabola to the
+## point of the click in the zone's arming time, leaving a trail; when it lands it bursts into
+## shards. Presentation only, on every peer, from the zone's phase. It freezes nobody (ZoneFreeze).
 
 @export var zone: GroundZone
 ## The ball: a mesh child (it holds the mesh).
@@ -64,7 +65,8 @@ func _process(delta: float) -> void:
 		FxBus.puff(trail, global_position)
 
 
-## In front of the wizard, rising from his feet to over his head as it grows from nothing to its size.
+## In front of the wizard, rising from his feet to over his head as it grows from nothing to its
+## size.
 func _follow_wizard() -> void:
 	var wizard := zone.caster() as WizardBody
 	if wizard == null:
@@ -83,7 +85,8 @@ func _follow_wizard() -> void:
 	ball.scale = Vector3.ONE * maxf(progress, 0.01)
 
 
-## A parabola from where the cast left it to the click: the straight line plus the arc a pull of `gravity` makes in that time.
+## A parabola from where the cast left it to the click: the straight line plus the arc a pull of
+## `gravity` makes in that time.
 func _fly() -> void:
 	var seconds := float(maxi(zone.arm_ticks, 1)) / MatchClock.TICKS_PER_SECOND_F
 	var t := clampf(float(zone.phase_ticks) / float(maxi(zone.arm_ticks, 1)), 0.0, 1.0)

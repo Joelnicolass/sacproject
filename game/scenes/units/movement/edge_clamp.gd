@@ -2,11 +2,12 @@ class_name EdgeClamp
 extends RefCounted
 
 ## A walking body does not step off the land. Paths come from the navmesh and the terrain and the
-## buildings collide; this covers what is left: a body the avoidance (or a crowd) pushes toward a hole or a cliff. Call
-## it on the velocity right before move_and_slide. The terrain answers «is the next step on the ground?» (one lookup in
-## the heightmap, the common case ends there); only when it is not, the navmesh gives the closest land point and the
-## step is cut to it (the navmesh edge is inset by the agent radius, so the capsule stays over the ground). Without a
-## NavService the horizontal step is dropped. A body thrown on purpose (Tumbling) is not clamped: it falls.
+## buildings collide; this covers what is left: a body the avoidance (or a crowd) pushes toward a
+## hole or a cliff. Call it on the velocity right before move_and_slide. The terrain answers «is the
+## next step on the ground?» (one lookup in the heightmap, the common case ends there); only when it
+## is not, the navmesh gives the closest land point and the step is cut to it (the navmesh edge is
+## inset by the agent radius, so the capsule stays over the ground). Without a NavService the
+## horizontal step is dropped. A body thrown on purpose (Tumbling) is not clamped: it falls.
 
 
 ## `velocity` whose horizontal step from the body's position this tick stays on the land. Y is kept.

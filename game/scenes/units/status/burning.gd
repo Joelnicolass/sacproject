@@ -4,23 +4,24 @@ extends DamageOverTime
 ## One fire on a body. It deals `damage / lifetime` per frame; once per frame it:
 ##   deals that as ranged or spell damage, with the fire's DamageMod (the Pyromaniac's
 ##     pierce-shield skips Life Shield, Rockform, petrified and Skin of Stone);
-##   drains `mana_drain / lifetime` mana (never under 0; the Tickferno's heat ray);
-##   puts 3 fire particles on a creature (not on a building);
-##   ends after the update whose lifetime reached 0 (`return lifetime-- > 0`): lifetime + 1 updates, as DamageOverTime.
-## A fire of no damage on a building ends on its first update, before any damage or particle: the Spitfire's wave and the Bombard's fire make one on
-## every building they touch. It is made, runs one update and goes: no health, no mana, no look.
-## The attacker feeds LifeDrain with what each update took,
-## as the poison does (DamageOverTime.attacker_path); the shooter's path comes from `attacker`.
+##   drains `mana_drain / lifetime` mana (never under 0; the Tickferno's heat ray); puts 3 fire
+##   particles on a creature (not on a building); ends after the update whose lifetime reached 0
+##   (`return lifetime-- > 0`): lifetime + 1 updates, as DamageOverTime.
+## A fire of no damage on a building ends on its first update, before any damage or particle: the
+## Spitfire's wave and the Bombard's fire make one on every building they touch. It is made, runs
+## one update and goes: no health, no mana, no look. The attacker feeds LifeDrain with what each
+## update took, as the poison does (DamageOverTime.attacker_path); the shooter's path comes from
+## `attacker`.
 ##
-## A fire keeps no sum with the others (refreshing a fire is a spell's), so there is no owner of aggregates
-## as Poisoning: each Burning is its own owner. It lives under the body it burns (freed with it), steps itself once per
-## physics tick and frees itself when DamageOverTime.step() says it is over. Server (or solo) only: BurnImpact makes it
-## there; the look goes through FxBus.
+## A fire keeps no sum with the others (refreshing a fire is a spell's), so there is no owner of
+## aggregates as Poisoning: each Burning is its own owner. It lives under the body it burns (freed
+## with it), steps itself once per physics tick and frees itself when DamageOverTime.step() says it
+## is over. Server (or solo) only: BurnImpact makes it there; the look goes through FxBus.
 
 ## Mana drained per update.
 var mana_drain_per_tick := 0.0
-## The fire puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only), at
-## `fire_socket` (inside the box). Null = none.
+## The fire puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a
+## creature only), at `fire_socket` (inside the box). Null = none.
 var fire_fx: ParticleType = null
 var fire_every_ticks := 10
 var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
@@ -31,10 +32,10 @@ var _health: Health
 var _mana: ManaPool
 
 
-## Set ablaze: `damage` over `lifetime` frames (`damage / lifetime` per update) as
-## `kind`, and `mana_drain` over the same frames. Null when the body is dead or has no Health. A building with no damage
-## still gets its fire (it ends on its first update, see above). `attacker`: the creature that set it ablaze (null = nobody
-## drains).
+## Set ablaze: `damage` over `lifetime` frames (`damage / lifetime` per update) as `kind`, and
+## `mana_drain` over the same frames. Null when the body is dead or has no Health. A building with
+## no damage still gets its fire (it ends on its first update, see above). `attacker`: the creature
+## that set it ablaze (null = nobody drains).
 static func ignite(
 	target: Node3D,
 	damage: float,

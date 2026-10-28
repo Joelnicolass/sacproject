@@ -1,10 +1,12 @@
 class_name LoadingScreen
 extends CanvasLayer
 
-## The black screen while a match loads: a title, what it is doing (reading the world, preparing the graphics) and a thin bar.
-## It covers the world from the first file until the world says it is ready, then fades out. While it shows, the game gets no
-## input (Esc does not open the pause menu behind it). It runs with the tree paused (the start gate holds the match meanwhile).
-## Not: what loads or when the match starts (the flow's MpWorldLoader, the gate): it only shows what the flow tells it.
+## The black screen while a match loads: a title, what it is doing (reading the world, preparing the
+## graphics) and a thin bar. It covers the world from the first file until the world says it is
+## ready, then fades out. While it shows, the game gets no input (Esc does not open the pause menu
+## behind it). It runs with the tree paused (the start gate holds the match meanwhile).
+## Not: what loads or when the match starts (the flow's MpWorldLoader, the gate): it only shows what
+## the flow tells it.
 
 ## The line under the title while the files are read.
 @export var files_key := &"UI_LOADING_WORLD"
@@ -21,7 +23,8 @@ func _ready() -> void:
 	_hide_now()
 
 
-## The flow's world_load_progressed: FILES/WORLD show it and move the bar, READY fades it out, IDLE (the load was dropped) hides it.
+## The flow's world_load_progressed: FILES/WORLD show it and move the bar, READY fades it out, IDLE
+## (the load was dropped) hides it.
 func show_progress(ratio: float, phase: MpWorldLoader.Phase) -> void:
 	match phase:
 		MpWorldLoader.Phase.FILES, MpWorldLoader.Phase.WORLD:

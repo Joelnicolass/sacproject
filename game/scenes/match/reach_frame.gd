@@ -2,13 +2,16 @@
 class_name ReachFrame
 extends Node3D
 
-## The reaches of the match as nodes you can drag in the editor: how far a wizard picks up a soul, how far the mana of a fount and an
-## altar reaches, the Manahoar aura, and how far a Guardian can be armed, strays and comes back. It only holds them: nothing here
-## moves, draws or decides (ReachFacts reads the numbers once). The scene is never instanced by the game (its Area3D would move the
-## simulation); it is read from its SceneState. To change a reach, open `reach_places.tscn` (or an inherited scene) and drag the shape.
+## The reaches of the match as nodes you can drag in the editor: how far a wizard picks up a soul,
+## how far the mana of a fount and an altar reaches, the Manahoar aura, and how far a Guardian can
+## be armed, strays and comes back. It only holds them: nothing here moves, draws or decides
+## (ReachFacts reads the numbers once). The scene is never instanced by the game (its Area3D would
+## move the simulation); it is read from its SceneState. To change a reach, open `reach_places.tscn`
+## (or an inherited scene) and drag the shape.
 
 @export_group("Souls")
-## How far a wizard picks up a soul: the radius on the ground, and half the height up and down (a cylinder).
+## How far a wizard picks up a soul: the radius on the ground, and half the height up and down (a
+## cylinder).
 @export var soul: CollisionShape3D
 @export_group("Mana")
 ## How far a mana fount feeds the wizards around it.

@@ -77,7 +77,7 @@ game/
 │       ├── path_follower.gd          M 026a  contador de tramos «derecho por falta de ranura»
 │       │                             M 026c  umbral de steer_point → @export
 │       └── nav_grid.gd               —       se conserva; en 026c queda para regiones
-└── rfcs/RFC-026-native-navigation.md N
+└── docs/archive/rfcs/RFC-026-native-navigation.md N
 ```
 
 Ningún archivo de `scenes/world/ai/*`, `unit_body.gd`, `wizard_body.gd`, `doctor_body.gd`, `stuck_guard.gd`, `map_building.gd`, `mana_source.gd` ni `body_separation.gd` cambia en ningún corte.

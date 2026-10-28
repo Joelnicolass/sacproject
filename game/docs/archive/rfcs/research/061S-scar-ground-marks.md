@@ -1,6 +1,6 @@
 # 061S — Marcas en el suelo (SCAR): formato, cómo las usa el original y cómo llevarlas a Godot
 
-Este informe es para el sub-corte **061k-5** (`rfcs/plans/061k-terrain-plan.md`). Trae los hechos y una propuesta, pero no código. sacengine no implementa las SCAR: deja `// TODO: scar` en `state.d` 11460 (Meanstalks), 16377 (rayo), 18435 y 18490 (Erupt), 18558 (restos de Erupt), 19186 (Halo), 20045 (Firewall), 20536 (Wall of Spikes), 21297 (Bombardment), 21746 y 21785 (Bovine), 24499, 25600 (aceite) y 25734 (Quake).
+Este informe es para el sub-corte **061k-5** (`docs/archive/rfcs/plans/061k-terrain-plan.md`). Trae los hechos y una propuesta, pero no código. sacengine no implementa las SCAR: deja `// TODO: scar` en `state.d` 11460 (Meanstalks), 16377 (rayo), 18435 y 18490 (Erupt), 18558 (restos de Erupt), 19186 (Halo), 20045 (Firewall), 20536 (Wall of Spikes), 21297 (Bombardment), 21746 y 21785 (Bovine), 24499, 25600 (aceite) y 25734 (Quake).
 
 ## Fuentes y etiquetas
 

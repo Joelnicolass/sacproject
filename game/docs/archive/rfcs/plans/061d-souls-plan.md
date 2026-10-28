@@ -1,6 +1,6 @@
 # 061d: almas (Soul Mole, Animate Dead, Soul Wind)
 
-Corte del plan maestro `061-spells-master-plan.md` (pieza 6, `SpellCarrier`). Números de `rfcs/research/061R-abilities-structures.md`; arte de `rfcs/research/061V-spell-visuals-d-e.md` (el SPEL manda sobre las etiquetas del exe). Arte final desde el inicio (decisión del usuario, 2026-10-24).
+Corte del plan maestro `061-spells-master-plan.md` (pieza 6, `SpellCarrier`). Números de `docs/archive/rfcs/research/061R-abilities-structures.md`; arte de `docs/archive/rfcs/research/061V-spell-visuals-d-e.md` (el SPEL manda sobre las etiquetas del exe). Arte final desde el inicio (decisión del usuario, 2026-10-24).
 
 ## Objetivo
 - **Soul Mole (`pmcd`, nivel 3, 50 de maná):** un topo (la roca `rock`) nace en los pies del mago al empezar el hechizo, camina 4,5 s por una curva hasta el alma, la suelta de su cuerpo (el cadáver se disuelve) y en otros 4,5 s la arrastra al mago. Todo el que pasa a ≤10 m del topo queda aturdido (8 s de enfriamiento propio), salvo el mago. No hace daño. El aturdimiento empieza cuando termina el lanzamiento.

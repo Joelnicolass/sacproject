@@ -134,7 +134,7 @@ game/project.godot                             [~] plugin habilitado + debug_lig
 game/docs/HOWTO.md                             [~] «Relieve (mapas PBR) de un modelo» y «PBR desde Blender»
 game/VISUAL.md                                 [~] la línea «al caché, no a git» -> assets/surfaces (LFS), opcional
 game/scenes/bodies/README.md, scenes/look/README.md [~] una línea Edit/Check cada uno
-game/rfcs/RFC-067-surface-maps.md, FEATURES.md [+]/[~]
+game/docs/archive/rfcs/RFC-067-surface-maps.md, FEATURES.md [+]/[~]
 ```
 
 En `export_presets.cfg` el `exclude_filter` queda en `addons/sacrifice_tools/*, addons/terrain_tools/*, addons/surface_maps/*, …`. `assets/surfaces/` **no** se excluye: el juego lee esos PNG.

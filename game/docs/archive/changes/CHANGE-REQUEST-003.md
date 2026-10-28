@@ -35,4 +35,4 @@ Las decisiones de la cola están delegadas («iterar la cola sin preguntar»). L
 - `PRD.md` (fuera del primer corte)
 - `FEATURES.md` (Won't)
 - `RULES.md` (dominios y datos)
-- `rfcs/RFC-052-audio.md` (nuevo, F360–F369)
+- `docs/archive/rfcs/RFC-052-audio.md` (nuevo, F360–F369)

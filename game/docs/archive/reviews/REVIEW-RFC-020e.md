@@ -5,7 +5,7 @@ Veredicto: **PASS con observaciones**. Sin bloqueantes. El RFC se puede dar por 
 Verificado por mí (no por el informe del developer):
 - `Godot --headless res://debug/rules_suite.tscn --fixed-fps 600 --quit-after 600000` completa: 25 casos `: PASS` y `RULES SUITE PASS`, EXIT 0, sin ERROR/WARNING en el log. Incluye `convert_numbers`, `convert_revive`, `convert_check`, `convert_chain` (bombeo 10,0 s, fases 1,2,3,4,2,3,5, 2 rondas, "completo, 1 almas") y `convert_doctor_dies`.
 - Carga headless sin errores: `desecrate_ritual`, `ritual_cancel`, `convert_ritual`, `convert_pump_kill`, `convert_carry_kill`.
-- `rg "sac_doctor|request_convert|CONVERTED|NO_TARGET|_convert_soul"` (sin `.md` ni `reviews/`): vacío. `rg "func agent_" src scenes glue`: vacío. `git diff --stat` no se pudo correr: el repo no tiene commits (`HEAD` inexistente); no hay forma de acotar el diff, revisé los archivos tocados.
+- `rg "sac_doctor|request_convert|CONVERTED|NO_TARGET|_convert_soul"` (sin `.md` ni `docs/archive/reviews/`): vacío. `rg "func agent_" src scenes glue`: vacío. `git diff --stat` no se pudo correr: el repo no tiene commits (`HEAD` inexistente); no hay forma de acotar el diff, revisé los archivos tocados.
 
 ## Criterios de 020e
 

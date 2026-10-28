@@ -404,4 +404,4 @@ Esta sección manda sobre todo lo anterior.
    - Es solo presentación y el banco no cambia.
    - Prueba con ventana: comparar antes y después en el lab de FX.
    - Va al final, después de 053g.
-6. **Granjeros y Normal:** se aplican las recomendaciones de §14 y §15. Los granjeros siguen siendo enemigos, con prioridad baja, la regla de futilidad y sin hechizos de la IA sobre ellos. Normal queda como «los números del original más las reglas de sensatez», registrado en `changes/CHANGE-REQUEST-005.md`.
+6. **Granjeros y Normal:** se aplican las recomendaciones de §14 y §15. Los granjeros siguen siendo enemigos, con prioridad baja, la regla de futilidad y sin hechizos de la IA sobre ellos. Normal queda como «los números del original más las reglas de sensatez», registrado en `docs/archive/changes/CHANGE-REQUEST-005.md`.

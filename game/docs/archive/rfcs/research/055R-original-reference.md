@@ -5,7 +5,7 @@ Investigación de hechos, sin diseño. Fuentes:
 - **[SAC]** sacengine (`sacengine/source/`, GPL, solo lectura; se describe el comportamiento, no se copia código).
 - **[DATOS]** datos del juego ya horneados en el port (`game/data/catalog/...`, salidos de las WAD originales).
 - **[PORT]** código del port (`game/scenes/...`).
-- **[PREV]** investigaciones previas (`game/rfcs/research/poblados-npc.md`, `game/rfcs/RFC-030-full-bestiary.md`).
+- **[PREV]** investigaciones previas (`game/docs/archive/rfcs/research/poblados-npc.md`, `game/docs/archive/rfcs/RFC-030-full-bestiary.md`).
 - **REA** no hizo falta: sacengine y los datos fueron inequívocos en las 7 preguntas. Donde algo no se pudo confirmar se marca **NO VERIFICADO**.
 
 ---

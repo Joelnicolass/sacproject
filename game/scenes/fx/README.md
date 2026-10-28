@@ -1,13 +1,8 @@
 # fx
-What: every visual effect is a typed Resource (ParticleType, BeamType, or a PackedScene whose root is an FxScene) played through the `FxBus` autoload at a socket of a body or a Marker3D.
-Not: sounds (SoundBus), the simulation (nothing in `sim` reads an effect), blood (RFC-060), GPUParticles3D.
-Talks to: a node calls `FxBus.broadcast(fx, BodyFacts.point(body, socket))` -> one RPC carries `FxWire.id_of(fx)` (the resource path) -> each peer's `FxWire.resource(id)` -> `%Bursts` / `%Beams` pools draw it. Every play emits `FxBus.played(kind, fx, at)` first: FxSounds (the `sound` of the type), CameraShake (its `camera_trauma`, fall-off in `ShakeMap`), checks and the agent listen. A headless process only emits `played`. Loading screen (069): the `WarmHook` child asks `%Bursts` / `%Beams` `flash_all(stage)`: one of each type for one frame in front of the camera, with no `played`.
-Edit: the look (atlas `Texture2D`), light (`FxLightSpec`), `sound` and `camera_trauma` live in the effect's `.tres` (data/fx); where it leaves from is `@export var <role>_socket: BodyFacts.Socket` or a Marker3D of the scene (`BurstSpot`, a tower's `BaseSpot`).
-Add: a burst = duplicate a `.tres` of data/fx and drag it onto the field; a scene effect = a scene whose root extends `FxScene` (override `play(params)`, set `camera_trauma` in the inspector), dragged onto an `@export var x: PackedScene`. The pool warms up by itself and the id comes from the path.
-Closed (055x x7): `FxBus` takes only a ParticleType, a BeamType or a PackedScene (null plays nothing), and an atlas is a `Texture2D` on the type or the node; no API takes an effect by name. Text exists only on the wire (`FxWire.id_of` / `FxWire.resource`) and in `Caster.cast_fx_shown` (that id, replicated). Old data with names: `python3 tools/migrate/fx_refs_055x.py --dry-run --dirs <folders>`.
 
----
-
-Efectos: rayos, atlas de FX, shaders y partículas del juego. Un efecto nuevo es una packed scene con su shader; el bus es `FxBus`.
-
-Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `@export` (nada de herencia profunda), y los datos de tipo en `data/` como `.tres`.
+Visual effects. Every effect is a typed resource (`ParticleType`, `BeamType`) or a `PackedScene` whose root extends
+`FxScene`, played by the `FxBus` autoload at a body socket or a `Marker3D`.
+- `FxBus.broadcast*` sends one RPC with the resource path (`FxWire`); `FxBus.play*` is local. A headless process only
+  emits `FxBus.played` (sounds, camera shake and checks listen to it).
+- No API takes an effect by name: drag the `.tres` or scene onto an `@export`. Look, light, sound and `camera_trauma`
+  live in the effect's `.tres` in `data/fx/`.

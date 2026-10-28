@@ -1,6 +1,6 @@
 # RFC-058: ambiente (día y noche, clima, vida ambiental)
 
-Estado: implementado (058-1 hora, 058-2 clima, 058-3 rayos de tormenta, 058-4 vida); falta la pasada única de pruebas. Plan aprobado: `rfcs/plans/058-ambience-plan.md` (revisión 2 + bloque «Estado: aprobado»).
+Estado: implementado (058-1 hora, 058-2 clima, 058-3 rayos de tormenta, 058-4 vida); falta la pasada única de pruebas. Plan aprobado: `docs/archive/rfcs/plans/058-ambience-plan.md` (revisión 2 + bloque «Estado: aprobado»).
 
 ## Qué es
 

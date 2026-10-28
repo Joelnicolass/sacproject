@@ -323,7 +323,7 @@ Retirado el camino horneado de los cuerpos animados. **Borrado:** `scenes/world/
 
 **`sizes.json`:** queda como **dato versionado, sin generador**. Calcularlo desde los `.glb` no da los mismos números (la pose de enlace del `.glb` difiere de la del OBJ con que se midió; los cuerpos con pose se midieron sobre los cuadros de sacengine y el esqueleto los reproduce a ≤ 0,5 mm pero los valores se redondean a 1 mm), y cambiarlo mueve cápsulas y digests. Documentado en `assets/original/README.md`; se quitó `--sizes-from` de `import_props.py`.
 
-**`rg`:** `cache/` en `scenes data debug addons agent/harness` queda vacío salvo el comentario de `scenes/world/obj_mesh.gd`. En `tools/` sobreviven, de 033/033i: `audit_original_props.gd`, `export_persephone.py`, `export_bodies.py` (produce los OBJ que lee `--bodies-from`) y la rama de caché de `export_buildings` en `export_stats.py`. `rg "anim_f37|baked-bodies|ClipPosePlayer"` vacío fuera de `rfcs/`, `reviews/` y `FEATURES.md`.
+**`rg`:** `cache/` en `scenes data debug addons agent/harness` queda vacío salvo el comentario de `scenes/world/obj_mesh.gd`. En `tools/` sobreviven, de 033/033i: `audit_original_props.gd`, `export_persephone.py`, `export_bodies.py` (produce los OBJ que lee `--bodies-from`) y la rama de caché de `export_buildings` en `export_stats.py`. `rg "anim_f37|baked-bodies|ClipPosePlayer"` vacío fuera de `docs/archive/rfcs/`, `docs/archive/reviews/` y `FEATURES.md`.
 
 Desvíos / notas: `debug/body_gallery` y las escenas que usan `gallery_body.tscn` solo dibujan los híbridos y los props (los cuerpos con esqueleto no tienen malla estática); no se tocaron. No se corrió Godot (pedido del orquestador): los 11 `.glb.import` nuevos no tienen `uid` hasta el primer import. No se regrabó ningún digest.
 

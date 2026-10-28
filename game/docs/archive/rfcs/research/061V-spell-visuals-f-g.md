@@ -1,6 +1,6 @@
 # 061V — Cómo se ven en el original los hechizos de 061f y 061g
 
-Este informe junta los hechos para el arte final de 061f (zonas: Explosion, Frozen Ground, Demonic Rift, Healing Aura) y 061g (muros: Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence). No trae diseño ni código. El plan está en `rfcs/plans/061-spells-master-plan.md` (piezas `GroundZone` y `SpellWall`) y los números de juego en `rfcs/research/061R-abilities-structures.md`. El usuario pidió **arte final desde el inicio**. El formato es el de `061V-spell-visuals-d-e.md`.
+Este informe junta los hechos para el arte final de 061f (zonas: Explosion, Frozen Ground, Demonic Rift, Healing Aura) y 061g (muros: Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence). No trae diseño ni código. El plan está en `docs/archive/rfcs/plans/061-spells-master-plan.md` (piezas `GroundZone` y `SpellWall`) y los números de juego en `docs/archive/rfcs/research/061R-abilities-structures.md`. El usuario pidió **arte final desde el inicio**. El formato es el de `061V-spell-visuals-d-e.md`.
 
 ## Fuentes y etiquetas
 

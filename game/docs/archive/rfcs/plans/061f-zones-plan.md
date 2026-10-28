@@ -1,6 +1,6 @@
 # 061f — Zonas (Explosion, Frozen Ground, Demonic Rift, Healing Aura) — plan del corte
 
-Fuentes: `061-spells-master-plan.md` (§1 piezas 1, 2 y 7; fila 061f), `rfcs/research/061R-abilities-structures.md`, `061V-spell-visuals-f-g.md` (el SPEL manda sobre las etiquetas del exe), sacengine (`state.d` 9986-10013, 10960-11116, 19037-19065, 19507-19737, 19739-19899) y `CONVENTIONS.md` (C1-C21 y §2c). Decisión del usuario: arte final desde el inicio. Los hechizos de 061d (`SpellCarrier`) y 061e (`ChainHop`) corren en otros worktrees; este corte no los usa.
+Fuentes: `061-spells-master-plan.md` (§1 piezas 1, 2 y 7; fila 061f), `docs/archive/rfcs/research/061R-abilities-structures.md`, `061V-spell-visuals-f-g.md` (el SPEL manda sobre las etiquetas del exe), sacengine (`state.d` 9986-10013, 10960-11116, 19037-19065, 19507-19737, 19739-19899) y `CONVENTIONS.md` (C1-C21 y §2c). Decisión del usuario: arte final desde el inicio. Los hechizos de 061d (`SpellCarrier`) y 061e (`ChainHop`) corren en otros worktrees; este corte no los usa.
 
 Dos correcciones que mandan sobre el plan maestro:
 - **Healing Aura la lleva una criatura aliada** (sacengine `HealingAura.target`): es un `Ward` + `BodyAura` de 061b, no una `GroundZone`.

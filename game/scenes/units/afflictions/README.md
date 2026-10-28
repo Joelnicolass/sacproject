@@ -1,5 +1,6 @@
 # units/afflictions
-What: the states of a body that change what it can do (stunned, petrified, frozen, vined, rings of fire, slimed...). `Afflictions` owns the questions the body asks and the replicated mask; each `Affliction` child is one state, a `SpellAffliction` is one a spell lays in layers.
-Not: who may be targeted (`SpellTarget`), the cast (`AfflictAction`), the speed (`PaceFactors` owns it; Slime only gives its factor), the health (`Health` asks `resistance_bonus()`).
-Talks to: spells call `Affliction.lay(spell, slot)`; `Health`, `MeleeWeapon`, `RangedWeapon`, `UnitBody` ask `Afflictions` (`stat_factor`, `resistance_bonus`, `blocks_regeneration`); every peer draws from `Affliction.shown_changed` (the looks in `looks/`: `BodyBoxLook`, `VineLook`, `RingsLook`, `AfflictionEmitter`, `AfflictionCues` for sound) and `StoneLook` swaps the skin texture (Slime).
-Edit: `afflictions.tscn` (every state, its looks, sounds and its `Glow` light, a `StateLight` wired to the state's `shown_changed`) · `data/afflictions/<state>.tres` (bit, flags, skin texture) · on the instance in `unit.tscn` / `wizard_body.tscn` (editable children): the body parts outside the scene (`body`, `health`, `clip_pose`, `wards` on `Afflictions`; `tilt`, `visual`, `mesh` and each look's `body` on the child), the wizard's differences (`Oiled.type`, `Stunned.corpse_lays_down`) and the creature-only states (Pulling, UsingAbility, Firewalking, BlindRaged).
+
+States that change what a body can do (stunned, frozen, vined, petrified, slimed…). `Afflictions` owns the questions and
+the replicated mask; each `Affliction` child is one state, laid with `Affliction.lay(spell, slot)`.
+`afflictions.tscn` is instanced in both `unit.tscn` and `wizard_body.tscn` with editable children: the wizard's
+differences and the creature-only states are set on those instances.

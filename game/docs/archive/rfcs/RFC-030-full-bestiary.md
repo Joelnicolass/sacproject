@@ -4,7 +4,7 @@ Estado: **cerrado (2026-10-17)**, cortes 030a–030v hechos (F121–F160); banco
 Pedido del usuario: «también está pendiente tener a disponibilidad todas las criaturas. Hoy tenemos las básicas, pero en el juego original al avanzar en la campaña teníamos muchas más criaturas».
 Features: **F112–F133** (cortes 030a–030v).
 
-> **Conflicto con el PRD (gana el PRD hasta que se cambie):** `PRD.md:21` deja «libro de hechizos completo» fuera del primer corte. Las criaturas son entradas del libro (`spellbook.gd:3-5`). Antes de 030b el orquestador registra `changes/CHANGE-REQUEST-002.md` o edita esa línea: criaturas completas sí, hechizos de nivel ≥ 2 no. 030a no cambia el juego y puede ir antes.
+> **Conflicto con el PRD (gana el PRD hasta que se cambie):** `PRD.md:21` deja «libro de hechizos completo» fuera del primer corte. Las criaturas son entradas del libro (`spellbook.gd:3-5`). Antes de 030b el orquestador registra `docs/archive/changes/CHANGE-REQUEST-002.md` o edita esa línea: criaturas completas sí, hechizos de nivel ≥ 2 no. 030a no cambia el juego y puede ir antes.
 
 ## 1. Objetivo (criterios de aceptación)
 
@@ -659,7 +659,7 @@ agent/run_determinism.sh                       M  caso f121 (0,5 min)
 
 #### 030k-a — F122 Veneno a distancia (Necryl `cena`, Deadeye `lfda`, Hellmouth `mhba`) y debuffs de `cen@`
 
-**Plan (developer de F122, 2026-10-17):** el del tech lead en `rfcs/plans/030k-030l-plan.md` §030k-a (sacengine, diseño, árbol y criterios), sin cambios de árbol.
+**Plan (developer de F122, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030k-030l-plan.md` §030k-a (sacengine, diseño, árbol y criterios), sin cambios de árbol.
 - `Poisoning` (`scenes/world/units/poisoning.gd`, hijo `Poisoning` de `unit.tscn` y `wizard_body.tscn`) es el único dueño.
   - Sus hijos son las dosis `Poisoned` (`extends DamageOverTime`) y las corre en orden en `_physics_process`, solo en servidor o solo.
   - Los agregados se derivan de las dosis vivas en cada consulta: `resistance_bonus()` = 1e-3·Σ ires, `regeneration_factor()` = Π freg, `mana_blocked()` y `damage_sum()` = Σ int(por s).
@@ -705,7 +705,7 @@ agent/run_determinism.sh                       M  caso f121 (0,5 min)
 
 #### 030k-b — F149 Congelar a distancia (Silverback `rdba`)
 
-**Plan (developer de F149, 2026-10-17):** el del tech lead en `rfcs/plans/030k-030l-plan.md` §030k-b, sin cambios de árbol. Se hizo en dos fases: primero archivos nuevos sin referencias, en paralelo con 030k-a; después el cableado.
+**Plan (developer de F149, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030k-030l-plan.md` §030k-b, sin cambios de árbol. Se hizo en dos fases: primero archivos nuevos sin referencias, en paralelo con 030k-a; después el cableado.
 - `Frozen` (`afflictions/frozen.gd` + `data/afflictions/frozen.tres`, bit 3) es un `Affliction`:
   - `try_freeze_with_cooldown` rechaza `cc_protected` y muertos. Con enfriamiento > 0 tira `uniform(600)` con `MatchSeed ["freeze", nombre]`, y si la tirada deja intentar, el enfriamiento vuelve a 600.
   - `freeze` dura `ceil(60·1000/vidaMáx·20)` en float32, como sacengine (`_f32` en cada paso, REVIEW N6): Trogg 1250, y 801 (no 800) para Sara Bella y Gangrel (1500 de vida). Un mago dura 300. No cuenta el cuadro en que arranca.
@@ -771,7 +771,7 @@ Después de la corrección:
 
 **Escena de prueba:** `res://debug/f121_fire_shots.tscn`. **Criterio:** forma de vuelo y daño de cada uno contra el original.
 
-**Plan (developer de F123, 2026-10-17):** el del tech lead en `rfcs/plans/030k-030l-plan.md` §030l, con estas precisiones:
+**Plan (developer de F123, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030k-030l-plan.md` §030l, con estas precisiones:
 - `Burning` (`scenes/world/units/burning.gd`, `extends DamageOverTime`) es un `Fire` de sacengine.
   - `Burning.ignite(...)` hace de `setAblaze` / `setAblazeWithManaDrain`: `damage/lifetime` por actualización, `lifetime + 1` actualizaciones (lo cuenta la base) y `mana_drain/lifetime` con `ManaPool.drain`.
   - Las partículas `fire` (FxBus) salen solo sobre criaturas y magos, aunque el fuego no haga daño.
@@ -838,7 +838,7 @@ Después de la corrección:
 
 **Escena de prueba:** `res://debug/f124_bolts.tscn` (los carriles C y E del Warmonger, en 030m-b). **Criterio:** daño y radio medidos.
 
-**Plan (developer de 030m-a, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030m. Gnome, Styx y Warmonger no tienen proyectil, así que `bolt_impact` pasa a ser «strikes»:
+**Plan (developer de 030m-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030m-030n-plan.md` §030m. Gnome, Styx y Warmonger no tienen proyectil, así que `bolt_impact` pasa a ser «strikes»:
 - `ShotLook.strike` (PackedScene) y `ShotLook.for_tag` (la única búsqueda de `data/shots/`, que antes era `RangedShot._look_for`).
 - `RangedAttack._fire`: precisión con `ShotAim.scatter` (sacada tal cual, mismo orden de sorteos) y diccionario con `aim_x/y/z` y `accuracy`. Si el look tiene `strike`, lo instancia como hijo propio, solo en el servidor, y llama a `launch(data, look, self)`. `shot_origin()` pasa a ser público.
 - `ShotImpact.land(holder, look, target, point, ability)` (estático) es el único dueño de lo que pasa donde pega un disparo o un strike: impacto o daño directo, y después `impact_fx`. `RangedShot._burst` lo usa. Devuelve el daño directo recibido.
@@ -879,7 +879,7 @@ Después de la corrección:
 - El origen del `StyxBolt` no sigue al tirador; el final sí sigue al blanco.
 - La salpicadura del Styx alcanza la choza `Bld069_jhut` a 8,01 m del carril D. No aparece en los eventos `hurt` del banco.
 
-**030m-b: Plan (developer, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030m (carriles C y E), sobre 030m-a.
+**030m-b: Plan (developer, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030m-030n-plan.md` §030m (carriles C y E), sobre 030m-a.
 - `strikes/warmonger_gun.tscn`: `RayStrike` con `bursts 16`, `first_tick 2`, `period 4`, `rays 2`, `reroll`, `follow`, `foes_only`, prioridad −1, `label "ametralladora"`. Sin beam: sacengine no dibuja fogonazo del arma (el `SacWarmongerEffect` es la llama del modelo); solo `warmongerHit` donde termina cada rayo.
 - `data/shots/fhga.tres` (strike `warmonger_gun`, `impact_fx` `warmonger_hit`) y `data/fx/warmonger_hit.tres`: 20 partículas, vida 31 ticks (0,517 s), velocidad 0,8–3,2, gravedad, `pool_max` 20 (15 ráfagas/s × 2 rayos × 0,517 s × 1,25 ≈ 19).
 - `tools/export_particles.py`: `warmonger_hit` pasa a `wsqb_a` (overlay de alfa, `glow_to_alpha`, `blend_mix`, energía 1) con `lifetime_frames` 31 (antes 63). Sobre la nieve, nada aditivo.
@@ -911,7 +911,7 @@ Después de la corrección:
 
 **Escena de prueba:** `res://debug/f123_big_shots.tscn`. **Criterio:** daño y forma medidos.
 
-**Plan (developer de 030n-a, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030n, sobre 030m-a.
+**Plan (developer de 030n-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030m-030n-plan.md` §030n, sobre 030m-a.
 - `ShotLook.volley` (1 por defecto) y `ShotLook.range_factor` (1 por defecto).
 - `RangedAttack._fire`: en la rama sin `strike`, un bucle de `volley` disparos con la misma dirección (una sola tirada de precisión). Cada paquete es una copia del diccionario, con `volley_index` (−k..k) y `aim_distance` (|apuntado − origen|). `max_distance` pasa a ser `cast_range · range_factor`.
 - `RangedShot.spawn_data`: el paquete con el que nació. Lo lee su `ShotInFlight`.
@@ -949,7 +949,7 @@ Después de la corrección:
 - Las del plan: el giro usa `Vector3.UP`, el Phoenix tira desde su altura de vuelo sin el tubo de 30 cuadros, y el giro y el polvo usan RNG propio.
 - **El pasto tapa a los Druids** en la captura cercana (`a3`). En `a2` las piedras se ven chicas con la cámara alta.
 
-**Plan (developer de 030n-b, 2026-10-17):** el del tech lead en `rfcs/plans/030m-030n-plan.md` §030n (Rhinok), sobre 030n-a. Números verificados en `state.d` 11880-11885, 4996-5025, 24933 y 24942-25037.
+**Plan (developer de 030n-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030m-030n-plan.md` §030n (Rhinok), sobre 030n-a. Números verificados en `state.d` 11880-11885, 4996-5025, 24933 y 24942-25037.
 - `GroundHug` (`ground_hug_flight.gd/.tscn`, un `ShotInFlight`): en cada tick vuelve el disparo a `suelo + 0,05` antes de que `RangedShot` busque el choque. Las púas del camino son visuales (`rock_emerge` cada 4 ticks en un disco de 2,5 m, con `MatchSeed.rng(["spikes", disparo])`).
 - `SpikeImpact` (`impacts/spike_impact.gd/.tscn`): el tocado recibe el monto entero como `splash_ranged` y los anillos salen bajo su centro. Si se agota el alcance, el pedido vivo recibe lo mismo y los anillos salen del punto final.
 - `SpikeWave` (`impacts/spike_wave.gd/.tscn`, Node3D en el contenedor de disparos, prioridad −1):
@@ -996,7 +996,7 @@ Después de la corrección:
 - Si `RangedShot` revienta sin cuerpo por el chequeo del suelo, `SpikeImpact` lo toma como alcance agotado.
 - **El pasto tapa a C6** en la captura cercana: su vida sale del report del watcher.
 
-**Corrección (developer de 030n-b, ronda única, `reviews/REVIEW-RFC-030n-b.md`):**
+**Corrección (developer de 030n-b, ronda única, `docs/archive/reviews/REVIEW-RFC-030n-b.md`):**
 - **B1, la altura tiene un solo dueño:**
   - `ShotInFlight.holds_height()` vale false por defecto, y `GroundHug` lo pone en true. Con eso `RangedShot` saltea su chequeo de suelo y el disparo solo termina por choque o por alcance.
   - `GroundHug` toma la altura de `RangedShot.ground_height()`, que pasó a ser pública. Es el rayo con máscara 1 que cuenta techos de estructuras, altares y manantiales, igual que `getHeight`.
@@ -1045,7 +1045,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030o-a: Plan (developer) / Resultado
 
-**Plan (developer de 030o-a, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030o-a. Números de `state.d` 13092-13100, 13196-13202, 25698-25713, 25122, 218-224 y 8962-8963.
+**Plan (developer de 030o-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030o-030p-plan.md` §030o-a. Números de `state.d` 13092-13100, 13196-13202, 25698-25713, 25122, 218-224 y 8962-8963.
 - `AbilityCatalog` (`data/abilities/ability_catalog.tres`, `{"HSba": protector.tscn}`) dice qué tag tiene efecto propio. `ActiveAbility` lo instancia como hijo «Effect» y le delega `status()` (después del maná) y `fire()`; la regla y el efecto viven en `AbilityEffect`, y el enfriamiento y el gasto siguen en `ActiveAbility`.
 - `LifeShield` (hijo de `unit.tscn`, `shown` replicado) es el único dueño del escudo: `start(ticks)`, `is_on()` derivado de `MatchClock`, `factor()` (×0,5), fin por tiempo o por muerte. Life Shield (`hsba`) y Protector (`HSba`) lo usan.
 - `Health.shield_factor() = max(0, damage_factor) · life_shield.factor()`: lo usan `damage_typed` (salvo `pierce_shield`) y el golpe cuerpo a cuerpo (`melee_attack.gd`).
@@ -1071,7 +1071,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030o-b: Plan (developer) / Resultado
 
-**Plan (developer de 030o-b, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030o-b. Números de `state.d` 13470-13493, 12631-12758 (el maná se cobra aunque `firewalk` falle: 12746-12748), 13213-13217, 25802-25846 y modo firewalk (124, 135, 141, 193, 8922).
+**Plan (developer de 030o-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030o-030p-plan.md` §030o-b. Números de `state.d` 13470-13493, 12631-12758 (el maná se cobra aunque `firewalk` falle: 12746-12748), 13213-13217, 25802-25846 y modo firewalk (124, 135, 141, 193, 8922).
 - `ActiveAbility`: con `windup() > 0` (Firewalk, 150 ticks de `shoot_animations[1]`), `use()` enciende `UsingAbility` (hijo de `Afflictions`, bit 4, `holds`) y no gasta. En `now + windup` dispara el efecto, cobra el maná siempre y pone el enfriamiento si estaba en 0; si `UsingAbility` ya no estaba (aturdimiento, petrificado, congelado, tumbling lo cancelan por `cancels`) loguea `preparación cortada` y no gasta.
 - Tiempo en ticks (`MatchClock`): el enfriamiento, Stealth y Play Dead pasan de restar `delta` a «hasta el tick N».
 - `Firewalking` (Affliction, bit 5, `holds`, `hides`, `cancels using_ability`): `walk(end)`, `steer()` escribe la posición de cada cuadro, `WarpSnap.announce()` en el salto, oculta `Tilt`, estela `fire` (MIX).
@@ -1098,7 +1098,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030p-a: Plan (developer) / Resultado
 
-**Plan (developer de 030p-a, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030p-a. Números de `state.d` 13232-13236, 19284-19321, 19212-19270, 19076-19100, 19272-19282, 202-209, 28825 y util.d 554-560.
+**Plan (developer de 030p-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030o-030p-plan.md` §030p-a. Números de `state.d` 13232-13236, 19284-19321, 19212-19270, 19076-19100, 19272-19282, 202-209, 28825 y util.d 554-560.
 - `HaloOfEarthAbility` (`AbilityEffect` sin preparación) pone un coordinador `HaloOfEarth` en el contenedor de disparos; el coordinador (prioridad −1, solo en el servidor) simula las 6 rocas y las mueve; cada roca es un `RangedShot` con `ShotLook halo_rock` (no colisiona, solo se dibuja y se replica). Catálogo: `"HRba": halo_of_earth_ability.tscn` (la clave es el tag; ningún archivo se llama como el tag).
 - `ShotSpawner` pasa a tener `class_name` y `spawn_shot` devuelve el `RangedShot` (null en un cliente); `ranged_shot.gd` expone `touching()`. Los dos `WORKAROUND:` del coordinador se tiparon y se borraron.
 - `ai_match` enciende `HaloOfEarth.log_halo`. `rock_dust.tres` pasa a `pool_max 128` (6 rocas × 30 estelas/s × 0,517 s × 1,25).
@@ -1113,7 +1113,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030p-b: Plan (developer) / Resultado
 
-**Plan (developer de 030p-b, 2026-10-17):** el del tech lead en `rfcs/plans/030o-030p-plan.md` §030p-b. Números de `state.d` 13238-13248, 13470-13493, 25943-25975, 8651-8664, 14101-14131 y 29582-29604.
+**Plan (developer de 030p-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030o-030p-plan.md` §030p-b. Números de `state.d` 13238-13248, 13470-13493, 25943-25975, 8651-8664, 14101-14131 y 29582-29604.
 - `BreathOfLifeAbility` (`AbilityEffect` con preparación de 52 ticks, de `shoot_animations[1]`) juzga el blanco (alma → cadáver, muerto, mismo slot, alma NORMAL o EMERGING, ≤ 40 m en 3D) y pone un `BreathOfLife` en el contenedor de disparos. El coordinador (prioridad −1, solo en el servidor) mueve un `RangedShot` (`ShotLook breath_of_life`) con `v = 60·(blanco − pos)`, tope 60; al llegar agrega `FastRevive` al cuerpo.
 - `FastRevive` usa `Captive.revive(0, 1)` y deja el alma en REVIVING; durante 150 ticks sube 2 m/75 por tick (1,97 m) y gira 2π; al final borra el alma y llama a `Captive.finish_revive()` (nuevo: REVIVING → IDLE, velocidad cero; `taken_changed(false)` devuelve la capa y el grupo `unit`).
 - `AbilityEffect.windup()` pasa a ser el único dueño de la búsqueda del clip (`windup_from_clip`, apagado por defecto: Protector y Halo no preparan). Firewalk y Breath lo encienden en su escena y ya no lo duplican.
@@ -1134,7 +1134,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030q-a: Plan (developer) / Resultado
 
-**Plan (developer de 030q-a, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030q-a. Números de `state.d` 10108-10113, 13166-13175, 12592-12605, 12738-12739 y 25434-25519.
+**Plan (developer de 030q-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030q-030s-plan.md` §030q-a. Números de `state.d` 10108-10113, 13166-13175, 12592-12605, 12738-12739 y 25434-25519.
 - `Pull` (`AbilityEffect`, `abilities/pull.gd`, escenas `web_pull.tscn` y `cage_pull.tscn`) juzga el blanco (no aliado, sin Life Shield, ≤ 50 m), prepara 54 ticks (carga en el cuadro 27) y en `fire` arranca el `Pulling` del usuario. `AbilityEffect.starts_cooldown` es un knob nuevo de la base y `ActiveAbility._spend` lo respeta (la Web y la Cage lo apagan).
 - `Pulling` (`Affliction`, `pulling.tres`, bit 6, `holds`, `cancels [using_ability]`; nodo `Afflictions/Pulling` en `unit.tscn`) es el único dueño de la simulación: hilo, tirones, ventana de 25 ticks, tirón extra y fin (`_finish()` único). Usa `Stunned.stun_with_cooldown(480)`, `Tumbling.catapult` y el nuevo `Tumbling.drive(v)` (sin `WORKAROUND:`), o `BodyNudge.push` en el suelo. Prioridad −1. `stunned`, `petrified`, `frozen` y `tumbling` agregan `&"pulling"` a `cancels`.
 - Hilo (`pull_thread.gd/.tscn`): `FxBus.broadcast_scene` una vez, en MIX (alfa, nunca aditivo). Catálogo: `"psla"` → `web_pull.tscn`, `"psaa"` → `cage_pull.tscn`. `ai_match` enciende `Pulling.log_pull`. Caso `f128` (0,3 min) en `run_determinism.sh`.
@@ -1150,7 +1150,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030q-b: Plan (developer) / Resultado
 
-**Plan (developer de 030q-b, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030q-b. Es el mismo `Pull` y el mismo `Pulling`: cambian la escena (`cage_pull.tscn`, SPs1 de 102 cuadros: vuelta de 204 ticks, tirones en T+202+204k), el hilo (`cage_thread.tscn`: rayo de 10 tramos, dispersión 2,5 m, cambia de forma cada 6 ticks, crece en 0,5 s) y las chispas del final (`styx_spark`).
+**Plan (developer de 030q-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030q-030s-plan.md` §030q-b. Es el mismo `Pull` y el mismo `Pulling`: cambian la escena (`cage_pull.tscn`, SPs1 de 102 cuadros: vuelta de 204 ticks, tirones en T+202+204k), el hilo (`cage_thread.tscn`: rayo de 10 tramos, dispersión 2,5 m, cambia de forma cada 6 ticks, crece en 0,5 s) y las chispas del final (`styx_spark`).
 
 **Resultado (developer de 030q-b, 2026-10-17):** semilla 7, caso `f128` (carril C, el mismo caso y los mismos baselines).
 - `f154_expect.py` da `RESULTADO PASS` en fixed, stress y window: 4 tirones en los ticks 236, 440, 644 y 848 (T+202+204k), solo el primero aturde, fin por «4 tirones» en el tick 849 (T+815) con la caja a 10,77 m; Druid5 sigue en el aire y aterriza en el 866 en (1093,48, 1509,99), igual que la réplica. La réplica ahora cuenta que el `Pulling` pisa la velocidad con el empuje (sin elevación) un tick después del 4.º tirón, antes de terminar.
@@ -1159,7 +1159,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030r-a: Plan (developer) / Resultado
 
-**Plan (developer de 030r-a, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030r-a. Números de `state.d` 13179-13187, 13463-13493, 11491-11510, 25524-25578 y `stats.d` 122.
+**Plan (developer de 030r-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030q-030s-plan.md` §030r-a. Números de `state.d` 13179-13187, 13463-13493, 11491-11510, 25524-25578 y `stats.d` 122.
 - `PaceFactors` (componente, `unit.tscn` y `wizard_body.tscn`) es el único dueño de `speed_factor = Π factores` (por nombre de fuente, solo escribe si cambia). `SpeedupEffect` le da su factor (`&"speedup"`); el doctor no lo tiene y sigue escribiendo directo.
 - `Clinging` (componente, mismos dos cuerpos; sockets `body`, `poisoning`, `pace`; `Clinging:shown` replicado) lleva los vencimientos por tipo y le da a `PaceFactors` `0,75ⁿ`. Se suelta todo si el cuerpo ya no puede ser pegado.
 - `LobAbility` (`AbilityEffect`, `sticky_bomb.tscn`, catálogo `"acia"`) prepara desde el clip y lanza 10 `RangedShot` con la puntería de `ShotAim.scatter` y `0,2·uniformDirection` (`MatchSeed.rng(["lob", usuario, tick])`); `StickImpact` (`ShotImpact`, `sticky_bomb_impact.tscn`, look `data/shots/acia.tres`) pega a una criatura enemiga que `can_be_poisoned` o desaparece en el suelo.
@@ -1177,7 +1177,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030r-b: Plan (developer) / Resultado
 
-**Plan (developer de 030r-b, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030r-b. Números de `state.d` 8961, 9028-9031, 13189-13194, 13647-13649, 25580-25676 y los portadores de ignite 23041, 23051, 23247, 24521, 24528, 16670-16677 y 25218.
+**Plan (developer de 030r-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030q-030s-plan.md` §030r-b. Números de `state.d` 8961, 9028-9031, 13189-13194, 13647-13649, 25580-25676 y los portadores de ignite 23041, 23051, 23247, 24521, 24528, 16670-16677 y 25218.
 - `AfflictionType.coexists` y `Afflictions.admit` (se saltea en las dos direcciones, no cancela ni es cancelado). `Oiled` (bit 7, hijo de `Afflictions` en `unit.tscn` con el socket `orders` y en `wizard_body.tscn` sin él; `oiled.tres` retiene, `oiled_wizard.tres` no; ambos `coexists` y con look oscuro: `StoneLook` de `Afflictions` con tinte (0,3, 0,22, 0,12) y prioridad 0, debajo de piedra y hielo). `Health.oil` (socket): con `IGNITE` sobre un cuerpo untado el golpe pasa ×2 y `Oiled.ignite()` lo enciende; la explosión sale en el tick siguiente.
 - Cadena de ignite: `ShotLook.ignites` y `hits_every_side` → `RangedShot.mods` → `ShotImpact.mods_of`/`land`, `DirectImpact`, `SplashImpact` → `SplashDamage.deal`/`hurt(…, mods)`. `fireball_projectile` y `steam_cloud` pasan `IGNITE`; Tickferno y Phoenix no. `fkba.tres` y `fhba.tres` (solo `ignites`), `ignites = true` en `cfba.tres` (Bombard).
 - **`fhba` (Spitfire) no es un proyectil:** es el aliento-cono del Spitfire (state.d:23035-23055); se borró `fhba.tres` y queda para su propio corte (con Rain of Fire, Lava ball y Dragonfire, que tendrán que llevar `IGNITE`). `fkba` (Flame Minion) sí volaba como una bola sin look: ahora tiene su `.tres`.
@@ -1197,7 +1197,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030s-a: Plan (developer) / Resultado
 
-**Plan (developer de 030s-a, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030s-a. Números de `state.d` 13121-13136, 10474-10491, 16366-16386, 9017-9022, 9237, 25342-25386 y `stats.d` 122.
+**Plan (developer de 030s-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030q-030s-plan.md` §030s-a. Números de `state.d` 13121-13136, 10474-10491, 16366-16386, 9017-9022, 9237, 25342-25386 y `stats.d` 122.
 - `LightningStrike` (`abilities/lightning_strike.gd/.tscn`; coordinador en el contenedor de disparos, solo servidor; `launch` e `is_valid_target` estáticos) es el único dueño de «un rayo vuela y daña»: rebota en el primer cuerpo del camino (`retarget`), a los 12 ticks hace el daño directo con `Health.LIGHTNING` y el look es `FxBus.broadcast_beam("lightning")`. **Nombre:** la fase 0 lo llamó `LightningBolt`, pero `scenes/fx/lightning_bolt.gd` ya es el `class_name LightningBolt` (la forma del rayo del `BeamFx`); chocaba y rompía `fx_bus`/`pull_thread`.
 - `CallLightning` (`AbilityEffect`, catálogo `"gsba"`): sin preparación ni enfriamiento, `MatchSeed.rng(["call_lightning", usuario, tick])`.
 - `LightningCharge` (hijo de `unit.tscn`; sockets `body` y `pace`; `LightningCharge:shown` replicado, índice 17 tras `Clinging:shown`): dueño de los cuadros, la rampa y las descargas; `PaceFactors` `&"lightning_charge"` ×1,5; chispas con un RNG de presentación sembrado por `MatchSeed.seed_rng`. `DamagePassive.charge` solo lo consulta (`incoming_factor`, `outgoing_melee_factor`, `melee_accuracy_factor`); `Health.damage_typed(..., mods)` y `Health.LIGHTNING/IGNITE`; `Caster._strike_lightning` pasa `LIGHTNING`.
@@ -1214,7 +1214,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030s-b: Plan (developer) / Resultado
 
-**Plan (developer de 030s-b, 2026-10-17):** el del tech lead en `rfcs/plans/030q-030s-plan.md` §030s-b, con los archivos de la fase 0 (`MiteHop`, `bilemites.tscn`, `liba.tres`, `f156_expect.py`, carril M). Números de `state.d` 13111-13119, 25235-25340, 28778, 29106-29111 y `stats.d` 122.
+**Plan (developer de 030s-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030q-030s-plan.md` §030s-b, con los archivos de la fase 0 (`MiteHop`, `bilemites.tscn`, `liba.tres`, `f156_expect.py`, carril M). Números de `state.d` 13111-13119, 25235-25340, 28778, 29106-29111 y `stats.d` 122.
 - `ShotInFlight.spent() -> bool` (false por defecto; solo `MiteHop` lo redefine). `RangedShot._physics_process`, después de `fly()`: si `spent()`, apaga la física y `queue_free` (+4 líneas).
 - `liba.tres`: `hits_every_side = true`. `LobAbility.fire`: el paquete lleva `"intended"` (ruta del blanco si es enemigo, `""` si no); `"target"` queda igual (`f129` y `f155` no cambian). `LobAbility.uniform_direction(rng)` estático, que usa también `MiteHop` (un solo dueño del cubo normalizado).
 - Catálogo `"liba"` (`bilemites.tscn`); `ai_match` enciende `MiteHop.log_hop`; caso `f156` (0,3 min, semilla 7) en `run_determinism.sh` (usage, `case_args`, `quick` fixed). Ventana: `pt156_watch.gd`, `run_pt156.sh`, `flows/pt156_play.json`.
@@ -1319,7 +1319,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 - **Numeración:** las features se corrieron +2 (F112–F133), porque F110 y F111 ya son de RFC-029.
 - **P1 = (a):** nivel fijo elegido en la partida, 9 por defecto. La XP queda para otro RFC.
 - **P2 = (a):** las criaturas se muestran aunque tengan habilidades pendientes, con «No implementado».
-- **Conflicto con el PRD:** se resolvió en `changes/CHANGE-REQUEST-002.md` y en `PRD.md` («Fuera del primer corte»).
+- **Conflicto con el PRD:** se resolvió en `docs/archive/changes/CHANGE-REQUEST-002.md` y en `PRD.md` («Fuera del primer corte»).
 - **Orden:** 030a puede ir ya. 030b espera a que cierren F79/F80/F84 en el HUD (ya cerradas) y a 028a, porque los dos tocan el libro y el HUD.
 - **030d (por REVIEW-F77):** «Contra la IA» se elige en el boot después de la selección de personaje. La fila «Nivel del mago» va junto a `%AiGod` en el boot, no en `character_select`.
 - **030e (por el playtest de F112):** Rhinok flota en el idle (`Eds1`, que también es tag de vuelo) y Phoenix flota +3,26 m. Las dos entran al criterio de pose de 030e.
@@ -1334,7 +1334,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030t-a: Plan (developer) / Resultado
 
-**Plan (developer de 030t-a, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030t-a y los diffs de `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 10444-10459, 12474, 12526-12529, 13138-13163, 13943-13948, 14400-14403, 14991-15006, 17925-17935, 30820-30825.
+**Plan (developer de 030t-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030t-030v-plan.md` §030t-a y los diffs de `docs/archive/rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 10444-10459, 12474, 12526-12529, 13138-13163, 13943-13948, 14400-14403, 14991-15006, 17925-17935, 30820-30825.
 - `Soul`: `DEVOURING` al final del enum, `devour_shrink_per_s`, `begin_devour(by)`, `sever()` (único lugar que disuelve el cadáver; `SoulSystem._try_collect` lo usa después de `soul_collected` y `SoulPurse.add`), `is_free_or_own(slot)`, `on_corpse(c)` estático (`BreathOfLifeAbility.soul_of` lo llama), `label()` y `_devour_step`. `begin_collect` guarda `_remains`. `Soul.log_souls`.
 - `DevourAbility` (`abilities/devour.tscn/.gd`, `windup_from_clip`) y `DevourGrowth` (`components/devour_growth.tscn/.gd`, dueño único de n, incremento, regeneración extra, ×0,9ⁿ y bulto; `shown` replicado en `unit.tscn` índice 18). `Health.growth/raise_maximum/resistance`; `MeleeAttack.roll_damage` × `DevourGrowth.resistance_factor_of`; `unit_body._regenerate` suma `extra_regeneration_of` (línea reemplazada, 1040 líneas).
 - `ActiveAbility._cost() = float(mana_cost)` (el `max(1)` desaparece; 0 no gasta). `RangedAttack.origin_of(body)` estático (Breath y Devour). `HealEffect.report_each` (log por tick, solo lo enciende Devour).
@@ -1351,7 +1351,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030t-b: Plan (developer) / Resultado
 
-**Plan (developer de 030t-b, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030t-b y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 9075-9089, 12750, 13219-13230, 25867-25890.
+**Plan (developer de 030t-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030t-030v-plan.md` §030t-b y `docs/archive/rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 9075-9089, 12750, 13219-13230, 25867-25890.
 - `AbilityEffect.windup_clip` (`@export_range(0,1)`, por defecto 1: Firewalk, Breath, Pull y Sticky no cambian). `Soul.burst()` (`sever` + `number = 0` + `alma X reventada` + `queue_free`).
 - `RendSoulAbility` (`abilities/rend_soul.tscn/.gd`, `windup_from_clip`, `windup_clip 0`) y `SoulStrike` (`strikes/soul_strike.tscn/.gd`, `ShotStrike`, `land_tick 1`, beam `styx`, prioridad −1). Look `data/shots/rend_soul.tres` (`impact` = `rend_blast_impact.tscn`, `impact_fx` = `styx_spark`). Catálogo `"dner"`.
 - Carril R (z +15) al final de `f131_devour_rend.tres` (el carril D no se renumera): S1 = Styx1, R0/R6/R7 = Trogg6/7/8, J1..J5 = Jabberocky1..5, A1 = Druid2. Ventana: `pt157_watch.gd`, `run_pt157.sh`, `flows/pt157_play.json`.
@@ -1368,7 +1368,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030u-a: Plan (developer) / Resultado
 
-**Plan (developer de 030u-a, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030u-a y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 13495-13510, 13204-13207, 5187-5225, 25716-25759, 8546-8568.
+**Plan (developer de 030u-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030t-030v-plan.md` §030u-a y `docs/archive/rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 13495-13510, 13204-13207, 5187-5225, 25716-25759, 8546-8568.
 - `AbilityEffect.pays_upfront` (por defecto false: Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour y Rend no cambian). `ActiveAbility`: `_spend` se parte en `_pay`, `_start_cooldown` y `_log_spent`. Con `pays_upfront`, `_begin_windup` cobra y `_finish_windup` hace `fire()` y el enfriamiento si era 0, sin chequear maná (log `habilidad X enfriamiento N ticks`).
 - `QuakeAbility` (`abilities/quake.tscn/.gd`, `windup_from_clip`, `windup_clip 0`, `pays_upfront`): `fire` imprime `sacudida X` y llama a `QuakeWave.launch` en los pies. `QuakeWave` y `QuakeRing` ya los había dejado la fase 0. Catálogo `"kauq"`; `ai_match` enciende `QuakeWave.log_quake`.
 - `Frozen` usa `SacFloat.f32` (dedupe sin cambio de resultado).
@@ -1388,7 +1388,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030u-b: Plan (developer) / Resultado
 
-**Plan (developer de 030u-b, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030u-b y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 14411-14438, 10693-10725 y `stats.d` 86-90.
+**Plan (developer de 030u-b, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030t-030v-plan.md` §030u-b y `docs/archive/rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 14411-14438, 10693-10725 y `stats.d` 86-90.
 - `MeleeAttack` (ahora con `class_name`): `signal connected(target, was_frozen)`. `was_frozen` se lee antes del daño; la señal sale al final de `_land` aunque el monto sea ≤ 0, y el daño y `struck` quedan envueltos en `if amount > 0`.
 - `Affliction.inflict(spell, from_slot) -> bool` virtual. `Frozen.inflict` y `try_freeze_with_cooldown` comparten `_try`; con `inflict` loguea `congelar X enfriamiento C tirada R congela|rechaza`, con la única tirada (sin tirada con enfriamiento 0, como sacengine). `Frozen.is_frozen(node)` estático.
 - `MeleeOnHit` (`units/melee_on_hit.gd/.tscn`, hijo de `unit.tscn`: `melee`, `body`, `types`): por cada tag de `passive_abilities` con tipo aplica `skip_if_was_frozen` y `refuse_flying` y llama a `inflict`. `static log_on_hit` (`ai_match` lo enciende). `data/passives/yeti_freeze.tres` (`zerf`, `Afflictions/Frozen`, `skip_if_was_frozen`).
@@ -1406,7 +1406,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030u-c: Plan (developer) / Resultado
 
-**Plan (developer de 030u-c, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030u-c y `rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 10795-10812, 3092-3104, 17852-17876, 8588-8605 y `stats.d` 68-95.
+**Plan (developer de 030u-c, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030t-030v-plan.md` §030u-c y `docs/archive/rfcs/plans/030t-030u-phase0-diffs.md`. Números de `state.d` 10795-10812, 3092-3104, 17852-17876, 8588-8605 y `stats.d` 68-95.
 - `AfflictionType`: `pins` y `blocks_regeneration`. `Afflictions`: `pins()`, `fixed()` (= `immobilized()` o `pins()`) y `blocks_regeneration()`. `BodyNudge.fixed` y las líneas de `unit_body.gd` y `wizard_body.gd` (separación) usan `fixed()`: neto 0. `Health.regenerate` corta si `blocks_regeneration()`.
 - `Affliction.cc_ticks(wizard, vida_máx, duración, k, factor)`: la cuenta `ceil(60 · (mago 0,25 : 1000/vidaMáx) · duración)` en float32 con `SacFloat.f32`. `Frozen.lifetime_ticks` y `Vined` la comparten (un solo dueño de la fórmula).
 - `Vined` (`afflictions/vined.gd`, `data/afflictions/vined.tres`: bit 8, `coexists`, `holds = false`, `cc_protects`, `pins`, `blocks_regeneration`): lista de vencimientos (cada golpe suma uno con su timer); `inflict` → `grasp`, que no aplica a voladores ni a un cuerpo muerto; `steer` deja xz en cero; la muerte del cuerpo vacía la lista. Look de reserva: 16 lianas en espiral, malla de tubo opaca (MIX), RNG de presentación con `MatchSeed.seed_rng`, crecen y se achican en 1 s. Logs `enredado X durante N (n k) (cuadro T)` y `enredado fin X (n k) (cuadro T)` detrás de `Vined.log_vines` (`ai_match`).
@@ -1424,7 +1424,7 @@ scenes/world/units/active_ability.gd       M  si el catálogo tiene la tag: inst
 
 #### 030v-a: Plan (developer) / Resultado
 
-**Plan (developer de 030v-a, 2026-10-17):** el del tech lead en `rfcs/plans/030t-030v-plan.md` §030v-a. Refactorización sin cambio de comportamiento. Orden: (0) caso `f133` con el código de antes, (1) R6, (2) migración.
+**Plan (developer de 030v-a, 2026-10-17):** el del tech lead en `docs/archive/rfcs/plans/030t-030v-plan.md` §030v-a. Refactorización sin cambio de comportamiento. Orden: (0) caso `f133` con el código de antes, (1) R6, (2) migración.
 - **Paso 0:** `debug/f133_legacy_abilities.tscn` + `debug/rules/f133_legacy_abilities.tres` (0,3 min, fila z-80), caso `f133` en `run_determinism.sh` (usage, `case_args`, `quick` en fixed), `agent/tools/f133_expect.py` (lanes + resultado de cada evento + maná y enfriamiento de las seis). Digest grabado en `det_baseline.txt` antes de tocar `active_ability.gd`.
 - **R6:** `static var log_ability := false` en `ActiveAbility`, guarda sus 5 `print`; `debug/ai_match.gd` lo enciende.
 - **Migración:** `LifeShieldAbility` (hsba), `RunAway` (`!nur`) y `DivineSight` (eesd) como `AbilityEffect` en `abilities/`, y 3 entradas nuevas en `data/abilities/ability_catalog.tres`. Se borran del `match` de `active_ability.gd` sus ramas, constantes y `_apply_*`.

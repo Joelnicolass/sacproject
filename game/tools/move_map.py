@@ -14,8 +14,8 @@ Comment lines start with `#`. Directives (one per line, space separated):
   @fix-root <glob> <cut>            after the cut, `dirname "$0")/..` becomes `dirname "$0")/../..` in matching files
 
 Rules: no file is renamed (only the directory changes); a folder row must not contain file rows. A row is "applied"
-when its old path is gone and its new path exists, so the script is idempotent. History folders (rfcs/, reviews/,
-changes/) and addons/ are never rewritten. See rfcs/RFC-048-folder-structure.md.
+when its old path is gone and its new path exists, so the script is idempotent. History (docs/archive/) and addons/ are never
+rewritten. See docs/archive/rfcs/RFC-048-folder-structure.md.
 """
 import argparse
 import difflib
@@ -29,7 +29,7 @@ GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO = os.path.dirname(GAME)
 TEXT_EXT = ('.gd', '.tscn', '.tres', '.gdshader', '.gdshaderinc', '.godot', '.cfg', '.json', '.txt', '.sh', '.py',
             '.md', '.service', '.import')
-SKIP_PREFIX = ('docs/AUDIT-editor-first.md', '.studio/', 'rfcs/', 'reviews/', 'changes/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
+SKIP_PREFIX = ('docs/AUDIT-editor-first.md', '.studio/', 'docs/archive/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
 EXTRA_FILES = ('../README.md', '../.gitattributes', '../.gitignore')
 MAX_BYTES = 20 * 1024 * 1024
 DANGLING_BASELINE = os.path.join(GAME, 'tools', 'move_map', 'dangling_baseline.txt')

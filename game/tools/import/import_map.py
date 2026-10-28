@@ -15,7 +15,7 @@ idempotent: a second run writes nothing, and an existing .png.import is never to
   python3 tools/import/import_map.py --out=DIR          # write there instead (to compare with the versioned ones)
 
 The Godot side of a new map (MapDefinition, map.tscn, catalog entry) is tools/import/scaffold_map.py; the whole sequence is in
-rfcs/RFC-050-original-maps.md.
+docs/archive/rfcs/RFC-050-original-maps.md.
 
 Source: "(N) <name>.scp" of the installation, read with tools/import/sac_formats:
   TMAP   the map's tile index                                       -> not here: tools/import/bake_ground_roles.py reads it into the

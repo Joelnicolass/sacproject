@@ -57,7 +57,7 @@ Fuente: el `Displacement` de state.d:28911-28934 suma lo permanente más `testDi
 
 | Contradicción | Gana |
 |---|---|
-| No existe `rfcs/RFC-057-*.md`; solo el boceto de RFC-055 §12.5 (TerrainShape, Chunks, DeformLog, TerrainBrush) | 063D, que es lo construido y lo aprobado. Este plan hace de RFC; el orquestador escribe `rfcs/RFC-057-deformable-terrain.md` con §3 y marca §12.5 como reemplazado (ese archivo también lo toca la auditoría de RFC-055) |
+| No existe `docs/archive/rfcs/RFC-057-*.md`; solo el boceto de RFC-055 §12.5 (TerrainShape, Chunks, DeformLog, TerrainBrush) | 063D, que es lo construido y lo aprobado. Este plan hace de RFC; el orquestador escribe `docs/archive/rfcs/RFC-057-deformable-terrain.md` con §3 y marca §12.5 como reemplazado (ese archivo también lo toca la auditoría de RFC-055) |
 | `quake_wave.gd`/`quake_ring.gd`: «sacengine Quake.displacement is a render effect» frente a state.d:28929-28931 | sacengine: es simulación. RFC-055 §12.2 ya lo lista entre los que deforman |
 | Decisión del usuario del 2026-10-24 (061k): «la nav como el original, solo los agujeros». El código de hoy (72dfae70) conecta `NavService` a `settled`, así que rehornea también por cada abolladura y al terminar Erupt, aunque Erupt no deja nada | La decisión del usuario. Como aquel motivo (el costo) desapareció con F6, pregunto de nuevo (pregunta 2) |
 | El plan 061k §8 decía «los edificios no siguen el relieve (NO VERIFICADO)» | sacengine lo confirma: ni `getHeight` ni los edificios enmascaran el desplazamiento (sacmap.d:589-603). Si las bases se protegen o no lo decide el usuario (pregunta 1) |
@@ -158,8 +158,8 @@ game/debug/suite/
   [+] deform_net_cases.gd        criterion 9 (in-flight kept, join mid-Volcano, Quake on the client)
   [~] terrain_cases.gd           registers the 5 files (merge, like bore/dent) and run_net adds deform_net_cases
 game/debug/perf/terrain_deform_bench.gd (or .tscn)   [~] + «5 Quakes» run (criterion 10)
-game/rfcs/RFC-057-deformable-terrain.md   [+] (orchestrator) §1 + §3 of this plan
-game/rfcs/RFC-055-human-first-refactor.md [~] ⚠RFC-055 audit   §12.5 «Reemplazado por 063D + RFC-057»
+game/docs/archive/rfcs/RFC-057-deformable-terrain.md   [+] (orchestrator) §1 + §3 of this plan
+game/docs/archive/rfcs/RFC-055-human-first-refactor.md [~] ⚠RFC-055 audit   §12.5 «Reemplazado por 063D + RFC-057»
 ```
 
 No se toca:

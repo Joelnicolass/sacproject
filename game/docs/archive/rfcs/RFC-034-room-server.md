@@ -310,7 +310,7 @@ game/
 │   ├── room_server.service       [+] 034g  systemd (solo el servidor de salas; los dedicados son hijos)
 │   └── README.md                 [+] 034g  export dedicated, puertos, firewall
 ├── PRD.md / FEATURES.md / RULES.md [~] ediciones de §9
-└── rfcs/RFC-034-room-server.md   [+]
+└── docs/archive/rfcs/RFC-034-room-server.md   [+]
 ```
 
 **Mapa de responsabilidades (un dueño por estado):**

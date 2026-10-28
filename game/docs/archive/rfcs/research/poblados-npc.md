@@ -82,7 +82,7 @@ Etiquetas: [REA] visto en `Sacrifice.exe` con REA (Ghidra 12.1.4, JDK 21, heap 3
 | # | Hecho | Fuente | Estado |
 |---|---|---|---|
 | 38 | Almas F30 (`SoulSystem`): alma al caer el cadáver, azul/roja, juntar a 5 m, P suelta; Convert F61. La roja pegada al cadáver no se junta. Sin tope ni regeneración. | `game/FEATURES.md` F30, F61 | Verificado (documentado) |
-| 39 | `map_props.gd` solo coloca **widgets** (plantas) del NTTS; no carga estructuras ni criaturas. `grep jhut|bld1|epez` en `scenes/`, `tools/`, `data/` sin resultados. No hay campesino, casas, bandos 2/3 ni los 6 Taurock. | `game/scenes/world/map_props.gd`; `rfcs/RFC-024-addendum-poblados.md` §1.4; `rfcs/RFC-018-editable-map.md` | Verificado |
+| 39 | `map_props.gd` solo coloca **widgets** (plantas) del NTTS; no carga estructuras ni criaturas. `grep jhut|bld1|epez` en `scenes/`, `tools/`, `data/` sin resultados. No hay campesino, casas, bandos 2/3 ni los 6 Taurock. | `game/scenes/world/map_props.gd`; `docs/archive/rfcs/RFC-024-addendum-poblados.md` §1.4; `docs/archive/rfcs/RFC-018-editable-map.md` | Verificado |
 | 40 | Datos de NPC ya en caché (`creatures.json`); mallas `epez`, `peas`, `eber` horneadas. Modelos de casas de James (`jhut`, `bld*`, `jcc*`, `jwg1`) **no** horneados. | RFC-024 addendum §1.4 | Verificado |
 
 ## (c) No encontrado o dudoso

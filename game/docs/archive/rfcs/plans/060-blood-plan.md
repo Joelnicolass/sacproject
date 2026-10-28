@@ -17,7 +17,7 @@ Base: rama `refactor/new-systems`, HEAD 23b1b83f. Leí `CONVENTIONS.md` entero, 
 
 ## 0. Qué hacía el original y qué ya tenemos
 
-**El original** (sacengine para el QUÉ, REA vía `rfcs/research/061S-scar-ground-marks.md`):
+**El original** (sacengine para el QUÉ, REA vía `docs/archive/rfcs/research/061S-scar-ground-marks.md`):
 - **Gib.** Hace 40 `hoverBlood` y 20 chorros de 10 `blood` (`state.d:8310-8330`, `gibAnimation`). Usa una sola textura roja `blud` para todas las criaturas (`sacobject.d:1726-1730`). `locustBlood` usa la misma textura (`sacobject.d:1732-1735`). En el original no hay sangre de otro color.
 - **Manchas en el suelo.** Existen en el ejecutable, no en sacengine. Cuando una partícula de sangre toca el suelo, pinta la SCAR `blud` de 8×8 px (1,25 m) en el mismo pool de baldosas que las demás cicatrices (`PARTICLESYSTEM::RunParticles`, G3D 0x1602018e-0x160201ed, 061S §2.4). Las manchas no se desvanecen; el tope es «Number of scars» (256 baldosas). El menú tiene un bit aparte para apagar la sangre (bit 0 de «Types of scars allowed», EXE 0x40d51e, 061S §2.3). Ya está importada: `assets/original/scars/blud.png` (8×8, rojo medio 107,4,1).
 - **Al recibir daño.** El original reproduce un clip de dolor direccional (`damageAnimation`, `state.d:8780-8806`: `damageFront+dir`, `flyDamage`) y el sonido `damaged`. No hay flash ni hit-stop: no encontré nada en `state.d`. NO VERIFICADO con REA que el ejecutable tampoco los tenga. El `ScreenShake` del original solo lo disparan hechizos y rocas (`state.d:13417`, 16734, 21261…), nunca un golpe cuerpo a cuerpo.
@@ -134,7 +134,7 @@ debug/fx/
 project.godot                                 [~] + debug_hit_heavy, debug_gib
 agent/flows/f390_blood.json                   [+] capturas f390_01..03 con cámara fija
 FEATURES.md                                   [~] F390        COMPARTIDO con 065 (F389)
-rfcs/RFC-060-blood-hit-feedback.md            [+] spec corta a partir de §14.2 con estas decisiones
+docs/archive/rfcs/RFC-060-blood-hit-feedback.md            [+] spec corta a partir de §14.2 con estas decisiones
 ```
 
 - **No se tocan**: `particle_type.gd`, `fx_atlas.gd` y `sprite_emitter.gd` (los cambia 065), `GroundScars`, `ScarMark`, `Gib`, `Health`, `addons/terrain_tools`, `tower.tscn`, `wizard_sounds.gd` ni `wizard_body.tscn`.
@@ -334,8 +334,8 @@ Al terminar: `bash tools/lint/conventions.sh`, y ningún conteo puede subir. Los
 
 ## Archivos relevantes (absolutos)
 
-- /Users/joelsartori/Development/sacproject/game/rfcs/RFC-055-human-first-refactor.md (§14.2, cita vieja `unit_body.gd:608`)
-- /Users/joelsartori/Development/sacproject/game/rfcs/research/061S-scar-ground-marks.md (§2.3, §2.4: la sangre del original pinta `blud`)
+- /Users/joelsartori/Development/sacproject/game/docs/archive/rfcs/RFC-055-human-first-refactor.md (§14.2, cita vieja `unit_body.gd:608`)
+- /Users/joelsartori/Development/sacproject/game/docs/archive/rfcs/research/061S-scar-ground-marks.md (§2.3, §2.4: la sangre del original pinta `blud`)
 - /Users/joelsartori/Development/sacproject/game/scenes/units/gib.gd
 - /Users/joelsartori/Development/sacproject/game/scenes/units/weapons/melee_weapon.gd (líneas 141-143: `struck` solo en la simulación)
 - /Users/joelsartori/Development/sacproject/game/scenes/audio/unit_sounds.gd (el patrón a seguir)
@@ -357,6 +357,6 @@ Al terminar: `bash tools/lint/conventions.sh`, y ningún conteo puede subir. Los
 - /Users/joelsartori/Development/sacproject/game/debug/fx/f375_hit_feel.gd
 - /Users/joelsartori/Development/sacproject/game/debug/look/scars_lab.tscn
 - /Users/joelsartori/Development/sacproject/game/tools/lint/conventions.sh (C23)
-- /Users/joelsartori/Development/sacproject/game/rfcs/plans/065-build-feedback-plan.md (para ver qué archivos se comparten)
+- /Users/joelsartori/Development/sacproject/game/docs/archive/rfcs/plans/065-build-feedback-plan.md (para ver qué archivos se comparten)
 - /Users/joelsartori/Development/sacproject/sacengine/source/state.d (8310-8330, 8780-8806, 13417)
 - /Users/joelsartori/Development/sacproject/sacengine/source/sacobject.d (1726-1735)

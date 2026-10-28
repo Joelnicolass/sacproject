@@ -1,6 +1,6 @@
 # structures/towers
-What: the ten towers a wizard casts over a free manafount: five Manaliths (`tower.tscn`) and five Shrines (`shrine_tower.tscn`, which adds a RitualSite). Each is a `CastTower` (a MapBuilding): 5000 health, `HealthRegen` (full in 60 s), a `ManaSource` of 50 m (Manalith 33.3/s, Shrine 8.33/s, for the side and its allies), a `GuardPost` with its `AttachPoint`.
-Not: who may cast one or where (StructureAction, TowerRules), how it reaches the other peers (StructureSpawner), drawing the rise (`structures/reveal`: BuildReveal, BuildEdge, BuildCues).
-Talks to: StructureAction.begin -> StructureSpawner.spawn_tower(rising) -> every peer instances the scene at `build_progress` 0; the cast raises it (replicated, `build_progress_changed`), pushes bodies with the fount's `BuildArea`, `cancel` frees it, `finish` calls `complete()` (stands, `clear_footprint` moves the dead and the living out of the box). Rising: no damage (`is_targetable`), no mana, no collision. CastTower takes the fount on enter; at 0 health it falls on every peer the same tick (`MapBuilding.destroyed`: fount free, out of `cast_tower`, ManaSource off, `is_targetable` false, StructureBreak bursts) and the server frees it `linger_s` (1 s) later, so every peer sees the fall before the despawn. A fount with a tower answers `fount_taken`; only a building on the BuildArea answers `occupied` (TowerRules.has_room).
-Edit: open `tower.tscn` / `shrine_tower.tscn` (rate, sphere `Reach`, `AttachPoint`, `HealthRegen.refill_s`, `linger_s` on the root; the rise: `BuildEdge` and its `EdgeLight`, `BaseSpot` with the gizmo, `BuildCues` start / done / cut effects); the model and box live in `buildings/_<tag>.tscn`; role and name in `data/buildings/_<tag>.tres`. A new god's tower: a building scene instancing one of them, a `GodStructure` row, and an entry in `StructureSpawner.scenes`.
-Check: any `buildings/_*.tscn` open in the editor shows the 50 m sphere.
+
+The towers a wizard casts over a free manafount: Manaliths (`tower.tscn`) and Shrines (`shrine_tower.tscn`). Each is a
+`CastTower` (a `MapBuilding`) with `HealthRegen`, a `ManaSource` and a `GuardPost`. While it rises it takes no damage,
+gives no mana and has no collision. A new god's tower: a building scene instancing one of these, a `GodStructure` row on
+the god, and an entry in `StructureSpawner.scenes`.

@@ -68,7 +68,7 @@ res://
 ├── agent/             # AgentKit: flows, harness, fixtures, runs (dev, fuera del export)
 ├── tools/             # importadores y horneados por CLI (dev, fuera del export)
 ├── script_templates/  # plantillas del editor. NO se mueve
-└── docs/ rfcs/ reviews/ changes/ visual/   # documentos (fuera del export). NO se mueven
+└── docs/ docs/archive/rfcs/ docs/archive/reviews/ docs/archive/changes/ visual/   # documentos (fuera del export). NO se mueven
 ```
 
 ### 2.3 `scenes/`: un dominio por carpeta
@@ -334,7 +334,7 @@ No hay Resources ni nodos nuevos. No cambia ningún `@export` ni ningún `.tres`
 - **Se reescribe `path=` aunque haya `uid=`.** Godot resuelve por UID primero, pero acá el 93 % (2 378 de 2 544) de los `ext_resource` no tiene UID. **No** se agregan los `uid=` que faltan (P7).
 - **Se reescriben todas las rutas en texto:** `preload`/`load`, las constantes de carpeta (`SCENE_DIR` en `body_model.gd`, `OUT_DIR` en `tools/bake_body_scenes.gd`, `TYPES_DIR` y `LOOKS_DIR` si cambiaran, `ROOT` de `OriginalAssets`, que no cambia), los `#include` de shader, los flows `.json`, `det_cases.txt`, `det.cfg`, los `.sh`, los `.py` y `tools/deploy/room_server.service`.
 - **Configuración:** en `project.godot`, los autoloads `SacrificeFlow`, `GameData` y `BodyLibrary` (`FxBus` no cambia) y `run/main_scene`. En `export_presets.cfg`, `exclude_filter` suma `debug/*` y `script_templates/*` (048l). `.gitattributes` y `.gitignore` (los del repo y los de `game/`) no tienen hoy rutas de `scenes/`, `debug/` ni `tools/`, pero el script los revisa igual.
-- **Documentos vivos** (`PRD.md`, `FEATURES.md`, `RULES.md`, `VISUAL.md`, `docs/`, `../README.md`, `agent/**/README.md`): se reescriben. **Historia** (`rfcs/`, `reviews/`, `changes/`, `agent/out/`): no se toca; para eso queda el CSV versionado (P3).
+- **Documentos vivos** (`PRD.md`, `FEATURES.md`, `RULES.md`, `VISUAL.md`, `docs/`, `../README.md`, `agent/**/README.md`): se reescriben. **Historia** (`docs/archive/rfcs/`, `docs/archive/reviews/`, `docs/archive/changes/`, `agent/out/`): no se toca; para eso queda el CSV versionado (P3).
 - **No se renombra nada** (archivo, `class_name`, nodo). Una mudanza no puede cambiar la simulación: si `quick` cambia, hay un bug en la mudanza y se para.
 - Un commit por corte, con el mensaje `RFC-048x: mover <dominio> (solo rutas)`. Los hashes se suman a `.git-blame-ignore-revs`. Como cada archivo cambia poco (una o dos líneas de ruta), git detecta los renames y `git log --follow` sigue andando.
 
@@ -347,7 +347,7 @@ python3 tools/move_map.py <csv> [--dry-run] [--diff] [--apply] [--check] [--lint
 - **CSV:** `old,new` relativos a `res://`. Si la fila termina en `/` mueve una carpeta; si no, un archivo. Las líneas con `#` son comentarios. Hay una directiva `@require-empty scenes/world/` que hace fallar el script si queda algún archivo sin mapear bajo esa carpeta. Hay otra, `@fix-root agent/runs/*.sh`, que pasa `dirname "$0")/..` a `/../..`.
 - **Validación (antes de tocar nada):** todo `old` existe y ningún `new` existe. No hay dos `old` con el mismo `new`. No se mueve nada de la lista «NO mover» (§5). Cada `@require-empty` queda cubierto.
 - **Mudanza:** se expanden las carpetas a archivos, se suman los `.uid`/`.import` hermanos, se hace `mkdir -p` y `git mv`.
-- **Reescritura en una sola pasada:** una regex con todas las rutas viejas en alternancia, la más larga primero, con borde (`(?<![\w/.-])`). Así nunca se encadena A→B→C. Reconoce tres formas: `res://old`, `old` desnudo en `.sh`/`.py`/`.md`/`.service`, y el prefijo de carpeta `res://old/`. Recorre los archivos de texto que `git ls-files` lista en `game/` (`.gd .tscn .tres .gdshader .gdshaderinc .godot .cfg .json .txt .sh .py .md .service .import`) más `../README.md`, `../.gitattributes` y `../.gitignore`. Deja afuera `rfcs/`, `reviews/`, `changes/`, `agent/out/`, `addons/` y los binarios LFS.
+- **Reescritura en una sola pasada:** una regex con todas las rutas viejas en alternancia, la más larga primero, con borde (`(?<![\w/.-])`). Así nunca se encadena A→B→C. Reconoce tres formas: `res://old`, `old` desnudo en `.sh`/`.py`/`.md`/`.service`, y el prefijo de carpeta `res://old/`. Recorre los archivos de texto que `git ls-files` lista en `game/` (`.gd .tscn .tres .gdshader .gdshaderinc .godot .cfg .json .txt .sh .py .md .service .import`) más `../README.md`, `../.gitattributes` y `../.gitignore`. Deja afuera `docs/archive/rfcs/`, `docs/archive/reviews/`, `docs/archive/changes/`, `agent/out/`, `addons/` y los binarios LFS.
 - **`--check` (falla con exit 1):**
   1. `grep` de cada ruta vieja, en sus tres formas, sobre ese mismo conjunto: debe dar vacío.
   2. Escaneo de enlaces muertos: todo literal `res://…` sin `%`, `+` ni `{` en ese conjunto apunta a un archivo que existe.
@@ -401,7 +401,7 @@ Cada corte termina con el commit del corte. No hay review separada en los cortes
 - `debug/rules/`, `agent/flows/`, `agent/harness/`, `agent/tools/`, `agent/out/`, `agent/run_determinism.sh` y `det.*`.
 - `scenes/fx/`, `scenes/net/`, `scenes/ui/<sub>/` y la estructura interna de `scenes/world/ai/` y `scenes/world/sacrifice/` (solo cambia el prefijo).
 - Nombres de archivo, `class_name` y nombres de nodo.
-- `docs/`, `rfcs/`, `reviews/`, `changes/`, `visual/`, `script_templates/`.
+- `docs/`, `docs/archive/rfcs/`, `docs/archive/reviews/`, `docs/archive/changes/`, `visual/`, `script_templates/`.
 
 ### Riesgos
 
@@ -424,7 +424,7 @@ Cada corte termina con el commit del corte. No hay review separada en los cortes
 
 - **P1. ¿Paraguas `scenes/` o plano en `res://`?** Recomiendo el paraguas (§2.1): la raíz queda en 12 entradas y no en 27, y RULES y el kit ya lo usan. Con el plano, el script y la tabla cambian solo el prefijo.
 - **P2. ¿Renombrar `data/` a `content/`?** No: costaría 2 544 rutas, `GameCatalog` y las rutas dinámicas, y no gana claridad. Alcanza con el README.
-- **P3. ¿Reescribir la historia (`rfcs/`, `reviews/`, `changes/`)?** No. Se reescriben solo los documentos vivos (PRD, FEATURES, RULES, VISUAL, docs, READMEs). El CSV versionado en `tools/move_map/048.csv` sirve para buscar una ruta vieja.
+- **P3. ¿Reescribir la historia (`docs/archive/rfcs/`, `docs/archive/reviews/`, `docs/archive/changes/`)?** No. Se reescriben solo los documentos vivos (PRD, FEATURES, RULES, VISUAL, docs, READMEs). El CSV versionado en `tools/move_map/048.csv` sirve para buscar una ruta vieja.
 - **P4. ¿Sacar `debug/` del export dedicado?** Sí (en 048l), como piden el kit y la regla de producto y desarrollo. El modo `--world=res://debug/…` sigue andando con el binario del editor. Confirmar que nadie usa un export con debug en el VPS.
 - **P5. ¿Sacar `agent_kit` del producto?** Todavía no: es un autoload y los flows lo necesitan. Va como RFC aparte: cargarlo solo con un flag de CLI y excluir `addons/agent_kit/*` del export.
 - **P6. ¿Mover `skeletal_post_import.gd` y `terrain_import.gd` a `tools/import/`?** No en 048: obligaría a reimportar 84 modelos. Queda documentado en `tools/README.md` como excepción.

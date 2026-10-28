@@ -1,6 +1,6 @@
 # 061V-i — Cómo se ven en el original los hechizos de nivel 8 sobre un blanco (061i)
 
-Este informe junta los hechos para el arte final de 061i: Charm, Blind Rage, Intestinal Vaporization, Bovine Intervention y Death. No trae diseño ni código. El plan está en `rfcs/plans/061-spells-master-plan.md` (pieza `SpellCarrier`) y los números de juego en `rfcs/research/061R-abilities-structures.md`. El usuario pidió **arte final desde el inicio**. El formato es el de `061V-spell-visuals-f-g.md` (mismo método: la tabla de recursos del registro SPEL manda sobre las etiquetas por defecto del exe).
+Este informe junta los hechos para el arte final de 061i: Charm, Blind Rage, Intestinal Vaporization, Bovine Intervention y Death. No trae diseño ni código. El plan está en `docs/archive/rfcs/plans/061-spells-master-plan.md` (pieza `SpellCarrier`) y los números de juego en `docs/archive/rfcs/research/061R-abilities-structures.md`. El usuario pidió **arte final desde el inicio**. El formato es el de `061V-spell-visuals-f-g.md` (mismo método: la tabla de recursos del registro SPEL manda sobre las etiquetas por defecto del exe).
 
 ## Fuentes y etiquetas
 

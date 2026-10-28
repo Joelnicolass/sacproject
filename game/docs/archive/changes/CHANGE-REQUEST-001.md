@@ -1,6 +1,6 @@
 # CHANGE-REQUEST-001 — Modo single player contra IA, con poblados y NPC
 
-Fecha: 2026-10-14 · Origen: pedido del usuario («el modo single player. Necesitamos que la IA juegue también») y adición del usuario («también los poblados: matar a los NPC es parte de la economía de almas»). Plan técnico: `rfcs/RFC-024-single-player-ai.md` + `rfcs/RFC-024-addendum-poblados.md`. Investigación de poblados (con REA, sacengine y web): `rfcs/research/poblados-npc.md` (en curso; donde difiera de la adenda, manda la investigación).
+Fecha: 2026-10-14 · Origen: pedido del usuario («el modo single player. Necesitamos que la IA juegue también») y adición del usuario («también los poblados: matar a los NPC es parte de la economía de almas»). Plan técnico: `docs/archive/rfcs/RFC-024-single-player-ai.md` + `docs/archive/rfcs/RFC-024-addendum-poblados.md`. Investigación de poblados (con REA, sacengine y web): `docs/archive/rfcs/research/poblados-npc.md` (en curso; donde difiera de la adenda, manda la investigación).
 
 ## 1. Resumen
 Se suma al producto el modo **1 humano contra 1 mago controlado por IA** en High Noon (los 5 dioses), con la IA portada de la del original (`sacengine/source/bots/shiny.d`), más los **poblados y NPC del mapa** como fuente de almas. La IA es un jugador más: sin trampa, mismas reglas de maná y almas. Recomendación: **aceptar**, como cambio de **alcance** que se implementa por cortes (F71–F77), detrás del trabajo ya en curso del pasto.
@@ -78,8 +78,8 @@ F70 queda reservada para el cierre del pasto (RFC-022e §12). Testing: banco rep
 - `PRD.md`: Fantasía; Fuera del primer corte (aclaración); nueva sección «Modo solo contra la IA»; Slice jugable (punto 5).
 - `FEATURES.md`: F71–F77 agregadas como pendientes (IDs append-only; F70 sigue reservada para el pasto).
 - `RULES.md`: nueva sección «IA» (jugador más, sin trampa, fuera de `mp_kit`, determinismo con semilla).
-- `rfcs/RFC-024-single-player-ai.md` y `rfcs/RFC-024-addendum-poblados.md`: ya escritos; aprobados por el usuario con las decisiones de §5.
-- `RFCS.md` y `TEST-STRATEGY.md`: **no existen** en este proyecto; el índice de RFCs es la carpeta `rfcs/` y la estrategia de pruebas vive dentro de cada RFC (§5–§6 de RFC-024). No se crean por este cambio.
+- `docs/archive/rfcs/RFC-024-single-player-ai.md` y `docs/archive/rfcs/RFC-024-addendum-poblados.md`: ya escritos; aprobados por el usuario con las decisiones de §5.
+- `RFCS.md` y `TEST-STRATEGY.md`: **no existen** en este proyecto; el índice de RFCs es la carpeta `docs/archive/rfcs/` y la estrategia de pruebas vive dentro de cada RFC (§5–§6 de RFC-024). No se crean por este cambio.
 - Código: ninguno todavía.
 
 ## 8. Stakeholders y comunicación

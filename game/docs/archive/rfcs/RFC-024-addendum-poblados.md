@@ -2,7 +2,7 @@
 
 Estado: propuesta, falta el OK del usuario. **Reemplaza** las secciones 1.4, 2, 3.1, 3.2 (se suman filas), 3.3 (se suma), 5.2 (se suman campos), 6, 7, 8 y 9 de `RFC-024-single-player-ai.md`. Las demás (0, 1.1, 1.2, 1.3, 4, 5.1, 5.3, 5.4, 10) quedan como están.
 
-Pedido del usuario: «agregar los poblados, son parte importante del gameplay, matar a los "npc" son parte de la economía de almas». Dato del usuario: «hay "casas" y "criaturas" que no atacan pero pueden ser atacadas para quedarse con sus almas». Regla del usuario para la investigación: **usar REA, buscar en la web, no inventar nada**. Hay una investigación aparte en curso (`rfcs/research/poblados-npc.md`); donde difiera de esta adenda, manda la investigación con evidencia.
+Pedido del usuario: «agregar los poblados, son parte importante del gameplay, matar a los "npc" son parte de la economía de almas». Dato del usuario: «hay "casas" y "criaturas" que no atacan pero pueden ser atacadas para quedarse con sus almas». Regla del usuario para la investigación: **usar REA, buscar en la web, no inventar nada**. Hay una investigación aparte en curso (`docs/archive/rfcs/research/poblados-npc.md`); donde difiera de esta adenda, manda la investigación con evidencia.
 
 **Qué cambia respecto de lo que dijo el usuario**
 - Confirmado en parte: las criaturas pasivas existen (26 Farmer, que nunca atacan). Pero **las casas no dan almas**: destruir un edificio no deja alma en sacengine (`state.d:8376-8380`).
@@ -194,7 +194,7 @@ Aprobadas: 1 (dificultades Fácil/Normal/Difícil sin trampa), 2 (1 rival IA), 3
 
 ## Adenda 1.1 — Resultados de la investigación con REA, datos y web (2026-10-15)
 
-Fuente: `rfcs/research/poblados-npc.md`. Donde difiere de lo anterior, manda esto.
+Fuente: `docs/archive/rfcs/research/poblados-npc.md`. Donde difiere de lo anterior, manda esto.
 - **Confirmado:** hay habitantes pasivos (Peasant `saep`, Snowman `zepa`, Zombie `zepd`, Farmer `zepe`, Slave `zepf`): agresividad 0, 500 de vida, 1 alma, `behavior_flags` 256 [DATOS]. El manual oficial los describe como «almas esperando ser convertidas» y dice que en multijugador conviene matarlos para juntar sus almas [DOC].
 - **Refugios (corrige 1.5):** solo las **11 estructuras** `jhut` ×5 y `jwg1` ×6 de High Noon tienen la marca de refugio (bit 15 del BLDG original) [DATOS]. Los demás edificios (`jcc*`, `bld*`, `bon*`, `jeg*`) no la tienen; qué son exactamente: [NO ENCONTRADO]. Casi todos los Farmers están a < 57 m de un refugio.
 - **Casas destructibles:** tienen 5000 de vida [DATOS]; el exe tiene la función de script `DestroyHut` [REA 0x4cc04c]. Qué hace al destruirse: [NO ENCONTRADO]. Destruir un edificio da solo XP, no almas [SAC state.d:8376-8380, 9156].

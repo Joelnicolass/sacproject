@@ -1,6 +1,6 @@
 # 055u — Unidades de tiempo y de medida para humanos (plan)
 
-> Origen: auditoría `rfcs/research/055R-legacy-audit.md` §3.3 (C-3) y `RFC-055-human-first-refactor.md` §13.2b (fila C-3, corte 055u). Explicación aprobada por el usuario.
+> Origen: auditoría `docs/archive/rfcs/research/055R-legacy-audit.md` §3.3 (C-3) y `RFC-055-human-first-refactor.md` §13.2b (fila C-3, corte 055u). Explicación aprobada por el usuario.
 
 ## Regla
 

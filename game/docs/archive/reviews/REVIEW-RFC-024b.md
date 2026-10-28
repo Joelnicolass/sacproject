@@ -1,6 +1,6 @@
 # Review RFC-024 · corte 024b (F72: navegación, visión por bando y elección de blanco)
 
-Revisor: studio-reviewer, una pasada, sin implementar. Plan: `rfcs/RFC-024-single-player-ai.md` (§1.2, §3.1–3.3, §5, §6 «024b», riesgos 2–3), adenda de poblados, `RULES.md` («Datos», «IA»). Proyecto de juego: checks de SQL/XSS/auth N/A.
+Revisor: studio-reviewer, una pasada, sin implementar. Plan: `docs/archive/rfcs/RFC-024-single-player-ai.md` (§1.2, §3.1–3.3, §5, §6 «024b», riesgos 2–3), adenda de poblados, `RULES.md` («Datos», «IA»). Proyecto de juego: checks de SQL/XSS/auth N/A.
 
 ## Veredicto
 

@@ -1,10 +1,7 @@
-# scenes/ai
-What: an AI side plays a seat like one more player: it knows what its bodies saw (Perception), sums up the field (Groups, Stance), picks spells (Brain and its phases) and work for its creatures (Tasks), and gives orders and casts through Port, the same way a human does.
-Not: the rules of a spell, a creature or a ritual (they answer through Caster, Orders and the game systems); it never cheats: no extra mana, souls or sight in any difficulty.
-Talks to: AiRoster seats an AiSide per seat (ai_side.tscn); Vision -> SightIntake -> Belief; Clock runs the jobs; Brain and Tasks push into Port, which calls Caster and Orders; AiBody reads a body's parts.
-Edit: data/ai/difficulty_<id>.tres (how fast and bold) · data/ai/tactics_*.tres (weights) · SpellType ai_use / ai_phase in the inspector · ai_side.tscn children (take a phase or a task out and the side stops doing it).
+# ai
+
+An AI side plays one seat like a player, through the same `Caster` and `Orders` a human uses. It never cheats: no extra
+mana, souls or sight at any difficulty.
+Entry point: `ai_side.tscn` (one per AI seat, seated by `AiRoster`). Remove a child (a brain phase, a task) and the side
+stops doing that. Difficulty and tactics are `data/ai/*.tres`; what a spell is for is `SpellType.ai_use` / `ai_phase`.
 Check: `--log=ai_seat,ai_attack,ai_focus,ai_order,ai_summon`.
-
----
-
-Un cerebro nuevo va en `brains/` como hijo de `ai_side.tscn`; los datos de tipo van en `data/ai/` como `.tres`. El diseño es propio; el Sacrifice original es referencia (citas al final de cada doc, en `## Ref:`).

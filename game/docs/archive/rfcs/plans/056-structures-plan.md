@@ -326,5 +326,5 @@ func is_targetable() -> bool    ## standing and not destroyed
 - /Users/joelsartori/Development/sacproject/game/data/fx/explosion_blast.tres
 - /Users/joelsartori/Development/sacproject/game/data/fx/explosion_blast2.tres
 - /Users/joelsartori/Development/sacproject/game/debug/map/structure_siege.tscn
-- /Users/joelsartori/Development/sacproject/game/rfcs/plans/065-build-feedback-plan.md
+- /Users/joelsartori/Development/sacproject/game/docs/archive/rfcs/plans/065-build-feedback-plan.md
 - /Users/joelsartori/Development/sacproject/sacengine/source/state.d (8376-8380, 9183-9188, 15157-15181, 27611-27660)

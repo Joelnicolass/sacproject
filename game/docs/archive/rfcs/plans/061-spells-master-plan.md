@@ -222,8 +222,8 @@ Con ventana: captura con `--cast=rapf` y `--cast=htel`.
 3. ¿Looks provisorios (burbuja, partículas aditivas, mallas simples) hasta cerrar el libro, y los modelos con Blender (vaca, Muerte, dragón de fuego) en una pasada aparte con referencias? **Recomiendo que sí.**
 
 Archivos clave:
-- game/rfcs/research/061R-abilities-structures.md
-- game/rfcs/plans/061a-shrine-plan.md
+- game/docs/archive/rfcs/research/061R-abilities-structures.md
+- game/docs/archive/rfcs/plans/061a-shrine-plan.md
 - game/CONVENTIONS.md
 - game/scenes/spells/caster.gd
 - game/scenes/spells/actions/spell_action.gd

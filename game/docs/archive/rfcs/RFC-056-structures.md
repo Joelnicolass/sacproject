@@ -1,6 +1,6 @@
 # RFC-056: estructuras (destrucción, extensible por señales)
 
-Estado: implementado 2026-10-26 (S1, S2, S3), sin correr Godot; falta la pasada final de pruebas. Plan: `rfcs/plans/056-structures-plan.md` (aprobado con todas las recomendaciones). Feature: **F391**.
+Estado: implementado 2026-10-26 (S1, S2, S3), sin correr Godot; falta la pasada final de pruebas. Plan: `docs/archive/rfcs/plans/056-structures-plan.md` (aprobado con todas las recomendaciones). Feature: **F391**.
 
 ## Alcance
 

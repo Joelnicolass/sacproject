@@ -49,7 +49,7 @@ debug/suite/rules_suite.gd          [~] (C)
 debug/suite/guardian_cases.gd       [~] RULES.guardian_* → ReachFacts.of_rules(RULES)
 debug/rules/*.tres (23) + agent/fixtures/rfc022c_rules_persephone.tres, pt97_heal_rules_persephone.tres [~] r4: − soul_collect_distance, manafount_radius, altar_radius
 tools/lint/baseline.txt             [~] al cerrar
-rfcs/RFC-055-human-first-refactor.md [~] C-5: 055r hecho
+docs/archive/rfcs/RFC-055-human-first-refactor.md [~] C-5: 055r hecho
 ```
 No se tocan: `unit.tscn`, `unit_body.gd`, `creature_fx.gd`, `wizard_body.gd`, `altar.tscn`, `manafount.tscn`, `tower.tscn`, `map_props.gd`, `guard_post.gd`, `sacrifice_places.tscn`.
 

@@ -1,6 +1,6 @@
 # 061V — Cómo se ven en el original los hechizos de 061h (las nubes)
 
-Este informe junta los hechos para el arte final de 061h: Rain of Frogs, Rain of Fire, Plague, Cloudkill y Bombardment (con daño y sin abolladuras). No trae diseño ni código. El plan del corte está en `rfcs/plans/061h-clouds-plan.md` y los números de juego en `rfcs/research/061R-abilities-structures.md`. El usuario pidió **arte final desde el inicio**. El formato y el método son los de `061V-spell-visuals-f-g.md` (la tabla de recursos del registro SPEL manda sobre las etiquetas por defecto del exe).
+Este informe junta los hechos para el arte final de 061h: Rain of Frogs, Rain of Fire, Plague, Cloudkill y Bombardment (con daño y sin abolladuras). No trae diseño ni código. El plan del corte está en `docs/archive/rfcs/plans/061h-clouds-plan.md` y los números de juego en `docs/archive/rfcs/research/061R-abilities-structures.md`. El usuario pidió **arte final desde el inicio**. El formato y el método son los de `061V-spell-visuals-f-g.md` (la tabla de recursos del registro SPEL manda sobre las etiquetas por defecto del exe).
 
 ## Fuentes y etiquetas
 

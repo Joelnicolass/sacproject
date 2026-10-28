@@ -6,7 +6,7 @@ No edité el repo. El lint está en verde y no cambió ningún conteo (C1a 103, 
 
 ## 0. Antes de empezar: contradicciones y dependencias
 
-- **No hay RFC-057 escrito.** Solo aparece en `game/rfcs/plans/061-spells-master-plan.md:48`, en la fila 061k. Hasta que el RFC exista, este plan hace de RFC. Lo que aprueben de acá hay que copiarlo a `rfcs/RFC-057-*.md`.
+- **No hay RFC-057 escrito.** Solo aparece en `game/docs/archive/rfcs/plans/061-spells-master-plan.md:48`, en la fila 061k. Hasta que el RFC exista, este plan hace de RFC. Lo que aprueben de acá hay que copiarlo a `docs/archive/rfcs/RFC-057-*.md`.
 - **055R §3.3 quedó desactualizado.** Dice que la colisión se crea en `_ready` con `create_trimesh_shape`. El código actual dice otra cosa: `Collision` es un hijo guardado que trae el `terrain.glb` (`scenes/map/terrain/terrain.gd:1-6`). Gana el código, porque RFC > research.
 - **061h todavía no está.** No existe `ZoneDropper` ni el meteorito de Bombardment. Las abolladuras van en el último sub-corte y se enganchan a la escena del meteorito cuando 061h la cree.
 - **Formato SCAR:** sacengine no lo implementa (deja `// TODO: scar` en `state.d:11460`, `18435`, `18490`, `19186`). No hay qué portar sin investigar el ejecutable con REA (ver pregunta 1).
@@ -215,9 +215,9 @@ debug/net/terrain_late_join.tscn       NEW
 ## Archivos leídos
 
 - `game/CONVENTIONS.md`
-- `game/rfcs/research/055R-original-reference.md` (§3)
-- `game/rfcs/research/061R-abilities-structures.md`
-- `game/rfcs/plans/061-spells-master-plan.md`
+- `game/docs/archive/rfcs/research/055R-original-reference.md` (§3)
+- `game/docs/archive/rfcs/research/061R-abilities-structures.md`
+- `game/docs/archive/rfcs/plans/061-spells-master-plan.md`
 - `game/scenes/map/terrain/terrain_shape.gd`
 - `game/scenes/map/terrain/terrain.gd`
 - `game/scenes/map/terrain/terrain_rules.gd`

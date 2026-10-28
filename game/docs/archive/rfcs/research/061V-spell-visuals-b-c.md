@@ -1,6 +1,6 @@
 # 061V — Cómo se ven en el original los hechizos de 061b y 061c
 
-Investigación de hechos para el arte final de 061b (escudos de nivel 2) y 061c (control sobre un blanco). No tiene diseño ni código. El plan es `rfcs/plans/061-spells-master-plan.md`, y el usuario pidió **arte final desde el inicio**.
+Investigación de hechos para el arte final de 061b (escudos de nivel 2) y 061c (control sobre un blanco). No tiene diseño ni código. El plan es `docs/archive/rfcs/plans/061-spells-master-plan.md`, y el usuario pidió **arte final desde el inicio**.
 
 ## Fuentes y etiquetas
 

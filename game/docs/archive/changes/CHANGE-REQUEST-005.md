@@ -31,4 +31,4 @@ La comprobación de línea de tiro también existe en el original.
 ## Artefactos
 
 - `PRD.md` (sección de dificultades)
-- `rfcs/RFC-053-ai-and-combat-feel.md`
+- `docs/archive/rfcs/RFC-053-ai-and-combat-feel.md`

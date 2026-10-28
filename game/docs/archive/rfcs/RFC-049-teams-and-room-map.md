@@ -331,7 +331,7 @@ game/
 │   └── runs/run_pt049.sh        [+] 049i  playtest: 1 ventana + 1 headless + 2 IA en 2v2
 ├── docs/HOWTO.md                [~] 049i  «Un mapa» (test_flat4) y «Un modo»
 ├── PRD.md / FEATURES.md / RULES.md [~] 049i  §8
-└── rfcs/RFC-049-teams-and-room-map.md [+]
+└── docs/archive/rfcs/RFC-049-teams-and-room-map.md [+]
 ```
 
 **Mapa de responsabilidades (un dueño por estado):**

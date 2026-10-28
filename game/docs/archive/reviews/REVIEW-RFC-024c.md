@@ -1,6 +1,6 @@
 # REVIEW RFC-024 corte 024c (F74): cerebro minimo del mago IA
 
-Una pasada, sin implementar. Plan: `rfcs/RFC-024-single-player-ai.md` (§1.1, §3, §4, §5, §6, §9) y `rfcs/RFC-024-addendum-poblados.md` (§6 «024c», manda). Reglas: `RULES.md` «IA». Fuente: `sacengine/source/bots/shiny.d`.
+Una pasada, sin implementar. Plan: `docs/archive/rfcs/RFC-024-single-player-ai.md` (§1.1, §3, §4, §5, §6, §9) y `docs/archive/rfcs/RFC-024-addendum-poblados.md` (§6 «024c», manda). Reglas: `RULES.md` «IA». Fuente: `sacengine/source/bots/shiny.d`.
 
 ## Veredicto: NEEDS WORK (sin bloqueantes; el corte se puede cerrar)
 

@@ -2,7 +2,7 @@
 
 Fan game de Sacrifice. Godot 4.7, arquitectura estándar por dominios (`scenes/<dominio>/`), multijugador online con servidor dedicado.
 
-Esta página es el **estado actual por área**. El registro completo, una entrada por feature con su criterio y lo que se midió, está en [`docs/CHANGELOG-features.md`](docs/CHANGELOG-features.md): buscá ahí por id (`### F208`). Cada corte de cada RFC (`rfcs/RFC-NNN-*.md`) cita sus ids. Cómo agregar contenido: [`docs/HOWTO.md`](docs/HOWTO.md).
+Esta página es el **estado actual por área**. El registro completo, una entrada por feature con su criterio y lo que se midió, está en [`docs/archive/CHANGELOG-features.md`](docs/archive/CHANGELOG-features.md): buscá ahí por id (`### F208`). Cada corte de cada RFC (`docs/archive/rfcs/RFC-NNN-*.md`) cita sus ids. Cómo agregar contenido: [`docs/HOWTO.md`](docs/HOWTO.md).
 
 Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), **Pendiente**.
 

@@ -1,7 +1,5 @@
-# scenes/camera/
+# camera
 
-Camara del mundo (`world_camera`). Solo presentacion y entrada de camara.
-
-La camara sigue la pose DIBUJADA del cuerpo (`DrawnPose.origin`, solo en `_process`) y corre con `process_priority = 15000`, despues de MpActor (10000); su propia interpolacion esta apagada porque se coloca cada cuadro. `FollowCamera` (lluvia, vida del aire) corre en 15001, despues de ella.
-
-Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `@export` (nada de herencia profunda), y los datos de tipo en `data/` como `.tres`.
+The world camera: presentation and camera input only.
+It follows the drawn pose of the body (`DrawnPose.origin`, in `_process`) and runs at `process_priority = 15000`, after
+`MpActor` (10000), which writes the pose first. `FollowCamera` nodes (rain, air life) run at 15001.

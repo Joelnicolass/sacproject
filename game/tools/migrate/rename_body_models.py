@@ -31,7 +31,7 @@ spec = importlib.util.spec_from_file_location('rename_resources', os.path.join(H
 rr = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rr)
 # History and generated data keep the names they had; so does the changelog of the features.
-rr.SKIP_PREFIX = rr.SKIP_PREFIX + ('docs/CHANGELOG', 'tools/migrate/rename_body_models.py')
+rr.SKIP_PREFIX = rr.SKIP_PREFIX + ('docs/archive/', 'tools/migrate/rename_body_models.py')
 
 GAME = rr.GAME
 MODELS = 'scenes/bodies/models'

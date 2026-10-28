@@ -36,7 +36,7 @@ Campaña, hechizos de nivel 2 en adelante y el Shrine (las criaturas completas p
 - Victoria y derrota como hoy: profanar el altar enemigo y desvanecimiento.
 - Un dedicado puede alojar un humano contra la IA (`--ai-slots=2`), como prueba de humo. El modo online de dos humanos no cambia.
 - «Contra la IA» admite los modos con varios asientos: la IA llena los demás (aliada o rival). En una sala, el anfitrión puede poner IA en los asientos libres (RFC-049).
-- Plan: `rfcs/RFC-024-single-player-ai.md` y `rfcs/RFC-024-addendum-poblados.md`. Cortes F71 a F77.
+- Plan: `docs/archive/rfcs/RFC-024-single-player-ai.md` y `docs/archive/rfcs/RFC-024-addendum-poblados.md`. Cortes F71 a F77.
 
 ## Recorrido
 

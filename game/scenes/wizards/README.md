@@ -1,21 +1,9 @@
-# scenes/wizards/
-What: the wizards of a match: `WizardBody` (the body the player or the AI drives), `WizardSpawner`, the ghost form and the types (`WizardType`, one `.tres` per wizard in `data/catalog/wizards/`).
-Not: what a wizard casts (`scenes/spells/`), the picks and the lobby (`scenes/net/`, `scenes/ui/`), the size and sockets of the body (`scenes/bodies/` and `bodies/` here).
-Talks to: `WizardType.body` (a `BodyFrame` scene in `bodies/`) is worn through `BodyMount`; `BodyCollider` is the only writer of the capsule and the spells read the muzzle, top and feet through `BodyFacts`; `GhostForm` asks `WizardDeathLook` to lay the body down.
-Edit: `data/catalog/wizards/<nombre>.tres` (stats, `body`) · `bodies/<nombre>.tscn` (drag `Bounds/Capsule`, `Bounds/Footprint` and the `Sockets/` markers) · `wizard_body.tscn` (parts).
+# wizards
 
-Magos: cuerpo, spawner, forma fantasma y tipos. La estadistica concreta de cada mago es un `.tres` en `data/`.
-
-Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `@export` (nada de herencia profunda), y los datos de tipo en `data/` como `.tres`.
-
-Muerte (presentacion): `GhostForm` (etapa DYING) le pide a `DeathLook` (`WizardDeathLook` + `RagdollDriver`, esqueleto fisico horneado con `tools/bake/bake_ragdolls.gd`) que el cuerpo caiga como ragdoll durante el morir (se congela a los `settle_s` del driver). En RISING la primera mitad desvanece el cuerpo caido, el cuerpo se para en idle donde esta, y la segunda mitad lo desvanece hacia el fantasma (un solo cuerpo, sin duplicado). Sin altar (GONE) el cuerpo caido se desvanece y desaparece. Un modelo sin esqueleto fisico o un servidor dedicado no cambian nada.
-
-Cuerpo: cada mago tiene su escena de tamano y sockets en `bodies/<nombre>.tscn` (`BodyFrame`: capsula, huella, `Sockets/Muzzle` de donde sale la bola, `Sockets/Feet`). `WizardType.body` la apunta, `WizardBody.mount` (`BodyMount`) la viste y `BodyCollider` es el unico que escribe la capsula.
-
-Libro: `Spellbook` (hijo, socket `wizard`) arma el libro con `current_book()`: `WizardBody.book` si esta puesto (un libro propio para este mago, para el banco o el solo; no viaja por la red y online avisa con un warning), si no el libro de `god_type`. Cambiar `book` o el nivel lo reconstruye una vez.
-
-Red (RFC-072 1b): el cuerpo lleva un `MpActor` hijo (con su `MpSync`, que se guarda en la escena) en vez de `Net` (`MpReplicate`) y un `MultiplayerSynchronizer` propio. La pose viaja en `MpActor:net_position`/`net_rotation`/`net_stamp` a 60 Hz y en el cliente la dibuja `MpActor` (BUFFERED, un poco en el pasado); ningun otro nodo escribe la posicion del mago ahi. El resto de lo replicado (vida, mana, almas, fantasma, wards, sangre, `owner_slot`, `level`) esta en `sync_extra`: para sumar una propiedad se agrega ahi y se abre y guarda la escena. `warp_to` y `_return_to_altar` marcan el salto en el servidor con `WarpSnap` (`MpActor.snap()`): la marca (`net_teleports`) viaja con la pose y los proxies saltan.
-
-Movimiento (RFC-072 2a): `WizardDrive` (hijo `Drive`) es el unico que escribe el movimiento del mago en cada tick: `step(keys, delta)` valida `forward` (-1..1, finito) y `yaw`, respeta `locked`, camina las ordenes (`walking`, `goal`: solo el servidor) y termina en `Locomotion.finish_now`. El kit lo corre via `WizardBody.mp_move` (`MpActor.predict`): el servidor por cada frame de teclas del dueno, el dueno al instante y de nuevo al reconciliar. Las teclas viajan como values del `MpInput` hijo (`forward` cada frame, `yaw` solo cuando cambia ~0,25 grados). `locked` lo deriva el servidor en cada paso (aflicciones, `Caster.holds_wizard`, fantasma que no se mueve, asiento) y viaja en el `MpSync` junto con `velocity` y `speed_factor`, que `mp_move` lee. El mago no esquiva con RVO: avisa su velocidad (`BodyAvoidance.announce`) y los demas lo esquivan. Un asiento IA no predice: `WizardSpawner` apaga `MpActor.predict` (segun `PickBoard.is_ai`) y `WizardBody._physics_process` llama `drive.step(null, delta)`. Un cuerpo de banco sin spawner queda con `predict` y el kit lo simula sin teclas. Efectos del servidor (tumbo, empujones, ordenes de caminar con clic) todavia no se predicen: el dueno los ve ~1 RTT despues (RFC-072 2b).
-
-Correccion del dueno (RFC-072 paso 2): `MpActor.correction_snap_distance = 2.0` m; una correccion del servidor mayor a eso se dibuja de golpe en vez de deslizarse (la catapulta de Erupt manda al mago varios metros: deslizarlo 0,5 s se ve como un patinazo), las menores se funden con `correction_smoothing_s`.
+The wizards: `wizard_body.tscn` (the body the player or the AI drives), `WizardSpawner` and `WizardType`
+(`data/catalog/wizards/<name>.tres`).
+- `Drive` (`WizardDrive`) is the only writer of the wizard's movement each tick. The kit's `MpActor` predicts it for the
+  owner and draws it buffered on other peers; an AI seat does not predict.
+- Replicated properties are listed in `MpActor` › `sync_extra`; save the scene after changing it.
+- `GhostForm` handles death and return to the altar; `DeathLook` lays the body down as a ragdoll.
+- The book is the god's, unless `WizardBody.book` is set (local only, never sent over the network).

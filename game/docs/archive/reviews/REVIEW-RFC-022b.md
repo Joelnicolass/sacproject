@@ -1,6 +1,6 @@
 # Review RFC-022b (luz base)
 
-Alcance: `rfcs/RFC-022-graphics-upgrade.md` (§3 fila 022b, §5-§9, §17, "Medido en 022a" con aclaración, "Medido en 022b") y `VISUAL.md`. Una pasada, solo lectura.
+Alcance: `docs/archive/rfcs/RFC-022-graphics-upgrade.md` (§3 fila 022b, §5-§9, §17, "Medido en 022a" con aclaración, "Medido en 022b") y `VISUAL.md`. Una pasada, solo lectura.
 
 ## Veredicto: FAIL con 1 bloqueante (corregible con un cambio de datos)
 

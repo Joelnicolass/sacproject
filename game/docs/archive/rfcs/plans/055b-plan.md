@@ -1,6 +1,6 @@
 # 055b: look (cielo, luz, Environment) con un solo dueño. Plan aprobado 2026-10-23
 
-Aprobado por el usuario con: bloom/glow agregado y P1–P7 según la recomendación. Fuente: informe del tech lead; referencia visual en `rfcs/research/055R-visual-reference.md`.
+Aprobado por el usuario con: bloom/glow agregado y P1–P7 según la recomendación. Fuente: informe del tech lead; referencia visual en `docs/archive/rfcs/research/055R-visual-reference.md`.
 
 ## Hoy (medido)
 - `Environment` con 3 escritores que se pisan (`ThemeApplier`, `SkyLayer`, `LightLayer`), cada uno con copia y restauración de un `Dictionary`.

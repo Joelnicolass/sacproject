@@ -1,6 +1,6 @@
 # REVIEW RFC-022c — terreno PBR (Persephone)
 
-Reviewer: studio-reviewer, una pasada, solo lectura. Contra `rfcs/RFC-022-graphics-upgrade.md` (§3 fila 022c, §5, §6, §8, §9, §11, §12, §17, «Medido en 022c») y `VISUAL.md`.
+Reviewer: studio-reviewer, una pasada, solo lectura. Contra `docs/archive/rfcs/RFC-022-graphics-upgrade.md` (§3 fila 022c, §5, §6, §8, §9, §11, §12, §17, «Medido en 022c») y `VISUAL.md`.
 
 ## Veredicto: PASS con observaciones
 

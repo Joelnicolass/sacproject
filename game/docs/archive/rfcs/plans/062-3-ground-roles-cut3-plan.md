@@ -4,7 +4,7 @@ Tech lead, 2026-10-26. Estado: **aprobado** 2026-10-26 («ok a todo con tus reco
 
 ## 0. Objetivo
 - Los 5 `data/look/<dios>.tres` llevan un `GodGround` con 4 `GroundRole` completos; `LookProfile.ground_classic` deja de existir.
-- `grep -rE "sacrifice_ground|ground_pbr|GroundSet|GroundLayer|NativeGround|TileLayerMap|zone_splat|ground_common|ground_classic|land_remap" game/` da 0 fuera de `rfcs/`, `reviews/` y `docs/CHANGELOG`. Queda solo `ground.gdshader`.
+- `grep -rE "sacrifice_ground|ground_pbr|GroundSet|GroundLayer|NativeGround|TileLayerMap|zone_splat|ground_common|ground_classic|land_remap" game/` da 0 fuera de `docs/archive/rfcs/`, `docs/archive/reviews/` y `docs/CHANGELOG`. Queda solo `ground.gdshader`.
 - El pasto lee `Terrain.ground_roles` (no `TileLayerMap`).
 - Un mapa nuevo desde `_template` tiene suelo en los 5 dioses, sin `tiles.png` ni ids del original.
 - Lint: C13 2 → 1 (queda `original_assets.gd` para 055z), C7 −2, ningún conteo sube.

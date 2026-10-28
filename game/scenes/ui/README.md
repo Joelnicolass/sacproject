@@ -1,11 +1,5 @@
-# scenes/ui/
+# ui
 
-What: la interfaz, una subcarpeta por pantalla o widget (`hud/`, `lobby/`, `character_select/`, `map_picker/`, `mode_picker/`, `biome_picker/`, `ai_picker/`, `local_server/`, `online/`...).
-Not: las reglas ni el cable de red. Un picker lista el catalogo y entrega el recurso elegido (`selected_map()`, `selected_mode()`, `selected_god()`); el id de red solo lo arma `MatchWire`.
-Talks to: las pantallas llaman a `SacrificeFlow` (pick, jugar) a `MpLobby` (salas del servidor de salas) y, en `online/`, a `SacrificeFlow.host_online_room` / `join_online` / `online_rooms` (salas que hospedan los jugadores); los pickers guardan el recurso como metadata de cada item y no leen ningun tag.
-Edit: un dios, un mapa o un modo nuevo aparece solo en los pickers (su `.tres` o su carpeta); una pantalla nueva es una subcarpeta con su escena y su script.
-
----
-Interfaz por pantalla o widget: `hud/`, `spell_book/`, `character_select/`, `minimap/`, `radial/`, `lobby/`, etc. Una pantalla nueva es una subcarpeta con su escena y su script.
-
-Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `@export` (nada de herencia profunda), y los datos de tipo en `data/` como `.tres`.
+The interface, one subfolder per screen or widget. Screens call `SacrificeFlow` (or `MpLobby`); they never build network
+ids (only `MatchWire` does). A picker lists a catalog and returns the chosen resource, so a new god, map or mode shows up
+by itself. Player-facing text goes through `tr()` with keys in `data/i18n/strings.csv`.

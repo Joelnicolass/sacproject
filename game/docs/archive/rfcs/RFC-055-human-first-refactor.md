@@ -323,7 +323,7 @@ debug/units/death_carrier_rules.tres   [+] the doctor is killed mid-haul at tick
 Flujo: con `DROP_DEAD` el cuerpo pasa a `DEAD` en el aire, el gate de gravedad de 055a lo baja en ticks hasta `is_on_floor()`, `Corpse.settled` avisa y `SoulSystem` crea el alma en `soul_anchor()`, donde aterrizó. Sin RPC nuevas: `mode` ya se replica.
 
 ### 12.5 Terreno deformable (RFC-057, boceto)
-**Reemplazado por 063D + RFC-057** (2026-10-26): lo construido es `Terrain` (único escritor) + `GroundField` + `TerrainLive` + `TerrainStamp`/`StampProfile` + `HoleCutter`/`HoleRules` + `TerrainNet`; ver `rfcs/RFC-057-deformable-terrain.md` y `scenes/map/terrain/README.md`. El boceto de abajo queda como historia.
+**Reemplazado por 063D + RFC-057** (2026-10-26): lo construido es `Terrain` (único escritor) + `GroundField` + `TerrainLive` + `TerrainStamp`/`StampProfile` + `HoleCutter`/`HoleRules` + `TerrainNet`; ver `docs/archive/rfcs/RFC-057-deformable-terrain.md` y `scenes/map/terrain/README.md`. El boceto de abajo queda como historia.
 ```
 Map
 ├── Terrain : Node3D                 [~] only assembles
@@ -477,7 +477,7 @@ Hoy el port solo tiene sangre al desintegrar un cuerpo (`Gib.burst`, `scenes/uni
 - `BloodFx` (nodo hijo de la unidad): al recibir daño emite salpicadura (`GPUParticles3D` o el sistema de partículas existente) con el color de sangre del tipo de criatura (`CreatureType.blood_color`: rojo por defecto; verde, negro o nada para no-muertos y elementales).
 - `BloodDecals` (capa del `LookRig`): `Decal` de Godot en el suelo con pool y tope por calidad, se desvanecen en `fade_s`; nunca entran a la sim.
 - Escena de prueba `debug/fx/blood_lab.tscn`.
-- Nota (2026-10-26): este boceto lo reemplaza `rfcs/RFC-060-blood-hit-feedback.md` (escucha `Health.changed`, `BodyLook.blood`, manchas en `GroundScars`; todo sangra rojo).
+- Nota (2026-10-26): este boceto lo reemplaza `docs/archive/rfcs/RFC-060-blood-hit-feedback.md` (escucha `Health.changed`, `BodyLook.blood`, manchas en `GroundScars`; todo sangra rojo).
 
 ## 15. Regla «todo en el editor, movible con gizmo» (aprobada 2026-10-23)
 Auditoría: `research/055R-editor-gizmo-audit.md`. El usuario aprobó los 5 cortes nuevos, el orden y los cambios a decisiones previas.

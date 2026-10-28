@@ -88,7 +88,7 @@ debug/suite/
   captive_look_cases.gd        [+]    casos headless con el modelo montado a mano. ~150
   death_cases.gd               [~]    bind(skeleton) -> bind_model(model)
   rules_suite.gd               [~]    registra CAPTIVE_LOOK_CASES después de DEATH_CASES
-rfcs/RFC-055-human-first-refactor.md [~] §13.2 «Muerte por Tween» -> Hecho; §16 con las desviaciones 1, 2 y 5 de §0
+docs/archive/rfcs/RFC-055-human-first-refactor.md [~] §13.2 «Muerte por Tween» -> Hecho; §16 con las desviaciones 1, 2 y 5 de §0
 tools/lint/baseline.txt        [~]    solo si algún conteo baja
 ```
 

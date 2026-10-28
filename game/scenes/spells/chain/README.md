@@ -1,5 +1,4 @@
 # spells/chain
-What: spells that jump: `ChainHop` keeps who was hit and the clock of the jumps (Chain Lightning 7 hits every 20 ticks, Rainbow 6 arcs of 64 ticks, the jumps of Dragonfire); `ChainPick` chooses the next body inside a radius that shrinks ((6 - n) / 6 of the range); a `ChainEffect` child says what a jump does (`ChainStrike`: a lightning bolt; `ChainHeal`: an arc and a full cure through `HealEffect`).
-Not: casting (`LaunchAction` + `Caster`), the damage maths (`Health`), the dragon's flight (`carrier/`), the look of a bolt or arc (`BeamType` / `BeamFx` in `data/fx/beams/`).
-Talks to: `LaunchAction.started` makes the scene (`chain_lightning.tscn`, `rainbow.tscn`) in the shot container and `release` lets the first jump go; `ChainHop` calls down its `effect`; bolts and arcs reach every peer through `FxBus.broadcast_beam`; `CastBolts` and `CastGlow` are played on every peer by `FxBus.broadcast_scene` while the wizard casts.
-Edit: the scene of each spell (`hits`, `hop_s`, `shrink_steps`, `allies`, `order`, the `beam` of `Strike` - `lightning.tres` is the SPEL's `ltn2`, `lightning_ltng.tres` the exe's `ltng`) · `data/fx/beams/rainbow_arc.tres` (31 segments, fins of 0.7 m, `path` ARC) · `data/fx/spark.tres`, `rainbow.tres`, `rainbow_tip.tres` · `data/catalog/spells/ntlc.tres`, `wobr.tres`.
+
+Spells that jump (Chain Lightning, Rainbow, Dragonfire's hits). `ChainHop` keeps who was hit and the jump clock,
+`ChainPick` picks the next body, and a `ChainEffect` child says what one jump does (`ChainStrike`, `ChainHeal`).

@@ -2,7 +2,7 @@
 
 Estado: 052a–052i hechos (F360–F368); 052z (F369) con el banco `all` igual y pendiente del playtest con ventana.
 Pedido: «si, hagamos esto para tener el juego completo» (usuario, 2026-10-19).
-Cambio previo: `changes/CHANGE-REQUEST-003.md` saca «audio original» de los no-goals del PRD y de FEATURES (Won't), y suma el dominio `scenes/audio/` y la carpeta `data/audio/` a RULES.md.
+Cambio previo: `docs/archive/changes/CHANGE-REQUEST-003.md` saca «audio original» de los no-goals del PRD y de FEATURES (Won't), y suma el dominio `scenes/audio/` y la carpeta `data/audio/` a RULES.md.
 
 ## 1. Hoy
 

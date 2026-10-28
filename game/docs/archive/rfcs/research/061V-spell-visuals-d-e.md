@@ -1,6 +1,6 @@
 # 061V — Cómo se ven en el original los hechizos de 061d y 061e
 
-Investigación de hechos para el arte final de 061d (almas: Soul Mole, Animate Dead, Soul Wind) y 061e (saltos y dirigidos: Chain Lightning, Rainbow, Dragonfire, Halo of Earth). No tiene diseño ni código. El plan es `rfcs/plans/061-spells-master-plan.md`, los números de juego están en `rfcs/research/061R-abilities-structures.md`, y el usuario pidió **arte final desde el inicio**. Formato y método iguales a `061V-spell-visuals-b-c.md`.
+Investigación de hechos para el arte final de 061d (almas: Soul Mole, Animate Dead, Soul Wind) y 061e (saltos y dirigidos: Chain Lightning, Rainbow, Dragonfire, Halo of Earth). No tiene diseño ni código. El plan es `docs/archive/rfcs/plans/061-spells-master-plan.md`, los números de juego están en `docs/archive/rfcs/research/061R-abilities-structures.md`, y el usuario pidió **arte final desde el inicio**. Formato y método iguales a `061V-spell-visuals-b-c.md`.
 
 ## Fuentes y etiquetas
 

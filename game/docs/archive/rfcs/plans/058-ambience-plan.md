@@ -391,8 +391,8 @@ Archivos clave que leí:
 - `/Users/joelsartori/Development/sacproject/game/scenes/look/look_profile.gd`
 - `/Users/joelsartori/Development/sacproject/game/scenes/match/match_biome.gd`
 - `/Users/joelsartori/Development/sacproject/game/scenes/match/match_clock.gd`
-- `/Users/joelsartori/Development/sacproject/game/rfcs/RFC-029-vfx-lights-weather.md`
-- `/Users/joelsartori/Development/sacproject/game/rfcs/RFC-055-human-first-refactor.md`
+- `/Users/joelsartori/Development/sacproject/game/docs/archive/rfcs/RFC-029-vfx-lights-weather.md`
+- `/Users/joelsartori/Development/sacproject/game/docs/archive/rfcs/RFC-055-human-first-refactor.md`
 
 
 ---

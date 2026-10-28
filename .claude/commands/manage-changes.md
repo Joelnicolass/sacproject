@@ -62,4 +62,4 @@ Evaluá e integrá los cambios propuestos así:
 
 Brindá primero un resumen de tu evaluación general, luego el análisis detallado según la estructura de arriba, y por último una recomendación clara de cómo proceder con cada cambio.
 
-Guardá la evaluación completa en `changes/CHANGE-REQUEST-[NNN].md`, numerando de forma secuencial a partir de los archivos que ya hay en esa carpeta. La clasificación, el análisis de impacto, las alternativas que rechazaste y las razones por las que las rechazaste son exactamente el registro de decisión que no vale nada en un log de chat y vale en un archivo -- dentro de seis meses, "¿por qué no se construyó esto?" lo responde ese archivo o nadie.
+Guardá la evaluación completa en `docs/archive/changes/CHANGE-REQUEST-[NNN].md`, numerando de forma secuencial a partir de los archivos que ya hay en esa carpeta. La clasificación, el análisis de impacto, las alternativas que rechazaste y las razones por las que las rechazaste son exactamente el registro de decisión que no vale nada en un log de chat y vale en un archivo -- dentro de seis meses, "¿por qué no se construyó esto?" lo responde ese archivo o nadie.

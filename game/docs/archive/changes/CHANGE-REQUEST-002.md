@@ -18,4 +18,4 @@ Fecha: 2026-10-16. Pedido del usuario: «también está pendiente tener a dispon
 - **Ocultar las criaturas con habilidades pendientes:** sería menos fiel al libro, y cada corte las va completando.
 
 ## Artefactos actualizados
-- `PRD.md` (fuera del primer corte), `rfcs/RFC-030-full-bestiary.md` §13. Las F112–F133 se registran en `FEATURES.md` cuando arranque cada corte.
+- `PRD.md` (fuera del primer corte), `docs/archive/rfcs/RFC-030-full-bestiary.md` §13. Las F112–F133 se registran en `FEATURES.md` cuando arranque cada corte.

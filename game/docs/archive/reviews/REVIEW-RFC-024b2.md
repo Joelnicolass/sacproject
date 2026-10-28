@@ -1,7 +1,7 @@
 # Revisión RFC-024 adenda 1 · corte 024b2 «Poblados y NPC» (F73)
 
 Revisor: studio-reviewer, un pase, solo lectura (el único archivo escrito es este). Fecha: 2026-10-15.
-Referencias: `rfcs/RFC-024-addendum-poblados.md` (§1.4, §1.5, §2, §3.1–3.3, §5.2, §6 «024b2», §7, §9, Adenda 1.1), `rfcs/research/poblados-npc.md`, `RULES.md` («Datos», «IA»). Decisiones del usuario respetadas: almas de NPC = matar + Convert; la IA no caza aldeanos.
+Referencias: `docs/archive/rfcs/RFC-024-addendum-poblados.md` (§1.4, §1.5, §2, §3.1–3.3, §5.2, §6 «024b2», §7, §9, Adenda 1.1), `docs/archive/rfcs/research/poblados-npc.md`, `RULES.md` («Datos», «IA»). Decisiones del usuario respetadas: almas de NPC = matar + Convert; la IA no caza aldeanos.
 
 Limitación de método: el repo no tiene ningún commit y el índice está desactualizado, así que `git diff` no da una línea base del corte. Leí los archivos tal como están y confronté con el informe del developer. No corrí vuelos con ventana ni los flows `.json` (f20/f22/f30/pt60/pt61b): solo lo pedido, en headless.
 
@@ -40,7 +40,7 @@ Salida pedida en la regla 8: `rg -n "func agent_" scenes src glue` no encuentra 
 
 Criterios con evidencia propia (mis corridas): carga, pasivos, huida (se alejó 20,2 m en 3 s), encogerse (COWER, 0,0 m en 10 s), rencor (todos los Farmers a <= 80 m en 0,133 s, ninguno de más lejos), almas (rojas, pegadas, el mago encima no las junta), casas (0 almas, indestructible lo informa), sin reaparición (`farmers_alive_10min` 0 de 26), rendimiento (2,34 ms), libro de almas (`balanced true`, convertidas 3 = 1 + 2).
 
-**B1 (bloqueante de contrato). Los desvíos del developer son honestos, pero el RFC sigue diciendo otra cosa.** `rfcs/RFC-024-addendum-poblados.md` §6 no se tocó. Hay que corregirlo con evidencia, no dejar la discrepancia en la descripción de `debug/village.tscn`:
+**B1 (bloqueante de contrato). Los desvíos del developer son honestos, pero el RFC sigue diciendo otra cosa.** `docs/archive/rfcs/RFC-024-addendum-poblados.md` §6 no se tocó. Hay que corregirlo con evidencia, no dejar la discrepancia en la descripción de `debug/village.tscn`:
 - *Taurock a 80 m (desvío 1): el criterio del RFC está mal, el código está bien.* La fórmula de 024b (`TargetPicker.score`, `target_picker.gd:72-82`, sacengine `state.d:12925-12935`) con umbral de patrulla 0,25 y peso de criatura 1,25 da `s² · 1,25 > 0,25`, es decir `s > 0,447`, es decir distancia < 100·(1−0,447)/0,75 = **73,7 m**. Los 100 m son la vista, no el alcance de la elección. Medido por mí: a 80 m no elige blanco en 20 s; a 70 m elige en 0,12 s. Corregir §6 a «ataca desde <= 70 m (corte del puntaje 73,7 m [S]); a 80 m no».
 - *«Ataca en <= 5 s»: ambigüedad no dicha.* A 70 m el Taurock **elige** blanco en 0,12 s pero el **primer golpe** llega a los 12,1 s (tiene que caminar 65 m). El informe del developer no lo menciona. El RFC debe decir cuál de las dos cosas mide el criterio; hoy solo se cumple la lectura «elige blanco».
 - *Convert (desvío 2).* Se demuestra en `village_cower` (altar propio a 70 m, Farmer6 sin refugio), no en `village`. Mi corrida: 1 alma en 31,7 s (<= 60 s), Taurock +2 en 77,3 s (el RFC no fija tiempo para el Taurock, 4 rondas). Es honesto, pero corresponde moverlo al RFC («en `village_cower`»), y ver la dimensión 8: en `village` no hay forma práctica de convertir.
@@ -53,7 +53,7 @@ Criterios con evidencia propia (mis corridas): carga, pasivos, huida (se alejó 
 - `cache/` está en `.gitignore` (`git check-ignore -v cache/high_noon_ntts.json` lo confirma); `git ls-files -- cache` vacío; ningún `.wad`, `.scp`, `.obj`, `.res` de modelo ni `buildings.json` en el índice. `tools/export_high_noon_ntts.py` y `tools/export_stats.py` escriben solo bajo `cache/`.
 - `SideRelations`, `MapPopulation`, `MapBuilding` leen todo de `cache/` y degradan con aviso si falta (verificado en `side_relations.gd:25-43`, `map_population.gd:50-54`, `map_building.gd:60-63`).
 - Nit 1: `debug/village_rules.gd:12` y `debug/village.tscn` (descripción) llevan una posición del mapa (`1255,1214`). Es un dato derivado menor y el RFC ya la cita; si se quiere pureza, sacarla a un `@export` sin default y ponerla en el `.tres`... que también es del repo. No bloquea.
-- Nit 2: `rfcs/research/poblados-npc.md` lista las posiciones de los 11 refugios y flags de BLDG. Es documentación de análisis, no recurso del juego; coherente con «nada del original» en el sentido de RULES (WAD, texturas, modelos).
+- Nit 2: `docs/archive/rfcs/research/poblados-npc.md` lista las posiciones de los 11 refugios y flags de BLDG. Es documentación de análisis, no recurso del juego; coherente con «nada del original» en el sentido de RULES (WAD, texturas, modelos).
 - Nit 3: las suites dependen del caché local (`village_sides` falla sin `cache/high_noon_ntts.json`). Igual que las demás; no es nuevo.
 
 ## 3. Composición — PASS (nits)
@@ -109,7 +109,7 @@ Recomendación: no bloquear el cierre de F73 (los criterios medidos pasan y el p
 ## Bloqueantes y no bloqueantes
 
 Bloqueantes (una corrección, no un bucle):
-1. B1: reescribir §6 de `rfcs/RFC-024-addendum-poblados.md`: Taurock <= 70 m (corte 73,7 m por la fórmula de 024b), «elige blanco» vs «primer golpe», Convert medido en `village_cower`, y «vida 500».
+1. B1: reescribir §6 de `docs/archive/rfcs/RFC-024-addendum-poblados.md`: Taurock <= 70 m (corte 73,7 m por la fórmula de 024b), «elige blanco» vs «primer golpe», Convert medido en `village_cower`, y «vida 500».
 2. B2: correr y anotar el criterio de red (32 NPC y 69 casas en un cliente del dedicado) con la corrida de regresión de red, y comprobar una casa caída con cliente tardío.
 
 No bloqueantes (para 024c o antes del playtest):

@@ -1,6 +1,6 @@
 # 061a — Shrine y torres como escenas (plan aprobado 2026-10-24)
 
-Fuente: `rfcs/research/061R-abilities-structures.md` (verificado con REA). Plan del tech lead, aprobado por el usuario con estas decisiones:
+Fuente: `docs/archive/rfcs/research/061R-abilities-structures.md` (verificado con REA). Plan del tech lead, aprobado por el usuario con estas decisiones:
 
 - Se migra el Manalith en este corte y se borra `StructureBody` (RFC-055 §13.1: nada de contenido nuevo sobre lo calcado).
 - El Shrine **no** revive al mago (el fantasma vuelve solo en el altar).

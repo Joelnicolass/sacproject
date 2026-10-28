@@ -1,6 +1,6 @@
 # 063 — Terreno de malla libre (plan aprobado)
 
-> **Reemplazado por 063D (2026-10-26).** El terreno vuelve a ser la grilla de 256²; ver `rfcs/plans/063D-grid-terrain-plan.md`. El camino de malla de 063-2a se borró en 063D S1. Este plan queda solo como historia.
+> **Reemplazado por 063D (2026-10-26).** El terreno vuelve a ser la grilla de 256²; ver `docs/archive/rfcs/plans/063D-grid-terrain-plan.md`. El camino de malla de 063-2a se borró en 063D S1. Este plan queda solo como historia.
 
 # Plan RFC-063: terreno de malla libre (convivencia con la grilla solo durante la transición, después se borra la grilla)
 
@@ -258,5 +258,5 @@ Si en rendimiento no se llega al 1,5×, se agrega una caché ráster de alturas 
 - `game/scenes/map/maps/peaks/map.tscn`
 - `game/scenes/units/movement/edge_clamp.gd`
 - `game/tools/terrain_import.gd`, `tools/import/scaffold_map.py`
-- `game/rfcs/plans/061k-terrain-plan.md`, `062-ground-roles-plan.md`
+- `game/docs/archive/rfcs/plans/061k-terrain-plan.md`, `062-ground-roles-plan.md`
 - `game/RULES.md`

@@ -1,6 +1,6 @@
 # ui/online
-What: «Salas online», salas que hospedan los jugadores por el emisor y el relay de MpKit: crear una (modo, mapa, tierra, nombre, «en la lista»; muestra el código), unirse por código o desde la lista de salas públicas. Una vista a la vez (`online_screen` → `online_host_view` / `online_join_view`); una línea de estado (`%OnlineStatus`) con lo que dice `SacrificeFlow`.
-Not: la vida de la sala (`MpOnline` del kit), el ticket (`scenes/net/online_ticket.gd`), el servidor de salas de un VPS (`scenes/ui/lobby/`, apagado: `room_server_enabled` en `sacrifice_flow.tscn` lo prende y entonces «Salas online» abre ese lobby), asientos de IA (online son solo personas).
-Talks to: crear → `SacrificeFlow.host_online_room(opciones, nombre, listada)` y `MpOnline.room_ready(code)`; unirse → `await SacrificeFlow.join_online(code)`; lista → `await SacrificeFlow.online_rooms()`; `OnlineNetwork.apply()` al entrar.
-Edit: look y layout en `online_*.tscn` (la fila de la lista es `online_room_row.tscn`; «Listada» por defecto = `button_pressed` de `%Listed`) · emisor en `data/net/online_config.tres` (`issuer_url`, `game_id`; `--issuer-url=` / `--issuer-game=` le ganan) · textos en `data/i18n/strings.csv` (`UI_ONLINE_*`) y los del kit en el grupo «Online (issuer)» de `sacrifice_flow.tscn` · versión del juego en Project Settings › Application › Config › Version (solo se juntan jugadores con la misma).
-Check: dos instancias (Debug › Customize Run Instances) → Online → Crear en una, Actualizar y tocar la fila (o tipear el código) en la otra; el log del proceso de partida dice `partida local_…: slot 2 pick … (elegido al entrar)`.
+
+«Salas online»: rooms that players host through the issuer and relay of MpKit. Create one (shows its code), join by code
+or from the public list. The issuer is `data/net/online_config.tres` (`--issuer-url=` / `--issuer-game=` override it).
+Only players with the same game version (Project Settings › Application › Config › Version) meet.
+Check: run two instances (Debug › Customize Run Instances), create a room in one and join it from the other.

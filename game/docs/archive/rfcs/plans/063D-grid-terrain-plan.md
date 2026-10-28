@@ -265,7 +265,7 @@ game/debug/rules/ai_mesh_duel.tres             [~→] ai_duel_quiet.tres (2 AIs 
 game/debug/map/ground_dump.gd                  [~] drops the filter of maps with ground.glb
 game/agent/runs/run_063_2a.sh                  [-]
 game/.gitignore                                [~] drops `!scenes/map/maps/*/ground.glb.import`
-game/rfcs/plans/063-mesh-ground-plan.md        [~] header «Reemplazado por 063D (2026-10-26)»
+game/docs/archive/rfcs/plans/063-mesh-ground-plan.md        [~] header «Reemplazado por 063D (2026-10-26)»
 ```
 
 ### S2

@@ -1,6 +1,6 @@
 # RFC-068: Puerta de arranque
 
-Estado: en implementación (K1-K3 kit, G1-G2 juego, G3 pruebas y docs) desde el 2026-10-26. Feature F392. Plan: `rfcs/plans/068-start-gate-plan.md` (el texto del plan dice 067; es este RFC).
+Estado: en implementación (K1-K3 kit, G1-G2 juego, G3 pruebas y docs) desde el 2026-10-26. Feature F392. Plan: `docs/archive/rfcs/plans/068-start-gate-plan.md` (el texto del plan dice 067; es este RFC).
 
 ## Decisiones del usuario (2026-10-26, mandan)
 

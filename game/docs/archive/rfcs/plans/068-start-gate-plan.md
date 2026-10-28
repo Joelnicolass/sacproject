@@ -1,4 +1,4 @@
-Estado: **aprobado 2026-10-26** con todas las recomendaciones de §11. El usuario: no hay nada productivo que deba mantener compatibilidad de protocolo (subir la versión del kit alcanza; sin capa de compatibilidad). Nota del orquestador: el id 067 ya es del plan de mapas PBR; este plan es **RFC-068** (F392). Donde el texto dice RFC-067 / run_067_gate / rfcs/RFC-067-start-gate.md, léase 068.
+Estado: **aprobado 2026-10-26** con todas las recomendaciones de §11. El usuario: no hay nada productivo que deba mantener compatibilidad de protocolo (subir la versión del kit alcanza; sin capa de compatibilidad). Nota del orquestador: el id 067 ya es del plan de mapas PBR; este plan es **RFC-068** (F392). Donde el texto dice RFC-067 / run_067_gate / docs/archive/rfcs/RFC-067-start-gate.md, léase 068.
 
 # Plan tech lead: una puerta de arranque para LAN y salas (propuesta: RFC-067, F392)
 
@@ -116,7 +116,7 @@ agent/runs/      [+] run_067_gate.sh
 agent/harness/   [~] run_pt143.sh, run_pt143p.sh   + --start-seats=2/3
 agent/flows/     [~] late_join_a/b -> rejoin_a / rejoin_intruder; pt73_net_late, pt57_client_late, f63_client_late -> rejoin
                  [-] late_join_ghost_a/b, pt140pt_net_c2late (hoy ninguna corrida los usa: confirmar con grep antes de borrar)
-RULES.md:28, FEATURES.md (F392), rfcs/RFC-067-start-gate.md, rfcs/plans/067-start-gate-plan.md
+RULES.md:28, FEATURES.md (F392), docs/archive/rfcs/RFC-067-start-gate.md, docs/archive/rfcs/plans/067-start-gate-plan.md
 ```
 
 **Árboles de nodos:**

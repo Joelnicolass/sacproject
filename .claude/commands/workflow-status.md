@@ -17,8 +17,8 @@ El orquestador (`godot-studio-workflow`) ejecuta estos pasos; el usuario no tien
 | 6 | Generar RFCs | carpeta RFCs/ + RFCS.md | `/generate-rfcs` |
 | 7 | Estrategia de testing | TEST-STRATEGY.md | `/test-strategy` (opcional) |
 | 8 | Implementar RFCs (uno por uno) | Código | `/implement-rfc <id>` |
-| 9 | Revisar cada implementación | `reviews/REVIEW-RFC-<id>.md` | `/review-rfc <id>` |
-| 10 | Gestionar cambios (cuando se mueven los requisitos) | `changes/CHANGE-REQUEST-<nnn>.md` | `/manage-changes` |
+| 9 | Revisar cada implementación | `docs/archive/reviews/REVIEW-RFC-<id>.md` | `/review-rfc <id>` |
+| 10 | Gestionar cambios (cuando se mueven los requisitos) | `docs/archive/changes/CHANGE-REQUEST-<nnn>.md` | `/manage-changes` |
 | 11 | Chequeo de estado (en cualquier momento) | este reporte | `/workflow-status` |
 
 `/test-strategy` va **antes** de implementar a propósito: un plan de tests escrito después del código es una auditoría de cobertura, no un plan. `VISUAL.md` puede faltar si todavía no hay look; entonces el pase visual no corre.
@@ -27,10 +27,10 @@ El orquestador (`godot-studio-workflow`) ejecuta estos pasos; el usuario no tien
 
 Inspeccioná el proyecto actual para determinar el progreso del flujo:
 
-1. Qué artefactos existen: PRD.md, PRD-REVIEW.md, FEATURES.md, RULES.md, VISUAL.md, RFCS.md, carpeta RFCs/, reviews/, changes/, `.studio/MEMORY.md`?
+1. Qué artefactos existen: PRD.md, PRD-REVIEW.md, FEATURES.md, RULES.md, VISUAL.md, RFCS.md, carpeta RFCs/, docs/archive/reviews/, docs/archive/changes/, `.studio/MEMORY.md`?
 2. Qué RFCs aparecen implementados en el codebase versus todavía no empezados? Compará los criterios de aceptación de cada RFC contra el código real — no asumas que un RFC está hecho solo porque existe código.
-3. Qué RFCs fueron revisados? Revisá `reviews/` en busca de un reporte por cada RFC implementado — un RFC implementado sin review es el hueco más común en el mundo real, y los reviews son exactamente lo que se salta bajo deadline.
-4. ¿Hay change requests abiertos en `changes/` cuyas decisiones siguen pendientes?
+3. Qué RFCs fueron revisados? Revisá `docs/archive/reviews/` en busca de un reporte por cada RFC implementado — un RFC implementado sin review es el hueco más común en el mundo real, y los reviews son exactamente lo que se salta bajo deadline.
+4. ¿Hay change requests abiertos en `docs/archive/changes/` cuyas decisiones siguen pendientes?
 5. ¿Algún signo de drift: código que contradice el PRD o RULES.md, features en el codebase sin RFC, RFCs salteados fuera de orden?
 
 Si no podés inspeccionar archivos de forma directa, pedime que describa o pegue los artefactos antes de reportar.

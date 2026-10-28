@@ -199,7 +199,7 @@ game/
 │   ├── tools/migrate_unit_asserts.py             N  reescribe los 23 flows de %Unit
 │   └── flows/ f78_deselect, f78_many, f78_online_a (+ run_f78_net.sh), f79_roster, f79_roster_many, f80_cues, f80_hud_text   N
 │              (23 flows con %Unit)               M  025b, migración mecánica
-└── rfcs/RFC-025-selection-and-hud-icons.md       N  este documento
+└── docs/archive/rfcs/RFC-025-selection-and-hud-icons.md       N  este documento
 ```
 
 **Mapa de responsabilidades:** `Selection` = estado local de selección y grupos (no dibuja); `MatchCommand` = input → selección, armado y órdenes (no dibuja texto); `CommandLog` = estado observable del mando local; `CommandCue`/`CursorSkin` = presentación del armado y del cursor (no deciden); `SelectionRoster` = presentación de la selección, el clic delega en `Selection`; `Orders` = autoridad de órdenes; `HudIcons` = carga de imágenes del caché; `CueSet` = datos de qué icono va con qué. Sin `SelectionRoster` no hay panel; sin `CommandCue` no hay icono en el cursor; el juego sigue andando.
@@ -267,7 +267,7 @@ Playtester: `f80_cues`, `f80_hud_text`; capturas `f80_0_idle_cursor`, `f80_1_roc
 
 ## 8. Riesgos
 
-- **Choques de archivos con otros agentes:** `high_noon.tscn` (RFC-022e, RFC-024), `orders.gd` (RFC-024 `apply_for`), `match_command.gd` (grande, pisadas previas). Mitigación: ventanas de edición cortas, releer antes, no tocar `scenes/world/look/grass/`, `rfcs/research/` ni los archivos de RFC-024.
+- **Choques de archivos con otros agentes:** `high_noon.tscn` (RFC-022e, RFC-024), `orders.gd` (RFC-024 `apply_for`), `match_command.gd` (grande, pisadas previas). Mitigación: ventanas de edición cortas, releer antes, no tocar `scenes/world/look/grass/`, `docs/archive/rfcs/research/` ni los archivos de RFC-024.
 - **Filas de 12:** extensión, no el original; con muchas unidades puede trabarse en pasos angostos (se mide en 025a.2; `row_size` ajustable).
 - **`_match` O(n²) con sort:** a 300 unidades ~90 000 pares (~40 ms estimado en GDScript). El criterio mide 150; si hace falta, agrupar por fila antes de emparejar (local a `orders.gd`).
 - **150 barras de vida 3D visibles:** costo de dibujo, se mide en 025a.9; si supera el umbral, RFC aparte con `MultiMesh`.

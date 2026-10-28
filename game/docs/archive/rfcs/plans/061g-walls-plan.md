@@ -1,6 +1,6 @@
 # 061g: muros (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence)
 
-Corte del plan maestro `061-spells-master-plan.md` (pieza 8, `SpellWall` + hijo `WallTouch`). Números de `rfcs/research/061R-abilities-structures.md` (REA manda: Firewall 625/s × una rampa de 3 s única para todo el muro, NO el 1200/s de sacengine); arte de `rfcs/research/061V-spell-visuals-f-g.md` (el SPEL manda). Arte final desde el inicio (decisión del usuario, 2026-10-24).
+Corte del plan maestro `061-spells-master-plan.md` (pieza 8, `SpellWall` + hijo `WallTouch`). Números de `docs/archive/rfcs/research/061R-abilities-structures.md` (REA manda: Firewall 625/s × una rampa de 3 s única para todo el muro, NO el 1200/s de sacengine); arte de `docs/archive/rfcs/research/061V-spell-visuals-f-g.md` (el SPEL manda). Arte final desde el inicio (decisión del usuario, 2026-10-24).
 
 ## Objetivo
 - Los cinco se lanzan con la tecla y un clic en el **suelo**. El muro se centra en el clic, su recta es perpendicular a mago→clic y crece desde el centro hacia los dos lados a `effect_range / grow_ticks` por tick (55 m por lado). Cada extremo se detiene al llegar a `effect_range`, a un edificio o al borde del mapa. Empieza a crecer con el lanzamiento y sigue creciendo hasta `grow_ticks` (4 s; 3 s Wailing Wall; 176 ticks Fence, valores de sacengine marcados «TODO» ahí: **NO VERIFICADO** en el exe).

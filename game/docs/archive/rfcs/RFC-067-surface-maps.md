@@ -1,6 +1,6 @@
 # RFC-067: Relieve (mapas PBR) en todos los modelos
 
-Estado: P1–P4 y P6 hechos al 2026-10-26. P5 (roles del suelo) espera a la 062-3. Feature F393. Plan: `rfcs/plans/067-surface-maps-plan.md`.
+Estado: P1–P4 y P6 hechos al 2026-10-26. P5 (roles del suelo) espera a la 062-3. Feature F393. Plan: `docs/archive/rfcs/plans/067-surface-maps-plan.md`.
 
 ## Decisiones del usuario (2026-10-26, mandan)
 

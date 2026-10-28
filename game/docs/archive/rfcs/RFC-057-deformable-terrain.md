@@ -1,6 +1,6 @@
 # RFC-057: terreno deformable (cierre de fase 2)
 
-Estado: implementado (057a, 057b, 057c, 057d, 057z); falta 057e (flora viva), que espera a 066d. Plan: `rfcs/plans/057-deformable-terrain-plan.md` (aprobado el 2026-10-26).
+Estado: implementado (057a, 057b, 057c, 057d, 057z); falta 057e (flora viva), que espera a 066d. Plan: `docs/archive/rfcs/plans/057-deformable-terrain-plan.md` (aprobado el 2026-10-26).
 Reemplaza al boceto de RFC-055 §12.5. La API es la de 063D (`Terrain` es el único escritor; `GroundField`, `TerrainLive`, `TerrainStamp`, `HoleCutter`, `TerrainNet`), y este RFC cierra los huecos que quedaban.
 
 ## Decisiones del usuario (2026-10-26)

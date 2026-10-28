@@ -34,8 +34,8 @@ Las decisiones de la cola están delegadas («iterar la cola sin preguntar»). L
 ## Artefactos actualizados
 
 - `PRD.md` (fantasía, fuera del primer corte, modo solo)
-- `FEATURES.md` (Modos y equipos, F290–F298) y `docs/CHANGELOG-features.md`
+- `FEATURES.md` (Modos y equipos, F290–F298) y `docs/archive/CHANGELOG-features.md`
 - `RULES.md` (red, IA)
-- `rfcs/RFC-034-room-server.md` (nota en §12)
-- `rfcs/RFC-049-teams-and-room-map.md` (estado)
+- `docs/archive/rfcs/RFC-034-room-server.md` (nota en §12)
+- `docs/archive/rfcs/RFC-049-teams-and-room-map.md` (estado)
 - `docs/HOWTO.md` («Un mapa», «Un modo», «Jugar 2 contra 2»)

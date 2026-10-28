@@ -1,6 +1,6 @@
 # 061h — Nubes (Rain of Frogs, Rain of Fire, Plague, Cloudkill, Bombardment) — plan del corte
 
-Fuentes: `061-spells-master-plan.md` (§1 pieza 7 `GroundZone` + `ZoneDropper` y `ZoneMover`; fila 061h), `rfcs/research/061R-abilities-structures.md` (REA manda: Cloudkill), `rfcs/research/061V-spell-visuals-h.md` (el arte: SPEL > exe > sacengine), `061f-zones-plan.md` (la zona que se reutiliza), sacengine (`state.d` 3462-3507, 3994-4084, 4228-4248, 11025-11063, 11331-11339, 19324-19504, 20897-21053, 21055-21421, 22036-22108; `renderer.d` 451-475, 1830-1858, 2080-2083, 2459-2516, 3318-3336) y `CONVENTIONS.md` (C1-C21 y §2c). Decisión del usuario: arte final desde el inicio.
+Fuentes: `061-spells-master-plan.md` (§1 pieza 7 `GroundZone` + `ZoneDropper` y `ZoneMover`; fila 061h), `docs/archive/rfcs/research/061R-abilities-structures.md` (REA manda: Cloudkill), `docs/archive/rfcs/research/061V-spell-visuals-h.md` (el arte: SPEL > exe > sacengine), `061f-zones-plan.md` (la zona que se reutiliza), sacengine (`state.d` 3462-3507, 3994-4084, 4228-4248, 11025-11063, 11331-11339, 19324-19504, 20897-21053, 21055-21421, 22036-22108; `renderer.d` 451-475, 1830-1858, 2080-2083, 2459-2516, 3318-3336) y `CONVENTIONS.md` (C1-C21 y §2c). Decisión del usuario: arte final desde el inicio.
 
 Reglas de este corte que mandan sobre el plan maestro:
 - **Bombardment va sin abolladuras** (061k). Hace daño, aturde y tiembla la pantalla; el suelo no se toca.

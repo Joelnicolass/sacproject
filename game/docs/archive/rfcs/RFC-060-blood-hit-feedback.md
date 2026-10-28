@@ -1,6 +1,6 @@
 # RFC-060: Sangre y feedback de golpe
 
-Estado: implementado (060a, 060c, 060b, 060d, 060z) el 2026-10-26; falta la pasada única de pruebas con ventana. Feature F390. Plan: `rfcs/plans/060-blood-plan.md` (reemplaza el boceto de RFC-055 §14.2).
+Estado: implementado (060a, 060c, 060b, 060d, 060z) el 2026-10-26; falta la pasada única de pruebas con ventana. Feature F390. Plan: `docs/archive/rfcs/plans/060-blood-plan.md` (reemplaza el boceto de RFC-055 §14.2).
 
 ## Decisiones del usuario (2026-10-26, mandan)
 
@@ -26,7 +26,7 @@ Solo presentación: ningún nodo escribe la simulación, no hay RPC ni RNG globa
 
 ## 060s: la misma sangre en todos los peers (decisión del usuario, 2026-10-26)
 
-Plan `rfcs/plans/060s-blood-sync-plan.md`. Reemplaza «en cada peer, porque `current` se replica» y el `quiet_s` de arriba: el servidor decide la herida (`BloodRules.kind_for` en segundos de `MatchClock`) y la escribe en `BloodFx.wound` (pies del servidor, índice y si es fuerte), replicada por el sincronizador del cuerpo (spawn, al cambiar). Cada peer pinta una vez cada índice nuevo, con las manchas sacadas de `MatchSeed.rng(["blood", cuerpo, índice])`; la herida que llega al aparecer (rejoin) cuenta como ya mostrada. La semilla de la partida la fija el servidor en `SacrificeFlow._apply_match_choice`, la guarda `ActiveMatch` y la lleva `MatchWire` (`"seed"`) a todos; `MatchWorld` siembra en todos los peers. `SprayMarks` saca sus manchas de la semilla y el lugar del chorro; `DebrisPiece` integra en `_physics_process`. Sin RPC nuevo.
+Plan `docs/archive/rfcs/plans/060s-blood-sync-plan.md`. Reemplaza «en cada peer, porque `current` se replica» y el `quiet_s` de arriba: el servidor decide la herida (`BloodRules.kind_for` en segundos de `MatchClock`) y la escribe en `BloodFx.wound` (pies del servidor, índice y si es fuerte), replicada por el sincronizador del cuerpo (spawn, al cambiar). Cada peer pinta una vez cada índice nuevo, con las manchas sacadas de `MatchSeed.rng(["blood", cuerpo, índice])`; la herida que llega al aparecer (rejoin) cuenta como ya mostrada. La semilla de la partida la fija el servidor en `SacrificeFlow._apply_match_choice`, la guarda `ActiveMatch` y la lleva `MatchWire` (`"seed"`) a todos; `MatchWorld` siembra en todos los peers. `SprayMarks` saca sus manchas de la semilla y el lugar del chorro; `DebrisPiece` integra en `_physics_process`. Sin RPC nuevo.
 
 ## Criterios (los chequea `debug/fx/blood_lab.tscn`)
 

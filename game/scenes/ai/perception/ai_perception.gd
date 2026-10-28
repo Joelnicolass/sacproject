@@ -1,3 +1,6 @@
+# gdlint: disable=max-public-methods
+# max-public-methods: the AI's read API over what a side knows (28 queries); split it by
+# responsibility later, not by count.
 @tool
 class_name AiPerception
 extends Node

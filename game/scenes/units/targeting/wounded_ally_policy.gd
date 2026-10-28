@@ -43,6 +43,8 @@ func is_patient(body: UnitBody, node: Variant) -> bool:
 		return false
 	if not GameBody.targetable(other):
 		return false
+	# max-returns: one early return per reason a body is no patient.
+	# gdlint: ignore=max-returns
 	return _HEAL.can_heal(other)
 
 

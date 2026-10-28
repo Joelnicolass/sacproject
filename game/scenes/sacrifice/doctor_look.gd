@@ -87,6 +87,8 @@ func _clip_of(pose: DoctorBody.Pose, work: DoctorBody.Work) -> String:
 					return String(lift_clip)
 				DoctorBody.Work.TORTURE:
 					return String(torture_clip)
+	# max-returns: one return per pose and work in the match.
+	# gdlint: ignore=max-returns
 	return ""
 
 

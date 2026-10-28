@@ -72,6 +72,8 @@ func _run() -> void:
 	var error := ResourceSaver.save(baked, _nav_path)
 	if error != OK:
 		_fail("could not save %s (error %d)" % [_nav_path, error])
+		# max-returns: one early return per failed step.
+		# gdlint: ignore=max-returns
 		return
 	var regions := NavRegions.new()
 	regions.build(baked)

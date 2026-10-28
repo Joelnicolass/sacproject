@@ -96,6 +96,8 @@ func _physics_process(_delta: float) -> void:
 	while _samples.size() > 1 and now - int(_samples[1].x) >= window:
 		_samples.pop_front()
 	if now - int(_samples[0].x) < window:
+		# max-returns: one early return per guard of the tick.
+		# gdlint: ignore=max-returns
 		return
 	var lost := _samples[0].y - health.current
 	if lost < futile_min_loss * health.maximum:

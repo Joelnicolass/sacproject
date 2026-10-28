@@ -710,7 +710,7 @@ func _height_range(key: Vector2i) -> Vector2:
 
 ## The land height, derived from the terrain the first time a field loads (GrassHeight): not stored
 ## anywhere.
-func _load_height(terrain: Object) -> bool:
+func _load_height(_terrain: Object) -> bool:
 	if _height_texture:
 		return true
 	var shape := Terrain.of(self)

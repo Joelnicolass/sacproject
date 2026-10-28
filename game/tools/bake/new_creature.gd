@@ -1,3 +1,6 @@
+# gdlint: disable=max-file-lines
+# max-file-lines: an editor tool with one linear pipeline (create, roles, size, scenes, clips,
+# icon, sounds, report); split it into steps later.
 extends SceneTree
 
 ## Does not need the original game; it uses the models and data already imported in assets/original
@@ -324,6 +327,8 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 
 	var icon := await _make_icon(tag, str(roles["idle"]))
 	_report(tag, clips, found, measure, wrote, kept, god, icon)
+	# max-returns: one early return per failed step of the pipeline.
+	# gdlint: ignore=max-returns
 	return OK
 
 

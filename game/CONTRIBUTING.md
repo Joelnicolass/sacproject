@@ -157,5 +157,8 @@ Follow the [style guide](https://docs.godotengine.org/en/stable/tutorials/script
 
 - The editor's GDScript warnings `UNSAFE_PROPERTY_ACCESS`, `UNSAFE_METHOD_ACCESS`, `UNSAFE_CAST` and `UNTYPED_DECLARATION`
   are on as warnings. The count only goes down.
+- `gdformat --check` and `gdlint` block CI. An inline `# gdlint: ignore=<rule>` (or a `disable` at the top for a
+  whole-class rule) goes with a `#` line that says why. A log or warning string over 100 columns stays whole, so it can
+  be found with grep, under `# gdlint: ignore=max-line-length`.
 - `.import` files are committed with their assets.
 - New pure rules get a GUT test in `test/unit/`.

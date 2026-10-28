@@ -155,7 +155,7 @@ func _init(
 
 ## The species the FloraLayers of a map draw, with the species' raw mesh and no material
 ## (headless-safe): one entry per layer.
-static func describe_groups(layer: VegetationLayerConfig, map: FloraDensity) -> Array[Dictionary]:
+static func describe_groups(_layer: VegetationLayerConfig, map: FloraDensity) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if map == null:
 		return out

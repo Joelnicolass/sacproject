@@ -101,6 +101,6 @@ func _summon_threat(wizard: AiTrack) -> float:
 	return AiField.f32(wizard.threat * (1.0 - share * (1.0 - weight)))
 
 
-func _note(wizard: AiTrack, why: String) -> void:
+func _note(_wizard: AiTrack, why: String) -> void:
 	if DebugLog.on(&"ai_summon"):
 		print("ai_summon slot %d tick %d %s" % [brain.perception.slot, brain.port.now_tick(), why])

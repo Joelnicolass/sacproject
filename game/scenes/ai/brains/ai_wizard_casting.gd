@@ -89,6 +89,8 @@ func light_can_cast(wizard: AiTrack, spell: Resource) -> bool:
 	if cooldown > 0.0:
 		return false
 	var cost := maxf(CASTER.MIN_MANA_COST, float(spell.get("mana_cost")))
+	# max-returns: one early return per reason the spell cannot be cast.
+	# gdlint: ignore=max-returns
 	return cost <= AiBody.mana_now(node) + CASTER.MANA_EPSILON
 
 
@@ -191,6 +193,8 @@ func execute_best_cast(wizard: AiTrack, check_only: bool) -> bool:
 			_last_summon_tick = port.now_tick()
 		queue.remove_at(i)
 		return true
+	# max-returns: one early return per guard of the cast queue.
+	# gdlint: ignore=max-returns
 	return false
 
 
@@ -247,6 +251,8 @@ func _check_shot(wizard: AiTrack, target: AiTrack, spell: Resource, check_only: 
 		if loss > tactics.own_splash_max_ratio:
 			splash_vetoes += 1
 			return Shot.VETOED
+	# max-returns: one early return per veto of the shot.
+	# gdlint: ignore=max-returns
 	return Shot.OK
 
 

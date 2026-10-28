@@ -1,3 +1,6 @@
+# gdlint: disable=max-public-methods
+# max-public-methods: the commands other systems give a creature are its public API (27 methods);
+# split it by responsibility later, not by count.
 class_name UnitBody
 extends GameBody
 

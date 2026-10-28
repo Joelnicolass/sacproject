@@ -157,6 +157,8 @@ func _classify(screen: Vector2) -> StringName:
 	# A manafount is ground for the cursor (an order lands on it), but the info panel names it.
 	if node is ManafountBody:
 		_picked = node
+	# max-returns: one return per kind of thing under the pointer.
+	# gdlint: ignore=max-returns
 	return GROUND
 
 

@@ -87,7 +87,7 @@ static func run(arguments: PackedStringArray, host: Node) -> int:
 	return code
 
 
-static func _enter(scene: String, tag: String, host: Node) -> MapRoot:
+static func _enter(scene: String, _tag: String, host: Node) -> MapRoot:
 	var packed := load(scene) as PackedScene if ResourceLoader.exists(scene) else null
 	if packed == null:
 		return null

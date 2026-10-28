@@ -1,3 +1,6 @@
+# gdlint: disable=max-public-methods
+# max-public-methods: GUT runs every public test_* method; one file per component keeps the Health
+# cases together.
 extends GutTest
 ## Health: the damage a body takes on both paths (damage, damage_typed) and what it heals, with
 ## every piece that changes a hit (resistance, deflector, passive, wards, states, poison, oil,

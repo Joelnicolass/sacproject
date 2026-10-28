@@ -18,13 +18,10 @@ jobs:
           python-version: "3.12"
       - name: Install gdtoolkit
         run: pip install "gdtoolkit==4.5.0"
-      - name: gdlint (tests, must pass)
-        run: gdlint test
-      # The game code still has a baseline of findings until the gdformat pass (audit Q2):
-      # reported, not blocking.
-      - name: gdlint (game code, report only)
-        continue-on-error: true
-        run: gdlint scenes tools
+      - name: gdformat
+        run: gdformat --check scenes tools test
+      - name: gdlint
+        run: gdlint scenes tools test
       - name: Project-specific checks
         run: bash tools/lint/conventions.sh
 

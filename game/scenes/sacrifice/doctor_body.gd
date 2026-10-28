@@ -1,3 +1,6 @@
+# gdlint: disable=max-public-methods
+# max-public-methods: the Sac Doctor's commands (walk, carry, work, pose) are its public API (23
+# methods); split it by responsibility later, not by count.
 @tool
 class_name DoctorBody
 extends GameBody

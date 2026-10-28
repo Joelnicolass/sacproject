@@ -1,3 +1,6 @@
+# gdlint: disable=max-public-methods
+# max-public-methods: the commands other systems give a wizard are its public API (21 methods);
+# split it by responsibility later, not by count.
 class_name WizardBody
 extends GameBody
 

@@ -88,6 +88,8 @@ func think(wizard: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> Thought
 			return Thought.CAPTURING
 	if casting.execute_best_cast(wizard, false):
 		return Thought.ACTED
+	# max-returns: one return per decision, in priority order.
+	# gdlint: ignore=max-returns
 	return _as_creature(wizard, task_kind, record)
 
 

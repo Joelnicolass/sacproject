@@ -128,4 +128,6 @@ func _add_tangents(path: String, dry: bool) -> int:
 	if ResourceSaver.save(mesh, path) != OK:
 		printerr("add_tangents: could not save %s" % path)
 		return -1
+	# max-returns: one early return per failed step.
+	# gdlint: ignore=max-returns
 	return missing.size()

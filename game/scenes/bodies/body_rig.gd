@@ -1,3 +1,6 @@
+# gdlint: disable=max-public-methods
+# max-public-methods: the rig is the one API the look, the ragdoll and the tools call on a skinned
+# body (22 methods); split it by responsibility later, not by count.
 @tool
 class_name BodyRig
 extends Node3D

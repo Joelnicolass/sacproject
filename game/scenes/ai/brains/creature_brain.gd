@@ -54,6 +54,8 @@ func think(t: AiTrack, task_kind: AiTask.Kind, record: AiRecord) -> bool:
 			if record.target != null and AiWizardBrain.target_alive(record.target):
 				port.orders.order_if_changed(t, AiCommandPort.AiOrder.ATTACK, record.target, null)
 			return true
+	# max-returns: one return per task the creature can be on.
+	# gdlint: ignore=max-returns
 	return true
 
 

@@ -58,7 +58,7 @@ func show_cooldown(left: float, total: float) -> void:
 	%Time.text = "%.1f" % left
 
 
-func _show(title: String, key: String, page: Texture2D, icon: Texture2D) -> void:
+func _show(title: String, _key: String, page: Texture2D, icon: Texture2D) -> void:
 	%Page.texture = page
 	%Icon.texture = icon
 	%Icon.visible = icon != null

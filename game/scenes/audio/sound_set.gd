@@ -80,4 +80,6 @@ func own_cue(event: StringName) -> SoundCue:
 			return incantation
 		SoundEvent.GHOST:
 			return ghost
+	# max-returns: one return per sound event in the match.
+	# gdlint: ignore=max-returns
 	return null

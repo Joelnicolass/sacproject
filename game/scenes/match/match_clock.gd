@@ -12,12 +12,16 @@ extends Node
 ## (hundreds of callers): they forward to the clock in the tree. Without a match (the editor, F6 on
 ## one scene) now() is the engine's physics frame count.
 
+# Upper case on purpose: per-run constants read in ~145 places; they cannot be `const` because
+# they come from the project settings.
+# gdlint: disable=class-variable-name
 ## Ticks per second of the simulation: the project's physics/common/physics_ticks_per_second (read
 ## once at class load; a project setting, the same for every match).
 static var TICKS_PER_SECOND: int = Engine.physics_ticks_per_second
 ## The same, as a float: the per-tick formulas divide by it (an int there would be an integer
 ## division).
 static var TICKS_PER_SECOND_F: float = float(Engine.physics_ticks_per_second)
+# gdlint: enable=class-variable-name
 
 ## The clock of the running match (set by begin, cleared in _exit_tree); null = no match.
 static var _live: MatchClock

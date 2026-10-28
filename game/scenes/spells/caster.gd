@@ -119,7 +119,7 @@ func at_creature_limit() -> bool:
 		return false
 	var slot := _wizard.owner_slot
 	var count := 0
-	for unit in get_tree().get_nodes_in_group(&"unit"):
+	for unit in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		if unit.get("owner_slot") == slot and unit is UnitBody and not (unit as UnitBody).is_dead():
 			count += 1
 	return count >= cap

@@ -67,7 +67,7 @@ A spell is two things: the data and, if it has its own procedure, a scene.
 
 ## A building
 
-- **Type.** `data/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the ruin). The scene with the same name in `scenes/structures/buildings/` is the building you drag into a map (root `MapBuilding`, parts saved under `Visuals`). A new one is made by duplicating a `.tres` and its scene; «Ajustar a las partes» (on the root) measures the box that holds the parts, which you can also drag with the handles of `Collision`.
+- **Type.** `data/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the ruin). The scene with the same name in `scenes/structures/buildings/` is the building you drag into a map (root `MapBuilding`, parts saved under `Visuals`). A new one is made by duplicating a `.tres` and its scene; «Fit to parts» (on the root) measures the box that holds the parts, which you can also drag with the handles of `Collision`.
 - **On the map.** Drag `scenes/structures/buildings/<name>.tscn` under `Buildings` in the map scene. Move and rotate it with the gizmo: the transform is the truth and the model shows in the editor; with «Editable Children» you see and move the parts of that instance. With `max_health` 0 it is indestructible.
 - **As a structure spell** (Manalith, Shrine): the `SpellType` goes in the book's `structures`, a `GodStructure` row (spell + scene) in `GodType.structures`, and a `StructureAction` with that `tag` under `Caster/Actions`; the building is a scene of `buildings/` that instances `towers/tower.tscn` (or `shrine_tower.tscn`) and is added to `StructureSpawner.scenes` in `match.tscn`.
 
@@ -114,7 +114,7 @@ After importing, `map.tscn` and `<tag>.tres` are edited by hand (the scene is th
 2. In `map.tscn`, one `PlayerStart` per seat under `MapProps/Starts` (`Start1`…`Start4`, with `slot` 1..N without repeats) and its altar; move each start's `WizardSpot` with the gizmo (the wizard appears there, facing where it faces); the fountains under `MapProps/Founts`. A building is dragged under `Buildings`. In `test_flat4`, seats 1 and 2 are on the same side and 3 and 4 opposite, because `2v2` puts 1+2 against 3+4.
 3. The sides come from the nodes: each `PlayerStart` is a seat (`slot`; a `team` above 0 allies the seats that share it, 0 = enemy of everyone) and each `side` of an `NpcSpawn` is a side no player takes. The teams of a mode are set by the mode.
 4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (and `light` if it has one) dragged from the inspector, and `player_starts` (= number of `PlayerStart`). `room_selectable = false` if it is only for testing (the rooms offer it with `--room-test-maps`).
-5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Hornear navmesh» button of `NavRegion`) and run `tools/audit/check_map.tscn -- --map=<tag>` (seats, objects on land, level bases, paths).
+5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Bake navmesh» button of `NavRegion`) and run `tools/audit/check_map.tscn -- --map=<tag>` (seats, objects on land, level bases, paths).
 
 A map only shows up in a mode if it has one start per seat: High Noon (2) offers `1v1`; `winter_wonder` and `test_flat4` (4) also offer `2v2`, `ffa3` and `ffa4`.
 
@@ -177,7 +177,7 @@ G="${GODOT_BIN:-godot}"   # see «Configure paths» below
 bash tools/lint/conventions.sh
 ```
 
-From the editor, **Project > Tools > Sacrifice** re-bakes the navmesh and bakes the missing models, and shows the output in a dialog. The minimap has a «Re-hornear minimapa» (Re-bake minimap) button in the inspector of `MinimapTerrainBake`.
+From the editor, **Project > Tools > Sacrifice** re-bakes the navmesh and bakes the missing models, and shows the output in a dialog. The minimap has a «Rebake minimap» button in the inspector of `MinimapTerrainBake`.
 
 The console bakes (without `--force` they do not overwrite hand edits):
 

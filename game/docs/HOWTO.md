@@ -65,7 +65,7 @@ Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 
 ## Un edificio
 
-- **Tipo.** `data/buildings/<nombre>.tres` (`BuildingType`: nombre, vida máxima, si da refugio y la ruina). La escena del mismo nombre en `scenes/structures/buildings/` es el edificio que se arrastra al mapa (raíz `MapBuilding`, partes guardadas bajo `Visuals`). Uno nuevo se hace duplicando un `.tres` y su escena; «Ajustar a las partes» (en la raíz) mide la caja que encierra las partes, que también se arrastra con los tiradores de `Collision`.
+- **Tipo.** `data/buildings/<nombre>.tres` (`BuildingType`: nombre, vida máxima, si da refugio y la ruina). La escena del mismo nombre en `scenes/structures/buildings/` es el edificio que se arrastra al mapa (raíz `MapBuilding`, partes guardadas bajo `Visuals`). Uno nuevo se hace duplicando un `.tres` y su escena; «Fit to parts» (en la raíz) mide la caja que encierra las partes, que también se arrastra con los tiradores de `Collision`.
 - **En el mapa.** Arrastrá `scenes/structures/buildings/<nombre>.tscn` bajo `Buildings` en la escena del mapa. Movelo y rotalo con el gizmo: el transform es la verdad y el modelo se ve en el editor; con «Hijos editables» ves y movés las partes de esa instancia. Con `max_health` 0 es indestructible.
 - **Como hechizo de estructura** (Manalith, Shrine): el `SpellType` va en `structures` del libro y una fila `GodStructure` (hechizo + escena) en `GodType.structures`; la acción es un `StructureAction` con ese `tag` bajo `Caster/Actions`; el edificio es una escena de `buildings/` que instancia `towers/tower.tscn` (o `shrine_tower.tscn`) y se agrega a `StructureSpawner.scenes` en `match.tscn`.
 
@@ -110,7 +110,7 @@ Después de importar, `map.tscn` y `<tag>.tres` se editan a mano (la escena es l
 2. En `map.tscn`, un `PlayerStart` por asiento bajo `MapProps/Starts` (`Start1`…`Start4`, con `slot` 1..N sin repetir) y su altar; mové el `WizardSpot` de cada inicio con el gizmo (ahí aparece el mago y hacia dónde mira); los manantiales bajo `MapProps/Founts`. Un edificio se arrastra bajo `Buildings`. En `test_flat4`, los asientos 1 y 2 están del mismo lado y 3 y 4 enfrente, porque el `2v2` junta 1+2 contra 3+4.
 3. Los bandos salen de los nodos: cada `PlayerStart` es un asiento (`slot`; `team` mayor que 0 aliada a los asientos que lo comparten, 0 = enemigo de todos) y cada `side` de un `NpcSpawn` un bando sin jugador. Los equipos de un modo los pone el modo.
 4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (y `light` si tiene) arrastrados desde el inspector, y `player_starts` (= cantidad de `PlayerStart`). `room_selectable = false` si es solo de prueba (las salas lo ofrecen con `--room-test-maps`).
-5. No hay lista que editar (`MapCatalog` recorre la carpeta). Horneá el navmesh (botón «Hornear navmesh» de `NavRegion`) y corré `tools/audit/check_map.tscn -- --map=<tag>` (asientos, objetos sobre tierra, bases a nivel, caminos).
+5. No hay lista que editar (`MapCatalog` recorre la carpeta). Horneá el navmesh (botón «Bake navmesh» de `NavRegion`) y corré `tools/audit/check_map.tscn -- --map=<tag>` (asientos, objetos sobre tierra, bases a nivel, caminos).
 
 Un mapa solo aparece en un modo si tiene un inicio por asiento: High Noon (2) ofrece `1v1`; `winter_wonder` y `test_flat4` (4) ofrecen también `2v2`, `ffa3` y `ffa4`.
 
@@ -176,7 +176,7 @@ G="${GODOT_BIN:-godot}"   # ver «Configurar rutas» abajo
 bash tools/lint/conventions.sh
 ```
 
-Desde el editor, **Project > Tools > Sacrifice** re-hornea el navmesh y hornea los modelos que faltan, y muestra la salida en un diálogo. El minimapa tiene un botón «Re-hornear minimapa» en el inspector de `MinimapTerrainBake`.
+Desde el editor, **Project > Tools > Sacrifice** re-hornea el navmesh y hornea los modelos que faltan, y muestra la salida en un diálogo. El minimapa tiene un botón «Rebake minimap» en el inspector de `MinimapTerrainBake`.
 
 Los horneados por consola (sin `--force` no pisan lo editado a mano):
 

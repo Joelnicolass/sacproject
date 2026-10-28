@@ -1,0 +1,42 @@
+# PLANEADO PARA EL FUTURO (2026-10-27): el servidor de salas se retiró del juego; ver README.md de esta carpeta.
+# RFC-034 034g (F184). Unidad de systemd del servidor de salas de Sacrifice. NO está desplegada: es para el VPS del usuario.
+# Solo corre el servidor de salas; las partidas (los dedicados) son procesos hijos que el servidor lanza y vigila por sí mismo
+#. Si el servidor muere, systemd mata a los hijos (KillMode=control-group) y el
+# dedicado que quede huérfano se cierra solo en <= 10 s (parent_check_s).
+#
+# Instalar (ver tools/deploy/README.md):
+#   sudo cp room_server.service /etc/systemd/system/sacrifice-rooms.service
+#   sudo systemctl daemon-reload && sudo systemctl enable --now sacrifice-rooms
+# Ajustar: User, WorkingDirectory y la ruta del binario si no usás /opt/sacrifice.
+
+[Unit]
+Description=Sacrifice - servidor de salas (RFC-034)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sacrifice
+Group=sacrifice
+WorkingDirectory=/opt/sacrifice
+# --room-server: el boot entrega el proceso a scenes/net/room_server.tscn. Los números salen de data/net/lobby_config.tres
+# (4 partidas, puertos 7800-7831); cualquier campo se pisa con su flag (--max-matches=8, --lobby-port=7700, --transport=ws,
+# --rejoin-grace-s=60, --resume-grace-s=120). --headless: sin ventana ni audio.
+ExecStart=/opt/sacrifice/sacrifice_server.x86_64 --headless -- --room-server
+Restart=on-failure
+RestartSec=3
+# Los dedicados son hijos: que mueran con el servidor y que systemd no los deje sueltos.
+KillMode=control-group
+TimeoutStopSec=15
+# Carpeta de las partidas (user://mp_matches) y logs: bajo el HOME del servicio.
+Environment=HOME=/var/lib/sacrifice
+StateDirectory=sacrifice
+LimitNOFILE=65536
+# Endurecimiento básico (no necesita más que su carpeta y la red).
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

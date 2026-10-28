@@ -15,7 +15,7 @@ Estándar. Escenas en `scenes/`. Sin `src/domain/`.
 Estructura por dominio (RFC-048). Cada carpeta tiene su `README.md`.
 - `scenes/<dominio>/`: código y escenas del producto (`ai`, `audio`, `bodies`, `camera`, `components`, `core`, `fx`, `gods`, `look`, `map`, `match`, `net`, `orders`, `sacrifice`, `souls`, `spells`, `structures`, `ui`, `units`, `wizards`). Nada suelto en la raíz de `scenes/`.
 - `data/`: Resources `.tres` por tipo (`data/catalog/<tipo>/`, `gods/`, `look/`, `nav/`, `maps/`, `audio/`...).
-- `tools/`: `import/`, `bake/`, `audit/`, `material/`. No hay carpeta de pruebas versionada: un flow o harness de AgentKit se regenera en `agent/` (ignorada por git) cuando hace falta. Ni `scenes/` ni `data/` nombran `res://agent|tools`.
+- `tools/`: `import/`, `bake/`, `audit/`, `material/`, `deploy/`. No hay carpeta de pruebas versionada: un flow o harness de AgentKit se regenera en `agent/` (ignorada por git) cuando hace falta. Ni `scenes/` ni `data/` nombran `res://agent|tools`.
 - Las mudanzas de rutas se hacen con `tools/move_map.py` y un CSV (`--check --lint` debe dar 0). Los commits de mudanza están en `.git-blame-ignore-revs`.
 
 Convenciones de código en `CONVENTIONS.md`; `tools/lint/conventions.sh` es el ratchet (falla si un conteo sube; cada corte que baja uno reescribe `tools/lint/baseline.txt`).

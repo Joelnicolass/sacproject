@@ -24,6 +24,18 @@
 [ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
 [ext_resource type="Resource" path="res://scenes/look/life/ash.tres" id="58_ash"]
 [ext_resource type="Resource" path="res://gods/pyro/embers.tres" id="58_embers"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/god_flora.gd" id="fl_script"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="fl_species"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pyt1.res" id="flm_pyt1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pyt2.res" id="flm_pyt2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pyt4.res" id="flm_pyt4"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pyt5.res" id="flm_pyt5"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pyt6.res" id="flm_pyt6"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/plm3.res" id="flm_plm3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/pyro_groundcover_1.tres" id="fl_pyro_groundcover_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/pyro_groundcover_2.tres" id="fl_pyro_groundcover_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/pyro_groundcover_3.tres" id="fl_pyro_groundcover_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/pyro_groundcover_4.tres" id="fl_pyro_groundcover_4"]
 
 [sub_resource type="Resource" id="Role_open"]
 script = ExtResource("21_ground_role")
@@ -107,6 +119,66 @@ water = Array[ExtResource("58_swarm")]([])
 woods = Array[ExtResource("58_swarm")]([ExtResource("58_ash")])
 rock = Array[ExtResource("58_swarm")]([ExtResource("58_embers")])
 
+[sub_resource type="Resource" id="Tree_pyt1"]
+script = ExtResource("fl_species")
+tag = "tree_pyt1"
+mesh = ExtResource("flm_pyt1")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pyt2"]
+script = ExtResource("fl_species")
+tag = "tree_pyt2"
+mesh = ExtResource("flm_pyt2")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pyt4"]
+script = ExtResource("fl_species")
+tag = "tree_pyt4"
+mesh = ExtResource("flm_pyt4")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pyt5"]
+script = ExtResource("fl_species")
+tag = "tree_pyt5"
+mesh = ExtResource("flm_pyt5")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pyt6"]
+script = ExtResource("fl_species")
+tag = "tree_pyt6"
+mesh = ExtResource("flm_pyt6")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_plm3"]
+script = ExtResource("fl_species")
+tag = "tree_plm3"
+mesh = ExtResource("flm_plm3")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Flora_pyro"]
+script = ExtResource("fl_script")
+trees = Array[Resource]([SubResource("Tree_pyt1"), SubResource("Tree_pyt2"), SubResource("Tree_pyt4"), SubResource("Tree_pyt5"), SubResource("Tree_pyt6"), SubResource("Tree_plm3")])
+shrubs = Array[Resource]([])
+cover = Array[Resource]([ExtResource("fl_pyro_groundcover_1"), ExtResource("fl_pyro_groundcover_2"), ExtResource("fl_pyro_groundcover_3"), ExtResource("fl_pyro_groundcover_4")])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Pyro"
@@ -115,6 +187,7 @@ sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_pgdjj")
 ground = SubResource("GodGround_pyro")
+flora = SubResource("Flora_pyro")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")

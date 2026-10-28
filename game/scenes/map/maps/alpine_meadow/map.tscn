@@ -56,6 +56,7 @@
 [ext_resource type="Texture2D" path="res://assets/original/maps/alpine_meadow/light.png" id="62_light"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
 [ext_resource type="Resource" uid="uid://bhvgyjagps0lv" path="res://scenes/map/maps/alpine_meadow/heights.png" id="t_heights"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/alpine_meadow/flora/forest.png" id="fd_forest"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -491,59 +492,87 @@ terrain = NodePath("../Terrain")
 [node name="PersephoneFern1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_fern_1")
+land_role = 2
+land_index = 0
 density = ExtResource("fd_persephone_fern_1")
 max_per_cell = 11
 
 [node name="PersephoneFern2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_fern_2")
+land_role = 2
+land_index = 1
 density = ExtResource("fd_persephone_fern_2")
 max_per_cell = 8
 
 [node name="PersephoneFern3" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_fern_3")
+land_role = 2
+land_index = 2
 density = ExtResource("fd_persephone_fern_3")
 max_per_cell = 9
 
 [node name="PersephoneShrub1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_shrub_1")
+land_role = 2
+land_index = 3
 density = ExtResource("fd_persephone_shrub_1")
 max_per_cell = 8
 
 [node name="PersephoneReed1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_reed_1")
+land_role = 3
+land_index = 0
 density = ExtResource("fd_persephone_reed_1")
 max_per_cell = 20
 
 [node name="PersephoneGrass1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_grass_1")
+land_role = 3
+land_index = 1
 density = ExtResource("fd_persephone_grass_1")
 max_per_cell = 12
 
 [node name="PersephoneShrub2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_shrub_2")
+land_role = 2
+land_index = 4
 density = ExtResource("fd_persephone_shrub_2")
 max_per_cell = 6
 
 [node name="PersephoneFern4" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_fern_4")
+land_role = 2
+land_index = 5
 density = ExtResource("fd_persephone_fern_4")
 max_per_cell = 2
 
 [node name="PersephoneReed2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_reed_2")
+land_role = 3
+land_index = 2
 density = ExtResource("fd_persephone_reed_2")
 max_per_cell = 11
 
 [node name="PersephoneReed3" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_persephone_reed_3")
+land_role = 3
+land_index = 3
 density = ExtResource("fd_persephone_reed_3")
 max_per_cell = 10
+[node name="Forest" type="Node3D" parent="Vegetation"]
+editor_description = "The land's trees (GodFlora trees of the match's god). First painted by tools/look/forest_density.py; paint over it with the Flora brush."
+script = ExtResource("flora_layer_script")
+land_role = 1
+density = ExtResource("fd_forest")
+cell_m = 16.0
+max_per_cell = 2
+

@@ -36,6 +36,9 @@ extends Resource
 @export var ground: GodGround
 ## The stylized grass around the camera.
 @export var grass: GrassSet
+## The god's trees, shrubs and ground cover, drawn where the map's FloraLayers paint those roles.
+## Empty = every layer draws its own species.
+@export var flora: GodFlora
 
 @export_group("Audio")
 ## What plays in a match on this land: the music by mood. Empty: the match's default music.

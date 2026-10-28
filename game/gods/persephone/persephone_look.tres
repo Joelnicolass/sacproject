@@ -26,6 +26,26 @@
 [ext_resource type="Resource" path="res://scenes/look/life/fireflies.tres" id="58_fireflies"]
 [ext_resource type="Resource" path="res://scenes/look/life/gnats.tres" id="58_gnats"]
 [ext_resource type="Resource" path="res://scenes/look/life/pollen.tres" id="58_pollen"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/god_flora.gd" id="fl_script"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="fl_species"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct1.res" id="flm_pct1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct2.res" id="flm_pct2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct4.res" id="flm_pct4"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct8.res" id="flm_pct8"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct9.res" id="flm_pct9"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/ptre.res" id="flm_ptre"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_clump_1.tres" id="fl_persephone_clump_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_clump_2.tres" id="fl_persephone_clump_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_fern_1.tres" id="fl_persephone_fern_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_fern_2.tres" id="fl_persephone_fern_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_fern_3.tres" id="fl_persephone_fern_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_fern_4.tres" id="fl_persephone_fern_4"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_shrub_1.tres" id="fl_persephone_shrub_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_shrub_2.tres" id="fl_persephone_shrub_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_grass_1.tres" id="fl_persephone_grass_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_reed_1.tres" id="fl_persephone_reed_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_reed_2.tres" id="fl_persephone_reed_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/persephone_reed_3.tres" id="fl_persephone_reed_3"]
 
 [sub_resource type="Resource" id="Role_open"]
 script = ExtResource("21_ground_role")
@@ -109,6 +129,66 @@ water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats"), ExtResource("58
 woods = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
 rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
 
+[sub_resource type="Resource" id="Tree_pct1"]
+script = ExtResource("fl_species")
+tag = "tree_pct1"
+mesh = ExtResource("flm_pct1")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pct2"]
+script = ExtResource("fl_species")
+tag = "tree_pct2"
+mesh = ExtResource("flm_pct2")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pct4"]
+script = ExtResource("fl_species")
+tag = "tree_pct4"
+mesh = ExtResource("flm_pct4")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pct8"]
+script = ExtResource("fl_species")
+tag = "tree_pct8"
+mesh = ExtResource("flm_pct8")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_pct9"]
+script = ExtResource("fl_species")
+tag = "tree_pct9"
+mesh = ExtResource("flm_pct9")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_ptre"]
+script = ExtResource("fl_species")
+tag = "tree_ptre"
+mesh = ExtResource("flm_ptre")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Flora_persephone"]
+script = ExtResource("fl_script")
+trees = Array[Resource]([SubResource("Tree_pct1"), SubResource("Tree_pct2"), SubResource("Tree_pct4"), SubResource("Tree_pct8"), SubResource("Tree_pct9"), SubResource("Tree_ptre")])
+shrubs = Array[Resource]([ExtResource("fl_persephone_clump_1"), ExtResource("fl_persephone_clump_2"), ExtResource("fl_persephone_fern_1"), ExtResource("fl_persephone_fern_2"), ExtResource("fl_persephone_fern_3"), ExtResource("fl_persephone_fern_4"), ExtResource("fl_persephone_shrub_1"), ExtResource("fl_persephone_shrub_2")])
+cover = Array[Resource]([ExtResource("fl_persephone_grass_1"), ExtResource("fl_persephone_reed_1"), ExtResource("fl_persephone_reed_2"), ExtResource("fl_persephone_reed_3")])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Pradera de Persephone"
@@ -117,6 +197,7 @@ sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_e3s6b")
 ground = SubResource("GodGround_persephone")
+flora = SubResource("Flora_persephone")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")

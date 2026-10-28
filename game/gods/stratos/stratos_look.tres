@@ -26,6 +26,18 @@
 [ext_resource type="Resource" path="res://scenes/look/life/fireflies.tres" id="58_fireflies"]
 [ext_resource type="Resource" path="res://scenes/look/life/gnats.tres" id="58_gnats"]
 [ext_resource type="Resource" path="res://scenes/look/life/pollen.tres" id="58_pollen"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/god_flora.gd" id="fl_script"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="fl_species"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/stt1.res" id="flm_stt1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/stt2.res" id="flm_stt2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/stt3.res" id="flm_stt3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_shrub_1.tres" id="fl_stratos_shrub_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_shrub_2.tres" id="fl_stratos_shrub_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_1.tres" id="fl_stratos_groundcover_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_2.tres" id="fl_stratos_groundcover_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_3.tres" id="fl_stratos_groundcover_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_4.tres" id="fl_stratos_groundcover_4"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_5.tres" id="fl_stratos_groundcover_5"]
 
 [sub_resource type="Resource" id="Role_open"]
 script = ExtResource("21_ground_role")
@@ -110,6 +122,39 @@ water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
 woods = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
 rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
 
+[sub_resource type="Resource" id="Tree_stt1"]
+script = ExtResource("fl_species")
+tag = "tree_stt1"
+mesh = ExtResource("flm_stt1")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_stt2"]
+script = ExtResource("fl_species")
+tag = "tree_stt2"
+mesh = ExtResource("flm_stt2")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_stt3"]
+script = ExtResource("fl_species")
+tag = "tree_stt3"
+mesh = ExtResource("flm_stt3")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Flora_stratos"]
+script = ExtResource("fl_script")
+trees = Array[Resource]([SubResource("Tree_stt1"), SubResource("Tree_stt2"), SubResource("Tree_stt3")])
+shrubs = Array[Resource]([ExtResource("fl_stratos_shrub_1"), ExtResource("fl_stratos_shrub_2")])
+cover = Array[Resource]([ExtResource("fl_stratos_groundcover_1"), ExtResource("fl_stratos_groundcover_2"), ExtResource("fl_stratos_groundcover_3"), ExtResource("fl_stratos_groundcover_4"), ExtResource("fl_stratos_groundcover_5")])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Stratos"
@@ -118,6 +163,7 @@ sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_dp2kx")
 ground = SubResource("GodGround_stratos")
+flora = SubResource("Flora_stratos")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")

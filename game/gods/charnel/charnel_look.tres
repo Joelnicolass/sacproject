@@ -25,6 +25,23 @@
 [ext_resource type="Resource" path="res://scenes/look/life/ash.tres" id="58_ash"]
 [ext_resource type="Resource" path="res://scenes/look/life/fireflies.tres" id="58_fireflies"]
 [ext_resource type="Resource" path="res://gods/charnel/spores.tres" id="58_spores"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/god_flora.gd" id="fl_script"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="fl_species"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cht1.res" id="flm_cht1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cht2.res" id="flm_cht2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cat1.res" id="flm_cat1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cat4.res" id="flm_cat4"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_fern_1.tres" id="fl_charnel_fern_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_fern_2.tres" id="fl_charnel_fern_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_fern_3.tres" id="fl_charnel_fern_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_shrub_1.tres" id="fl_charnel_shrub_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_1.tres" id="fl_charnel_groundcover_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_2.tres" id="fl_charnel_groundcover_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_3.tres" id="fl_charnel_groundcover_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_4.tres" id="fl_charnel_groundcover_4"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_reed_1.tres" id="fl_charnel_reed_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_reed_2.tres" id="fl_charnel_reed_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_reed_3.tres" id="fl_charnel_reed_3"]
 
 [sub_resource type="Resource" id="Role_open"]
 script = ExtResource("21_ground_role")
@@ -72,6 +89,48 @@ water = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
 woods = Array[ExtResource("58_swarm")]([ExtResource("58_spores")])
 rock = Array[ExtResource("58_swarm")]([ExtResource("58_ash")])
 
+[sub_resource type="Resource" id="Tree_cht1"]
+script = ExtResource("fl_species")
+tag = "tree_cht1"
+mesh = ExtResource("flm_cht1")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_cht2"]
+script = ExtResource("fl_species")
+tag = "tree_cht2"
+mesh = ExtResource("flm_cht2")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_cat1"]
+script = ExtResource("fl_species")
+tag = "tree_cat1"
+mesh = ExtResource("flm_cat1")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_cat4"]
+script = ExtResource("fl_species")
+tag = "tree_cat4"
+mesh = ExtResource("flm_cat4")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Flora_charnel"]
+script = ExtResource("fl_script")
+trees = Array[Resource]([SubResource("Tree_cht1"), SubResource("Tree_cht2"), SubResource("Tree_cat1"), SubResource("Tree_cat4")])
+shrubs = Array[Resource]([ExtResource("fl_charnel_fern_1"), ExtResource("fl_charnel_fern_2"), ExtResource("fl_charnel_fern_3"), ExtResource("fl_charnel_shrub_1")])
+cover = Array[Resource]([ExtResource("fl_charnel_groundcover_1"), ExtResource("fl_charnel_groundcover_2"), ExtResource("fl_charnel_groundcover_3"), ExtResource("fl_charnel_groundcover_4"), ExtResource("fl_charnel_reed_1"), ExtResource("fl_charnel_reed_2"), ExtResource("fl_charnel_reed_3")])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "Charnel"
@@ -80,6 +139,7 @@ sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_s0acu")
 ground = SubResource("GodGround_charnel")
+flora = SubResource("Flora_charnel")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")

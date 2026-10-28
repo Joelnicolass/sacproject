@@ -20,18 +20,19 @@ var _height := PackedInt32Array()
 var _bytes: Array[PackedByteArray] = []
 
 
-## One entry per layer that has a species and an image (in the order given).
-static func from_layers(layers: Array) -> FloraDensity:
+## One entry per layer that has a species on `land` and an image (in the order given).
+static func from_layers(layers: Array, land: GodFlora = null) -> FloraDensity:
 	var snapshot := FloraDensity.new()
 	for layer: FloraLayer in layers:
-		if layer.species == null or layer.density == null:
+		var drawn := layer.species_on(land)
+		if drawn == null or layer.density == null:
 			continue
 		var image := layer.density_image()
 		if image == null:
 			continue
 		snapshot.layer_ids.append(layer.get_instance_id())
-		snapshot.tags.append(layer.species.density_tag())
-		snapshot.species.append(layer.species)
+		snapshot.tags.append(drawn.density_tag())
+		snapshot.species.append(drawn)
 		snapshot._cell_m.append(layer.cell_m)
 		snapshot._max.append(layer.max_per_cell)
 		snapshot._width.append(image.get_width())
@@ -40,8 +41,9 @@ static func from_layers(layers: Array) -> FloraDensity:
 	return snapshot
 
 
-## The FloraLayer nodes in the tree under `scope` (not the ones leaving it) as a snapshot.
-static func gather(scope: Node) -> FloraDensity:
+## The FloraLayer nodes in the tree under `scope` (not the ones leaving it) as a snapshot, with the
+## plants of `land`.
+static func gather(scope: Node, land: GodFlora = null) -> FloraDensity:
 	var layers := []
 	for node in scope.get_tree().get_nodes_in_group(FloraLayer.GROUP):
 		if (
@@ -50,7 +52,7 @@ static func gather(scope: Node) -> FloraDensity:
 			and scope.is_ancestor_of(node)
 		):
 			layers.append(node)
-	return from_layers(layers)
+	return from_layers(layers, land)
 
 
 ## A new snapshot like this one with the bytes of the layer `layer_id` replaced (same size: the

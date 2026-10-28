@@ -57,6 +57,8 @@ var _bound_rig: LookRig
 ## rebuilt.
 var _density: FloraDensity
 var _density_dirty := true
+## The match's land plants (the biome's GodFlora); null = the layers' own species.
+var _land: GodFlora
 var _density_version := 0
 
 
@@ -77,10 +79,15 @@ func _enter_tree() -> void:
 		_refresh.call_deferred()
 
 
-func apply_look(_profile: LookProfile, look_rig: LookRig) -> void:
-	# The map's plants are drawn in every look (classic or a biome): the profile does not matter.
+func apply_look(profile: LookProfile, look_rig: LookRig) -> void:
+	# The map's plants are drawn in every look; the biome's GodFlora picks the species of the
+	# layers that paint a land role.
 	if rig == null:
 		rig = look_rig
+	var land: GodFlora = profile.flora if profile else null
+	if land != _land:
+		_land = land
+		_density_dirty = true
 	_refresh()
 
 
@@ -289,7 +296,7 @@ func density() -> FloraDensity:
 	if _density == null or _density_dirty:
 		_density_dirty = false
 		_density_version += 1
-		_density = FloraDensity.gather(_scope())
+		_density = FloraDensity.gather(_scope(), _land)
 	return _density
 
 

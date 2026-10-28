@@ -25,6 +25,13 @@
 [ext_resource type="Resource" path="res://scenes/look/life/dust.tres" id="58_dust"]
 [ext_resource type="Resource" path="res://scenes/look/life/fireflies.tres" id="58_fireflies"]
 [ext_resource type="Resource" path="res://scenes/look/life/gnats.tres" id="58_gnats"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/god_flora.gd" id="fl_script"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="fl_species"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_1.tres" id="fl_james_bush_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_2.tres" id="fl_james_bush_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_3.tres" id="fl_james_bush_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_4.tres" id="fl_james_bush_4"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/james_bush_5.tres" id="fl_james_bush_5"]
 
 [sub_resource type="Resource" id="Role_open"]
 script = ExtResource("21_ground_role")
@@ -63,6 +70,12 @@ water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
 woods = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
 rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
 
+[sub_resource type="Resource" id="Flora_james"]
+script = ExtResource("fl_script")
+trees = Array[Resource]([])
+shrubs = Array[Resource]([ExtResource("fl_james_bush_1"), ExtResource("fl_james_bush_2"), ExtResource("fl_james_bush_3"), ExtResource("fl_james_bush_4"), ExtResource("fl_james_bush_5")])
+cover = Array[Resource]([])
+
 [resource]
 script = ExtResource("1_p")
 display_name = "James"
@@ -71,6 +84,7 @@ sky = ExtResource("9_sky")
 light = ExtResource("2_light")
 glow = ExtResource("1_ehq6w")
 ground = SubResource("GodGround_james")
+flora = SubResource("Flora_james")
 grass = ExtResource("10_grass")
 music = ExtResource("gm_music")
 ambience = ExtResource("gm_ambience")

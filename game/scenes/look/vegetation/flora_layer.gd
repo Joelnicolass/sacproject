@@ -20,6 +20,17 @@ const GROUP := &"flora_layer"
 		_watch(species, value)
 		species = value
 		_changed()
+## The role this layer paints for the land's plants (GodFlora): the god of the match picks the
+## species. NONE = always `species`, whatever the land.
+@export var land_role := GodFlora.Role.NONE:
+	set(value):
+		land_role = value
+		_changed()
+## Which of the role's plants (wrapping over the god's list).
+@export_range(0, 15) var land_index := 0:
+	set(value):
+		land_index = value
+		_changed()
 @export var density: Texture2D:
 	set(value):
 		_watch(density, value)
@@ -53,6 +64,16 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	# Still in the group now: the field gathers again after the frame.
 	get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFERRED, FloraField.GROUP, &"layers_changed")
+
+
+## The species drawn on `land` (the match's GodFlora; null = no look): the land's plant for this
+## layer's role, else `species`.
+func species_on(land: GodFlora) -> VegetationSpecies:
+	if land_role != GodFlora.Role.NONE and land != null:
+		var picked := land.pick(land_role, land_index)
+		if picked != null:
+			return picked
+	return species
 
 
 ## The brush painted `area_m` (map x, z) of `image` (L8, the size of `density`): the field replants
@@ -132,8 +153,8 @@ func _update_overlay() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if species == null:
-		warnings.append("The species is missing (VegetationSpecies).")
+	if species == null and land_role == GodFlora.Role.NONE:
+		warnings.append("The species is missing (VegetationSpecies), or set a land role.")
 	if density == null:
 		warnings.append("The density picture is missing (PNG L8, 1 px = cell_m).")
 	if position != Vector3.ZERO:

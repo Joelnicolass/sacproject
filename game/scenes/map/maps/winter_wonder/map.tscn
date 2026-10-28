@@ -40,6 +40,7 @@
 [ext_resource type="Texture2D" path="res://assets/original/maps/winter_wonder/light.png" id="62_light"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
 [ext_resource type="Resource" uid="uid://cl5ibtkyy5lpx" path="res://scenes/map/maps/winter_wonder/heights.png" id="t_heights"]
+[ext_resource type="Texture2D" path="res://scenes/map/maps/winter_wonder/flora/forest.png" id="fd_forest"]
 
 [node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
@@ -477,41 +478,63 @@ terrain = NodePath("../Terrain")
 [node name="StratosShrub1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_stratos_shrub_1")
+land_role = 2
+land_index = 0
 density = ExtResource("fd_stratos_shrub_1")
 max_per_cell = 6
 
 [node name="StratosShrub2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_stratos_shrub_2")
+land_role = 2
+land_index = 1
 density = ExtResource("fd_stratos_shrub_2")
 max_per_cell = 7
 
 [node name="StratosGroundcover1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_stratos_groundcover_1")
+land_role = 3
+land_index = 0
 density = ExtResource("fd_stratos_groundcover_1")
 max_per_cell = 7
 
 [node name="StratosGroundcover2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_stratos_groundcover_2")
+land_role = 3
+land_index = 1
 density = ExtResource("fd_stratos_groundcover_2")
 max_per_cell = 6
 
 [node name="StratosGroundcover3" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_stratos_groundcover_3")
+land_role = 3
+land_index = 2
 density = ExtResource("fd_stratos_groundcover_3")
 max_per_cell = 7
 
 [node name="StratosGroundcover4" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_stratos_groundcover_4")
+land_role = 3
+land_index = 3
 density = ExtResource("fd_stratos_groundcover_4")
 max_per_cell = 8
 
 [node name="StratosGroundcover5" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_stratos_groundcover_5")
+land_role = 3
+land_index = 4
 density = ExtResource("fd_stratos_groundcover_5")
 max_per_cell = 7
+[node name="Forest" type="Node3D" parent="Vegetation"]
+editor_description = "The land's trees (GodFlora trees of the match's god). First painted by tools/look/forest_density.py; paint over it with the Flora brush."
+script = ExtResource("flora_layer_script")
+land_role = 1
+density = ExtResource("fd_forest")
+cell_m = 16.0
+max_per_cell = 2
+

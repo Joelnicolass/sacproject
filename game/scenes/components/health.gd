@@ -290,7 +290,7 @@ func _can_be_damaged() -> bool:
 	if wards != null and wards.immune():
 		return false
 	var body := get_parent()
-	return body == null or not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: any body that owns a Health answers it
+	return GameBody.targetable(body)
 
 
 func _owner_slot() -> int:

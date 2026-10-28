@@ -22,4 +22,4 @@ func _affect(center: Vector3) -> void:
 	var freg := ability.poison_regen_factor
 	for body in bodies_within(center, ability.effect_range_m):
 		Poisoning.dose_body(body, per_second, frames, _HEALTH.SPLASH_SPELL, from_slot, false, ires, freg)
-		print("  veneno a %s %.2f/s %d cuadros ires %d freg %.2f (vida %d)" % [who(body), per_second, frames, ires, freg, roundi(float(body.get_node("Health").get("current")))])
+		print("  veneno a %s %.2f/s %d cuadros ires %d freg %.2f (vida %d)" % [GameBody.name_of(body), per_second, frames, ires, freg, roundi(float(body.get_node("Health").get("current")))])

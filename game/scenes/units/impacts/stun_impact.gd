@@ -8,7 +8,6 @@ extends ShotImpact
 ## Ref: F120 (RFC-030i-a), F138 (RFC-030i-c); sacengine flummoxProjectileExplosion (state.d:24059-24067), dealSplashRangedDamageAt, stunWithCooldown(target, 480), dealDamageAt 9075-9089.
 
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## How long a stunned body cannot be stunned again.
 ## Ref: sacengine stunCooldownFrames = 8·updateFPS.
@@ -37,7 +36,7 @@ func _affect(_shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType
 
 ## A creature or a wizard (a building and the ground are not stunned).
 func _is_stunnable(body: Node3D) -> bool:
-	if body == null or not is_instance_valid(body) or not _ROCK.is_live_body(body):
+	if body == null or not is_instance_valid(body) or not ProjectileTargets.is_live_body(body):
 		return false
 	for group in groups:
 		if body.is_in_group(group):
@@ -48,6 +47,6 @@ func _is_stunnable(body: Node3D) -> bool:
 func _stun(body: Node3D) -> void:
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
 	if stunned == null:
-		print("  aturdir: %s no tiene Stunned" % who(body))
+		print("  aturdir: %s no tiene Stunned" % GameBody.name_of(body))
 	elif not stunned.stun_with_cooldown(MatchClock.ticks_for(cooldown_s)) and stunned.cooldown_ticks() > 0:
-		print("  aturdir: %s en enfriamiento (%d) (cuadro %d)" % [who(body), stunned.cooldown_ticks(), MatchClock.now()])
+		print("  aturdir: %s en enfriamiento (%d) (cuadro %d)" % [GameBody.name_of(body), stunned.cooldown_ticks(), MatchClock.now()])

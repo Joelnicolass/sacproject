@@ -23,4 +23,4 @@ func _affect(shot: Node3D, _target: Node3D, point: Vector3, ability: AbilityType
 		if int(body.get("owner_slot")) != from_slot or _HEAL.heal_full(body, true) == null:
 			continue
 		var health := body.get_node("Health")
-		print("  cura a %s (vida %d/%d)" % [who(body), roundi(float(health.get("current"))), roundi(float(health.get("maximum")))])
+		print("  cura a %s (vida %d/%d)" % [GameBody.name_of(body), roundi(float(health.get("current"))), roundi(float(health.get("maximum")))])

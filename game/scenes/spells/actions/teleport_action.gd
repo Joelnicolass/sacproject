@@ -68,7 +68,10 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 		var spot := TeleportMath.carried(body.global_position, start, destination, flying, on_ground)
 		spot.y = _land_y(shape, spot, destination.y)
 		froms.append(_feet_of(body))
-		body.call("warp_to", spot)  # dynamic: a unit or a wizard warps
+		if body is UnitBody:
+			(body as UnitBody).warp_to(spot)
+		else:
+			(body as WizardBody).warp_to(spot)
 		tos.append(_feet_of(body))
 		widths.append(2.0 * facts.radius_m)
 		heights.append(facts.height_m)

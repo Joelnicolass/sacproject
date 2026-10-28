@@ -23,7 +23,7 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityTyp
 		return
 	push.direction = (shot.get("velocity") as Vector3).normalized()
 	target.add_child(push)
-	print("empuje a %s dir (%.3f, %.3f, %.3f)" % [who(target), push.direction.x, push.direction.y, push.direction.z])
+	print("empuje a %s dir (%.3f, %.3f, %.3f)" % [GameBody.name_of(target), push.direction.x, push.direction.y, push.direction.z])
 
 
 func _moves(body: Node3D) -> bool:

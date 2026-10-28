@@ -1,5 +1,5 @@
 class_name UnitBody
-extends CharacterBody3D
+extends GameBody
 
 ## A creature on the map: the physics body, the ids that travel on the network (`creature_tag`, `model`, `mode`), the commands other
 ## systems give it and the explicit order of its physics step. What it is and does lives in its children: Creature, Locomotion, Engagement,
@@ -33,11 +33,6 @@ var creature_tag := ""
 	set(value):
 		model = value
 		if creature != null: creature.adopt_model()
-## Player slot that summoned it (0 = nobody).
-@export var owner_slot := 0:
-	set(value):
-		owner_slot = value
-		if health_bar != null: health_bar.set_owner_slot(owner_slot)
 @export var mode: Mode = Mode.IDLE:
 	set(value):
 		var was := mode
@@ -133,6 +128,11 @@ func _physics_process(delta: float) -> void:
 	locomotion.finish(delta, not special_forms.playing_dead, is_obstacle)
 
 
+## `owner_slot` is the player slot that summoned it; its health bar takes the side colour.
+func _owner_slot_changed() -> void:
+	if health_bar != null: health_bar.set_owner_slot(owner_slot)
+
+
 func _on_died(_from_slot: int) -> void:
 	mode = Mode.DEAD
 	died.emit.call_deferred(creature_tag, owner_slot, global_position)
@@ -167,12 +167,6 @@ func is_targetable() -> bool: return is_obstacle() and not special_forms.playing
 func is_flying() -> bool: return (type != null and type.is_flying()) or (flight != null and flight.is_airborne())
 func can_take_mana() -> bool: return mode != Mode.DEAD and mode != Mode.SUMMONING
 func simulates() -> bool: return is_multiplayer_authority()
-
-
-func facing_flat() -> Vector3:
-	var ahead := Vector3.BACK.rotated(Vector3.UP, rotation.y)
-	ahead.y = 0.0
-	return Vector3.BACK if ahead.length_squared() < 0.000001 else ahead.normalized()
 
 
 ## Small doors to the children, for the callers that hold a body and nothing else.

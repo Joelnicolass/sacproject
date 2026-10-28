@@ -37,7 +37,7 @@ func _physics_process(delta: float) -> void:
 				continue
 			if target.global_position.distance_to(at) > radius:
 				continue
-			if target.has_method("can_take_mana") and not target.call("can_take_mana"):  # dynamic: a unit or a wizard
+			if target is GameBody and not (target as GameBody).can_take_mana():
 				continue
 			var pool := target.get_node_or_null("ManaPool") as ManaPool
 			if pool:

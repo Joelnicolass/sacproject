@@ -1,3 +1,4 @@
+@tool
 class_name Summoner
 extends Node
 
@@ -31,8 +32,19 @@ const NO_SOULS := Refusal.NO_SOULS
 @export var summon_fx: ParticleType = preload("res://data/fx/summon.tres")
 ## Where on the new creature's body the burst plays.
 @export var summon_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
+## The wizard that owns this node (set in wizard_body.tscn).
+@export var wizard: WizardBody
 
-@onready var _wizard: WizardBody = get_parent()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	if wizard == null:
+		return PackedStringArray(["Assign `wizard`: the WizardBody that owns this node."])
+	return PackedStringArray()
+
+
+func _ready() -> void:
+	if not Engine.is_editor_hint() and wizard == null:
+		push_error("%s: `wizard` is empty." % get_path())
 
 
 func can_summon(type: CreatureType) -> bool:
@@ -47,9 +59,9 @@ func begin(type: CreatureType) -> Node3D:
 	var unit: Node3D = spawner.spawn_unit({
 		"tag": type.tag,
 		"label": type.display_name,
-		"slot": _wizard.owner_slot,
+		"slot": wizard.owner_slot,
 		"x": at.x, "y": at.y, "z": at.z,
-		"yaw": _wizard.rotation.y,
+		"yaw": wizard.rotation.y,
 		"summoning": true,
 	})
 	if unit:
@@ -61,7 +73,7 @@ func begin(type: CreatureType) -> Node3D:
 func finish(unit: Node3D, type: CreatureType) -> String:
 	if unit == null or not is_instance_valid(unit):
 		return ""
-	var purse := _wizard.get_node_or_null("SoulPurse") as SoulPurse
+	var purse := wizard.get_node_or_null("SoulPurse") as SoulPurse
 	if purse == null or not purse.spend(type.souls):
 		unit.queue_free()
 		return NO_SOULS
@@ -70,9 +82,9 @@ func finish(unit: Node3D, type: CreatureType) -> String:
 
 
 func spawn_point() -> Vector3:
-	var ahead := _wizard.facing_flat()
+	var ahead := wizard.facing_flat()
 	var side := Vector3(ahead.z, 0.0, -ahead.x)
-	var origin := _wizard.global_position
+	var origin := wizard.global_position
 	var first: Variant = _ground_at(origin + ahead * ahead_m)
 	if first != null and _is_clear(first):
 		return first
@@ -88,7 +100,7 @@ func spawn_point() -> Vector3:
 
 
 func _ground_at(at: Vector3) -> Variant:
-	return GroundRay.surface_point(_wizard, at, ground_mask, GroundRay.wizard_rids(get_tree()))
+	return GroundRay.surface_point(wizard, at, ground_mask, GroundRay.wizard_rids(get_tree()))
 
 
 func _is_clear(spot: Vector3) -> bool:

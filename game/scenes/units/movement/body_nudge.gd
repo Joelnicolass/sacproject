@@ -125,7 +125,7 @@ static func _alive(body: Node3D) -> bool:
 		return false
 	if body is UnitBody and ((body as UnitBody).mode == UnitBody.Mode.SUMMONING or (body as UnitBody).is_taken()):
 		return false
-	if not body is UnitBody and body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: wizard, structure and doctor bodies answer it
+	if not body is UnitBody and not GameBody.targetable(body):
 		return false
 	var health := body.get_node_or_null("Health") as Health
 	return health != null and not health.is_dead()

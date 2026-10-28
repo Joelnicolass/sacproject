@@ -17,7 +17,6 @@ extends Node3D
 ## Ref: F148 (RFC-030 030h3), sacengine updateAbominationDroplet state.d:24488-24505, 24481-24487, 24494, 24497-24498, collisionTarget 16442-16447 and 30033.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 const GROUP := &"droplet_rain"
 
 ## Bodies (creatures, wizards, structures) the drop can touch.
@@ -125,7 +124,7 @@ func _target_at(space: PhysicsDirectSpaceState3D, at: Vector3, size: float, from
 	var best_d := INF
 	for found in space.intersect_shape(_query, 8):
 		var body := found.get("collider") as Node3D
-		if body == null or not _ROCK.is_live_body(body):
+		if body == null or not ProjectileTargets.is_live_body(body):
 			continue
 		var rank := _rank(body, from_slot)
 		var d := at.distance_squared_to(body.global_position)
@@ -148,7 +147,7 @@ func _hit(target: Node3D, amount: float, from_slot: int) -> void:
 	var health := target.get_node("Health") as Health
 	var taken := health.damage_typed(amount, _HEALTH.DIRECT_RANGED, from_slot)
 	if log_hits:
-		print("gota %s %.2f vida %.2f" % [ShotImpact.who(target), taken, float(health.get("current"))])
+		print("gota %s %.2f vida %.2f" % [GameBody.name_of(target), taken, float(health.get("current"))])
 
 
 func _remove(i: int) -> void:

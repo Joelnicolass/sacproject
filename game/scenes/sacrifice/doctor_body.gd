@@ -1,6 +1,6 @@
 @tool
 class_name DoctorBody
-extends CharacterBody3D
+extends GameBody
 
 ## A Sac Doctor: falls out of a vortex, walks to a point, stands working and dies. Not a UnitBody: no orders, attack, corpse or soul;
 ## creatures, shots and spells can still attack it (group «doctor»). It keeps the pose, the work and the health and offers the verbs;
@@ -22,11 +22,6 @@ enum Pose { IDLE, FALLING, WALKING, WORKING, DYING, LANDING }
 enum Work { PUMP, LIFT, TORTURE }
 
 @export var type: CreatureType
-@export var owner_slot := 0:
-	set(value):
-		owner_slot = value
-		if is_node_ready() and health_bar:
-			(health_bar as UnitHealthBar).set_owner_slot(owner_slot)
 @export var pose: Pose = Pose.IDLE:
 	set(value):
 		pose = value
@@ -73,6 +68,11 @@ func _ready() -> void:
 		drop_to(Vector3(global_position.x, GroundRay.surface_y(self, global_position, 1, [get_rid()], global_position.y), global_position.z))
 	else:
 		stand()
+
+
+func _owner_slot_changed() -> void:
+	if is_node_ready() and health_bar:
+		(health_bar as UnitHealthBar).set_owner_slot(owner_slot)
 
 
 func stand() -> void:
@@ -150,8 +150,6 @@ func pace() -> float: return (type.run_speed_m_s if type else 0.0) * speed_facto
 
 
 func landing_s() -> float: return motor.landing_s()
-
-func facing_flat() -> Vector3: return motor.facing_flat()
 
 
 ## Defense and size for MeleeRules.profile_of: evasion and resistance of the CRE8, size of `sacd`.

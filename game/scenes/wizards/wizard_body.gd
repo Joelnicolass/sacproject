@@ -1,5 +1,5 @@
 class_name WizardBody
-extends CharacterBody3D
+extends GameBody
 
 ## One per player slot (WizardSpawner). The server (or solo) simulates the body. The player's keys travel as the values `forward` and
 ## `yaw` of the MpInput child; `mp_move` (the kit runs it on the server, on the owner and when the owner reconciles) hands them to
@@ -16,10 +16,6 @@ const GROUP := &"wizard"
 const LOCAL_GROUP := &"local_wizard"
 
 @export var step: WalkStep
-@export var owner_slot := 0:
-	set(value):
-		owner_slot = value
-		_refresh_owner()
 ## The wizard the player picked (data/catalog/wizards/). Every peer takes it from SacrificeFlow.pick_for(owner_slot) (the pick is
 ## typed on each of them); a bench without a flow sets it in its .tscn. It never looks the type up by text.
 @export var wizard_type: WizardType:
@@ -77,7 +73,6 @@ const LOCAL_GROUP := &"local_wizard"
 ## Ref: sacengine; state.d:1429
 @export var regen_pause_s := 0.5
 
-const REST_FACING := Vector3(0.0, 0.0, 1.0)
 const TURN_RATE := PI
 ## The yaw is sent again when the camera turned this much (radians, about 0.25 degrees): a value per frame would cost three times the bytes.
 const YAW_STEP := 0.0044
@@ -202,6 +197,10 @@ func display_name() -> String:
 	return model
 
 
+func _owner_slot_changed() -> void:
+	_refresh_owner()
+
+
 func _refresh_owner() -> void:
 	if not is_inside_tree():
 		return
@@ -259,14 +258,6 @@ func _wear_body() -> void:
 ## How far the soles of the feet are below the origin of the body (the Feet marker of its body scene).
 func feet_drop() -> float:
 	return mount.facts.feet.y
-
-
-func facing_flat() -> Vector3:
-	var ahead := REST_FACING.rotated(Vector3.UP, rotation.y)
-	ahead.y = 0.0
-	if ahead.length_squared() < 0.000001:
-		return Vector3(0.0, 0.0, 1.0)
-	return ahead.normalized()
 
 
 func _process(delta: float) -> void:

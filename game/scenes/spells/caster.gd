@@ -1,3 +1,4 @@
+@tool
 class_name Caster
 extends Node
 
@@ -31,6 +32,8 @@ const BARE := "-"
 @export var summoner: Summoner
 ## Holds the SpellAction children. Without it, or without the child, the spell answers «No implementado».
 @export var actions: Node
+## The wizard that owns this node (set in wizard_body.tscn).
+@export var wizard: WizardBody
 
 ## SpellType or CreatureType being cast.
 var _entry: BookEntry
@@ -53,7 +56,16 @@ var _shown_id := ""
 		cast_fx_shown = value
 		cast_changed.emit(not value.is_empty(), cast_fx())
 
-@onready var _wizard: WizardBody = get_parent()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	if wizard == null:
+		return PackedStringArray(["Assign `wizard`: the WizardBody that owns this node."])
+	return PackedStringArray()
+
+
+func _ready() -> void:
+	if not Engine.is_editor_hint() and wizard == null:
+		push_error("%s: `wizard` is empty." % get_path())
 
 
 ## A cast is in progress: the server knows the entry; a client reads the replicated `cast_fx_shown`.
@@ -71,7 +83,7 @@ func cast_fx() -> ParticleType:
 ## Only an idle or moving wizard, not a dying or ghost one.
 ## Ref: sacengine canCast (state.d:9520)
 func wizard_can_cast() -> bool:
-	return _wizard.can_cast()
+	return wizard.can_cast()
 
 
 ## Can the spell be armed? &"" = yes, else a Refusal key.
@@ -117,7 +129,7 @@ func at_creature_limit() -> bool:
 	var cap := rules.max_creatures_per_player if rules != null else 0
 	if cap <= 0:
 		return false
-	var slot := _wizard.owner_slot
+	var slot := wizard.owner_slot
 	var count := 0
 	for unit in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		if unit.get("owner_slot") == slot and unit is UnitBody and not (unit as UnitBody).is_dead():
@@ -133,7 +145,7 @@ func structure_status(index: int) -> StringName:
 	var action := action_for(spell.tag)
 	if action == null:
 		return Refusal.NOT_IMPLEMENTED
-	var status := action.arm_status(_wizard, spell)
+	var status := action.arm_status(wizard, spell)
 	if not status.is_empty():
 		return status
 	return _funds(spell)
@@ -172,8 +184,8 @@ func aim_for(tag: String, point: Vector3, picked: Node3D) -> SpellAction.Aim:
 	var action := action_for(tag)
 	var spell := _spell_of(tag)
 	var aim := SpellAction.Aim.new()
-	aim.status = Refusal.BAD_TARGET if action == null or spell == null else action.arm_status(_wizard, spell)
-	return aim if not aim.status.is_empty() else action.check(_wizard, spell, point, picked, _funds(spell))
+	aim.status = Refusal.BAD_TARGET if action == null or spell == null else action.arm_status(wizard, spell)
+	return aim if not aim.status.is_empty() else action.check(wizard, spell, point, picked, _funds(spell))
 
 
 ## Read only: aim_for(...).status ("" = it would start).
@@ -249,7 +261,7 @@ func _receive_feedback(text: String) -> void:
 
 ## Server only: the RPC sender when it owns this wizard, else 0.
 func _owner_sender() -> int:
-	if not MpAuthority.accept_command(self, _wizard.owner_slot):
+	if not MpAuthority.accept_command(self, wizard.owner_slot):
 		return 0
 	return multiplayer.get_remote_sender_id()
 
@@ -263,7 +275,7 @@ func _report(text: String) -> void:
 ## Server or solo: tells the owner something that happened after the request answered.
 func _tell_owner(text: String) -> void:
 	if MpKit.is_networked() and MpKit.is_server():
-		var peer := MpKit.peer_id_for(_wizard.owner_slot)
+		var peer := MpKit.peer_id_for(wizard.owner_slot)
 		if peer > 0 and peer != multiplayer.get_unique_id():
 			_receive_feedback.rpc_id(peer, text)
 			return
@@ -327,17 +339,17 @@ func _try_action(action: SpellAction, spell: SpellType, point: Vector3, path: No
 	var aim := aim_for(spell.tag, point, picked)
 	if not aim.status.is_empty():
 		return aim.status
-	action.begin(_wizard, spell, aim)
+	action.begin(wizard, spell, aim)
 	_active = action
 	var frames := _start(spell, aim.target)
-	action.started(_wizard, spell, aim, frames)
+	action.started(wizard, spell, aim, frames)
 	return spell.display_name
 
 
 ## Takes the cast: counts the casting frames and the drain, sets the cooldowns. Returns the casting frames.
 func _start(entry: BookEntry, target: Node3D) -> int:
 	# The wizard level shortens the cast (CastTime).
-	var frames := floori(MatchClock.TICKS_PER_SECOND_F * CastTime.seconds(entry, _wizard.level))
+	var frames := floori(MatchClock.TICKS_PER_SECOND_F * CastTime.seconds(entry, wizard.level))
 	var cost := _cost(entry)
 	_entry = entry
 	_target = target
@@ -347,7 +359,7 @@ func _start(entry: BookEntry, target: Node3D) -> int:
 	spellbook.apply_cooldown(entry.tag)
 	_shown_id = _cast_fx_id()
 	var verb := "convoca" if entry is CreatureType else "lanza"
-	print("%s %s slot %d" % [verb, entry.display_name, _wizard.owner_slot])
+	print("%s %s slot %d" % [verb, entry.display_name, wizard.owner_slot])
 	return frames
 
 
@@ -369,7 +381,7 @@ func _physics_process(_delta: float) -> void:
 ## The wizard died, or was stunned or petrified (F138), while casting: the spell does not land and a creature being
 ## summoned goes.
 func _interrupt() -> void:
-	print("se corta %s slot %d" % [_entry.display_name, _wizard.owner_slot])
+	print("se corta %s slot %d" % [_entry.display_name, wizard.owner_slot])
 	if _entry is CreatureType and is_instance_valid(_target):
 		_target.queue_free()
 	if _active != null:
@@ -395,7 +407,7 @@ func _finish() -> void:
 	if _active != null:
 		var action := _active
 		_active = null
-		var text := action.finish(_wizard, spell, target)
+		var text := action.finish(wizard, spell, target)
 		if not text.is_empty():
 			_tell_owner(text)
 
@@ -405,8 +417,8 @@ func _finish() -> void:
 ## Ref: state.d:16386, 16707.
 func _cast_fx_id() -> String:
 	var fx: ParticleType = _active.cast_fx if _active != null else null
-	if fx == null and _wizard.god_type != null:
-		fx = _wizard.god_type.cast_fx
+	if fx == null and wizard.god_type != null:
+		fx = wizard.god_type.cast_fx
 	var id := FxWire.id_of(fx) if fx != null else ""
 	return id if not id.is_empty() else BARE
 
@@ -439,12 +451,12 @@ func _cost(entry: BookEntry) -> float:
 
 
 func _mana() -> float:
-	return _wizard.mana.current
+	return wizard.mana.current
 
 
 func _souls() -> int:
-	return _wizard.souls.count
+	return wizard.souls.count
 
 
 func _spend(amount: float) -> void:
-	_wizard.mana.spend(minf(amount, _wizard.mana.current))
+	wizard.mana.spend(minf(amount, wizard.mana.current))

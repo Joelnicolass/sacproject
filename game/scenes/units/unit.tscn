@@ -366,8 +366,9 @@ light_energy = 0.9
 omni_range = 5.0
 priority = 2.0
 
-[node name="Orders" type="Node" parent="."]
+[node name="Orders" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f27_orders")
+body = NodePath("..")
 
 [node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("f72_follower")

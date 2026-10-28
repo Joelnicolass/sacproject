@@ -312,7 +312,7 @@ static func _half_size(body: Node3D) -> float:
 
 
 static func _yaw_of(node: Node3D) -> float:
-	if node.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
-		var ahead: Vector3 = node.call("facing_flat")
+	if node is GameBody:
+		var ahead := (node as GameBody).facing_flat()
 		return atan2(ahead.x, ahead.z)
 	return node.rotation.y

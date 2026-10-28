@@ -97,13 +97,6 @@ func advance_on_ground(horizontal: Vector3, delta: float) -> void:
 	_finish_step()
 
 
-## The unit vector the doctor faces on the ground.
-func facing_flat() -> Vector3:
-	var ahead := Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, body.rotation.y)
-	ahead.y = 0.0
-	return ahead.normalized() if ahead.length_squared() > 0.000001 else Vector3(0.0, 0.0, 1.0)
-
-
 ## Seconds of the «hit floor» clip: how long it stays down after touching the ground.
 func landing_s() -> float:
 	if body.type == null:

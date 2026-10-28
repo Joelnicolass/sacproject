@@ -20,7 +20,6 @@ extends DamageOverTime
 ## there; the look goes through FxBus.
 ## Ref: F123 (RFC-030l), sacengine Fire state.d:2578-2587, setAblaze 27670-27676, updateFire 15112-15130, 15117-15118, dealFireDamage 9421-9427, peirceShield 8962-8969, drainMana 8822-8825, Bombard fire 24521-24527, dealDamage 8940, refreshAblaze (030r).
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## Mana drained per update (manaDrainPerFrame).
 var mana_drain_per_tick := 0.0
@@ -43,7 +42,7 @@ var _mana: ManaPool
 ## drains).
 static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringName, from_slot: int, mana_drain := 0.0,
 		pierce := false, fx: ParticleType = null, attacker: Node = null) -> Burning:
-	if target == null or not is_instance_valid(target) or not _ROCK.is_live_body(target):
+	if target == null or not is_instance_valid(target) or not ProjectileTargets.is_live_body(target):
 		return null
 	var health := target.get_node_or_null("Health") as Health
 	var creature := target.is_in_group(UnitBody.GROUP) or target.is_in_group(WizardBody.GROUP)

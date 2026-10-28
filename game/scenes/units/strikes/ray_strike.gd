@@ -94,7 +94,7 @@ func _cast(from: Vector3, direction: Vector3) -> void:
 		if hit.is_empty():
 			break
 		var collider := hit.get("collider") as Node3D
-		if collider != null and Attackable.is_body(collider) and not _ROCK.is_live_body(collider):
+		if collider != null and Attackable.is_body(collider) and not ProjectileTargets.is_live_body(collider):
 			var object := collider as CollisionObject3D
 			if object == null:
 				break

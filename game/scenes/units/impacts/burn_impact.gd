@@ -67,7 +67,7 @@ func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: 
 	fire.fire_every_ticks = MatchClock.ticks_for(fire_every_s)
 	fire.fire_socket = fire_socket
 	var health := body.get_node("Health") as Health
-	print("fuego %s a %s: %.1f en %d cuadros%s%s (vida %d%s)" % [ability.tag if ability else "?", who(body), damage, frames,
+	print("fuego %s a %s: %.1f en %d cuadros%s%s (vida %d%s)" % [ability.tag if ability else "?", GameBody.name_of(body), damage, frames,
 			", maná %.2f" % drain if drain > 0.0 else "", ", atraviesa escudos" if pierce_shield else "",
 			roundi(health.current), ", maná %.2f" % mana.current if mana and drain > 0.0 else ""])
 

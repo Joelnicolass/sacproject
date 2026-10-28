@@ -104,7 +104,7 @@ func clip_role() -> String:
 func _body_allows(body: Node3D) -> bool:
 	if body is UnitBody and (body as UnitBody).is_rock_form():
 		return false
-	return not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: a unit or a wizard
+	return GameBody.targetable(body)
 
 
 func _physics_process(_delta: float) -> void:

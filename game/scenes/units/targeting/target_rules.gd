@@ -23,7 +23,7 @@ static func is_valid_foe_of(slot: int, node: Variant, me: Node = null, by_stance
 		return false
 	## Not a dying or ghost wizard.
 	## Ref: sacengine isValidAttackTarget state.d:138.
-	if other.has_method("is_targetable") and not other.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
+	if not GameBody.targetable(other):
 		return false
 	var other_slot := int(other.get("owner_slot"))
 	if other_slot == slot:

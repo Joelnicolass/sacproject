@@ -107,6 +107,6 @@ func _physics_process(delta: float) -> void:
 func _end() -> void:
 	if report_end and _health != null:
 		var body := get_parent()
-		var who := str(body.call("display_name")) if body.has_method("display_name") else str(body.name)  # dynamic: unit, wizard and doctor bodies name themselves
+		var who := GameBody.name_of(body)
 		print("cura %s total %d vida %d" % [who, roundi(_healed), roundi(float(_health.get("current")))])
 	queue_free()

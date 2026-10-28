@@ -141,8 +141,8 @@ func _cast_step() -> void:
 ## Ref: sacengine rockCastingPosition
 static func cast_position(caster: Node3D) -> Vector3:
 	var ahead := Vector3(0.0, 0.0, 1.0)
-	if caster.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
-		ahead = caster.call("facing_flat")
+	if caster is GameBody:
+		ahead = (caster as GameBody).facing_flat()
 	var front := _reach_mm(BodyFacts.of_body(caster).reach_m)
 	return caster.global_position + ahead * (front + CAST_AHEAD)
 
@@ -225,20 +225,3 @@ func _burst(target: Node3D) -> void:
 	ScarMark.broadcast(ground_mark, global_position)
 	set_physics_process(false)
 	queue_free()
-
-
-# WORKAROUND: creature and AI scripts outside scenes/spells still preload this script for these three helpers.
-# They forward to ProjectileTargets; remove them once those callers use ProjectileTargets directly.
-## Same as ProjectileTargets.body_center.
-static func body_center(body: Node3D) -> Vector3:
-	return ProjectileTargets.body_center(body)
-
-
-## Same as ProjectileTargets.is_live_body.
-static func is_live_body(body: Node) -> bool:
-	return ProjectileTargets.is_live_body(body)
-
-
-## Same as ProjectileTargets.report.
-static func report(target: Node3D, taken: float, kind: StringName) -> void:
-	ProjectileTargets.report(target, taken, kind)

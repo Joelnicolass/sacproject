@@ -82,4 +82,4 @@ func _body() -> Node3D:
 
 ## The body's name for the log.
 func _body_name() -> String:
-	return str(_body().call("display_name"))  # dynamic: the body is a unit or a wizard
+	return GameBody.name_of(_body())

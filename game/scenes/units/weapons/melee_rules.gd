@@ -10,16 +10,20 @@ const SWING_ROLES: Array[StringName] = [&"attack", &"attack2", &"attack3"]
 
 
 static func facing_of(node: Node3D) -> Vector3:
-	if node.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
-		return node.call("facing_flat")
+	if node is GameBody:
+		return (node as GameBody).facing_flat()
 	var ahead := Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, node.global_rotation.y)
 	return Vector3(ahead.x, 0.0, ahead.z).normalized()
 
 
-## Defense and size of any target: a UnitBody answers melee_profile(); a wizard reads WIZD.
+## Defense and size of any target: a creature, a Sac Doctor or a building answers melee_profile(); a wizard reads its type.
 static func profile_of(target: Node3D) -> Dictionary:
-	if target.has_method("melee_profile"):  # dynamic: unit, doctor and building bodies answer it
-		return target.call("melee_profile")
+	if target is UnitBody:
+		return (target as UnitBody).melee_profile()
+	if target is DoctorBody:
+		return (target as DoctorBody).melee_profile()
+	if target is MapBuilding:
+		return (target as MapBuilding).melee_profile()
 	var facts := BodyFacts.of_body(target)
 	var result := {
 		"evasion": 0.0,
@@ -27,7 +31,7 @@ static func profile_of(target: Node3D) -> Dictionary:
 		"reach": facts.reach_m,
 		"height": facts.height_m,
 	}
-	var wizard: WizardType = target.get("wizard_type") if "wizard_type" in target else null
+	var wizard: WizardType = (target as WizardBody).wizard_type if target is WizardBody else null
 	if wizard:
 		result["evasion"] = float(wizard.melee_evasion_milli())
 		result["resistance"] = wizard.melee_resistance

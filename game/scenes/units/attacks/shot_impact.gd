@@ -40,10 +40,6 @@ static func shooter_of(holder: Node) -> Node:
 	return holder.get_node_or_null(path as NodePath)
 
 
-static func who(body: Node) -> String:
-	return str(body.call("display_name")) if body.has_method("display_name") else str(body.name)  # dynamic: unit, wizard and doctor bodies name themselves
-
-
 ## What a creature's shot or strike does where it lands: the ShotLook.impact scene (as a child of `holder`, freed with
 ## it), or without one the whole amount as direct ranged damage to the body hit;
 ## then the look's impact_fx at `point` on every
@@ -63,11 +59,11 @@ static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3,
 		else:
 			node.free()
 			push_warning("ShotImpact.land: el impacto de %s no es un ShotImpact." % holder.name)
-	elif hit and preload("res://scenes/spells/rock_projectile.gd").is_live_body(hit):
-		## Local preloads: the variants (SplashImpact, DirectImpact, …) already name theirs _HEALTH and _ROCK.
+	elif hit and ProjectileTargets.is_live_body(hit):
+		## A local preload: the variants (SplashImpact, DirectImpact, …) already name theirs _HEALTH.
 		var direct_ranged: StringName = preload("res://scenes/components/health.gd").DIRECT_RANGED
 		taken = (hit.get_node("Health") as Health).damage_typed(float(holder.get("damage")), direct_ranged, int(holder.get("from_slot")), false, false, mods_of(holder))
-		preload("res://scenes/spells/rock_projectile.gd").report(hit, taken, direct_ranged)  ## F155: the bench reads this line
+		ProjectileTargets.report(hit, taken, direct_ranged)  ## F155: the bench reads this line
 		LifeDrain.feed(shooter_of(holder), hit, taken)  ## F164
 	for fx: ParticleType in look.impact_fx:
 		FxBus.broadcast(fx, point)

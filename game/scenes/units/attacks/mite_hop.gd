@@ -147,7 +147,7 @@ func _intended(shot: RangedShot, from: Vector3, close: Node3D, shape: Terrain) -
 
 
 func _is_target(body: Node3D) -> bool:
-	return is_instance_valid(body) and preload("res://scenes/spells/rock_projectile.gd").is_live_body(body)
+	return is_instance_valid(body) and ProjectileTargets.is_live_body(body)
 
 
 func _reach(shot: RangedShot) -> float:

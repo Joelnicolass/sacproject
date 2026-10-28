@@ -34,7 +34,7 @@ func _physics_process(_delta: float) -> void:
 	var tumbling := BodyNudge.tumbling_of(body)
 	if tumbling and tumbling.is_on():
 		tumbling.add_velocity(push)
-		print("empuje %s en tumbo: +(%.2f, %.2f, %.2f) m/s" % [ShotImpact.who(body), push.x, push.y, push.z])
+		print("empuje %s en tumbo: +(%.2f, %.2f, %.2f) m/s" % [GameBody.name_of(body), push.x, push.y, push.z])
 		_end(body)
 		return
 	if BodyNudge.push(body, push):
@@ -47,6 +47,6 @@ func _physics_process(_delta: float) -> void:
 func _end(body: Node3D) -> void:
 	set_physics_process(false)
 	var at := body.global_position
-	print("empuje %s %.2f m en %d ticks (dx %.2f, dz %.2f, dy %.2f) (cuadro %d)" % [ShotImpact.who(body), _moved, _done,
+	print("empuje %s %.2f m en %d ticks (dx %.2f, dz %.2f, dy %.2f) (cuadro %d)" % [GameBody.name_of(body), _moved, _done,
 		at.x - _from.x, at.z - _from.z, at.y - _from.y, MatchClock.now()])
 	queue_free()

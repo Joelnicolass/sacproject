@@ -287,15 +287,17 @@ script = ExtResource("9_book")
 wizard = NodePath("..")
 rules = ExtResource("7_rules")
 
-[node name="Summoner" type="Node" parent="."]
+[node name="Summoner" type="Node" parent="." node_paths=PackedStringArray("wizard")]
 script = ExtResource("11_summoner")
+wizard = NodePath("..")
 
-[node name="Caster" type="Node" parent="." node_paths=PackedStringArray("spellbook", "summoner", "actions")]
+[node name="Caster" type="Node" parent="." node_paths=PackedStringArray("spellbook", "summoner", "actions", "wizard")]
 script = ExtResource("10_caster")
 rules = ExtResource("7_rules")
 spellbook = NodePath("../Spellbook")
 summoner = NodePath("../Summoner")
 actions = NodePath("Actions")
+wizard = NodePath("..")
 
 [node name="Actions" type="Node" parent="Caster"]
 

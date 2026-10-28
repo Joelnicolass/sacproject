@@ -22,8 +22,8 @@ signal arrived
 ## A pursuit keeps its path while the target stays within this (flat) of the goal it was planned for: 2 cells of 5 m (RFC-024).
 const REPATH_GOAL_M := 10.0
 
-## The body to move: a UnitBody or a WizardBody (begin_walk / is_walking / walk_to).
-@export var body: Node3D
+## The body to move: a creature, a wizard or a Sac Doctor (begin_walk / is_walking).
+@export var body: GameBody
 ## Seconds between checks of the way and the progress.
 ## Ref: sacengine 2 s.
 @export var repath_s := 2.0
@@ -60,14 +60,14 @@ var _steer_age := 0.0
 
 func _ready() -> void:
 	if body == null:
-		body = get_parent() as Node3D
+		body = get_parent() as GameBody
 	if not is_multiplayer_authority():
 		set_physics_process(false)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if body == null and not get_parent() is Node3D:
+	if body == null and not get_parent() is GameBody:
 		warnings.append("Falta el cuerpo (body).")
 	return warnings
 
@@ -241,10 +241,10 @@ static func _flat(a: Vector3, b: Vector3) -> float:
 	return Vector2(a.x - b.x, a.z - b.z).length()
 
 
-## The body walks one straight leg: a unit, a wizard or a Sac Doctor (no common class).
+## The body walks one straight leg.
 func _begin_leg(point: Vector3) -> void:
-	body.call("begin_walk", point)  # dynamic: unit, wizard and doctor bodies walk
+	body.begin_walk(point)
 
 
 func _body_walking() -> bool:
-	return bool(body.call("is_walking"))  # dynamic: unit, wizard and doctor bodies walk
+	return body.is_walking()

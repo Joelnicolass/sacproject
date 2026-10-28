@@ -459,7 +459,7 @@ func _valid(body: Node3D) -> bool:
 
 ## isValidAttackTarget: valid and not hidden from the foe.
 func _attackable(body: Node3D) -> bool:
-	return _valid(body) and (not body.has_method("is_targetable") or bool(body.call("is_targetable")))  # dynamic: unit, wizard, structure and doctor bodies answer it
+	return _valid(body) and GameBody.targetable(body)
 
 
 static func _slot_of(body: Node) -> int:

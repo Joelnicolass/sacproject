@@ -20,7 +20,6 @@ extends Node3D
 ## Ref: F130 (RFC-030 030s-a); sacengine `lightning` (state.d:10474-10491, Lightning 2831-2840, updateLightning 16366-16386), updateTargets 10475-10484, dealSpellDamage 16380-16383, 28892-28899.
 
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## The bolt arrived: on `body` (a valid end) or on the land (null), at `at`. For whoever launched it and adds something of its own (the splash).
 signal struck(body: Node3D, at: Vector3)
@@ -86,7 +85,7 @@ static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point:
 
 ## isValidTarget: alive and on the field (and targetable). The one answer for the retarget ray, the damage and the charge's picks.
 static func is_valid_target(body: Node) -> bool:
-	if body == null or not is_instance_valid(body) or not body.is_inside_tree() or not _ROCK.is_live_body(body):
+	if body == null or not is_instance_valid(body) or not body.is_inside_tree() or not ProjectileTargets.is_live_body(body):
 		return false
 	var unit := body as UnitBody
 	return unit == null or not (unit.is_summoning() or unit.is_taken())

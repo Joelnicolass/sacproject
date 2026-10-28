@@ -25,7 +25,7 @@ var dead: Node3D
 ## Acts once around `center` (the dead body's box center), plays `fx` there and frees the node.
 func burst(center: Vector3, fx: ParticleType) -> void:
 	global_position = center
-	var dead_name := who(dead) if dead else "?"
+	var dead_name := GameBody.name_of(dead) if dead else "?"
 	print("nube %s de %s (slot %d) en (%.1f, %.1f, %.1f)" % [ability.tag if ability else "?", dead_name, from_slot, center.x, center.y, center.z])
 	if ability:
 		_affect(center)
@@ -42,7 +42,3 @@ func _affect(_center: Vector3) -> void:
 ## Live creatures and wizards whose hit box is within `radius` of `center`, but the dead one (SplashDamage owns the walk).
 func bodies_within(center: Vector3, radius: float) -> Array[Node3D]:
 	return _SPLASH.bodies_within(get_tree(), center, radius, dead, GROUPS)
-
-
-static func who(body: Node) -> String:
-	return str(body.call("display_name")) if body.has_method("display_name") else str(body.name)  # dynamic: unit, wizard and doctor bodies name themselves

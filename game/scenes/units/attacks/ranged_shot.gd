@@ -213,7 +213,7 @@ func _swept_target(from: Vector3, to: Vector3) -> Node3D:
 ## earthflingProjectileCollisionTarget / scarabProjectileCollisionTarget: a live body, not the shooter, that is the
 ## intended target or (ShotLook.hits_allies) of the shooter's side, else not of it.
 func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
-	if body == null or body == shooter or not _is_live_body(body):
+	if body == null or body == shooter or not ProjectileTargets.is_live_body(body):
 		return false
 	if look.hits_only_poisonable:
 		var poisoning := Poisoning.of(body)
@@ -221,15 +221,6 @@ func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
 			return false
 	var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
 	return body == intended or from_slot <= 0 or look.hits_every_side or (side == from_slot) == look.hits_allies
-
-
-static func _is_live_body(body: Node) -> bool:
-	if not Attackable.is_body(body):
-		return false
-	if body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
-		return false
-	var health := body.get_node_or_null("Health") as Health
-	return health != null and not health.is_dead()
 
 
 ## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards

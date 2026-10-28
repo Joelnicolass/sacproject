@@ -54,8 +54,7 @@ static func body_center(body: Node3D) -> Vector3:
 static func is_live_body(body: Node) -> bool:
 	if not Attackable.is_body(body):
 		return false
-	# dynamic: unit, wizard, structure and doctor bodies answer it
-	if body.has_method("is_targetable") and not body.call("is_targetable"):
+	if not GameBody.targetable(body):
 		return false
 	var health := body.get_node_or_null("Health") as Health
 	return health != null and not health.is_dead()
@@ -65,8 +64,7 @@ static func is_live_body(body: Node) -> bool:
 static func report(target: Node3D, taken: float, kind: StringName) -> void:
 	var health := target.get_node("Health") as Health
 	# The bench tells apart bodies of the same kind by their display name.
-	# dynamic: unit, wizard and doctor bodies name themselves
-	var who := str(target.call("display_name")) if target.has_method("display_name") and not DebugLog.on(&"oil") else str(target.name)
+	var who := str(target.name) if DebugLog.on(&"oil") else GameBody.name_of(target)
 	var line := "dano %s %d vida %d" % [who, roundi(taken), roundi(health.current)]
 	if taken <= 0.0 and health.resistance(kind) <= 0.0:
 		line += " (inmune)"

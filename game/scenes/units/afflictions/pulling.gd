@@ -229,8 +229,8 @@ static func _fall_acceleration(tumbling: Tumbling) -> float:
 
 
 static func _forward(body: Node3D) -> Vector3:
-	if body.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
-		return body.call("facing_flat")
+	if body is GameBody:
+		return (body as GameBody).facing_flat()
 	var flat := -body.global_basis.z
 	flat.y = 0.0
 	return flat.normalized()

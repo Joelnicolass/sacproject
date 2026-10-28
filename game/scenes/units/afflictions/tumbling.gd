@@ -126,7 +126,7 @@ func _body_allows(body: Node3D) -> bool:
 		return false
 	var unit := body as UnitBody
 	if unit == null:
-		return not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: a wizard (or another body) answers it
+		return GameBody.targetable(body)
 	var flight := unit.get_node_or_null("Flight") as Flight
 	if flight and flight.state == Flight.State.LANDING:
 		return false

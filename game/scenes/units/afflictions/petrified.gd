@@ -57,7 +57,7 @@ func petrify(lifetime_ticks: int) -> bool:
 static func can_be_immobilized(body: Node3D) -> bool:
 	var unit := body as UnitBody
 	if unit == null:
-		return body.has_method("is_targetable") and bool(body.call("is_targetable"))  # dynamic: a wizard (or another body) answers it
+		return body is GameBody and (body as GameBody).is_targetable()
 	return not unit.is_dead() and not unit.is_taken() and unit.mode != UnitBody.Mode.SUMMONING
 
 

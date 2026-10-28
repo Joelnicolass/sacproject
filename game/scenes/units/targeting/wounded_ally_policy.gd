@@ -42,7 +42,7 @@ func is_patient(body: UnitBody, node: Variant) -> bool:
 		return false
 	if other is UnitBody and (other as UnitBody).is_rock_form():
 		return false
-	if other.has_method("is_targetable") and not other.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
+	if not GameBody.targetable(other):
 		return false
 	return _HEAL.can_heal(other)
 

@@ -17,7 +17,7 @@ const BALLISTIC: PackedStringArray = ["ekba", "fkba", "dkba", "aaba", "wobf", "b
 
 ## A body a shot may be loosed at: targetable, with Health, alive.
 static func is_live(body: Node) -> bool:
-	if body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
+	if not GameBody.targetable(body):
 		return false
 	var health := body.get_node_or_null("Health") as Health
 	return health != null and not health.is_dead()

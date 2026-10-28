@@ -139,7 +139,7 @@ func _classify(screen: Vector2) -> StringName:
 		return _with_owner(node, "building")
 	if Attackable.is_body(node):
 		_picked = node
-		if node.has_method("is_dead") and bool(node.call("is_dead")):  # dynamic: unit, structure and doctor bodies answer it
+		if node is GameBody and (node as GameBody).is_dead():
 			return &"corpse"
 		return _with_owner(node, "unit")
 	# A manafount is ground for the cursor (an order lands on it), but the info panel names it.

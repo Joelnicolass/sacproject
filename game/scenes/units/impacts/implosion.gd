@@ -50,7 +50,7 @@ func _influence(body: Node3D, ticks: float) -> void:
 		return
 	if not _first.has(body):
 		_first[body] = body.global_position
-		print("implosión toca %s en (%.2f, %.2f, %.2f) suelo %.2f centro +%.2f escala %.2f" % [ShotImpact.who(body), body.global_position.x,
+		print("implosión toca %s en (%.2f, %.2f, %.2f) suelo %.2f centro +%.2f escala %.2f" % [GameBody.name_of(body), body.global_position.x,
 			body.global_position.y, body.global_position.z, BodyNudge.ground_y(body, body.global_position),
 			BodyNudge.center(body).y - body.global_position.y, _scale])
 	var direction := to_center / distance
@@ -77,5 +77,5 @@ func _report() -> void:
 		var at := body.global_position
 		var before := Vector2(global_position.x - from.x, global_position.z - from.z).length()
 		var after := Vector2(global_position.x - at.x, global_position.z - at.z).length()
-		print("implosión %s de %.2f m a %.2f m del centro (tirón %.2f m) (cuadro %d)" % [ShotImpact.who(body), before, after,
+		print("implosión %s de %.2f m a %.2f m del centro (tirón %.2f m) (cuadro %d)" % [GameBody.name_of(body), before, after,
 			before - after, MatchClock.now()])

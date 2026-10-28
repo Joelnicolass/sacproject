@@ -17,7 +17,6 @@ extends ShotImpact
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 @export var wave_scene: PackedScene
 
@@ -29,14 +28,14 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	var hurt: Node3D = null
 	var center := point
 	var tag := ability.tag if ability else "?"
-	if target != null and is_instance_valid(target) and _ROCK.is_live_body(target):
+	if target != null and is_instance_valid(target) and ProjectileTargets.is_live_body(target):
 		hurt = target
 		center = BodyNudge.center(target)
 		if DebugLog.on(&"spikes"):
 			print("púas %s %s choca con %s en (%.3f, %.3f, %.3f) (cuadro %d)" % [tag, shot.name, target.name, point.x,
 				point.y, point.z, MatchClock.now()])
 	elif _range_spent(shot):
-		if intended != null and _ROCK.is_live_body(intended):
+		if intended != null and ProjectileTargets.is_live_body(intended):
 			hurt = intended
 		if DebugLog.on(&"spikes"):
 			print("púas %s %s agota el alcance en (%.3f, %.3f, %.3f), pedido %s (cuadro %d)" % [tag, shot.name, point.x,

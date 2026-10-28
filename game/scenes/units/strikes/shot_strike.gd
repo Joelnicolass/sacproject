@@ -14,7 +14,6 @@ extends Node3D
 ## shooter_path.
 ## Ref: F124 (RFC-030 030m), sacengine gnomeShoot state.d:11724-11735, StyxShoot 11852-11855, 24154-24172, effects before creatures 29331 vs 29345.
 
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
 
 ## Already scaled by the shooter (attack_factor).
 var damage := 0.0
@@ -93,7 +92,7 @@ func shooter() -> Node3D:
 	var body: Node3D = null
 	if not shooter_path.is_empty():
 		body = get_node_or_null(shooter_path) as Node3D
-	return body if body != null and _ROCK.is_live_body(body) else null
+	return body if body != null and ProjectileTargets.is_live_body(body) else null
 
 
 ## The body the shooter aimed at while it is a live target, else null.
@@ -101,7 +100,7 @@ func intended() -> Node3D:
 	var body: Node3D = null
 	if not target_path.is_empty():
 		body = get_node_or_null(target_path) as Node3D
-	return body if body != null and _ROCK.is_live_body(body) else null
+	return body if body != null and ProjectileTargets.is_live_body(body) else null
 
 
 ## The shooter's node name (a stable id on the field: Gnome1), even after it died.

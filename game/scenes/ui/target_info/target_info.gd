@@ -46,7 +46,7 @@ static func describe(node: Node, local_slot: int) -> TargetInfo:
 		info.title = type.display_name if named else UiText.t(&"TARGET_INFO_BUILDING")
 	elif node is WizardBody:
 		info.title = (node as WizardBody).display_name()
-	elif node.has_method("display_name") and "owner_slot" in node:
+	elif node is GameBody:
 		info.title = _creature_title(node)
 		info.icon = CreatureType.icon_of(node)
 	else:
@@ -83,11 +83,9 @@ static func _read_health(info: TargetInfo, node: Node) -> void:
 
 
 static func _name_of(node: Node) -> String:
-	if node.has_method("display_name"):
-		return str(node.call("display_name"))  # dynamic: unit, wizard and doctor bodies answer it
-	return str(node.name)
+	return GameBody.name_of(node)
 
 
 ## A creature or doctor that died and is not a corpse yet (it is falling): the cursor already calls it a corpse.
 static func _is_dead(node: Node) -> bool:
-	return (node is UnitBody or node is DoctorBody) and bool(node.call("is_dead"))  # dynamic: both answer it
+	return node is GameBody and (node as GameBody).is_dead()

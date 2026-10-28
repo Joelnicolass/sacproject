@@ -6,9 +6,6 @@
 [ext_resource type="Resource" path="res://data/ai/difficulty_normal.tres" id="4_normal"]
 [ext_resource type="Resource" path="res://data/ai/difficulty_hard.tres" id="5_hard"]
 
-; Las dificultades que nombran las salas, el menu y los asientos, en el orden de los menus. El id es el nombre del archivo sin
-; «difficulty_» (easy, normal, hard). Agregar una = un difficulty_<id>.tres nuevo arrastrado a esta lista.
-
 [resource]
 script = ExtResource("1_list")
 difficulties = Array[ExtResource("2_difficulty")]([ExtResource("3_easy"), ExtResource("4_normal"), ExtResource("5_hard")])

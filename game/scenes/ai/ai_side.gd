@@ -2,11 +2,13 @@
 class_name AiSide
 extends Node
 
-## One AI side: its seat becomes what it plays with (AiPlay), every child gets it once, and each physics tick the child Clock says
-## which of the six jobs run (status, stance, perception, groups, replan, tasks). The decisions are in the children and all that
-## leaves goes through the port. Runs only where the game is simulated (solo or the server); the bench starts it paused (`active`
-## off). Take away a child and that behaviour is gone. What a human reads of it is AiSideReport.
-## Ref: shiny.d:459-500 run; shiny.d:1129-1172 updateStatus, 1305-1346 updateReplan; shiny.d:575-584 botSpawned
+## One AI side: its seat becomes what it plays with (AiPlay), every child gets it once, and each
+## physics tick the child Clock says which of the six jobs run (status, stance, perception, groups,
+## replan, tasks). The decisions are in the children and all that leaves goes through the port. Runs
+## only where the game is simulated (solo or the server); a test scene can start it paused (`active`
+## off). Take away a child and that behaviour is gone.
+## Ref: shiny.d:459-500 run; shiny.d:1129-1172 updateStatus, 1305-1346 updateReplan; shiny.d:575-584
+## botSpawned
 
 signal started
 
@@ -26,13 +28,15 @@ signal started
 @export var creature_brain: CreatureBrain
 @export var port: AiCommandPort
 
-## What this side plays with (tactics, difficulty, aggression, ages): made once by setup, shared by every child.
+## What this side plays with (tactics, difficulty, aggression, ages): made once by setup, shared by
+## every child.
 var play: AiPlay
 var wizard: Node3D
 var world: Node3D
 
 var _started := false
-## Own bodies that entered the tree since the last tick: the tick takes them in (everything happens in the physics frame).
+## Own bodies that entered the tree since the last tick: the tick takes them in (everything happens
+## in the physics frame).
 var _arrived: Array[Node3D] = []
 
 
@@ -48,19 +52,30 @@ func _ready() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	for pair in [["clock", clock], ["perception", perception], ["stance", stance], ["groups", groups], ["board", board], ["brain", brain], ["port", port]]:
+	for pair in [
+		["clock", clock],
+		["perception", perception],
+		["stance", stance],
+		["groups", groups],
+		["board", board],
+		["brain", brain],
+		["port", port]
+	]:
 		if pair[1] == null:
-			warnings.append("Falta el hijo `%s`." % pair[0])
+			warnings.append("Missing the child `%s`." % pair[0])
 	return warnings
 
 
-## Gives the side its world and its wizard (the roster or the bench does it). Call before `active`.
+## Gives the side its world and its wizard (the roster or a test scene does it). Call before
+## `active`.
 func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	world = world_node
 	wizard = wizard_body
 	seat = ai_seat
 	slot = ai_seat.slot
-	play = AiPlay.make(ai_seat.difficulty_or_normal(), ai_seat.tactics, clock.base_ticks(AiClock.Job.PERCEPTION))
+	play = AiPlay.make(
+		ai_seat.difficulty_or_normal(), ai_seat.tactics, clock.base_ticks(AiClock.Job.PERCEPTION)
+	)
 	clock.play = play
 	perception.play = play
 	stance.play = play
@@ -69,9 +84,10 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	port.orders.play = play
 	if creature_brain != null:
 		creature_brain.play = play
-	if ai_seat.book != null and wizard is WizardBody:  # a bench's or a solo game's own book: it does not travel on the network
+	# a test's or a solo game's own book: it does not travel on the network
+	if ai_seat.book != null and wizard is WizardBody:
 		if not multiplayer.multiplayer_peer is OfflineMultiplayerPeer:
-			push_warning("AiSide: AiSeat.book no viaja por red (slot %d)" % slot)
+			push_warning("AiSide: AiSeat.book does not travel on the network (slot %d)" % slot)
 		(wizard as WizardBody).book = ai_seat.book
 	perception.slot = slot
 	perception.wizard = wizard
@@ -80,10 +96,13 @@ func setup(world_node: Node3D, wizard_body: Node3D, ai_seat: AiSeat) -> void:
 	port.can_cast = brain.casting.cast_refusal
 	brain.prepare()
 	port.bind(slot, wizard, world.get_node("%Orders"))
-	brain.rng = AiRand.with_seed(MatchSeed.derive(["ai_rand", slot]) if MatchSeed.is_active() else 1)
+	brain.rng = AiRand.with_seed(
+		MatchSeed.derive(["ai_rand", slot]) if MatchSeed.is_active() else 1
+	)
 	perception.forced.connect(clock.wake)
 	clock.job_due.connect(_run_job)
-	## A creature the side summons, or a structure it builds (a Manalith), is one of its own bodies from the moment it stands.
+	# A creature the side summons, or a structure it builds (a Manalith), is one of its own bodies
+	# from the moment it stands.
 	for parent: Node in [world.get_node_or_null("%Units"), world.get_node_or_null("Structures")]:
 		if parent != null:
 			parent.child_entered_tree.connect(_on_unit_entered)
@@ -101,33 +120,37 @@ func _physics_process(_delta: float) -> void:
 		return
 	var began := Time.get_ticks_usec()
 	var game_before := port.game_us
-	## The requests that waited their delay (Easy) leave first: what the wizard decided half a second ago.
+	# The requests that waited their delay (Easy) leave first: what the wizard decided half a second
+	# ago.
 	port.flush()
 	for node in _arrived:
 		if is_instance_valid(node):
-			perception.add_node(node, &"event")
+			perception.add_node(node, AiTrack.Origin.EVENT)
 	_arrived.clear()
 	clock.run()
 	clock.note_tick(Time.get_ticks_usec() - began, port.game_us - game_before)
 
 
 ## What each job of the clock does, in the children.
-func _run_job(job: int) -> void:
+func _run_job(job: AiClock.Job) -> void:
 	match job:
 		AiClock.Job.STATUS:
 			# the first scan of the map and the stats, when something woke them
-			if clock.is_woken(AiClock.Wake.STANCE): clock.handle(AiClock.Wake.STANCE)
+			if clock.is_woken(AiClock.Wake.STANCE):
+				clock.handle(AiClock.Wake.STANCE)
 			if clock.is_woken(AiClock.Wake.SCAN):
 				perception.scan_global()
 				clock.handle(AiClock.Wake.SCAN)
 			if clock.is_woken(AiClock.Wake.STATS):
 				perception.update_stats()
 				clock.handle(AiClock.Wake.STATS)
-		AiClock.Job.STANCE: stance.update()
+		AiClock.Job.STANCE:
+			stance.update()
 		AiClock.Job.PERCEPTION:
 			perception.update_nodes(1)
 			stance.update_threat(perception.find(wizard))
-		AiClock.Job.GROUPS: groups.refresh()
+		AiClock.Job.GROUPS:
+			groups.refresh()
 		AiClock.Job.REPLAN:
 			# bodies, groups, tasks and claims made again
 			perception.discover()
@@ -136,7 +159,8 @@ func _run_job(job: int) -> void:
 			board.replan_tasks()
 			board.claim_pass()
 			clock.handle(AiClock.Wake.REPLAN | AiClock.Wake.TASKS)
-		AiClock.Job.TASKS: board.update_tasks()
+		AiClock.Job.TASKS:
+			board.update_tasks()
 
 
 ## A creature (or a structure) of the side appeared: summoned, built, or put by the scene.

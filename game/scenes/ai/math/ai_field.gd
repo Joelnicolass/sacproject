@@ -6,6 +6,10 @@ extends RefCounted
 ## original line it was ported from. Floats the engine stores as `float` go through f32().
 ## Ref: RFC-024 §3.1 `AiField`.
 
+## The even split of weight_triple when no branch gives a weight (0.3333 as the original's float32).
+const EVEN_WEIGHT := 0.333299994468689
+
+
 ## A float32 round trip (the engine keeps most of these in float).
 static func f32(x: float) -> float:
 	var a := PackedFloat32Array([x])
@@ -25,7 +29,8 @@ static func lerp_w(a: float, w: float, b: float) -> float:
 	return f32(a + (b - a) * w)
 
 
-## The linear falloff every scan uses: 1 up to `near`, 0 from `far`, (far - d) / (far - near) between
+## The linear falloff every scan uses: 1 up to `near`, 0 from `far`, (far - d) / (far - near)
+## between
 ## Ref: shiny.d:2012-2040 probOr, 2042-2062 densityGroups, 2064-2082 influenceGroups
 static func ramp(distance: float, near: float, far: float) -> float:
 	if distance <= near:
@@ -45,8 +50,8 @@ static func prob_or(distances: PackedFloat32Array, near: float, far: float) -> f
 	return acc
 
 
-## A group of `count` takes a body within group_radius_m * min(1 + group_growth * count, group_cap) of its center (the crowd
-## tactics; the cap goes through float32 like the original's 1.8).
+## A group of `count` takes a body within group_radius_m * min(1 + group_growth * count, group_cap)
+## of its center (the crowd tactics; the cap goes through float32 like the original's 1.8).
 ## Ref: shiny.d:1702-1710 canAccept
 static func group_radius(count: int, crowd: AiCrowdTactics) -> float:
 	var r := float(count) * crowd.group_growth + 1.0
@@ -61,8 +66,8 @@ static func can_accept(count: int, distance_sq: float, crowd: AiCrowdTactics) ->
 	return not (r * r < distance_sq)
 
 
-## weightTriple: the weights of attacking, supporting and converting.
-## `ratio` is stanceRecs[3] u[6] (own souls / (own + enemy)), `task` the kind of the record's task: guard and capture have their
+## weightTriple: the weights of attacking, supporting and converting. `ratio` is stanceRecs[3] u[6]
+## (own souls / (own + enemy)), `task` the kind of the record's task: guard and capture have their
 ## own split; idle and focus (the original's idle number, which neither branch takes) split evenly.
 ## Ref: shiny.d:2953-2966, 0x48cc70
 static func weight_triple(task: AiTask.Kind, ratio: float, aggression: float) -> Array[float]:
@@ -80,16 +85,19 @@ static func weight_triple(task: AiTask.Kind, ratio: float, aggression: float) ->
 		o2 = m * aggression
 	var total := (o2 + o1) + o0
 	if total <= 0.0:
-		return [0.333299994468689, 0.333299994468689, 0.333299994468689]
+		return [EVEN_WEIGHT, EVEN_WEIGHT, EVEN_WEIGHT]
 	return [f32(safediv(o0, total)), f32(safediv(o1, total)), f32(safediv(o2, total))]
 
 
-## The weight a foe has for the wizard's attack: 1 within 10 m; (thr-d)/(thr-10) up to `thr`; times the tactics' weight_passive
-## when it does not fight, weight_no_ability when it has no ability it can pay now (`able`: AiBody.ability_ready), weight_sac_doctor
-## for a Sac Doctor. 0 when the foe is out of reach. 055f f5: the original read bits only a wizard or a ready Manahoar carried, so
-## every creature weighed x0.5 and x1/3 whatever it could do.
+## The weight a foe has for the wizard's attack: 1 within 10 m; (thr-d)/(thr-10) up to `thr`; times
+## the tactics' weight_passive when it does not fight, weight_no_ability when it has no ability it
+## can pay now (`able`: AiBody.ability_ready), weight_sac_doctor for a Sac Doctor. 0 when the foe is
+## out of reach. 055f f5: the original read bits only a wizard or a ready Manahoar carried, so every
+## creature weighed x0.5 and x1/3 whatever it could do.
 ## Ref: shiny.d:3052-3071 (0x48d640)
-static func attack_weight(distance: float, thr: float, foe: AiTrack, able: bool, tactics: AiTactics, sac_doctor := false) -> float:
+static func attack_weight(
+	distance: float, thr: float, foe: AiTrack, able: bool, tactics: AiTactics, sac_doctor := false
+) -> float:
 	var w := 0.0
 	if distance <= 10.0:
 		w = 1.0

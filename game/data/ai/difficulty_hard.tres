@@ -3,10 +3,6 @@
 [ext_resource type="Script" path="res://scenes/ai/data/ai_difficulty.gd" id="1_difficulty"]
 [ext_resource type="Resource" path="res://data/ai/tactics_hard.tres" id="2_tactics"]
 
-; Dificil (RFC-024 024e, 055f f6): periodos x0,75 (9/45/4/4/45/9), agresividad 1,0, sabe lo que ve y lo que muestra el minimapa
-; (posicion, nunca vida ni mana: SIGHT_AND_MAP).
-; Sin bonificacion de recursos ni trampa (RULES.md «IA»): resource_bonus bloqueado en 0.
-
 [resource]
 script = ExtResource("1_difficulty")
 display_name = "Difícil"

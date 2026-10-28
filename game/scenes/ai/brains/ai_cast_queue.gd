@@ -1,22 +1,26 @@
 class_name AiCastQueue
 extends RefCounted
 
-## The queue of casts of a wizard: forced entries first, then
-## by score, best first; a new entry goes before the ones with its score; an entry with the same spell tag replaces the old
-## one. Entries are Dictionaries {flag, score, target (AiTrack|null), obj (AiTrack|null), range, spell (Resource)}.
-## The queue is emptied at every replan of the wizard.
+## The queue of casts of a wizard: forced entries first, then by score, best first; a new entry goes
+## before the ones with its score; an entry with the same spell tag replaces the old one. Entries
+## are Dictionaries {forced (bool), score, target (AiTrack|null), obj (AiTrack|null), range, spell
+## (Resource)}. The queue is emptied at every replan of the wizard. Static.
 ## Ref: shiny.d:2638-2662 `enqueueCast`, 0x48ced0 + 0x48ce40; shiny.d:3333
 
-const FORCED := 1
 
-
-static func make(flag: int, score: float, target: AiTrack, spell: Resource, range_m: float, obj: AiTrack) -> Dictionary:
+## `forced`: the original's flag 1 (it goes first and waits for the mana it needs).
+static func make(
+	forced: bool, score: float, target: AiTrack, spell: Resource, range_m: float, obj: AiTrack
+) -> Dictionary:
 	return {
-		"flag": flag, "score": score, "target": target,
-		## obj0 == 0 falls back to the target.
-		## Ref: shiny.d:2640
+		"forced": forced,
+		"score": score,
+		"target": target,
+		# obj0 == 0 falls back to the target.
+		# Ref: shiny.d:2640
 		"obj": obj if obj != null else target,
-		"range": range_m, "spell": spell,
+		"range": range_m,
+		"spell": spell,
 	}
 
 
@@ -32,8 +36,8 @@ static func enqueue(queue: Array, entry: Dictionary) -> int:
 	var at := 0
 	while at < queue.size():
 		var q: Dictionary = queue[at]
-		var q_forced := (int(q["flag"]) & FORCED) != 0
-		var n_forced := (int(entry["flag"]) & FORCED) != 0
+		var q_forced: bool = q["forced"]
+		var n_forced: bool = entry["forced"]
 		if q_forced != n_forced:
 			if n_forced:
 				break

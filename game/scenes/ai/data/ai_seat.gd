@@ -1,8 +1,9 @@
 class_name AiSeat
 extends Resource
 
-## A seat the AI takes: which slot, which wizard and god, how well it plays. Drag the wizard and the god from the FileSystem
-## (data/catalog/wizards, data/gods). It does not play: AiRoster (or the bench) seats it and AiSide plays it.
+## A seat the AI takes: which slot, which wizard and god, how well it plays. Drag the wizard and the
+## god from the FileSystem (data/catalog/wizards, data/gods). It does not play: AiRoster (or the
+## bench) seats it and AiSide plays it.
 
 ## Normal: the difficulty of a seat that names none (drag another file here to change the default).
 const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
@@ -14,9 +15,11 @@ const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
 @export var god: GodType
 ## How well it plays (024e). Empty: Normal (data/ai/difficulty_normal.tres).
 @export var difficulty: AiDifficulty
-## A personality of its own: these tactics instead of the difficulty's. Empty: the difficulty's (AiDifficulty.tactics).
+## A personality of its own: these tactics instead of the difficulty's. Empty: the difficulty's
+## (AiDifficulty.tactics).
 @export var tactics: AiTactics
-## The wizard's book instead of his god's (a bench or a solo game: it does not travel on the network). Empty: the god's.
+## The wizard's book instead of his god's (a bench or a solo game: it does not travel on the
+## network). Empty: the god's.
 @export var book: GodBook
 ## The seats of a debug scene start paused: the runner starts them (AiSide.active).
 @export var start_active := true
@@ -24,8 +27,8 @@ const NORMAL: AiDifficulty = preload("res://data/ai/difficulty_normal.tres")
 @export var side_scene: PackedScene
 
 
-## The difficulty with that id (a room's or a screen's: easy, normal, hard; data/ai/difficulties.tres); null for an empty or
-## unknown id (the seat then plays Normal).
+## The difficulty with that id (a room's or a screen's: easy, normal, hard;
+## data/ai/difficulties.tres); null for an empty or unknown id (the seat then plays Normal).
 static func difficulty_of(id: String) -> AiDifficulty:
 	return AiDifficultyList.shared().find(id)
 
@@ -40,7 +43,8 @@ func difficulty_or_normal() -> AiDifficulty:
 	return difficulty if difficulty != null else NORMAL
 
 
-## A copy of this seat for `p_slot`, with `p_god` when given (null keeps the seat's own god; none = drawn when the match starts).
+## A copy of this seat for `p_slot`, with `p_god` when given (null keeps the seat's own god; none =
+## drawn when the match starts).
 func for_slot(p_slot: int, p_god: GodType = null) -> AiSeat:
 	var seat := duplicate() as AiSeat
 	seat.slot = p_slot
@@ -49,7 +53,8 @@ func for_slot(p_slot: int, p_god: GodType = null) -> AiSeat:
 	return seat
 
 
-## A copy of this seat for each slot from 2 to `seats` (slot 1 is the player's), all with `p_god` when given.
+## A copy of this seat for each slot from 2 to `seats` (slot 1 is the player's), all with `p_god`
+## when given.
 func for_seats(seats: int, p_god: GodType = null) -> Array[AiSeat]:
 	var found: Array[AiSeat] = []
 	for slot in range(2, maxi(seats, 2) + 1):

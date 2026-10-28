@@ -3,10 +3,6 @@
 [ext_resource type="Script" path="res://scenes/ai/data/ai_difficulty.gd" id="1_difficulty"]
 [ext_resource type="Resource" path="res://data/ai/tactics_easy.tres" id="2_tactics"]
 
-; Facil (RFC-024 024e): periodos x2 (24/120/12/12/120/24), agresividad 0,6, 0,5 s entre la decision y cada pedido; solo lo ultimo visto.
-; Adenda 1.3: 40 s minimos entre convocatorias y 15 % del mana maximo que no gasta en criaturas (limites propios, no de las reglas).
-; Sin bonificacion de recursos ni trampa (RULES.md «IA»): resource_bonus bloqueado en 0.
-
 [resource]
 script = ExtResource("1_difficulty")
 display_name = "Fácil"

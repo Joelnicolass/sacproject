@@ -1,10 +1,12 @@
 class_name AiTrackFacts
 extends RefCounted
 
-## What a body is for the AI, worked out once when the side takes it in: its kind (wizard, creature, Manahoar, structure), its site
-## (altar, fount, Manalith, shrine), whether it fights, what it is worth (`rate`). Static: it never follows a body in time (that is
-## AiPerception) and never writes into the game. The Manahoar is the creature whose passive is the side's `mana_source` (hmba).
-## Ref: shiny.d:46 NodeKind, 884-1100 setupT4oBody/setupMaho/setupBldg, 926-931 the BLDG words of 055f's table (§8.1).; shiny.d:891-894; shiny.d:392-405 tagAcc; shiny.d:739-745 relation
+## What a body is for the AI, worked out once when the side takes it in: its kind (wizard, creature,
+## Manahoar, structure), its site (altar, fount, Manalith, shrine), whether it fights, what it is
+## worth (`rate`). Static: it never follows a body in time (that is AiPerception) and never writes
+## into the game. The Manahoar is the creature whose passive is the side's `mana_source` (hmba).
+## Ref: shiny.d:46 NodeKind, 884-1100 setupT4oBody/setupMaho/setupBldg, 926-931 the BLDG words of
+## 055f's table (§8.1).; shiny.d:891-894; shiny.d:392-405 tagAcc; shiny.d:739-745 relation
 
 
 ## The kind of `node` for the AI (NONE: the AI does not track it).
@@ -13,7 +15,11 @@ static func kind_of(node: Node, mana_source: AbilityType) -> AiTrack.Kind:
 		return AiTrack.Kind.WIZARD
 	if node.is_in_group(UnitBody.GROUP):
 		var type: Variant = node.get("type")
-		return kind_of_type(type as CreatureType, mana_source) if type != null else AiTrack.Kind.CREATURE
+		return (
+			kind_of_type(type as CreatureType, mana_source)
+			if type != null
+			else AiTrack.Kind.CREATURE
+		)
 	if node.is_in_group(Altar.GROUP) or node.is_in_group(ManafountBody.GROUP):
 		return AiTrack.Kind.STRUCTURE
 	if node is CastTower:
@@ -21,9 +27,14 @@ static func kind_of(node: Node, mana_source: AbilityType) -> AiTrack.Kind:
 	return AiTrack.Kind.NONE
 
 
-## A creature type is a Manahoar when its passive is the mana source (the Manahoar's ManaSupport), else a plain creature.
+## A creature type is a Manahoar when its passive is the mana source (the Manahoar's ManaSupport),
+## else a plain creature.
 static func kind_of_type(type: CreatureType, mana_source: AbilityType) -> AiTrack.Kind:
-	return AiTrack.Kind.MANAHOAR if type != null and type.has_passive(mana_source) else AiTrack.Kind.CREATURE
+	return (
+		AiTrack.Kind.MANAHOAR
+		if type != null and type.has_passive(mana_source)
+		else AiTrack.Kind.CREATURE
+	)
 
 
 ## What a structure is: a fount, an altar, a shrine, else a Manalith.
@@ -47,16 +58,24 @@ static func ability_count(type: CreatureType) -> int:
 	return type.abilities().size()
 
 
-## What summoning a creature of `type` is worth, worked out once per type (it depends on the type only).
+## What summoning a creature of `type` is worth, worked out once per type (it depends on the type
+## only).
 static var _tag_accs: Dictionary = {}
+
 
 ## What side `other` is to side `side`: own, ally, enemy or neutral.
 static func relation(side: int, other: int) -> AiTrack.Relation:
 	if other == side:
 		return AiTrack.Relation.OWN
-	if SideRelations.stance(side, other) == SideRelations.Stance.ALLY or SideRelations.stance(other, side) == SideRelations.Stance.ALLY:
+	if (
+		SideRelations.stance(side, other) == SideRelations.Stance.ALLY
+		or SideRelations.stance(other, side) == SideRelations.Stance.ALLY
+	):
 		return AiTrack.Relation.ALLY
-	if SideRelations.stance(side, other) == SideRelations.Stance.ENEMY or SideRelations.stance(other, side) == SideRelations.Stance.ENEMY:
+	if (
+		SideRelations.stance(side, other) == SideRelations.Stance.ENEMY
+		or SideRelations.stance(other, side) == SideRelations.Stance.ENEMY
+	):
 		return AiTrack.Relation.ENEMY
 	return AiTrack.Relation.NEUTRAL
 
@@ -69,7 +88,9 @@ static func tag_acc(type: CreatureType) -> PackedFloat32Array:
 	return _tag_accs[type]
 
 
-static func make(node: Node3D, kind: AiTrack.Kind, origin: StringName, perception: AiPerception) -> AiTrack:
+static func make(
+	node: Node3D, kind: AiTrack.Kind, origin: AiTrack.Origin, perception: AiPerception
+) -> AiTrack:
 	var t := AiTrack.new()
 	t.kind = kind
 	t.node = node
@@ -79,31 +100,38 @@ static func make(node: Node3D, kind: AiTrack.Kind, origin: StringName, perceptio
 	return t
 
 
-## A new track of `perception`: its side, where it is, what it is and, for a body, what it is worth. Health and mana only of a body
-## the side sees now: of one it does not (a foe of the first scan) it knows nothing until it sees it (no difficulty cheats).
+## A new track of `perception`: its side, where it is, what it is and, for a body, what it is worth.
+## Health and mana only of a body the side sees now: of one it does not (a foe of the first scan) it
+## knows nothing until it sees it (no difficulty cheats).
 static func setup(t: AiTrack, perception: AiPerception) -> void:
 	t.relation = perception.relation_of(t.node)
 	if t.relation == AiTrack.Relation.OWN:
 		t.age_seen = 0
 	var here := t.node.global_position
-	t.cur_pos = here; t.prev_pos = here; t.extrap_pos = here
+	t.cur_pos = here
+	t.prev_pos = here
+	t.extrap_pos = here
 	var seen := perception.sees(t)
 	if t.is_body() and seen:
 		perception.belief.snapshot(t, perception.slot)
 	match t.kind:
 		AiTrack.Kind.WIZARD:
 			t.fights = true
-			if seen: t.min_mana_cost = float(AiRater.ftol(AiBody.mana_max(t.node)) / 4)
+			if seen:
+				t.min_mana_cost = float(AiRater.ftol(AiBody.mana_max(t.node)) / 4)
 			t.spell_dirty = true
 			rate(t, perception)
 		AiTrack.Kind.CREATURE, AiTrack.Kind.MANAHOAR:
 			var type := t.node.get("type") as CreatureType
 			if fights_of(type):
 				t.fights = true
-			## The mana below which a creature with abilities goes to a source to recharge (the Manahoar has none). 024d (autoCapture).
-			## Ref: shiny.d:892-900 setupT4oBody, setupMaho.
+			# The mana below which a creature with abilities goes to a source to recharge (the
+			# Manahoar has none). 024d (autoCapture).
+			# Ref: shiny.d:892-900 setupT4oBody, setupMaho.
 			if t.kind == AiTrack.Kind.CREATURE and type != null and seen:
-				t.min_mana_cost = float(AiRater.ftol(AiBody.mana_max(t.node))) if ability_count(type) > 0 else 0.0
+				t.min_mana_cost = (
+					float(AiRater.ftol(AiBody.mana_max(t.node))) if ability_count(type) > 0 else 0.0
+				)
 				for ability in type.abilities():
 					if float(ability.mana_cost) < t.min_mana_cost:
 						t.min_mana_cost = float(ability.mana_cost)
@@ -113,7 +141,8 @@ static func setup(t: AiTrack, perception: AiPerception) -> void:
 			refresh_structure(t)
 
 
-## A structure's state now: a fount is free (nothing built on it) and ready when nobody built on it; every other structure is ready.
+## A structure's state now: a fount is free (nothing built on it) and ready when nobody built on it;
+## every other structure is ready.
 static func refresh_structure(t: AiTrack) -> void:
 	var top_free := true
 	if t.site == AiTrack.Site.FOUNT:
@@ -121,7 +150,8 @@ static func refresh_structure(t: AiTrack) -> void:
 	apply_structure(t, top_free)
 
 
-## The state of a structure whose top is free or not (the readings of refresh_structure, apart so the suite can test them).
+## The state of a structure whose top is free or not (the readings of refresh_structure, apart so
+## the suite can test them).
 static func apply_structure(t: AiTrack, top_free: bool) -> void:
 	if t.site == AiTrack.Site.FOUNT:
 		t.free_fount = top_free

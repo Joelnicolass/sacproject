@@ -1,10 +1,10 @@
 class_name AiRand
 extends RefCounted
 
-## The random numbers of an AI side: a 32-bit linear congruential
-## generator, state = state * 214013 + 2531011, and the answer is bits 16..30 of the new state (0..32767).
-## One per AI side, seeded from the match seed (MatchSeed.derive) so a match repeats. Only wizSacrifice uses
-## it, to decide whether this replan may think of the emergency Manahoar.
+## The random numbers of an AI side: a 32-bit linear congruential generator, state = state * 214013
+## + 2531011, and the answer is bits 16..30 of the new state (0..32767). One per AI side, seeded
+## from the match seed (MatchSeed.derive) so a match repeats. Only wizSacrifice uses it, to decide
+## whether this replan may think of the emergency Manahoar.
 ## Ref: the `rand()` of MSVC, shiny.d:31-38 `ShinyRand`; shiny.d:3123
 
 const MULTIPLIER := 214013
@@ -16,8 +16,8 @@ const MASK := 0xFFFFFFFF
 var state := 1
 
 
-## A generator whose first state is `seed_value` truncated to 32 bits (0 would give a short cycle at the start;
-## it is kept as the engine's own 1).
+## A generator whose first state is `seed_value` truncated to 32 bits (0 would give a short cycle at
+## the start; it is kept as the engine's own 1).
 static func with_seed(seed_value: int) -> AiRand:
 	var rng := AiRand.new()
 	rng.state = (seed_value & MASK) if (seed_value & MASK) != 0 else 1

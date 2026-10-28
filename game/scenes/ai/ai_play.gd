@@ -1,15 +1,15 @@
 class_name AiPlay
 extends RefCounted
 
-## What one AI side plays with: its tactics, its difficulty and the aggression that comes with it, and how long an «age» of a track
-## lasts. AiSide.setup makes it once from the seat and hands it to every child; nothing changes it after, and no `.tres` is ever
-## changed. It decides nothing.
+## What one AI side plays with: its tactics, its difficulty and the aggression that comes with it,
+## and how long an «age» of a track lasts. AiSide.setup makes it once from the seat and hands it to
+## every child; nothing changes it after, and no `.tres` is ever changed. It decides nothing.
 
 var tactics: AiTactics
 var difficulty: AiDifficulty
 var aggression := 1.0
-## Ticks of one age: the perception job's period at Normal pace (not scaled), so a slower difficulty stretches the ages in time
-## the same as it stretches its clock.
+## Ticks of one age: the perception job's period at Normal pace (not scaled), so a slower difficulty
+## stretches the ages in time the same as it stretches its clock.
 var age_ticks := 1
 
 
@@ -23,7 +23,8 @@ static func make(p_difficulty: AiDifficulty, p_tactics: AiTactics, p_age_ticks: 
 	return play
 
 
-## Normal's play with the clock's default perception period, for the parts of an AI built outside an AiSide (the suite).
+## Normal's play with the clock's default perception period, for the parts of an AI built outside an
+## AiSide (the suite).
 static func normal() -> AiPlay:
 	var clock := AiClock.new()
 	var ticks := clock.base_ticks(AiClock.Job.PERCEPTION)

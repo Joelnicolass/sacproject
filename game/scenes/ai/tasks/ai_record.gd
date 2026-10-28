@@ -10,7 +10,8 @@ var target: AiTrack
 var leader: AiTrack
 ## A capture record: its members go to the anchor (the original's record flag 2).
 var capture := false
-## Who the free bodies must count to take the record: one that fights / a wizard (the required status 1, 2 or 9 of the original).
+## Who the free bodies must count to take the record: one that fights / a wizard (the required
+## status 1, 2 or 9 of the original).
 var needs_fighter := false
 var needs_wizard := false
 var anchor := Vector3.ZERO

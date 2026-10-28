@@ -1,18 +1,25 @@
 class_name AiTrack
 extends RefCounted
 
-## What the AI knows of one body: what it is (`kind`, `relation`, `site`), what it can do (`fights`, `ready`, `free_fount`), whether
-## its side has seen it, where it was, what it is worth, and the AI's own notes on it (last order, group, record, the wizard's cast
-## queue). AiTrackFacts fills what it is and AiPerception keeps it up to date; a track never looks at the world by itself.
+## What the AI knows of one body: what it is (`kind`, `relation`, `site`), what it can do (`fights`,
+## `ready`, `free_fount`), whether its side has seen it, where it was, what it is worth, and the
+## AI's own notes on it (last order, group, record, the wizard's cast queue). AiTrackFacts fills
+## what it is and AiPerception keeps it up to date; a track never looks at the world by itself.
 ## Souls get a track of kind NONE (only the node and where it is).
-## Ref: shiny.d:78-132 `AINode`, 46 `NodeKind`, 748-753 relation and category, 884-1100 the status bits these booleans replace.
+## Ref: shiny.d:78-132 `AINode`, 46 `NodeKind`, 748-753 relation and category, 884-1100 the status
+## bits these booleans replace.
 
 ## Same order as the original's node kinds.
 enum Kind { NONE, WIZARD, CREATURE, MANAHOAR, STRUCTURE }
-## The side of the body as this AI sees it; the number is the old category (0 own, 1 ally, 2 neutral, 3 enemy).
+## The side of the body as this AI sees it. Also the index of the per-side lists (AiPerception,
+## AiGroups, AiStance).
+## Ref: shiny.d:750-753 categoryFromFlags (0 own, 1 ally, 2 neutral, 3 enemy).
 enum Relation { OWN, ALLY, NEUTRAL, ENEMY }
 ## What a structure is for the AI (NONE for bodies and souls).
 enum Site { NONE, ALTAR, FOUNT, MANALITH, SHRINE }
+## Why the AI knows the body: the first scan of the map, one of its own bodies appearing, the side's
+## Vision saw it, or a soul.
+enum Origin { SCAN, EVENT, SEEN, SOUL }
 
 var kind := Kind.NONE
 var relation := Relation.NEUTRAL
@@ -35,8 +42,9 @@ var cur_pos := Vector3.ZERO
 var extrap_pos := Vector3.ZERO
 var prev_pos := Vector3.ZERO
 var velocity := Vector3.ZERO
-## 024e, f6 (every difficulty): the side does not know where the body is now, so its position stays where it was last seen (cur_pos);
-## its health and mana are the ones of the moment it was last seen (seen_health, seen_mana: (current, maximum); zero if never seen).
+## 024e, f6 (every difficulty): the side does not know where the body is now, so its position stays
+## where it was last seen (cur_pos); its health and mana are the ones of the moment it was last seen
+## (seen_health, seen_mana: (current, maximum); zero if never seen).
 var frozen := false
 var seen_health := Vector2i.ZERO
 var seen_mana := Vector2i.ZERO
@@ -54,18 +62,19 @@ var threat_tick := 0
 var souls_snap_tick := 0
 var souls_snap := 0
 var mana_snap := 0
-## Why the AI knows it: «scan» (scanGlobal, t = 0), «event» (its own bodies), «seen» (the side's Vision saw it).
-var origin := &"scan"
+## Why the AI knows it.
+var origin := Origin.SCAN
 var group: AiGroup
 var record: AiRecord
-## Last order given by the brain (an AiCommandPort.AiOrder), its target track and position.
+## Last order given by the brain, its target track and position.
 ## Ref: shiny.d:2393-2420 orderIfChanged
-var ord_state := 0
+var ord_state := AiCommandPort.AiOrder.NONE
 var ord_target := 0
 var ord_pos := Vector3.ZERO
-## A body that went to a mana source because its mana fell to its minimum (CreatureBrain.auto_capture) stays by it until it holds
-## AiTactics.mana_refill_ratio of its pool: without it the wizard left the altar the tick he had enough for one spell, cast it on the
-## way and walked back (the back and forth on the same spot).
+## A body that went to a mana source because its mana fell to its minimum
+## (CreatureBrain.auto_capture) stays by it until it holds AiTactics.mana_refill_ratio of its pool:
+## without it the wizard left the altar the tick he had enough for one spell, cast it on the way and
+## walked back (the back and forth on the same spot).
 var refilling := false
 ## Wizard only: the creatures it may summon, rated against the field, and the cast queue.
 ## Ref: wizSpellRebuild, shiny.d:2610
@@ -79,12 +88,6 @@ var manahoar_spell: Resource
 var shrine_spell: Resource
 var convert_spell: Resource
 var desecrate_spell: Resource
-
-
-## The relation as a number (0 own, 1 ally, 2 neutral, 3 enemy): the index of the per-side lists.
-## Ref: shiny.d:750-753 categoryFromFlags
-func category() -> int:
-	return relation
 
 
 func is_body() -> bool:
@@ -101,19 +104,21 @@ func is_altar() -> bool:
 	return site == Site.ALTAR
 
 
-## A structure the side's army can take down: a Manalith or a shrine (the original: MANALITH, or 0x40000 without ALTAR).
+## A structure the side's army can take down: a Manalith or a shrine (the original: MANALITH, or
+## 0x40000 without ALTAR).
 ## Ref: capture_task.gd:64 at 51b17307.
 func is_tower() -> bool:
 	return site == Site.MANALITH or site == Site.SHRINE
 
 
-## A structure the capture task can aim at: all four kinds (the BLDG word & 0xc17 is never 0 for them).
+## A structure the capture task can aim at: all four kinds (the BLDG word & 0xc17 is never 0 for
+## them).
 func capturable() -> bool:
 	return kind == Kind.STRUCTURE
 
 
-## A body with no status at all: a creature that does not fight and a Manahoar that cannot channel now, or a fount with a structure on
-## it. The groups and the records skip them.
+## A body with no status at all: a creature that does not fight and a Manahoar that cannot channel
+## now, or a fount with a structure on it. The groups and the records skip them.
 func is_inert() -> bool:
 	if kind == Kind.STRUCTURE:
 		return not ready and site == Site.FOUNT

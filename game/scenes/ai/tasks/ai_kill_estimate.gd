@@ -3,11 +3,13 @@ extends RefCounted
 
 ## How many seconds the side needs to kill a body, from what it knows (no cheat):
 ##   seconds = known health / (sum of the members' DPS - the healing it sees on the target).
-## A member's DPS comes from its CreatureType (its ranged attack's damage over its cadence, or its melee blow over its swing), times the
-## catalog resistance of the target's type (a shot's cadence: shot_period). The healing seen is the target's own regeneration (catalog) plus the most of: the enemy
-## healers the side sees within HEAL_SEEN_M of the target (a creature that shoots its wounded, WoundedAllyPolicy) and the heal effect that
-## shows on the target (HealEffect, the glow a human sees). The health is AiPerception.health_of: the last seen of a body the
-## side does not see now. Static: FocusTask and AttackPhase call it, the suite tests the pure parts.
+## A member's DPS comes from its CreatureType (its ranged attack's damage over its cadence, or its
+## melee blow over its swing), times the catalog resistance of the target's type (a shot's cadence:
+## shot_period). The healing seen is the target's own regeneration (catalog) plus the most of: the
+## enemy healers the side sees within HEAL_SEEN_M of the target (a creature that shoots its wounded,
+## WoundedAllyPolicy) and the heal effect that shows on the target (HealEffect, the glow a human
+## sees). The health is AiPerception.health_of: the last seen of a body the side does not see now.
+## Static: FocusTask and AttackPhase call it, the suite tests the pure parts.
 ## Ref: RFC-053 053d (F373).
 
 ## Only healers this close to the target count (RFC-053 §9 053d).
@@ -22,7 +24,8 @@ const POLICY_DIR := "res://data/targeting/"
 static var _heals_by_tag := {}
 
 
-## Pure: seconds to take `health` with `dps` against `healing` per second; INF when the damage does not outrun the healing.
+## Pure: seconds to take `health` with `dps` against `healing` per second; INF when the damage does
+## not outrun the healing.
 static func seconds(health: float, dps: float, healing: float) -> float:
 	var net := dps - healing
 	if health <= 0.0:
@@ -32,23 +35,28 @@ static func seconds(health: float, dps: float, healing: float) -> float:
 	return health / net
 
 
-## Pure: the damage per second a creature of `type` does to a body whose catalog data is `target_data` (CreatureType, WizardType or
-## null: resistance 1). A healer's shot does none.
+## Pure: the damage per second a creature of `type` does to a body whose catalog data is
+## `target_data` (CreatureType, WizardType or null: resistance 1). A healer's shot does none.
 static func dps_of(type: CreatureType, target_data: Resource = null) -> float:
 	if type == null:
 		return 0.0
 	if type.ranged_attack != null:
 		var attack := type.ranged_attack
 		if not shot_heals(attack.tag):
-			return float(attack.damage) * _resistance(target_data, &"direct_ranged_resistance") / shot_period(type, attack)
+			return (
+				float(attack.damage)
+				* _resistance(target_data, &"direct_ranged_resistance")
+				/ shot_period(type, attack)
+			)
 	if type.melee_strength <= 0:
 		return 0.0
 	var swing := maxf(_mean_swing_s(type.clip_facts()), MIN_PERIOD_S)
 	return float(type.melee_strength) * _resistance(target_data, &"melee_resistance") / swing
 
 
-## Pure: the health per second a healer of `type` gives a body of `target_max` health (0: not a healer). The Healing web heals the
-## patient's whole bar at HealEffect.HEAL_SPEED (heal_full) once per cadence of its shot.
+## Pure: the health per second a healer of `type` gives a body of `target_max` health (0: not a
+## healer). The Healing web heals the patient's whole bar at HealEffect.HEAL_SPEED (heal_full) once
+## per cadence of its shot.
 static func heal_rate_of(type: CreatureType, target_max: float) -> float:
 	if not is_healer(type) or target_max <= 0.0:
 		return 0.0
@@ -58,8 +66,9 @@ static func heal_rate_of(type: CreatureType, target_max: float) -> float:
 	return minf(HealEffect.HEAL_SPEED, target_max / shot_period(type, attack))
 
 
-## Pure: seconds between two shots of a creature of `type` with `attack` (RangedWeapon): it shoots with its first shoot clip, the
-## cooldown starts at the clip's shoot tick, and the next shot starts once both the clip and the cooldown are over.
+## Pure: seconds between two shots of a creature of `type` with `attack` (RangedWeapon): it shoots
+## with its first shoot clip, the cooldown starts at the clip's shoot tick, and the next shot starts
+## once both the clip and the cooldown are over.
 static func shot_period(type: CreatureType, attack: AbilityType) -> float:
 	var length := 0.0
 	var at := 0.0
@@ -77,9 +86,11 @@ static func is_healer(type: CreatureType) -> bool:
 	return type != null and type.ranged_attack != null and shot_heals(type.ranged_attack.tag)
 
 
-## Pure: whether the ranged attack `tag` is a healer's: its targeting rules (data/targeting/<tag>.tres, TargetPicker.policies) are a
-## WoundedAllyPolicy, it shoots the wounded of its own side (the Scarab's Healing web). Read once per tag; the policy is already loaded
-## with unit.tscn, so this never loads a shot's look and its FX from disk (that cost 22 ms on the first replan that met a Brainiac).
+## Pure: whether the ranged attack `tag` is a healer's: its targeting rules
+## (data/targeting/<tag>.tres, TargetPicker.policies) are a WoundedAllyPolicy, it shoots the wounded
+## of its own side (the Scarab's Healing web). Read once per tag; the policy is already loaded with
+## unit.tscn, so this never loads a shot's look and its FX from disk (that cost 22 ms on the first
+## replan that met a Brainiac).
 static func shot_heals(tag: String) -> bool:
 	if tag.is_empty():
 		return false
@@ -113,8 +124,9 @@ static func seen_healing(perception: AiPerception, target: AiTrack) -> float:
 	var side: Array = perception.bodies(target.relation)
 	for other: AiTrack in side:
 		if other == target:
-			## A healer never picks itself, but its web bursts on its patient and heals all of its side within effect_range: it
-			## heals itself while a wounded body of its side stands that close to it.
+			# A healer never picks itself, but its web bursts on its patient and heals all of its
+			# side within effect_range: it heals itself while a wounded body of its side stands that
+			# close to it.
 			if healer_near(perception, other, at) and _wounded_near(perception, other, side):
 				healers += heal_rate_of(other.node.get("type") as CreatureType, maximum)
 			continue
@@ -128,7 +140,8 @@ static func seen_healing(perception: AiPerception, target: AiTrack) -> float:
 	return regen + maxf(healers, glow)
 
 
-## A body of `side` other than `healer`, not full by what the side knows, within the healer's web burst (effect_range).
+## A body of `side` other than `healer`, not full by what the side knows, within the healer's web
+## burst (effect_range).
 static func _wounded_near(perception: AiPerception, healer: AiTrack, side: Array) -> bool:
 	var attack := (healer.node.get("type") as CreatureType).ranged_attack
 	var reach := attack.effect_range_m if attack != null else 0.0
@@ -146,14 +159,16 @@ static func _wounded_near(perception: AiPerception, healer: AiTrack, side: Array
 static func healer_near(perception: AiPerception, t: AiTrack, at: Vector3) -> bool:
 	if t == null or t.kind != AiTrack.Kind.CREATURE or not AiGroups.alive(t):
 		return false
-	## the cached catalog test first: the vision query is the costly one
+	# the cached catalog test first: the vision query is the costly one
 	if not is_healer(t.node.get("type") as CreatureType) or not perception.knows_live(t):
 		return false
 	return _flat(perception.pos_of(t), at) <= HEAL_SEEN_M
 
 
 ## Seconds for `members` (own tracks) to kill `target`, from what `perception` knows.
-static func kill_seconds(perception: AiPerception, target: AiTrack, members: Array[AiTrack]) -> float:
+static func kill_seconds(
+	perception: AiPerception, target: AiTrack, members: Array[AiTrack]
+) -> float:
 	var target_data := data_of(target.node)
 	var dps := 0.0
 	for m in members:

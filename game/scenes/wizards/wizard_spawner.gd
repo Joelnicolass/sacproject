@@ -3,6 +3,8 @@ extends MpSlotSpawner
 ## One wizard_body.tscn per occupied player slot (the dedicated server is not a player).
 ## Each wizard appears at spawn_transform() of the PlayerStart with its slot number (the WizardSpot marker of that
 ## start), among the children of spawn_points (MapProps/Starts).
+## It gives every wizard its seat's pick (`WizardBody.seat_pick`) on every peer: before add_child where it spawns them,
+## when the spawn arrives on a client, and again whenever the picks change.
 
 
 ## RFC-068: `despawn_on_leave` is off in match.tscn: a player who drops may come back to the same slot within the grace of the
@@ -13,12 +15,16 @@ func _ready() -> void:
 	var gate := Mp.gate()
 	if not despawn_on_leave and gate != null:
 		gate.seat_away.connect(_on_seat_away)
+	spawned.connect(_on_spawned)
+	SacrificeFlow.slot_picks_changed.connect(_give_picks)
 
 
 func _exit_tree() -> void:
 	var gate := Mp.gate()
 	if gate != null and gate.seat_away.is_connected(_on_seat_away):
 		gate.seat_away.disconnect(_on_seat_away)
+	if SacrificeFlow.slot_picks_changed.is_connected(_give_picks):
+		SacrificeFlow.slot_picks_changed.disconnect(_give_picks)
 	super._exit_tree()
 
 
@@ -28,9 +34,29 @@ func _on_seat_away(slot: int) -> void:
 		wizard.stand_still()
 
 
+## A client: the wizard the server spawned arrived (its `owner_slot` came with it).
+func _on_spawned(node: Node) -> void:
+	var wizard := node as WizardBody
+	if wizard != null:
+		wizard.seat_pick = SacrificeFlow.pick_for(wizard.owner_slot)
+
+
+## The picks changed (a late pick, a seat that changed its mind): every wizard wears its seat's pick again.
+func _give_picks() -> void:
+	if _root == null:
+		return
+	for child in _root.get_children():
+		var wizard := child as WizardBody
+		if wizard != null:
+			wizard.seat_pick = SacrificeFlow.pick_for(wizard.owner_slot)
+
+
 func _place(pawn: Node, slot: int) -> void:
 	## MatchState seats the slot when the wizard enters `Wizards` (RFC-049 049b), so `owner_slot` goes before add_child.
 	pawn.set("owner_slot", slot)
+	var wizard := pawn as WizardBody
+	if wizard != null:
+		wizard.seat_pick = SacrificeFlow.pick_for(slot)
 	## An AI seat has no keys to predict from: it moves on the server (WizardBody steps Drive itself) and owns no MpInput frames.
 	var net := MpActor.of(pawn)
 	if net != null and SacrificeFlow.board.is_ai(slot):

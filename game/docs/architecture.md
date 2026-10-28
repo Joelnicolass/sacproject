@@ -20,14 +20,14 @@ step-by-step recipes (a creature, a spell, a map) in [`HOWTO.en.md`](HOWTO.en.md
 | Autoload | For |
 |---|---|
 | `SacrificeFlow` (`scenes/core/flow/sacrifice_flow.tscn`) | Takes the player from the menu to a match and back: solo, «Contra la IA», online rooms, «Servidor local», LAN. Holds the local pick (wizard + god) and the AI seats. Extends the kit's `MpFlow` |
-| `GameData` (`scenes/core/catalog/game_data.gd`) | Read-only access to the catalog types in `data/catalog/` |
 | `FxBus` (`scenes/fx/fx_bus.tscn`) | Plays visual effects (`ParticleType`, `BeamType` or an `FxScene`) from pools, locally or broadcast to every peer |
 | `SoundBus` (`scenes/audio/sound_bus.tscn`) | Owns the audio players: 2D, 3D, voices, music and ambience. Client only, closed on a dedicated server |
 | `MpKit`, `MpLobby` (`addons/mp_kit/`) | The network kit: peers, slots, snapshots, rooms |
 | `AgentKit` (`addons/agent_kit/`) | Captures and scripted clicks for automated checks; it does nothing in normal play |
 
 State that belongs to one match never lives in an autoload: it is a node of `match.tscn`. `ActiveMatch`
-(`scenes/core/catalog/active_match.gd`) is a static holder of the map, mode and seed this process plays.
+(`scenes/core/catalog/active_match.gd`) is a static holder of the map, mode and seed this process plays. The type catalog
+(`data/catalog/`, `data/gods/`) is the static `GameCatalog.shared()`, not an autoload.
 
 ## The life of a match
 
@@ -35,7 +35,7 @@ State that belongs to one match never lives in an autoload: it is a node of `mat
    `host_online_room`, `join_online`, `join_local_server`…).
 2. `SacrificeFlow` stores the choice in a `MatchSetup` and `ActiveMatch`, shows `LoadingScreen` and loads
    `scenes/match/match.tscn` through the kit's world loader.
-3. `MatchWorld` (`match_world.gd`, root of `match.tscn`) instances the map of the active `MapDefinition` as its child `Map`
+3. `MatchWorld` (`match_world.gd`, root of `match.tscn`) instances the map of the active `MapDefinition` as `World/Map`
    (a `MapRoot`) and plugs the systems into its sockets (terrain, navmesh, starts, buildings, NPC spawns).
 4. `Warmup` (`scenes/look/warmup/`) draws every material once behind the loading screen; then the world reports it is ready
    and the kit's match gate starts the match when every seat has loaded.
@@ -47,17 +47,20 @@ State that belongs to one match never lives in an autoload: it is a node of `mat
 
 ## `match.tscn`
 
-The root has one child per system, all placed in the scene:
+The root's children are five plain group nodes; every system is placed in the scene under one of them:
 
-- **Map and look:** `Map` (added at runtime from the active map), `MatchBiome` (which god's land is drawn), `Nav`
-  (`NavService`), `Camera` (`WorldCamera`), `PostFx`, `Warmup`.
-- **Actors and their spawners:** `Wizards` + `WizardSpawner`, `Units` + `UnitSpawner`, `Population` (the map's villagers
-  and NPCs), `Spells` + `SpellSpawner`, `Shots` + `ShotSpawner`, `Structures` + `StructureSpawner`.
-- **Rules:** `MatchState`, `SoulSystem` (`scenes/souls/`), `SacrificeSystem` (`scenes/sacrifice/`), `AiRoster`.
-- **Input and orders:** `Selection`, `Orders`, `MatchCommand` (one child per kind of input: keys, pointer ray, armed spell,
-  minimap clicks, group keys), `OrderRadial`.
-- **Interface:** `Hud` (spell book, roster, wizard stats, minimap, radial menu, result, target info), `PauseMenu`.
-- **Sound:** `ListenerFocus`, `CommandVoice`, `AdvisorVoice`, `CombatGauge`, `MusicDirector`, `AmbienceDirector`.
+- **`World`** (`Node3D`): `Map` (added at runtime as its first child, from the active map), `Camera` (`WorldCamera`),
+  `MatchBiome` + `BiomeLink` (which god's land is drawn), `Wizards` + `WizardSpawner`, `Units` + `UnitSpawner`,
+  `Population` (the map's villagers and NPCs), `Spells` + `SpellSpawner`, `Shots` + `ShotSpawner`,
+  `Structures` + `StructureSpawner`, `DamageNumbers`, `SprayMarks`, `DropletRain`, `Ping`, `PostFx`.
+- **`Systems`** (`Node`): `LocalSeat`, `Warmup`, `LoadReport`, `SoulSystem` (`scenes/souls/`), `SacrificeSystem`
+  (`scenes/sacrifice/`), `MatchState`, `Nav` (`NavService`), `AiRoster`, `GraphicsApplier`, `UiScaleApplier`.
+- **`Input`** (`Node`): `Selection`, `Orders`, `MatchCommand` (one child per kind of input: keys, pointer ray, armed spell,
+  minimap clicks, group keys), `OrderRadial`, `Inspector`.
+- **`Hud`** (`CanvasLayer`): spell book, roster, wizard stats, minimap, radial menu, result, target info, `PauseMenu`.
+- **`Audio`** (`Node`): `ListenerFocus`, `CommandVoice`, `AdvisorVoice`, `CombatGauge`, `MusicDirector`, `AmbienceDirector`.
+
+Nodes reference each other by `@export` set in the scene or by `%UniqueName`, so a node can move between groups.
 
 Round numbers (souls, mana, times) are in `data/match_rules.tres`; the reaches of places (an altar, a fount, a soul) are
 shapes in `scenes/match/reach_places.tscn`.

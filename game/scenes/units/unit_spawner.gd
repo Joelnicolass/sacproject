@@ -49,7 +49,7 @@ func _make(data: Variant) -> Node3D:
 	if bool(info.get("npc", false)):
 		unit.add_to_group(NPC_GROUP)
 	unit.name = str(info["name"])
-	unit.set("type", GameData.creature(str(info["tag"])))
+	unit.set("type", GameCatalog.shared().creature(str(info["tag"])))
 	unit.set("owner_slot", int(info.get("slot", 0)))
 	unit.set("rules", rules)
 	unit.position = Vector3(float(info["x"]), float(info["y"]), float(info["z"]))

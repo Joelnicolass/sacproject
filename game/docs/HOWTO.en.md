@@ -63,7 +63,7 @@ A spell is two things: the data and, if it has its own procedure, a scene.
 1. Duplicate `data/gods/pyro.tres` as `<god>.tres` (`GodType`): `tag`, `display_name`, `sort_order`, and the theme (`data/themes`), look (`data/look`) and cast FX (`data/fx`) `.tres` files.
 2. `ai_profile`: an `AiProfile` from `data/ai/` (duplicate `profile_pyro.tres`).
 3. `book`: a `GodBook` with `creatures`, `spells`, `structures` and `unlocks`. They are references to the `.tres` files in `data/catalog/`: adding something to the book is dragging it into the list.
-4. The character picker and the catalog pick it up by themselves (`GameData`).
+4. The character picker and the catalog pick it up by themselves (`GameCatalog`).
 
 ## A building
 

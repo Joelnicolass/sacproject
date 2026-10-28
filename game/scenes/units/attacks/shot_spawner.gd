@@ -56,10 +56,10 @@ func _make(data: Variant) -> Node:
 			empty.queue_free.call_deferred()
 			return empty
 		var node := scene.instantiate()
-		node.call("setup", data, GameData.ability(str(data.get("tag", ""))))  # dynamic: the root of any spawnable scene answers setup(data, ability)
+		node.call("setup", data, GameCatalog.shared().ability(str(data.get("tag", ""))))  # dynamic: the root of any spawnable scene answers setup(data, ability)
 		return node
 	var shot: RangedShot = _SHOT.new()
-	shot.setup(data, GameData.ability(str(data.get("tag", ""))), FxWire.resource(str(data.get("look", ""))) as PackedScene)
+	shot.setup(data, GameCatalog.shared().ability(str(data.get("tag", ""))), FxWire.resource(str(data.get("look", ""))) as PackedScene)
 	return shot
 
 

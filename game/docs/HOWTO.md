@@ -61,7 +61,7 @@ Un hechizo son dos cosas: el dato y, si tiene procedimiento propio, una escena.
 1. Duplicá `data/gods/pyro.tres` como `<dios>.tres` (`GodType`): `tag`, `display_name`, `sort_order`, y los `.tres` de tema (`data/themes`), look (`data/look`) y FX de lanzamiento (`data/fx`).
 2. `ai_profile`: un `AiProfile` de `data/ai/` (duplicá `profile_pyro.tres`).
 3. `book`: un `GodBook` con `creatures`, `spells`, `structures` y `unlocks`. Son referencias a los `.tres` de `data/catalog/`: agregar algo al libro es arrastrarlo a la lista.
-4. El selector de personaje y el catálogo lo levantan solos (`GameData`).
+4. El selector de personaje y el catálogo lo levantan solos (`GameCatalog`).
 
 ## Un edificio
 

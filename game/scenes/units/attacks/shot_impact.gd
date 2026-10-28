@@ -13,7 +13,7 @@ extends Node
 
 
 ## `shot`: the bursting RangedShot (damage and from_slot already scaled by the shooter). `target`: the body it hit, or
-## null on the ground. `point`: where it burst. `ability`: the shot's SPEL (ranges), or null if GameData has no such tag.
+## null on the ground. `point`: where it burst. `ability`: the shot's SPEL (ranges), or null if the catalog has no such tag.
 func apply(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType) -> void:
 	_affect(shot, target, point, ability)
 	for child in get_children():

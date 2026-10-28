@@ -21,6 +21,7 @@ var buildings: Array[BuildingType] = []
 var duplicate_building_tags := PackedStringArray()
 var _building_by_tag: Dictionary = {}
 var _creature_by_id: Dictionary = {}
+var _ability_by_tag: Dictionary[String, AbilityType] = {}
 ## The gods of data/gods/<tag>.tres (RFC-042), by sort_order then tag. Each carries its theme, look and typed book.
 var gods: Array[GodType] = []
 ## The game modes in the order the screens list them (data/modes/mode_catalog.tres).
@@ -46,6 +47,9 @@ func scan(reload_from_disk := false) -> void:
 	spells.assign(_load_folder("spells", SpellType, reload_from_disk))
 	wizards.assign(_load_folder("wizards", WizardType, reload_from_disk))
 	abilities.assign(_load_folder("abilities", AbilityType, reload_from_disk))
+	_ability_by_tag.clear()
+	for type in abilities:
+		_ability_by_tag[type.tag] = type
 	buildings.assign(_load_folder("buildings", BuildingType, reload_from_disk))
 	_index_buildings()
 	gods.assign(_load_gods(reload_from_disk))
@@ -85,6 +89,11 @@ func _index_buildings() -> void:
 ## The creature with that id (its `tag`, or the file name when the tag is empty), or null. Indexed in scan().
 func creature(id: String) -> CreatureType:
 	return _creature_by_id.get(id)
+
+
+## The ability with that tag, or null. Indexed in scan().
+func ability(tag: String) -> AbilityType:
+	return _ability_by_tag.get(tag)
 
 
 ## The god with that id (its `tag`, or the file name when the tag is empty), or null.

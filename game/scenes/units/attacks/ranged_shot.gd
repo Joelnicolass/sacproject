@@ -29,7 +29,7 @@ var velocity := Vector3.ZERO
 var target_path := NodePath()
 var shooter_path := NodePath()
 var look: ShotLook
-## The shot's SPEL (ranges for its impact); null when GameData has no such tag.
+## The shot's SPEL (ranges for its impact); null when the catalog has no such tag.
 var ability: AbilityType
 
 ## F125: the packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs (SplitFlight:

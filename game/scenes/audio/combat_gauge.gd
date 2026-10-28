@@ -17,8 +17,8 @@ extends Node
 
 signal battle_changed(on: bool)
 
-## Emits `local_wizard_changed(wizard)` and answers `local_wizard()` (MatchWorld). Optional: the lab sets `wizard`.
-@export var world: Node
+## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets `wizard`.
+@export var world: MatchWorld
 @export var wizard: Node3D
 @export_range(1.0, 500.0, 1.0, "suffix:m") var radius_m := 40.0
 ## Fighting creatures in range at which the intensity is 1.
@@ -55,10 +55,9 @@ func _ready() -> void:
 		set_process(false)
 		return
 	if world != null:
-		if world.has_signal("local_wizard_changed"):
-			world.connect("local_wizard_changed", bind_wizard)
-		if wizard == null and world is MatchWorld:
-			wizard = (world as MatchWorld).local_wizard()
+		world.local_wizard_changed.connect(bind_wizard)
+		if wizard == null:
+			wizard = world.local_wizard()
 	Events.body_hurt.connect(_on_body_hurt)
 
 

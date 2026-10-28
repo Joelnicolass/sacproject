@@ -16,8 +16,8 @@ const GROUP := &"wizard"
 const LOCAL_GROUP := &"local_wizard"
 
 @export var step: WalkStep
-## The wizard the player picked (data/catalog/wizards/). Every peer takes it from SacrificeFlow.pick_for(owner_slot) (the pick is
-## typed on each of them); a bench without a flow sets it in its .tscn. It never looks the type up by text.
+## The wizard the player picked (data/catalog/wizards/). Every peer takes it from `seat_pick` (the pick is typed on each of
+## them); a bench without a flow sets it in its .tscn. It never looks the type up by text.
 @export var wizard_type: WizardType:
 	set(value):
 		wizard_type = value
@@ -38,7 +38,7 @@ const LOCAL_GROUP := &"local_wizard"
 	set(value):
 		model = value
 		pick_changed.emit()
-## The god whose book the wizard casts (data/gods/). Taken from the seat's pick on every peer (it does not travel in the
+## The god whose book the wizard casts (data/gods/). Taken from `seat_pick` on every peer (it does not travel in the
 ## synchronizer); a bench without a flow sets it by hand.
 @export var god_type: GodType:
 	set(value):
@@ -66,6 +66,13 @@ const LOCAL_GROUP := &"local_wizard"
 ## Ref: makeWizard, state.d:2307-2311
 @export var level_health_bonus := 0.0
 @export var level_mana_bonus := 0.0
+## The pick of this wizard's seat (wizard and god). WizardSpawner sets it on every peer when the wizard spawns and when the
+## picks change; the body wears it once it is ready. Null (a bench): the types of the .tscn stay.
+var seat_pick: WizardPick:
+	set(value):
+		seat_pick = value
+		if is_node_ready():
+			_wear_pick()
 ## Ray mask used to seat the body on the ground after spawning.
 @export_flags_3d_physics var ground_mask := 1
 @export var seat_attempts := 12
@@ -126,22 +133,13 @@ func _ready() -> void:
 	_clip_pose.clip_looped.connect(_on_clip_looped)
 	_present_prev_pos = global_position
 	_present_prev_ready = true
-	if MpKit.is_networked() and not MpKit.is_server():
+	if _is_remote_copy():
 		vision.watching = false
-		_take_pick_type()
-		SacrificeFlow.slot_picks_changed.connect(_take_pick_type)
+		_wear_pick()
 		return
 	_seat_left = seat_attempts
 	health.changed.connect(_on_health_changed)
-	_apply_pick()
-	SacrificeFlow.slot_picks_changed.connect(_apply_pick)
-
-
-func _exit_tree() -> void:
-	if SacrificeFlow.slot_picks_changed.is_connected(_apply_pick):
-		SacrificeFlow.slot_picks_changed.disconnect(_apply_pick)
-	if SacrificeFlow.slot_picks_changed.is_connected(_take_pick_type):
-		SacrificeFlow.slot_picks_changed.disconnect(_take_pick_type)
+	_wear_pick()
 
 
 func is_local() -> bool:
@@ -210,28 +208,26 @@ func _refresh_owner() -> void:
 		remove_from_group(LOCAL_GROUP)
 
 
-func _apply_pick() -> void:
-	var chosen: WizardPick = SacrificeFlow.pick_for(owner_slot)
-	if chosen != null and chosen.is_complete():
-		## The replicated ids (`wizard_tag`, `model`) stay the wire until the body is a scene of its own (055s).
+## Wears `seat_pick`: the wizard and god types on every peer. The one who simulates also writes the replicated `model`;
+## a client gets it (and `wizard_tag`) from the server by replication.
+func _wear_pick() -> void:
+	var chosen := seat_pick
+	var complete := chosen != null and chosen.is_complete()
+	if complete:
 		if chosen.wizard != wizard_type:
 			wizard_type = chosen.wizard
-		if chosen.wizard.model_id() != model:
-			model = chosen.wizard.model_id()
 		if chosen.god != god_type:
 			god_type = chosen.god
+	if _is_remote_copy():
+		return
+	if complete and chosen.wizard.model_id() != model:
+		model = chosen.wizard.model_id()
 	_apply_type()
 
 
-## A client: the wizard and god types come from the pick; the ids (`wizard_tag`, `model`) are the server's and reach it by replication.
-func _take_pick_type() -> void:
-	var chosen: WizardPick = SacrificeFlow.pick_for(owner_slot)
-	if chosen == null or not chosen.is_complete():
-		return
-	if chosen.wizard != wizard_type:
-		wizard_type = chosen.wizard
-	if chosen.god != god_type:
-		god_type = chosen.god
+## A networked client: it draws the server's wizard and does not simulate it.
+func _is_remote_copy() -> bool:
+	return MpKit.is_networked() and not MpKit.is_server()
 
 
 func _apply_type() -> void:

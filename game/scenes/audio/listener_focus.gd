@@ -9,8 +9,8 @@ extends AudioListener3D
 ## SoundEmitter3D nodes measure their range from it (052d).
 ## Ref: RFC-052 052c (F362).
 
-## Emits `local_wizard_changed(wizard)` and answers `local_wizard()` (MatchWorld). Optional: the lab sets `target` instead.
-@export var world: Node
+## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets `target` instead.
+@export var world: MatchWorld
 @export var camera: Camera3D:
 	set(value):
 		camera = value
@@ -26,10 +26,9 @@ func _ready() -> void:
 		set_process(false)
 		return
 	if world != null:
-		if world.has_signal("local_wizard_changed"):
-			world.connect("local_wizard_changed", _on_local_wizard_changed)
-		if target == null and world is MatchWorld:
-			target = (world as MatchWorld).local_wizard()
+		world.local_wizard_changed.connect(_on_local_wizard_changed)
+		if target == null:
+			target = world.local_wizard()
 	make_current()
 	SoundBus.listener = self
 	_follow()

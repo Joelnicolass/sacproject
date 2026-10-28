@@ -24,6 +24,8 @@ const SEARCH_LOG_MAX := 200000
 ## The map's NavigationRegion3D (MapRoot.nav_region; MatchWorld binds it when the map is attached). Required: without it the
 ## service stays not ready, with a warning.
 @export var region: NavigationRegion3D
+## The node whose subtree a re-bake parses for colliders: the match root (map, structures and bodies). Required for re-bakes.
+@export var bake_root: Node3D
 ## Time between a change and the swap of the re-baked navmesh (if the worker is not done by then the match goes on with the old one
 ## and the swap happens at the first tick it is). Counted in physics ticks, never a clock.
 @export_range(0.0, 30.0, 0.0001, "suffix:s") var rebake_swap_s := 3.0
@@ -206,8 +208,11 @@ func _request_rebake() -> void:
 	var areas := changes.take(_collect_blockers(_dynamic_groups(), true))
 	if areas.is_empty():
 		return
+	if bake_root == null:
+		push_error("NavService: set `bake_root` (the match root); the navmesh cannot be baked again.")
+		return
 	_tag_dynamic_nodes()
-	if rebake.start(get_parent(), areas):
+	if rebake.start(bake_root, areas):
 		_swap_at = _tick + MatchClock.ticks_for(rebake_swap_s)
 	else:
 		areas.map(changes.add_area)

@@ -20,8 +20,8 @@ extends Node
 	set(value):
 		advisor = value
 		update_configuration_warnings()
-## Emits `local_wizard_changed(wizard)` and answers `local_wizard()` (MatchWorld). Optional: the lab sets `wizard`.
-@export var world: Node
+## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets `wizard`.
+@export var world: MatchWorld
 @export var wizard: Node3D
 ## Who looks at this screen: only this seat's side is warned.
 @export var seat: MpLocalSeat:
@@ -50,10 +50,9 @@ func _ready() -> void:
 	if not _open:
 		return
 	if world != null:
-		if world.has_signal("local_wizard_changed"):
-			world.connect("local_wizard_changed", bind_wizard)
-		if wizard == null and world is MatchWorld:
-			wizard = (world as MatchWorld).local_wizard()
+		world.local_wizard_changed.connect(bind_wizard)
+		if wizard == null:
+			wizard = world.local_wizard()
 	Events.body_hurt.connect(_on_body_hurt)
 	Events.ritual_started.connect(_on_ritual_started)
 	Events.ritual_ended.connect(_on_ritual_ended)

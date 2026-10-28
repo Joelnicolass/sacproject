@@ -3,13 +3,15 @@ extends Node3D
 
 signal local_wizard_changed(wizard: Node3D)
 
-## The match is map-agnostic. The map is the child `Map` (a MapRoot): the one the scene already holds
-## (an inherited scene with a map in it) or, when there is none or `--map=<tag>` asks for another, the scene of the active
-## MapDefinition. The systems below are bound to its sockets before any of them is ready.
-## Ref: RFC-044.
+## The match is map-agnostic. The map is the child `Map` (a MapRoot) of `map_parent` (World): the one the scene already
+## holds (an inherited scene with a map in it) or, when there is none or `--map=<tag>` asks for another, the scene of the
+## active MapDefinition. The systems below are bound to its sockets before any of them is ready.
+## The children are grouped: World (3D world and spawners), Systems, Input, Hud and Audio.
 const MAP_NODE := "Map"
 
 @export var rules: MatchRules
+## The group the map is put under, as its first child (World).
+@export var map_parent: Node3D
 ## The systems that take parts of the map when it is attached (set in match.tscn).
 @export var camera: WorldCamera
 @export var selection: Selection
@@ -49,13 +51,16 @@ func _enter_tree() -> void:
 	_attach_map()
 
 
-## Puts the active map first among the children (it is ready before the systems that read it) and binds the systems.
+## Puts the active map first under `map_parent` (it is ready before the systems that read it) and binds the systems.
 func _attach_map() -> void:
+	if map_parent == null:
+		push_error("Match: map_parent must be set in match.tscn.")
+		return
 	## One line for the logs and the runs (RFC-049 049a): which map this process loaded, and whether it simulates it.
 	print(("mapa %s" if not MpKit.is_networked() or MpKit.is_server() else "en mapa %s") % definition.tag)
-	map = get_node_or_null(MAP_NODE) as MapRoot
+	map = map_parent.get_node_or_null(MAP_NODE) as MapRoot
 	if map != null and definition.map_scene != null and map.scene_file_path != definition.map_scene.resource_path:
-		remove_child(map)
+		map_parent.remove_child(map)
 		map.free()
 		map = null
 	if map == null:
@@ -65,8 +70,8 @@ func _attach_map() -> void:
 			push_error("Match: the map '%s' has no MapRoot; the match cannot start." % definition.tag)
 			return
 		map.name = MAP_NODE
-		add_child(map)
-		move_child(map, 0)
+		map_parent.add_child(map)
+		map_parent.move_child(map, 0)
 	_bind_map()
 
 

@@ -1,5 +1,7 @@
 # Despliegue del servidor de salas (RFC-034, corte 034g)
 
+> **Estado 2026-10-27:** planeado para el futuro. El servidor de salas sigue en el juego pero **apagado**: hoy online son las «Salas online» que hospedan los jugadores (MpKit 0.18). Para usar esta guía, prendé `room_server_enabled` en el inspector de `scenes/core/flow/sacrifice_flow.tscn` antes de exportar: así `--room-server` arranca (apagado, sale con error) y «Salas online» abre el lobby de este servidor en vez de las salas de jugadores.
+
 Estos archivos están **escritos y revisados, no desplegados**. La prueba real en el VPS (Vultr) la hacés vos; en la Mac se verificó todo en `127.0.0.1`.
 
 ## Qué corre en el VPS

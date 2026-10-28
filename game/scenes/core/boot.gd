@@ -15,7 +15,12 @@ const ROOM_SERVER_SCENE := "res://scenes/net/room_server.tscn"
 func _ready() -> void:
 	## RFC-034 034g: the exported binary has no scene argument; `--room-server` makes its main scene (this one) hand over to the
 	## room server, so the same binary is the room server and, with `--dedicated`, every match process.
+	## Only with `SacrificeFlow.room_server_enabled` (inspector of sacrifice_flow.tscn).
 	if MpBoot.role() == "room-server":
+		if not SacrificeFlow.room_server_enabled:
+			push_error("--room-server: el servidor de salas está apagado (room_server_enabled en sacrifice_flow.tscn)")
+			get_tree().quit(1)
+			return
 		get_tree().change_scene_to_file.call_deferred(ROOM_SERVER_SCENE)
 		return
 	SacrificeFlow.status_changed.connect(_on_status)
@@ -23,7 +28,8 @@ func _ready() -> void:
 	%VsAi.pressed.connect(_on_vs_ai)
 	_fill_ai_levels()
 	%Join.pressed.connect(_on_join)
-	## «Salas online»: rooms the players host through the issuer (scenes/ui/online/; the issuer is in data/net/online_config.tres).
+	## «Salas online»: rooms the players host through the issuer (scenes/ui/online/; the issuer is in data/net/online_config.tres),
+	## or the room-server lobby when `SacrificeFlow.room_server_enabled` is on.
 	## The field for an IP and «Unirse» (direct to a dedicated or a LAN host) stay only in debug builds.
 	%Online.pressed.connect(_on_online)
 	## RFC-034 034m: «Servidor local» is a door of its own (create on this PC / join an address), visible in every build.
@@ -81,7 +87,8 @@ func _fill_ai_levels() -> void:
 			picker.select(picker.item_count - 1)
 
 func _on_online() -> void:
-	get_tree().change_scene_to_file(SacrificeFlow.ONLINE_SCENE)
+	var screen := SacrificeFlow.LOBBY_SCENE if SacrificeFlow.room_server_enabled else SacrificeFlow.ONLINE_SCENE
+	get_tree().change_scene_to_file(screen)
 
 func _on_local_server() -> void:
 	get_tree().change_scene_to_file(SacrificeFlow.LOCAL_SERVER_SCENE)

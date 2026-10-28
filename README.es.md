@@ -18,7 +18,7 @@ Port no oficial de **Sacrifice** (Shiny Entertainment, 2000) a **Godot 4.7**, he
 - **Sonido del original:** efectos 3D, voces de criaturas, magos y consejero, música por dios (calma, batalla, sacrificio, victoria) y ambiente, con volumen por bus en Opciones → Sonido. Los sonidos propios van en `game/assets/custom/sounds/` (ver `game/docs/HOWTO.md`).
 - **Menú radial de órdenes y 8 formaciones.** Se mantiene el clic derecho, se elige la formación y se suelta: las unidades van ahí en esa formación.
 - **Multijugador con autoridad del servidor:**
-  - servidor de salas con lobby y un servidor dedicado por partida;
+  - «Salas online»: un jugador hospeda la sala desde su PC y los amigos entran con el código, a través de un relay;
   - «Servidor local» para jugar desde tu PC sin VPS;
   - transporte ENet o WebSocket;
   - reconexión a la partida con el mismo ticket.
@@ -77,14 +77,6 @@ En el menú: **Cambiar personaje** para elegir mago y dios, y **Jugar solo** o *
 | Zoom | rueda (sobre el minimapa, hace zoom en el minimapa) |
 | Mostrar u ocultar el minimapa | `M` |
 | Pausa | `Esc` |
-
-### Servidor dedicado (VPS)
-
-La guía de export de Linux, puertos, firewall y systemd está en [`game/tools/deploy/README.md`](game/tools/deploy/README.md). Para probar en local, el servidor de salas arranca con:
-
-```bash
-godot --headless --path game -- --room-server
-```
 
 ## Comandos útiles
 
@@ -177,7 +169,7 @@ Las rutas son relativas a `game/`.
 
 | Herramienta | ¿Necesita el original? | Qué produce |
 |---|---|---|
-| Jugar (F5), `godot --path game`, el servidor de salas | **No** | Nada: los assets ya están en `game/assets/original/` (LFS) |
+| Jugar (F5), `godot --path game` | **No** | Nada: los assets ya están en `game/assets/original/` (LFS) |
 | Flows y capturas descartables de AgentKit | **No** | PASS/FAIL y capturas, no se versionan |
 | `tools/import/export_stats.py` | **Sí** | `assets/original/data/*.json` (estadísticas de criaturas, hechizos, magos, edificios) |
 | `tools/import/export_skeletal.py` | **Sí** | `assets/original/models/*.glb` + `index.json` (esqueleto y animaciones) |

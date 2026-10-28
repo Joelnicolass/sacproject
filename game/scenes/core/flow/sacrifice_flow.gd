@@ -21,6 +21,10 @@ const ONLINE_SCENE := "res://scenes/ui/online/online_screen.tscn"
 @export var presence: SeatPresence
 ## The black screen while a match loads (a child of this scene). Empty = no screen; the load is the same.
 @export var loading_screen: LoadingScreen
+## The room server of a VPS (RFC-034: `--room-server`, scenes/ui/lobby/, data/net/lobby_*.tres), kept for a future deploy (tools/deploy/).
+## Off: «Salas online» opens the rooms the players host and `--room-server` refuses to start. On: «Salas online» opens the
+## room-server lobby and the binary can run as the room server.
+@export var room_server_enabled := false
 
 ## Local choice. Never null after `_ready`.
 var pick: WizardPick

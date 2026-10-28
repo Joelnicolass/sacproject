@@ -87,7 +87,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if start == null:
 		warnings.append("Assign in `start` the node where the rope starts (the doctor's needle).")
 	if atlas == null:
-		warnings.append("Assign in `atlas` the rope texture (ltn2.png); without it a fill is drawn.")
+		warnings.append(
+			"Assign in `atlas` the rope texture (ltn2.png); without it a fill is drawn."
+		)
 	return warnings
 
 
@@ -182,8 +184,18 @@ func _curve(t: float) -> Array[Vector3]:
 	var m1 := _loc[mini(i + 2, n - 1)] - _loc[i]
 	var u2 := u * u
 	var u3 := u2 * u
-	var p := (2 * u3 - 3 * u2 + 1) * p0 + (u3 - 2 * u2 + u) * m0 + (-2 * u3 + 3 * u2) * p1 + (u3 - u2) * m1
-	var m := (6 * u2 - 6 * u) * p0 + (3 * u2 - 4 * u + 1) * m0 + (-6 * u2 + 6 * u) * p1 + (3 * u2 - 2 * u) * m1
+	var p := (
+		(2 * u3 - 3 * u2 + 1) * p0
+		+ (u3 - 2 * u2 + u) * m0
+		+ (-2 * u3 + 3 * u2) * p1
+		+ (u3 - u2) * m1
+	)
+	var m := (
+		(6 * u2 - 6 * u) * p0
+		+ (3 * u2 - 4 * u + 1) * m0
+		+ (-6 * u2 + 6 * u) * p1
+		+ (3 * u2 - 2 * u) * m1
+	)
 	return [p, m]
 
 
@@ -192,11 +204,17 @@ func _draw() -> void:
 	var centers: Array[Vector3] = []
 	var offsets: Array = []
 	var sqrt34 := sqrt(0.75)
-	var base := [Vector3(0, -1, 0) * radius, Vector3(sqrt34, 0.5, 0) * radius, Vector3(-sqrt34, 0.5, 0) * radius]
+	var base := [
+		Vector3(0, -1, 0) * radius,
+		Vector3(sqrt34, 0.5, 0) * radius,
+		Vector3(-sqrt34, 0.5, 0) * radius
+	]
 	for i in count:
 		var c := _curve(float(i) / float(count - 1))
 		centers.append(c[0])
-		var tangent: Vector3 = c[1].normalized() if c[1].length_squared() > 0.000001 else Vector3.BACK
+		var tangent: Vector3 = (
+			c[1].normalized() if c[1].length_squared() > 0.000001 else Vector3.BACK
+		)
 		var q := Quaternion(Vector3.BACK, tangent)
 		offsets.append([q * base[0], q * base[1], q * base[2]])
 	_imesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)

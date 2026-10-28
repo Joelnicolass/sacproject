@@ -96,8 +96,11 @@ static func socket_warning(prefs: AudioPrefs) -> String:
 
 func _defaults() -> Dictionary:
 	return {
-		&"Master": default_master, &"Music": default_music, &"SFX": default_sfx,
-		&"Voice": default_voice, &"Ambience": default_ambience,
+		&"Master": default_master,
+		&"Music": default_music,
+		&"SFX": default_sfx,
+		&"Voice": default_voice,
+		&"Ambience": default_ambience,
 	}
 
 
@@ -123,7 +126,12 @@ func _ensure_loaded() -> void:
 		if typeof(stored) in [TYPE_INT, TYPE_FLOAT]:
 			_volumes[bus] = clampf(float(stored), 0.0, 1.0)
 		elif stored != null:
-			push_warning("AudioPrefs: [%s] %s = %s is not a number; using %s." % [SECTION, key_for(bus), stored, _volumes[bus]])
+			push_warning(
+				(
+					"AudioPrefs: [%s] %s = %s is not a number; using %s."
+					% [SECTION, key_for(bus), stored, _volumes[bus]]
+				)
+			)
 	var stored_muted: Variant = UserSettings.read_value(SECTION, MUTED_KEY, false)
 	_muted = stored_muted if typeof(stored_muted) == TYPE_BOOL else false
 	if agent_starts_silent(OS.get_cmdline_user_args()):

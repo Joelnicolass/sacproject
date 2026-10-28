@@ -20,15 +20,26 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
-	return aim_at_body(wizard, spell, point, funds, target.pick(wizard, picked) if target != null else null)
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
+	return aim_at_body(
+		wizard, spell, point, funds, target.pick(wizard, picked) if target != null else null
+	)
 
 
 func finish(wizard: WizardBody, spell: SpellType, body: Node3D) -> String:
 	if body == null or not ProjectileTargets.is_live_body(body):
 		return ""
 	# DamageMod.lightning, which charges a Storm Giant.
-	var taken := (body.get_node("Health") as Health).damage_typed(float(spell.damage), _HEALTH.DIRECT_SPELL, wizard.owner_slot, false, false, _HEALTH.LIGHTNING)
+	var taken := (body.get_node("Health") as Health).damage_typed(
+		float(spell.damage),
+		_HEALTH.DIRECT_SPELL,
+		wizard.owner_slot,
+		false,
+		false,
+		_HEALTH.LIGHTNING
+	)
 	ProjectileTargets.report(body, taken, _HEALTH.DIRECT_SPELL)
 	if beam != null:
 		FxBus.broadcast_beam(beam, _origin(wizard), ProjectileTargets.body_center(body), body)

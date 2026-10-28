@@ -18,7 +18,9 @@ const SEARCH_STEPS := 5
 ## `beyond`: the vortex hangs past the target as seen from the
 ## caster instead of on the caster's side.
 ## Returns {"vortex": Vector3, "landing": Vector3, "step": int (-1 = fallback), "side": int}.
-static func drop_positions(target: Vector3, caster: Vector3, distance: float, on_ground: Callable, beyond := false) -> Dictionary:
+static func drop_positions(
+	target: Vector3, caster: Vector3, distance: float, on_ground: Callable, beyond := false
+) -> Dictionary:
 	var toward := Vector3(target.x - caster.x, 0.0, target.z - caster.z)
 	toward = toward.normalized() if toward.length_squared() > 0.000001 else Vector3(0.0, 0.0, 1.0)
 	var offset := (distance if beyond else -distance) * toward
@@ -35,11 +37,16 @@ static func drop_positions(target: Vector3, caster: Vector3, distance: float, on
 
 # --- The ritual ---
 
+
 ## Ring position for the k-th doctor (`index` may pass 3: round r
 ## starts one quarter turn further). `progress` 0..1 is how far
 ## into the walk phase it is. The radius is 20 m, shrinking by `shrink` in the last fifth of the walk.
-static func ring_point(center: Vector3, index: int, progress: float, radius := 20.0, shrink := 3.0) -> Vector3:
-	var turns := fposmod(0.125 + 0.25 * (float(index) + minf(1.1 * progress, 0.7 + 0.3 * progress)), 1.0)
+static func ring_point(
+	center: Vector3, index: int, progress: float, radius := 20.0, shrink := 3.0
+) -> Vector3:
+	var turns := fposmod(
+		0.125 + 0.25 * (float(index) + minf(1.1 * progress, 0.7 + 0.3 * progress)), 1.0
+	)
 	var angle := turns * TAU - 0.5 * PI
 	var r := radius - shrink * maxf(0.0, 5.0 * progress - 4.0)
 	return center + Vector3(cos(angle), 0.0, -sin(angle)) * r
@@ -69,7 +76,9 @@ static func convert_rounds(max_health: float, per_round := 550.0) -> int:
 
 ## Where in the schedule `time_s` seconds after the ritual started falls: {"phase": &"setup"|&"walk"|
 ## &"shoot"|&"wait", "round": int, "t": seconds into that phase}. Pure, for the suite.
-static func schedule(time_s: float, setup_s := 5.0, walk_s := 4.5, shoot_s := 4.5, wait_s := 4.5) -> Dictionary:
+static func schedule(
+	time_s: float, setup_s := 5.0, walk_s := 4.5, shoot_s := 4.5, wait_s := 4.5
+) -> Dictionary:
 	if time_s < setup_s:
 		return {"phase": &"setup", "round": 0, "t": time_s}
 	var round_s := walk_s + shoot_s + wait_s
@@ -84,6 +93,7 @@ static func schedule(time_s: float, setup_s := 5.0, walk_s := 4.5, shoot_s := 4.
 
 
 # --- Convert ---
+
 
 ## Seconds a Sac Doctor pumps a corpse with `souls` souls: (souls + 1) * 5.
 static func pump_seconds(souls: int, per_soul := 5.0) -> float:

@@ -106,7 +106,9 @@ func rect_distance(key: Vector2i, from: Vector2) -> float:
 
 ## The ground point the camera looks at, no farther than the field can use: low cameras get a center ahead of them (so
 ## the ring covers what they see), high ones look straight at it. `ground_y` is the land under the camera.
-static func field_center(cam_local: Vector3, forward: Vector3, near_radius: float, ground_y: float) -> Vector2:
+static func field_center(
+	cam_local: Vector3, forward: Vector3, near_radius: float, ground_y: float
+) -> Vector2:
 	var flat := Vector2(forward.x, forward.z)
 	var above := maxf(cam_local.y - ground_y, 0.0)
 	var reach := near_radius * 0.9 + above * 0.5

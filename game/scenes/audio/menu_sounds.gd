@@ -63,4 +63,8 @@ func _on_entry_chosen(_entry: RadialEntry) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if menu != null else PackedStringArray(["Assign in `menu` the menu whose signals make sounds."])
+	return (
+		PackedStringArray()
+		if menu != null
+		else PackedStringArray(["Assign in `menu` the menu whose signals make sounds."])
+	)

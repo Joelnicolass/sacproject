@@ -55,9 +55,11 @@ func _ready() -> void:
 		_refresh_preview()
 		return
 	visible = false
-	animator.closed.connect(func() -> void:
-		if not _open:
-			visible = false)
+	animator.closed.connect(
+		func() -> void:
+			if not _open:
+				visible = false
+	)
 
 
 func is_open() -> bool:
@@ -72,7 +74,11 @@ func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 	_resize_to_layout()
 	position = screen - size * 0.5
 	var center_rect := decor.center_rect
-	center_rect.texture = center_icon if center_icon != null else (layout.center.display_icon() if layout.center else null)
+	center_rect.texture = (
+		center_icon
+		if center_icon != null
+		else (layout.center.display_icon() if layout.center else null)
+	)
 	_open = true
 	hovered = null
 	_last_hover = null

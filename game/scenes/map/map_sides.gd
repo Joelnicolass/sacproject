@@ -43,13 +43,22 @@ static func rows_of(scene: PackedScene) -> Array:
 				allies |= 1 << other
 			else:
 				enemies |= 1 << other
-		rows.append({"id": id, "allies": allies, "enemies": enemies, "assignment": id + 1 if seats.has(id) else 0})
+		rows.append(
+			{
+				"id": id,
+				"allies": allies,
+				"enemies": enemies,
+				"assignment": id + 1 if seats.has(id) else 0
+			}
+		)
 	rows.append({"id": NEUTRAL_SIDE, "allies": 0, "enemies": 0, "assignment": 0})
 	return rows
 
 
 ## The value a node of the scene stores for `property`, or `fallback` when it keeps the default of its scene.
-static func _stored(state: SceneState, node: int, property: StringName, fallback: Variant) -> Variant:
+static func _stored(
+	state: SceneState, node: int, property: StringName, fallback: Variant
+) -> Variant:
 	for k in state.get_node_property_count(node):
 		if state.get_node_property_name(node, k) == property:
 			return state.get_node_property_value(node, k)

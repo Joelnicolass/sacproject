@@ -99,7 +99,9 @@ func _show() -> void:
 		var rest: Transform3D = _rest[node]
 		if node == ring:
 			var up := float_height * rise * rise
-			node.transform = Transform3D(rest.basis.scaled(Vector3.ONE * (1.0 - rise)), rest.origin + Vector3.UP * up)
+			node.transform = Transform3D(
+				rest.basis.scaled(Vector3.ONE * (1.0 - rise)), rest.origin + Vector3.UP * up
+			)
 			node.visible = _time < float_end
 		else:
 			node.transform = Transform3D(rest.basis, rest.origin + Vector3.DOWN * sink_depth * sink)

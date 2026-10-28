@@ -43,7 +43,8 @@ func _process(delta: float) -> void:
 	_since_log += delta
 	if _since_log >= 10.0:
 		_since_log = 0.0
-		if DebugLog.on(&"life"): print("vida spots activos %d/%d" % [_active_spots(), _spot_nodes().size()])
+		if DebugLog.on(&"life"):
+			print("vida spots activos %d/%d" % [_active_spots(), _spot_nodes().size()])
 
 
 func _on_atmosphere_changed(sample: AtmosphereSample) -> void:
@@ -102,8 +103,12 @@ func _show_air(slot: GPUParticles3D, swarm: AmbientSwarm) -> void:
 		slot.emitting = false
 		return
 	var count := maxi(1, roundi(swarm.amount * _density))
-	if slot.process_material != swarm.process_material or slot.draw_pass_1 != swarm.mesh \
-			or slot.lifetime != swarm.lifetime_s or slot.amount != count:
+	if (
+		slot.process_material != swarm.process_material
+		or slot.draw_pass_1 != swarm.mesh
+		or slot.lifetime != swarm.lifetime_s
+		or slot.amount != count
+	):
 		slot.emitting = false
 		slot.process_material = swarm.process_material
 		slot.draw_pass_1 = swarm.mesh
@@ -135,6 +140,13 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if atmosphere == null:
 		found.append("The Atmosphere socket is missing.")
 	if _set and _set.air.size() > air_slots.size():
-		found.append("The biome has %d air swarms and the pool only %d (Air1..Air%d): the rest are left out." % [
-				_set.air.size(), air_slots.size(), air_slots.size()])
+		(
+			found
+			. append(
+				(
+					"The biome has %d air swarms and the pool only %d (Air1..Air%d): the rest are left out."
+					% [_set.air.size(), air_slots.size(), air_slots.size()]
+				)
+			)
+		)
 	return found

@@ -36,7 +36,9 @@ func poison(body: Node3D, at: Vector3) -> void:
 		_dose(body, per_second, ticks)
 		if hit_burst != null:
 			FxBus.broadcast(hit_burst, BodyNudge.center(body))
-	for hit in SplashDamage.bodies_within(get_tree(), at, drop.damage_range, body if live else null, groups):
+	for hit in SplashDamage.bodies_within(
+		get_tree(), at, drop.damage_range, body if live else null, groups
+	):
 		var near := 1.0 - SplashDamage.box_distance(hit, at) / drop.damage_range
 		_dose(hit, per_second * splash_share * near, ticks)
 	for type in bursts:
@@ -44,8 +46,14 @@ func poison(body: Node3D, at: Vector3) -> void:
 
 
 func _dose(body: Node3D, per_second: float, ticks: int) -> void:
-	Poisoning.dose_body(body, per_second, ticks, Health.SPLASH_SPELL, drop.from_slot, infectious, 0, regeneration)
+	Poisoning.dose_body(
+		body, per_second, ticks, Health.SPLASH_SPELL, drop.from_slot, infectious, 0, regeneration
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["The drop (ZoneDrop) whose end it gets is missing."])
+	return (
+		PackedStringArray()
+		if drop != null
+		else PackedStringArray(["The drop (ZoneDrop) whose end it gets is missing."])
+	)

@@ -36,8 +36,13 @@ static func grid_for(bounds: Rect2) -> Vector2i:
 
 ## The tiles of the map a mark touches, in row order. Tiles outside the `grid` (tiles per side, see `grid_for`) are left out.
 static func tiles_touched(origin: Vector2i, size: Vector2i, grid: Vector2i) -> Array[Vector2i]:
-	var first := Vector2i(floori(float(origin.x) / TILE_TEXELS), floori(float(origin.y) / TILE_TEXELS))
-	var last := Vector2i(floori(float(origin.x + size.x - 1) / TILE_TEXELS), floori(float(origin.y + size.y - 1) / TILE_TEXELS))
+	var first := Vector2i(
+		floori(float(origin.x) / TILE_TEXELS), floori(float(origin.y) / TILE_TEXELS)
+	)
+	var last := Vector2i(
+		floori(float(origin.x + size.x - 1) / TILE_TEXELS),
+		floori(float(origin.y + size.y - 1) / TILE_TEXELS)
+	)
 	var tiles: Array[Vector2i] = []
 	for z in range(maxi(first.y, 0), mini(last.y, grid.y - 1) + 1):
 		for x in range(maxi(first.x, 0), mini(last.x, grid.x - 1) + 1):
@@ -67,14 +72,19 @@ static func clamp_capacity(count: int) -> int:
 ## mark's alpha, so marks on the same tile pile up. `origin` is the mark's top-left texel (`texel_origin`).
 static func paint(layer: Image, mark: Image, origin: Vector2i, tile: Vector2i) -> void:
 	var tile_origin := tile * TILE_TEXELS
-	var inside := Rect2i(origin, mark.get_size()).intersection(Rect2i(tile_origin, Vector2i(TILE_TEXELS, TILE_TEXELS)))
+	var inside := Rect2i(origin, mark.get_size()).intersection(
+		Rect2i(tile_origin, Vector2i(TILE_TEXELS, TILE_TEXELS))
+	)
 	if inside.has_area():
-		layer.blend_rect(mark, Rect2i(inside.position - origin, inside.size), inside.position - tile_origin)
+		layer.blend_rect(
+			mark, Rect2i(inside.position - origin, inside.size), inside.position - tile_origin
+		)
 
 
 ## The painted tiles: which layer of the texture array holds each tile, and which one is the oldest when it is full.
 ## Every mark has the same priority, so the order is the order of use (a tile that gets painted again becomes the newest).
-class Pool extends RefCounted:
+class Pool:
+	extends RefCounted
 	var capacity := 0
 	## Set by the last `claim`: the layer is new for its tile (clear it before painting), and the tile it took the layer from.
 	var fresh := false

@@ -12,7 +12,9 @@ const MARGIN_M := 2.0
 
 
 ## The fount closest to `point` within `max_distance` (only the free ones with `free_only`), or null.
-static func closest_fount(tree: SceneTree, point: Vector3, max_distance: float, free_only := true) -> ManafountBody:
+static func closest_fount(
+	tree: SceneTree, point: Vector3, max_distance: float, free_only := true
+) -> ManafountBody:
 	var best: ManafountBody = null
 	var best_d := INF
 	for node in tree.get_nodes_in_group(ManafountBody.GROUP):
@@ -37,6 +39,12 @@ static func has_room(tree: SceneTree, area: BuildArea) -> bool:
 			var body := node as Node3D
 			if body == null or not is_instance_valid(body):
 				continue
-			if Vector2(body.global_position.x - middle.x, body.global_position.z - middle.z).length() <= radius:
+			if (
+				(
+					Vector2(body.global_position.x - middle.x, body.global_position.z - middle.z)
+					. length()
+				)
+				<= radius
+			):
 				return false
 	return true

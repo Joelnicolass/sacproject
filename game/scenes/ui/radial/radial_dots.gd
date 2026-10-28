@@ -5,7 +5,15 @@ extends RefCounted
 
 
 ## `formation`'s slots for eight bodies as dots on `canvas`: forward is up, the group fitted in a `box` square around `center`.
-static func draw(canvas: CanvasItem, formation: FormationType, center: Vector2, box: float, radius: float, color: Color, outline: Color) -> void:
+static func draw(
+	canvas: CanvasItem,
+	formation: FormationType,
+	center: Vector2,
+	box: float,
+	radius: float,
+	color: Color,
+	outline: Color
+) -> void:
 	var slots := formation.slots(8, 1.0, 0.0, 0)
 	if slots.is_empty():
 		return

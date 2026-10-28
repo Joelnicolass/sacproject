@@ -99,7 +99,9 @@ func has_one_shots() -> bool:
 ## One of the set's one-shots now, at a point around the listener; the next is scheduled. False when nothing played.
 func play_one_shot() -> bool:
 	_schedule()
-	var shots: Array[SoundCue] = _night_shots if not _night_shots.is_empty() and is_night() else _one_shots
+	var shots: Array[SoundCue] = (
+		_night_shots if not _night_shots.is_empty() and is_night() else _one_shots
+	)
 	if shots.is_empty() or not SoundBus.can_play():
 		return false
 	var at: Vector3 = SoundBus.listener_position()
@@ -107,8 +109,12 @@ func play_one_shot() -> bool:
 		return false
 	var cue := shots[_rng.randi_range(0, shots.size() - 1)]
 	var angle := _rng.randf_range(0.0, TAU)
-	var distance := _rng.randf_range(ambience_set.distance_m.x, maxf(ambience_set.distance_m.x, ambience_set.distance_m.y))
-	var height := _rng.randf_range(ambience_set.height_m.x, maxf(ambience_set.height_m.x, ambience_set.height_m.y))
+	var distance := _rng.randf_range(
+		ambience_set.distance_m.x, maxf(ambience_set.distance_m.x, ambience_set.distance_m.y)
+	)
+	var height := _rng.randf_range(
+		ambience_set.height_m.x, maxf(ambience_set.height_m.x, ambience_set.height_m.y)
+	)
 	var offset := Vector3(cos(angle) * distance, height, sin(angle) * distance)
 	return SoundBus.play_3d(cue, at + offset, EMITTER, SoundEvent.AMBIENT)
 
@@ -142,4 +148,10 @@ func _schedule() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if bed != null else PackedStringArray(["Assign `bed` (the child AudioStreamPlayer): without it the background is silent."])
+	return (
+		PackedStringArray()
+		if bed != null
+		else PackedStringArray(
+			["Assign `bed` (the child AudioStreamPlayer): without it the background is silent."]
+		)
+	)

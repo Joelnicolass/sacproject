@@ -40,7 +40,10 @@ static func is_passive(node: Node) -> bool:
 	if not node is UnitBody:
 		return false
 	var type := (node as UnitBody).type
-	return (type != null and type.aggressiveness <= 0) or node.get_node_or_null("Brain") is VillagerBrain
+	return (
+		(type != null and type.aggressiveness <= 0)
+		or node.get_node_or_null("Brain") is VillagerBrain
+	)
 
 
 ## A passive body (is_passive) of an NPC slot (SideRelations.is_npc_slot): a Farmer of the map. AttackPhase weighs these

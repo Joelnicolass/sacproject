@@ -12,7 +12,6 @@ extends Node
 ## from it. The bulk is a scale of the mesh (placeholder).
 ## Server (or solo) only for grow().
 
-
 ## The body that grows (its name goes in the log). Empty = the parent.
 @export var body: Node3D
 ## Where the maximum goes up and the bar is (Health.raise_maximum). Required.
@@ -98,14 +97,33 @@ func grow(souls: int, from := "") -> void:
 	var most := health.maximum
 	for _i in souls:
 		health.raise_maximum(health_per_soul)
-		_increment = first_increment * health.maximum if _increment < 0.0 else increment_keep * _increment + increment_add
+		_increment = (
+			first_increment * health.maximum
+			if _increment < 0.0
+			else increment_keep * _increment + increment_add
+		)
 		_extra += _increment / regeneration_over_s
 		_resistance *= resistance_step
 		shown += 1
 	if DebugLog.on(&"devour"):
-		print("devours %s soul %s n %d health %d->%d max %d->%d increment %.3f regeneration +%.3f/s resistance %.4f (tick %d)" % [
-			AbilityEffect.who(body), from, souls, roundi(life), roundi(health.current), roundi(most), roundi(health.maximum),
-			_increment, _extra, _resistance, MatchClock.now()])
+		print(
+			(
+				"devours %s soul %s n %d health %d->%d max %d->%d increment %.3f regeneration +%.3f/s resistance %.4f (tick %d)"
+				% [
+					AbilityEffect.who(body),
+					from,
+					souls,
+					roundi(life),
+					roundi(health.current),
+					roundi(most),
+					roundi(health.maximum),
+					_increment,
+					_extra,
+					_resistance,
+					MatchClock.now()
+				]
+			)
+		)
 
 
 func _physics_process(_delta: float) -> void:

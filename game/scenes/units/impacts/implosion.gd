@@ -48,11 +48,24 @@ func _influence(body: Node3D, ticks: float) -> void:
 		return
 	if not _first.has(body):
 		_first[body] = body.global_position
-		print("implosion touches %s at (%.2f, %.2f, %.2f) ground %.2f center +%.2f scale %.2f" % [GameBody.name_of(body), body.global_position.x,
-			body.global_position.y, body.global_position.z, BodyNudge.ground_y(body, body.global_position),
-			BodyNudge.center(body).y - body.global_position.y, _scale])
+		print(
+			(
+				"implosion touches %s at (%.2f, %.2f, %.2f) ground %.2f center +%.2f scale %.2f"
+				% [
+					GameBody.name_of(body),
+					body.global_position.x,
+					body.global_position.y,
+					body.global_position.z,
+					BodyNudge.ground_y(body, body.global_position),
+					BodyNudge.center(body).y - body.global_position.y,
+					_scale
+				]
+			)
+		)
 	var direction := to_center / distance
-	var speed := sqrt(maxf(10.0, distance) * maxf(10.0, _scale)) / effect_range * influence_speed / ticks
+	var speed := (
+		sqrt(maxf(10.0, distance) * maxf(10.0, _scale)) / effect_range * influence_speed / ticks
+	)
 	var thrown := 2.0 * speed * direction
 	thrown.y = maxf(-1.0 / ticks, thrown.y)
 	var tumbling := BodyNudge.tumbling_of(body)
@@ -75,5 +88,9 @@ func _report() -> void:
 		var at := body.global_position
 		var before := Vector2(global_position.x - from.x, global_position.z - from.z).length()
 		var after := Vector2(global_position.x - at.x, global_position.z - at.z).length()
-		print("implosion %s from %.2f m to %.2f m from the center (pull %.2f m) (frame %d)" % [GameBody.name_of(body), before, after,
-			before - after, MatchClock.now()])
+		print(
+			(
+				"implosion %s from %.2f m to %.2f m from the center (pull %.2f m) (frame %d)"
+				% [GameBody.name_of(body), before, after, before - after, MatchClock.now()]
+			)
+		)

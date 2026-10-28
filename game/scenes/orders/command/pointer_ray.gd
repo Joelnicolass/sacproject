@@ -21,7 +21,9 @@ const _CAMERA := preload("res://scenes/camera/world_camera.gd")
 
 func _ready() -> void:
 	if seat == null:
-		push_warning("PointerRay: assign `seat` (the MpLocalSeat); every body counts as an enemy without it")
+		push_warning(
+			"PointerRay: assign `seat` (the MpLocalSeat); every body counts as an enemy without it"
+		)
 
 
 ## True while the world camera counts the pointer as dragged (a click that ends it is not an order).
@@ -120,8 +122,13 @@ func is_empty_at(screen: Vector2) -> bool:
 	var body: Object = hit.get("collider")
 	if body is Node:
 		var node := body as Node
-		if Attackable.is_body(node) or node.is_in_group(Corpse.GROUP) or node.is_in_group(Soul.TARGET_GROUP) \
-				or node.is_in_group(MapBuilding.STRUCTURE_GROUP) or node.is_in_group(Altar.GROUP):
+		if (
+			Attackable.is_body(node)
+			or node.is_in_group(Corpse.GROUP)
+			or node.is_in_group(Soul.TARGET_GROUP)
+			or node.is_in_group(MapBuilding.STRUCTURE_GROUP)
+			or node.is_in_group(Altar.GROUP)
+		):
 			return false
 	return true
 
@@ -134,7 +141,10 @@ func body_near(point: Vector3, own_only := false) -> Node3D:
 	var reach := minimap_pick_units * float(minimap.zoom)
 	var best: Node3D = null
 	var best_distance := reach
-	for node in get_tree().get_nodes_in_group(UnitBody.GROUP) + get_tree().get_nodes_in_group(WizardBody.GROUP):
+	for node in (
+		get_tree().get_nodes_in_group(UnitBody.GROUP)
+		+ get_tree().get_nodes_in_group(WizardBody.GROUP)
+	):
 		var body := node as Node3D
 		if body == null or not Attackable.is_body(body) or is_corpse(body):
 			continue
@@ -143,7 +153,9 @@ func body_near(point: Vector3, own_only := false) -> Node3D:
 			continue
 		if enemy and not _targetable(body):
 			continue
-		var distance := Vector2(body.global_position.x - point.x, body.global_position.z - point.z).length()
+		var distance := (
+			Vector2(body.global_position.x - point.x, body.global_position.z - point.z).length()
+		)
 		if distance < best_distance:
 			best_distance = distance
 			best = body
@@ -210,6 +222,12 @@ static func _targetable(body: Node3D) -> bool:
 
 static func _building_of(hit: Dictionary) -> Node3D:
 	var body: Object = null if hit.is_empty() else hit.get("collider")
-	if body is Node3D and ((body as Node).is_in_group(MapBuilding.STRUCTURE_GROUP) or (body as Node).is_in_group(Altar.GROUP)):
+	if (
+		body is Node3D
+		and (
+			(body as Node).is_in_group(MapBuilding.STRUCTURE_GROUP)
+			or (body as Node).is_in_group(Altar.GROUP)
+		)
+	):
 		return body as Node3D
 	return null

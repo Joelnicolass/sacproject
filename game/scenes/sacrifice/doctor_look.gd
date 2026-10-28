@@ -43,7 +43,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if body == null:
 		out.append("Assign `body` (the DoctorBody shown).")
 	if clip_player == null:
-		out.append("Assign `clip_player` (BodyAnimator): without it the doctor stays in a fixed pose.")
+		out.append(
+			"Assign `clip_player` (BodyAnimator): without it the doctor stays in a fixed pose."
+		)
 	if visual == null:
 		out.append("Assign `visual` (BodyVisual): without it a dead doctor does not fade out.")
 	return out
@@ -93,4 +95,6 @@ func _fade_out() -> void:
 	if _fade:
 		_fade.kill()
 	_fade = create_tween()
-	_fade.tween_method(visual.set_fade, 0.0, 1.0, body.rules.doctor_death_s if body.rules else _DEFAULT_FADE_S)
+	_fade.tween_method(
+		visual.set_fade, 0.0, 1.0, body.rules.doctor_death_s if body.rules else _DEFAULT_FADE_S
+	)

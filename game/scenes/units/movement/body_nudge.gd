@@ -11,7 +11,9 @@ extends RefCounted
 ## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in a line to `edge` at `radius`, 0 from
 ## `radius` out; under `inner` it keeps growing (1.5 times `speed` at the middle with inner 5 and radius 15). The ritual and a tower
 ## being cast push with it.
-static func push_speed(distance: float, inner: float, radius: float, speed: float, edge := 0.0) -> float:
+static func push_speed(
+	distance: float, inner: float, radius: float, speed: float, edge := 0.0
+) -> float:
 	if distance >= radius or radius <= inner:
 		return 0.0
 	return lerpf(speed, edge, (maxf(distance, 0.0) - inner) / (radius - inner))
@@ -102,7 +104,9 @@ static func box(body: Node3D) -> AABB:
 
 ## Every live creature and wizard whose box meets `area`, in group order (wizards first, as
 ## SplashDamage walks them), so the result does not depend on the scene tree.
-static func bodies_in(tree: SceneTree, area: AABB, groups: Array[StringName] = [&"wizard", &"unit"]) -> Array[Node3D]:
+static func bodies_in(
+	tree: SceneTree, area: AABB, groups: Array[StringName] = [&"wizard", &"unit"]
+) -> Array[Node3D]:
 	var found: Array[Node3D] = []
 	var seen := {}
 	for group in groups:
@@ -120,7 +124,10 @@ static func bodies_in(tree: SceneTree, area: AABB, groups: Array[StringName] = [
 static func _alive(body: Node3D) -> bool:
 	if not Attackable.is_body(body):
 		return false
-	if body is UnitBody and ((body as UnitBody).mode == UnitBody.Mode.SUMMONING or (body as UnitBody).is_taken()):
+	if (
+		body is UnitBody
+		and ((body as UnitBody).mode == UnitBody.Mode.SUMMONING or (body as UnitBody).is_taken())
+	):
 		return false
 	if not body is UnitBody and not GameBody.targetable(body):
 		return false

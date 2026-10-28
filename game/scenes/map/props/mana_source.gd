@@ -53,7 +53,10 @@ func reach_m() -> float:
 func reaches(body: Node3D) -> bool:
 	if owner_slot >= 0:
 		var body_slot := int(body.get("owner_slot"))
-		if body_slot != owner_slot and SideRelations.stance(owner_slot, body_slot) != SideRelations.Stance.ALLY:
+		if (
+			body_slot != owner_slot
+			and SideRelations.stance(owner_slot, body_slot) != SideRelations.Stance.ALLY
+		):
 			return false
 	return global_position.distance_to(body.global_position) < reach_m()
 

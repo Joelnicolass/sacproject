@@ -11,12 +11,12 @@ extends RefCounted
 const BONE_LAYER := 16
 const BONE_MASK := 1
 const MIN_BONE_RATIO := 0.06
-const LEAF_RATIO := 0.35 ## a bone with no children gets this part of its own length
-const RADIUS_PER_LENGTH := 0.22 ## capsule radius, as a part of the segment (never fatter than half of it)
+const LEAF_RATIO := 0.35  ## a bone with no children gets this part of its own length
+const RADIUS_PER_LENGTH := 0.22  ## capsule radius, as a part of the segment (never fatter than half of it)
 const RADIUS_MIN_RATIO := 0.04
 const DENSITY := 800.0
 const FRICTION := 0.8
-const LIMB_DEG := Vector2(55.0, 35.0) ## cone limits in degrees (swing, twist); a hub bone (hips, chest) is stiffer
+const LIMB_DEG := Vector2(55.0, 35.0)  ## cone limits in degrees (swing, twist); a hub bone (hips, chest) is stiffer
 const HUB_DEG := Vector2(28.0, 18.0)
 ## A capsule is never shorter than two radii plus this (Godot clamps it otherwise and the baked number lies).
 const CAPSULE_SLACK_M := 0.01
@@ -38,7 +38,9 @@ static func add_bodies(skeleton: Skeleton3D, simulator: PhysicalBoneSimulator3D,
 			continue
 		var length: float = segment["length"]
 		var dir: Vector3 = offset.basis * (segment["dir"] as Vector3)
-		var radius := clampf(maxf(length * RADIUS_PER_LENGTH, size * RADIUS_MIN_RATIO), 0.01, length * 0.5)
+		var radius := clampf(
+			maxf(length * RADIUS_PER_LENGTH, size * RADIUS_MIN_RATIO), 0.01, length * 0.5
+		)
 		var body := PhysicalBone3D.new()
 		body.name = "Bone_" + skeleton.get_bone_name(bone)
 		simulator.add_child(body)
@@ -64,7 +66,9 @@ static func add_bodies(skeleton: Skeleton3D, simulator: PhysicalBoneSimulator3D,
 
 ## The capsule of a bone: its axis along `dir` (in the body's frame), from the bone's head to `length` ahead.
 ## The shape is sized first and assigned after, so the numbers that get saved are the ones set here.
-static func _add_capsule(body: PhysicalBone3D, root: Node, dir: Vector3, length: float, radius: float) -> void:
+static func _add_capsule(
+	body: PhysicalBone3D, root: Node, dir: Vector3, length: float, radius: float
+) -> void:
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = radius
 	capsule.height = maxf(length, radius * 2.0 + CAPSULE_SLACK_M)

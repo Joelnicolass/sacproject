@@ -121,7 +121,9 @@ func _set_points(axes: Vector3) -> void:
 		var angle := float(i) * GOLDEN_ANGLE
 		var direction := Vector3(cos(angle) * ring, height, sin(angle) * ring)
 		if axes.y <= 0.0:
-			direction = Vector3(cos(TAU * float(i) / float(POINTS)), 0.0, sin(TAU * float(i) / float(POINTS)))
+			direction = Vector3(
+				cos(TAU * float(i) / float(POINTS)), 0.0, sin(TAU * float(i) / float(POINTS))
+			)
 		var depth := 1.0 if on_surface else pow(fposmod(float(i) * 0.618034, 1.0), 1.0 / 3.0)
 		points.append(direction * axes * depth)
 	emission_shape = EMISSION_SHAPE_POINTS

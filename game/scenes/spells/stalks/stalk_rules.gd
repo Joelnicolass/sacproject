@@ -40,16 +40,31 @@ static func curve(base: Vector3, tip: Vector3, frame: Vector3) -> PackedVector3A
 	var out := direction.cross(side).normalized().cross(direction)
 	var bend := 0.5 * delta + bulge * out
 	var p1 := bend + HANDLE_M * direction
-	var p2 := Vector3(delta.x + 0.3 * (p1.x - delta.x), delta.y + 0.7 * (p1.y - delta.y), delta.z + 0.3 * (p1.z - delta.z))
-	return PackedVector3Array([
-		base, base + Vector3(0.0, HANDLE_M, 0.0), base + bend - HANDLE_M * direction, base + bend,
-		base + bend, base + p1, base + p2, tip,
-		out + 0.2 * (Vector3.UP - out)])
+	var p2 := Vector3(
+		delta.x + 0.3 * (p1.x - delta.x),
+		delta.y + 0.7 * (p1.y - delta.y),
+		delta.z + 0.3 * (p1.z - delta.z)
+	)
+	return PackedVector3Array(
+		[
+			base,
+			base + Vector3(0.0, HANDLE_M, 0.0),
+			base + bend - HANDLE_M * direction,
+			base + bend,
+			base + bend,
+			base + p1,
+			base + p2,
+			tip,
+			out + 0.2 * (Vector3.UP - out)
+		]
+	)
 
 
 ## One tick of the tip towards `goal`: the speed grows by `accel` m/s each second up to `rate`, and slows down inside SLOW_M of the goal.
 ## Returns [new tip, new velocity].
-static func step_tip(tip: Vector3, velocity: Vector3, goal: Vector3, rate: float, accel: float) -> PackedVector3Array:
+static func step_tip(
+	tip: Vector3, velocity: Vector3, goal: Vector3, rate: float, accel: float
+) -> PackedVector3Array:
 	var delta := goal - tip
 	var gap := delta.length()
 	var top := rate if gap >= SLOW_M else rate * gap / SLOW_M
@@ -71,8 +86,15 @@ static func in_pick_band(base: Vector3, at: Vector3) -> bool:
 
 
 ## A point of the cone over `base` that a stalk without a prey drifts to: `lean` (-π/4..π/4) from the vertical, `turn` (0..2π) around it.
-static func wander_point(base: Vector3, lean: float, turn: float, radius_m: float, height_m: float) -> Vector3:
-	return base + Vector3(radius_m * sin(lean) * sin(turn), height_m * cos(lean), radius_m * sin(lean) * cos(turn))
+static func wander_point(
+	base: Vector3, lean: float, turn: float, radius_m: float, height_m: float
+) -> Vector3:
+	return (
+		base
+		+ Vector3(
+			radius_m * sin(lean) * sin(turn), height_m * cos(lean), radius_m * sin(lean) * cos(turn)
+		)
+	)
 
 
 ## True while the body can be taken: still there, alive, not a corpse.

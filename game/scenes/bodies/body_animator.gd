@@ -73,12 +73,20 @@ func has_role(role: String) -> bool:
 
 func active_tag() -> String:
 	var rig := _rig()
-	return rig.role_tag(active_role()) if _skeletal and rig != null and not active_role().is_empty() else ""
+	return (
+		rig.role_tag(active_role())
+		if _skeletal and rig != null and not active_role().is_empty()
+		else ""
+	)
 
 
 func active_framerate() -> int:
 	var rig := _rig()
-	return int(rig.role_framerate(active_role())) if _skeletal and rig != null and not active_role().is_empty() else 0
+	return (
+		int(rig.role_framerate(active_role()))
+		if _skeletal and rig != null and not active_role().is_empty()
+		else 0
+	)
 
 
 ## Frame of the clip the rig is in (from the tree's position).

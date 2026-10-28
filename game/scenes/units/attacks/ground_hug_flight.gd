@@ -36,10 +36,30 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		shot.global_position.y = ground + lift
 	if DebugLog.on(&"flight"):
 		var now := shot.global_position
-		print("hugging %s tick %d at (%.3f, %.3f, %.3f) ground %s (frame %d)" % [shot.name, ticks, now.x, now.y, now.z,
-			"%.3f" % ground if ground > -INF else "ninguno", MatchClock.now()])
+		print(
+			(
+				"hugging %s tick %d at (%.3f, %.3f, %.3f) ground %s (frame %d)"
+				% [
+					shot.name,
+					ticks,
+					now.x,
+					now.y,
+					now.z,
+					"%.3f" % ground if ground > -INF else "ninguno",
+					MatchClock.now()
+				]
+			)
+		)
 	var spike_every_ticks := MatchClock.ticks_for(spike_every_s)
 	if spike_scene != null and spike_every_ticks > 0 and (ticks - 1) % spike_every_ticks == 0:
-		FxBus.broadcast_scene(spike_scene, shot.global_position, {
-			"inner": 0.0, "outer": spike_radius, "count": spikes_per_tick * spike_every_ticks, "height": spike_height,
-			"seed": MatchSeed.derive(["spikes", String(shot.name), MatchClock.now()])})
+		FxBus.broadcast_scene(
+			spike_scene,
+			shot.global_position,
+			{
+				"inner": 0.0,
+				"outer": spike_radius,
+				"count": spikes_per_tick * spike_every_ticks,
+				"height": spike_height,
+				"seed": MatchSeed.derive(["spikes", String(shot.name), MatchClock.now()])
+			}
+		)

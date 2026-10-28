@@ -22,7 +22,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first, then the range, then the land under the click (the order of the whole book).
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():
@@ -40,12 +42,24 @@ func started(wizard: WizardBody, _spell: SpellType, aim: Aim, _frames: int) -> v
 	if spawner == null:
 		return
 	var run := WallRules.direction_for(wizard.global_position, aim.point, wizard.facing_flat())
-	_wall = spawner.spawn_zone(wall_kind, {
-		"x": aim.point.x, "y": aim.point.y, "z": aim.point.z,
-		"dir_x": run.x, "dir_z": run.y,
-		"caster": str(wizard.get_path()),
-		"slot": wizard.owner_slot,
-	}) as SpellWall
+	_wall = (
+		(
+			spawner
+			. spawn_zone(
+				wall_kind,
+				{
+					"x": aim.point.x,
+					"y": aim.point.y,
+					"z": aim.point.z,
+					"dir_x": run.x,
+					"dir_z": run.y,
+					"caster": str(wizard.get_path()),
+					"slot": wizard.owner_slot,
+				}
+			)
+		)
+		as SpellWall
+	)
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:

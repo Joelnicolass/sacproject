@@ -49,23 +49,52 @@ static func roll(weapon: MeleeWeapon, target: Node3D) -> Dictionary:
 	var foe := profile_of(target)
 	# The Storm Giant's Lightning Charge makes it x1.5; each layer of Slime on the attacker costs accuracy and each on the target
 	# costs its evasion, x0.2.
-	var accuracy := float(type.melee_accuracy_milli()) * (passive.melee_accuracy_factor() if passive != null else 1.0) * Afflictions.stat_factor_of(body, Afflictions.Stat.ACCURACY)
-	var evasion := float(foe.get("evasion", 0.0)) * Afflictions.stat_factor_of(target, Afflictions.Stat.ACCURACY)
+	var accuracy := (
+		float(type.melee_accuracy_milli())
+		* (passive.melee_accuracy_factor() if passive != null else 1.0)
+		* Afflictions.stat_factor_of(body, Afflictions.Stat.ACCURACY)
+	)
+	var evasion := (
+		float(foe.get("evasion", 0.0))
+		* Afflictions.stat_factor_of(target, Afflictions.Stat.ACCURACY)
+	)
 	var total := accuracy + evasion / facing
 	if not (total > 0.0):
-		return {"amount": 0.0, "chance": 0.0, "roll": 1.0, "accuracy": accuracy, "evasion": evasion,
-			"facing": facing, "pending": pending, "resistance": 0.0}
+		return {
+			"amount": 0.0,
+			"chance": 0.0,
+			"roll": 1.0,
+			"accuracy": accuracy,
+			"evasion": evasion,
+			"facing": facing,
+			"pending": pending,
+			"resistance": 0.0
+		}
 	var hit_chance := accuracy / total
 	var rolled := weapon.rng.randf()
 	if rolled >= hit_chance:
 		damage *= (1.0 - rolled) / (1.0 - hit_chance)
 	damage *= float(type.melee_strength)
 	# The poison's resistance bonus goes inside the max; so do what the target has devoured down to and its afflictions.
-	var resistance := maxf(0.0, float(foe.get("resistance", 1.0)) * DevourGrowth.resistance_factor_of(target) + Poisoning.resistance_bonus_of(target)
-		+ Afflictions.resistance_bonus_of(target))
+	var resistance := maxf(
+		0.0,
+		(
+			float(foe.get("resistance", 1.0)) * DevourGrowth.resistance_factor_of(target)
+			+ Poisoning.resistance_bonus_of(target)
+			+ Afflictions.resistance_bonus_of(target)
+		)
+	)
 	damage *= weapon.melee_resistance_scale * resistance
-	return {"amount": damage, "chance": hit_chance, "roll": rolled, "accuracy": accuracy, "evasion": evasion,
-		"facing": facing, "pending": pending, "resistance": resistance}
+	return {
+		"amount": damage,
+		"chance": hit_chance,
+		"roll": rolled,
+		"accuracy": accuracy,
+		"evasion": evasion,
+		"facing": facing,
+		"pending": pending,
+		"resistance": resistance
+	}
 
 
 ## A guardian hits harder, and the passive scales melee by the attacker's health

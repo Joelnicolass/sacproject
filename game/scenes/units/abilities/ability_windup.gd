@@ -39,7 +39,12 @@ func begin(target_pos: Vector3, target: Node3D) -> String:
 	_fire_pos = target_pos
 	_fire_target = target
 	if DebugLog.on(&"ability"):
-		print("using ability %s %s %d ticks (tick %d)" % [slot.ability.display_name, str(slot.body.name), ticks, MatchClock.now()])
+		print(
+			(
+				"using ability %s %s %d ticks (tick %d)"
+				% [slot.ability.display_name, str(slot.body.name), ticks, MatchClock.now()]
+			)
+		)
 	if slot.effect.pays_upfront:
 		var before := slot.mana_left()
 		slot.pay()
@@ -51,7 +56,12 @@ func begin(target_pos: Vector3, target: Node3D) -> String:
 func _cut() -> void:
 	_fire_at = -1
 	if DebugLog.on(&"ability"):
-		print("windup cut %s %s (tick %d)" % [slot.ability.display_name, str(slot.body.name), MatchClock.now()])
+		print(
+			(
+				"windup cut %s %s (tick %d)"
+				% [slot.ability.display_name, str(slot.body.name), MatchClock.now()]
+			)
+		)
 
 
 ## The effect's tick: if the preparation survived, it fires and the mana is spent even when fire() did nothing.
@@ -65,7 +75,12 @@ func _finish() -> void:
 		slot.effect.fire(_fire_pos, target)
 		slot.start_cooldown(false)
 		if DebugLog.on(&"ability"):
-			print("ability %s cooldown %d ticks (tick %d)" % [slot.ability.display_name, slot.cooldown_ticks_left(), MatchClock.now()])
+			print(
+				(
+					"ability %s cooldown %d ticks (tick %d)"
+					% [slot.ability.display_name, slot.cooldown_ticks_left(), MatchClock.now()]
+				)
+			)
 		if using.is_on():
 			afflictions.mark(using, false)
 		return
@@ -73,7 +88,12 @@ func _finish() -> void:
 	if slot.cost() > before + AbilitySlot.MANA_EPSILON:
 		# Mana >= cost at the load tick: short of it, nothing happens and nothing is spent.
 		if DebugLog.on(&"ability"):
-			print("windup without mana %s %s (tick %d)" % [slot.ability.display_name, str(slot.body.name), MatchClock.now()])
+			print(
+				(
+					"windup without mana %s %s (tick %d)"
+					% [slot.ability.display_name, str(slot.body.name), MatchClock.now()]
+				)
+			)
 		afflictions.mark(using, false)
 		return
 	slot.effect.fire(_fire_pos, target)

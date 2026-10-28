@@ -101,10 +101,20 @@ class PlanJob:
 ## Where the map is placed in the world: the transform of the mesh that draws `land` (identity without one).
 static func map_transform_of(land: Terrain) -> Transform3D:
 	var drawn := land.mesh
-	return Transform3D.IDENTITY if not is_instance_valid(drawn) else (drawn.global_transform if drawn.is_inside_tree() else drawn.transform)
+	return (
+		Transform3D.IDENTITY
+		if not is_instance_valid(drawn)
+		else (drawn.global_transform if drawn.is_inside_tree() else drawn.transform)
+	)
 
 
-func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: Terrain, owner_node: Node3D) -> void:
+func _init(
+	layer: VegetationLayerConfig,
+	preset: VegetationQuality,
+	map: FloraDensity,
+	land: Terrain,
+	owner_node: Node3D
+) -> void:
 	config = layer
 	quality = preset
 	flora = map
@@ -123,7 +133,9 @@ func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDe
 	for group in groups:
 		group["end_m"] = species_end(group, config, quality)
 		group["mesh"] = FloraMaterial.mesh_for(group["mesh"] as Mesh)
-		group["material"] = FloraMaterial.for_mesh(group["mesh"], float(group["end_m"]), config.fade_m)
+		group["material"] = FloraMaterial.for_mesh(
+			group["mesh"], float(group["end_m"]), config.fade_m
+		)
 	groups = groups.filter(func(group: Dictionary) -> bool: return group["mesh"] != null)
 
 
@@ -155,13 +167,22 @@ static func _group(index: int, map: FloraDensity) -> Dictionary:
 static func plan_groups(layer_groups: Array[Dictionary]) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for group in layer_groups:
-		out.append({"tag": group["tag"], "tag_index": group["tag_index"],
-			"variation": group["variation"], "texel_m": group["texel_m"], "per_cell": group["per_cell"]})
+		out.append(
+			{
+				"tag": group["tag"],
+				"tag_index": group["tag_index"],
+				"variation": group["variation"],
+				"texel_m": group["texel_m"],
+				"per_cell": group["per_cell"]
+			}
+		)
 	return out
 
 
 ## Camera distance where a species is gone: the layer radius, or the species' own end if nearer.
-static func species_end(group: Dictionary, layer: VegetationLayerConfig, preset: VegetationQuality) -> float:
+static func species_end(
+	group: Dictionary, layer: VegetationLayerConfig, preset: VegetationQuality
+) -> float:
 	var radius := layer.radius_m * preset.radius_scale
 	var own := float(group.get("visibility_end_m", 0.0))
 	return minf(own, radius) if own > 0.0 else radius
@@ -170,8 +191,15 @@ static func species_end(group: Dictionary, layer: VegetationLayerConfig, preset:
 ## The instances of planter cell `key`, one MultiMesh buffer (XFORM_STRIDE floats each, cell-local: the cell's corner
 ## at the map origin's height 0) per entry of `groups`. Pure: the same inputs give the same floats.
 ## `height` is a Callable(x, z) -> float, NAN off the ground. `clears`: rows x, z, radius, edge.
-static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_groups: Array[Dictionary], density: float,
-		key: Vector2i, height: Callable, clears: PackedVector4Array) -> Array[PackedFloat32Array]:
+static func plan_cell(
+	layer: VegetationLayerConfig,
+	map: FloraDensity,
+	layer_groups: Array[Dictionary],
+	density: float,
+	key: Vector2i,
+	height: Callable,
+	clears: PackedVector4Array
+) -> Array[PackedFloat32Array]:
 	var items: Array = []
 	items.resize(layer_groups.size())
 	for g in layer_groups.size():
@@ -194,10 +222,25 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 				if n <= 0:
 					continue
 				var sub := dz * per + dx
-				var spots := FloraPlacement.cell_instances(seed, tag, tx, tz, n, texel, Vector2(0.0, 1.0))
+				var spots := FloraPlacement.cell_instances(
+					seed, tag, tx, tz, n, texel, Vector2(0.0, 1.0)
+				)
 				for i in n:
 					var at := i * FloraPlacement.STRIDE
-					(items[g] as Array).append([(float(i) + 0.5) / float(n), sub, spots[at], spots[at + 1], spots[at + 2], spots[at + 3], tag_h, tx, tz, i])
+					(items[g] as Array).append(
+						[
+							(float(i) + 0.5) / float(n),
+							sub,
+							spots[at],
+							spots[at + 1],
+							spots[at + 2],
+							spots[at + 3],
+							tag_h,
+							tx,
+							tz,
+							i
+						]
+					)
 	var out: Array[PackedFloat32Array] = []
 	var corner := Vector2(key) * CELL_M
 	for g in layer_groups.size():
@@ -211,13 +254,35 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 		for item: Array in list:
 			var x: float = item[2]
 			var z: float = item[3]
-			if not clears.is_empty() and is_cleared(clears, x, z, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9])):
+			if (
+				not clears.is_empty()
+				and is_cleared(
+					clears, x, z, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9])
+				)
+			):
 				continue
 			var y: float = height.call(x, z)
 			if is_nan(y):
 				continue
-			var at := FloraVariation.instance_transform(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), float(item[4]), float(item[5]), Vector3(x - corner.x, y, z - corner.y))
-			FloraVariation.write_instance(buffer, kept, at, FloraVariation.instance_color(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), x, z))
+			var at := FloraVariation.instance_transform(
+				variation,
+				seed,
+				int(item[6]),
+				int(item[7]),
+				int(item[8]),
+				int(item[9]),
+				float(item[4]),
+				float(item[5]),
+				Vector3(x - corner.x, y, z - corner.y)
+			)
+			FloraVariation.write_instance(
+				buffer,
+				kept,
+				at,
+				FloraVariation.instance_color(
+					variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), x, z
+				)
+			)
 			kept += 1
 		buffer.resize(kept * XFORM_STRIDE)
 		out.append(buffer)
@@ -231,14 +296,19 @@ static func _by_rank(a: Array, b: Array) -> bool:
 
 
 ## Inside a clear, or in its edge where a hash of the instance thins it linearly to nothing at the rim.
-static func is_cleared(clears: PackedVector4Array, x: float, z: float, seed: int, tag_h: int, tx: int, tz: int, i: int) -> bool:
+static func is_cleared(
+	clears: PackedVector4Array, x: float, z: float, seed: int, tag_h: int, tx: int, tz: int, i: int
+) -> bool:
 	for clear in clears:
 		var d := Vector2(x - clear.x, z - clear.y).length()
 		if d < clear.z:
 			return true
 		if clear.w > 0.0 and d < clear.z + clear.w:
 			var keep := (d - clear.z) / clear.w
-			if FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_CLEAR, tag_h, tx, tz, i)) > keep:
+			if (
+				FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_CLEAR, tag_h, tx, tz, i))
+				> keep
+			):
 				return true
 	return false
 
@@ -267,7 +337,9 @@ func update(camera_global: Vector3, deadline_us: int) -> void:
 	var ground := shape.height_at(cam.x, cam.z)
 	var above := maxf(cam.y - (ground if not is_nan(ground) else shape.lowest()), 0.0)
 	var radius := config.radius_m * quality.radius_scale
-	_radius = sqrt(radius * radius - above * above) if radius > above else -2.0 * _ring.keep_margin_m
+	_radius = (
+		sqrt(radius * radius - above * above) if radius > above else -2.0 * _ring.keep_margin_m
+	)
 	_eye = Vector2(cam.x, cam.z)
 	var changes := _ring.update(_radius, _eye, _eye)
 	for key: Vector2i in changes["added"]:
@@ -361,7 +433,10 @@ func _apply_finished(deadline_us: int) -> void:
 	if ready.size() > 1:
 		var eye := _eye
 		var ring := _ring
-		ready.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return ring.rect_distance(a, eye) < ring.rect_distance(b, eye))
+		ready.sort_custom(
+			func(a: Vector2i, b: Vector2i) -> bool:
+				return ring.rect_distance(a, eye) < ring.rect_distance(b, eye)
+		)
 	var applied := 0
 	for key in ready:
 		var job: PlanJob = _jobs[key]
@@ -392,7 +467,10 @@ func _start_plans(deadline_us: int) -> void:
 	if not _pending_sorted:
 		var eye := _eye
 		var ring := _ring
-		_pending.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return ring.rect_distance(a, eye) > ring.rect_distance(b, eye))
+		_pending.sort_custom(
+			func(a: Vector2i, b: Vector2i) -> bool:
+				return ring.rect_distance(a, eye) > ring.rect_distance(b, eye)
+		)
 		_pending_sorted = true
 	var height := shape.sampler()
 	var plain := plan_groups(groups)
@@ -420,7 +498,9 @@ func _start_plans(deadline_us: int) -> void:
 ## The nodes of a planned cell: one MultiMeshInstance3D per species with instances, filled from its buffer in one copy.
 func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 	var nodes := []
-	var cell_xform := map_xform * Transform3D(Basis.IDENTITY, Vector3(key.x * CELL_M, 0.0, key.y * CELL_M))
+	var cell_xform := (
+		map_xform * Transform3D(Basis.IDENTITY, Vector3(key.x * CELL_M, 0.0, key.y * CELL_M))
+	)
 	var tier := _ring.tier_of(key)
 	for g in groups.size():
 		var buffer: PackedFloat32Array = buffers[g]
@@ -438,7 +518,11 @@ func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 		node.multimesh = multimesh
 		node.material_override = group["material"]
 		var shadow := bool(group["cast_shadow"]) and quality.shadows
-		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadow else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.cast_shadow = (
+			GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+			if shadow
+			else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		)
 		node.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
 		node.visibility_range_end = float(group["end_m"]) + CELL_REACH_M
 		node.top_level = true
@@ -451,10 +535,14 @@ func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 
 func _apply_tier(nodes: Array, tier: int) -> void:
 	var fractions := config.tier_fractions
-	var fraction := fractions[clampi(tier, 0, fractions.size() - 1)] if not fractions.is_empty() else 1.0
+	var fraction := (
+		fractions[clampi(tier, 0, fractions.size() - 1)] if not fractions.is_empty() else 1.0
+	)
 	for node: MultiMeshInstance3D in nodes:
 		var multimesh := node.multimesh
-		multimesh.visible_instance_count = -1 if fraction >= 1.0 else ceili(multimesh.instance_count * fraction)
+		multimesh.visible_instance_count = (
+			-1 if fraction >= 1.0 else ceili(multimesh.instance_count * fraction)
+		)
 
 
 func _stash(key: Vector2i) -> void:

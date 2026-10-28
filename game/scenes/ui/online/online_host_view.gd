@@ -34,7 +34,9 @@ func _on_create() -> void:
 	chosen.map = (%HostMap as MapPicker).selected_map()
 	chosen.biome = (%HostBiome as BiomePicker).selected_god()
 	var room := (%RoomName as LineEdit).text.strip_edges()
-	_online = SacrificeFlow.host_online_room(MatchWire.options_of(chosen), room, (%Listed as CheckBox).button_pressed)
+	_online = SacrificeFlow.host_online_room(
+		MatchWire.options_of(chosen), room, (%Listed as CheckBox).button_pressed
+	)
 	if _online == null:
 		return
 	_online.room_ready.connect(_on_room_ready)

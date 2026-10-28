@@ -88,12 +88,18 @@ static func socket_warning(prefs: FeelPrefs) -> String:
 
 func _commit(save: bool) -> void:
 	if save and not Engine.is_editor_hint():
-		UserSettings.write_values(SECTION, {
-			"shake_scale": _shake_scale,
-			"damage_numbers": _damage_numbers,
-			"hover_info": _hover_info,
-			"blood": _blood,
-		})
+		(
+			UserSettings
+			. write_values(
+				SECTION,
+				{
+					"shake_scale": _shake_scale,
+					"damage_numbers": _damage_numbers,
+					"hover_info": _hover_info,
+					"blood": _blood,
+				}
+			)
+		)
 	emit_changed()
 
 

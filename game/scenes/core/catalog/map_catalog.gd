@@ -68,9 +68,13 @@ func playable_tags() -> PackedStringArray:
 ## Every tag, the test maps included (a room server started with `--room-test-maps`, the debug boot).
 func all_tags() -> PackedStringArray:
 	var tags := Array(DirAccess.get_directories_at(DIR))
-	tags = tags.filter(func(tag: String) -> bool: return ResourceLoader.exists("%s/%s/%s.tres" % [DIR, tag, tag]))
-	tags.sort_custom(func(a: String, b: String) -> bool:
-		var ka := [a != String(DEFAULT_TAG), a.begins_with("test"), a]
-		var kb := [b != String(DEFAULT_TAG), b.begins_with("test"), b]
-		return ka < kb)
+	tags = tags.filter(
+		func(tag: String) -> bool: return ResourceLoader.exists("%s/%s/%s.tres" % [DIR, tag, tag])
+	)
+	tags.sort_custom(
+		func(a: String, b: String) -> bool:
+			var ka := [a != String(DEFAULT_TAG), a.begins_with("test"), a]
+			var kb := [b != String(DEFAULT_TAG), b.begins_with("test"), b]
+			return ka < kb
+	)
 	return PackedStringArray(tags)

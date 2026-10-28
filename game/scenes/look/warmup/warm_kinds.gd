@@ -6,8 +6,20 @@ extends RefCounted
 ## What it does not do: walk, load or keep anything (only the field names of each kind).
 
 ## Engine resources with nothing to draw under them: the walk stops there (they are big and hold no mesh or material).
-const LEAVES: Array[StringName] = [&"Script", &"Texture", &"Image", &"AudioStream", &"Animation", &"AnimationLibrary",
-		&"NavigationMesh", &"Font", &"Shape3D", &"Shape2D", &"Curve", &"Gradient"]
+const LEAVES: Array[StringName] = [
+	&"Script",
+	&"Texture",
+	&"Image",
+	&"AudioStream",
+	&"Animation",
+	&"AnimationLibrary",
+	&"NavigationMesh",
+	&"Font",
+	&"Shape3D",
+	&"Shape2D",
+	&"Curve",
+	&"Gradient"
+]
 
 ## A kind of resource (its script, or its engine class) -> its fields that can hold resources (`fields_of`).
 static var _by_kind: Dictionary = {}
@@ -39,7 +51,11 @@ static func fields_of(resource: Resource) -> Variant:
 		var names := PackedStringArray()
 		for property in resource.get_property_list():
 			var type: int = property.type
-			if property.usage & PROPERTY_USAGE_STORAGE and holds(type) and not (resource is Mesh and property.name == "_surfaces"):
+			if (
+				property.usage & PROPERTY_USAGE_STORAGE
+				and holds(type)
+				and not (resource is Mesh and property.name == "_surfaces")
+			):
 				names.append(property.name)
 		fields = names
 	_by_kind[kind] = fields
@@ -51,7 +67,11 @@ static func is_drawable(resource: Resource) -> bool:
 	if resource is BaseMaterial3D:
 		return true
 	var shader_material := resource as ShaderMaterial
-	return shader_material != null and shader_material.shader != null and shader_material.shader.get_mode() == Shader.MODE_SPATIAL
+	return (
+		shader_material != null
+		and shader_material.shader != null
+		and shader_material.shader.get_mode() == Shader.MODE_SPATIAL
+	)
 
 
 ## True when the root of the scene is (or extends) BodyLook or FxScene, or when the scene is only engine geometry (a GeometryInstance3D
@@ -66,7 +86,10 @@ static func is_look(state: SceneState) -> bool:
 
 
 static func _is_bare_geometry(state: SceneState) -> bool:
-	if state.get_node_instance(0) != null or not ClassDB.is_parent_class(state.get_node_type(0), &"GeometryInstance3D"):
+	if (
+		state.get_node_instance(0) != null
+		or not ClassDB.is_parent_class(state.get_node_type(0), &"GeometryInstance3D")
+	):
 		return false
 	for node in state.get_node_count():
 		if state.get_node_instance(node) != null:
@@ -82,4 +105,8 @@ static func _root_script(state: SceneState) -> Script:
 		if state.get_node_property_name(0, i) == &"script":
 			return state.get_node_property_value(0, i) as Script
 	var base := state.get_node_instance(0)
-	return _root_script(base.get_state()) if base != null and base.get_state().get_node_count() > 0 else null
+	return (
+		_root_script(base.get_state())
+		if base != null and base.get_state().get_node_count() > 0
+		else null
+	)

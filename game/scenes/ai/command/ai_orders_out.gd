@@ -111,7 +111,8 @@ func order_if_changed(
 		at = pos as Vector3
 	elif target != null:
 		at = target.cur_pos
-	if DebugLog.on(&"ai_order"): print(
+	if DebugLog.on(&"ai_order"):
+		print(
 			(
 				"ai_order tick %d slot %d %s ost %d->%d %s goal %.1f,%.1f,%.1f"
 				% [tick, slot, t.node.name, t.ord_state, ostate, reason, at.x, at.y, at.z]

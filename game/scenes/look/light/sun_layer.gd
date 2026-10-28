@@ -76,7 +76,9 @@ func _light_direction(look: LightLook, sample: AtmosphereSample) -> Vector3:
 		return LightLook.direction_of(moon.x, moon.y)
 	if sample.elevation_change_deg == 0.0:
 		return look.sun_direction()
-	return LightLook.direction_of(look.sun_azimuth_deg, AtmosphereRules.light_elevation(look.sun_elevation_deg, sample))
+	return LightLook.direction_of(
+		look.sun_azimuth_deg, AtmosphereRules.light_elevation(look.sun_elevation_deg, sample)
+	)
 
 
 func _write_sun(look: LightLook) -> void:
@@ -84,7 +86,9 @@ func _write_sun(look: LightLook) -> void:
 	sun.light_volumetric_fog_energy = look.sun_fog_energy
 	sun.shadow_bias = look.shadow_bias
 	sun.shadow_normal_bias = look.shadow_normal_bias
-	sun.directional_shadow_mode = _preset.shadow_splits if _preset else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+	sun.directional_shadow_mode = (
+		_preset.shadow_splits if _preset else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+	)
 	var distance := look.shadow_max_distance
 	if _preset and _preset.shadow_distance_cap > 0.0:
 		distance = minf(distance, _preset.shadow_distance_cap)

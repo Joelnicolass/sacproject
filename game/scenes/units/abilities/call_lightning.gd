@@ -35,6 +35,29 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	var direction := (Vector3(sx, sz, sy).normalized() + Vector3(0.0, sky_lift, 0.0)).normalized()
 	var origin := center + sky_distance * direction
 	if DebugLog.on(&"effects"):
-		print("lightning gsba %s draw (%.4f, %.4f, %.4f) origin %s (tick %d)" % [
-			AbilityEffect.who(user), sx, sy, sz, "(%.4f, %.4f, %.4f)" % [origin.x, origin.y, origin.z], MatchClock.now()])
-	return LightningStrike.launch(bolt_scene, self, user, origin, user, center, float(spell.damage), ability.tag if ability else "gsba") != null
+		print(
+			(
+				"lightning gsba %s draw (%.4f, %.4f, %.4f) origin %s (tick %d)"
+				% [
+					AbilityEffect.who(user),
+					sx,
+					sy,
+					sz,
+					"(%.4f, %.4f, %.4f)" % [origin.x, origin.y, origin.z],
+					MatchClock.now()
+				]
+			)
+		)
+	return (
+		LightningStrike.launch(
+			bolt_scene,
+			self,
+			user,
+			origin,
+			user,
+			center,
+			float(spell.damage),
+			ability.tag if ability else "gsba"
+		)
+		!= null
+	)

@@ -85,12 +85,20 @@ func _refresh() -> void:
 	%ReadyButton.disabled = state > MpLobbyRooms.State.COUNTDOWN
 	# The match runs and this player is out of it (a drop): the same ticket takes the same slot back
 	# while the dedicated allows it (`rejoin_grace_s`); past that the server turns the player away.
-	%RejoinMatch.visible = state == MpLobbyRooms.State.IN_MATCH and not MpKit.is_networked() and not client.last_match().is_empty()
+	%RejoinMatch.visible = (
+		state == MpLobbyRooms.State.IN_MATCH
+		and not MpKit.is_networked()
+		and not client.last_match().is_empty()
+	)
 	var mine := _my_seat(room)
 	var is_ready := bool(mine.get("ready", false))
 	%ReadyButton.text = tr("UI_ROOM_VIEW_NOT_READY") if is_ready else tr("UI_ROOM_VIEW_READY")
 	# The last match's result, until the next one starts.
-	%RoomResult.text = LobbyText.result_text(room["last_result"], client.my_seat() + 1) if state != MpLobbyRooms.State.LAUNCHING and state != MpLobbyRooms.State.IN_MATCH else ""
+	%RoomResult.text = (
+		LobbyText.result_text(room["last_result"], client.my_seat() + 1)
+		if state != MpLobbyRooms.State.LAUNCHING and state != MpLobbyRooms.State.IN_MATCH
+		else ""
+	)
 	_auto_pick(room, mine, open)
 	_show_progress(room)
 
@@ -100,7 +108,9 @@ func _show_progress(room: Dictionary) -> void:
 	var state := int(room["state"])
 	match state:
 		MpLobbyRooms.State.COUNTDOWN:
-			%RoomCountdown.text = tr("UI_ROOM_VIEW_COUNTDOWN") % ceili(MpLobby.client.countdown_remaining())
+			%RoomCountdown.text = (
+				tr("UI_ROOM_VIEW_COUNTDOWN") % ceili(MpLobby.client.countdown_remaining())
+			)
 		MpLobbyRooms.State.LAUNCHING:
 			%RoomCountdown.text = tr("UI_ROOM_VIEW_LAUNCHING")
 		MpLobbyRooms.State.IN_MATCH:

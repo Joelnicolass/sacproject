@@ -64,8 +64,14 @@ func problems(sun_elevation_deg: float) -> PackedStringArray:
 		var hour := float(step) * 0.1
 		var a := sun_elevation_deg + AtmosphereRules.curve_at(elevation_change_deg, hour, 0.0)
 		var b := sun_elevation_deg + AtmosphereRules.curve_at(elevation_change_deg, hour + 0.1, 0.0)
-		if signf(a - AtmosphereRules.MOON_BELOW_DEG) != signf(b - AtmosphereRules.MOON_BELOW_DEG) \
-				and AtmosphereRules.curve_at(light_energy, hour, 1.0) > 0.05:
-			found.append("The light does not go out (%.2f) where the sun crosses the horizon (%.1f h)." % [
-					AtmosphereRules.curve_at(light_energy, hour, 1.0), hour])
+		if (
+			signf(a - AtmosphereRules.MOON_BELOW_DEG) != signf(b - AtmosphereRules.MOON_BELOW_DEG)
+			and AtmosphereRules.curve_at(light_energy, hour, 1.0) > 0.05
+		):
+			found.append(
+				(
+					"The light does not go out (%.2f) where the sun crosses the horizon (%.1f h)."
+					% [AtmosphereRules.curve_at(light_energy, hour, 1.0), hour]
+				)
+			)
 	return found

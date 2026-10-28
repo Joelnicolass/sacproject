@@ -92,7 +92,9 @@ func bake() -> void:
 		ground.mesh = drawn.mesh
 		ground.transform = drawn.global_transform
 		if look != null and look.ground != null:
-			ground.material_override = GroundMaterial.build(look.ground, terrain.ground_roles, terrain.light_map, null)
+			ground.material_override = GroundMaterial.build(
+				look.ground, terrain.ground_roles, terrain.light_map, null
+			)
 	if ground.mesh == null:
 		push_warning("MinimapTerrainBake: there is no terrain mesh to bake.")
 		return
@@ -108,7 +110,10 @@ func bake() -> void:
 	camera.near = 0.1
 	camera.far = height - box.position.y + camera_margin_m
 	# Image right = world +x, image down = world +z, looking down.
-	camera.transform = Transform3D(Basis(Vector3.RIGHT, Vector3(0.0, 0.0, -1.0), Vector3.UP), Vector3(center.x, height, center.z))
+	camera.transform = Transform3D(
+		Basis(Vector3.RIGHT, Vector3(0.0, 0.0, -1.0), Vector3.UP),
+		Vector3(center.x, height, center.z)
+	)
 	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	texture = viewport.get_texture()
 	if preview:

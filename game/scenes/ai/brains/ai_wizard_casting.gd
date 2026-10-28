@@ -275,7 +275,8 @@ func _note_attack(spell: Resource, target: AiTrack) -> void:
 		return
 	var health := perception.health_of(target)
 	var mark: Array = _attack_marks.get(target.id, [])
-	if DebugLog.on(&"ai_attack"): print(
+	if DebugLog.on(&"ai_attack"):
+		print(
 			(
 				"ai_attack slot %d spell %s on %s: known health %d of %d, before %s, seen %s"
 				% [
@@ -295,7 +296,8 @@ func _note_attack(spell: Resource, target: AiTrack) -> void:
 	if lost_too_little:
 		mark[1] = port.now_tick() + MatchClock.ticks_for(tactics.spell_futile_forget_s)
 		futile_bans += 1
-		if DebugLog.on(&"ai_attack"): print(
+		if DebugLog.on(&"ai_attack"):
+			print(
 				(
 					"ai_attack slot %d futile spell on %s: health %d before %d of %d"
 					% [perception.slot, target.node.name, health.x, int(mark[0]), health.y]

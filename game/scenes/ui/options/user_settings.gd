@@ -55,7 +55,12 @@ static func write_values(section: String, values: Dictionary) -> bool:
 	if config == null:
 		if not _warned_write:
 			_warned_write = true
-			push_warning("UserSettings: %s could not be read; changes last this session and are not saved, so it is not overwritten." % path())
+			push_warning(
+				(
+					"UserSettings: %s could not be read; changes last this session and are not saved, so it is not overwritten."
+					% path()
+				)
+			)
 		return false
 	for key in values:
 		config.set_value(section, str(key), values[key])
@@ -66,7 +71,9 @@ static func write_values(section: String, values: Dictionary) -> bool:
 	var temp := file + ".tmp"
 	var saved := config.save(temp)
 	if saved == OK:
-		saved = DirAccess.rename_absolute(ProjectSettings.globalize_path(temp), ProjectSettings.globalize_path(file))
+		saved = DirAccess.rename_absolute(
+			ProjectSettings.globalize_path(temp), ProjectSettings.globalize_path(file)
+		)
 	if saved != OK:
 		push_error("UserSettings: could not save %s (%s)." % [file, error_string(saved)])
 		return false
@@ -86,5 +93,10 @@ static func _load() -> ConfigFile:
 	if loaded == OK or loaded == ERR_FILE_NOT_FOUND:
 		return config
 	_unreadable = true
-	push_warning("UserSettings: %s could not be read (%s); the defaults are used and the file stays as it is." % [path(), error_string(loaded)])
+	push_warning(
+		(
+			"UserSettings: %s could not be read (%s); the defaults are used and the file stays as it is."
+			% [path(), error_string(loaded)]
+		)
+	)
 	return null

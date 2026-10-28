@@ -8,7 +8,9 @@ extends RefCounted
 
 ## `ai_seat` is the seat an AI takes; `fallback` the pick of a seat whose pick the ticket cannot read; `seats` the seats to keep when
 ## the ticket does not name a mode.
-static func read(glue: MatchTicketGlue, ai_seat: AiSeat, fallback: WizardPick, seats: int) -> LaunchPlan:
+static func read(
+	glue: MatchTicketGlue, ai_seat: AiSeat, fallback: WizardPick, seats: int
+) -> LaunchPlan:
 	var plan := LaunchPlan.new()
 	# The seats are those of the ticket's mode (the humans take the slots of their tokens, so the transport has room for all of
 	# them), and the bots of the ticket are the AI seats of this match.
@@ -35,7 +37,12 @@ static func read(glue: MatchTicketGlue, ai_seat: AiSeat, fallback: WizardPick, s
 		var chosen: WizardPick = MatchWire.decode_pick(metas[slot], true)
 		var kept: WizardPick = chosen if chosen != null else fallback
 		plan.picks[slot] = kept
-		print("partida %s: slot %d pick %s %s" % [match_id, slot, kept.wizard.model_id(), kept.god.id()])
+		print(
+			(
+				"partida %s: slot %d pick %s %s"
+				% [match_id, slot, kept.wizard.model_id(), kept.god.id()]
+			)
+		)
 	plan.setup = glue.match_setup()
 	plan.wait_for_picks = glue.picks_pending()
 	return plan

@@ -37,7 +37,10 @@ static func standing(shape: Terrain, rect: Rect2i) -> Standing:
 			var body := node as Node3D
 			var at := body.global_position if body != null else Vector3(NAN, NAN, NAN)
 			# The cheap test first: most bodies of the map are outside the rect (NAN never is inside).
-			if not (at.x >= low.x and at.x < high.x and at.z >= low.y and at.z < high.y) or BodyNudge.airborne(body):
+			if (
+				not (at.x >= low.x and at.x < high.x and at.z >= low.y and at.z < high.y)
+				or BodyNudge.airborne(body)
+			):
 				continue
 			var ground := shape.height_at(at.x, at.z)
 			if not is_nan(ground) and at.y >= ground - SINK_M:
@@ -58,7 +61,10 @@ static func follow(standing: Standing, shape: Terrain) -> void:
 		if is_nan(ground):
 			continue
 		var before := standing.ground_y[k]
-		if at.y < ground or (ground < before and absf(at.y - before) <= SINK_M and not _thrown(body)):
+		if (
+			at.y < ground
+			or (ground < before and absf(at.y - before) <= SINK_M and not _thrown(body))
+		):
 			body.global_position.y = ground
 
 

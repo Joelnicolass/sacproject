@@ -10,7 +10,12 @@ extends RefCounted
 static func hermite(p0: Vector3, m0: Vector3, p1: Vector3, m1: Vector3, t: float) -> Vector3:
 	var t2 := t * t
 	var t3 := t2 * t
-	return (2.0 * t3 - 3.0 * t2 + 1.0) * p0 + (t3 - 2.0 * t2 + t) * m0 + (-2.0 * t3 + 3.0 * t2) * p1 + (t3 - t2) * m1
+	return (
+		(2.0 * t3 - 3.0 * t2 + 1.0) * p0
+		+ (t3 - 2.0 * t2 + t) * m0
+		+ (-2.0 * t3 + 3.0 * t2) * p1
+		+ (t3 - t2) * m1
+	)
 
 
 ## The sideways push of the trip: flat, at right angles to the line `from` -> `to`, `bend` times as long as that line.
@@ -26,17 +31,26 @@ static func out_at(start: Vector3, soul: Vector3, side: Vector3, f: int, leg_tic
 
 ## Tick `f` (1..leg_ticks, counted from the turn) of the way from `turn` back to the wizard: leaves with the sideways push, arrives
 ## slowing down.
-static func back_at(turn: Vector3, wizard: Vector3, side: Vector3, f: int, leg_ticks: int) -> Vector3:
-	return hermite(turn, side, wizard, 0.75 * (wizard - turn), clampf(float(f) / float(leg_ticks), 0.0, 1.0))
+static func back_at(
+	turn: Vector3, wizard: Vector3, side: Vector3, f: int, leg_ticks: int
+) -> Vector3:
+	return hermite(
+		turn, side, wizard, 0.75 * (wizard - turn), clampf(float(f) / float(leg_ticks), 0.0, 1.0)
+	)
 
 
 ## Where a guided carrier is `progress` (0 to 1) of the way through the casting: one turn around the wizard, climbing from his feet to
 ## `height_m` over his head, in a circle that opens as it goes (`cast_s` and `speed` size the circle). Dragonfire's dragon.
-static func spiral(wizard: Node3D, cast_s: float, speed: float, height_m: float, progress: float) -> Vector3:
+static func spiral(
+	wizard: Node3D, cast_s: float, speed: float, height_m: float, progress: float
+) -> Vector3:
 	var top := BodyNudge.box(wizard).end.y - wizard.global_position.y + height_m
 	var radius := 0.5 * cast_s * speed / TAU * (0.5 + 0.5 * progress)
 	var angle := TAU * progress
-	return wizard.global_position + wizard.global_basis * Vector3(radius * cos(angle), top * progress, radius * sin(angle))
+	return (
+		wizard.global_position
+		+ wizard.global_basis * Vector3(radius * cos(angle), top * progress, radius * sin(angle))
+	)
 
 
 ## `from` turned toward `to` by at most `max_angle` radians (both unit vectors).

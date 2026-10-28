@@ -104,8 +104,14 @@ func _rebuild() -> void:
 
 
 func _refresh_visible() -> void:
-	var has_entries := is_instance_valid(_book) and _book.creature_count() + _book.size() + _book.structure_count() > 0
-	var wizard_allows: bool = not (_wizard is WizardBody and is_instance_valid(_wizard)) or (_wizard as WizardBody).spellbook_visible()
+	var has_entries := (
+		is_instance_valid(_book)
+		and _book.creature_count() + _book.size() + _book.structure_count() > 0
+	)
+	var wizard_allows: bool = (
+		not (_wizard is WizardBody and is_instance_valid(_wizard))
+		or (_wizard as WizardBody).spellbook_visible()
+	)
 	visible = has_entries and wizard_allows
 
 

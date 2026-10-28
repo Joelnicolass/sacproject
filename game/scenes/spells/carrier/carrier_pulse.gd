@@ -42,14 +42,20 @@ func _ready() -> void:
 
 
 func radius_m() -> float:
-	return (reach.shape as SphereShape3D).radius if reach != null and reach.shape is SphereShape3D else 0.0
+	return (
+		(reach.shape as SphereShape3D).radius
+		if reach != null and reach.shape is SphereShape3D
+		else 0.0
+	)
 
 
 func _physics_process(_delta: float) -> void:
 	if carrier == null or not carrier.armed or reach == null:
 		return
 	var wizard := carrier.wizard()
-	for body in SplashDamage.bodies_within(get_tree(), carrier.global_position, radius_m(), null, groups):
+	for body in SplashDamage.bodies_within(
+		get_tree(), carrier.global_position, radius_m(), null, groups
+	):
 		if body == wizard:
 			continue
 		if affects == Affects.FOES and _is_friend(wizard, body):
@@ -74,4 +80,10 @@ func _reach(body: Node3D) -> void:
 static func _is_friend(wizard: Node3D, body: Node3D) -> bool:
 	if wizard == null:
 		return false
-	return SpellTarget.same_owner(wizard, body) or SideRelations.stance(int(wizard.get("owner_slot")), int(body.get("owner_slot"))) == SideRelations.Stance.ALLY
+	return (
+		SpellTarget.same_owner(wizard, body)
+		or (
+			SideRelations.stance(int(wizard.get("owner_slot")), int(body.get("owner_slot")))
+			== SideRelations.Stance.ALLY
+		)
+	)

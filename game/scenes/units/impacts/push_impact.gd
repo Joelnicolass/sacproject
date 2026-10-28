@@ -11,7 +11,12 @@ extends ShotImpact
 
 
 func _affect(shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityType) -> void:
-	if target == null or not is_instance_valid(target) or pushback_scene == null or not _moves(target):
+	if (
+		target == null
+		or not is_instance_valid(target)
+		or pushback_scene == null
+		or not _moves(target)
+	):
 		return
 	var tumbling := BodyNudge.tumbling_of(target)
 	if tumbling and tumbling.is_on():
@@ -21,7 +26,12 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, _ability: AbilityTyp
 		return
 	push.direction = (shot.get("velocity") as Vector3).normalized()
 	target.add_child(push)
-	print("push on %s dir (%.3f, %.3f, %.3f)" % [GameBody.name_of(target), push.direction.x, push.direction.y, push.direction.z])
+	print(
+		(
+			"push on %s dir (%.3f, %.3f, %.3f)"
+			% [GameBody.name_of(target), push.direction.x, push.direction.y, push.direction.z]
+		)
+	)
 
 
 func _moves(body: Node3D) -> bool:

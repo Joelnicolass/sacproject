@@ -56,7 +56,12 @@ static func decode_picks(raw: Variant) -> Dictionary[int, WizardPick]:
 	for slot in raw.keys():
 		var pick: WizardPick = decode_pick(raw[slot])
 		if pick == null:
-			push_error("MatchWire: the pick of slot %s names a wizard or a god this client does not have." % str(slot))
+			push_error(
+				(
+					"MatchWire: the pick of slot %s names a wizard or a god this client does not have."
+					% str(slot)
+				)
+			)
 			continue
 		out[int(slot)] = pick
 	return out
@@ -87,7 +92,11 @@ static func decode_mode(id: String) -> GameMode:
 ## {"map": id, "mode": id, "seed": n} of what this process plays: the part of the flow snapshot a joiner needs before the world
 ## loads (the seed: every peer draws the same marks and debris).
 static func encode_choice() -> Dictionary:
-	return {"map": String(ActiveMatch.map_tag()), "mode": String(ActiveMatch.mode_tag()), "seed": ActiveMatch.match_seed()}
+	return {
+		"map": String(ActiveMatch.map_tag()),
+		"mode": String(ActiveMatch.mode_tag()),
+		"seed": ActiveMatch.match_seed()
+	}
 
 
 ## A client takes the map, the mode and the seed the server announced. One this client does not have is an error and the other one is
@@ -98,14 +107,21 @@ static func decode_choice(data: Dictionary) -> void:
 	var mode_id := str(data.get("mode", ""))
 	if not mode_id.is_empty():
 		if decode_mode(mode_id) == null:
-			push_error("MatchWire: the server sent the mode '%s' and this client does not have it." % mode_id)
+			push_error(
+				(
+					"MatchWire: the server sent the mode '%s' and this client does not have it."
+					% mode_id
+				)
+			)
 		else:
 			chosen_mode = StringName(mode_id)
 			print("match mode %s (from the server)" % mode_id)
 	var map_id := str(data.get("map", ""))
 	if not map_id.is_empty():
 		if not MapCatalog.shared().has(StringName(map_id)):
-			push_error("MatchWire: the server sent the map '%s' and this client does not have it." % map_id)
+			push_error(
+				"MatchWire: the server sent the map '%s' and this client does not have it." % map_id
+			)
 		else:
 			chosen_map = StringName(map_id)
 			print("match map %s (from the server)" % map_id)

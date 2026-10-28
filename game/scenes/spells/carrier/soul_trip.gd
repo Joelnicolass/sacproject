@@ -20,7 +20,11 @@ func step() -> void:
 	var leg := MatchClock.ticks_for(_carrier.roundtrip_s) / 2
 	var target := _carrier.soul()
 	var owner_body := _carrier.wizard()
-	if target == null or owner_body == null or not (target.state == Soul.State.NORMAL or target.state == Soul.State.EMERGING):
+	if (
+		target == null
+		or owner_body == null
+		or not (target.state == Soul.State.NORMAL or target.state == Soul.State.EMERGING)
+	):
 		_carrier.stop()
 		return
 	_carrier.frame += 1
@@ -32,14 +36,20 @@ func step() -> void:
 	if _carrier.frame == 1:
 		_side = CarrierPath.side_velocity(_carrier.start, soul_at, _carrier.bend)
 	if _carrier.frame <= leg:
-		_carrier.global_position = _grounded(CarrierPath.out_at(_carrier.start, soul_at, _side, _carrier.frame, leg))
+		_carrier.global_position = _grounded(
+			CarrierPath.out_at(_carrier.start, soul_at, _side, _carrier.frame, leg)
+		)
 	else:
-		_carrier.global_position = _grounded(CarrierPath.back_at(_turn, owner_body.global_position, _side, _carrier.frame - leg, leg))
+		_carrier.global_position = _grounded(
+			CarrierPath.back_at(_turn, owner_body.global_position, _side, _carrier.frame - leg, leg)
+		)
 	if _carrier.frame >= MatchClock.ticks_for(_carrier.roundtrip_s):
 		_carrier.stop()
 
 
 ## The same place, on the ground (a carrier walks it).
 func _grounded(at: Vector3) -> Vector3:
-	var y := GroundRay.surface_y(_carrier, at, _carrier.ground_mask, GroundRay.wizard_rids(_carrier.get_tree()), NAN)
+	var y := GroundRay.surface_y(
+		_carrier, at, _carrier.ground_mask, GroundRay.wizard_rids(_carrier.get_tree()), NAN
+	)
 	return at if is_nan(y) else Vector3(at.x, y, at.z)

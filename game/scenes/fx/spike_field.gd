@@ -57,7 +57,10 @@ func play(params: Dictionary) -> void:
 			base.y = land
 		var lean := sqrt(rng.randf()) * tilt
 		var lean_angle := rng.randf() * TAU
-		var axis := Vector3(cos(lean_angle) * lean, height, sin(lean_angle) * lean) * rng.randf_range(0.85, 1.15)
+		var axis := (
+			Vector3(cos(lean_angle) * lean, height, sin(lean_angle) * lean)
+			* rng.randf_range(0.85, 1.15)
+		)
 		_bases.append(base - center)
 		_axes.append(axis)
 	var multimesh := MultiMesh.new()
@@ -104,7 +107,9 @@ static func spike_material(albedo: Texture2D, fallback: Color) -> StandardMateri
 
 
 ## The spike mesh: the ground ring, the neck ring and the tip (y up); texture coordinates radial.
-static func spike_mesh(sides: int, base_radius: float, neck_radius: float, neck_height: float) -> ArrayMesh:
+static func spike_mesh(
+	sides: int, base_radius: float, neck_radius: float, neck_height: float
+) -> ArrayMesh:
 	var key := "%d/%s/%s/%s" % [sides, base_radius, neck_radius, neck_height]
 	if _mesh_cache.has(key):
 		return _mesh_cache[key]
@@ -117,7 +122,14 @@ static func spike_mesh(sides: int, base_radius: float, neck_radius: float, neck_
 		var p := []
 		for ring: Array in rings:
 			var r: float = ring[0]
-			p.append([Vector3(r * cos(a0), ring[1], r * sin(a0)), _uv(a0, ring[2]), Vector3(r * cos(a1), ring[1], r * sin(a1)), _uv(a1, ring[2])])
+			p.append(
+				[
+					Vector3(r * cos(a0), ring[1], r * sin(a0)),
+					_uv(a0, ring[2]),
+					Vector3(r * cos(a1), ring[1], r * sin(a1)),
+					_uv(a1, ring[2])
+				]
+			)
 		_tri(st, p[0][0], p[0][1], p[1][0], p[1][1], p[0][2], p[0][3])
 		_tri(st, p[0][2], p[0][3], p[1][0], p[1][1], p[1][2], p[1][3])
 		_tri(st, p[1][0], p[1][1], Vector3(0.0, 1.0, 0.0), Vector2(0.5, 0.5), p[1][2], p[1][3])
@@ -133,7 +145,9 @@ static func _uv(angle: float, radius: float) -> Vector2:
 	return Vector2(0.5, 0.5) + dir * radius
 
 
-static func _tri(st: SurfaceTool, a: Vector3, ua: Vector2, b: Vector3, ub: Vector2, c: Vector3, uc: Vector2) -> void:
+static func _tri(
+	st: SurfaceTool, a: Vector3, ua: Vector2, b: Vector3, ub: Vector2, c: Vector3, uc: Vector2
+) -> void:
 	st.set_uv(ua)
 	st.add_vertex(a)
 	st.set_uv(ub)

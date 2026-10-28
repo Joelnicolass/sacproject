@@ -44,11 +44,22 @@ func _launch(point: Vector3, _body: Node3D) -> void:
 	if spawner == null:
 		return
 	var from := _start(point)
-	var goal := Vector3(point.x, zone.global_position.y, point.z) if start == Start.ABOVE_POINT else point
+	var goal := (
+		Vector3(point.x, zone.global_position.y, point.z) if start == Start.ABOVE_POINT else point
+	)
 	var spell := zone.spell
 	var data := {
-		"x": from.x, "y": from.y, "z": from.z, "goal": goal, "fall_s": fall_s, "slot": zone.from_slot,
-		"caster": str(zone.caster_path), "damage": float(spell.damage), "damage_range": spell.damage_range_m, "effect_range": spell.effect_range_m}
+		"x": from.x,
+		"y": from.y,
+		"z": from.z,
+		"goal": goal,
+		"fall_s": fall_s,
+		"slot": zone.from_slot,
+		"caster": str(zone.caster_path),
+		"damage": float(spell.damage),
+		"damage_range": spell.damage_range_m,
+		"effect_range": spell.effect_range_m
+	}
 	if shoots:
 		data["shot_speed"] = spell.speed_m_s
 	spawner.spawn_scene(drop, data)
@@ -58,15 +69,27 @@ func _start(point: Vector3) -> Vector3:
 	var height := cloud_at.global_position.y if cloud_at != null else point.y
 	match start:
 		Start.CLOUD_DISK:
-			var around := (cloud_at.global_position if cloud_at != null else zone.global_position) + _disk()
+			var around := (
+				(cloud_at.global_position if cloud_at != null else zone.global_position) + _disk()
+			)
 			return Vector3(around.x, height, around.z)
 		Start.CASTER_DISK:
 			var wizard := zone.caster()
-			var base := (wizard.global_position if wizard != null else zone.global_position) + _disk()
-			return Vector3(base.x, ZoneGround.height(self, base.x, base.z, zone.global_position.y) - buried_m, base.z)
+			var base := (
+				(wizard.global_position if wizard != null else zone.global_position) + _disk()
+			)
+			return Vector3(
+				base.x,
+				ZoneGround.height(self, base.x, base.z, zone.global_position.y) - buried_m,
+				base.z
+			)
 		Start.ZONE_COLUMN:
 			var mouth := zone.global_position
-			return Vector3(mouth.x, ZoneGround.height(self, mouth.x, mouth.z, mouth.y) + _rng.randf() * column_m, mouth.z)
+			return Vector3(
+				mouth.x,
+				ZoneGround.height(self, mouth.x, mouth.z, mouth.y) + _rng.randf() * column_m,
+				mouth.z
+			)
 	return Vector3(point.x, height, point.z)
 
 

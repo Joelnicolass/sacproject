@@ -81,7 +81,8 @@ func auto_capture(t: AiTrack) -> bool:
 		return false
 	var source: AiTrack = found["node"]
 	var radius := float(found["radius"])
-	if DebugLog.on(&"ai_order") and t.kind == AiTrack.Kind.WIZARD: print(
+	if DebugLog.on(&"ai_order") and t.kind == AiTrack.Kind.WIZARD:
+		print(
 			(
 				"ai_order slot %d %s auto_capture mana %d/%d min %d until %d source %s at %.1f m"
 				% [

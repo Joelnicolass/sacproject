@@ -54,7 +54,13 @@ func _ready() -> void:
 		push_error("%s: `body` is empty." % get_path())
 
 
-func give(order_command: Command, order_target: Node3D, order_point: Vector3, order_offset: Vector2, order_facing: float) -> void:
+func give(
+	order_command: Command,
+	order_target: Node3D,
+	order_point: Vector3,
+	order_offset: Vector2,
+	order_facing: float
+) -> void:
 	if body.afflictions.raging():
 		return
 	if _is_repeat(order_command, order_target):

@@ -20,7 +20,9 @@ const GROUP := &"feel_presentation"
 ## Who looks at this screen (own losses read in `own_color`); empty = no body is tinted as own.
 @export var seat: MpLocalSeat
 @export var number_scene: PackedScene = preload("res://scenes/fx/damage_number.tscn")
-@export var body_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "map_building", "doctor"])
+@export var body_groups: PackedStringArray = PackedStringArray(
+	["unit", "wizard", "structure", "map_building", "doctor"]
+)
 @export_range(1, 256) var pool_size := 48
 @export var merge_s := 0.15
 @export var life_s := 0.9
@@ -49,7 +51,8 @@ var _base_color := Color.WHITE
 
 
 ## This moves by itself every frame, so physics interpolation must leave it alone.
-func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 func _ready() -> void:
@@ -101,7 +104,10 @@ func _seen(body: Node3D) -> bool:
 	if camera == null or not camera.is_inside_tree():
 		return true
 	var at := _head(body)
-	return camera.global_position.distance_to(at) <= max_distance_m and camera.is_position_in_frustum(at)
+	return (
+		camera.global_position.distance_to(at) <= max_distance_m
+		and camera.is_position_in_frustum(at)
+	)
 
 
 func _show(body: Node3D, amount: float) -> void:
@@ -133,7 +139,9 @@ func _process(delta: float) -> void:
 			continue
 		var t := age / life_s
 		# Slow in, slow out: fast at first, settling at the top (ease out).
-		label.global_position = (entry["base"] as Vector3) + Vector3.UP * rise_m * (1.0 - pow(1.0 - t, 2.0))
+		label.global_position = (
+			(entry["base"] as Vector3) + Vector3.UP * rise_m * (1.0 - pow(1.0 - t, 2.0))
+		)
 		var color := label.modulate
 		color.a = clampf((life_s - age) / maxf(fade_s, 0.001), 0.0, 1.0)
 		label.modulate = color
@@ -154,7 +162,9 @@ func _release(label: Label3D, entry: Dictionary) -> void:
 ## Over the head: the Top marker of the body scene it wears, and `head_gap_m` more. A thing with no body scene (a building, a pillar)
 ## uses the top of its mesh, or `default_height_m` without one.
 func _head(body: Node3D) -> Vector3:
-	var top := BodyFacts.of_body(body).top if "mount" in body else Vector3(0.0, _mesh_top(body), 0.0)
+	var top := (
+		BodyFacts.of_body(body).top if "mount" in body else Vector3(0.0, _mesh_top(body), 0.0)
+	)
 	return body.global_position + top + Vector3(0.0, head_gap_m, 0.0)
 
 
@@ -164,4 +174,3 @@ func _mesh_top(body: Node3D) -> float:
 		if shown != null and shown.mesh != null:
 			return (shown.transform * shown.get_aabb()).end.y
 	return default_height_m
-

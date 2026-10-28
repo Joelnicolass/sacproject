@@ -75,7 +75,10 @@ func _dress(node: Node) -> void:
 		if material is BaseMaterial3D and SurfaceRelief.is_on(material) and not _off.has(material):
 			(material as BaseMaterial3D).normal_enabled = false
 			_off.append(material)
-		elif material is ShaderMaterial and (material as ShaderMaterial).get_shader_parameter(&"use_relief") == true:
+		elif (
+			material is ShaderMaterial
+			and (material as ShaderMaterial).get_shader_parameter(&"use_relief") == true
+		):
 			(material as ShaderMaterial).set_shader_parameter(&"use_relief", false)
 			_copies.append(material)
 

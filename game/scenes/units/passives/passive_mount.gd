@@ -25,7 +25,14 @@ var _mounted: PackedScene
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if body == null or health == null or mana == null or pace == null or weapons == null or melee == null:
+	if (
+		body == null
+		or health == null
+		or mana == null
+		or pace == null
+		or weapons == null
+		or melee == null
+	):
 		warnings.append("Assign body, health, mana, pace, weapons and melee.")
 	return warnings
 
@@ -36,8 +43,12 @@ func mount(scene: PackedScene) -> void:
 	if scene == null or scene == _mounted:
 		return
 	if _mounted != null:
-		push_error("PassiveMount on '%s': already wears %s, cannot mount %s"
-				% [body.name, _mounted.resource_path, scene.resource_path])
+		push_error(
+			(
+				"PassiveMount on '%s': already wears %s, cannot mount %s"
+				% [body.name, _mounted.resource_path, scene.resource_path]
+			)
+		)
 		return
 	_mounted = scene
 	var holder := scene.instantiate()
@@ -49,5 +60,7 @@ func mount(scene: PackedScene) -> void:
 		if passive != null:
 			passive.attach(self)
 		else:
-			push_error("PassiveMount: %s in %s is not a UnitPassive" % [node.name, scene.resource_path])
+			push_error(
+				"PassiveMount: %s in %s is not a UnitPassive" % [node.name, scene.resource_path]
+			)
 	holder.free()

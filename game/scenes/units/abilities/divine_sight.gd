@@ -31,12 +31,24 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 	if at.y == -INF:
 		at.y = user.global_position.y
 	var velocity := ability.speed_m_s * ahead
-	var eye := spawner.spawn_scene({
-		"scene": eye_scene.resource_path, "prefix": "Eye",
-		"x": at.x, "y": at.y, "z": at.z,
-		"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
-		"slot": int(user.get("owner_slot")), "tag": ability.tag, "shooter": who(user),
-	})
+	var eye := (
+		spawner
+		. spawn_scene(
+			{
+				"scene": eye_scene.resource_path,
+				"prefix": "Eye",
+				"x": at.x,
+				"y": at.y,
+				"z": at.z,
+				"vx": velocity.x,
+				"vy": velocity.y,
+				"vz": velocity.z,
+				"slot": int(user.get("owner_slot")),
+				"tag": ability.tag,
+				"shooter": who(user),
+			}
+		)
+	)
 	if DebugLog.on(&"effects"):
 		print("eye %s of %s (tick %d)" % [eye.name if eye else "?", who(user), MatchClock.now()])
 	return eye != null

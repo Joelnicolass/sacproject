@@ -21,7 +21,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first, then a soul on a dead creature of the wizard's side, then the range.
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():
@@ -29,7 +31,11 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 		return aim
 	var soul := picked as Soul
 	var corpse := soul.corpse as UnitBody if soul != null else null
-	if corpse == null or not corpse.is_dead() or not soul.fetchable_by(int(wizard.get("owner_slot"))):
+	if (
+		corpse == null
+		or not corpse.is_dead()
+		or not soul.fetchable_by(int(wizard.get("owner_slot")))
+	):
 		aim.status = BAD_TARGET
 	elif wizard.global_position.distance_to(soul.global_position) > spell.cast_range_m:
 		aim.status = OUT_OF_RANGE
@@ -55,9 +61,17 @@ func started(wizard: WizardBody, _spell: SpellType, aim: Aim, _frames: int) -> v
 	if spawner == null:
 		return
 	var at := corpse.global_position
-	spawner.spawn_scene(effect, {
-		"x": at.x, "y": at.y, "z": at.z,
-		"caster": str(wizard.get_path()),
-		"target": str(corpse.get_path()),
-		"ticks": revive.revive_ticks,
-	})
+	(
+		spawner
+		. spawn_scene(
+			effect,
+			{
+				"x": at.x,
+				"y": at.y,
+				"z": at.z,
+				"caster": str(wizard.get_path()),
+				"target": str(corpse.get_path()),
+				"ticks": revive.revive_ticks,
+			}
+		)
+	)

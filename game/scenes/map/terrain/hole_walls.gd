@@ -16,11 +16,17 @@ var _built_version := 0
 
 func _ready() -> void:
 	extra_cull_margin = lift_margin_m
-	set_process(not Engine.is_editor_hint() and terrain != null and DisplayServer.get_name() != "headless")
+	set_process(
+		not Engine.is_editor_hint() and terrain != null and DisplayServer.get_name() != "headless"
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
+	return (
+		PackedStringArray()
+		if terrain != null
+		else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
+	)
 
 
 func _process(_delta: float) -> void:

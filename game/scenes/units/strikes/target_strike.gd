@@ -21,7 +21,20 @@ func _strike_tick(age: int) -> void:
 	var point := center_of(target) if target != null else aim
 	if beam != null:
 		FxBus.broadcast_beam(beam, origin, point, target)
-	_log("blow %s %s → %s at (%.1f, %.1f, %.1f) at %.1f m (tick %d)" % [tag, shooter_name(), str(target.name) if target != null else "aimed point",
-			point.x, point.y, point.z, origin.distance_to(point), MatchClock.now()])
+	_log(
+		(
+			"blow %s %s → %s at (%.1f, %.1f, %.1f) at %.1f m (tick %d)"
+			% [
+				tag,
+				shooter_name(),
+				str(target.name) if target != null else "aimed point",
+				point.x,
+				point.y,
+				point.z,
+				origin.distance_to(point),
+				MatchClock.now()
+			]
+		)
+	)
 	_land(target, point)
 	finish()

@@ -80,13 +80,19 @@ func _process(_delta: float) -> void:
 	elif _seen or now - _born > MatchClock.ticks_for(wait_s):
 		queue_free()
 		return
-	if now - _born > MatchClock.ticks_for(max_life_s) or not is_instance_valid(_user) or not is_instance_valid(_target):
+	if (
+		now - _born > MatchClock.ticks_for(max_life_s)
+		or not is_instance_valid(_user)
+		or not is_instance_valid(_target)
+	):
 		queue_free()
 		return
 	var start := _origin()
 	var reach := clampf(float(now - _born) / maxf(1.0, float(_grow_ticks)), 0.0, 1.0)
 	var end := start.lerp(DrawnPose.center(_target), reach)
-	var ramp := clampf(float(now - _born) / maxf(1.0, float(MatchClock.ticks_for(ramp_s))), 0.0, 1.0)
+	var ramp := clampf(
+		float(now - _born) / maxf(1.0, float(MatchClock.ticks_for(ramp_s))), 0.0, 1.0
+	)
 	var reshape := maxi(1, MatchClock.ticks_for(reshape_s))
 	if _bolt != null and now / reshape != _shape_slot:
 		_shape_slot = now / reshape
@@ -130,7 +136,9 @@ func _rebuild(start: Vector3, end: Vector3, ramp: float) -> void:
 
 
 ## Point `i` of the strand: on the axis, or the bolt's point pushed off it by `ramp` of its spread.
-func _point(i: int, count: int, start: Vector3, line: Vector3, side: Vector3, lift: Vector3, ramp: float) -> Vector3:
+func _point(
+	i: int, count: int, start: Vector3, line: Vector3, side: Vector3, lift: Vector3, ramp: float
+) -> Vector3:
 	if _bolt == null:
 		return start + line * (float(i) / float(count - 1))
 	var local := _bolt.points[i]

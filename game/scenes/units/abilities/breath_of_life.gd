@@ -11,8 +11,6 @@ extends Node3D
 ##
 ## Look: the breath is a golden ball with the heal trail; it does not turn the caster's head; no sound.
 
-
-
 ## The breath's look (data/shots/breath_of_life.tscn). Empty = a plain ball.
 @export var look: PackedScene
 ## The revival the breath starts on arrival (fast_revive.tscn).
@@ -50,8 +48,18 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	_shot = _make_shot()
-	_say("breath %s leaves %s toward %s d %.4f m (tick %d)" % [
-		_who, _v(_position), AbilityEffect.who(corpse), _position.distance_to(BodyNudge.center(corpse)), _born])
+	_say(
+		(
+			"breath %s leaves %s toward %s d %.4f m (tick %d)"
+			% [
+				_who,
+				_v(_position),
+				AbilityEffect.who(corpse),
+				_position.distance_to(BodyNudge.center(corpse)),
+				_born
+			]
+		)
+	)
 
 
 func _exit_tree() -> void:
@@ -63,7 +71,12 @@ func _exit_tree() -> void:
 func _physics_process(_delta: float) -> void:
 	if _ended or ability == null or MatchClock.now() <= _born:
 		return
-	if corpse == null or not is_instance_valid(corpse) or not corpse.is_inside_tree() or not corpse.is_dead():
+	if (
+		corpse == null
+		or not is_instance_valid(corpse)
+		or not corpse.is_inside_tree()
+		or not corpse.is_dead()
+	):
 		_say("breath %s loses its target (tick %d)" % [_who, MatchClock.now()])
 		_finish()
 		return
@@ -88,7 +101,12 @@ func _arrive() -> void:
 		corpse.add_child(fast)
 	else:
 		fast.free()
-		_say("breath %s cannot raise %s (tick %d)" % [_who, AbilityEffect.who(corpse), MatchClock.now()])
+		_say(
+			(
+				"breath %s cannot raise %s (tick %d)"
+				% [_who, AbilityEffect.who(corpse), MatchClock.now()]
+			)
+		)
 	_finish()
 
 
@@ -103,9 +121,18 @@ func _make_shot() -> RangedShot:
 		push_warning("BreathOfLife: no shot spawner; the breath is not shown.")
 		return null
 	var data := {
-		"x": _position.x, "y": _position.y, "z": _position.z, "vx": 0.0, "vy": 0.0, "vz": 0.0,
-		"damage": 0.0, "slot": int(user.get("owner_slot")) if "owner_slot" in user else 0, "gravity": 0.0,
-		"max_distance": 1.0e9, "look": FxWire.id_of(look), "target": "",
+		"x": _position.x,
+		"y": _position.y,
+		"z": _position.z,
+		"vx": 0.0,
+		"vy": 0.0,
+		"vz": 0.0,
+		"damage": 0.0,
+		"slot": int(user.get("owner_slot")) if "owner_slot" in user else 0,
+		"gravity": 0.0,
+		"max_distance": 1.0e9,
+		"look": FxWire.id_of(look),
+		"target": "",
 		"shooter": str(user.get_path()) if user.is_inside_tree() else "",
 	}
 	return spawner.spawn_shot(data)

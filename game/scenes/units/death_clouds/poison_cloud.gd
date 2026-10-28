@@ -20,5 +20,19 @@ func _affect(center: Vector3) -> void:
 	var ires := ability.poison_resistance_debuff
 	var freg := ability.poison_regen_factor
 	for body in bodies_within(center, ability.effect_range_m):
-		Poisoning.dose_body(body, per_second, frames, _HEALTH.SPLASH_SPELL, from_slot, false, ires, freg)
-		print("  poison on %s %.2f/s %d frames ires %d freg %.2f (health %d)" % [GameBody.name_of(body), per_second, frames, ires, freg, roundi(float(body.get_node("Health").get("current")))])
+		Poisoning.dose_body(
+			body, per_second, frames, _HEALTH.SPLASH_SPELL, from_slot, false, ires, freg
+		)
+		print(
+			(
+				"  poison on %s %.2f/s %d frames ires %d freg %.2f (health %d)"
+				% [
+					GameBody.name_of(body),
+					per_second,
+					frames,
+					ires,
+					freg,
+					roundi(float(body.get_node("Health").get("current")))
+				]
+			)
+		)

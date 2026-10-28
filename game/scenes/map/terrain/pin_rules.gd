@@ -43,7 +43,12 @@ static func apply(values: PackedFloat32Array, rect: Rect2i, weights: PackedFloat
 	for row in rect.size.y:
 		for column in rect.size.x:
 			var vertex := rect.position + Vector2i(column, row)
-			if vertex.x >= 0 and vertex.y >= 0 and vertex.x < TerrainGrid.SIDE and vertex.y < TerrainGrid.SIDE:
+			if (
+				vertex.x >= 0
+				and vertex.y >= 0
+				and vertex.x < TerrainGrid.SIDE
+				and vertex.y < TerrainGrid.SIDE
+			):
 				values[row * rect.size.x + column] *= weights[TerrainGrid.id_of(vertex)]
 
 

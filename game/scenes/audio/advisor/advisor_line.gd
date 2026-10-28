@@ -26,7 +26,11 @@ enum Priority {
 
 ## Its name for the queue and the log.
 func id() -> StringName:
-	return StringName(resource_name) if not resource_name.is_empty() else StringName("line_%d" % get_instance_id())
+	return (
+		StringName(resource_name)
+		if not resource_name.is_empty()
+		else StringName("line_%d" % get_instance_id())
+	)
 
 
 ## True when it has a clip with a stream.

@@ -35,8 +35,15 @@ extends Node3D
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var shapes: Dictionary[String, CollisionShape3D] = {
-		"soul": soul, "fount": fount, "altar": altar, "manahoar_aura": manahoar_aura, "manahoar_peak": manahoar_peak,
-		"manahoar_end": manahoar_end, "guardian_arm": guardian_arm, "guardian_leash": guardian_leash,
-		"guardian_return": guardian_return}
+		"soul": soul,
+		"fount": fount,
+		"altar": altar,
+		"manahoar_aura": manahoar_aura,
+		"manahoar_peak": manahoar_peak,
+		"manahoar_end": manahoar_end,
+		"guardian_arm": guardian_arm,
+		"guardian_leash": guardian_leash,
+		"guardian_return": guardian_return
+	}
 	var marks: Dictionary[String, Marker3D] = {"guardian_leash_from": guardian_leash_from}
 	return PlaceWarnings.check(shapes, marks)

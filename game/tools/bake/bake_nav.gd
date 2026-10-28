@@ -66,9 +66,23 @@ func _run() -> void:
 	var sizes := Array(regions.sizes)
 	sizes.sort()
 	sizes.reverse()
-	print("bake_nav: %d regions, biggest (polygons): %s" % [regions.component_count, sizes.slice(0, 8)])
-	print("bake_nav: written %s (%d polygons, %d vertices, source %s)" % [
-		_nav_path, baked.get_polygon_count(), baked.get_vertices().size(), source_hash.substr(0, 12)])
+	print(
+		(
+			"bake_nav: %d regions, biggest (polygons): %s"
+			% [regions.component_count, sizes.slice(0, 8)]
+		)
+	)
+	print(
+		(
+			"bake_nav: written %s (%d polygons, %d vertices, source %s)"
+			% [
+				_nav_path,
+				baked.get_polygon_count(),
+				baked.get_vertices().size(),
+				source_hash.substr(0, 12)
+			]
+		)
+	)
 	get_tree().quit(0)
 
 
@@ -85,7 +99,12 @@ func _restamp(settings: NavBakeSettings) -> void:
 	if ResourceSaver.save(saved, _nav_path) != OK:
 		_fail("could not save %s" % _nav_path)
 		return
-	print("bake_nav: restamped %s (%d polygons, source %s)" % [_nav_path, saved.get_polygon_count(), source_hash.substr(0, 12)])
+	print(
+		(
+			"bake_nav: restamped %s (%d polygons, source %s)"
+			% [_nav_path, saved.get_polygon_count(), source_hash.substr(0, 12)]
+		)
+	)
 	get_tree().quit(0)
 
 
@@ -132,7 +151,12 @@ func _bake(settings: NavBakeSettings) -> NavigationMesh:
 	var started := Time.get_ticks_usec()
 	var zones := NavZones.new(settings).bake_all(geometry)
 	navmesh = zones.stitched()
-	print("bake_nav: %d zones baked and joined in %d ms" % [zones.zone_count(), (Time.get_ticks_usec() - started) / 1000])
+	print(
+		(
+			"bake_nav: %d zones baked and joined in %d ms"
+			% [zones.zone_count(), (Time.get_ticks_usec() - started) / 1000]
+		)
+	)
 	if navmesh.get_polygon_count() == 0:
 		_fail("the bake produced no polygons")
 		return null
@@ -157,10 +181,23 @@ func _check(baked: NavigationMesh, source_hash: String) -> void:
 		if str(saved.get_meta(NavFingerprint.META_SOURCE, "")) != source_hash:
 			problems.append("the saved navmesh is stale: its source hash differs from the map's")
 		if NavFingerprint.mesh_hash(saved) != NavFingerprint.mesh_hash(baked):
-			problems.append("the bake is not the saved one (%d vs %d polygons)" % [baked.get_polygon_count(), saved.get_polygon_count()])
+			problems.append(
+				(
+					"the bake is not the saved one (%d vs %d polygons)"
+					% [baked.get_polygon_count(), saved.get_polygon_count()]
+				)
+			)
 	if problems.is_empty():
-		print("bake_nav: CHECK PASS (%d polygons, source %s, mesh %s)" % [
-			baked.get_polygon_count(), source_hash.substr(0, 12), NavFingerprint.mesh_hash(baked).substr(0, 12)])
+		print(
+			(
+				"bake_nav: CHECK PASS (%d polygons, source %s, mesh %s)"
+				% [
+					baked.get_polygon_count(),
+					source_hash.substr(0, 12),
+					NavFingerprint.mesh_hash(baked).substr(0, 12)
+				]
+			)
+		)
 		get_tree().quit(0)
 		return
 	for problem in problems:

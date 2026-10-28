@@ -14,7 +14,9 @@ const THROW_PIT_M := 5.0
 
 ## m/s a body at `distance` from a blast of `blast_range` leaves at: 20 at the most, 5 + 17.5 · (1 − d / range) otherwise.
 static func throw_strength(distance: float, blast_range: float) -> float:
-	return minf(THROW_CEILING, THROW_FLOOR + THROW_SPAN * (1.0 - distance / maxf(blast_range, 0.001)))
+	return minf(
+		THROW_CEILING, THROW_FLOOR + THROW_SPAN * (1.0 - distance / maxf(blast_range, 0.001))
+	)
 
 
 ## Which blast point a body at `at` answers to: the first one when it is in range, else the closest one in range. -1 = none.
@@ -60,7 +62,14 @@ static func disk_point(rng: RandomNumberGenerator, radius: float) -> Vector3:
 
 ## `count` points around `center`, one per equal slice of a turn (the first slice starts half a slice in), each at a random angle within
 ## ±`jitter_rad` of its slice's middle and a random distance between `inner_m` and `outer_m` (the roots of Meanstalks: 9 to 21.6 m).
-static func ring_points(rng: RandomNumberGenerator, center: Vector3, count: int, inner_m: float, outer_m: float, jitter_rad: float) -> PackedVector3Array:
+static func ring_points(
+	rng: RandomNumberGenerator,
+	center: Vector3,
+	count: int,
+	inner_m: float,
+	outer_m: float,
+	jitter_rad: float
+) -> PackedVector3Array:
 	var points := PackedVector3Array()
 	var step := TAU / float(maxi(count, 1))
 	for i in count:
@@ -79,7 +88,9 @@ static func flat_gap(box: AABB, point: Vector3) -> float:
 
 ## The velocity that takes a drop from `start` to `goal` in `seconds`: the straight line of that time, plus (`lobbed`) what its `gravity`
 ## takes away over the flight, so it lands on `goal` right on time.
-static func launch_velocity(start: Vector3, goal: Vector3, seconds: float, gravity: float, lobbed: bool) -> Vector3:
+static func launch_velocity(
+	start: Vector3, goal: Vector3, seconds: float, gravity: float, lobbed: bool
+) -> Vector3:
 	var line := (goal - start) / maxf(seconds, 0.001)
 	return line + Vector3(0.0, 0.5 * gravity * seconds, 0.0) if lobbed else line
 

@@ -13,7 +13,9 @@ const PROPS_OTHER: Array[String] = [".:position", ".:rotation", ".:scale", ".:ph
 static func attach(carrier: SpellCarrier) -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
-	net.sync_properties = PackedStringArray(PROPS_SOUL_TRIP if carrier.motion == SpellCarrier.Motion.SOUL_TRIP else PROPS_OTHER)
+	net.sync_properties = PackedStringArray(
+		PROPS_SOUL_TRIP if carrier.motion == SpellCarrier.Motion.SOUL_TRIP else PROPS_OTHER
+	)
 	MpAuthority.ensure_sync(carrier, net.sync_properties)
 	carrier.add_child(net)
 

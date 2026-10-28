@@ -43,7 +43,9 @@ var _in_flight: ShotInFlight
 
 ## `shot_ability`: the ability the packet's `tag` names, or null for a shot that is not one; `look_scene`: the scene its `look`
 ## names (null = a plain ball). ShotSpawner turns both texts into them.
-func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: PackedScene = null) -> void:
+func setup(
+	data: Dictionary, shot_ability: AbilityType = null, look_scene: PackedScene = null
+) -> void:
 	name = str(data["name"])
 	spawn_data = data
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
@@ -60,7 +62,10 @@ func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: Packe
 	mods = Health.IGNITE if look.ignites else 0
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)
-	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	_spin_axis = (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 	_spin_rate = TAU * rng.randf_range(look.spin_min, look.spin_max)
 	_add_visual()
 	_attach_net()
@@ -150,7 +155,10 @@ func _physics_process(delta: float) -> void:
 		hit = _swept_target(from, global_position)
 	if hit:
 		_burst(hit)
-	elif not (_in_flight and _in_flight.holds_height()) and global_position.y < ground_height(global_position):
+	elif (
+		not (_in_flight and _in_flight.holds_height())
+		and global_position.y < ground_height(global_position)
+	):
 		_burst(null)
 	elif _traveled >= max_distance:
 		if look.burst_at_range_end:
@@ -219,7 +227,12 @@ func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
 		if poisoning == null or not poisoning.can_be_poisoned():
 			return false
 	var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
-	return body == intended or from_slot <= 0 or look.hits_every_side or (side == from_slot) == look.hits_allies
+	return (
+		body == intended
+		or from_slot <= 0
+		or look.hits_every_side
+		or (side == from_slot) == look.hits_allies
+	)
 
 
 ## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards

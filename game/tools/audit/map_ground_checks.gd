@@ -27,7 +27,9 @@ static func _on_land(root: MapRoot, terrain: Terrain) -> Array[String]:
 	for placed in standing:
 		var at := placed.global_position
 		if is_nan(terrain.height_at(at.x, at.z)):
-			problems.append("%s stands over a void at (%.0f, %.0f)" % [root.get_path_to(placed), at.x, at.z])
+			problems.append(
+				"%s stands over a void at (%.0f, %.0f)" % [root.get_path_to(placed), at.x, at.z]
+			)
 	return problems
 
 
@@ -42,9 +44,16 @@ static func _level_bases(root: MapRoot, terrain: Terrain) -> Array[String]:
 		var rect := FootprintRules.vertices_under(footprint.area())
 		var spread := FootprintRules.spread_m(source.heights_m, rect)
 		var voids := _voids_in(source, rect)
-		print("footprint %s: spread %.2f m over %dx%d vertices, %d void" % [path, spread, rect.size.x, rect.size.y, voids])
+		print(
+			(
+				"footprint %s: spread %.2f m over %dx%d vertices, %d void"
+				% [path, spread, rect.size.x, rect.size.y, voids]
+			)
+		)
 		if spread > MAX_SPREAD_M:
-			problems.append("%s is not level: spread %.2f m (max %.2f m)" % [path, spread, MAX_SPREAD_M])
+			problems.append(
+				"%s is not level: spread %.2f m (max %.2f m)" % [path, spread, MAX_SPREAD_M]
+			)
 		if voids > 0:
 			problems.append("%s has %d void vertices under it" % [path, voids])
 	return problems

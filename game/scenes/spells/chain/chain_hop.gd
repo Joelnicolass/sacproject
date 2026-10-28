@@ -53,7 +53,9 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-func begin_cast(caster: Node3D, type: SpellType, target: Node3D, point: Vector3, _cast_ticks: int) -> void:
+func begin_cast(
+	caster: Node3D, type: SpellType, target: Node3D, point: Vector3, _cast_ticks: int
+) -> void:
 	wizard = caster
 	spell = type
 	slot = int(caster.get("owner_slot")) if caster != null else 0
@@ -105,7 +107,15 @@ func add_hit(body: Node3D) -> bool:
 
 ## The body the next jump goes to after `n` hits, from `from_point`, or null.
 func pick_next(from_point: Vector3, n: int) -> Node3D:
-	return ChainPick.next(get_tree(), from_point, radius_for(spell.effect_range_m, n, shrink_steps), _hit, slot, allies, order)
+	return ChainPick.next(
+		get_tree(),
+		from_point,
+		radius_for(spell.effect_range_m, n, shrink_steps),
+		_hit,
+		slot,
+		allies,
+		order
+	)
 
 
 func _physics_process(_delta: float) -> void:
@@ -136,6 +146,12 @@ func _land() -> void:
 		return
 	var here := _current_at
 	_current = pick_next(here, _count - 1)
-	_current_at = BodyNudge.center(_current) if _current != null else ChainPick.fallback(self, here, _from, spell.effect_range_m, fallback_limit_min, fallback_drift, _rng)
+	_current_at = (
+		BodyNudge.center(_current)
+		if _current != null
+		else ChainPick.fallback(
+			self, here, _from, spell.effect_range_m, fallback_limit_min, fallback_drift, _rng
+		)
+	)
 	_from = here
 	_start_hop()

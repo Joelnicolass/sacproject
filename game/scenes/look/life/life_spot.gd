@@ -73,4 +73,8 @@ func _fitted(motion: ParticleProcessMaterial) -> ParticleProcessMaterial:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if on_screen and swarm_particles else PackedStringArray(["The On Screen / Swarm Particles sockets are missing."])
+	return (
+		PackedStringArray()
+		if on_screen and swarm_particles
+		else PackedStringArray(["The On Screen / Swarm Particles sockets are missing."])
+	)

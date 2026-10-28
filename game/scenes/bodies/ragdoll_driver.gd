@@ -87,7 +87,11 @@ func is_running() -> bool:
 ## Asks for a pose (the one it has: nothing; one the model cannot do: ignored). FALL from OFF throws the body along `push` (zero:
 ## it collapses); from HANG it lets go. OFF stands the model up in its rest pose for the clips to take over.
 func set_pose(next: Pose, push := Vector3.ZERO) -> void:
-	if next == _pose or (next != Pose.OFF and not available()) or (next == Pose.HANG and not can_hang()):
+	if (
+		next == _pose
+		or (next != Pose.OFF and not available())
+		or (next == Pose.HANG and not can_hang())
+	):
 		return
 	var from := _pose
 	_pose = next

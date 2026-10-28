@@ -35,7 +35,9 @@ func build(navmesh: NavigationMesh) -> void:
 	var by_position := {}
 	for i in _vertices.size():
 		var v := _vertices[i]
-		var key := Vector3i(roundi(v.x * SNAP_PER_M), roundi(v.y * SNAP_PER_M), roundi(v.z * SNAP_PER_M))
+		var key := Vector3i(
+			roundi(v.x * SNAP_PER_M), roundi(v.y * SNAP_PER_M), roundi(v.z * SNAP_PER_M)
+		)
 		if not by_position.has(key):
 			by_position[key] = i
 		canon[i] = by_position[key]
@@ -89,7 +91,9 @@ func component_at(point: Vector3, snap_m: float) -> int:
 			for dx in range(-ring, ring + 1):
 				if maxi(absi(dx), absi(dz)) != ring:
 					continue
-				var list: PackedInt32Array = _cells.get(Vector2i(cell.x + dx, cell.y + dz), PackedInt32Array())
+				var list: PackedInt32Array = _cells.get(
+					Vector2i(cell.x + dx, cell.y + dz), PackedInt32Array()
+				)
 				for p in list:
 					var d := _distance_to_polygon(at, _polygons[p])
 					if d < best_d or (d == best_d and p < best):
@@ -126,7 +130,9 @@ func closest_land(point: Vector3, snap_m: float, min_size: int) -> Vector3:
 			for dx in range(-ring, ring + 1):
 				if maxi(absi(dx), absi(dz)) != ring:
 					continue
-				var list: PackedInt32Array = _cells.get(Vector2i(cell.x + dx, cell.y + dz), PackedInt32Array())
+				var list: PackedInt32Array = _cells.get(
+					Vector2i(cell.x + dx, cell.y + dz), PackedInt32Array()
+				)
 				for p in list:
 					if sizes[_component[p]] < min_size:
 						continue
@@ -217,7 +223,9 @@ func _nearest_in(at: Vector2, polygon: PackedInt32Array) -> float:
 			negative = true
 		var ab := b - a
 		var length_sq := ab.length_squared()
-		var on := a if length_sq <= 0.000001 else a + ab * clampf((at - a).dot(ab) / length_sq, 0.0, 1.0)
+		var on := (
+			a if length_sq <= 0.000001 else a + ab * clampf((at - a).dot(ab) / length_sq, 0.0, 1.0)
+		)
 		var d := at.distance_to(on)
 		if d < closest:
 			closest = d

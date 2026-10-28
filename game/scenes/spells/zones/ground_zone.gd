@@ -80,9 +80,22 @@ func _attach_net() -> void:
 	var net := MpReplicate.new()
 	net.name = "Net"
 	net.interpolate = false
-	net.sync_properties = PackedStringArray([".:phase", ".:cancelled", ".:position"] if replicates_position else [".:phase", ".:cancelled"]) + synced + synced_on_change
+	net.sync_properties = (
+		PackedStringArray(
+			(
+				[".:phase", ".:cancelled", ".:position"]
+				if replicates_position
+				else [".:phase", ".:cancelled"]
+			)
+		)
+		+ synced
+		+ synced_on_change
+	)
 	var sync := MpAuthority.ensure_sync(self, net.sync_properties)
-	for path in synced_on_change: sync.replication_config.property_set_replication_mode(NodePath(path), SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
+	for path in synced_on_change:
+		sync.replication_config.property_set_replication_mode(
+			NodePath(path), SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE
+		)
 	add_child(net)
 
 
@@ -111,17 +124,27 @@ func finish() -> void:
 
 
 func hold_ticks() -> int:
-	return maxi(1, MatchClock.ticks_for(spell.duration_s if hold_is_spell_duration and spell != null else hold_s))
+	return maxi(
+		1,
+		MatchClock.ticks_for(
+			spell.duration_s if hold_is_spell_duration and spell != null else hold_s
+		)
+	)
 
 
-func end_ticks() -> int: return MatchClock.ticks_for(end_s)
+func end_ticks() -> int:
+	return MatchClock.ticks_for(end_s)
 
 
 ## The radius of ground the zone has reached for a full radius of `max_m`: nothing before ACTIVE, growing during `grow_s`, all after.
 func grown_m(max_m: float) -> float:
 	if phase < Phase.ACTIVE:
 		return 0.0
-	return max_m if phase > Phase.ACTIVE else ZoneRules.grown_radius(max_m, phase_ticks, MatchClock.ticks_for(grow_s))
+	return (
+		max_m
+		if phase > Phase.ACTIVE
+		else ZoneRules.grown_radius(max_m, phase_ticks, MatchClock.ticks_for(grow_s))
+	)
 
 
 func caster() -> Node3D:

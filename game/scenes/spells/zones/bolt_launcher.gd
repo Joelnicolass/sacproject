@@ -20,15 +20,38 @@ func _ready() -> void:
 
 
 func _launch(point: Vector3, body: Node3D) -> void:
-	var strike := LightningStrike.launch(bolt, self, zone.caster(), cloud_at.global_position, body, point, float(zone.spell.damage), zone.spell.tag)
+	var strike := LightningStrike.launch(
+		bolt,
+		self,
+		zone.caster(),
+		cloud_at.global_position,
+		body,
+		point,
+		float(zone.spell.damage),
+		zone.spell.tag
+	)
 	if strike != null:
 		strike.struck.connect(_splash)
 
 
 ## The splash of the bolt on whatever is within the spell's damage range of where it arrived, but the body it hit.
 func _splash(body: Node3D, at: Vector3) -> void:
-	SplashDamage.deal(get_tree(), at, float(zone.spell.damage), zone.spell.damage_range_m, body, zone.from_slot, Health.SPLASH_SPELL)
+	SplashDamage.deal(
+		get_tree(),
+		at,
+		float(zone.spell.damage),
+		zone.spell.damage_range_m,
+		body,
+		zone.from_slot,
+		Health.SPLASH_SPELL
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and dropper != null and bolt != null and cloud_at != null else PackedStringArray(["The zone, its ZoneDropper, the bolt and the cloud (Marker3D) are missing."])
+	return (
+		PackedStringArray()
+		if zone != null and dropper != null and bolt != null and cloud_at != null
+		else PackedStringArray(
+			["The zone, its ZoneDropper, the bolt and the cloud (Marker3D) are missing."]
+		)
+	)

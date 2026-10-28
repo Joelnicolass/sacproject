@@ -195,7 +195,9 @@ func begin_altar_collapse(slot: int, by_slot := 0) -> bool:
 		_collapsing[altar] = collapse_seconds()
 		altar.start_collapse(collapse_seconds())
 		started = true
-		print("altar of slot %d collapses (by slot %d, %.1f s)" % [slot, by_slot, collapse_seconds()])
+		print(
+			"altar of slot %d collapses (by slot %d, %.1f s)" % [slot, by_slot, collapse_seconds()]
+		)
 	if started:
 		publish()
 	return started
@@ -253,7 +255,12 @@ func result() -> Dictionary:
 	winners.assign(winner_slots)
 	var defeated: Array = []
 	defeated.assign(defeated_slots)
-	return {"winner_slot": winner_slot, "winner_slots": winners, "defeated_slots": defeated, "reason": "result"}
+	return {
+		"winner_slot": winner_slot,
+		"winner_slots": winners,
+		"defeated_slots": defeated,
+		"reason": "result"
+	}
 
 
 ## Says the match is over (MatchStateNet tells the kit when this is a dedicated started by hand).
@@ -286,17 +293,29 @@ func to_snapshot() -> Dictionary:
 	for altar in altars():
 		var index := int(seen.get(altar.owner_slot, 0))
 		seen[altar.owner_slot] = index + 1
-		entries.append({
-			"slot": altar.owner_slot,
-			"index": index,
-			"state": int(altar.state),
-			"left": float(_collapsing.get(altar, 0.0)),
-		})
+		(
+			entries
+			. append(
+				{
+					"slot": altar.owner_slot,
+					"index": index,
+					"state": int(altar.state),
+					"left": float(_collapsing.get(altar, 0.0)),
+				}
+			)
+		)
 	return {
-		"altars": entries, "defeated": defeated_slots.duplicate(), "winner": winner_slot, "ended": ended,
-		"winners": winner_slots.duplicate(), "winner_team": winner_team, "seated": seated_slots.duplicate(),
-		"friendly_fire": friendly_fire, "ally_damage_factor": ally_damage_factor,
-		"drop_soul": drop_soul, "starting_souls": starting_souls,
+		"altars": entries,
+		"defeated": defeated_slots.duplicate(),
+		"winner": winner_slot,
+		"ended": ended,
+		"winners": winner_slots.duplicate(),
+		"winner_team": winner_team,
+		"seated": seated_slots.duplicate(),
+		"friendly_fire": friendly_fire,
+		"ally_damage_factor": ally_damage_factor,
+		"drop_soul": drop_soul,
+		"starting_souls": starting_souls,
 	}
 
 
@@ -306,8 +325,13 @@ func apply_snapshot(data: Dictionary) -> void:
 		var factor := float(data.get("ally_damage_factor", ally_damage_factor))
 		var drop := bool(data.get("drop_soul", drop_soul))
 		var souls := int(data.get("starting_souls", starting_souls))
-		if not _rules_known or fire != friendly_fire or factor != ally_damage_factor or drop != drop_soul \
-				or souls != starting_souls:
+		if (
+			not _rules_known
+			or fire != friendly_fire
+			or factor != ally_damage_factor
+			or drop != drop_soul
+			or souls != starting_souls
+		):
 			friendly_fire = fire
 			ally_damage_factor = factor
 			drop_soul = drop

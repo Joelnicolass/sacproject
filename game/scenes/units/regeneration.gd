@@ -31,7 +31,13 @@ func age(delta: float) -> void:
 func step(delta: float, resting: bool) -> void:
 	if resting:
 		heal(delta, true)
-	elif body.type != null and body.type.regenerates_always and body.mode != UnitBody.Mode.DEAD and body.mode != UnitBody.Mode.REVIVING and not health.is_dead():
+	elif (
+		body.type != null
+		and body.type.regenerates_always
+		and body.mode != UnitBody.Mode.DEAD
+		and body.mode != UnitBody.Mode.REVIVING
+		and not health.is_dead()
+	):
 		heal(delta, false)
 
 
@@ -42,7 +48,9 @@ func heal(delta: float, paused := true) -> void:
 		return
 	var full := mana.maximum
 	var factor := 1.0 if full <= 0.0 else mana.current / full
-	health.regenerate((type.regeneration_per_s + DevourGrowth.extra_regeneration_of(body)) * factor * delta)
+	health.regenerate(
+		(type.regeneration_per_s + DevourGrowth.extra_regeneration_of(body)) * factor * delta
+	)
 	last_health = health.current
 
 

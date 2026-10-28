@@ -79,7 +79,9 @@ func _kill_fade() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if mount == null:
-		warnings.append("Assign `mount` (the body's BodyMount): the height and the radius come from it.")
+		warnings.append(
+			"Assign `mount` (the body's BodyMount): the height and the radius come from it."
+		)
 	return warnings
 
 

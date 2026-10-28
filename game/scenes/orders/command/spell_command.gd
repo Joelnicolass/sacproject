@@ -112,7 +112,10 @@ func arm_structure(index: int) -> void:
 
 
 func cast_at(screen: Vector2) -> void:
-	cast_on(ray.soul_under(screen) if _armed_picks_soul() else ray.body_under(screen, false), ray.ground(screen))
+	cast_on(
+		ray.soul_under(screen) if _armed_picks_soul() else ray.body_under(screen, false),
+		ray.ground(screen)
+	)
 
 
 ## The armed spell aims at a soul (Soul Mole, Animate Dead, Soul Wind): the click looks for souls, not bodies.
@@ -130,7 +133,9 @@ func cast_on(body: Node3D, ground: Variant) -> void:
 		armed.mode = ""
 		_log.say("Mago")
 		return
-	var point: Vector3 = body.global_position if body else (ground if ground != null else Vector3.ZERO)
+	var point: Vector3 = (
+		body.global_position if body else (ground if ground != null else Vector3.ZERO)
+	)
 	if body == null and ground == null:
 		_log.say(Refusal.NO_TARGET)
 		return
@@ -166,7 +171,9 @@ func structure_at(screen: Vector2) -> void:
 func structure_at_point(point: Vector3) -> void:
 	var book := _spellbook()
 	var spell: SpellType = book.structure_at(armed.structure_index) if book else null
-	var action: SpellAction = armed.caster.structure_action(armed.structure_index) if spell else null
+	var action: SpellAction = (
+		armed.caster.structure_action(armed.structure_index) if spell else null
+	)
 	if action == null:
 		armed.mode = ""
 		_log.say("Mago" if spell == null else Refusal.NOT_IMPLEMENTED)

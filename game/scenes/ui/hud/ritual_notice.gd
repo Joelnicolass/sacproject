@@ -43,8 +43,11 @@ func _process(delta: float) -> void:
 		return
 	var profaning := false
 	for ritual in _running:
-		if ritual.is_running() and ritual.kind == Ritual.Kind.DESECRATE \
-				and ritual.target_slot == slot:
+		if (
+			ritual.is_running()
+			and ritual.kind == Ritual.Kind.DESECRATE
+			and ritual.target_slot == slot
+		):
 			profaning = true
 	_flash_left = maxf(_flash_left - delta, 0.0)
 	if _flash_left > 0.0:

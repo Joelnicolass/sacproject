@@ -22,7 +22,12 @@ static func query_for(shape: Shape3D) -> PhysicsShapeQueryParameters3D:
 ## The living body that `query`'s shape touches at `at`, except `skip`; enemies of `slot` first, then neutrals, then its own
 ## side, the closest of a rank wins. `skip_own_side` drops the bodies of `slot`. Null when none.
 static func pick_body(
-	from: Node3D, query: PhysicsShapeQueryParameters3D, at: Vector3, skip: Node, slot: int, skip_own_side: bool
+	from: Node3D,
+	query: PhysicsShapeQueryParameters3D,
+	at: Vector3,
+	skip: Node,
+	slot: int,
+	skip_own_side: bool
 ) -> Node3D:
 	if query.shape == null:
 		return null

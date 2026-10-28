@@ -85,7 +85,12 @@ func absorb_herd() -> void:
 	var own_cost := body.type.mana_cost if body.type else 0
 	for node in get_tree().get_nodes_in_group(herd_group):
 		var member := node as UnitBody
-		if member == null or member == body or member.owner_slot != body.owner_slot or member.is_dead():
+		if (
+			member == null
+			or member == body
+			or member.owner_slot != body.owner_slot
+			or member.is_dead()
+		):
 			continue
 		if (member.type.mana_cost if member.type else 0) != own_cost:
 			continue

@@ -163,15 +163,21 @@ static func socket_warning(prefs: GraphicsPrefs) -> String:
 
 func _commit() -> void:
 	if not Engine.is_editor_hint():
-		UserSettings.write_values(SECTION, {
-			"quality": String(_stored_quality),
-			"vsync": _vsync,
-			"fullscreen": _fullscreen,
-			"max_fps": _max_fps,
-			"vegetation": _vegetation,
-			"relief": _relief,
-			"scar_tiles": _scar_tiles,
-		})
+		(
+			UserSettings
+			. write_values(
+				SECTION,
+				{
+					"quality": String(_stored_quality),
+					"vsync": _vsync,
+					"fullscreen": _fullscreen,
+					"max_fps": _max_fps,
+					"vegetation": _vegetation,
+					"relief": _relief,
+					"scar_tiles": _scar_tiles,
+				}
+			)
+		)
 	emit_changed()
 
 
@@ -188,17 +194,28 @@ func _ensure_loaded() -> void:
 	_scar_tiles = default_scar_tiles
 	if Engine.is_editor_hint():
 		return
-	var stored_quality := StringName(str(UserSettings.read_value(SECTION, "quality", String(default_quality))))
+	var stored_quality := StringName(
+		str(UserSettings.read_value(SECTION, "quality", String(default_quality)))
+	)
 	if preset_for(stored_quality):
 		_quality = stored_quality
 	else:
-		push_warning("GraphicsPrefs: [%s] quality = %s is not a preset; using %s." % [SECTION, stored_quality, default_quality])
+		push_warning(
+			(
+				"GraphicsPrefs: [%s] quality = %s is not a preset; using %s."
+				% [SECTION, stored_quality, default_quality]
+			)
+		)
 	_vsync = _read_bool("vsync", default_vsync)
 	_fullscreen = _read_bool("fullscreen", default_fullscreen)
 	_vegetation = _read_bool("vegetation", default_vegetation)
 	_relief = _read_bool("relief", default_relief)
 	var tiles: Variant = UserSettings.read_value(SECTION, "scar_tiles", default_scar_tiles)
-	_scar_tiles = clampi(int(tiles), 32, 256) if typeof(tiles) in [TYPE_INT, TYPE_FLOAT] else default_scar_tiles
+	_scar_tiles = (
+		clampi(int(tiles), 32, 256)
+		if typeof(tiles) in [TYPE_INT, TYPE_FLOAT]
+		else default_scar_tiles
+	)
 	var fps: Variant = UserSettings.read_value(SECTION, "max_fps", default_max_fps)
 	_max_fps = maxi(int(fps), 0) if typeof(fps) in [TYPE_INT, TYPE_FLOAT] else default_max_fps
 	_stored_quality = _quality

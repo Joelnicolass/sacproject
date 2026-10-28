@@ -66,7 +66,13 @@ func _rate_from_manaliths() -> float:
 		# Only Manaliths feed a Manahoar, the allies' too; a Shrine does not.
 		if manalith == null or manalith.type.role != BuildingType.Role.MANALITH:
 			continue
-		if manalith.owner_slot != body.owner_slot and SideRelations.stance(body.owner_slot, manalith.owner_slot) != SideRelations.Stance.ALLY:
+		if (
+			manalith.owner_slot != body.owner_slot
+			and (
+				SideRelations.stance(body.owner_slot, manalith.owner_slot)
+				!= SideRelations.Stance.ALLY
+			)
+		):
 			continue
 		var distance := body.global_position.distance_to(manalith.global_position)
 		if distance >= far:

@@ -85,7 +85,17 @@ func drop_soul(slot: int) -> bool:
 	if purse == null or not purse.spend(1):
 		return false
 	var at := wizard.global_position
-	spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": 1, "owner_slot": slot, "dropped": true, "origin": String(ORIGIN_WIZARD)})
+	spawn_soul(
+		{
+			"x": at.x,
+			"y": at.y,
+			"z": at.z,
+			"number": 1,
+			"owner_slot": slot,
+			"dropped": true,
+			"origin": String(ORIGIN_WIZARD)
+		}
+	)
 	return true
 
 
@@ -172,7 +182,11 @@ func _stance(soul: Node3D, slot: int) -> Stance:
 		return Stance.NEUTRAL
 	if soul_slot == slot:
 		return Stance.OWN
-	return Stance.ALLY if SideRelations.stance(soul_slot, slot) == SideRelations.Stance.ALLY else Stance.ENEMY
+	return (
+		Stance.ALLY
+		if SideRelations.stance(soul_slot, slot) == SideRelations.Stance.ALLY
+		else Stance.ENEMY
+	)
 
 
 ## Dying and ghost wizards do not collect.
@@ -229,14 +243,26 @@ func _on_unit_died(_tag: String, slot: int, _at: Vector3, unit: Node3D) -> void:
 
 ## The origin of the souls a creature leaves: the NPCs of the map (group `npc`) are not the creatures of a wizard.
 static func origin_of(unit: Node) -> StringName:
-	return ORIGIN_NPC if unit != null and unit.is_in_group(UnitSpawner.NPC_GROUP) else ORIGIN_CREATURE
+	return (
+		ORIGIN_NPC if unit != null and unit.is_in_group(UnitSpawner.NPC_GROUP) else ORIGIN_CREATURE
+	)
 
 
 func _spawn_on_corpse(unit: Node3D, slot: int, count: int) -> void:
 	if not is_instance_valid(unit) or not unit.is_inside_tree():
 		return
 	var at := (unit as UnitBody).soul_anchor()
-	var soul := spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": count, "owner_slot": slot, "attached": true, "origin": String(origin_of(unit))})
+	var soul := spawn_soul(
+		{
+			"x": at.x,
+			"y": at.y,
+			"z": at.z,
+			"number": count,
+			"owner_slot": slot,
+			"attached": true,
+			"origin": String(origin_of(unit))
+		}
+	)
 	if soul:
 		soul.set("corpse", unit)
 
@@ -244,7 +270,17 @@ func _spawn_on_corpse(unit: Node3D, slot: int, count: int) -> void:
 ## A creature that burst (Gib): its soul rises where it stood, off any corpse.
 func _spawn_free(unit: Node3D, slot: int, count: int) -> void:
 	var at := (unit as UnitBody).soul_anchor()
-	spawn_soul({"x": at.x, "y": at.y, "z": at.z, "number": count, "owner_slot": slot, "attached": false, "origin": String(origin_of(unit))})
+	spawn_soul(
+		{
+			"x": at.x,
+			"y": at.y,
+			"z": at.z,
+			"number": count,
+			"owner_slot": slot,
+			"attached": false,
+			"origin": String(origin_of(unit))
+		}
+	)
 
 
 func _make(data: Variant) -> Node:

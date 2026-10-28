@@ -118,5 +118,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if layers == null:
 		warnings.append("The Layers socket is missing.")
 	if terrain == null:
-		warnings.append("The Terrain socket is missing (the map's Terrain): the ground layer does nothing without it.")
+		(
+			warnings
+			. append(
+				"The Terrain socket is missing (the map's Terrain): the ground layer does nothing without it."
+			)
+		)
 	return warnings

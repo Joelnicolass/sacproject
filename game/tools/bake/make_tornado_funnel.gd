@@ -48,8 +48,18 @@ func _edge() -> ArrayMesh:
 			colors.append(Color(1, 1, 1, 0.0 if i == 0 else 1.0))
 	for i in RINGS - 3:
 		var a := 4 * i
-		indices.append_array([a, a + 1, a + 4, a + 1, a + 5, a + 4, a + 2, a + 3, a + 6, a + 3, a + 7, a + 6])
-	return _mesh({Mesh.ARRAY_VERTEX: vertices, Mesh.ARRAY_TEX_UV: uvs, Mesh.ARRAY_TEX_UV2: uv2s, Mesh.ARRAY_COLOR: colors, Mesh.ARRAY_INDEX: indices})
+		indices.append_array(
+			[a, a + 1, a + 4, a + 1, a + 5, a + 4, a + 2, a + 3, a + 6, a + 3, a + 7, a + 6]
+		)
+	return _mesh(
+		{
+			Mesh.ARRAY_VERTEX: vertices,
+			Mesh.ARRAY_TEX_UV: uvs,
+			Mesh.ARRAY_TEX_UV2: uv2s,
+			Mesh.ARRAY_COLOR: colors,
+			Mesh.ARRAY_INDEX: indices
+		}
+	)
 
 
 func _mesh(data: Dictionary) -> ArrayMesh:
@@ -66,5 +76,10 @@ func _mesh(data: Dictionary) -> ArrayMesh:
 func _save(mesh: ArrayMesh, file: String) -> bool:
 	mesh.resource_name = file.get_basename()
 	var error := ResourceSaver.save(mesh, DIR + file)
-	print("%s: %s (%d vertices)" % [file, "saved" if error == OK else "FAILED %d" % error, mesh.surface_get_array_len(0)])
+	print(
+		(
+			"%s: %s (%d vertices)"
+			% [file, "saved" if error == OK else "FAILED %d" % error, mesh.surface_get_array_len(0)]
+		)
+	)
 	return error == OK

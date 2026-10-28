@@ -22,7 +22,11 @@ static func scatter(direction: Vector3, accuracy: float, rng: RandomNumberGenera
 static func origin(body: UnitBody, height_fraction: float) -> Vector3:
 	var profile := body.melee_profile()
 	var facing := body.facing_flat()
-	return body.global_position + facing * float(profile.get("reach", 0.35)) + Vector3.UP * float(profile.get("height", 1.8)) * height_fraction
+	return (
+		body.global_position
+		+ facing * float(profile.get("reach", 0.35))
+		+ Vector3.UP * float(profile.get("height", 1.8)) * height_fraction
+	)
 
 
 ## The shot origin of `unit`'s ranged weapon, or its feet lifted when it has none. Breath of life and
@@ -37,7 +41,14 @@ static func shot_position(unit: Node3D) -> Vector3:
 ## A body's centre: its Collision shape, else half its height over its feet.
 static func center(target: Node3D) -> Vector3:
 	var col := target.get_node_or_null("Collision") as Node3D
-	return col.global_position if col else target.global_position + Vector3.UP * float(MeleeRules.profile_of(target).get("height", 1.8)) * 0.5
+	return (
+		col.global_position
+		if col
+		else (
+			target.global_position
+			+ Vector3.UP * float(MeleeRules.profile_of(target).get("height", 1.8)) * 0.5
+		)
+	)
 
 
 ## The target's centre where it will be when a shot of `speed` arrives.
@@ -66,11 +77,16 @@ static func box_point(body: Node3D, target: Node3D) -> Vector3:
 static func box_gap(body: UnitBody, target: Node3D) -> float:
 	var d := target.global_position - body.global_position
 	var own := float(body.melee_profile().get("reach", 0.35))
-	return maxf(0.0, Vector2(d.x, d.z).length() - own - float(MeleeRules.profile_of(target).get("reach", 0.35)))
+	return maxf(
+		0.0,
+		Vector2(d.x, d.z).length() - own - float(MeleeRules.profile_of(target).get("reach", 0.35))
+	)
 
 
 ## Nothing of the ground mask between `from` and `to`, the line checked `drop` under both ends.
-static func clear_shot(body: Node3D, target: Node3D, from: Vector3, to: Vector3, drop: float, mask: int) -> bool:
+static func clear_shot(
+	body: Node3D, target: Node3D, from: Vector3, to: Vector3, drop: float, mask: int
+) -> bool:
 	var down := Vector3.DOWN * drop
 	var query := PhysicsRayQueryParameters3D.create(from + down, to + down)
 	query.collision_mask = mask

@@ -35,7 +35,9 @@ func _fire(step: int) -> void:
 		return
 	var center := zone.points[0]
 	for body in bodies_near(center, loc + 0.1):
-		var flat := Vector2(body.global_position.x - center.x, body.global_position.z - center.z).length()
+		var flat := (
+			Vector2(body.global_position.x - center.x, body.global_position.z - center.z).length()
+		)
 		if flat > stun_min_m and absf(flat - loc) < half_band_m():
 			var stunned := body.get_node_or_null(stunned_path) as Stunned
 			if stunned != null:

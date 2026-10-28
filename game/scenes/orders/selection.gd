@@ -55,7 +55,9 @@ func _ready() -> void:
 		_groups.append([])
 	hide_box()
 	if seat == null:
-		push_warning("Selection: assign `seat` (the MpLocalSeat); nothing can be selected without it")
+		push_warning(
+			"Selection: assign `seat` (the MpLocalSeat); nothing can be selected without it"
+		)
 
 
 func units() -> Array[Node3D]:
@@ -69,7 +71,11 @@ func size() -> int:
 
 
 func has(unit: Variant) -> bool:
-	return unit != null and is_instance_valid(unit) and _members.has((unit as Object).get_instance_id())
+	return (
+		unit != null
+		and is_instance_valid(unit)
+		and _members.has((unit as Object).get_instance_id())
+	)
 
 
 ## The active ability the selection offers: the newest selected creature that has one wins
@@ -125,7 +131,10 @@ func click(unit: Node3D, screen: Vector2, shift: bool, ctrl: bool) -> void:
 	if not can_select(unit):
 		return
 	var now := Time.get_ticks_msec()
-	var again := (unit == _last_unit or _last_at.distance_to(screen) < double_click_px) and now - _last_ms <= int(double_click_s * 1000.0)
+	var again := (
+		(unit == _last_unit or _last_at.distance_to(screen) < double_click_px)
+		and now - _last_ms <= int(double_click_s * 1000.0)
+	)
 	if ctrl or again:
 		if shift:
 			_replace(_merge_front(_units, _same_type_near(unit)))
@@ -164,12 +173,17 @@ func select_rect(from: Vector2, to: Vector2, additive: bool) -> void:
 			if not can_select(node):
 				continue
 			var center := _center(node)
-			if camera.is_position_behind(center) or not rect.has_point(camera.unproject_position(center)):
+			if (
+				camera.is_position_behind(center)
+				or not rect.has_point(camera.unproject_position(center))
+			):
 				continue
 			if _hidden_by_ground(camera, center):
 				continue
 			picked.append(node)
-	picked.sort_custom(func(a: Node3D, b: Node3D) -> bool: return a.get_instance_id() > b.get_instance_id())
+	picked.sort_custom(
+		func(a: Node3D, b: Node3D) -> bool: return a.get_instance_id() > b.get_instance_id()
+	)
 	if max_size > 0 and picked.size() > max_size:
 		picked.resize(max_size)
 	var base: Array = []
@@ -351,8 +365,13 @@ func _same_type_near(unit: Node3D) -> Array:
 			continue
 		if (node as Node3D).global_position.distance_to(unit.global_position) <= same_type_radius:
 			near.append(node)
-	near.sort_custom(func(a: Node3D, b: Node3D) -> bool:
-		return a.global_position.distance_squared_to(unit.global_position) < b.global_position.distance_squared_to(unit.global_position))
+	near.sort_custom(
+		func(a: Node3D, b: Node3D) -> bool:
+			return (
+				a.global_position.distance_squared_to(unit.global_position)
+				< b.global_position.distance_squared_to(unit.global_position)
+			)
+	)
 	if max_size > 0 and near.size() > max_size:
 		near.resize(max_size)
 	return near

@@ -66,5 +66,7 @@ static func _root_value(scene: PackedScene, property: StringName) -> Variant:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if model == null and static_mesh == null:
-		warnings.append("Missing `model` (the model scene) or `static_mesh`: this body is not drawn.")
+		warnings.append(
+			"Missing `model` (the model scene) or `static_mesh`: this body is not drawn."
+		)
 	return warnings

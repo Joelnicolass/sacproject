@@ -12,7 +12,9 @@ enum Look { NONE, HANG, HANG_APPEAR, KEEP_LYING, CLIPS, STAND_APPEAR, LET_GO }
 
 ## `can_hang`: the model has a rag doll that can hang and the look may use it. `lies_as_ragdoll`: the body lies as a rag doll now.
 ## `was == now` is a late join (the model was mounted while the mode already held).
-static func on_change(was: UnitBody.Mode, now: UnitBody.Mode, can_hang: bool, lies_as_ragdoll: bool) -> Look:
+static func on_change(
+	was: UnitBody.Mode, now: UnitBody.Mode, can_hang: bool, lies_as_ragdoll: bool
+) -> Look:
 	match now:
 		UnitBody.Mode.DEAD:
 			return Look.NONE

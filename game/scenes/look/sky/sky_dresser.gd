@@ -22,8 +22,18 @@ func reset() -> void:
 
 ## Puts the right material on `sky`. `force` skips the rate limit (a new look, a preset). `moon_dir_deg` = azimuth and
 ## elevation of the moon light.
-func dress(sky: Sky, look: SkyLook, sample: AtmosphereSample, moon_dir_deg: Vector2, sky_hz: float, force: bool) -> void:
-	var due := Time.get_ticks_msec() - _written_ms >= int(1000.0 / maxf(sky_hz, 0.1)) or sample.flash != _written.flash
+func dress(
+	sky: Sky,
+	look: SkyLook,
+	sample: AtmosphereSample,
+	moon_dir_deg: Vector2,
+	sky_hz: float,
+	force: bool
+) -> void:
+	var due := (
+		Time.get_ticks_msec() - _written_ms >= int(1000.0 / maxf(sky_hz, 0.1))
+		or sample.flash != _written.flash
+	)
 	if not force and (not due or sample.is_close(_written, 1e-3)):
 		return
 	_cloud_phase = _next_cloud_phase(look, sample)
@@ -42,6 +52,15 @@ func dress(sky: Sky, look: SkyLook, sample: AtmosphereSample, moon_dir_deg: Vect
 func _next_cloud_phase(look: SkyLook, sample: AtmosphereSample) -> float:
 	if is_equal_approx(_written.cloud_speed_mul, sample.cloud_speed_mul):
 		return _cloud_phase
-	var period: Variant = look.material.get_shader_parameter(&"cloud_period_s") if look.material else null
+	var period: Variant = (
+		look.material.get_shader_parameter(&"cloud_period_s") if look.material else null
+	)
 	var t := Time.get_ticks_msec() / 1000.0  # close to the shader's TIME; an error only shifts the clouds by a hair
-	return _cloud_phase + t / maxf(float(period) if period != null else 64.0, 1.0) * (_written.cloud_speed_mul - sample.cloud_speed_mul)
+	return (
+		_cloud_phase
+		+ (
+			t
+			/ maxf(float(period) if period != null else 64.0, 1.0)
+			* (_written.cloud_speed_mul - sample.cloud_speed_mul)
+		)
+	)

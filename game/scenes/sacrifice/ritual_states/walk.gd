@@ -18,7 +18,9 @@ func physics_update(delta: float) -> void:
 	var facts := SacrificeFacts.of_rules(rules)
 	var progress := clampf(time / rules.ritual_walk_s, 0.0, 1.0)
 	for k in ritual.doctors.size():
-		var point := SacrificeMath.ring_point(ritual.center(), k + ritual.round_index, progress, facts.ring_m, facts.walk_shrink_m())
+		var point := SacrificeMath.ring_point(
+			ritual.center(), k + ritual.round_index, progress, facts.ring_m, facts.walk_shrink_m()
+		)
 		ritual.doctors[k].walk_to(point)
 	if time >= rules.ritual_walk_s:
 		transition(&"Shoot")

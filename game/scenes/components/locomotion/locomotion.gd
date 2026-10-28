@@ -72,7 +72,13 @@ func _steer(delta: float, may_walk: bool) -> void:
 	if air != null:
 		air.hold_still()
 	body.velocity = afflictions.steer(body.velocity, delta)
-	_walk_intent = face_velocity and may_walk and not airborne_step and not afflictions.holds() and _flat_speed() > face_min_speed
+	_walk_intent = (
+		face_velocity
+		and may_walk
+		and not airborne_step
+		and not afflictions.holds()
+		and _flat_speed() > face_min_speed
+	)
 
 
 ## The velocity (x, z) the avoidance gave back: the second half of the step.

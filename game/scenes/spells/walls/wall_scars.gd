@@ -37,6 +37,8 @@ func _paint(end: float) -> void:
 	if absf(end) < 0.01:
 		return
 	var t := end - signf(end) * _rng.randf_range(0.0, behind_m)
-	var across := WallRules.across(wall.direction) * (0.45 * wall.thickness_m() * _rng.randf_range(-1.0, 1.0))
+	var across := (
+		WallRules.across(wall.direction) * (0.45 * wall.thickness_m() * _rng.randf_range(-1.0, 1.0))
+	)
 	var at := wall.point_at(t)
 	mark.mark_at(Vector3(at.x + across.x, at.y, at.z + across.y))

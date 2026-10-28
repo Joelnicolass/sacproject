@@ -26,8 +26,12 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
-	return aim_at_body(wizard, spell, point, funds, target.pick(wizard, picked) if target != null else null)
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
+	return aim_at_body(
+		wizard, spell, point, funds, target.pick(wizard, picked) if target != null else null
+	)
 
 
 func begin(_wizard: WizardBody, _spell: SpellType, aim: Aim) -> void:

@@ -43,7 +43,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first, then a valid body (or the ground), then the range: the order every spell of the book answers in.
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():
@@ -63,7 +65,11 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	_aim = aim
 	_ticks = frames
 	if cast_scene != null:
-		FxBus.broadcast_scene(cast_scene, _birth(wizard, aim), {"ticks": frames, "target": str(aim.target.get_path()) if aim.target != null else ""})
+		FxBus.broadcast_scene(
+			cast_scene,
+			_birth(wizard, aim),
+			{"ticks": frames, "target": str(aim.target.get_path()) if aim.target != null else ""}
+		)
 	if spawn_when == When.START:
 		_spawn(wizard, spell)
 
@@ -97,7 +103,9 @@ func _spawn(wizard: WizardBody, spell: SpellType) -> void:
 	_carrier = spawner.spawn_launch(carrier, launch) as SpellCarrier
 	_released = false
 	if _carrier != null:
-		_carrier.begin(wizard, spell, _aim.target, _aim.point, _ticks if spawn_when == When.START else 0)
+		_carrier.begin(
+			wizard, spell, _aim.target, _aim.point, _ticks if spawn_when == When.START else 0
+		)
 
 
 ## Where the carrier is born (on the land, before it is sunk): see `spawn_at`.

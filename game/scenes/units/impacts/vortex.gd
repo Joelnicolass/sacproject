@@ -34,7 +34,10 @@ func _physics_process(_delta: float) -> void:
 	var ticks := float(MatchClock.TICKS_PER_SECOND)
 	if _frame < influence_share * duration_s * ticks:
 		var diag := sqrt(2.0) * radius
-		var area := AABB(global_position - Vector3(diag, 0.25 * height, diag), Vector3(2.0 * diag, 1.25 * height, 2.0 * diag))
+		var area := AABB(
+			global_position - Vector3(diag, 0.25 * height, diag),
+			Vector3(2.0 * diag, 1.25 * height, 2.0 * diag)
+		)
 		for body in BodyNudge.bodies_in(get_tree(), area):
 			_influence(body, ticks)
 	_frame += 1
@@ -49,11 +52,16 @@ func _influence(body: Node3D, ticks: float) -> void:
 		return
 	var center := BodyNudge.center(body)
 	if _frame < catapult_s * ticks and not tumbling.is_on():
-		var toward := Vector2(global_position.x - center.x, global_position.z - center.z).normalized() * tangent_speed
+		var toward := (
+			Vector2(global_position.x - center.x, global_position.z - center.z).normalized()
+			* tangent_speed
+		)
 		tumbling.catapult(Vector3(toward.y, lift_speed, -toward.x), side)
 	if tumbling.is_on():
 		var rel := center - global_position
 		if rel.y <= height:
-			tumbling.add_velocity(Vector3(field * (-rel.z - rel.x), field, field * (rel.x - rel.z)) / ticks)
+			tumbling.add_velocity(
+				Vector3(field * (-rel.z - rel.x), field, field * (rel.x - rel.z)) / ticks
+			)
 		tumbling.velocity.y = maxf(tumbling.velocity.y, min_rise)
 		tumbling.lift()

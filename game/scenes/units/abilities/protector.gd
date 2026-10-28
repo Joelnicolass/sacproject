@@ -78,7 +78,16 @@ func _shield_allies() -> void:
 		var parts := PackedStringArray()
 		for entry in seen:
 			parts.append(str(entry[1]))
-		print("protector %s: %s (tick %d)" % [who(user), "; ".join(parts) if not parts.is_empty() else "nobody", MatchClock.now()])
+		print(
+			(
+				"protector %s: %s (tick %d)"
+				% [
+					who(user),
+					"; ".join(parts) if not parts.is_empty() else "nobody",
+					MatchClock.now()
+				]
+			)
+		)
 
 
 ## Alive and on the field (not dead, not being summoned, not taken by a Sac Doctor).

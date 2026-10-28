@@ -14,7 +14,11 @@ extends Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null and sound != null else PackedStringArray(["The SpellCarrier and the sound are missing."])
+	return (
+		PackedStringArray()
+		if carrier != null and sound != null
+		else PackedStringArray(["The SpellCarrier and the sound are missing."])
+	)
 
 
 func _ready() -> void:

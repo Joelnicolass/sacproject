@@ -51,10 +51,16 @@ func apply() -> void:
 	if not _owns_scene():
 		return
 	_apply_window()
-	var line := "graphics: %s · vsync %s · fullscreen %s · fps cap %s · vegetation %s" % [
-		prefs.quality_id(), _yes(prefs.vsync()), _yes(prefs.fullscreen()),
-		str(prefs.max_fps()) if prefs.max_fps() > 0 else "no", _yes(prefs.vegetation_enabled()),
-	]
+	var line := (
+		"graphics: %s · vsync %s · fullscreen %s · fps cap %s · vegetation %s"
+		% [
+			prefs.quality_id(),
+			_yes(prefs.vsync()),
+			_yes(prefs.fullscreen()),
+			str(prefs.max_fps()) if prefs.max_fps() > 0 else "no",
+			_yes(prefs.vegetation_enabled()),
+		]
+	)
 	if _has_rig():
 		rig.set_vegetation_enabled(prefs.vegetation_enabled())
 	var preset := prefs.quality()
@@ -79,7 +85,11 @@ func apply_sandbox_preset() -> void:
 
 
 func _sandbox_preset_only() -> bool:
-	if Engine.is_editor_hint() or DisplayServer.get_name() == "headless" or MpBoot.is_dedicated_process():
+	if (
+		Engine.is_editor_hint()
+		or DisplayServer.get_name() == "headless"
+		or MpBoot.is_dedicated_process()
+	):
 		return false
 	return UserSettings.sandboxed()
 
@@ -127,8 +137,12 @@ static var _launch_overrides := {}
 static func _snapshot_launch(window: Window) -> void:
 	if not _launch_overrides.is_empty():
 		return
-	var project_mode := int(ProjectSettings.get_setting("display/window/size/mode", Window.MODE_WINDOWED))
-	var project_vsync := int(ProjectSettings.get_setting("display/window/vsync/vsync_mode", DisplayServer.VSYNC_ENABLED))
+	var project_mode := int(
+		ProjectSettings.get_setting("display/window/size/mode", Window.MODE_WINDOWED)
+	)
+	var project_vsync := int(
+		ProjectSettings.get_setting("display/window/vsync/vsync_mode", DisplayServer.VSYNC_ENABLED)
+	)
 	var project_fps := int(ProjectSettings.get_setting("application/run/max_fps", 0))
 	_launch_overrides = {
 		"mode": int(window.mode) != project_mode,

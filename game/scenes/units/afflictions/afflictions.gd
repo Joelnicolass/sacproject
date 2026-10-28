@@ -37,7 +37,6 @@ enum Stat { ATTACK_TIME, ACCURACY }
 		if is_node_ready() and not Engine.is_editor_hint():
 			_show(was)
 
-
 ## The mask as it was before the last change of `shown` (every peer). A state that takes over from another in the same
 ## tick reads it (Stunned after a Tumbling that landed lies hit_floor + get_up, not knock + get_up).
 var previous := 0
@@ -105,7 +104,10 @@ func fixed() -> bool:
 func blocks_regeneration() -> bool:
 	return immobilized() or _any(&"blocks_regeneration")
 
-func raging() -> bool: return _any(&"rages")  ## Blind Rage is on (UnitOrders, RangedWeapon and TargetPicker ask).
+
+func raging() -> bool:
+	return _any(&"rages")  ## Blind Rage is on (UnitOrders, RangedWeapon and TargetPicker ask).
+
 
 ## A state that is on lets a flier fall (petrified; Flight reads it).
 func drops_fliers() -> bool:
@@ -272,7 +274,9 @@ func _show_look() -> void:
 	look.swap_texture = swap
 	var skin := wards != null and wards.stone_skin()
 	if best:
-		look.apply(best.look_tint, best.look_base, best.look_gain, best.look_roughness, best.look_metallic)
+		look.apply(
+			best.look_tint, best.look_base, best.look_gain, best.look_roughness, best.look_metallic
+		)
 	elif skin:
 		look.apply_stone()
 	look.stone = best != null or skin

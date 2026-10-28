@@ -29,7 +29,7 @@ signal state_changed(was: State, now: State)
 ## The sprite plays 8 cells at 15 fps.
 const ANIM_FPS := 15.0
 const ANIM_FRAMES := 8
-const FIRST_FRAME := { SoulColor.BLUE: 0, SoulColor.RED: 8 }
+const FIRST_FRAME := {SoulColor.BLUE: 0, SoulColor.RED: 8}
 ## Sprite width 1 and height 1.6; ring radius 0.3.
 const SPRITE_SIZE := Vector2(1.0, 1.6)
 const RING_RADIUS := 0.3
@@ -86,7 +86,6 @@ const SPRITE_LIFT := 1.25 * 1.6
 @export var shader: Shader = preload("res://scenes/souls/soul.gdshader")
 ## Emission energy of the sprite; 20 clips the soul to white under High Noon's ACES tonemap.
 @export var energy := 2.0
-
 
 var corpse: Node3D
 var collector: Node3D
@@ -166,7 +165,11 @@ func can_be_collected_by(slot: int) -> bool:
 ## A red soul in the open, grown or still growing in, that no doctor of that side is already coming for. A soul that just
 ## appeared can be converted right away, like the end of the cast and the carrier already allow.
 func can_convert_by(slot: int) -> bool:
-	return (state == State.NORMAL or state == State.EMERGING) and color_for(slot) == SoulColor.RED and not is_reserved_for(slot)
+	return (
+		(state == State.NORMAL or state == State.EMERGING)
+		and color_for(slot) == SoulColor.RED
+		and not is_reserved_for(slot)
+	)
 
 
 ## Server or solo. A Convert cast of `slot` fixes this soul (the side's bit is cleared).
@@ -231,7 +234,9 @@ func sever() -> void:
 
 ## A soul a spell can fetch for `slot`: not dropped with P, blue for that side, and still waiting (not being taken, eaten or revived).
 func fetchable_by(slot: int) -> bool:
-	return not dropped and is_free_or_own(slot) and (state == State.NORMAL or state == State.EMERGING)
+	return (
+		not dropped and is_free_or_own(slot) and (state == State.NORMAL or state == State.EMERGING)
+	)
 
 
 ## Server or solo. Soul Mole and Soul Wind take the soul: it lets go of its corpse (which dissolves), prefers the wizard's side
@@ -305,7 +310,9 @@ func _follow_corpse() -> void:
 		attached = false
 		corpse = null
 		return
-	global_position = (corpse as UnitBody).soul_anchor() if corpse is UnitBody else corpse.global_position
+	global_position = (
+		(corpse as UnitBody).soul_anchor() if corpse is UnitBody else corpse.global_position
+	)
 
 
 ## A free soul comes down to the land under it, faster and faster (`fall_gravity`, `max_fall_speed`). Over a hole (no land under
@@ -364,7 +371,9 @@ func _devour_step(delta: float) -> void:
 		scaling = 0.0
 	if collector and is_instance_valid(collector):
 		var factor := scaling / previous if previous > 0.0 else 0.0
-		global_position = global_position * factor + ShotAim.shot_position(collector) * (1.0 - factor)
+		global_position = (
+			global_position * factor + ShotAim.shot_position(collector) * (1.0 - factor)
+		)
 	if scaling <= 0.0:
 		number = 0
 		if DebugLog.on(&"souls"):

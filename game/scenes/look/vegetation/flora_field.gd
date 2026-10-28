@@ -120,7 +120,12 @@ func preset() -> LookQuality:
 ## dedicated) is not part of it: `presentationless` stops the building on top.
 func active_layers() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	if rig == null or not is_inside_tree() or not rig.vegetation_enabled or density().entries() == 0:
+	if (
+		rig == null
+		or not is_inside_tree()
+		or not rig.vegetation_enabled
+		or density().entries() == 0
+	):
 		return out
 	var current := preset()
 	if current == null:
@@ -164,7 +169,10 @@ func _refresh() -> void:
 func _bind_rig() -> void:
 	if _bound_rig == rig:
 		return
-	if is_instance_valid(_bound_rig) and _bound_rig.vegetation_toggled.is_connected(_on_vegetation_toggled):
+	if (
+		is_instance_valid(_bound_rig)
+		and _bound_rig.vegetation_toggled.is_connected(_on_vegetation_toggled)
+	):
 		_bound_rig.vegetation_toggled.disconnect(_on_vegetation_toggled)
 	_bound_rig = rig
 	if rig and not rig.vegetation_toggled.is_connected(_on_vegetation_toggled):
@@ -182,7 +190,19 @@ func _signature_of(layers: Array[Dictionary], surface: Terrain) -> String:
 	parts.append(str(surface.get_instance_id() if surface else 0))
 	for layer in layers:
 		var q: VegetationQuality = layer["quality"]
-		parts.append("%d:%s:%s:%s:%s:%d" % [(layer["config"] as Object).get_instance_id(), q.enabled, q.radius_scale, q.density_scale, q.shadows, q.max_builds_per_frame])
+		parts.append(
+			(
+				"%d:%s:%s:%s:%s:%d"
+				% [
+					(layer["config"] as Object).get_instance_id(),
+					q.enabled,
+					q.radius_scale,
+					q.density_scale,
+					q.shadows,
+					q.max_builds_per_frame
+				]
+			)
+		)
 	return "|".join(parts)
 
 
@@ -212,7 +232,9 @@ func _watch_configs() -> void:
 	for resource in _watching:
 		if is_instance_valid(resource) and resource.changed.is_connected(_on_config_changed):
 			resource.changed.disconnect(_on_config_changed)
-	_watching.assign(configs.filter(func(config: VegetationLayerConfig) -> bool: return config != null))
+	_watching.assign(
+		configs.filter(func(config: VegetationLayerConfig) -> bool: return config != null)
+	)
 	for resource in _watching:
 		resource.changed.connect(_on_config_changed)
 
@@ -226,21 +248,29 @@ func _on_config_changed() -> void:
 
 ## Instances drawn now by every layer (the visible prefix of each shown cell).
 func instance_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.instance_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.instance_count(), 0
+	)
 
 
 ## Cells built and shown by every layer.
 func cell_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.cell_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.cell_count(), 0
+	)
 
 
 ## MultiMeshInstance3D nodes shown by every layer.
 func node_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.node_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.node_count(), 0
+	)
 
 
 func pending_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.pending_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.pending_count(), 0
+	)
 
 
 ## The FloraLayer nodes of this field's map as a snapshot: the layers under the same MapRoot (or, without one, in the

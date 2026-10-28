@@ -13,7 +13,11 @@ extends OptionButton
 ## The item selected at start (an id of AiSeat.difficulty_ids()); with `offer_human` the person is selected at start.
 @export var initial_difficulty := "normal"
 
-const NAMES := {"easy": "UI_AI_DIFFICULTY_EASY", "normal": "UI_AI_DIFFICULTY_NORMAL", "hard": "UI_AI_DIFFICULTY_HARD"}
+const NAMES := {
+	"easy": "UI_AI_DIFFICULTY_EASY",
+	"normal": "UI_AI_DIFFICULTY_NORMAL",
+	"hard": "UI_AI_DIFFICULTY_HARD"
+}
 
 
 func _ready() -> void:

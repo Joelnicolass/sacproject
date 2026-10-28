@@ -49,10 +49,10 @@ const GROUP := &"divine_sight_eye"
 @export var frames_v := 4
 @export_range(0.0166, 1.0, 0.0001, "suffix:s") var frame_s := 0.1333
 
-
 ## rising_s in ticks (the frames count ticks).
 var rising_ticks: int:
-	get: return MatchClock.ticks_for(rising_s)
+	get:
+		return MatchClock.ticks_for(rising_s)
 var slot := 0
 var ability: AbilityType
 var velocity := Vector3.ZERO
@@ -104,16 +104,41 @@ func _ready() -> void:
 		return
 	_born = MatchClock.now()
 	if DebugLog.on(&"eye"):
-		print("eye %s of %s spawns at (%.3f, %.3f, %.3f) v (%.3f, %.3f, %.3f) side %d (frame %d)" % [name, _shooter_name, position.x,
-			position.y, position.z, velocity.x, velocity.y, velocity.z, slot, _born])
+		print(
+			(
+				"eye %s of %s spawns at (%.3f, %.3f, %.3f) v (%.3f, %.3f, %.3f) side %d (frame %d)"
+				% [
+					name,
+					_shooter_name,
+					position.x,
+					position.y,
+					position.z,
+					velocity.x,
+					velocity.y,
+					velocity.z,
+					slot,
+					_born
+				]
+			)
+		)
 
 
 func _process(_delta: float) -> void:
 	if _material:
 		_material.albedo_color.a = clampf(scale.x * scale.x, 0.0, 1.0)
 		var cells := frames_h * frames_v
-		var cell := posmod(floori(float(Engine.get_physics_frames() - _first_tick) / maxi(1, MatchClock.ticks_for(frame_s))), cells)
-		_material.uv1_offset = Vector3(float(cell % frames_h) / frames_h, float(floori(float(cell) / frames_h)) / frames_v, 0.0)
+		var cell := posmod(
+			floori(
+				(
+					float(Engine.get_physics_frames() - _first_tick)
+					/ maxi(1, MatchClock.ticks_for(frame_s))
+				)
+			),
+			cells
+		)
+		_material.uv1_offset = Vector3(
+			float(cell % frames_h) / frames_h, float(floori(float(cell) / frames_h)) / frames_v, 0.0
+		)
 
 
 func _physics_process(_delta: float) -> void:
@@ -134,7 +159,11 @@ func _physics_process(_delta: float) -> void:
 
 
 func lifetime_ticks() -> int:
-	return rising_ticks + roundi(ability.duration_s * MatchClock.TICKS_PER_SECOND_F) if ability else rising_ticks
+	return (
+		rising_ticks + roundi(ability.duration_s * MatchClock.TICKS_PER_SECOND_F)
+		if ability
+		else rising_ticks
+	)
 
 
 ## False when the eye is over.
@@ -144,7 +173,11 @@ func _step(at_frame: int) -> bool:
 	var grown := minf(1.0, minf(float(frame), lifetime - float(frame)) / float(rising_ticks - 1))
 	scale = Vector3.ONE * maxf(grown, 0.001)
 	if frame < rising_ticks:
-		position.y = _height(position) + 0.5 * flying_height + float(frame) * (0.5 * flying_height) / float(rising_ticks - 1)
+		position.y = (
+			_height(position)
+			+ 0.5 * flying_height
+			+ float(frame) * (0.5 * flying_height) / float(rising_ticks - 1)
+		)
 		return true
 	if not vision.watching:
 		vision.watching = true
@@ -153,11 +186,24 @@ func _step(at_frame: int) -> bool:
 		var travel := frame - rising_ticks
 		if float(travel) * ability.speed_m_s < MatchClock.TICKS_PER_SECOND_F * ability.cast_range_m:
 			velocity = velocity.normalized() * ability.speed_m_s
-		elif float(travel - 1) * ability.speed_m_s < MatchClock.TICKS_PER_SECOND_F * ability.cast_range_m:
+		elif (
+			float(travel - 1) * ability.speed_m_s
+			< MatchClock.TICKS_PER_SECOND_F * ability.cast_range_m
+		):
 			velocity = Vector3.ZERO
 		target = _closest_foe()
 		if target and DebugLog.on(&"eye"):
-			print("eye %s locks %s on frame %d (at %.3f m)" % [name, target.name, MatchClock.now(), BodyNudge.center(target).distance_to(position)])
+			print(
+				(
+					"eye %s locks %s on frame %d (at %.3f m)"
+					% [
+						name,
+						target.name,
+						MatchClock.now(),
+						BodyNudge.center(target).distance_to(position)
+					]
+				)
+			)
 	elif target != null:
 		if _alive(target):
 			var box := BodyNudge.box(target)

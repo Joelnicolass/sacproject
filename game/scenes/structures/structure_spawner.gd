@@ -20,15 +20,24 @@ func _ready() -> void:
 
 ## Raises `scene` (one of `scenes`) over `fount` for `slot`. `rising`: it is born at build_progress 0 (a cast that starts; the cast
 ## raises it), else standing. Returns the tower, or null on a client or an unknown scene.
-func spawn_tower(scene: PackedScene, fount: ManafountBody, slot: int, yaw: float, rising := false) -> CastTower:
+func spawn_tower(
+	scene: PackedScene, fount: ManafountBody, slot: int, yaw: float, rising := false
+) -> CastTower:
 	var index := scenes.find(scene)
 	if index < 0 or fount == null:
 		return null
 	_serial += 1
 	var at := fount.anchor()
 	var data := {
-		"name": "Tower%d" % _serial, "scene": index, "slot": slot, "yaw": yaw,
-		"x": at.x, "y": at.y, "z": at.z, "fount": str(fount.get_path()), "rising": rising,
+		"name": "Tower%d" % _serial,
+		"scene": index,
+		"slot": slot,
+		"yaw": yaw,
+		"x": at.x,
+		"y": at.y,
+		"z": at.z,
+		"fount": str(fount.get_path()),
+		"rising": rising,
 	}
 	var tower := spawn_here(data) as CastTower
 	if tower != null and not tower.is_rising():

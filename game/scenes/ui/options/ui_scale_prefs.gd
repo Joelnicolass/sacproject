@@ -46,7 +46,11 @@ func _initial() -> float:
 	if text.is_valid_float() and is_finite(text.to_float()):
 		return text.to_float()
 	var stored: Variant = UserSettings.read_value(SECTION, KEY, fallback)
-	return float(stored) if typeof(stored) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(stored)) else fallback
+	return (
+		float(stored)
+		if typeof(stored) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(stored))
+		else fallback
+	)
 
 
 func _cli_text() -> String:

@@ -44,7 +44,14 @@ func clear() -> void:
 
 
 ## Call every frame. `center` and `radius_m` bound the scan to what the field draws.
-func update(delta: float, tree: SceneTree, space: Node3D, center: Vector2, radius_m: float, ground_y: Callable) -> void:
+func update(
+	delta: float,
+	tree: SceneTree,
+	space: Node3D,
+	center: Vector2,
+	radius_m: float,
+	ground_y: Callable
+) -> void:
 	_scan_left -= delta
 	if _scan_left <= 0.0:
 		_scan_left = scan_s
@@ -89,7 +96,9 @@ func update(delta: float, tree: SceneTree, space: Node3D, center: Vector2, radiu
 	count = n
 
 
-func _scan(tree: SceneTree, space: Node3D, center: Vector2, radius_m: float, ground_y: Callable) -> void:
+func _scan(
+	tree: SceneTree, space: Node3D, center: Vector2, radius_m: float, ground_y: Callable
+) -> void:
 	var seen := {}
 	var found: Array[Node3D] = []
 	for group in GROUPS:
@@ -106,8 +115,17 @@ func _scan(tree: SceneTree, space: Node3D, center: Vector2, radius_m: float, gro
 			if local.y - floor_y > 2.2:
 				continue
 			found.append(body)
-	found.sort_custom(func(a: Node3D, b: Node3D) -> bool:
-		return space.to_local(a.global_position).distance_squared_to(Vector3(center.x, 0.0, center.y)) < space.to_local(b.global_position).distance_squared_to(Vector3(center.x, 0.0, center.y)))
+	found.sort_custom(
+		func(a: Node3D, b: Node3D) -> bool:
+			return (
+				space.to_local(a.global_position).distance_squared_to(
+					Vector3(center.x, 0.0, center.y)
+				)
+				< space.to_local(b.global_position).distance_squared_to(
+					Vector3(center.x, 0.0, center.y)
+				)
+			)
+	)
 	if found.size() > LIVE_MAX:
 		found.resize(LIVE_MAX)
 	# Keep the drop memory of the bodies that stay.

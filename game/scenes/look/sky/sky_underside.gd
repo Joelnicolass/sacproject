@@ -15,7 +15,11 @@ var _was_shown := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if plane else PackedStringArray(["The `plane` socket is missing (the background MeshInstance3D)."])
+	return (
+		PackedStringArray()
+		if plane
+		else PackedStringArray(["The `plane` socket is missing (the background MeshInstance3D)."])
+	)
 
 
 func apply_look(profile: LookProfile, _rig: LookRig) -> void:

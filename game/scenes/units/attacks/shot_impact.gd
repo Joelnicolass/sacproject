@@ -45,7 +45,9 @@ static func shooter_of(holder: Node) -> Node:
 ## peer. `holder`: the RangedShot or ShotStrike (damage and from_slot already scaled by the shooter). `target`: the body
 ## hit, or null (ground, range end). Server (or solo) only. Returns the damage the body took from the direct hit; 0 when
 ## it took none or an impact scene decided.
-static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3, ability: AbilityType) -> float:
+static func land(
+	holder: Node3D, look: ShotLook, target: Node3D, point: Vector3, ability: AbilityType
+) -> float:
 	var hit := target if target != null and is_instance_valid(target) else null
 	var taken := 0.0
 	if look.impact:
@@ -60,7 +62,14 @@ static func land(holder: Node3D, look: ShotLook, target: Node3D, point: Vector3,
 	elif hit and ProjectileTargets.is_live_body(hit):
 		# A local preload: the variants (SplashImpact, DirectImpact, …) already name theirs _HEALTH.
 		var direct_ranged: StringName = preload("res://scenes/components/health.gd").DIRECT_RANGED
-		taken = (hit.get_node("Health") as Health).damage_typed(float(holder.get("damage")), direct_ranged, int(holder.get("from_slot")), false, false, mods_of(holder))
+		taken = (hit.get_node("Health") as Health).damage_typed(
+			float(holder.get("damage")),
+			direct_ranged,
+			int(holder.get("from_slot")),
+			false,
+			false,
+			mods_of(holder)
+		)
 		ProjectileTargets.report(hit, taken, direct_ranged)  # a debug tool reads this line
 		LifeDrain.feed(shooter_of(holder), hit, taken)
 	for fx: ParticleType in look.impact_fx:

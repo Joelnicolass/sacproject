@@ -6,6 +6,7 @@ extends RefCounted
 ## When every voice is busy, the one of the lowest priority (the oldest among equals) is the one to take over, unless it
 ## is above the newcomer.
 
+
 class Voice:
 	var player: Node
 	var cue: SoundCue
@@ -59,8 +60,11 @@ func pick(priority: int, budget: int) -> Voice:
 				idle = voice
 			continue
 		playing += 1
-		if victim == null or voice.cue.priority < victim.cue.priority \
-				or (voice.cue.priority == victim.cue.priority and voice.started < victim.started):
+		if (
+			victim == null
+			or voice.cue.priority < victim.cue.priority
+			or (voice.cue.priority == victim.cue.priority and voice.started < victim.started)
+		):
 			victim = voice
 	if idle != null and playing < budget:
 		return idle

@@ -69,7 +69,10 @@ func apply_quality(preset: LookQuality) -> void:
 	_max_lights = preset.fx_max_lights if preset else fallback_max_lights
 	while _slots.size() > _max_lights:
 		_retire(_weakest(_camera()))
-	while _free.size() + _slots.size() + _fading.size() > _max_lights + max_fading and not _free.is_empty():
+	while (
+		_free.size() + _slots.size() + _fading.size() > _max_lights + max_fading
+		and not _free.is_empty()
+	):
 		_free.pop_back().queue_free()
 
 
@@ -118,7 +121,10 @@ func shadow_count() -> int:
 
 ## "fx_luces activas <n> tope <m> sombras <s>" for the labs.
 func report() -> String:
-	return "fx_luces activas %d tope %d fundiendo %d sombras %d" % [active_count(), max_lights(), fading_count(), shadow_count()]
+	return (
+		"fx_luces activas %d tope %d fundiendo %d sombras %d"
+		% [active_count(), max_lights(), fading_count(), shadow_count()]
+	)
 
 
 func _process(delta: float) -> void:
@@ -152,7 +158,13 @@ func _open_slot(spec: FxLightSpec, at: Vector3) -> _Slot:
 		return slot
 	var camera := _camera()
 	var weakest := _weakest(camera)
-	if weakest == null or _priority(weakest.spec, _level(weakest), weakest.at, camera) >= _priority(spec, 1.0, at, camera):
+	if (
+		weakest == null
+		or (
+			_priority(weakest.spec, _level(weakest), weakest.at, camera)
+			>= _priority(spec, 1.0, at, camera)
+		)
+	):
 		return null
 	_slots.erase(weakest)
 	_slots.append(weakest)

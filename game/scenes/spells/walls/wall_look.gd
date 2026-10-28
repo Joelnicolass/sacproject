@@ -21,7 +21,10 @@ func _ready() -> void:
 	shader.set_shader_parameter(&"reach", reach)
 	shader.set_shader_parameter(&"thickness", wall.thickness_m())
 	shader.set_shader_parameter(&"ground", _land_along(reach))
-	custom_aabb = AABB(Vector3(-0.5 * reach, -10.0, -wall.thickness_m()), Vector3(reach, 40.0, 2.0 * wall.thickness_m()))
+	custom_aabb = AABB(
+		Vector3(-0.5 * reach, -10.0, -wall.thickness_m()),
+		Vector3(reach, 40.0, 2.0 * wall.thickness_m())
+	)
 
 
 func _process(_delta: float) -> void:

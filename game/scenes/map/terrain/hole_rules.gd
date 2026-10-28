@@ -14,7 +14,9 @@ const DEPTH_BAND_M := 50.0
 
 ## True when the vertex at (column, row) may be taken away. `parts` are the world places of the parts of every building, `bases`
 ## the lattice vertices under every base (`bases_of`).
-static func can_remove(shape: Terrain, vertex: Vector2i, parts: PackedVector3Array, bases: Array[Rect2i] = []) -> bool:
+static func can_remove(
+	shape: Terrain, vertex: Vector2i, parts: PackedVector3Array, bases: Array[Rect2i] = []
+) -> bool:
 	if not is_open(shape, vertex) or is_under_base(vertex, bases):
 		return false
 	var spot := TerrainGrid.point_of(vertex)
@@ -24,7 +26,12 @@ static func can_remove(shape: Terrain, vertex: Vector2i, parts: PackedVector3Arr
 
 ## True for a land vertex inside the rim that is still there (the building parts aside).
 static func is_open(shape: Terrain, vertex: Vector2i) -> bool:
-	if vertex.x < 0 or vertex.y < 0 or vertex.x >= TerrainGrid.SIDE - 1 or vertex.y >= TerrainGrid.SIDE - 1:
+	if (
+		vertex.x < 0
+		or vertex.y < 0
+		or vertex.x >= TerrainGrid.SIDE - 1
+		or vertex.y >= TerrainGrid.SIDE - 1
+	):
 		return false
 	var id := TerrainGrid.id_of(vertex)
 	return shape.index.land[id] != 0 and not shape.field().is_removed(id)
@@ -43,7 +50,10 @@ static func is_near_part(spot: Vector2, height: float, parts: PackedVector3Array
 	for part in parts:
 		if not is_nan(height) and absf(part.y - height) > DEPTH_BAND_M:
 			continue
-		if Vector2(part.x, part.z).distance_squared_to(spot) < BUILDING_CLEARANCE_M * BUILDING_CLEARANCE_M:
+		if (
+			Vector2(part.x, part.z).distance_squared_to(spot)
+			< BUILDING_CLEARANCE_M * BUILDING_CLEARANCE_M
+		):
 			return true
 	return false
 
@@ -95,7 +105,10 @@ static func point_on(shape: Terrain, vertex: Vector2i) -> Vector3:
 		var inside := spot + side * TerrainGrid.CELL_M * 0.25
 		height = shape.height_at(inside.x, inside.y)
 	if is_nan(height):
-		height = TerrainRules.height_in(spot.x, spot.y, shape.index.ground, shape.index.cells) + shape.field().at(TerrainGrid.id_of(vertex))
+		height = (
+			TerrainRules.height_in(spot.x, spot.y, shape.index.ground, shape.index.cells)
+			+ shape.field().at(TerrainGrid.id_of(vertex))
+		)
 	return Vector3(spot.x, shape.lowest() if is_nan(height) else height, spot.y)
 
 

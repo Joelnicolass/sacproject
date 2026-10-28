@@ -54,7 +54,12 @@ func text_for(slot: int) -> String:
 
 ## The team line for `slot`: empty with no result, no player, or a winner alone (1v1, all against all).
 func team_text_for(slot: int) -> String:
-	if match_state == null or not match_state.has_result() or slot <= 0 or match_state.winner_slots.size() < 2:
+	if (
+		match_state == null
+		or not match_state.has_result()
+		or slot <= 0
+		or match_state.winner_slots.size() < 2
+	):
 		return ""
 	var names := PackedStringArray()
 	for winner in match_state.winner_slots:

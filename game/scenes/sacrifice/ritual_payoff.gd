@@ -30,7 +30,13 @@ func pay() -> void:
 					system.announce_conversion(ritual.caster_slot, ritual.souls, creature)
 			purse.add(ritual.souls)
 		_free(creature)
-	if DebugLog.on(&"ritual"): print("ritual: complete, %d souls for slot %d (altar of slot %d)" % [ritual.souls, ritual.caster_slot, ritual.target_slot])
+	if DebugLog.on(&"ritual"):
+		print(
+			(
+				"ritual: complete, %d souls for slot %d (altar of slot %d)"
+				% [ritual.souls, ritual.caster_slot, ritual.target_slot]
+			)
+		)
 
 
 ## A hanging rag doll is handed back to its clips before the body goes (a body that simulates is never freed with `free()`).

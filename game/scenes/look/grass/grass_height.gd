@@ -58,7 +58,12 @@ static func _fill_holes(heights: PackedFloat32Array, land: PackedByteArray) -> v
 		for at in frontier:
 			var x := at % SIZE
 			var y := at / SIZE
-			for other in [at + 1 if x + 1 < SIZE else -1, at - 1 if x > 0 else -1, at + SIZE if y + 1 < SIZE else -1, at - SIZE if y > 0 else -1]:
+			for other in [
+				at + 1 if x + 1 < SIZE else -1,
+				at - 1 if x > 0 else -1,
+				at + SIZE if y + 1 < SIZE else -1,
+				at - SIZE if y > 0 else -1
+			]:
 				if other >= 0 and filled[other] == 0 and queued[other] == 0:
 					queued[other] = 1
 					next.append(other)

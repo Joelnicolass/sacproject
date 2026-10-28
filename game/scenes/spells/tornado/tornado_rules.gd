@@ -27,14 +27,24 @@ const SPIRAL_TURN := 5.0 * 360.0 / TAU
 ## The radius of each of the seven points of the axis.
 static func radii() -> PackedFloat32Array:
 	var span := FOOT_M - WIDE_M
-	return PackedFloat32Array([
-		TOP_RADIUS_M, WIDE_M + span * 0.6, WIDE_M + span * 0.6, WIDE_M + span * 0.675,
-		WIDE_M + span * 0.75, WIDE_M + span * 0.95, FOOT_M])
+	return PackedFloat32Array(
+		[
+			TOP_RADIUS_M,
+			WIDE_M + span * 0.6,
+			WIDE_M + span * 0.6,
+			WIDE_M + span * 0.675,
+			WIDE_M + span * 0.75,
+			WIDE_M + span * 0.95,
+			FOOT_M
+		]
+	)
 
 
 ## The seven points of the axis: the top, the foot (`size` of the way from the top to `foot`), and between them points that the winds
 ## (`phases`, four angles) push sideways by up to 0.3 of the height.
-static func axis(top: Vector3, foot: Vector3, size: float, phases: PackedFloat32Array) -> PackedVector3Array:
+static func axis(
+	top: Vector3, foot: Vector3, size: float, phases: PackedFloat32Array
+) -> PackedVector3Array:
 	var bottom := top + size * (foot - top)
 	var step := (bottom - top) / 6.0
 	var p2 := top + 1.5 * step
@@ -59,8 +69,18 @@ static func centre(points: PackedVector3Array, radii_m: PackedFloat32Array, at: 
 	var i := 0 if t <= 0.5 else 3
 	var u := 2.0 * t if t <= 0.5 else 2.0 * (t - 0.5)
 	var v := 1.0 - u
-	var point := v * v * v * points[i] + 3.0 * v * v * u * points[i + 1] + 3.0 * v * u * u * points[i + 2] + u * u * u * points[i + 3]
-	var radius := v * v * v * radii_m[i] + 3.0 * v * v * u * radii_m[i + 1] + 3.0 * v * u * u * radii_m[i + 2] + u * u * u * radii_m[i + 3]
+	var point := (
+		v * v * v * points[i]
+		+ 3.0 * v * v * u * points[i + 1]
+		+ 3.0 * v * u * u * points[i + 2]
+		+ u * u * u * points[i + 3]
+	)
+	var radius := (
+		v * v * v * radii_m[i]
+		+ 3.0 * v * v * u * radii_m[i + 1]
+		+ 3.0 * v * u * u * radii_m[i + 2]
+		+ u * u * u * radii_m[i + 3]
+	)
 	return Vector4(point.x, point.y, point.z, radius)
 
 
@@ -78,7 +98,9 @@ static func pull(at: Vector3, centre_at: Vector4) -> Vector3:
 		dz *= scale
 	var c := cos(SPIRAL_TURN)
 	var s := sin(SPIRAL_TURN)
-	var target := Vector3(centre_at.x + c * dx - s * dz, at.y + RISE_M, centre_at.z + s * dx + c * dz)
+	var target := Vector3(
+		centre_at.x + c * dx - s * dz, at.y + RISE_M, centre_at.z + s * dx + c * dz
+	)
 	var delta := target - at
 	var most := STEP_M / MatchClock.TICKS_PER_SECOND_F
 	if delta.length() > most:

@@ -22,7 +22,10 @@ func pick(body: UnitBody, center: Vector3, within: float) -> Node3D:
 			if not TargetRules.is_valid_foe_of(-1, node, body, false):
 				continue
 			var other := node as Node3D
-			var d := Vector2(other.global_position.x - center.x, other.global_position.z - center.z).length()
+			var d := (
+				Vector2(other.global_position.x - center.x, other.global_position.z - center.z)
+				. length()
+			)
 			if d <= best_d:
 				best_d = d
 				best = other

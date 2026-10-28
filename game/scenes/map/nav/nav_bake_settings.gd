@@ -53,10 +53,28 @@ func apply_to(navmesh: NavigationMesh) -> void:
 func apply_zone(navmesh: NavigationMesh, zone: Rect2) -> void:
 	navmesh.border_size = zone_border_m
 	var box := zone.grow(zone_border_m)
-	navmesh.filter_baking_aabb = AABB(Vector3(box.position.x, floor_m, box.position.y), Vector3(box.size.x, ceiling_m - floor_m, box.size.y))
+	navmesh.filter_baking_aabb = AABB(
+		Vector3(box.position.x, floor_m, box.position.y),
+		Vector3(box.size.x, ceiling_m - floor_m, box.size.y)
+	)
 
 
 ## Every number that changes the bake, as text, for the source hash.
 func fingerprint() -> String:
-	return "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % [cell_size, cell_height, agent_radius, agent_height, agent_max_climb,
-		agent_max_slope, region_min_size, region_merge_size, zone_m, zone_border_m, floor_m, ceiling_m]
+	return (
+		"%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s"
+		% [
+			cell_size,
+			cell_height,
+			agent_radius,
+			agent_height,
+			agent_max_climb,
+			agent_max_slope,
+			region_min_size,
+			region_merge_size,
+			zone_m,
+			zone_border_m,
+			floor_m,
+			ceiling_m
+		]
+	)

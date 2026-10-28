@@ -22,7 +22,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first, then a soul the wizard can fetch, then the range (the order of the whole book).
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():

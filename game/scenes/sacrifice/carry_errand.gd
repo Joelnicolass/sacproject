@@ -48,12 +48,20 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if body == null:
 		warnings.append("Assign to `body` the doctor (DoctorBody) that runs the errand.")
 	if steps == null:
-		warnings.append("Assign to `steps` the FsmMachine with Wait, Approach, Pump, Haul and Over.")
+		warnings.append(
+			"Assign to `steps` the FsmMachine with Wait, Approach, Pump, Haul and Over."
+		)
 	return warnings
 
 
 ## Server or solo. Before the doctor drops. `converted_soul` only for Convert.
-func configure(errand_kind: Ritual.Kind, slot: int, target: UnitBody, destination: RitualSite, converted_soul: Soul = null) -> void:
+func configure(
+	errand_kind: Ritual.Kind,
+	slot: int,
+	target: UnitBody,
+	destination: RitualSite,
+	converted_soul: Soul = null
+) -> void:
 	kind = errand_kind
 	caster_slot = slot
 	creature = target
@@ -74,7 +82,13 @@ func soul_is_waiting() -> bool:
 	if soul.state != Soul.State.NORMAL and soul.state != Soul.State.EMERGING:
 		return false
 	var corpse := soul.corpse as UnitBody
-	return corpse != null and is_instance_valid(corpse) and corpse.is_inside_tree() and corpse.is_dead() and Captive.of(corpse) != null
+	return (
+		corpse != null
+		and is_instance_valid(corpse)
+		and corpse.is_inside_tree()
+		and corpse.is_dead()
+		and Captive.of(corpse) != null
+	)
 
 
 ## Convert: the soul goes back to being convertible by the caster.
@@ -99,7 +113,8 @@ func site_standing() -> bool:
 
 ## Haul: stands at the site with the creature and lets the ritual start.
 func arrive() -> void:
-	if arrived: return
+	if arrived:
+		return
 	arrived = true
 	body.stop()
 	reached_site.emit()
@@ -113,13 +128,22 @@ func hand_over() -> void:
 
 ## Lets the creature go where it hangs, for `reason` (Captive.Release).
 func release_creature(reason := Captive.Release.LET_GO) -> void:
-	if captive != null and is_instance_valid(captive) and (captive.holder == body or captive.body.is_reviving()):
+	if (
+		captive != null
+		and is_instance_valid(captive)
+		and (captive.holder == body or captive.body.is_reviving())
+	):
 		captive.release(reason)
 
 
 func _is_alive_own() -> bool:
-	return creature != null and is_instance_valid(creature) and creature.is_inside_tree() \
-		and not creature.is_dead() and creature.owner_slot == creature_owner
+	return (
+		creature != null
+		and is_instance_valid(creature)
+		and creature.is_inside_tree()
+		and not creature.is_dead()
+		and creature.owner_slot == creature_owner
+	)
 
 
 func _on_landed() -> void:

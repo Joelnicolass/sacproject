@@ -118,7 +118,12 @@ func _on_orders_requested(units: Array, command: String) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if channel == null:
-		out.append("Assign `channel` (the child AudioStreamPlayer): without it the creatures do not answer.")
+		(
+			out
+			. append(
+				"Assign `channel` (the child AudioStreamPlayer): without it the creatures do not answer."
+			)
+		)
 	if selection == null:
 		out.append("Assign `selection` (%Selection): without it selecting says nothing.")
 	if orders == null:

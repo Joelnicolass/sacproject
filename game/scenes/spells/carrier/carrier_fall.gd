@@ -23,7 +23,11 @@ var _tick := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
 
 ## Server or solo. The fall starts on the carrier's place (buried), aimed at `target`; the cow looks at it.
@@ -47,7 +51,9 @@ func step() -> void:
 	var at := carrier.global_position
 	at.y = goal.y * rel + _start_y * (1.0 - rel) + 4.0 * peak_m * rel * (1.0 - rel)
 	if left > 0:
-		var diff := Vector2(goal.x - at.x, goal.z - at.z) / float(left) * (2.0 if left >= 2 else 1.0)
+		var diff := (
+			Vector2(goal.x - at.x, goal.z - at.z) / float(left) * (2.0 if left >= 2 else 1.0)
+		)
 		at.x += diff.x
 		at.z += diff.y
 	elif left == 0:
@@ -68,10 +74,11 @@ func _center() -> Vector3:
 
 
 func _land(at: Vector3) -> void:
-	var ground := GroundRay.surface_y(carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
+	var ground := GroundRay.surface_y(
+		carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), NAN
+	)
 	if not is_nan(ground) and at.y < ground:
 		carrier.landed.emit(Vector3(at.x, ground, at.z))
 		carrier.stop()
 	elif is_nan(ground) and at.y < -_VOID_DEPTH_M:
 		carrier.stop()
-

@@ -17,17 +17,40 @@ const GROUPS: Array[StringName] = [WizardBody.GROUP, UnitBody.GROUP, MapBuilding
 ## Hurts every body around `center` except `direct` (which the caller already hit with the whole amount).
 ## `kind` is the Health damage kind: splash spell (Wrath, Fireball, Swarm, Steam Cloud) or splash ranged
 ## (a creature's shot). `mods`: the DamageMod bits (IGNITE).
-static func deal(tree: SceneTree, center: Vector3, amount: float, radius: float, direct: Node3D, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0, attacker: Node = null) -> void:
+static func deal(
+	tree: SceneTree,
+	center: Vector3,
+	amount: float,
+	radius: float,
+	direct: Node3D,
+	from_slot: int,
+	kind: StringName = _HEALTH.SPLASH_SPELL,
+	mods := 0,
+	attacker: Node = null
+) -> void:
 	for body in bodies_within(tree, center, radius, direct):
 		if float(body.get_node("Health").get("maximum")) <= 0.0:
 			continue
-		hurt(body, amount * maxf(0.0, 1.0 - box_distance(body, center) / radius), from_slot, kind, mods, attacker)
+		hurt(
+			body,
+			amount * maxf(0.0, 1.0 - box_distance(body, center) / radius),
+			from_slot,
+			kind,
+			mods,
+			attacker
+		)
 
 
 ## The one walk of a splash: live bodies of `groups`
 ## whose hit box is within `radius` of `center`, but `except`, in group order (so the result does not depend on the
 ## scene tree). Wizards and creatures go first. DeathCloud asks with creatures and wizards only.
-static func bodies_within(tree: SceneTree, center: Vector3, radius: float, except: Node3D = null, groups: Array[StringName] = GROUPS) -> Array[Node3D]:
+static func bodies_within(
+	tree: SceneTree,
+	center: Vector3,
+	radius: float,
+	except: Node3D = null,
+	groups: Array[StringName] = GROUPS
+) -> Array[Node3D]:
 	var found: Array[Node3D] = []
 	if radius <= 0.0:
 		return found
@@ -35,7 +58,12 @@ static func bodies_within(tree: SceneTree, center: Vector3, radius: float, excep
 	for group in groups:
 		for node in tree.get_nodes_in_group(group):
 			var body := node as Node3D
-			if body == null or body == except or seen.has(body) or not ProjectileTargets.is_live_body(body):
+			if (
+				body == null
+				or body == except
+				or seen.has(body)
+				or not ProjectileTargets.is_live_body(body)
+			):
 				continue
 			seen[body] = true
 			if box_distance(body, center) <= radius:
@@ -46,8 +74,17 @@ static func bodies_within(tree: SceneTree, center: Vector3, radius: float, excep
 ## `mods`: the DamageMod bits the hit carries (Health.IGNITE: Fireball, Steam Cloud, fkba/cfba shots, the oil's blast).
 ## F164b: `attacker` is the creature that fired the shot (null: a spell or an effect with no drain); LifeDrain.feed gives it
 ## back `taken · its drain`.
-static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName = _HEALTH.SPLASH_SPELL, mods := 0, attacker: Node = null) -> void:
-	var taken := (body.get_node("Health") as Health).damage_typed(amount, kind, from_slot, false, false, mods)
+static func hurt(
+	body: Node3D,
+	amount: float,
+	from_slot: int,
+	kind: StringName = _HEALTH.SPLASH_SPELL,
+	mods := 0,
+	attacker: Node = null
+) -> void:
+	var taken := (body.get_node("Health") as Health).damage_typed(
+		amount, kind, from_slot, false, false, mods
+	)
 	ProjectileTargets.report(body, taken, kind)
 	LifeDrain.feed(attacker, body, taken)
 
@@ -59,7 +96,10 @@ static func hurt(body: Node3D, amount: float, from_slot: int, kind: StringName =
 static func box_distance(body: Node3D, point: Vector3) -> float:
 	if body is MapBuilding:
 		var box := (body as MapBuilding).hit_box()
-		return _outside(body.global_transform.affine_inverse() * point - (box.position + box.size * 0.5), box.size * 0.5)
+		return _outside(
+			body.global_transform.affine_inverse() * point - (box.position + box.size * 0.5),
+			box.size * 0.5
+		)
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
 	if col == null or col.shape == null:
 		return body.global_position.distance_to(point)
@@ -78,5 +118,9 @@ static func box_distance(body: Node3D, point: Vector3) -> float:
 
 
 static func _outside(local: Vector3, half: Vector3) -> float:
-	var outside := Vector3(maxf(absf(local.x) - half.x, 0.0), maxf(absf(local.y) - half.y, 0.0), maxf(absf(local.z) - half.z, 0.0))
+	var outside := Vector3(
+		maxf(absf(local.x) - half.x, 0.0),
+		maxf(absf(local.y) - half.y, 0.0),
+		maxf(absf(local.z) - half.z, 0.0)
+	)
 	return outside.length()

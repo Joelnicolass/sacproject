@@ -34,7 +34,10 @@ func _ready() -> void:
 	if Engine.is_editor_hint() or zone == null:
 		return
 	var rng := MatchSeed.rng(["snowball", String(zone.name)])
-	_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	_axis = (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 	_turn = TAU * rng.randf_range(spin_turns.x, spin_turns.y)
 	zone.phase_changed.connect(_on_phase)
 	_on_phase(zone.phase)
@@ -69,7 +72,14 @@ func _follow_wizard() -> void:
 	var progress := clampf(float(zone.phase_ticks) / float(maxi(zone.cast_ticks, 1)), 0.0, 1.0)
 	var box := DrawnPose.box(wizard)
 	var front := wizard.facing_flat() * (maxf(box.size.x, box.size.z) * 0.5 + in_front_m)
-	global_position = Vector3(box.get_center().x, lerpf(box.position.y, box.end.y + over_head_m, progress), box.get_center().z) + front
+	global_position = (
+		Vector3(
+			box.get_center().x,
+			lerpf(box.position.y, box.end.y + over_head_m, progress),
+			box.get_center().z
+		)
+		+ front
+	)
 	ball.scale = Vector3.ONE * maxf(progress, 0.01)
 
 
@@ -78,4 +88,6 @@ func _fly() -> void:
 	var seconds := float(maxi(zone.arm_ticks, 1)) / MatchClock.TICKS_PER_SECOND_F
 	var t := clampf(float(zone.phase_ticks) / float(maxi(zone.arm_ticks, 1)), 0.0, 1.0)
 	var line := _from.lerp(zone.points[0], t)
-	global_position = line + Vector3(0.0, 0.5 * gravity * (t * seconds) * ((1.0 - t) * seconds), 0.0)
+	global_position = (
+		line + Vector3(0.0, 0.5 * gravity * (t * seconds) * ((1.0 - t) * seconds), 0.0)
+	)

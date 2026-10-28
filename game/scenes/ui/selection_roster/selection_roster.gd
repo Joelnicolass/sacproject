@@ -127,10 +127,12 @@ func _show_groups() -> void:
 			by_tag[tag] = []
 		by_tag[tag].append(unit)
 	var tags: Array = by_tag.keys()
-	tags.sort_custom(func(a: String, b: String) -> bool:
-		var na: int = by_tag[a].size()
-		var nb: int = by_tag[b].size()
-		return na > nb or (na == nb and a < b))
+	tags.sort_custom(
+		func(a: String, b: String) -> bool:
+			var na: int = by_tag[a].size()
+			var nb: int = by_tag[b].size()
+			return na > nb or (na == nb and a < b)
+	)
 	_ensure_cells(tags.size())
 	for i in _cells.size():
 		var cell := _cells[i]
@@ -149,7 +151,9 @@ func _show_groups() -> void:
 ## past the sixth scroll (the frame art has a fixed 2×6 grid).
 func _ensure_cells(needed: int) -> void:
 	var want := maxi(needed, capacity())
-	%Cells.custom_minimum_size.y = maxf(rows, rows + ceili(float(want - capacity()) / columns)) * cell_size.y
+	%Cells.custom_minimum_size.y = (
+		maxf(rows, rows + ceili(float(want - capacity()) / columns)) * cell_size.y
+	)
 	while _cells.size() < want:
 		var cell: RosterCell = cell_scene.instantiate()
 		cell.name = "Cell%d" % (_cells.size() + 1)
@@ -181,7 +185,10 @@ func _on_cell_activated(cell: RosterCell, shift: bool, ctrl: bool) -> void:
 		return
 	var members: Array = cell.members
 	if mode == "unit" and ctrl and not shift:
-		members = _units.filter(func(unit: Variant) -> bool: return is_instance_valid(unit) and str(unit.get("creature_tag")) == cell.tag)
+		members = _units.filter(
+			func(unit: Variant) -> bool:
+				return is_instance_valid(unit) and str(unit.get("creature_tag")) == cell.tag
+		)
 	if shift:
 		(selection as _SELECTION).remove(members)
 	else:

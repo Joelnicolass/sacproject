@@ -62,7 +62,11 @@ func _ready() -> void:
 		return
 	add_to_group(GROUP)
 	var flat := type != null and type.flattens_ground
-	max_health = max_health_override if max_health_override > 0.0 else (type.max_health if type != null else 0.0)
+	max_health = (
+		max_health_override
+		if max_health_override > 0.0
+		else (type.max_health if type != null else 0.0)
+	)
 	shelter = type != null and type.shelters_peasants
 	if not flat:
 		add_to_group(STRUCTURE_GROUP)
@@ -105,7 +109,9 @@ func hit_box() -> AABB:
 func melee_profile() -> Dictionary:
 	var c := _box.get_center()
 	var reach := maxf(absf(c.x) + _box.size.x * 0.5, absf(c.z) + _box.size.z * 0.5)
-	return {"evasion": 0.0, "resistance": 1.0, "reach": reach, "height": _box.position.y + _box.size.y}
+	return {
+		"evasion": 0.0, "resistance": 1.0, "reach": reach, "height": _box.position.y + _box.size.y
+	}
 
 
 ## The box of `Collision` is the box of the parts; the body is that box smaller by the inset. Flattening the ground: no box.
@@ -127,7 +133,12 @@ func _read_body(flat: bool) -> void:
 func _fit_to_parts() -> void:
 	var parts := BuildingFit.parts_box(visuals)
 	if parts.size == Vector3.ZERO or not collision.shape is BoxShape3D:
-		push_warning("%s: needs a MeshInstance3D part with a mesh to measure and a BoxShape3D in `collision`." % name)
+		push_warning(
+			(
+				"%s: needs a MeshInstance3D part with a mesh to measure and a BoxShape3D in `collision`."
+				% name
+			)
+		)
 		return
 	var shape := collision.shape.duplicate() as BoxShape3D
 	shape.size = parts.size

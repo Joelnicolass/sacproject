@@ -7,4 +7,3 @@ extends FsmState
 var errand: CarryErrand:
 	get:
 		return actor as CarryErrand
-

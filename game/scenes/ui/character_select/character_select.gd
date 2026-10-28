@@ -28,16 +28,30 @@ func _ready() -> void:
 	var catalog := GameCatalog.shared()
 	# The button names (`Wizard_<id>`, `God_<id>`) carry the network id, so the flows of the agent keep working.
 	for wizard in catalog.offered_wizards():
-		_add_button(_wizard_grid, "Wizard_" + wizard.id(), wizard.display_name, _wizard_group, _on_wizard.bind(wizard))
+		_add_button(
+			_wizard_grid,
+			"Wizard_" + wizard.id(),
+			wizard.display_name,
+			_wizard_group,
+			_on_wizard.bind(wizard)
+		)
 	for god in catalog.offered_gods():
-		_add_button(_god_row, "God_" + god.id(), tr("UI_CHARACTER_SELECT_GOD_BUTTON") % god.display_name, _god_group, _on_god.bind(god))
+		_add_button(
+			_god_row,
+			"God_" + god.id(),
+			tr("UI_CHARACTER_SELECT_GOD_BUTTON") % god.display_name,
+			_god_group,
+			_on_god.bind(god)
+		)
 	%Play.text = tr(confirm_text)
 	%Play.pressed.connect(_on_play)
 	_on_wizard(_wizard)
 	_on_god(_god)
 
 
-func _add_button(parent: Control, unique: String, text: String, group: ButtonGroup, on_pressed: Callable) -> void:
+func _add_button(
+	parent: Control, unique: String, text: String, group: ButtonGroup, on_pressed: Callable
+) -> void:
 	var button := pick_button.instantiate() as BaseButton
 	button.name = unique
 	button.set("text", text)

@@ -36,7 +36,12 @@ func _init() -> void:
 			continue
 		done.append(stem)
 		counts[_bake(MODEL_DIR + stem + ".tscn", stem, force)] += 1
-	print("RAGDOLL BAKE baked=%d completed=%d failed=%d" % [counts["baked"], counts["completed"], counts["failed"]])
+	print(
+		(
+			"RAGDOLL BAKE baked=%d completed=%d failed=%d"
+			% [counts["baked"], counts["completed"], counts["failed"]]
+		)
+	)
 	quit(1 if counts["failed"] > 0 else 0)
 
 
@@ -57,7 +62,12 @@ func _bake(path: String, stem: String, force: bool) -> String:
 	if not problem.is_empty():
 		printerr("bake_ragdolls: %s: %s" % [stem, problem])
 		return "failed"
-	print("bake_ragdolls: %s -> %s" % [stem, "%d bodies" % bodies if fresh else "kept, exports completed"])
+	print(
+		(
+			"bake_ragdolls: %s -> %s"
+			% [stem, "%d bodies" % bodies if fresh else "kept, exports completed"]
+		)
+	)
 	return "baked" if fresh else "completed"
 
 

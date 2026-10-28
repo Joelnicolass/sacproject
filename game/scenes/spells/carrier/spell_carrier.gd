@@ -84,7 +84,9 @@ func target_body() -> Node3D:
 
 
 ## Server or solo. The cast started: a guided carrier follows `caster` for `cast_ticks` ticks; a hunter appears; a falling one waits for `arm`.
-func begin(caster: Node3D, spell_cast: SpellType, target: Node3D, point: Vector3, cast_ticks: int) -> void:
+func begin(
+	caster: Node3D, spell_cast: SpellType, target: Node3D, point: Vector3, cast_ticks: int
+) -> void:
 	spell = spell_cast
 	if motion == Motion.GUIDED:
 		flight.begin(caster, target, point, cast_ticks)

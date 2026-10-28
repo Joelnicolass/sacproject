@@ -27,7 +27,9 @@ var cast_ticks := 0
 
 
 ## A launch of `spell` by `wizard` from `at` toward `body` (or toward `point` when there is no body).
-static func toward(wizard: WizardBody, spell: SpellType, at: Vector3, body: Node3D, point: Vector3) -> ProjectileLaunch:
+static func toward(
+	wizard: WizardBody, spell: SpellType, at: Vector3, body: Node3D, point: Vector3
+) -> ProjectileLaunch:
 	var launch := ProjectileLaunch.new()
 	launch.from = at
 	launch.aim = ProjectileTargets.body_center(body) if body else point

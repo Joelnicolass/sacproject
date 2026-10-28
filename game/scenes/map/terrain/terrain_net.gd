@@ -14,7 +14,11 @@ const SNAPSHOT_KEY := "terrain"
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
+	return (
+		PackedStringArray()
+		if terrain != null
+		else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
+	)
 
 
 func _ready() -> void:

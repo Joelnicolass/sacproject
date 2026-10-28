@@ -79,7 +79,9 @@ func baked(geometry: NavigationMeshSourceGeometryData3D, zones: PackedInt32Array
 	var fresh := []
 	fresh.resize(zones.size())
 	if zones.size() > 1:
-		var group := WorkerThreadPool.add_group_task(_bake_slot.bind(geometry, zones, fresh), zones.size(), -1, true, "NavZones")
+		var group := WorkerThreadPool.add_group_task(
+			_bake_slot.bind(geometry, zones, fresh), zones.size(), -1, true, "NavZones"
+		)
 		WorkerThreadPool.wait_for_group_task_completion(group)
 	else:
 		for slot in zones.size():
@@ -132,7 +134,9 @@ func stitched() -> NavigationMesh:
 	return out
 
 
-func _bake_slot(slot: int, geometry: NavigationMeshSourceGeometryData3D, zones: PackedInt32Array, fresh: Array) -> void:
+func _bake_slot(
+	slot: int, geometry: NavigationMeshSourceGeometryData3D, zones: PackedInt32Array, fresh: Array
+) -> void:
 	var navmesh := NavigationMesh.new()
 	_settings.apply_to(navmesh)
 	_settings.apply_zone(navmesh, _zone_rect(zones[slot]))
@@ -141,7 +145,9 @@ func _bake_slot(slot: int, geometry: NavigationMeshSourceGeometryData3D, zones: 
 
 
 func _zone_rect(zone: int) -> Rect2:
-	return Rect2(Vector2(zone % _side, zone / _side) * _settings.zone_m, Vector2.ONE * _settings.zone_m)
+	return Rect2(
+		Vector2(zone % _side, zone / _side) * _settings.zone_m, Vector2.ONE * _settings.zone_m
+	)
 
 
 ## The zone column and row of the point (x, z), cut to the grid.

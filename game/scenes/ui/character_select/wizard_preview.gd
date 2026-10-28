@@ -49,5 +49,7 @@ func _build(wizard: WizardType) -> Node3D:
 	var holder := Node3D.new()
 	holder.add_child(rig)
 	var factor := model_height / maxf(facts.height_m, 0.01)
-	holder.transform = Transform3D(Basis.from_euler(model_rotation).scaled(Vector3.ONE * factor), Vector3.ZERO)
+	holder.transform = Transform3D(
+		Basis.from_euler(model_rotation).scaled(Vector3.ONE * factor), Vector3.ZERO
+	)
 	return holder

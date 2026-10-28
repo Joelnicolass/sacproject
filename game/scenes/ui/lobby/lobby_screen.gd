@@ -69,7 +69,12 @@ func _on_connect_requested(display_name: String, host_override: String) -> void:
 	var where := endpoint.resolved() if endpoint != null else MpLobbyEndpoint.new()
 	var host := host_override if not host_override.is_empty() else where.host
 	online.apply()
-	print("lobby screen: connecting to %s:%d (%s) as \"%s\"" % [host, where.port, MpLobby.client.transport, display_name])
+	print(
+		(
+			'lobby screen: connecting to %s:%d (%s) as "%s"'
+			% [host, where.port, MpLobby.client.transport, display_name]
+		)
+	)
 	var err := MpLobby.connect_to(host, where.port, display_name)
 	if err != OK:
 		_connect_view.show_message(LobbyText.lost_text("connect_failed"))

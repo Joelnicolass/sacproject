@@ -23,7 +23,9 @@ static func reach(weapon: RangedWeapon) -> float:
 	var attack := weapon.attack
 	if attack == null:
 		return 0.0
-	return maxf(weapon.range_factor * attack.cast_range_m, attack.cast_range_m - weapon.range_margin)
+	return maxf(
+		weapon.range_factor * attack.cast_range_m, attack.cast_range_m - weapon.range_margin
+	)
 
 
 ## APPROACH out of range or without a clear line, HOLD while it turns or reloads, FIRE once it can start the shot.
@@ -32,12 +34,24 @@ static func step(weapon: RangedWeapon, target: Node3D) -> Weapon.Step:
 	if body.global_position.distance_to(ShotAim.box_point(body, target)) > reach(weapon):
 		return Weapon.Step.APPROACH
 	var led := weapon.predicted(target)
-	if not ShotAim.clear_shot(body, target, weapon.shot_origin(), led, weapon.clear_shot_drop, weapon.ground_mask):
+	if not ShotAim.clear_shot(
+		body, target, weapon.shot_origin(), led, weapon.clear_shot_drop, weapon.ground_mask
+	):
 		return Weapon.Step.APPROACH
 	var to := led - body.global_position
 	to.y = 0.0
 	var facing: Vector3 = body.facing_flat()
-	if to.length_squared() > 0.000001 and facing.angle_to(to.normalized()) > float(MatchClock.ticks_for(weapon.facing_s)) * body.locomotion.turn_rate / MatchClock.TICKS_PER_SECOND_F:
+	if (
+		to.length_squared() > 0.000001
+		and (
+			facing.angle_to(to.normalized())
+			> (
+				float(MatchClock.ticks_for(weapon.facing_s))
+				* body.locomotion.turn_rate
+				/ MatchClock.TICKS_PER_SECOND_F
+			)
+		)
+	):
 		return Weapon.Step.HOLD
 	return Weapon.Step.FIRE if RangedFire.loaded(weapon) else Weapon.Step.HOLD
 

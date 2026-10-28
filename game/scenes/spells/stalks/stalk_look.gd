@@ -60,4 +60,8 @@ func _on_mode(mode: int) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if stalk != null else PackedStringArray(["The stalk (Stalk) it draws is missing."])
+	return (
+		PackedStringArray()
+		if stalk != null
+		else PackedStringArray(["The stalk (Stalk) it draws is missing."])
+	)

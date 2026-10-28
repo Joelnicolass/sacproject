@@ -50,8 +50,15 @@ func set_owner_slot(owner_slot: int) -> void:
 	_owner_slot = owner_slot
 	var local := MpLocalSeat.slot_of(self)
 	_own = owner_slot > 0 and owner_slot == local
-	var ally := not _own and owner_slot > 0 and local > 0 and SideRelations.stance(local, owner_slot) == SideRelations.Stance.ALLY
-	set_instance_shader_parameter("fill_color", own_color if _own else (ally_color if ally else enemy_color))
+	var ally := (
+		not _own
+		and owner_slot > 0
+		and local > 0
+		and SideRelations.stance(local, owner_slot) == SideRelations.Stance.ALLY
+	)
+	set_instance_shader_parameter(
+		"fill_color", own_color if _own else (ally_color if ally else enemy_color)
+	)
 	_refresh_visible()
 
 
@@ -74,7 +81,9 @@ func _refresh_visible() -> void:
 
 
 func _on_changed(current: float, maximum: float) -> void:
-	set_instance_shader_parameter("fraction", clampf(current / maximum, 0.0, 1.0) if maximum > 0.0 else 0.0)
+	set_instance_shader_parameter(
+		"fraction", clampf(current / maximum, 0.0, 1.0) if maximum > 0.0 else 0.0
+	)
 	_refresh_visible()
 
 

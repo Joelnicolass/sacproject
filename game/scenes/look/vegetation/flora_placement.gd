@@ -25,7 +25,6 @@ const SALT_YAW := 0x68E31DA4
 const SALT_SCALE := 0x0B4F2E1D
 
 
-
 ## Stable hash of a tag (FNV-1a over its UTF-8 bytes); String.hash() is not promised to stay the same across versions.
 static func tag_hash(tag: String) -> int:
 	var h := 0x811C9DC5
@@ -50,7 +49,9 @@ static func unit(h: int) -> float:
 
 ## How many of the cell's `count` plants a density scale keeps: floor(count x scale), plus one with a probability equal to
 ## the fraction, decided by the cell's own hash.
-static func instance_count(seed: int, tag: String, tx: int, tz: int, count: int, density_scale: float) -> int:
+static func instance_count(
+	seed: int, tag: String, tx: int, tz: int, count: int, density_scale: float
+) -> int:
 	if count <= 0 or density_scale <= 0.0:
 		return 0
 	var exact := float(count) * density_scale
@@ -63,7 +64,9 @@ static func instance_count(seed: int, tag: String, tx: int, tz: int, count: int,
 
 ## The first `n` instances of cell (tx, tz) of a `texel_m` grid, STRIDE floats each: x, z in map meters, yaw in [0, TAU),
 ## scale in [scale_range.x, scale_range.y]. Any prefix of the result is the result for a smaller n.
-static func cell_instances(seed: int, tag: String, tx: int, tz: int, n: int, texel_m: float, scale_range := Vector2.ONE) -> PackedFloat32Array:
+static func cell_instances(
+	seed: int, tag: String, tx: int, tz: int, n: int, texel_m: float, scale_range := Vector2.ONE
+) -> PackedFloat32Array:
 	var out := PackedFloat32Array()
 	out.resize(maxi(n, 0) * STRIDE)
 	var tag_h := tag_hash(tag)
@@ -73,7 +76,9 @@ static func cell_instances(seed: int, tag: String, tx: int, tz: int, n: int, tex
 		out[i * STRIDE] = origin.x + local.x * texel_m
 		out[i * STRIDE + 1] = origin.y + local.y * texel_m
 		out[i * STRIDE + 2] = unit(cell_hash(seed ^ SALT_YAW, tag_h, tx, tz, i)) * TAU
-		out[i * STRIDE + 3] = lerpf(scale_range.x, scale_range.y, unit(cell_hash(seed ^ SALT_SCALE, tag_h, tx, tz, i)))
+		out[i * STRIDE + 3] = lerpf(
+			scale_range.x, scale_range.y, unit(cell_hash(seed ^ SALT_SCALE, tag_h, tx, tz, i))
+		)
 	return out
 
 

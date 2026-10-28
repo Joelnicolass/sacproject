@@ -34,11 +34,20 @@ var _lifetime := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
+
 
 ## Server or solo. The cast started: it appears where it is and looks where the wizard looks, for `cast_ticks`.
 func begin(wizard: Node3D, cast_ticks: int) -> void:
-	_lifetime = MatchClock.ticks_for(carrier.spell.duration_s) + cast_ticks if carrier.spell != null else cast_ticks
+	_lifetime = (
+		MatchClock.ticks_for(carrier.spell.duration_s) + cast_ticks
+		if carrier.spell != null
+		else cast_ticks
+	)
 	carrier.phase = SpellCarrier.Phase.CASTING
 	carrier.rotation.y = wizard.rotation.y
 
@@ -71,7 +80,9 @@ func _hunt() -> void:
 		var size := prey.global_transform.basis.get_scale().length()
 		var angle := wrapf(atan2(to.x, to.z) - carrier.rotation.y, -PI, PI)
 		if not still:
-			carrier.rotation.y += signf(angle) * minf(absf(angle), turn_rate / MatchClock.TICKS_PER_SECOND_F)
+			carrier.rotation.y += (
+				signf(angle) * minf(absf(angle), turn_rate / MatchClock.TICKS_PER_SECOND_F)
+			)
 			_pausing = _pausing and absf(angle) >= TAU / 16.0
 		ready = to.length() < size + attack_radius_m
 		able = to.length() < size + hit_radius_m
@@ -129,7 +140,9 @@ func _over() -> bool:
 ## It walks over the land, never under it.
 func _walk(step: Vector3) -> void:
 	var at := carrier.global_position + step
-	var ground := GroundRay.surface_y(carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
+	var ground := GroundRay.surface_y(
+		carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), NAN
+	)
 	carrier.global_position = at if is_nan(ground) else Vector3(at.x, maxf(at.y, ground), at.z)
 
 
@@ -140,7 +153,10 @@ func _closest() -> Node3D:
 	var best_d := INF
 	for group in groups:
 		for node in get_tree().get_nodes_in_group(group):
-			if not TargetRules.is_valid_foe_of(-1, node, null, false) or node.is_in_group(WizardBody.GROUP):
+			if (
+				not TargetRules.is_valid_foe_of(-1, node, null, false)
+				or node.is_in_group(WizardBody.GROUP)
+			):
 				continue
 			var d := from.distance_squared_to(BodyNudge.center(node as Node3D))
 			if d < best_d:

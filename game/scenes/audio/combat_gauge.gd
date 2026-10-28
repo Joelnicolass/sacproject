@@ -30,7 +30,8 @@ signal battle_changed(on: bool)
 ## UnitBody.Mode values that count as fighting.
 ## The group the creatures that may be fighting belong to.
 @export var unit_group: StringName = &"unit"
-@export var fighting_modes: Array[int] = [UnitBody.Mode.CHASE, UnitBody.Mode.ATTACK, UnitBody.Mode.SHOOT]
+@export
+var fighting_modes: Array[int] = [UnitBody.Mode.CHASE, UnitBody.Mode.ATTACK, UnitBody.Mode.SHOOT]
 
 var intensity := 0.0
 var _open := false
@@ -132,7 +133,10 @@ func measure() -> float:
 		var id := unit.get_instance_id()
 		strokes[id] = unit.weapons.swings + unit.weapons.shots
 		var struck := _strokes.has(id) and int(_strokes[id]) != int(strokes[id])
-		if (struck or fighting_modes.has(int(unit.mode))) and unit.global_position.distance_squared_to(at) <= reach:
+		if (
+			(struck or fighting_modes.has(int(unit.mode)))
+			and unit.global_position.distance_squared_to(at) <= reach
+		):
 			fighting += 1
 	_strokes = strokes
 	return clampf(float(fighting) / float(maxi(full_at, 1)), 0.0, 1.0)

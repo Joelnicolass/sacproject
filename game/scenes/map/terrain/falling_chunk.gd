@@ -18,7 +18,8 @@ var _gone_at := 0.0
 
 
 ## This moves by itself every frame, so physics interpolation must leave it alone.
-func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 func _ready() -> void:
@@ -32,7 +33,9 @@ func play(params: Dictionary) -> void:
 		queue_free()
 		return
 	var at: Vector3 = params["at"]
-	var built := FallingChunkRules.arrays(terrain.index, terrain.field().texels, TerrainGrid.vertex_id(at.x, at.z))
+	var built := FallingChunkRules.arrays(
+		terrain.index, terrain.field().texels, TerrainGrid.vertex_id(at.x, at.z)
+	)
 	if built.is_empty():
 		queue_free()
 		return

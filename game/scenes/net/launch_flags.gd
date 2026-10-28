@@ -32,11 +32,21 @@ static func _read_ai_slots(plan: LaunchPlan, ai_seat: AiSeat) -> void:
 		if slot >= 2 and slot <= plan.max_players and not slots.has(slot):
 			slots.append(slot)
 	if slots.is_empty():
-		push_warning("--ai-slots=%s: no valid slot (they go from 2 to %d, the seats of the mode)" % [raw, plan.max_players])
+		push_warning(
+			(
+				"--ai-slots=%s: no valid slot (they go from 2 to %d, the seats of the mode)"
+				% [raw, plan.max_players]
+			)
+		)
 		return
 	slots.sort()
 	if slots.size() != plan.max_players - slots[0] + 1:
-		push_warning("--ai-slots=%s: the AI slots should be the tail of the %d seats; the humans take the lowest" % [raw, plan.max_players])
+		push_warning(
+			(
+				"--ai-slots=%s: the AI slots should be the tail of the %d seats; the humans take the lowest"
+				% [raw, plan.max_players]
+			)
+		)
 	var god: GodType = MatchWire.decode_god(MpBoot.user_value("ai-god", ""), true)
 	for slot in slots:
 		plan.ai_seats.append(ai_seat.for_slot(slot, god))

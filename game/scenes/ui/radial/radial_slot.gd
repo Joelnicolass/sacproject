@@ -19,7 +19,11 @@ var _tween: Tween
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if icon_rect != null and highlight != null else PackedStringArray(["Assign icon_rect and highlight."])
+	return (
+		PackedStringArray()
+		if icon_rect != null and highlight != null
+		else PackedStringArray(["Assign icon_rect and highlight."])
+	)
 
 
 func setup(value: RadialEntry, size_px: float) -> void:

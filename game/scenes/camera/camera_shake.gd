@@ -73,7 +73,9 @@ func offset() -> Vector3:
 	if amount <= 0.0:
 		return Vector3.ZERO
 	var t := _time * noise_hz
-	var wobble := Vector3(_noise.get_noise_2d(t, 0.0), _noise.get_noise_2d(t, 100.0), 0.0).limit_length(1.0)
+	var wobble := (
+		Vector3(_noise.get_noise_2d(t, 0.0), _noise.get_noise_2d(t, 100.0), 0.0).limit_length(1.0)
+	)
 	return wobble * max_offset_m * amount
 
 

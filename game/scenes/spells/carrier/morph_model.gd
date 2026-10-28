@@ -22,7 +22,11 @@ var _set := PackedInt32Array()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if not clips.is_empty() else PackedStringArray(["The clips are missing."])
+	return (
+		PackedStringArray()
+		if not clips.is_empty()
+		else PackedStringArray(["The clips are missing."])
+	)
 
 
 func _ready() -> void:
@@ -79,7 +83,14 @@ func _show() -> void:
 	if int(at[1]) != int(at[0]):
 		_weigh(int(at[1]), float(at[2]))
 	if _clip.reveal.x >= 0.0:
-		mesh.set_instance_shader_parameter(&"reveal", lerpf(_clip.reveal.x, _clip.reveal.y, clampf(_seconds / maxf(_clip.duration_s(), 0.001), 0.0, 1.0)))
+		mesh.set_instance_shader_parameter(
+			&"reveal",
+			lerpf(
+				_clip.reveal.x,
+				_clip.reveal.y,
+				clampf(_seconds / maxf(_clip.duration_s(), 0.001), 0.0, 1.0)
+			)
+		)
 
 
 ## Pose 0 is the mesh itself; pose n is the blend shape n - 1.

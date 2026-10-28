@@ -37,7 +37,9 @@ var _fade: Tween
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if center_rect != null else PackedStringArray(["Assign center_rect."])
+	return (
+		PackedStringArray() if center_rect != null else PackedStringArray(["Assign center_rect."])
+	)
 
 
 func _ready() -> void:
@@ -146,5 +148,9 @@ func _draw_center(middle: Vector2) -> void:
 	var font := get_theme_default_font()
 	for i in lines.size():
 		var at := Vector2(middle.x - dead, middle.y + dead * 0.3 + i * (font_size + 1))
-		draw_string_outline(font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, 4, text_outline)
-		draw_string(font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, text_color)
+		draw_string_outline(
+			font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, 4, text_outline
+		)
+		draw_string(
+			font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, text_color
+		)

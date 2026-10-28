@@ -40,7 +40,14 @@ var _last_stage := GhostForm.Stage.ALIVE
 func _ready() -> void:
 	super._ready()
 	set_physics_process(false)
-	if Engine.is_editor_hint() or not _open or body == null or health == null or caster == null or ghost == null:
+	if (
+		Engine.is_editor_hint()
+		or not _open
+		or body == null
+		or health == null
+		or caster == null
+		or ghost == null
+	):
 		return
 	_last_health = health.current
 	_was_casting = caster.is_casting()
@@ -98,7 +105,10 @@ func _on_stage_changed(stage: GhostForm.Stage) -> void:
 	_last_stage = stage
 	if stage == GhostForm.Stage.DYING:
 		play(SoundEvent.DEATH)
-	elif stage == GhostForm.Stage.RISING or (stage == GhostForm.Stage.GHOST and was != GhostForm.Stage.RISING):
+	elif (
+		stage == GhostForm.Stage.RISING
+		or (stage == GhostForm.Stage.GHOST and was != GhostForm.Stage.RISING)
+	):
 		play(SoundEvent.GHOST)
 
 

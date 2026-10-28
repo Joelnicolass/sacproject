@@ -19,7 +19,8 @@ const BAD_TARGET := SpellAction.BAD_TARGET
 
 
 ## What a running cast keeps between its start and its end (the action holds it).
-class Cast extends RefCounted:
+class Cast:
+	extends RefCounted
 	var kind := Ritual.Kind.DESECRATE
 	var caster_slot := 0
 	## Desecrate: the creature sacrificed. Convert: the corpse the soul sits on.
@@ -44,7 +45,8 @@ class Cast extends RefCounted:
 
 ## The doctors' root, for the debug scenes.
 var doctors_root: Node3D:
-	get: return spawns.doctors_root
+	get:
+		return spawns.doctors_root
 
 
 func _ready() -> void:
@@ -59,7 +61,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if spawns == null or targets == null or casts == null or starter == null:
-		warnings.append("Assign `spawns`, `targets`, `casts` and `starter` (the system's children).")
+		warnings.append(
+			"Assign `spawns`, `targets`, `casts` and `starter` (the system's children)."
+		)
 	if world == null and rules == null:
 		warnings.append("Assign `world` (MatchWorld) or `rules` (MatchRules).")
 	return warnings

@@ -24,9 +24,13 @@ func enter() -> void:
 	var corpse := soul.corpse as UnitBody if soul != null and is_instance_valid(soul) else null
 	var captive := Captive.of(corpse) if corpse != null else null
 	var rules := body.rules
-	if captive == null or not captive.revive(
+	if (
+		captive == null
+		or not captive.revive(
 			rules.convert_revive_min_health if rules else 400.0,
-			rules.convert_revive_fraction if rules else 0.5):
+			rules.convert_revive_fraction if rules else 0.5
+		)
+	):
 		# If the revive fails, the soul is freed and the doctor dies.
 		errand.release_soul()
 		body.kill()

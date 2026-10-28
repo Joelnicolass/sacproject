@@ -21,7 +21,6 @@ extends Node3D
 ##
 ## Limits: the look is quake_ring.tscn (a ring of earth, MIX) plus dirt; no sound.
 
-
 ## How far the wave goes (m) and how long it takes (s).
 @export var wave_range := 50.0
 @export var wave_s := 0.5
@@ -55,7 +54,9 @@ static func launch(scene: PackedScene, from: Node, feet: Vector3, tag: String) -
 	if scene == null or from == null or not from.is_inside_tree():
 		return null
 	var spawner := from.get_tree().get_first_node_in_group(ShotSpawner.GROUP)
-	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
+	var container := (
+		spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
+	)
 	if container == null:
 		push_warning("QuakeWave: no shot container (group shot_spawner).")
 		return null
@@ -75,8 +76,24 @@ func begin() -> void:
 	_born = MatchClock.now()
 	if DebugLog.on(&"quake"):
 		var at := global_position
-		print("wave %s at (%.3f, %.3f, %.3f) range %.1f m %.2f s stuns from %.1f to %.1f m band %.3f m for %d (frame %d)" % [
-			label, at.x, at.y, at.z, wave_range, wave_s, stun_min, stun_max, band_meters(), MatchClock.ticks_for(cooldown_s), _born])
+		print(
+			(
+				"wave %s at (%.3f, %.3f, %.3f) range %.1f m %.2f s stuns from %.1f to %.1f m band %.3f m for %d (frame %d)"
+				% [
+					label,
+					at.x,
+					at.y,
+					at.z,
+					wave_range,
+					wave_s,
+					stun_min,
+					stun_max,
+					band_meters(),
+					MatchClock.ticks_for(cooldown_s),
+					_born
+				]
+			)
+		)
 
 
 func _physics_process(_delta: float) -> void:
@@ -124,8 +141,19 @@ func _step(f: int) -> void:
 		if stun_min < flat and absf(flat - loc) < half_band:
 			result = _stun(body)
 		if DebugLog.on(&"quake"):
-			print("  wave %s %s at %.3f m flat, box %.3f m: %s (frame %d)" % [label, body.name, flat,
-				SplashDamage.box_distance(body, center), result, MatchClock.now()])
+			print(
+				(
+					"  wave %s %s at %.3f m flat, box %.3f m: %s (frame %d)"
+					% [
+						label,
+						body.name,
+						flat,
+						SplashDamage.box_distance(body, center),
+						result,
+						MatchClock.now()
+					]
+				)
+			)
 
 
 ## Stuns a body of the band with the cooldown rule; what happened, for the log.
@@ -135,7 +163,11 @@ func _stun(body: Node3D) -> String:
 		return "no Stunned"
 	if stunned.stun_with_cooldown(MatchClock.ticks_for(cooldown_s)):
 		return "aturdido"
-	return "no effect, cooldown %d" % stunned.cooldown_ticks() if stunned.cooldown_ticks() > 0 else "no effect"
+	return (
+		"no effect, cooldown %d" % stunned.cooldown_ticks()
+		if stunned.cooldown_ticks() > 0
+		else "no effect"
+	)
 
 
 ## The explosion (frame 1): the look. Presentation, every peer.

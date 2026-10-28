@@ -17,7 +17,13 @@ func physics_update(_delta: float) -> void:
 	if errand.arrived:
 		return
 	var center := errand.site.center()
-	if body.is_targetable() and body.global_position.distance_to(center) < SacrificeFacts.of_rules(body.rules).carrier_stop_m:
+	if (
+		body.is_targetable()
+		and (
+			body.global_position.distance_to(center)
+			< SacrificeFacts.of_rules(body.rules).carrier_stop_m
+		)
+	):
 		errand.arrive()
 		return
 	body.motor.walk_to(center)

@@ -79,7 +79,10 @@ func _physics_process(_delta: float) -> void:
 	var on_ground := false
 	var ground := _ground_height(global_position)
 	if is_finite(ground):
-		var flat := Vector2(target_center.x - global_position.x, target_center.z - global_position.z).length()
+		var flat := (
+			Vector2(target_center.x - global_position.x, target_center.z - global_position.z)
+			. length()
+		)
 		var flying_height := minf(FLYING_HEIGHT, 0.75 * flat)
 		if next.y < ground + flying_height:
 			var lifted := velocity
@@ -88,8 +91,10 @@ func _physics_process(_delta: float) -> void:
 			on_ground = true
 	global_position = next
 	var flat_left := Vector2(target_center.x - next.x, target_center.z - next.z).length()
-	var close := (target_center - next).length() < ARRIVE_DISTANCE \
+	var close := (
+		(target_center - next).length() < ARRIVE_DISTANCE
 		or (on_ground and target_center.y < next.y and flat_left < ARRIVE_DISTANCE)
+	)
 	var hit := ProjectileTargets.pick_body(self, _query, global_position, null, from_slot, true)
 	if hit:
 		_explode(hit)

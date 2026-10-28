@@ -55,7 +55,13 @@ func _place() -> void:
 		for i in maxi(type.count, 1):
 			var angle := float(i) * 2.399963
 			var out := Vector3(cos(angle), 0.0, sin(angle))
-			points.append(Vector3(out.x * half.x, half.y * (2.0 * fposmod(float(i) * 0.618034, 1.0) - 1.0), out.z * half.z))
+			points.append(
+				Vector3(
+					out.x * half.x,
+					half.y * (2.0 * fposmod(float(i) * 0.618034, 1.0) - 1.0),
+					out.z * half.z
+				)
+			)
 			normals.append((out * spray_out + Vector3.UP * spray_up).normalized())
 		direction = Vector3.RIGHT
 		spread = 0.0

@@ -66,17 +66,27 @@ func _refresh() -> void:
 	if _wizard == null:
 		return
 	var god_type: GodType = (_wizard as WizardBody).god_type
-	%Title.text = "%s · %s" % [_wizard.display_name(), god_type.display_name if god_type != null else "?"]
-	%Stats.text = tr(STATS_TEXT) % [
-		roundi(_wizard.health.current), roundi(_wizard.health.maximum),
-		roundi(_wizard.mana.current), roundi(_wizard.mana.maximum),
-		_wizard.souls.count,
-	]
+	%Title.text = (
+		"%s · %s" % [_wizard.display_name(), god_type.display_name if god_type != null else "?"]
+	)
+	%Stats.text = (
+		tr(STATS_TEXT)
+		% [
+			roundi(_wizard.health.current),
+			roundi(_wizard.health.maximum),
+			roundi(_wizard.mana.current),
+			roundi(_wizard.mana.maximum),
+			_wizard.souls.count,
+		]
+	)
 	%GhostState.visible = (_wizard as WizardBody).ghost.shows_ghost()
-	%WizardStats.show_values(
-		_fraction(_wizard.health.current, _wizard.health.maximum),
-		_fraction(_wizard.mana.current, _wizard.mana.maximum),
-		_wizard.souls.count,
+	(
+		%WizardStats
+		. show_values(
+			_fraction(_wizard.health.current, _wizard.health.maximum),
+			_fraction(_wizard.mana.current, _wizard.mana.maximum),
+			_wizard.souls.count,
+		)
 	)
 
 

@@ -29,13 +29,28 @@ func play(_params: Dictionary) -> void:
 	var rng := MatchSeed.rng(["debris_burst", global_position])
 	for i in pieces:
 		var angle := rng.randf_range(-PI, PI)
-		var direction := Vector3(cos(angle), rng.randf_range(rise.x, rise.y), sin(angle)).normalized()
+		var direction := (
+			Vector3(cos(angle), rng.randf_range(rise.x, rise.y), sin(angle)).normalized()
+		)
 		var rock := piece.instantiate() as DebrisPiece
 		add_child(rock)
-		var axis := Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
-		rock.launch(direction * (speed + rng.randf_range(-jitter, jitter)), axis, TAU * rng.randf_range(spin_turns.x, spin_turns.y))
+		var axis := (
+			Vector3(
+				rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)
+			)
+			. normalized()
+		)
+		rock.launch(
+			direction * (speed + rng.randf_range(-jitter, jitter)),
+			axis,
+			TAU * rng.randf_range(spin_turns.x, spin_turns.y)
+		)
 	get_tree().create_timer(life_s).timeout.connect(queue_free)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if piece != null else PackedStringArray(["The rock (piece) is missing: a DebrisPiece scene."])
+	return (
+		PackedStringArray()
+		if piece != null
+		else PackedStringArray(["The rock (piece) is missing: a DebrisPiece scene."])
+	)

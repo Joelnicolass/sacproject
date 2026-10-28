@@ -96,7 +96,8 @@ func is_synced() -> bool:
 	_synced = closest.distance_to(_probe) < 3.0
 	_checks += 1
 	if not _synced and _checks == DIAGNOSE_AFTER:
-		if DebugLog.on(&"nav"): print(diagnose("NOT synced after %d checks" % _checks))
+		if DebugLog.on(&"nav"):
+			print(diagnose("NOT synced after %d checks" % _checks))
 	return _synced
 
 
@@ -112,7 +113,10 @@ func _resolve_map() -> void:
 		return
 	map = found
 	var navmesh := region.navigation_mesh
-	if navmesh != null and not is_equal_approx(NavigationServer3D.map_get_cell_size(map), navmesh.cell_size):
+	if (
+		navmesh != null
+		and not is_equal_approx(NavigationServer3D.map_get_cell_size(map), navmesh.cell_size)
+	):
 		NavigationServer3D.map_set_cell_size(map, navmesh.cell_size)
 		NavigationServer3D.map_set_cell_height(map, navmesh.cell_height)
 
@@ -120,14 +124,31 @@ func _resolve_map() -> void:
 ## One line with what the server says about the map and the region (for a run where the backend never becomes ready).
 func diagnose(label: String) -> String:
 	if region == null or not map.is_valid():
-		return "nav: diag %s: no region or no valid map (region %s, map valid %s)" % [label, region != null, map.is_valid()]
+		return (
+			"nav: diag %s: no region or no valid map (region %s, map valid %s)"
+			% [label, region != null, map.is_valid()]
+		)
 	var region_rid := region.get_rid()
 	var navmesh := region.navigation_mesh
-	return "nav: diag %s: map_valid=%s map_regions=%d region_map_is_map=%s iteration=%d active=%s map_cell=%s mesh_cell=%s region_enabled=%s in_tree=%s polygons=%d probe=%s closest_probe=%s closest_start1=%s" % [
-		label, map.is_valid(), NavigationServer3D.map_get_regions(map).size(), NavigationServer3D.region_get_map(region_rid) == map,
-		NavigationServer3D.map_get_iteration_id(map), NavigationServer3D.map_is_active(map), NavigationServer3D.map_get_cell_size(map),
-		navmesh.cell_size if navmesh != null else -1.0, region.is_enabled(), region.is_inside_tree(), polygon_count, _probe,
-		NavigationServer3D.map_get_closest_point(map, _probe), NavigationServer3D.map_get_closest_point(map, DIAGNOSE_POINT)]
+	return (
+		"nav: diag %s: map_valid=%s map_regions=%d region_map_is_map=%s iteration=%d active=%s map_cell=%s mesh_cell=%s region_enabled=%s in_tree=%s polygons=%d probe=%s closest_probe=%s closest_start1=%s"
+		% [
+			label,
+			map.is_valid(),
+			NavigationServer3D.map_get_regions(map).size(),
+			NavigationServer3D.region_get_map(region_rid) == map,
+			NavigationServer3D.map_get_iteration_id(map),
+			NavigationServer3D.map_is_active(map),
+			NavigationServer3D.map_get_cell_size(map),
+			navmesh.cell_size if navmesh != null else -1.0,
+			region.is_enabled(),
+			region.is_inside_tree(),
+			polygon_count,
+			_probe,
+			NavigationServer3D.map_get_closest_point(map, _probe),
+			NavigationServer3D.map_get_closest_point(map, DIAGNOSE_POINT)
+		]
+	)
 
 
 ## Waypoints from `from` (not included) to `to`: [to] when nothing is in the way, the closest approach when `to` is off the mesh or
@@ -167,7 +188,9 @@ func line_clear(a: Vector3, b: Vector3) -> bool:
 		var t := float(k) / float(steps)
 		var at := a.lerp(b, t)
 		var along := length * t
-		var allowed := LINE_TOL_M + maxf(0.0, maxf(START_SLACK_M - along, END_SNAP_M - (length - along)))
+		var allowed := (
+			LINE_TOL_M + maxf(0.0, maxf(START_SLACK_M - along, END_SNAP_M - (length - along)))
+		)
 		if not _near_land(at, allowed):
 			return false
 	return true
@@ -226,8 +249,13 @@ func _query(from: Vector3, to: Vector3) -> PackedVector3Array:
 ## that sets the search limits: map_get_path caps the search at 4096 polygons (NavigationPathQueryParameters3D default) and
 ## returns a partial path past that; a map has ~10k, so long paths stopped short. Here there is no cap on polygons or distance.
 ## tools/audit/map_path_checks.gd asks the same.
-static func query_path(on_map: RID, from: Vector3, to: Vector3, params: NavigationPathQueryParameters3D,
-		result: NavigationPathQueryResult3D) -> PackedVector3Array:
+static func query_path(
+	on_map: RID,
+	from: Vector3,
+	to: Vector3,
+	params: NavigationPathQueryParameters3D,
+	result: NavigationPathQueryResult3D
+) -> PackedVector3Array:
 	params.path_search_max_polygons = 0
 	params.path_search_max_distance = 0.0
 	params.map = on_map

@@ -46,7 +46,9 @@ func _physics_process(delta: float) -> void:
 	if _goal == Vector3.INF or Vector2(_goal.x - goal.x, _goal.z - goal.z).length() > 0.5:
 		_goal = goal
 		_reset()
-	var distance := Vector2(goal.x - body.global_position.x, goal.z - body.global_position.z).length()
+	var distance := (
+		Vector2(goal.x - body.global_position.x, goal.z - body.global_position.z).length()
+	)
 	if _best == INF:
 		_best = distance
 		_window_left = window_s
@@ -81,7 +83,10 @@ func _watch_idle(delta: float) -> void:
 	if _idle_left > 0.0:
 		return
 	_idle_left = window_s
-	var moved := Vector2(body.global_position.x - _idle_mark.x, body.global_position.z - _idle_mark.z).length()
+	var moved := (
+		Vector2(body.global_position.x - _idle_mark.x, body.global_position.z - _idle_mark.z)
+		. length()
+	)
 	_idle_mark = body.global_position
 	if moved >= idle_move_m:
 		_idle_for = 0.0

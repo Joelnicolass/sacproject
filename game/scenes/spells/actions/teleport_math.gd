@@ -11,7 +11,9 @@ extends RefCounted
 ## stands; if that spot has no land (or the wizard is right over the building and there is no side to
 ## come from), the building's own position.
 ## Y is the building's.
-static func landing(start: Vector3, building: Vector3, radius: float, on_ground: Callable = Callable()) -> Vector3:
+static func landing(
+	start: Vector3, building: Vector3, radius: float, on_ground: Callable = Callable()
+) -> Vector3:
 	var flat := Vector2(start.x - building.x, start.z - building.z)
 	if flat.length_squared() <= 0.000001:
 		return building
@@ -24,8 +26,16 @@ static func landing(start: Vector3, building: Vector3, radius: float, on_ground:
 ## teleport: `new = body - start + target`, the formation
 ## is kept. A walker whose slot has no land goes to the landing spot itself (a quirk the original marks with a
 ## `// TODO: fix`); a flier keeps the shifted position wherever it falls.
-static func carried(position: Vector3, start: Vector3, destination: Vector3, flying: bool, on_ground: Callable = Callable()) -> Vector3:
-	var moved := Vector3(position.x - start.x + destination.x, position.y, position.z - start.z + destination.z)
+static func carried(
+	position: Vector3,
+	start: Vector3,
+	destination: Vector3,
+	flying: bool,
+	on_ground: Callable = Callable()
+) -> Vector3:
+	var moved := Vector3(
+		position.x - start.x + destination.x, position.y, position.z - start.z + destination.z
+	)
 	if not flying and not _ground(on_ground, moved):
 		return destination
 	return moved

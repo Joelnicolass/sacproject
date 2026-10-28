@@ -24,13 +24,19 @@ func _fire(_step: int) -> void:
 	var spell := zone.spell
 	var center := zone.points[0]
 	_show(center)
-	SplashDamage.deal(get_tree(), center, float(spell.damage), spell.damage_range_m, null, zone.from_slot)
+	SplashDamage.deal(
+		get_tree(), center, float(spell.damage), spell.damage_range_m, null, zone.from_slot
+	)
 	for body in bodies_near(center, throw_range_m):
 		var away := body.global_position - center
 		away.y = 0.0
 		var tumbling := BodyNudge.tumbling_of(body)
 		if tumbling != null and away.length() < throw_range_m:
-			var push := Vector3(away.x, throw_up, away.z).normalized() * throw_speed * (1.0 - away.length() / throw_range_m)
+			var push := (
+				Vector3(away.x, throw_up, away.z).normalized()
+				* throw_speed
+				* (1.0 - away.length() / throw_range_m)
+			)
 			tumbling.catapult(push, zone.from_slot)
 
 

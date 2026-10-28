@@ -61,23 +61,48 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 		direction = ShotAim.scatter(direction, accuracy, rng)
 		direction += spread * _uniform_direction(rng)
 		var velocity := direction * ability.speed_m_s
-		var shot := spawner.spawn_shot({
-			"tag": ability.tag,
-			"look": look_id,
-			"x": origin.x, "y": origin.y, "z": origin.z,
-			"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
-			"damage": float(ability.damage),
-			"slot": int(user.get("owner_slot")) if "owner_slot" in user else 0,
-			"gravity": falling,
-			"max_distance": flight_limit,
-			"target": "",
-			"intended": str(target.get_path()) if _is_foe(target) else "",
-			"shooter": str(user.get_path()),
-		})
+		var shot := (
+			spawner
+			. spawn_shot(
+				{
+					"tag": ability.tag,
+					"look": look_id,
+					"x": origin.x,
+					"y": origin.y,
+					"z": origin.z,
+					"vx": velocity.x,
+					"vy": velocity.y,
+					"vz": velocity.z,
+					"damage": float(ability.damage),
+					"slot": int(user.get("owner_slot")) if "owner_slot" in user else 0,
+					"gravity": falling,
+					"max_distance": flight_limit,
+					"target": "",
+					"intended": str(target.get_path()) if _is_foe(target) else "",
+					"shooter": str(user.get_path()),
+				}
+			)
+		)
 		if DebugLog.on(&"effects"):
-			print("lob %s %s shot %d/%d %s v (%.4f, %.4f, %.4f) origin (%.4f, %.4f, %.4f) (tick %d)" % [
-				who(user), ability.tag, index + 1, shots, shot.name if shot else "?", velocity.x, velocity.y, velocity.z,
-				origin.x, origin.y, origin.z, tick])
+			print(
+				(
+					"lob %s %s shot %d/%d %s v (%.4f, %.4f, %.4f) origin (%.4f, %.4f, %.4f) (tick %d)"
+					% [
+						who(user),
+						ability.tag,
+						index + 1,
+						shots,
+						shot.name if shot else "?",
+						velocity.x,
+						velocity.y,
+						velocity.z,
+						origin.x,
+						origin.y,
+						origin.z,
+						tick
+					]
+				)
+			)
 	return true
 
 
@@ -88,7 +113,10 @@ func _uniform_direction(rng: RandomNumberGenerator) -> Vector3:
 
 ## The cube point, 3 draws (MiteHop's too).
 static func uniform_direction(rng: RandomNumberGenerator) -> Vector3:
-	return Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	return (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 
 
 ## What the volley aims at: an enemy creature's center, led by its pace; anything else (ground, ally, nothing) the point.
@@ -105,7 +133,12 @@ func _aim_point(target_pos: Vector3, target: Node3D) -> Vector3:
 
 ## A live body of another side: the only kind a lob aims at (an ally is the ground).
 func _is_foe(target: Node3D) -> bool:
-	if target == null or not is_instance_valid(target) or not "owner_slot" in target or not "owner_slot" in user:
+	if (
+		target == null
+		or not is_instance_valid(target)
+		or not "owner_slot" in target
+		or not "owner_slot" in user
+	):
 		return false
 	if int(target.get("owner_slot")) == int(user.get("owner_slot")):
 		return false

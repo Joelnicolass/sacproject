@@ -16,4 +16,3 @@ static func from_hand_facing(wizard: WizardBody, facing: Vector3) -> Vector3:
 	var at := wizard.global_position + Vector3(0.0, muzzle.y, 0.0)
 	at += facing * muzzle.z
 	return at
-

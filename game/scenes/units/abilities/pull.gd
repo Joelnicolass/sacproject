@@ -61,7 +61,12 @@ func fire(_target_pos: Vector3, target: Node3D) -> bool:
 		return false
 	var hit := first_body_on_path(target)
 	if hit != target and DebugLog.on(&"pull"):
-		print("pull %s: the ray stops at %s instead of %s (tick %d)" % [who(user), who(hit), who(target), MatchClock.now()])
+		print(
+			(
+				"pull %s: the ray stops at %s instead of %s (tick %d)"
+				% [who(user), who(hit), who(target), MatchClock.now()]
+			)
+		)
 	return pulling.start(hit, self, loop_ticks(), pull_frame())
 
 
@@ -117,7 +122,12 @@ func pull_frame() -> int:
 
 ## A live creature or wizard on the field: what a pull can hold.
 static func is_live(node: Node) -> bool:
-	if node == null or not is_instance_valid(node) or not node.is_inside_tree() or node.is_in_group(Corpse.GROUP):
+	if (
+		node == null
+		or not is_instance_valid(node)
+		or not node.is_inside_tree()
+		or node.is_in_group(Corpse.GROUP)
+	):
 		return false
 	if not node.is_in_group(UnitBody.GROUP) and not node.is_in_group(WizardBody.GROUP):
 		return false

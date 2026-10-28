@@ -39,7 +39,11 @@ func set_transparency(value: float) -> void:
 
 
 func set_shadow(on: bool) -> void:
-	var mode := GeometryInstance3D.SHADOW_CASTING_SETTING_ON if on else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var mode := (
+		GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		if on
+		else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	)
 	for instance in meshes():
 		instance.cast_shadow = mode
 
@@ -107,7 +111,10 @@ func _dress(instance: MeshInstance3D) -> void:
 	for i in instance.mesh.get_surface_count():
 		var current := instance.get_surface_override_material(i)
 		originals.append(current)
-		var base := (current if current != null else instance.mesh.surface_get_material(i)) as StandardMaterial3D
+		var base := (
+			(current if current != null else instance.mesh.surface_get_material(i))
+			as StandardMaterial3D
+		)
 		var copy: StandardMaterial3D = base.duplicate() if base else StandardMaterial3D.new()
 		copy.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		instance.set_surface_override_material(i, copy)

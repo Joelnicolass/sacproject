@@ -83,7 +83,9 @@ func _process(delta: float) -> void:
 	elif _pending == null and _shown == null:
 		_try_pin()
 	if visible and not _pinned:
-		position = place(probe.pointer if probe else Vector2.ZERO, size, get_viewport_rect().size, cursor_gap_px)
+		position = place(
+			probe.pointer if probe else Vector2.ZERO, size, get_viewport_rect().size, cursor_gap_px
+		)
 
 
 ## Top-left corner of a box of `box` pixels beside `pointer` inside a `view`-sized screen: `gap` to the right and below the
@@ -121,7 +123,11 @@ func _on_inspected_changed(_body: Node3D) -> void:
 
 
 func _try_pin() -> void:
-	if inspector == null or inspector.inspected == null or not is_instance_valid(inspector.inspected):
+	if (
+		inspector == null
+		or inspector.inspected == null
+		or not is_instance_valid(inspector.inspected)
+	):
 		return
 	_show(inspector.inspected, true)
 
@@ -153,8 +159,12 @@ func _hide() -> void:
 
 
 func _unbind() -> void:
-	if _info != null and _info.health != null and is_instance_valid(_info.health) \
-			and _info.health.changed.is_connected(_on_health_changed):
+	if (
+		_info != null
+		and _info.health != null
+		and is_instance_valid(_info.health)
+		and _info.health.changed.is_connected(_on_health_changed)
+	):
 		_info.health.changed.disconnect(_on_health_changed)
 
 

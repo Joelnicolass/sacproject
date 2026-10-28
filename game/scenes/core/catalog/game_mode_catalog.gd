@@ -39,7 +39,9 @@ static func is_room_mode(tag: StringName) -> bool:
 
 ## True when the map has a start for each seat of the mode. Empty tags are the defaults (High Noon, 1v1); an unknown tag is false.
 static func map_fits_mode(map_tag: StringName, mode_tag: StringName) -> bool:
-	var definition := MapCatalog.shared().find(MapCatalog.DEFAULT_TAG if map_tag == &"" else map_tag)
+	var definition := MapCatalog.shared().find(
+		MapCatalog.DEFAULT_TAG if map_tag == &"" else map_tag
+	)
 	var mode := shared().find(DEFAULT_TAG if mode_tag == &"" else mode_tag)
 	return definition != null and mode != null and definition.fits(mode)
 
@@ -55,7 +57,11 @@ func find(tag: StringName) -> GameMode:
 func map_tags_for(mode: GameMode, catalog: MapCatalog, only_rooms := false) -> PackedStringArray:
 	var tags := PackedStringArray()
 	for definition in catalog.maps:
-		if definition != null and definition.fits(mode) and (definition.room_selectable or not only_rooms):
+		if (
+			definition != null
+			and definition.fits(mode)
+			and (definition.room_selectable or not only_rooms)
+		):
 			tags.append(String(definition.tag))
 	return tags
 

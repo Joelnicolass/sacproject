@@ -45,14 +45,24 @@ func warm(_stage: Node3D) -> void:
 
 
 ## The weather at `t_s` with `plan` and `sky_seed`; `preview` (editor) shows that state alone, fully.
-func advance(plan: WeatherPlan, sky_seed: int, t_s: float, preview: WeatherState) -> AtmosphereSample:
+func advance(
+	plan: WeatherPlan, sky_seed: int, t_s: float, preview: WeatherState
+) -> AtmosphereSample:
 	_plan = plan
-	var now: Array = [preview, preview, 1.0] if preview else AtmosphereRules.states_at(plan, sky_seed, t_s)
-	var sample := AtmosphereRules.state_sample(preview) if preview else AtmosphereRules.weather_at(plan, sky_seed, t_s)
+	var now: Array = (
+		[preview, preview, 1.0] if preview else AtmosphereRules.states_at(plan, sky_seed, t_s)
+	)
+	var sample := (
+		AtmosphereRules.state_sample(preview)
+		if preview
+		else AtmosphereRules.weather_at(plan, sky_seed, t_s)
+	)
 	_rule(sample.weather)
 	var from: WeatherState = now[0]
 	var to: WeatherState = now[1]
-	var look: PrecipitationLook = to.precipitation if to and to.precipitation else (from.precipitation if from else null)
+	var look: PrecipitationLook = (
+		to.precipitation if to and to.precipitation else (from.precipitation if from else null)
+	)
 	if precipitation:
 		precipitation.show_fall(look, sample.rain)
 	if storm:
@@ -84,4 +94,8 @@ func _rule(state: WeatherState) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if precipitation else PackedStringArray(["The Precipitation socket is missing."])
+	return (
+		PackedStringArray()
+		if precipitation
+		else PackedStringArray(["The Precipitation socket is missing."])
+	)

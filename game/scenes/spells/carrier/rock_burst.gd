@@ -19,13 +19,24 @@ func play(_params: Dictionary) -> void:
 		var direction := Vector3(cos(angle), rng.randf_range(1.0, 2.0), sin(angle)).normalized()
 		var rock := piece.instantiate() as DebrisPiece
 		add_child(rock)
-		rock.launch(direction * (throw_speed + rng.randf_range(-throw_jitter, throw_jitter)), _axis(rng), TAU * rng.randf_range(spin_turns.x, spin_turns.y))
+		rock.launch(
+			direction * (throw_speed + rng.randf_range(-throw_jitter, throw_jitter)),
+			_axis(rng),
+			TAU * rng.randf_range(spin_turns.x, spin_turns.y)
+		)
 	get_tree().create_timer(4.0).timeout.connect(queue_free)
 
 
 func _axis(rng: RandomNumberGenerator) -> Vector3:
-	return Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	return (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if piece != null else PackedStringArray(["The rock (piece) is missing."])
+	return (
+		PackedStringArray()
+		if piece != null
+		else PackedStringArray(["The rock (piece) is missing."])
+	)

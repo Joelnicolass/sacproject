@@ -23,13 +23,24 @@ var _land: Terrain
 
 func _ready() -> void:
 	process_physics_priority = 1
-	set_physics_process(not Engine.is_editor_hint() and zone != null and type != null and DisplayServer.get_name() != "headless")
+	set_physics_process(
+		(
+			not Engine.is_editor_hint()
+			and zone != null
+			and type != null
+			and DisplayServer.get_name() != "headless"
+		)
+	)
 	_rng = MatchSeed.rng(["zone_dust", String(zone.name) if zone != null else ""])
 	_land = Terrain.of(self)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and type != null else PackedStringArray(["The zone (zone) or the particle type (type) is missing."])
+	return (
+		PackedStringArray()
+		if zone != null and type != null
+		else PackedStringArray(["The zone (zone) or the particle type (type) is missing."])
+	)
 
 
 func _physics_process(_delta: float) -> void:
@@ -37,7 +48,11 @@ func _physics_process(_delta: float) -> void:
 		return
 	for i in per_tick:
 		var angle := _rng.randf() * TAU
-		var reach := wide_m * (1.0 - _rng.randf() * _rng.randf()) if _rng.randi() % 4 == 0 else near_m * _rng.randf()
+		var reach := (
+			wide_m * (1.0 - _rng.randf() * _rng.randf())
+			if _rng.randi() % 4 == 0
+			else near_m * _rng.randf()
+		)
 		var spot := zone.global_position + Vector3(cos(angle) * reach, 0.0, sin(angle) * reach)
 		var ground := _land.height_at(spot.x, spot.z)
 		if not is_nan(ground):

@@ -16,7 +16,9 @@ var _to_freeze: Array[Frozen] = []
 
 ## The body's Frozen when it can be frozen now (not a building, not frozen yet), read before the damage.
 func before_hit(body: Node3D, _direct: bool, _shot: RangedShot, wave: GrowingWave) -> Variant:
-	var frozen: Frozen = null if wave.is_building(body) else body.get_node_or_null(frozen_path) as Frozen
+	var frozen: Frozen = (
+		null if wave.is_building(body) else body.get_node_or_null(frozen_path) as Frozen
+	)
 	return frozen if frozen != null and not frozen.is_on() else null
 
 

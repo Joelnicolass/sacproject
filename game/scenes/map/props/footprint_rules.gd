@@ -13,7 +13,9 @@ static func vertices_under(area: Rect2) -> Rect2i:
 	var center := area.get_center()
 	var across := TerrainGrid.vertex_rect(center, area.size.x * 0.5)
 	var along := TerrainGrid.vertex_rect(center, area.size.y * 0.5)
-	return Rect2i(Vector2i(across.position.x, along.position.y), Vector2i(across.size.x, along.size.y))
+	return Rect2i(
+		Vector2i(across.position.x, along.position.y), Vector2i(across.size.x, along.size.y)
+	)
 
 
 ## The highest minus the lowest height of the vertices in `rect`. 0 for an empty rect.

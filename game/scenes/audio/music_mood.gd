@@ -27,7 +27,9 @@ enum Desecration { NONE, WINNING, LOSING }
 
 
 ## The mood for these inputs.
-static func decide(result: Result, desecration: Desecration, ritual_near: bool, battle: bool) -> StringName:
+static func decide(
+	result: Result, desecration: Desecration, ritual_near: bool, battle: bool
+) -> StringName:
 	match result:
 		Result.WON:
 			return VICTORY

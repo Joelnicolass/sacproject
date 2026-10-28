@@ -7,7 +7,9 @@ extends RefCounted
 
 
 ## Writes over `rect` what stays plus every stamp of `stamps` ([rect, values] each, values row by row), in their order.
-static func sum(texels: PackedFloat32Array, permanent: PackedFloat32Array, stamps: Array, rect: Rect2i) -> void:
+static func sum(
+	texels: PackedFloat32Array, permanent: PackedFloat32Array, stamps: Array, rect: Rect2i
+) -> void:
 	for row in rect.size.y:
 		var first := TerrainGrid.id_of(rect.position + Vector2i(0, row))
 		for id in range(first, first + rect.size.x):
@@ -18,15 +20,26 @@ static func sum(texels: PackedFloat32Array, permanent: PackedFloat32Array, stamp
 		var cut := rect.intersection(area)
 		for row in cut.size.y:
 			var first := TerrainGrid.id_of(cut.position + Vector2i(0, row))
-			var at := (cut.position.y + row - area.position.y) * area.size.x + cut.position.x - area.position.x - first
+			var at := (
+				(cut.position.y + row - area.position.y) * area.size.x
+				+ cut.position.x
+				- area.position.x
+				- first
+			)
 			for id in range(first, first + cut.size.x):
 				texels[id * 2] += values[at + id]
 
 
 ## One stamp's new shift `values` over the same `rect` as its old one `before`: with no other stamp over the rect (`alone`)
 ## it writes what stays plus `values` exactly; otherwise it adds the difference.
-static func replace(texels: PackedFloat32Array, permanent: PackedFloat32Array, rect: Rect2i, values: PackedFloat32Array,
-		before: PackedFloat32Array, alone: bool) -> void:
+static func replace(
+	texels: PackedFloat32Array,
+	permanent: PackedFloat32Array,
+	rect: Rect2i,
+	values: PackedFloat32Array,
+	before: PackedFloat32Array,
+	alone: bool
+) -> void:
 	for row in rect.size.y:
 		var first := TerrainGrid.id_of(rect.position + Vector2i(0, row))
 		var at := row * rect.size.x - first

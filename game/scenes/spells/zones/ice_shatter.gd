@@ -22,4 +22,8 @@ func play(params: Dictionary) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shards != null else PackedStringArray(["The SpriteEmitter of the shards is missing."])
+	return (
+		PackedStringArray()
+		if shards != null
+		else PackedStringArray(["The SpriteEmitter of the shards is missing."])
+	)

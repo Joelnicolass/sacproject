@@ -35,13 +35,18 @@ func _ready() -> void:
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.mesh = SpikeField.spike_mesh(sides, 0.3, 0.25, 0.75)
 	multimesh.instance_count = count
-	custom_aabb = AABB(Vector3(-wall.reach_m() - 5.0, -5.0, -10.0), Vector3(2.0 * wall.reach_m() + 10.0, 20.0, 20.0))
+	custom_aabb = AABB(
+		Vector3(-wall.reach_m() - 5.0, -5.0, -10.0),
+		Vector3(2.0 * wall.reach_m() + 10.0, 20.0, 20.0)
+	)
 	_born.resize(count)
 	_born.fill(-1)
 	_bases.resize(count)
 	_axes.resize(count)
 	for i in count:
-		multimesh.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO))
+		multimesh.set_instance_transform(
+			i, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO)
+		)
 
 
 func _process(_delta: float) -> void:
@@ -49,21 +54,51 @@ func _process(_delta: float) -> void:
 		_born_at(_next, ceili(float(wall.grow_ticks * _next) / float(count)))
 		_next += 1
 	for i in _next:
-		var grown := clampf(float(minf(wall.age, wall.vanish_at if wall.vanish_at >= 0 else wall.age) - _born[i]) / (grow_s * MatchClock.TICKS_PER_SECOND_F), 0.0, 1.0)
+		var grown := clampf(
+			(
+				float(
+					minf(wall.age, wall.vanish_at if wall.vanish_at >= 0 else wall.age) - _born[i]
+				)
+				/ (grow_s * MatchClock.TICKS_PER_SECOND_F)
+			),
+			0.0,
+			1.0
+		)
 		if wall.vanish_at >= 0:
-			grown = maxf(0.0, grown - float(wall.age - wall.vanish_at) / (vanish_s * MatchClock.TICKS_PER_SECOND_F))
+			grown = maxf(
+				0.0,
+				(
+					grown
+					- float(wall.age - wall.vanish_at) / (vanish_s * MatchClock.TICKS_PER_SECOND_F)
+				)
+			)
 		var width := spike_scale * grown
-		multimesh.set_instance_transform(i, Transform3D(Basis(Vector3(width, 0.0, 0.0), _axes[i] * grown, Vector3(0.0, 0.0, width)), _bases[i]))
+		multimesh.set_instance_transform(
+			i,
+			Transform3D(
+				Basis(Vector3(width, 0.0, 0.0), _axes[i] * grown, Vector3(0.0, 0.0, width)),
+				_bases[i]
+			)
+		)
 
 
 ## The spike `index` is born at `age`, near one of the ends and leaning every which way.
 func _born_at(index: int, age: int) -> void:
 	var at_left := _rng.randi_range(0, 1) == 1
-	var t := _rng.randf_range(wall.left, minf(wall.left + near_end_m, wall.right)) if at_left else _rng.randf_range(maxf(wall.right - near_end_m, wall.left), wall.right)
+	var t := (
+		_rng.randf_range(wall.left, minf(wall.left + near_end_m, wall.right))
+		if at_left
+		else _rng.randf_range(maxf(wall.right - near_end_m, wall.left), wall.right)
+	)
 	var across := 0.5 * wall.thickness_m() * _rng.randf_range(-1.0, 1.0)
-	var land := wall.ground_y(wall.center.x + wall.direction.x * t, wall.center.z + wall.direction.y * t) - wall.global_position.y
+	var land := (
+		wall.ground_y(wall.center.x + wall.direction.x * t, wall.center.z + wall.direction.y * t)
+		- wall.global_position.y
+	)
 	_born[index] = age
 	_bases[index] = Vector3(t, land, across)
 	var way := _rng.randf() * TAU
 	var lean := sqrt(_rng.randf()) * lean_m
-	_axes[index] = Vector3(cos(way) * lean, spike_height * _rng.randf_range(0.4, 1.6), sin(way) * lean)
+	_axes[index] = Vector3(
+		cos(way) * lean, spike_height * _rng.randf_range(0.4, 1.6), sin(way) * lean
+	)

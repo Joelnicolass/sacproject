@@ -26,7 +26,6 @@ const FRAME_TICKS := 2
 ## The clip of each ability: the first and the second shoot clip of the creature's model.
 const SHOOT_ROLES: Array[StringName] = [&"shoot", &"shoot2"]
 
-
 ## The body that has the ability and its SPEL. Set by setup() before the node enters the tree.
 var user: UnitBody
 var ability: AbilityType

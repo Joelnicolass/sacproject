@@ -25,7 +25,10 @@ func enter() -> void:
 
 func physics_update(delta: float) -> void:
 	var foe := body.target
-	if not body.engagement.accepts_target(foe) or (not body.ordered and body.locomotion.flat_distance(foe) > body.vision.range_m()):
+	if (
+		not body.engagement.accepts_target(foe)
+		or (not body.ordered and body.locomotion.flat_distance(foe) > body.vision.range_m())
+	):
 		body.target = null
 		transition(&"Idle")
 		return
@@ -71,7 +74,11 @@ func _watch_pace() -> void:
 	var at := body.global_position
 	if _seen_frame >= 0:
 		var frames := maxi(1, frame - _seen_frame)
-		var speed := Vector2(at.x - _last_position.x, at.z - _last_position.z).length() * MatchClock.TICKS_PER_SECOND_F / frames
+		var speed := (
+			Vector2(at.x - _last_position.x, at.z - _last_position.z).length()
+			* MatchClock.TICKS_PER_SECOND_F
+			/ frames
+		)
 		_still_ticks = _still_ticks + frames if speed < still_speed else 0
 	_seen_frame = frame
 	_last_position = at

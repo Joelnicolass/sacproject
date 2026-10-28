@@ -35,6 +35,9 @@ func on_clip_looped(role: String) -> bool:
 	if role != "cower" and role != "talk_cower":
 		return false
 	_loops += 1
-	var talk := posmod(hash(String(body.name)) + _loops, TALK_COWER_EVERY) == 0 and body.has_clip("talk_cower")
+	var talk := (
+		posmod(hash(String(body.name)) + _loops, TALK_COWER_EVERY) == 0
+		and body.has_clip("talk_cower")
+	)
 	_role = "talk_cower" if talk else "cower"
 	return true

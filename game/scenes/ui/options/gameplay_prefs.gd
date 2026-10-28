@@ -89,7 +89,11 @@ func to_setup(level := 0) -> MatchSetup:
 
 func _commit() -> void:
 	if not Engine.is_editor_hint():
-		var values := {"friendly_fire": _friendly_fire, "drop_soul": _drop_soul, "starting_souls": _starting_souls}
+		var values := {
+			"friendly_fire": _friendly_fire,
+			"drop_soul": _drop_soul,
+			"starting_souls": _starting_souls
+		}
 		var chosen := {}
 		for key in values:
 			if _chosen.has(key):

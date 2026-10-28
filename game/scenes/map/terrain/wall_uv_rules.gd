@@ -23,12 +23,21 @@ static func rim_metres(ends: PackedVector2Array) -> PackedFloat32Array:
 	done.resize(ends.size() / 2)
 	for open_runs_first in [true, false]:
 		for i in ends.size():
-			if done[i / 2] == 0 and (not open_runs_first or (at[point_key(ends[i])] as Array).size() == 1):
+			if (
+				done[i / 2] == 0
+				and (not open_runs_first or (at[point_key(ends[i])] as Array).size() == 1)
+			):
 				_walk(ends, at, done, metres, i)
 	return metres
 
 
-static func _walk(ends: PackedVector2Array, at: Dictionary, done: PackedByteArray, metres: PackedFloat32Array, start: int) -> void:
+static func _walk(
+	ends: PackedVector2Array,
+	at: Dictionary,
+	done: PackedByteArray,
+	metres: PackedFloat32Array,
+	start: int
+) -> void:
 	var end := start
 	var walked := 0.0
 	while end >= 0:

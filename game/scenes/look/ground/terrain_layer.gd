@@ -52,7 +52,9 @@ func _refresh() -> void:
 		mesh.clear_ground()
 		return
 	if _material == null:
-		_material = GroundMaterial.build(_ground, _rig.terrain.ground_roles, _rig.terrain.light_map, _preset)
+		_material = GroundMaterial.build(
+			_ground, _rig.terrain.ground_roles, _rig.terrain.light_map, _preset
+		)
 	else:
 		GroundMaterial.update(_material, _ground, _preset)
 	mesh.set_ground(_material)

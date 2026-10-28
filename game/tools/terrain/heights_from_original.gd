@@ -49,9 +49,16 @@ func _initialize() -> void:
 	var scp_files := ORIGINAL_SCP.duplicate()
 	if not only.is_empty() and not scp.is_empty():
 		scp_files[only] = scp
-	var tags := Array(scp_files.keys()).filter(func(tag: String) -> bool: return only.is_empty() or tag == only)
+	var tags := Array(scp_files.keys()).filter(
+		func(tag: String) -> bool: return only.is_empty() or tag == only
+	)
 	if tags.is_empty() or not DirAccess.dir_exists_absolute(MAPS_DIR.path_join(tags[0])):
-		push_error("heights: '%s' is no map of the original in %s (a map of your own: edit its heights.png)." % [only, MAPS_DIR])
+		push_error(
+			(
+				"heights: '%s' is no map of the original in %s (a map of your own: edit its heights.png)."
+				% [only, MAPS_DIR]
+			)
+		)
 		quit(1)
 		return
 	if not DirAccess.dir_exists_absolute(original):
@@ -69,13 +76,26 @@ func _initialize() -> void:
 ## The heights of a .scp in the game's maps folder (`root` may be the game folder, its maps/ or its data/).
 func _from_original(root: String, relative: String) -> TerrainHeights:
 	var hmap := PackedByteArray()
-	for candidate: String in [root.path_join("maps").path_join(relative), root.path_join(relative), root.path_join("../maps").path_join(relative)]:
+	for candidate: String in [
+		root.path_join("maps").path_join(relative),
+		root.path_join(relative),
+		root.path_join("../maps").path_join(relative)
+	]:
 		if FileAccess.file_exists(candidate):
 			hmap = _hmap(candidate)
 			break
 	var side := TerrainGrid.SIDE
-	if hmap.size() < 4 + 2 * TerrainHeights.COUNT or hmap.decode_u16(0) != side or hmap.decode_u16(2) != side:
-		push_error("heights: %s is missing in %s, or its HMAP is not %d x %d." % [relative, root, side, side])
+	if (
+		hmap.size() < 4 + 2 * TerrainHeights.COUNT
+		or hmap.decode_u16(0) != side
+		or hmap.decode_u16(2) != side
+	):
+		push_error(
+			(
+				"heights: %s is missing in %s, or its HMAP is not %d x %d."
+				% [relative, root, side, side]
+			)
+		)
 		return null
 	var heights_m := PackedFloat32Array()
 	heights_m.resize(TerrainHeights.COUNT)
@@ -104,7 +124,9 @@ static func _hmap(path: String) -> PackedByteArray:
 	var bytes := FileAccess.get_file_as_bytes(path)
 	if bytes.size() < 20:
 		return PackedByteArray()
-	var info := bytes.slice(bytes.decode_u32(4)).decompress_dynamic(-1, FileAccess.COMPRESSION_DEFLATE)
+	var info := bytes.slice(bytes.decode_u32(4)).decompress_dynamic(
+		-1, FileAccess.COMPRESSION_DEFLATE
+	)
 	var wanted := "PAMH".to_ascii_buffer()
 	var offset := 20
 	var at := 0
@@ -116,7 +138,9 @@ static func _hmap(path: String) -> PackedByteArray:
 			kind = 1 if info.decode_u32(at + 16) != 0 else (2 if packed_size < size else 0)
 		if info.slice(at + 4, at + 8) == wanted:
 			var blob := bytes.slice(offset, offset + (size if kind == 0 else packed_size))
-			return blob if kind == 0 else blob.decompress_dynamic(-1, FileAccess.COMPRESSION_DEFLATE)
+			return (
+				blob if kind == 0 else blob.decompress_dynamic(-1, FileAccess.COMPRESSION_DEFLATE)
+			)
 		offset += size if kind == 0 else (packed_size if kind == 2 else 0)
 		at += 28
 	return PackedByteArray()
@@ -141,18 +165,41 @@ static func _write(heights: TerrainHeights, folder: String, tag: String) -> bool
 		elif absf(heights.height(v) - units[v] * HEIGHT_STEP_M) > EXACT_TOLERANCE_M:
 			inexact += 1
 	if inexact > 0:
-		push_error("heights %s: %d heights are not a whole number of %s m; heights.png cannot keep them exact." % [tag, inexact, HEIGHT_STEP_M])
+		push_error(
+			(
+				"heights %s: %d heights are not a whole number of %s m; heights.png cannot keep them exact."
+				% [tag, inexact, HEIGHT_STEP_M]
+			)
+		)
 		return false
 	var result := MapImages.write(heights, folder, HEIGHT_STEP_M)
 	if not result.error.is_empty():
 		push_error("heights %s: %s" % [tag, result.error])
 		return false
 	var back := MapImages.read(folder.path_join(MapImages.HEIGHTS_FILE), HEIGHT_STEP_M)
-	if not back.error.is_empty() or back.heights.void_mask != heights.void_mask or _differing_land(heights, back.heights) > 0:
-		push_error("heights %s: the written pictures do not read back as the same ground. %s" % [tag, back.error])
+	if (
+		not back.error.is_empty()
+		or back.heights.void_mask != heights.void_mask
+		or _differing_land(heights, back.heights) > 0
+	):
+		push_error(
+			(
+				"heights %s: the written pictures do not read back as the same ground. %s"
+				% [tag, back.error]
+			)
+		)
 		return false
-	print("heights %s: %s (%d land vertices, %d heights under voids kept at the lowest land)" % [
-			tag, ", ".join(result.written) if not result.written.is_empty() else "unchanged", heights.void_mask.count(0), below])
+	print(
+		(
+			"heights %s: %s (%d land vertices, %d heights under voids kept at the lowest land)"
+			% [
+				tag,
+				", ".join(result.written) if not result.written.is_empty() else "unchanged",
+				heights.void_mask.count(0),
+				below
+			]
+		)
+	)
 	return true
 
 

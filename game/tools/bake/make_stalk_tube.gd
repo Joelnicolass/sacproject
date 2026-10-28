@@ -41,5 +41,10 @@ func _initialize() -> void:
 	mesh.custom_aabb = BOUNDS
 	mesh.resource_name = "stalk_tube"
 	var error := ResourceSaver.save(mesh, OUT)
-	print("stalk_tube: %s (%d vertices) -> %s" % ["saved" if error == OK else "FAILED %d" % error, vertices.size(), OUT])
+	print(
+		(
+			"stalk_tube: %s (%d vertices) -> %s"
+			% ["saved" if error == OK else "FAILED %d" % error, vertices.size(), OUT]
+		)
+	)
 	quit(0 if error == OK else 1)

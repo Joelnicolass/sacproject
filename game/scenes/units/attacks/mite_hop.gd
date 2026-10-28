@@ -60,7 +60,6 @@ func spent() -> bool:
 	return true
 
 
-
 func _fly(shot: RangedShot, at: Vector3) -> void:
 	if _rng == null:
 		_shot_name = String(shot.name)
@@ -84,7 +83,12 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		_rest = here
 		shot.velocity = Vector3.ZERO
 		if DebugLog.on(&"hop"):
-			print("hop %s n=%d at %s stopped (tick %d)" % [_shot_name, _touches, _vec(here), MatchClock.now()])
+			print(
+				(
+					"hop %s n=%d at %s stopped (tick %d)"
+					% [_shot_name, _touches, _vec(here), MatchClock.now()]
+				)
+			)
 		return
 	var close := _closest(shot, here, shape)
 	var chosen := _intended(shot, here, close, shape)
@@ -102,7 +106,12 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 		velocity.y = idle_rise
 	shot.velocity = velocity
 	if DebugLog.on(&"hop"):
-		print("hop %s n=%d at %s v %s toward %s (tick %d)" % [_shot_name, _touches, _vec(here), _vec(velocity), aim, MatchClock.now()])
+		print(
+			(
+				"hop %s n=%d at %s v %s toward %s (tick %d)"
+				% [_shot_name, _touches, _vec(here), _vec(velocity), aim, MatchClock.now()]
+			)
+		)
 
 
 ## The closest live creature or wizard within the range, any side, whose feet are at most max_target_height over the land.
@@ -129,7 +138,10 @@ func _closest(shot: RangedShot, from: Vector3, shape: Terrain) -> Node3D:
 func _low_enough(body: Node3D, shape: Terrain) -> bool:
 	if shape == null or not shape.is_on_ground(body.global_position.x, body.global_position.z):
 		return true
-	return body.global_position.y <= shape.height_at(body.global_position.x, body.global_position.z) + max_target_height
+	return (
+		body.global_position.y
+		<= shape.height_at(body.global_position.x, body.global_position.z) + max_target_height
+	)
 
 
 ## `close`, or the intended target when it is within the range (it goes first).
@@ -138,10 +150,17 @@ func _intended(shot: RangedShot, from: Vector3, close: Node3D, shape: Terrain) -
 	if path.is_empty() or close == null:
 		return close
 	var intended := shot.get_node_or_null(NodePath(path)) as Node3D
-	if intended == null or intended == close or not _is_target(intended) or not _low_enough(intended, shape):
+	if (
+		intended == null
+		or intended == close
+		or not _is_target(intended)
+		or not _low_enough(intended, shape)
+	):
 		return close
 	var reach := _reach(shot)
-	return intended if from.distance_squared_to(BodyNudge.center(intended)) <= reach * reach else close
+	return (
+		intended if from.distance_squared_to(BodyNudge.center(intended)) <= reach * reach else close
+	)
 
 
 func _is_target(body: Node3D) -> bool:
@@ -149,7 +168,11 @@ func _is_target(body: Node3D) -> bool:
 
 
 func _reach(shot: RangedShot) -> float:
-	return shot.ability.effect_range_m if shot.ability != null and shot.ability.effect_range_m > 0.0 else fallback_range
+	return (
+		shot.ability.effect_range_m
+		if shot.ability != null and shot.ability.effect_range_m > 0.0
+		else fallback_range
+	)
 
 
 func _land(shot: RangedShot) -> Terrain:

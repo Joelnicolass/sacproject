@@ -29,16 +29,27 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	var mods := mods_of(shot)
 	var shooter := shooter_of(shot)
 	var direct := target if direct_hit and target and is_instance_valid(target) else null
-	print("splash %s at (%.1f, %.1f, %.1f) radius %.1f m of %d" % [ability.tag if ability else "?", point.x, point.y, point.z, radius, roundi(amount)])
+	print(
+		(
+			"splash %s at (%.1f, %.1f, %.1f) radius %.1f m of %d"
+			% [ability.tag if ability else "?", point.x, point.y, point.z, radius, roundi(amount)]
+		)
+	)
 	if direct and ProjectileTargets.is_live_body(direct):
 		print("  directo %s" % GameBody.name_of(direct))
 		_SPLASH.hurt(direct, amount, from_slot, _HEALTH.SPLASH_RANGED, mods, shooter)
 	for body in _SPLASH.bodies_within(get_tree(), point, radius, direct):
 		print("  %s a %.2f m" % [GameBody.name_of(body), _SPLASH.box_distance(body, point)])
-	_SPLASH.deal(get_tree(), point, amount, radius, direct, from_slot, _HEALTH.SPLASH_RANGED, mods, shooter)
+	_SPLASH.deal(
+		get_tree(), point, amount, radius, direct, from_slot, _HEALTH.SPLASH_RANGED, mods, shooter
+	)
 
 
 func _radius(ability: AbilityType) -> float:
 	if ability == null:
 		return 0.0
-	return ability.effect_range_m if radius_source == RadiusSource.EFFECT_RANGE else ability.damage_range_m
+	return (
+		ability.effect_range_m
+		if radius_source == RadiusSource.EFFECT_RANGE
+		else ability.damage_range_m
+	)

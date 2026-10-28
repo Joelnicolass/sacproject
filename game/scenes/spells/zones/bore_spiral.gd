@@ -30,7 +30,9 @@ func advance() -> Vector2:
 	if not last > angle:
 		angle = last
 		arrived = true
-	var radius := (reach_m - START_RADIUS_M) * angle / last + START_RADIUS_M if last > 0.0 else START_RADIUS_M
+	var radius := (
+		(reach_m - START_RADIUS_M) * angle / last + START_RADIUS_M if last > 0.0 else START_RADIUS_M
+	)
 	var place := center + radius * Vector2(sin(angle), cos(angle))
 	angle += step_m / radius
 	return place

@@ -24,7 +24,9 @@ static func players_of(ticket: Dictionary) -> int:
 	return (ticket.get("seats", []) as Array).size()
 
 
-static func _build_with(rules: SacrificeRoomRules, host_pick: WizardPick, options: Dictionary) -> Dictionary:
+static func _build_with(
+	rules: SacrificeRoomRules, host_pick: WizardPick, options: Dictionary
+) -> Dictionary:
 	if host_pick == null or not rules.are_options_valid(options):
 		return {}
 	var seats: Array = [{"slot": HOST_SLOT, "token": "", "meta": MatchWire.encode_pick(host_pick)}]

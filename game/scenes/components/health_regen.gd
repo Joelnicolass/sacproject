@@ -11,10 +11,20 @@ extends Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if health != null else PackedStringArray(["Assign to `health` the health that regenerates."])
+	return (
+		PackedStringArray()
+		if health != null
+		else PackedStringArray(["Assign to `health` the health that regenerates."])
+	)
 
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint() or health == null or refill_s <= 0.0 or health.is_dead() or health.is_full():
+	if (
+		Engine.is_editor_hint()
+		or health == null
+		or refill_s <= 0.0
+		or health.is_dead()
+		or health.is_full()
+	):
 		return
 	health.heal(health.maximum / refill_s * delta)

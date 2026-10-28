@@ -63,18 +63,35 @@ static func ramp(age: int, start_ticks: int, ramp_ticks: int) -> float:
 
 ## A body's box (world) is inside when it is not above the wall nor below the ground at its centre, its footprint overlaps
 ## the thickness across the axis, and its extent along the axis overlaps [left, right].
-static func in_wall(box: AABB, ground_y: float, top: float, center: Vector3, dir: Vector2, left: float, right: float, thickness: float) -> bool:
+static func in_wall(
+	box: AABB,
+	ground_y: float,
+	top: float,
+	center: Vector3,
+	dir: Vector2,
+	left: float,
+	right: float,
+	thickness: float
+) -> bool:
 	if box.end.y < ground_y or box.position.y > ground_y + top:
 		return false
 	var low_along := INF
 	var high_along := -INF
 	var low_across := INF
 	var high_across := -INF
-	for corner in [Vector3(box.position.x, 0.0, box.position.z), Vector3(box.position.x, 0.0, box.end.z), Vector3(box.end.x, 0.0, box.position.z), Vector3(box.end.x, 0.0, box.end.z)]:
+	for corner in [
+		Vector3(box.position.x, 0.0, box.position.z),
+		Vector3(box.position.x, 0.0, box.end.z),
+		Vector3(box.end.x, 0.0, box.position.z),
+		Vector3(box.end.x, 0.0, box.end.z)
+	]:
 		var a := along(corner, center, dir)
 		var c := lateral(corner, center, dir)
 		low_along = minf(low_along, a)
 		high_along = maxf(high_along, a)
 		low_across = minf(low_across, c)
 		high_across = maxf(high_across, c)
-	return not (high_across < -0.5 * thickness or low_across > 0.5 * thickness) and not (high_along < left or low_along > right)
+	return (
+		not (high_across < -0.5 * thickness or low_across > 0.5 * thickness)
+		and not (high_along < left or low_along > right)
+	)

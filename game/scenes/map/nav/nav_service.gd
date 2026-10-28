@@ -38,7 +38,9 @@ const SEARCH_LOG_MAX := 200000
 @export var box_clearance_m := 0.5
 ## `cast_tower`: Manaliths and Shrines are MapBuildings raised during the match, so the stored bake never holds them; listing their
 ## own group here (and not in `baked_groups`) puts them in the re-bake signature, or a doctor walks into a tower's legs.
-@export var blocker_groups: PackedStringArray = PackedStringArray(["manafount", "altar", "map_building", "nav_blocker", "cast_tower"])
+@export var blocker_groups: PackedStringArray = PackedStringArray(
+	["manafount", "altar", "map_building", "nav_blocker", "cast_tower"]
+)
 ## What the players build (Manaliths): their collision blocks too, and the navmesh is baked again when one
 ## appears or falls. `structures` is the node they are put under (%Structures).
 @export var built_group: StringName = &"structure"
@@ -187,11 +189,24 @@ func _build_navmesh() -> bool:
 	if nav_region.navigation_mesh == null or nav_region.navigation_mesh.get_polygon_count() == 0:
 		push_warning("nav: the region has no navmesh (run tools/bake/bake_nav.tscn)")
 		return false
-	var settings: NavBakeSettings = nav_region.get("bake_settings") if nav_region.get("bake_settings") != null else load(BAKE_SETTINGS) as NavBakeSettings
+	var settings: NavBakeSettings = (
+		(
+			nav_region.get("bake_settings")
+			if nav_region.get("bake_settings") != null
+			else load(BAKE_SETTINGS)
+		)
+		as NavBakeSettings
+	)
 	rebake = NavRebake.new(settings)
 	rebake.set_stored(nav_region.navigation_mesh)
 	mesh.build(nav_region, entries, box_clearance_m)
-	if DebugLog.on(&"nav"): print("nav: navmesh %d polygons, %d regions, %.0f ms" % [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms])
+	if DebugLog.on(&"nav"):
+		print(
+			(
+				"nav: navmesh %d polygons, %d regions, %.0f ms"
+				% [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms]
+			)
+		)
 	_request_rebake()
 	built.emit(mesh.build_ms)
 	return true
@@ -208,7 +223,9 @@ func _request_rebake() -> void:
 	if areas.is_empty():
 		return
 	if bake_root == null:
-		push_error("NavService: set `bake_root` (the match root); the navmesh cannot be baked again.")
+		push_error(
+			"NavService: set `bake_root` (the match root); the navmesh cannot be baked again."
+		)
 		return
 	_tag_dynamic_nodes()
 	if rebake.start(bake_root, areas):
@@ -224,7 +241,11 @@ func _tag_dynamic_nodes() -> void:
 			if node is Node3D and not node.is_in_group(NavFingerprint.GROUP):
 				node.add_to_group(NavFingerprint.GROUP)
 	for node in get_tree().get_nodes_in_group(built_group):
-		if node is Node3D and not node.is_in_group(MapBuilding.GROUP) and not node.is_in_group(NavFingerprint.GROUP):
+		if (
+			node is Node3D
+			and not node.is_in_group(MapBuilding.GROUP)
+			and not node.is_in_group(NavFingerprint.GROUP)
+		):
 			node.add_to_group(NavFingerprint.GROUP)
 
 
@@ -235,7 +256,22 @@ func _swap_rebaked() -> void:
 	if baked != null:
 		rebake.retire(mesh.swap(baked, rebake.regions))
 		rebakes += 1
-		if DebugLog.on(&"nav"): print("nav: re-bake %d polygons, %d regions, %d/%d zones (parse %.1f ms, bake %.0f ms on the worker, swap %.2f ms%s)" % [mesh.polygon_count, mesh.regions.component_count, rebake.zones_baked, rebake.zones_total, rebake.parse_ms, rebake.bake_ms, mesh.swap_ms, (", swap %d ticks late" % late) if late > 0 else ""])
+		if DebugLog.on(&"nav"):
+			print(
+				(
+					"nav: re-bake %d polygons, %d regions, %d/%d zones (parse %.1f ms, bake %.0f ms on the worker, swap %.2f ms%s)"
+					% [
+						mesh.polygon_count,
+						mesh.regions.component_count,
+						rebake.zones_baked,
+						rebake.zones_total,
+						rebake.parse_ms,
+						rebake.bake_ms,
+						mesh.swap_ms,
+						(", swap %d ticks late" % late) if late > 0 else ""
+					]
+				)
+			)
 	else:
 		push_warning("nav: the re-bake came out empty, the old navmesh stays")
 	if _dirty:
@@ -358,7 +394,12 @@ func _collect_blockers(groups: PackedStringArray, with_built: bool) -> Array:
 		return discs
 	for node in get_tree().get_nodes_in_group(built_group):
 		var built_node := node as Node3D
-		if built_node != null and not built_node.is_in_group(MapBuilding.GROUP) and not built_node.is_queued_for_deletion() and not blocker_groups.has(String(built_group)):
+		if (
+			built_node != null
+			and not built_node.is_in_group(MapBuilding.GROUP)
+			and not built_node.is_queued_for_deletion()
+			and not blocker_groups.has(String(built_group))
+		):
 			_collect(built_node, discs, 0)
 	return discs
 
@@ -376,8 +417,19 @@ func _collect(node: Node3D, discs: Array, depth: int) -> void:
 				discs.append([Vector2(at.x, at.z), cylinder.radius * maxf(scale.x, scale.z)])
 			elif shape_node.shape is BoxShape3D:
 				var half := (shape_node.shape as BoxShape3D).size * 0.5 * scale
-				discs.append([Vector2(at.x, at.z), Vector2(half.x, half.z), shape_node.global_transform.basis.get_euler().y])
+				discs.append(
+					[
+						Vector2(at.x, at.z),
+						Vector2(half.x, half.z),
+						shape_node.global_transform.basis.get_euler().y
+					]
+				)
 			elif shape_node.shape is SphereShape3D:
-				discs.append([Vector2(at.x, at.z), (shape_node.shape as SphereShape3D).radius * maxf(scale.x, scale.z)])
+				discs.append(
+					[
+						Vector2(at.x, at.z),
+						(shape_node.shape as SphereShape3D).radius * maxf(scale.x, scale.z)
+					]
+				)
 		elif child is Node3D and depth < 2:
 			_collect(child as Node3D, discs, depth + 1)

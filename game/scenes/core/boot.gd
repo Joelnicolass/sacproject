@@ -14,13 +14,16 @@ const ROOM_SERVER_SCENE := "res://scenes/net/room_server.tscn"
 @onready var character_select: Control = %CharacterSelect
 @onready var column: Control = %Column
 
+
 func _ready() -> void:
 	# The exported binary has no scene argument; `--room-server` makes its main scene (this one) hand over to the
 	# room server, so the same binary is the room server and, with `--dedicated`, every match process.
 	# Only with `SacrificeFlow.room_server_enabled` (inspector of sacrifice_flow.tscn).
 	if MpBoot.role() == "room-server":
 		if not SacrificeFlow.room_server_enabled:
-			push_error("--room-server: the room server is off (room_server_enabled in sacrifice_flow.tscn)")
+			push_error(
+				"--room-server: the room server is off (room_server_enabled in sacrifice_flow.tscn)"
+			)
 			get_tree().quit(1)
 			return
 		get_tree().change_scene_to_file.call_deferred(ROOM_SERVER_SCENE)
@@ -43,9 +46,11 @@ func _ready() -> void:
 	character_select.confirmed.connect(_on_confirmed)
 	_show_select()
 
+
 func _show_select() -> void:
 	column.visible = false
 	character_select.visible = true
+
 
 func _on_confirmed() -> void:
 	var chosen: WizardPick = SacrificeFlow.pick
@@ -53,13 +58,18 @@ func _on_confirmed() -> void:
 	character_select.visible = false
 	column.visible = true
 
+
 func _on_solo() -> void:
 	SacrificeFlow.play_solo(_setup(0))
+
 
 ## «Contra la IA»: solo with the AI in every other seat of the mode; the god of %AiGod, or drawn with «Aleatorio».
 func _on_vs_ai() -> void:
 	var level: OptionButton = %AiLevel
-	SacrificeFlow.play_vs_ai((%AiGod as AiGodPicker).selected_god(), _setup(int(level.get_item_metadata(level.selected))))
+	SacrificeFlow.play_vs_ai(
+		(%AiGod as AiGodPicker).selected_god(), _setup(int(level.get_item_metadata(level.selected)))
+	)
+
 
 ## The match this boot creates: Options → Jugabilidad and `level` (0 = the rules'). Without prefs, only the level.
 func _setup(level: int) -> MatchSetup:
@@ -77,6 +87,7 @@ func _setup(level: int) -> MatchSetup:
 	setup.biome = (%BiomePicker as BiomePicker).selected_god()
 	return setup
 
+
 ## The level of both wizards in «Contra la IA», 1-9; default = the product rules (9).
 func _fill_ai_levels() -> void:
 	var picker: OptionButton = %AiLevel
@@ -88,15 +99,23 @@ func _fill_ai_levels() -> void:
 		if level == initial:
 			picker.select(picker.item_count - 1)
 
+
 func _on_online() -> void:
-	var screen := SacrificeFlow.LOBBY_SCENE if SacrificeFlow.room_server_enabled else SacrificeFlow.ONLINE_SCENE
+	var screen := (
+		SacrificeFlow.LOBBY_SCENE
+		if SacrificeFlow.room_server_enabled
+		else SacrificeFlow.ONLINE_SCENE
+	)
 	get_tree().change_scene_to_file(screen)
+
 
 func _on_local_server() -> void:
 	get_tree().change_scene_to_file(SacrificeFlow.LOCAL_SERVER_SCENE)
 
+
 func _on_join() -> void:
 	SacrificeFlow.join_lan(ip.text)
+
 
 func _on_status(text: String) -> void:
 	status.text = text

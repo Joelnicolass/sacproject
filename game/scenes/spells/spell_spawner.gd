@@ -37,7 +37,9 @@ func spawn_scene(scene: PackedScene, data: Dictionary) -> Node:
 		push_error("SpellSpawner: no scene file to spawn (data %s)" % [data])
 		return null
 	_serial += 1
-	data["name"] = "%s%d" % [scene.resource_path.get_file().get_basename().to_pascal_case(), _serial]
+	data["name"] = (
+		"%s%d" % [scene.resource_path.get_file().get_basename().to_pascal_case(), _serial]
+	)
 	data[_SCENE_KEY] = scene.resource_path
 	return spawn_here(data)
 

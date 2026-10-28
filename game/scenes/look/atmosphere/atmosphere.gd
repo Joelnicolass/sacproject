@@ -43,8 +43,10 @@ signal night_changed(is_night: bool)
 			publish()
 
 @export_group("Now (read-only)")
-@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY) var hour_now: float = -1.0
-@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY) var weather_now: String = ""
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY)
+var hour_now: float = -1.0
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY)
+var weather_now: String = ""
 
 var _cycle: DayCycle
 var _plan: WeatherPlan
@@ -86,7 +88,8 @@ func _process(delta: float) -> void:
 		publish()
 	if _since_log >= 10.0:
 		_since_log = 0.0
-		if DebugLog.on(&"atmosphere"): print("atmosfera t=%.1f hora=%.2f clima=%s" % [now_s(), _current.hour, _weather_name()])
+		if DebugLog.on(&"atmosphere"):
+			print("atmosfera t=%.1f hora=%.2f clima=%s" % [now_s(), _current.hour, _weather_name()])
 
 
 ## The atmosphere now (neutral before a look applies).
@@ -128,7 +131,9 @@ func _sample_now() -> AtmosphereSample:
 	var t := now_s()
 	var day := _time.sample_at(_cycle, t * time_scale, pin)
 	day.moon = AtmosphereRules.is_moon(_sun_elevation_deg, day)
-	var plan: WeatherPlan = null if Engine.is_editor_hint() else (plan_override if plan_override else _plan)
+	var plan: WeatherPlan = (
+		null if Engine.is_editor_hint() else (plan_override if plan_override else _plan)
+	)
 	var sample := AtmosphereSample.mix(day, _weather.advance(plan, sky_seed(), t, preview_weather))
 	return sample.as_neutral() if sample.is_neutral(1e-4) else sample
 

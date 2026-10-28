@@ -66,7 +66,9 @@ func _place_creatures() -> void:
 		var slot := SideRelations.slot_of(spawn.side)
 		if spawn.creature == null:
 			continue
-		var unit := unit_spawner.spawn_map_creature(spawn.creature, slot, spawn.global_position, spawn.yaw())
+		var unit := unit_spawner.spawn_map_creature(
+			spawn.creature, slot, spawn.global_position, spawn.yaw()
+		)
 		if unit == null:
 			continue
 		var key := spawn.creature.display_name.to_lower()

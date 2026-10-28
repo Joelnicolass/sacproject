@@ -10,7 +10,6 @@ extends RefCounted
 ## what the guardians took, not from the building (Health.deflected_last tells the two apart).
 ## And the fire (Burning, a DamageOverTime with the attacker's path), each update, with what it took.
 
-
 ## The groups a body must be in (one of them) to feed a drain: a mobile body, never a structure.
 const FEEDING_GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
@@ -24,13 +23,32 @@ static func feed(attacker: Node, target: Node, taken: float) -> float:
 		return 0.0
 	var creature := (attacker as UnitBody).type
 	var health := attacker.get_node_or_null("Health") as Health
-	if creature == null or creature.drain <= 0.0 or health == null or health.is_dead() or not _feeds(target):
+	if (
+		creature == null
+		or creature.drain <= 0.0
+		or health == null
+		or health.is_dead()
+		or not _feeds(target)
+	):
 		return 0.0
 	var before := health.current
 	health.heal(taken * creature.drain)
 	var gained := health.current - before
 	if DebugLog.on(&"drain") and gained > 0.0:
-		print("drain %s from %s %.4f (scale %.3f) -> health %.4f gained %.4f (tick %d)" % [attacker.name, target.name, taken, creature.drain, health.current, gained, MatchClock.now()])
+		print(
+			(
+				"drain %s from %s %.4f (scale %.3f) -> health %.4f gained %.4f (tick %d)"
+				% [
+					attacker.name,
+					target.name,
+					taken,
+					creature.drain,
+					health.current,
+					gained,
+					MatchClock.now()
+				]
+			)
+		)
 	return gained
 
 

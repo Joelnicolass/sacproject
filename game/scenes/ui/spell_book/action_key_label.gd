@@ -11,7 +11,9 @@ static func of(action: String) -> String:
 		if event is InputEventKey:
 			var key := event as InputEventKey
 			var code := key.keycode if key.keycode != KEY_NONE else key.physical_keycode
-			var text := UiText.t("UI_KEY_SPACE") if code == KEY_SPACE else OS.get_keycode_string(code)
+			var text := (
+				UiText.t("UI_KEY_SPACE") if code == KEY_SPACE else OS.get_keycode_string(code)
+			)
 			if key.alt_pressed:
 				text = "Alt+" + text
 			if key.shift_pressed:

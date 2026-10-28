@@ -60,7 +60,9 @@ func items() -> Array:
 	all.append_array(meshes)
 	all.append_array(materials)
 	for shader in shaders:
-		if not materials.any(func(worn: Material) -> bool: return worn is ShaderMaterial and worn.shader == shader):
+		if not materials.any(
+			func(worn: Material) -> bool: return worn is ShaderMaterial and worn.shader == shader
+		):
 			all.append(shader)
 	all.append_array(scenes)
 	return all
@@ -143,7 +145,9 @@ func _visit_scene(packed: PackedScene) -> void:
 			if WarmKinds.holds(typeof(value)):
 				_visit(value)
 			match state.get_node_property_name(node, i):
-				&"mesh": drawn = value
-				&"material_override": worn = value
+				&"mesh":
+					drawn = value
+				&"material_override":
+					worn = value
 		if drawn is ImmediateMesh and worn is Material and not worn in strokes:
 			strokes.append(worn)

@@ -58,9 +58,18 @@ func _attach_map() -> void:
 		push_error("Match: map_parent must be set in match.tscn.")
 		return
 	# One line for the logs and the runs: which map this process loaded, and whether it simulates it.
-	print(("map %s" if not MpKit.is_networked() or MpKit.is_server() else "on map %s") % definition.tag)
+	print(
+		(
+			("map %s" if not MpKit.is_networked() or MpKit.is_server() else "on map %s")
+			% definition.tag
+		)
+	)
 	map = map_parent.get_node_or_null(MAP_NODE) as MapRoot
-	if map != null and definition.map_scene != null and map.scene_file_path != definition.map_scene.resource_path:
+	if (
+		map != null
+		and definition.map_scene != null
+		and map.scene_file_path != definition.map_scene.resource_path
+	):
 		map_parent.remove_child(map)
 		map.free()
 		map = null
@@ -68,7 +77,9 @@ func _attach_map() -> void:
 		var packed := definition.map_scene
 		map = packed.instantiate() as MapRoot if packed != null else null
 		if map == null:
-			push_error("Match: the map '%s' has no MapRoot; the match cannot start." % definition.tag)
+			push_error(
+				"Match: the map '%s' has no MapRoot; the match cannot start." % definition.tag
+			)
 			return
 		map.name = MAP_NODE
 		map_parent.add_child(map)
@@ -100,7 +111,11 @@ func _bind_map() -> void:
 func _ready() -> void:
 	var map_name := "?"
 	if definition:
-		map_name = definition.display_name if not definition.display_name.is_empty() else String(definition.tag)
+		map_name = (
+			definition.display_name
+			if not definition.display_name.is_empty()
+			else String(definition.tag)
+		)
 	print("on %s slot %d" % [map_name, MpKit.local_slot()])
 	if match_state:
 		match_state.result_changed.connect(_on_result_changed)

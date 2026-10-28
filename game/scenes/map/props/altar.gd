@@ -105,7 +105,9 @@ func _apply() -> void:
 		visuals.visible = alive
 	_set_group(self, GROUP, alive)
 	if mana_source:
-		mana_source.process_mode = Node.PROCESS_MODE_INHERIT if alive else Node.PROCESS_MODE_DISABLED
+		mana_source.process_mode = (
+			Node.PROCESS_MODE_INHERIT if alive else Node.PROCESS_MODE_DISABLED
+		)
 		_set_group(mana_source, ManaSource.GROUP, alive)
 	if loop_sound:
 		loop_sound.set_active(alive)

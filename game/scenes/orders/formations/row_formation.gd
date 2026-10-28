@@ -42,7 +42,11 @@ func slots(count: int, spacing: float, target_distance: float, command: int) -> 
 			if n % 2 == 1:
 				x += -target_distance if 2 * col < n + 1 else target_distance - spacing
 			else:
-				x += -(target_distance - 0.5 * spacing) if 2 * col < n else target_distance - 0.5 * spacing
+				x += (
+					-(target_distance - 0.5 * spacing)
+					if 2 * col < n
+					else target_distance - 0.5 * spacing
+				)
 		var y := float(-row * spacing)
 		if stagger:
 			y = -dist if (i & 1) == 1 else 0.0

@@ -41,7 +41,8 @@ var left_stopped := false
 var right_stopped := false
 var _ended := false
 var grow_ticks: int:  # grow_s in ticks: what the parts compare `age` against
-	get: return MatchClock.ticks_for(grow_s)
+	get:
+		return MatchClock.ticks_for(grow_s)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -49,7 +50,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if spell == null:
 		warnings.append("`spell` is missing: the SpellType of the wall (reach and duration).")
 	if body == null or not body.shape is BoxShape3D:
-		warnings.append("`body` with a BoxShape3D is missing: its y is the height and its z the thickness.")
+		warnings.append(
+			"`body` with a BoxShape3D is missing: its y is the height and its z the thickness."
+		)
 	return warnings
 
 
@@ -87,6 +90,7 @@ func height_m() -> float:
 
 func thickness_m() -> float:
 	return (body.shape as BoxShape3D).size.z if body != null and body.shape is BoxShape3D else 0.0
+
 
 func reach_m() -> float:
 	return spell.effect_range_m if spell != null else 0.0

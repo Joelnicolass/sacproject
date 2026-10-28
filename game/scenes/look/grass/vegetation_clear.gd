@@ -48,5 +48,9 @@ static func world_rows(tree: SceneTree) -> PackedVector4Array:
 	for node in tree.get_nodes_in_group(GROUP):
 		var clear := node as VegetationClear
 		if clear and clear.is_inside_tree() and clear.radius_m > 0.0:
-			found.append(Vector4(clear.global_position.x, clear.global_position.z, clear.radius_m, clear.edge_m))
+			found.append(
+				Vector4(
+					clear.global_position.x, clear.global_position.z, clear.radius_m, clear.edge_m
+				)
+			)
 	return found

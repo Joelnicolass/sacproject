@@ -13,7 +13,6 @@ extends CanvasLayer
 signal opened
 signal closed
 
-
 ## Title alone (the match is paused) and online (it is not).
 @export var paused_title := "UI_PAUSE_MENU_PAUSED"
 @export var online_title := "UI_PAUSE_MENU_ONLINE"

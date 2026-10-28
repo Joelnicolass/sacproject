@@ -23,7 +23,9 @@ func _process(_delta: float) -> void:
 	if not is_instance_valid(light):
 		set_process(false)
 		return
-	var wanted := wall.top() > 0.0 if posts == null else not posts.posts.is_empty() and wall.vanish_at < 0
+	var wanted := (
+		wall.top() > 0.0 if posts == null else not posts.posts.is_empty() and wall.vanish_at < 0
+	)
 	if wanted != _on:
 		_on = wanted
 		light.show_lit(wanted)
@@ -33,7 +35,11 @@ func _process(_delta: float) -> void:
 	if posts != null:
 		light.global_position = _nearest_post(ear)
 		return
-	var along := clampf(WallRules.along(ear if ear != Vector3.INF else wall.center, wall.center, wall.direction), wall.left, wall.right)
+	var along := clampf(
+		WallRules.along(ear if ear != Vector3.INF else wall.center, wall.center, wall.direction),
+		wall.left,
+		wall.right
+	)
 	var at := wall.point_at(along)
 	at.y += 0.5 * wall.top()
 	light.global_position = at

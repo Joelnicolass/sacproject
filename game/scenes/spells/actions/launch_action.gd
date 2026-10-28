@@ -31,7 +31,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first, then «already one» (when asked), a valid body and the range: the order every spell of the book answers in.
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():
@@ -55,7 +57,9 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	container.add_child(_launch)
 	_launch.begin_cast(wizard, spell, aim.target, aim.point, frames)
 	if cast_scene != null:
-		FxBus.broadcast_scene(cast_scene, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
+		FxBus.broadcast_scene(
+			cast_scene, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())}
+		)
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, picked: Node3D) -> String:

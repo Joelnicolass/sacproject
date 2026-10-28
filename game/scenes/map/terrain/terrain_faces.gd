@@ -12,8 +12,21 @@ const CORNER_IDS: Array[int] = [0, 1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE]
 ## For each mask of land corners (bit k = corner k), the lattice ids (from the low corner, as CORNER_IDS) of its land triangles' corners in
 ## order: two in a full cell, one when exactly one corner is void (the diagonal so the land half stays), none otherwise.
 const LAND_CORNER_IDS: Array[Array] = [
-	[], [], [], [], [], [], [], [0, 1, TerrainGrid.SIDE + 1], [], [], [], [0, 1, TerrainGrid.SIDE], [],
-	[TerrainGrid.SIDE + 1, TerrainGrid.SIDE, 0], [1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE],
+	[],
+	[],
+	[],
+	[],
+	[],
+	[],
+	[],
+	[0, 1, TerrainGrid.SIDE + 1],
+	[],
+	[],
+	[],
+	[0, 1, TerrainGrid.SIDE],
+	[],
+	[TerrainGrid.SIDE + 1, TerrainGrid.SIDE, 0],
+	[1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE],
 	[0, 1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE + 1, TerrainGrid.SIDE, 0],
 ]
 ## A side wall of a cell: [top end a, top end b, the two vertices just outside]; it stands when both of those are void.
@@ -43,8 +56,13 @@ static func build(heights: TerrainHeights) -> MapTerrainData:
 				var land := lands[z * TerrainGrid.SIDE + x]
 				var at := row + x
 				# Walls stand on cells with three or four land corners; a full one needs a void just outside a side.
-				if land == 15 and voids[at - PADDED_SIDE] == 0 and voids[at + 2 * PADDED_SIDE + 1] == 0 \
-						and voids[at + PADDED_SIDE - 1] == 0 and voids[at + 2] == 0:
+				if (
+					land == 15
+					and voids[at - PADDED_SIDE] == 0
+					and voids[at + 2 * PADDED_SIDE + 1] == 0
+					and voids[at + PADDED_SIDE - 1] == 0
+					and voids[at + 2] == 0
+				):
 					continue
 				if land == 7 or land >= 11 and land != 12:
 					_add_walls(faces, heights_m, voids, land, x, z)
@@ -52,7 +70,9 @@ static func build(heights: TerrainHeights) -> MapTerrainData:
 
 
 ## The land triangles of every cell in order, written into arrays sized for them (as MapTerrainData.add, without a call each).
-static func _add_lands(faces: MapTerrainData, heights_m: PackedFloat32Array, lands: PackedByteArray) -> void:
+static func _add_lands(
+	faces: MapTerrainData, heights_m: PackedFloat32Array, lands: PackedByteArray
+) -> void:
 	var count := 0
 	for land in lands:
 		count += LAND_CORNER_IDS[land].size()
@@ -71,12 +91,18 @@ static func _add_lands(faces: MapTerrainData, heights_m: PackedFloat32Array, lan
 		var corners: Array = LAND_CORNER_IDS[lands[cell]]
 		for k in corners.size():
 			var id: int = cell + corners[k]
-			vertices[at + k] = Vector3((id % TerrainGrid.SIDE) * TerrainGrid.CELL_M, heights_m[id], (id / TerrainGrid.SIDE) * TerrainGrid.CELL_M)
+			vertices[at + k] = Vector3(
+				(id % TerrainGrid.SIDE) * TerrainGrid.CELL_M,
+				heights_m[id],
+				(id / TerrainGrid.SIDE) * TerrainGrid.CELL_M
+			)
 			lattice[at + k] = id
 			indices[at + k] = at + k
 		for first in range(at, at + corners.size(), 3):
 			cells[first / 3] = cell
-			var right := (vertices[first + 1] - vertices[first]).cross(vertices[first + 2] - vertices[first])
+			var right := (vertices[first + 1] - vertices[first]).cross(
+				vertices[first + 2] - vertices[first]
+			)
 			var normal := Vector3.UP if right == Vector3.ZERO else (-right).normalized()
 			normals[first] = normal
 			normals[first + 1] = normal
@@ -90,15 +116,26 @@ static func _add_lands(faces: MapTerrainData, heights_m: PackedFloat32Array, lan
 
 
 ## The side walls of a cell with three or four land corners, then the wall across it when exactly one corner is void.
-static func _add_walls(faces: MapTerrainData, heights_m: PackedFloat32Array, voids: PackedByteArray, land: int, x: int, z: int) -> void:
+static func _add_walls(
+	faces: MapTerrainData,
+	heights_m: PackedFloat32Array,
+	voids: PackedByteArray,
+	land: int,
+	x: int,
+	z: int
+) -> void:
 	var padded := (z + PAD) * PADDED_SIDE + x + PAD
 	for side in SIDE_WALLS:
 		var a: int = side[0]
 		var b: int = side[1]
 		var out_a: Vector2i = side[2]
 		var out_b: Vector2i = side[3]
-		if voids[padded + out_a.y * PADDED_SIDE + out_a.x] != 0 and voids[padded + out_b.y * PADDED_SIDE + out_b.x] != 0 \
-				and land & (1 << a) and land & (1 << b):
+		if (
+			voids[padded + out_a.y * PADDED_SIDE + out_a.x] != 0
+			and voids[padded + out_b.y * PADDED_SIDE + out_b.x] != 0
+			and land & (1 << a)
+			and land & (1 << b)
+		):
 			_add_wall(faces, heights_m, x, z, a, b)
 	if land != 15:
 		var gone := 0
@@ -108,11 +145,21 @@ static func _add_walls(faces: MapTerrainData, heights_m: PackedFloat32Array, voi
 
 
 ## A strip that drops HoleWallRules.DEPTH_M under the rim from corner a to corner b, as two triangles.
-static func _add_wall(faces: MapTerrainData, heights_m: PackedFloat32Array, x: int, z: int, a: int, b: int) -> void:
+static func _add_wall(
+	faces: MapTerrainData, heights_m: PackedFloat32Array, x: int, z: int, a: int, b: int
+) -> void:
 	var id_a := z * TerrainGrid.SIDE + x + CORNER_IDS[a]
 	var id_b := z * TerrainGrid.SIDE + x + CORNER_IDS[b]
-	var top_a := Vector3((id_a % TerrainGrid.SIDE) * TerrainGrid.CELL_M, heights_m[id_a], (id_a / TerrainGrid.SIDE) * TerrainGrid.CELL_M)
-	var top_b := Vector3((id_b % TerrainGrid.SIDE) * TerrainGrid.CELL_M, heights_m[id_b], (id_b / TerrainGrid.SIDE) * TerrainGrid.CELL_M)
+	var top_a := Vector3(
+		(id_a % TerrainGrid.SIDE) * TerrainGrid.CELL_M,
+		heights_m[id_a],
+		(id_a / TerrainGrid.SIDE) * TerrainGrid.CELL_M
+	)
+	var top_b := Vector3(
+		(id_b % TerrainGrid.SIDE) * TerrainGrid.CELL_M,
+		heights_m[id_b],
+		(id_b / TerrainGrid.SIDE) * TerrainGrid.CELL_M
+	)
 	var down := Vector3(0.0, -HoleWallRules.DEPTH_M, 0.0)
 	faces.add(top_a, top_b + down, top_b, id_a, id_b, id_b, true)
 	faces.add(top_b + down, top_a, top_a + down, id_b, id_a, id_a, true)
@@ -126,8 +173,12 @@ static func _land_corners(voids: PackedByteArray) -> PackedByteArray:
 		var low := (z + PAD) * PADDED_SIDE + PAD
 		var high := low + PADDED_SIDE
 		for x in TerrainGrid.SIDE - 1:
-			lands[z * TerrainGrid.SIDE + x] = (1 if voids[low + x] == 0 else 0) | (2 if voids[low + x + 1] == 0 else 0) \
-					| (4 if voids[high + x + 1] == 0 else 0) | (8 if voids[high + x] == 0 else 0)
+			lands[z * TerrainGrid.SIDE + x] = (
+				(1 if voids[low + x] == 0 else 0)
+				| (2 if voids[low + x + 1] == 0 else 0)
+				| (4 if voids[high + x + 1] == 0 else 0)
+				| (8 if voids[high + x] == 0 else 0)
+			)
 	return lands
 
 

@@ -207,7 +207,19 @@ func _enter(next: Stage, seconds: float) -> void:
 	_left = seconds
 	stage = next
 	var at := _wizard.global_position
-	print("wizard %d %s at %.1f %.1f health %d mana %d" % [owner_slot(), STAGE_NAMES[next], at.x, at.z, roundi(health.current), roundi(mana.current)])
+	print(
+		(
+			"wizard %d %s at %.1f %.1f health %d mana %d"
+			% [
+				owner_slot(),
+				STAGE_NAMES[next],
+				at.x,
+				at.z,
+				roundi(health.current),
+				roundi(mana.current)
+			]
+		)
+	)
 
 
 ## Death, death2 or death3, whichever of them his model has.
@@ -245,7 +257,12 @@ func _show_stage(animate: bool) -> void:
 		_fade.kill()
 		_fade = null
 	visual.visible = true
-	if death_look != null and stage != Stage.DYING and stage != Stage.RISING and stage != Stage.GONE:
+	if (
+		death_look != null
+		and stage != Stage.DYING
+		and stage != Stage.RISING
+		and stage != Stage.GONE
+	):
 		death_look.stand()
 	var ethereal := _ethereal and stage == Stage.ALIVE
 	var see_through := shows_ghost() or stage == Stage.GONE or ethereal

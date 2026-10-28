@@ -27,15 +27,24 @@ func _init() -> void:
 		elif not arg.begins_with("--"):
 			targets.append_array(_files_of(arg))
 	if recipe == null or targets.is_empty():
-		printerr("bake_relief: usage: -- <folder|material.tres> [--force] [--recipe=res://recipe.tres]")
+		printerr(
+			"bake_relief: usage: -- <folder|material.tres> [--force] [--recipe=res://recipe.tres]"
+		)
 		quit(1)
 		return
 	var counts := {"written": 0, "assigned": 0, "pending": 0, "skipped": 0}
 	for path in targets:
 		_bake_one(path, recipe, force, counts)
-	print("bake_relief: %d maps written, %d materials assigned, %d waiting for import, %d skipped" % [counts.written, counts.assigned, counts.pending, counts.skipped])
+	print(
+		(
+			"bake_relief: %d maps written, %d materials assigned, %d waiting for import, %d skipped"
+			% [counts.written, counts.assigned, counts.pending, counts.skipped]
+		)
+	)
 	if counts.pending > 0:
-		print("bake_relief: run `Godot --headless --path . --import` and the same command again to assign the new maps")
+		print(
+			"bake_relief: run `Godot --headless --path . --import` and the same command again to assign the new maps"
+		)
 	quit()
 
 

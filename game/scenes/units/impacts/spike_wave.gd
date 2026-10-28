@@ -23,7 +23,8 @@ const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
 ## When each ring hurts, after the hit.
-@export var damage_at_s: PackedFloat64Array = PackedFloat64Array([0.2333, 0.4833, 0.7333, 0.9833, 1.4833])
+@export
+var damage_at_s: PackedFloat64Array = PackedFloat64Array([0.2333, 0.4833, 0.7333, 0.9833, 1.4833])
 ## The width of a ring (m).
 @export var strip := 6.0
 ## The inner radius of the first ring (m).
@@ -97,8 +98,12 @@ func _ring(i: int, frame: int) -> void:
 	var bounds := ring_bounds(i)
 	var center := global_position
 	if DebugLog.on(&"spikes"):
-		print("ring %d/%d %s +%d from %.2f to %.2f m (frame %d)" % [i + 1, damage_at_s.size(), label, frame, bounds.x,
-			bounds.y, MatchClock.now()])
+		print(
+			(
+				"ring %d/%d %s +%d from %.2f to %.2f m (frame %d)"
+				% [i + 1, damage_at_s.size(), label, frame, bounds.x, bounds.y, MatchClock.now()]
+			)
+		)
 	_bristle(i, bounds)
 	var skip: Node3D = touched if touched != null and is_instance_valid(touched) else null
 	for body in _SPLASH.bodies_within(get_tree(), center, bounds.y, skip):
@@ -111,9 +116,21 @@ func _ring(i: int, frame: int) -> void:
 			continue
 		var why := _excluded(body, feet)
 		if DebugLog.on(&"spikes"):
-			print("  ring %d %s at %.3f m: %s" % [i + 1, body.name, distance, why if not why.is_empty() else "damage"])
+			print(
+				(
+					"  ring %d %s at %.3f m: %s"
+					% [i + 1, body.name, distance, why if not why.is_empty() else "damage"]
+				)
+			)
 		if why.is_empty():
-			_SPLASH.hurt(body, amount, from_slot, _HEALTH.SPLASH_RANGED, 0, get_node_or_null(attacker_path) if not attacker_path.is_empty() else null)
+			_SPLASH.hurt(
+				body,
+				amount,
+				from_slot,
+				_HEALTH.SPLASH_RANGED,
+				0,
+				get_node_or_null(attacker_path) if not attacker_path.is_empty() else null
+			)
 
 
 ## One SpikeField event that fills ring i's strip (presentation, every peer).
@@ -121,9 +138,18 @@ func _bristle(i: int, bounds: Vector2) -> void:
 	if spike_scene == null or spikes_per_m2 <= 0.0:
 		return
 	var area := PI * (bounds.y * bounds.y - bounds.x * bounds.x)
-	FxBus.broadcast_scene(spike_scene, global_position, {"inner": bounds.x, "outer": bounds.y,
-		"count": mini(max_spikes, ceili(area * spikes_per_m2)), "height": spike_height, "life": spike_life_s,
-		"seed": MatchSeed.derive(["spikes", label, _born, i])})
+	FxBus.broadcast_scene(
+		spike_scene,
+		global_position,
+		{
+			"inner": bounds.x,
+			"outer": bounds.y,
+			"count": mini(max_spikes, ceili(area * spikes_per_m2)),
+			"height": spike_height,
+			"life": spike_life_s,
+			"seed": MatchSeed.derive(["spikes", label, _born, i])
+		}
+	)
 
 
 ## Why the ring leaves `body` out (checked in order: land, height, ally), or "" when it hurts it.
@@ -139,24 +165,53 @@ func _excluded(body: Node3D, feet: Vector3) -> String:
 	return ""
 
 
-
 func _log_start() -> void:
 	var rings := PackedStringArray()
 	for i in damage_at_s.size():
 		var bounds := ring_bounds(i)
-		rings.append("+%d [%.2f, %.2f]" % [MatchClock.ticks_for(damage_at_s[i]), bounds.x, bounds.y])
+		rings.append(
+			"+%d [%.2f, %.2f]" % [MatchClock.ticks_for(damage_at_s[i]), bounds.x, bounds.y]
+		)
 	var at := global_position
-	print("rings %s at (%.3f, %.3f, %.3f) range %.1f m damage %d side %d intended %s touched %s rings %s (frame %d)" % [
-		label, at.x, at.y, at.z, effect_range, roundi(amount), from_slot, _name_of(intended), _name_of(touched),
-		", ".join(rings), _born])
+	print(
+		(
+			"rings %s at (%.3f, %.3f, %.3f) range %.1f m damage %d side %d intended %s touched %s rings %s (frame %d)"
+			% [
+				label,
+				at.x,
+				at.y,
+				at.z,
+				effect_range,
+				roundi(amount),
+				from_slot,
+				_name_of(intended),
+				_name_of(touched),
+				", ".join(rings),
+				_born
+			]
+		)
+	)
 	# Every body the rings may weigh, where it stands now (the replica walks the same list).
 	for body in _SPLASH.bodies_within(get_tree(), at, effect_range + 10.0):
 		var feet := body.global_position
 		var health := body.get_node_or_null("Health") as Health
 		var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
-		print("rings %s body %s feet (%.3f, %.3f, %.3f) ground %.3f land %s side %d max health %d" % [label,
-			body.name, feet.x, feet.y, feet.z, BodyNudge.ground_y(body, feet),
-			"yes" if BodyNudge.on_land(body, feet) else "no", side, roundi(health.maximum) if health else 0])
+		print(
+			(
+				"rings %s body %s feet (%.3f, %.3f, %.3f) ground %.3f land %s side %d max health %d"
+				% [
+					label,
+					body.name,
+					feet.x,
+					feet.y,
+					feet.z,
+					BodyNudge.ground_y(body, feet),
+					"yes" if BodyNudge.on_land(body, feet) else "no",
+					side,
+					roundi(health.maximum) if health else 0
+				]
+			)
+		)
 
 
 static func _name_of(body: Node3D) -> String:

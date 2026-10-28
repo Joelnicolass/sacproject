@@ -47,7 +47,10 @@ static func ensure(host: Node, tag: String, idle_clip: String, force := false) -
 		return "not drawn: %s%s.glb is not imported" % [MODEL_DIR, tag]
 	var image := await render(host, glb, idle_clip)
 	if image == null:
-		return "not drawn: no renderer here (a headless run has none). Run `Godot --path . --script res://tools/bake/creature_icon.gd -- %s` with a window, or put your own %s" % [tag, path]
+		return (
+			"not drawn: no renderer here (a headless run has none). Run `Godot --path . --script res://tools/bake/creature_icon.gd -- %s` with a window, or put your own %s"
+			% [tag, path]
+		)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ICON_DIR))
 	var error := image.save_png(ProjectSettings.globalize_path(path))
 	if error != OK:
@@ -59,16 +62,25 @@ static func ensure(host: Node, tag: String, idle_clip: String, force := false) -
 ## `--import` once); until then it says so and `tools/bake/fill_type_icons.gd` does it later. A creature that already has an icon keeps it.
 static func link(tag: String) -> String:
 	var type_path := TypeRef.creature_path(tag)
-	var type := ResourceLoader.load(type_path, "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
+	var type := (
+		ResourceLoader.load(type_path, "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
+	)
 	if type == null:
 		return "not linked: %s does not exist" % type_path
 	if type.icon != null:
 		return "icon already set (%s)" % type.icon.resource_path
 	var path := path_for(tag)
 	if not ResourceLoader.exists(path):
-		return "not linked: %s is not imported yet (open the editor or run --import once, then tools/bake/fill_type_icons.gd)" % path
+		return (
+			"not linked: %s is not imported yet (open the editor or run --import once, then tools/bake/fill_type_icons.gd)"
+			% path
+		)
 	type.icon = load(path) as Texture2D
-	return "linked in %s" % type_path if ResourceSaver.save(type, type_path) == OK else "not linked: cannot save %s" % type_path
+	return (
+		"linked in %s" % type_path
+		if ResourceSaver.save(type, type_path) == OK
+		else "not linked: cannot save %s" % type_path
+	)
 
 
 ## The 32 x 32 icon of the model `glb` in the pose of its `idle_clip`, or null without a renderer.
@@ -113,7 +125,9 @@ static func render(host: Node, glb: PackedScene, idle_clip: String) -> Image:
 	var box := _box(model)
 	var center := box.get_center()
 	var direction := VIEW.normalized()
-	camera.look_at_from_position(center + direction * _distance(box, direction, FOV_DEG), center, Vector3.UP)
+	camera.look_at_from_position(
+		center + direction * _distance(box, direction, FOV_DEG), center, Vector3.UP
+	)
 	light.look_at_from_position(center + Vector3(-0.7, 1.0, 0.9) * 5.0, center, Vector3.UP)
 
 	var tree := host.get_tree()

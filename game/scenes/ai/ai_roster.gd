@@ -79,7 +79,8 @@ func _seat_all(seats: Array[AiSeat]) -> void:
 		side.setup(world, wizard, seat)
 		side.active = seat.start_active
 		sides[seat.slot] = side
-		if DebugLog.on(&"ai_seat"): print(
+		if DebugLog.on(&"ai_seat"):
+			print(
 				(
 					"ai slot %d ready (%s, %s)"
 					% [seat.slot, seat.god.id(), side.play.difficulty.display_name]

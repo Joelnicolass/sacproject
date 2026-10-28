@@ -42,8 +42,12 @@ func refit() -> void:
 	if flight != null and flight.is_airborne():
 		height = facts.flying_capsule_height_m
 	var capsule := collision.shape as CapsuleShape3D
-	if capsule != null and is_equal_approx(capsule.height, height) and is_equal_approx(capsule.radius, radius) \
-			and is_equal_approx(collision.position.y, height * 0.5):
+	if (
+		capsule != null
+		and is_equal_approx(capsule.height, height)
+		and is_equal_approx(capsule.radius, radius)
+		and is_equal_approx(collision.position.y, height * 0.5)
+	):
 		return
 	# A capsule saved in a scene (it has a resource path) is shared by every instance: copied once, then owned. A new one is sized
 	# before it is assigned, so the physics server gets one shape update, not three.

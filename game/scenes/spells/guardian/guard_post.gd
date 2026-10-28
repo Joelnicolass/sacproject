@@ -77,7 +77,12 @@ func attach_position() -> Vector3:
 
 ## The building stands and can hold guardians.
 func is_open() -> bool:
-	if host == null or not is_instance_valid(host) or not host.is_inside_tree() or host.is_queued_for_deletion():
+	if (
+		host == null
+		or not is_instance_valid(host)
+		or not host.is_inside_tree()
+		or host.is_queued_for_deletion()
+	):
 		return false
 	if health != null and health.is_dead():
 		return false

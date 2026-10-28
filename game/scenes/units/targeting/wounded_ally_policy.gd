@@ -58,7 +58,10 @@ func _most_wounded(body: UnitBody, center: Vector3, radius: float) -> Node3D:
 			if not is_patient(body, node):
 				continue
 			var other := node as Node3D
-			var distance := Vector2(other.global_position.x - center.x, other.global_position.z - center.z).length()
+			var distance := (
+				Vector2(other.global_position.x - center.x, other.global_position.z - center.z)
+				. length()
+			)
 			if distance > radius:
 				continue
 			var health := other.get_node("Health")

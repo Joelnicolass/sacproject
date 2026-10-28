@@ -87,7 +87,17 @@ func _physics_process(delta: float) -> void:
 	_health.heal(per_frame)
 	_healed += float(_health.get("current")) - before
 	if report_each:
-		print("heal %s +%.3f health %.1f (tick %d)" % [get_parent().name, float(_health.get("current")) - before, float(_health.get("current")), MatchClock.now()])
+		print(
+			(
+				"heal %s +%.3f health %.1f (tick %d)"
+				% [
+					get_parent().name,
+					float(_health.get("current")) - before,
+					float(_health.get("current")),
+					MatchClock.now()
+				]
+			)
+		)
 	_fx_left -= delta
 	if _fx_left <= 0.0:
 		_fx_left = fx_interval_s
@@ -100,5 +110,10 @@ func _end() -> void:
 	if report_end and _health != null:
 		var body := get_parent()
 		var who := GameBody.name_of(body)
-		print("heal %s total %d health %d" % [who, roundi(_healed), roundi(float(_health.get("current")))])
+		print(
+			(
+				"heal %s total %d health %d"
+				% [who, roundi(_healed), roundi(float(_health.get("current")))]
+			)
+		)
 	queue_free()

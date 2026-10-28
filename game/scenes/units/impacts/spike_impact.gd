@@ -30,21 +30,43 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 		hurt = target
 		center = BodyNudge.center(target)
 		if DebugLog.on(&"spikes"):
-			print("spikes %s %s hit %s at (%.3f, %.3f, %.3f) (frame %d)" % [tag, shot.name, target.name, point.x,
-				point.y, point.z, MatchClock.now()])
+			print(
+				(
+					"spikes %s %s hit %s at (%.3f, %.3f, %.3f) (frame %d)"
+					% [tag, shot.name, target.name, point.x, point.y, point.z, MatchClock.now()]
+				)
+			)
 	elif _range_spent(shot):
 		if intended != null and ProjectileTargets.is_live_body(intended):
 			hurt = intended
 		if DebugLog.on(&"spikes"):
-			print("spikes %s %s run out of range at (%.3f, %.3f, %.3f), intended %s (frame %d)" % [tag, shot.name, point.x,
-				point.y, point.z, str(intended.name) + " alive" if hurt else "nobody", MatchClock.now()])
+			print(
+				(
+					"spikes %s %s run out of range at (%.3f, %.3f, %.3f), intended %s (frame %d)"
+					% [
+						tag,
+						shot.name,
+						point.x,
+						point.y,
+						point.z,
+						str(intended.name) + " alive" if hurt else "nobody",
+						MatchClock.now()
+					]
+				)
+			)
 	elif DebugLog.on(&"spikes"):
-		print("spikes %s %s end without a body before the range at (%.3f, %.3f, %.3f) (frame %d)" % [tag, shot.name, point.x,
-			point.y, point.z, MatchClock.now()])
+		print(
+			(
+				"spikes %s %s end without a body before the range at (%.3f, %.3f, %.3f) (frame %d)"
+				% [tag, shot.name, point.x, point.y, point.z, MatchClock.now()]
+			)
+		)
 	center.y = BodyNudge.ground_y(shot, center)
 	if hurt:
 		_SPLASH.hurt(hurt, amount, from_slot, _HEALTH.SPLASH_RANGED, 0, shooter_of(shot))
-	_start_wave(shot, center, amount, from_slot, intended, hurt, ability, "%s %s" % [tag, shot.name])
+	_start_wave(
+		shot, center, amount, from_slot, intended, hurt, ability, "%s %s" % [tag, shot.name]
+	)
 
 
 func _range_spent(shot: Node3D) -> bool:
@@ -58,8 +80,16 @@ func _intended(shot: Node3D) -> Node3D:
 	return shot.get_node_or_null(path) as Node3D
 
 
-func _start_wave(shot: Node3D, center: Vector3, amount: float, from_slot: int, intended: Node3D, hurt: Node3D,
-		ability: AbilityType, label: String) -> void:
+func _start_wave(
+	shot: Node3D,
+	center: Vector3,
+	amount: float,
+	from_slot: int,
+	intended: Node3D,
+	hurt: Node3D,
+	ability: AbilityType,
+	label: String
+) -> void:
 	if wave_scene == null or shot.get_parent() == null:
 		return
 	var wave := wave_scene.instantiate() as SpikeWave

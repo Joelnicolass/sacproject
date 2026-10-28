@@ -76,9 +76,24 @@ func lunge() -> void:
 	pivot.rotation.x = 0.0
 	_lunge_tween = pivot.create_tween()
 	_lunge_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-	_lunge_tween.tween_property(pivot, "rotation:x", -deg_to_rad(lunge_back_deg), lunge_back_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	_lunge_tween.tween_property(pivot, "rotation:x", deg_to_rad(lunge_forward_deg), lunge_forward_s).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	_lunge_tween.tween_property(pivot, "rotation:x", 0.0, lunge_recover_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	(
+		_lunge_tween
+		. tween_property(pivot, "rotation:x", -deg_to_rad(lunge_back_deg), lunge_back_s)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
+	(
+		_lunge_tween
+		. tween_property(pivot, "rotation:x", deg_to_rad(lunge_forward_deg), lunge_forward_s)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_IN)
+	)
+	(
+		_lunge_tween
+		. tween_property(pivot, "rotation:x", 0.0, lunge_recover_s)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 
 ## The attack is cancelled: the lunge stops and the pivot stands up.

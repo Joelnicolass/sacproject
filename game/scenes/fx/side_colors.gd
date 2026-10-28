@@ -19,7 +19,6 @@ const PALETTE: Array[Color] = [
 	Color(0.0, 1.0, 1.0),
 ]
 
-
 const NPC_COLOR := Color(0.5, 0.5, 0.5)
 
 

@@ -64,7 +64,13 @@ func _ready() -> void:
 	if type:
 		health.setup(float(type.health))
 	if drop_on_ready:
-		drop_to(Vector3(global_position.x, GroundRay.surface_y(self, global_position, 1, [get_rid()], global_position.y), global_position.z))
+		drop_to(
+			Vector3(
+				global_position.x,
+				GroundRay.surface_y(self, global_position, 1, [get_rid()], global_position.y),
+				global_position.z
+			)
+		)
 	else:
 		stand()
 
@@ -87,11 +93,16 @@ func drop_to(point: Vector3) -> void:
 
 
 ## Walks to `point` with collision; `begin_walk` is one straight leg (what the PathFollower hands out).
-func walk_to(point: Vector3) -> void: motor.walk_to(point)
+func walk_to(point: Vector3) -> void:
+	motor.walk_to(point)
 
-func begin_walk(point: Vector3) -> void: motor.begin_walk(point)
 
-func turn_toward(direction: Vector3, delta: float) -> void: motor.turn_toward(direction, delta)
+func begin_walk(point: Vector3) -> void:
+	motor.begin_walk(point)
+
+
+func turn_toward(direction: Vector3, delta: float) -> void:
+	motor.turn_toward(direction, delta)
 
 
 ## Stops walking and stands.
@@ -128,33 +139,55 @@ func give_up() -> void:
 
 
 ## The server or a solo game moves and rules it; a client only shows it.
-func simulates() -> bool: return is_multiplayer_authority()
+func simulates() -> bool:
+	return is_multiplayer_authority()
 
-func is_walking() -> bool: return motor.is_walking()
 
-func is_dead() -> bool: return pose == Pose.DYING or (health != null and health.is_dead())
+func is_walking() -> bool:
+	return motor.is_walking()
 
-func is_alive() -> bool: return not is_dead()
 
-func is_dropping() -> bool: return pose == Pose.FALLING or pose == Pose.LANDING
+func is_dead() -> bool:
+	return pose == Pose.DYING or (health != null and health.is_dead())
+
+
+func is_alive() -> bool:
+	return not is_dead()
+
+
+func is_dropping() -> bool:
+	return pose == Pose.FALLING or pose == Pose.LANDING
+
 
 ## Not a target while it falls or dies (the bounce makes it invulnerable). Health.damage and every target search ask this.
-func is_targetable() -> bool: return not is_dropping() and pose != Pose.DYING
-
-func is_obstacle() -> bool: return pose != Pose.DYING
-
-func display_name() -> String: return type.display_name if type else name
-
-func pace() -> float: return (type.run_speed_m_s if type else 0.0) * speed_factor
+func is_targetable() -> bool:
+	return not is_dropping() and pose != Pose.DYING
 
 
-func landing_s() -> float: return motor.landing_s()
+func is_obstacle() -> bool:
+	return pose != Pose.DYING
+
+
+func display_name() -> String:
+	return type.display_name if type else name
+
+
+func pace() -> float:
+	return (type.run_speed_m_s if type else 0.0) * speed_factor
+
+
+func landing_s() -> float:
+	return motor.landing_s()
 
 
 ## Defense and size for MeleeRules.profile_of: evasion and resistance of the CRE8, size of `sacd`.
 func melee_profile() -> Dictionary:
-	return {"evasion": float(type.melee_evasion_milli()) if type else 0.0, "resistance": type.melee_resistance if type else 1.0,
-		"reach": mount.facts.reach_m, "height": mount.facts.height_m}
+	return {
+		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
+		"resistance": type.melee_resistance if type else 1.0,
+		"reach": mount.facts.reach_m,
+		"height": mount.facts.height_m
+	}
 
 
 func regenerate(delta: float) -> void:
@@ -162,7 +195,8 @@ func regenerate(delta: float) -> void:
 		health.heal(type.regeneration_per_s * delta)
 
 
-func announce_death() -> void: died.emit(_killer_slot)
+func announce_death() -> void:
+	died.emit(_killer_slot)
 
 
 func _die(from_slot: int) -> void:
@@ -191,7 +225,9 @@ func _announce_pose() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
-	for socket in ["type", "rules", "health", "collision", "mount", "health_bar", "states", "motor"]:
+	for socket in [
+		"type", "rules", "health", "collision", "mount", "health_bar", "states", "motor"
+	]:
 		if get(socket) == null:
 			out.append("Assign `%s` (see doctor.tscn)." % socket)
 	return out

@@ -10,7 +10,6 @@ extends Node
 ## in another order, gives the same number). A factor of exactly 1 is the same as no factor.
 ## Server (or solo): speed_factor is simulated there; on a client the component does nothing.
 
-
 ## The body whose speed_factor it owns. Empty = the parent.
 @export var body: Node3D
 
@@ -79,4 +78,6 @@ func _apply() -> void:
 		return
 	body.set("speed_factor", now)
 	if DebugLog.on(&"pace"):
-		print("pace %s ×%.4f %s (tick %d)" % [str(body.name), now, str(sources()), MatchClock.now()])
+		print(
+			"pace %s ×%.4f %s (tick %d)" % [str(body.name), now, str(sources()), MatchClock.now()]
+		)

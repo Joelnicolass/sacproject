@@ -79,7 +79,11 @@ func _on_local_wizard(wizard: Node3D) -> void:
 
 func _on_feedback(text: String) -> void:
 	# The answer to the pending cast is the one that is not a refusal (by key, never by the spell's words).
-	if (mode == "spell" or mode == "structure") and not cast_pending.is_empty() and not _log.is_reason(text):
+	if (
+		(mode == "spell" or mode == "structure")
+		and not cast_pending.is_empty()
+		and not _log.is_reason(text)
+	):
 		mode = ""
 		cast_pending = ""
 	_log.say(text)

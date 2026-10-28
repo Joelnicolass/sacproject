@@ -64,7 +64,6 @@ extends Node
 @export var fallback_color := Color(0.8, 0.7, 0.5)
 @export var fallback_radius := 0.15
 
-
 ## The scene this look was made from (null for the plain ball).
 var source: PackedScene
 

@@ -43,7 +43,10 @@ static var _team_of_seat: PackedInt32Array = PackedInt32Array()
 ## The sides of `map` (MapSides.rows_of its scene, its seats) and the team overlay of `mode`, from now on. The world calls it once
 ## when it starts; calling it again with the same map and mode changes nothing. A null map leaves no rows (every slot an enemy).
 static func use(map: MapDefinition, mode: GameMode) -> void:
-	set_rows(MapSides.rows_of(map.map_scene) if map != null else [], map.player_starts if map != null else 2)
+	set_rows(
+		MapSides.rows_of(map.map_scene) if map != null else [],
+		map.player_starts if map != null else 2
+	)
 	_install_mode(mode)
 
 
@@ -149,7 +152,11 @@ static func stance(from_slot: int, to_slot: int) -> Stance:
 		return Stance.ALLY
 	_ensure()
 	if _in_mode(from_slot) and _in_mode(to_slot):
-		return Stance.ALLY if _team_of_seat[from_slot - 1] == _team_of_seat[to_slot - 1] else Stance.ENEMY
+		return (
+			Stance.ALLY
+			if _team_of_seat[from_slot - 1] == _team_of_seat[to_slot - 1]
+			else Stance.ENEMY
+		)
 	if not knows(from_slot, to_slot):
 		return Stance.ENEMY
 	var from_side := side_of(from_slot)
@@ -188,5 +195,7 @@ static func _ensure() -> void:
 		return
 	if not _warned and not Engine.is_editor_hint():
 		_warned = true
-		push_warning("SideRelations: asked before a world called use(map, mode); every other slot is an enemy.")
+		push_warning(
+			"SideRelations: asked before a world called use(map, mode); every other slot is an enemy."
+		)
 	set_rows([])

@@ -73,7 +73,11 @@ static func weather_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> Atmosphe
 	if now[0] == null:
 		return AtmosphereSample.neutral()
 	var to := state_sample(now[1])
-	return to if now[2] >= 1.0 or now[0] == now[1] else AtmosphereSample.blend(state_sample(now[0]), to, now[2])
+	return (
+		to
+		if now[2] >= 1.0 or now[0] == now[1]
+		else AtmosphereSample.blend(state_sample(now[0]), to, now[2])
+	)
 
 
 ## The weather that rules at `t_s` (the one past half of a blend).
@@ -99,7 +103,9 @@ static func states_at(plan: WeatherPlan, sky_seed: int, t_s: float) -> Array:
 
 ## The weather of segment `k`: the plan's first for k = 0, then a weighted draw by the sky's seed (or the list in order).
 static func segment_state(plan: WeatherPlan, sky_seed: int, k: int) -> WeatherState:
-	var usable := plan.chances.filter(func(c: WeatherChance) -> bool: return c != null and c.state != null and c.weight > 0.0)
+	var usable := plan.chances.filter(
+		func(c: WeatherChance) -> bool: return c != null and c.state != null and c.weight > 0.0
+	)
 	if k <= 0 or usable.is_empty():
 		return plan.first
 	if plan.in_order:
@@ -124,8 +130,15 @@ static func state_sample(state: WeatherState) -> AtmosphereSample:
 ## split of the span. Time is cut in slots of 2 × `min_gap_s`; `per_min` picks evenly which slots strike (a minute gets
 ## its share, never a burst or a long silence) and the strike falls in the middle half of its slot, so two are never
 ## closer than `min_gap_s` (photosensitivity; `per_min` tops out at 30 / `min_gap_s`).
-static func strikes_between(sky_seed: int, t0_s: float, t1_s: float, per_min: float, min_gap_s := 4.0, near_m := 150.0,
-		far_m := 600.0) -> PackedVector3Array:
+static func strikes_between(
+	sky_seed: int,
+	t0_s: float,
+	t1_s: float,
+	per_min: float,
+	min_gap_s := 4.0,
+	near_m := 150.0,
+	far_m := 600.0
+) -> PackedVector3Array:
 	var out := PackedVector3Array()
 	var slot := 2.0 * maxf(min_gap_s, 0.1)
 	var chance := clampf(per_min * slot / 60.0, 0.0, 1.0)
@@ -136,7 +149,13 @@ static func strikes_between(sky_seed: int, t0_s: float, t1_s: float, per_min: fl
 			continue
 		var t := (float(k) + 0.25 + 0.5 * unit_hash(salt, 4 * k + 1)) * slot
 		if t > t0_s and t <= t1_s:
-			out.append(Vector3(t, 360.0 * unit_hash(salt, 4 * k + 2), lerpf(near_m, far_m, unit_hash(salt, 4 * k + 3))))
+			out.append(
+				Vector3(
+					t,
+					360.0 * unit_hash(salt, 4 * k + 2),
+					lerpf(near_m, far_m, unit_hash(salt, 4 * k + 3))
+				)
+			)
 	return out
 
 
@@ -160,8 +179,15 @@ static func fog_range(sky: SkyLook, sample: AtmosphereSample) -> Vector2:
 ## The fog's color for the sky's fog bent by the sample: greyed by `sky_grey`, paled by the mist, tinted like the sky.
 static func fog_color(sky: SkyLook, sample: AtmosphereSample) -> Color:
 	var luma := sky.fog_color.get_luminance()
-	var color := sky.fog_color.lerp(Color(luma, luma, luma), sample.sky_grey) if sample.sky_grey > 0.0 else sky.fog_color
-	return (color.lerp(sample.mist_color, sample.mist) if sample.mist > 0.0 else color) * sample.sky_tint
+	var color := (
+		sky.fog_color.lerp(Color(luma, luma, luma), sample.sky_grey)
+		if sample.sky_grey > 0.0
+		else sky.fog_color
+	)
+	return (
+		(color.lerp(sample.mist_color, sample.mist) if sample.mist > 0.0 else color)
+		* sample.sky_tint
+	)
 
 
 ## Integer hash of two numbers (splitmix64's finalizer): the same on every architecture, unlike `hash()`.

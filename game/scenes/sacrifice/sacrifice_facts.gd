@@ -72,4 +72,3 @@ func _read(state: SceneState) -> void:
 		drop_out_m = SceneStateReader.mm(-vortex.z)
 	if root.has("exit"):
 		exit_down_m = SceneStateReader.mm(-SceneStateReader.marker(nodes, root, "exit").y)
-

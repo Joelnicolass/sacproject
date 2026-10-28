@@ -70,7 +70,9 @@ func _attach() -> void:
 	add_child(_fx)
 	var emitter := _fx as SpriteEmitter
 	if emitter:
-		emitter.set_tint(SideColors.mana_color(body.owner_slot), SideColors.mana_energy_scale(body.owner_slot))
+		emitter.set_tint(
+			SideColors.mana_color(body.owner_slot), SideColors.mana_energy_scale(body.owner_slot)
+		)
 		emitter.set_active(true)
 	_find_socket()
 	_apply_rate()

@@ -47,7 +47,12 @@ func _draw() -> void:
 	for node in tree.get_nodes_in_group(ManafountBody.GROUP):
 		_mark(node as Node3D, style.manafount, 0, false)
 	for node in tree.get_nodes_in_group(Altar.GROUP):
-		_mark(node as Node3D, style.altar, int(node.get("owner_slot")), _is_mine(int(node.get("owner_slot")), slot))
+		_mark(
+			node as Node3D,
+			style.altar,
+			int(node.get("owner_slot")),
+			_is_mine(int(node.get("owner_slot")), slot)
+		)
 	for node in tree.get_nodes_in_group(CastTower.TOWER_GROUP):
 		var tower := node as CastTower
 		if tower == null:
@@ -74,7 +79,14 @@ func _draw() -> void:
 ## The local slot and its allies (allied vision; there is no
 ## fog, so what changes is that an ally is shown always, with the arrow at the edge for its buildings).
 func _is_mine(owner_slot: int, slot: int) -> bool:
-	return owner_slot == slot or (owner_slot > 0 and slot > 0 and SideRelations.stance(slot, owner_slot) == SideRelations.Stance.ALLY)
+	return (
+		owner_slot == slot
+		or (
+			owner_slot > 0
+			and slot > 0
+			and SideRelations.stance(slot, owner_slot) == SideRelations.Stance.ALLY
+		)
+	)
 
 
 func _unit_shows(unit: UnitBody, slot: int) -> bool:
@@ -117,15 +129,32 @@ func _side_color(slot: int) -> Color:
 func _draw_icon(at: Vector2, kind: MinimapMarkerStyle, color: Color) -> void:
 	var half := kind.size_px * 0.5
 	if kind.texture != null:
-		draw_texture_rect(kind.texture, Rect2(at - Vector2.ONE * half, Vector2.ONE * kind.size_px), false, color)
+		draw_texture_rect(
+			kind.texture, Rect2(at - Vector2.ONE * half, Vector2.ONE * kind.size_px), false, color
+		)
 		return
 	match kind.shape:
 		MinimapMarkerStyle.Shape.TRIANGLE:
-			draw_colored_polygon(PackedVector2Array([at + Vector2(0.0, -half), at + Vector2(half, half), at + Vector2(-half, half)]), color)
+			draw_colored_polygon(
+				PackedVector2Array(
+					[at + Vector2(0.0, -half), at + Vector2(half, half), at + Vector2(-half, half)]
+				),
+				color
+			)
 		MinimapMarkerStyle.Shape.SQUARE:
 			draw_rect(Rect2(at - Vector2.ONE * half, Vector2.ONE * kind.size_px), color)
 		MinimapMarkerStyle.Shape.DIAMOND:
-			draw_colored_polygon(PackedVector2Array([at + Vector2(0.0, -half), at + Vector2(half, 0.0), at + Vector2(0.0, half), at + Vector2(-half, 0.0)]), color)
+			draw_colored_polygon(
+				PackedVector2Array(
+					[
+						at + Vector2(0.0, -half),
+						at + Vector2(half, 0.0),
+						at + Vector2(0.0, half),
+						at + Vector2(-half, 0.0)
+					]
+				),
+				color
+			)
 		_:
 			draw_circle(at, half, color)
 
@@ -140,7 +169,12 @@ func _draw_arrows() -> void:
 		var at := center + direction * (0.92 * radius - 7.0)
 		var half := kind.arrow_size_px * 0.5
 		draw_set_transform(at, atan2(direction.x, -direction.y))
-		draw_texture_rect(kind.arrow_texture, Rect2(Vector2.ONE * -half, Vector2.ONE * kind.arrow_size_px), false, entry[1])
+		draw_texture_rect(
+			kind.arrow_texture,
+			Rect2(Vector2.ONE * -half, Vector2.ONE * kind.arrow_size_px),
+			false,
+			entry[1]
+		)
 		draw_set_transform_matrix(Transform2D.IDENTITY)
 		arrows_drawn += 1
 

@@ -31,7 +31,9 @@ func _notification(what: int) -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if not get_parent() is Node3D:
-		return PackedStringArray(["GroundSnap rests its parent on the ground: it must be a child of a Node3D."])
+		return PackedStringArray(
+			["GroundSnap rests its parent on the ground: it must be a child of a Node3D."]
+		)
 	return PackedStringArray()
 
 
@@ -63,7 +65,12 @@ func snap() -> void:
 func _terrain() -> Terrain:
 	for node in get_tree().get_nodes_in_group(Terrain.GROUP):
 		var terrain := node as Terrain
-		if terrain and terrain.is_loaded() and terrain.get_parent() and terrain.get_parent().is_ancestor_of(self):
+		if (
+			terrain
+			and terrain.is_loaded()
+			and terrain.get_parent()
+			and terrain.get_parent().is_ancestor_of(self)
+		):
 			return terrain
 	return null
 

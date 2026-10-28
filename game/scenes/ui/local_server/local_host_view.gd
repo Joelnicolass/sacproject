@@ -66,9 +66,15 @@ func _on_create() -> void:
 func _on_server_ready(address: String, port: int, code: String) -> void:
 	%HostAddress.text = LocalServerText.address_text(address)
 	%HostPort.text = tr(LocalServerText.INFO_PORT) % port
-	%HostTransportInfo.text = tr(LocalServerText.INFO_TRANSPORT) % LocalServerText.transport_name(MpKit.transport)
+	%HostTransportInfo.text = (
+		tr(LocalServerText.INFO_TRANSPORT) % LocalServerText.transport_name(MpKit.transport)
+	)
 	# One code per seat for a person (`code` is the first one).
-	%HostCode.text = LocalServerText.codes_text(_server.codes) if _server != null else tr(LocalServerText.INFO_CODE) % code
+	%HostCode.text = (
+		LocalServerText.codes_text(_server.codes)
+		if _server != null
+		else tr(LocalServerText.INFO_CODE) % code
+	)
 	_info.visible = true
 	_status.text = ""
 
@@ -115,7 +121,9 @@ func _on_server_closed(_result: Dictionary) -> void:
 func _on_enter() -> void:
 	if _server == null or not _server.hosting:
 		return
-	var err: Error = SacrificeFlow.join_local_server(LocalServerHost.LOOPBACK, _server.port, _server.host_token)
+	var err: Error = SacrificeFlow.join_local_server(
+		LocalServerHost.LOOPBACK, _server.port, _server.host_token
+	)
 	if err != OK:
 		_status.text = tr(LocalServerText.FAILED_START)
 
@@ -123,7 +131,13 @@ func _on_enter() -> void:
 func _on_copy() -> void:
 	if _server == null:
 		return
-	var text := tr("UI_LOCAL_HOST_COPY_FORMAT") % [LocalServerEndpoint.format(_server.address, _server.port), LocalServerText.codes_text(_server.codes)]
+	var text := (
+		tr("UI_LOCAL_HOST_COPY_FORMAT")
+		% [
+			LocalServerEndpoint.format(_server.address, _server.port),
+			LocalServerText.codes_text(_server.codes)
+		]
+	)
 	DisplayServer.clipboard_set(text)
 	_status.text = tr(LocalServerText.COPIED)
 

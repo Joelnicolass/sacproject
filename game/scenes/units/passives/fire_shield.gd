@@ -10,7 +10,6 @@ extends UnitPassive
 ## A node of the Phoenix's `phoenix_passives.tscn`: only a creature that has it burns. Server (or solo) only.
 ## The particles are the reserve look (`fire_fx` at the burned body's `fire_socket` every `fire_every_s`).
 
-
 const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
 ## The passive (data/catalog/abilities/phoenix_fire_shield.tres): its numbers give the mana cost.
@@ -86,15 +85,41 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 		var box := BodyBox.box_of(target)
 		var center: Vector3 = mine[0]
 		var at := target.global_position
-		print("shield %s burns %s %.4f health %.4f (tick %d) mana %.3f box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) other (%.3f, %.3f, %.3f) ± (%.3f, %.3f)" % [
-			body.name, target.name, taken, victim.current, MatchClock.now(), mana.current if mana != null else -1.0, center.x, center.y, center.z, mine[1], mine[2], mine[1],
-			at.x, at.y, at.z, box.x, box.y])
+		print(
+			(
+				"shield %s burns %s %.4f health %.4f (tick %d) mana %.3f box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) other (%.3f, %.3f, %.3f) ± (%.3f, %.3f)"
+				% [
+					body.name,
+					target.name,
+					taken,
+					victim.current,
+					MatchClock.now(),
+					mana.current if mana != null else -1.0,
+					center.x,
+					center.y,
+					center.z,
+					mine[1],
+					mine[2],
+					mine[1],
+					at.x,
+					at.y,
+					at.z,
+					box.x,
+					box.y
+				]
+			)
+		)
 
 
 func _log_ally(target: Node3D) -> void:
 	if DebugLog.on(&"shield") and not _allies_seen.has(target.get_instance_id()):
 		_allies_seen[target.get_instance_id()] = true
-		print("shield %s touches %s ally, no burn (tick %d)" % [body.name, target.name, MatchClock.now()])
+		print(
+			(
+				"shield %s touches %s ally, no burn (tick %d)"
+				% [body.name, target.name, MatchClock.now()]
+			)
+		)
 
 
 ## (center, half width, half height) of the Phoenix's box, scaled about the center.
@@ -148,6 +173,10 @@ func _present(node: Node) -> bool:
 	if not "mode" in node:
 		return true
 	var mode: int = node.get("mode")
-	if mode == UnitBody.Mode.DEAD or mode == UnitBody.Mode.SUMMONING or mode == UnitBody.Mode.REVIVING:
+	if (
+		mode == UnitBody.Mode.DEAD
+		or mode == UnitBody.Mode.SUMMONING
+		or mode == UnitBody.Mode.REVIVING
+	):
 		return false
 	return not (node is UnitBody and (node as UnitBody).is_taken())

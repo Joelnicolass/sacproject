@@ -69,7 +69,12 @@ func fall_down() -> void:
 		return
 	_from_fall = true
 	_afflictions().mark(self, true)
-	print("stunned after a fall %s for %d (hit_floor + get_up) (frame %d)" % [_body_name(), _total, MatchClock.now()])
+	print(
+		(
+			"stunned after a fall %s for %d (hit_floor + get_up) (frame %d)"
+			% [_body_name(), _total, MatchClock.now()]
+		)
+	)
 
 
 ## Server (or solo): the stun the end of a petrification calls: the
@@ -162,7 +167,12 @@ func _play_fallback(on: bool) -> void:
 		if absf(tilt.rotation.z) > 0.0001 or tilt.position.y > 0.0001:
 			_tween = tilt.create_tween()
 			_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-			_tween.tween_property(tilt, "rotation:z", 0.0, cut_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			(
+				_tween
+				. tween_property(tilt, "rotation:z", 0.0, cut_s)
+				. set_trans(Tween.TRANS_SINE)
+				. set_ease(Tween.EASE_OUT)
+			)
 			var health := _afflictions().health
 			if health == null or not health.is_dead() or not corpse_lays_down:
 				_tween.parallel().tween_property(tilt, "position:y", 0.0, cut_s)
@@ -175,17 +185,46 @@ func _play_fallback(on: bool) -> void:
 	_tween = tilt.create_tween()
 	_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 	if _airborne:
-		_tween.tween_property(tilt, "rotation:z", deg_to_rad(air_sway_deg), rest_s * 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		_tween.tween_property(tilt, "rotation:z", 0.0, rest_s * 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		(
+			_tween
+			. tween_property(tilt, "rotation:z", deg_to_rad(air_sway_deg), rest_s * 0.3)
+			. set_trans(Tween.TRANS_SINE)
+			. set_ease(Tween.EASE_OUT)
+		)
+		(
+			_tween
+			. tween_property(tilt, "rotation:z", 0.0, rest_s * 0.7)
+			. set_trans(Tween.TRANS_SINE)
+			. set_ease(Tween.EASE_IN_OUT)
+		)
 		return
 	var radius := (visual as BodyVisual).body_radius() if visual is BodyVisual else 0.0
 	var down_s := minf(fall_s, knock_s)
 	if down_s > 0.0:
-		_tween.tween_property(tilt, "rotation:z", deg_to_rad(fall_deg), down_s).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		_tween.parallel().tween_property(tilt, "position:y", radius, down_s).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		(
+			_tween
+			. tween_property(tilt, "rotation:z", deg_to_rad(fall_deg), down_s)
+			. set_trans(Tween.TRANS_QUAD)
+			. set_ease(Tween.EASE_IN)
+		)
+		(
+			_tween
+			. parallel()
+			. tween_property(tilt, "position:y", radius, down_s)
+			. set_trans(Tween.TRANS_QUAD)
+			. set_ease(Tween.EASE_IN)
+		)
 		_tween.tween_interval(knock_s - down_s)
 	else:
 		tilt.rotation.z = deg_to_rad(fall_deg)
 		tilt.position.y = radius
-	_tween.tween_property(tilt, "rotation:z", 0.0, rest_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_tween.parallel().tween_property(tilt, "position:y", 0.0, rest_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_tween.tween_property(tilt, "rotation:z", 0.0, rest_s).set_trans(Tween.TRANS_SINE).set_ease(
+		Tween.EASE_IN_OUT
+	)
+	(
+		_tween
+		. parallel()
+		. tween_property(tilt, "position:y", 0.0, rest_s)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_IN_OUT)
+	)

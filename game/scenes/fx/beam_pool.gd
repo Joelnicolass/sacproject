@@ -15,7 +15,9 @@ var _playing: Dictionary[BeamType, Array] = {}
 
 
 ## Plays `type` from `from` to `to`; with `follow` the end keeps its offset from that node while it lives.
-func play(type: BeamType, from: Vector3, to: Vector3, beam_seed: int, follow: Node3D = null) -> void:
+func play(
+	type: BeamType, from: Vector3, to: Vector3, beam_seed: int, follow: Node3D = null
+) -> void:
 	if type.scene == null:
 		if type.light != null:
 			type.light.light_up(get_tree(), null, to)
@@ -84,7 +86,10 @@ func _build(type: BeamType) -> BeamFx:
 		return null
 	beam.type = type
 	beam.pooled = true
-	beam.name = "beam_%s_%d" % [FxWire.label_of(type), (_playing[type] as Array).size() + (_idle[type] as Array).size()]
+	beam.name = (
+		"beam_%s_%d"
+		% [FxWire.label_of(type), (_playing[type] as Array).size() + (_idle[type] as Array).size()]
+	)
 	add_child(beam)
 	beam.finished.connect(_release.bind(type, beam))
 	return beam

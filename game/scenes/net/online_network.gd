@@ -17,4 +17,3 @@ func apply() -> void:
 	if not config.game_id.is_empty():
 		MpIssuer.game = config.game_id
 	MpIssuer.from_flags()
-

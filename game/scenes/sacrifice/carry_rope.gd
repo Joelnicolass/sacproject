@@ -35,7 +35,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if doctor == null:
 		warnings.append("Assign to `doctor` the DoctorBody that carries the creature.")
 	if rig == null:
-		warnings.append("Assign to `rig` the doctor's BodyRig: the needle tip comes from its model.")
+		warnings.append(
+			"Assign to `rig` the doctor's BodyRig: the needle tip comes from its model."
+		)
 	if tether == null:
 		warnings.append("Assign to `tether` the rope (scenes/fx/tether.tscn).")
 	return warnings
@@ -73,7 +75,12 @@ func _needle() -> Node3D:
 	var socket: Node3D = rig.tool_socket() if rig != null else null
 	if socket == null and not _warned:
 		_warned = true
-		push_warning("CarryRope: the model of %s has no tool_socket (BodyModel.tool_socket): the rope starts at the doctor's origin." % doctor.name)
+		push_warning(
+			(
+				"CarryRope: the model of %s has no tool_socket (BodyModel.tool_socket): the rope starts at the doctor's origin."
+				% doctor.name
+			)
+		)
 	return socket if socket != null else self
 
 
@@ -85,4 +92,6 @@ func _spark(delta: float, needle: Node3D) -> void:
 		return
 	_spark_left = spark_period_s
 	# A pooled burst on this peer only (every peer draws its own from `doctor.carried`); the sparks stay where they were born.
-	FxBus.play(spark_type, needle.global_position, (needle.global_basis * tether.start_axis).normalized())
+	FxBus.play(
+		spark_type, needle.global_position, (needle.global_basis * tether.start_axis).normalized()
+	)

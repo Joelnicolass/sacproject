@@ -24,14 +24,16 @@ const GROUP := &"unit"
 	set(value):
 		type = value
 		creature_tag = value.id() if value != null else ""
-		if creature != null: creature.adopt()
+		if creature != null:
+			creature.adopt()
 ## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the type, not this.
 var creature_tag := ""
 ## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived from `type`: set the type, not this.
 @export var model := "":
 	set(value):
 		model = value
-		if creature != null: creature.adopt_model()
+		if creature != null:
+			creature.adopt_model()
 @export var mode: Mode = Mode.IDLE:
 	set(value):
 		var was := mode
@@ -62,7 +64,8 @@ var creature_tag := ""
 @export var health_bar: UnitHealthBar
 @export_flags_3d_physics var unit_layer := 2
 @export_flags_3d_physics var ground_mask := 1
-@export var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor"])
+@export
+var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor"])
 ## 0 = random. Fixed seeds make a duel repeatable.
 @export var rng_seed := 0
 ## Off: an idle creature without an order never picks a fight (debug scenes hold still).
@@ -79,8 +82,10 @@ var gibbed := false
 var ordered := false
 ## Owned by Engagement; every state reads and writes it here.
 var target: Node3D:
-	get: return engagement.target
-	set(value): engagement.target = value
+	get:
+		return engagement.target
+	set(value):
+		engagement.target = value
 
 @onready var afflictions: Afflictions = $Afflictions
 @onready var air: UnitAir = $Air
@@ -119,7 +124,10 @@ func _physics_process(delta: float) -> void:
 	var resting := special_forms.playing_dead
 	if not (resting or afflictions.holds()):
 		var state := current_state()
-		if state.rests_on_floor() and (is_dead() or (not locomotion.airborne_step and is_on_floor())):
+		if (
+			state.rests_on_floor()
+			and (is_dead() or (not locomotion.airborne_step and is_on_floor()))
+		):
 			return
 		resting = state.regenerates()  # asked before the update: a mode it leaves this tick does not regenerate in it
 		state.physics_update(delta)
@@ -129,7 +137,8 @@ func _physics_process(delta: float) -> void:
 
 ## `owner_slot` is the player slot that summoned it; its health bar takes the side colour.
 func _owner_slot_changed() -> void:
-	if health_bar != null: health_bar.set_owner_slot(owner_slot)
+	if health_bar != null:
+		health_bar.set_owner_slot(owner_slot)
 
 
 func _on_died(_from_slot: int) -> void:
@@ -138,45 +147,124 @@ func _on_died(_from_slot: int) -> void:
 
 
 ## Commands (Engagement does them) and the abilities (the Port of Abilities). The summon cast begins before the body enters the tree.
-func engage(foe: Node3D) -> void: engagement.engage(foe)
-func halt() -> void: engagement.halt()
-func begin_walk(goal: Vector3) -> void: engagement.walk(goal)
-func walk_to(point: Vector3) -> void: engagement.walk_to(point)
-func warp_to(point: Vector3) -> void: engagement.warp(point)
-func use_ability(target_pos: Vector3, foe: Node3D = null) -> String: return abilities.port.use(target_pos, foe)
-func begin_summon() -> void: mode = Mode.SUMMONING
+func engage(foe: Node3D) -> void:
+	engagement.engage(foe)
+
+
+func halt() -> void:
+	engagement.halt()
+
+
+func begin_walk(goal: Vector3) -> void:
+	engagement.walk(goal)
+
+
+func walk_to(point: Vector3) -> void:
+	engagement.walk_to(point)
+
+
+func warp_to(point: Vector3) -> void:
+	engagement.warp(point)
+
+
+func use_ability(target_pos: Vector3, foe: Node3D = null) -> String:
+	return abilities.port.use(target_pos, foe)
+
+
+func begin_summon() -> void:
+	mode = Mode.SUMMONING
+
+
 func finish_summon() -> void:
-	if mode == Mode.SUMMONING: mode = Mode.IDLE
+	if mode == Mode.SUMMONING:
+		mode = Mode.IDLE
 
 
 ## Questions. A body held or revived by a Sac Doctor is not a creature of the match meanwhile; an obstacle is not dead, not summoning, not
 ## taken and not hidden by an affliction; flying is a creature that must fly or a hybrid with its Flight up.
 ## Mana does not regenerate while dead or still being summoned.
-func is_dead() -> bool: return mode == Mode.DEAD
-func is_summoning() -> bool: return mode == Mode.SUMMONING
-func is_held() -> bool: return mode == Mode.HELD
-func is_reviving() -> bool: return mode == Mode.REVIVING
-func is_walking() -> bool: return mode == Mode.MOVE
-func is_cowering() -> bool: return mode == Mode.COWER
-func is_rock_form() -> bool: return mode == Mode.ROCK_FORM
-func is_taken() -> bool: return _is_taken(mode)
-static func _is_taken(value: Mode) -> bool: return value == Mode.HELD or value == Mode.REVIVING
-func is_obstacle() -> bool: return mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not afflictions.hides()
-func is_targetable() -> bool: return is_obstacle() and not special_forms.playing_dead and not special_forms.stealth
-func is_flying() -> bool: return (type != null and type.is_flying()) or (flight != null and flight.is_airborne())
-func can_take_mana() -> bool: return mode != Mode.DEAD and mode != Mode.SUMMONING
-func simulates() -> bool: return is_multiplayer_authority()
+func is_dead() -> bool:
+	return mode == Mode.DEAD
+
+
+func is_summoning() -> bool:
+	return mode == Mode.SUMMONING
+
+
+func is_held() -> bool:
+	return mode == Mode.HELD
+
+
+func is_reviving() -> bool:
+	return mode == Mode.REVIVING
+
+
+func is_walking() -> bool:
+	return mode == Mode.MOVE
+
+
+func is_cowering() -> bool:
+	return mode == Mode.COWER
+
+
+func is_rock_form() -> bool:
+	return mode == Mode.ROCK_FORM
+
+
+func is_taken() -> bool:
+	return _is_taken(mode)
+
+
+static func _is_taken(value: Mode) -> bool:
+	return value == Mode.HELD or value == Mode.REVIVING
+
+
+func is_obstacle() -> bool:
+	return (
+		mode != Mode.DEAD and mode != Mode.SUMMONING and not is_taken() and not afflictions.hides()
+	)
+
+
+func is_targetable() -> bool:
+	return is_obstacle() and not special_forms.playing_dead and not special_forms.stealth
+
+
+func is_flying() -> bool:
+	return (type != null and type.is_flying()) or (flight != null and flight.is_airborne())
+
+
+func can_take_mana() -> bool:
+	return mode != Mode.DEAD and mode != Mode.SUMMONING
+
+
+func simulates() -> bool:
+	return is_multiplayer_authority()
 
 
 ## Small doors to the children, for the callers that hold a body and nothing else.
-func display_name() -> String: return type.display_name if type else creature_tag
-func has_clip(role: String) -> bool: return clips.has_clip(role)
-func current_state() -> UnitState: return states.current as UnitState if states != null else null
-func corpse() -> Corpse: return $Corpse as Corpse
+func display_name() -> String:
+	return type.display_name if type else creature_tag
+
+
+func has_clip(role: String) -> bool:
+	return clips.has_clip(role)
+
+
+func current_state() -> UnitState:
+	return states.current as UnitState if states != null else null
+
+
+func corpse() -> Corpse:
+	return $Corpse as Corpse
 
 
 func melee_profile() -> Dictionary:
-	return {"evasion": float(type.melee_evasion_milli()) if type else 0.0, "resistance": type.melee_resistance if type else 1.0, "reach": mount.facts.reach_m, "height": mount.facts.height_m}
+	return {
+		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
+		"resistance": type.melee_resistance if type else 1.0,
+		"reach": mount.facts.reach_m,
+		"height": mount.facts.height_m
+	}
 
 
 ## The body center (of the laid corpse once it has fallen: a clip lays it down and the pivot stays upright).

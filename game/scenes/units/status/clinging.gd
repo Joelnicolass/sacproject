@@ -21,7 +21,6 @@ const KINDS: Array[StringName] = [STICKY, MITES, FROGS]
 ## The PaceFactors source of each kind.
 const SOURCES := {STICKY: &"cling_sticky", MITES: &"cling_mites", FROGS: &"cling_frogs"}
 
-
 ## The body they stick to (its box places the look, its name goes in the log). Empty = the parent.
 @export var body: Node3D
 ## Whether the body can still be stuck to. Empty = nothing ends them but their time.
@@ -78,14 +77,30 @@ func stick(kind: StringName, ticks: int, factor: float) -> bool:
 	_refresh()
 	set_physics_process(true)
 	if DebugLog.on(&"cling"):
-		print("stuck %s %s n=%d factor ×%.4f until %d (tick %d)" % [_who(), kind, ends.size(), pow(factor, ends.size()), ends.max(), MatchClock.now()])
+		print(
+			(
+				"stuck %s %s n=%d factor ×%.4f until %d (tick %d)"
+				% [
+					_who(),
+					kind,
+					ends.size(),
+					pow(factor, ends.size()),
+					ends.max(),
+					MatchClock.now()
+				]
+			)
+		)
 	return true
 
 
 ## How many pieces of `kind` are on (the server's lists; on a client what it was told).
 func count_of(kind: StringName) -> int:
 	if not is_multiplayer_authority():
-		return shown.x if kind == STICKY else (shown.y if kind == MITES else (shown.z if kind == FROGS else 0))
+		return (
+			shown.x
+			if kind == STICKY
+			else (shown.y if kind == MITES else (shown.z if kind == FROGS else 0))
+		)
 	return (_ends.get(kind, []) as Array).size()
 
 
@@ -122,7 +137,9 @@ func _physics_process(_delta: float) -> void:
 	elif DebugLog.on(&"cling") and body != null:
 		var at := body.global_position
 		var pace_now := float(body.get("speed_factor")) if "speed_factor" in body else 1.0
-		print("pace %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)" % [_who(), pace_now, at.x, at.y, at.z, now])
+		print(
+			"pace %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)" % [_who(), pace_now, at.x, at.y, at.z, now]
+		)
 
 
 func _total() -> int:
@@ -137,8 +154,14 @@ func _refresh() -> void:
 	for kind: StringName in KINDS:
 		if pace != null:
 			var count := (_ends.get(kind, []) as Array).size()
-			pace.set_factor(SOURCES[kind], pow(float(_factors.get(kind, 1.0)), count) if count > 0 else 1.0)
-	shown = Vector3i((_ends.get(STICKY, []) as Array).size(), (_ends.get(MITES, []) as Array).size(), (_ends.get(FROGS, []) as Array).size())
+			pace.set_factor(
+				SOURCES[kind], pow(float(_factors.get(kind, 1.0)), count) if count > 0 else 1.0
+			)
+	shown = Vector3i(
+		(_ends.get(STICKY, []) as Array).size(),
+		(_ends.get(MITES, []) as Array).size(),
+		(_ends.get(FROGS, []) as Array).size()
+	)
 
 
 ## Every peer: as many looks of each kind as `shown` says (up to max_looks), at fixed places.
@@ -171,7 +194,10 @@ func _place(kind_index: int, index: int) -> Vector3:
 		reach = float(profile.get("reach", reach))
 		height = float(profile.get("height", height))
 	var angle := (float(index) + 0.5 * float(kind_index)) * 2.39996323
-	return Vector3(cos(angle), 0.0, sin(angle)) * reach * ring_reach + Vector3.UP * height * (min_height + height_step * float(index % 5))
+	return (
+		Vector3(cos(angle), 0.0, sin(angle)) * reach * ring_reach
+		+ Vector3.UP * height * (min_height + height_step * float(index % 5))
+	)
 
 
 func _who() -> String:

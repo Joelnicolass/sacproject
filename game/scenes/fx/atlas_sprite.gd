@@ -24,7 +24,9 @@ var _t := 0.0
 
 
 func _ready() -> void:
-	set_process(fps > 0.0 and not Engine.is_editor_hint() and DisplayServer.get_name() != "headless")
+	set_process(
+		fps > 0.0 and not Engine.is_editor_hint() and DisplayServer.get_name() != "headless"
+	)
 
 
 func _process(delta: float) -> void:

@@ -16,7 +16,11 @@ func _fire(_step: int) -> void:
 	var reach := zone.grown_m(zone.spell.effect_range_m)
 	for body in bodies_near(center, reach + CANDIDATE_MARGIN_M):
 		var frozen := Frozen.of(body)
-		if frozen == null or not _applies(body) or ZoneRules.flat_gap(BodyNudge.box(body), center) > reach:
+		if (
+			frozen == null
+			or not _applies(body)
+			or ZoneRules.flat_gap(BodyNudge.box(body), center) > reach
+		):
 			continue
 		if _taken.has(body.get_instance_id()):
 			continue

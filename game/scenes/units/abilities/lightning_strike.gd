@@ -18,8 +18,6 @@ extends Node3D
 ## Limits: buildings do not stop the ray (only creatures and wizards); the bolt does not keep its 64 frames of
 ## life (the look has its own): the node is freed after it strikes; the scar and the sound are not here.
 
-
-
 ## The bolt arrived: on `body` (a valid end) or on the land (null), at `at`. For whoever launched it and adds something of its own (the splash).
 signal struck(body: Node3D, at: Vector3)
 
@@ -53,13 +51,27 @@ var _ended := false
 ## `with_retarget` overrides the scene's knob (the charge's discharges say false).
 ## A chain of lightning gives its own `beam`, `hit` burst and `travel_s` instead of the scene's (null / -1 = the scene's);
 ## `seat` the slot it hurts in the name of when `shooting` is gone (-1 = the shooter's).
-static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point: Vector3, target: Node3D, ground_point: Vector3,
-		damage: float, tag: String, with_retarget := true, beam: BeamType = null, travel_s := -1.0, seat := -1,
-		hit: ParticleType = null) -> LightningStrike:
+static func launch(
+	scene: PackedScene,
+	from: Node,
+	shooting: Node3D,
+	from_point: Vector3,
+	target: Node3D,
+	ground_point: Vector3,
+	damage: float,
+	tag: String,
+	with_retarget := true,
+	beam: BeamType = null,
+	travel_s := -1.0,
+	seat := -1,
+	hit: ParticleType = null
+) -> LightningStrike:
 	if scene == null or from == null or not from.is_inside_tree():
 		return null
 	var spawner := from.get_tree().get_first_node_in_group(ShotSpawner.GROUP)
-	var container := spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
+	var container := (
+		spawner.get_node_or_null(spawner.get("spawn_path")) if spawner != null else null
+	)
 	if container == null:
 		push_warning("LightningStrike: no shot container (group shot_spawner).")
 		return null
@@ -83,14 +95,26 @@ static func launch(scene: PackedScene, from: Node, shooting: Node3D, from_point:
 
 ## Alive and on the field (and targetable). The one answer for the retarget ray, the damage and the charge's picks.
 static func is_valid_target(body: Node) -> bool:
-	if body == null or not is_instance_valid(body) or not body.is_inside_tree() or not ProjectileTargets.is_live_body(body):
+	if (
+		body == null
+		or not is_instance_valid(body)
+		or not body.is_inside_tree()
+		or not ProjectileTargets.is_live_body(body)
+	):
 		return false
 	var unit := body as UnitBody
 	return unit == null or not (unit.is_summoning() or unit.is_taken())
 
 
 ## Before the node enters the tree.
-func setup(shooting: Node3D, from_point: Vector3, target: Node3D, ground_point: Vector3, damage: float, tag: String) -> void:
+func setup(
+	shooting: Node3D,
+	from_point: Vector3,
+	target: Node3D,
+	ground_point: Vector3,
+	damage: float,
+	tag: String
+) -> void:
 	shooter = shooting
 	start = from_point
 	end_body = target
@@ -111,11 +135,26 @@ func _ready() -> void:
 	_follow()
 	if retarget:
 		_retarget()
-	_say("lightning %s %s spawns from %s to %s at %s (tick %d)" % [label, _who, _v(start), _name_of(end_body), _v(end_point), _born])
+	_say(
+		(
+			"lightning %s %s spawns from %s to %s at %s (tick %d)"
+			% [label, _who, _v(start), _name_of(end_body), _v(end_point), _born]
+		)
+	)
 	if end_body != first:
-		_say("lightning %s %s bounces on %s instead of %s (tick %d)" % [label, _who, _name_of(end_body), _name_of(first), _born])
+		_say(
+			(
+				"lightning %s %s bounces on %s instead of %s (tick %d)"
+				% [label, _who, _name_of(end_body), _name_of(first), _born]
+			)
+		)
 	if beam_type != null:
-		FxBus.broadcast_beam(beam_type, start, end_point, end_body if end_body != null and is_instance_valid(end_body) else null)
+		FxBus.broadcast_beam(
+			beam_type,
+			start,
+			end_point,
+			end_body if end_body != null and is_instance_valid(end_body) else null
+		)
 
 
 func _physics_process(_delta: float) -> void:
@@ -163,18 +202,35 @@ func _retarget() -> void:
 func _strike() -> void:
 	struck.emit(end_body if end_body != null and is_valid_target(end_body) else null, end_point)
 	if end_body == null:
-		_say("lightning %s %s reaches the ground at %s (tick %d)" % [label, _who, _v(end_point), MatchClock.now()])
+		_say(
+			(
+				"lightning %s %s reaches the ground at %s (tick %d)"
+				% [label, _who, _v(end_point), MatchClock.now()]
+			)
+		)
 		return
 	if not is_valid_target(end_body):
-		_say("lightning %s %s reaches %s: no longer a target (tick %d)" % [label, _who, _name_of(end_body), MatchClock.now()])
+		_say(
+			(
+				"lightning %s %s reaches %s: no longer a target (tick %d)"
+				% [label, _who, _name_of(end_body), MatchClock.now()]
+			)
+		)
 		return
 	var health := end_body.get_node_or_null("Health") as Health
 	if health == null:
 		return
 	if hit_fx != null:
 		FxBus.broadcast(hit_fx, end_point)
-	var taken := health.damage_typed(amount, Health.DIRECT_SPELL, _slot, false, false, Health.LIGHTNING)
-	_say("lightning %s %s damage %s %.2f health %.2f (tick %d)" % [label, _who, _name_of(end_body), taken, health.current, MatchClock.now()])
+	var taken := health.damage_typed(
+		amount, Health.DIRECT_SPELL, _slot, false, false, Health.LIGHTNING
+	)
+	_say(
+		(
+			"lightning %s %s damage %s %.2f health %.2f (tick %d)"
+			% [label, _who, _name_of(end_body), taken, health.current, MatchClock.now()]
+		)
+	)
 
 
 func _name_of(body: Node) -> String:

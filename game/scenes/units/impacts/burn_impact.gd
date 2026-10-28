@@ -55,18 +55,34 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 			_ignite(body, damage, frames, from_slot, ability, shooter)
 
 
-func _ignite(body: Node3D, damage: float, frames: int, from_slot: int, ability: AbilityType, shooter: Node) -> void:
+func _ignite(
+	body: Node3D, damage: float, frames: int, from_slot: int, ability: AbilityType, shooter: Node
+) -> void:
 	var mana := body.get_node_or_null("ManaPool") as ManaPool
 	var drain := mana_drain_fraction * mana.maximum if mana and mana_drain_fraction > 0.0 else 0.0
-	var fire := Burning.ignite(body, damage, frames, kind, from_slot, drain, pierce_shield, fire_fx, shooter)
+	var fire := Burning.ignite(
+		body, damage, frames, kind, from_slot, drain, pierce_shield, fire_fx, shooter
+	)
 	if fire == null:
 		return
 	fire.fire_every_ticks = MatchClock.ticks_for(fire_every_s)
 	fire.fire_socket = fire_socket
 	var health := body.get_node("Health") as Health
-	print("fire %s on %s: %.1f over %d frames%s%s (health %d%s)" % [ability.tag if ability else "?", GameBody.name_of(body), damage, frames,
-			", mana %.2f" % drain if drain > 0.0 else "", ", atraviesa escudos" if pierce_shield else "",
-			roundi(health.current), ", mana %.2f" % mana.current if mana and drain > 0.0 else ""])
+	print(
+		(
+			"fire %s on %s: %.1f over %d frames%s%s (health %d%s)"
+			% [
+				ability.tag if ability else "?",
+				GameBody.name_of(body),
+				damage,
+				frames,
+				", mana %.2f" % drain if drain > 0.0 else "",
+				", atraviesa escudos" if pierce_shield else "",
+				roundi(health.current),
+				", mana %.2f" % mana.current if mana and drain > 0.0 else ""
+			]
+		)
+	)
 
 
 func _frames(ability: AbilityType) -> int:

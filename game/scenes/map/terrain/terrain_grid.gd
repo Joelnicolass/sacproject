@@ -39,13 +39,19 @@ static func point_of(vertex: Vector2i) -> Vector2:
 
 ## The vertex (column, row) nearest to the ground point (x, z) in metres. Not cut to the lattice.
 static func vertex_near(point: Vector2) -> Vector2i:
-	return Vector2i(floori((point.x + CELL_M * 0.5) / CELL_M), floori((point.y + CELL_M * 0.5) / CELL_M))
+	return Vector2i(
+		floori((point.x + CELL_M * 0.5) / CELL_M), floori((point.y + CELL_M * 0.5) / CELL_M)
+	)
 
 
 ## The vertices that lie within `radius_m` of the ground point `center` (x, z), cut to the lattice.
 static func vertex_rect(center: Vector2, radius_m: float) -> Rect2i:
-	var low := Vector2i(floori((center.x - radius_m) / CELL_M), floori((center.y - radius_m) / CELL_M))
-	var high := Vector2i(ceili((center.x + radius_m) / CELL_M), ceili((center.y + radius_m) / CELL_M))
+	var low := Vector2i(
+		floori((center.x - radius_m) / CELL_M), floori((center.y - radius_m) / CELL_M)
+	)
+	var high := Vector2i(
+		ceili((center.x + radius_m) / CELL_M), ceili((center.y + radius_m) / CELL_M)
+	)
 	low = low.clamp(Vector2i.ZERO, Vector2i(SIDE - 1, SIDE - 1))
 	high = high.clamp(Vector2i.ZERO, Vector2i(SIDE - 1, SIDE - 1))
 	return Rect2i(low, high - low + Vector2i.ONE)

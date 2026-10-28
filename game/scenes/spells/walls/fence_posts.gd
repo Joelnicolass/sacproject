@@ -47,7 +47,11 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	var birth_tick := MatchClock.ticks_for(birth_s)
-	if wall.vanish_at >= 0 or wall.age < birth_tick or (wall.age - birth_tick) % maxi(1, MatchClock.ticks_for(period_s)) != 0:
+	if (
+		wall.vanish_at >= 0
+		or wall.age < birth_tick
+		or (wall.age - birth_tick) % maxi(1, MatchClock.ticks_for(period_s)) != 0
+	):
 		return
 	for side in [-1.0, 1.0]:
 		if posts.size() >= max_posts or (wall.left_stopped if side < 0.0 else wall.right_stopped):
@@ -69,12 +73,20 @@ func scale_of(post: Vector2) -> float:
 	var grown := clampf(float(live - int(post.y)) / float(MatchClock.ticks_for(grow_s)), 0.0, 1.0)
 	if wall.vanish_at < 0:
 		return grown
-	return maxf(0.0, grown - float(wall.age - wall.vanish_at) / float(MatchClock.ticks_for(shrink_s)))
+	return maxf(
+		0.0, grown - float(wall.age - wall.vanish_at) / float(MatchClock.ticks_for(shrink_s))
+	)
 
 
 ## Where the post floats now.
 func position_of(post: Vector2) -> Vector3:
-	var swing := 0.5 * (1.0 - cos(TAU * float(wall.age - int(post.y)) / (swing_s * MatchClock.TICKS_PER_SECOND_F)))
+	var swing := (
+		0.5
+		* (
+			1.0
+			- cos(TAU * float(wall.age - int(post.y)) / (swing_s * MatchClock.TICKS_PER_SECOND_F))
+		)
+	)
 	var at := wall.point_at(post.x)
 	at.y += swing * low_m + (1.0 - swing) * high_m
 	return at

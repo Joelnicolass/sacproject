@@ -135,11 +135,20 @@ func checksum() -> int:
 ## Everything a peer that joins late needs.
 func to_snapshot() -> Dictionary:
 	var raw := permanent.to_byte_array()
-	return {"rev": rev, "size": raw.size(), "permanent": raw.compress(FileAccess.COMPRESSION_ZSTD), "holes": removed_ids()}
+	return {
+		"rev": rev,
+		"size": raw.size(),
+		"permanent": raw.compress(FileAccess.COMPRESSION_ZSTD),
+		"holes": removed_ids()
+	}
 
 
 func apply_snapshot(data: Dictionary) -> void:
-	permanent = (data["permanent"] as PackedByteArray).decompress(int(data["size"]), FileAccess.COMPRESSION_ZSTD).to_float32_array()
+	permanent = (
+		(data["permanent"] as PackedByteArray)
+		. decompress(int(data["size"]), FileAccess.COMPRESSION_ZSTD)
+		. to_float32_array()
+	)
 	for id in holes.ids():
 		texels[id * 2 + 1] = 0.0
 	holes.replace(data["holes"] as PackedInt32Array)

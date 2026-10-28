@@ -25,7 +25,11 @@ func _init() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
 
 func _ready() -> void:
@@ -56,7 +60,9 @@ func _process(delta: float) -> void:
 		return
 	visible = true
 	var grow := 1.0 if grow_s <= 0.0 else clampf(_age / grow_s, 0.0, 1.0)
-	var shrink := 1.0 if life_s <= 0.0 or grow_s <= 0.0 else clampf((life_s - _age) / grow_s, 0.0, 1.0)
+	var shrink := (
+		1.0 if life_s <= 0.0 or grow_s <= 0.0 else clampf((life_s - _age) / grow_s, 0.0, 1.0)
+	)
 	scale = Vector3.ONE * size_m * minf(grow, shrink)
 	var target := carrier.target_body()
 	if over_target and target != null and is_instance_valid(target):

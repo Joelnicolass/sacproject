@@ -52,5 +52,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func _recenter() -> void:
 	if Engine.is_editor_hint() and is_node_ready():
-		var center := terrain.bounds().get_center() if editor_recenter and terrain != null else Vector2.ZERO
+		var center := (
+			terrain.bounds().get_center() if editor_recenter and terrain != null else Vector2.ZERO
+		)
 		position = Vector3(-center.x, 0.0, -center.y)

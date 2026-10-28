@@ -41,12 +41,18 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	var idle := clip_player != null and not clip_player.frozen and clip_player.active_role() == String(idle_role)
+	var idle := (
+		clip_player != null
+		and not clip_player.frozen
+		and clip_player.active_role() == String(idle_role)
+	)
 	_weight = move_toward(_weight, 1.0 if idle else 0.0, delta / maxf(ease_s, 0.001))
 	_time += delta
 	var lift := bob_height_m * _weight * 0.5 * (1.0 - cos(_time * TAU / bob_period_s))
 	var lean := deg_to_rad(sway_deg) * _weight * sin(_time * TAU / sway_period_s)
-	pivot.transform = Transform3D(_rest.basis * Basis(Vector3.BACK, lean), _rest.origin + Vector3(0.0, lift, 0.0))
+	pivot.transform = Transform3D(
+		_rest.basis * Basis(Vector3.BACK, lean), _rest.origin + Vector3(0.0, lift, 0.0)
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

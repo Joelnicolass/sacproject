@@ -20,4 +20,9 @@ func _affect(shot: Node3D, _target: Node3D, point: Vector3, ability: AbilityType
 	var before := point - (shot.get("velocity") as Vector3) / float(MatchClock.TICKS_PER_SECOND)
 	shot.get_parent().add_child(vortex)
 	vortex.global_position = before
-	print("vortex at (%.2f, %.2f, %.2f) radius %.1f m (frame %d)" % [before.x, before.y, before.z, vortex.radius, MatchClock.now()])
+	print(
+		(
+			"vortex at (%.2f, %.2f, %.2f) radius %.1f m (frame %d)"
+			% [before.x, before.y, before.z, vortex.radius, MatchClock.now()]
+		)
+	)

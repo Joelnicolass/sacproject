@@ -53,7 +53,13 @@ func lay_ticks(spell: SpellType) -> int:
 	if duration_mode == Duration.FIXED:
 		return ceili(float(MatchClock.TICKS_PER_SECOND) * spell.duration_s)
 	var health := _afflictions().health
-	return cc_ticks(body.is_in_group(WizardBody.GROUP), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor)
+	return cc_ticks(
+		body.is_in_group(WizardBody.GROUP),
+		health.maximum if health else 0.0,
+		spell.duration_s,
+		creature_k,
+		wizard_factor
+	)
 
 
 ## Server (or solo). True when a layer went on.
@@ -61,11 +67,19 @@ func lay(spell: SpellType, from_slot: int) -> bool:
 	var owner_node := _afflictions()
 	var ticks := lay_ticks(spell)
 	var dead := owner_node.health != null and owner_node.health.is_dead()
-	if ticks <= 0 or dead or not is_multiplayer_authority() or _left.size() >= max_stacks or not owner_node.admit(self):
+	if (
+		ticks <= 0
+		or dead
+		or not is_multiplayer_authority()
+		or _left.size() >= max_stacks
+		or not owner_node.admit(self)
+	):
 		return false
 	_left.append(ticks)
 	_slots.append(from_slot)
-	_hits.append((float(spell.damage) if damage_from_spell else 0.0) / MatchClock.TICKS_PER_SECOND_F)
+	_hits.append(
+		(float(spell.damage) if damage_from_spell else 0.0) / MatchClock.TICKS_PER_SECOND_F
+	)
 	owner_node.mark(self, true)
 	_apply_pace()
 	set_physics_process(true)
@@ -121,4 +135,7 @@ func _shown(on: bool) -> void:
 func _apply_pace() -> void:
 	var pace := PaceFactors.of(_body())
 	if pace != null and pace_per_stack != 1.0:
-		pace.set_factor(type.id, 1.0 if BodyNudge.airborne(_body()) else pow(pace_per_stack, float(_left.size())))
+		pace.set_factor(
+			type.id,
+			1.0 if BodyNudge.airborne(_body()) else pow(pace_per_stack, float(_left.size()))
+		)

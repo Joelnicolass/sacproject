@@ -48,8 +48,9 @@ func follow(state: WeatherState, sky_seed: int, t_s: float) -> float:
 	var from_s := t_s if behind else _last_t
 	_last_t = t_s
 	if state != null and state.strikes_per_min > 0.0:
-		var strikes := AtmosphereRules.strikes_between(sky_seed, from_s, t_s, state.strikes_per_min, min_gap_s,
-				min_strike_m, max_strike_m)
+		var strikes := AtmosphereRules.strikes_between(
+			sky_seed, from_s, t_s, state.strikes_per_min, min_gap_s, min_strike_m, max_strike_m
+		)
 		for strike in strikes:
 			_strike(strike, state.flash_strength)
 	return flash_now()
@@ -73,7 +74,8 @@ func flash_now() -> float:
 func _strike(strike: Vector3, strength: float) -> void:
 	_flash_usec = Time.get_ticks_usec()
 	_flash_peak = clampf(strength * flash_scale, 0.0, 1.0)
-	if DebugLog.on(&"atmosphere"): print("rayo t=%.2f rumbo=%.1f dist=%.0f" % [strike.x, strike.y, strike.z])
+	if DebugLog.on(&"atmosphere"):
+		print("rayo t=%.2f rumbo=%.1f dist=%.0f" % [strike.x, strike.y, strike.z])
 	var camera := get_viewport().get_camera_3d() if is_inside_tree() else null
 	if camera == null:
 		return

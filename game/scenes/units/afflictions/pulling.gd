@@ -30,7 +30,6 @@ extends Affliction
 ##
 ## Server (or solo) only: the clients get the bit and the positions. The user's own velocity is 0 while it lasts (steer).
 
-
 ## No check while the thread flies out.
 const SHOOT_FRAMES := 20
 ## unit_orders.gd has no class_name (other scripts preload it).
@@ -69,7 +68,14 @@ func _ready() -> void:
 ## at the fire tick − effect.windup() + pull_frame. True when it started (it ends a UsingAbility, the type's `cancels`).
 func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bool:
 	var body := _body()
-	if not is_multiplayer_authority() or body == null or effect == null or target == null or loop_ticks <= 0 or is_on():
+	if (
+		not is_multiplayer_authority()
+		or body == null
+		or effect == null
+		or target == null
+		or loop_ticks <= 0
+		or is_on()
+	):
 		return false
 	if not _afflictions().admit(self):
 		return false
@@ -90,8 +96,17 @@ func start(target: Node3D, effect: Pull, loop_ticks: int, pull_frame: int) -> bo
 	set_physics_process(true)
 	_throw_thread(body)
 	if DebugLog.on(&"pull"):
-		print("pull %s → %s start target at %.3f m (tick %d)" % [
-			AbilityEffect.who(body), AbilityEffect.who(target), body.global_position.distance_to(target.global_position), _fired])
+		print(
+			(
+				"pull %s → %s start target at %.3f m (tick %d)"
+				% [
+					AbilityEffect.who(body),
+					AbilityEffect.who(target),
+					body.global_position.distance_to(target.global_position),
+					_fired
+				]
+			)
+		)
 	return true
 
 
@@ -134,13 +149,20 @@ func _physics_process(_delta: float) -> void:
 	var velocity := -_effect.pull_speed * direction
 	var box := box_distance(BodyNudge.box(_target), user_center)
 	var checked_window := _window
-	if _pulls >= 1 and box < _effect.min_thread and (checked_window <= 0 or thread.y >= -0.5 * _effect.min_thread):
+	if (
+		_pulls >= 1
+		and box < _effect.min_thread
+		and (checked_window <= 0 or thread.y >= -0.5 * _effect.min_thread)
+	):
 		_finish("cerca", box, thread.y)
 		return
 	var tumbling := BodyNudge.tumbling_of(_target)
 	var flying := tumbling != null and tumbling.is_on()
 	if flying:
-		if thread.length() > OUTWARD_RADIUS_FACTOR * _radius and direction.dot(tumbling.velocity) > OUTWARD_SPEED:
+		if (
+			thread.length() > OUTWARD_RADIUS_FACTOR * _radius
+			and direction.dot(tumbling.velocity) > OUTWARD_SPEED
+		):
 			pull_now = true
 		var forward_dist := forward.dot(thread)
 		if forward_dist < -BACKWARD_FACTOR * thread.y:
@@ -157,9 +179,24 @@ func _physics_process(_delta: float) -> void:
 		_window = MatchClock.ticks_for(_effect.pull_s)
 		action = "pull"
 		if DebugLog.on(&"pull"):
-			print("pull %d %s → %s v (%.4f, %.4f, %.4f) thread (%.4f, %.4f, %.4f) stuns %s (tick %d)" % [
-				_pulls, AbilityEffect.who(body), AbilityEffect.who(_target), velocity.x, velocity.y, velocity.z,
-				thread.x, thread.y, thread.z, "yes" if stunned else "no", now])
+			print(
+				(
+					"pull %d %s → %s v (%.4f, %.4f, %.4f) thread (%.4f, %.4f, %.4f) stuns %s (tick %d)"
+					% [
+						_pulls,
+						AbilityEffect.who(body),
+						AbilityEffect.who(_target),
+						velocity.x,
+						velocity.y,
+						velocity.z,
+						thread.x,
+						thread.y,
+						thread.z,
+						"yes" if stunned else "no",
+						now
+					]
+				)
+			)
 	else:
 		_window -= 1
 		if _window > 0:
@@ -169,9 +206,23 @@ func _physics_process(_delta: float) -> void:
 				BodyNudge.push(_target, velocity)
 			action = "window"
 	if DebugLog.on(&"pull") and _pulls >= 1:
-		print("step %s → %s center (%.3f, %.3f, %.3f) thread y %.4f box %.4f window %d action %s (tick %d)" % [
-			AbilityEffect.who(body), AbilityEffect.who(_target), target_center.x, target_center.y, target_center.z,
-			thread.y, box, checked_window, action, now])
+		print(
+			(
+				"step %s → %s center (%.3f, %.3f, %.3f) thread y %.4f box %.4f window %d action %s (tick %d)"
+				% [
+					AbilityEffect.who(body),
+					AbilityEffect.who(_target),
+					target_center.x,
+					target_center.y,
+					target_center.z,
+					thread.y,
+					box,
+					checked_window,
+					action,
+					now
+				]
+			)
+		)
 	if _pulls >= _effect.max_pulls and (now - _clip_origin) % _loop + 1 >= _loop:
 		_finish("4 pulls", box, thread.y)
 
@@ -187,16 +238,40 @@ func _finish(reason: String, box := NAN, thread_y := 0.0) -> void:
 	var live := Pull.is_live(target)
 	var center := BodyNudge.center(target) if live else Vector3.ZERO
 	if is_nan(box):
-		box = box_distance(BodyNudge.box(target), BodyNudge.center(body)) if live and body != null else NAN
+		box = (
+			box_distance(BodyNudge.box(target), BodyNudge.center(body))
+			if live and body != null
+			else NAN
+		)
 	if live and effect != null and effect.break_fx != null:
 		FxBus.broadcast(effect.break_fx, BodyFacts.point(target, effect.break_socket))
 	if is_on():
 		_afflictions().mark(self, false)
 	set_physics_process(false)
 	if DebugLog.on(&"pull"):
-		print("pull end %s → %s by %s pulls %d box %.4f thread y %.4f window %d bit %d center (%.3f, %.3f, %.3f) (tick %d)" % [
-			AbilityEffect.who(body), AbilityEffect.who(target) if target != null and is_instance_valid(target) else "?", reason,
-			_pulls, box, thread_y, _window, 1 if is_on() else 0, center.x, center.y, center.z, MatchClock.now()])
+		print(
+			(
+				"pull end %s → %s by %s pulls %d box %.4f thread y %.4f window %d bit %d center (%.3f, %.3f, %.3f) (tick %d)"
+				% [
+					AbilityEffect.who(body),
+					(
+						AbilityEffect.who(target)
+						if target != null and is_instance_valid(target)
+						else "?"
+					),
+					reason,
+					_pulls,
+					box,
+					thread_y,
+					_window,
+					1 if is_on() else 0,
+					center.x,
+					center.y,
+					center.z,
+					MatchClock.now()
+				]
+			)
+		)
 	_target = null
 	_effect = null
 
@@ -206,10 +281,19 @@ func _throw_thread(body: Node3D) -> void:
 	var scene := _effect.thread_scene
 	if scene == null or not body.is_inside_tree() or not _target.is_inside_tree():
 		return
-	FxBus.broadcast_scene(scene, body.global_position, {
-		"user": str(body.get_path()), "target": str(_target.get_path()),
-		"seed": MatchSeed.derive(["pull_thread", str(body.name), _fired]), "grow_ticks": SHOOT_FRAMES,
-	})
+	(
+		FxBus
+		. broadcast_scene(
+			scene,
+			body.global_position,
+			{
+				"user": str(body.get_path()),
+				"target": str(_target.get_path()),
+				"seed": MatchSeed.derive(["pull_thread", str(body.name), _fired]),
+				"grow_ticks": SHOOT_FRAMES,
+			}
+		)
+	)
 
 
 func _stun() -> bool:
@@ -234,5 +318,9 @@ static func _forward(body: Node3D) -> Vector3:
 static func box_distance(box: AABB, point: Vector3) -> float:
 	var low := box.position
 	var high := box.end
-	var nearest := Vector3(clampf(point.x, low.x, high.x), clampf(point.y, low.y, high.y), clampf(point.z, low.z, high.z))
+	var nearest := Vector3(
+		clampf(point.x, low.x, high.x),
+		clampf(point.y, low.y, high.y),
+		clampf(point.z, low.z, high.z)
+	)
 	return point.distance_to(nearest)

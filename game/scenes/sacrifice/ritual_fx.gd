@@ -47,7 +47,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if vortex_scene == null:
 		warnings.append("Assign to `vortex_scene` the red vortex (red_vortex.tscn).")
 	if altar_top == null or vortex_aim == null or creature_aim == null or wizard_aim == null:
-		warnings.append("Assign the four markers (altar_top, vortex_aim, creature_aim, wizard_aim).")
+		warnings.append(
+			"Assign the four markers (altar_top, vortex_aim, creature_aim, wizard_aim)."
+		)
 	return warnings
 
 
@@ -93,11 +95,31 @@ func _vortex_point(wizard: WizardBody) -> Vector3:
 	var toward := ritual.center() - wizard.global_position
 	toward.y = 0.0
 	toward = toward.normalized() if toward.length_squared() > 0.000001 else Vector3.ZERO
-	return wizard.global_position + toward * minf(vortex_distance, Vector2(ritual.center().x - wizard.global_position.x, ritual.center().z - wizard.global_position.z).length()) + Vector3.UP * vortex_height
+	return (
+		wizard.global_position
+		+ (
+			toward
+			* minf(
+				vortex_distance,
+				(
+					Vector2(
+						ritual.center().x - wizard.global_position.x,
+						ritual.center().z - wizard.global_position.z
+					)
+					. length()
+				)
+			)
+		)
+		+ Vector3.UP * vortex_height
+	)
 
 
 func _ropes(shooting: bool, wizard: WizardBody) -> void:
-	var creature := ritual.get_node_or_null(ritual.creature_path) as UnitBody if not ritual.creature_path.is_empty() else null
+	var creature := (
+		ritual.get_node_or_null(ritual.creature_path) as UnitBody
+		if not ritual.creature_path.is_empty()
+		else null
+	)
 	if shooting and creature != null:
 		creature_aim.global_position = creature.soul_anchor()
 	if shooting and wizard != null and _vortex != null and is_instance_valid(_vortex):

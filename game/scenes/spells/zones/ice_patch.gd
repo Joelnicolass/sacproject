@@ -38,7 +38,9 @@ func _on_phase(phase: int) -> void:
 func _process(_delta: float) -> void:
 	var broken := 0
 	if zone.phase == GroundZone.Phase.ENDING:
-		broken = floori(float(zone.phase_ticks) / float(maxi(zone.end_ticks(), 1)) * float(break_steps))
+		broken = floori(
+			float(zone.phase_ticks) / float(maxi(zone.end_ticks(), 1)) * float(break_steps)
+		)
 	set_instance_shader_parameter(&"radius", zone.grown_m(_radius))
 	set_instance_shader_parameter(&"inner", ZoneRules.ring_radius(broken, break_steps, _radius))
 
@@ -52,9 +54,19 @@ func _build() -> void:
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for ring in rings:
 		for side in sides:
-			var corners := [[ring, side], [ring + 1, side], [ring, side + 1], [ring, side + 1], [ring + 1, side], [ring + 1, side + 1]]
+			var corners := [
+				[ring, side],
+				[ring + 1, side],
+				[ring, side + 1],
+				[ring, side + 1],
+				[ring + 1, side],
+				[ring + 1, side + 1]
+			]
 			for corner: Array in corners:
-				var uv := Vector2(float(corner[1]) / float(sides) * turns, float(corner[0]) / float(rings) * repeats)
+				var uv := Vector2(
+					float(corner[1]) / float(sides) * turns,
+					float(corner[0]) / float(rings) * repeats
+				)
 				surface.set_uv(uv)
 				surface.add_vertex(_vertex(land, center, corner[0], corner[1]))
 	surface.generate_normals()
@@ -65,4 +77,8 @@ func _vertex(land: Terrain, center: Vector3, ring: int, side: int) -> Vector3:
 	var angle := TAU * float(side) / float(sides)
 	var at := center + Vector3(cos(angle), 0.0, sin(angle)) * _radius * float(ring) / float(rings)
 	var height := land.height_at(at.x, at.z) if land != null else NAN
-	return Vector3(at.x - center.x, (center.y if is_nan(height) else height) - center.y + lift_m, at.z - center.z)
+	return Vector3(
+		at.x - center.x,
+		(center.y if is_nan(height) else height) - center.y + lift_m,
+		at.z - center.z
+	)

@@ -81,7 +81,12 @@ static func _build(textures: Array, kind: Kind) -> Texture2DArray:
 			image.clear_mipmaps()
 			image.convert(Image.FORMAT_RGBA8)
 			if image.get_size() != size:
-				push_warning("GroundTextures: the %s maps of a GodGround differ in size; scaling one to %s." % [Kind.keys()[kind], size])
+				push_warning(
+					(
+						"GroundTextures: the %s maps of a GodGround differ in size; scaling one to %s."
+						% [Kind.keys()[kind], size]
+					)
+				)
 				image.resize(size.x, size.y, Image.INTERPOLATE_LANCZOS)
 		image.generate_mipmaps()
 		images[i] = image

@@ -63,7 +63,15 @@ func start(going_out: bool, feet: Vector3, width: float, height: float) -> void:
 	_height = height
 	_ring_ticks = rules.teleport_ring_s * MatchClock.TICKS_PER_SECOND_F if rules != null else 48.0
 	_rise = rules.teleport_ring_rise if rules != null else 0.25
-	_steps = maxi(1, roundi((rules.teleport_effect_s if rules != null else 32.0 / 60.0) * MatchClock.TICKS_PER_SECOND_F))
+	_steps = maxi(
+		1,
+		roundi(
+			(
+				(rules.teleport_effect_s if rules != null else 32.0 / 60.0)
+				* MatchClock.TICKS_PER_SECOND_F
+			)
+		)
+	)
 	_spawn_z.resize(_steps)
 	for f in _steps:
 		_spawn_z[f] = ring_height(going_out, f, _steps) * height
@@ -93,13 +101,22 @@ func _update() -> void:
 	for f in _steps:
 		var age := _t - float(f)
 		if age < 0.0 or age >= _ring_ticks:
-			multimesh.set_instance_transform(f, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO))
+			multimesh.set_instance_transform(
+				f, Transform3D(Basis.from_scale(Vector3.ZERO), Vector3.ZERO)
+			)
 			continue
 		var life := age / _ring_ticks
 		var ring_scale := _width * sqrt(1.0 - life)
 		var rise := _rise * life
-		multimesh.set_instance_transform(f, Transform3D(Basis.from_scale(Vector3.ONE * ring_scale), Vector3(0.0, _spawn_z[f] + rise, 0.0)))
+		multimesh.set_instance_transform(
+			f,
+			Transform3D(
+				Basis.from_scale(Vector3.ONE * ring_scale), Vector3(0.0, _spawn_z[f] + rise, 0.0)
+			)
+		)
 		var glow := RING_ENERGY * ring_scale * ring_scale
 		multimesh.set_instance_color(f, Color(glow, glow, glow, 1.0))
 		var frame := floori(age / TICKS_PER_ATLAS_FRAME) % ATLAS_FRAMES
-		multimesh.set_instance_custom_data(f, Color(0.0, 0.0, (float(frame) + 0.01) / float(ATLAS_FRAMES), 0.0))
+		multimesh.set_instance_custom_data(
+			f, Color(0.0, 0.0, (float(frame) + 0.01) / float(ATLAS_FRAMES), 0.0)
+		)

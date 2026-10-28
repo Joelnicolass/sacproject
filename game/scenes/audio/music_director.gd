@@ -90,7 +90,11 @@ func use_god(god: GodType) -> void:
 
 ## The set `god` plays: its look's `music`, else `default_music`; null when neither exists.
 func music_of(god: GodType) -> MusicSet:
-	return god.look.music if god != null and god.look != null and god.look.music != null else default_music
+	return (
+		god.look.music
+		if god != null and god.look != null and god.look.music != null
+		else default_music
+	)
 
 
 ## Plays the mood of `next_set` from the start.
@@ -111,7 +115,11 @@ func restart() -> void:
 func look() -> void:
 	if not _open or music_set == null or _players.size() < 2 or not SoundBus.can_play():
 		return
-	var next := MusicMood.CALM if menu else MusicMood.decide(_result(), _desecration(), _ritual_near(), _battle())
+	var next := (
+		MusicMood.CALM
+		if menu
+		else MusicMood.decide(_result(), _desecration(), _ritual_near(), _battle())
+	)
 	if next != mood:
 		_switch(next)
 
@@ -151,7 +159,9 @@ func _switch(next: StringName) -> void:
 	SoundBus.log_played(EMITTER, next, stream)
 
 
-func _fade(player: AudioStreamPlayer, from: float, to: float, seconds: float, stop_after: bool) -> void:
+func _fade(
+	player: AudioStreamPlayer, from: float, to: float, seconds: float, stop_after: bool
+) -> void:
 	if seconds <= 0.0:
 		_set_gain(to, player)
 		if stop_after:
@@ -207,7 +217,9 @@ func _desecration() -> MusicMood.Desecration:
 	var slot := seat.slot if seat != null else 0
 	for ritual in _rituals:
 		if ritual.is_running() and ritual.kind == Ritual.Kind.DESECRATE:
-			worst = MusicMood.worst(worst, MusicMood.desecration_of(ritual.caster_slot, ritual.target_slot, slot))
+			worst = MusicMood.worst(
+				worst, MusicMood.desecration_of(ritual.caster_slot, ritual.target_slot, slot)
+			)
 	return worst
 
 
@@ -217,7 +229,10 @@ func _ritual_near() -> bool:
 		return false
 	var reach := ritual_radius_m * ritual_radius_m
 	for ritual in _rituals:
-		if ritual.is_running() and ritual.center().distance_squared_to(view.global_position) <= reach:
+		if (
+			ritual.is_running()
+			and ritual.center().distance_squared_to(view.global_position) <= reach
+		):
 			return true
 	return false
 
@@ -225,7 +240,14 @@ func _ritual_near() -> bool:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if track_a == null or track_b == null:
-		out.append("Assign `track_a` and `track_b` (the two child AudioStreamPlayers): without them there is no music.")
+		(
+			out
+			. append(
+				"Assign `track_a` and `track_b` (the two child AudioStreamPlayers): without them there is no music."
+			)
+		)
 	if seat == null and not menu:
-		out.append("Assign `seat` (the MpLocalSeat): without it it does not know who watches the result.")
+		out.append(
+			"Assign `seat` (the MpLocalSeat): without it it does not know who watches the result."
+		)
 	return out

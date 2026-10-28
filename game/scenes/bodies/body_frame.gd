@@ -50,24 +50,47 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if reach == null or center == null or top == null:
 		warnings.append("Missing markers: `reach`, `center` and `top`.")
 	if look == null:
-		warnings.append("Missing `look`: the `Look` node with the look (<name>_look.tscn) as an instance, «Load As Placeholder».")
+		(
+			warnings
+			. append(
+				"Missing `look`: the `Look` node with the look (<name>_look.tscn) as an instance, «Load As Placeholder»."
+			)
+		)
 	elif look.scene_file_path.is_empty() and not look is InstancePlaceholder:
 		warnings.append("`look` must be the instance of <name>_look.tscn.")
 	elif not look is InstancePlaceholder and not look.get_scene_instance_load_placeholder():
-		warnings.append("`look` must load as a placeholder (right click › Load As Placeholder): otherwise the server loads the model and the sounds.")
+		(
+			warnings
+			. append(
+				"`look` must load as a placeholder (right click › Load As Placeholder): otherwise the server loads the model and the sounds."
+			)
+		)
 	if model_id.is_empty():
 		warnings.append("`model_id` is empty: the network would not know which model to draw.")
 	if passives != null and passives.scene_file_path.is_empty():
 		warnings.append("`passives` must be the instance of <name>_passives.tscn.")
 	elif passives != null and is_editable_instance(passives):
-		warnings.append("Changes to `Passives` made in this scene are not used: edit the numbers in <name>_passives.tscn.")
+		(
+			warnings
+			. append(
+				"Changes to `Passives` made in this scene are not used: edit the numbers in <name>_passives.tscn."
+			)
+		)
 	return warnings
 
 
 ## True when every node the rules read is in place.
 func is_complete() -> bool:
-	return capsule != null and capsule.shape is CapsuleShape3D and footprint != null and footprint.shape is CylinderShape3D \
-		and reach != null and center != null and top != null and not model_id.is_empty()
+	return (
+		capsule != null
+		and capsule.shape is CapsuleShape3D
+		and footprint != null
+		and footprint.shape is CylinderShape3D
+		and reach != null
+		and center != null
+		and top != null
+		and not model_id.is_empty()
+	)
 
 
 ## Where the appearance scene of this body is (res://scenes/units/bodies/<name>_look.tscn); "" without a `Look`. Read from the placeholder,

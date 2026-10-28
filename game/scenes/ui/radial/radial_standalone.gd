@@ -13,7 +13,9 @@ func _ready() -> void:
 		return
 	DebugLog.enable(&"radial")
 	set_process_input(true)
-	menu.hovered_changed.connect(func(entry: RadialEntry) -> void: _log("hover " + (entry.display_label() if entry else "-")))
+	menu.hovered_changed.connect(
+		func(entry: RadialEntry) -> void: _log("hover " + (entry.display_label() if entry else "-"))
+	)
 	menu.entry_chosen.connect(func(entry: RadialEntry) -> void: _log("chosen %s" % entry.id))
 	menu.cancelled.connect(func() -> void: _log("cancelled"))
 	_reopen.call_deferred()
@@ -35,4 +37,5 @@ func _reopen() -> void:
 
 
 func _log(text: String) -> void:
-	if DebugLog.on(&"radial"): print("RADIAL ", text)
+	if DebugLog.on(&"radial"):
+		print("RADIAL ", text)

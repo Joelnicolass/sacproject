@@ -21,7 +21,13 @@ const VERTICAL_MARGIN_M := 0.25
 
 ## Pairs (p0, q0, p1, q1, ...) of polygons joined by a side. `canon` maps each vertex to its first copy by position; `matched` holds the
 ## edge keys (min << 32 | max, of canonical vertices) that two polygons already share. `cell_m` is the size of the lookup cells.
-static func pairs(vertices: PackedVector3Array, polygons: Array[PackedInt32Array], canon: PackedInt32Array, matched: Dictionary, cell_m: float) -> PackedInt32Array:
+static func pairs(
+	vertices: PackedVector3Array,
+	polygons: Array[PackedInt32Array],
+	canon: PackedInt32Array,
+	matched: Dictionary,
+	cell_m: float
+) -> PackedInt32Array:
 	var owners := PackedInt32Array()
 	var from_pts := PackedVector3Array()
 	var to_pts := PackedVector3Array()

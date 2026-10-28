@@ -22,7 +22,9 @@ func arm_status(wizard: WizardBody, _spell: SpellType) -> String:
 
 
 ## `picked` and `point` come from the client: the soul is validated here and its own position is the aim.
-func check(wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.target = wizard
 	var system := _find_system()
@@ -46,7 +48,9 @@ func begin(wizard: WizardBody, spell: SpellType, aim: Aim) -> void:
 	var system := _find_system()
 	if system == null:
 		return
-	_cast = system.begin_convert_cast(wizard, aim.target as Soul, CastTime.seconds(spell, wizard.level))
+	_cast = system.begin_convert_cast(
+		wizard, aim.target as Soul, CastTime.seconds(spell, wizard.level)
+	)
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:

@@ -54,7 +54,13 @@ func _choose() -> void:
 	var body: Node3D
 	if pick == Pick.BODY_OR_RING:
 		var angle := _rng.randf_range(-PI, PI)
-		spot = centre + Vector3(cos(angle), 0.0, sin(angle)) * _rng.randf_range(ring_min_m, maxf(reach, ring_min_m))
+		spot = (
+			centre
+			+ (
+				Vector3(cos(angle), 0.0, sin(angle))
+				* _rng.randf_range(ring_min_m, maxf(reach, ring_min_m))
+			)
+		)
 		var crowd := SplashDamage.bodies_within(get_tree(), centre, reach, null, groups)
 		if not crowd.is_empty() and _rng.randi_range(0, crowd.size() + decoys - 1) < crowd.size():
 			body = crowd[_rng.randi_range(0, crowd.size() - 1)]
@@ -70,7 +76,9 @@ func _choose() -> void:
 func _pulled(centre: Vector3, spot: Vector3) -> Node3D:
 	var best: Node3D
 	var best_d := INF
-	for body in SplashDamage.bodies_within(get_tree(), centre, zone.spell.effect_range_m, null, groups):
+	for body in SplashDamage.bodies_within(
+		get_tree(), centre, zone.spell.effect_range_m, null, groups
+	):
 		var at := BodyNudge.center(body)
 		var d := Vector2(at.x - spot.x, at.z - spot.z).length()
 		if d < best_d:
@@ -82,4 +90,8 @@ func _pulled(centre: Vector3, spot: Vector3) -> Node3D:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) the drops fall from is missing."])
+	return (
+		PackedStringArray()
+		if zone != null
+		else PackedStringArray(["The zone (GroundZone) the drops fall from is missing."])
+	)

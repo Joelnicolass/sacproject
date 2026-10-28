@@ -22,7 +22,8 @@ const NO_ROOM := Refusal.OCCUPIED
 
 
 ## Where a cast lands, or why it cannot start (`status` != "").
-class Aim extends RefCounted:
+class Aim:
+	extends RefCounted
 	var status := ""
 	var point := Vector3.ZERO
 	var target: Node3D
@@ -51,7 +52,11 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var parent := get_parent()
 	if parent != null and spell != null:
 		for sibling in parent.get_children():
-			if sibling != self and sibling is SpellAction and (sibling as SpellAction).spell == spell:
+			if (
+				sibling != self
+				and sibling is SpellAction
+				and (sibling as SpellAction).spell == spell
+			):
 				warnings.append("Another action of `%s` casts the same spell." % parent.name)
 				break
 	return warnings
@@ -67,7 +72,9 @@ func arm_status(_wizard: WizardBody, _spell: SpellType) -> String:
 ## or the reason it cannot start.
 ## `picked` and `point` come from the client: validate owner, group and state here, and take the
 ## position from `picked` when the spell aims at a body.
-func check(_wizard: WizardBody, _spell: SpellType, _point: Vector3, _picked: Node3D, _funds: String) -> Aim:
+func check(
+	_wizard: WizardBody, _spell: SpellType, _point: Vector3, _picked: Node3D, _funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.status = NOT_IMPLEMENTED
 	return aim
@@ -105,7 +112,9 @@ func standing_status(funds: String, wizard: WizardBody, spell: SpellType, point:
 
 ## The shared answer of a spell aimed at one body: funds first (cooldown, mana), then a valid body (`body`, already picked with the
 ## action's SpellTarget; null = not valid), then the cast range.
-func aim_at_body(wizard: WizardBody, spell: SpellType, point: Vector3, funds: String, body: Node3D) -> Aim:
+func aim_at_body(
+	wizard: WizardBody, spell: SpellType, point: Vector3, funds: String, body: Node3D
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():

@@ -89,7 +89,9 @@ func _on_health_changed(current: float, maximum: float) -> void:
 	var since_drop := now - _last_drop_s
 	_last_drop_s = now
 	_lost += drop / maximum
-	var kind := BloodRules.kind_for(drop / maximum, _lost, now - _last_spray_s, since_drop, blood_type())
+	var kind := BloodRules.kind_for(
+		drop / maximum, _lost, now - _last_spray_s, since_drop, blood_type()
+	)
 	if kind == BloodRules.Kind.NONE:
 		return
 	_lost = 0.0

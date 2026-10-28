@@ -17,7 +17,11 @@ var ruin: Node
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if building != null else PackedStringArray(["Assign `building` (the MapBuilding root)."])
+	return (
+		PackedStringArray()
+		if building != null
+		else PackedStringArray(["Assign `building` (the MapBuilding root)."])
+	)
 
 
 func _ready() -> void:

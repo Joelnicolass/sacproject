@@ -45,7 +45,11 @@ func _swell(sphere: MeshInstance3D, seconds: float, radius: float) -> void:
 	sphere.set_instance_shader_parameter(&"fade", 1.0)  # the tween needs a start value
 	var tween := create_tween().set_parallel()
 	tween.tween_property(sphere, "scale", squash * radius * 2.0, seconds)
-	tween.tween_property(sphere, "instance_shader_parameters/fade", 0.0, seconds * fade_share).set_delay(seconds * (1.0 - fade_share))
+	(
+		tween
+		. tween_property(sphere, "instance_shader_parameters/fade", 0.0, seconds * fade_share)
+		. set_delay(seconds * (1.0 - fade_share))
+	)
 	tween.chain().tween_callback(sphere.hide)
 
 
@@ -58,12 +62,23 @@ func _throw() -> void:
 		var direction := Vector3(cos(angle), rng.randf_range(0.5, 2.0), sin(angle)).normalized()
 		var rock := piece.instantiate() as DebrisPiece
 		add_child(rock)
-		rock.launch(direction * (throw_speed + rng.randf_range(-throw_jitter, throw_jitter)), _axis(rng), TAU * rng.randf_range(spin_turns.x, spin_turns.y))
+		rock.launch(
+			direction * (throw_speed + rng.randf_range(-throw_jitter, throw_jitter)),
+			_axis(rng),
+			TAU * rng.randf_range(spin_turns.x, spin_turns.y)
+		)
 
 
 func _axis(rng: RandomNumberGenerator) -> Vector3:
-	return Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	return (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if big != null and small != null else PackedStringArray(["The two spheres (big and small) are missing."])
+	return (
+		PackedStringArray()
+		if big != null and small != null
+		else PackedStringArray(["The two spheres (big and small) are missing."])
+	)

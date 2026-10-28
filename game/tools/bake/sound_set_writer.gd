@@ -83,7 +83,9 @@ func save_set(sound_set: Resource, path: String) -> Resource:
 
 ## The set of the creature `name`: the sound files of `source`/creatures/<name>/ as fields (none: an empty set over the melee
 ## fallback) -> `out`/creatures/<name>.tres. Returns the path it wrote or kept ("" when it could not be saved).
-func write_creature_set(name: String, source: String = CUSTOM_SRC, out: String = CUSTOM_OUT) -> String:
+func write_creature_set(
+	name: String, source: String = CUSTOM_SRC, out: String = CUSTOM_OUT
+) -> String:
 	var events := _events_in(source.path_join("creatures").path_join(name))
 	var sound_set := new_set()
 	for event: StringName in events:

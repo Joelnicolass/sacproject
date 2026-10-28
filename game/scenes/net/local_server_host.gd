@@ -66,12 +66,19 @@ func _ready() -> void:
 ## (`world`, `mode`…); `ai_seats` {slot: {god, difficulty}} the seats an AI plays (slot 1 is the host's and never an AI).
 ## `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already hosts; ERR_INVALID_PARAMETER for options
 ## or an AI seat the rules refuse (a map with fewer starts than the mode, an unknown god).
-func start(host_pick: WizardPick, transport: String = "", options: Dictionary = {}, ai_seats: Dictionary = {}) -> Error:
+func start(
+	host_pick: WizardPick,
+	transport: String = "",
+	options: Dictionary = {},
+	ai_seats: Dictionary = {}
+) -> Error:
 	if hosting:
 		return ERR_ALREADY_IN_USE
 	# Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
 	if not is_inside_tree() or launcher == null or launcher.config == null or rules == null:
-		push_error("LocalServerHost.start: the node is not in the tree (add it to root and wait a frame)")
+		push_error(
+			"LocalServerHost.start: the node is not in the tree (add it to root and wait a frame)"
+		)
 		return ERR_UNCONFIGURED
 	if not transport.is_empty():
 		launcher.config.transport = MpTransport.normalize(transport)
@@ -85,7 +92,9 @@ func start(host_pick: WizardPick, transport: String = "", options: Dictionary = 
 	MpKit.transport = launcher.config.transport
 	host_token = _new_code()
 	codes = {}
-	var seats: Array = [{"slot": HOST_SLOT, "token": host_token, "meta": MatchWire.encode_pick(host_pick)}]
+	var seats: Array = [
+		{"slot": HOST_SLOT, "token": host_token, "meta": MatchWire.encode_pick(host_pick)}
+	]
 	for slot in range(RIVAL_SLOT, rules.seat_count_for(options) + 1):
 		if ai_seats.has(slot):
 			seats.append({"slot": slot, "bot": true, "meta": ai_seats[slot]})
@@ -126,7 +135,9 @@ func _process(_delta: float) -> void:
 ## `result.json` is there, that is the end of the match, not a failure. Without it, the host left a match in course: kill the dedicated.
 func _on_host_gone() -> void:
 	set_process(false)
-	var result := MpMatchFiles.read_json(MpMatchFiles.path_of(launcher.config.matches_root, match_id, MpMatchFiles.RESULT))
+	var result := MpMatchFiles.read_json(
+		MpMatchFiles.path_of(launcher.config.matches_root, match_id, MpMatchFiles.RESULT)
+	)
 	if result.is_empty():
 		stop("host_left")
 		return
@@ -142,8 +153,18 @@ func _on_listening(listening_id: String, listening_port: int) -> void:
 	port = listening_port
 	address = MpLan.get_local_ipv4()
 	# One line for the logs and the tests: the same three things the screen shows.
-	print("servidor local listo direccion=%s puerto=%d transporte=%s codigo=%s asientos=%s" % [
-		address, port, launcher.config.transport, rival_code, ",".join(PackedStringArray(codes.keys().map(str)))])
+	print(
+		(
+			"servidor local listo direccion=%s puerto=%d transporte=%s codigo=%s asientos=%s"
+			% [
+				address,
+				port,
+				launcher.config.transport,
+				rival_code,
+				",".join(PackedStringArray(codes.keys().map(str)))
+			]
+		)
+	)
 	server_ready.emit(address, port, rival_code)
 
 

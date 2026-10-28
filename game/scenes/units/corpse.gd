@@ -54,7 +54,9 @@ func _ready() -> void:
 func lying_pose(body_radius: float) -> Transform3D:
 	if not clip_driven:
 		return Transform3D.IDENTITY
-	return Transform3D(Basis.from_euler(Vector3(-deg_to_rad(fall_deg), 0.0, 0.0)), Vector3(0.0, body_radius, 0.0))
+	return Transform3D(
+		Basis.from_euler(Vector3(-deg_to_rad(fall_deg), 0.0, 0.0)), Vector3(0.0, body_radius, 0.0)
+	)
 
 
 ## Every peer. The body is dead: it leaves the creatures and starts to fall. `instant`: it joined late, it already lies.
@@ -98,16 +100,21 @@ func dissolve(body: Node) -> void:
 	if dissolving or not is_multiplayer_authority():
 		return
 	dissolving = true
-	get_tree().create_timer(dissolve_s, false, true).timeout.connect(func() -> void:
-		if is_instance_valid(body):
-			body.queue_free())
+	get_tree().create_timer(dissolve_s, false, true).timeout.connect(
+		func() -> void:
+			if is_instance_valid(body):
+				body.queue_free()
+	)
 
 
 ## Runs after its body's own physics step (a child follows its parent), so `is_on_floor()` is this tick's.
 func _physics_process(_delta: float) -> void:
 	_ticks += 1
 	var landed := not _body.simulates() or _body.is_on_floor()
-	if (landed and _ticks >= MatchClock.ticks_for(fall_s)) or _ticks >= MatchClock.ticks_for(max_fall_s):
+	if (
+		(landed and _ticks >= MatchClock.ticks_for(fall_s))
+		or _ticks >= MatchClock.ticks_for(max_fall_s)
+	):
 		_settle()
 
 

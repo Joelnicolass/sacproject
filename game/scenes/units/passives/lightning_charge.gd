@@ -26,7 +26,6 @@ extends UnitPassive
 ## The candidates go in the order of the groups (wizards, then units); a
 ## body that dies loses its charge at once; the sparks are a reserve look.
 
-
 ## The PaceFactors source of the charge.
 const PACE_SOURCE := &"lightning_charge"
 
@@ -149,7 +148,12 @@ func _discharge(rng: RandomNumberGenerator, spell: AbilityType) -> void:
 	if pick < candidates.size() and LightningStrike.is_valid_target(candidates[pick]):
 		target = candidates[pick]
 	if target == body:
-		_say("charge %s picks its own body: nothing (candidates %d, roll %d, tick %d)" % [_who(), candidates.size(), pick, MatchClock.now()])
+		_say(
+			(
+				"charge %s picks its own body: nothing (candidates %d, roll %d, tick %d)"
+				% [_who(), candidates.size(), pick, MatchClock.now()]
+			)
+		)
 		return
 	var ground := Vector3.ZERO
 	if target == null:
@@ -160,10 +164,20 @@ func _discharge(rng: RandomNumberGenerator, spell: AbilityType) -> void:
 	var before := frames
 	frames -= int(spell.damage) >> 1
 	ramp = 0.0
-	LightningStrike.launch(bolt_scene, self, body, center, target, ground, float(spell.damage), passive.tag, false)
-	var where := "ground %s" % _v(ground) if target == null else "%s a %.4f m" % [target.name, center.distance_to(BodyNudge.center(target))]
-	_say("charge %s discharges at %s (candidates %d, roll %d) frames %d->%d (tick %d)" % [
-		_who(), where, candidates.size(), pick, before, frames, MatchClock.now()])
+	LightningStrike.launch(
+		bolt_scene, self, body, center, target, ground, float(spell.damage), passive.tag, false
+	)
+	var where := (
+		"ground %s" % _v(ground)
+		if target == null
+		else "%s a %.4f m" % [target.name, center.distance_to(BodyNudge.center(target))]
+	)
+	_say(
+		(
+			"charge %s discharges at %s (candidates %d, roll %d) frames %d->%d (tick %d)"
+			% [_who(), where, candidates.size(), pick, before, frames, MatchClock.now()]
+		)
+	)
 
 
 ## The bodies within `radius` of `center` (center to center) that a discharge can pick: creatures and wizards that are not
@@ -212,7 +226,12 @@ func _trace_walk() -> void:
 		return
 	_last_walk = at
 	var factor := body.speed_factor
-	print("pace %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)" % [_who(), factor, at.x, at.y, at.z, MatchClock.now()])
+	print(
+		(
+			"pace %s ×%.4f (%.4f, %.4f, %.4f) (tick %d)"
+			% [_who(), factor, at.x, at.y, at.z, MatchClock.now()]
+		)
+	)
 
 
 ## 48 sparks over the body's box at `spark_rate` per second; the stream is the look's, not the simulation's.
@@ -223,7 +242,9 @@ func _spark() -> void:
 	if _look_rng.randf() > chance:
 		return
 	var box := BodyNudge.box(body)
-	var at := box.position + Vector3(_look_rng.randf(), _look_rng.randf(), _look_rng.randf()) * box.size
+	var at := (
+		box.position + Vector3(_look_rng.randf(), _look_rng.randf(), _look_rng.randf()) * box.size
+	)
 	FxBus.play(spark_fx, at)
 
 

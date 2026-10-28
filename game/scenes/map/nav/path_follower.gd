@@ -82,7 +82,11 @@ func cancel() -> void:
 
 ## An order to walk to `goal`. The same goal while the walk goes on is a no-op (the order layer repeats it).
 func go_to(target: Vector3) -> void:
-	var same := active and Vector2(target.x, target.z).distance_to(Vector2(goal.x, goal.z)) < 0.5 and _body_walking()
+	var same := (
+		active
+		and Vector2(target.x, target.z).distance_to(Vector2(goal.x, goal.z)) < 0.5
+		and _body_walking()
+	)
 	if same:
 		return
 	if _retarget(target):
@@ -103,7 +107,11 @@ func _physics_process(delta: float) -> void:
 		return
 	if not _body_walking():
 		var arrived_at_goal := _flat(body.global_position, goal) <= arrive_m
-		if not arrived_at_goal and waypoints.size() > 1 and _flat(body.global_position, waypoints[0]) <= arrive_m:
+		if (
+			not arrived_at_goal
+			and waypoints.size() > 1
+			and _flat(body.global_position, waypoints[0]) <= arrive_m
+		):
 			# The body ended a leg that was already under it (its own stop distance is wider than a waypoint a cell
 			# rounding away): the walk is not over, the next leg starts.
 			waypoints.remove_at(0)
@@ -131,7 +139,9 @@ func _physics_process(delta: float) -> void:
 	var moved := _flat(here, _mark)
 	_mark = here
 	var stuck := pace > 0.0 and moved < pace * repath_s * stuck_fraction
-	var blocked := not waypoints.is_empty() and _nav_ready() and not _nav.line_clear(here, waypoints[0])
+	var blocked := (
+		not waypoints.is_empty() and _nav_ready() and not _nav.line_clear(here, waypoints[0])
+	)
 	if stuck or blocked:
 		repaths += 1
 		_plan()
@@ -162,7 +172,11 @@ func steer_point(target: Vector3) -> Vector3:
 	if _nav.line_clear(here, target):
 		_steer_path = PackedVector3Array()
 		return target
-	var stale := _steer_path.is_empty() or _flat(target, _steer_goal) >= REPATH_GOAL_M or _steer_age >= repath_s
+	var stale := (
+		_steer_path.is_empty()
+		or _flat(target, _steer_goal) >= REPATH_GOAL_M
+		or _steer_age >= repath_s
+	)
 	if stale and _nav.take_search_slot():
 		searches += 1
 		_steer_path = _nav.find_path(here, target)

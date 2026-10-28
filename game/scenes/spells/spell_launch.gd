@@ -8,7 +8,9 @@ extends Node3D
 
 
 ## The cast started. `target` is the body the click named (or null), `point` where it was, `cast_ticks` how long the casting lasts.
-func begin_cast(_wizard: Node3D, _spell: SpellType, _target: Node3D, _point: Vector3, _cast_ticks: int) -> void:
+func begin_cast(
+	_wizard: Node3D, _spell: SpellType, _target: Node3D, _point: Vector3, _cast_ticks: int
+) -> void:
 	pass
 
 

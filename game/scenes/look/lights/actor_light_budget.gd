@@ -92,13 +92,19 @@ func rank() -> void:
 		if light.always_on:
 			light.set_budget_on(true)
 			continue
-		var distance := light.global_position.distance_to(camera.global_position) if camera else min_distance_m
+		var distance := (
+			light.global_position.distance_to(camera.global_position) if camera else min_distance_m
+		)
 		if cap <= 0 or not light.is_lit() or distance > _reach(light):
 			light.set_budget_on(false)
 			continue
 		var entry := _Entry.new()
 		entry.light = light
-		entry.score = light.priority / maxf(distance, min_distance_m) * (hysteresis if light.is_budget_on() else 1.0)
+		entry.score = (
+			light.priority
+			/ maxf(distance, min_distance_m)
+			* (hysteresis if light.is_budget_on() else 1.0)
+		)
 		entries.append(entry)
 	entries.sort_custom(func(a: _Entry, b: _Entry) -> bool: return a.score > b.score)
 	for i in entries.size():
@@ -107,4 +113,8 @@ func rank() -> void:
 
 ## Past this distance the light has faded out by itself: it is not worth a place.
 func _reach(light: ActorLight) -> float:
-	return light.distance_fade_begin + light.distance_fade_length if light.distance_fade_enabled else INF
+	return (
+		light.distance_fade_begin + light.distance_fade_length
+		if light.distance_fade_enabled
+		else INF
+	)

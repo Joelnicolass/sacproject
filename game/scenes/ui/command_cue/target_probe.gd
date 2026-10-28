@@ -24,8 +24,16 @@ const MASK := 15
 
 ## Where an order (attack, guard, advance, an ability) can land: anything but the sky.
 const ORDER_TARGETS: PackedStringArray = [
-	"ground", "corpse", "own_unit", "neutral_unit", "enemy_unit", "own_building",
-	"neutral_building", "enemy_building", "own_soul", "soul",
+	"ground",
+	"corpse",
+	"own_unit",
+	"neutral_unit",
+	"enemy_unit",
+	"own_building",
+	"neutral_building",
+	"enemy_building",
+	"own_soul",
+	"soul",
 ]
 
 ## Samples per second.
@@ -114,7 +122,9 @@ func _classify(screen: Vector2) -> StringName:
 	if cam == null:
 		return NONE
 	var origin := cam.project_ray_origin(screen)
-	var query := PhysicsRayQueryParameters3D.create(origin, origin + cam.project_ray_normal(screen) * 10000.0)
+	var query := PhysicsRayQueryParameters3D.create(
+		origin, origin + cam.project_ray_normal(screen) * 10000.0
+	)
 	query.collision_mask = MASK
 	var world := cam.get_world_3d()
 	if world == null:

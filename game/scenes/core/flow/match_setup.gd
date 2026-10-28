@@ -40,7 +40,14 @@ func copy() -> MatchSetup:
 
 
 func is_empty() -> bool:
-	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0 and match_seed == 0 and biome == null
+	return (
+		level == 0
+		and friendly_fire < 0
+		and drop_soul < 0
+		and starting_souls < 0
+		and match_seed == 0
+		and biome == null
+	)
 
 
 ## A copy of this setup where every field `over` sets wins (boot > flag: the boot's setup over the flags' one).

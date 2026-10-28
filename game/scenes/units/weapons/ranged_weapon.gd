@@ -42,7 +42,12 @@ func setup(unit: UnitBody, creature: CreatureType, stream: RandomNumberGenerator
 	if attack and attack.speed_m_s <= 0.0:
 		attack = null
 	if attack and attack.shot_look == null:
-		push_error("RangedWeapon: the ranged attack %s has no shot_look; it flies as a plain ball." % attack.resource_path)
+		push_error(
+			(
+				"RangedWeapon: the ranged attack %s has no shot_look; it flies as a plain ball."
+				% attack.resource_path
+			)
+		)
 	if attack and unit.simulates():
 		look = ShotLook.fit(self, look, attack.shot_look)
 	elif look != null:
@@ -106,7 +111,9 @@ func advance(delta: float) -> bool:
 	if not _clip.active:
 		return false
 	# Each layer of Slime makes the shot take 5x as long.
-	for _shot in _clip.advance(delta / Afflictions.stat_factor_of(body, Afflictions.Stat.ATTACK_TIME)):
+	for _shot in _clip.advance(
+		delta / Afflictions.stat_factor_of(body, Afflictions.Stat.ATTACK_TIME)
+	):
 		RangedFire.tick(self, _clip.shots.size())
 	if _clip.ended():
 		_clip.active = false

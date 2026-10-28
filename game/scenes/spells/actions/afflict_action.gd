@@ -26,14 +26,22 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first (cooldown, mana), then a valid body that can take the state, then the range: the order every spell of the book answers in.
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var body := target.pick(wizard, picked) if target != null else null
-	return aim_at_body(wizard, spell, point, funds, body if body != null and _state_of(body) != null else null)
+	return aim_at_body(
+		wizard, spell, point, funds, body if body != null and _state_of(body) != null else null
+	)
 
 
 func started(_wizard: WizardBody, _spell: SpellType, aim: Aim, frames: int) -> void:
 	if cast_scene != null and aim.target != null:
-		FxBus.broadcast_scene(cast_scene, aim.target.global_position, {"ticks": frames, "target": str(aim.target.get_path())})
+		FxBus.broadcast_scene(
+			cast_scene,
+			aim.target.global_position,
+			{"ticks": frames, "target": str(aim.target.get_path())}
+		)
 
 
 ## The casting time ended: the state goes on the body if it is still a valid one (dead or already protected = nothing).

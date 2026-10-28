@@ -48,7 +48,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first (cooldown, mana), then the range: the order every spell of the book answers in. The click only needs to be a point.
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = picked.global_position if picked != null else point
 	aim.target = wizard
@@ -66,7 +68,9 @@ func started(wizard: WizardBody, spell: SpellType, aim: Aim, frames: int) -> voi
 	data["follow"] = aim.data.get("follow", "")
 	_zone = spawner.spawn_zone(kind, data) as GroundZone
 	if cast_scene != null:
-		FxBus.broadcast_scene(cast_scene, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())})
+		FxBus.broadcast_scene(
+			cast_scene, wizard.global_position, {"ticks": frames, "wizard": str(wizard.get_path())}
+		)
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:
@@ -88,7 +92,16 @@ func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) ->
 	var rng := MatchSeed.rng(["zone", spell.tag, String(wizard.name), MatchClock.now()])
 	var origin := _ground(wizard.global_position) if anchor == Anchor.WIZARD else click
 	if snap_m > 0.0:
-		origin = _ground(Vector3(floorf((origin.x + snap_m * 0.5) / snap_m), origin.y, floorf((origin.z + snap_m * 0.5) / snap_m)) * Vector3(snap_m, 1.0, snap_m))
+		origin = _ground(
+			(
+				Vector3(
+					floorf((origin.x + snap_m * 0.5) / snap_m),
+					origin.y,
+					floorf((origin.z + snap_m * 0.5) / snap_m)
+				)
+				* Vector3(snap_m, 1.0, snap_m)
+			)
+		)
 	if ring_count > 0:
 		points = _roots(rng, click)
 		origin = _ground(click)
@@ -98,15 +111,23 @@ func _data(wizard: WizardBody, spell: SpellType, click: Vector3, frames: int) ->
 		points.append(_ground(click + ZoneRules.disk_point(rng, spell.effect_range_m)))
 	var wait := MatchClock.ticks_for(arm_s)
 	return {
-		"x": origin.x, "y": origin.y, "z": origin.z, "points": points, "aim": click,
-		"slot": wizard.owner_slot, "caster": str(wizard.get_path()), "cast_ticks": frames,
+		"x": origin.x,
+		"y": origin.y,
+		"z": origin.z,
+		"points": points,
+		"aim": click,
+		"slot": wizard.owner_slot,
+		"caster": str(wizard.get_path()),
+		"cast_ticks": frames,
 		"arm_ticks": maxi(0, wait - frames) if arm_from_start else wait,
 	}
 
 
 ## The roots of a ring on the ground: a root off the land is drawn again around where it fell (the zone keeps the last one when none fits).
 func _roots(rng: RandomNumberGenerator, click: Vector3) -> PackedVector3Array:
-	var roots := ZoneRules.ring_points(rng, click, ring_count, ring_inner_m, ring_outer_m, deg_to_rad(ring_jitter_deg))
+	var roots := ZoneRules.ring_points(
+		rng, click, ring_count, ring_inner_m, ring_outer_m, deg_to_rad(ring_jitter_deg)
+	)
 	var shape := Terrain.of(self)
 	for i in roots.size():
 		var fell := roots[i]

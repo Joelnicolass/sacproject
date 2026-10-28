@@ -51,6 +51,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 		seen[team] = true
 	for team in range(seen.size()):
 		if not seen.has(team):
-			warnings.append("The teams of `team_of_seat` must be 0..T-1 with no gaps (%d is missing)." % team)
+			warnings.append(
+				"The teams of `team_of_seat` must be 0..T-1 with no gaps (%d is missing)." % team
+			)
 			break
 	return warnings

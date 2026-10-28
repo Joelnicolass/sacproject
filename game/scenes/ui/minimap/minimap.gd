@@ -167,7 +167,9 @@ func world_transform() -> Transform2D:
 
 
 func set_zoom(value: float) -> void:
-	var next := clampf(value, _zoom_of(view.min_radius_m), _zoom_of(view.max_radius_m)) if view else value
+	var next := (
+		clampf(value, _zoom_of(view.min_radius_m), _zoom_of(view.max_radius_m)) if view else value
+	)
 	if is_equal_approx(next, zoom):
 		return
 	zoom = next
@@ -187,8 +189,14 @@ func _update_state() -> void:
 		target = eye
 		var followed: Variant = camera.get("follow") if "follow" in camera else null
 		# The followed wizard can be freed (e.g. after leaving the match) before the camera drops it.
-		if is_instance_valid(followed) and followed is Node3D and (followed as Node3D).is_inside_tree():
-			target = Vector2((followed as Node3D).global_position.x, (followed as Node3D).global_position.z)
+		if (
+			is_instance_valid(followed)
+			and followed is Node3D
+			and (followed as Node3D).is_inside_tree()
+		):
+			target = Vector2(
+				(followed as Node3D).global_position.x, (followed as Node3D).global_position.z
+			)
 		var lead := eye.distance_to(target) * (view.lead_factor if view else 0.0)
 		center_world = target + heading * lead if (view and view.heading_up) else target
 	var x_axis := Vector2(1.0, 0.0) * scale_px
@@ -197,11 +205,17 @@ func _update_state() -> void:
 		x_axis = Vector2(-heading.y, -heading.x) * scale_px
 		y_axis = Vector2(heading.x, -heading.y) * scale_px
 	var middle := Vector2.ONE * radius()
-	_to_local = Transform2D(x_axis, y_axis, middle - Transform2D(x_axis, y_axis, Vector2.ZERO) * center_world)
+	_to_local = Transform2D(
+		x_axis, y_axis, middle - Transform2D(x_axis, y_axis, Vector2.ZERO) * center_world
+	)
 	if compass:
 		var north := world_dir_to_local(Vector2(0.0, -1.0))
 		compass.pivot_offset = compass.size * 0.5
-		compass.position = middle + north * (radius() - (view.compass_inset if view else 4.0)) - compass.pivot_offset
+		compass.position = (
+			middle
+			+ north * (radius() - (view.compass_inset if view else 4.0))
+			- compass.pivot_offset
+		)
 		compass.rotation = atan2(north.x, -north.y)
 
 

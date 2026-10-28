@@ -52,7 +52,11 @@ func _ready() -> void:
 func _match_state() -> MatchState:
 	if _state and is_instance_valid(_state) and _state.is_inside_tree():
 		return _state
-	_state = get_tree().get_first_node_in_group(match_state_group) as MatchState if is_inside_tree() else null
+	_state = (
+		get_tree().get_first_node_in_group(match_state_group) as MatchState
+		if is_inside_tree()
+		else null
+	)
 	if _state and not _state.rules_changed.is_connected(_sync):
 		_state.rules_changed.connect(_sync)
 	return _state

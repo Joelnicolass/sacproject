@@ -101,6 +101,5 @@ func _summon_threat(wizard: AiTrack) -> float:
 
 
 func _note(wizard: AiTrack, why: String) -> void:
-	if DebugLog.on(&"ai_summon"): print(
-		"ai_summon slot %d tick %d %s" % [brain.perception.slot, brain.port.now_tick(), why]
-	)
+	if DebugLog.on(&"ai_summon"):
+		print("ai_summon slot %d tick %d %s" % [brain.perception.slot, brain.port.now_tick(), why])

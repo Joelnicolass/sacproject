@@ -9,7 +9,9 @@ const SHADER := preload("res://scenes/look/ground/ground.gdshader")
 
 
 ## `roles`: the map's ground_roles.png (Terrain.ground_roles); `light`: its baked light (Terrain.light_map). Either may be null.
-static func build(ground: GodGround, roles: Texture2D, light: Texture2D, preset: LookQuality) -> ShaderMaterial:
+static func build(
+	ground: GodGround, roles: Texture2D, light: Texture2D, preset: LookQuality
+) -> ShaderMaterial:
 	var mat := ShaderMaterial.new()
 	mat.shader = SHADER
 	mat.set_shader_parameter("ground_roles", roles)
@@ -21,10 +23,16 @@ static func build(ground: GodGround, roles: Texture2D, light: Texture2D, preset:
 
 ## Pushes the ground's tunables, its texture arrays and the preset's switches. The arrays are cached per GodGround.
 static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) -> void:
-	mat.set_shader_parameter("role_albedo", GroundTextures.array_of(ground, GroundTextures.Kind.ALBEDO))
-	mat.set_shader_parameter("role_normal", GroundTextures.array_of(ground, GroundTextures.Kind.NORMAL))
+	mat.set_shader_parameter(
+		"role_albedo", GroundTextures.array_of(ground, GroundTextures.Kind.ALBEDO)
+	)
+	mat.set_shader_parameter(
+		"role_normal", GroundTextures.array_of(ground, GroundTextures.Kind.NORMAL)
+	)
 	mat.set_shader_parameter("role_orm", GroundTextures.array_of(ground, GroundTextures.Kind.ORM))
-	mat.set_shader_parameter("role_detail", GroundTextures.array_of(ground, GroundTextures.Kind.DETAIL))
+	mat.set_shader_parameter(
+		"role_detail", GroundTextures.array_of(ground, GroundTextures.Kind.DETAIL)
+	)
 	mat.set_shader_parameter("use_maps", preset == null or preset.ground_layers >= 4)
 	mat.set_shader_parameter("use_triplanar", preset == null or preset.ground_triplanar)
 	mat.set_shader_parameter("use_stochastic", preset != null and preset.ground_stochastic)
@@ -44,10 +52,18 @@ static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) 
 			relief.append(Vector4.ZERO)
 			continue
 		var grain := role.detail_strength if role.detail != null else 0.0
-		layout.append(Vector4(role.tile_m, float(role.variants_per_side), grain, role.detail_repeat))
+		layout.append(
+			Vector4(role.tile_m, float(role.variants_per_side), grain, role.detail_repeat)
+		)
 		tint.append(Vector4(role.tint.r, role.tint.g, role.tint.b, role.roughness))
-		relief.append(Vector4(role.normal_strength, _flag(GroundTextures.has_map(role, GroundTextures.Kind.NORMAL)),
-				_flag(GroundTextures.has_map(role, GroundTextures.Kind.ORM)), _flag(role.triplanar)))
+		relief.append(
+			Vector4(
+				role.normal_strength,
+				_flag(GroundTextures.has_map(role, GroundTextures.Kind.NORMAL)),
+				_flag(GroundTextures.has_map(role, GroundTextures.Kind.ORM)),
+				_flag(role.triplanar)
+			)
+		)
 		takes[i] = role.takes_slope_deg
 		contrast[i] = role.height_contrast
 		stochastic[i] = _flag(role.stochastic)
@@ -68,7 +84,19 @@ static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) 
 
 ## Gives the ground the average colour of the grass where the grass grows (see `grass_paint.gdshaderinc`). amount 0 removes it.
 ## `roles`: the share of the paint per role (x..w = open, earth, rock, path).
-static func set_grass_paint(mat: ShaderMaterial, color: Color, amount: float, roles: Vector4, reference: float, wave_dir: Vector2, wave_scale: float, wave_speed: float, wave_strength: float, slope_start := 10.0, slope_end := 36.0) -> void:
+static func set_grass_paint(
+	mat: ShaderMaterial,
+	color: Color,
+	amount: float,
+	roles: Vector4,
+	reference: float,
+	wave_dir: Vector2,
+	wave_scale: float,
+	wave_speed: float,
+	wave_strength: float,
+	slope_start := 10.0,
+	slope_end := 36.0
+) -> void:
 	mat.set_shader_parameter("grass_wave_noise", GroundTextures.noise())
 	mat.set_shader_parameter("grass_paint_color", Vector3(color.r, color.g, color.b))
 	mat.set_shader_parameter("grass_paint_amount", amount)

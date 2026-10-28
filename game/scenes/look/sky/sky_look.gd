@@ -42,7 +42,9 @@ extends Resource
 ## storm's clouds, grey and tint, the flash, the moon disc where the moon light is (`moon_dir_deg` = azimuth,
 ## elevation) and no sun disc while the light is the moon. Every value starts from `material`'s own, so it is
 ## idempotent; a neutral sample leaves the copy equal to `material`. `cloud_phase` keeps the cloud drift continuous.
-func write_atmosphere(copy: ShaderMaterial, sample: AtmosphereSample, moon_dir_deg: Vector2, cloud_phase: float) -> void:
+func write_atmosphere(
+	copy: ShaderMaterial, sample: AtmosphereSample, moon_dir_deg: Vector2, cloud_phase: float
+) -> void:
 	copy.set_shader_parameter(&"night_amount", sample.stars)
 	copy.set_shader_parameter(&"cloud_cover", sample.cloud_cover)
 	copy.set_shader_parameter(&"cloud_darken", sample.cloud_darken)
@@ -54,9 +56,15 @@ func write_atmosphere(copy: ShaderMaterial, sample: AtmosphereSample, moon_dir_d
 	for name: StringName in [&"sun_intensity", &"halo_strength"]:
 		copy.set_shader_parameter(name, 0.0 if sample.moon else _own(name, 0.0))
 	var moon_shows := sample.moon_intensity > 0.0
-	copy.set_shader_parameter(&"moon_intensity", _own(&"moon_intensity", 0.0) + sample.moon_intensity)
-	copy.set_shader_parameter(&"moon_azimuth_deg", moon_dir_deg.x if moon_shows else _own(&"moon_azimuth_deg", -40.0))
-	copy.set_shader_parameter(&"moon_elevation_deg", moon_dir_deg.y if moon_shows else _own(&"moon_elevation_deg", 40.0))
+	copy.set_shader_parameter(
+		&"moon_intensity", _own(&"moon_intensity", 0.0) + sample.moon_intensity
+	)
+	copy.set_shader_parameter(
+		&"moon_azimuth_deg", moon_dir_deg.x if moon_shows else _own(&"moon_azimuth_deg", -40.0)
+	)
+	copy.set_shader_parameter(
+		&"moon_elevation_deg", moon_dir_deg.y if moon_shows else _own(&"moon_elevation_deg", 40.0)
+	)
 
 
 ## The material's own value of a float uniform (the shader's default when the material does not set it).

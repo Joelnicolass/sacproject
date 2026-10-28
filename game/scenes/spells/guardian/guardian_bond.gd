@@ -144,7 +144,13 @@ func _keep_near() -> void:
 	var current := orders as _ORDERS
 	if current == null:
 		return
-	if current.command == _ORDERS.Command.MOVE and (current.point - attach).length_squared() < reach.guardian_leash_m * reach.guardian_leash_m:
+	if (
+		current.command == _ORDERS.Command.MOVE
+		and (
+			(current.point - attach).length_squared()
+			< reach.guardian_leash_m * reach.guardian_leash_m
+		)
+	):
 		return
 	var spot := attach + reach.guardian_return_m * gap.normalized()
 	spot.y = body.global_position.y

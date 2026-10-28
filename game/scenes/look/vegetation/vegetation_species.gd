@@ -16,7 +16,6 @@ extends Resource
 ## Camera distance where this species is gone (it dithers out over the layer's `fade_m` before). 0 = the layer's radius.
 @export_range(0.0, 400.0, 1.0, "suffix:m") var visibility_end_m := 0.0
 
-
 @export_group("Variation")
 ## Uniform scale of an instance, picked per instance by FloraPlacement between x and y.
 @export var scale_range := Vector2(0.75, 1.3)
@@ -43,5 +42,11 @@ func density_tag() -> String:
 ## The numbers FloraVariation.instance_transform / instance_color read, as plain values (a planting task copies these,
 ## never the Resource).
 func variation() -> Dictionary:
-	return {"scale_range": scale_range, "height_jitter": height_jitter, "tint_dark": tint_dark, "tint_light": tint_light,
-		"tint_cluster_m": tint_cluster_m, "tilt_max_deg": tilt_max_deg}
+	return {
+		"scale_range": scale_range,
+		"height_jitter": height_jitter,
+		"tint_dark": tint_dark,
+		"tint_light": tint_light,
+		"tint_cluster_m": tint_cluster_m,
+		"tilt_max_deg": tilt_max_deg
+	}

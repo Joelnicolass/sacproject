@@ -105,7 +105,9 @@ func _begin(root: Node, areas: Array[Rect2], everything: bool) -> bool:
 	return true
 
 
-func _work(geometry: NavigationMeshSourceGeometryData3D, areas: Array[Rect2], everything: bool) -> void:
+func _work(
+	geometry: NavigationMeshSourceGeometryData3D, areas: Array[Rect2], everything: bool
+) -> void:
 	_retired = null
 	_bake_started = Time.get_ticks_usec()
 	var base := _zones

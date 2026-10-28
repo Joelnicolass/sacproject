@@ -44,7 +44,13 @@ func pick(wizard: Node3D, picked: Node3D) -> Node3D:
 
 ## The wizard himself or a body of the same player (same `owner_slot`).
 static func same_owner(wizard: Node3D, body: Node) -> bool:
-	return body == wizard or int(body.get("owner_slot") if "owner_slot" in body else 0) == int(wizard.get("owner_slot"))
+	return (
+		body == wizard
+		or (
+			int(body.get("owner_slot") if "owner_slot" in body else 0)
+			== int(wizard.get("owner_slot"))
+		)
+	)
 
 
 func _by_who(wizard: Node3D, picked: Node3D) -> Node3D:
@@ -58,5 +64,11 @@ func _by_who(wizard: Node3D, picked: Node3D) -> Node3D:
 		return picked if picked != null and not same_owner(wizard, picked) else null
 	if picked == null:
 		return wizard if who == Who.ALLY_OR_SELF else null
-	var allied := picked == wizard or SideRelations.stance(int(wizard.get("owner_slot")), int(picked.get("owner_slot"))) == SideRelations.Stance.ALLY
+	var allied := (
+		picked == wizard
+		or (
+			SideRelations.stance(int(wizard.get("owner_slot")), int(picked.get("owner_slot")))
+			== SideRelations.Stance.ALLY
+		)
+	)
 	return picked if allied == (who == Who.ALLY_OR_SELF) else null

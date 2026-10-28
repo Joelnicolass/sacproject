@@ -79,7 +79,11 @@ func follow(leader: Node3D) -> void:
 ## Teleport: the body is at `point` (a spot on the land) in one step, at the height it had over the ground if it flies, with no goal,
 ## target or velocity; it keeps its order only if it is guard or retreat.
 func warp(point: Vector3) -> void:
-	var above := maxf(0.0, body.global_position.y - body.air.ground_height(body.global_position)) if body.is_flying() else 0.0
+	var above := (
+		maxf(0.0, body.global_position.y - body.air.ground_height(body.global_position))
+		if body.is_flying()
+		else 0.0
+	)
 	body.global_position = Vector3(point.x, point.y + above, point.z)
 	body.velocity = Vector3.ZERO
 	halt()
@@ -96,7 +100,11 @@ func drop() -> void:
 
 
 func cancel_attacks() -> void:
-	if body.mode == UnitBody.Mode.ROCK_FORM and body.simulates() and afflictions.breaks_special_modes():
+	if (
+		body.mode == UnitBody.Mode.ROCK_FORM
+		and body.simulates()
+		and afflictions.breaks_special_modes()
+	):
 		body.mode = UnitBody.Mode.IDLE  # Petrified ends Rockform; Afflictions.held_changed calls here.
 	body.weapons.cancel_all()
 	body.clips.cancel_lunge()
@@ -117,7 +125,11 @@ func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within 
 ## the own side and anything else a stance enemy.
 func accepts_target(node: Variant) -> bool:
 	var explicit := is_attack_order_on(node)
-	return picker.accepts(node, explicit) if is_instance_valid(picker) else TargetRules.is_valid_foe_of(body.owner_slot, node, body, not explicit)
+	return (
+		picker.accepts(node, explicit)
+		if is_instance_valid(picker)
+		else TargetRules.is_valid_foe_of(body.owner_slot, node, body, not explicit)
+	)
 
 
 ## A foe by the rules of orders (Orders retarget); by stance, except the target of an explicit ATTACK order.
@@ -129,7 +141,11 @@ func is_foe(node: Variant) -> bool:
 func is_attack_order_on(node: Variant) -> bool:
 	if not body.ordered or node == null or not is_instance_valid(node):
 		return false
-	if not is_instance_valid(orders) or orders.command != _ORDERS.Command.ATTACK or not is_instance_valid(orders.target):
+	if (
+		not is_instance_valid(orders)
+		or orders.command != _ORDERS.Command.ATTACK
+		or not is_instance_valid(orders.target)
+	):
 		return false
 	return orders.target == node
 
@@ -141,7 +157,11 @@ func is_futile(node: Variant) -> bool:
 
 ## Not dead, not being summoned and not held by a Sac Doctor: it takes commands.
 func _free() -> bool:
-	return body.mode != UnitBody.Mode.DEAD and body.mode != UnitBody.Mode.SUMMONING and not body.is_taken()
+	return (
+		body.mode != UnitBody.Mode.DEAD
+		and body.mode != UnitBody.Mode.SUMMONING
+		and not body.is_taken()
+	)
 
 
 ## A body looks only while it simulates and is alive, summoned and free: not as a corpse, a summon in the making or a held creature.

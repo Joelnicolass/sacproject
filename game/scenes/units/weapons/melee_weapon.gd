@@ -131,11 +131,28 @@ func _land() -> void:
 	var factor := health.shield_factor() * MeleeRules.attack_factor(self)
 	var amount := float(result["amount"]) * factor
 	if DebugLog.on(&"melee"):
-		print("blow %s → %s accuracy %.1f evasion %.1f facing %.6f slope %.6f p %.6f roll %.6f strength %d scale %.4f resistance %.4f factor %.4f amount %.4f (tick %d)" % [
-			body.name, target.name, result["accuracy"], result["evasion"], result["facing"], result["pending"], result["chance"], result["roll"],
-			type.melee_strength, melee_resistance_scale, result["resistance"], factor, amount, MatchClock.now()])
+		print(
+			(
+				"blow %s → %s accuracy %.1f evasion %.1f facing %.6f slope %.6f p %.6f roll %.6f strength %d scale %.4f resistance %.4f factor %.4f amount %.4f (tick %d)"
+				% [
+					body.name,
+					target.name,
+					result["accuracy"],
+					result["evasion"],
+					result["facing"],
+					result["pending"],
+					result["chance"],
+					result["roll"],
+					type.melee_strength,
+					melee_resistance_scale,
+					result["resistance"],
+					factor,
+					amount,
+					MatchClock.now()
+				]
+			)
+		)
 	if amount > 0.0:
 		LifeDrain.feed(body, target, health.damage(amount, body.owner_slot))
 		struck.emit(target, amount, float(result["chance"]), float(result["roll"]))
 	connected.emit(target, was_frozen)
-

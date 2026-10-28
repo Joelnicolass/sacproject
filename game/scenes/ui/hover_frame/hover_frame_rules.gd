@@ -10,8 +10,16 @@ extends RefCounted
 const SIZE := 0.1
 const _B := SIZE * 0.5
 const _VERTS: Array[Vector2] = [
-	Vector2(-_B, -_B), Vector2(-_B + SIZE, -_B), Vector2(-_B + SIZE, -_B - SIZE), Vector2(1.0 + _B, -_B), Vector2(-_B + SIZE, -_B + SIZE),
-	Vector2(-_B, -_B), Vector2(-_B + SIZE, -_B + SIZE), Vector2(-_B, -_B + SIZE), Vector2(-_B - SIZE, -_B + SIZE), Vector2(-_B, 1.0 + _B),
+	Vector2(-_B, -_B),
+	Vector2(-_B + SIZE, -_B),
+	Vector2(-_B + SIZE, -_B - SIZE),
+	Vector2(1.0 + _B, -_B),
+	Vector2(-_B + SIZE, -_B + SIZE),
+	Vector2(-_B, -_B),
+	Vector2(-_B + SIZE, -_B + SIZE),
+	Vector2(-_B, -_B + SIZE),
+	Vector2(-_B - SIZE, -_B + SIZE),
+	Vector2(-_B, 1.0 + _B),
 ]
 const _ALPHA: Array[float] = [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]
 const _TRIS: Array[int] = [0, 1, 2, 1, 3, 2, 0, 4, 1, 4, 3, 1, 5, 6, 7, 8, 5, 7, 7, 9, 6, 8, 9, 7]
@@ -19,12 +27,19 @@ const _TRIS: Array[int] = [0, 1, 2, 1, 3, 2, 0, 4, 1, 4, 3, 1, 5, 6, 7, 8, 5, 7,
 
 ## Whether `node`, classified as `kind` by TargetProbe, gets a frame. Corpses, sky, ground and the HUD never do; a drag hides it;
 ## buildings show while an icon waits for a target, and while idle only when `buildings_idle`.
-static func should_show(node: Node, kind: StringName, armed: bool, dragging: bool, buildings_idle: bool) -> bool:
+static func should_show(
+	node: Node, kind: StringName, armed: bool, dragging: bool, buildings_idle: bool
+) -> bool:
 	if node == null or not is_instance_valid(node) or not node.is_inside_tree() or dragging:
 		return false
 	if kind == TargetProbe.GROUND and node is ManafountBody:
 		return armed or buildings_idle
-	if kind == TargetProbe.NONE or kind == TargetProbe.GROUND or kind == TargetProbe.HUD or kind == &"corpse":
+	if (
+		kind == TargetProbe.NONE
+		or kind == TargetProbe.GROUND
+		or kind == TargetProbe.HUD
+		or kind == &"corpse"
+	):
 		return false
 	if kind.ends_with("_building"):
 		return armed or buildings_idle
@@ -50,7 +65,11 @@ static func world_corners(node: Node) -> PackedVector3Array:
 	for found in node.find_children("*", "CollisionShape3D", true, false):
 		var shape := found as CollisionShape3D
 		if shape.shape != null and not shape.disabled:
-			_add_corners(out, shape.get_global_transform_interpolated(), shape.shape.get_debug_mesh().get_aabb())
+			_add_corners(
+				out,
+				shape.get_global_transform_interpolated(),
+				shape.shape.get_debug_mesh().get_aabb()
+			)
 	return out
 
 

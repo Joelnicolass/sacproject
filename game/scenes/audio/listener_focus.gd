@@ -56,4 +56,8 @@ func _follow() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if camera != null else PackedStringArray(["Assign `camera`: the listener turns with it."])
+	return (
+		PackedStringArray()
+		if camera != null
+		else PackedStringArray(["Assign `camera`: the listener turns with it."])
+	)

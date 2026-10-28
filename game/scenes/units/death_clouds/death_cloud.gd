@@ -24,7 +24,12 @@ var dead: Node3D
 func burst(center: Vector3, fx: ParticleType) -> void:
 	global_position = center
 	var dead_name := GameBody.name_of(dead) if dead else "?"
-	print("cloud %s of %s (slot %d) at (%.1f, %.1f, %.1f)" % [ability.tag if ability else "?", dead_name, from_slot, center.x, center.y, center.z])
+	print(
+		(
+			"cloud %s of %s (slot %d) at (%.1f, %.1f, %.1f)"
+			% [ability.tag if ability else "?", dead_name, from_slot, center.x, center.y, center.z]
+		)
+	)
 	if ability:
 		_affect(center)
 	if fx != null:

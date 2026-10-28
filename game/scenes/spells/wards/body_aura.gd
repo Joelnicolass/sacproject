@@ -84,7 +84,8 @@ static func box_gap(a: AABB, b: AABB) -> float:
 	var gap := Vector3(
 		maxf(0.0, maxf(a.position.x - b.end.x, b.position.x - a.end.x)),
 		maxf(0.0, maxf(a.position.y - b.end.y, b.position.y - a.end.y)),
-		maxf(0.0, maxf(a.position.z - b.end.z, b.position.z - a.end.z)))
+		maxf(0.0, maxf(a.position.z - b.end.z, b.position.z - a.end.z))
+	)
 	return gap.length()
 
 
@@ -104,7 +105,13 @@ func _sting(body: Node3D, other: Node3D, delta: float) -> float:
 	if damage_per_s <= 0.0:
 		return 0.0
 	var victim := other.get_node_or_null("Health") as Health
-	var took := victim.damage_typed(damage_per_s * delta, damage_kind, _slot(body), false, pierce_shield, mods) if victim else 0.0
+	var took := (
+		victim.damage_typed(
+			damage_per_s * delta, damage_kind, _slot(body), false, pierce_shield, mods
+		)
+		if victim
+		else 0.0
+	)
 	if took > 0.0:
 		stung.emit(other)
 	return took
@@ -127,7 +134,9 @@ func _push(body: Node3D, other: Node3D, mine: AABB, radius: float, delta: float)
 ## Renews the heal of `other` (HealEffect keeps the better rate and the longer time; a body that cannot be healed is left alone).
 func _mend(other: Node3D) -> void:
 	if heal_per_s > 0.0 and HealEffect.can_heal(other):
-		(HealEffect.on(other) as HealEffect).renew(heal_per_s / MatchClock.TICKS_PER_SECOND_F, MatchClock.ticks_for(heal_hold_s))
+		(HealEffect.on(other) as HealEffect).renew(
+			heal_per_s / MatchClock.TICKS_PER_SECOND_F, MatchClock.ticks_for(heal_hold_s)
+		)
 
 
 func _slot(node: Node) -> int:

@@ -92,7 +92,10 @@ func hand_to_ritual() -> void:
 ## Server or solo. Lets the creature go where it is. LET_GO: it falls to the ground, alive and with its owner, and
 ## answers orders again. CARRIER_DIED: DeathRules says if it lands alive or dies in the air and falls as a corpse.
 func release(reason := Release.LET_GO) -> void:
-	if not is_held() and not (reason == Release.CARRIER_DIED and body != null and body.is_reviving()):
+	if (
+		not is_held()
+		and not (reason == Release.CARRIER_DIED and body != null and body.is_reviving())
+	):
 		holder = null
 		return
 	var kind := DeathRules.Carried.REVIVING if body.is_reviving() else DeathRules.Carried.HELD
@@ -148,7 +151,9 @@ func _kill() -> void:
 
 ## The match rule: does a dropped creature die? The doctor's rules win, then the body's; without any, yes.
 func _dies_when_dropped() -> bool:
-	var rules: MatchRules = holder.rules if is_instance_valid(holder) and holder.rules else body.rules
+	var rules: MatchRules = (
+		holder.rules if is_instance_valid(holder) and holder.rules else body.rules
+	)
 	return rules.carried_dies_when_dropped if rules else true
 
 
@@ -170,7 +175,9 @@ func _physics_process(delta: float) -> void:
 		return
 	var rules := holder.rules
 	var facts := SacrificeFacts.of_rules(rules)
-	var want := hang_point(holder.global_position, holder.facing_flat(), facts.carry_up_m, facts.carry_back_m)
+	var want := hang_point(
+		holder.global_position, holder.facing_flat(), facts.carry_up_m, facts.carry_back_m
+	)
 	var gap := want - body.global_position
 	var distance := gap.length()
 	if distance <= 0.75:
@@ -197,4 +204,3 @@ func _apply(held: bool) -> void:
 		body.collision_layer = _layer if _layer != 0 else body.unit_layer
 		body.remove_from_group(HELD_GROUP)
 		body.add_to_group(UnitBody.GROUP)
-

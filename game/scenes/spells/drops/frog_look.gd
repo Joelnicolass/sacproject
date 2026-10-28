@@ -21,7 +21,14 @@ var _jumps := 0
 
 
 func _ready() -> void:
-	set_process(not Engine.is_editor_hint() and drop != null and sprite != null and DisplayServer.get_name() != "headless")
+	set_process(
+		(
+			not Engine.is_editor_hint()
+			and drop != null
+			and sprite != null
+			and DisplayServer.get_name() != "headless"
+		)
+	)
 
 
 func _process(delta: float) -> void:
@@ -34,8 +41,16 @@ func _process(delta: float) -> void:
 				croak.play_once()
 		_last = drop.status
 	_t += delta
-	sprite.frame = sitting_frame if drop.status != ZoneDrop.Status.FLYING else (mini(int(_t * frames_per_s), 15) if _jumping else falling_frame)
+	sprite.frame = (
+		sitting_frame
+		if drop.status != ZoneDrop.Status.FLYING
+		else (mini(int(_t * frames_per_s), 15) if _jumping else falling_frame)
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null and sprite != null else PackedStringArray(["The frog (ZoneDrop) and its sprite (AtlasSprite) are missing."])
+	return (
+		PackedStringArray()
+		if drop != null and sprite != null
+		else PackedStringArray(["The frog (ZoneDrop) and its sprite (AtlasSprite) are missing."])
+	)

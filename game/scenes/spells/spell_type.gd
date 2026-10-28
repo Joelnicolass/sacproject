@@ -8,7 +8,24 @@ extends BookEntry
 ## RAISE_DEAD: an own corpse stands up again (Animate Dead). GATHER_SOULS: a soul he would not walk to is brought to him
 ## (Soul Wind, Soul Mole). ESCAPE: away to an own building when the threat is high (Teleport). GUARD_SITE: an own creature is tied
 ## to a threatened building (Guardian). HEAL_AREA: health back to the own bodies around the target (Rainbow, Healing Aura).
-enum AiUse { NONE, SELF_GUARD, DISABLE_FOE, HIT_ONE, HIT_AREA, HEAL, SPEEDUP, CONVERT, DESECRATE, SELF_AREA, TAKE_FOE, RAISE_DEAD, GATHER_SOULS, ESCAPE, GUARD_SITE, HEAL_AREA }
+enum AiUse {
+	NONE,
+	SELF_GUARD,
+	DISABLE_FOE,
+	HIT_ONE,
+	HIT_AREA,
+	HEAL,
+	SPEEDUP,
+	CONVERT,
+	DESECRATE,
+	SELF_AREA,
+	TAKE_FOE,
+	RAISE_DEAD,
+	GATHER_SOULS,
+	ESCAPE,
+	GUARD_SITE,
+	HEAL_AREA
+}
 ## When the wizard of the AI may cast it: against a foe (ATTACK), for his own side (SUPPORT) or never on his own (NEVER).
 ## Saved as an integer: only append at the end.
 enum AiPhase { NEVER, ATTACK, SUPPORT }

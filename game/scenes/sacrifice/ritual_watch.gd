@@ -26,7 +26,12 @@ func step() -> void:
 		ritual.abort()
 		return
 	var drain := ritual.drain
-	if drain != null and ritual.type().collapses_target_altar and ritual.target_wizard != null and ritual.target_is_gone():
+	if (
+		drain != null
+		and ritual.type().collapses_target_altar
+		and ritual.target_wizard != null
+		and ritual.target_is_gone()
+	):
 		drain.collapse_altar()
 	var falling := drain != null and drain.altar_falling
 	if not falling and not ritual.site.is_standing():

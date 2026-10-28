@@ -45,7 +45,11 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if rig != null else PackedStringArray(["The Rig socket is missing (the map's LookRig)."])
+	return (
+		PackedStringArray()
+		if rig != null
+		else PackedStringArray(["The Rig socket is missing (the map's LookRig)."])
+	)
 
 
 func _process(_delta: float) -> void:
@@ -85,7 +89,10 @@ func _on_changed(area: Rect2) -> void:
 		_settled = settled
 		_map_dirty = true
 	elif field.live_count() > 0:
-		var rect := Rect2i(Vector2i((area.position / field.cell_m).round()), Vector2i((area.size / field.cell_m).round()))
+		var rect := Rect2i(
+			Vector2i((area.position / field.cell_m).round()),
+			Vector2i((area.size / field.cell_m).round())
+		)
 		_live_rect = _live_rect.merge(rect) if _live_rect.has_area() else rect
 		_live_dirty = true
 
@@ -117,12 +124,16 @@ func _upload_live(field: GroundField) -> void:
 	var rect := _live_rect
 	if rect.has_area():
 		var first := rect.position.y * field.size.x * 2
-		var rows := field.texels.slice(first, first + rect.size.y * field.size.x * 2).to_byte_array()
+		var rows := (
+			field.texels.slice(first, first + rect.size.y * field.size.x * 2).to_byte_array()
+		)
 		_strip.set_data(field.size.x, rect.size.y, false, Image.FORMAT_RGF, rows)
 		var resized := _live_image.get_size() != rect.size
 		if resized:
 			_live_image = Image.create_empty(rect.size.x, rect.size.y, false, Image.FORMAT_RGF)
-		_live_image.blit_rect(_strip, Rect2i(rect.position.x, 0, rect.size.x, rect.size.y), Vector2i.ZERO)
+		_live_image.blit_rect(
+			_strip, Rect2i(rect.position.x, 0, rect.size.x, rect.size.y), Vector2i.ZERO
+		)
 		if resized:
 			_live.set_image(_live_image)
 		else:
@@ -130,7 +141,9 @@ func _upload_live(field: GroundField) -> void:
 		uploaded_bytes += rect.get_area() * BYTES_PER_VERTEX
 	if rect != _shown_rect:
 		_shown_rect = rect
-		RenderingServer.global_shader_parameter_set(LIVE_RECT, Vector4(rect.position.x, rect.position.y, rect.size.x, rect.size.y))
+		RenderingServer.global_shader_parameter_set(
+			LIVE_RECT, Vector4(rect.position.x, rect.position.y, rect.size.x, rect.size.y)
+		)
 
 
 static func _settled_of(field: GroundField) -> Vector2i:

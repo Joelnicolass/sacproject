@@ -17,7 +17,6 @@ extends DamageOverTime
 ## physics tick and frees itself when DamageOverTime.step() says it is over. Server (or solo) only: BurnImpact makes it
 ## there; the look goes through FxBus.
 
-
 ## Mana drained per update.
 var mana_drain_per_tick := 0.0
 ## The fire puffed on the body every `fire_every_ticks` updates while it burns, whatever it takes (a creature only), at
@@ -36,13 +35,29 @@ var _mana: ManaPool
 ## `kind`, and `mana_drain` over the same frames. Null when the body is dead or has no Health. A building with no damage
 ## still gets its fire (it ends on its first update, see above). `attacker`: the creature that set it ablaze (null = nobody
 ## drains).
-static func ignite(target: Node3D, damage: float, lifetime: int, kind: StringName, from_slot: int, mana_drain := 0.0,
-		pierce := false, fx: ParticleType = null, attacker: Node = null) -> Burning:
-	if target == null or not is_instance_valid(target) or not ProjectileTargets.is_live_body(target):
+static func ignite(
+	target: Node3D,
+	damage: float,
+	lifetime: int,
+	kind: StringName,
+	from_slot: int,
+	mana_drain := 0.0,
+	pierce := false,
+	fx: ParticleType = null,
+	attacker: Node = null
+) -> Burning:
+	if (
+		target == null
+		or not is_instance_valid(target)
+		or not ProjectileTargets.is_live_body(target)
+	):
 		return null
 	var health := target.get_node_or_null("Health") as Health
 	var creature := target.is_in_group(UnitBody.GROUP) or target.is_in_group(WizardBody.GROUP)
-	if health == null or (damage <= 0.0 and not creature and not target.is_in_group(MapBuilding.STRUCTURE_GROUP)):
+	if (
+		health == null
+		or (damage <= 0.0 and not creature and not target.is_in_group(MapBuilding.STRUCTURE_GROUP))
+	):
 		return null
 	var frames := maxi(1, lifetime)
 	var fire := Burning.new()

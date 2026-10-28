@@ -49,7 +49,9 @@ func play(event: StringName) -> bool:
 	var anchor := anchor()
 	if cue == null or anchor == null or not anchor.is_inside_tree():
 		return false
-	return SoundBus.play_3d(cue, anchor.global_position + Vector3.UP * height_m, emitter_name(), event)
+	return SoundBus.play_3d(
+		cue, anchor.global_position + Vector3.UP * height_m, emitter_name(), event
+	)
 
 
 ## `damaged`, at most once every `damaged_every_s` of game time.

@@ -21,9 +21,17 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var body := target.pick(wizard, picked) if target != null else null
-	return aim_at_body(wizard, spell, point, funds, body if body != null and SpeedupEffect.duration_s(body, spell) >= 0.0 else null)
+	return aim_at_body(
+		wizard,
+		spell,
+		point,
+		funds,
+		body if body != null and SpeedupEffect.duration_s(body, spell) >= 0.0 else null
+	)
 
 
 func started(_wizard: WizardBody, spell: SpellType, aim: Aim, _frames: int) -> void:

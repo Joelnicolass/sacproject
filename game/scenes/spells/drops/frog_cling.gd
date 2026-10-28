@@ -41,4 +41,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["The frog (ZoneDrop) that clings is missing."])
+	return (
+		PackedStringArray()
+		if drop != null
+		else PackedStringArray(["The frog (ZoneDrop) that clings is missing."])
+	)

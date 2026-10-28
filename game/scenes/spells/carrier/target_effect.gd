@@ -39,7 +39,11 @@ func _ready() -> void:
 
 ## Metres around the carrier the reach covers (0: no reach).
 func radius_m() -> float:
-	return (reach.shape as SphereShape3D).radius if reach != null and reach.shape is SphereShape3D else 0.0
+	return (
+		(reach.shape as SphereShape3D).radius
+		if reach != null and reach.shape is SphereShape3D
+		else 0.0
+	)
 
 
 func _on_event(target: Node3D) -> void:
@@ -50,5 +54,7 @@ func _on_event(target: Node3D) -> void:
 	if reach == null:
 		effect.apply(carrier, target)
 		return
-	for body in SplashDamage.bodies_within(get_tree(), carrier.global_position, radius_m(), null, groups):
+	for body in SplashDamage.bodies_within(
+		get_tree(), carrier.global_position, radius_m(), null, groups
+	):
 		effect.apply(carrier, body)

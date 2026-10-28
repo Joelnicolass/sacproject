@@ -12,9 +12,15 @@ extends SceneTree
 ## alone. A mesh with blend shapes is skipped (it says so). `--dry` only lists what it would change.
 ## Not: the animated models (.glb): their import already has meshes/ensure_tangents=true.
 
-const DEFAULT_DIRS: PackedStringArray = ["res://scenes/props/meshes/", "res://scenes/bodies/meshes/"]
-const KEPT_FLAGS := Mesh.ARRAY_FLAG_USE_2D_VERTICES | Mesh.ARRAY_FLAG_USE_DYNAMIC_UPDATE | Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS \
-		| Mesh.ARRAY_FLAG_COMPRESS_ATTRIBUTES
+const DEFAULT_DIRS: PackedStringArray = [
+	"res://scenes/props/meshes/", "res://scenes/bodies/meshes/"
+]
+const KEPT_FLAGS := (
+	Mesh.ARRAY_FLAG_USE_2D_VERTICES
+	| Mesh.ARRAY_FLAG_USE_DYNAMIC_UPDATE
+	| Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
+	| Mesh.ARRAY_FLAG_COMPRESS_ATTRIBUTES
+)
 
 
 func _initialize() -> void:
@@ -34,7 +40,17 @@ func _initialize() -> void:
 			counts["failed"] += 1
 		elif result > 0:
 			counts["rewritten"] += 1
-	print("add_tangents: meshes=%d %s=%d failed=%d" % [counts["meshes"], "would_rewrite" if dry else "rewritten", counts["rewritten"], counts["failed"]])
+	print(
+		(
+			"add_tangents: meshes=%d %s=%d failed=%d"
+			% [
+				counts["meshes"],
+				"would_rewrite" if dry else "rewritten",
+				counts["rewritten"],
+				counts["failed"]
+			]
+		)
+	)
 	quit(1 if counts["failed"] > 0 else 0)
 
 
@@ -73,20 +89,34 @@ func _add_tangents(path: String, dry: bool) -> int:
 	for i in mesh.get_surface_count():
 		var arrays := mesh.surface_get_arrays(i)
 		if arrays.is_empty():
-			printerr("add_tangents: %s surface %d has no readable data (run without --headless)" % [path, i])
+			printerr(
+				(
+					"add_tangents: %s surface %d has no readable data (run without --headless)"
+					% [path, i]
+				)
+			)
 			return -1
 		if i in missing:
 			var tool := SurfaceTool.new()
 			tool.create_from(mesh, i)
 			tool.generate_tangents()
 			arrays = tool.commit_to_arrays()
-		rebuilt.append({"arrays": arrays, "primitive": mesh.surface_get_primitive_type(i), "material": mesh.surface_get_material(i),
-				"name": mesh.surface_get_name(i), "flags": mesh.surface_get_format(i) & KEPT_FLAGS})
+		rebuilt.append(
+			{
+				"arrays": arrays,
+				"primitive": mesh.surface_get_primitive_type(i),
+				"material": mesh.surface_get_material(i),
+				"name": mesh.surface_get_name(i),
+				"flags": mesh.surface_get_format(i) & KEPT_FLAGS
+			}
+		)
 	var box := mesh.custom_aabb
 	mesh.clear_surfaces()
 	for i in rebuilt.size():
 		var surface := rebuilt[i]
-		mesh.add_surface_from_arrays(surface["primitive"], surface["arrays"], [], {}, surface["flags"])
+		mesh.add_surface_from_arrays(
+			surface["primitive"], surface["arrays"], [], {}, surface["flags"]
+		)
 		mesh.surface_set_material(i, surface["material"])
 		mesh.surface_set_name(i, surface["name"])
 	mesh.custom_aabb = box

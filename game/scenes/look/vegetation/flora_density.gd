@@ -42,7 +42,11 @@ static func from_layers(layers: Array) -> FloraDensity:
 static func gather(scope: Node) -> FloraDensity:
 	var layers := []
 	for node in scope.get_tree().get_nodes_in_group(FloraLayer.GROUP):
-		if node.is_inside_tree() and not node.is_queued_for_deletion() and scope.is_ancestor_of(node):
+		if (
+			node.is_inside_tree()
+			and not node.is_queued_for_deletion()
+			and scope.is_ancestor_of(node)
+		):
 			layers.append(node)
 	return from_layers(layers)
 
@@ -76,7 +80,14 @@ func cell_m(index: int) -> float:
 
 ## Plants of entry `index` in the cell (tx, tz); 0 outside the image.
 func count_at(index: int, tx: int, tz: int) -> int:
-	if index < 0 or index >= _bytes.size() or tx < 0 or tz < 0 or tx >= _width[index] or tz >= _height[index]:
+	if (
+		index < 0
+		or index >= _bytes.size()
+		or tx < 0
+		or tz < 0
+		or tx >= _width[index]
+		or tz >= _height[index]
+	):
 		return 0
 	return roundi(_bytes[index][tz * _width[index] + tx] * _max[index] / 255.0)
 

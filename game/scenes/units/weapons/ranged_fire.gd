@@ -10,7 +10,9 @@ const FALLING_ACCELERATION := {"dkba": 10.0}
 const DEFAULT_FALLING := 30.0
 ## Shots fired on a ballistic arc: earthfling, flame minion, fallen, sylph, ranger, mutant, abomination, bombard,
 ## flurry, flummox. The rest fly straight.
-const BALLISTIC: PackedStringArray = ["ekba", "fkba", "dkba", "aaba", "wobf", "babt", "tugt", "cfba", "caba", "crba"]
+const BALLISTIC: PackedStringArray = [
+	"ekba", "fkba", "dkba", "aaba", "wobf", "babt", "tugt", "cfba", "caba", "crba"
+]
 
 
 ## A body a shot may be loosed at: targetable, with Health, alive.
@@ -27,7 +29,11 @@ static func mana_cost(weapon: RangedWeapon) -> float:
 
 
 static func mana_left(weapon: RangedWeapon) -> float:
-	return weapon.weapons.mana.current if weapon.weapons != null and weapon.weapons.mana != null else 0.0
+	return (
+		weapon.weapons.mana.current
+		if weapon.weapons != null and weapon.weapons.mana != null
+		else 0.0
+	)
 
 
 ## Off cooldown and with the mana of a whole shot.
@@ -63,9 +69,13 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 	var origin := weapon.shot_origin()
 	var predicted := weapon.predicted(target)
 	var offset := predicted - origin
-	var direction: Vector3 = offset.normalized() if offset.length_squared() > 0.000001 else body.facing_flat()
+	var direction: Vector3 = (
+		offset.normalized() if offset.length_squared() > 0.000001 else body.facing_flat()
+	)
 	var ballistic := BALLISTIC.has(attack.tag)
-	var gravity := float(FALLING_ACCELERATION.get(attack.tag, DEFAULT_FALLING)) if ballistic else 0.0
+	var gravity := (
+		float(FALLING_ACCELERATION.get(attack.tag, DEFAULT_FALLING)) if ballistic else 0.0
+	)
 	if ballistic:
 		direction.y += 0.5 * gravity * offset.length() / (attack.speed_m_s * attack.speed_m_s)
 	direction = ShotAim.scatter(direction, weapon.accuracy(), weapon.rng)
@@ -75,8 +85,12 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 	var data := {
 		"tag": attack.tag,
 		"look": FxWire.id_of(look.source),
-		"x": origin.x, "y": origin.y, "z": origin.z,
-		"vx": velocity.x, "vy": velocity.y, "vz": velocity.z,
+		"x": origin.x,
+		"y": origin.y,
+		"z": origin.z,
+		"vx": velocity.x,
+		"vy": velocity.y,
+		"vz": velocity.z,
 		"damage": float(attack.damage) * maxf(0.0, body.attack_factor),
 		"slot": body.owner_slot,
 		"gravity": gravity,
@@ -84,7 +98,9 @@ static func fire(weapon: RangedWeapon, target: Node3D) -> void:
 		"target": str(target.get_path()),
 		"shooter": str(body.get_path()),
 		# The predicted point without accuracy, and the accuracy, for the strikes that aim again.
-		"aim_x": predicted.x, "aim_y": predicted.y, "aim_z": predicted.z,
+		"aim_x": predicted.x,
+		"aim_y": predicted.y,
+		"aim_z": predicted.z,
 		"accuracy": weapon.accuracy(),
 	}
 	if look.strike != null:

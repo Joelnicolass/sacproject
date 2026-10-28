@@ -38,7 +38,14 @@ func refresh() -> void:
 		child.queue_free()
 	for room: Dictionary in rooms:
 		var row := room_row_scene.instantiate() as Button
-		row.text = tr("UI_ONLINE_ROOM_ROW") % [str(room.get("name", "")), int(room.get("players", 0)), int(room.get("max_players", 0))]
+		row.text = (
+			tr("UI_ONLINE_ROOM_ROW")
+			% [
+				str(room.get("name", "")),
+				int(room.get("players", 0)),
+				int(room.get("max_players", 0))
+			]
+		)
 		row.pressed.connect(_join.bind(str(room.get("code", ""))))
 		_rows.add_child(row)
 	%NoRooms.visible = rooms.is_empty()

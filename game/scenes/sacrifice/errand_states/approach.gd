@@ -23,7 +23,10 @@ func _desecrate(body: DoctorBody) -> void:
 		body.kill()
 		return
 	var creature := errand.creature
-	if _flat_distance(body, creature.global_position) >= SacrificeFacts.of_rules(body.rules).pickup_m:
+	if (
+		_flat_distance(body, creature.global_position)
+		>= SacrificeFacts.of_rules(body.rules).pickup_m
+	):
 		body.motor.walk_to(creature.global_position)
 		return
 	var captive := Captive.of(creature)

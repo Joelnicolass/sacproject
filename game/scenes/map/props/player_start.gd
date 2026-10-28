@@ -55,7 +55,15 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("The Altar child is missing.")
 	for other in _other_starts():
 		if other.slot == slot:
-			warnings.append("Slot %d is already used by another start (%s). Every start needs a different number." % [slot, other.name])
+			(
+				warnings
+				. append(
+					(
+						"Slot %d is already used by another start (%s). Every start needs a different number."
+						% [slot, other.name]
+					)
+				)
+			)
 	return warnings
 
 

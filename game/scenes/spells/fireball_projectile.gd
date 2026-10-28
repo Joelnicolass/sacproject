@@ -71,7 +71,10 @@ func _physics_process(_delta: float) -> void:
 	var on_ground := false
 	var ground := _ground_height(global_position)
 	if is_finite(ground):
-		var flat := Vector2(target_center.x - global_position.x, target_center.z - global_position.z).length()
+		var flat := (
+			Vector2(target_center.x - global_position.x, target_center.z - global_position.z)
+			. length()
+		)
 		var flying_height := minf(FLYING_HEIGHT, 0.75 * flat)
 		if next.y < ground + flying_height:
 			var lifted := velocity
@@ -80,9 +83,13 @@ func _physics_process(_delta: float) -> void:
 			on_ground = true
 	global_position = next
 	var flat_left := Vector2(target_center.x - next.x, target_center.z - next.z).length()
-	var close := (target_center - next).length() < ARRIVE_DISTANCE \
+	var close := (
+		(target_center - next).length() < ARRIVE_DISTANCE
 		or (on_ground and target_center.y < next.y and flat_left < ARRIVE_DISTANCE)
-	var hit := ProjectileTargets.pick_body(self, _query, global_position, _caster(), from_slot, true)
+	)
+	var hit := ProjectileTargets.pick_body(
+		self, _query, global_position, _caster(), from_slot, true
+	)
 	if hit:
 		_explode(hit)
 	elif global_position.y < _ground_height(global_position):
@@ -125,7 +132,16 @@ func _explode(direct: Node3D) -> void:
 		SplashDamage.hurt(direct, damage, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
 	else:
 		direct = null
-	SplashDamage.deal(get_tree(), center, damage, damage_range, direct, from_slot, Health.SPLASH_SPELL, Health.IGNITE)
+	SplashDamage.deal(
+		get_tree(),
+		center,
+		damage,
+		damage_range,
+		direct,
+		from_slot,
+		Health.SPLASH_SPELL,
+		Health.IGNITE
+	)
 	# Its own explosion: xplo + exp2 + frck + smok.
 	for type in explosion:
 		FxBus.broadcast(type, center)

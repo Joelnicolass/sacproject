@@ -73,7 +73,11 @@ func _replan(areas: Array[Rect2], planters: Array[MeshPlanter], tree: SceneTree)
 
 ## True when one of `areas` reaches the patch's circle (both in the ground's x, z).
 func _touches(patch: VegetationPatch, areas: Array[Rect2]) -> bool:
-	var local := _shape.to_local(patch.global_position) if is_instance_valid(_shape) else patch.global_position
+	var local := (
+		_shape.to_local(patch.global_position)
+		if is_instance_valid(_shape)
+		else patch.global_position
+	)
 	var center := Vector2(local.x, local.z)
 	for area in areas:
 		if center.distance_to(center.clamp(area.position, area.end)) <= patch.radius_m:

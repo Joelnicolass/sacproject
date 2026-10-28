@@ -23,9 +23,18 @@ var next_tick := 0
 
 ## The swing the target calls for: the downward one when it lies below, else a random one of the other two the model has; -1 when
 ## the model has none (the fallback swing plays). The only draw is the pick between the two.
-static func pick(facts: ClipFacts, body: Node3D, target: Node3D, height: float, downward_threshold: float, rng: RandomNumberGenerator) -> int:
+static func pick(
+	facts: ClipFacts,
+	body: Node3D,
+	target: Node3D,
+	height: float,
+	downward_threshold: float,
+	rng: RandomNumberGenerator
+) -> int:
 	var own_mid := body.global_position.y + height * 0.5
-	var foe_mid := target.global_position.y + float(MeleeRules.profile_of(target).get("height", 1.8)) * 0.5
+	var foe_mid := (
+		target.global_position.y + float(MeleeRules.profile_of(target).get("height", 1.8)) * 0.5
+	)
 	if foe_mid + downward_threshold < own_mid and facts.frames(MeleeRules.SWING_ROLES[2]) > 0:
 		return 2
 	var choices: Array[int] = []

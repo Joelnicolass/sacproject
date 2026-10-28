@@ -61,7 +61,14 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 			continue
 		_log_touch(shot, body, at, distance, radius, "splash")
 		var splash_states := _before(body, false, shot)
-		_SPLASH.hurt(body, amount * maxf(0.0, 1.0 - distance / radius), from_slot, _HEALTH.SPLASH_RANGED, shot.mods, shooter)
+		_SPLASH.hurt(
+			body,
+			amount * maxf(0.0, 1.0 - distance / radius),
+			from_slot,
+			_HEALTH.SPLASH_RANGED,
+			shot.mods,
+			shooter
+		)
 		_after(body, false, splash_states, shot)
 	for touch in _touches:
 		touch.settled(shot)
@@ -111,16 +118,49 @@ func _log_start(shot: RangedShot, at: Vector3) -> void:
 	var velocity := shot.velocity
 	var direction := velocity.normalized()
 	var target := _intended(shot)
-	print("wave %s tick 1 at (%.3f, %.3f, %.3f) dir (%.5f, %.5f, %.5f) step %.4f final radius %.2f in %.4f ticks at %s (frame %d)" % [
-		shot.name, at.x, at.y, at.z, direction.x, direction.y, direction.z, velocity.length() / MatchClock.TICKS_PER_SECOND_F, final_radius,
-		final_radius / maxf(radius_at(1, shot), 0.000001), str(target.name) if target else "nobody", MatchClock.now()])
+	print(
+		(
+			"wave %s tick 1 at (%.3f, %.3f, %.3f) dir (%.5f, %.5f, %.5f) step %.4f final radius %.2f in %.4f ticks at %s (frame %d)"
+			% [
+				shot.name,
+				at.x,
+				at.y,
+				at.z,
+				direction.x,
+				direction.y,
+				direction.z,
+				velocity.length() / MatchClock.TICKS_PER_SECOND_F,
+				final_radius,
+				final_radius / maxf(radius_at(1, shot), 0.000001),
+				str(target.name) if target else "nobody",
+				MatchClock.now()
+			]
+		)
+	)
 
 
-func _log_touch(shot: RangedShot, body: Node3D, at: Vector3, distance: float, radius: float, what: String) -> void:
+func _log_touch(
+	shot: RangedShot, body: Node3D, at: Vector3, distance: float, radius: float, what: String
+) -> void:
 	if not DebugLog.on(&"touches"):
 		return
-	print("wave %s touches %s tick %d at (%.3f, %.3f, %.3f) at %.3f m radius %.3f %s: %s" % [shot.name, str(body.name),
-		ticks, at.x, at.y, at.z, distance, radius, _box_text(body), what])
+	print(
+		(
+			"wave %s touches %s tick %d at (%.3f, %.3f, %.3f) at %.3f m radius %.3f %s: %s"
+			% [
+				shot.name,
+				str(body.name),
+				ticks,
+				at.x,
+				at.y,
+				at.z,
+				distance,
+				radius,
+				_box_text(body),
+				what
+			]
+		)
+	)
 
 
 ## The hit box SplashDamage measures against, for the log (a capsule, cylinder or box under Collision, axis-aligned).
@@ -136,7 +176,10 @@ static func _box_text(body: Node3D) -> String:
 		var cylinder := col.shape as CylinderShape3D
 		half = Vector3(cylinder.radius, cylinder.height * 0.5, cylinder.radius)
 	var center := col.global_position
-	return "box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f)" % [center.x, center.y, center.z, half.x, half.y, half.z]
+	return (
+		"box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f)"
+		% [center.x, center.y, center.z, half.x, half.y, half.z]
+	)
 
 
 func _exit_tree() -> void:

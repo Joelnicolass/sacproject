@@ -38,14 +38,22 @@ func fire(_target_pos: Vector3, _target: Node3D) -> bool:
 ## Every peer: the shell grows when the body enters ROCK_FORM and shrinks when it leaves. Never where meshes are not drawn (dedicated).
 func show_rock_form(on: bool) -> void:
 	if DebugLog.on(&"effects"):
-		print("rockform %s %s (tick %d)" % ["abierto" if on else "cerrado", AbilityEffect.who(user), MatchClock.now()])
+		print(
+			(
+				"rockform %s %s (tick %d)"
+				% ["abierto" if on else "cerrado", AbilityEffect.who(user), MatchClock.now()]
+			)
+		)
 	if on and _shell == null and shell_scene != null and BodyLook.loads_meshes():
 		_shell = shell_scene.instantiate() as Node3D
 		user.add_child(_shell)
 	if _shell == null:
 		return
 	var facts := BodyFacts.of_body(user)
-	var full := rock_scale_factor * Vector3(2.0 * facts.reach_m, facts.height_m, 2.0 * facts.reach_m).length()
+	var full := (
+		rock_scale_factor
+		* Vector3(2.0 * facts.reach_m, facts.height_m, 2.0 * facts.reach_m).length()
+	)
 	_shell.position = facts.local(shell_socket)
 	if _shell_tween:
 		_shell_tween.kill()

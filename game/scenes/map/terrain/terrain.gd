@@ -40,7 +40,11 @@ var _field := GroundField.new()
 
 ## The ground of the map `node` is in; null when it is not in the tree or no ground is loaded.
 static func of(node: Node) -> Terrain:
-	var found := node.get_tree().get_first_node_in_group(GROUP) as Terrain if node != null and node.is_inside_tree() else null
+	var found := (
+		node.get_tree().get_first_node_in_group(GROUP) as Terrain
+		if node != null and node.is_inside_tree()
+		else null
+	)
 	return found if found != null and found.is_loaded() else null
 
 
@@ -59,7 +63,15 @@ func _ready() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var wired := heights != null and ground_roles != null and mesh != null and live != null
-	return PackedStringArray() if wired else PackedStringArray(["`heights` (heights.png), `ground_roles` (ground_roles.png), `mesh` (the Mesh child) or `live` (the Live child) is missing."])
+	return (
+		PackedStringArray()
+		if wired
+		else PackedStringArray(
+			[
+				"`heights` (heights.png), `ground_roles` (ground_roles.png), `mesh` (the Mesh child) or `live` (the Live child) is missing."
+			]
+		)
+	)
 
 
 func is_loaded() -> bool:
@@ -73,7 +85,9 @@ func height_at(x: float, z: float) -> float:
 
 ## True when a land triangle lies under (x, z). Holes and the map rim have none.
 func is_on_ground(x: float, z: float) -> bool:
-	return TerrainRules.triangle_in(x, z, index.ground, index.cells, _field.texels, index.corners) >= 0
+	return (
+		TerrainRules.triangle_in(x, z, index.ground, index.cells, _field.texels, index.corners) >= 0
+	)
 
 
 ## The map's footprint on the ground (x, z in metres; the map lives at x, z >= 0).
@@ -108,7 +122,15 @@ func field() -> GroundField:
 
 
 ## Every peer, from its own clock: stamp `key` shows its shift at `at_s` s at the next physics tick, in place of its last one.
-func stamp(key: StringName, profile: StampProfile, center: Vector2, reach_m: float, peak_m: float, at_s: float, pattern := PackedFloat32Array()) -> void:
+func stamp(
+	key: StringName,
+	profile: StampProfile,
+	center: Vector2,
+	reach_m: float,
+	peak_m: float,
+	at_s: float,
+	pattern := PackedFloat32Array()
+) -> void:
 	if live != null:
 		live.put(String(key), profile, center, reach_m, peak_m, at_s, pattern)
 
@@ -121,9 +143,18 @@ func unstamp(key: StringName) -> void:
 
 ## Server (or alone): what the stamp reaches at its end stays (never under a base that pins its ground), its live shift `key` goes
 ## in the same step; the clients get it.
-func keep_stamp(key: StringName, profile: StampProfile, center: Vector2, reach_m: float, peak_m: float, pattern := PackedFloat32Array()) -> void:
+func keep_stamp(
+	key: StringName,
+	profile: StampProfile,
+	center: Vector2,
+	reach_m: float,
+	peak_m: float,
+	pattern := PackedFloat32Array()
+) -> void:
 	var rect := TerrainGrid.vertex_rect(center, reach_m)
-	var delta := StampRules.shift(profile, center, reach_m, peak_m, profile.duration_s() - 1e-4, rect, pattern)
+	var delta := StampRules.shift(
+		profile, center, reach_m, peak_m, profile.duration_s() - 1e-4, rect, pattern
+	)
 	PinRules.apply(delta, rect, live.pins if live != null else PackedFloat32Array())
 	if _may_edit("keep_stamp") and delta.size() == rect.get_area():
 		keep(_field.rev + 1, String(key), rect, delta)

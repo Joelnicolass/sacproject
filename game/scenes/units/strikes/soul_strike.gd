@@ -32,7 +32,19 @@ func _strike_tick(age: int) -> void:
 	soul.burst()
 	if beam != null:
 		FxBus.broadcast_beam(beam, origin, point, null)
-	_log("blow %s %s → soul at (%.1f, %.1f, %.1f) at %.1f m (tick %d)" % [tag, shooter_name(), point.x, point.y, point.z,
-			origin.distance_to(point), MatchClock.now()])
+	_log(
+		(
+			"blow %s %s → soul at (%.1f, %.1f, %.1f) at %.1f m (tick %d)"
+			% [
+				tag,
+				shooter_name(),
+				point.x,
+				point.y,
+				point.z,
+				origin.distance_to(point),
+				MatchClock.now()
+			]
+		)
+	)
 	_land(null, point)
 	finish()

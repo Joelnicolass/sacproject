@@ -44,8 +44,13 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _ready() -> void:
-	var on := not Engine.is_editor_hint() and not LookRig.is_presentationless() \
-			and tower != null and reveal != null and spot != null
+	var on := (
+		not Engine.is_editor_hint()
+		and not LookRig.is_presentationless()
+		and tower != null
+		and reveal != null
+		and spot != null
+	)
 	set_process(on)
 	if on:
 		tower.build_progress_changed.connect(_on_progress)
@@ -80,7 +85,9 @@ func _on_tower_leaving() -> void:
 	# This node leaves with the tower: the check runs on the script, a frame later, when a despawn and a scene going away
 	# differ. The home goes by id: a scene going away frees it before the call.
 	var home := tower.get_parent()
-	Callable(BuildCues, &"_play_if_alive").call_deferred(cut_fx, _cut_at, home.get_instance_id() if home != null else 0)
+	Callable(BuildCues, &"_play_if_alive").call_deferred(
+		cut_fx, _cut_at, home.get_instance_id() if home != null else 0
+	)
 
 
 ## The spot of the base, raised to the cut line of the rise now.

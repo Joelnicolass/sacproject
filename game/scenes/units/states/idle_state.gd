@@ -34,5 +34,9 @@ func on_clip_looped(role: String) -> bool:
 	if role != "idle" and role != "gesture":
 		return false
 	_loops += 1
-	_gesturing = role == "idle" and posmod(hash(String(body.name)) + _loops, GESTURE_EVERY) == 0 and body.has_clip("gesture")
+	_gesturing = (
+		role == "idle"
+		and posmod(hash(String(body.name)) + _loops, GESTURE_EVERY) == 0
+		and body.has_clip("gesture")
+	)
 	return true

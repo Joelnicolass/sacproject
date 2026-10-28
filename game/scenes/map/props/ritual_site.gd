@@ -50,7 +50,12 @@ func center() -> Vector3:
 func is_standing() -> bool:
 	if altar != null:
 		return altar.is_standing()
-	return building != null and is_instance_valid(building) and not building.is_destroyed() and not building.is_queued_for_deletion()
+	return (
+		building != null
+		and is_instance_valid(building)
+		and not building.is_destroyed()
+		and not building.is_queued_for_deletion()
+	)
 
 
 func is_free() -> bool:

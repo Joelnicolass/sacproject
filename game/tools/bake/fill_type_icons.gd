@@ -18,7 +18,12 @@ const CATALOG := "res://data/catalog/"
 func _init() -> void:
 	var force := OS.get_cmdline_user_args().has("--force")
 	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(ICONS_DIR)):
-		print("FILL_TYPE_ICONS: %s is missing (the icons come with the project; run tools/import/import_ui.py if you have the original). Nothing written." % ICONS_DIR)
+		print(
+			(
+				"FILL_TYPE_ICONS: %s is missing (the icons come with the project; run tools/import/import_ui.py if you have the original). Nothing written."
+				% ICONS_DIR
+			)
+		)
 		quit(1)
 		return
 	var filled := 0
@@ -43,7 +48,9 @@ func _init() -> void:
 				filled += 1
 			else:
 				push_error("fill_type_icons: cannot save %s" % path)
-	print("FILL_TYPE_ICONS: %d filled, %d kept, %d without a picture" % [filled, kept, without.size()])
+	print(
+		"FILL_TYPE_ICONS: %d filled, %d kept, %d without a picture" % [filled, kept, without.size()]
+	)
 	for entry in without:
 		print("  no icon: ", entry)
 	quit(0)

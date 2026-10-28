@@ -38,7 +38,9 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	var home := zone.points[0]
-	var axis := TornadoRules.axis(home + Vector3.UP * TornadoRules.COLUMN_M, zone.global_position, drift.size, winds.phases())
+	var axis := TornadoRules.axis(
+		home + Vector3.UP * TornadoRules.COLUMN_M, zone.global_position, drift.size, winds.phases()
+	)
 	var local := PackedVector3Array()
 	for point in axis:
 		local.append(point - global_position)
@@ -53,8 +55,14 @@ func _physics_process(_delta: float) -> void:
 		parts[i].visible = drift.size > 0.0
 	if dust != null:
 		var foot := axis[6].y - global_position.y
-		dust.set_rate(MatchClock.TICKS_PER_SECOND_F * clampf(0.4 * (dust_height_m - foot), 0.0, dust_per_tick))
+		dust.set_rate(
+			MatchClock.TICKS_PER_SECOND_F * clampf(0.4 * (dust_height_m - foot), 0.0, dust_per_tick)
+		)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and drift != null and winds != null else PackedStringArray(["The zone, the drift and the winds are missing."])
+	return (
+		PackedStringArray()
+		if zone != null and drift != null and winds != null
+		else PackedStringArray(["The zone, the drift and the winds are missing."])
+	)

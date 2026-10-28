@@ -6,6 +6,7 @@ extends RefCounted
 ## place, or it shakes against the body. Without interpolation both places are the same, so nothing changes.
 ## Presentation only, only from `_process`. Never use it in `_physics_process`: the simulation reads the pose of the tick (global_transform).
 
+
 ## The drawn position of `node`.
 static func origin(node: Node3D) -> Vector3:
 	return node.get_global_transform_interpolated().origin
@@ -14,7 +15,10 @@ static func origin(node: Node3D) -> Vector3:
 ## The drawn place of a point of the world that moves with `body` (a socket, the center of its box): the same point, carried from the
 ## body's pose of the tick to its drawn pose.
 static func point(body: Node3D, world_point: Vector3) -> Vector3:
-	return body.get_global_transform_interpolated() * (body.global_transform.affine_inverse() * world_point)
+	return (
+		body.get_global_transform_interpolated()
+		* (body.global_transform.affine_inverse() * world_point)
+	)
 
 
 ## The box of `body` (BodyNudge.box) moved to where the body is drawn.

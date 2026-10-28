@@ -19,7 +19,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## Funds first, then the carrier (valid, in range), then the ward: missing = NOT_IMPLEMENTED, already on = BAD_TARGET (nothing is spent).
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = wizard.global_position
 	aim.target = wizard

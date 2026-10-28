@@ -102,7 +102,12 @@ func start_cooldown(force: bool) -> void:
 
 func log_spent(before: float) -> void:
 	if DebugLog.on(&"ability"):
-		print("ability %s mana %d->%d cooldown %d ticks" % [ability.display_name, roundi(before), roundi(mana_left()), cooldown_ticks_left()])
+		print(
+			(
+				"ability %s mana %d->%d cooldown %d ticks"
+				% [ability.display_name, roundi(before), roundi(mana_left()), cooldown_ticks_left()]
+			)
+		)
 
 
 ## The UsingAbility affliction: while it is on, the body is held for the preparation.

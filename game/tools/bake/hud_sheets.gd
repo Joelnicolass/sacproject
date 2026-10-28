@@ -25,12 +25,29 @@ const SPACE_WIDTH := 6
 func _initialize() -> void:
 	var folder := ProjectSettings.globalize_path(DIR)
 	if not FileAccess.file_exists(folder + "fram.png"):
-		push_warning("hud_sheets: %s has no fram.png; nothing written (the sheets in git are used as they are)." % folder)
+		push_warning(
+			(
+				"hud_sheets: %s has no fram.png; nothing written (the sheets in git are used as they are)."
+				% folder
+			)
+		)
 		quit(0)
 		return
 	var fram := _load(folder, "fram")
-	_save(_vertical_pair(fram.get_region(Rect2i(64, 0, 31, 31)), fram.get_region(Rect2i(64, 1, 31, 30))), folder, "stats_frame")
-	_save(_vertical_pair(fram.get_region(Rect2i(64, 0, 31, 31)), fram.get_region(Rect2i(64, 1, 31, 30))), folder, "soul_frame")
+	_save(
+		_vertical_pair(
+			fram.get_region(Rect2i(64, 0, 31, 31)), fram.get_region(Rect2i(64, 1, 31, 30))
+		),
+		folder,
+		"stats_frame"
+	)
+	_save(
+		_vertical_pair(
+			fram.get_region(Rect2i(64, 0, 31, 31)), fram.get_region(Rect2i(64, 1, 31, 30))
+		),
+		folder,
+		"soul_frame"
+	)
 	_save(_roster(fram.get_region(Rect2i(0, 0, 64, 128))), folder, "roster_frame")
 	_save(_quarters(fram.get_region(Rect2i(64, 64, 64, 64))), folder, "minimap_frame")
 	var cap := fram.get_region(Rect2i(80, 32, 48, 16))
@@ -62,7 +79,9 @@ func _save(image: Image, folder: String, sheet: String) -> void:
 
 ## `top` over `bottom` flipped upside down: the stats frame (the art is symmetric top to bottom).
 func _vertical_pair(top: Image, bottom: Image) -> Image:
-	var out := Image.create_empty(top.get_width(), top.get_height() + bottom.get_height(), false, Image.FORMAT_RGBA8)
+	var out := Image.create_empty(
+		top.get_width(), top.get_height() + bottom.get_height(), false, Image.FORMAT_RGBA8
+	)
 	bottom.flip_y()
 	out.blit_rect(top, Rect2i(Vector2i.ZERO, top.get_size()), Vector2i.ZERO)
 	out.blit_rect(bottom, Rect2i(Vector2i.ZERO, bottom.get_size()), Vector2i(0, top.get_height()))
@@ -90,7 +109,11 @@ func _quarters(quarter: Image) -> Image:
 			piece.flip_x()
 		if corner >= 2:
 			piece.flip_y()
-		out.blit_rect(piece, Rect2i(Vector2i.ZERO, quarter.get_size()), Vector2i((corner % 2) * side, (corner / 2) * side))
+		out.blit_rect(
+			piece,
+			Rect2i(Vector2i.ZERO, quarter.get_size()),
+			Vector2i((corner % 2) * side, (corner / 2) * side)
+		)
 	return out
 
 
@@ -101,10 +124,14 @@ func _stack(folder: String, sheet: String, top_rows: int, bottom_rows: int) -> I
 	var mid := _load(folder, sheet + "_mid")
 	var bottom := _rows(_load(folder, sheet + "_bottom"), bottom_rows)
 	var width := mid.get_width()
-	var out := Image.create_empty(width, top_rows + mid.get_height() + bottom_rows, false, Image.FORMAT_RGBA8)
+	var out := Image.create_empty(
+		width, top_rows + mid.get_height() + bottom_rows, false, Image.FORMAT_RGBA8
+	)
 	out.blit_rect(top, Rect2i(Vector2i.ZERO, top.get_size()), Vector2i.ZERO)
 	out.blit_rect(mid, Rect2i(Vector2i.ZERO, mid.get_size()), Vector2i(0, top_rows))
-	out.blit_rect(bottom, Rect2i(Vector2i.ZERO, bottom.get_size()), Vector2i(0, top_rows + mid.get_height()))
+	out.blit_rect(
+		bottom, Rect2i(Vector2i.ZERO, bottom.get_size()), Vector2i(0, top_rows + mid.get_height())
+	)
 	return out
 
 
@@ -120,14 +147,35 @@ func _rows(source: Image, rows: int) -> Image:
 func _write_font(sheet: Image, path: String) -> void:
 	var cell := sheet.get_width() / GLYPH_GRID
 	var lines := PackedStringArray()
-	lines.append("info face=\"fn10\" size=%d bold=0 italic=0 charset=\"\" unicode=1 stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=0,0" % LINE_HEIGHT)
-	lines.append("common lineHeight=%d base=%d scaleW=%d scaleH=%d pages=1 packed=0" % [LINE_HEIGHT, LINE_HEIGHT, sheet.get_width(), sheet.get_height()])
-	lines.append("page id=0 file=\"fn10.png\"")
+	(
+		lines
+		. append(
+			(
+				'info face="fn10" size=%d bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=0,0'
+				% LINE_HEIGHT
+			)
+		)
+	)
+	lines.append(
+		(
+			"common lineHeight=%d base=%d scaleW=%d scaleH=%d pages=1 packed=0"
+			% [LINE_HEIGHT, LINE_HEIGHT, sheet.get_width(), sheet.get_height()]
+		)
+	)
+	lines.append('page id=0 file="fn10.png"')
 	lines.append("chars count=95")
 	for code in range(32, 127):
 		var origin := Vector2i((code % GLYPH_GRID) * cell, (code / GLYPH_GRID) * cell)
 		var width := SPACE_WIDTH if code == 32 else _ink_width(sheet, origin, cell)
-		lines.append("char id=%d x=%d y=%d width=%d height=%d xoffset=0 yoffset=0 xadvance=%d page=0 chnl=15" % [code, origin.x, origin.y, width, cell, width + 1])
+		(
+			lines
+			. append(
+				(
+					"char id=%d x=%d y=%d width=%d height=%d xoffset=0 yoffset=0 xadvance=%d page=0 chnl=15"
+					% [code, origin.x, origin.y, width, cell, width + 1]
+				)
+			)
+		)
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		push_error("hud_sheets: cannot write %s" % path)

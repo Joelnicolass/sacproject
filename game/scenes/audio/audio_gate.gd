@@ -17,7 +17,11 @@ static var _cached := -1
 static func is_open() -> bool:
 	if _cached < 0:
 		var args := OS.get_cmdline_user_args() + OS.get_cmdline_args()
-		_cached = 1 if decide(args, DisplayServer.get_name() == "headless", MpBoot.is_dedicated_process()) else 0
+		_cached = (
+			1
+			if decide(args, DisplayServer.get_name() == "headless", MpBoot.is_dedicated_process())
+			else 0
+		)
 	return _cached == 1
 
 

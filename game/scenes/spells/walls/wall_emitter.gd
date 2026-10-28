@@ -37,7 +37,19 @@ func _process(_delta: float) -> void:
 		var end := wall.left if where == Where.LEFT_END else wall.right
 		box = Vector3(0.5 * front_m, 0.0, across)
 		at = Vector3(end, 0.0, 0.0)
-	emitter.position = at + Vector3(0.0, wall.ground_y(wall.center.x + wall.direction.x * at.x, wall.center.z + wall.direction.y * at.x) - wall.center.y, 0.0)
+	emitter.position = (
+		at
+		+ Vector3(
+			0.0,
+			(
+				wall.ground_y(
+					wall.center.x + wall.direction.x * at.x, wall.center.z + wall.direction.y * at.x
+				)
+				- wall.center.y
+			),
+			0.0
+		)
+	)
 	emitter.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
 	emitter.emission_box_extents = box
 	emitter.set_rate(rate * (wall.right - wall.left) if where == Where.ALONG else rate)

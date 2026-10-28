@@ -163,7 +163,9 @@ func _show(on: bool) -> void:
 		return
 	var full := (BodyNudge.box(body).size if body else Vector3(0.6, 1.8, 0.6)) * look_scale
 	if on:
-		look.position = body.to_local(BodyNudge.center(body)) if body else BodyFacts.fallback().center
+		look.position = (
+			body.to_local(BodyNudge.center(body)) if body else BodyFacts.fallback().center
+		)
 		look.scale = Vector3.ONE * 0.01
 		look.visible = true
 	_tween = look.create_tween()

@@ -38,7 +38,11 @@ static func can_stand(wall: SpellWall, t: float) -> bool:
 		return false
 	for node in wall.get_tree().get_nodes_in_group(MapBuilding.STRUCTURE_GROUP):
 		var building := node as Node3D
-		if building != null and building.is_inside_tree() and SplashDamage.box_distance(building, at) <= 0.0:
+		if (
+			building != null
+			and building.is_inside_tree()
+			and SplashDamage.box_distance(building, at) <= 0.0
+		):
 			return false
 	return true
 
@@ -57,6 +61,15 @@ static func bodies_inside(wall: SpellWall) -> Array[Node3D]:
 	for each in BodyNudge.bodies_in(wall.get_tree(), AABB(low, high - low)):
 		var box := BodyNudge.box(each)
 		var middle := box.get_center()
-		if WallRules.in_wall(box, wall.ground_y(middle.x, middle.z), top, wall.center, wall.direction, wall.left, wall.right, wall.thickness_m()):
+		if WallRules.in_wall(
+			box,
+			wall.ground_y(middle.x, middle.z),
+			top,
+			wall.center,
+			wall.direction,
+			wall.left,
+			wall.right,
+			wall.thickness_m()
+		):
 			found.append(each)
 	return found

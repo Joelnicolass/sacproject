@@ -20,4 +20,12 @@ func _leave_dent(_body: Node3D, _at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null and stamp != null else PackedStringArray(["The drop (ZoneDrop) and the stamp of the dent (TerrainStamp with manual) are missing."])
+	return (
+		PackedStringArray()
+		if drop != null and stamp != null
+		else PackedStringArray(
+			[
+				"The drop (ZoneDrop) and the stamp of the dent (TerrainStamp with manual) are missing."
+			]
+		)
+	)

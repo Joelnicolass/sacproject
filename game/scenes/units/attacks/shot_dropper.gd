@@ -57,5 +57,19 @@ func drop(at: Vector3, from_slot: int) -> void:
 
 func _exit_tree() -> void:
 	if ticks > 0 and _rain != null and is_instance_valid(_rain) and _rain.log_hits:
-		print("drops %s %d of %d ticks, from (%.1f, %.1f, %.1f) to (%.1f, %.1f, %.1f)" % [get_parent().name, drops, ticks,
-			first_at.x, first_at.y, first_at.z, last_at.x, last_at.y, last_at.z])
+		print(
+			(
+				"drops %s %d of %d ticks, from (%.1f, %.1f, %.1f) to (%.1f, %.1f, %.1f)"
+				% [
+					get_parent().name,
+					drops,
+					ticks,
+					first_at.x,
+					first_at.y,
+					first_at.z,
+					last_at.x,
+					last_at.y,
+					last_at.z
+				]
+			)
+		)

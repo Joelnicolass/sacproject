@@ -76,7 +76,10 @@ func goes_by_air(distance: float) -> bool:
 	if state != State.GROUND or _held() or not is_capable() or distance <= 0.0:
 		return false
 	var type := body.type
-	if type.clip_facts().seconds_at_30(&"takeoff") + distance / type.fly_speed_m_s >= distance / type.run_speed_m_s:
+	if (
+		type.clip_facts().seconds_at_30(&"takeoff") + distance / type.fly_speed_m_s
+		>= distance / type.run_speed_m_s
+	):
 		return false
 	_take_off()
 	return true

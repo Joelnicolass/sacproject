@@ -20,5 +20,16 @@ func _affect(shot: Node3D, _target: Node3D, point: Vector3, ability: AbilityType
 	implosion.side = int(shot.get("from_slot"))
 	shot.get_parent().add_child(implosion)
 	implosion.global_position = point
-	print("implosion at (%.2f, %.2f, %.2f) %.1f m in %.2f s (frame %d)" % [point.x, point.y, point.z, implosion.effect_range,
-		implosion.duration_s, MatchClock.now()])
+	print(
+		(
+			"implosion at (%.2f, %.2f, %.2f) %.1f m in %.2f s (frame %d)"
+			% [
+				point.x,
+				point.y,
+				point.z,
+				implosion.effect_range,
+				implosion.duration_s,
+				MatchClock.now()
+			]
+		)
+	)

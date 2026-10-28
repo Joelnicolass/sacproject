@@ -33,7 +33,9 @@ const BODILESS: Array[StringName] = [&"manafount"]
 @export var spherical := false
 ## Total angle of the cone in front of the body; 360 = sees all around.
 @export_range(1.0, 360.0, 1.0, "suffix:deg") var fov_deg := 360.0
-@export var seen_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor", "manafount"])
+@export var seen_groups: PackedStringArray = PackedStringArray(
+	["unit", "wizard", "structure", "doctor", "manafount"]
+)
 ## How long a foe stays known to the side after a Vision last saw it.
 @export_range(0.0166, 600.0, 0.0001, "suffix:s") var forget_s := 6.4
 ## How often it looks again; every body looks on its own tick of the cycle.
@@ -77,7 +79,11 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shape != null else PackedStringArray(["Missing the shape (shape): a CollisionShape3D child."])
+	return (
+		PackedStringArray()
+		if shape != null
+		else PackedStringArray(["Missing the shape (shape): a CollisionShape3D child."])
+	)
 
 
 func _physics_process(_delta: float) -> void:
@@ -101,7 +107,9 @@ func side() -> int:
 
 ## Whether `point` lies inside the sight shape and cone, whoever stands there.
 func covers(point: Vector3) -> bool:
-	return VisionRules.covers(spherical, global_position, point, _range_m, body.global_basis.z, fov_deg)
+	return VisionRules.covers(
+		spherical, global_position, point, _range_m, body.global_basis.z, fov_deg
+	)
 
 
 ## Who is in sight as of the last refresh, sorted by name.
@@ -139,7 +147,9 @@ func expose_to(slot: int) -> void:
 
 func _candidates() -> Array:
 	var by_area := use_area and monitoring
-	return VisionRules.gather(get_tree(), seen_groups, get_overlapping_bodies() if by_area else [], by_area)
+	return VisionRules.gather(
+		get_tree(), seen_groups, get_overlapping_bodies() if by_area else [], by_area
+	)
 
 
 func _apply_shape() -> void:

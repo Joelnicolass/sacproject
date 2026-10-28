@@ -28,4 +28,6 @@ func _fire(_step: int) -> void:
 	for mark in marks:
 		ScarMark.broadcast(mark, point)
 	if damage_radius_m > 0.0:
-		SplashDamage.deal(get_tree(), point, float(zone.spell.damage), damage_radius_m, null, zone.from_slot)
+		SplashDamage.deal(
+			get_tree(), point, float(zone.spell.damage), damage_radius_m, null, zone.from_slot
+		)

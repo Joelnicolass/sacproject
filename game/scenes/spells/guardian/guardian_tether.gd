@@ -86,7 +86,9 @@ func _apply_look() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if beam == null:
-		warnings.append("Assign to `beam` the MeshInstance3D that draws the beam (with its material).")
+		warnings.append(
+			"Assign to `beam` the MeshInstance3D that draws the beam (with its material)."
+		)
 	return warnings
 
 
@@ -104,14 +106,20 @@ func retire() -> void:
 	if phase == Phase.WITHDRAWING_AT_BUILDING or phase == Phase.WITHDRAWING_AT_CREATURE:
 		return
 	_sample()
-	phase = Phase.WITHDRAWING_AT_BUILDING if _building_known and _post() != null else Phase.WITHDRAWING_AT_CREATURE
+	phase = (
+		Phase.WITHDRAWING_AT_BUILDING
+		if _building_known and _post() != null
+		else Phase.WITHDRAWING_AT_CREATURE
+	)
 	_phase_clock = 0.0
 	if is_instance_valid(glow):
 		glow.show_lit(false)
 
 
 ## Where the two ends are at `progress` (0..1) of the current phase: creature end, building end.
-static func ends(phase_now: Phase, progress: float, creature_at: Vector3, building_at: Vector3) -> Array[Vector3]:
+static func ends(
+	phase_now: Phase, progress: float, creature_at: Vector3, building_at: Vector3
+) -> Array[Vector3]:
 	match phase_now:
 		Phase.APPEARING:
 			var eased := pow(clampf(progress, 0.0, 1.0), 3.0)
@@ -139,7 +147,10 @@ func _process(delta: float) -> void:
 		return
 	if phase == Phase.APPEARING and _phase_clock >= appear_s:
 		phase = Phase.STEADY
-	if (phase == Phase.WITHDRAWING_AT_BUILDING or phase == Phase.WITHDRAWING_AT_CREATURE) and _phase_clock >= withdraw_s:
+	if (
+		(phase == Phase.WITHDRAWING_AT_BUILDING or phase == Phase.WITHDRAWING_AT_CREATURE)
+		and _phase_clock >= withdraw_s
+	):
 		queue_free()
 		return
 	var span := appear_s if phase == Phase.APPEARING else withdraw_s
@@ -148,14 +159,20 @@ func _process(delta: float) -> void:
 
 
 func _post() -> GuardPost:
-	var node := get_node_or_null(_post_path) as GuardPost if not _post_path.is_empty() and is_inside_tree() else null
+	var node := (
+		get_node_or_null(_post_path) as GuardPost
+		if not _post_path.is_empty() and is_inside_tree()
+		else null
+	)
 	return node if node != null and not node.is_queued_for_deletion() else null
 
 
 ## Remembers where the ends are while they exist: a body that is gone leaves its last place.
 func _sample() -> void:
 	if _creature != null and is_instance_valid(_creature):
-		_creature_at = DrawnPose.point(_creature, _creature.global_transform * BodyFacts.of_body(_creature).center)
+		_creature_at = DrawnPose.point(
+			_creature, _creature.global_transform * BodyFacts.of_body(_creature).center
+		)
 	var post := _post()
 	if post != null:
 		_building_at = post.attach_position()
@@ -187,7 +204,9 @@ func _draw(from: Vector3, to: Vector3) -> void:
 		points.append(from + line * t + side_a * wobble.x + side_b * wobble.y + along * wobble.z)
 	# 3 planes at 120 degrees, pointed at both ends.
 	var root := sqrt(0.75)
-	var offsets: Array[Vector3] = [-side_b, side_a * root + side_b * 0.5, -side_a * root + side_b * 0.5]
+	var offsets: Array[Vector3] = [
+		-side_b, side_a * root + side_b * 0.5, -side_a * root + side_b * 0.5
+	]
 	var inset := 0.5 / 64.0
 	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in segments:
@@ -202,7 +221,11 @@ func _draw(from: Vector3, to: Vector3) -> void:
 				pos.append(p)
 				# Texcoords: u flips per segment, v is the bright centerline for k 0 and 1.
 				var flip := ((i & 1) == 1) != (k == 1 or k == 2)
-				uvs.append(Vector2(1.0 - inset if flip else inset, 1.0 - inset if (k == 0 or k == 1) else inset))
+				uvs.append(
+					Vector2(
+						1.0 - inset if flip else inset, 1.0 - inset if (k == 0 or k == 1) else inset
+					)
+				)
 			for idx in [0, 1, 2, 2, 3, 0]:
 				mesh.surface_set_uv(uvs[idx])
 				mesh.surface_add_vertex(pos[idx])
@@ -230,7 +253,11 @@ func _random_shape() -> Array[Vector3]:
 	var shape: Array[Vector3] = []
 	var half := jitter_radius * 0.5
 	for i in 5:
-		var p := Vector3(_rng.randf_range(-half, half), _rng.randf_range(-half, half), _rng.randf_range(-half, half))
+		var p := Vector3(
+			_rng.randf_range(-half, half),
+			_rng.randf_range(-half, half),
+			_rng.randf_range(-half, half)
+		)
 		if i == 0 or i == 4:
 			p *= 0.25
 		shape.append(p)
@@ -247,4 +274,12 @@ static func _spline(points: Array[Vector3], t: float) -> Vector3:
 	var p1 := points[i]
 	var p2 := points[i + 1]
 	var p3 := points[mini(i + 2, last)]
-	return 0.5 * ((2.0 * p1) + (p2 - p0) * local + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * local * local + (3.0 * p1 - p0 - 3.0 * p2 + p3) * local * local * local)
+	return (
+		0.5
+		* (
+			(2.0 * p1)
+			+ (p2 - p0) * local
+			+ (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * local * local
+			+ (3.0 * p1 - p0 - 3.0 * p2 + p3) * local * local * local
+		)
+	)

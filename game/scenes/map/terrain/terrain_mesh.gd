@@ -35,7 +35,11 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["The `terrain` socket is missing (the parent Terrain)."])
+	return (
+		PackedStringArray()
+		if terrain != null
+		else PackedStringArray(["The `terrain` socket is missing (the parent Terrain)."])
+	)
 
 
 func _notification(what: int) -> void:
@@ -68,10 +72,21 @@ func _build() -> void:
 	_arrays = TerrainMeshArrays.from_data(terrain.data) if loaded and _draws() else null
 	mesh = _make_mesh() if _arrays != null else null
 	if not loaded and not Engine.is_editor_hint():
-		push_error("TerrainMesh '%s' has no ground: its `terrain` needs `heights` (the map's heights.png)." % name)
+		push_error(
+			(
+				"TerrainMesh '%s' has no ground: its `terrain` needs `heights` (the map's heights.png)."
+				% name
+			)
+		)
 	if missing:
 		missing.visible = not loaded
-	if DebugLog.on(&"terrain_load"): print("terrain_load: %s mesh %.0f ms (%s)" % [name, (Time.get_ticks_usec() - started) / 1000.0, "built" if mesh else "none"])
+	if DebugLog.on(&"terrain_load"):
+		print(
+			(
+				"terrain_load: %s mesh %.0f ms (%s)"
+				% [name, (Time.get_ticks_usec() - started) / 1000.0, "built" if mesh else "none"]
+			)
+		)
 
 
 ## A mesh is only worth building where something is drawn.

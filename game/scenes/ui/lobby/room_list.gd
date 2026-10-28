@@ -45,7 +45,9 @@ func _fill(rows: Array) -> void:
 		var used := int(row["seats_used"])
 		var seats := int(row["seats"])
 		var state := int(row["state"])
-		button.text = "%s · %d/%d · %s" % [str(row["name"]), used, seats, LobbyText.state_text(state)]
+		button.text = (
+			"%s · %d/%d · %s" % [str(row["name"]), used, seats, LobbyText.state_text(state)]
+		)
 		button.disabled = state != MpLobbyRooms.State.OPEN or used >= seats
 		button.pressed.connect(_on_row.bind(str(row["id"])))
 		holder.add_child(button)

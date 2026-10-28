@@ -19,12 +19,16 @@ func apply(carrier: SpellCarrier, body: Node3D) -> bool:
 		return false
 	var box := BodyNudge.box(body)
 	var center := box.get_center()
-	var half := maxf(min_length_m, 1.5 * pow(maxf(box.size.x * box.size.y * box.size.z, 0.0), 1.0 / 3.0))
+	var half := maxf(
+		min_length_m, 1.5 * pow(maxf(box.size.x * box.size.y * box.size.z, 0.0), 1.0 / 3.0)
+	)
 	var rng := MatchSeed.rng(["death", carrier.from_slot, MatchClock.now(), body.get_instance_id()])
 	if beam != null:
 		for i in bolts:
 			var angle := rng.randf_range(-PI, PI)
-			var along := Vector3(cos(angle), rng.randf_range(-1.0, 1.0), sin(angle)).normalized() * half
+			var along := (
+				Vector3(cos(angle), rng.randf_range(-1.0, 1.0), sin(angle)).normalized() * half
+			)
 			FxBus.broadcast_beam(beam, center - along, center + along, null)
 	if strike != null:
 		FxBus.broadcast(strike, center)

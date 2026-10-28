@@ -90,7 +90,8 @@ func scan_global() -> void:
 			if group == UnitBody.GROUP and foe and not belief.within_map(node as Node3D):
 				continue
 			add_node(node as Node3D, AiTrack.Origin.SCAN)
-	if DebugLog.on(&"ai_seat"): print(
+	if DebugLog.on(&"ai_seat"):
+		print(
 			(
 				"ai slot %d: first scan %d own, %d allied, %d neutral, %d enemy"
 				% [

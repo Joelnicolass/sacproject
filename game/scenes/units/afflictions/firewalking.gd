@@ -15,7 +15,6 @@ extends Affliction
 ## Look: Tilt (the mesh) hidden while it lasts and a `fire` trail at the body (every peer, from the replicated bit; the
 ## position is replicated). The health bar stays visible and the capsule stays on the units' layer.
 
-
 ## How long the walk lasts.
 @export_range(0.0166, 10.0, 0.0001, "suffix:s") var walk_s := 1.0
 ## The distance (m) under which the walk is a straight line.
@@ -25,7 +24,8 @@ extends Affliction
 @export var snap: WarpSnap
 ## walk_s in ticks: the frames of the walk.
 var frames: int:
-	get: return MatchClock.ticks_for(walk_s)
+	get:
+		return MatchClock.ticks_for(walk_s)
 ## The mesh pivot that is hidden while it lasts.
 @export var tilt: Node3D
 ## The trail of flames puffed while it walks, and the socket it leaves from: the muzzle, where the Warmonger's flame is.
@@ -64,8 +64,22 @@ func walk(end: Vector3) -> bool:
 	_afflictions().mark(self, true)
 	set_physics_process(true)
 	if DebugLog.on(&"walk"):
-		print("firewalk %s start from (%.3f, %.3f, %.3f) to (%.3f, %.3f, %.3f) d %.2f m (tick %d)" % [
-			str(body.name), _start.x, _start.y, _start.z, end.x, end.y, end.z, _start.distance_to(end), MatchClock.now()])
+		print(
+			(
+				"firewalk %s start from (%.3f, %.3f, %.3f) to (%.3f, %.3f, %.3f) d %.2f m (tick %d)"
+				% [
+					str(body.name),
+					_start.x,
+					_start.y,
+					_start.z,
+					end.x,
+					end.y,
+					end.z,
+					_start.distance_to(end),
+					MatchClock.now()
+				]
+			)
+		)
 	return true
 
 
@@ -106,10 +120,24 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 	if snap and jump > snap_step:
 		snap.announce()
 	if DebugLog.on(&"walk"):
-		print("firewalk %s frame %d (%.3f, %.3f, %.3f) (tick %d)" % [str(body.name), _frame, at.x, at.y, at.z, MatchClock.now()])
+		print(
+			(
+				"firewalk %s frame %d (%.3f, %.3f, %.3f) (tick %d)"
+				% [str(body.name), _frame, at.x, at.y, at.z, MatchClock.now()]
+			)
+		)
 	if DebugLog.on(&"walk") and _frame == frames / 2 and body is UnitBody:
-		print("firewalk %s oculto: is_targetable %s is_obstacle %s (tick %d)" % [
-			str(body.name), (body as UnitBody).is_targetable(), (body as UnitBody).is_obstacle(), MatchClock.now()])
+		print(
+			(
+				"firewalk %s oculto: is_targetable %s is_obstacle %s (tick %d)"
+				% [
+					str(body.name),
+					(body as UnitBody).is_targetable(),
+					(body as UnitBody).is_obstacle(),
+					MatchClock.now()
+				]
+			)
+		)
 	return Vector3.ZERO
 
 

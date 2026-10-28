@@ -72,7 +72,9 @@ func next_ritual_name() -> String:
 
 func spawn_vortex(at: Vector3, life_s: float) -> RedVortex:
 	_vortex_serial += 1
-	var data := {"name": "Vortex%d" % _vortex_serial, "x": at.x, "y": at.y, "z": at.z, "life": life_s}
+	var data := {
+		"name": "Vortex%d" % _vortex_serial, "x": at.x, "y": at.y, "z": at.z, "life": life_s
+	}
 	if MpKit.is_networked():
 		if not MpKit.is_server():
 			return null

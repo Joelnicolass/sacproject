@@ -23,14 +23,24 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## Life and mana of `fraction` of one round, from the wizard (killing credit to the caster).
 func apply(fraction: float) -> void:
-	if not ritual.type().drains_target_wizard or ritual.target_is_gone() or fraction <= 0.0 or ritual.rules == null:
+	if (
+		not ritual.type().drains_target_wizard
+		or ritual.target_is_gone()
+		or fraction <= 0.0
+		or ritual.rules == null
+	):
 		return
 	var rules := ritual.rules
 	var wizard := ritual.target_wizard
 	var health := wizard.health as Health
-	health.damage(SacrificeMath.desecrate_health(ritual.souls, rules.desecrate_health_per_round) * fraction, ritual.caster_slot)
+	health.damage(
+		SacrificeMath.desecrate_health(ritual.souls, rules.desecrate_health_per_round) * fraction,
+		ritual.caster_slot
+	)
 	var mana := wizard.mana
-	var wanted := SacrificeMath.desecrate_mana(ritual.souls, rules.desecrate_mana_per_round) * fraction
+	var wanted := (
+		SacrificeMath.desecrate_mana(ritual.souls, rules.desecrate_mana_per_round) * fraction
+	)
 	mana.set("current", maxf(float(mana.get("current")) - wanted, 0.0))
 
 

@@ -19,7 +19,9 @@ static func nodes_of(state: SceneState) -> Dictionary:
 		var path := String(state.get_node_path(index)).trim_prefix("./")
 		var props: Dictionary = nodes.get(path, {})
 		for slot in state.get_node_property_count(index):
-			props[String(state.get_node_property_name(index, slot))] = state.get_node_property_value(index, slot)
+			props[String(state.get_node_property_name(index, slot))] = (
+				state.get_node_property_value(index, slot)
+			)
 		nodes[path] = props
 	return nodes
 
@@ -53,7 +55,9 @@ static func radius(nodes: Dictionary, root: Dictionary, prop: String, fallback: 
 
 ## Half the height of the cylinder the root's `prop` points at (how far it reaches up and down from its centre), in mm; `fallback`
 ## when the scene does not save a cylinder.
-static func half_height(nodes: Dictionary, root: Dictionary, prop: String, fallback: float) -> float:
+static func half_height(
+	nodes: Dictionary, root: Dictionary, prop: String, fallback: float
+) -> float:
 	var found := shape(nodes, root, prop)
 	if found is CylinderShape3D:
 		return mm((found as CylinderShape3D).height * 0.5)

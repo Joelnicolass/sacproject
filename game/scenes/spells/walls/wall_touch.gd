@@ -57,6 +57,7 @@ var _slows := {}
 func _get_configuration_warnings() -> PackedStringArray:
 	return PackedStringArray() if wall != null else PackedStringArray(["The SpellWall is missing."])
 
+
 func _ready() -> void:
 	if Engine.is_editor_hint() or not multiplayer.is_server():
 		set_physics_process(false)
@@ -70,9 +71,21 @@ func _physics_process(_delta: float) -> void:
 	if only_while_standing and wall.vanish_at >= 0:
 		return
 	for body in wall.bodies_inside():
-		if affects == Affects.NOT_ALLIES and SideRelations.stance(wall.from_slot, int(body.get("owner_slot"))) == SideRelations.Stance.ALLY:
+		if (
+			affects == Affects.NOT_ALLIES
+			and (
+				SideRelations.stance(wall.from_slot, int(body.get("owner_slot")))
+				== SideRelations.Stance.ALLY
+			)
+		):
 			continue
-		if core_fraction > 0.0 and absf(WallRules.lateral(body.global_position, wall.center, wall.direction)) >= core_fraction * wall.thickness_m():
+		if (
+			core_fraction > 0.0
+			and (
+				absf(WallRules.lateral(body.global_position, wall.center, wall.direction))
+				>= core_fraction * wall.thickness_m()
+			)
+		):
 			continue
 		_every_tick(body)
 		_touch(body, now)
@@ -83,14 +96,27 @@ func _every_tick(body: Node3D) -> void:
 	var per_s := float(wall.spell.damage) if spell_damage_per_s else damage_per_s
 	if per_s > 0.0 and health != null:
 		var scale := wall.ramp(ramp_start_s, ramp_s) if ramp_s > 0.0 else 1.0
-		health.damage_typed(per_s * scale / MatchClock.TICKS_PER_SECOND_F, kind, wall.from_slot, false, pierce_shield, mods)
+		health.damage_typed(
+			per_s * scale / MatchClock.TICKS_PER_SECOND_F,
+			kind,
+			wall.from_slot,
+			false,
+			pierce_shield,
+			mods
+		)
 	var mana := ManaPool.of(body)
 	if mana_drain_per_s > 0.0 and mana != null:
 		mana.drain(mana.maximum * mana_drain_per_s / MatchClock.TICKS_PER_SECOND_F)
 
 
 func _touch(body: Node3D, now: int) -> void:
-	if stun_cooldown_s <= 0.0 and not spell_damage_on_touch and slow_factor >= 1.0 and affliction == null and hit_scene == null:
+	if (
+		stun_cooldown_s <= 0.0
+		and not spell_damage_on_touch
+		and slow_factor >= 1.0
+		and affliction == null
+		and hit_scene == null
+	):
 		return
 	var id := body.get_instance_id()
 	var wait := MatchClock.ticks_for(cooldown_s)
@@ -125,7 +151,9 @@ func _lay(body: Node3D) -> bool:
 	var state := _state_of(body)
 	if state == null or Afflictions.of(body).cc_protected():
 		return false
-	var left_s := wall.spell.duration_s - float(wall.age - wall.grow_ticks) / MatchClock.TICKS_PER_SECOND_F
+	var left_s := (
+		wall.spell.duration_s - float(wall.age - wall.grow_ticks) / MatchClock.TICKS_PER_SECOND_F
+	)
 	return state.lay_within(wall.spell, wall.from_slot, maxf(0.0, left_s))
 
 

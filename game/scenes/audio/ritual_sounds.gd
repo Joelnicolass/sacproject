@@ -62,4 +62,8 @@ func _on_ended(completed: bool) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if ritual != null else PackedStringArray(["Assign in `ritual` the Ritual that sounds."])
+	return (
+		PackedStringArray()
+		if ritual != null
+		else PackedStringArray(["Assign in `ritual` the Ritual that sounds."])
+	)

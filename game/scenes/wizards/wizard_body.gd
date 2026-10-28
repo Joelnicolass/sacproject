@@ -241,6 +241,7 @@ func _apply_type() -> void:
 	health.setup(wizard_type.health + level_health_bonus)
 	mana.setup(wizard_type.mana + level_mana_bonus)
 
+
 func _wear_body() -> void:
 	if mount != null and wizard_type != null:
 		mount.wear(wizard_type.body)
@@ -407,16 +408,27 @@ func _return_to_altar() -> void:
 		return
 	var best: Node3D = null
 	for source in get_tree().get_nodes_in_group(ManaSource.GROUP):
-		if int(source.get("kind")) != ManaSource.Kind.ALTAR or int(source.get("owner_slot")) != owner_slot:
+		if (
+			int(source.get("kind")) != ManaSource.Kind.ALTAR
+			or int(source.get("owner_slot")) != owner_slot
+		):
 			continue
 		var altar := source as Node3D
-		if best == null or altar.global_position.distance_squared_to(global_position) < best.global_position.distance_squared_to(global_position):
+		if (
+			best == null
+			or (
+				altar.global_position.distance_squared_to(global_position)
+				< best.global_position.distance_squared_to(global_position)
+			)
+		):
 			best = altar
 	if best == null:
 		return
 	drive.stop_walk()
 	velocity = Vector3.ZERO
-	global_position = FallCheck.altar_return_spot(self, best.global_position) - Vector3.UP * feet_drop()
+	global_position = (
+		FallCheck.altar_return_spot(self, best.global_position) - Vector3.UP * feet_drop()
+	)
 	_announce_jump()
 	print("wizard %d returned to the altar" % owner_slot)
 
@@ -472,6 +484,9 @@ func _on_clip_looped(role: String) -> void:
 	if role != "idle" and role != "gesture":
 		return
 	_idle_loops += 1
-	_gesturing = role == "idle" and posmod(hash(String(name)) + _idle_loops, GESTURE_EVERY) == 0 \
+	_gesturing = (
+		role == "idle"
+		and posmod(hash(String(name)) + _idle_loops, GESTURE_EVERY) == 0
 		and _clip_pose.has_role("gesture")
+	)
 	_update_clip_state(_clip_flat_speed)

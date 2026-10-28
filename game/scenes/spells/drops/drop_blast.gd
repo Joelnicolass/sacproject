@@ -35,11 +35,31 @@ func blast(body: Node3D, at: Vector3) -> void:
 	var slot := drop.from_slot
 	if live:
 		SplashDamage.hurt(body, drop.damage, slot, Health.SPLASH_SPELL, mods)
-	SplashDamage.deal(get_tree(), at, drop.damage, drop.damage_range, body if live else null, slot, Health.SPLASH_SPELL, mods)
+	SplashDamage.deal(
+		get_tree(),
+		at,
+		drop.damage,
+		drop.damage_range,
+		body if live else null,
+		slot,
+		Health.SPLASH_SPELL,
+		mods
+	)
 	for hit in SplashDamage.bodies_within(get_tree(), at, drop.damage_range):
 		if ignites:
-			Burning.ignite(hit, 0.0, MatchClock.ticks_for(burn_s), Health.DIRECT_SPELL, slot, 0.0, false, burn_look)
-		var stunned := hit.get_node_or_null(stunned_path) as Stunned if stun_s > 0.0 and hit != body else null
+			Burning.ignite(
+				hit,
+				0.0,
+				MatchClock.ticks_for(burn_s),
+				Health.DIRECT_SPELL,
+				slot,
+				0.0,
+				false,
+				burn_look
+			)
+		var stunned := (
+			hit.get_node_or_null(stunned_path) as Stunned if stun_s > 0.0 and hit != body else null
+		)
 		if stunned != null:
 			stunned.stun_with_cooldown(MatchClock.ticks_for(stun_s))
 	for type in bursts:
@@ -49,4 +69,8 @@ func blast(body: Node3D, at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["The drop (ZoneDrop) whose end it gets is missing."])
+	return (
+		PackedStringArray()
+		if drop != null
+		else PackedStringArray(["The drop (ZoneDrop) whose end it gets is missing."])
+	)

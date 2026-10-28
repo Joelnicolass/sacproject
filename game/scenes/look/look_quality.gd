@@ -25,7 +25,8 @@ extends Resource
 
 @export_group("Sun shadows")
 ## 2 splits (low) or 4 (medium, high).
-@export var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+@export
+var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 ## Resolution of the directional shadow atlas (global to the renderer).
 @export_enum("1024:1024", "2048:2048", "4096:4096", "8192:8192") var shadow_atlas_size: int = 4096
 @export var shadow_filter: RenderingServer.ShadowQuality = RenderingServer.SHADOW_QUALITY_SOFT_LOW

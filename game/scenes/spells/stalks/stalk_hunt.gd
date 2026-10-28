@@ -31,7 +31,9 @@ func _ready() -> void:
 
 ## A point of the cone over `base` the tip drifts to.
 func wander_goal(base: Vector3, height_m: float) -> Vector3:
-	return StalkRules.wander_point(base, _rng.randf_range(-PI / 4.0, PI / 4.0), _rng.randf_range(0.0, TAU), wander_m, height_m)
+	return StalkRules.wander_point(
+		base, _rng.randf_range(-PI / 4.0, PI / 4.0), _rng.randf_range(0.0, TAU), wander_m, height_m
+	)
 
 
 ## The nearest body within `reach_m` of `base` that `takeable` allows (by its feet), or null.
@@ -47,4 +49,9 @@ func pick(base: Vector3, reach_m: float) -> Node3D:
 
 
 func takeable(body: Node3D, at: Vector3, base: Vector3) -> bool:
-	return StalkRules.is_live(body) and not roster.has(body) and not BodyNudge.fixed(body) and StalkRules.in_pick_band(base, at)
+	return (
+		StalkRules.is_live(body)
+		and not roster.has(body)
+		and not BodyNudge.fixed(body)
+		and StalkRules.in_pick_band(base, at)
+	)

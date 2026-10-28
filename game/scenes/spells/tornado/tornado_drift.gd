@@ -32,7 +32,9 @@ func _physics_process(_delta: float) -> void:
 	var wanted := 0.0
 	match zone.phase:
 		GroundZone.Phase.CASTING:
-			wanted = cast_size * minf(1.0, float(zone.phase_ticks) / float(maxi(zone.cast_ticks, 1)))
+			wanted = (
+				cast_size * minf(1.0, float(zone.phase_ticks) / float(maxi(zone.cast_ticks, 1)))
+			)
 		GroundZone.Phase.ARMING, GroundZone.Phase.ACTIVE:
 			wanted = 1.0 if _on_ground(zone.position) else 0.0
 			_wander()

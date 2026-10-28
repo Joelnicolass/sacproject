@@ -43,14 +43,22 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) it belongs to is missing."])
+	return (
+		PackedStringArray()
+		if zone != null
+		else PackedStringArray(["The zone (GroundZone) it belongs to is missing."])
+	)
 
 
 func _physics_process(_delta: float) -> void:
 	if zone.cancelled or zone.phase != GroundZone.Phase.ACTIVE or _terrain == null:
 		return
 	if _spiral == null:
-		_spiral = BoreSpiral.new(Vector2(zone.points[0].x, zone.points[0].z), zone.spell.effect_range_m, scribe_speed * zone.spell.speed_m_s / MatchClock.TICKS_PER_SECOND_F)
+		_spiral = BoreSpiral.new(
+			Vector2(zone.points[0].x, zone.points[0].z),
+			zone.spell.effect_range_m,
+			scribe_speed * zone.spell.speed_m_s / MatchClock.TICKS_PER_SECOND_F
+		)
 	_ticks += 1
 	if _stage == Stage.CUTTING:
 		_cut()
@@ -60,7 +68,13 @@ func _physics_process(_delta: float) -> void:
 
 func _exit_tree() -> void:
 	# A zone that goes while the map stays leaves the ground whole (when the map goes too there is nothing to mend).
-	if _terrain != null and is_instance_valid(_terrain) and _terrain.is_inside_tree() and zone != null and zone.is_authority():
+	if (
+		_terrain != null
+		and is_instance_valid(_terrain)
+		and _terrain.is_inside_tree()
+		and zone != null
+		and zone.is_authority()
+	):
 		for at in _taken:
 			_terrain.fill_hole(Vector2(at.x, at.z))
 		_taken.clear()
@@ -95,7 +109,14 @@ func _give_back() -> void:
 
 ## What stood over the new hole and is not on land any more falls: a body on the ground is thrown with no speed.
 func _fling(at: Vector3) -> void:
-	for body in SplashDamage.bodies_within(get_tree(), at, fling_reach_m, null, ZonePulse.BODY_GROUPS):
+	for body in SplashDamage.bodies_within(
+		get_tree(), at, fling_reach_m, null, ZonePulse.BODY_GROUPS
+	):
 		var tumbling := BodyNudge.tumbling_of(body)
-		if tumbling != null and not tumbling.is_on() and not BodyNudge.airborne(body) and not _terrain.is_on_ground(body.global_position.x, body.global_position.z):
+		if (
+			tumbling != null
+			and not tumbling.is_on()
+			and not BodyNudge.airborne(body)
+			and not _terrain.is_on_ground(body.global_position.x, body.global_position.z)
+		):
 			tumbling.catapult(Vector3.ZERO, zone.from_slot)

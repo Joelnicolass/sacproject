@@ -124,10 +124,16 @@ func _sparkle_tip(delta: float) -> void:
 	if type.tip_type == null or _t >= type.travel_s:
 		return
 	_tip_left -= delta
-	var tip := _arc_point(_from, _end_point(), type.span_at(_t).y) if type.path == BeamType.Path.ARC else _from.lerp(_end_point(), type.span_at(_t).y)
+	var tip := (
+		_arc_point(_from, _end_point(), type.span_at(_t).y)
+		if type.path == BeamType.Path.ARC
+		else _from.lerp(_end_point(), type.span_at(_t).y)
+	)
 	while _tip_left <= 0.0:
 		_tip_left += 1.0 / type.tip_per_s
-		var around := Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0))
+		var around := Vector3(
+			_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)
+		)
 		FxBus.puff(type.tip_type, tip + around.limit_length(1.0) * type.tip_spread_m)
 
 
@@ -148,7 +154,11 @@ func _draw() -> void:
 	if length < 0.001 or _bolts.is_empty():
 		return
 	var axis := diff / length
-	var turn := Quaternion(Vector3.BACK, axis) if axis.dot(Vector3.BACK) > -0.9999 else Quaternion(Vector3.RIGHT, PI)
+	var turn := (
+		Quaternion(Vector3.BACK, axis)
+		if axis.dot(Vector3.BACK) > -0.9999
+		else Quaternion(Vector3.RIGHT, PI)
+	)
 	var sqrt34 := sqrt(0.75)
 	var fins: Array[Vector3] = [
 		turn * (Vector3(0.0, -1.0, 0.0) * type.width_m),
@@ -159,7 +169,9 @@ func _draw() -> void:
 	var n := type.segments
 	var points := PackedVector3Array()
 	points.resize(n + 1)
-	set_instance_shader_parameter(&"cell", float(int(floor(_t / type.frame_s)) % (type.h_frames * type.v_frames)))
+	set_instance_shader_parameter(
+		&"cell", float(int(floor(_t / type.frame_s)) % (type.h_frames * type.v_frames))
+	)
 	set_instance_shader_parameter(&"energy", type.energy_at(_t))
 	_imesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for bolt in _bolts:
@@ -188,7 +200,12 @@ func _add_ribbon(points: PackedVector3Array, fins: Array[Vector3], n: int) -> vo
 					p += fins[j]
 				pos.append(p)
 				var flip := ((i & 1) == 1) != (k == 1 or k == 2)
-				uvs.append(Vector2(1.0 - UV_INSET if flip else UV_INSET, 1.0 - UV_INSET if (k == 0 or k == 1) else UV_INSET))
+				uvs.append(
+					Vector2(
+						1.0 - UV_INSET if flip else UV_INSET,
+						1.0 - UV_INSET if (k == 0 or k == 1) else UV_INSET
+					)
+				)
 			for idx in [0, 1, 2, 2, 3, 0]:
 				_imesh.surface_set_uv(uvs[idx])
 				_imesh.surface_add_vertex(pos[idx])

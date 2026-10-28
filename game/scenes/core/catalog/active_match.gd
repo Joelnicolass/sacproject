@@ -23,7 +23,12 @@ static func map() -> MapDefinition:
 		_map_id = _flag("map", MapCatalog.DEFAULT_TAG)
 	var found := MapCatalog.shared().find(_map_id)
 	if found == null and _map_id != MapCatalog.DEFAULT_TAG:
-		push_error("ActiveMatch: no map '%s' in %s; playing '%s'." % [_map_id, MapCatalog.DIR, MapCatalog.DEFAULT_TAG])
+		push_error(
+			(
+				"ActiveMatch: no map '%s' in %s; playing '%s'."
+				% [_map_id, MapCatalog.DIR, MapCatalog.DEFAULT_TAG]
+			)
+		)
 		_map_id = MapCatalog.DEFAULT_TAG
 		found = MapCatalog.shared().find(_map_id)
 	if found == null:
@@ -37,7 +42,12 @@ static func mode() -> GameMode:
 		_mode_id = _flag("mode", GameModeCatalog.DEFAULT_TAG)
 	var found := GameModeCatalog.shared().find(_mode_id)
 	if found == null and _mode_id != GameModeCatalog.DEFAULT_TAG:
-		push_error("ActiveMatch: no mode '%s' in %s; playing '%s'." % [_mode_id, GameModeCatalog.PATH, GameModeCatalog.DEFAULT_TAG])
+		push_error(
+			(
+				"ActiveMatch: no mode '%s' in %s; playing '%s'."
+				% [_mode_id, GameModeCatalog.PATH, GameModeCatalog.DEFAULT_TAG]
+			)
+		)
 		_mode_id = GameModeCatalog.DEFAULT_TAG
 		found = GameModeCatalog.shared().find(_mode_id)
 	if found == null:
@@ -93,8 +103,18 @@ static func choose(map_choice: MapDefinition, mode_choice: GameMode) -> void:
 	if chosen_map == null or chosen_mode == null:
 		return
 	if not chosen_map.fits(chosen_mode):
-		push_error("ActiveMatch: the mode '%s' asks for %d seats and the map '%s' has %d; '%s' is played." % [
-			chosen_mode.tag, chosen_mode.seats(), chosen_map.tag, chosen_map.player_starts, GameModeCatalog.DEFAULT_TAG])
+		push_error(
+			(
+				"ActiveMatch: the mode '%s' asks for %d seats and the map '%s' has %d; '%s' is played."
+				% [
+					chosen_mode.tag,
+					chosen_mode.seats(),
+					chosen_map.tag,
+					chosen_map.player_starts,
+					GameModeCatalog.DEFAULT_TAG
+				]
+			)
+		)
 		_mode_id = GameModeCatalog.DEFAULT_TAG
 
 
@@ -113,7 +133,9 @@ static func load_paths() -> PackedStringArray:
 	var paths := PackedStringArray([MapCatalog.path_of(map_tag())])
 	if BodyLook.loads_meshes() and not Engine.is_editor_hint():
 		var catalog := GameCatalog.shared()
-		paths.append_array(WarmCollect.look_paths([catalog.offered_gods(), catalog.offered_wizards()]))
+		paths.append_array(
+			WarmCollect.look_paths([catalog.offered_gods(), catalog.offered_wizards()])
+		)
 	return paths
 
 

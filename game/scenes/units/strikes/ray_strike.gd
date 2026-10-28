@@ -56,7 +56,12 @@ func _strike_tick(age: int) -> void:
 	var from: Vector3 = source.shot_origin() if follow else origin
 	_bursts_fired += 1
 	if bursts > 1:
-		_log("burst %d/%d %s %s (tick %d)" % [_bursts_fired, bursts, tag, shooter_name(), MatchClock.now()])
+		_log(
+			(
+				"burst %d/%d %s %s (tick %d)"
+				% [_bursts_fired, bursts, tag, shooter_name(), MatchClock.now()]
+			)
+		)
 	for _i in rays_per_burst:
 		_cast(from, _ray_direction(from))
 	if _bursts_fired >= bursts:
@@ -65,7 +70,11 @@ func _strike_tick(age: int) -> void:
 
 func _ray_direction(from: Vector3) -> Vector3:
 	if not reroll:
-		return velocity.normalized() if velocity.length_squared() > 0.000001 else (aim - from).normalized()
+		return (
+			velocity.normalized()
+			if velocity.length_squared() > 0.000001
+			else (aim - from).normalized()
+		)
 	if _rng == null:
 		_rng = MatchSeed.rng(["gun", shooter_name(), _born_tick])
 	var offset := aim - from
@@ -91,7 +100,11 @@ func _cast(from: Vector3, direction: Vector3) -> void:
 		if hit.is_empty():
 			break
 		var collider := hit.get("collider") as Node3D
-		if collider != null and Attackable.is_body(collider) and not ProjectileTargets.is_live_body(collider):
+		if (
+			collider != null
+			and Attackable.is_body(collider)
+			and not ProjectileTargets.is_live_body(collider)
+		):
 			var object := collider as CollisionObject3D
 			if object == null:
 				break
@@ -104,21 +117,38 @@ func _cast(from: Vector3, direction: Vector3) -> void:
 		break
 	if beam != null:
 		var seen_end := end if stopped else from + (end - from) * miss_fraction
-		FxBus.broadcast_beam(beam, from, from + direction * beam_length if beam_length > 0.0 else seen_end)
+		FxBus.broadcast_beam(
+			beam, from, from + direction * beam_length if beam_length > 0.0 else seen_end
+		)
 	var distance := from.distance_to(end)
 	if body == null:
 		_land(null, end)
-		_log("ray %s %s → %s at %.1f m (tick %d)" % [tag, shooter_name(), "ground" if stopped else "nada", distance, MatchClock.now()])
+		_log(
+			(
+				"ray %s %s → %s at %.1f m (tick %d)"
+				% [tag, shooter_name(), "ground" if stopped else "nada", distance, MatchClock.now()]
+			)
+		)
 		return
 	var ally := _is_ally(body)
 	var mark := " (ally)" if ally else ""
 	var wanted: Node = get_node_or_null(target_path) if not target_path.is_empty() else null
 	if foes_only and ally and body != wanted:
 		_land(null, end)
-		_log("ray %s %s → %s%s at %.1f m: no damage (ally) (tick %d)" % [tag, shooter_name(), _name_of(body), mark, distance, MatchClock.now()])
+		_log(
+			(
+				"ray %s %s → %s%s at %.1f m: no damage (ally) (tick %d)"
+				% [tag, shooter_name(), _name_of(body), mark, distance, MatchClock.now()]
+			)
+		)
 		return
 	var taken := _land(body, end)
-	_log("ray %s %s → %s%s at %.1f m: %.1f (tick %d)" % [tag, shooter_name(), _name_of(body), mark, distance, taken, MatchClock.now()])
+	_log(
+		(
+			"ray %s %s → %s%s at %.1f m: %.1f (tick %d)"
+			% [tag, shooter_name(), _name_of(body), mark, distance, taken, MatchClock.now()]
+		)
+	)
 
 
 func _is_ally(body: Node3D) -> bool:

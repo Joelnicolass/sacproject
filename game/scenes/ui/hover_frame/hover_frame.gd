@@ -76,7 +76,9 @@ func _draw() -> void:
 
 func _wanted() -> bool:
 	var dragging := selection_box != null and selection_box.visible
-	return HoverFrameRules.should_show(probe.hovered, probe.kind, armed != null and armed.is_armed(), dragging, buildings_idle)
+	return HoverFrameRules.should_show(
+		probe.hovered, probe.kind, armed != null and armed.is_armed(), dragging, buildings_idle
+	)
 
 
 func _hide() -> void:

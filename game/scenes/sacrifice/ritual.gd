@@ -96,11 +96,23 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if phases == null:
-		warnings.append("Assign to `phases` the FsmMachine with Setup, Walk, Shoot, Wait and Ended (autostart off: begin() starts it).")
+		(
+			warnings
+			. append(
+				"Assign to `phases` the FsmMachine with Setup, Walk, Shoot, Wait and Ended (autostart off: begin() starts it)."
+			)
+		)
 	if types.is_empty():
-		warnings.append("Assign to `types` one RitualType per kind (data/sacrifice/desecrate_ritual.tres, convert_ritual.tres).")
+		(
+			warnings
+			. append(
+				"Assign to `types` one RitualType per kind (data/sacrifice/desecrate_ritual.tres, convert_ritual.tres)."
+			)
+		)
 	if rules == null:
-		warnings.append("Assign `rules` (MatchRules), or SacrificeSystem does it when it creates it.")
+		warnings.append(
+			"Assign `rules` (MatchRules), or SacrificeSystem does it when it creates it."
+		)
 	return warnings
 
 
@@ -118,7 +130,9 @@ func simulates() -> bool:
 
 
 ## Server or solo. The site is already taken by this ritual and the doctors stand on the ring.
-func begin(unit: UnitBody, ritual_site: RitualSite, ring_doctors: Array[DoctorBody], wizard: WizardBody) -> void:
+func begin(
+	unit: UnitBody, ritual_site: RitualSite, ring_doctors: Array[DoctorBody], wizard: WizardBody
+) -> void:
 	creature = unit
 	captive = Captive.of(unit)
 	site = ritual_site
@@ -130,7 +144,13 @@ func begin(unit: UnitBody, ritual_site: RitualSite, ring_doctors: Array[DoctorBo
 		doctor.died.connect(_on_doctor_died)
 	if drain != null:
 		drain.mark_target(true)
-	if DebugLog.on(&"ritual"): print("ritual %s: starts on the altar of slot %d (cast by slot %d, %d souls)" % [Kind.keys()[kind].to_lower(), target_slot, caster_slot, souls])
+	if DebugLog.on(&"ritual"):
+		print(
+			(
+				"ritual %s: starts on the altar of slot %d (cast by slot %d, %d souls)"
+				% [Kind.keys()[kind].to_lower(), target_slot, caster_slot, souls]
+			)
+		)
 	phases.start()  # autostart is off: the phases begin here, in their initial_state (Setup)
 
 
@@ -188,7 +208,8 @@ func abort() -> void:
 		captive.release()
 	if drain != null:
 		drain.mark_target(false)
-	if DebugLog.on(&"ritual"): print("ritual: cancelado")
+	if DebugLog.on(&"ritual"):
+		print("ritual: cancelado")
 	_wind_down()
 
 

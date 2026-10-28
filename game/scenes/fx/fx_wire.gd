@@ -47,7 +47,11 @@ static func resource(id: String) -> Resource:
 static func label_of(fx: Resource) -> String:
 	if fx == null:
 		return ""
-	return fx.resource_path.get_file().get_basename() if not fx.resource_path.is_empty() else "embedded"
+	return (
+		fx.resource_path.get_file().get_basename()
+		if not fx.resource_path.is_empty()
+		else "embedded"
+	)
 
 
 ## Every resource file under `dir` and its folders (the pools warm up from this).

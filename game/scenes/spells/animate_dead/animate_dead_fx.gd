@@ -44,7 +44,11 @@ func _physics_process(_delta: float) -> void:
 	if _age > ticks:
 		queue_free()
 		return
-	if DisplayServer.get_name() == "headless" or streamer_scene == null or _age % maxi(1, MatchClock.ticks_for(every_s)) != 0:
+	if (
+		DisplayServer.get_name() == "headless"
+		or streamer_scene == null
+		or _age % maxi(1, MatchClock.ticks_for(every_s)) != 0
+	):
 		return
 	if _rng.randf() >= chance:
 		return

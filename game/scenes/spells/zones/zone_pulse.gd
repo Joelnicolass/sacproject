@@ -46,8 +46,15 @@ func bodies_near(center: Vector3, radius: float) -> Array[Node3D]:
 
 
 func is_ally(body: Node3D) -> bool:
-	return SideRelations.stance(zone.from_slot, int(body.get("owner_slot"))) == SideRelations.Stance.ALLY
+	return (
+		SideRelations.stance(zone.from_slot, int(body.get("owner_slot")))
+		== SideRelations.Stance.ALLY
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) it belongs to is missing."])
+	return (
+		PackedStringArray()
+		if zone != null
+		else PackedStringArray(["The zone (GroundZone) it belongs to is missing."])
+	)

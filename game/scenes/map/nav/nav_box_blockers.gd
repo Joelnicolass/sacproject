@@ -42,7 +42,12 @@ func crosses_box(a: Vector3, b: Vector3) -> bool:
 	for box: Array in boxes:
 		var center: Vector2 = box[0]
 		var reach: float = box[4]
-		if center.x + reach < lo_x or center.x - reach > hi_x or center.y + reach < lo_z or center.y - reach > hi_z:
+		if (
+			center.x + reach < lo_x
+			or center.x - reach > hi_x
+			or center.y + reach < lo_z
+			or center.y - reach > hi_z
+		):
 			continue
 		var half: Vector2 = box[1]
 		var cos_y: float = box[2]

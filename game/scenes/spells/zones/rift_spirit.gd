@@ -118,23 +118,31 @@ func _aim() -> Vector3:
 		return goal
 	var t := float(_risen) / float(maxi(MatchClock.ticks_for(rising_s), 1))
 	var angle := TAU * float(rising_turns) * t
-	return (BodyNudge.center(body) if body != null else goal) + Vector3(cos(angle), rising_m * t, sin(angle))
+	return (
+		(BodyNudge.center(body) if body != null else goal)
+		+ Vector3(cos(angle), rising_m * t, sin(angle))
+	)
 
 
 func _arrived() -> void:
 	match status:
 		Status.TARGETING:
-			var body := get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null
+			var body := (
+				get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null
+			)
 			if body != null and ProjectileTargets.is_live_body(body):
 				SplashDamage.hurt(body, damage, from_slot, Health.DIRECT_SPELL)
 				status = Status.RISING
 			else:
 				status = Status.MOVING_AWAY
-				goal = global_position + ZoneRules.disk_point(_rng, effect_range) + Vector3(0.0, away_altitude_m, 0.0)
+				goal = (
+					global_position
+					+ ZoneRules.disk_point(_rng, effect_range)
+					+ Vector3(0.0, away_altitude_m, 0.0)
+				)
 		Status.MOVING_AWAY:
 			status = Status.MOVING_BACK
 			goal = home
 		Status.MOVING_BACK:
 			status = Status.VANISHING
 			velocity = Vector3(0.0, -speed, 0.0)
-

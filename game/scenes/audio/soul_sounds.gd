@@ -49,4 +49,8 @@ func _on_leaving() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if soul != null else PackedStringArray(["Assign in `soul` the Soul that sounds."])
+	return (
+		PackedStringArray()
+		if soul != null
+		else PackedStringArray(["Assign in `soul` the Soul that sounds."])
+	)

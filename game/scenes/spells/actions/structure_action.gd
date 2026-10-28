@@ -27,7 +27,9 @@ func arm_status(wizard: WizardBody, spell: SpellType) -> String:
 
 
 ## Read only, no instancing: cheap enough for the armed preview on every client.
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.target = wizard
 	aim.point = point
@@ -102,10 +104,14 @@ func _forget() -> void:
 
 
 ## The fount closest to the click (within POINT_FOUNT_RANGE_M), else to the wizard (cast range + 1); only free ones with `free_only`.
-func _near_fount(wizard: WizardBody, spell: SpellType, point: Vector3, free_only: bool) -> ManafountBody:
+func _near_fount(
+	wizard: WizardBody, spell: SpellType, point: Vector3, free_only: bool
+) -> ManafountBody:
 	var fount := TowerRules.closest_fount(get_tree(), point, POINT_FOUNT_RANGE_M, free_only)
 	if fount == null:
-		fount = TowerRules.closest_fount(get_tree(), wizard.global_position, spell.cast_range_m + 1.0, free_only)
+		fount = TowerRules.closest_fount(
+			get_tree(), wizard.global_position, spell.cast_range_m + 1.0, free_only
+		)
 	return fount
 
 

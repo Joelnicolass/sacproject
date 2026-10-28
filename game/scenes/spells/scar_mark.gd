@@ -55,4 +55,8 @@ static func broadcast(scene: PackedScene, at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if texture != null else PackedStringArray(["Assign `texture` (the picture of the mark)."])
+	return (
+		PackedStringArray()
+		if texture != null
+		else PackedStringArray(["Assign `texture` (the picture of the mark)."])
+	)

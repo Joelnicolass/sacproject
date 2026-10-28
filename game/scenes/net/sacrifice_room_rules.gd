@@ -12,7 +12,9 @@ const LEVEL_MAX := 9
 const SOULS_MIN := 0
 const SOULS_MAX := 200
 const SEED_MAX := 0x7fffffff
-const OPTION_KEYS: PackedStringArray = ["world", "mode", "level", "friendly_fire", "drop_soul", "starting_souls", "biome"]
+const OPTION_KEYS: PackedStringArray = [
+	"world", "mode", "level", "friendly_fire", "drop_soul", "starting_souls", "biome"
+]
 ## Version of the ticket this builds (2 = `mode` and `ai_seats`). The dedicated reads a ticket without them as a 1v1.
 const TICKET_VERSION := 2
 const BOT_KEYS: PackedStringArray = ["god", "difficulty"]
@@ -58,9 +60,15 @@ func is_valid_bot(meta: Dictionary) -> bool:
 			return false
 	var god: Variant = meta.get("god", "")
 	var difficulty: Variant = meta.get("difficulty", "")
-	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.difficulty_ids().has(String(difficulty)))):
+	if not (
+		difficulty is String
+		and (String(difficulty).is_empty() or AiSeat.difficulty_ids().has(String(difficulty)))
+	):
 		return false
-	return god is String and (String(god).is_empty() or MatchWire.decode_god(String(god), true) != null)
+	return (
+		god is String
+		and (String(god).is_empty() or MatchWire.decode_god(String(god), true) != null)
+	)
 
 
 ## Options of a room: only known keys, each of its type and inside the rules' range. Empty is fine. The map and the
@@ -72,7 +80,9 @@ func are_options_valid(options: Dictionary) -> bool:
 	var clean := clean_options(options)
 	if clean.size() != options.size():
 		return false
-	return GameModeCatalog.map_fits_mode(StringName(str(clean.get("world", worlds()[0]))), StringName(str(clean.get("mode", ""))))
+	return GameModeCatalog.map_fits_mode(
+		StringName(str(clean.get("world", worlds()[0]))), StringName(str(clean.get("mode", "")))
+	)
 
 
 ## The seats of a room with these options: the seats of its mode (1v1 by default).
@@ -119,12 +129,24 @@ func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 		var row: Dictionary = seat
 		if bool(row.get("bot", false)):
 			var bot_meta: Dictionary = row.get("meta", {})
-			ai_seats.append({"slot": int(row["slot"]), "god": str(bot_meta.get("god", "")), "difficulty": str(bot_meta.get("difficulty", ""))})
+			ai_seats.append(
+				{
+					"slot": int(row["slot"]),
+					"god": str(bot_meta.get("god", "")),
+					"difficulty": str(bot_meta.get("difficulty", ""))
+				}
+			)
 			continue
-		rows.append({
-			"slot": int(row["slot"]), "token": str(row["token"]),
-			"meta": MatchWire.clean_pick(row.get("meta", {})),
-		})
+		(
+			rows
+			. append(
+				{
+					"slot": int(row["slot"]),
+					"token": str(row["token"]),
+					"meta": MatchWire.clean_pick(row.get("meta", {})),
+				}
+			)
+		)
 	var clean := clean_options(options)
 	return {
 		"ticket_version": TICKET_VERSION,
@@ -135,4 +157,3 @@ func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 		"seats": rows,
 		"ai_seats": ai_seats,
 	}
-

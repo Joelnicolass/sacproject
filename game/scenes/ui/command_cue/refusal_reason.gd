@@ -61,7 +61,9 @@ func _process(delta: float) -> void:
 func _refresh() -> void:
 	var words := _flash_text if _flash_left > 0.0 else ""
 	if words.is_empty() and command_log != null and not command_log.armed.is_empty():
-		words = Refusal.text(command_log.aim_status) if not command_log.aim_status.is_empty() else ""
+		words = (
+			Refusal.text(command_log.aim_status) if not command_log.aim_status.is_empty() else ""
+		)
 	text = words
 	visible = not words.is_empty()
 	set_process(visible)

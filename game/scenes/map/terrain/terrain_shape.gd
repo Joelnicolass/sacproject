@@ -39,7 +39,17 @@ func derive() -> void:
 	var started := Time.get_ticks_usec()
 	faces = TerrainFaces.build(_heights)
 	index = TerrainRules.index(faces) if faces.is_valid() else TerrainRules.Index.new()
-	if DebugLog.on(&"terrain_load"): print("terrain_load: %s faces + index %.0f ms (%d triangles)" % [str(_clock.name) if _clock else "?", (Time.get_ticks_usec() - started) / 1000.0, faces.indices.size() / 3])
+	if DebugLog.on(&"terrain_load"):
+		print(
+			(
+				"terrain_load: %s faces + index %.0f ms (%d triangles)"
+				% [
+					str(_clock.name) if _clock else "?",
+					(Time.get_ticks_usec() - started) / 1000.0,
+					faces.indices.size() / 3
+				]
+			)
+		)
 	derived.emit(_moved())
 
 
@@ -49,7 +59,11 @@ func _on_changed() -> void:
 	if _waiting or _clock == null or not _clock.is_inside_tree():
 		return
 	_waiting = true
-	while is_instance_valid(_clock) and _clock.is_inside_tree() and Time.get_ticks_msec() - _changed_ms < DELAY_S * 1000.0:
+	while (
+		is_instance_valid(_clock)
+		and _clock.is_inside_tree()
+		and Time.get_ticks_msec() - _changed_ms < DELAY_S * 1000.0
+	):
 		await _clock.get_tree().create_timer(DELAY_S).timeout
 	_waiting = false
 	if is_instance_valid(_clock):
@@ -67,7 +81,10 @@ func _moved() -> Rect2i:
 	for row in rows:
 		var first := row * TerrainGrid.SIDE
 		var last := first + TerrainGrid.SIDE
-		if heights.slice(first, last) == _last_heights.slice(first, last) and voids.slice(first, last) == _last_voids.slice(first, last):
+		if (
+			heights.slice(first, last) == _last_heights.slice(first, last)
+			and voids.slice(first, last) == _last_voids.slice(first, last)
+		):
 			continue
 		for id in range(first, last):
 			if heights[id] != _last_heights[id] or voids[id] != _last_voids[id]:

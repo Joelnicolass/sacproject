@@ -44,5 +44,8 @@ func is_last_round(ritual: Ritual) -> bool:
 			return true
 		var health := ritual.creature.get_node_or_null("Health") as Health
 		var per_round := ritual.rules.convert_health_per_round if ritual.rules else 550.0
-		return ritual.round_index >= SacrificeMath.convert_rounds(health.maximum if health else 0.0, per_round) - 1
+		return (
+			ritual.round_index
+			>= SacrificeMath.convert_rounds(health.maximum if health else 0.0, per_round) - 1
+		)
 	return ritual.target_is_gone()

@@ -35,12 +35,18 @@ static func run(arguments: PackedStringArray, host: Node) -> int:
 		var pair := argument.trim_prefix("--").split("=", true, 1)
 		options[pair[0]] = pair[1] if pair.size() > 1 else ""
 	var tag: String = options.get("map", "")
-	var scene: String = options.get("scene", "%s/%s/map.tscn" % [MAPS_DIR, tag] if not tag.is_empty() else "")
+	var scene: String = options.get(
+		"scene", "%s/%s/map.tscn" % [MAPS_DIR, tag] if not tag.is_empty() else ""
+	)
 	if scene.is_empty():
 		printerr(USAGE)
 		return 2
 	if options.has("flat") and not tag.is_empty():
-		return _written(TerrainEdits.write_flat(options.get("out", "%s/%s" % [MAPS_DIR, tag]), float(options["flat"])))
+		return _written(
+			TerrainEdits.write_flat(
+				options.get("out", "%s/%s" % [MAPS_DIR, tag]), float(options["flat"])
+			)
+		)
 	var root := _enter(scene, tag, host)
 	if root == null or root.terrain == null:
 		printerr("terrain_cli: %s is no map scene with a Terrain (MapRoot.terrain)" % scene)
@@ -59,7 +65,9 @@ static func run(arguments: PackedStringArray, host: Node) -> int:
 		code = _flatten_bases(root, folder)
 	elif options.has("validate"):
 		var catalog := MapCatalog.shared()
-		var problems: Array[String] = await MapChecks.check(root, catalog.find(StringName(tag)) if catalog.has(StringName(tag)) else null)
+		var problems: Array[String] = await MapChecks.check(
+			root, catalog.find(StringName(tag)) if catalog.has(StringName(tag)) else null
+		)
 		for problem in problems:
 			print("terrain_cli: %s" % problem)
 		print("TERRAIN VALIDATE %s %s" % [scene, "PASS" if problems.is_empty() else "FAIL"])
@@ -103,7 +111,16 @@ static func _written(result: MapImages.Result) -> int:
 	if not result.error.is_empty():
 		printerr("terrain_cli: " + result.error)
 		return 1
-	print("terrain_cli: wrote %s; import again (--import) to use it" % (", ".join(result.written) if not result.written.is_empty() else "nothing (unchanged)"))
+	print(
+		(
+			"terrain_cli: wrote %s; import again (--import) to use it"
+			% (
+				", ".join(result.written)
+				if not result.written.is_empty()
+				else "nothing (unchanged)"
+			)
+		)
+	)
 	return 0
 
 

@@ -121,23 +121,67 @@ func is_neutral(eps: float) -> bool:
 
 ## Every number in a fixed order (comparisons, logs).
 func numbers() -> PackedFloat32Array:
-	return PackedFloat32Array([
-		hour, night, elevation_change_deg, light_tint.r, light_tint.g, light_tint.b, light_energy,
-		ambient_tint.r, ambient_tint.g, ambient_tint.b, ambient_energy, sky_tint.r, sky_tint.g, sky_tint.b, sky_grey,
-		fog_density, fog_end, rain, flash, stars, moon_intensity, cloud_cover, cloud_darken, cloud_speed_mul,
-		shadow, fog_clear_m, fog_begin, mist, mist_color.r, mist_color.g, mist_color.b,
-	])
+	return PackedFloat32Array(
+		[
+			hour,
+			night,
+			elevation_change_deg,
+			light_tint.r,
+			light_tint.g,
+			light_tint.b,
+			light_energy,
+			ambient_tint.r,
+			ambient_tint.g,
+			ambient_tint.b,
+			ambient_energy,
+			sky_tint.r,
+			sky_tint.g,
+			sky_tint.b,
+			sky_grey,
+			fog_density,
+			fog_end,
+			rain,
+			flash,
+			stars,
+			moon_intensity,
+			cloud_cover,
+			cloud_darken,
+			cloud_speed_mul,
+			shadow,
+			fog_clear_m,
+			fog_begin,
+			mist,
+			mist_color.r,
+			mist_color.g,
+			mist_color.b,
+		]
+	)
 
 
 func _take(n: PackedFloat32Array) -> void:
-	hour = n[0]; night = n[1]; elevation_change_deg = n[2]
-	light_tint = Color(n[3], n[4], n[5]); light_energy = n[6]
-	ambient_tint = Color(n[7], n[8], n[9]); ambient_energy = n[10]
-	sky_tint = Color(n[11], n[12], n[13]); sky_grey = n[14]
-	fog_density = n[15]; fog_end = n[16]; rain = n[17]; flash = n[18]
-	stars = n[19]; moon_intensity = n[20]; cloud_cover = n[21]; cloud_darken = n[22]; cloud_speed_mul = n[23]
-	shadow = n[24]; fog_clear_m = n[25]; fog_begin = n[26]
-	mist = n[27]; mist_color = Color(n[28], n[29], n[30])
+	hour = n[0]
+	night = n[1]
+	elevation_change_deg = n[2]
+	light_tint = Color(n[3], n[4], n[5])
+	light_energy = n[6]
+	ambient_tint = Color(n[7], n[8], n[9])
+	ambient_energy = n[10]
+	sky_tint = Color(n[11], n[12], n[13])
+	sky_grey = n[14]
+	fog_density = n[15]
+	fog_end = n[16]
+	rain = n[17]
+	flash = n[18]
+	stars = n[19]
+	moon_intensity = n[20]
+	cloud_cover = n[21]
+	cloud_darken = n[22]
+	cloud_speed_mul = n[23]
+	shadow = n[24]
+	fog_clear_m = n[25]
+	fog_begin = n[26]
+	mist = n[27]
+	mist_color = Color(n[28], n[29], n[30])
 
 
 ## The same moment with the look left as it is (hour and weather kept): Atmosphere snaps a sample within a hair of

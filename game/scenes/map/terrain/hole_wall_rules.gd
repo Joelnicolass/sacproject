@@ -33,8 +33,17 @@ static func arrays(index: TerrainRules.Index, removed: PackedInt32Array) -> Arra
 		var first := vertices.size()
 		vertices.append_array([a, b, b + down, a + down])
 		normals.append_array([edges[w][2], edges[w][2], edges[w][2], edges[w][2]])
-		colors.append_array([Color(0, 0, 0, 0), Color(0, 0, 0, 0), Color(0, 0, 0, 0), Color(0, 0, 0, 0)])
-		uvs.append_array([Vector2(metres[w * 2], 0.0), Vector2(metres[w * 2 + 1], 0.0), Vector2(metres[w * 2 + 1], 1.0), Vector2(metres[w * 2], 1.0)])
+		colors.append_array(
+			[Color(0, 0, 0, 0), Color(0, 0, 0, 0), Color(0, 0, 0, 0), Color(0, 0, 0, 0)]
+		)
+		uvs.append_array(
+			[
+				Vector2(metres[w * 2], 0.0),
+				Vector2(metres[w * 2 + 1], 0.0),
+				Vector2(metres[w * 2 + 1], 1.0),
+				Vector2(metres[w * 2], 1.0)
+			]
+		)
 		indices.append_array([first, first + 2, first + 1, first + 2, first, first + 3])
 	return [vertices, normals, colors, indices, uvs]
 
@@ -50,7 +59,12 @@ static func boundary(index: TerrainRules.Index, removed: PackedInt32Array) -> Ar
 		for dz in range(-2, 2):
 			for dx in range(-2, 2):
 				var cell := vertex + Vector2i(dx, dz)
-				if cell.x < 0 or cell.y < 0 or cell.x >= TerrainGrid.SIDE or cell.y >= TerrainGrid.SIDE:
+				if (
+					cell.x < 0
+					or cell.y < 0
+					or cell.x >= TerrainGrid.SIDE
+					or cell.y >= TerrainGrid.SIDE
+				):
 					continue
 				for k in 2:
 					var triangle := index.cells[TerrainGrid.id_of(cell) * 2 + k]
@@ -81,17 +95,24 @@ static func boundary(index: TerrainRules.Index, removed: PackedInt32Array) -> Ar
 
 ## True when a corner of `triangle` was taken away.
 static func _lost(index: TerrainRules.Index, gone: Dictionary, triangle: int) -> bool:
-	return gone.has(index.corners[triangle * 3]) or gone.has(index.corners[triangle * 3 + 1]) or gone.has(index.corners[triangle * 3 + 2])
+	return (
+		gone.has(index.corners[triangle * 3])
+		or gone.has(index.corners[triangle * 3 + 1])
+		or gone.has(index.corners[triangle * 3 + 2])
+	)
 
 
 ## [from, to, normal] of the side of `land` ([triangle, corner]) that faces the lost triangle `hole`.
 static func _wall(index: TerrainRules.Index, land: Array, hole: int) -> Array:
 	var a := index.ground[land[0] * 3 + land[1]]
 	var b := index.ground[land[0] * 3 + (land[1] + 1) % 3]
-	var along := (b - a)
+	var along := b - a
 	along.y = 0.0
 	var normal := Vector3(along.z, 0.0, -along.x).normalized()
-	var middle := (index.ground[hole * 3] + index.ground[hole * 3 + 1] + index.ground[hole * 3 + 2]) / 3.0 - (a + b) * 0.5
+	var middle := (
+		(index.ground[hole * 3] + index.ground[hole * 3 + 1] + index.ground[hole * 3 + 2]) / 3.0
+		- (a + b) * 0.5
+	)
 	if normal.dot(middle) < 0.0:
 		normal = -normal
 	return [a, b, normal]

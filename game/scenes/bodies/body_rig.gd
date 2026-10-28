@@ -91,7 +91,11 @@ func role_framerate(role: String) -> float:
 ## Seconds into the active clip (within the pass the state machine is in); 0 when nothing plays.
 func play_position() -> float:
 	var playback := _playback()
-	return playback.get_current_play_position() if playback != null and _model_root.tree().active else 0.0
+	return (
+		playback.get_current_play_position()
+		if playback != null and _model_root.tree().active
+		else 0.0
+	)
 
 
 ## The frame of the active clip's first `hit` marker (the strike lands on it), -1 without one.
@@ -155,7 +159,11 @@ func set_paused(on: bool) -> void:
 	_paused = on
 	if _model_root == null:
 		return
-	var mode := AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL if on else AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE
+	var mode := (
+		AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
+		if on
+		else AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE
+	)
 	_model_root.tree().callback_mode_process = mode
 
 
@@ -251,7 +259,9 @@ func _clear() -> void:
 func _collect_hands() -> void:
 	for child in _skeleton.get_children():
 		var hand := child as BoneAttachment3D
-		var socket := hand.get_child(0) as Node3D if hand != null and hand.get_child_count() > 0 else null
+		var socket := (
+			hand.get_child(0) as Node3D if hand != null and hand.get_child_count() > 0 else null
+		)
 		if socket != null and String(hand.name).begins_with("Hand"):
 			_hands.append(hand)
 			_sockets.append(socket)

@@ -34,7 +34,9 @@ func _ready() -> void:
 
 func _show_choice() -> void:
 	var chosen: WizardPick = SacrificeFlow.pick
-	%JoinChoice.text = tr(LocalServerText.PICK_CHOICE) % [chosen.wizard.display_name, chosen.god.display_name]
+	%JoinChoice.text = (
+		tr(LocalServerText.PICK_CHOICE) % [chosen.wizard.display_name, chosen.god.display_name]
+	)
 
 
 func _on_pick_pressed() -> void:
@@ -71,7 +73,10 @@ func _on_join() -> void:
 		_status.text = tr(LocalServerText.BAD_ENDPOINT)
 		return
 	_set_joining(true)
-	_status.text = tr(LocalServerText.CONNECTING) % LocalServerEndpoint.format(str(target["host"]), int(target["port"]))
+	_status.text = (
+		tr(LocalServerText.CONNECTING)
+		% LocalServerEndpoint.format(str(target["host"]), int(target["port"]))
+	)
 
 
 func _set_joining(joining: bool) -> void:

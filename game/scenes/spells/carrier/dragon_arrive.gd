@@ -38,11 +38,16 @@ func released(carrier: SpellCarrier, target: Node3D) -> void:
 
 func along(carrier: SpellCarrier) -> void:
 	var half := carrier.damage_range * 0.5
-	var area := AABB(carrier.global_position - Vector3(half, half, half), Vector3(carrier.damage_range, carrier.damage_range, carrier.damage_range))
+	var area := AABB(
+		carrier.global_position - Vector3(half, half, half),
+		Vector3(carrier.damage_range, carrier.damage_range, carrier.damage_range)
+	)
 	var per_tick := burn_share * carrier.damage / MatchClock.TICKS_PER_SECOND_F
 	for body in BodyNudge.bodies_in(carrier.get_tree(), area):
 		if body != carrier.wizard():
-			Health.of(body).damage_typed(per_tick, Health.DIRECT_SPELL, carrier.from_slot, false, true)
+			Health.of(body).damage_typed(
+				per_tick, Health.DIRECT_SPELL, carrier.from_slot, false, true
+			)
 
 
 func arrive(carrier: SpellCarrier) -> void:
@@ -69,17 +74,38 @@ func arrive(carrier: SpellCarrier) -> void:
 func _burst(carrier: SpellCarrier) -> void:
 	var center := carrier.global_position
 	var tree := carrier.get_tree()
-	SplashDamage.deal(tree, center, carrier.damage, carrier.damage_range, null, carrier.from_slot, Health.SPLASH_SPELL, Health.IGNITE)
+	SplashDamage.deal(
+		tree,
+		center,
+		carrier.damage,
+		carrier.damage_range,
+		null,
+		carrier.from_slot,
+		Health.SPLASH_SPELL,
+		Health.IGNITE
+	)
 	for body in SplashDamage.bodies_within(tree, center, carrier.damage_range):
-		Burning.ignite(body, 0.0, MatchClock.ticks_for(ablaze_s), Health.SPLASH_SPELL, carrier.from_slot)
+		Burning.ignite(
+			body, 0.0, MatchClock.ticks_for(ablaze_s), Health.SPLASH_SPELL, carrier.from_slot
+		)
 
 
 ## No body to follow: fly on to a point `wander_share` of the range away, over the land.
 func _wander(carrier: SpellCarrier) -> void:
-	var around := Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)).normalized()
+	var around := (
+		Vector3(
+			_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)
+		)
+		. normalized()
+	)
 	var at := carrier.global_position + around * wander_share * _spell.effect_range_m
-	var ground := GroundRay.surface_y(carrier, at, 1, GroundRay.wizard_rids(carrier.get_tree()), INF)
-	at.y = (ground if is_finite(ground) else carrier.global_position.y) + wander_share * _spell.effect_range_m
+	var ground := GroundRay.surface_y(
+		carrier, at, 1, GroundRay.wizard_rids(carrier.get_tree()), INF
+	)
+	at.y = (
+		(ground if is_finite(ground) else carrier.global_position.y)
+		+ wander_share * _spell.effect_range_m
+	)
 	carrier.flight.retarget(null, at)
 
 

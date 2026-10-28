@@ -113,7 +113,11 @@ func _input(event: InputEvent) -> void:
 		var button := event as InputEventMouseButton
 		var wheel_in := button.is_action_pressed(&"camera_wheel_in")
 		var wheel_out := button.is_action_pressed(&"camera_wheel_out")
-		if button.is_action_pressed(&"select") or button.is_action_pressed(&"order_units") or button.is_action_pressed(&"camera_orbit"):
+		if (
+			button.is_action_pressed(&"select")
+			or button.is_action_pressed(&"order_units")
+			or button.is_action_pressed(&"camera_orbit")
+		):
 			_dragged = false
 			_drag_travel = 0.0
 		elif (wheel_in or wheel_out) and _wheel_blocked(button.position):
@@ -142,7 +146,9 @@ func _wheel_blocked(screen: Vector2) -> bool:
 		if blocker is Minimap:
 			if (blocker as Minimap).covers(screen):
 				return true
-		elif Rect2(Vector2.ZERO, blocker.size).has_point(blocker.get_global_transform().affine_inverse() * screen):
+		elif Rect2(Vector2.ZERO, blocker.size).has_point(
+			blocker.get_global_transform().affine_inverse() * screen
+		):
 			return true
 	return false
 
@@ -153,8 +159,12 @@ func _wheel_factor(button: InputEventMouseButton) -> float:
 
 ## True while the orbit gesture is held (`camera_orbit`, or `camera_orbit_modifier` + `select`).
 func _free_look() -> bool:
-	return Input.is_action_pressed(&"camera_orbit") \
-			or (Input.is_action_pressed(&"camera_orbit_modifier") and Input.is_action_pressed(&"select"))
+	return (
+		Input.is_action_pressed(&"camera_orbit")
+		or (
+			Input.is_action_pressed(&"camera_orbit_modifier") and Input.is_action_pressed(&"select")
+		)
+	)
 
 
 func _process(delta: float) -> void:
@@ -234,9 +244,14 @@ func _place() -> void:
 	var ahead := Vector3(sin(yaw), 0.0, cos(yaw))
 	var spot := origin - ahead * distance
 	spot.y = origin.y - _ground_y(origin, origin.y) + _ground_y(spot, origin.y) + height
-	var offset := atan2(spot.y - (origin.y + focus * focus_factor), Vector2(origin.x - spot.x, origin.z - spot.z).length())
+	var offset := atan2(
+		spot.y - (origin.y + focus * focus_factor),
+		Vector2(origin.x - spot.x, origin.z - spot.z).length()
+	)
 	var offset_deg := rad_to_deg(offset)
-	free_pitch_deg = clampf(free_pitch_deg, -look_up_max_deg - offset_deg, look_down_max_deg - offset_deg)
+	free_pitch_deg = clampf(
+		free_pitch_deg, -look_up_max_deg - offset_deg, look_down_max_deg - offset_deg
+	)
 	view_pitch_deg = clampf(offset_deg + free_pitch_deg, -look_up_max_deg, look_down_max_deg)
 	var down := deg_to_rad(view_pitch_deg)
 	var view := ahead * cos(down) + Vector3.DOWN * sin(down)

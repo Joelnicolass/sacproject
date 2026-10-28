@@ -15,5 +15,10 @@ func _draw() -> void:
 	if bake == null or bake.texture == null or bake.side_m <= 0.0:
 		return
 	draw_set_transform_matrix(minimap.world_transform())
-	draw_texture_rect(bake.texture, Rect2(bake.origin_xz, Vector2.ONE * bake.side_m), false, minimap.style.ground_tint)
+	draw_texture_rect(
+		bake.texture,
+		Rect2(bake.origin_xz, Vector2.ONE * bake.side_m),
+		false,
+		minimap.style.ground_tint
+	)
 	draw_set_transform_matrix(Transform2D.IDENTITY)

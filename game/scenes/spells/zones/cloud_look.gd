@@ -30,7 +30,8 @@ var _size := 0.0
 
 
 ## This moves by itself every frame, so physics interpolation must leave it alone.
-func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 func _ready() -> void:
@@ -40,9 +41,14 @@ func _ready() -> void:
 	if multimesh.instance_count != layer_count:
 		multimesh.instance_count = layer_count
 		for i in layer_count:
-			multimesh.set_instance_transform(i, Transform3D(Basis.from_scale(Vector3.ONE * (1.0 - layer_shrink * i)), Vector3.ZERO))
+			multimesh.set_instance_transform(
+				i,
+				Transform3D(Basis.from_scale(Vector3.ONE * (1.0 - layer_shrink * i)), Vector3.ZERO)
+			)
 			multimesh.set_instance_custom_data(i, Color(layer_seed(i), 0.0, 0.0, 0.0))
-	set_process(not Engine.is_editor_hint() and zone != null and DisplayServer.get_name() != "headless")
+	set_process(
+		not Engine.is_editor_hint() and zone != null and DisplayServer.get_name() != "headless"
+	)
 	visible = false
 
 
@@ -55,10 +61,18 @@ func _process(delta: float) -> void:
 	var ending := zone.phase == GroundZone.Phase.ENDING
 	_size = clampf(_size + (-shrink_per_s if ending else grow_per_s) * delta, 0.0, 1.0)
 	visible = _size > 0.001
-	var radius := fixed_radius_m if fixed_radius_m > 0.0 else zone.spell.effect_range_m * radius_share
+	var radius := (
+		fixed_radius_m if fixed_radius_m > 0.0 else zone.spell.effect_range_m * radius_share
+	)
 	layers.scale = shape * radius * (0.5 + 0.5 * _size) * 2.0 * mean_radius
 	layers.set_instance_shader_parameter(&"size", _size)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null and layers != null else PackedStringArray(["The zone (GroundZone) and the layers (MultiMeshInstance3D) are missing."])
+	return (
+		PackedStringArray()
+		if zone != null and layers != null
+		else PackedStringArray(
+			["The zone (GroundZone) and the layers (MultiMeshInstance3D) are missing."]
+		)
+	)

@@ -141,7 +141,6 @@ extends Resource
 ## Seconds the grass takes to stand up after a unit moves on.
 @export_range(0.2, 8.0, 0.1, "suffix:s") var trample_recover_s := 2.0
 
-
 ## Share of the blade's top view that counts as ground cover (a blade is a thin, tapered, bent shape).
 const COVER_SHAPE := 0.55
 ## Where in its range of heights the far blades are measured (0 = the short ones, 1 = the tall ones).

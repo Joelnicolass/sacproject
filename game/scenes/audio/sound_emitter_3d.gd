@@ -65,7 +65,11 @@ func _exit_tree() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if cue != null else PackedStringArray(["Assign `cue`: the SoundCue that plays (data/audio/cues/)."])
+	return (
+		PackedStringArray()
+		if cue != null
+		else PackedStringArray(["Assign `cue`: the SoundCue that plays (data/audio/cues/)."])
+	)
 
 
 ## Turns a loop on or off (a one-shot only remembers it for its next play_once).

@@ -35,16 +35,28 @@ func spawn_unit(data: Dictionary) -> Node3D:
 ## A creature the map puts on the field (MapPopulation): a type with `peasant` gets villager_scene, and every one
 ## joins the group `npc` (SoulSystem and the ledger read it). `slot` is the side of the map plus one.
 func spawn_map_creature(type: CreatureType, slot: int, at: Vector3, yaw: float) -> Node3D:
-	return spawn_unit({
-		"tag": type.id(), "label": type.display_name, "slot": slot,
-		"x": at.x, "y": at.y, "z": at.z, "yaw": yaw,
-		"npc": true, "peasant": type.peasant,
-	})
+	return spawn_unit(
+		{
+			"tag": type.id(),
+			"label": type.display_name,
+			"slot": slot,
+			"x": at.x,
+			"y": at.y,
+			"z": at.z,
+			"yaw": yaw,
+			"npc": true,
+			"peasant": type.peasant,
+		}
+	)
 
 
 func _make(data: Variant) -> Node3D:
 	var info: Dictionary = data
-	var scene := villager_scene if bool(info.get("peasant", false)) and villager_scene != null else unit_scene
+	var scene := (
+		villager_scene
+		if bool(info.get("peasant", false)) and villager_scene != null
+		else unit_scene
+	)
 	var unit: Node3D = scene.instantiate()
 	if bool(info.get("npc", false)):
 		unit.add_to_group(NPC_GROUP)

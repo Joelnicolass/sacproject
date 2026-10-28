@@ -40,7 +40,13 @@ var _dealt_since_fx := 0.0
 func step(health: Health) -> bool:
 	_before_damage()
 	updates += 1
-	var dealt := health.damage_typed(per_second / float(MatchClock.TICKS_PER_SECOND), kind, from_slot, ignore_friendly, pierce_shield)
+	var dealt := health.damage_typed(
+		per_second / float(MatchClock.TICKS_PER_SECOND),
+		kind,
+		from_slot,
+		ignore_friendly,
+		pierce_shield
+	)
 	taken += dealt
 	if dealt > 0.0 and not attacker_path.is_empty():
 		LifeDrain.feed(health.get_node_or_null(attacker_path), health.get_parent(), dealt)
@@ -69,7 +75,10 @@ func _before_damage() -> void:
 
 ## The line the owner prints when the dose ends.
 func end_line(who: String, health: Health) -> String:
-	return "%s %s total %.1f in %d updates health %d" % [_log_word(), who, taken, updates, roundi(health.current)]
+	return (
+		"%s %s total %.1f in %d updates health %d"
+		% [_log_word(), who, taken, updates, roundi(health.current)]
+	)
 
 
 func _log_word() -> String:

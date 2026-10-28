@@ -75,7 +75,18 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 ## The score without the danger factor. Pure: the suite calls it.
-static func score(distance: float, ref_range: float, building: bool, last_attacker: bool, current: bool, near_slope := 0.75, far_factor := 0.25, creature_weight := 1.25, last_attacker_weight := 1.2, current_weight := 1.3) -> float:
+static func score(
+	distance: float,
+	ref_range: float,
+	building: bool,
+	last_attacker: bool,
+	current: bool,
+	near_slope := 0.75,
+	far_factor := 0.25,
+	creature_weight := 1.25,
+	last_attacker_weight := 1.2,
+	current_weight := 1.3
+) -> float:
 	var s := 0.0
 	if distance < ref_range:
 		s = 1.0 - near_slope * (distance / ref_range)
@@ -93,7 +104,9 @@ static func score(distance: float, ref_range: float, building: bool, last_attack
 
 
 ## The distance at which the best weight still reaches `threshold`.
-static func score_cutoff(threshold: float, ref_range: float, max_weight := 1.25 * 1.2 * 1.3) -> float:
+static func score_cutoff(
+	threshold: float, ref_range: float, max_weight := 1.25 * 1.2 * 1.3
+) -> float:
 	var root := sqrt(maxf(threshold, 0.0) / max_weight)
 	if root <= 0.0:
 		return INF
@@ -137,7 +150,18 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 			var distance := _flat(center, other.global_position)
 			if distance > within:
 				continue
-			var value := score(distance, ref_range, other.is_in_group(MapBuilding.STRUCTURE_GROUP), other.get_instance_id() == last_attacker_id, other == body.target, near_slope, far_factor, creature_weight, last_attacker_weight, current_weight)
+			var value := score(
+				distance,
+				ref_range,
+				other.is_in_group(MapBuilding.STRUCTURE_GROUP),
+				other.get_instance_id() == last_attacker_id,
+				other == body.target,
+				near_slope,
+				far_factor,
+				creature_weight,
+				last_attacker_weight,
+				current_weight
+			)
 			if TargetRules.is_passive(other):
 				value *= passive_weight
 			if value <= threshold:
@@ -149,7 +173,9 @@ func pick(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF)
 				best_distance = distance
 				best = other
 	if record_scores:
-		last_scores.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["score"]) > float(b["score"]))
+		last_scores.sort_custom(
+			func(a: Dictionary, b: Dictionary) -> bool: return float(a["score"]) > float(b["score"])
+		)
 	total_us += Time.get_ticks_usec() - started
 	if best != null:
 		picked.emit(best)
@@ -172,7 +198,12 @@ func is_banned(node: Variant) -> bool:
 
 ## INF for a flyer or a body with a ranged attack, else the top of its swing.
 func _max_target_height() -> float:
-	if not melee_height_filter or body.type == null or body.type.ranged_attack != null or body.is_flying():
+	if (
+		not melee_height_filter
+		or body.type == null
+		or body.type.ranged_attack != null
+		or body.is_flying()
+	):
 		return INF
 	var melee := body.weapons.melee
 	return melee.height if melee != null else INF

@@ -27,7 +27,11 @@ static func parts_box(visuals: Node3D) -> AABB:
 
 ## The size of the collision box for a parts box: narrower by the inset on x and z, never thinner than half a meter.
 static func body_size(parts: AABB, inset_m: float) -> Vector3:
-	return Vector3(maxf(parts.size.x - 2.0 * inset_m, 0.5), maxf(parts.size.y, 0.5), maxf(parts.size.z - 2.0 * inset_m, 0.5))
+	return Vector3(
+		maxf(parts.size.x - 2.0 * inset_m, 0.5),
+		maxf(parts.size.y, 0.5),
+		maxf(parts.size.z - 2.0 * inset_m, 0.5)
+	)
 
 
 ## World centre where a part (a holder under `Visuals`) bursts: its Marker3D child when it has one, else the middle of its meshes.

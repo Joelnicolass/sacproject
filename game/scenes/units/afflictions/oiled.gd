@@ -22,7 +22,6 @@ extends Affliction
 ## The shown bit is the oil for every peer; the splash look is the shot's (ShotLook.impact_fx). Server (or solo) only decides.
 ## Two oiled bodies blast in the order of the scene tree. A neighbour lit by a blast may blast on the same tick or on the next one.
 
-
 ## unit_orders.gd has no class_name (other scripts preload it).
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
@@ -58,7 +57,13 @@ func _ready() -> void:
 ## got smeared; false if it already is, cannot be, or this is a client.
 func start(ticks: int, slot: int, ability: AbilityType) -> bool:
 	var body := _body()
-	if not is_multiplayer_authority() or body == null or ticks <= 0 or is_on() or not can_be_oiled():
+	if (
+		not is_multiplayer_authority()
+		or body == null
+		or ticks <= 0
+		or is_on()
+		or not can_be_oiled()
+	):
 		return false
 	if not _afflictions().admit(self):
 		return false
@@ -105,7 +110,12 @@ func _physics_process(_delta: float) -> void:
 	if orders != null and is_instance_valid(orders):
 		(orders as _ORDERS).clear()
 	if DebugLog.on(&"oil"):
-		_say("step (%.3f, %.3f, %.3f)" % [body.global_position.x, body.global_position.y, body.global_position.z])
+		_say(
+			(
+				"step (%.3f, %.3f, %.3f)"
+				% [body.global_position.x, body.global_position.y, body.global_position.z]
+			)
+		)
 	if not can_be_oiled():
 		_finish("cannot be oiled")
 		return
@@ -127,8 +137,19 @@ func _blast(body: Node3D) -> void:
 		FxBus.broadcast(blast_fx, center)
 	var tree := get_tree()
 	for target in SplashDamage.bodies_within(tree, center, _radius):
-		Burning.ignite(target, 0.0, MatchClock.ticks_for(fire_s), Health.SPLASH_RANGED, _slot, 0.0, false, fire_fx)
-	SplashDamage.deal(tree, center, _damage, _radius, null, _slot, Health.SPLASH_RANGED, Health.IGNITE)
+		Burning.ignite(
+			target,
+			0.0,
+			MatchClock.ticks_for(fire_s),
+			Health.SPLASH_RANGED,
+			_slot,
+			0.0,
+			false,
+			fire_fx
+		)
+	SplashDamage.deal(
+		tree, center, _damage, _radius, null, _slot, Health.SPLASH_RANGED, Health.IGNITE
+	)
 	_say("blast end")
 	_finish("blew up")
 

@@ -23,7 +23,8 @@ extends FsmMachine
 @export var work_role := "work"
 
 var body: UnitBody:
-	get: return actor as UnitBody
+	get:
+		return actor as UnitBody
 
 var _left := 0.0
 
@@ -43,7 +44,14 @@ func _ready() -> void:
 ## One step: the panic wears off and, every `think_interval_s`, it thinks. Only an idle, walking or cowering villager thinks; a dead, held
 ## or revived one is somebody else's, and so is one under an order.
 func _physics_process(delta: float) -> void:
-	if body.ordered or not (body.mode == UnitBody.Mode.IDLE or body.mode == UnitBody.Mode.MOVE or body.mode == UnitBody.Mode.COWER):
+	if (
+		body.ordered
+		or not (
+			body.mode == UnitBody.Mode.IDLE
+			or body.mode == UnitBody.Mode.MOVE
+			or body.mode == UnitBody.Mode.COWER
+		)
+	):
 		return
 	senses.age(delta)
 	_left -= delta
@@ -59,7 +67,10 @@ func state_name() -> StringName:
 
 
 func think() -> void:
-	if senses.panic_left > 0.0 and _flee_from(senses.closest_of_slot(senses.panic_from), panic_leg_m):
+	if (
+		senses.panic_left > 0.0
+		and _flee_from(senses.closest_of_slot(senses.panic_from), panic_leg_m)
+	):
 		return
 	if senses.closest_shelter() == null:
 		transition(&"Cower")

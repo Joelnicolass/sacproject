@@ -15,10 +15,18 @@ func request(target_pos: Vector3, foe: Node3D = null) -> String:
 	var reason := status(target_pos, foe)
 	if not reason.is_empty() or not MpAuthority.should_send_command():
 		return reason if not reason.is_empty() else use(target_pos, foe)
-	submit_ability.rpc_id(MpAuthority.SERVER_PEER, {
-		"x": target_pos.x, "y": target_pos.y, "z": target_pos.z,
-		"target": str(foe.get_path()) if foe else "",
-	})
+	(
+		submit_ability
+		. rpc_id(
+			MpAuthority.SERVER_PEER,
+			{
+				"x": target_pos.x,
+				"y": target_pos.y,
+				"z": target_pos.z,
+				"target": str(foe.get_path()) if foe else "",
+			}
+		)
+	)
 	return ""
 
 

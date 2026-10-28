@@ -50,8 +50,14 @@ static func index(data: MapTerrainData) -> Index:
 
 
 ## Land height under (x, z) in world units, NAN over a hole or off the map. `shift`/`corners`: see the class doc.
-static func height_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array,
-		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> float:
+static func height_in(
+	x: float,
+	z: float,
+	ground: PackedVector3Array,
+	cells: PackedInt32Array,
+	shift := PackedFloat32Array(),
+	corners := PackedInt32Array()
+) -> float:
 	var id := triangle_in(x, z, ground, cells, shift, corners)
 	if id < 0:
 		return NAN
@@ -67,8 +73,14 @@ static func height_in(x: float, z: float, ground: PackedVector3Array, cells: Pac
 
 
 ## The land triangle under (x, z) (an id into `ground`), -1 over a hole or off the map.
-static func triangle_in(x: float, z: float, ground: PackedVector3Array, cells: PackedInt32Array,
-		shift := PackedFloat32Array(), corners := PackedInt32Array()) -> int:
+static func triangle_in(
+	x: float,
+	z: float,
+	ground: PackedVector3Array,
+	cells: PackedInt32Array,
+	shift := PackedFloat32Array(),
+	corners := PackedInt32Array()
+) -> int:
 	if ground.is_empty():
 		return -1
 	var cell_x := int(floor(x / TerrainGrid.CELL_M))
@@ -88,7 +100,11 @@ static func triangle_in(x: float, z: float, ground: PackedVector3Array, cells: P
 
 ## True when a corner of triangle `id` was taken away.
 static func _has_hole(shift: PackedFloat32Array, corners: PackedInt32Array, id: int) -> bool:
-	return shift[corners[id * 3] * 2 + 1] > 0.5 or shift[corners[id * 3 + 1] * 2 + 1] > 0.5 or shift[corners[id * 3 + 2] * 2 + 1] > 0.5
+	return (
+		shift[corners[id * 3] * 2 + 1] > 0.5
+		or shift[corners[id * 3 + 1] * 2 + 1] > 0.5
+		or shift[corners[id * 3 + 2] * 2 + 1] > 0.5
+	)
 
 
 ## Edges count as inside, with either winding.
@@ -99,8 +115,10 @@ static func _inside(ground: PackedVector3Array, id: int, at: Vector2) -> bool:
 	var s0 := flat_cross(a, b, at)
 	var s1 := flat_cross(b, c, at)
 	var s2 := flat_cross(c, a, at)
-	return (s0 >= -EDGE_TOLERANCE and s1 >= -EDGE_TOLERANCE and s2 >= -EDGE_TOLERANCE) \
-			or (s0 <= EDGE_TOLERANCE and s1 <= EDGE_TOLERANCE and s2 <= EDGE_TOLERANCE)
+	return (
+		(s0 >= -EDGE_TOLERANCE and s1 >= -EDGE_TOLERANCE and s2 >= -EDGE_TOLERANCE)
+		or (s0 <= EDGE_TOLERANCE and s1 <= EDGE_TOLERANCE and s2 <= EDGE_TOLERANCE)
+	)
 
 
 ## Cross product of (b - a) and (at - a) on the ground plane (x, z).

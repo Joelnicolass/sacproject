@@ -115,7 +115,9 @@ func _physics_process(delta: float) -> void:
 
 ## The body the drop's box touches, by stance order (foe, neutral, own side; then the closest; then the name,
 ## so the pick does not depend on the order the physics server lists them in).
-func _target_at(space: PhysicsDirectSpaceState3D, at: Vector3, size: float, from_slot: int) -> Node3D:
+func _target_at(
+	space: PhysicsDirectSpaceState3D, at: Vector3, size: float, from_slot: int
+) -> Node3D:
 	_query.shape = _shape(size)
 	_query.transform = Transform3D(Basis(), at)
 	var best: Node3D = null
@@ -127,7 +129,14 @@ func _target_at(space: PhysicsDirectSpaceState3D, at: Vector3, size: float, from
 			continue
 		var rank := _rank(body, from_slot)
 		var d := at.distance_squared_to(body.global_position)
-		if best == null or rank < best_rank or (rank == best_rank and (d < best_d or (d == best_d and str(body.name) < str(best.name)))):
+		if (
+			best == null
+			or rank < best_rank
+			or (
+				rank == best_rank
+				and (d < best_d or (d == best_d and str(body.name) < str(best.name)))
+			)
+		):
 			best = body
 			best_rank = rank
 			best_d = d
@@ -146,7 +155,12 @@ func _hit(target: Node3D, amount: float, from_slot: int) -> void:
 	var health := target.get_node("Health") as Health
 	var taken := health.damage_typed(amount, _HEALTH.DIRECT_RANGED, from_slot)
 	if log_hits:
-		print("drop %s %.2f health %.2f" % [GameBody.name_of(target), taken, float(health.get("current"))])
+		print(
+			(
+				"drop %s %.2f health %.2f"
+				% [GameBody.name_of(target), taken, float(health.get("current"))]
+			)
+		)
 
 
 func _remove(i: int) -> void:
@@ -186,6 +200,19 @@ func _ground_height(at: Vector3) -> float:
 
 func _exit_tree() -> void:
 	if log_hits and added > 0:
-		print("rain drops %d hits %d ground %d over_cap %d peak %d (%.3f ms) tick_max %.3f ms mean %.3f ms over %d ticks" % [
-			added, hits, landed, over_cap, peak, peak_us / 1000.0, max_us / 1000.0,
-			(float(busy_us) / busy_ticks / 1000.0) if busy_ticks > 0 else 0.0, busy_ticks])
+		print(
+			(
+				"rain drops %d hits %d ground %d over_cap %d peak %d (%.3f ms) tick_max %.3f ms mean %.3f ms over %d ticks"
+				% [
+					added,
+					hits,
+					landed,
+					over_cap,
+					peak,
+					peak_us / 1000.0,
+					max_us / 1000.0,
+					(float(busy_us) / busy_ticks / 1000.0) if busy_ticks > 0 else 0.0,
+					busy_ticks
+				]
+			)
+		)

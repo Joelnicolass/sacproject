@@ -75,7 +75,10 @@ func setup(data: Dictionary) -> void:
 	_query = ProjectileTargets.query_for(hit_box)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)
-	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	_spin_axis = (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 	_spin_rate = TAU * rng.randf_range(SPIN_MIN, SPIN_MAX)
 	_attach_net()
 	_trail = FxTrail.attach(self, trail, TRAIL_INTERVAL_S)

@@ -23,7 +23,12 @@ func _enter_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if not shape is BoxShape3D:
-		warnings.append("GroundFootprint needs a BoxShape3D: its box seen from above is the base that stays level.")
+		(
+			warnings
+			. append(
+				"GroundFootprint needs a BoxShape3D: its box seen from above is the base that stays level."
+			)
+		)
 	return warnings
 
 
@@ -36,7 +41,9 @@ func area() -> Rect2:
 	var xform := global_transform
 	var first := xform * Vector3(-half.x, 0.0, -half.z)
 	var out := Rect2(Vector2(first.x, first.z), Vector2.ZERO)
-	for corner: Vector3 in [Vector3(half.x, 0.0, -half.z), Vector3(-half.x, 0.0, half.z), Vector3(half.x, 0.0, half.z)]:
+	for corner: Vector3 in [
+		Vector3(half.x, 0.0, -half.z), Vector3(-half.x, 0.0, half.z), Vector3(half.x, 0.0, half.z)
+	]:
 		var at := xform * corner
 		out = out.expand(Vector2(at.x, at.z))
 	return out

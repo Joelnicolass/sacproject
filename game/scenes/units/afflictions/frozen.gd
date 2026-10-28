@@ -95,7 +95,18 @@ func _try(spell: SpellType, from_slot: int, log_roll: bool) -> bool:
 		var roll := _roll()
 		var passes := _cooldown <= roll
 		if log_roll:
-			print("freeze %s cooldown %d roll %d %s (tick %d)" % [str(body.name), _cooldown, roll, "congela" if passes else "rechaza", MatchClock.now()])
+			print(
+				(
+					"freeze %s cooldown %d roll %d %s (tick %d)"
+					% [
+						str(body.name),
+						_cooldown,
+						roll,
+						"congela" if passes else "rechaza",
+						MatchClock.now()
+					]
+				)
+			)
 		elif not passes:
 			print("  freeze: %s on cooldown %d" % [str(body.name), _cooldown])
 		if not passes:
@@ -125,8 +136,18 @@ func freeze(spell: SpellType, from_slot: int) -> bool:
 	_afflictions().mark(self, true)
 	set_physics_process(true)
 	var health := _afflictions().health
-	print("frozen %s for %d (max health %d%s) (frame %d)" % [str(body.name), _lifetime,
-		roundi(health.maximum) if health else 0, ", wizard" if body.is_in_group(WizardBody.GROUP) else "", _start_frame])
+	print(
+		(
+			"frozen %s for %d (max health %d%s) (frame %d)"
+			% [
+				str(body.name),
+				_lifetime,
+				roundi(health.maximum) if health else 0,
+				", wizard" if body.is_in_group(WizardBody.GROUP) else "",
+				_start_frame
+			]
+		)
+	)
 	return true
 
 
@@ -134,7 +155,13 @@ func freeze(spell: SpellType, from_slot: int) -> bool:
 ## · the spell's duration.
 func lifetime_ticks(body: Node3D, spell: SpellType) -> int:
 	var health := _afflictions().health
-	return cc_ticks(body.is_in_group(WizardBody.GROUP), health.maximum if health else 0.0, spell.duration_s, creature_k, wizard_factor)
+	return cc_ticks(
+		body.is_in_group(WizardBody.GROUP),
+		health.maximum if health else 0.0,
+		spell.duration_s,
+		creature_k,
+		wizard_factor
+	)
 
 
 ## Can it be frozen? The same answer as Petrified's can-be-immobilized.
@@ -183,7 +210,12 @@ func _end_by_time() -> void:
 func _on_hit(amount: float, _from: int, _was_full: bool) -> void:
 	if not _running or not is_on() or amount <= 0.0:
 		return
-	print("%s breaks the ice with %.2f damage (frame %d)" % [str(_body().name), amount, MatchClock.now()])
+	print(
+		(
+			"%s breaks the ice with %.2f damage (frame %d)"
+			% [str(_body().name), amount, MatchClock.now()]
+		)
+	)
 	_afflictions().mark(self, false)
 
 
@@ -199,8 +231,18 @@ func _shatter() -> void:
 	if health and _thaw_damage > 0.0:
 		taken = health.damage_typed(_thaw_damage, _HEALTH.DIRECT_SPELL, _from_slot)
 	var immune := health != null and taken <= 0.0 and health.resistance(_HEALTH.DIRECT_SPELL) <= 0.0
-	print("thaw %s %d spell damage health %d%s (frame %d)" % [str(body.name), roundi(taken),
-		roundi(health.current) if health else 0, " (inmune)" if immune else "", MatchClock.now()])
+	print(
+		(
+			"thaw %s %d spell damage health %d%s (frame %d)"
+			% [
+				str(body.name),
+				roundi(taken),
+				roundi(health.current) if health else 0,
+				" (inmune)" if immune else "",
+				MatchClock.now()
+			]
+		)
+	)
 	if shards_fx != null:
 		FxBus.broadcast(shards_fx, BodyFacts.point(body, shards_socket))
 

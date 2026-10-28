@@ -24,7 +24,11 @@ var _linger := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
 
 func _ready() -> void:
@@ -33,7 +37,9 @@ func _ready() -> void:
 
 ## Ticks the wait lasts for the carrier's spell.
 func wait_ticks() -> int:
-	var seconds := carrier.spell.duration_s if hold_is_spell_duration and carrier.spell != null else hold_s
+	var seconds := (
+		carrier.spell.duration_s if hold_is_spell_duration and carrier.spell != null else hold_s
+	)
 	return MatchClock.ticks_for(seconds)
 
 
@@ -74,7 +80,9 @@ func _follow() -> void:
 		return
 	var at := BodyNudge.center(_target)
 	if ride_height_m > 0.0:
-		var ground := GroundRay.surface_y(carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), at.y)
+		var ground := GroundRay.surface_y(
+			carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), at.y
+		)
 		var left := float(_total - _ticks) / MatchClock.TICKS_PER_SECOND_F
 		var rise := 1.0 if drop_s <= 0.0 else clampf(left / drop_s, 0.0, 1.0)
 		at = Vector3(at.x, ground + ride_height_m * rise, at.z)

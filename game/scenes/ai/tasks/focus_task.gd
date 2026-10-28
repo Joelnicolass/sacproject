@@ -101,7 +101,8 @@ func _pick() -> AiTrack:
 		if members.is_empty():
 			continue
 		var kill_s := AiKillEstimate.kill_seconds(perception, foe, members)
-		if DebugLog.on(&"ai_focus"): print(
+		if DebugLog.on(&"ai_focus"):
+			print(
 				(
 					"ai_focus slot %d candidate %s members %d dies in %.2f s"
 					% [perception.slot, foe.node.name, members.size(), kill_s]
@@ -120,9 +121,8 @@ func _pick() -> AiTrack:
 		best_score = score
 		best = foe
 		last_commit = "%s %.2f %.3f" % [foe.node.name, kill_s, score]
-	if DebugLog.on(&"ai_focus") and best != null: print(
-		"ai_focus slot %d commitment %s" % [perception.slot, last_commit]
-	)
+	if DebugLog.on(&"ai_focus") and best != null:
+		print("ai_focus slot %d commitment %s" % [perception.slot, last_commit])
 	return best
 
 
@@ -189,7 +189,8 @@ func _near_own_group(at: Vector3) -> bool:
 ## side knows it has).
 func _strong_enough(at: Vector3, tactics: AiTactics) -> bool:
 	var ratio := power_ratio(board.stance, at, tactics.crowd.focus_radius_m)
-	if DebugLog.on(&"ai_focus"): print(
+	if DebugLog.on(&"ai_focus"):
+		print(
 			(
 				"ai_focus slot %d local strength %.2f (minimum %.2f)"
 				% [board.perception.slot, ratio, tactics.crowd.focus_power_ratio]

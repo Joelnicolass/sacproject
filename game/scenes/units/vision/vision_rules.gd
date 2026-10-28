@@ -7,7 +7,14 @@ extends RefCounted
 
 ## Whether `at` is inside the sight shape around `center`: a cylinder looks at the flat distance (height does not matter), a sphere at the
 ## full distance. `forward` and `fov_deg` cut the cone (360 = no cone).
-static func covers(round_shape: bool, center: Vector3, at: Vector3, range_m: float, forward: Vector3, fov_deg: float) -> bool:
+static func covers(
+	round_shape: bool,
+	center: Vector3,
+	at: Vector3,
+	range_m: float,
+	forward: Vector3,
+	fov_deg: float
+) -> bool:
 	var offset := at - center
 	if not round_shape:
 		offset.y = 0.0
@@ -55,7 +62,14 @@ static var _sorted: Array = []
 ## Of `candidates` (any order, repeats allowed), the nodes other than `me` that are in the tree, not corpses, and inside the sight
 ## shape and cone around `center`; sorted by name. The sorted, de-duplicated list is kept while the candidates do not change (every body
 ## of a tick asks with the same list), so a look costs one pass over it.
-static func filter(candidates: Array, me: Node3D, round_shape: bool, center: Vector3, range_m: float, fov_deg: float) -> Array[Node3D]:
+static func filter(
+	candidates: Array,
+	me: Node3D,
+	round_shape: bool,
+	center: Vector3,
+	range_m: float,
+	fov_deg: float
+) -> Array[Node3D]:
 	if candidates != _raw:
 		_raw = candidates
 		var done := {}
@@ -84,7 +98,9 @@ static func filter(candidates: Array, me: Node3D, round_shape: bool, center: Vec
 
 ## The nodes the groups list, plus (with the area) the bodies it overlaps that sit in one of the groups. Groups with no physics body
 ## (Vision.BODILESS) are always walked; the others only when there is no area.
-static func gather(tree: SceneTree, groups: PackedStringArray, overlapping: Array, by_area: bool) -> Array:
+static func gather(
+	tree: SceneTree, groups: PackedStringArray, overlapping: Array, by_area: bool
+) -> Array:
 	var nodes: Array = []
 	for group in groups:
 		if not by_area or Vision.BODILESS.has(StringName(group)):

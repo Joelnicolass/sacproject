@@ -43,7 +43,13 @@ func lay_ticks(_spell: SpellType) -> int:
 ## How many ticks a crowd-control state lasts: ceil(ticks per second · duration), duration =
 ## (wizard ? 0.25 : 1000 / max health) · the spell's duration. Plain GDScript floats: a tick of difference from
 ## float32 is accepted. 0 for a creature with no health.
-static func cc_ticks(wizard: bool, max_health: float, spell_duration: float, creature_k := 1000.0, wizard_factor := 0.25) -> int:
+static func cc_ticks(
+	wizard: bool,
+	max_health: float,
+	spell_duration: float,
+	creature_k := 1000.0,
+	wizard_factor := 0.25
+) -> int:
 	var seconds := wizard_factor * spell_duration
 	if not wizard:
 		if max_health <= 0.0:

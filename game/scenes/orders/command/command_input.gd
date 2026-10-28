@@ -108,7 +108,10 @@ func _on_view_event(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and _left_down:
 		var at := (event as InputEventMouseMotion).position
 		if not _rect and not armed.is_armed() and not _press_ctrl and not ray.camera_dragged():
-			_rect = absf(at.x - _press_at.x) >= rect_threshold_px or absf(at.y - _press_at.y) >= rect_threshold_px
+			_rect = (
+				absf(at.x - _press_at.x) >= rect_threshold_px
+				or absf(at.y - _press_at.y) >= rect_threshold_px
+			)
 		if _rect:
 			_selection.show_box(_press_at, at)
 

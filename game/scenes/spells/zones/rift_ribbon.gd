@@ -42,8 +42,17 @@ func _process(_delta: float) -> void:
 	for i in count:
 		var at := mini(i * stride, _history.size() - 1)
 		var here := _history[at]
-		var along := _history[maxi(at - stride, 0)] - here if i > 0 else here - _history[mini(stride, _history.size() - 1)]
-		var side := along.cross(camera.global_position - here).normalized() * width_m * 0.5 * follows.scale.x
+		var along := (
+			_history[maxi(at - stride, 0)] - here
+			if i > 0
+			else here - _history[mini(stride, _history.size() - 1)]
+		)
+		var side := (
+			along.cross(camera.global_position - here).normalized()
+			* width_m
+			* 0.5
+			* follows.scale.x
+		)
 		var u := float(i) / float(maxi(count - 1, 1))
 		drawing.surface_set_uv(Vector2(u, 0.0))
 		drawing.surface_add_vertex(here - side)
@@ -53,4 +62,8 @@ func _process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if follows != null else PackedStringArray(["`follows` is missing: the node the ribbon follows."])
+	return (
+		PackedStringArray()
+		if follows != null
+		else PackedStringArray(["`follows` is missing: the node the ribbon follows."])
+	)

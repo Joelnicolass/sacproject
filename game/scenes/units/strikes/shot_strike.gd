@@ -13,7 +13,6 @@ extends Node3D
 ## Same names as RangedShot, so a ShotImpact reads either: damage, from_slot, velocity, ability, target_path,
 ## shooter_path.
 
-
 ## Already scaled by the shooter (attack_factor).
 var damage := 0.0
 var from_slot := 0
@@ -36,7 +35,6 @@ var tag := ""
 ## The RangedWeapon that fired it (its shot_origin() for a strike that follows the shooter). Injected by launch().
 var source: RangedWeapon
 
-
 var _born_tick := 0
 var _done_tick := 0
 var _finished := false
@@ -45,13 +43,23 @@ var _finished := false
 ## `data`: the keys of RangedFire.fire (the ones of RangedShot.setup plus aim_x/y/z and accuracy). Call it once the
 ## strike is in the tree: tick 0 may already cast against the world. `from`: the RangedWeapon that fired it. A look nobody holds yet
 ## becomes a child of the strike.
-func launch(data: Dictionary, shot_look: ShotLook, shot_ability: AbilityType, from: RangedWeapon = null) -> void:
+func launch(
+	data: Dictionary, shot_look: ShotLook, shot_ability: AbilityType, from: RangedWeapon = null
+) -> void:
 	source = from
 	tag = str(data.get("tag", ""))
-	origin = Vector3(float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0)))
+	origin = Vector3(
+		float(data.get("x", 0.0)), float(data.get("y", 0.0)), float(data.get("z", 0.0))
+	)
 	global_position = origin
-	velocity = Vector3(float(data.get("vx", 0.0)), float(data.get("vy", 0.0)), float(data.get("vz", 0.0)))
-	aim = Vector3(float(data.get("aim_x", origin.x)), float(data.get("aim_y", origin.y)), float(data.get("aim_z", origin.z)))
+	velocity = Vector3(
+		float(data.get("vx", 0.0)), float(data.get("vy", 0.0)), float(data.get("vz", 0.0))
+	)
+	aim = Vector3(
+		float(data.get("aim_x", origin.x)),
+		float(data.get("aim_y", origin.y)),
+		float(data.get("aim_z", origin.z))
+	)
 	accuracy = float(data.get("accuracy", 0.0))
 	damage = float(data.get("damage", 0.0))
 	from_slot = int(data.get("slot", 0))

@@ -34,7 +34,11 @@ func _ready() -> void:
 
 ## The strength at `distance` from the center: 1 up to `full_m`, 0 from `reach_m`.
 func strength_at(distance: float) -> float:
-	return 1.0 - maxf(0.0, distance - full_m) / maxf(reach_m - full_m, 0.001) if distance < reach_m else 0.0
+	return (
+		1.0 - maxf(0.0, distance - full_m) / maxf(reach_m - full_m, 0.001)
+		if distance < reach_m
+		else 0.0
+	)
 
 
 func _physics_process(_delta: float) -> void:
@@ -50,7 +54,12 @@ func _physics_process(_delta: float) -> void:
 		if strength <= 0.0:
 			continue
 		if damage_share > 0.0:
-			SplashDamage.hurt(body, float(zone.spell.damage) * damage_share * strength / MatchClock.TICKS_PER_SECOND_F, zone.from_slot, Health.DIRECT_SPELL)
+			SplashDamage.hurt(
+				body,
+				float(zone.spell.damage) * damage_share * strength / MatchClock.TICKS_PER_SECOND_F,
+				zone.from_slot,
+				Health.DIRECT_SPELL
+			)
 		if body.is_in_group(UnitBody.GROUP) or body.is_in_group(WizardBody.GROUP):
 			_ignite(body)
 			if push_m_s > 0.0 and away.length() > 0.001:
@@ -63,8 +72,14 @@ func _ignite(body: Node3D) -> void:
 	var burn_ticks := MatchClock.ticks_for(burn_s)
 	if burn_ticks > 0 and int(_lit_until.get(id, 0)) <= _ticks:
 		_lit_until[id] = _ticks + burn_ticks
-		Burning.ignite(body, 0.0, burn_ticks, Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look)
+		Burning.ignite(
+			body, 0.0, burn_ticks, Health.DIRECT_SPELL, zone.from_slot, 0.0, false, burn_look
+		)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["The zone (GroundZone) whose heat this is is missing."])
+	return (
+		PackedStringArray()
+		if zone != null
+		else PackedStringArray(["The zone (GroundZone) whose heat this is is missing."])
+	)

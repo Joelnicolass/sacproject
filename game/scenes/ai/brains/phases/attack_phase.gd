@@ -53,7 +53,8 @@ func run(wizard: AiTrack, w3: Array[float], _record: AiRecord) -> void:
 			best = w
 			best_track = foe
 		total = AiField.f32(total + w)
-	if DebugLog.on(&"ai_attack"): print(
+	if DebugLog.on(&"ai_attack"):
+		print(
 			(
 				"ai_attack slot %d threat %.3f enemy_ratio %.3f best %s w %.3f total %.3f"
 				% [

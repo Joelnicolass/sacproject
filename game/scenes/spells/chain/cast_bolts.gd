@@ -42,4 +42,6 @@ func _physics_process(_delta: float) -> void:
 	var size := box.size * box_scale
 	var low := box.get_center() - size * 0.5
 	var start := low + Vector3(_rng.randf() * size.x, _rng.randf() * size.y, _rng.randf() * size.z)
-	FxBus.play_beam(beam, start, start + Vector3(0.0, _rng.randf_range(rise_min_m, rise_max_m), 0.0))
+	FxBus.play_beam(
+		beam, start, start + Vector3(0.0, _rng.randf_range(rise_min_m, rise_max_m), 0.0)
+	)

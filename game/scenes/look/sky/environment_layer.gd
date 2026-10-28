@@ -43,7 +43,12 @@ func apply_quality(preset: LookQuality) -> void:
 
 func _notification(what: int) -> void:
 	# The preview is a private copy: the saved scene keeps pointing at the shared base.
-	if Engine.is_editor_hint() and what == NOTIFICATION_EDITOR_PRE_SAVE and world_environment and _base:
+	if (
+		Engine.is_editor_hint()
+		and what == NOTIFICATION_EDITOR_PRE_SAVE
+		and world_environment
+		and _base
+	):
 		world_environment.environment = _base
 	elif Engine.is_editor_hint() and what == NOTIFICATION_EDITOR_POST_SAVE:
 		_refresh()
@@ -55,7 +60,16 @@ func _watch_parts() -> void:
 		if is_instance_valid(resource) and resource.changed.is_connected(_refresh):
 			resource.changed.disconnect(_refresh)
 	_watched.clear()
-	var parts: Array = [_profile.sky, _profile.light, _profile.glow, _profile.sky.material if _profile.sky else null] if _profile else []
+	var parts: Array = (
+		[
+			_profile.sky,
+			_profile.light,
+			_profile.glow,
+			_profile.sky.material if _profile.sky else null
+		]
+		if _profile
+		else []
+	)
 	for resource: Resource in parts:
 		if resource:
 			resource.changed.connect(_refresh)
@@ -92,8 +106,14 @@ func _write_atmosphere(force_sky: bool) -> void:
 	_write_fog(_profile.sky, sample)
 	if _profile.light:
 		_write_light(_profile.light, sample)
-	var moon := _profile.day.moon_dir_deg(_profile.light) if _profile.day and _profile.light else Vector2.ZERO
-	_sky_dresser.dress(_sky, _profile.sky, sample, moon, atmosphere.sky_hz if atmosphere else 2.0, force_sky)
+	var moon := (
+		_profile.day.moon_dir_deg(_profile.light)
+		if _profile.day and _profile.light
+		else Vector2.ZERO
+	)
+	_sky_dresser.dress(
+		_sky, _profile.sky, sample, moon, atmosphere.sky_hz if atmosphere else 2.0, force_sky
+	)
 
 
 func _write_sky(look: SkyLook) -> void:
@@ -103,7 +123,11 @@ func _write_sky(look: SkyLook) -> void:
 	_sky.radiance_size = look.radiance_size
 	_env.background_mode = Environment.BG_SKY
 	_env.sky = _sky
-	_env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY if look.ambient_sky_contribution > 0.0 else Environment.AMBIENT_SOURCE_COLOR
+	_env.ambient_light_source = (
+		Environment.AMBIENT_SOURCE_SKY
+		if look.ambient_sky_contribution > 0.0
+		else Environment.AMBIENT_SOURCE_COLOR
+	)
 	_env.ambient_light_sky_contribution = look.ambient_sky_contribution
 	_env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 
@@ -121,7 +145,9 @@ func _write_fog(look: SkyLook, sample: AtmosphereSample) -> void:
 	_env.volumetric_fog_albedo = look.haze_tint
 	_env.volumetric_fog_density = look.volumetric_density
 	_env.volumetric_fog_length = look.volumetric_length_m
-	LookGlobals.publish_fx_fog(_env.fog_density if look.fog_enabled else 0.0, _env.fog_depth_begin, _env.fog_depth_end)
+	LookGlobals.publish_fx_fog(
+		_env.fog_density if look.fog_enabled else 0.0, _env.fog_depth_begin, _env.fog_depth_end
+	)
 
 
 func _write_light(look: LightLook, sample: AtmosphereSample) -> void:
@@ -145,4 +171,15 @@ func _write_light(look: LightLook, sample: AtmosphereSample) -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var missing: Array = [] if world_environment else ["The World Environment socket is missing."]
-	return PackedStringArray(missing + ([] if atmosphere else ["Without the Atmosphere socket the environment follows neither the hour nor the weather."]))
+	return PackedStringArray(
+		(
+			missing
+			+ (
+				[]
+				if atmosphere
+				else [
+					"Without the Atmosphere socket the environment follows neither the hour nor the weather."
+				]
+			)
+		)
+	)

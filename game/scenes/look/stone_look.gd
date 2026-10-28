@@ -77,8 +77,16 @@ func _rig() -> BodyRig:
 
 
 ## Every knob of the look at once (one redress, whatever changed). Afflictions calls it with the state that is on.
-func apply(new_tint: Color, new_base: float, new_gain: float, new_roughness: float, new_metallic: float) -> void:
-	if new_tint == tint and new_base == base and new_gain == gain and new_roughness == roughness and new_metallic == metallic:
+func apply(
+	new_tint: Color, new_base: float, new_gain: float, new_roughness: float, new_metallic: float
+) -> void:
+	if (
+		new_tint == tint
+		and new_base == base
+		and new_gain == gain
+		and new_roughness == roughness
+		and new_metallic == metallic
+	):
 		return
 	tint = new_tint
 	base = new_base
@@ -157,7 +165,17 @@ func _undress() -> void:
 
 
 func _stone_for(source: Material) -> ShaderMaterial:
-	var key: Array = [source if source else shader, tint, base, gain, roughness, metallic, swap_texture, stone, SurfaceRelief.is_on(source)]
+	var key: Array = [
+		source if source else shader,
+		tint,
+		base,
+		gain,
+		roughness,
+		metallic,
+		swap_texture,
+		stone,
+		SurfaceRelief.is_on(source)
+	]
 	var found := _materials.get(key) as ShaderMaterial
 	if found and found.shader == shader:
 		return found
@@ -175,8 +193,14 @@ func _stone_for(source: Material) -> ShaderMaterial:
 	if base:
 		built.set_shader_parameter("albedo_tex", base.albedo_texture)
 		built.set_shader_parameter("albedo_color", base.albedo_color)
-		built.set_shader_parameter("alpha_scissor", base.alpha_scissor_threshold if base.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR else 0.0)
+		built.set_shader_parameter(
+			"alpha_scissor",
+			(
+				base.alpha_scissor_threshold
+				if base.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+				else 0.0
+			)
+		)
 		SurfaceRelief.forward(base, built)
 	_materials[key] = built
 	return built
-

@@ -25,7 +25,9 @@ var _destination := Vector3.ZERO
 var _has_destination := false
 
 
-func check(wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.target = wizard
 	if not is_building_of(wizard.owner_slot, picked):
@@ -63,7 +65,9 @@ func finish(wizard: WizardBody, spell: SpellType, target: Node3D) -> String:
 	for body in travelers(wizard, radius):
 		var facts := BodyFacts.of_body(body)
 		var flying := body is UnitBody and (body as UnitBody).is_flying()
-		var spot := TeleportMath.carried(body.global_position, start, destination, flying, on_ground)
+		var spot := TeleportMath.carried(
+			body.global_position, start, destination, flying, on_ground
+		)
 		spot.y = _land_y(shape, spot, destination.y)
 		froms.append(_feet_of(body))
 		if body is UnitBody:
@@ -85,7 +89,12 @@ func cancel() -> void:
 ## A standing building of `slot` that can be aimed at. Altars count while they stand; any other building,
 ## while it has life. `picked` comes from the client.
 func is_building_of(slot: int, picked: Node3D) -> bool:
-	if picked == null or not is_instance_valid(picked) or not picked.is_inside_tree() or picked.is_queued_for_deletion():
+	if (
+		picked == null
+		or not is_instance_valid(picked)
+		or not picked.is_inside_tree()
+		or picked.is_queued_for_deletion()
+	):
 		return false
 	var listed := false
 	for group in target_groups:
@@ -106,9 +115,19 @@ func travelers(wizard: WizardBody, radius: float) -> Array[Node3D]:
 	var out: Array[Node3D] = [wizard]
 	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		var unit := node as UnitBody
-		if unit == null or not unit.is_inside_tree() or unit.is_queued_for_deletion() or unit.owner_slot != wizard.owner_slot:
+		if (
+			unit == null
+			or not unit.is_inside_tree()
+			or unit.is_queued_for_deletion()
+			or unit.owner_slot != wizard.owner_slot
+		):
 			continue
-		if unit.is_dead() or unit.is_taken() or unit.is_in_group(GuardianBond.ROOTED) or unit.is_in_group(DoctorBody.GROUP):
+		if (
+			unit.is_dead()
+			or unit.is_taken()
+			or unit.is_in_group(GuardianBond.ROOTED)
+			or unit.is_in_group(DoctorBody.GROUP)
+		):
 			continue
 		if TeleportMath.in_radius(unit.global_position, wizard.global_position, radius):
 			out.append(unit)
@@ -144,7 +163,13 @@ func _feet_of(body: Node3D) -> Vector3:
 
 ## Server or solo: every peer shows the same burst at the origin and at the destination of each body.
 ## `centers` is the y of the Center marker of each body, over its feet: where the particle goes.
-func _announce(froms: PackedVector3Array, tos: PackedVector3Array, widths: PackedFloat32Array, heights: PackedFloat32Array, centers: PackedFloat32Array) -> void:
+func _announce(
+	froms: PackedVector3Array,
+	tos: PackedVector3Array,
+	widths: PackedFloat32Array,
+	heights: PackedFloat32Array,
+	centers: PackedFloat32Array
+) -> void:
 	if MpKit.is_networked():
 		if MpKit.is_server():
 			_show_jump.rpc(froms, tos, widths, heights, centers)
@@ -153,7 +178,13 @@ func _announce(froms: PackedVector3Array, tos: PackedVector3Array, widths: Packe
 
 
 @rpc("authority", "call_local", "reliable")
-func _show_jump(froms: PackedVector3Array, tos: PackedVector3Array, widths: PackedFloat32Array, heights: PackedFloat32Array, centers: PackedFloat32Array) -> void:
+func _show_jump(
+	froms: PackedVector3Array,
+	tos: PackedVector3Array,
+	widths: PackedFloat32Array,
+	heights: PackedFloat32Array,
+	centers: PackedFloat32Array
+) -> void:
 	if DisplayServer.get_name() == "headless" or not is_inside_tree():
 		return
 	for i in froms.size():
@@ -161,7 +192,9 @@ func _show_jump(froms: PackedVector3Array, tos: PackedVector3Array, widths: Pack
 		_burst(in_fx, false, tos[i], widths[i], heights[i], centers[i])
 
 
-func _burst(fx: ParticleType, going_out: bool, feet: Vector3, width: float, height: float, center_y: float) -> void:
+func _burst(
+	fx: ParticleType, going_out: bool, feet: Vector3, width: float, height: float, center_y: float
+) -> void:
 	if fx != null:
 		FxBus.play(fx, feet + Vector3(0.0, center_y, 0.0))
 	if rings_scene == null:

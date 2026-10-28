@@ -33,7 +33,9 @@ const _SELECTION := preload("res://scenes/orders/selection.gd")
 
 func _ready() -> void:
 	if seat == null:
-		push_warning("CommandFeedback: assign `seat` (the MpLocalSeat); summoned creatures will not join the selection")
+		push_warning(
+			"CommandFeedback: assign `seat` (the MpLocalSeat); summoned creatures will not join the selection"
+		)
 	_log.say("Mago")
 	%Units.child_entered_tree.connect(_on_unit_entered)
 	_selection.changed.connect(on_selection_changed)

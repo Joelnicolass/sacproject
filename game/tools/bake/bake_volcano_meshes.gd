@@ -46,5 +46,10 @@ func _tube(rings: int, bounds: AABB) -> ArrayMesh:
 func _save(mesh: ArrayMesh, file: String) -> bool:
 	mesh.resource_name = file.get_basename()
 	var error := ResourceSaver.save(mesh, DIR + file)
-	print("%s: %s (%d vertices)" % [file, "saved" if error == OK else "FAILED %d" % error, mesh.surface_get_array_len(0)])
+	print(
+		(
+			"%s: %s (%d vertices)"
+			% [file, "saved" if error == OK else "FAILED %d" % error, mesh.surface_get_array_len(0)]
+		)
+	)
 	return error == OK

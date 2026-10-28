@@ -30,8 +30,6 @@ extends SpellLaunch
 ## particles of its own (the look's FxBus types); a rock that blows up does not make the rock after it move twice in the
 ## same tick; buildings without Health do not stop a rock.
 
-
-
 const GROUP := &"halo_of_earth"
 
 ## The shot container's spawner (group `shot_spawner`): the rocks are its shots. The ability that adds this node hands it over.
@@ -82,7 +80,8 @@ var _cast_ticks := 0
 var _cast_elapsed := 0
 
 
-class Rock extends RefCounted:
+class Rock:
+	extends RefCounted
 	var index := 0
 	var node: Node3D
 	var position := Vector3.ZERO
@@ -112,7 +111,9 @@ var _ended := false
 func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 	user = body
 	ability = type
-	_set_numbers(float(ability.damage), ability.speed_m_s, ability.acceleration_m_s2, ability.effect_range_m)
+	_set_numbers(
+		float(ability.damage), ability.speed_m_s, ability.acceleration_m_s2, ability.effect_range_m
+	)
 	spawner = rock_spawner
 	_born = MatchClock.now()
 	_who = AbilityEffect.who(body)
@@ -123,9 +124,13 @@ func setup(body: Node3D, type: AbilityType, rock_spawner: Node) -> void:
 
 
 ## The wizard's halo: the cast started. The rocks come out as the casting goes on and wait for `release` to look for targets.
-func begin_cast(caster: Node3D, spell: SpellType, _target: Node3D, _point: Vector3, cast_ticks: int) -> void:
+func begin_cast(
+	caster: Node3D, spell: SpellType, _target: Node3D, _point: Vector3, cast_ticks: int
+) -> void:
 	user = caster
-	_set_numbers(float(spell.damage), spell.speed_m_s, spell.acceleration_m_s2, spell.effect_range_m)
+	_set_numbers(
+		float(spell.damage), spell.speed_m_s, spell.acceleration_m_s2, spell.effect_range_m
+	)
 	life_s = spell.duration_s
 	spawner = ShotSpawner.of(get_tree())
 	_born = MatchClock.now()
@@ -198,7 +203,9 @@ func _physics_process(_delta: float) -> void:
 func _rocks_due() -> int:
 	if _armed:
 		return num_rocks
-	return mini(num_rocks, floori((float(_cast_elapsed) / float(_cast_ticks) + 0.1) * float(num_rocks)))
+	return mini(
+		num_rocks, floori((float(_cast_elapsed) / float(_cast_ticks) + 0.1) * float(num_rocks))
+	)
 
 
 ## While the wizard casts: the free flight only.
@@ -215,8 +222,12 @@ func _can_carry() -> bool:
 	if unit == null:
 		var health := Health.of(user)
 		return health == null or not health.is_dead()
-	return unit.mode != UnitBody.Mode.DEAD and unit.mode != UnitBody.Mode.SUMMONING \
-		and unit.mode != UnitBody.Mode.REVIVING and not unit.is_taken()
+	return (
+		unit.mode != UnitBody.Mode.DEAD
+		and unit.mode != UnitBody.Mode.SUMMONING
+		and unit.mode != UnitBody.Mode.REVIVING
+		and not unit.is_taken()
+	)
 
 
 ## Over the top of the Rhinok's box. NaN x = it cannot carry the halo.
@@ -232,7 +243,9 @@ func _spawn() -> void:
 	var box := BodyNudge.box(user)
 	var size := box.size * spawn_box_scale
 	var low := box.get_center() - size * 0.5
-	var at := Vector3(_rng.randf_range(low.x, low.x + size.x), 0.0, _rng.randf_range(low.z, low.z + size.z))
+	var at := Vector3(
+		_rng.randf_range(low.x, low.x + size.x), 0.0, _rng.randf_range(low.z, low.z + size.z)
+	)
 	at.y = BodyNudge.ground_y(user, at) - bury_depth
 	var rock := Rock.new()
 	rock.index = _spawned
@@ -253,9 +266,18 @@ func _make_node(at: Vector3) -> Node3D:
 		push_warning("HaloOfEarth: no shot spawner; the rocks are not shown.")
 		return null
 	var data := {
-		"x": at.x, "y": at.y, "z": at.z, "vx": 0.0, "vy": 0.0, "vz": 0.0,
-		"damage": _damage, "slot": _slot, "gravity": 0.0,
-		"max_distance": 1.0e9, "look": FxWire.id_of(look), "target": "",
+		"x": at.x,
+		"y": at.y,
+		"z": at.z,
+		"vx": 0.0,
+		"vy": 0.0,
+		"vz": 0.0,
+		"damage": _damage,
+		"slot": _slot,
+		"gravity": 0.0,
+		"max_distance": 1.0e9,
+		"look": FxWire.id_of(look),
+		"target": "",
 		"shooter": str(user.get_path()) if user != null and user.is_inside_tree() else "",
 	}
 	return (spawner as ShotSpawner).spawn_shot(data)
@@ -302,21 +324,33 @@ func _orbit(rock: Rock, center: Vector3) -> void:
 		rock.to_point = _in_ball(orbit_radius)
 		rock.to_tangent = _direction() * orbit_tangent
 	rock.progress += orbit_speed / MatchClock.TICKS_PER_SECOND_F
-	rock.position = _hermite(rock.from_point, rock.from_tangent, rock.to_point, rock.to_tangent, rock.progress) + center
+	rock.position = (
+		_hermite(rock.from_point, rock.from_tangent, rock.to_point, rock.to_tangent, rock.progress)
+		+ center
+	)
 
 
 ## util.d cintp2, the position part.
 static func _hermite(p0: Vector3, m0: Vector3, p1: Vector3, m1: Vector3, t: float) -> Vector3:
 	var t2 := t * t
 	var t3 := t2 * t
-	return (2.0 * t3 - 3.0 * t2 + 1.0) * p0 + (t3 - 2.0 * t2 + t) * m0 + (-2.0 * t3 + 3.0 * t2) * p1 + (t3 - t2) * m1
+	return (
+		(2.0 * t3 - 3.0 * t2 + 1.0) * p0
+		+ (t3 - 2.0 * t2 + t) * m0
+		+ (-2.0 * t3 + 3.0 * t2) * p1
+		+ (t3 - t2) * m1
+	)
 
 
 ## A point of the ball, by rejection in its cube.
 func _in_ball(radius: float) -> Vector3:
 	var point := Vector3.ZERO
 	while true:
-		point = Vector3(_rng.randf_range(-radius, radius), _rng.randf_range(-radius, radius), _rng.randf_range(-radius, radius))
+		point = Vector3(
+			_rng.randf_range(-radius, radius),
+			_rng.randf_range(-radius, radius),
+			_rng.randf_range(-radius, radius)
+		)
 		if point.length_squared() <= radius * radius:
 			return point
 	return point
@@ -324,7 +358,12 @@ func _in_ball(radius: float) -> Vector3:
 
 ## A point of the cube [−1, 1]³, normalized.
 func _direction() -> Vector3:
-	return Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)).normalized()
+	return (
+		Vector3(
+			_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)
+		)
+		. normalized()
+	)
 
 
 ## The SPEL's speed cap and the one that stops it from passing its target in a tick.
@@ -379,7 +418,9 @@ func _seek(rock: Rock) -> void:
 			var distance := rock.position.distance_to(BodyNudge.center(body))
 			if distance <= _reach:
 				found.append([distance, str(body.name), body])
-	found.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0] or (a[0] == b[0] and a[1] < b[1]))
+	found.sort_custom(
+		func(a: Array, b: Array) -> bool: return a[0] < b[0] or (a[0] == b[0] and a[1] < b[1])
+	)
 	for entry in found:
 		var body: Node3D = entry[2]
 		if _in_sight(rock, body):
@@ -388,8 +429,21 @@ func _seek(rock: Rock) -> void:
 			if throw_burst != null:
 				FxBus.broadcast(throw_burst, rock.position)
 			var half := BodyNudge.box(body).size * 0.5
-			_say("halo %s rock %d target %s at %.4f m from %s toward %s box %s (tick %d)" % [
-				_who, rock.index, body.name, entry[0], _v(rock.position), _v(rock.target_center), _v(half), MatchClock.now()])
+			_say(
+				(
+					"halo %s rock %d target %s at %.4f m from %s toward %s box %s (tick %d)"
+					% [
+						_who,
+						rock.index,
+						body.name,
+						entry[0],
+						_v(rock.position),
+						_v(rock.target_center),
+						_v(half),
+						MatchClock.now()
+					]
+				)
+			)
 			return
 
 
@@ -416,8 +470,19 @@ func _despawn_free() -> void:
 
 ## The damage to the valid body it hit, the look's effects, and the rock is gone.
 func _explode(rock: Rock, hit: Node3D, why: String) -> void:
-	_say("halo %s rock %d blows up by %s at %s with %s (tick %d)" % [
-		_who, rock.index, why, _v(rock.position), hit.name if hit != null and is_instance_valid(hit) else "nobody", MatchClock.now()])
+	_say(
+		(
+			"halo %s rock %d blows up by %s at %s with %s (tick %d)"
+			% [
+				_who,
+				rock.index,
+				why,
+				_v(rock.position),
+				hit.name if hit != null and is_instance_valid(hit) else "nobody",
+				MatchClock.now()
+			]
+		)
+	)
 	if _valid(hit):
 		_hurt(hit)
 	for fx: ParticleType in _look.impact_fx:
@@ -447,7 +512,12 @@ func _finish() -> void:
 
 ## Alive and on the field.
 func _valid(body: Node3D) -> bool:
-	if body == null or not is_instance_valid(body) or not body.is_inside_tree() or not Attackable.is_body(body):
+	if (
+		body == null
+		or not is_instance_valid(body)
+		or not body.is_inside_tree()
+		or not Attackable.is_body(body)
+	):
 		return false
 	var unit := body as UnitBody
 	if unit != null and (unit.is_summoning() or unit.is_taken()):
@@ -469,8 +539,21 @@ func _log_start(center: Vector3) -> void:
 	var box := BodyNudge.box(user)
 	var size := box.size * spawn_box_scale
 	var low := box.get_center() - size * 0.5
-	_say("halo %s use tick %d spawn %d at tick %d box %s at %s x%.2f center %s" % [
-		_who, _born, num_rocks, MatchClock.now(), _v(low), _v(low + size), spawn_box_scale, _v(center)])
+	_say(
+		(
+			"halo %s use tick %d spawn %d at tick %d box %s at %s x%.2f center %s"
+			% [
+				_who,
+				_born,
+				num_rocks,
+				MatchClock.now(),
+				_v(low),
+				_v(low + size),
+				spawn_box_scale,
+				_v(center)
+			]
+		)
+	)
 
 
 func _say(text: String) -> void:

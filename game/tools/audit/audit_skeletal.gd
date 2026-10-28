@@ -36,7 +36,9 @@ func _initialize() -> void:
 		elif arg.begins_with("--clips="):
 			only = JSON.parse_string(FileAccess.get_file_as_string(arg.trim_prefix("--clips=")))
 	if ref_dir == "":
-		push_error("audit_skeletal: --ref=DIR is required (tools/import/export_skeletal_reference.py writes it)")
+		push_error(
+			"audit_skeletal: --ref=DIR is required (tools/import/export_skeletal_reference.py writes it)"
+		)
 		quit(1)
 		return
 	var index: Dictionary = {}
@@ -48,7 +50,9 @@ func _initialize() -> void:
 	var missing := 0
 	var clips_audited := 0
 	var clips_total := 0
-	print("model\tclip\tframe\tmax_err_mm\tverts_over_tol\tunnorm\tunnorm_pred_mm\tunnorm_raw_mm\tresult")
+	print(
+		"model\tclip\tframe\tmax_err_mm\tverts_over_tol\tunnorm\tunnorm_pred_mm\tunnorm_raw_mm\tresult"
+	)
 	for model: String in models:
 		if not index.has(model):
 			print("%s\t-\t-\t-\t-\tFAIL (not in index.json)" % model)
@@ -76,10 +80,25 @@ func _initialize() -> void:
 		var player := _find(scene_root, "AnimationPlayer") as AnimationPlayer
 		var mesh_node := _find(scene_root, "MeshInstance3D") as MeshInstance3D
 		if skeleton == null or player == null or mesh_node == null:
-			print("%s\t-\t-\t-\t-\tFAIL (missing Skeleton3D / AnimationPlayer / MeshInstance3D)" % model)
+			print(
+				(
+					"%s\t-\t-\t-\t-\tFAIL (missing Skeleton3D / AnimationPlayer / MeshInstance3D)"
+					% model
+				)
+			)
 			failed = true
 			continue
-		print("# %s: %d joints, %d animations, mesh node at %s" % [model, skeleton.get_bone_count(), player.get_animation_list().size(), mesh_node.transform])
+		print(
+			(
+				"# %s: %d joints, %d animations, mesh node at %s"
+				% [
+					model,
+					skeleton.get_bone_count(),
+					player.get_animation_list().size(),
+					mesh_node.transform
+				]
+			)
+		)
 		var clips: Dictionary = index[model]["clips"]
 		var unnorm: Array = index[model].get("unnormalized_vertices", [])
 		var unnorm_global := _global_indices(mesh_node, unnorm)
@@ -95,7 +114,12 @@ func _initialize() -> void:
 			for frame: int in wanted:
 				have = have and FileAccess.file_exists(clip_dir.path_join("%d.obj" % frame))
 			if ref_dir == "" and have and _frame_count(clip_dir) != frames:
-				print("%s\t%s\t-\t-\t-\t-\t-\t-\tFAIL (baked %d frames, clip %d)" % [model, clip, _frame_count(clip_dir), frames])
+				print(
+					(
+						"%s\t%s\t-\t-\t-\t-\t-\t-\tFAIL (baked %d frames, clip %d)"
+						% [model, clip, _frame_count(clip_dir), frames]
+					)
+				)
 				failed = true
 				continue
 			if not have:
@@ -110,7 +134,9 @@ func _initialize() -> void:
 				continue
 			clips_audited += 1
 			for frame: int in wanted:
-				var ref := _read_obj(clip_dir.path_join("%d.obj" % frame), index[model].get("dropped_vertices", []))
+				var ref := _read_obj(
+					clip_dir.path_join("%d.obj" % frame), index[model].get("dropped_vertices", [])
+				)
 				player.stop()
 				# Constant tracks equal to the rest pose are dropped by the glTF importer: start every seek from rest.
 				skeleton.reset_bone_poses()
@@ -119,7 +145,12 @@ func _initialize() -> void:
 				player.advance(0.0)
 				var skinned := _skin(mesh_node, skeleton)
 				if skinned.size() != ref.size():
-					print("%s\t%s\t%d\t-\t-\t-\t-\t-\tFAIL (%d skinned vertices, %d in OBJ)" % [model, clip, frame, skinned.size(), ref.size()])
+					print(
+						(
+							"%s\t%s\t%d\t-\t-\t-\t-\t-\tFAIL (%d skinned vertices, %d in OBJ)"
+							% [model, clip, frame, skinned.size(), ref.size()]
+						)
+					)
 					failed = true
 					continue
 				# Root displacement D = origin of the root bone (the only translation track).
@@ -142,11 +173,36 @@ func _initialize() -> void:
 				var ok := worst <= TOLERANCE_MM
 				failed = failed or not ok
 				rows += 1
-				print("%s\t%s\t%d\t%.3f\t%d\t%d\t%.2f\t%.2f\t%s" % [model, clip, frame, worst, over, unnorm.size(), pred, raw, "ok" if ok else "FAIL"])
+				print(
+					(
+						"%s\t%s\t%d\t%.3f\t%d\t%d\t%.2f\t%.2f\t%s"
+						% [
+							model,
+							clip,
+							frame,
+							worst,
+							over,
+							unnorm.size(),
+							pred,
+							raw,
+							"ok" if ok else "FAIL"
+						]
+					)
+				)
 	if rows == 0:
 		failed = true
-	print("# clips audited %d of %d (%d without reference OBJ)" % [clips_audited, clips_total, missing])
-	print("SKELETAL AUDIT %s (%d rows, tolerance %.1f mm)" % ["FAIL" if failed else "PASS", rows, TOLERANCE_MM])
+	print(
+		(
+			"# clips audited %d of %d (%d without reference OBJ)"
+			% [clips_audited, clips_total, missing]
+		)
+	)
+	print(
+		(
+			"SKELETAL AUDIT %s (%d rows, tolerance %.1f mm)"
+			% ["FAIL" if failed else "PASS", rows, TOLERANCE_MM]
+		)
+	)
 	quit(1 if failed else 0)
 
 
@@ -195,7 +251,9 @@ func _skin(mesh_node: MeshInstance3D, skeleton: Skeleton3D) -> PackedVector3Arra
 	var globals: Array[Transform3D] = []
 	for b in skeleton.get_bone_count():
 		var parent := skeleton.get_bone_parent(b)
-		globals.append(skeleton.get_bone_pose(b) if parent < 0 else globals[parent] * skeleton.get_bone_pose(b))
+		globals.append(
+			skeleton.get_bone_pose(b) if parent < 0 else globals[parent] * skeleton.get_bone_pose(b)
+		)
 	for i in binds:
 		var bone := skin.get_bind_bone(i)
 		if bone < 0:
@@ -228,7 +286,9 @@ func _read_obj(path: String, dropped: Array) -> PackedVector3Array:
 			part += 1
 			local = 0
 		elif line.begins_with("v "):
-			var skip: bool = part >= 0 and part < dropped.size() and (dropped[part] as Array).has(float(local))
+			var skip: bool = (
+				part >= 0 and part < dropped.size() and (dropped[part] as Array).has(float(local))
+			)
 			if not skip:
 				var parts := line.split(" ", false)
 				out.append(Vector3(parts[1].to_float(), parts[2].to_float(), parts[3].to_float()))

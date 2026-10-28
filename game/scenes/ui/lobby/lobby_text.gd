@@ -71,7 +71,13 @@ static func pick_text(meta: Dictionary) -> String:
 		return UiText.t("LOBBY_NO_PICK")
 	var pick: WizardPick = MatchWire.decode_pick(meta)
 	if pick == null:
-		return UiText.t("LOBBY_PICK_FORMAT") % [str(meta.get("model", meta.get("wizard", "?"))), str(meta.get("god", "?")).capitalize()]
+		return (
+			UiText.t("LOBBY_PICK_FORMAT")
+			% [
+				str(meta.get("model", meta.get("wizard", "?"))),
+				str(meta.get("god", "?")).capitalize()
+			]
+		)
 	return UiText.t("LOBBY_PICK_FORMAT") % [pick.wizard.display_name, pick.god.display_name]
 
 
@@ -82,7 +88,10 @@ static func bot_text(meta: Dictionary) -> String:
 	if not god.is_empty():
 		var data: GodType = MatchWire.decode_god(god)
 		god_name = data.display_name if data != null else god.capitalize()
-	return UiText.t("LOBBY_BOT_FORMAT") % [god_name, AiDifficultyPicker.difficulty_name(str(meta.get("difficulty", "normal")))]
+	return (
+		UiText.t("LOBBY_BOT_FORMAT")
+		% [god_name, AiDifficultyPicker.difficulty_name(str(meta.get("difficulty", "normal")))]
+	)
 
 
 ## What a result says to the player in `my_slot` (0 = not in the match). `result` is the Dictionary the dedicated

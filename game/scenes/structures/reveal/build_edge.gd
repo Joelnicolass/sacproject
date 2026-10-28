@@ -34,19 +34,28 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if reveal == null:
 		warnings.append("Assign `reveal` (the tower's BuildReveal: it gives the line's height).")
 	if rings == null:
-		warnings.append("Assign `rings` (the EdgeRings SpriteEmitter with data/fx/build_edge_ring.tres).")
+		warnings.append(
+			"Assign `rings` (the EdgeRings SpriteEmitter with data/fx/build_edge_ring.tres)."
+		)
 	if light == null:
 		warnings.append("Assign `light` (the EdgeLight ActorLight).")
 	return warnings
 
 
 ## This moves by itself every frame, so physics interpolation must leave it alone.
-func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 func _ready() -> void:
-	var on := not Engine.is_editor_hint() and not LookRig.is_presentationless() \
-			and tower != null and reveal != null and rings != null and light != null
+	var on := (
+		not Engine.is_editor_hint()
+		and not LookRig.is_presentationless()
+		and tower != null
+		and reveal != null
+		and rings != null
+		and light != null
+	)
 	set_process(on)
 	if on:
 		_show_rising(false)

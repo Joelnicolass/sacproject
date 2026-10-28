@@ -36,7 +36,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if body == null:
 		out.append("Assign `body` (the DoctorBody it moves).")
 	if avoidance == null:
-		out.append("Assign `avoidance` (BodyAvoidance): without it the doctors walk through each other.")
+		out.append(
+			"Assign `avoidance` (BodyAvoidance): without it the doctors walk through each other."
+		)
 	return out
 
 
@@ -57,8 +59,14 @@ func walk_to(point: Vector3) -> void:
 		return
 	if is_instance_valid(path_follower):
 		var follower_goal := path_follower.goal
-		if _walking and path_follower.is_active() \
-				and Vector2(point.x - follower_goal.x, point.z - follower_goal.z).length() < repath_goal_m:
+		if (
+			_walking
+			and path_follower.is_active()
+			and (
+				Vector2(point.x - follower_goal.x, point.z - follower_goal.z).length()
+				< repath_goal_m
+			)
+		):
 			return
 		path_follower.go_to(point)
 	else:
@@ -104,7 +112,9 @@ func landing_s() -> float:
 
 
 func turn_toward(direction: Vector3, delta: float) -> void:
-	body.rotation.y = rotate_toward(body.rotation.y, atan2(direction.x, direction.z), turn_rate * delta)
+	body.rotation.y = rotate_toward(
+		body.rotation.y, atan2(direction.x, direction.z), turn_rate * delta
+	)
 
 
 ## The velocity (x, z) the avoidance gave back: the second half of the step of advance_on_ground.

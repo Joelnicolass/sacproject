@@ -30,4 +30,3 @@ enum Role { SCENERY, MANALITH, SHRINE }
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "tag":
 		property.usage |= PROPERTY_USAGE_READ_ONLY
-

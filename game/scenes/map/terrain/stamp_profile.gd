@@ -41,4 +41,8 @@ func has_pattern() -> bool:
 
 
 func is_ready() -> bool:
-	return (radial != null or has_pattern()) and timeline != null and (ring_travel == null) == (ring_width == null)
+	return (
+		(radial != null or has_pattern())
+		and timeline != null
+		and (ring_travel == null) == (ring_width == null)
+	)

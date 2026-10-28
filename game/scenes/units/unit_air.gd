@@ -40,7 +40,9 @@ func step_vertical(delta: float, walking: bool) -> bool:
 	if must_fly and not (flight != null and flight.is_dropped()):
 		hold_height(delta)
 	elif flight != null and (must_fly or flight.is_capable()):
-		var above := body.global_position.y - ground_height(body.global_position) if airborne else 0.0
+		var above := (
+			body.global_position.y - ground_height(body.global_position) if airborne else 0.0
+		)
 		var lift := flight.advance(delta, walking, above, body.is_on_floor())
 		if airborne:
 			body.velocity.y = lift

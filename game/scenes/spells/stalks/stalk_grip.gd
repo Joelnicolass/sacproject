@@ -51,9 +51,13 @@ func follow(tip: Vector3, velocity: Vector3) -> void:
 
 ## Lets go with the speed of the tip (plus the pull of one tick's gravity): the body flies on and Tumbling lands it.
 func throw(velocity: Vector3) -> void:
-	var tumbling := BodyNudge.tumbling_of(_body) if _body != null and is_instance_valid(_body) else null
+	var tumbling := (
+		BodyNudge.tumbling_of(_body) if _body != null and is_instance_valid(_body) else null
+	)
 	if tumbling != null and tumbling.is_on():
-		tumbling.drive(velocity + Vector3.UP * tumbling.falling_acceleration / MatchClock.TICKS_PER_SECOND_F)
+		tumbling.drive(
+			velocity + Vector3.UP * tumbling.falling_acceleration / MatchClock.TICKS_PER_SECOND_F
+		)
 	drop()
 
 

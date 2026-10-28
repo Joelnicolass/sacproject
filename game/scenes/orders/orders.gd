@@ -47,12 +47,21 @@ var last_width := 0.0
 
 
 ## Owner side. `facing` is the camera yaw (forward = (sin, 0, cos)). `formation_id` only matters for "formation".
-func request(units: Array, command: String, point: Vector3, target: Node3D, facing: float, formation_id := &"") -> void:
+func request(
+	units: Array,
+	command: String,
+	point: Vector3,
+	target: Node3D,
+	facing: float,
+	formation_id := &""
+) -> void:
 	requested.emit(units, command)
 	var paths := _paths_of(units)
 	var target_path := str(target.get_path()) if target else ""
 	if MpAuthority.should_send_command():
-		submit_order.rpc_id(MpAuthority.SERVER_PEER, paths, command, point, target_path, facing, formation_id)
+		submit_order.rpc_id(
+			MpAuthority.SERVER_PEER, paths, command, point, target_path, facing, formation_id
+		)
 		return
 	_apply(MpKit.local_slot(), paths, command, point, target_path, facing, formation_id)
 
@@ -61,7 +70,15 @@ func request(units: Array, command: String, point: Vector3, target: Node3D, faci
 ## `request` with the slot given instead of read from MpKit.local_slot(); _apply still checks that every unit
 ## belongs to `slot`, so the AI can order exactly what a human of that slot could.
 ## The AI does not choose formations: its creatures keep the line.
-func apply_for(slot: int, units: Array, command: String, point: Vector3, target: Node3D, facing := 0.0, formation_id := &"") -> void:
+func apply_for(
+	slot: int,
+	units: Array,
+	command: String,
+	point: Vector3,
+	target: Node3D,
+	facing := 0.0,
+	formation_id := &""
+) -> void:
 	if slot <= 0 or (MpKit.is_networked() and not MpKit.is_server()):
 		return
 	# The nodes go straight in: the AI orders thousands of times per match and the roundtrip through NodePaths cost half of each order.
@@ -77,14 +94,31 @@ static func _paths_of(units: Array) -> PackedStringArray:
 
 
 @rpc("any_peer", "call_remote", "reliable")
-func submit_order(unit_paths: PackedStringArray, command: String, target_pos: Vector3, target_path: String, facing: float, formation_id: StringName) -> void:
+func submit_order(
+	unit_paths: PackedStringArray,
+	command: String,
+	target_pos: Vector3,
+	target_path: String,
+	facing: float,
+	formation_id: StringName
+) -> void:
 	var slot := MpAuthority.command_slot(self)
 	if slot <= 0:
 		return
 	_apply(slot, unit_paths, command, target_pos, target_path, facing, formation_id)
 
 
-func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Vector3, target_path: String, facing: float, formation_id: StringName, unit_nodes: Array = [], target_node: Node3D = null) -> void:
+func _apply(
+	slot: int,
+	unit_paths: PackedStringArray,
+	command: String,
+	point: Vector3,
+	target_path: String,
+	facing: float,
+	formation_id: StringName,
+	unit_nodes: Array = [],
+	target_node: Node3D = null
+) -> void:
 	if command == FORMATION_COMMAND:
 		_set_formation(slot, unit_paths, formation_id, unit_nodes)
 		return
@@ -95,7 +129,11 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 		_set_formation(slot, unit_paths, formation_id, unit_nodes)
 	var started := Time.get_ticks_usec()
 	var kind: int = COMMANDS[command]
-	var target := target_node if target_node != null else (get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null)
+	var target := (
+		target_node
+		if target_node != null
+		else (get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null)
+	)
 	if kind == UnitOrders.Command.RETREAT:
 		_retreat(slot)
 		return
@@ -109,8 +147,14 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 		spots.append(_spot(kind, point, target, offset, facing))
 	var yaw := _yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
 	var row_size := formation.match_row_size(units.size())
-	var matched := _match(units, spots) if last_rows <= 1 or row_size <= 0 else _match_rows(units, slots, yaw, row_size)
-	var retarget := kind == UnitOrders.Command.ATTACK and target != null and target.is_in_group(UnitBody.GROUP)
+	var matched := (
+		_match(units, spots)
+		if last_rows <= 1 or row_size <= 0
+		else _match_rows(units, slots, yaw, row_size)
+	)
+	var retarget := (
+		kind == UnitOrders.Command.ATTACK and target != null and target.is_in_group(UnitBody.GROUP)
+	)
 	for i in units.size():
 		var unit: Node3D = units[i]
 		var index: int = matched[i]
@@ -120,22 +164,30 @@ func _apply(slot: int, unit_paths: PackedStringArray, command: String, point: Ve
 			if foe == null:
 				foe = target
 		var order_point := target.global_position if target else point
-		var order_facing := _yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
-		(unit.get_node("Orders") as UnitOrders).give(kind as UnitOrders.Command, foe, order_point, slots[index], order_facing)
+		var order_facing := (
+			_yaw_of(target) if kind == UnitOrders.Command.GUARD and target else facing
+		)
+		(unit.get_node("Orders") as UnitOrders).give(
+			kind as UnitOrders.Command, foe, order_point, slots[index], order_facing
+		)
 	last_apply_us = Time.get_ticks_usec() - started
 	if unit_nodes.is_empty() or log_ai_orders:
-		if DebugLog.on(&"orders"): print("order %s %d" % [command, units.size()])
+		if DebugLog.on(&"orders"):
+			print("order %s %d" % [command, units.size()])
 
 
 ## "formation": keeps `formation_id` on each creature of the slot that was asked for. Nobody moves; an id the catalog does
 ## not know changes nothing.
-func _set_formation(slot: int, unit_paths: PackedStringArray, formation_id: StringName, unit_nodes: Array) -> void:
+func _set_formation(
+	slot: int, unit_paths: PackedStringArray, formation_id: StringName, unit_nodes: Array
+) -> void:
 	if catalog == null or not catalog.has_id(formation_id):
 		return
 	for unit in _own_units(slot, unit_paths, null, UnitOrders.Command.MOVE, unit_nodes):
 		unit.get_node("Orders").set("formation_id", formation_id)
 	if unit_nodes.is_empty() or log_ai_orders:
-		if DebugLog.on(&"orders"): print("order formation %s" % formation_id)
+		if DebugLog.on(&"orders"):
+			print("order formation %s" % formation_id)
 
 
 ## The formation most of the group keeps; a tie goes to the one first in the catalog (the original's order).
@@ -163,19 +215,30 @@ func _retreat(slot: int) -> void:
 		return
 	for unit in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		if _can_order(unit, slot):
-			(unit.get_node("Orders") as UnitOrders).give(UnitOrders.Command.RETREAT, wizard, wizard.global_position, Vector2.ZERO, 0.0)
+			(unit.get_node("Orders") as UnitOrders).give(
+				UnitOrders.Command.RETREAT, wizard, wizard.global_position, Vector2.ZERO, 0.0
+			)
 
 
 ## Pacifists refuse attack and advance.
-func _own_units(slot: int, unit_paths: PackedStringArray, target: Node3D, kind: int, unit_nodes: Array = []) -> Array[Node3D]:
+func _own_units(
+	slot: int, unit_paths: PackedStringArray, target: Node3D, kind: int, unit_nodes: Array = []
+) -> Array[Node3D]:
 	var units: Array[Node3D] = []
 	var seen := {}
 	var candidates: Array = unit_nodes.duplicate()
 	for path in unit_paths:
 		candidates.append(get_node_or_null(path))
 	for candidate in candidates:
-		var unit := candidate as Node3D if candidate != null and is_instance_valid(candidate) else null
-		if unit == null or unit == target or seen.has(unit.get_instance_id()) or not _can_order(unit, slot):
+		var unit := (
+			candidate as Node3D if candidate != null and is_instance_valid(candidate) else null
+		)
+		if (
+			unit == null
+			or unit == target
+			or seen.has(unit.get_instance_id())
+			or not _can_order(unit, slot)
+		):
 			continue
 		var pacifist: bool = unit.get("type") == null or unit.get("type").aggressiveness <= 0
 		if pacifist and (kind == UnitOrders.Command.ATTACK or kind == UnitOrders.Command.ADVANCE):
@@ -191,11 +254,15 @@ func _can_order(unit: Node, slot: int) -> bool:
 	if not unit.is_in_group(UnitBody.GROUP) or int(unit.get("owner_slot")) != slot:
 		return false
 	var body := unit as UnitBody
-	return body != null and not body.is_dead() and not body.is_summoning() and body.has_node("Orders")
+	return (
+		body != null and not body.is_dead() and not body.is_summoning() and body.has_node("Orders")
+	)
 
 
 ## The slots (right, forward) of `formation` for the group. Guarding or attacking a body changes them.
-func _formation(formation: FormationType, units: Array[Node3D], kind: int, target: Node3D) -> Array[Vector2]:
+func _formation(
+	formation: FormationType, units: Array[Node3D], kind: int, target: Node3D
+) -> Array[Vector2]:
 	var size := 0.0
 	for unit in units:
 		size = maxf(size, 2.0 * _half_size(unit))
@@ -261,7 +328,9 @@ func _match(units: Array[Node3D], spots: Array[Vector3]) -> PackedInt32Array:
 ## crowd took the back rows and everyone else walked through the bodies already parked, which carried them off their slots.
 ## Here the units furthest along `yaw` take the front row, the next ones the row
 ## behind, and so on; inside a row they keep their order across (left to right). No two paths cross. Ties go by index.
-func _match_rows(units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int) -> PackedInt32Array:
+func _match_rows(
+	units: Array[Node3D], slots: Array[Vector2], yaw: float, row_size: int
+) -> PackedInt32Array:
 	var n := units.size()
 	var result := PackedInt32Array()
 	result.resize(n)

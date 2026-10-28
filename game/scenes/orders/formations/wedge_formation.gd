@@ -11,7 +11,9 @@ func slots(count: int, spacing: float, target_distance: float, command: int) -> 
 	var result: Array[Vector2] = []
 	var unit := maxf(spacing, target_distance / 1.5)
 	var root2 := sqrt(2.0)
-	var advance := 0.0 if attack_forward and command == UnitOrders.Command.ATTACK else 3.0 * 0.5 * root2 * unit
+	var advance := (
+		0.0 if attack_forward and command == UnitOrders.Command.ATTACK else 3.0 * 0.5 * root2 * unit
+	)
 	var offset := Vector2(0.0, advance)
 	var half := floori(count / 2.0)
 	for i in count:

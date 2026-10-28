@@ -30,7 +30,11 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, ability: AbilityType
 		var health := target.get_node_or_null("Health") as Health
 		if health:
 			# A building with guardians sends the hit to them: the shooter drains from what they took.
-			LifeDrain.feed(shooter_of(shot), target, health.damage_typed(float(shot.get("damage")), _HEALTH.DIRECT_RANGED, from_slot))
+			LifeDrain.feed(
+				shooter_of(shot),
+				target,
+				health.damage_typed(float(shot.get("damage")), _HEALTH.DIRECT_RANGED, from_slot)
+			)
 		return
 	if ability == null or ability.duration_s <= 0.0:
 		return
@@ -41,9 +45,30 @@ func _affect(shot: Node3D, target: Node3D, _point: Vector3, ability: AbilityType
 	var frames := int(ability.duration_s * MatchClock.TICKS_PER_SECOND)
 	var ires := ability.poison_resistance_debuff
 	var freg := ability.poison_regen_factor
-	if Poisoning.dose_body(target, per_second, frames, kind, from_slot, infectious, ires, freg, shooter.get_path() if shooter != null else NodePath()):
-		print("poison %s on %s: %.3f/s, %d frames%s (health %d)" % [ability.tag, target.name, per_second, frames,
-				", contagia" if infectious else "", roundi(float(target.get_node("Health").get("current")))])
+	if Poisoning.dose_body(
+		target,
+		per_second,
+		frames,
+		kind,
+		from_slot,
+		infectious,
+		ires,
+		freg,
+		shooter.get_path() if shooter != null else NodePath()
+	):
+		print(
+			(
+				"poison %s on %s: %.3f/s, %d frames%s (health %d)"
+				% [
+					ability.tag,
+					target.name,
+					per_second,
+					frames,
+					", contagia" if infectious else "",
+					roundi(float(target.get_node("Health").get("current")))
+				]
+			)
+		)
 
 
 func _is_building(target: Node) -> bool:

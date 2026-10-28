@@ -23,7 +23,9 @@ func arm_status(wizard: WizardBody, _spell: SpellType) -> String:
 
 ## `picked` and `point` come from the client: the creature is validated here and its own position
 ## is the aim.
-func check(wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.target = wizard
 	var system := _find_system()

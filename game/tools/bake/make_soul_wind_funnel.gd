@@ -42,5 +42,10 @@ func _initialize() -> void:
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	mesh.resource_name = "soul_wind_funnel"
 	var error := ResourceSaver.save(mesh, OUT)
-	print("soul_wind_funnel: %s (%d vertices) -> %s" % ["saved" if error == OK else "FAILED %d" % error, vertices.size(), OUT])
+	print(
+		(
+			"soul_wind_funnel: %s (%d vertices) -> %s"
+			% ["saved" if error == OK else "FAILED %d" % error, vertices.size(), OUT]
+		)
+	)
 	quit(0 if error == OK else 1)

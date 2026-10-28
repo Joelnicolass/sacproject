@@ -119,7 +119,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if command_log == null:
 		out.append("Assign `command_log` (%Battle): without it the refusals say nothing.")
 	if channel == null:
-		out.append("Assign `channel` (the child AudioStreamPlayer): without it the advisor says nothing.")
+		out.append(
+			"Assign `channel` (the child AudioStreamPlayer): without it the advisor says nothing."
+		)
 	var refusal_script: GDScript = Refusal
 	var known: Array = refusal_script.get_script_constant_map().values()
 	for key: StringName in refusal_lines:

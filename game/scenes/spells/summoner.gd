@@ -11,13 +11,34 @@ const NO_SOULS := Refusal.NO_SOULS
 ## First try ahead_m in front of the wizard, then these
 ## (side, ahead) offsets, then a ring of fallback_radius around it.
 @export var ahead_m := 6.0
-@export var offsets: PackedVector2Array = PackedVector2Array([
-	Vector2(-3, 6), Vector2(3, 6),
-	Vector2(-2, 3), Vector2(2, 3), Vector2(-5, 3), Vector2(5, 3),
-	Vector2(-2, 9), Vector2(2, 9), Vector2(5, 9), Vector2(-5, 9),
-	Vector2(-8, 12), Vector2(-5, 12), Vector2(-2, 12), Vector2(2, 12), Vector2(5, 12), Vector2(8, 12),
-	Vector2(-11, 15), Vector2(-8, 15), Vector2(-5, 15), Vector2(-2, 15), Vector2(2, 15), Vector2(5, 15), Vector2(8, 15), Vector2(11, 15),
-])
+@export var offsets: PackedVector2Array = PackedVector2Array(
+	[
+		Vector2(-3, 6),
+		Vector2(3, 6),
+		Vector2(-2, 3),
+		Vector2(2, 3),
+		Vector2(-5, 3),
+		Vector2(5, 3),
+		Vector2(-2, 9),
+		Vector2(2, 9),
+		Vector2(5, 9),
+		Vector2(-5, 9),
+		Vector2(-8, 12),
+		Vector2(-5, 12),
+		Vector2(-2, 12),
+		Vector2(2, 12),
+		Vector2(5, 12),
+		Vector2(8, 12),
+		Vector2(-11, 15),
+		Vector2(-8, 15),
+		Vector2(-5, 15),
+		Vector2(-2, 15),
+		Vector2(2, 15),
+		Vector2(5, 15),
+		Vector2(8, 15),
+		Vector2(11, 15),
+	]
+)
 @export var fallback_radius := 15.0
 @export var fallback_tries := 24
 ## Nothing within this half-width (m) of the spot.
@@ -53,14 +74,21 @@ func begin(type: CreatureType) -> Node3D:
 	if spawner == null:
 		return null
 	var at := spawn_point()
-	var unit: Node3D = spawner.spawn_unit({
-		"tag": type.tag,
-		"label": type.display_name,
-		"slot": wizard.owner_slot,
-		"x": at.x, "y": at.y, "z": at.z,
-		"yaw": wizard.rotation.y,
-		"summoning": true,
-	})
+	var unit: Node3D = (
+		spawner
+		. spawn_unit(
+			{
+				"tag": type.tag,
+				"label": type.display_name,
+				"slot": wizard.owner_slot,
+				"x": at.x,
+				"y": at.y,
+				"z": at.z,
+				"yaw": wizard.rotation.y,
+				"summoning": true,
+			}
+		)
+	)
 	if unit:
 		FxBus.broadcast(summon_fx, BodyFacts.point(unit, summon_socket))
 	return unit
@@ -90,7 +118,9 @@ func spawn_point() -> Vector3:
 		if spot != null and _is_clear(spot):
 			return spot
 	for i in fallback_tries:
-		var spot: Variant = _ground_at(origin + ahead.rotated(Vector3.UP, TAU * i / fallback_tries) * fallback_radius)
+		var spot: Variant = _ground_at(
+			origin + ahead.rotated(Vector3.UP, TAU * i / fallback_tries) * fallback_radius
+		)
 		if spot != null and _is_clear(spot):
 			return spot
 	return first if first != null else origin
@@ -106,6 +136,10 @@ func _is_clear(spot: Vector3) -> bool:
 			if not node is Node3D or (node as Node).is_in_group(Corpse.GROUP):
 				continue
 			var d := (node as Node3D).global_position - spot
-			if absf(d.x) <= clear_half_width and absf(d.z) <= clear_half_width and absf(d.y) <= clear_half_height:
+			if (
+				absf(d.x) <= clear_half_width
+				and absf(d.z) <= clear_half_width
+				and absf(d.y) <= clear_half_height
+			):
 				return false
 	return true

@@ -53,9 +53,19 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if profile == null or not profile.is_ready():
-		warnings.append("`profile` is missing (a StampProfile with radial and timeline; the ring needs ring_travel and ring_width).")
+		(
+			warnings
+			. append(
+				"`profile` is missing (a StampProfile with radial and timeline; the ring needs ring_travel and ring_width)."
+			)
+		)
 	if reach == null or not reach.shape is CylinderShape3D:
-		warnings.append("`reach` is missing: a CollisionShape3D with a cylinder (radius = reach, height = peak).")
+		(
+			warnings
+			. append(
+				"`reach` is missing: a CollisionShape3D with a cylinder (radius = reach, height = peak)."
+			)
+		)
 	return warnings
 
 
@@ -68,7 +78,9 @@ func center() -> Vector2:
 
 
 func is_ready() -> bool:
-	return profile != null and profile.is_ready() and reach != null and reach.shape is CylinderShape3D
+	return (
+		profile != null and profile.is_ready() and reach != null and reach.shape is CylinderShape3D
+	)
 
 
 ## Seconds since it started playing (negative before).

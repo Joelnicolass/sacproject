@@ -50,7 +50,13 @@ func setup(data: Dictionary) -> void:
 	name = str(data["name"])
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
 	var goal: Vector3 = data.get("goal", position)
-	velocity = ZoneRules.shot_velocity(position, goal, float(data["shot_speed"]), gravity_m_s2) if data.has("shot_speed") else ZoneRules.launch_velocity(position, goal, float(data.get("fall_s", 1.0)), gravity_m_s2, lobbed)
+	velocity = (
+		ZoneRules.shot_velocity(position, goal, float(data["shot_speed"]), gravity_m_s2)
+		if data.has("shot_speed")
+		else ZoneRules.launch_velocity(
+			position, goal, float(data.get("fall_s", 1.0)), gravity_m_s2, lobbed
+		)
+	)
 	damage = float(data.get("damage", 0.0))
 	damage_range = float(data.get("damage_range", 0.0))
 	effect_range = float(data.get("effect_range", 0.0))

@@ -113,7 +113,12 @@ func _read(state: SceneState) -> bool:
 	for mark: String in marks:
 		if not root.has(mark) or not nodes.has(String(root[mark])):
 			return false
-	if footprint == null or ground == null or (air_path != null and air == null) or str(root.get("model_id", "")).is_empty():
+	if (
+		footprint == null
+		or ground == null
+		or (air_path != null and air == null)
+		or str(root.get("model_id", "")).is_empty()
+	):
 		return false
 	from_scene = true
 	model_id = str(root["model_id"])
@@ -130,7 +135,11 @@ func _read(state: SceneState) -> bool:
 	center = SceneStateReader.marker(nodes, root, "center")
 	top = SceneStateReader.marker(nodes, root, "top")
 	feet = SceneStateReader.marker(nodes, root, "feet")
-	muzzle = SceneStateReader.marker(nodes, root, "muzzle") if root.has("muzzle") else _hand(height_m, reach_m)
+	muzzle = (
+		SceneStateReader.marker(nodes, root, "muzzle")
+		if root.has("muzzle")
+		else _hand(height_m, reach_m)
+	)
 	passives = SceneStateReader.instance(state, root, "passives")
 	return true
 

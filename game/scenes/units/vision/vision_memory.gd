@@ -102,6 +102,9 @@ func exposed_sides(now: int) -> Array:
 
 func _alive(marks: Dictionary, now: int, bodies: bool) -> Array:
 	for key: int in marks.keys():
-		if (bodies and not is_instance_id_valid(key)) or VisionRules.lapsed(marks[key], now, forget_ticks):
+		if (
+			(bodies and not is_instance_id_valid(key))
+			or VisionRules.lapsed(marks[key], now, forget_ticks)
+		):
 			marks.erase(key)
 	return marks.keys()

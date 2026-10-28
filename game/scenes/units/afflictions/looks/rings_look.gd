@@ -65,7 +65,12 @@ func _spawn(follow: bool) -> void:
 	var feet := body.to_local(Vector3(box.get_center().x, box.position.y, box.get_center().z))
 	var fraction := _rng.randf_range(height_range.x, height_range.y)
 	var seconds := _rng.randf_range(close_range_s.x, close_range_s.y)
-	var radius := _rng.randf_range(radius_range.x, radius_range.y) * 0.5 * Vector2(box.size.x, box.size.z).length() * fraction
+	var radius := (
+		_rng.randf_range(radius_range.x, radius_range.y)
+		* 0.5
+		* Vector2(box.size.x, box.size.z).length()
+		* fraction
+	)
 	var height := box.size.y * fraction
 	var points := PackedVector3Array()
 	for k in flames:

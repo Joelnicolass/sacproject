@@ -29,7 +29,9 @@ func _run() -> void:
 		elif not arg.begins_with("--") and tag.is_empty():
 			tag = arg.get_file().get_basename()
 	if tag.is_empty():
-		push_error("creature_icon: pass the model tag: ... --script res://tools/bake/creature_icon.gd -- testmonster")
+		push_error(
+			"creature_icon: pass the model tag: ... --script res://tools/bake/creature_icon.gd -- testmonster"
+		)
 		quit(1)
 		return
 	if clip.is_empty():

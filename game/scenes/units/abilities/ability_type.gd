@@ -52,7 +52,14 @@ extends BookEntry
 
 ## True when the player must pick a target before the ability fires.
 func needs_target() -> bool:
-	return targets_wizards or targets_souls or targets_creatures or targets_corpses or targets_structures or targets_ground
+	return (
+		targets_wizards
+		or targets_souls
+		or targets_creatures
+		or targets_corpses
+		or targets_structures
+		or targets_ground
+	)
 
 
 ## True when it looks for souls or corpses, not only for living bodies.

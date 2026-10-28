@@ -59,7 +59,9 @@ func _jump() -> void:
 	if foe != null:
 		var line := BodyNudge.center(foe) - drop.global_position
 		speed = toward_speed * line.normalized() + wobble * _direction()
-		speed.y = minf(speed.y + 0.5 * drop.gravity_m_s2 * line.length() / maxf(speed.length(), 0.001), up_cap)
+		speed.y = minf(
+			speed.y + 0.5 * drop.gravity_m_s2 * line.length() / maxf(speed.length(), 0.001), up_cap
+		)
 	else:
 		speed = aimless_speed * _direction()
 		speed.y = aimless_up
@@ -69,7 +71,9 @@ func _jump() -> void:
 func _closest() -> Node3D:
 	var best: Node3D
 	var best_d := INF
-	for body in SplashDamage.bodies_within(get_tree(), drop.global_position, drop.effect_range, null, groups):
+	for body in SplashDamage.bodies_within(
+		get_tree(), drop.global_position, drop.effect_range, null, groups
+	):
 		var d := drop.global_position.distance_squared_to(BodyNudge.center(body))
 		if d < best_d:
 			best = body
@@ -82,4 +86,8 @@ func _direction() -> Vector3:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["The frog (ZoneDrop) that hops is missing."])
+	return (
+		PackedStringArray()
+		if drop != null
+		else PackedStringArray(["The frog (ZoneDrop) that hops is missing."])
+	)

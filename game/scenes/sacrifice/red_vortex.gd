@@ -44,7 +44,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if disc == null:
 		warnings.append("Assign to `disc` the red PortalDisc of the vortex.")
 	if effect == null:
-		warnings.append("Assign to `effect` the ParticleType of the drops (data/fx/red_vortex.tres).")
+		warnings.append(
+			"Assign to `effect` the ParticleType of the drops (data/fx/red_vortex.tres)."
+		)
 	return warnings
 
 
@@ -81,10 +83,13 @@ func _leave_closing_ring() -> void:
 	var openness := disc.openness
 	var host := tree.current_scene if tree.current_scene != null else tree.root
 	host.add_child.call_deferred(ghost)
-	ghost.ready.connect(func() -> void:
-		ghost.global_transform = at
-		ghost.openness = openness
-		ghost.close(), CONNECT_ONE_SHOT)
+	ghost.ready.connect(
+		func() -> void:
+			ghost.global_transform = at
+			ghost.openness = openness
+			ghost.close(),
+		CONNECT_ONE_SHOT
+	)
 
 
 func _drops() -> void:

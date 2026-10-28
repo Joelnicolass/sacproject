@@ -13,15 +13,26 @@ func _init(p_capacity := 64) -> void:
 	capacity = maxi(p_capacity, 1)
 
 
-func add(emitter: StringName, event: StringName, stream: AudioStream, played: bool, reason: StringName = &"") -> void:
-	_entries.append({
-		"emitter": emitter,
-		"event": event,
-		"stream": stream.resource_path if stream != null else "",
-		"tick": Engine.get_process_frames(),
-		"played": played,
-		"reason": reason,
-	})
+func add(
+	emitter: StringName,
+	event: StringName,
+	stream: AudioStream,
+	played: bool,
+	reason: StringName = &""
+) -> void:
+	(
+		_entries
+		. append(
+			{
+				"emitter": emitter,
+				"event": event,
+				"stream": stream.resource_path if stream != null else "",
+				"tick": Engine.get_process_frames(),
+				"played": played,
+				"reason": reason,
+			}
+		)
+	)
 	while _entries.size() > capacity:
 		_entries.pop_front()
 

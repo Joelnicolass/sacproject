@@ -22,7 +22,12 @@ func reseed(value: int) -> void:
 func refusal(cue: SoundCue, active := -1, with_cooldown := true) -> StringName:
 	if cue.is_silent():
 		return &"silent"
-	if with_cooldown and cue.cooldown_s > 0.0 and _last_play.has(cue) and clock - float(_last_play[cue]) < cue.cooldown_s:
+	if (
+		with_cooldown
+		and cue.cooldown_s > 0.0
+		and _last_play.has(cue)
+		and clock - float(_last_play[cue]) < cue.cooldown_s
+	):
 		return &"cooldown"
 	if cue.max_voices > 0 and active >= cue.max_voices:
 		return &"max_voices"
@@ -43,7 +48,10 @@ func draw_stream(cue: SoundCue) -> AudioStream:
 
 ## Puts a cue's stream, volume, pitch (with its jitter), bus and 3D falloff on a player.
 func configure(player: Node, cue: SoundCue, stream: AudioStream, in_3d: bool) -> void:
-	var pitch := 1.0 + (_rng.randf_range(-cue.pitch_jitter, cue.pitch_jitter) if cue.pitch_jitter > 0.0 else 0.0)
+	var pitch := (
+		1.0
+		+ (_rng.randf_range(-cue.pitch_jitter, cue.pitch_jitter) if cue.pitch_jitter > 0.0 else 0.0)
+	)
 	player.stream = stream
 	player.volume_db = cue.volume_db
 	player.pitch_scale = maxf(pitch, 0.01)

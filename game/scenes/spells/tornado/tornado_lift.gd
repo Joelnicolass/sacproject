@@ -22,8 +22,12 @@ func _physics_process(_delta: float) -> void:
 	if zone.cancelled or zone.phase != GroundZone.Phase.ACTIVE or drift.size <= 0.0:
 		return
 	var home := zone.points[0]
-	var axis := TornadoRules.axis(home + Vector3.UP * TornadoRules.COLUMN_M, zone.position, drift.size, winds.phases())
-	var area := AABB(home - Vector3(350.0, 10.0, 350.0), Vector3(700.0, TornadoRules.COLUMN_M + 20.0, 700.0))
+	var axis := TornadoRules.axis(
+		home + Vector3.UP * TornadoRules.COLUMN_M, zone.position, drift.size, winds.phases()
+	)
+	var area := AABB(
+		home - Vector3(350.0, 10.0, 350.0), Vector3(700.0, TornadoRules.COLUMN_M + 20.0, 700.0)
+	)
 	for body in BodyNudge.bodies_in(get_tree(), area):
 		_pull(body, axis)
 
@@ -32,7 +36,9 @@ func _pull(body: Node3D, axis: PackedVector3Array) -> void:
 	var tumbling := BodyNudge.tumbling_of(body)
 	if tumbling == null or BodyNudge.airborne(body) or BodyNudge.fixed(body):
 		return
-	var impulse := TornadoRules.pull(body.global_position, TornadoRules.centre(axis, _radii, body.global_position))
+	var impulse := TornadoRules.pull(
+		body.global_position, TornadoRules.centre(axis, _radii, body.global_position)
+	)
 	if impulse == Vector3.INF:
 		return
 	if tumbling.is_on():

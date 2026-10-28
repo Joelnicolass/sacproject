@@ -11,14 +11,18 @@ const REACH_M := 500.0
 
 
 ## The y of the first surface under `at` (`from` only gives the physics world), `miss` when the ray hits nothing.
-static func surface_y(from: Node3D, at: Vector3, mask: int, exclude: Array[RID], miss: float) -> float:
+static func surface_y(
+	from: Node3D, at: Vector3, mask: int, exclude: Array[RID], miss: float
+) -> float:
 	var hit := _cast(from, at, mask, exclude, REACH_M)
 	return float(hit.position.y) if not hit.is_empty() else miss
 
 
 ## The point where the ray hits (x and z as the engine reports them, not rounded to `at`), null when it hits nothing.
 ## `reach_m` is how far above and below `at` the ray goes.
-static func surface_point(from: Node3D, at: Vector3, mask: int, exclude: Array[RID], reach_m := REACH_M) -> Variant:
+static func surface_point(
+	from: Node3D, at: Vector3, mask: int, exclude: Array[RID], reach_m := REACH_M
+) -> Variant:
 	var hit := _cast(from, at, mask, exclude, reach_m)
 	return null if hit.is_empty() else hit.get("position")
 
@@ -32,8 +36,12 @@ static func wizard_rids(tree: SceneTree) -> Array[RID]:
 	return rids
 
 
-static func _cast(from: Node3D, at: Vector3, mask: int, exclude: Array[RID], reach_m: float) -> Dictionary:
-	var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * reach_m, at + Vector3.DOWN * reach_m)
+static func _cast(
+	from: Node3D, at: Vector3, mask: int, exclude: Array[RID], reach_m: float
+) -> Dictionary:
+	var query := PhysicsRayQueryParameters3D.create(
+		at + Vector3.UP * reach_m, at + Vector3.DOWN * reach_m
+	)
 	query.collision_mask = mask
 	query.exclude = exclude
 	return from.get_world_3d().direct_space_state.intersect_ray(query)

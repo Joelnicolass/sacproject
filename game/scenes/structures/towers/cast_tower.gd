@@ -104,8 +104,12 @@ func clear_footprint() -> void:
 		_push_out(node as Node3D, reach, exclude)
 	for node in get_tree().get_nodes_in_group(Soul.GROUP):
 		var soul := node as Soul
-		if soul != null and not soul.attached and soul.carrier == null \
-				and soul.state in [Soul.State.NORMAL, Soul.State.EMERGING]:
+		if (
+			soul != null
+			and not soul.attached
+			and soul.carrier == null
+			and soul.state in [Soul.State.NORMAL, Soul.State.EMERGING]
+		):
 			_push_out(soul, reach, exclude)
 	var around := AABB(global_position - Vector3(reach, reach, reach), Vector3.ONE * reach * 2.0)
 	for body in BodyNudge.bodies_in(get_tree(), around, BuildArea.PUSHED):
@@ -115,13 +119,18 @@ func clear_footprint() -> void:
 func _push_out(body: Node3D, reach: float, exclude: Array[RID]) -> void:
 	if body == null or not is_instance_valid(body):
 		return
-	var flat := Vector3(body.global_position.x - global_position.x, 0.0, body.global_position.z - global_position.z)
+	var flat := Vector3(
+		body.global_position.x - global_position.x, 0.0, body.global_position.z - global_position.z
+	)
 	if flat.length() >= reach:
 		return
 	var out := flat.normalized() if flat.length() > 0.01 else Vector3.RIGHT
 	var to := global_position + out * reach
-	to.y = body.global_position.y if BodyNudge.airborne(body) \
-			else GroundRay.surface_y(self, to, ground_mask, exclude, body.global_position.y)
+	to.y = (
+		body.global_position.y
+		if BodyNudge.airborne(body)
+		else GroundRay.surface_y(self, to, ground_mask, exclude, body.global_position.y)
+	)
 	BodyNudge.place(body, to)
 
 

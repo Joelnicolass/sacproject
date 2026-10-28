@@ -29,8 +29,16 @@ func apply() -> void:
 
 
 func _inert() -> bool:
-	return Engine.is_editor_hint() or DisplayServer.get_name() == "headless" or MpBoot.is_dedicated_process()
+	return (
+		Engine.is_editor_hint()
+		or DisplayServer.get_name() == "headless"
+		or MpBoot.is_dedicated_process()
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if prefs != null else PackedStringArray(["Assign `prefs` (%s)." % UiScalePrefs.SHARED_PATH])
+	return (
+		PackedStringArray()
+		if prefs != null
+		else PackedStringArray(["Assign `prefs` (%s)." % UiScalePrefs.SHARED_PATH])
+	)

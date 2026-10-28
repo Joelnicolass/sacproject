@@ -9,7 +9,9 @@ extends Node3D
 
 @export var carrier: SpellCarrier
 ## The phases in which they circle the carrier (the target); in CASTING they circle the wizard, in the others they stay by the carrier.
-@export var circle_in: Array[SpellCarrier.Phase] = [SpellCarrier.Phase.HOLDING, SpellCarrier.Phase.LINGERING]
+@export var circle_in: Array[SpellCarrier.Phase] = [
+	SpellCarrier.Phase.HOLDING, SpellCarrier.Phase.LINGERING
+]
 ## In CASTING they circle the wizard (Charm's spirits); off: they are not seen then.
 @export var circles_wizard := true
 ## While the carrier flies they fly with it (Charm's spirits); off: they are not seen then.
@@ -45,7 +47,11 @@ func _init() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["The SpellCarrier is missing."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
 
 func _ready() -> void:
@@ -87,7 +93,9 @@ func _process(delta: float) -> void:
 	if phase == SpellCarrier.Phase.FLYING or phase == SpellCarrier.Phase.SHRINKING:
 		for i in members.size():
 			var angle := TAU * float(i) / float(members.size())
-			members[i].global_position = DrawnPose.origin(carrier) + Vector3(sin(angle), 0.0, cos(angle)) * flight_spread_m
+			members[i].global_position = (
+				DrawnPose.origin(carrier) + Vector3(sin(angle), 0.0, cos(angle)) * flight_spread_m
+			)
 		return
 	var radius := radius_base_m + radius_per_size * _size(focus)
 	for i in members.size():
@@ -97,13 +105,33 @@ func _process(delta: float) -> void:
 func _wander(i: int, center: Vector3, radius: float, delta: float) -> void:
 	if _progress[i] >= 1.0:
 		_progress[i] -= 1.0
-		_from[i] = _to[i] if _from[i] != Vector3.ZERO or _to[i] != Vector3.ZERO else members[i].global_position - center
+		_from[i] = (
+			_to[i]
+			if _from[i] != Vector3.ZERO or _to[i] != Vector3.ZERO
+			else members[i].global_position - center
+		)
 		_push_from[i] = _push_to[i]
 		var disc := Vector2.from_angle(_rng.randf_range(-PI, PI)) * radius * sqrt(_rng.randf())
 		_to[i] = Vector3(disc.x, _rng.randf_range(-0.5, 0.5) * radius, disc.y)
-		_push_to[i] = Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)).normalized() * push * radius
+		_push_to[i] = (
+			(
+				Vector3(
+					_rng.randf_range(-1.0, 1.0),
+					_rng.randf_range(-1.0, 1.0),
+					_rng.randf_range(-1.0, 1.0)
+				)
+				. normalized()
+			)
+			* push
+			* radius
+		)
 	_progress[i] += legs_per_s * delta
-	var at := CarrierPath.hermite(_from[i], _push_from[i], _to[i], _push_to[i], clampf(_progress[i], 0.0, 1.0)) + center
+	var at := (
+		CarrierPath.hermite(
+			_from[i], _push_from[i], _to[i], _push_to[i], clampf(_progress[i], 0.0, 1.0)
+		)
+		+ center
+	)
 	var ground := GroundRay.surface_y(self, at, 1, GroundRay.wizard_rids(get_tree()), -INF)
 	if is_finite(ground):
 		at.y = maxf(at.y, ground + min_height_m)
@@ -114,11 +142,22 @@ func _wander(i: int, center: Vector3, radius: float, delta: float) -> void:
 func _focus(phase: SpellCarrier.Phase) -> Node3D:
 	if phase == SpellCarrier.Phase.CASTING or phase == SpellCarrier.Phase.WAITING:
 		return carrier.wizard() if circles_wizard else null
-	if phase == SpellCarrier.Phase.LINGERING and linger_visible_s > 0.0 and _phase_age > linger_visible_s:
+	if (
+		phase == SpellCarrier.Phase.LINGERING
+		and linger_visible_s > 0.0
+		and _phase_age > linger_visible_s
+	):
 		return null
 	if circle_in.has(phase):
 		return carrier.target_body() if carrier.target_body() != null else carrier
-	return carrier if flies_along and (phase == SpellCarrier.Phase.FLYING or phase == SpellCarrier.Phase.SHRINKING) else null
+	return (
+		carrier
+		if (
+			flies_along
+			and (phase == SpellCarrier.Phase.FLYING or phase == SpellCarrier.Phase.SHRINKING)
+		)
+		else null
+	)
 
 
 static func _size(body: Node3D) -> float:

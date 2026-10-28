@@ -125,10 +125,18 @@ func _on_cursor_changed(_cursor_name: String, texture: Texture2D) -> void:
 ## The armed icon cannot take what lies under the pointer (empty `accepts` = anything) or would be refused there (aim_status).
 func _check_hover() -> void:
 	_hover_invalid = false
-	if command_log == null or probe == null or command_log.armed.is_empty() or probe.kind == TargetProbe.HUD:
+	if (
+		command_log == null
+		or probe == null
+		or command_log.armed.is_empty()
+		or probe.kind == TargetProbe.HUD
+	):
 		return
 	var accepts := command_log.armed_accepts
-	_hover_invalid = not command_log.aim_status.is_empty() or not accepts.is_empty() and not accepts.has(String(probe.kind))
+	_hover_invalid = (
+		not command_log.aim_status.is_empty()
+		or not accepts.is_empty() and not accepts.has(String(probe.kind))
+	)
 
 
 func _update_invalid() -> void:

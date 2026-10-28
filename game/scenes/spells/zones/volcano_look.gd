@@ -38,11 +38,19 @@ var _next_angle := 0
 
 
 ## This moves by itself every frame, so physics interpolation must leave it alone.
-func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 func _ready() -> void:
-	set_process(not Engine.is_editor_hint() and zone != null and eruption != null and not LookRig.is_presentationless())
+	set_process(
+		(
+			not Engine.is_editor_hint()
+			and zone != null
+			and eruption != null
+			and not LookRig.is_presentationless()
+		)
+	)
 	if not is_processing():
 		return
 	_picture = Image.create(ground_steps, ANGLES, false, Image.FORMAT_RF)
@@ -76,9 +84,18 @@ func _process(_delta: float) -> void:
 	elif since < fade:
 		grown = floorf(float(since) * steps / fade)
 	var pulse_ticks := maxi(1, MatchClock.ticks_for(pulse_s))
-	_apply(lava, {"extend": grown / steps, "frame": (since / maxi(1, MatchClock.ticks_for(lava_frame_s))) % 8})
+	_apply(
+		lava,
+		{
+			"extend": grown / steps,
+			"frame": (since / maxi(1, MatchClock.ticks_for(lava_frame_s))) % 8
+		}
+	)
 	var pulse := float(since % pulse_ticks) / float(pulse_ticks)
-	_apply(spatter, {"pulse": pulse, "frame": mini(15, int(16.0 * pulse)), "origin_y": global_position.y})
+	_apply(
+		spatter,
+		{"pulse": pulse, "frame": mini(15, int(16.0 * pulse)), "origin_y": global_position.y}
+	)
 	_renew_ground(land, mouth)
 
 
@@ -95,7 +112,11 @@ func _renew_ground(land: Terrain, mouth: Vector2) -> void:
 		for column in ground_steps:
 			var reach := column * ground_step_m
 			var height := land.height_at(mouth.x + reach * cos(angle), mouth.y + reach * sin(angle))
-			_picture.set_pixel(column, _next_angle, Color(global_position.y if is_nan(height) else height, 0.0, 0.0, 1.0))
+			_picture.set_pixel(
+				column,
+				_next_angle,
+				Color(global_position.y if is_nan(height) else height, 0.0, 0.0, 1.0)
+			)
 		_next_angle = (_next_angle + 1) % ANGLES
 	_texture.update(_picture)
 

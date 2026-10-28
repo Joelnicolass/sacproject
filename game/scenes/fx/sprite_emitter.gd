@@ -51,7 +51,9 @@ func _notification(what: int) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray(["The ParticleType is missing."]) if type == null else PackedStringArray()
+	return (
+		PackedStringArray(["The ParticleType is missing."]) if type == null else PackedStringArray()
+	)
 
 
 ## The only switch outside code should use: a dedicated process stays off. Out of the tree it only stores the state
@@ -109,7 +111,9 @@ func _apply() -> void:
 		emitting = false
 		if not _warned:
 			_warned = true
-			push_warning("SpriteEmitter: ParticleType has no atlas texture (assign `atlas`; sheets come from tools/import/import_ui.py).")
+			push_warning(
+				"SpriteEmitter: ParticleType has no atlas texture (assign `atlas`; sheets come from tools/import/import_ui.py)."
+			)
 		return
 	local_coords = false
 	one_shot = type.rate_per_s <= 0.0

@@ -32,7 +32,9 @@ func _ready() -> void:
 		# An exported binary carries its project (no `--path`); from the editor's binary it needs the folder.
 		launcher.base_args = PackedStringArray(["--headless"])
 		if not OS.has_feature("template"):
-			launcher.base_args.append_array(PackedStringArray(["--path", ProjectSettings.globalize_path("res://")]))
+			launcher.base_args.append_array(
+				PackedStringArray(["--path", ProjectSettings.globalize_path("res://")])
+			)
 	# `--match-engine-args=--fixed-fps,600` adds ENGINE args (before the `--`) to every dedicated: the tests run the match without waiting
 	# for real time. Comma-separated; a flag with a value is two items.
 	var engine_extra := MpBoot.user_value("match-engine-args", "")
@@ -51,10 +53,14 @@ func _ready() -> void:
 	var rooms := MpLobby.server.rooms
 	rooms.match_assigned.connect(_on_match_assigned)
 	rooms.room_changed.connect(_on_room_changed)
-	rooms.room_error.connect(func(room_id: String, code: String) -> void:
-		print("sala \"%s\" error %s" % [MpLobby.server.name_of_room(room_id), code]))
-	launcher.match_failed.connect(func(match_id: String, reason: String) -> void:
-		print("partida %s fallo %s" % [match_id, reason]))
+	rooms.room_error.connect(
+		func(room_id: String, code: String) -> void:
+			print('sala "%s" error %s' % [MpLobby.server.name_of_room(room_id), code])
+	)
+	launcher.match_failed.connect(
+		func(match_id: String, reason: String) -> void:
+			print("partida %s fallo %s" % [match_id, reason])
+	)
 	print("salas listo puerto %d" % launcher.config.lobby_port)
 
 
@@ -63,9 +69,15 @@ func _on_match_assigned(room_id: String, _session_id: String, port: int, _token:
 	if match_id.is_empty() or _announced.has(match_id):
 		return
 	_announced[match_id] = true
-	var ticket := MpMatchFiles.read_json(MpMatchFiles.path_of(launcher.config.matches_root, match_id, MpMatchFiles.TICKET))
-	print("partida %s sala \"%s\" puerto %d semilla %d" % [
-		match_id, MpLobby.server.name_of_room(room_id), port, int(ticket.get("seed", 0))])
+	var ticket := MpMatchFiles.read_json(
+		MpMatchFiles.path_of(launcher.config.matches_root, match_id, MpMatchFiles.TICKET)
+	)
+	print(
+		(
+			'partida %s sala "%s" puerto %d semilla %d'
+			% [match_id, MpLobby.server.name_of_room(room_id), port, int(ticket.get("seed", 0))]
+		)
+	)
 
 
 func _on_room_changed(room_id: String) -> void:
@@ -73,4 +85,4 @@ func _on_room_changed(room_id: String) -> void:
 	if result.is_empty() or _result_seen.get(room_id, 0) == result.hash():
 		return
 	_result_seen[room_id] = result.hash()
-	print("sala \"%s\" resultado %s" % [MpLobby.server.name_of_room(room_id), JSON.stringify(result)])
+	print('sala "%s" resultado %s' % [MpLobby.server.name_of_room(room_id), JSON.stringify(result)])

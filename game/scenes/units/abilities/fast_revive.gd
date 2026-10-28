@@ -13,8 +13,6 @@ extends Node
 ## The creature goes back to the ground by gravity; it is not added to
 ## the selection again; the corpse stands up with Corpse.stand_up (0.9 s), not the revive clip.
 
-
-
 ## How long the revival lasts.
 @export_range(0.0166, 30.0, 0.0001, "suffix:s") var revive_s := 2.5
 ## It climbs while the timer is under this.
@@ -28,9 +26,11 @@ extends Node
 
 ## revive_s and rise_s in ticks (what the timer counts).
 var revive_ticks: int:
-	get: return MatchClock.ticks_for(revive_s)
+	get:
+		return MatchClock.ticks_for(revive_s)
 var rise_ticks: int:
-	get: return MatchClock.ticks_for(rise_s)
+	get:
+		return MatchClock.ticks_for(rise_s)
 
 var _body: UnitBody
 var _soul: Soul
@@ -42,7 +42,13 @@ var _who := "?"
 
 ## Before the node enters the tree. False = it cannot be revived (not dead, soul gone or already taken): nothing changed.
 func begin(corpse: UnitBody, soul: Soul) -> bool:
-	if corpse == null or soul == null or not is_instance_valid(corpse) or not is_instance_valid(soul) or not corpse.is_dead():
+	if (
+		corpse == null
+		or soul == null
+		or not is_instance_valid(corpse)
+		or not is_instance_valid(soul)
+		or not corpse.is_dead()
+	):
 		return false
 	if not (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING):
 		return false
@@ -94,7 +100,12 @@ func _finish() -> void:
 		_soul.queue_free()
 	var captive := Captive.of(_body)
 	if captive == null or not captive.finish_revive():
-		push_warning("FastRevive: %s could not finish the revival (no Captive, or it was not REVIVING)." % _who)
+		push_warning(
+			(
+				"FastRevive: %s could not finish the revival (no Captive, or it was not REVIVING)."
+				% _who
+			)
+		)
 	_say("revive %s end idle health %d (tick %d)" % [_who, roundi(_health()), MatchClock.now()])
 	queue_free()
 

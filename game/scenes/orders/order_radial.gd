@@ -82,7 +82,10 @@ func _poll_key(delta: float, hold: float) -> void:
 	if down and _source == Source.NONE and not _right_down:
 		_held_s += delta
 		if _held_s >= hold:
-			_open(Source.KEY, get_viewport().get_mouse_position() if _pointer == Vector2.ZERO else _pointer)
+			_open(
+				Source.KEY,
+				get_viewport().get_mouse_position() if _pointer == Vector2.ZERO else _pointer
+			)
 	elif not down and _source == Source.KEY:
 		menu.point_at(_pointer)
 		menu.confirm()
@@ -118,7 +121,9 @@ func _on_view_event(event: InputEvent) -> void:
 func _open(source: Source, at: Vector2) -> void:
 	_source = source
 	_origin = at
-	menu.open_at(at, menu.layout.center_icons.get(command.context_kind(at)) if menu.layout else null)
+	menu.open_at(
+		at, menu.layout.center_icons.get(command.context_kind(at)) if menu.layout else null
+	)
 	menu.point_at(_pointer)
 
 

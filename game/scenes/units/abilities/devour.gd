@@ -22,7 +22,11 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	if ability == null or user == null:
 		return Refusal.BAD_TARGET
 	var soul := _soul_of(target)
-	if soul == null or not soul.is_free_or_own(_slot()) or not (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING):
+	if (
+		soul == null
+		or not soul.is_free_or_own(_slot())
+		or not (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING)
+	):
 		return Refusal.BAD_TARGET
 	if _flat_distance(soul) > reach():
 		return Refusal.OUT_OF_RANGE
@@ -55,7 +59,9 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 func reach() -> float:
 	var profile := user.melee_profile()
 	var half := float(profile.get("reach", 0.35))
-	return reach_factor * Vector3(2.0 * half, float(profile.get("height", 1.8)), 2.0 * half).length()
+	return (
+		reach_factor * Vector3(2.0 * half, float(profile.get("height", 1.8)), 2.0 * half).length()
+	)
 
 
 func _heal_amount() -> float:

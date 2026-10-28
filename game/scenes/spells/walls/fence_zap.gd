@@ -28,7 +28,11 @@ var _right := {}
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if wall != null and posts != null and bolt != null else PackedStringArray(["The wall, posts and bolt are missing."])
+	return (
+		PackedStringArray()
+		if wall != null and posts != null and bolt != null
+		else PackedStringArray(["The wall, posts and bolt are missing."])
+	)
 
 
 func _ready() -> void:
@@ -96,7 +100,10 @@ func _discharge(key: Vector2, list: PackedVector2Array, charge: float) -> float:
 		_charge[other] = float(_charge.get(other, 0.0)) + charge
 	else:
 		spilt = charge
-	var around := Vector3.FORWARD.rotated(Vector3.UP, _rng.randf() * TAU) * _rng.randf_range(ground_reach_m.x, ground_reach_m.y)
+	var around := (
+		Vector3.FORWARD.rotated(Vector3.UP, _rng.randf() * TAU)
+		* _rng.randf_range(ground_reach_m.x, ground_reach_m.y)
+	)
 	var from := posts.position_of(key)
 	var end := from + around
 	end.y = wall.ground_y(end.x, end.z)
@@ -108,13 +115,21 @@ func _discharge(key: Vector2, list: PackedVector2Array, charge: float) -> float:
 func _strike(key: Vector2) -> float:
 	var at := posts.position_of(key)
 	var taken := 0.0
-	for body in SplashDamage.bodies_within(get_tree(), at, strike_range_m, null, [&"wizard", &"unit"]):
+	for body in SplashDamage.bodies_within(
+		get_tree(), at, strike_range_m, null, [&"wizard", &"unit"]
+	):
 		if _rng.randf() >= strike_per_s / MatchClock.TICKS_PER_SECOND_F:
 			continue
 		var is_caster := body == wall.wizard()
 		_zap(at, BodyNudge.center(body), null if is_caster else body)
 		if not is_caster:
-			SplashDamage.hurt(body, float(wall.spell.damage), wall.from_slot, Health.DIRECT_SPELL, Health.LIGHTNING)
+			SplashDamage.hurt(
+				body,
+				float(wall.spell.damage),
+				wall.from_slot,
+				Health.DIRECT_SPELL,
+				Health.LIGHTNING
+			)
 		var moved := _rng.randf_range(0.01, 0.02)
 		_charge[key] = float(_charge.get(key, 0.0)) - moved
 		taken += moved
@@ -123,7 +138,14 @@ func _strike(key: Vector2) -> float:
 
 func _on_post_born(at: Vector3) -> void:
 	for _bolt in _rng.randi_range(birth_bolts.x, birth_bolts.y):
-		var way := Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)).normalized()
+		var way := (
+			Vector3(
+				_rng.randf_range(-1.0, 1.0),
+				_rng.randf_range(-1.0, 1.0),
+				_rng.randf_range(-1.0, 1.0)
+			)
+			. normalized()
+		)
 		way.y = way.y * 0.75 + 0.25
 		var start := at + way * birth_reach_m
 		start.y = maxf(start.y, wall.ground_y(start.x, start.z))

@@ -6,7 +6,8 @@ extends FsmState
 ## Not: deciding which state comes next (VillagerBrain).
 
 var body: UnitBody:
-	get: return actor as UnitBody
+	get:
+		return actor as UnitBody
 
 
 func act() -> void:

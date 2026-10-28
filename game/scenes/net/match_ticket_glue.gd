@@ -71,10 +71,23 @@ func _ready() -> void:
 	# ALWAYS: this node and its agent (heartbeat, idle, result) keep working while the gate holds the simulation.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().node_added.connect(_on_node_added)
-	print("partida %s: ticket con %d asientos, semilla %d, nivel %d" % [agent.match_id, _seat_count, _setup.match_seed, _setup.level])
-	print("partida %s: mapa %s modo %s, %d IA" % [
-		agent.match_id, str(agent.ticket.get("world", MapCatalog.DEFAULT_TAG)), str(agent.ticket.get("mode", GameModeCatalog.DEFAULT_TAG)),
-		ai_seats().size()])
+	print(
+		(
+			"partida %s: ticket con %d asientos, semilla %d, nivel %d"
+			% [agent.match_id, _seat_count, _setup.match_seed, _setup.level]
+		)
+	)
+	print(
+		(
+			"partida %s: mapa %s modo %s, %d IA"
+			% [
+				agent.match_id,
+				str(agent.ticket.get("world", MapCatalog.DEFAULT_TAG)),
+				str(agent.ticket.get("mode", GameModeCatalog.DEFAULT_TAG)),
+				ai_seats().size()
+			]
+		)
+	)
 
 
 ## The glue of this process's ticket (`--match-ticket-file`), added under `parent`; null when there is no usable ticket. A ticket
@@ -89,7 +102,12 @@ static func attach(parent: Node) -> MatchTicketGlue:
 		glue.queue_free()
 		return null
 	if not world_is_valid(glue.agent.ticket):
-		push_error("partida %s: bad_ticket, el ticket pide el mapa '%s' y no existe" % [glue.agent.match_id, str(glue.agent.ticket.get("world", ""))])
+		push_error(
+			(
+				"partida %s: bad_ticket, el ticket pide el mapa '%s' y no existe"
+				% [glue.agent.match_id, str(glue.agent.ticket.get("world", ""))]
+			)
+		)
 		glue.agent.report_result({"winner_slot": 0, "defeated_slots": [], "reason": "bad_ticket"})
 		parent.get_tree().quit(1)
 		glue.rejected = true
@@ -157,7 +175,13 @@ func ai_seats() -> Array[Dictionary]:
 	if agent == null:
 		return out
 	for row in agent.ticket.get("ai_seats", []):
-		out.append({"slot": int(row["slot"]), "god": str(row.get("god", "")), "difficulty": str(row.get("difficulty", ""))})
+		out.append(
+			{
+				"slot": int(row["slot"]),
+				"god": str(row.get("god", "")),
+				"difficulty": str(row.get("difficulty", ""))
+			}
+		)
 	return out
 
 
@@ -178,7 +202,13 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _forced or _force_slots.is_empty() or (_force_ticks <= 0 and _force_file.is_empty()) or _first_admit_tick < 0 or _match_state == null:
+	if (
+		_forced
+		or _force_slots.is_empty()
+		or (_force_ticks <= 0 and _force_file.is_empty())
+		or _first_admit_tick < 0
+		or _match_state == null
+	):
 		return
 	if _force_file.is_empty():
 		if MatchClock.now() - _first_admit_tick < _force_ticks:
@@ -263,7 +293,14 @@ func _on_seat_abandoned(_slot: int, _why: String) -> void:
 	for slot in range(1, total + 1):
 		if GameModeCatalog.team_of_slot(tag, slot) == team:
 			winners.append(slot)
-	_report({"winner_slot": winners[0], "winner_slots": winners, "defeated_slots": defeated, "reason": "abandon"})
+	_report(
+		{
+			"winner_slot": winners[0],
+			"winner_slots": winners,
+			"defeated_slots": defeated,
+			"reason": "abandon"
+		}
+	)
 
 
 func _report(data: Dictionary) -> void:

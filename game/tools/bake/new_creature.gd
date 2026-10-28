@@ -58,7 +58,20 @@ const DEFAULT_IMPACT := 0.5
 const WORDS := {
 	"idle": ["idle", "stand", "stance", "rest", "breath", "breathe"],
 	"run": ["run", "sprint", "gallop", "trot", "jog", "walk", "move", "locomotion", "charge"],
-	"attack": ["attack", "melee", "slash", "bite", "swing", "punch", "claw", "strike", "smash", "stab", "bash"],
+	"attack":
+	[
+		"attack",
+		"melee",
+		"slash",
+		"bite",
+		"swing",
+		"punch",
+		"claw",
+		"strike",
+		"smash",
+		"stab",
+		"bash"
+	],
 	"shoot": ["shoot", "fire", "ranged", "spit", "throw"],
 	"cast": ["cast", "spell", "magic"],
 	"hit": ["hit", "hurt", "damage", "flinch", "pain", "react"],
@@ -78,14 +91,34 @@ const WORDS := {
 }
 ## Role -> the word groups a clip name must have ALL of. Compound roles come first so `fly_death` is not taken by `death`.
 const RULES := [
-	["fly_death", ["fly", "death"]], ["fly_damage", ["fly", "hit"]], ["cast_run", ["cast", "run"]],
-	["takeoff", ["takeoff"]], ["land", ["land"]], ["hover", ["hover"]], ["get_up", ["getup"]], ["knock", ["knock"]],
-	["talk_cower", []], ["cower", ["cower"]], ["work", ["work"]], ["held", ["held"]], ["thrash", ["thrash"]], ["rise", ["rise"]],
-	["gesture", ["gesture"]], ["death", ["death"]], ["hit", ["hit"]], ["attack", ["attack"]], ["shoot", ["shoot"]],
-	["cast", ["cast"]], ["fly", ["fly"]], ["run", ["run"]], ["idle", ["idle"]],
+	["fly_death", ["fly", "death"]],
+	["fly_damage", ["fly", "hit"]],
+	["cast_run", ["cast", "run"]],
+	["takeoff", ["takeoff"]],
+	["land", ["land"]],
+	["hover", ["hover"]],
+	["get_up", ["getup"]],
+	["knock", ["knock"]],
+	["talk_cower", []],
+	["cower", ["cower"]],
+	["work", ["work"]],
+	["held", ["held"]],
+	["thrash", ["thrash"]],
+	["rise", ["rise"]],
+	["gesture", ["gesture"]],
+	["death", ["death"]],
+	["hit", ["hit"]],
+	["attack", ["attack"]],
+	["shoot", ["shoot"]],
+	["cast", ["cast"]],
+	["fly", ["fly"]],
+	["run", ["run"]],
+	["idle", ["idle"]],
 ]
 ## A role with no clip of its own plays another role's (the rig itself rests on idle for the rest, e.g. `hit`).
-const FALLBACKS := {"shoot": ["attack"], "hover": ["fly"], "fly_death": ["death"], "fly_damage": ["hit"]}
+const FALLBACKS := {
+	"shoot": ["attack"], "hover": ["fly"], "fly_death": ["death"], "fly_damage": ["hit"]
+}
 ## The fallbacks of these roles only make sense for a body that flies.
 const FLIGHT_FALLBACKS: PackedStringArray = ["hover", "fly_death", "fly_damage"]
 
@@ -141,13 +174,17 @@ func _initialize() -> void:
 		elif not arg.begins_with("--") and positional.is_empty():
 			positional = arg
 	if positional.is_empty():
-		push_error("new_creature: pass the model tag or the .glb path: ... --script res://tools/bake/new_creature.gd -- testmonster")
+		push_error(
+			"new_creature: pass the model tag or the .glb path: ... --script res://tools/bake/new_creature.gd -- testmonster"
+		)
 		quit(1)
 		return
 	var glb_path := positional if positional.ends_with(".glb") else MODEL_DIR + positional + ".glb"
 	var tag := glb_path.get_file().get_basename()
 	if tag != tag.validate_filename() or tag.is_empty() or tag.contains(" "):
-		push_error("new_creature: «%s» is not a usable tag (no spaces or symbols: rename the .glb)" % tag)
+		push_error(
+			"new_creature: «%s» is not a usable tag (no spaces or symbols: rename the .glb)" % tag
+		)
 		quit(1)
 		return
 	# BodyModel answers only once it is ready, and the root is not in the tree yet during _initialize: work on the first frame.
@@ -168,9 +205,15 @@ func _run_job() -> void:
 
 # --- create ------------------------------------------------------------------------------------------------------------
 
+
 func _create(tag: String, glb_path: String, display: String, god: String) -> int:
 	if not ResourceLoader.exists(glb_path):
-		push_error("new_creature: %s is not imported. Open the project in the editor once, or run `Godot --headless --path . --import`." % glb_path)
+		push_error(
+			(
+				"new_creature: %s is not imported. Open the project in the editor once, or run `Godot --headless --path . --import`."
+				% glb_path
+			)
+		)
 		return 1
 	var glb := load(glb_path) as PackedScene
 	if glb == null:
@@ -179,7 +222,12 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 	var instance := glb.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
 	var players := instance.find_children("*", "AnimationPlayer", true, false)
 	if players.is_empty():
-		push_error("new_creature: %s has no animations (export with the animations on; one action per clip)" % glb_path)
+		push_error(
+			(
+				"new_creature: %s has no animations (export with the animations on; one action per clip)"
+				% glb_path
+			)
+		)
 		instance.free()
 		return 1
 	var player := players[0] as AnimationPlayer
@@ -187,7 +235,9 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 	var found := _roles(clips)
 	var roles: Dictionary = found["roles"]
 	if not roles.has("idle"):
-		push_error("new_creature: no clip is named like «idle» (clips: %s)" % ", ".join(clips.keys()))
+		push_error(
+			"new_creature: no clip is named like «idle» (clips: %s)" % ", ".join(clips.keys())
+		)
 		instance.free()
 		return 1
 	var measure := _measure(instance)
@@ -222,7 +272,9 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 		var type := (load(TEMPLATE) as CreatureType).duplicate() as CreatureType
 		type.tag = tag
 		type.display_name = display if not display.is_empty() else tag.capitalize()
-		type.body = ResourceLoader.load(body_path, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+		type.body = (
+			ResourceLoader.load(body_path, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+		)
 		if not roles.has("run") and roles.has("fly"):
 			# A flier with no ground clip: it never walks.
 			type.fly_speed_m_s = type.run_speed_m_s
@@ -251,7 +303,15 @@ func _clips(player: AnimationPlayer) -> Dictionary:
 	var out := {}
 	for name in player.get_animation_list():
 		var animation := player.get_animation(name)
-		var fps := _fps_arg if _fps_arg > 0 else (roundi(1.0 / animation.step) if animation.step > 0.0 else BodyModel.DEFAULT_FRAMERATE)
+		var fps := (
+			_fps_arg
+			if _fps_arg > 0
+			else (
+				roundi(1.0 / animation.step)
+				if animation.step > 0.0
+				else BodyModel.DEFAULT_FRAMERATE
+			)
+		)
 		var frames := roundi(animation.length * fps)
 		if frames > 1:
 			out[String(name)] = {"seconds": animation.length, "fps": fps, "frames": frames}
@@ -259,6 +319,7 @@ func _clips(player: AnimationPlayer) -> Dictionary:
 
 
 # --- names -> roles ----------------------------------------------------------------------------------------------------
+
 
 ## {roles: role -> clip name, impacts: clip name -> fraction of the clip (0..1), unused: clips no role took}.
 func _roles(clips: Dictionary) -> Dictionary:
@@ -270,7 +331,9 @@ func _roles(clips: Dictionary) -> Dictionary:
 		if info["impact"] >= 0.0:
 			impacts[name] = info["impact"]
 		elif info["impact_frame"] >= 0:
-			impacts[name] = clampf(float(info["impact_frame"]) / float(clips[name]["frames"]), 0.0, 1.0)
+			impacts[name] = clampf(
+				float(info["impact_frame"]) / float(clips[name]["frames"]), 0.0, 1.0
+			)
 	var roles := {}
 	var taken := {}
 	# The melee swings first: a variant (`attack2`) must not be taken for the plain `attack`.
@@ -355,7 +418,13 @@ func _parse(name: String) -> Dictionary:
 	var flat := "".join(tokens)
 	if variant < 0 and _is_attack(tokens, flat):
 		variant = 0
-	return {"tokens": tokens, "flat": flat, "impact": impact, "impact_frame": impact_frame, "variant": variant}
+	return {
+		"tokens": tokens,
+		"flat": flat,
+		"impact": impact,
+		"impact_frame": impact_frame,
+		"variant": variant
+	}
 
 
 func _tokens_of(text: String) -> PackedStringArray:
@@ -372,7 +441,11 @@ func _is_attack(tokens: PackedStringArray, flat: String) -> bool:
 	if _score(tokens, flat, ["attack"]) < 0:
 		return false
 	for rule: Array in RULES:
-		if rule[0] != "attack" and not (rule[1] as Array).is_empty() and _score(tokens, flat, rule[1]) >= 0:
+		if (
+			rule[0] != "attack"
+			and not (rule[1] as Array).is_empty()
+			and _score(tokens, flat, rule[1]) >= 0
+		):
 			return false
 	return true
 
@@ -414,6 +487,7 @@ func _token_is(token: String, word: String) -> bool:
 
 # --- size --------------------------------------------------------------------------------------------------------------
 
+
 ## {aabb: the skinned meshes' rest-pose box in model space, raw: the union of their own boxes}.
 func _measure(root: Node3D) -> Dictionary:
 	var box := AABB()
@@ -445,13 +519,19 @@ func _hands_of(root: Node3D) -> Array[Dictionary]:
 			continue
 		var attachment := empty.get_parent() as BoneAttachment3D
 		if attachment == null:
-			print("NEW_CREATURE note: the empty %s hangs from no bone, so it is left out (parent it to a bone in Blender)" % hand_name)
+			print(
+				(
+					"NEW_CREATURE note: the empty %s hangs from no bone, so it is left out (parent it to a bone in Blender)"
+					% hand_name
+				)
+			)
 			continue
 		found.append({"name": hand_name, "bone": attachment.bone_name, "offset": empty.position})
 	return found
 
 
 # --- body scene (size and sockets) and look ------------------------------------------------------------------------------
+
 
 ## scenes/units/bodies/<tag>.tscn: a BodyFrame measured from the mesh. height = the box's; footprint radius = half its narrow side;
 ## reach = half its long side (the melee box); the physics capsule is the footprint with the floor and the width limit the capsule always
@@ -490,7 +570,15 @@ func _save_body(tag: String, measure: Dictionary) -> bool:
 	frame.reach = _marker(root, sockets, "Reach", Vector3(0.0, 0.0, reach))
 	frame.center = _marker(root, sockets, "Center", Vector3(0.0, height * 0.5, 0.0))
 	frame.top = _marker(root, sockets, "Top", Vector3(0.0, height, 0.0))
-	var look := (ResourceLoader.load(BODY_DIR + tag + "_look.tscn", "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene).instantiate()
+	var look := (
+		(
+			ResourceLoader.load(
+				BODY_DIR + tag + "_look.tscn", "", ResourceLoader.CACHE_MODE_REPLACE
+			)
+			as PackedScene
+		)
+		. instantiate()
+	)
 	look.name = "Look"
 	root.add_child(look)
 	look.owner = root
@@ -499,7 +587,9 @@ func _save_body(tag: String, measure: Dictionary) -> bool:
 	return _pack(root, BODY_DIR + tag + ".tscn")
 
 
-func _shape_node(root: Node3D, parent: Node, node_name: String, shape: Shape3D, middle_y: float) -> CollisionShape3D:
+func _shape_node(
+	root: Node3D, parent: Node, node_name: String, shape: Shape3D, middle_y: float
+) -> CollisionShape3D:
 	var node := CollisionShape3D.new()
 	node.name = node_name
 	node.shape = shape
@@ -523,7 +613,10 @@ func _marker(root: Node3D, parent: Node, node_name: String, at: Vector3) -> Mark
 func _save_look(tag: String, set_path: String) -> bool:
 	var root := BodyLook.new()
 	root.name = tag.capitalize().replace(" ", "") + "Look"
-	var scene := ResourceLoader.load(ModelPaths.scene_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+	var scene := (
+		ResourceLoader.load(ModelPaths.scene_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE)
+		as PackedScene
+	)
 	var model := scene.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE)
 	model.name = "Model"
 	root.add_child(model)
@@ -557,7 +650,16 @@ func _mm(value: float) -> float:
 
 # --- model scene -------------------------------------------------------------------------------------------------------
 
-func _save_scene(tag: String, glb: PackedScene, clips: Dictionary, roles: Dictionary, impacts: Dictionary, box: AABB, hands: Array[Dictionary]) -> bool:
+
+func _save_scene(
+	tag: String,
+	glb: PackedScene,
+	clips: Dictionary,
+	roles: Dictionary,
+	impacts: Dictionary,
+	box: AABB,
+	hands: Array[Dictionary]
+) -> bool:
 	var root := BodyModel.new()
 	root.name = tag
 	root.model = tag
@@ -658,14 +760,22 @@ func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 		var clip := AnimationNodeAnimation.new()
 		clip.animation = StringName(role)
 		var at := names.size()
-		machine.add_node(StringName(role), clip, GRID_ORIGIN + Vector2(GRID.x * (at % GRID_COLUMNS), GRID.y * (at / GRID_COLUMNS)))
+		machine.add_node(
+			StringName(role),
+			clip,
+			GRID_ORIGIN + Vector2(GRID.x * (at % GRID_COLUMNS), GRID.y * (at / GRID_COLUMNS))
+		)
 		names.append(role)
 	machine.set_node_position(&"Start", Vector2(60.0, 100.0))
 	machine.add_transition(&"Start", &"idle", start)
 	for from in names:
 		for to in names:
 			if from != to:
-				machine.add_transition(StringName(from), StringName(to), to_idle if to == "idle" and BodyModel.ONE_SHOT_ROLES.has(from) else travel)
+				machine.add_transition(
+					StringName(from),
+					StringName(to),
+					to_idle if to == "idle" and BodyModel.ONE_SHOT_ROLES.has(from) else travel
+				)
 	return machine
 
 
@@ -673,7 +783,14 @@ func _machine(roles: Dictionary) -> AnimationNodeStateMachine:
 ## tracks, the clip's own length, the loop mode its role needs, and, for attack / shoot / cast, the method track at the impact
 ## (attack, attack2 and attack3 -> "attack", shoot -> "shoot", cast -> "cast") with the `hit` / `shoot` marker there. No mark in
 ## the clip's name = the middle of the clip. Null when it could not be saved.
-func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, roles: Dictionary, impacts: Dictionary, hands: Array[Dictionary]) -> AnimationLibrary:
+func _save_library(
+	tag: String,
+	source: AnimationPlayer,
+	clips: Dictionary,
+	roles: Dictionary,
+	impacts: Dictionary,
+	hands: Array[Dictionary]
+) -> AnimationLibrary:
 	var dir := "%s%s_clips" % [SCENE_DIR, tag]
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var library := AnimationLibrary.new()
@@ -683,7 +800,11 @@ func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, role
 		if not roles.has(role):
 			continue
 		var clip_name: String = roles[role]
-		var kind := "hold" if BodyModel.HOLD_ROLES.has(role) else ("once" if BodyModel.ONE_SHOT_ROLES.has(role) else "loop")
+		var kind := (
+			"hold"
+			if BodyModel.HOLD_ROLES.has(role)
+			else ("once" if BodyModel.ONE_SHOT_ROLES.has(role) else "loop")
+		)
 		var shows_hands := not hands.is_empty() and HAND_ROLES.has(role)
 		var key := "%s|%s|%s" % [clip_name, kind, shows_hands]
 		if not made.has(key):
@@ -691,7 +812,15 @@ func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, role
 			while files.has(file):
 				file += "_"
 			files[file] = true
-			var anim := _animation(source, clip_name, clips[clip_name], role, kind, float(impacts.get(clip_name, DEFAULT_IMPACT)), hands if shows_hands else [])
+			var anim := _animation(
+				source,
+				clip_name,
+				clips[clip_name],
+				role,
+				kind,
+				float(impacts.get(clip_name, DEFAULT_IMPACT)),
+				hands if shows_hands else []
+			)
 			var path := "%s/%s.res" % [dir, file]
 			anim.take_over_path(path)
 			if ResourceSaver.save(anim, path) != OK:
@@ -715,14 +844,26 @@ func _save_library(tag: String, source: AnimationPlayer, clips: Dictionary, role
 
 
 ## One Animation of the library: the clip of the .glb with its length, step, loop mode, method track and marker.
-func _animation(source: AnimationPlayer, clip_name: String, info: Dictionary, role: String, kind: String, impact: float, shown_hands: Array) -> Animation:
+func _animation(
+	source: AnimationPlayer,
+	clip_name: String,
+	info: Dictionary,
+	role: String,
+	kind: String,
+	impact: float,
+	shown_hands: Array
+) -> Animation:
 	var anim := source.get_animation(StringName(clip_name)).duplicate() as Animation
 	anim.resource_name = clip_name
 	anim.step = 1.0 / float(info["fps"])
 	anim.loop_mode = Animation.LOOP_LINEAR if kind == "loop" else Animation.LOOP_NONE
 	for hand: Dictionary in shown_hands:
 		_visible_track(anim, hand["name"], true)
-	var event := "attack" if role.begins_with("attack") else (role if role == "shoot" or role == "cast" else "")
+	var event := (
+		"attack"
+		if role.begins_with("attack")
+		else (role if role == "shoot" or role == "cast" else "")
+	)
 	if not event.is_empty():
 		var at := anim.length * impact
 		var track := anim.add_track(Animation.TYPE_METHOD)
@@ -745,12 +886,25 @@ func _visible_track(anim: Animation, hand_name: String, shown: bool) -> void:
 
 ## `--sync`: copies the bone tracks of the .glb again into the Animations of the library and keeps the markers and the method track.
 func _refresh_library(tag: String) -> int:
-	var library := ResourceLoader.load(ModelPaths.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
-	var glb := ResourceLoader.load(MODEL_DIR + tag + ".glb", "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
+	var library := (
+		ResourceLoader.load(ModelPaths.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE)
+		as AnimationLibrary
+	)
+	var glb := (
+		ResourceLoader.load(MODEL_DIR + tag + ".glb", "", ResourceLoader.CACHE_MODE_REPLACE)
+		as PackedScene
+	)
 	var instance := glb.instantiate() if glb != null else null
-	var players := instance.find_children("*", "AnimationPlayer", true, false) if instance != null else []
+	var players := (
+		instance.find_children("*", "AnimationPlayer", true, false) if instance != null else []
+	)
 	if library == null or players.is_empty():
-		push_error("new_creature --sync: %s_clips.tres or the animations of %s.glb are missing" % [tag, tag])
+		push_error(
+			(
+				"new_creature --sync: %s_clips.tres or the animations of %s.glb are missing"
+				% [tag, tag]
+			)
+		)
 		if instance != null:
 			instance.free()
 		return 1
@@ -763,7 +917,10 @@ func _refresh_library(tag: String) -> int:
 		seen[anim] = true
 		var fresh := source.get_animation(StringName(anim.resource_name))
 		for index in range(anim.get_track_count() - 1, -1, -1):
-			var kept := anim.track_get_type(index) == Animation.TYPE_METHOD or String(anim.track_get_path(index)).ends_with(":visible")
+			var kept := (
+				anim.track_get_type(index) == Animation.TYPE_METHOD
+				or String(anim.track_get_path(index)).ends_with(":visible")
+			)
 			if not kept:
 				anim.remove_track(index)
 		for index in fresh.get_track_count():
@@ -779,17 +936,30 @@ func _refresh_library(tag: String) -> int:
 
 # --- clip facts for the rules ------------------------------------------------------------------------------------------
 
+
 func _sync_creature(tag: String) -> int:
 	if not FileAccess.file_exists(TypeRef.creature_path(tag)) or not ModelPaths.exists(tag):
-		push_error("new_creature --sync: %s.tres or its model scene %s.tscn do not exist" % [tag, tag])
+		push_error(
+			"new_creature --sync: %s.tres or its model scene %s.tscn do not exist" % [tag, tag]
+		)
 		return 1
 	var code := _refresh_library(tag)
 	if code == OK:
 		code = _link_clips(tag)
 	if code == OK:
-		print("NEW_CREATURE synced %s: data/catalog/creatures/%s.tres reads the clips of scenes/bodies/models/%s_clips.tres" % [tag, tag, tag])
-		var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
-		print("NEW_CREATURE icon: %s" % await _make_icon(tag, CreatureIconRender.idle_clip_of(type)))
+		print(
+			(
+				"NEW_CREATURE synced %s: data/catalog/creatures/%s.tres reads the clips of scenes/bodies/models/%s_clips.tres"
+				% [tag, tag, tag]
+			)
+		)
+		var type := (
+			ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE)
+			as CreatureType
+		)
+		print(
+			"NEW_CREATURE icon: %s" % await _make_icon(tag, CreatureIconRender.idle_clip_of(type))
+		)
 		var sounds := _bake_sounds(tag)
 		code = sounds["code"]
 		if code == OK:
@@ -800,8 +970,14 @@ func _sync_creature(tag: String) -> int:
 ## Points the creature of `tag` at the library of its model (`clips`), so the rules read the timing a human edits there. Saves it only
 ## when it was not already pointing at it.
 func _link_clips(tag: String) -> int:
-	var type := ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as CreatureType
-	var library := ResourceLoader.load(ModelPaths.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as AnimationLibrary
+	var type := (
+		ResourceLoader.load(TypeRef.creature_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE)
+		as CreatureType
+	)
+	var library := (
+		ResourceLoader.load(ModelPaths.clips_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE)
+		as AnimationLibrary
+	)
 	if type == null or library == null:
 		push_error("new_creature: cannot read the creature or the library of %s" % tag)
 		return 1
@@ -817,15 +993,19 @@ func _link_clips(tag: String) -> int:
 
 # --- icon ---------------------------------------------------------------------------------------------------------------
 
+
 ## Draws assets/custom/icons/<tag>.png when it is missing (or `--icon`), keeps yours when it is there. Returns what happened.
 func _make_icon(tag: String, idle_clip: String) -> String:
 	if _no_icon:
 		return "skipped (--no-icon)"
 	var result := await CreatureIconRender.ensure(root, tag, idle_clip, _icon)
-	return result if result.begins_with("not drawn") else result + "; " + CreatureIconRender.link(tag)
+	return (
+		result if result.begins_with("not drawn") else result + "; " + CreatureIconRender.link(tag)
+	)
 
 
 # --- sounds -------------------------------------------------------------------------------------------------------------
+
 
 ## The creature's SoundSet (tools/bake/sound_set_writer.gd): the files of `_sounds_src`/creatures/<tag>/ as its fields, or an empty
 ## set over the fist melee set when there are none. {code: OK or 1, path: where the set is}. It becomes the `sounds` of the look when the
@@ -837,14 +1017,24 @@ func _bake_sounds(tag: String) -> Dictionary:
 	writer.force = _force or _force_sounds
 	var path := writer.write_creature_set(tag, _sounds_src, _sounds_out)
 	for file in writer.unknown:
-		print("NEW_CREATURE sounds note: %s is not an event with a field in the set. Events: %s" % [file, SoundSetWriter.event_help()])
+		print(
+			(
+				"NEW_CREATURE sounds note: %s is not an event with a field in the set. Events: %s"
+				% [file, SoundSetWriter.event_help()]
+			)
+		)
 	if not writer.failures.is_empty():
 		push_error("new_creature: could not save the sounds: %s" % ", ".join(writer.failures))
 		return {"code": 1, "path": ""}
 	if writer.written.has(path):
 		print("NEW_CREATURE sounds wrote: %s" % path)
 		if not has_files:
-			print("NEW_CREATURE sounds: the set is empty (it uses the fist melee sounds); drag .ogg or .wav files onto its fields, or put <event>_1.wav in %s/ and run again with --force" % folder)
+			print(
+				(
+					"NEW_CREATURE sounds: the set is empty (it uses the fist melee sounds); drag .ogg or .wav files onto its fields, or put <event>_1.wav in %s/ and run again with --force"
+					% folder
+				)
+			)
 	else:
 		print("NEW_CREATURE sounds kept (exists; --force rewrites it): %s" % path)
 	return {"code": OK, "path": path}
@@ -869,7 +1059,17 @@ func _assign_sounds(tag: String, set_path: String) -> void:
 
 # --- output ------------------------------------------------------------------------------------------------------------
 
-func _report(tag: String, clips: Dictionary, found: Dictionary, measure: Dictionary, wrote: PackedStringArray, kept: PackedStringArray, god: String, icon: String) -> void:
+
+func _report(
+	tag: String,
+	clips: Dictionary,
+	found: Dictionary,
+	measure: Dictionary,
+	wrote: PackedStringArray,
+	kept: PackedStringArray,
+	god: String,
+	icon: String
+) -> void:
 	var roles: Dictionary = found["roles"]
 	var lines := PackedStringArray()
 	for role in BodyModel.ROLES:
@@ -878,18 +1078,54 @@ func _report(tag: String, clips: Dictionary, found: Dictionary, measure: Diction
 			var note := ""
 			if found["impacts"].has(name):
 				note = "  impact %d %%" % roundi(float(found["impacts"][name]) * 100.0)
-			lines.append("  %-10s <- %s (%d frames @ %d)%s" % [role, name, clips[name]["frames"], clips[name]["fps"], note])
+			lines.append(
+				(
+					"  %-10s <- %s (%d frames @ %d)%s"
+					% [role, name, clips[name]["frames"], clips[name]["fps"], note]
+				)
+			)
 	print("NEW_CREATURE %s" % tag)
 	print("NEW_CREATURE roles:\n%s" % "\n".join(lines))
 	if not (found["unused"] as PackedStringArray).is_empty():
-		print("NEW_CREATURE clips no role took (rename them like a role, or point a state of the model scene at them): %s" % ", ".join(found["unused"]))
+		print(
+			(
+				"NEW_CREATURE clips no role took (rename them like a role, or point a state of the model scene at them): %s"
+				% ", ".join(found["unused"])
+			)
+		)
 	for role in ["run", "attack", "death"]:
 		if not roles.has(role):
-			print("NEW_CREATURE note: no «%s» clip%s" % [role, " (the creature rests on idle while it walks)" if role == "run" else (" (it hits on the last frame of an empty swing)" if role == "attack" else " (the body tips over instead)")])
+			print(
+				(
+					"NEW_CREATURE note: no «%s» clip%s"
+					% [
+						role,
+						(
+							" (the creature rests on idle while it walks)"
+							if role == "run"
+							else (
+								" (it hits on the last frame of an empty swing)"
+								if role == "attack"
+								else " (the body tips over instead)"
+							)
+						)
+					]
+				)
+			)
 	var box: AABB = measure["aabb"]
 	print("NEW_CREATURE size: height %.2f, box %.2f x %.2f" % [box.size.y, box.size.x, box.size.z])
 	print("NEW_CREATURE wrote: %s" % ", ".join(wrote))
 	print("NEW_CREATURE icon: %s" % icon)
 	if not kept.is_empty():
-		print("NEW_CREATURE kept (exist; --force rewrites them, --sync refreshes the clips only): %s" % ", ".join(kept))
-	print("NEW_CREATURE next: put data/catalog/creatures/%s.tres in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator." % [tag, god if not god.is_empty() else "a god", god if not god.is_empty() else "<god>"])
+		print(
+			(
+				"NEW_CREATURE kept (exist; --force rewrites them, --sync refreshes the clips only): %s"
+				% ", ".join(kept)
+			)
+		)
+	print(
+		(
+			"NEW_CREATURE next: put data/catalog/creatures/%s.tres in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator."
+			% [tag, god if not god.is_empty() else "a god", god if not god.is_empty() else "<god>"]
+		)
+	)

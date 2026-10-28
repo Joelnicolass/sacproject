@@ -28,7 +28,9 @@ func _enter_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if not shape is CylinderShape3D:
-		warnings.append("BuildArea needs a CylinderShape3D: its radius is the area the tower clears.")
+		warnings.append(
+			"BuildArea needs a CylinderShape3D: its radius is the area the tower clears."
+		)
 	if core_m >= radius_m():
 		warnings.append("`core_m` has to be smaller than the cylinder's radius.")
 	return warnings

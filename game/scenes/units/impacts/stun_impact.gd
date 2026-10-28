@@ -44,5 +44,13 @@ func _stun(body: Node3D) -> void:
 	var stunned := body.get_node_or_null(stunned_path) as Stunned
 	if stunned == null:
 		print("  stun: %s has no Stunned" % GameBody.name_of(body))
-	elif not stunned.stun_with_cooldown(MatchClock.ticks_for(cooldown_s)) and stunned.cooldown_ticks() > 0:
-		print("  stun: %s on cooldown (%d) (frame %d)" % [GameBody.name_of(body), stunned.cooldown_ticks(), MatchClock.now()])
+	elif (
+		not stunned.stun_with_cooldown(MatchClock.ticks_for(cooldown_s))
+		and stunned.cooldown_ticks() > 0
+	):
+		print(
+			(
+				"  stun: %s on cooldown (%d) (frame %d)"
+				% [GameBody.name_of(body), stunned.cooldown_ticks(), MatchClock.now()]
+			)
+		)

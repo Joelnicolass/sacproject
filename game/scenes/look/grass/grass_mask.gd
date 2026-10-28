@@ -24,11 +24,20 @@ func gather(tree: SceneTree, space: Node3D, grass_set: GrassSet) -> bool:
 			_add(found, space, clear.global_position, clear.radius_m, clear.edge_m)
 	if grass_set:
 		_add_group(found, tree, space, Altar.GROUP, grass_set.altar_clear_m, grass_set.altar_edge_m)
-		_add_group(found, tree, space, ManafountBody.GROUP, grass_set.fount_clear_m, grass_set.fount_edge_m)
+		_add_group(
+			found, tree, space, ManafountBody.GROUP, grass_set.fount_clear_m, grass_set.fount_edge_m
+		)
 	return _store(found)
 
 
-func _add_group(found: PackedVector4Array, tree: SceneTree, space: Node3D, group: StringName, radius: float, edge: float) -> void:
+func _add_group(
+	found: PackedVector4Array,
+	tree: SceneTree,
+	space: Node3D,
+	group: StringName,
+	radius: float,
+	edge: float
+) -> void:
 	if radius <= 0.0:
 		return
 	for node in tree.get_nodes_in_group(group):
@@ -37,7 +46,9 @@ func _add_group(found: PackedVector4Array, tree: SceneTree, space: Node3D, group
 			_add(found, space, spot.global_position, radius, edge)
 
 
-func _add(found: PackedVector4Array, space: Node3D, world_position: Vector3, radius: float, edge: float) -> void:
+func _add(
+	found: PackedVector4Array, space: Node3D, world_position: Vector3, radius: float, edge: float
+) -> void:
 	if found.size() >= MAX_CLEARS:
 		return
 	var local := space.to_local(world_position)

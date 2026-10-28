@@ -52,13 +52,31 @@ static func resistance_bonus_of(node: Node) -> float:
 
 
 ## One dose on `target` through its Poisoning; null (and a line in the log) when it has none.
-static func dose_body(target: Node, per_second: float, lifetime: int, kind: StringName, from_slot: int, infectious := false,
-		resistance_debuff := 0, regen_factor := 1.0, attacker_path := NodePath()) -> Poisoned:
+static func dose_body(
+	target: Node,
+	per_second: float,
+	lifetime: int,
+	kind: StringName,
+	from_slot: int,
+	infectious := false,
+	resistance_debuff := 0,
+	regen_factor := 1.0,
+	attacker_path := NodePath()
+) -> Poisoned:
 	var poisoning := of(target)
 	if poisoning == null:
 		print("  poison: %s has no Poisoning" % _who(target))
 		return null
-	return poisoning.dose(per_second, lifetime, kind, from_slot, infectious, resistance_debuff, regen_factor, attacker_path)
+	return poisoning.dose(
+		per_second,
+		lifetime,
+		kind,
+		from_slot,
+		infectious,
+		resistance_debuff,
+		regen_factor,
+		attacker_path
+	)
 
 
 func _ready() -> void:
@@ -71,8 +89,16 @@ func _ready() -> void:
 
 ## Adds one dose of `per_second` for `lifetime` frames (lifetime + 1 updates).
 ## `resistance_debuff` is the SPEL's `ires`, `regen_factor` its `freg`. Server (or solo) only; null elsewhere.
-func dose(per_second: float, lifetime: int, kind: StringName, from_slot: int, infectious := false, resistance_debuff := 0,
-		regen_factor := 1.0, attacker_path := NodePath()) -> Poisoned:
+func dose(
+	per_second: float,
+	lifetime: int,
+	kind: StringName,
+	from_slot: int,
+	infectious := false,
+	resistance_debuff := 0,
+	regen_factor := 1.0,
+	attacker_path := NodePath()
+) -> Poisoned:
 	if not is_multiplayer_authority():
 		return null
 	var regen_before := regeneration_factor()
@@ -135,7 +161,9 @@ func infection_cooling() -> bool:
 
 ## infect(): the infection cooldown = lifetime + 3 s on the body just infected.
 func start_infection_cooldown(lifetime: int) -> void:
-	_infection_until = MatchClock.now() + lifetime + MatchClock.ticks_for(infection_cooldown_extra_s)
+	_infection_until = (
+		MatchClock.now() + lifetime + MatchClock.ticks_for(infection_cooldown_extra_s)
+	)
 
 
 func _physics_process(_delta: float) -> void:
@@ -150,7 +178,12 @@ func _physics_process(_delta: float) -> void:
 		if not alive or health == null or not current.step(health):
 			_end(current)
 		elif current.blocks_mana and not was_blocking:
-			print("%s mana blocked by %s (frame %d, tick %d)" % [_who(body), current.name, current.mana_block_frame, MatchClock.now()])
+			print(
+				(
+					"%s mana blocked by %s (frame %d, tick %d)"
+					% [_who(body), current.name, current.mana_block_frame, MatchClock.now()]
+				)
+			)
 	_log_regeneration(regen_before)
 	_log_mana()
 
@@ -177,7 +210,16 @@ func _spread(source: Poisoned) -> void:
 		if next == null or next.infection_cooling():
 			continue
 		var verb := "reinfectado" if next.is_poisoned() else "infectado"
-		next.dose(float(sum), left, source.kind, source.from_slot, true, source.resistance_debuff, source.regeneration_factor, source.attacker_path)
+		next.dose(
+			float(sum),
+			left,
+			source.kind,
+			source.from_slot,
+			true,
+			source.resistance_debuff,
+			source.regeneration_factor,
+			source.attacker_path
+		)
 		next.start_infection_cooldown(left)
 		print("%s %s by %s: %d/s, %d frames" % [_who(other), verb, _who(body), sum, left])
 

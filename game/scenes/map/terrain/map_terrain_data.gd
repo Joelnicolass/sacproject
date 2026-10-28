@@ -18,8 +18,12 @@ var land_cells := PackedInt32Array()
 
 
 func is_valid() -> bool:
-	return not vertices.is_empty() and not indices.is_empty() and normals.size() == vertices.size() \
-			and lattice.size() == vertices.size()
+	return (
+		not vertices.is_empty()
+		and not indices.is_empty()
+		and normals.size() == vertices.size()
+		and lattice.size() == vertices.size()
+	)
 
 
 ## Appends one triangle with its flat normal. Godot's front face is the opposite of the right-hand normal: land keeps

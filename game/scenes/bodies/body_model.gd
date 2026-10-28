@@ -22,12 +22,56 @@ extends Node3D
 ## Roles the state machine of a model scene can have a state for. A new role is a new state in the scenes (and here).
 ## attack2 and attack3 are the other swings of a creature of your own; walk, shoot2, pull, death2, death3, ghost_rise and unghost
 ## are roles the rules read (the library has them) even when no state draws them.
-const ROLES: PackedStringArray = ["idle", "run", "walk", "attack", "attack2", "attack3", "shoot", "shoot2", "cast", "hit", "death", "death2",
-	"death3", "held", "thrash", "rise", "fly", "cower", "talk_cower", "work", "pull", "takeoff", "land", "knock", "get_up", "fly_damage",
-	"gesture", "cast_run", "hover", "fly_death", "fall", "hit_floor", "ghost_rise", "unghost"]
+const ROLES: PackedStringArray = [
+	"idle",
+	"run",
+	"walk",
+	"attack",
+	"attack2",
+	"attack3",
+	"shoot",
+	"shoot2",
+	"cast",
+	"hit",
+	"death",
+	"death2",
+	"death3",
+	"held",
+	"thrash",
+	"rise",
+	"fly",
+	"cower",
+	"talk_cower",
+	"work",
+	"pull",
+	"takeoff",
+	"land",
+	"knock",
+	"get_up",
+	"fly_damage",
+	"gesture",
+	"cast_run",
+	"hover",
+	"fly_death",
+	"fall",
+	"hit_floor",
+	"ghost_rise",
+	"unghost"
+]
 ## Roles that end by themselves and hand the body back to idle (the Tree gives them the to-idle transition).
-const ONE_SHOT_ROLES: PackedStringArray = ["attack", "attack2", "attack3", "shoot", "shoot2", "cast", "hit", "rise", "hit_floor", "ghost_rise",
-	"unghost"]
+const ONE_SHOT_ROLES: PackedStringArray = [
+	"attack",
+	"attack2",
+	"attack3",
+	"shoot",
+	"shoot2",
+	"cast",
+	"hit",
+	"rise",
+	"hit_floor",
+	"ghost_rise",
+	"unghost"
+]
 ## Roles that play once and stay on their last frame; every other role repeats.
 const HOLD_ROLES: PackedStringArray = ["death", "death2", "death3", "fly_death", "fall"]
 ## The roles whose Animation carries the `hit` marker.
@@ -118,7 +162,11 @@ func ragdoll_simulator() -> PhysicalBoneSimulator3D:
 	if ragdoll != null:
 		return ragdoll
 	var skin := skeleton()
-	return skin.find_child("Ragdoll", false, false) as PhysicalBoneSimulator3D if skin != null else null
+	return (
+		skin.find_child("Ragdoll", false, false) as PhysicalBoneSimulator3D
+		if skin != null
+		else null
+	)
 
 
 ## The state machine of the Tree.
@@ -138,7 +186,11 @@ func animation_for(role: String) -> StringName:
 ## The clip tag of the .glb (HUa1...) behind `role`: the name stored in its Animation. "" when the model has no state for it.
 func tag_for(role: String) -> String:
 	var wanted := animation_for(role)
-	return _clips.get_animation(wanted).resource_name if not wanted.is_empty() and _clips.has_animation(wanted) else ""
+	return (
+		_clips.get_animation(wanted).resource_name
+		if not wanted.is_empty() and _clips.has_animation(wanted)
+		else ""
+	)
 
 
 ## True when the model has a playable clip for `role`.
@@ -194,19 +246,52 @@ func _fit_bounds() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if model.is_empty():
-		warnings.append("`model` is empty: the scene is made with tools/bake/new_creature.gd (Project > Tools > Sacrifice).")
+		(
+			warnings
+			. append(
+				"`model` is empty: the scene is made with tools/bake/new_creature.gd (Project > Tools > Sacrifice)."
+			)
+		)
 	if hang_bone != null and ragdoll == null:
-		warnings.append("`hang_bone` is set but `ragdoll` is missing: the body cannot hang without the physical skeleton.")
+		(
+			warnings
+			. append(
+				"`hang_bone` is set but `ragdoll` is missing: the body cannot hang without the physical skeleton."
+			)
+		)
 	elif hang_bone != null and hang_bone.get_parent() != ragdoll:
-		warnings.append("`hang_bone` must be a direct child of `ragdoll` (a PhysicalBone3D of the same simulator).")
+		(
+			warnings
+			. append(
+				"`hang_bone` must be a direct child of `ragdoll` (a PhysicalBone3D of the same simulator)."
+			)
+		)
 	if ragdoll != null and ragdoll.get_child_count() == 0:
-		warnings.append("`ragdoll` has no PhysicalBone3D: bake them with tools/bake/bake_ragdolls.gd.")
+		warnings.append(
+			"`ragdoll` has no PhysicalBone3D: bake them with tools/bake/bake_ragdolls.gd."
+		)
 	var player := get_node_or_null("%Clips") as AnimationPlayer
 	if player == null or not player.has_animation(&"idle"):
-		warnings.append("Missing the `Clips` node with the <model>_clips.tres library (idle role included): the body has nothing to play.")
+		(
+			warnings
+			. append(
+				"Missing the `Clips` node with the <model>_clips.tres library (idle role included): the body has nothing to play."
+			)
+		)
 		return warnings
 	for role in MELEE_ROLES:
 		var wanted := animation_for(role)
-		if player.has_animation(wanted) and not player.get_animation(wanted).has_marker(ClipFacts.HIT):
-			warnings.append("The role `%s` has no `hit` marker in its Animation: the blow would land on the last frame." % role)
+		if (
+			player.has_animation(wanted)
+			and not player.get_animation(wanted).has_marker(ClipFacts.HIT)
+		):
+			(
+				warnings
+				. append(
+					(
+						"The role `%s` has no `hit` marker in its Animation: the blow would land on the last frame."
+						% role
+					)
+				)
+			)
 	return warnings

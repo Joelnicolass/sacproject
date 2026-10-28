@@ -48,8 +48,15 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _ready() -> void:
-	set_process(not Engine.is_editor_hint() and DisplayServer.get_name() != "headless" \
-			and tower != null and visuals != null and shader != null)
+	set_process(
+		(
+			not Engine.is_editor_hint()
+			and DisplayServer.get_name() != "headless"
+			and tower != null
+			and visuals != null
+			and shader != null
+		)
+	)
 
 
 func _process(delta: float) -> void:

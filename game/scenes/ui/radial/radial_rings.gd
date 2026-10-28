@@ -36,5 +36,7 @@ func _add_ring(layout: RadialLayout, entries: Array[RadialEntry], radius: float)
 		add_child(slot)
 		slot.setup(entries[i], layout.icon_px)
 		slot.hover_s = hover_s
-		slot.position = middle + RadialLayout.slot_offset(entries.size(), i, radius) - slot.size * 0.5
+		slot.position = (
+			middle + RadialLayout.slot_offset(entries.size(), i, radius) - slot.size * 0.5
+		)
 		_slots.append(slot)

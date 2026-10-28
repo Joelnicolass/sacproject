@@ -74,10 +74,18 @@ func _draw() -> void:
 	for i in n + 1:
 		var progress := clampf(lerpf(head, tail, float(i) / n), 0.0, 1.0)
 		var at := CarrierPath.hermite(_last_from, _out, _last_to, _in, progress)
-		var ahead := CarrierPath.hermite(_last_from, _out, _last_to, _in, minf(progress + 0.01, 1.0))
+		var ahead := CarrierPath.hermite(
+			_last_from, _out, _last_to, _in, minf(progress + 0.01, 1.0)
+		)
 		var tangent := (ahead - at) if ahead != at else (_last_to - _last_from)
 		points.append(at)
-		turns.append(Quaternion(Vector3.BACK, tangent.normalized()) if tangent.normalized().dot(Vector3.BACK) > -0.9999 else Quaternion(Vector3.RIGHT, PI))
+		turns.append(
+			(
+				Quaternion(Vector3.BACK, tangent.normalized())
+				if tangent.normalized().dot(Vector3.BACK) > -0.9999
+				else Quaternion(Vector3.RIGHT, PI)
+			)
+		)
 	var cells := type.h_frames * type.v_frames
 	set_instance_shader_parameter(&"cell", float(int(floor(_t / type.frame_s)) % cells))
 	set_instance_shader_parameter(&"energy", type.energy_max)
@@ -90,20 +98,38 @@ func _draw() -> void:
 
 ## The quad of fin `j` between link `i` and `i + 1` of a ribbon: the axis along the bottom of the cell, the fin's edge along the top. The
 ## ribbons of the Wailing Wall's spirits are drawn with it too.
-static func add_fin(mesh: ImmediateMesh, points: PackedVector3Array, turns: Array[Quaternion], i: int, j: int, n: int, width_m: float) -> void:
+static func add_fin(
+	mesh: ImmediateMesh,
+	points: PackedVector3Array,
+	turns: Array[Quaternion],
+	i: int,
+	j: int,
+	n: int,
+	width_m: float
+) -> void:
 	var sqrt34 := sqrt(0.75)
-	var fins: Array[Vector3] = [Vector3(0.0, -1.0, 0.0), Vector3(sqrt34, 0.5, 0.0), Vector3(-sqrt34, 0.5, 0.0)]
+	var fins: Array[Vector3] = [
+		Vector3(0.0, -1.0, 0.0), Vector3(sqrt34, 0.5, 0.0), Vector3(-sqrt34, 0.5, 0.0)
+	]
 	var corners: Array[Vector3] = []
 	var uvs: Array[Vector2] = []
 	for k in 4:
 		var link := i + 1 if (k == 1 or k == 2) else i
 		var edge := k == 2 or k == 3
 		corners.append(points[link] + (turns[link] * (fins[j] * width_m) if edge else Vector3.ZERO))
-		uvs.append(Vector2(clampf(float(link) / n, UV_INSET, 1.0 - UV_INSET), UV_INSET if edge else 1.0 - UV_INSET))
+		uvs.append(
+			Vector2(
+				clampf(float(link) / n, UV_INSET, 1.0 - UV_INSET),
+				UV_INSET if edge else 1.0 - UV_INSET
+			)
+		)
 	for index in [0, 1, 2, 2, 3, 0]:
 		mesh.surface_set_uv(uvs[index])
 		mesh.surface_add_vertex(corners[index])
 
 
 static func _direction(rng: RandomNumberGenerator) -> Vector3:
-	return Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	return (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)

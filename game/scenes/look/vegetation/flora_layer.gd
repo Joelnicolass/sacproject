@@ -115,7 +115,11 @@ func _update_overlay() -> void:
 		rgba[i * 4 + 3] = bytes[i] * 3 / 5
 	var decal := Decal.new()
 	decal.name = &"Overlay"
-	decal.texture_albedo = ImageTexture.create_from_image(Image.create_from_data(image.get_width(), image.get_height(), false, Image.FORMAT_RGBA8, rgba))
+	decal.texture_albedo = ImageTexture.create_from_image(
+		Image.create_from_data(
+			image.get_width(), image.get_height(), false, Image.FORMAT_RGBA8, rgba
+		)
+	)
 	var size := Vector2(image.get_size()) * cell_m
 	decal.size = Vector3(size.x, 400.0, size.y)
 	decal.position = Vector3(size.x, 0.0, size.y) * 0.5

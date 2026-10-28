@@ -93,7 +93,10 @@ func closest_scare() -> Node3D:
 				continue
 			var other := node as Node3D
 			var slot := int(other.get("owner_slot"))
-			if not SideRelations.is_enemy(body.owner_slot, slot) and not (grudge != null and grudge.has_grudge(slot)):
+			if (
+				not SideRelations.is_enemy(body.owner_slot, slot)
+				and not (grudge != null and grudge.has_grudge(slot))
+			):
 				continue
 			var d := _flat(other.global_position)
 			if d <= best_d:

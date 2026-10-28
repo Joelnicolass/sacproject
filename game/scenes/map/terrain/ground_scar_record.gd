@@ -82,8 +82,11 @@ func to_wire() -> Dictionary:
 
 ## One mark on the wire (a donor passing on a mark painted after its list left).
 static func one(path: String, at: Vector3, max_height_m: float, ordinal: int) -> Dictionary:
-	return {PATHS: PackedStringArray([path]), MARKS: PackedFloat32Array([0, at.x, at.y, at.z, max_height_m]),
-			ORDINALS: PackedInt32Array([ordinal])}
+	return {
+		PATHS: PackedStringArray([path]),
+		MARKS: PackedFloat32Array([0, at.x, at.y, at.z, max_height_m]),
+		ORDINALS: PackedInt32Array([ordinal])
+	}
 
 
 ## The same place for the same picture on every peer (a point rounded to SAME_PLACE_M).
@@ -118,9 +121,20 @@ static func entries(wire: Dictionary) -> Array:
 	for i in count(wire):
 		var at := i * STRIDE
 		var index := int(marks[at])
-		var ordinal := (ordinals as PackedInt32Array)[i] if ordinals is PackedInt32Array and i < ordinals.size() else 1
+		var ordinal := (
+			(ordinals as PackedInt32Array)[i]
+			if ordinals is PackedInt32Array and i < ordinals.size()
+			else 1
+		)
 		if index >= 0 and index < textures.size() and textures[index] != null:
-			out.append([textures[index], Vector3(marks[at + 1], marks[at + 2], marks[at + 3]), marks[at + 4], ordinal])
+			out.append(
+				[
+					textures[index],
+					Vector3(marks[at + 1], marks[at + 2], marks[at + 3]),
+					marks[at + 4],
+					ordinal
+				]
+			)
 	return out
 
 

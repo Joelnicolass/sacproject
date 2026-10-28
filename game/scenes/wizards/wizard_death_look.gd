@@ -28,7 +28,9 @@ func fall() -> bool:
 	if not ragdoll.available():
 		return false
 	_lying = true
-	ragdoll.set_pose(RagdollDriver.Pose.FALL, -Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, body.rotation.y))
+	ragdoll.set_pose(
+		RagdollDriver.Pose.FALL, -Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, body.rotation.y)
+	)
 	return true
 
 

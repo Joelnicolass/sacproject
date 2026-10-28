@@ -25,9 +25,16 @@ func _affect(shot: Node3D, target: Node3D, point: Vector3, ability: AbilityType)
 	var poisoning := Poisoning.of(target)
 	var clinging := Clinging.of(target)
 	if poisoning == null or clinging == null or not poisoning.can_be_poisoned():
-		_log("%s is lost on %s (it cannot be stuck to) at %s" % [shot.name, str(target.name), _vec(point)])
+		_log(
+			(
+				"%s is lost on %s (it cannot be stuck to) at %s"
+				% [shot.name, str(target.name), _vec(point)]
+			)
+		)
 		return
-	var seconds := ability.duration_s if ability != null and ability.duration_s > 0.0 else fallback_seconds
+	var seconds := (
+		ability.duration_s if ability != null and ability.duration_s > 0.0 else fallback_seconds
+	)
 	var ticks := int(seconds * MatchClock.TICKS_PER_SECOND) + extra_ticks
 	_log("%s sticks to %s at %s" % [shot.name, str(target.name), _vec(point)])
 	clinging.stick(kind, ticks, factor)

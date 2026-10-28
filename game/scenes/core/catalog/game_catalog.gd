@@ -82,7 +82,12 @@ func _index_buildings() -> void:
 	for type in buildings:
 		if _building_by_tag.has(type.tag):
 			duplicate_building_tags.append(type.tag)
-			push_error("GameCatalog: two buildings claim the tag \"%s\" (%s and %s)." % [type.tag, _building_by_tag[type.tag].resource_path, type.resource_path])
+			push_error(
+				(
+					'GameCatalog: two buildings claim the tag "%s" (%s and %s).'
+					% [type.tag, _building_by_tag[type.tag].resource_path, type.resource_path]
+				)
+			)
 		_building_by_tag[type.tag] = type
 
 
@@ -128,7 +133,9 @@ func offered_wizards() -> Array[WizardType]:
 
 
 func _load_gods(reload_from_disk: bool) -> Array:
-	var mode := ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
+	var mode := (
+		ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
+	)
 	var found: Array = []
 	for entry in ResourceLoader.list_directory(GODS_DIR):
 		if not entry.ends_with(".tres"):
@@ -138,18 +145,27 @@ func _load_gods(reload_from_disk: bool) -> Array:
 			push_warning("GameCatalog: gods/%s is not a GodType; skipped." % entry)
 			continue
 		found.append(type)
-	found.sort_custom(func(a: GodType, b: GodType) -> bool:
-		return a.sort_order < b.sort_order if a.sort_order != b.sort_order else a.tag < b.tag)
+	found.sort_custom(
+		func(a: GodType, b: GodType) -> bool:
+			return a.sort_order < b.sort_order if a.sort_order != b.sort_order else a.tag < b.tag
+	)
 	return found
 
 
 func _load_folder(folder: String, script: Script, reload_from_disk: bool) -> Array:
-	var mode := ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
+	var mode := (
+		ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
+	)
 	var found: Array = []
 	for file in files_in(folder):
 		var type := ResourceLoader.load(dir_of(folder) + file, "", mode)
 		if type == null or type.get_script() != script:
-			push_warning("GameCatalog: %s/%s is not a %s; skipped." % [folder, file, script.get_global_name()])
+			push_warning(
+				(
+					"GameCatalog: %s/%s is not a %s; skipped."
+					% [folder, file, script.get_global_name()]
+				)
+			)
 			continue
 		found.append(type)
 	found.sort_custom(func(a: Resource, b: Resource) -> bool: return a.tag < b.tag)

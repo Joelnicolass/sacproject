@@ -78,7 +78,11 @@ func _fraction() -> float:
 
 
 func _on_health_changed(_current: float, _maximum: float) -> void:
-	if inspected and is_instance_valid(inspected) and (inspected.get_node("Health") as Health).is_dead():
+	if (
+		inspected
+		and is_instance_valid(inspected)
+		and (inspected.get_node("Health") as Health).is_dead()
+	):
 		clear()
 
 

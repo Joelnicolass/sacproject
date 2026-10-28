@@ -219,7 +219,9 @@ func _rebuild() -> void:
 		sorted.append(spell)
 	for structure in rows.get("structures", []):
 		sorted.append(structure)
-	sorted.sort_custom(func(a: BookEntry, b: BookEntry) -> bool: return BookOrder.key(a) < BookOrder.key(b))
+	sorted.sort_custom(
+		func(a: BookEntry, b: BookEntry) -> bool: return BookOrder.key(a) < BookOrder.key(b)
+	)
 	_entries = sorted
 	_creature_rows = PackedInt32Array()
 	_spell_rows = PackedInt32Array()
@@ -242,4 +244,6 @@ func _rebuild() -> void:
 func _warn_if_override() -> void:
 	if wizard.book != null and MpKit.is_networked() and not _warned_override:
 		_warned_override = true
-		push_warning("WizardBody.book is an override of this peer only; it does not travel on the network")
+		push_warning(
+			"WizardBody.book is an override of this peer only; it does not travel on the network"
+		)

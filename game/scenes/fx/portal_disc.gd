@@ -55,9 +55,16 @@ func _validate_property(property: Dictionary) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if look == null:
-		warnings.append("Assign in `look` the PortalLook (data/fx/portal_blue.tres or portal_red.tres).")
+		warnings.append(
+			"Assign in `look` the PortalLook (data/fx/portal_blue.tres or portal_red.tres)."
+		)
 	elif _missing:
-		warnings.append("The PortalLook has no `rim` or `center` (the ring and centre textures): a fill is drawn.")
+		(
+			warnings
+			. append(
+				"The PortalLook has no `rim` or `center` (the ring and centre textures): a fill is drawn."
+			)
+		)
 	return warnings
 
 

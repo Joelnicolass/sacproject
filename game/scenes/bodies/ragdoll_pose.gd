@@ -20,7 +20,10 @@ static func bones_of(simulator: PhysicalBoneSimulator3D) -> Array[PhysicalBone3D
 static func capture(skeleton: Skeleton3D, bones: Array[PhysicalBone3D]) -> Dictionary:
 	var poses := {}
 	for bone in bones:
-		poses[bone.get_bone_id()] = skeleton.global_transform.affine_inverse() * (bone.global_transform * bone.body_offset.affine_inverse())
+		poses[bone.get_bone_id()] = (
+			skeleton.global_transform.affine_inverse()
+			* (bone.global_transform * bone.body_offset.affine_inverse())
+		)
 	return poses
 
 
@@ -70,7 +73,12 @@ const HANG_SPAN_DEG := 180.0
 ## hang). A hang rebuilds every cone joint, parents first, on HANG_SPAN_DEG cones: Godot builds a joint when its bone enters the tree,
 ## with every body static, and the joints hanging from the root come out loose. Rebuilding them for a fall sends
 ## bones flying (a gallery fall), so a fall keeps them. `spans` (spans_of) are put back before the cones open.
-static func start(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, spans: Dictionary, anchor: PhysicalBone3D) -> void:
+static func start(
+	simulator: PhysicalBoneSimulator3D,
+	skeleton: Skeleton3D,
+	spans: Dictionary,
+	anchor: PhysicalBone3D
+) -> void:
 	var names: Array[StringName] = []
 	for bone in bones_of(simulator):
 		if bone != anchor:
@@ -82,8 +90,10 @@ static func start(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, span
 	for bone in bones_of(simulator):
 		if bone.joint_type == PhysicalBone3D.JOINT_TYPE_CONE:
 			cones.append(bone)
-	cones.sort_custom(func(a: PhysicalBone3D, b: PhysicalBone3D) -> bool:
-		return _depth(skeleton, a.get_bone_id()) < _depth(skeleton, b.get_bone_id()))
+	cones.sort_custom(
+		func(a: PhysicalBone3D, b: PhysicalBone3D) -> bool:
+			return _depth(skeleton, a.get_bone_id()) < _depth(skeleton, b.get_bone_id())
+	)
 	for bone in cones:
 		var limits: Dictionary = spans.get(bone, {})
 		bone.joint_type = PhysicalBone3D.JOINT_TYPE_NONE

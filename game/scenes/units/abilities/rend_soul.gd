@@ -28,9 +28,15 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 
 ## The one answer for the order and for the strike that checks again.
 static func can_rend(soul: Soul, slot: int) -> bool:
-	return soul != null and is_instance_valid(soul) and soul.is_inside_tree() and not soul.is_queued_for_deletion() \
-			and (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING) \
-			and soul.is_free_or_own(slot) and not soul.dropped
+	return (
+		soul != null
+		and is_instance_valid(soul)
+		and soul.is_inside_tree()
+		and not soul.is_queued_for_deletion()
+		and (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING)
+		and soul.is_free_or_own(slot)
+		and not soul.dropped
+	)
 
 
 ## Shoots at the soul. False = the soul is gone by the shoot tick: nothing flies; the mana is spent all the same.
@@ -56,16 +62,28 @@ func fire(target_pos: Vector3, target: Node3D) -> bool:
 	parent.add_child(strike)
 	var origin := ShotAim.shot_position(user)
 	var center := SoulStrike.center_of_soul(soul)
-	strike.launch({
-		"tag": ability.tag,
-		"x": origin.x, "y": origin.y, "z": origin.z,
-		"aim_x": center.x, "aim_y": center.y, "aim_z": center.z,
-		"damage": float(ability.damage),
-		"slot": _slot(),
-		"max_distance": ability.cast_range_m,
-		"target": "",
-		"shooter": str(user.get_path()),
-	}, ShotLook.make(look), ability, parent)
+	(
+		strike
+		. launch(
+			{
+				"tag": ability.tag,
+				"x": origin.x,
+				"y": origin.y,
+				"z": origin.z,
+				"aim_x": center.x,
+				"aim_y": center.y,
+				"aim_z": center.z,
+				"damage": float(ability.damage),
+				"slot": _slot(),
+				"max_distance": ability.cast_range_m,
+				"target": "",
+				"shooter": str(user.get_path()),
+			},
+			ShotLook.make(look),
+			ability,
+			parent
+		)
+	)
 	return true
 
 

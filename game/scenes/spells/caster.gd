@@ -161,7 +161,11 @@ func action_for(tag: String) -> SpellAction:
 	if spell == null or spell.action == null:
 		return null
 	for child in actions.get_children():
-		if child is SpellAction and not child.is_queued_for_deletion() and (child as SpellAction).spell == spell:
+		if (
+			child is SpellAction
+			and not child.is_queued_for_deletion()
+			and (child as SpellAction).spell == spell
+		):
 			return child
 	var made := spell.action.instantiate() as SpellAction
 	if made == null:
@@ -177,16 +181,24 @@ func aim_for(tag: String, point: Vector3, picked: Node3D) -> SpellAction.Aim:
 	var action := action_for(tag)
 	var spell := _spell_of(tag)
 	var aim := SpellAction.Aim.new()
-	aim.status = Refusal.BAD_TARGET if action == null or spell == null else action.arm_status(wizard, spell)
-	return aim if not aim.status.is_empty() else action.check(wizard, spell, point, picked, _funds(spell))
+	aim.status = (
+		Refusal.BAD_TARGET if action == null or spell == null else action.arm_status(wizard, spell)
+	)
+	return (
+		aim
+		if not aim.status.is_empty()
+		else action.check(wizard, spell, point, picked, _funds(spell))
+	)
 
 
 ## Read only: aim_for(...).status ("" = it would start).
-func action_status(tag: String, point: Vector3, picked: Node3D) -> String: return aim_for(tag, point, picked).status
+func action_status(tag: String, point: Vector3, picked: Node3D) -> String:
+	return aim_for(tag, point, picked).status
 
 
 ## The cast in progress keeps the wizard standing (a structure): WizardBody neither walks nor turns while it is true. Server or solo.
-func holds_wizard() -> bool: return _active != null and _active.stationary
+func holds_wizard() -> bool:
+	return _active != null and _active.stationary
 
 
 ## The action of an entry of the structures tab, or null.
@@ -281,7 +293,9 @@ func _try_cast(tag: String, point: Vector3, path: NodePath) -> String:
 		return ""
 	var action := action_for(tag)
 	if action == null:
-		return Refusal.NOT_IMPLEMENTED if spellbook.spell_by_tag(tag) != null else Refusal.BAD_TARGET
+		return (
+			Refusal.NOT_IMPLEMENTED if spellbook.spell_by_tag(tag) != null else Refusal.BAD_TARGET
+		)
 	var spell := _spell_of(tag)
 	if spell == null:
 		return Refusal.BAD_TARGET

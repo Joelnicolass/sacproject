@@ -151,7 +151,14 @@ func _hit(amount: float, from_slot: int) -> void:
 ## `mods`: the DamageMod bits of the hit (LIGHTNING, IGNITE). The body's passive and the oil read them.
 ## `pierce_shield`: the body's shields and states (damage_factor:
 ## Rockform, Life Shield; _state_factor: petrified) do not scale it. The Pyromaniac's fire.
-func damage_typed(amount: float, kind: StringName, from_slot: int = 0, ignore_friendly := false, pierce_shield := false, mods := 0) -> float:
+func damage_typed(
+	amount: float,
+	kind: StringName,
+	from_slot: int = 0,
+	ignore_friendly := false,
+	pierce_shield := false,
+	mods := 0
+) -> float:
 	deflected_last = false
 	if not is_multiplayer_authority() or amount <= 0.0 or is_dead() or not _can_be_damaged():
 		return 0.0
@@ -186,7 +193,14 @@ func shield_factor(kind := MELEE) -> float:
 ## Its spell states add theirs inside the same max (Slime +0.2 a layer).
 func resistance(kind: StringName) -> float:
 	var base := _base_resistance(kind) * (growth.resistance_factor() if growth else 1.0)
-	return maxf(0.0, base + (poisoning.resistance_bonus() if poisoning else 0.0) + (afflictions.resistance_bonus() if afflictions else 0.0))
+	return maxf(
+		0.0,
+		(
+			base
+			+ (poisoning.resistance_bonus() if poisoning else 0.0)
+			+ (afflictions.resistance_bonus() if afflictions else 0.0)
+		)
+	)
 
 
 func _base_resistance(kind: StringName) -> float:
@@ -218,7 +232,10 @@ func _side_factor(from_slot: int, ignore_friendly: bool, unruled: float) -> floa
 	if from_slot <= 0:
 		return 1.0
 	var owner_slot := _owner_slot()
-	if from_slot != owner_slot and SideRelations.stance(from_slot, owner_slot) != SideRelations.Stance.ALLY:
+	if (
+		from_slot != owner_slot
+		and SideRelations.stance(from_slot, owner_slot) != SideRelations.Stance.ALLY
+	):
 		return 1.0
 	var state := _match_state()
 	if state == null:

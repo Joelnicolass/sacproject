@@ -132,7 +132,12 @@ func _unwatch() -> void:
 ## Editing a GrassType, a GrassPalette or the GrassSet in the inspector shows live: values only, and
 ## the meshes again when the density changed. A different first type, palette or list rebuilds all.
 func _on_resource_changed() -> void:
-	if not _active or _grass == null or _grass.primary() != _source_type or _grass.palette != _palette:
+	if (
+		not _active
+		or _grass == null
+		or _grass.primary() != _source_type
+		or _grass.palette != _palette
+	):
 		_set_grass(_grass)
 		return
 	_type = _grass.resolved_type()
@@ -172,7 +177,12 @@ func _refresh() -> void:
 	if _preset == null or not _preset.grass_enabled:
 		return
 	var terrain := _ground_mesh()
-	if terrain == null or Terrain.of(self) == null or Terrain.of(self).ground_roles == null or terrain.material_override == null:
+	if (
+		terrain == null
+		or Terrain.of(self) == null
+		or Terrain.of(self).ground_roles == null
+		or terrain.material_override == null
+	):
 		return
 	if not _load_height(terrain):
 		return
@@ -259,11 +269,15 @@ func _zone_view(mode: int) -> SubViewport:
 	mat.set_shader_parameter("height_by_role", _type.height_by_role)
 	mat.set_shader_parameter("slope_range", Vector2(_type.slope_start_deg, _type.slope_full_deg))
 	mat.set_shader_parameter("slope_height_floor", _type.slope_height_floor)
-	mat.set_shader_parameter("hill_slope", Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg))
+	mat.set_shader_parameter(
+		"hill_slope", Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg)
+	)
 	mat.set_shader_parameter("hill_density", _type.hill_density)
 	mat.set_shader_parameter("paint_amount", _type.paint_amount)
 	mat.set_shader_parameter("paint_by_role", _type.paint_by_role)
-	mat.set_shader_parameter("paint_slope", Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg))
+	mat.set_shader_parameter(
+		"paint_slope", Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg)
+	)
 	rect.material = mat
 	view.add_child(rect)
 	add_child(view, false, Node.INTERNAL_MODE_BACK)
@@ -290,7 +304,10 @@ func _ground_view(terrain: MeshInstance3D, material: ShaderMaterial) -> SubViewp
 	camera.size = _map_m
 	camera.near = 1.0
 	camera.far = 4000.0
-	camera.transform = Transform3D(Basis(Vector3(1, 0, 0), Vector3(0, 0, -1), Vector3(0, 1, 0)), Vector3(_map_m * 0.5, 1500.0, _map_m * 0.5))
+	camera.transform = Transform3D(
+		Basis(Vector3(1, 0, 0), Vector3(0, 0, -1), Vector3(0, 1, 0)),
+		Vector3(_map_m * 0.5, 1500.0, _map_m * 0.5)
+	)
 	view.add_child(camera)
 	camera.current = true
 	add_child(view, false, Node.INTERNAL_MODE_BACK)
@@ -326,7 +343,19 @@ func _ground_luminance(ground_full: Image, zone_full: Image) -> float:
 
 ## What the baked textures depend on: a change rebakes them.
 func _signature() -> String:
-	return "%s|%s|%s|%s|%s|%s|%s|%s" % [_type.density_by_role, _type.height_by_role, Vector2(_type.slope_start_deg, _type.slope_full_deg), _type.slope_height_floor, Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg), _type.paint_amount, _type.paint_by_role, _type.hill_density]
+	return (
+		"%s|%s|%s|%s|%s|%s|%s|%s"
+		% [
+			_type.density_by_role,
+			_type.height_by_role,
+			Vector2(_type.slope_start_deg, _type.slope_full_deg),
+			_type.slope_height_floor,
+			Vector2(_type.paint_slope_start_deg, _type.paint_slope_end_deg),
+			_type.paint_amount,
+			_type.paint_by_role,
+			_type.hill_density
+		]
+	)
 
 
 ## What the painted ground color of the roots depends on (a palette edit changes it).
@@ -338,8 +367,19 @@ func _paint_signature_now() -> String:
 func _paint_into(mat: ShaderMaterial) -> void:
 	var color := _type.average_color().srgb_to_linear()
 	var wind := deg_to_rad(_type.wind_direction_deg)
-	GroundMaterial.set_grass_paint(mat, color, _type.paint_amount, _type.paint_by_role, _reference, Vector2(cos(wind), sin(wind)),
-		_type.wind_scale_m * 2.0, _type.wind_speed, _type.paint_waves, _type.paint_slope_start_deg, _type.paint_slope_end_deg)
+	GroundMaterial.set_grass_paint(
+		mat,
+		color,
+		_type.paint_amount,
+		_type.paint_by_role,
+		_reference,
+		Vector2(cos(wind), sin(wind)),
+		_type.wind_scale_m * 2.0,
+		_type.wind_speed,
+		_type.paint_waves,
+		_type.paint_slope_start_deg,
+		_type.paint_slope_end_deg
+	)
 
 
 ## The ground the terrain shows takes the paint if its shader has it (the plain «no look» one has not).
@@ -444,7 +484,14 @@ func _counts() -> Vector2i:
 
 ## What the meshes depend on: a change of it rebuilds them.
 func _mesh_key_now() -> String:
-	return "%s|%s|%s" % [_counts(), int(_preset_value(&"grass_near_segments", 2)), _preset_value(&"grass_near_radius_m", 15.0)]
+	return (
+		"%s|%s|%s"
+		% [
+			_counts(),
+			int(_preset_value(&"grass_near_segments", 2)),
+			_preset_value(&"grass_near_radius_m", 15.0)
+		]
+	)
 
 
 ## `blend` of the shader at a distance (the same smoothstep).
@@ -472,7 +519,9 @@ func _build_meshes() -> void:
 		var count := clampi(ceili(counts.x * pow(ratio, blend)), counts.y, counts.x)
 		_tier_meshes.append(_multimesh(blade, count, buffer.slice(0, count * 16)))
 		_tier_starts.append(0.0 if blend == 0.0 else _distance_at_blend(blend, near_r))
-	_tier_meshes.append(_multimesh(GrassBladeMesh.build(1), counts.y, buffer.slice(0, counts.y * 16)))
+	_tier_meshes.append(
+		_multimesh(GrassBladeMesh.build(1), counts.y, buffer.slice(0, counts.y * 16))
+	)
 	_tier_starts.append(near_r * FAR_START_FACTOR)
 	_material.set_shader_parameter("far_ratio", ratio)
 	_ring.tier_starts = _tier_starts
@@ -487,7 +536,12 @@ func _check_rings(counts: Vector2i, near_r: float) -> void:
 	for i in _tier_meshes.size():
 		var wanted := float(counts.x) * pow(ratio, _blend_at(_tier_starts[i], near_r))
 		if float(_tier_meshes[i].instance_count) < wanted - 1.0:
-			push_warning("GrassField: ring %d has %d blades per cell and the shader asks for %.0f at its inner edge: the thinning shows again." % [i, _tier_meshes[i].instance_count, wanted])
+			push_warning(
+				(
+					"GrassField: ring %d has %d blades per cell and the shader asks for %.0f at its inner edge: the thinning shows again."
+					% [i, _tier_meshes[i].instance_count, wanted]
+				)
+			)
 
 
 func _multimesh(mesh: Mesh, count: int, buffer: PackedFloat32Array) -> MultiMesh:
@@ -511,9 +565,13 @@ func _process(delta: float) -> void:
 		_material.set_shader_parameter("map_origin", _map_origin)
 	var radius := float(_preset_value(&"grass_radius_m", 45.0)) * FADE_END
 	var cam_local := to_local(camera.global_position)
-	var forward := (global_transform.basis.inverse() * -camera.global_transform.basis.z).normalized()
+	var forward := (
+		(global_transform.basis.inverse() * -camera.global_transform.basis.z).normalized()
+	)
 	var ground_y := _height_at(cam_local.x, cam_local.z)
-	var target := CellRing.field_center(cam_local, forward, float(_preset_value(&"grass_near_radius_m", 15.0)), ground_y)
+	var target := CellRing.field_center(
+		cam_local, forward, float(_preset_value(&"grass_near_radius_m", 15.0)), ground_y
+	)
 	if _has_center:
 		_center = _center.lerp(target, 1.0 - exp(-delta * center_follow_rate))
 	else:
@@ -556,7 +614,12 @@ func _add_cell(key: Vector2i, tier: int) -> void:
 	var margin := 1.0
 	node.custom_aabb = AABB(
 		Vector3(-margin, range_y.x - 0.5, -margin),
-		Vector3(CELL_M + margin * 2.0, range_y.y - range_y.x + _type.tall_height_m * 2.0 + 1.0, CELL_M + margin * 2.0))
+		Vector3(
+			CELL_M + margin * 2.0,
+			range_y.y - range_y.x + _type.tall_height_m * 2.0 + 1.0,
+			CELL_M + margin * 2.0
+		)
+	)
 	_assign_mesh(node)
 	add_child(node, false, Node.INTERNAL_MODE_BACK)
 	_cells[key] = node
@@ -657,7 +720,15 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	var type := _grass.primary() if _grass else null
 	if type and type.far_coverage() < GrassType.MIN_FAR_COVERAGE:
-		warnings.append("The far coverage (%.1f) is below %.1f: bare ground shows between blades. Raise density_far or far_width_scale." % [type.far_coverage(), GrassType.MIN_FAR_COVERAGE])
+		(
+			warnings
+			. append(
+				(
+					"The far coverage (%.1f) is below %.1f: bare ground shows between blades. Raise density_far or far_width_scale."
+					% [type.far_coverage(), GrassType.MIN_FAR_COVERAGE]
+				)
+			)
+		)
 	if _grass and _grass.types.size() > 1:
 		warnings.append("Only the first GrassType of the GrassSet is drawn.")
 	return warnings

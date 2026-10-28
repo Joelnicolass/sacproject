@@ -94,4 +94,8 @@ func _play_bed() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drops and bed else PackedStringArray(["The Drops / Bed sockets are missing."])
+	return (
+		PackedStringArray()
+		if drops and bed
+		else PackedStringArray(["The Drops / Bed sockets are missing."])
+	)

@@ -296,7 +296,7 @@ the executable through REA) live here. Paths are under `game/scenes/`. `RFC`/cut
 | `spells/actions/lightning_action.gd` | `LightningAction.finish()` | state.d:9017-9022 | DamageMod.lightning, which charges a Storm Giant. |
 | `spells/actions/lightning_action.gd` | `LightningAction._origin()` | sacengine updateLightningCasting (state.d:16322-16341) | The bolt starts 0.5 above the top of the wizard's hitbox and 0.75 ahead of its front. |
 | `spells/actions/meanstalks_action.tscn` | `cast particle (editor_description)` | sacengine animateMeanstalksCasting | heal particle while casting |
-| `spells/actions/pups_action.gd` | `PupsAction` | sacengine speedUp | Speedup (pups) |
+| `spells/actions/speedup_action.gd` | `SpeedupAction` | sacengine speedUp | Speedup (pups) |
 | `spells/actions/rock_action.gd` | `RockAction` | sacengine castRock | Rock (kcor) |
 | `spells/actions/soul_action.gd` | `SoulAction` | sacengine castSoulMole, castSoulWind (state.d:10814-10826, 10941-10954). | A spell that sends something walking to a soul and back (Soul Mole, Soul Wind). |
 | `spells/actions/spell_action.gd` | `SpellAction.stationary` | sacspell.d:201 (a structure always casts standing), state.d:62-63, 14672 (no step while stationaryCasting). | The wizard neither walks nor turns while he casts it (a structure) |

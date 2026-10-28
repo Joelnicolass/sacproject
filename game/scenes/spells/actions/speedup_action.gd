@@ -1,8 +1,8 @@
 @tool
-class_name PupsAction
+class_name SpeedupAction
 extends SpellAction
 
-## Speedup (pups): an ally or the wizard himself runs faster for a while. The effect is
+## Speedup: an ally or the wizard himself runs faster for a while. The effect is
 ## a SpeedupEffect child of the body, made as soon as the cast starts (it works at once). A body that
 ## already has one is not a valid target (the spell's exclusion).
 

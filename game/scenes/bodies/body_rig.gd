@@ -6,7 +6,7 @@ class_name BodyRig
 extends Node3D
 
 ## A skeletal body: it holds the look the body wears (BodyMount hands it over: the model's scene
-## scenes/bodies/models/<model>.tscn, a BodyModel with the .glb, its library of clips by role and
+## <model>_model.tscn, a BodyModel with the .glb, its library of clips by role and
 ## the AnimationTree with one state per ROLE) under %ModelSlot and plays ROLES (idle, run,
 ## attack...) through that tree. Which clip a role plays, and how the animations look, is edited in
 ## the model's scene in the editor; this node only asks the tree to travel to a role. A look without

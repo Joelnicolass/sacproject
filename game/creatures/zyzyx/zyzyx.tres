@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d43oa"]
+[ext_resource type="Texture2D" uid="uid://trvlofmv6hl3" path="res://assets/original/ui/icons/tnem.png" id="icon_tex"]
+[ext_resource type="AnimationLibrary" path="res://scenes/bodies/models/familiar_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/zyzyx/zyzyx.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_d43oa")
+tag = "tnem"
+display_name = "Zyzyx"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 1000
+regeneration_per_s = 16.6667
+run_speed_m_s = 10.0
+fly_speed_m_s = 10.0
+melee_strength = 50
+melee_accuracy = 1.0
+melee_evasion = 1.0
+ranged_accuracy = 1.0
+aggressiveness = 1.0
+vision_m = 100.0
+mana = 2000
+mana_cost = 250
+souls = 1

@@ -3,18 +3,18 @@ extends RefCounted
 ## Does not need the original game. Writes the SoundSet of a creature of your own (the one
 ## tools/bake/new_creature.gd makes).
 ## Your own sounds: assets/custom/sounds/creatures/<name>/<event>[_n].{ogg,wav} ->
-## data/audio/creatures/<name>.tres. Every file of one event is a variant of its cue (`death_1.wav`,
-## `death_2.wav`); the event names are SoundEvent.BODY (EVENT_HELP) and each one is a field of the
-## SoundSet. A `swing` with no `shoot` of its own also sounds when the creature shoots (the same
-## cue). The set has the melee set `data/audio/melee/fist.tres` as `fallback`, so a creature with
-## only a death still swings. With no sound files it writes the set empty (the fallback only): drag
-## the files onto its fields in the inspector. Never over an existing .tres unless `force` (it
-## throws away what you edited by hand). The streams are referenced by path and never loaded here:
-## it works before the editor imports the audio. Preloaded by path (no class_name): the tool runs as
-## `--script` before the class cache knows anything new.
+## creatures/<name>/<name>_sounds.tres. Every file of one event is a variant of its cue
+## (`death_1.wav`, `death_2.wav`); the event names are SoundEvent.BODY (EVENT_HELP) and each one is
+## a field of the SoundSet. A `swing` with no `shoot` of its own also sounds when the creature
+## shoots (the same cue). The set has the melee set `data/audio/melee/fist.tres` as `fallback`, so a
+## creature with only a death still swings. With no sound files it writes the set empty (the
+## fallback only): drag the files onto its fields in the inspector. Never over an existing .tres
+## unless `force` (it throws away what you edited by hand). The streams are referenced by path and
+## never loaded here: it works before the editor imports the audio. Preloaded by path (no
+## class_name): the tool runs as `--script` before the class cache knows anything new.
 
 const CUSTOM_SRC := "res://assets/custom/sounds/"
-const CUSTOM_OUT := "res://data/audio/"
+const CUSTOM_OUT := "res://creatures/"
 const SET_SCRIPT := "res://scenes/audio/sound_set.gd"
 const CUE_SCRIPT := "res://scenes/audio/sound_cue.gd"
 const MELEE_FALLBACK := "res://data/audio/melee/fist.tres"
@@ -86,8 +86,8 @@ func save_set(sound_set: Resource, path: String) -> Resource:
 
 
 ## The set of the creature `name`: the sound files of `source`/creatures/<name>/ as fields (none: an
-## empty set over the melee fallback) -> `out`/creatures/<name>.tres. Returns the path it wrote or
-## kept ("" when it could not be saved).
+## empty set over the melee fallback) -> `out`/<name>/<name>_sounds.tres. Returns the path it wrote
+## or kept ("" when it could not be saved).
 func write_creature_set(
 	name: String, source: String = CUSTOM_SRC, out: String = CUSTOM_OUT
 ) -> String:
@@ -101,7 +101,7 @@ func write_creature_set(
 		sound_set.set(&"shoot", sound_set.get(&"swing"))
 	if ResourceLoader.exists(MELEE_FALLBACK):
 		sound_set.set(&"fallback", load(MELEE_FALLBACK))
-	var path := out.path_join("creatures").path_join(name + ".tres")
+	var path := out.path_join(name).path_join(name + "_sounds.tres")
 	return path if save_set(sound_set, path) != null else ""
 
 

@@ -19,7 +19,7 @@ signal dressed(look: BodyLook)
 ## or test body).
 @export var rig: BodyRig
 
-## The body scene being worn (scenes/units/bodies/<name>.tscn or scenes/wizards/bodies/<name>.tscn);
+## The body scene being worn (creatures/<name>/<name>.tscn or scenes/wizards/bodies/<name>.tscn);
 ## null until the first `wear`.
 var scene: PackedScene
 ## The facts of `scene`; the unknown-model default until something is worn.

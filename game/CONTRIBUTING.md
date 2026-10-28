@@ -30,6 +30,7 @@ A developer should guess where a thing lives and change it by opening one or two
 
 | Folder | What lives there |
 |---|---|
+| `creatures/<name>/` | Everything only one creature uses: its type, body, look, passives, sounds, own abilities and `model/` |
 | `scenes/<system>/` | Scenes and the scripts attached to them, one folder per game system (units, spells, wizards, match, ui…) |
 | `data/` | `.tres` resources edited in the inspector (creature, spell and building types, AI tactics…) |
 | `assets/` | Imported art and sound. `assets/original/` comes from the original game and is read-only |
@@ -38,6 +39,8 @@ A developer should guess where a thing lives and change it by opening one or two
 | `tools/` | Editor and command-line tools (import, bake, audit). The game never loads anything from here |
 | `docs/` | `architecture.md` first; everything else is reference or history |
 
+- **One folder per entity.** A file used by one creature lives in that creature's folder; a file shared by several lives
+  in the shared folder of its kind. Moving a file never needs code changes: scenes and resources point at each other.
 - Files and folders: `snake_case` (`fire_shield.gd`, `fireball.tres`). Nodes: `PascalCase`.
 - A file is named after its `class_name` (`class_name FireShield` → `fire_shield.gd`) or after its root node.
 - Name things for what they are in the game (`fireball.tres`, `Firefist`), never by the original game's 4-letter codes. When a

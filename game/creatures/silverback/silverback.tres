@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_d0ate"]
+[ext_resource type="Texture2D" uid="uid://b1q5o5ky24uaj" path="res://assets/original/ui/icons/grdb.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/silverback/silverback_shot.tres" id="typed_rdba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/run_away.tres" id="typed__nur"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/lightning_charge.tres" id="typed_gcil"]
+[ext_resource type="AnimationLibrary" path="res://creatures/silverback/model/silverback_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/silverback/silverback.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_d0ate")
+tag = "grdb"
+display_name = "Silverback"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 4800
+regeneration_per_s = 16.6667
+run_speed_m_s = 12.5
+fly_speed_m_s = 25.0
+melee_strength = 800
+melee_accuracy = 3.0
+melee_evasion = 2.7
+ranged_accuracy = 0.3
+aggressiveness = 1.0
+vision_m = 150.0
+direct_spell_resistance = 0.5
+splash_spell_resistance = 0.5
+direct_ranged_resistance = 0.75
+splash_ranged_resistance = 0.75
+mana = 750
+mana_cost = 1900
+souls = 5
+cooldown_s = 10.0
+casting_time_s = 3.3333
+book_level = 9
+book_slot = 88
+ranged_attack = ExtResource("typed_rdba")
+active_ability = ExtResource("typed__nur")
+on_damage = ExtResource("typed_gcil")

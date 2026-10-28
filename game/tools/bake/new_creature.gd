@@ -15,23 +15,23 @@ extends SceneTree
 ##
 ## It writes these files, never over an existing one (`--force` rewrites them all and throws away
 ## what you edited):
-##   scenes/bodies/models/<tag>.tscn       BodyModel: the .glb, a Clips player with the library, an
+##   creatures/<tag>/model/<tag>_model.tscn BodyModel: the .glb, a Clips player with the library, an
 ##   AnimationTree with one state per role, and a
 ##                                          hidden HandL / HandR (BoneAttachment3D + Marker3D
 ##                                          Socket) for each empty of that name in the .glb (parent
 ##                                          it to a bone in Blender; it shows in the `cast` and
 ##                                          `cast_run` clips, where HandFx plays).
-##   scenes/bodies/models/<tag>_clips.tres the AnimationLibrary: role -> Animation, and
-##   <tag>_clips/<clip>.res, one Animation per clip
+##   creatures/<tag>/model/<tag>_model_clips.tres the AnimationLibrary: role -> Animation, and
+##   <tag>_model_clips/<clip>.res, one Animation per clip
 ##                                          (bone tracks, exact length, the `hit`/`shoot` marker and
 ##                                          the method track at the impact).
-##   scenes/units/bodies/<tag>.tscn        BodyFrame: the capsule, the footprint and the sockets
+##   creatures/<tag>/<tag>.tscn            BodyFrame: the capsule, the footprint and the sockets
 ##   (Reach, Center, Top) measured from the mesh,
 ##                                          and a placeholder where the look goes. Drag the handles
 ##                                          in the editor to tune them.
-##   scenes/units/bodies/<tag>_look.tscn   BodyLook: the model scene, the sounds and the carried
+##   creatures/<tag>/<tag>_look.tscn       BodyLook: the model scene, the sounds and the carried
 ##   effect (what only a client loads).
-##   data/catalog/creatures/<tag>.tres     CreatureType: the stats of data/templates/creature.tres +
+##   creatures/<tag>/<tag>.tres            CreatureType: the stats of data/templates/creature.tres +
 ##   its `body` + its `clips` (the same library:
 ##                                          the rules read the timing of each swing, shot, stun,
 ##                                          flight and death from it).
@@ -56,7 +56,7 @@ extends SceneTree
 ## tools/bake/creature_icon_render.gd. Drawing needs a renderer: from a headless run it is skipped
 ## (a note says so) and `Godot --path . --script res://tools/bake/creature_icon.gd -- <tag>` (with a
 ## window) makes it afterwards.
-## Sounds: it also writes data/audio/creatures/<tag>.tres, a SoundSet over the fist melee set, and
+## Sounds: it also writes creatures/<tag>/<tag>_sounds.tres, a SoundSet over the fist melee set, and
 ## puts it in the `sounds` of the look. When assets/custom/sounds/creatures/<tag>/ exists, its files
 ## (`death_1.wav`, `swing_1.ogg`...: the event names of SoundEvent.BODY) fill the fields of the set;
 ## without that folder the set is empty (drag the files onto it in the inspector). Never over an
@@ -69,8 +69,6 @@ extends SceneTree
 
 const TEMPLATE := "res://data/templates/creature.tres"
 const MODEL_DIR := "res://assets/custom/models/"
-const SCENE_DIR := "res://scenes/bodies/models/"
-const BODY_DIR := "res://scenes/units/bodies/"
 const SoundSetWriter := preload("res://tools/bake/sound_set_writer.gd")
 
 const XFADE_S := 0.15
@@ -276,10 +274,10 @@ func _create(tag: String, glb_path: String, display: String, god: String) -> int
 		instance.free()
 		return 1
 	var measure := _measure(instance)
-	var scene_path := SCENE_DIR + tag + ".tscn"
+	var scene_path := ModelPaths.scene_path(tag)
 	var type_path := TypeRef.creature_path(tag)
-	var body_path := BODY_DIR + tag + ".tscn"
-	var look_path := BODY_DIR + tag + "_look.tscn"
+	var body_path := _body_path(tag)
+	var look_path := _look_path(tag)
 	var hands := _hands_of(instance)
 	var wrote := PackedStringArray()
 	var kept := PackedStringArray()
@@ -577,7 +575,7 @@ func _hands_of(root: Node3D) -> Array[Dictionary]:
 # --- body scene (size and sockets) and look -------------------------------------------------------
 
 
-## scenes/units/bodies/<tag>.tscn: a BodyFrame measured from the mesh. height = the box's; footprint
+## creatures/<tag>/<tag>.tscn: a BodyFrame measured from the mesh. height = the box's; footprint
 ## radius = half its narrow side; reach = half its long side (the melee box); the physics capsule is
 ## the footprint with the floor and the width limit the capsule always had. The `Look` node is a
 ## placeholder of <tag>_look.tscn, so loading this scene does not load the model nor the sounds.
@@ -616,12 +614,7 @@ func _save_body(tag: String, measure: Dictionary) -> bool:
 	frame.center = _marker(root, sockets, "Center", Vector3(0.0, height * 0.5, 0.0))
 	frame.top = _marker(root, sockets, "Top", Vector3(0.0, height, 0.0))
 	var look := (
-		(
-			ResourceLoader.load(
-				BODY_DIR + tag + "_look.tscn", "", ResourceLoader.CACHE_MODE_REPLACE
-			)
-			as PackedScene
-		)
+		(ResourceLoader.load(_look_path(tag), "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene)
 		. instantiate()
 	)
 	look.name = "Look"
@@ -629,7 +622,7 @@ func _save_body(tag: String, measure: Dictionary) -> bool:
 	look.owner = root
 	look.set_scene_instance_load_placeholder(true)
 	frame.look = look
-	return _pack(root, BODY_DIR + tag + ".tscn")
+	return _pack(root, _body_path(tag))
 
 
 func _shape_node(
@@ -653,7 +646,7 @@ func _marker(root: Node3D, parent: Node, node_name: String, at: Vector3) -> Mark
 	return node
 
 
-## scenes/units/bodies/<tag>_look.tscn: the model scene as `Model` and the sounds `set_path` (empty:
+## creatures/<tag>/<tag>_look.tscn: the model scene as `Model` and the sounds `set_path` (empty:
 ## silent). A client is the only one that loads it. A look with a carried effect or a pose of its
 ## own is never rewritten here (_assign_sounds edits it in place).
 func _save_look(tag: String, set_path: String) -> bool:
@@ -670,7 +663,7 @@ func _save_look(tag: String, set_path: String) -> bool:
 	root.model = model as BodyModel
 	if not set_path.is_empty() and set_path.begins_with(SoundSetWriter.CUSTOM_OUT):
 		root.sounds = load(set_path) as SoundSet
-	return _pack(root, BODY_DIR + tag + "_look.tscn")
+	return _pack(root, _look_path(tag))
 
 
 ## Packs `root` (and frees it) into a scene file. False when it could not be saved.
@@ -761,8 +754,9 @@ func _save_scene(
 	if error != OK:
 		push_error("new_creature: cannot pack %s (%d)" % [tag, error])
 		return false
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SCENE_DIR))
-	error = ResourceSaver.save(packed, SCENE_DIR + tag + ".tscn")
+	var scene_path := ModelPaths.scene_path(tag)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(scene_path.get_base_dir()))
+	error = ResourceSaver.save(packed, scene_path)
 	if error != OK:
 		push_error("new_creature: cannot save %s.tscn (%d)" % [tag, error])
 		return false
@@ -842,7 +836,7 @@ func _save_library(
 	impacts: Dictionary,
 	hands: Array[Dictionary]
 ) -> AnimationLibrary:
-	var dir := "%s%s_clips" % [SCENE_DIR, tag]
+	var dir := ModelPaths.clips_dir(tag).trim_suffix("/")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var library := AnimationLibrary.new()
 	# "<clip>|<kind>" -> Animation: roles that play the same clip the same way share it
@@ -887,7 +881,7 @@ func _save_library(
 		for hand: Dictionary in hands:
 			_visible_track(reset, hand["name"], false)
 		library.add_animation(RESET, reset)
-	var library_path := "%s%s_clips.tres" % [SCENE_DIR, tag]
+	var library_path := ModelPaths.clips_path(tag)
 	library.take_over_path(library_path)
 	if ResourceSaver.save(library, library_path) != OK:
 		push_error("new_creature: cannot save " + library_path)
@@ -1004,8 +998,8 @@ func _sync_creature(tag: String) -> int:
 		print(
 			(
 				# gdlint: ignore=max-line-length
-				"NEW_CREATURE synced %s: data/catalog/creatures/%s.tres reads the clips of scenes/bodies/models/%s_clips.tres"
-				% [tag, tag, tag]
+				"NEW_CREATURE synced %s: %s reads the clips of %s"
+				% [tag, TypeRef.creature_path(tag), ModelPaths.clips_path(tag)]
 			)
 		)
 		var type := (
@@ -1066,7 +1060,7 @@ func _make_icon(tag: String, idle_clip: String) -> String:
 ## The creature's SoundSet (tools/bake/sound_set_writer.gd): the files of
 ## `_sounds_src`/creatures/<tag>/ as its fields, or an empty set over the fist melee set when there
 ## are none. {code: OK or 1, path: where the set is}. It becomes the `sounds` of the look when the
-## set went to data/audio/ (_assign_sounds, or _save_look on a new creature).
+## set went to the creature's folder (_assign_sounds, or _save_look on a new creature).
 func _bake_sounds(tag: String) -> Dictionary:
 	var folder := _sounds_src.path_join("creatures").path_join(tag)
 	var has_files := SoundSetWriter.has_sounds(tag, _sounds_src)
@@ -1098,11 +1092,11 @@ func _bake_sounds(tag: String) -> Dictionary:
 	return {"code": OK, "path": path}
 
 
-## `sounds = set` in the look of the creature (scenes/units/bodies/<tag>_look.tscn) when the set is
+## `sounds = set` in the look of the creature (creatures/<tag>/<tag>_look.tscn) when the set is
 ## a product file (not a test output) and the look has none. The look is read, changed and saved
 ## again; its model, effect and pose stay.
 func _assign_sounds(tag: String, set_path: String) -> void:
-	var look_path := BODY_DIR + tag + "_look.tscn"
+	var look_path := _look_path(tag)
 	if not set_path.begins_with(SoundSetWriter.CUSTOM_OUT) or not FileAccess.file_exists(look_path):
 		return
 	var old := ResourceLoader.load(look_path, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene
@@ -1187,7 +1181,21 @@ func _report(
 	print(
 		(
 			# gdlint: ignore=max-line-length
-			"NEW_CREATURE next: put data/catalog/creatures/%s.tres in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator."
-			% [tag, god if not god.is_empty() else "a god", god if not god.is_empty() else "<god>"]
+			"NEW_CREATURE next: put %s in the book of %s (data/gods/%s.tres > book > creatures, and a line in unlocks), then run the catalog validator."
+			% [
+				TypeRef.creature_path(tag),
+				god if not god.is_empty() else "a god",
+				god if not god.is_empty() else "<god>"
+			]
 		)
 	)
+
+
+# The body scene of `tag`, next to its type file (creatures/<tag>/<tag>.tscn).
+func _body_path(tag: String) -> String:
+	return TypeRef.creature_path(tag).get_basename() + ".tscn"
+
+
+# The look scene of `tag`, next to its body (BodyLook.of finds it there).
+func _look_path(tag: String) -> String:
+	return TypeRef.creature_path(tag).get_basename() + "_look.tscn"

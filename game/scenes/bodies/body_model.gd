@@ -2,8 +2,9 @@
 class_name BodyModel
 extends Node3D
 
-## The root of scenes/bodies/models/<name>_model.tscn, one per skeletal model: the .glb, the clips
-## it plays and the tree that picks one. The scene is made once (tools/bake/new_creature.gd for a
+## The root of <name>_model.tscn, one per skeletal model (in creatures/<name>/model/, or in
+## scenes/bodies/models/ when several bodies wear it): the .glb, the clips it plays and the tree
+## that picks one. The scene is made once (tools/bake/new_creature.gd for a
 ## new model) and edited in the editor from then on:
 ##   Model       the .glb of assets/original/models/ (or of assets/custom/models/; skeleton, skinned
 ##   mesh and every clip of the model),

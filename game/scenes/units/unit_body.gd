@@ -25,9 +25,9 @@ enum Mode { IDLE, MOVE, CHASE, ATTACK, DEAD, SUMMONING, SHOOT, ROCK_FORM, HELD, 
 ## Every creature body in play (corpses leave it).
 const GROUP := &"unit"
 
-## The creature this body is (data/catalog/creatures/). Whoever makes the body sets it before it
-## enters the tree: the spawner on every peer, the .tscn of a test scene. It never looks the type up
-## by text.
+## The creature this body is (creatures/<name>/<name>.tres). Whoever makes the body sets it before
+## it enters the tree: the spawner on every peer, the .tscn of a test scene. It never looks the type
+## up by text.
 @export var type: CreatureType:
 	set(value):
 		type = value

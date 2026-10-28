@@ -1,7 +1,7 @@
 # units
 
 Every creature on the map: `unit.tscn`, a thin `UnitBody` with one child per responsibility and one `UnitState` per mode
-under `States` (an `FsmMachine`). `UnitSpawner` sets its `CreatureType` (`data/catalog/creatures/<name>.tres`) before it
+under `States` (an `FsmMachine`). `UnitSpawner` sets its `CreatureType` (`creatures/<name>/<name>.tres`; the creature's own files live in that folder) before it
 enters the tree.
 - The body runs its physics step in a fixed order (`Locomotion.begin` → `Regeneration.age` → current state →
   `Regeneration.step` → `Locomotion.finish`); none of those nodes processes by itself.

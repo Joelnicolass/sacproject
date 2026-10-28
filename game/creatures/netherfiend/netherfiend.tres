@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_njg5r"]
+[ext_resource type="Texture2D" uid="uid://dy22u0t0qb3he" path="res://assets/original/ui/icons/crpd.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/devour.tres" id="typed_ifna"]
+[ext_resource type="AnimationLibrary" path="res://creatures/netherfiend/model/netherfiend_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/netherfiend/netherfiend.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_njg5r")
+tag = "crpd"
+display_name = "Netherfiend"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 1800
+drain = 0.5
+run_speed_m_s = 7.0
+melee_strength = 400
+melee_accuracy = 1.5
+melee_evasion = 1.5
+aggressiveness = 1.0
+vision_m = 100.0
+melee_resistance = 0.75
+direct_spell_resistance = 2.0
+splash_spell_resistance = 2.5
+direct_ranged_resistance = 0.9
+splash_ranged_resistance = 0.9
+mana = 500
+mana_cost = 1000
+souls = 2
+cooldown_s = 5.0
+casting_time_s = 1.4815
+book_level = 4
+book_slot = 59
+active_ability = ExtResource("typed_ifna")

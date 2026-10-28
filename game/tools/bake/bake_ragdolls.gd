@@ -1,19 +1,18 @@
 extends SceneTree
 
-## Gives the models of scenes/bodies/models/ the physical skeleton their bodies fall and hang with
+## Gives the skeletal models (ModelPaths) the physical skeleton their bodies fall and hang with
 ## (RagdollBaker does the work). A model that already has its "Ragdoll" keeps it (an edit made by
 ## hand is safe) and only gets the exports of its root completed; `--force` bakes it again from
 ## scratch. Walks the model files by name, never by tag. Needs no autoload.
 ##
 ## Run:  Godot --headless --path . --script res://tools/bake/bake_ragdolls.gd --
 ## <stem|res://...tscn>... [--missing] [--skip=<stem>] [--force]
-##   --missing   every model of the folder (the ones without a Ragdoll are baked, the others only
+##   --missing   every model (the ones without a Ragdoll are baked, the others only
 ##   completed)
 ##   --skip=X    leave the model with stem X out (repeatable)
 ## Prints one line per model and `RAGDOLL BAKE baked=N completed=M failed=K`; exits 1 when something
 ## failed.
 
-const MODEL_DIR := "res://scenes/bodies/models/"
 
 
 func _init() -> void:
@@ -31,15 +30,16 @@ func _init() -> void:
 		else:
 			names.append(arg)
 	if everything:
-		names.append_array(_all_stems())
+		names.append_array(ModelPaths.all_scenes())
 	var done: Array[String] = []
 	var counts := {"baked": 0, "completed": 0, "failed": 0}
 	for name_or_path in names:
-		var stem := name_or_path.get_file().get_basename()
+		var path := _scene_of(name_or_path)
+		var stem := path.get_file().get_basename()
 		if done.has(stem) or skip.has(stem):
 			continue
 		done.append(stem)
-		counts[_bake(MODEL_DIR + stem + ".tscn", stem, force)] += 1
+		counts[_bake(path, stem, force)] += 1
 	print(
 		(
 			"RAGDOLL BAKE baked=%d completed=%d failed=%d"
@@ -76,11 +76,12 @@ func _bake(path: String, stem: String, force: bool) -> String:
 	return "baked" if fresh else "completed"
 
 
-## The stem of every model scene of the folder, in name order.
-func _all_stems() -> Array[String]:
-	var stems: Array[String] = []
-	for file in DirAccess.get_files_at(MODEL_DIR):
-		if file.ends_with(".tscn"):
-			stems.append(file.get_basename())
-	stems.sort()
-	return stems
+## The model scene a command-line argument names: a res:// path as is, or a stem
+## (`firefist_model`) looked up among every model scene.
+func _scene_of(name_or_path: String) -> String:
+	if name_or_path.begins_with("res://"):
+		return name_or_path
+	for path in ModelPaths.all_scenes():
+		if path.get_file().get_basename() == name_or_path:
+			return path
+	return name_or_path

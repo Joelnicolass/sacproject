@@ -1,0 +1,36 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEst.res" id="1_PEst"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PErn.res" id="2_PErn"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEa1.res" id="3_PEa1"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEa2.res" id="4_PEa2"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PE00.res" id="5_PE00"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEd1.res" id="6_PEd1"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEcw.res" id="7_PEcw"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEtc.res" id="8_PEtc"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEdi.res" id="9_PEdi"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEpu.res" id="10_PEpu"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEfd.res" id="11_PEfd"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEgu.res" id="12_PEgu"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEhf.res" id="13_PEhf"]
+[ext_resource type="Animation" path="res://creatures/farmer/model/farmer_model_clips/PEi1.res" id="14_PEi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_PEst"),
+&"run": ExtResource("2_PErn"),
+&"attack": ExtResource("3_PEa1"),
+&"attack2": ExtResource("4_PEa2"),
+&"attack3": ExtResource("3_PEa1"),
+&"shoot": ExtResource("5_PE00"),
+&"shoot2": ExtResource("5_PE00"),
+&"death": ExtResource("6_PEd1"),
+&"cower": ExtResource("7_PEcw"),
+&"talk_cower": ExtResource("8_PEtc"),
+&"work": ExtResource("9_PEdi"),
+&"pull": ExtResource("10_PEpu"),
+&"knock": ExtResource("11_PEfd"),
+&"get_up": ExtResource("12_PEgu"),
+&"hit_floor": ExtResource("13_PEhf"),
+&"gesture": ExtResource("14_PEi1")
+}

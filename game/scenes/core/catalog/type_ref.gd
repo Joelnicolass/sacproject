@@ -8,8 +8,6 @@ extends RefCounted
 ## when empty, its file name (CreatureType.id()): the files carry human names, not tags.
 ## Types are read-only: never mutate what it returns.
 
-const CREATURES_FOLDER := "res://data/catalog/creatures/"
-
 
 static func building(tag: String) -> BuildingType:
 	if tag.is_empty():
@@ -26,8 +24,12 @@ static func creature(id: String) -> CreatureType:
 
 
 ## Where the creature `id` lives (or would live, for a new one): its file when the catalog knows it,
-## else `<id>.tres` in the creatures folder. For the tools that read and write the file
+## else creatures/<id>/<id>.tres. For the tools that read and write the file
 ## (tools/bake/): they run before the catalog knows what they just made.
 static func creature_path(id: String) -> String:
 	var found := creature(id)
-	return found.resource_path if found != null else "%s%s.tres" % [CREATURES_FOLDER, id]
+	return (
+		found.resource_path
+		if found != null
+		else "%s%s/%s.tres" % [GameCatalog.CREATURES_DIR, id, id]
+	)

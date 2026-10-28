@@ -6,20 +6,21 @@ extends Node3D
 ## effect it carries. It is the root of `<name>_look.tscn` (next to the body scene `<name>.tscn`),
 ## the scene behind the `Look` placeholder of the body. Only a client builds it (BodyMount), so the
 ## server and the room server never load a model or a sound. The model is an instance of
-## scenes/bodies/models/<model>.tscn; the root transform is the pose that stands it on the ground (a
+## <model>_model.tscn; the root transform is the pose that stands it on the ground (a
 ## flier that lifts itself, a model that sits low). A hybrid that no clip animates has no model: it
 ## carries `static_mesh` and the body draws that.
 ## What it does not do: size or place the body (BodyFrame), choose which look a body wears
 ## (BodyMount), play a clip (BodyRig).
 
-## The skeletal model (an instance of scenes/bodies/models/<model>.tscn). Empty for a hybrid, which
+## The skeletal model (an instance of a <model>_model.tscn). Empty for a hybrid, which
 ## draws `static_mesh`.
 @export var model: BodyModel
 ## The mesh of a body that no clip animates (scenes/bodies/meshes/<name>.res, with its materials).
 ## Empty when `model` is set.
 @export var static_mesh: Mesh
-## What the creature sounds like: voice, swing, hurt and death (data/audio/creatures/ or wizards/).
-## Empty: silent, but the summon sound of every creature (UnitSounds) still plays.
+## What the creature sounds like: voice, swing, hurt and death (creatures/<name>/<name>_sounds.tres,
+## or data/audio/wizards/). Empty: silent, but the summon sound of every creature (UnitSounds) still
+## plays.
 @export var sounds: SoundSet
 ## A scene the creature carries (CreatureFx adds it, tinted with the side's mana color): the
 ## Manahoar's mana flame. Empty: none.

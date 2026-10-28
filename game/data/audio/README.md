@@ -4,7 +4,7 @@ Sets de sonido (RFC-052), un `.tres` por emisor. El de una criatura o un mago se
 
 ## Cómo se asigna un sonido a una criatura
 
-`data/catalog/creatures/<nombre>.tres` → `Sounds` → el `SoundSet` de `creatures/<nombre>.tres`. El set tiene un campo por evento (`Selected`, `Ack`, `Attack Ack`, `Annoyed`, `Swing`, `Shoot`, `Damaged`, `Death`, `Summon`, `Incantation`, `Ghost`) y un `Fallback`: el set de golpes compartido (`melee/fist`, `saw`, `stab`). Un campo vacío suena como el del `Fallback`; `Summon` vacío suena como `UnitSounds.summon` (`cues/summon.tres`, el de todas).
+`creatures/<nombre>/<nombre>_look.tscn` → `Sounds` → el `SoundSet` `creatures/<nombre>/<nombre>_sounds.tres`. El set tiene un campo por evento (`Selected`, `Ack`, `Attack Ack`, `Annoyed`, `Swing`, `Shoot`, `Damaged`, `Death`, `Summon`, `Incantation`, `Ghost`) y un `Fallback`: el set de golpes compartido (`melee/fist`, `saw`, `stab`). Un campo vacío suena como el del `Fallback`; `Summon` vacío suena como `UnitSounds.summon` (`cues/summon.tres`, el de todas).
 
 ## Qué hay
 

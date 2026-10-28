@@ -24,7 +24,7 @@
 [ext_resource type="Script" path="res://scenes/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
 [ext_resource type="Resource" path="res://data/fx/needle.tres" id="17_needle"]
-[ext_resource type="Resource" path="res://data/catalog/creatures/sac_doctor.tres" id="typed_dcas"]
+[ext_resource type="Resource" path="res://creatures/sac_doctor/sac_doctor.tres" id="typed_dcas"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
 

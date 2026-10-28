@@ -53,7 +53,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 
 ### Criaturas y habilidades
 - **Hecho.** Convocar, melé, muerte y cadáver, almas, bestiario completo con sus habilidades (aliento, disparos, congelar, veneno, aturdir, drenaje, empuje, pasivas, nubes de muerte…). F25, F26, F29, F30, F41, F112, F116-F166, F177, F205.
-- Cada criatura es un `data/catalog/creatures/<tag>.tres`; las habilidades se componen con nodos y `.tres` en `data/abilities/`.
+- Cada criatura es una carpeta `creatures/<nombre>/` (tipo, cuerpo, look, modelo, sonidos); las habilidades se componen con nodos y `.tres` en `data/abilities/`.
 
 ### Sacrificio (Sac Doctor, ritual, fin de partida)
 - **Hecho.** Convert, Desecrate, altar con estado, ritual con rondas, drenaje y victoria, partida que cierra. F38, F39, F57-F61.
@@ -66,7 +66,7 @@ Estados: **Hecho** (cerrado y probado), **Parcial** (anda, con deuda anotada), *
 - **Hecho.** Minimapa: terreno horneado en vivo, marcadores, entrada y sigilo replicado, más fiel al original. F212-F215, F223.
 
 ### Cuerpos y animación
-- **Hecho.** Modelos esqueletales del original, una escena por modelo (`scenes/bodies/models/`, `BodyModel`) con `AnimationTree` y eventos de clip; reposo con stance, cápsula en tierra y en vuelo, voladoras híbridas. F35, F36, F47, F53, F94, F134-F135, F176, F208.
+- **Hecho.** Modelos esqueletales del original, una escena por modelo (`creatures/<nombre>/model/`, `BodyModel`) con `AnimationTree` y eventos de clip; reposo con stance, cápsula en tierra y en vuelo, voladoras híbridas. F35, F36, F47, F53, F94, F134-F135, F176, F208.
 - **Hecho.** `UnitBody` con una máquina de estados (FsmKit). F221.
 - **Hecho.** Evasión de Godot en lugar del empuje propio. F207.
 

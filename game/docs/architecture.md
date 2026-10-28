@@ -67,9 +67,22 @@ shapes in `scenes/match/reach_places.tscn`.
 
 ## A creature
 
-A creature is `scenes/units/unit.tscn`: a thin `UnitBody` (`CharacterBody3D`) plus one child per responsibility.
+A creature is `scenes/units/unit.tscn`: a thin `UnitBody` (`CharacterBody3D`) plus one child per responsibility. What
+makes one creature different from another lives in its folder, `creatures/<name>/`:
 
-- **Type:** `UnitSpawner` sets `UnitBody.type`, a `CreatureType` from `data/catalog/creatures/<name>.tres` (stats, body,
+| File | What it is |
+|---|---|
+| `<name>.tres` | `CreatureType`: stats, costs, abilities (the catalog finds it by the folder name) |
+| `<name>.tscn` | `BodyFrame`: capsule, footprint and sockets |
+| `<name>_look.tscn` | `BodyLook`: the model, the sounds and the carried effect (clients only) |
+| `<name>_passives.tscn` | its passives, when it has any (Firefist's fury, Phoenix's shield) |
+| `<name>_sounds.tres` | its `SoundSet` |
+| `<ability>.tres` | an ability only this creature has |
+| `model/` | the skeletal model scene, its clip library, one `.res` per clip and its materials |
+
+Something two creatures share stays in the shared folder of its kind (`data/catalog/abilities/`, `scenes/bodies/models/`).
+
+- **Type:** `UnitSpawner` sets `UnitBody.type`, a `CreatureType` from `creatures/<name>/<name>.tres` (stats, body,
   sounds, ranged attack, ability, passives), before the unit enters the tree. Types are shared: never write to them.
 - **Components:** `Health`, `ManaPool`, `Afflictions` (stun, freeze, vines…; `units/afflictions/afflictions.tscn`), `Wards`,
   `Weapons` (`Melee`, `Ranged`: the first child that wants the foe is used), `Abilities`, `Vision`, `Locomotion`,
@@ -78,8 +91,8 @@ A creature is `scenes/units/unit.tscn`: a thin `UnitBody` (`CharacterBody3D`) pl
 - **States:** `States` is a `UnitStates` (`FsmKit` `FsmMachine`) with one `UnitState` per mode: `Idle`, `Move`, `Chase`,
   `Attack`, `Shoot`, `Dead`, `Summoning`, `RockForm`, `Held`, `Reviving`, `Cower`. `UnitBody.mode` is the only writer of
   the mode; the body runs the current state inside its own physics step.
-- **Body:** the size and sockets (muzzle, feet, center) are a `BodyFrame` scene in `scenes/units/bodies/`; the model and
-  its animations are in `scenes/bodies/models/` and only clients build them.
+- **Body:** the size and sockets (muzzle, feet, center) are the `BodyFrame` scene of the creature's folder; the model and
+  its animations are in its `model/` and only clients build them.
 - **Orders:** the player (`scenes/orders/`) and the AI give orders through the unit's `Orders` node
   (`unit_orders.gd`), the same path for both.
 

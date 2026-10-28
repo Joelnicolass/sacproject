@@ -1,0 +1,61 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADst.res" id="1_ADst"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADrn.res" id="2_ADrn"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADa1.res" id="3_ADa1"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADa2.res" id="4_ADa2"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADa3.res" id="5_ADa3"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADs1.res" id="6_ADs1"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADd1.res" id="7_ADd1"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADfi.res" id="8_ADfi"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/AD2t.res" id="9_AD2t"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADsc.res" id="10_ADsc"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADfl.res" id="11_ADfl"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADhv.res" id="12_ADhv"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADto.res" id="13_ADto"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADla.res" id="14_ADla"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADfd.res" id="15_ADfd"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADgu.res" id="16_ADgu"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADda.res" id="17_ADda"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADhg.res" id="18_ADhg"]
+[ext_resource type="Animation" path="res://creatures/silverback/model/silverback_model_clips/ADi1.res" id="19_ADi1"]
+
+[sub_resource type="Animation" id="Animation_3hxoi"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[resource]
+_data = {
+&"RESET": SubResource("Animation_3hxoi"),
+&"attack": ExtResource("3_ADa1"),
+&"attack2": ExtResource("4_ADa2"),
+&"attack3": ExtResource("5_ADa3"),
+&"death": ExtResource("7_ADd1"),
+&"fly": ExtResource("11_ADfl"),
+&"fly_damage": ExtResource("17_ADda"),
+&"fly_death": ExtResource("8_ADfi"),
+&"gesture": ExtResource("19_ADi1"),
+&"get_up": ExtResource("16_ADgu"),
+&"held": ExtResource("9_AD2t"),
+&"hit_floor": ExtResource("18_ADhg"),
+&"hover": ExtResource("12_ADhv"),
+&"idle": ExtResource("1_ADst"),
+&"knock": ExtResource("15_ADfd"),
+&"land": ExtResource("14_ADla"),
+&"run": ExtResource("2_ADrn"),
+&"shoot": ExtResource("6_ADs1"),
+&"shoot2": ExtResource("6_ADs1"),
+&"takeoff": ExtResource("13_ADto"),
+&"thrash": ExtResource("10_ADsc")
+}

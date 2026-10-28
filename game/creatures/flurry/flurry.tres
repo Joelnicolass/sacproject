@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_4djl0"]
+[ext_resource type="Texture2D" uid="uid://bn6qifs6uyuky" path="res://assets/original/ui/icons/wlca.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/flurry/flurry_shot.tres" id="typed_caba"]
+[ext_resource type="AnimationLibrary" path="res://creatures/flurry/model/flurry_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/flurry/flurry.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_4djl0")
+tag = "wlca"
+display_name = "Flurry"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 1520
+regeneration_per_s = 16.6667
+run_speed_m_s = 7.5
+melee_strength = 100
+melee_accuracy = 2.0
+melee_evasion = 1.8
+ranged_accuracy = 1.5
+aggressiveness = 1.0
+vision_m = 150.0
+melee_resistance = 4.0
+splash_ranged_resistance = 1.35
+mana = 500
+mana_cost = 1100
+souls = 4
+cooldown_s = 7.0
+casting_time_s = 1.4815
+book_level = 6
+book_slot = 72
+ranged_attack = ExtResource("typed_caba")

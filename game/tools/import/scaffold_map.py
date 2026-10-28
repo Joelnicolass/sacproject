@@ -19,7 +19,7 @@ The PlayerStart and the manafounts are the altar and manafount rows of the NTTS,
 them (sac_formats.terrain.ground_height_fn); the WizardSpot of seat k is 30 m toward the closest manafount, looking at it, as sacengine puts the wizard.
 Buildings: every other structure row that has a BuildingType in data/buildings/ becomes an instance of its scene
 (scenes/structures/buildings/<name>.tscn) at the ground height, turned by its facing; Npcs: every creature row becomes an NpcSpawn
-(the creature type of data/catalog/creatures/, its side) 0.2 m above the ground. Rows off the land, rows with no type and the sky dome
+(the creature type of creatures/<name>/<name>.tres, its side) 0.2 m above the ground. Rows off the land, rows with no type and the sky dome
 `pcsb` (a 1 140 m model, not a prop) are left out and listed. The plants are --wire-flora's: one FloraLayer per species under a `Vegetation` node.
 The navmesh is baked with the «Hornear navmesh» button of the NavRegion. Nothing here is read at runtime. Idempotent: an existing file
 is kept unless --force.
@@ -182,9 +182,9 @@ def building_files() -> dict:
 
 
 def creature_files() -> dict:
-    """Creature tag -> (file stem of data/catalog/creatures/, display name)."""
+    """Creature tag -> (folder name of creatures/, display name)."""
     files = {}
-    for f in (ROOT / "data/catalog/creatures").glob("*.tres"):
+    for f in sorted(p for p in (ROOT / "creatures").glob("*/*.tres") if p.stem == p.parent.name):
         text = f.read_text()
         m = re.search(r'^display_name = "([^"]*)"', text, re.M)
         tag = re.search(r'^tag = "([^"]*)"', text, re.M)
@@ -313,7 +313,7 @@ transform = Transform3D({basis}, {x}, {y}, {z})
         label = display.replace(" ", "")
         counters[label] = counters.get(label, 0) + 1
         npc = resource("PackedScene", "res://scenes/map/npc_spawn.tscn", "d2_npc_spawn")
-        creature = resource("Resource", "res://data/catalog/creatures/%s.tres" % stem, "d2_%s" % stem)
+        creature = resource("Resource", "res://creatures/%s/%s.tres" % (stem, stem), "d2_%s" % stem)
         body.append("""
 [node name="{name}_{n:02d}" parent="Npcs" instance=ExtResource("{npc}")]
 transform = Transform3D({basis}, {x}, {y}, {z})

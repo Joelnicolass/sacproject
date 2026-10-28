@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_vkkob"]
+[ext_resource type="Texture2D" uid="uid://ckfjgwxrxuh5u" path="res://assets/original/ui/icons/wlce.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/flummox/flummox_shot.tres" id="typed_crba"]
+[ext_resource type="AnimationLibrary" path="res://creatures/flummox/model/flummox_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/flummox/flummox.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_vkkob")
+tag = "wlce"
+display_name = "Flummox"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 2280
+regeneration_per_s = 16.6667
+run_speed_m_s = 4.5
+melee_strength = 100
+melee_accuracy = 2.0
+melee_evasion = 2.2
+ranged_accuracy = 1.5
+aggressiveness = 1.0
+vision_m = 150.0
+melee_resistance = 4.0
+splash_ranged_resistance = 1.35
+mana = 200
+mana_cost = 1000
+souls = 3
+cooldown_s = 5.0
+casting_time_s = 1.7284
+book_level = 4
+book_slot = 57
+ranged_attack = ExtResource("typed_crba")

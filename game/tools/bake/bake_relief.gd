@@ -5,7 +5,7 @@ extends SceneTree
 ## ReliefBaker and MapWriter as the editor's buttons.
 ##
 ##   Godot --headless --path . --script res://tools/bake/bake_relief.gd --
-##   res://scenes/bodies/materials/eorc_001.tres
+##   res://creatures/trogg/model/materials/eorc_001.tres
 ##   Godot --headless --path . --script res://tools/bake/bake_relief.gd --
 ##   res://scenes/bodies/materials/ --force
 ##   Godot --headless --path . --script res://tools/bake/bake_relief.gd -- <folder|material>

@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_rrj4x"]
+[ext_resource type="Texture2D" uid="uid://dwmkn2rjxminm" path="res://assets/original/ui/icons/rgos.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/call_lightning.tres" id="typed_gsba"]
+[ext_resource type="Resource" path="res://data/catalog/abilities/lightning_charge.tres" id="typed_gcil"]
+[ext_resource type="AnimationLibrary" path="res://creatures/storm_giant/model/storm_giant_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/storm_giant/storm_giant.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_rrj4x")
+tag = "rgos"
+display_name = "Storm Giant"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 1280
+regeneration_per_s = 16.6667
+run_speed_m_s = 9.0
+melee_strength = 300
+melee_accuracy = 1.5
+melee_evasion = 1.35
+aggressiveness = 1.0
+vision_m = 100.0
+melee_resistance = 0.6
+direct_ranged_resistance = 0.8
+splash_ranged_resistance = 0.8
+mana = 200
+mana_cost = 1000
+souls = 2
+cooldown_s = 5.0
+casting_time_s = 0.9877
+book_level = 4
+book_slot = 58
+active_ability = ExtResource("typed_gsba")
+on_damage = ExtResource("typed_gcil")

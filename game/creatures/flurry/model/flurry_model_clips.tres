@@ -1,0 +1,64 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPst.res" id="1_CPst"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPrn.res" id="2_CPrn"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPa1.res" id="3_CPa1"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPa2.res" id="4_CPa2"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPa3.res" id="5_CPa3"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPs1.res" id="6_CPs1"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPs2.res" id="7_CPs2"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPd1.res" id="8_CPd1"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CP2t.res" id="9_CP2t"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPsc.res" id="10_CPsc"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPrz.res" id="11_CPrz"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPfd.res" id="12_CPfd"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPgu.res" id="13_CPgu"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPhf.res" id="14_CPhf"]
+[ext_resource type="Animation" path="res://creatures/flurry/model/flurry_model_clips/CPi1.res" id="15_CPi1"]
+
+[sub_resource type="Animation" id="Animation_h86fb"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D/HandR:visible")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[resource]
+_data = {
+&"RESET": SubResource("Animation_h86fb"),
+&"attack": ExtResource("3_CPa1"),
+&"attack2": ExtResource("4_CPa2"),
+&"attack3": ExtResource("5_CPa3"),
+&"death": ExtResource("8_CPd1"),
+&"gesture": ExtResource("15_CPi1"),
+&"get_up": ExtResource("13_CPgu"),
+&"held": ExtResource("9_CP2t"),
+&"hit_floor": ExtResource("14_CPhf"),
+&"idle": ExtResource("1_CPst"),
+&"knock": ExtResource("12_CPfd"),
+&"rise": ExtResource("11_CPrz"),
+&"run": ExtResource("2_CPrn"),
+&"shoot": ExtResource("6_CPs1"),
+&"shoot2": ExtResource("7_CPs2"),
+&"thrash": ExtResource("10_CPsc")
+}

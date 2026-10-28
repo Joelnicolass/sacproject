@@ -1,0 +1,49 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUst.res" id="1_GUst"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GFrn.res" id="2_GFrn"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GFa1.res" id="3_GFa1"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUa1.res" id="4_GUa1"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUs1.res" id="5_GUs1"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GFs2.res" id="6_GFs2"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUd1.res" id="7_GUd1"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUst_hold.res" id="8_GUst_hold"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GU2t.res" id="9_GU2t"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUsc.res" id="10_GUsc"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUrz.res" id="11_GUrz"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GUhf.res" id="12_GUhf"]
+[ext_resource type="Animation" path="res://creatures/warmonger/model/warmonger_model_clips/GFi1.res" id="13_GFi1"]
+
+[sub_resource type="Animation" id="Animation_h63dt"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[resource]
+_data = {
+&"RESET": SubResource("Animation_h63dt"),
+&"attack": ExtResource("3_GFa1"),
+&"attack2": ExtResource("4_GUa1"),
+&"attack3": ExtResource("4_GUa1"),
+&"death": ExtResource("7_GUd1"),
+&"fly_death": ExtResource("8_GUst_hold"),
+&"gesture": ExtResource("13_GFi1"),
+&"held": ExtResource("9_GU2t"),
+&"hit_floor": ExtResource("12_GUhf"),
+&"idle": ExtResource("1_GUst"),
+&"rise": ExtResource("11_GUrz"),
+&"run": ExtResource("2_GFrn"),
+&"shoot": ExtResource("5_GUs1"),
+&"shoot2": ExtResource("6_GFs2"),
+&"thrash": ExtResource("10_GUsc")
+}

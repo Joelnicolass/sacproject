@@ -2,13 +2,13 @@
 class_name CreatureType
 extends BookEntry
 
-## The body the creature wears: its size, capsule and sockets (scenes/units/bodies/<name>.tscn, a
+## The body the creature wears: its size, capsule and sockets (creatures/<name>/<name>.tscn, a
 ## BodyFrame). Drag the scene here. Its look (model, sounds, carried effect) is the
 ## `<name>_look.tscn` behind the placeholder of that scene: a client builds it, the server never
 ## does.
 @export var body: PackedScene
-## What the model plays and how long each role lasts (scenes/bodies/models/<model>_clips.tres): the
-## same library the body draws, read by the rules through ClipFacts.
+## What the model plays and how long each role lasts (model/<model>_clips.tres in the creature's
+## folder): the same library the body draws, read by the rules through ClipFacts.
 @export var clips: AnimationLibrary
 @export var health: int = 0
 @export var regeneration_per_s: float = 0.0
@@ -52,8 +52,8 @@ extends BookEntry
 ## (VillagerBrain).
 @export var peasant := false
 @export_group("Abilities")
-## The ranged attack of the creature (data/catalog/abilities/), or empty for one that only fights in
-## melee.
+## The ranged attack of the creature (its folder, or data/catalog/abilities/ when shared), or empty
+## for one that only fights in melee.
 @export var ranged_attack: AbilityType
 ## The ability the player triggers with Ctrl+Q while the creature is selected (Rhinok's halo,
 ## Dragon's breath of life), or empty.

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Rename the skeletal models of scenes/bodies/models/ from their original code to the human name.
+"""Historic, already applied: do not run again (creature_folders.py moved the models afterwards).
+
+Rename the skeletal models of scenes/bodies/models/ from their original code to the human name.
 
   python3 tools/migrate/rename_body_models.py --check     # the plan and the references to rewrite; touches nothing
   python3 tools/migrate/rename_body_models.py --apply     # moves the files and rewrites every reference

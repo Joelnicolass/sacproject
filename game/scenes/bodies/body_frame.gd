@@ -9,7 +9,7 @@ extends Node3D
 ## BodyCollider sizes the physics capsule). The scene never points at its creature's type, never
 ## carries a synchronizer, and never loads a sound or a model: its `Look` is an instance placeholder
 ## of `<name>_look.tscn`, the appearance (model, sounds), and only a client builds it (BodyMount).
-## Each creature has `scenes/units/bodies/<name>.tscn`, each wizard
+## Each creature has `creatures/<name>/<name>.tscn`, each wizard
 ## `scenes/wizards/bodies/<name>.tscn`. A creature with passives (the Firefist's fury, the Phoenix's
 ## shield) has a `Passives` child: an instance of `<name>_passives.tscn`, whose nodes carry the
 ## numbers in the inspector.
@@ -103,7 +103,7 @@ func is_complete() -> bool:
 	)
 
 
-## Where the appearance scene of this body is (res://scenes/units/bodies/<name>_look.tscn); ""
+## Where the appearance scene of this body is (creatures/<name>/<name>_look.tscn); ""
 ## without a `Look`. Read from the placeholder, so nothing of the appearance is loaded.
 func look_path() -> String:
 	if look is InstancePlaceholder:

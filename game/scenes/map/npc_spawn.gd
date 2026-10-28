@@ -10,8 +10,8 @@ extends Marker3D
 
 const SCENE_PATH := "res://scenes/map/npc_spawn.tscn"
 
-## The creature type (CreatureType in data/catalog/creatures/); drag its .tres here. Its tag (zepe =
-## Farmer, raeb = Taurock) is what the unit is spawned with.
+## The creature type (the CreatureType creatures/<name>/<name>.tres); drag its .tres here. Its tag
+## (zepe = Farmer, raeb = Taurock) is what the unit is spawned with.
 @export var creature: CreatureType:
 	set(value):
 		creature = value

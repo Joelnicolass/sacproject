@@ -1,6 +1,6 @@
 # Refactor a estándar Godot (rama `refactor/godot-standard`)
 
-2026-10-28. Pedido del usuario: un archivo de reglas según los estándares de Godot, más iterar el refactor del plan de `docs/AUDIT-code-quality.md` en una rama aparte, sin aprobaciones y **sin merge a `main`**. Son 44 commits sobre `refactor/new-systems`, todos pusheados a `origin/refactor/godot-standard`.
+2026-10-28. Pedido del usuario: un archivo de reglas según los estándares de Godot, más iterar el refactor del plan de `docs/AUDIT-code-quality.md` en una rama aparte, sin aprobaciones y **sin merge a `main`**. El refactor está en `origin/refactor/godot-standard`; Q14 (carpeta por criatura) va en `refactor/creature-folders`, que sale de ahí.
 
 ## Las reglas nuevas
 
@@ -34,6 +34,7 @@
 | Fase B Nombres | 149 archivos con códigos pasan a nombre humano (`brif.tres` → `fireball.tres`, `ahtf.tres` → `firefist_fury.tres`); el catálogo por tag queda idéntico |
 | Q13 Vida | `Health` recorre una cadena de `DamageModifier`; ya no conoce 8 tipos. 21 tests fijan la matemática y dieron igual antes y después |
 | Q12 Estado | El reloj, la semilla, el cielo, los bandos y la vista de los bandos viven en `Match/Context` y se liberan con la partida; `ActiveMatch` pasa a `SacrificeFlow.active_match` |
+| Q14 Carpeta por criatura | Cada criatura es `creatures/<nombre>/`: tipo, cuerpo, look, pasivas, sonidos, habilidades propias y `model/` (escena, clips y materiales). Son 1 844 archivos de 72 criaturas, movidos con `git mv`, con sus rutas reescritas. Lo compartido (44 modelos de magos o de varias criaturas, 19 habilidades) queda donde estaba. El catálogo encuentra la criatura por el nombre de la carpeta; `new_creature.gd` y los horneados escriben ahí |
 | Formato | gdformat en 571 archivos; gdlint de **5 088 avisos a 0**; el CI bloquea con lint y formato |
 | Bugs que aparecieron | La IA preguntaba si un nodo liberado estaba muerto (SCRIPT ERROR intermitente); `GrassField` quedaba pegado al primer mapa; el aura del Manahoar convertido alimentaba al bando viejo |
 
@@ -45,9 +46,10 @@
 | GUT | 60/60 |
 | `conventions.sh` | 0 FAIL |
 | gdlint / gdformat | 0 avisos / sin cambios |
-| Partida «Contra la IA» headless con semilla 7 | Mismo hash de posiciones, ticks y lanzamientos antes y después de Q12, Q13 y el formato |
+| Partida «Contra la IA» headless con semilla 7 | Mismo hash de posiciones, ticks y lanzamientos antes y después de Q12, Q13, el formato y Q14 |
 | Dos partidas seguidas en el mismo proceso | Arrancan limpias |
-| LAN con 2 procesos (dedicado con IA + cliente) | El pick llega al cliente; bola de fuego y disparos de criaturas por ruta de escena: PASS, sin SCRIPT ERROR. Repetida después de Q12: PASS |
+| LAN con 2 procesos (dedicado con IA + cliente) | El pick llega al cliente; bola de fuego y disparos de criaturas por ruta de escena: PASS, sin SCRIPT ERROR. Repetida después de Q12 y de Q14: PASS |
+| Catálogo antes y después de Q14 | Las mismas 72 criaturas y 63 habilidades, en el mismo orden; ninguna criatura sin cuerpo ni clips |
 
 ## Lo que no se probó
 
@@ -63,7 +65,7 @@ Los puntos de red están anotados en [`TECH-DEBT.md`](TECH-DEBT.md).
 |---|---|
 | `wizard_body.tscn` | El kit avisa en runtime que la MpSync guardada está desactualizada; abrir la escena en el editor y guardarla |
 | Clases grandes | `UnitBody`, `DoctorBody`, `BodyRig`, `AiPerception` y `tools/bake/new_creature.gd` tienen ignores justificados de gdlint; conviene partirlas por responsabilidad (`WizardBody` ya bajó a 20 métodos públicos) |
-| Carpeta por entidad | Q14 sin hacer (el Firefist todavía vive en varias carpetas) |
+| Carpeta por entidad | Q14 se hizo para las criaturas; los magos y los hechizos siguen repartidos entre `scenes/` y `data/` |
 | Logs del servidor | Siguen en español los que documenta la guía de despliegue (`salas listo puerto`, `partida …`) |
 | Códigos sin identificar | `data/catalog/abilities/dhsf.tres` y `othg.tres` |
 | Kit de skills | RC v0.19.0 con la skill `godot-code-quality`, commiteada en `rc/v0.19.0` y `rc/v0.19.0-spanish` y **sin pushear** (worktrees en el scratchpad) |

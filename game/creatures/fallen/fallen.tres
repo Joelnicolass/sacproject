@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_wsjns"]
+[ext_resource type="Texture2D" uid="uid://cp05iswkijk4v" path="res://assets/original/ui/icons/dplk.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/fallen/fallen_shot.tres" id="typed_dkba"]
+[ext_resource type="Resource" path="res://creatures/fallen/play_dead.tres" id="typed_dedp"]
+[ext_resource type="AnimationLibrary" path="res://creatures/fallen/model/fallen_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/fallen/fallen.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_wsjns")
+tag = "dplk"
+display_name = "Fallen"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 720
+drain = 0.5
+run_speed_m_s = 12.0
+melee_strength = 90
+melee_accuracy = 0.8
+melee_evasion = 0.8
+ranged_accuracy = 0.6
+aggressiveness = 1.0
+vision_m = 175.0
+melee_resistance = 6.0
+mana = 200
+mana_cost = 300
+souls = 1
+cooldown_s = 2.0
+casting_time_s = 0.3704
+book_level = 1
+book_slot = 31
+ranged_attack = ExtResource("typed_dkba")
+active_ability = ExtResource("typed_dedp")

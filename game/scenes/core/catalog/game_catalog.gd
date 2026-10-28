@@ -2,12 +2,15 @@
 class_name GameCatalog
 extends Resource
 
-## The game's catalog: every type of data/catalog/<folder>/<tag>.tres, discovered by scanning the
-## folders. There is nothing to register: drop a .tres in a folder and it is in the game. The files
-## are the only source of truth; this class holds no copy of them. Lists are sorted by tag so the
-## order never depends on the file system. Types are read-only at runtime.
+## The game's catalog: every type, discovered by scanning the folders. A creature is its folder,
+## creatures/<name>/<name>.tres; the other kinds are data/catalog/<kind>/<tag>.tres. There is
+## nothing to register: drop the file in and it is in the game. The files are the only source of
+## truth; this class holds no copy of them. Lists are sorted by tag so the order never depends on
+## the file system. Types are read-only at runtime.
 
 const DIR := "res://data/catalog/"
+## One folder per creature, with everything only that creature uses (body, look, model, sounds).
+const CREATURES_DIR := "res://creatures/"
 const GODS_DIR := "res://data/gods/"
 ## Buildings are named for humans (james_hut.tres); the tag is a field inside.
 const BUILDINGS_DIR := "res://data/buildings/"
@@ -51,6 +54,7 @@ func scan(reload_from_disk := false) -> void:
 	spells.assign(_load_folder("spells", SpellType, reload_from_disk))
 	wizards.assign(_load_folder("wizards", WizardType, reload_from_disk))
 	abilities.assign(_load_folder("abilities", AbilityType, reload_from_disk))
+	_add_creature_abilities()
 	_ability_by_tag.clear()
 	for type in abilities:
 		_ability_by_tag[type.tag] = type
@@ -60,19 +64,32 @@ func scan(reload_from_disk := false) -> void:
 	modes.assign(GameModeCatalog.shared().modes)
 
 
-## The folder of a catalog kind: data/catalog/<kind>/, except the buildings.
+## The folder of a catalog kind: data/catalog/<kind>/, except the buildings and the creatures.
 static func dir_of(folder: String) -> String:
-	return BUILDINGS_DIR if folder == "buildings" else DIR + folder + "/"
+	match folder:
+		"buildings":
+			return BUILDINGS_DIR
+		"creatures":
+			return CREATURES_DIR
+	return DIR + folder + "/"
 
 
-## The .tres file names (with extension) of a catalog folder, sorted.
-static func files_in(folder: String) -> PackedStringArray:
-	var names := PackedStringArray()
-	for entry in ResourceLoader.list_directory(dir_of(folder)):
-		if entry.ends_with(".tres"):
-			names.append(entry)
-	names.sort()
-	return names
+## The .tres files of a catalog kind, sorted: creatures/<name>/<name>.tres for the creatures, every
+## .tres of the folder for the rest.
+static func paths_of(folder: String) -> PackedStringArray:
+	var paths := PackedStringArray()
+	var dir := dir_of(folder)
+	for entry in ResourceLoader.list_directory(dir):
+		if folder == "creatures":
+			if entry.ends_with("/"):
+				var name := entry.trim_suffix("/")
+				var path := "%s%s/%s.tres" % [dir, name, name]
+				if ResourceLoader.exists(path):
+					paths.append(path)
+		elif entry.ends_with(".tres"):
+			paths.append(dir + entry)
+	paths.sort()
+	return paths
 
 
 ## The building of a tag, or null.
@@ -163,16 +180,25 @@ func _load_folder(folder: String, script: Script, reload_from_disk: bool) -> Arr
 		ResourceLoader.CACHE_MODE_REPLACE if reload_from_disk else ResourceLoader.CACHE_MODE_REUSE
 	)
 	var found: Array = []
-	for file in files_in(folder):
-		var type := ResourceLoader.load(dir_of(folder) + file, "", mode)
+	for path in paths_of(folder):
+		var type := ResourceLoader.load(path, "", mode)
 		if type == null or type.get_script() != script:
-			push_warning(
-				(
-					"GameCatalog: %s/%s is not a %s; skipped."
-					% [folder, file, script.get_global_name()]
-				)
-			)
+			push_warning("GameCatalog: %s is not a %s; skipped." % [path, script.get_global_name()])
 			continue
 		found.append(type)
 	found.sort_custom(func(a: Resource, b: Resource) -> bool: return a.tag < b.tag)
 	return found
+
+
+# An ability only one creature has lives in that creature's folder: it is known through the
+# creature's slots. The shared ones are in data/catalog/abilities/.
+func _add_creature_abilities() -> void:
+	var known := {}
+	for type in abilities:
+		known[type.tag] = true
+	for creature in creatures:
+		for type in creature.abilities():
+			if not known.has(type.tag):
+				known[type.tag] = true
+				abilities.append(type)
+	abilities.sort_custom(func(a: AbilityType, b: AbilityType) -> bool: return a.tag < b.tag)

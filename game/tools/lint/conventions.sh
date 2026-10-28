@@ -148,7 +148,7 @@ xargs grep -nE '(^|[^A-Za-z0-9_])ActiveMatch\.' < "$OUT/all.txt" 2>/dev/null \
 
 # C18c (055c1): a content reference exported as text where the Resource exists: `*_tag`, `*_tags`, `*_spell`, `spell`, and the old passive
 # slots, as String / StringName / PackedStringArray, or a `const TAGS` list of creature tags, in units, ai, wizards and sacrifice. A component
-# receives the AbilityType / SpellType / CreaturePassive by `@export`. Allowlist: the network ids (`tag` in a `*_type.gd`, `creature_tag`,
+# receives the AbilityType / SpellType by `@export`. Allowlist: the network ids (`tag` in a `*_type.gd`, `creature_tag`,
 # `wizard_tag`); the AI difficulty names are not content. (The FX by text, `look_tag`, `rock_tag`, `texture_tag`, `shot_tag`, left in 055x.)
 find scenes/units scenes/ai scenes/wizards scenes/sacrifice -name '*.gd' 2>/dev/null | sort \
 	| xargs grep -nE '^@export[a-z_]*(\([^)]*\))? var (tag|[a-z_0-9]*_tags?|[a-z_0-9]*_spell|spell|passive_on_damage|passive_abilities)[ ]*(:[ ]*(String|StringName|PackedStringArray)\b|:=[ ]*(&?"|PackedStringArray))|^const [A-Z_]*TAGS?[ ]*(:[^=]*)?=[ ]*(PackedStringArray|\[)' 2>/dev/null \

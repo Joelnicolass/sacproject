@@ -9,12 +9,12 @@ extends Node3D
 ## What it does not do: decide when it plays (the spell or unit that broadcasts it), touch the
 ## simulation, or run in a headless process.
 
+## Per scene: the `camera_trauma` it saves (read from its SceneState, never instanced).
+static var _trauma_cache: Dictionary[PackedScene, float] = {}
+
 ## How hard the camera shakes near this effect, 0 to 1 (full inside ShakeMap.full_within_m, fading
 ## with distance).
 @export_range(0.0, 1.0, 0.01) var camera_trauma := 0.0
-
-## Per scene: the `camera_trauma` it saves (read from its SceneState, never instanced).
-static var _trauma_cache: Dictionary[PackedScene, float] = {}
 
 
 ## FxBus calls this once, after the scene is in the tree and at its place. `params` are the numbers

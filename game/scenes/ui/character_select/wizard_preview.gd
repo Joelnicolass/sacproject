@@ -9,10 +9,10 @@ const _RIG := preload("res://scenes/bodies/body_rig.tscn")
 @export var model_height: float = 2.0
 @export var model_rotation: Vector3 = Vector3.ZERO
 
-@onready var _pivot: Node3D = %Pivot
-
 var _shown: Dictionary = {}
 var _model: String = ""
+
+@onready var _pivot: Node3D = %Pivot
 
 
 func _process(delta: float) -> void:

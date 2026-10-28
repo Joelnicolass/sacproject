@@ -31,9 +31,6 @@ const GROUP := &"unit"
 		creature_tag = value.id() if value != null else ""
 		if creature != null:
 			creature.adopt()
-## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the
-## type, not this.
-var creature_tag := ""
 ## The model id on the network: the one of the body scene `type` wears (BodyFrame.model_id). Derived
 ## from `type`: set the type, not this.
 @export var model := "":
@@ -78,6 +75,10 @@ var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "str
 ## Off: an idle creature without an order never picks a fight (debug scenes hold still).
 @export var idle_aggro := true
 @export var rules: MatchRules
+
+## The id of `type` on the network (it travels in the synchronizer). Derived from `type`: set the
+## type, not this.
+var creature_tag := ""
 
 ## Speedup sets it on the server (or solo); the pace is multiplied by it. GuardianBond writes
 ## `attack_factor`.

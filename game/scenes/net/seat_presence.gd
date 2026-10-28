@@ -10,10 +10,6 @@ extends Node
 ## "^partida "` on the server's log reads the whole match in order.
 ## Not: who may sit or when the match starts (the gate), what the room is told (MatchTicketGlue).
 
-## Before the text of each line. MatchTicketGlue's flow sets `partida <id>: ` for a match with a
-## ticket.
-@export var log_prefix := "partida lan: "
-
 ## Why the gate gave up on a seat -> the line told before «abandonó y pierde» (none for a seat past
 ## the grace).
 const GIVE_UP_NOTES := {
@@ -27,6 +23,10 @@ const START_NOTES := {
 	"load_timeout": "tiempo de carga vencido",
 	"no_hold": "sin espera",
 }
+
+## Before the text of each line. MatchTicketGlue's flow sets `partida <id>: ` for a match with a
+## ticket.
+@export var log_prefix := "partida lan: "
 
 
 func _ready() -> void:

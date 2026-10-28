@@ -14,6 +14,8 @@ enum Ending {
 	CREATURE_HEALTH_ROUNDS,
 }
 
+static var _inert: RitualType
+
 ## Network id of the class (what a client reads from the spawn data).
 @export var kind := Ritual.Kind.DESECRATE
 @export var ending := Ending.TARGET_WIZARD_GONE
@@ -25,8 +27,6 @@ enum Ending {
 @export var marks_target_ghost := true
 ## A finished ritual announces the conversion of the creature's souls.
 @export var counts_as_conversion := false
-
-static var _inert: RitualType
 
 
 ## A ritual with no type for its kind: it drains, collapses, marks and announces nothing.

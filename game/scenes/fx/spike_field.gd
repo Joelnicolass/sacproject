@@ -11,6 +11,8 @@ extends FxScene
 ## Presentation only: every peer, never headless; its generator is seeded by the event (`seed`),
 ## never the global one.
 
+static var _mesh_cache: Dictionary = {}
+
 ## How long a spike stands.
 @export var lifetime_s := 0.6666
 ## How far the tip leans (m).
@@ -25,15 +27,13 @@ extends FxScene
 @export var texture: Texture2D
 @export var fallback_color := Color(0.4, 0.3, 0.2, 1)
 
-@onready var _spikes: MultiMeshInstance3D = %Spikes
-
 ## Per spike: its axis at full size (s·d with s = 1).
 var _axes: PackedVector3Array = PackedVector3Array()
 var _bases: PackedVector3Array = PackedVector3Array()
 var _age := 0.0
 var _playing := false
 
-static var _mesh_cache: Dictionary = {}
+@onready var _spikes: MultiMeshInstance3D = %Spikes
 
 
 ## `params`: inner, outer (m), count, height (2 on the way, 2,5 in the rings), seed; `life` (s)

@@ -14,6 +14,9 @@ extends Node3D
 ## script owns what a soul is and what can be done to it: the corpse it leaves (`sever`), who may
 ## eat it, which soul waits on a corpse.
 
+## The state changed (every peer: the setter runs on the replicated value too). SoulSounds listens.
+signal state_changed(was: State, now: State)
+
 ## REVIVING and DEVOURING go last: `state` is replicated as an integer.
 enum State { NORMAL, EMERGING, COLLECTING, REVIVING, DEVOURING }
 enum SoulColor { BLUE, RED }
@@ -22,9 +25,6 @@ enum SoulColor { BLUE, RED }
 const GROUP := &"soul"
 ## The soul's clickable Target child: the pointer and the HUD pick a soul through it.
 const TARGET_GROUP := &"soul_target"
-
-## The state changed (every peer: the setter runs on the replicated value too). SoulSounds listens.
-signal state_changed(was: State, now: State)
 
 ## The sprite plays 8 cells at 15 fps.
 const ANIM_FPS := 15.0

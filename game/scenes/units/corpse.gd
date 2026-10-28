@@ -29,6 +29,13 @@ const GROUP := &"corpse"
 ## How far the body leans back when a death clip lays it down (degrees): where the soul sits. See
 ## lying_pose().
 @export_range(0.0, 90.0) var fall_deg := 90.0
+## Server writes it, the clients get it (unit.tscn replicates it).
+@export var dissolving := false:
+	set(value):
+		if value == dissolving:
+			return
+		dissolving = value
+		dissolving_changed.emit(dissolving)
 
 ## The body is a corpse now (it fell, or is falling).
 var laid := false
@@ -40,13 +47,6 @@ var death_role := ""
 ## true: a clip (the skeleton's death) lays the body down and the pivot stays upright. Only the
 ## soul's place changes.
 var clip_driven := false
-## Server writes it, the clients get it (unit.tscn replicates it).
-@export var dissolving := false:
-	set(value):
-		if value == dissolving:
-			return
-		dissolving = value
-		dissolving_changed.emit(dissolving)
 
 var _body: UnitBody
 var _ticks := 0

@@ -12,9 +12,10 @@ extends Resource
 const SCENE_DIR := "res://scenes/bodies/models/"
 const TABLE_PATH := "res://tools/bake/model_paths.tres"
 
+static var _shared: ModelPaths
+
 @export var stems: Dictionary[String, String] = {}
 
-static var _shared: ModelPaths
 var _tags: Dictionary[String, String] = {}
 
 

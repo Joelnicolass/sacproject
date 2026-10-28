@@ -1,12 +1,17 @@
 extends Control
 
-const _PREVIEW := preload("res://scenes/ui/character_select/wizard_preview.gd")
-
 signal confirmed
+
+const _PREVIEW := preload("res://scenes/ui/character_select/wizard_preview.gd")
 
 @export var pick_button: PackedScene
 ## The confirm button says «Jugar» in the menu; the room screen says «Elegir».
 @export var confirm_text: String = "UI_CHARACTER_SELECT_PLAY"
+
+var _wizard: WizardType
+var _god: GodType
+var _wizard_group := ButtonGroup.new()
+var _god_group := ButtonGroup.new()
 
 @onready var _wizard_grid: GridContainer = %WizardGrid
 @onready var _god_row: HBoxContainer = %GodRow
@@ -14,11 +19,6 @@ signal confirmed
 @onready var _wizard_name: Label = %WizardName
 @onready var _wizard_stats: Label = %WizardStats
 @onready var _book: Label = %Book
-
-var _wizard: WizardType
-var _god: GodType
-var _wizard_group := ButtonGroup.new()
-var _god_group := ButtonGroup.new()
 
 
 func _ready() -> void:

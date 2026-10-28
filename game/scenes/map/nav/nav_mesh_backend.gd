@@ -26,6 +26,10 @@ const WALKABLE_M := 0.75
 ## a pocket the walls closed): bodies do not stand there. The stored bake has 22 of them, 96
 ## polygons in all.
 const ISLAND_POLYGONS := 100
+## Checks of is_synced without an answer before the diagnostic is printed again (about 2 s of
+## physics ticks).
+const DIAGNOSE_AFTER := 120
+const DIAGNOSE_POINT := Vector3(1504.9, 17.0, 1540.5)
 
 var built := false
 var build_ms := 0.0
@@ -40,10 +44,9 @@ var map := RID()
 var _probe := Vector3.ZERO
 var _synced := false
 var _checks := 0
-## Checks of is_synced without an answer before the diagnostic is printed again (about 2 s of
-## physics ticks).
-const DIAGNOSE_AFTER := 120
-const DIAGNOSE_POINT := Vector3(1504.9, 17.0, 1540.5)
+
+var _params: NavigationPathQueryParameters3D
+var _result: NavigationPathQueryResult3D
 
 
 ## Takes the region (in the tree, with its navigation_mesh) and its map. `box_entries` are the
@@ -164,10 +167,6 @@ func diagnose(label: String) -> String:
 
 ## Waypoints from `from` (not included) to `to`: [to] when nothing is in the way, the closest
 ## approach when `to` is off the mesh or in another region. Empty only when not built.
-var _params: NavigationPathQueryParameters3D
-var _result: NavigationPathQueryResult3D
-
-
 func find_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	if not built:
 		return PackedVector3Array()

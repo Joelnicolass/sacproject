@@ -59,11 +59,12 @@ signal casting_changed(on: bool)
 			_show(shown)
 		shown_changed.emit(shown)
 
+## True while the wizard casts this ward's spell (casting_changed).
+var casting := false
+
 ## MatchClock tick at which the ward is off. -1 = no ward.
 var _until := -1
 var _tween: Tween
-## True while the wizard casts this ward's spell (casting_changed).
-var casting := false
 
 
 func _ready() -> void:

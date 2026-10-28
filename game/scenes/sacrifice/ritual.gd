@@ -16,11 +16,11 @@ signal phase_changed(phase: Phase)  ## every peer
 signal round_tortured(round_index: int)  ## server only
 signal ended(completed: bool)  ## every peer: completed or cancelled
 
-const GROUP := &"ritual"
-
 enum Kind { DESECRATE, CONVERT }
 enum Phase { OFF, SETUP, WALK, SHOOT, WAIT, ENDED }
 enum Outcome { RUNNING, COMPLETED, ABORTED }
+
+const GROUP := &"ritual"
 
 @export var kind := Kind.DESECRATE
 ## Slot of the wizard that cast it, and of the one whose altar it is.

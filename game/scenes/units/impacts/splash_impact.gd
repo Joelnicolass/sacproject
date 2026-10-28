@@ -12,10 +12,10 @@ extends ShotImpact
 ## The side is Health's rule (Health._side_factor): the shooter's own side takes 0 or
 ## ally_damage_factor by the match's friendly fire, the shooter included if it stands in the radius.
 
+enum RadiusSource { DAMAGE_RANGE, EFFECT_RANGE }
+
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
-
-enum RadiusSource { DAMAGE_RANGE, EFFECT_RANGE }
 
 ## The body the shot hit takes the whole amount (splash ranged) and is left out of the falloff.
 @export var direct_hit := true

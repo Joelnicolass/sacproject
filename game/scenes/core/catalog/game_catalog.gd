@@ -12,6 +12,8 @@ const GODS_DIR := "res://data/gods/"
 ## Buildings are named for humans (james_hut.tres); the tag is a field inside.
 const BUILDINGS_DIR := "res://data/buildings/"
 
+static var _shared: GameCatalog
+
 var creatures: Array[CreatureType] = []
 var spells: Array[SpellType] = []
 var wizards: Array[WizardType] = []
@@ -19,16 +21,15 @@ var abilities: Array[AbilityType] = []
 var buildings: Array[BuildingType] = []
 ## Tags that two building files claim (the catalog test fails on them).
 var duplicate_building_tags := PackedStringArray()
-var _building_by_tag: Dictionary = {}
-var _creature_by_id: Dictionary = {}
-var _ability_by_tag: Dictionary[String, AbilityType] = {}
 ## The gods of data/gods/<tag>.tres, by sort_order then tag. Each carries its theme, look and typed
 ## book.
 var gods: Array[GodType] = []
 ## The game modes in the order the screens list them (data/modes/mode_catalog.tres).
 var modes: Array[GameMode] = []
 
-static var _shared: GameCatalog
+var _building_by_tag: Dictionary = {}
+var _creature_by_id: Dictionary = {}
+var _ability_by_tag: Dictionary[String, AbilityType] = {}
 
 
 ## The catalog, built once from the folders. `refresh` rescans and reloads the files from disk

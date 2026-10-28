@@ -16,6 +16,13 @@ const GROUP := &"wizard"
 ## The wizard of this process's player (none on a dedicated server).
 const LOCAL_GROUP := &"local_wizard"
 
+const TURN_RATE := PI
+## The yaw is sent again when the camera turned this much (radians, about 0.25 degrees): a value per
+## frame would cost three times the bytes.
+const YAW_STEP := 0.0044
+## 1 rest loop in GESTURE_EVERY ends in the idle0 gesture, like the units.
+const GESTURE_EVERY := 5
+
 @export var step: WalkStep
 ## The wizard the player picked (data/catalog/wizards/). Every peer takes it from `seat_pick` (the
 ## pick is typed on each of them); a test scene without a flow sets it in its .tscn. It never looks
@@ -72,6 +79,12 @@ const LOCAL_GROUP := &"local_wizard"
 ## WizardSpawner fills them from MatchRules (wizard_level_stats); 0 keeps the WIZD numbers.
 @export var level_health_bonus := 0.0
 @export var level_mana_bonus := 0.0
+## Ray mask used to seat the body on the ground after spawning.
+@export_flags_3d_physics var ground_mask := 1
+@export var seat_attempts := 12
+## It regenerates only in idle and not during a damage animation.
+@export var regen_pause_s := 0.5
+
 ## The pick of this wizard's seat (wizard and god). WizardSpawner sets it on every peer when the
 ## wizard spawns and when the picks change; the body wears it once it is ready. Null (a test scene):
 ## the types of the .tscn stay.
@@ -80,23 +93,12 @@ var seat_pick: WizardPick:
 		seat_pick = value
 		if is_node_ready():
 			_wear_pick()
-## Ray mask used to seat the body on the ground after spawning.
-@export_flags_3d_physics var ground_mask := 1
-@export var seat_attempts := 12
-## It regenerates only in idle and not during a damage animation.
-@export var regen_pause_s := 0.5
-
-const TURN_RATE := PI
-## The yaw is sent again when the camera turned this much (radians, about 0.25 degrees): a value per
-## frame would cost three times the bytes.
-const YAW_STEP := 0.0044
-## 1 rest loop in GESTURE_EVERY ends in the idle0 gesture, like the units.
-const GESTURE_EVERY := 5
 
 var move_speed: float = 0.0
 ## Speedup sets it on the server (or solo); the pace is multiplied by it.
 var speed_factor := 1.0
 var look_yaw := 0.0
+
 var _sent_yaw := NAN
 var _seat_left := 0
 var _seated_frame := -1
@@ -115,13 +117,14 @@ var _clip_flat_speed := 0.0
 @onready var mana: ManaPool = $ManaPool
 @onready var souls: SoulPurse = $SoulPurse
 @onready var ghost: GhostForm = $GhostForm
+@onready var drive: WizardDrive = $Drive
+
 @onready var _clip_pose: ClipPlayback = $ClipPose
 ## The cast in progress as every peer sees it (`is_casting()` reads the replicated `cast_fx_shown`
 ## on a client), so the pose follows it.
 @onready var _caster: Caster = $Caster
 ## The one owner of «held» (stunned, petrified); walking, turning, casting and summoning ask it.
 @onready var _afflictions: Afflictions = $Afflictions
-@onready var drive: WizardDrive = $Drive
 @onready var _net: MpActor = $MpActor
 @onready var _keys: MpInput = $MpInput
 @onready var _follower: PathFollower = $PathFollower

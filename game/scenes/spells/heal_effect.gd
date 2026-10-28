@@ -26,8 +26,9 @@ var report_end := false
 ## Prints «heal <who> +N health V» each tick it heals (Devour's cure). Off for every other heal.
 var report_each := false
 var frames_left := 0
-var _healed := 0.0
 var per_frame := 0.0
+
+var _healed := 0.0
 var _health: Health
 var _fx_left := 0.0
 

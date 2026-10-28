@@ -38,8 +38,6 @@ extends FxScene
 ## ... and in any case after this long.
 @export_range(0.0, 600.0, 0.0001, "suffix:s") var max_life_s := 40.0
 
-@onready var _strand: MeshInstance3D = %Strand
-
 var _user: Node3D
 var _target: Node3D
 var _born := 0
@@ -49,6 +47,8 @@ var _bolt: LightningBolt
 var _rng: RandomNumberGenerator
 var _shape_slot := -1
 var _grow_ticks := 0
+
+@onready var _strand: MeshInstance3D = %Strand
 
 
 ## FxBus.broadcast_scene: starts the thread. Nothing happens without both bodies.

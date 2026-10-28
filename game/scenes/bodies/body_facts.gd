@@ -10,6 +10,10 @@ extends RefCounted
 ## What it does not do: move a body, size a physics shape (BodyCollider) or choose which scene a
 ## body wears (BodyMount).
 
+## Where an effect leaves a body: its feet, its middle, the top of its head or the muzzle (where its
+## hand or mouth throws from).
+enum Socket { FEET, CENTER, TOP, MUZZLE }
+
 ## Fraction of the height where a thrown ball leaves the hand when the scene has no `muzzle` marker.
 const _HAND_FRACTION := 0.65
 
@@ -76,11 +80,6 @@ static func fallback() -> BodyFacts:
 	if _fallback == null:
 		_fallback = BodyFacts.new()
 	return _fallback
-
-
-## Where an effect leaves a body: its feet, its middle, the top of its head or the muzzle (where its
-## hand or mouth throws from).
-enum Socket { FEET, CENTER, TOP, MUZZLE }
 
 
 ## The local position of `socket` (the origin of the body is at its feet).

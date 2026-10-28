@@ -38,11 +38,12 @@ const GROUP := &"selection"
 var count: int:
 	get:
 		return size()
+## Microseconds the last select_rect took (debug overlays).
+var last_rect_us := 0
+
 var _units: Array[Node3D] = []
 ## instance_id -> true for every unit in _units: has() in O(1).
 var _members: Dictionary = {}
-## Microseconds the last select_rect took (debug overlays).
-var last_rect_us := 0
 var _groups: Array = []
 var _last_unit: Node3D
 var _last_ms := -100000

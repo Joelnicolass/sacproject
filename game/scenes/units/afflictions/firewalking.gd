@@ -24,10 +24,6 @@ extends Affliction
 ## A step longer than this (m) is a jump: the clients are told not to glide it.
 @export var snap_step := 2.0
 @export var snap: WarpSnap
-## walk_s in ticks: the frames of the walk.
-var frames: int:
-	get:
-		return MatchClock.ticks_for(walk_s)
 ## The mesh pivot that is hidden while it lasts.
 @export var tilt: Node3D
 ## The trail of flames puffed while it walks, and the socket it leaves from: the muzzle, where the
@@ -40,6 +36,11 @@ var frames: int:
 ## The burst at the start and at the end (32 flames in the body's box), and its socket.
 @export var burst_fx: ParticleType = preload("res://data/fx/firewalk_burst.tres")
 @export var burst_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
+
+## walk_s in ticks: the frames of the walk.
+var frames: int:
+	get:
+		return MatchClock.ticks_for(walk_s)
 
 var _start := Vector3.ZERO
 var _end := Vector3.ZERO

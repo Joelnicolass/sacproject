@@ -15,8 +15,9 @@ const _SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 ## The wizard's book (spell_book.gd). Empty (the book was removed): the keys do nothing.
 @export var book: Control
 
-@onready var _log: CommandLog = %Battle
 var _book: _SPELL_BOOK
+
+@onready var _log: CommandLog = %Battle
 
 
 func _ready() -> void:

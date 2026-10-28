@@ -33,6 +33,11 @@ signal baked
 ## The camera sits this far over the highest point of the mesh.
 @export var camera_margin_m := 50.0
 
+## Editor button: draws the ground again and shows it in `preview`, to see what the minimap will get
+## after changing the terrain mesh or `resolution`. The game bakes by itself at every launch;
+## nothing is saved.
+@export_tool_button("Rebake minimap", "Reload") var rebake_in_editor := _rebake_in_editor
+
 ## ViewportTexture of the bake; null until `baked`.
 var texture: Texture2D
 ## World x/z of the texture's top-left corner and the side of the square it covers, in meters.
@@ -73,12 +78,6 @@ func world_to_uv(point: Vector3) -> Vector2:
 func _bake_when_ready() -> void:
 	await get_tree().process_frame
 	await bake()
-
-
-## Editor button: draws the ground again and shows it in `preview`, to see what the minimap will get
-## after changing the terrain mesh or `resolution`. The game bakes by itself at every launch;
-## nothing is saved.
-@export_tool_button("Rebake minimap", "Reload") var rebake_in_editor := _rebake_in_editor
 
 
 func _rebake_in_editor() -> void:

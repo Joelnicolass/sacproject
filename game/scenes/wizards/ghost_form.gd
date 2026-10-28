@@ -9,9 +9,9 @@ extends Node
 ## stages; `stage` is replicated and every peer fades the body on its own. A see-through wizard is
 ## drawn shadeless with energy 1 → GHOST_ENERGY and, being in the transparent pass, casts no shadow.
 
-enum Stage { ALIVE, DYING, RISING, GHOST, UNGHOSTING, GONE }
-
 signal stage_changed(stage: Stage)
+
+enum Stage { ALIVE, DYING, RISING, GHOST, UNGHOSTING, GONE }
 
 ## Alpha of the ghost.
 const GHOST_ALPHA := 0.36

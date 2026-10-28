@@ -10,9 +10,9 @@ extends Node
 ## would; ground and holes are respected (SacrificeGround). Server only. Take this node out of
 ## ritual.tscn and nothing is pushed: then melee creatures can kill doctors.
 
-@export var ritual: Ritual
-
 const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP, DoctorBody.GROUP]
+
+@export var ritual: Ritual
 
 
 func _get_configuration_warnings() -> PackedStringArray:

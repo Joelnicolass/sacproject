@@ -22,9 +22,6 @@ const SCENE_PATH := "res://scenes/map/npc_spawn.tscn"
 ## after the seats. MapSides reads it.
 @export var side := 0
 
-var _label: Label3D
-var _ghost: Node3D
-
 ## Creature tag, derived from `creature` ("" when none). Setting it looks the type up (TypeRef), for
 ## code and old scenes that still name a tag; the reference is what is saved.
 var tag: String:
@@ -32,6 +29,9 @@ var tag: String:
 		return creature.tag if creature != null else ""
 	set(value):
 		creature = TypeRef.creature(value)
+
+var _label: Label3D
+var _ghost: Node3D
 
 
 ## Turn about the vertical axis, radians, as the creature is put (the unit's yaw): read from the

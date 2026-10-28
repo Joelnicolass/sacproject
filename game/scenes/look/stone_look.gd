@@ -13,6 +13,10 @@ extends Node
 ## IceBlock). Skin of Stone will be one more state with a look there, not a second StoneLook on the
 ## same mesh.
 
+## One stone material per source material (or per shader with no source) and tint, shared by every
+## body.
+static var _materials: Dictionary = {}
+
 @export var mesh: MeshInstance3D
 @export var shader: Shader
 ## The shader's stone_tint: the stone's (1, 1, 0.8) or the ice's; Afflictions sets it from the type
@@ -40,6 +44,7 @@ extends Node
 		stone = value
 		if is_node_ready():
 			_refresh()
+
 ## A texture drawn on every surface instead of its own, with the surface's UV, alpha cut and light
 ## (Slime's wet skin, `lthg`). Afflictions sets it from the states that are on; with `stone` also
 ## on, the stone's grey is made from this texture. Null: the surfaces keep theirs.
@@ -51,10 +56,6 @@ var swap_texture: Texture2D:
 		if is_node_ready():
 			_dressed = null
 			_refresh()
-
-## One stone material per source material (or per shader with no source) and tint, shared by every
-## body.
-static var _materials: Dictionary = {}
 
 var _dressed: Mesh
 ## When `mesh` is a BodyVisual that a BodyRig draws for, the skinned meshes of the rig are dressed

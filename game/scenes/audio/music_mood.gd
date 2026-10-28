@@ -13,6 +13,9 @@ extends RefCounted
 ## 5. otherwise the god's `calm` (its `normal` theme). The menu is always `calm` of the menu set.
 ## No node, no state, no randomness: music_mood_cases tries the table.
 
+enum Result { NONE, WON, LOST }
+enum Desecration { NONE, WINNING, LOSING }
+
 const CALM := &"calm"
 const BATTLE := &"battle"
 const SACRIFICE := &"sacrifice"
@@ -24,9 +27,6 @@ const DEFEAT := &"defeat"
 const ALL: Array[StringName] = [CALM, BATTLE, SACRIFICE, WINNING, LOSING, VICTORY, DEFEAT]
 ## Moods whose track plays once and is not restarted when it ends.
 const ONCE: Array[StringName] = [VICTORY, DEFEAT]
-
-enum Result { NONE, WON, LOST }
-enum Desecration { NONE, WINNING, LOSING }
 
 
 ## The mood for these inputs.

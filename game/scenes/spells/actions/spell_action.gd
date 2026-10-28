@@ -20,6 +20,24 @@ const BAD_TARGET := Refusal.BAD_TARGET
 const NOT_IMPLEMENTED := Refusal.NOT_IMPLEMENTED
 const NO_ROOM := Refusal.OCCUPIED
 
+## What the click aims at: the ground, an own creature, a soul or an own building. SELF aims at
+## nothing: the cast starts on the key.
+@export var pick := Pick.GROUND
+## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god
+## (GodType.cast_fx).
+@export var cast_fx: ParticleType
+## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the
+## end of the cast.
+@export var stationary := false
+
+## The spell this action casts. Caster sets it when it instances `spell.action`; an action scene
+## does not know its spell.
+var spell: SpellType
+## Network id of the spell (read only: `spell.tag`), "" before Caster sets it.
+var tag: String:
+	get:
+		return spell.tag if spell != null else ""
+
 
 ## Where a cast lands, or why it cannot start (`status` != "").
 class Aim:
@@ -32,24 +50,6 @@ class Aim:
 	var site: Node3D
 	## What `begin` needs from `check` (an action keeps its own keys).
 	var data := {}
-
-
-## The spell this action casts. Caster sets it when it instances `spell.action`; an action scene
-## does not know its spell.
-var spell: SpellType
-## Network id of the spell (read only: `spell.tag`), "" before Caster sets it.
-var tag: String:
-	get:
-		return spell.tag if spell != null else ""
-## What the click aims at: the ground, an own creature, a soul or an own building. SELF aims at
-## nothing: the cast starts on the key.
-@export var pick := Pick.GROUND
-## Particle the wizard's hands throw while he casts this spell. Empty = the one of his god
-## (GodType.cast_fx).
-@export var cast_fx: ParticleType
-## The wizard neither walks nor turns while he casts it (a structure): a walk order waits for the
-## end of the cast.
-@export var stationary := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:

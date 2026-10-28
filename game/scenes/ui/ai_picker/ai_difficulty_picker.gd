@@ -6,6 +6,12 @@ extends OptionButton
 ## of this difficulty). It only lists: the choice goes out through `selected_difficulty()` and
 ## `is_human()`.
 
+const NAMES := {
+	"easy": "UI_AI_DIFFICULTY_EASY",
+	"normal": "UI_AI_DIFFICULTY_NORMAL",
+	"hard": "UI_AI_DIFFICULTY_HARD"
+}
+
 ## Item 0 is a person instead of an AI.
 @export var offer_human := false
 @export var human_text := "UI_AI_SEAT_HUMAN"
@@ -14,12 +20,6 @@ extends OptionButton
 ## The item selected at start (an id of AiSeat.difficulty_ids()); with `offer_human` the person is
 ## selected at start.
 @export var initial_difficulty := "normal"
-
-const NAMES := {
-	"easy": "UI_AI_DIFFICULTY_EASY",
-	"normal": "UI_AI_DIFFICULTY_NORMAL",
-	"hard": "UI_AI_DIFFICULTY_HARD"
-}
 
 
 func _ready() -> void:

@@ -22,6 +22,12 @@ extends Node
 ##   The window settings and the vegetation switch stay as the run started; without a preset
 ##   FloraField plants nothing, so a capture would show a bare ground.
 
+## What the engine's own command line set for this run. Godot consumes its flags (--max-fps,
+## --disable-vsync, -f/-w) before OS.get_cmdline_args(), so they are detected by comparing the state
+## at launch with the project settings, once per process and before this node ever touches the
+## window (the boot's applier runs first).
+static var _launch_overrides := {}
+
 ## The shared preference (data/ui/graphics_prefs.tres).
 @export var prefs: GraphicsPrefs
 ## The world's look rig; empty in the boot (window settings only).
@@ -135,13 +141,6 @@ func _inert() -> bool:
 	if MpBoot.is_dedicated_process():
 		return true
 	return UserSettings.sandboxed()
-
-
-## What the engine's own command line set for this run. Godot consumes its flags (--max-fps,
-## --disable-vsync, -f/-w) before OS.get_cmdline_args(), so they are detected by comparing the state
-## at launch with the project settings, once per process and before this node ever touches the
-## window (the boot's applier runs first).
-static var _launch_overrides := {}
 
 
 static func _snapshot_launch(window: Window) -> void:

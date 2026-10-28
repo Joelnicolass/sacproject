@@ -7,6 +7,15 @@ extends Resource
 ## Edit it in the inspector with the world open and the preview shows it live. The root of every
 ## blade takes the exact color of the ground under it, so only the body and tip colors live here.
 
+## Share of the blade's top view that counts as ground cover (a blade is a thin, tapered, bent
+## shape).
+const COVER_SHAPE := 0.55
+## Where in its range of heights the far blades are measured (0 = the short ones, 1 = the tall
+## ones).
+const FAR_REFERENCE_OPENNESS := 0.3
+## Under this the far field leaves bare ground between blades (1 - e^-C of the ground is covered).
+const MIN_FAR_COVERAGE := 2.3
+
 @export var label: String = ""
 
 @export_group("Blade")
@@ -148,15 +157,6 @@ extends Resource
 @export_range(0.5, 4.0, 0.05) var trample_radius_scale := 1.5
 ## Seconds the grass takes to stand up after a unit moves on.
 @export_range(0.2, 8.0, 0.1, "suffix:s") var trample_recover_s := 2.0
-
-## Share of the blade's top view that counts as ground cover (a blade is a thin, tapered, bent
-## shape).
-const COVER_SHAPE := 0.55
-## Where in its range of heights the far blades are measured (0 = the short ones, 1 = the tall
-## ones).
-const FAR_REFERENCE_OPENNESS := 0.3
-## Under this the far field leaves bare ground between blades (1 - e^-C of the ground is covered).
-const MIN_FAR_COVERAGE := 2.3
 
 
 ## Ground coverage of the far field: far density x far width x reference height x the blade shape.

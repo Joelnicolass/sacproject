@@ -16,17 +16,17 @@ var radius_scale := 1.5
 var scan_s := 0.2
 var drop_distance_m := 0.45
 
+## Stamps for the shader: x, z (map), radius, strength 0..1. Padded to `TOTAL`.
+var stamps := PackedVector4Array()
+## How many leading entries of `stamps` are in use (compact: live stamps, then the trail).
+var count := 0
+
 var _bodies: Array[Node3D] = []
 var _radius: Array[float] = []
 var _last_drop: Array[Vector2] = []
 var _trail: Array[Vector4] = []
 var _trail_age: Array[float] = []
 var _scan_left := 0.0
-
-## Stamps for the shader: x, z (map), radius, strength 0..1. Padded to `TOTAL`.
-var stamps := PackedVector4Array()
-## How many leading entries of `stamps` are in use (compact: live stamps, then the trail).
-var count := 0
 
 
 func _init() -> void:

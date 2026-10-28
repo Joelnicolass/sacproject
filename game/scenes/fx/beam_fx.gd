@@ -18,12 +18,12 @@ const SHADER := preload("res://scenes/fx/beam.gdshader")
 const SHADER_MIX := preload("res://scenes/fx/beam_mix.gdshader")
 const UV_INSET := 0.5 / 64.0
 
+static var _materials: Dictionary = {}
+
 @export var type: BeamType
 ## Owned by FxBus's pool: it waits hidden for `play` and hides again at the end instead of freeing
 ## itself.
 @export var pooled := false
-
-static var _materials: Dictionary = {}
 
 var _imesh: ImmediateMesh
 var _rng := RandomNumberGenerator.new()

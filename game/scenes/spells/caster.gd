@@ -35,6 +35,16 @@ const BARE := "-"
 ## The wizard that owns this node (set in wizard_body.tscn).
 @export var wizard: WizardBody
 
+## The cast in progress as every peer sees it: the FxWire id of the hands' particle, BARE without
+## one, "" while idle. The server writes it and the body's synchronizer replicates it; nothing in
+## the simulation reads it. Presentation only.
+@export var cast_fx_shown := "":
+	set(value):
+		if value == cast_fx_shown:
+			return
+		cast_fx_shown = value
+		cast_changed.emit(not value.is_empty(), cast_fx())
+
 ## SpellType or CreatureType being cast.
 var _entry: BookEntry
 var _target: Node3D
@@ -46,16 +56,6 @@ var _active: SpellAction
 ## What `cast_fx_shown` says while the cast in progress lasts (an FxWire id or BARE), taken when it
 ## starts.
 var _shown_id := ""
-
-## The cast in progress as every peer sees it: the FxWire id of the hands' particle, BARE without
-## one, "" while idle. The server writes it and the body's synchronizer replicates it; nothing in
-## the simulation reads it. Presentation only.
-@export var cast_fx_shown := "":
-	set(value):
-		if value == cast_fx_shown:
-			return
-		cast_fx_shown = value
-		cast_changed.emit(not value.is_empty(), cast_fx())
 
 
 func _get_configuration_warnings() -> PackedStringArray:

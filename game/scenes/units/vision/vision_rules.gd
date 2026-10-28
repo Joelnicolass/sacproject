@@ -5,6 +5,9 @@ extends RefCounted
 ## run out. It holds no state and needs no tree, so the rules suite can try it alone. It does not
 ## know bodies or sides (Vision does).
 
+static var _raw: Array = []
+static var _sorted: Array = []
+
 
 ## Whether `at` is inside the sight shape around `center`: a cylinder looks at the flat distance
 ## (height does not matter), a sphere at the full distance. `forward` and `fov_deg` cut the cone
@@ -57,10 +60,6 @@ static func by_name(a: Node, b: Node) -> bool:
 static func slot_of(node: Object) -> int:
 	var slot: Variant = node.get("owner_slot") if node != null else null
 	return int(slot) if slot != null else 0
-
-
-static var _raw: Array = []
-static var _sorted: Array = []
 
 
 ## Of `candidates` (any order, repeats allowed), the nodes other than `me` that are in the tree, not

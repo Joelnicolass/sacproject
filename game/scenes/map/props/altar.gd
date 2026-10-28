@@ -10,9 +10,9 @@ extends StaticBody3D
 ## DESTROYED: no model, no collision, no mana, out of the "altar" group. No manafount is left
 ## where it stood.
 
-enum State { STANDING, COLLAPSING, DESTROYED }
-
 signal state_changed(state: State)
+
+enum State { STANDING, COLLAPSING, DESTROYED }
 
 ## In the group while STANDING or COLLAPSING: what the rest of the game calls "an altar".
 const GROUP := &"altar"

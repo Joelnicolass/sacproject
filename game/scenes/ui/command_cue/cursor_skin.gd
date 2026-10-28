@@ -14,6 +14,10 @@ extends Node
 ## The cursor changed: its name (`Tnme`) and image (null without cache).
 signal changed(cursor_name: String, texture: Texture2D)
 
+## Hardware cursor limits, in window pixels.
+const MIN_PX := 8
+const MAX_PX := 256
+
 @export var cues: CueSet
 @export var command_log: CommandLog
 @export var probe: TargetProbe
@@ -22,10 +26,6 @@ signal changed(cursor_name: String, texture: Texture2D)
 @export var cursor_px := 38.4
 ## The interface size: when the player changes it the cursor is measured again.
 @export var ui_scale: UiScalePrefs
-
-## Hardware cursor limits, in window pixels.
-const MIN_PX := 8
-const MAX_PX := 256
 
 ## Name of the cursor chosen at the last refresh (`""` before the first).
 var current := ""

@@ -6,6 +6,10 @@ extends RefCounted
 ## worth (`rate`). Static: it never follows a body in time (that is AiPerception) and never writes
 ## into the game. The Manahoar is the creature whose passive is the side's `mana_source` (hmba).
 
+## What summoning a creature of `type` is worth, worked out once per type (it depends on the type
+## only).
+static var _tag_accs: Dictionary = {}
+
 
 ## The kind of `node` for the AI (NONE: the AI does not track it).
 static func kind_of(node: Node, mana_source: AbilityType) -> AiTrack.Kind:
@@ -54,11 +58,6 @@ static func fights_of(type: CreatureType) -> bool:
 ## The abilities the creature really has: an empty slot does not count.
 static func ability_count(type: CreatureType) -> int:
 	return type.abilities().size()
-
-
-## What summoning a creature of `type` is worth, worked out once per type (it depends on the type
-## only).
-static var _tag_accs: Dictionary = {}
 
 
 ## What side `other` is to side `side`: own, ally, enemy or neutral.

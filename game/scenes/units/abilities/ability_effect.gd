@@ -7,6 +7,11 @@ extends Node
 ## AbilityType says which scene is its effect (`AbilityType.effect`). Server (or solo): on a client
 ## AbilitySlot does not call it and its _physics_process stays off.
 
+## Ticks one animation frame lasts (the game updates 60 times a second, the clips run at 30).
+const FRAME_TICKS := 2
+## The clip of each ability: the first and the second shoot clip of the creature's model.
+const SHOOT_ROLES: Array[StringName] = [&"shoot", &"shoot2"]
+
 ## How long the body prepares before fire(). 0 = at once (Protector, Life Shield).
 @export_range(0.0, 10.0, 0.0001, "suffix:s") var windup_s := 0.0
 ## Starts the cooldown when it fires. Off = none (the pull).
@@ -23,11 +28,6 @@ extends Node
 ## If the preparation is cut the mana is gone and there is no cooldown. Off = the mana is paid at
 ## the shoot tick (Firewalk, Breath, Pull, Sticky, Oil, Mites, Devour, Rend).
 @export var pays_upfront := false
-
-## Ticks one animation frame lasts (the game updates 60 times a second, the clips run at 30).
-const FRAME_TICKS := 2
-## The clip of each ability: the first and the second shoot clip of the creature's model.
-const SHOOT_ROLES: Array[StringName] = [&"shoot", &"shoot2"]
 
 ## The body that has the ability and its SPEL. Set by setup() before the node enters the tree.
 var user: UnitBody

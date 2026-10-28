@@ -15,6 +15,18 @@ extends Control
 ##   The children are laid out by anchors.
 ## - FeelPrefs.hover_info off turns the hover box off; the pinned one still shows (it was clicked).
 
+@export var probe: TargetProbe
+## Optional: the clicked building stays in the box (empty: no pinned box).
+@export var inspector: StructureInspector
+@export var prefs: FeelPrefs
+## Seconds the pointer stays on a body before the box shows.
+@export var delay_s := 0.5
+## Canvas pixels between the pointer and the box.
+@export var cursor_gap_px := 19.0
+## Where the pinned box sits: canvas pixels from the left and from the bottom edge (above the spell
+## book).
+@export var pinned_margin_px := Vector2(10.0, 144.0)
+
 ## Read-only views for flows and checks (AgentKit reads properties).
 var shown_title: String:
 	get:
@@ -28,18 +40,6 @@ var shown_has_bar: bool:
 var pinned: bool:
 	get:
 		return visible and _pinned
-
-@export var probe: TargetProbe
-## Optional: the clicked building stays in the box (empty: no pinned box).
-@export var inspector: StructureInspector
-@export var prefs: FeelPrefs
-## Seconds the pointer stays on a body before the box shows.
-@export var delay_s := 0.5
-## Canvas pixels between the pointer and the box.
-@export var cursor_gap_px := 19.0
-## Where the pinned box sits: canvas pixels from the left and from the bottom edge (above the spell
-## book).
-@export var pinned_margin_px := Vector2(10.0, 144.0)
 
 ## The body hovered and waiting for the delay, the one shown, and how long it has waited.
 var _pending: Node

@@ -5,15 +5,15 @@ extends Node3D
 ## "A ritual can be held here": whose it is, where its center is, and whether another ritual already
 ## uses it. The altar has one and so has every Shrine. Only the server calls occupy() and release().
 
-enum Kind { ALTAR, SHRINE }
-
-## Every site in play: where Convert looks for the closest one of a side.
-const GROUP := &"ritual_site"
-
 ## A ritual took the site.
 signal occupied(by: Node)
 ## The site is free again.
 signal released
+
+enum Kind { ALTAR, SHRINE }
+
+## Every site in play: where Convert looks for the closest one of a side.
+const GROUP := &"ritual_site"
 
 @export var kind := Kind.ALTAR
 ## The altar this site belongs to (an altar's site). Leave empty on a Shrine.

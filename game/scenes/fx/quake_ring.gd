@@ -16,13 +16,13 @@ extends FxScene
 ## Height over the land (m): above the blades of grass, or the ring sinks in them.
 @export var lift := 0.8
 
-@onready var _mesh: MeshInstance3D = %Ring
-
 var _wave_range := 50.0
 var _wave_s := 0.5
 var _born := 0
 var _age := 0.0
 var _playing := false
+
+@onready var _mesh: MeshInstance3D = %Ring
 
 
 ## `params`: range (m), seconds (the wave's length), band (m, the width the wave stuns).

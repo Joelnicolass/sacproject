@@ -7,6 +7,9 @@ extends Weapon
 ## Not: choosing who to hit (the chase state) nor what a blow adds afterwards (the creature's
 ## MeleeOnHit passives). Server (or solo) only.
 
+## The clip of each swing, by `MeleeRules.SWING_ROLES` index.
+const CLIP_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
+
 ## The share of the melee box a target must touch to start a swing.
 @export var start_factor := 0.8
 ## How far ahead of the body the box sits, in reaches.
@@ -19,9 +22,6 @@ extends Weapon
 @export var downward_threshold := 0.25
 ## Melee damage is scaled by this times the target's melee resistance.
 @export var melee_resistance_scale := 0.4
-
-## The clip of each swing, by `MeleeRules.SWING_ROLES` index.
-const CLIP_ROLES: PackedStringArray = ["attack", "attack2", "attack3"]
 
 var type: CreatureType
 ## Read from the body scene (BodyFacts) every time the body changes model.

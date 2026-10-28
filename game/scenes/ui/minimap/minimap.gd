@@ -25,10 +25,6 @@ signal ground_pointed(point: Vector3, action: StringName)
 ## Height the ground ray starts from (meters); the map is far lower.
 const GROUND_RAY_TOP := 1500.0
 
-## Slot of the player of this process (0 until `bind`); the markers read it to tell your things from
-## the foe's.
-var local_slot := 0
-
 @export_group("Sockets")
 ## The world camera (WorldCamera). Reads its turn and the wizard it follows.
 @export var camera: Camera3D
@@ -43,6 +39,10 @@ var local_slot := 0
 @export_group("Resources")
 @export var style: MinimapStyleSet
 @export var view: MinimapView
+
+## Slot of the player of this process (0 until `bind`); the markers read it to tell your things from
+## the foe's.
+var local_slot := 0
 
 ## Meters of the world per canvas pixel in play (starts at `view.view_radius_m` over the radius).
 var zoom := 2.25

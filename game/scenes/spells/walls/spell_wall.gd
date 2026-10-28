@@ -43,10 +43,11 @@ var from_slot := 0
 ## An end stopped growing (a building, the edge of the land, its reach).
 var left_stopped := false
 var right_stopped := false
-var _ended := false
 var grow_ticks: int:  # grow_s in ticks: what the parts compare `age` against
 	get:
 		return MatchClock.ticks_for(grow_s)
+
+var _ended := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:

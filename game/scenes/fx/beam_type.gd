@@ -5,6 +5,9 @@ extends Resource
 ## lightning bolt, drawn by `scene` (BeamFx). A template shared by every beam of the type,
 ## never edited at runtime. Another beam (the storm's far strikes) = another .tres.
 
+enum Path { BOLT, ARC }
+enum Blend { ADD, MIX }
+
 ## Drawing of the beam. Empty = no bolt: only the flash (`light`) at the end.
 @export var scene: PackedScene
 ## The atlas of the ribbon (ltn2.png for the lightning bolts; elec.png also fits). Empty = a flat
@@ -16,7 +19,6 @@ extends Resource
 @export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 
 @export_group("Shape")
-enum Path { BOLT, ARC }
 ## BOLT: the jagged bolt of the lightning. ARC: a vertical half circle from end to end, with no
 ## jitter (Rainbow).
 @export var path := Path.BOLT
@@ -42,7 +44,6 @@ enum Path { BOLT, ARC }
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var travel_s := 0.2
 
 @export_group("Look")
-enum Blend { ADD, MIX }
 ## ADD: the atlas adds light (the spell bolts). MIX: the atlas is a straight-alpha overlay (*_a.png
 ## of tools/import/import_ui.py) drawn over the scene, for a glow that has to keep its hue over the
 ## snow (the Gnome's flame); its alpha times the brightness (clamped to 1) is the coverage.

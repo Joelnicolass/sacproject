@@ -27,9 +27,6 @@ const CODE_BYTES := 8
 const MATCH_ID_PREFIX := "local_"
 const LOOPBACK := "127.0.0.1"
 
-@onready var launcher: MpMatchLauncher = %Launcher
-@onready var rules: SacrificeRoomRules = %Rules
-
 ## What the host needs after `server_ready`.
 var match_id: String = ""
 var port: int = 0
@@ -47,6 +44,9 @@ var _joined: bool = false
 var _closed: bool = false
 ## True while `stop()` kills the dedicated: that is not a failure the screen should show.
 var _stopping: bool = false
+
+@onready var launcher: MpMatchLauncher = %Launcher
+@onready var rules: SacrificeRoomRules = %Rules
 
 
 func _ready() -> void:

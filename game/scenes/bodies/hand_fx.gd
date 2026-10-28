@@ -8,14 +8,15 @@ extends Node
 ## every peer. It is presentation: nothing here reads or writes the simulation, and a dedicated
 ## server (no meshes) plays nothing.
 
+## Seconds the pose may take to arrive before the burst goes to the fallback point.
+const POSE_WAIT_S := 0.3
+
 ## Emits `cast_changed(casting, fx)`; `cast_fx()` is the particle showing now.
 @export var caster: Caster
 ## The wizard's skeleton: where the hands are.
 @export var rig: BodyRig
 ## Seconds between two bursts while the cast lasts (the first one is at once).
 @export_range(0.05, 2.0, 0.05) var interval_s := 0.5
-## Seconds the pose may take to arrive before the burst goes to the fallback point.
-const POSE_WAIT_S := 0.3
 
 var _type: ParticleType
 var _left := 0.0

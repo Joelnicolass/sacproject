@@ -57,6 +57,13 @@ var host: Node3D
 var groups: Array[Dictionary] = []
 ## The map's transform (the ground mesh's global transform) and its inverse.
 var map_xform := Transform3D.IDENTITY
+## Plan on WorkerThreadPool tasks (false: on the main thread, inside the frame's budget).
+var threaded := true
+## Cells applied (nodes made) so far, and plans dropped because their cell left the ring or its
+## clears changed.
+var built_cells := 0
+var dropped_plans := 0
+
 var _map_inverse := Transform3D.IDENTITY
 var _ring := CellRing.new(CELL_M, MAP_CELLS)
 ## Built cells inside the ring: Vector2i -> Array of MultiMeshInstance3D.
@@ -65,8 +72,6 @@ var _cells := {}
 var _pending: Array[Vector2i] = []
 ## Cells being planned: Vector2i -> PlanJob.
 var _jobs := {}
-## Plan on WorkerThreadPool tasks (false: on the main thread, inside the frame's budget).
-var threaded := true
 var _pending_sorted := true
 ## Cells out of the ring, hidden: Vector2i -> nodes; `_cache_order` oldest first.
 var _cache := {}
@@ -75,10 +80,6 @@ var _cache_order: Array[Vector2i] = []
 var _clears := PackedVector4Array()
 var _eye := Vector2.ZERO
 var _radius := 0.0
-## Cells applied (nodes made) so far, and plans dropped because their cell left the ring or its
-## clears changed.
-var built_cells := 0
-var dropped_plans := 0
 
 
 ## One cell planned off the main thread. Holds copies of its inputs; `run` (the task) writes only

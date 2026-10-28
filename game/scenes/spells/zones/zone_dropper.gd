@@ -10,11 +10,12 @@ extends Node
 ## `point` stands on the land; `body` is the creature the drop was pulled to (null = a plain point).
 signal chosen(point: Vector3, body: Node3D)
 
+enum Pick { PULL_TO_NEAREST, BODY_OR_RING }
+
 @export var zone: GroundZone
 @export_range(0.0, 60.0, 0.1, "suffix:/s") var rate_per_s := 3.0
 ## The disk the points come from: this share of the spell's effect range, around the zone.
 @export_range(0.0, 2.0, 0.01) var reach_share := 1.0
-enum Pick { PULL_TO_NEAREST, BODY_OR_RING }
 
 ## How it chooses: a point of the disk that a body near it pulls (rain, meteorites), or a random
 ## body of the disk (with a chance that falls as the bodies are few) and otherwise a point of the

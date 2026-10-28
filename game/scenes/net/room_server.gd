@@ -9,11 +9,11 @@ extends Node
 ## `salas listo puerto N`, `partida <id> sala "x" puerto P semilla S`, `sala "x" resultado {…}`.
 ## `--match-args=` passes extra user args to the dedicated processes (tests).
 
-@onready var launcher: MpMatchLauncher = %Launcher
-@onready var rules: SacrificeRoomRules = %Rules
-
 var _announced: Dictionary = {}
 var _result_seen: Dictionary = {}
+
+@onready var launcher: MpMatchLauncher = %Launcher
+@onready var rules: SacrificeRoomRules = %Rules
 
 
 ## Before the launcher's own _ready: `--lobby-config=res://….tres` replaces the config it was saved

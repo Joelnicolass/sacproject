@@ -53,13 +53,14 @@ const BODILESS: Array[StringName] = [&"manafount"]
 		set_physics_process(value and not Engine.is_editor_hint())
 		monitoring = value and use_area
 
+var memory := VisionMemory.new()
+
 var _type_m := 0.0
 var _range_m := 0.0
 var _phase := 0
 var _period := 1
 var _sight: Array[Node3D] = []
 var _ids: Dictionary = {}
-var memory := VisionMemory.new()
 
 
 func _enter_tree() -> void:

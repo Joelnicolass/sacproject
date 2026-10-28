@@ -6,6 +6,10 @@ extends RefCounted
 ## hanging anchor follow its skeleton. It only touches the nodes it is given and never decides when
 ## anything happens (RagdollDriver does).
 
+## Cone limits wide enough that a hanging chain never pushes against them (tight cones blow up under
+## gravity).
+const HANG_SPAN_DEG := 180.0
+
 
 ## The physical bones of `simulator`, in order (empty without one).
 static func bones_of(simulator: PhysicalBoneSimulator3D) -> Array[PhysicalBone3D]:
@@ -68,11 +72,6 @@ static func brake(bones: Array[PhysicalBone3D], start: Vector3, max_drift_m: flo
 		var outward := bone.linear_velocity.dot(out)
 		if outward > 0.0:
 			bone.linear_velocity -= out * outward
-
-
-## Cone limits wide enough that a hanging chain never pushes against them (tight cones blow up under
-## gravity).
-const HANG_SPAN_DEG := 180.0
 
 
 ## Starts the simulation: every bone (a fall: the joints stay as built), or every bone but `anchor`,

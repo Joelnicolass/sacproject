@@ -10,6 +10,8 @@ extends Resource
 ## share). It does not play anything: UnitSounds, WizardSounds and CommandVoice ask it which cue
 ## answers an event.
 
+const MAX_HOPS := 8
+
 @export_group("Voice")
 ## You select it.
 @export var selected: SoundCue
@@ -38,8 +40,6 @@ extends Resource
 ## Asked when this set has no cue for an event (the melee set of a creature that has no sound of its
 ## own for a swing).
 @export var fallback: SoundSet
-
-const MAX_HOPS := 8
 
 
 ## The cue of `event` here or in the fallback chain; null when nobody has one.

@@ -20,10 +20,10 @@ signal stuck
 ## shows the clip.
 signal pose_changed(pose: Pose, work: Work)
 
-const GROUP := &"doctor"
-
 enum Pose { IDLE, FALLING, WALKING, WORKING, DYING, LANDING }
 enum Work { PUMP, LIFT, TORTURE }
+
+const GROUP := &"doctor"
 
 @export var type: CreatureType
 @export var pose: Pose = Pose.IDLE:
@@ -51,6 +51,7 @@ var speed_factor := 1.0
 var move_speed: float:
 	get:
 		return type.run_speed_m_s if type else 0.0
+
 var _killer_slot := 0
 
 

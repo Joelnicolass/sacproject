@@ -22,13 +22,13 @@ const SPELL_KEYS := 11
 @export var orders: OrderCommand
 @export var group_keys: GroupKeys
 
-@onready var _selection: _SELECTION = %Selection
-@onready var _inspector: StructureInspector = %Inspector
-
 var _left_down := false
 var _press_at := Vector2.ZERO
 var _press_ctrl := false
 var _rect := false
+
+@onready var _selection: _SELECTION = %Selection
+@onready var _inspector: StructureInspector = %Inspector
 
 
 func _ready() -> void:

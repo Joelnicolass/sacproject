@@ -69,15 +69,15 @@ var search_us_total := 0
 var searches := 0
 var searches_this_tick := 0
 var rebuilds := 0
-
-var _rebuild_in := -1
-var _tick := 0
 ## Where the map changed since the last bake (the ground that moved, the blockers that came or
 ## went): only those zones are baked.
 var changes := NavChanges.new()
+var rebakes := 0
+
+var _rebuild_in := -1
+var _tick := 0
 ## Tick at which the bake for the holes that came since is asked; -1 with none waiting.
 var _holes_at := -1
-var rebakes := 0
 ## Tick at which the running re-bake is swapped in; -1 with none running.
 var _swap_at := -1
 ## A change came while a bake was running: bake again after the swap.

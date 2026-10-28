@@ -64,11 +64,13 @@ var _ids: Dictionary = {}
 
 
 func _enter_tree() -> void:
-	VisionSides.join(self)
+	if not Engine.is_editor_hint():
+		VisionSides.join(self)
 
 
 func _exit_tree() -> void:
-	VisionSides.leave(self)
+	if not Engine.is_editor_hint():
+		VisionSides.leave(self)
 
 
 func _ready() -> void:

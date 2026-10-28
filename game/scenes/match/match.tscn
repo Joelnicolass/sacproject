@@ -104,6 +104,7 @@
 [ext_resource type="Script" uid="uid://bvekv0tj0x8rf" path="res://scenes/match/match_seed.gd" id="q12_seed"]
 [ext_resource type="Script" uid="uid://c14fmfa8dkqog" path="res://scenes/match/match_sky.gd" id="q12_sky"]
 [ext_resource type="Script" uid="uid://bju6gwfi4b7v1" path="res://scenes/map/side_relations.gd" id="q12_sides"]
+[ext_resource type="Script" uid="uid://bq1r40x83hhlr" path="res://scenes/units/vision/vision_sides.gd" id="q13_vision"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
@@ -128,7 +129,7 @@ map_parent = NodePath("World")
 
 
 [node name="Context" type="Node" parent="."]
-editor_description = "The state of this match that everybody reads (MatchClock.now(), MatchSeed.rng(), MatchSky, SideRelations.stance()). First child: it starts before the map and the bodies and leaves after them. Freed with the match, so nothing carries over to the next one."
+editor_description = "The state of this match that everybody reads (MatchClock.now(), MatchSeed.rng(), MatchSky, SideRelations.stance(), VisionSides.sees()). First child: it starts before the map and the bodies and leaves after them. Freed with the match, so nothing carries over to the next one."
 
 [node name="Clock" type="Node" parent="Context"]
 script = ExtResource("q12_clock")
@@ -141,6 +142,9 @@ script = ExtResource("q12_sky")
 
 [node name="Sides" type="Node" parent="Context"]
 script = ExtResource("q12_sides")
+
+[node name="Vision" type="Node" parent="Context"]
+script = ExtResource("q13_vision")
 
 [node name="World" type="Node3D" parent="."]
 editor_description = "What is in the 3D world: camera, map (MatchWorld adds it as the first child), bodies, spells, shots, structures and their spawners, the biome and the screen look."

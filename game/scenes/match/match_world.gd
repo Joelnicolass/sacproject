@@ -5,9 +5,9 @@ extends Node3D
 ## one the scene already holds (an inherited scene with a map in it) or, when there is none or
 ## `--map=<tag>` asks for another, the scene of the active MapDefinition. The systems below are
 ## bound to its sockets before any of them is ready.
-## The children are grouped: Context (the clock, the seed, the sky and the sides of this match:
-## first, so it is there for everything below and leaves last), World (3D world and spawners),
-## Systems, Input, Hud and Audio.
+## The children are grouped: Context (the clock, the seed, the sky, the sides and the sight of
+## this match: first, so it is there for everything below and leaves last), World (3D world and
+## spawners), Systems, Input, Hud and Audio.
 
 signal local_wizard_changed(wizard: Node3D)
 

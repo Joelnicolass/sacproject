@@ -2,7 +2,7 @@ class_name AiSightIntake
 extends Node
 
 ## How what the side's Visions see reaches the AI. It hears every body a Vision learns
-## (VisionSides.events.learned) and, when the AI looks (`take_new`), hands over the ones its side
+## (VisionSides.events().learned) and, when the AI looks (`take_new`), hands over the ones its side
 ## remembers now and the AI does not track yet, in name order. It also forgets a foe whose last
 ## known place one of the side's bodies is looking at while the foe is not there, and hands it back
 ## once the side sees it again. It does not look (Vision) nor decide anything; AiPerception adds and
@@ -17,19 +17,23 @@ var forgotten := 0
 var _heard: Dictionary = {}
 ## id -> body of the foes forgotten by `forget_checked`, in the order they were forgotten.
 var _lost: Dictionary = {}
+## The news of the sight this intake listens to (the match's), kept to disconnect from the same one.
+var _events: VisionEvents
 
 
 func _enter_tree() -> void:
-	if not VisionSides.events.learned.is_connected(_on_learned):
-		VisionSides.events.learned.connect(_on_learned)
+	_events = VisionSides.events()
+	if not _events.learned.is_connected(_on_learned):
+		_events.learned.connect(_on_learned)
 	# What the Visions learned before this side existed.
 	for node in VisionSides.remembered():
 		_heard[node.get_instance_id()] = true
 
 
 func _exit_tree() -> void:
-	if VisionSides.events.learned.is_connected(_on_learned):
-		VisionSides.events.learned.disconnect(_on_learned)
+	if _events != null and _events.learned.is_connected(_on_learned):
+		_events.learned.disconnect(_on_learned)
+	_events = null
 
 
 func _on_learned(_side: int, node: Node3D) -> void:

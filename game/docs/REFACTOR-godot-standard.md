@@ -33,7 +33,7 @@
 | Q3 Comentarios | Más de 1 200 citas al original movidas a [`docs/original-mapping/`](original-mapping/). No queda ninguna cita a RFC en el código; `##` dentro de funciones → `#`; logs y avisos en inglés |
 | Fase B Nombres | 149 archivos con códigos pasan a nombre humano (`brif.tres` → `fireball.tres`, `ahtf.tres` → `firefist_fury.tres`); el catálogo por tag queda idéntico |
 | Q13 Vida | `Health` recorre una cadena de `DamageModifier`; ya no conoce 8 tipos. 21 tests fijan la matemática y dieron igual antes y después |
-| Q12 Estado | El reloj, la semilla, el cielo y los bandos viven en `Match/Context` y se liberan con la partida; `ActiveMatch` pasa a `SacrificeFlow.active_match` |
+| Q12 Estado | El reloj, la semilla, el cielo, los bandos y la vista de los bandos viven en `Match/Context` y se liberan con la partida; `ActiveMatch` pasa a `SacrificeFlow.active_match` |
 | Formato | gdformat en 571 archivos; gdlint de **5 088 avisos a 0**; el CI bloquea con lint y formato |
 | Bugs que aparecieron | La IA preguntaba si un nodo liberado estaba muerto (SCRIPT ERROR intermitente); `GrassField` quedaba pegado al primer mapa; el aura del Manahoar convertido alimentaba al bando viejo |
 
@@ -62,7 +62,6 @@ Los puntos de red están anotados en [`TECH-DEBT.md`](TECH-DEBT.md).
 | Tema | Qué falta |
 |---|---|
 | `wizard_body.tscn` | El kit avisa en runtime que la MpSync guardada está desactualizada; abrir la escena en el editor y guardarla |
-| `VisionSides` | Sigue como estado estático (registro de nodos); necesita su propio corte |
 | Clases grandes | `UnitBody`, `WizardBody`, `DoctorBody`, `BodyRig`, `AiPerception` y `tools/bake/new_creature.gd` tienen ignores justificados de gdlint; conviene partirlas por responsabilidad |
 | Carpeta por entidad | Q14 sin hacer (el Firefist todavía vive en varias carpetas) |
 | Logs del servidor | Siguen en español los que documenta la guía de despliegue (`salas listo puerto`, `partida …`) |

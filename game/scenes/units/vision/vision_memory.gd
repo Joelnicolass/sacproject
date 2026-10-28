@@ -42,7 +42,7 @@ func next_lapse(now: int) -> int:
 ## `now`. A foe that stays in sight is renewed by the new look; one that left is remembered for
 ## `forget_ticks` from the last look that had it; a structure or fount for good. A foe new to the
 ## memory makes the unions of the sides stale (VisionSides); one it did not have in mind at `now`
-## (absent, or lapsed but not dropped yet) is announced on `VisionSides.events.learned`, once the
+## (absent, or lapsed but not dropped yet) is announced on `VisionSides.events().learned`, once the
 ## memory is up to date.
 func take_in(sight: Array, mine: int, observer: Node3D, now: int) -> void:
 	if mine <= 0:
@@ -71,7 +71,7 @@ func take_in(sight: Array, mine: int, observer: Node3D, now: int) -> void:
 	if learned:
 		VisionSides.touch()
 	for node in news:
-		VisionSides.events.learned.emit(mine, node)
+		VisionSides.events().learned.emit(mine, node)
 
 
 ## Side `side` saw `body` (the owner of this memory) strike one of its own at `tick`: that side sees
@@ -81,7 +81,7 @@ func expose_to(side: int, tick: int, body: Node3D) -> void:
 	_exposed[side] = tick
 	VisionSides.touch()
 	if news and body != null:
-		VisionSides.events.learned.emit(side, body)
+		VisionSides.events().learned.emit(side, body)
 
 
 ## Every id this memory holds, lapsed or not; it drops nothing (VisionSides.remembered).

@@ -4,8 +4,7 @@ extends Node3D
 
 ## Floating damage numbers. Presentation only: no RPC, no sim writes, no RNG; nothing in a headless or
 ## dedicated process (`run_headless` lets a check run it). FeelPrefs.damage_numbers turns them off.
-## - It hears every Health that enters the tree (SceneTree.node_added) whose body is in `body_groups`, and reads its
-##   `changed` signal (every peer has it): a drop in `current` is damage.
+## - It hears Events.body_hurt (every peer tells it) for the bodies in `body_groups`: the drop is the damage.
 ## - Only bodies the local player sees: visible in the tree, inside `camera`'s frustum and within `max_distance_m` of it.
 ## - Hits on the same body within `merge_s` add up in one number (no spam). At most `pool_size` numbers at once: a hit with
 ##   none free is dropped.
@@ -45,10 +44,6 @@ var _active := false
 var _free: Array[Label3D] = []
 ## Live numbers: Label3D -> {body, amount, age, base}.
 var _live: Dictionary = {}
-## Health -> its last `current`.
-var _last: Dictionary = {}
-## Health -> the bound callable connected to its `changed`.
-var _bound: Dictionary = {}
 ## Body -> the Label3D it is adding to, while younger than merge_s.
 var _merging: Dictionary = {}
 var _base_color := Color.WHITE
@@ -71,12 +66,7 @@ func _ready() -> void:
 		_free.append(label)
 	if not _free.is_empty():
 		_base_color = _free[0].modulate
-	get_tree().node_added.connect(_on_node_added)
-	for group in body_groups:
-		for body in get_tree().get_nodes_in_group(group):
-			var health := body.get_node_or_null("Health") as Health
-			if health:
-				_watch(health)
+	Events.body_hurt.connect(_on_body_hurt)
 
 
 ## False in headless and dedicated processes (unless `run_headless`): no pool, no listeners.
@@ -89,29 +79,6 @@ func live_count() -> int:
 	return _live.size()
 
 
-func _on_node_added(node: Node) -> void:
-	if node is Health:
-		_watch.call_deferred(node)
-
-
-func _watch(health: Health) -> void:
-	if not is_instance_valid(health) or _last.has(health) or not _is_body(health.get_parent()):
-		return
-	_last[health] = health.current
-	var listener := _on_health_changed.bind(health)
-	_bound[health] = listener
-	health.changed.connect(listener)
-	health.tree_exiting.connect(_forget.bind(health), CONNECT_ONE_SHOT)
-
-
-func _forget(health: Health) -> void:
-	_last.erase(health)
-	var listener: Variant = _bound.get(health)
-	_bound.erase(health)
-	if listener is Callable and is_instance_valid(health) and health.changed.is_connected(listener):
-		health.changed.disconnect(listener)
-
-
 func _is_body(node: Node) -> bool:
 	if node == null:
 		return false
@@ -121,13 +88,10 @@ func _is_body(node: Node) -> bool:
 	return false
 
 
-func _on_health_changed(current: float, _maximum: float, health: Health) -> void:
-	var lost := float(_last.get(health, current)) - current
-	_last[health] = current
+func _on_body_hurt(body: Node3D, lost: float, _current: float, _maximum: float) -> void:
 	if lost < min_amount or (prefs != null and not prefs.damage_numbers()):
 		return
-	var body := health.get_parent() as Node3D
-	if body == null or not _seen(body):
+	if not _is_body(body) or not _seen(body):
 		return
 	_show(body, lost)
 

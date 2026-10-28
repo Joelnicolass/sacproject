@@ -9,7 +9,7 @@ extends Node
 ##   last sample.
 ## - Hysteresis: the combat turns on when the intensity reaches `enter` and turns off after it stays under `exit` for
 ##   `hold_s`, so a pause between two swings does not cut the battle music.
-## - The local wizard hurt (its replicated Health goes down) keeps the battle on for `wizard_damage_s` (the original: 120 s).
+## - The local wizard hurt (Events.body_hurt on that wizard) keeps the battle on for `wizard_damage_s` (the original: 120 s).
 ## `is_battle()` is either of the two (RFC-052 §14.4); `battle_changed(on)` tells when it flips. It chooses no music.
 ## Sampled every `sample_every_s` of game time. With the AudioGate closed it does nothing. `force(value)` pins the
 ## intensity (the lab's `battle` step); `force(-1)` lets it go.
@@ -43,8 +43,6 @@ var _below_since := -1.0
 ## Clock of the local wizard's last hit; -INF = never.
 var _wizard_hit_at := -INF
 var _forced := -1.0
-var _health: Health
-var _last_health := 0.0
 ## UnitBody instance id -> swings + shots at the last sample.
 var _strokes: Dictionary = {}
 
@@ -61,8 +59,7 @@ func _ready() -> void:
 			world.connect("local_wizard_changed", bind_wizard)
 		if wizard == null and world is MatchWorld:
 			wizard = (world as MatchWorld).local_wizard()
-	if wizard != null:
-		bind_wizard(wizard)
+	Events.body_hurt.connect(_on_body_hurt)
 
 
 func _process(delta: float) -> void:
@@ -97,13 +94,7 @@ func force(value: float) -> void:
 
 ## The local wizard whose health keeps the battle on (MatchWorld.local_wizard_changed; the lab sets it).
 func bind_wizard(node: Node3D) -> void:
-	if _health != null and is_instance_valid(_health) and _health.changed.is_connected(_on_health):
-		_health.changed.disconnect(_on_health)
 	wizard = node
-	_health = Health.of(node)
-	if _health != null:
-		_last_health = _health.current
-		_health.changed.connect(_on_health)
 
 
 ## Measures now and updates the state (the lab calls it so as not to wait for the next sample).
@@ -149,9 +140,7 @@ func measure() -> float:
 	return clampf(float(fighting) / float(maxi(full_at, 1)), 0.0, 1.0)
 
 
-func _on_health(current: float, _maximum: float) -> void:
-	var hit := current < _last_health
-	_last_health = current
-	if hit:
+func _on_body_hurt(body: Node3D, _lost: float, _current: float, _maximum: float) -> void:
+	if body != null and body == wizard:
 		_wizard_hit_at = _clock
 		sample()

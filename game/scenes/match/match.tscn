@@ -547,11 +547,10 @@ editor_description = "RFC-052 052f: la intensidad del combate cerca del oyente (
 script = ExtResource("a052_gauge")
 world = NodePath("..")
 
-[node name="MusicDirector" parent="." node_paths=PackedStringArray("biome", "gauge", "match_state", "camera", "seat") instance=ExtResource("a052_music")]
+[node name="MusicDirector" parent="." node_paths=PackedStringArray("biome", "gauge", "camera", "seat") instance=ExtResource("a052_music")]
 seat = NodePath("../LocalSeat")
 biome = NodePath("../MatchBiome")
 gauge = NodePath("../CombatGauge")
-match_state = NodePath("../MatchState")
 camera = NodePath("../Camera")
 default_music = ExtResource("a055_common_music")
 

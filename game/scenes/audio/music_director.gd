@@ -6,9 +6,9 @@ extends Node
 ## set's `crossfade_s` (0.5 s); the track of a mood is drawn with its own generator (the battle one among battle1-5),
 ## never the global one. MusicMood decides the mood; this node only gathers its inputs and plays:
 ## - battle: `gauge` (CombatGauge.is_battle; it computes the intensity, not this node);
-## - the result: `match_state` (MatchState, or the first of group «match_state») has_result / won(the seat's slot);
-## - rituals (group «ritual», replicated on every peer): one running within `ritual_radius_m` of the camera, and the
-##   desecrations that involve the local side.
+## - the result: Events.match_ended (won = the seat's slot is among the winners);
+## - rituals (Events.ritual_started / ritual_ended, on every peer): one running within `ritual_radius_m` of the camera,
+##   and the desecrations that involve the local side.
 ## The set: `music` (the menu's in boot.tscn, a fixture in the lab), or the look's `music` of the GodType that `biome` applies
 ## (MatchBiome.applied(god)); a god with no set of its own uses `default_music` (music/common.tres in the match).
 ## `menu` keeps the mood at calm. `victory` and `defeat` play once: the mood stays, the track is not restarted.
@@ -30,8 +30,6 @@ const EMITTER := &"music"
 ## Emits `applied(god)` with the GodType of the land (MatchBiome). Optional.
 @export var biome: MatchBiome
 @export var gauge: CombatGauge
-## MatchState (has_result, won, result_changed). Optional: else the first node of group «match_state».
-@export var match_state: Node
 ## Who looks at this screen (its slot decides the result and the desecrations). Empty: nobody (the menu in boot.tscn).
 @export var seat: MpLocalSeat
 ## The camera the rituals are measured from. Optional: else the viewport's.
@@ -49,6 +47,10 @@ var _front := 0
 var _rng := RandomNumberGenerator.new()
 var _look_left := 0.0
 var _tweens: Array[Tween] = []
+var _ended := false
+var _winner_slots: Array[int] = []
+## The rituals running on this peer (Events.ritual_started until ritual_ended).
+var _rituals: Array[Ritual] = []
 
 
 func _ready() -> void:
@@ -59,6 +61,9 @@ func _ready() -> void:
 		set_process(false)
 		return
 	_rng.seed = rng_seed
+	Events.match_ended.connect(_on_match_ended)
+	Events.ritual_started.connect(_on_ritual_started)
+	Events.ritual_ended.connect(_on_ritual_ended)
 	for player: AudioStreamPlayer in [track_a, track_b]:
 		if player != null:
 			SoundBus.adopt_channel(player)
@@ -175,20 +180,34 @@ func _battle() -> bool:
 	return gauge != null and gauge.is_battle()
 
 
+func _on_match_ended(winner_slots: Array[int], _defeated_slots: Array[int]) -> void:
+	_ended = true
+	_winner_slots = winner_slots
+	look()
+
+
+func _on_ritual_started(ritual: Ritual) -> void:
+	if not _rituals.has(ritual):
+		_rituals.append(ritual)
+		ritual.tree_exiting.connect(func() -> void: _rituals.erase(ritual), CONNECT_ONE_SHOT)
+	look()
+
+
+func _on_ritual_ended(ritual: Ritual, _completed: bool) -> void:
+	_rituals.erase(ritual)
+	look()
+
+
 func _result() -> MusicMood.Result:
-	var state := (match_state if match_state != null else get_tree().get_first_node_in_group(MatchState.GROUP)) as MatchState
-	if state == null:
-		return MusicMood.Result.NONE
 	var slot := seat.slot if seat != null else 0
-	return MusicMood.result_of(state.has_result(), state.won(slot), slot)
+	return MusicMood.result_of(_ended, _ended and slot > 0 and _winner_slots.has(slot), slot)
 
 
 func _desecration() -> MusicMood.Desecration:
 	var worst := MusicMood.Desecration.NONE
 	var slot := seat.slot if seat != null else 0
-	for node in get_tree().get_nodes_in_group(Ritual.GROUP):
-		var ritual := node as Ritual
-		if ritual != null and ritual.is_running() and ritual.kind == Ritual.Kind.DESECRATE:
+	for ritual in _rituals:
+		if ritual.is_running() and ritual.kind == Ritual.Kind.DESECRATE:
 			worst = MusicMood.worst(worst, MusicMood.desecration_of(ritual.caster_slot, ritual.target_slot, slot))
 	return worst
 
@@ -198,9 +217,8 @@ func _ritual_near() -> bool:
 	if view == null or not view.is_inside_tree():
 		return false
 	var reach := ritual_radius_m * ritual_radius_m
-	for node in get_tree().get_nodes_in_group(Ritual.GROUP):
-		var ritual := node as Ritual
-		if ritual != null and ritual.is_running() and ritual.center().distance_squared_to(view.global_position) <= reach:
+	for ritual in _rituals:
+		if ritual.is_running() and ritual.center().distance_squared_to(view.global_position) <= reach:
 			return true
 	return false
 
@@ -209,6 +227,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if track_a == null or track_b == null:
 		out.append("Asigná `track_a` y `track_b` (los dos AudioStreamPlayer hijos): sin ellos no suena.")
-	if seat == null and match_state != null:
+	if seat == null and not menu:
 		out.append("Asigná `seat` (el MpLocalSeat): sin él no sabe quién mira el resultado.")
 	return out

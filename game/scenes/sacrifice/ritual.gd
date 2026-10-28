@@ -8,6 +8,7 @@ extends Node3D
 ## The server (or solo) simulates: `Phases` runs the phases; each tick `Lift` and then `Watch` step, in that order. `Drain` takes
 ## the wizard's life (Shoot), `Payoff` pays the souls at the end, `Push` and `Fx` are the barrier and what is seen. Take a part
 ## out of ritual.tscn and that thing stops happening. Replicated: phase, round_index and outcome. Numbers: MatchRules.
+## Every peer tells its start and its end game-wide (Events.ritual_started / ritual_ended).
 ## Ref: sacengine state.d:15854-16045.
 
 signal phase_changed(phase: Phase)  ## every peer
@@ -30,17 +31,23 @@ enum Outcome { RUNNING, COMPLETED, ABORTED }
 	set(value):
 		if phase == value:
 			return
+		var began := phase == Phase.OFF and outcome == Outcome.RUNNING
 		phase = value
 		phase_changed.emit(phase)
+		if began and is_inside_tree():
+			Events.ritual_started.emit(self)
 ## Starts at 0; every round adds one (Wait -> Walk).
 @export var round_index := 0
 @export var outcome := Outcome.RUNNING:
 	set(value):
 		if outcome == value:
 			return
+		var was_running := is_running()
 		outcome = value
 		if outcome != Outcome.RUNNING:
 			ended.emit(outcome == Outcome.COMPLETED)
+			if was_running and is_inside_tree():
+				Events.ritual_ended.emit(self, outcome == Outcome.COMPLETED)
 @export var rules: MatchRules
 ## One per class of ritual (data/sacrifice/*.tres); `type()` picks the one of `kind`.
 @export var types: Array[RitualType]
@@ -76,6 +83,9 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(GROUP)
+	## A client that receives a ritual already running (its phase came with the spawn) tells it now.
+	if is_running():
+		Events.ritual_started.emit(self)
 	if not simulates():
 		phases.run_physics = false
 		phases.run_process = false

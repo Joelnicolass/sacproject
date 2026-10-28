@@ -6,7 +6,7 @@ extends Node
 ## `roll()` on top of its own placement. Presentation only: no RPC, no sim writes, no global RNG (its own FastNoiseLite with a
 ## fixed seed). In a headless or dedicated process it does nothing (`run_headless` lets a check run it).
 ## - Trauma (0…1) from the hits to the local wizard (the `local_wizard` group): lost fraction × `wizard_hit_trauma_per_max`,
-##   read from Health.changed (every peer has it), and from the `camera_trauma` of the FX near the camera (FxBus.played; `shake_map` gives the fall-off).
+##   heard from Events.body_hurt (every peer tells it), and from the `camera_trauma` of the FX near the camera (FxBus.played; `shake_map` gives the fall-off).
 ## - Trauma falls by `decay_per_s` a second. Offset = trauma² × `max_offset_m` × noise, roll = trauma² × `max_roll_deg` × noise,
 ##   both × FeelPrefs.shake_scale (0 = none, exactly).
 ## Ref: RFC-053 053f (F375).
@@ -31,10 +31,6 @@ var trauma := 0.0
 var _time := 0.0
 var _noise := FastNoiseLite.new()
 var _active := false
-var _wizard: Node
-var _wizard_health: Health
-var _wizard_last := 0.0
-var _looked_for_wizard := 0.0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -59,6 +55,7 @@ func _ready() -> void:
 	if listener == null:
 		listener = get_parent() as Node3D
 	FxBus.played.connect(_on_fx_played)
+	Events.body_hurt.connect(_on_body_hurt)
 
 
 ## False in headless and dedicated processes (unless `run_headless`): nothing listens and the offset stays 0.
@@ -93,7 +90,6 @@ func roll() -> float:
 func advance(delta: float) -> void:
 	_time += delta
 	trauma = maxf(trauma - decay_per_s * delta, 0.0)
-	_follow_wizard(delta)
 
 
 func _process(delta: float) -> void:
@@ -115,31 +111,6 @@ func _on_fx_played(kind: StringName, fx: Resource, at: Vector3) -> void:
 	add_trauma(shake_map.trauma_of(kind, fx, distance))
 
 
-## Keeps the local wizard's Health in sight (it spawns after the camera, or is replaced on a rejoin).
-func _follow_wizard(delta: float) -> void:
-	if _wizard != null and is_instance_valid(_wizard) and _wizard.is_in_group(WizardBody.LOCAL_GROUP):
-		return
-	_looked_for_wizard -= delta
-	if _looked_for_wizard > 0.0 or not is_inside_tree():
-		return
-	_looked_for_wizard = 0.5
-	_bind_wizard(get_tree().get_first_node_in_group(WizardBody.LOCAL_GROUP))
-
-
-func _bind_wizard(wizard: Node) -> void:
-	if _wizard_health != null and is_instance_valid(_wizard_health) and _wizard_health.changed.is_connected(_on_wizard_health):
-		_wizard_health.changed.disconnect(_on_wizard_health)
-	_wizard = wizard
-	_wizard_health = wizard.get_node_or_null("Health") as Health if wizard else null
-	if _wizard_health == null:
-		return
-	_wizard_last = _wizard_health.current
-	_wizard_health.changed.connect(_on_wizard_health)
-
-
-func _on_wizard_health(current: float, maximum: float) -> void:
-	var lost := _wizard_last - current
-	_wizard_last = current
-	if lost > 0.0 and maximum > 0.0:
+func _on_body_hurt(body: Node3D, lost: float, _current: float, maximum: float) -> void:
+	if body != null and body.is_in_group(WizardBody.LOCAL_GROUP) and maximum > 0.0:
 		add_trauma(lost / maximum * wizard_hit_trauma_per_max)
-

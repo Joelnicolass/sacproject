@@ -31,10 +31,14 @@ const IGNITE := 1 << 6
 	set(value):
 		maximum = maxf(value, 0.0)
 		changed.emit(current, maximum)
+## Every drop on any peer (a hit here, or the replicated value on a client) is also told game-wide as Events.body_hurt.
 @export var current: float = 0.0:
 	set(value):
+		var before := current
 		current = value
 		changed.emit(current, maximum)
+		if current < before and is_inside_tree():
+			Events.body_hurt.emit(get_parent() as Node3D, before - current, current, maximum)
 
 ## Takes a hit before this body does (a building's guardians, RFC-021b). Optional: empty = nobody
 ## stands in for it.
@@ -75,9 +79,8 @@ var _match: MatchState
 
 func setup(full: float) -> void:
 	maximum = full
-	current = full
-	if rules and rules.start_health >= 0.0:
-		current = minf(rules.start_health, full)
+	## Set once: a start below full is not a hit (no body_hurt).
+	current = minf(rules.start_health, full) if rules and rules.start_health >= 0.0 else full
 
 
 ## Server or solo. The maximum goes up by `amount` and so does the health (devourSoul: health += 500, maxHealth += 500).

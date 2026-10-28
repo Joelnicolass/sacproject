@@ -10,7 +10,7 @@ extends Node
 ## An altar changed state in this peer (the server's decision or an applied snapshot).
 signal altar_state_changed(altar: Altar, state: Altar.State)
 signal side_defeated(slot: int)
-## The match has a result (a winner, or nobody left).
+## The match has a result (a winner, or nobody left). The end is also told game-wide once (Events.match_ended).
 signal result_changed
 ## The rules of this match shown to the players changed: taken from the world (server, solo) or from a snapshot (client).
 signal rules_changed
@@ -223,6 +223,7 @@ func end_match(winner: int) -> void:
 	winner_team = SideRelations.team_of(winner) if winner > 0 else 0
 	print("partida terminada, gana el slot %d" % winner)
 	result_changed.emit()
+	Events.match_ended.emit(winner_slots.duplicate(), defeated_slots.duplicate())
 	publish()
 	_tell_kit_ended()
 
@@ -243,6 +244,7 @@ func end_match_team(slots: Array[int]) -> void:
 	winner_team = SideRelations.team_of(team[0])
 	print("partida terminada, gana el equipo %d: slots %s" % [winner_team, str(team)])
 	result_changed.emit()
+	Events.match_ended.emit(winner_slots.duplicate(), defeated_slots.duplicate())
 	publish()
 	_tell_kit_ended()
 
@@ -341,11 +343,14 @@ func apply_snapshot(data: Dictionary) -> void:
 	for slot in data.get("winners", [now_winner] if now_winner > 0 else []):
 		now_winners.append(int(slot))
 	if now_ended != ended or now_winner != winner_slot or now_winners != winner_slots:
+		var ends_now := now_ended and not ended
 		ended = now_ended
 		winner_slot = now_winner
 		winner_slots.assign(now_winners)
 		winner_team = int(data.get("winner_team", 0))
 		result_changed.emit()
+		if ends_now:
+			Events.match_ended.emit(winner_slots.duplicate(), defeated_slots.duplicate())
 
 
 ## Server: asks the carrier to tell every client the match as it is now.

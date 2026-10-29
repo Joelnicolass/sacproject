@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_sqq48"]
+radius = 14.0
+
+[sub_resource type="Gradient" id="Gradient_i8ei5"]
+offsets = PackedFloat32Array(0, 1, 0.7)
+colors = PackedColorArray(0.2, 0.55, 0.22, 1, 0.1, 0.3, 0.12, 0, 0.15, 0.41250002, 0.16499999, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_awno8"]
+gradient = SubResource("Gradient_i8ei5")
+width = 36
+height = 36
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="GroveBush" type="StaticBody2D" unique_id=664853657 groups=["prop_obstruction"]]
+collision_layer = 2
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="." unique_id=557220909]
+shape = SubResource("CircleShape2D_sqq48")
+
+[node name="Leaves" type="Sprite2D" parent="." unique_id=1272227843]
+texture = SubResource("GradientTexture2D_awno8")

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/map/props/altar.tscn" id="2_altar"]
 [ext_resource type="Script" path="res://scenes/components/ground_snap.gd" id="4_snap"]
 
-[node name="PlayerStart" type="Node3D"]
+[node name="PlayerStart" type="Node3D" groups=["player_start"]]
 script = ExtResource("1_start")
 
 [node name="Altar" parent="." instance=ExtResource("2_altar")]

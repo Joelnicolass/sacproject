@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_jsy8i"]
+radius = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wnhgg"]
+albedo_color = Color(0.5, 0.5, 0.48, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_wxcha"]
+material = SubResource("StandardMaterial3D_wnhgg")
+radius = 1.0
+height = 1.3
+radial_segments = 10
+rings = 5
+
+[node name="ForestRock" type="StaticBody3D" unique_id=2076324910 groups=["prop_obstruction"]]
+collision_layer = 2
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="." unique_id=696108267]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("SphereShape3D_jsy8i")
+
+[node name="Stone" type="MeshInstance3D" parent="." unique_id=1145144887]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+mesh = SubResource("SphereMesh_wxcha")

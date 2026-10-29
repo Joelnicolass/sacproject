@@ -1,0 +1,182 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/prop_kit/examples/forest_3d/forest_3d.gd" id="1_x1dfe"]
+[ext_resource type="Script" path="res://addons/prop_kit/scatter/prop_scatter_3d.gd" id="2_lrmo3"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_scatter_rules.gd" id="3_fbvsc"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_variant.gd" id="4_j1ctq"]
+[ext_resource type="PackedScene" path="res://addons/prop_kit/examples/forest_3d/forest_tree.tscn" id="5_vl03n"]
+[ext_resource type="PackedScene" path="res://addons/prop_kit/examples/forest_3d/forest_rock.tscn" id="6_fh18b"]
+[ext_resource type="Script" path="res://addons/prop_kit/scatter/prop_ray_ground.gd" id="7_mm1ip"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_keep_out.gd" id="8_ad7pb"]
+[ext_resource type="Script" path="res://addons/prop_kit/draw/prop_batch_3d.gd" id="9_sfmdn"]
+[ext_resource type="Script" path="res://addons/prop_kit/nav/prop_nav_zones_3d.gd" id="10_yuc6j"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8fali"]
+size = Vector3(160, 1, 160)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kqaoa"]
+albedo_color = Color(0.36, 0.5, 0.26, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0w5hi"]
+material = SubResource("StandardMaterial3D_kqaoa")
+size = Vector2(160, 160)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ys2tp"]
+albedo_color = Color(0.85, 0.2, 0.15, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_v4f30"]
+material = SubResource("StandardMaterial3D_ys2tp")
+top_radius = 0.15
+bottom_radius = 0.15
+height = 5.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nxe77"]
+albedo_color = Color(0.85, 0.2, 0.15, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_fljsd"]
+material = SubResource("StandardMaterial3D_nxe77")
+top_radius = 0.15
+bottom_radius = 0.15
+height = 5.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ievq"]
+albedo_color = Color(0.85, 0.2, 0.15, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ealkd"]
+material = SubResource("StandardMaterial3D_2ievq")
+top_radius = 0.15
+bottom_radius = 0.15
+height = 5.0
+
+[sub_resource type="Resource" id="Resource_abg68"]
+script = ExtResource("3_fbvsc")
+random_seed = 7
+cluster_size = 70.0
+cover = 0.4
+density = 0.85
+lone_chance = 0.02
+spacing = 4.5
+max_count = 1600
+sink = 0.2
+
+[sub_resource type="Resource" id="Resource_ntqri"]
+script = ExtResource("4_j1ctq")
+scene = ExtResource("5_vl03n")
+weight = 5.0
+
+[sub_resource type="Resource" id="Resource_22jex"]
+script = ExtResource("4_j1ctq")
+scene = ExtResource("6_fh18b")
+
+[sub_resource type="Resource" id="Resource_xmy3g"]
+script = ExtResource("7_mm1ip")
+area = Rect2(-78, -78, 156, 156)
+
+[sub_resource type="Resource" id="Resource_gfekw"]
+script = ExtResource("8_ad7pb")
+group = &"keep_clear"
+radius = 14.0
+soft = 0.5
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_gpieg"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+
+[sub_resource type="Environment" id="Environment_hxqty"]
+background_mode = 1
+background_color = Color(0.62, 0.76, 0.9, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.7, 0.75, 0.8, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e5o62"]
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.1, 1)
+
+[node name="Forest3D" type="Node3D" unique_id=1612480703 node_paths=PackedStringArray("scatter", "batch", "zones", "camera", "hud", "path_line")]
+script = ExtResource("1_x1dfe")
+scatter = NodePath("World/Forest")
+batch = NodePath("Batch")
+zones = NodePath("Nav")
+camera = NodePath("Camera")
+hud = NodePath("Hud/Info")
+path_line = NodePath("PathLine")
+
+[node name="World" type="Node3D" parent="." unique_id=212855874]
+
+[node name="Ground" type="StaticBody3D" parent="World" unique_id=1673293573]
+
+[node name="Shape" type="CollisionShape3D" parent="World/Ground" unique_id=1035353187]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_8fali")
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Ground" unique_id=1401499075]
+mesh = SubResource("PlaneMesh_0w5hi")
+
+[node name="Camps" type="Node3D" parent="World" unique_id=492928037]
+
+[node name="Camp0" type="Node3D" parent="World/Camps" unique_id=53954643 groups=["keep_clear"]]
+
+[node name="Pole" type="MeshInstance3D" parent="World/Camps/Camp0" unique_id=193331190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_v4f30")
+
+[node name="Camp1" type="Node3D" parent="World/Camps" unique_id=957283410 groups=["keep_clear"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 40)
+
+[node name="Pole" type="MeshInstance3D" parent="World/Camps/Camp1" unique_id=1123975861]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_fljsd")
+
+[node name="Camp2" type="Node3D" parent="World/Camps" unique_id=157870950 groups=["keep_clear"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -35)
+
+[node name="Pole" type="MeshInstance3D" parent="World/Camps/Camp2" unique_id=1082216355]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_ealkd")
+
+[node name="Forest" type="Node3D" parent="World" unique_id=342406283]
+script = ExtResource("2_lrmo3")
+rules = SubResource("Resource_abg68")
+variants = Array[ExtResource("4_j1ctq")]([SubResource("Resource_ntqri"), SubResource("Resource_22jex")])
+ground = SubResource("Resource_xmy3g")
+keep_out = Array[ExtResource("8_ad7pb")]([SubResource("Resource_gfekw")])
+name_prefix = "Tree"
+
+[node name="Batch" type="Node3D" parent="." unique_id=942999531 node_paths=PackedStringArray("props")]
+script = ExtResource("9_sfmdn")
+props = [NodePath("../World/Forest")]
+chunk_size = 40.0
+build_on_ready = false
+
+[node name="Nav" type="Node3D" parent="." unique_id=1797956800 node_paths=PackedStringArray("source_root")]
+script = ExtResource("10_yuc6j")
+navigation_mesh = SubResource("NavigationMesh_gpieg")
+source_root = NodePath("../World")
+zone_size = 40.0
+area = Rect2(-80, -80, 160, 160)
+merge_gap = 0.8
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1782333825]
+transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.64278764, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Environment" type="WorldEnvironment" parent="." unique_id=888174325]
+environment = SubResource("Environment_hxqty")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=314068878]
+current = true
+far = 600.0
+
+[node name="PathLine" type="MeshInstance3D" parent="." unique_id=1571832386]
+material_override = SubResource("StandardMaterial3D_e5o62")
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=478016385]
+
+[node name="Info" type="Label" parent="Hud" unique_id=1208734974]
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 12.0
+offset_bottom = 10.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4

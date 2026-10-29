@@ -64,7 +64,7 @@ var _land: GodFlora
 var _density_version := 0
 ## The scene's own mesh of each dressed tree part.
 var _tree_meshes := {}
-var _forest: ForestDraw
+var _forest: PropBatch3D
 
 
 func _ready() -> void:
@@ -100,17 +100,21 @@ func apply_look(profile: LookProfile, look_rig: LookRig) -> void:
 ## The map's forest trees (ForestScatter, group `forest_tree`) take the meshes of the land's trees
 ## (GodFlora.trees), each the same one on every peer (by its name). A land without trees, or no
 ## land, leaves each tree its scene's mesh. Only the mesh: the trunk is the same on every land. In
-## play a ForestDraw draws them in batches; in the editor each tree shows its own.
+## play a PropBatch3D (PropKit) draws them in batches; in the editor each tree shows its own.
 func dress_trees() -> void:
 	if not is_inside_tree():
 		return
 	var trees := get_tree().get_nodes_in_group(TREE_GROUP)
 	if not Engine.is_editor_hint():
 		if _forest == null:
-			_forest = ForestDraw.new()
+			_forest = PropBatch3D.new()
+			_forest.chunk_size = 256.0
+			_forest.build_on_ready = false
+			_forest.mesh_of = func(prop: Node3D, _part: MeshInstance3D) -> Mesh: return _tree_mesh(prop)
 			_forest.top_level = true
 			add_child(_forest, false, INTERNAL_MODE_BACK)
-		_forest.build(trees, _tree_mesh)
+		_forest.props.assign(get_tree().get_nodes_in_group(ForestScatter.GROUP))
+		_forest.rebuild_all()
 		return
 	for node in trees:
 		var part := node.get_node_or_null(^"Mesh") as MeshInstance3D

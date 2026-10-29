@@ -1,11 +1,12 @@
 extends Node
 
-## Runs the «Scatter» of a map's ForestScatter (MapProps/Forest) headless and writes the trees into
+## Runs the «Scatter» of a map's ForestScatter (MapProps/Forest, PropKit) headless and writes the trees into
 ## the map's map.tscn as plain instance nodes, so the scene keeps every other line as it was. The
 ## same as pressing the button in the editor and saving. Bake the navmesh after it.
 ## "$GODOT" --headless --path game res://tools/look/scatter_forest.tscn -- --map=<tag>
 
 const FOREST_PATH := "MapProps/Forest"
+const FOREST_LINE := "[node name=\"Forest\" parent=\"MapProps\""
 const TREE_ID := "6_tree"
 
 
@@ -25,12 +26,12 @@ func _run() -> void:
 		_fail("%s has no %s (ForestScatter)" % [map.tag, FOREST_PATH])
 		return
 	await get_tree().process_frame
-	if forest.scatter() == 0:
+	if forest.scatter(world) == 0:
 		_fail("no tree planted")
 		return
 	var path := map.map_scene.resource_path
 	var text := FileAccess.get_file_as_string(path)
-	var start := text.find("[node name=\"Forest\" type=\"Node3D\" parent=\"MapProps\"]")
+	var start := text.find(FOREST_LINE)
 	if start < 0:
 		_fail("%s: no Forest node line" % path)
 		return
@@ -43,7 +44,7 @@ func _run() -> void:
 		if not skipping:
 			cleaned.append(line)
 	text = "\n".join(cleaned)
-	var tree_path := forest.tree.resource_path
+	var tree_path := forest.variants[0].scene.resource_path
 	if not text.contains("id=\"%s\"" % TREE_ID):
 		var first_node := text.find("\n[node ")
 		var header_end := text.rfind("[ext_resource", first_node)
@@ -62,7 +63,7 @@ func _run() -> void:
 			)
 		)
 	# after the Forest node's own lines
-	start = text.find("[node name=\"Forest\" type=\"Node3D\" parent=\"MapProps\"]")
+	start = text.find(FOREST_LINE)
 	var after := text.find("\n[", start) + 1
 	text = text.substr(0, after) + "\n".join(nodes) + "\n" + text.substr(after)
 	var file := FileAccess.open(path, FileAccess.WRITE)

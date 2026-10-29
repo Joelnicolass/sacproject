@@ -24,8 +24,8 @@ extends RefCounted
 ## source). gap (MeleeReach.close_in: one line per tick of every melee approach: --log=gap). pace
 ## (PaceFactors: a «ritmo» line on every tick a speed factor changes, so every tick of a Speedup
 ## that decays: --log=pace). terrain_load (TerrainShape and TerrainMesh: how long the ground's
-## faces, index and mesh took to build). nav (NavService, MapNavRegion: the navmesh in play and each
-## re-bake by zones; NavMeshBackend: the map that never synced). orders (Orders: «order <command>
+## faces, index and mesh took to build). nav (NavService, MapNav: the navmesh in play and each
+## re-bake by zones). orders (Orders: «order <command>
 ## <n>» for every human order; the AI's too with Orders.log_ai_orders). scars (GroundScars: every
 ## request to paint a mark on the ground, painted or refused and why).
 

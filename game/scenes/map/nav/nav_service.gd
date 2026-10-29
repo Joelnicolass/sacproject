@@ -7,27 +7,29 @@ extends Node
 ## Blockers come from the scene: the collision shapes of the nodes in `blocker_groups` (manafounts,
 ## the altars in play and the buildings of the map; `nav_blocker` is for whatever else a scene puts
 ## in the way, a pillar of the test of the Sac Doctors). Nothing here moves a body; PathFollower
-## hands waypoints to begin_walk. The navmesh is the one owner (NavMeshBackend + NavRegions +
-## NavBoxBlockers). What the bake does not hold (altars, structures, nav_blocker), a building that
-## fell and the ground that moved change the map: NavChanges says where, NavRebake bakes only the
-## zones there on a worker thread and the result is swapped in `rebake_swap_s` after the change (a
-## count: the same tick on every machine while the bake is done by then, else the first tick it is,
-## never blocking). No navmesh: not ready, callers get the straight line.
+## hands waypoints to begin_walk. The navmesh is the one owner (NavMeshBackend +
+## NavBoxBlockers over the map's MapNav, PropKit zones). What the bake does not hold (altars,
+## structures, nav_blocker), a building that fell and the ground that moved change the map:
+## NavChanges says where, MapNav bakes only the zones there on worker threads and the result is
+## swapped in `rebake_swap_s` after the change (apply MANUAL, a count: the same tick on every machine
+## while the bake is done by then, else the first tick it is, never blocking). A saved bake that is
+## stale (a match without its forest) is baked again by MapNav on its own before it is used.
+## No navmesh: not ready, callers get the straight line.
 
 signal built(ms: float)
 
 const GROUP := &"nav_service"
-const BAKE_SETTINGS := "res://scenes/map/nav_bake.tres"
 const SEARCH_LOG_MAX := 200000
 
 ## The map's ground (MapRoot.terrain): the path points take the land height from it.
 @export var terrain: Terrain
-## The map's NavigationRegion3D (MapRoot.nav_region; MatchWorld binds it when the map is attached).
-## Required: without it the service stays not ready, with a warning.
-@export var region: NavigationRegion3D
-## The node whose subtree a re-bake parses for colliders: the match root (map, structures and
-## bodies). Required for re-bakes.
-@export var bake_root: Node3D
+## The map's navmesh zones (MapRoot.nav; MatchWorld binds them when the map is attached). Required:
+## without them the service stays not ready, with a warning. A client never bakes them again (it
+## never asks for a path).
+@export var zones: MapNav:
+	set(value):
+		zones = value
+		_watch_zones()
 ## Time between a change and the swap of the re-baked navmesh (if the worker is not done by then the
 ## match goes on with the old one and the swap happens at the first tick it is). Counted in physics
 ## ticks, never a clock.
@@ -61,7 +63,6 @@ const SEARCH_LOG_MAX := 200000
 @export var build_on_ready := true
 
 var mesh := NavMeshBackend.new()
-var rebake: NavRebake
 ## Microseconds of the last A* search, for the report.
 var last_find_us := 0
 ## Microseconds of every A* search so far (for the report; never read by the simulation).
@@ -78,10 +79,11 @@ var _rebuild_in := -1
 var _tick := 0
 ## Tick at which the bake for the holes that came since is asked; -1 with none waiting.
 var _holes_at := -1
-## Tick at which the running re-bake is swapped in; -1 with none running.
+## Tick at which the waiting re-bake is swapped in; -1 with none asked.
 var _swap_at := -1
-## A change came while a bake was running: bake again after the swap.
-var _dirty := false
+## The zones are not ready yet (their saved bake is loading or being baked again): build again next
+## tick.
+var _build_waiting := false
 ## Microseconds of every search, to tell the p95 (for the report; never read by the simulation).
 ## Capped.
 var _search_log := PackedInt32Array()
@@ -107,8 +109,11 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	_tick += 1
 	searches_this_tick = 0
-	if _swap_at >= 0 and _tick >= _swap_at and rebake.is_done():
-		_swap_rebaked()
+	if _swap_at >= 0 and _tick >= _swap_at and zones.has_result():
+		_swap_at = -1
+		zones.apply()
+	if _build_waiting:
+		build()
 	if _holes_at >= 0 and _tick >= _holes_at:
 		_holes_at = -1
 		_request_rebake()
@@ -139,9 +144,33 @@ func _on_tower_progress(progress: float) -> void:
 
 
 func _exit_tree() -> void:
-	if rebake != null and rebake.is_running():
-		rebake.finish()
 	mesh.release()
+
+
+func _watch_zones() -> void:
+	if zones == null or not is_inside_tree():
+		return
+	if not is_multiplayer_authority():
+		zones.rebake_when_stale = false
+		return
+	if not zones.bake_ready.is_connected(_on_bake_ready):
+		zones.bake_ready.connect(_on_bake_ready)
+		zones.updated.connect(_on_updated)
+
+
+## A result nobody scheduled (a request joined after a swap): swapped in at the first tick.
+func _on_bake_ready(_zones: PackedInt32Array) -> void:
+	if _swap_at < 0:
+		_swap_at = _tick
+
+
+func _on_updated() -> void:
+	if not mesh.built:
+		return
+	rebakes += 1
+	mesh.refresh()
+	if DebugLog.on(&"nav"):
+		print("nav: re-bake %d polygons (%s)" % [mesh.polygon_count, zones.stats])
 
 
 func is_ready() -> bool:
@@ -151,7 +180,7 @@ func is_ready() -> bool:
 ## True while a re-bake is running or waits to be swapped in (the navmesh answers with the old map
 ## meanwhile).
 func is_rebaking() -> bool:
-	return _swap_at >= 0 or _dirty
+	return _swap_at >= 0 or (zones != null and zones.is_updating())
 
 
 ## Length of a path from `from` through `points`, flat.
@@ -165,14 +194,15 @@ static func path_length(from: Vector3, points: PackedVector3Array) -> float:
 	return total
 
 
-## Builds the pathfinder (again). Returns the milliseconds it took.
+## Builds the pathfinder (again). Returns the milliseconds it took (0 while the zones load).
 func build() -> float:
 	if terrain == null:
 		return 0.0
+	var started := Time.get_ticks_usec()
 	if not _build_navmesh():
 		return 0.0
 	_watch_buildings()
-	return mesh.build_ms
+	return float(Time.get_ticks_usec() - started) / 1000.0
 
 
 ## A building that falls leaves no wall: the navmesh is baked again without it (its collision is off
@@ -202,79 +232,52 @@ func _on_building_destroyed(building: MapBuilding) -> void:
 	build.call_deferred()
 
 
-## First time: takes the region and bakes at once if something the stored bake lacks stands on the
-## map. After: a change of blockers asks for a new bake. False when there is no region or it has no
-## navmesh.
+## First time: takes the zones once their saved bake is loaded (until then `build` is asked again
+## each tick) and bakes at once if something the stored bake lacks stands on the map. After: a
+## change of blockers asks for a new bake. False when there are no zones or no navmesh yet.
 func _build_navmesh() -> bool:
 	var entries := _blockers()
 	if mesh.built:
 		mesh.set_boxes(entries, box_clearance_m)
 		_request_rebake()
 		return true
-	var nav_region := region
-	if nav_region == null:
-		push_warning("nav: no `region` assigned (the map's NavRegion); the pathfinder is off")
+	if zones == null:
+		push_warning("nav: no `zones` assigned (the map's Nav); the pathfinder is off")
 		return false
-	if nav_region.navigation_mesh == null or nav_region.navigation_mesh.get_polygon_count() == 0:
-		push_warning("nav: the region has no navmesh (run tools/bake/bake_nav.tscn)")
+	_watch_zones()
+	_build_waiting = not zones.is_ready()
+	if _build_waiting:
 		return false
-	var settings: NavBakeSettings = (
-		(
-			nav_region.get("bake_settings")
-			if nav_region.get("bake_settings") != null
-			else load(BAKE_SETTINGS)
-		)
-		as NavBakeSettings
-	)
-	rebake = NavRebake.new(settings)
-	rebake.set_stored(nav_region.navigation_mesh)
-	_check_obstructions(nav_region.navigation_mesh)
-	mesh.build(nav_region, entries, box_clearance_m)
+	mesh.build(zones, entries, box_clearance_m)
 	if DebugLog.on(&"nav"):
 		print(
 			(
-				"nav: navmesh %d polygons, %d regions, %.0f ms"
-				% [mesh.polygon_count, mesh.regions.component_count, mesh.build_ms]
+				"nav: navmesh %d polygons, %d components, %d zones"
+				% [mesh.polygon_count, zones.index.component_count, zones.grid().zone_count()]
 			)
 		)
 	_request_rebake()
-	built.emit(mesh.build_ms)
+	built.emit(0.0)
 	return true
 
 
-## The stored bake held a different number of obstructions than stand now (a match that plays
-## without the map's forest): the whole map is baked again (on the worker; the stored navmesh
-## serves meanwhile).
-func _check_obstructions(stored: NavigationMesh) -> void:
-	var baked := int(stored.get_meta(NavObstructions.META_COUNT, -1))
-	var root := bake_root if bake_root != null else get_parent()
-	if baked < 0 or terrain == null or root == null or not root.is_inside_tree():
-		return
-	if NavObstructions.count_in(root) != baked:
-		changes.add_area(terrain.bounds())
-
-
-## Starts a bake of the zones that changed (see `changes`), or marks it dirty when one runs. Nothing
-## changed, nothing baked.
+## Starts a bake of the zones that changed (see `changes`); MapNav joins it with one that runs.
+## Nothing changed, nothing baked.
 func _request_rebake() -> void:
-	if rebake == null:
-		return
-	if _swap_at >= 0:
-		_dirty = true
+	if zones == null:
 		return
 	var areas := changes.take(_collect_blockers(_dynamic_groups(), true))
 	if areas.is_empty():
 		return
-	if bake_root == null:
-		push_error(
-			"NavService: set `bake_root` (the match root); the navmesh cannot be baked again."
-		)
-		return
 	_tag_dynamic_nodes()
-	if rebake.start(bake_root, areas):
+	for area in areas:
+		var middle := area.get_center()
+		var ground := terrain.height_at(middle.x, middle.y) if terrain != null else 0.0
+		zones.rebake(
+			Vector3(middle.x, 0.0 if is_nan(ground) else ground, middle.y), area.size.length() * 0.5
+		)
+	if _swap_at < 0:
 		_swap_at = _tick + MatchClock.ticks_for(rebake_swap_s)
-	else:
-		areas.map(changes.add_area)
 
 
 ## The nodes the stored bake lacks join the bake's source group (their collision shapes are parsed
@@ -291,37 +294,6 @@ func _tag_dynamic_nodes() -> void:
 			and not node.is_in_group(NavFingerprint.GROUP)
 		):
 			node.add_to_group(NavFingerprint.GROUP)
-
-
-func _swap_rebaked() -> void:
-	var late := _tick - _swap_at
-	_swap_at = -1
-	var baked := rebake.finish()
-	if baked != null:
-		rebake.retire(mesh.swap(baked, rebake.regions))
-		rebakes += 1
-		if DebugLog.on(&"nav"):
-			print(
-				(
-					# gdlint: ignore=max-line-length
-					"nav: re-bake %d polygons, %d regions, %d/%d zones (parse %.1f ms, bake %.0f ms on the worker, swap %.2f ms%s)"
-					% [
-						mesh.polygon_count,
-						mesh.regions.component_count,
-						rebake.zones_baked,
-						rebake.zones_total,
-						rebake.parse_ms,
-						rebake.bake_ms,
-						mesh.swap_ms,
-						(", swap %d ticks late" % late) if late > 0 else ""
-					]
-				)
-			)
-	else:
-		push_warning("nav: the re-bake came out empty, the old navmesh stays")
-	if _dirty:
-		_dirty = false
-		_request_rebake()
 
 
 ## The blocker groups the stored bake does not hold.

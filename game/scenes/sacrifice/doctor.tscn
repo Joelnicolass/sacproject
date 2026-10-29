@@ -73,6 +73,7 @@ properties/11/replication_mode = 0
 
 [node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "collision", "mount", "health_bar", "states", "motor", "unit")]
 collision_layer = 2
+collision_mask = 129
 floor_snap_length = 0.5
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")

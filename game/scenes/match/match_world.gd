@@ -118,7 +118,7 @@ func _bind_map() -> void:
 	camera.ground = drawn
 	selection.occluder = drawn
 	nav.terrain = map.terrain
-	nav.region = map.nav_region
+	nav.zones = map.nav
 	wizard_spawner.spawn_points = wizard_spawner.get_path_to(map.starts)
 	population.buildings = map.buildings
 	population.npcs = map.npcs

@@ -122,6 +122,12 @@ func test_merging_closes_only_narrow_gaps() -> void:
 	check(Geometry2D.is_point_in_polygon(Vector2(1.25, 0.0), joined.outline), "the narrow gap is closed")
 	check(not Geometry2D.is_point_in_polygon(Vector2(2.5, 1.6), joined.outline), "nothing beyond the trunks is covered")
 	check(PropObstructions.merged(list, 0.0).size() == 4, "gap 0 merges nothing")
+	var shortest := INF
+	for obstruction in PropObstructions.merged(list, 1.0, 0.25):
+		var outline := obstruction.outline
+		for i in outline.size():
+			shortest = minf(shortest, outline[i].distance_to(outline[(i + 1) % outline.size()]))
+	check(shortest > 0.25, "no edge as short as min_edge (%s)" % shortest)
 
 
 func test_merging_keeps_wide_passages() -> void:

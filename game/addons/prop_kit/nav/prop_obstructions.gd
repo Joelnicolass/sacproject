@@ -118,8 +118,12 @@ static func gather(
 ## ones become one, and the result shrinks back by gap / 2 (a morphological closing). Gaps narrower
 ## than `gap` close; anything wider stays open, so set it near the agent's diameter. A clearing
 ## closed all around by gaps narrower than `gap` is filled: no agent could walk in or out of it
-## (leave an opening wider than the gap where one must). `gap` 0 = `list` as it is.
-static func merged(list: Array[PropObstruction], gap: float) -> Array[PropObstruction]:
+## (leave an opening wider than the gap where one must). `gap` 0 = `list` as it is. A vertex
+## closer than `min_edge` to the one before is dropped: pass the bake's cell size, finer than the
+## bake can tell apart.
+static func merged(
+	list: Array[PropObstruction], gap: float, min_edge := 0.0
+) -> Array[PropObstruction]:
 	if gap <= 0.0 or list.size() < 2:
 		return list
 	var out: Array[PropObstruction] = []
@@ -137,14 +141,31 @@ static func merged(list: Array[PropObstruction], gap: float) -> Array[PropObstru
 				if not Geometry2D.is_polygon_clockwise(polygon):
 					grown.append(polygon)
 		for joined in _union(grown):
-			for polygon in Geometry2D.offset_polygon(joined, -gap * 0.5):
-				if Geometry2D.is_polygon_clockwise(polygon) or polygon.size() < 3:
+			for shrunk in Geometry2D.offset_polygon(joined, -gap * 0.5):
+				if Geometry2D.is_polygon_clockwise(shrunk):
+					continue
+				var polygon := _without_short_edges(shrunk, min_edge)
+				if polygon.size() < 3:
 					continue
 				var obstruction := PropObstruction.new()
 				obstruction.outline = polygon
 				obstruction.bottom = low
 				obstruction.top = high
 				out.append(obstruction)
+	return out
+
+
+## `polygon` without the vertices at `min_edge` or less from the last one kept (growing and
+## shrinking leaves pieces of edges that short, some of length 0).
+static func _without_short_edges(
+	polygon: PackedVector2Array, min_edge: float
+) -> PackedVector2Array:
+	var out := PackedVector2Array()
+	for point in polygon:
+		if out.is_empty() or out[-1].distance_to(point) > min_edge:
+			out.append(point)
+	while out.size() > 1 and out[-1].distance_to(out[0]) <= min_edge:
+		out.remove_at(out.size() - 1)
 	return out
 
 

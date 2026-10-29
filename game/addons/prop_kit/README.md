@@ -12,7 +12,7 @@ There is no network, no game rule and no autoload, and PropKit depends on no oth
 ./install.sh --addon /path/to/godot-project prop_kit
 ```
 
-Enable the **PropKit** plugin. It adds Project > Tools > *PropKit: Scatter the open scene*, which runs every scatter of the open scene. The kit's nodes work without the plugin too.
+Enable the **PropKit** plugin: it adds the editor tools ([In the editor](#in-the-editor)). The kit's nodes work without it too.
 
 Examples: `examples/forest_3d/forest_3d.tscn` (a forest, batches, a navmesh in 16 zones; click twice for a path, C chops, R gives a new forest) and `examples/grove_2d/grove_2d.tscn` (bushes around walls, a 2D navmesh; the same keys).
 
@@ -33,16 +33,16 @@ World
 
 1. Add a **PropScatter3D** (or **PropScatter2D**).
 2. Set **rules**: a `PropScatterRules`, which you can share between maps.
-3. Set **ground** (see below).
+3. Set **ground** (see below). The editor draws its outline.
 4. Add **variants**: a `PropVariant` per scene, each with a weight.
-5. Press **Scatter** in the inspector. **Clear** removes the props.
+5. Press **Scatter** in the inspector. **Clear** removes the props. Ctrl+Z undoes either.
 
-The same rules and seed always give the same props. Scattering again replaces every child of the node.
+The same rules and seed always give the same props. Scattering again replaces every child of the node; a scatter that cannot run (no ground, no variant) leaves them as they are.
 
-The props are ordinary children owned by the scene, so they are saved and you can edit them with the gizmo. From code: `scatter.scatter(scene_owner)`. From a build step or CI:
+The props are ordinary children owned by the scene, so they are saved and you can edit them with the gizmo. From code: `scatter.scatter(scene_owner)`. From a build step or CI (a scene, so the project runs as the game does, autoloads included):
 
 ```bash
-godot --headless --path . --script res://addons/prop_kit/tools/scatter_scene.gd -- --scene=res://maps/forest.tscn
+godot --headless --path . res://addons/prop_kit/tools/scatter_scene.tscn -- --scene=res://maps/forest.tscn
 ```
 
 The `rules`:
@@ -97,12 +97,12 @@ Game
 1. Put the props in the group **`prop_obstruction`**, in the prop's own scene. Their direct, enabled collision shapes cut the navmesh:
    - in 3D: Cylinder, Capsule, Sphere, Box, ConvexPolygon and CollisionPolygon3D;
    - in 2D: Circle, Rectangle, Capsule, ConvexPolygon and CollisionPolygon2D.
-2. Put the props on a **collision layer the navmesh does not parse**: take it out of the template's collision mask, and parse static colliders. Otherwise the bake pays for them twice, and the kit warns once.
-3. Add a **PropNavZones3D** with a `navigation_mesh` template: agent, cells, parsed geometry and collision mask. Set `source_root` and `zone_size` (a multiple of the cell size).
-4. Press **Bake** in the inspector. It bakes every zone and saves them next to the scene in a `.res`, which is the node's `saved`. From CI or a build step:
+2. Put the props on a **collision layer the navmesh does not parse**: take it out of the template's collision mask, and parse static colliders. Otherwise the bake pays for them twice; the inspector warns.
+3. Add a **PropNavZones3D** with a `navigation_mesh` template: agent, cells, parsed geometry and collision mask. Set `source_root` and `zone_size` (a multiple of the cell size). The editor draws the zones.
+4. Press **Bake** in the inspector. It saves the scene, bakes it the way the game will (in a separate headless Godot, with the project's autoloads) into a `.res` next to the scene, which is the node's `saved`, and reloads the scene. The inspector warns when the saved bake no longer matches the props or the settings. From CI or a build step:
 
    ```bash
-   godot --headless --path . --script res://addons/prop_kit/tools/bake_scene.gd -- --scene=res://maps/forest.tscn [--check]
+   godot --headless --path . res://addons/prop_kit/tools/bake_scene.tscn -- --scene=res://maps/forest.tscn [--check]
    ```
 
    - Without `--check`, it bakes every zone of every zones node and saves the results. When a node had no `saved`, the scene file is updated from a fresh copy, so nothing its scripts did while baking is kept.
@@ -110,15 +110,32 @@ Game
 
 In the game:
 
-- **On start** the saved bake loads at once. If the props differ from the saved ones (for example, a match played without its forest), it emits `stale` and bakes every zone again on worker threads. `rebake_when_stale` off: only `stale`.
-- **`extra_fingerprint`** (`func() -> int`, set in the game's `_ready`): a number from the game that changes when what the navmesh is baked from changes besides the props, such as the terrain's heights. It joins the props' fingerprint, so the saved bake goes stale when either changes.
-- **`rebake(areas, reparse)`** after something that blocks changed there. Areas are Rect2 on the ground plane. `PropObstructions.area_of(prop, true)` gives a prop's area, so read it before freeing the prop. `reparse = false` when only props changed: the parsed geometry is reused and only the obstructions near the touched zones are read (an index by zone, so the whole group is not walked).
-- **Requests while a bake runs** wait and are joined into the next one.
-- **`apply_mode` MANUAL**: the result waits (`bake_ready`, `has_result()`) for `apply()`. A lockstep game swaps it in at a tick it chooses; `is_done()` says without blocking whether it can. Pieces always go in in zone order, so the result depends only on the inputs, never on which zone finished first.
-- **`applied`** says the regions have the new pieces. **`synced`** (`is_synced()`) says the navigation map uses them: paths and server queries see them a few physics frames after `applied`.
+| You want to | Write |
+|---|---|
+| Wait until paths work | `if not nav.is_ready(): await nav.updated` |
+| Free or add a prop | Nothing more: `prop.queue_free()` or `add_child(prop)`, and the zones it touches re-bake on their own (`follow_props`) |
+| Tell it a prop moved | `nav.rebake_prop(prop)` |
+| Tell it the ground or a building changed | `nav.rebake(position, radius)` |
+| Re-bake everything | `nav.rebake_all()` |
+| Know when paths see a change | `await nav.updated`, or `nav.is_updating()` |
+
+| Signal or call | Means | Now you can |
+|---|---|---|
+| `updated` | The navigation map uses the latest pieces | Ask for paths and use `index`: they see every change asked for |
+| `is_ready()` | The first pieces are in; it stays true | Ask for paths at all |
+| `is_updating()` | A change is on its way (a bake, a result waiting, the map taking it) | Wait for `updated` if you need it |
+| `stale` | The saved bake does not match the props or the settings | Nothing: every zone bakes again (`rebake_when_stale`). In the editor, press Bake |
+| `bake_ready(zones)` | Apply MANUAL: a change in play is baked | Call `apply()` at the tick you choose (`has_result()`) |
+
+- **On start** the saved bake loads with its index, and `updated` follows. When it does not match the props or the settings (the template, the zone grid, the game's `extra_fingerprint`), the node emits `stale`, bakes every zone again and never uses the stale pieces. `rebake_when_stale` off: it uses them.
+- **Changes in play** re-bake only the zones they touch, on worker threads. Props alone need no parse: the parsed geometry is reused, and only the props near those zones are read (an index by zone, so the whole group is not walked). A change while a bake runs joins the next one.
+- **`extra_fingerprint`** (`func() -> int`): a number from the game that changes when what the navmesh is baked from changes besides the props, such as the terrain's heights. It joins the fingerprint, so the saved bake goes stale when it differs. Set it any time: when the pieces in force are the saved bake's, they are checked again then.
+- **`apply_mode` MANUAL** (Advanced, for lockstep): a change in play waits for `apply()`, so every peer swaps it in at the same tick. The kit's own bakes (the start, a stale saved bake) apply at once, so `is_ready()` never waits for the game.
 - **`stats`** (PropNavStats) for logs: `parse_ms`, `obstruct_ms`, `bake_ms`, `index_ms`, `zones_baked` / `zones_total`, `obstructions`, `polygons`, `components`.
 
 **How the zones meet.** Each zone bakes with its own filter (`filter_baking_aabb` / `baking_rect`) and a border (`zone_border`, 0 = from the agent radius), with the zone lines anchored at (0, 0). The pieces meet exactly on the zone lines and the navigation map joins them with no edge connections (`use_edge_connections` stays off, which keeps every swap cheap). A partial re-bake gives the same pieces as baking everything.
+
+**Height (3D).** The bake measures heights in cells from each zone's floor, so the floor and ceiling of every zone are whole cells of `cell_height` from 0. A zone re-baked after the ground went lower or higher in play (a crater, a mound) still meets the zones that did not re-bake. They come from the parsed geometry with a margin. `height_range` (floor, ceiling) gives every zone the same box instead, whatever the geometry is when a zone re-bakes; nothing outside it is baked.
 
 **Fewer polygons** (`merge_gap`):
 
@@ -131,25 +148,36 @@ In the game:
 
 | Query | Answer |
 |---|---|
-| `component_at(point)`, `same_component(a, b)` | Can an agent get from here to there at all |
+| `can_reach(a, b, max_distance)` | Can an agent walk from `a` to `b` at all. `max_distance`: points that far off the navmesh on the ground plane (a unit against a wall) count from the closest walkable point |
+| `closest_point(point, max_distance, min_area)` | The nearest walkable point among those within `max_distance` of it on the ground plane, whatever the navmesh's height above the ground. With `min_area`, only on a component at least that large: the closest land, not the roof or the walled pocket a body is in |
+| `component_at(point, max_distance)`, `component_area[c]` | The connected component at a point, and each one's area on the ground plane (m² in 3D, px² in 2D) |
 | `polygon_at(point)` | The polygon under a point |
-| `closest_point(point)` | The closest walkable point |
 | `stitched(template)` | The whole navmesh as one NavigationMesh |
 
 In 2D, the same queries end in `_2d`. `build_index` off: no index.
 
-**2D** (`PropNavZones2D`, pixels): the walkable area is the template's outlines, or the whole zone when none are drawn; parsed colliders and the props block it.
+**2D** (`PropNavZones2D`, pixels): the walkable area is the template's outlines, or the whole zone when none are drawn; parsed colliders and the props block it. `rebake(position, radius)` takes a `Vector2`.
+
+**When a NavigationRegion is enough.** A small level that never changes in play bakes fine with a NavigationRegion3D and its own Bake button. PropKit pays off when props change in play, when the world is big enough that a full bake is slow, or when the props should cut the navmesh from their colliders without a NavigationObstacle in each.
+
+## In the editor
+
+- **Scatter** and **Clear** (scatter node) can be undone: Ctrl+Z puts back the props they replaced, hand edits and all.
+- **Bake** (zones node) saves the scene, bakes it the way the game will in a separate headless Godot (its autoloads and main loop run; where the scene sits in the editor plays no part), and reloads it.
+- **Project > Tools**: *PropKit: Scatter the open scene* runs every scatter of the open scene, each undoable; *PropKit: Bake the open scene* is Bake for every zones node in it.
+- **The 3D and 2D views** draw a scatter's ground outline (white) and a zones node's zones (blue).
+- **Warnings** on a zones node: the saved bake does not match the props or the settings (press Bake); no node of the props' group under `source_root`; a prop's layer parsed as geometry; a zone size off the cell size; a cell size that is not the navigation map's.
 
 ## Multiplayer
 
 PropKit has no network. A scatter is deterministic, so all peers that load the same scene have the same props.
 
-When something blocks changes during a match (a prop chopped, a building up), every peer gets the change as game data, over its own transport (MpKit or anything else). Then each one calls `rebake(areas, false)`. With `apply_mode` MANUAL, each one swaps the result in at the same tick.
+When something blocks changes during a match (a prop chopped, a building up), every peer gets the change as game data, over its own transport (MpKit or anything else), and makes it: it frees the prop (the navmesh follows), or calls `rebake(position, radius)`. With `apply_mode` MANUAL, each one swaps the result in at the same tick (`bake_ready`, `apply()`). A lockstep game may also turn the navigation map's asynchronous iterations off (`navigation/world/map_use_async_iterations`); PropKit works either way.
 
 ## Godot issues it works around
 
 - **Godot 4.7: a region's update can be lost.** With asynchronous region iterations, a navmesh set on a region while its previous iteration is still running is lost: the map keeps the old one for good. The zones node holds a new piece until the region has taken the previous one, so nothing is lost. It reproduces on its own: one region, two navmeshes set one frame apart. `test_a_saved_bake_loads_and_goes_stale` covers it.
-- **2D: a harmless warning.** Godot's 2D baker can leave sub-pixel slivers around round outlines, and the map then warns "More than 2 edges tried to occupy the same map rasterization space". It happens inside a single piece, not on the zone lines. Paths are not affected.
+- **2D: vertices closer than a map cell.** Godot's 2D baker can leave two vertices less than a cell apart (sub-pixel slivers where outlines meet). The map joins edges by the cells of their ends, so it finds more than two edges on one, warns "More than 2 edges tried to occupy the same map rasterization space" and leaves them unjoined. The kit welds the vertices of a baked 2D piece that share a map cell and drops the polygons that collapse. `test_a_weld_drops_what_the_map_cannot_tell_apart` and `test_grove_2d_runs` cover it.
 
 ## Measured
 
@@ -174,20 +202,27 @@ The result is `PROPKIT TESTS PASS (n)`. The tests cover:
 
 - **the planner**: determinism, room, keep-outs, masks (thinning part way, inverted), outlines, variants and the cap;
 - **the scatter**: saved children, ray ground, slopes, normals, 2D, saving a scene;
-- **the command-line tools**: `scatter_scene` saves the props, `bake_scene --check` gives the same hash twice;
+- **the command-line tools**: `scatter_scene` saves the props, `bake_scene --check` gives the same hash twice, and bakes a scene whose script uses an autoload;
 - **every obstruction shape**, merging, and the fingerprint;
 - **the zone grid**;
-- **the 3D and 2D zones**: zones that meet, props that block, partial = full, added props, MANUAL apply, joined requests, saved and stale bakes (props or the game's fingerprint), merging, components;
+- **the 3D and 2D zones**: zones that meet, props that block, ready and updated, freed, added and moved props followed, partial = full, `follow_props` off, MANUAL apply of changes in play while the kit's own bakes apply at once, joined changes, saved and stale bakes (props, settings or the game's fingerprint), merging, a seam after the ground went lower, a fixed height range, `can_reach` near the navmesh, the closest point on the plane and past islands, the 2D weld, synchronous navigation iterations;
 - **the batch**;
 - **both examples, end to end.**
+
+The editor tools have their own check, a real editor doing what a person does (Scatter, Clear, undo and redo, a hand edit undo keeps, Bake and the scene it reloads, the stale warning):
+
+```bash
+PROPKIT_EDITOR_CHECK=1 godot --headless --editor --path propkit_lab
+```
+
+It prints `EDITOR CHECK PASS`.
 
 ## Not in the kit
 
 These are the game's:
 
 - what a prop is (health, loot, network sync);
-- when to rebake;
-- the transport;
-- the ground's data.
+- the transport, and when a change in play applies (MANUAL);
+- what else changed besides the props (`rebake`), and the ground's data.
 
-Grass is a separate kit, GrassKit, planned after PropKit 0.1.
+Grass is a separate kit, GrassKit, planned next.

@@ -2,7 +2,7 @@ extends Node3D
 
 ## PropKit's 3D example: a forest scattered over a ground with collision, drawn in batches, cutting
 ## a navmesh baked in zones. Left click twice: a path between the two points. C: chop the props
-## around the mouse (only their zones bake again). R: a new forest (another seed). Drag with the
+## around the mouse (the navmesh follows its props: only their zones bake again). R: a new forest (another seed). Drag with the
 ## right button to turn, the wheel to zoom, WASD to move. A game presses «Scatter» and «Bake» in
 ## the editor instead; this example scatters when it starts, so its scene stays small.
 
@@ -26,7 +26,7 @@ var _turning := false
 
 
 func _ready() -> void:
-	zones.applied.connect(func(_zones: PackedInt32Array) -> void: _show())
+	zones.updated.connect(_show)
 	if scatter.get_child_count() == 0:
 		scatter.scatter()
 	batch.rebuild_all()
@@ -72,30 +72,26 @@ func _unhandled_input(event: InputEvent) -> void:
 			new_forest()
 
 
-## Frees the props within `chop_radius_m` of `at` and re-bakes only where they stood.
+## Frees the props within `chop_radius_m` of `at`. The batches and the navmesh redo only where
+## they stood, on their own.
 func chop_at(at: Vector3) -> int:
 	if at == Vector3.INF:
 		return 0
-	var areas: Array[Rect2] = []
 	var chopped := 0
 	for prop: Node3D in scatter.get_children():
 		var offset := prop.global_position - at
 		if Vector2(offset.x, offset.z).length() > chop_radius_m:
 			continue
-		areas.append(PropObstructions.area_of(prop, true, zones.obstruction_sides))
 		prop.queue_free()
 		chopped += 1
-	if chopped > 0:
-		zones.rebake(areas, false)
 	return chopped
 
 
-## Scatters a forest with the next seed, then draws and bakes it again.
+## Scatters a forest with the next seed, then draws it again (the navmesh follows).
 func new_forest() -> void:
 	scatter.rules.random_seed += 1
 	scatter.scatter()
 	batch.rebuild_all()
-	zones.rebake_all(false)
 	_path.clear()
 	_draw_path()
 

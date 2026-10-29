@@ -6,9 +6,8 @@
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="8_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="9_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="f22_look"]
-[ext_resource type="Resource" path="res://scenes/map/nav_bake.tres" id="f200_bake"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
-[ext_resource type="Script" uid="uid://brj6glypovhy8" path="res://scenes/map/nav/map_nav_region.gd" id="f200_nav_region"]
+[ext_resource type="Resource" path="res://scenes/map/maps/high_noon/nav.res" id="f200_navmesh"]
+[ext_resource type="PackedScene" path="res://scenes/map/nav/map_nav.tscn" id="f200_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="f212_bake"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jfnt.res" id="fmesh_jfnt"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/james_rock_1.tscn" id="d2_james_rock_1"]
@@ -49,10 +48,10 @@
 [ext_resource type="PackedScene" path="res://scenes/look/life/life_spot.tscn" id="58_spot"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/forest_tree.tscn" id="6_tree"]
 
-[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" unique_id=1044000001 node_paths=PackedStringArray("terrain", "nav", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
-nav_region = NodePath("NavRegion")
+nav = NodePath("Nav")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
@@ -1631,12 +1630,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1467.162, 14.249803, 1068.663
 creature = ExtResource("d2_zepe")
 side = 2
 
-[node name="NavRegion" type="NavigationRegion3D" parent="." unique_id=1200200200]
-unique_name_in_owner = true
-navigation_mesh = ExtResource("f200_navmesh")
-use_edge_connections = false
-script = ExtResource("f200_nav_region")
-bake_settings = ExtResource("f200_bake")
+[node name="Nav" parent="." instance=ExtResource("f200_nav_region")]
+saved = ExtResource("f200_navmesh")
 
 [node name="MinimapBake" parent="." unique_id=1037000020 node_paths=PackedStringArray("terrain") instance=ExtResource("f212_bake")]
 unique_name_in_owner = true

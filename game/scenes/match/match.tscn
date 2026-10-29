@@ -319,11 +319,10 @@ world = NodePath("../..")
 wizards = NodePath("../../World/Wizards")
 
 
-[node name="Nav" type="Node" parent="Systems" unique_id=1324434439 node_paths=PackedStringArray("structures", "bake_root")]
+[node name="Nav" type="Node" parent="Systems" unique_id=1324434439 node_paths=PackedStringArray("structures")]
 unique_name_in_owner = true
 script = ExtResource("f72_nav")
 structures = NodePath("../../World/Structures")
-bake_root = NodePath("../..")
 
 
 [node name="AiRoster" type="Node" parent="Systems" unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]

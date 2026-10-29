@@ -68,7 +68,7 @@ Cada corte usa a lo sumo un Godot headless para exportar. El navegador corre en 
 | Corte | Qué | Criterio de aceptación |
 |---|---|---|
 | **039a** Arranque limpio | `rendering_method.web` y preset `Web` (hechos en el spike), y en web se esconde «Servidor local» (`MpNetConfig.can_host()`) | El export sale con código 0. En el navegador: menú, partida contra la IA en `test_flat` y High Noon, 0 `SCRIPT ERROR` |
-| **039b** Shaders en Compatibility | Los 17 shaders con *instance uniforms* pasan a uniforms de material o a `INSTANCE_CUSTOM` (MultiMesh) en web, ramificando con `#if CURRENT_RENDERER == RENDERER_COMPATIBILITY` en el mismo archivo. Se revisan los 6 que leen la pantalla o la profundidad | 0 errores de *instance variables*. Captura de una partida: altar, almas, barras y FX bien dibujados, sin azul plano ni negro |
+| **039b** Shaders en Compatibility | Los 17 shaders con *instance uniforms* pasan a uniforms de material o a `INSTANCE_CUSTOM` (MultiMesh) en web, ramificando con `#if CURRENT_RENDERER == RENDERER_COMPATIBILITY` en el mismo archivo. Se revisan los 6 que leen la pantalla o la profundidad | 0 errores de *instance variables* y 0 de `instance_buffer_pos.has(p_instance)` (material_storage.cpp:2098). Este último se repite por instancia y por cuadro: cada uno cruza a JS como `console.error` y por sí solo puede hundir los fps, así que va antes de medir 039c. Captura de una partida: altar, almas, barras y FX bien dibujados, sin azul plano ni negro |
 | **039c** Preset web | `quality_web.tres`, elegido solo en web: sin volumétrica, SSAO, SSIL ni DoF; sombras de 2 splits en atlas de 1024; pasto y luces con tope. Opciones › Gráficos esconde VSync y FPS | Chrome real en la Mac: ≥ 60 fps a 1280×720 en High Noon contra la IA. Laptop media del usuario: ≥ 30 fps y p1 ≥ 20 |
 | **039d** Peso | Solo en el export web: texturas a la mitad (los normal maps, más), audio a menor bitrate y una sola versión por pista. Medir si hace falta separar el pack por dios | `.pck` ≤ 120 MB en bruto y ≤ 80 MB con brotli. El `.pck` de escritorio no cambia (±1 %). Capturas web lado a lado con escritorio sin texturas negras ni rosas |
 | **039e** `/play` privado | Integración con la landing: ruta `/[lang]/play`, `GODOT_CONFIG.mainPack` apuntando a R2 y headers en `vercel.json`. Lo hace la sesión de la web; el juego aporta el preset, los nombres y `index.sizes.json` (`tools/web_export/write_sizes.py` después de cada export, para la barra de progreso con brotli) | Un preview privado carga hasta la partida contra la IA en Chrome. Safari: arranca, o queda anotado qué falla |
@@ -80,7 +80,7 @@ Cada corte usa a lo sumo un Godot headless para exportar. El navegador corre en 
 ## 4. Riesgos
 
 - **El índice del navmesh en wasm** puede tardar varias veces lo de escritorio, aunque corre en un worker. Se mide en 039c.
-- **Memoria:** 563 MB de heap de JS en High Noon, antes del preset web. Con texturas sin comprimir para web podría pasar de 2 GB en mapas grandes. Se mide en 039c y 039d.
+- **Memoria:** la sesión de la web midió un pico de 1328 MB de heap de JS en el menú, después de cargar el `.pck`, y 552 MB en la partida en High Noon, antes del preset web. El pico de carga cuenta para 039d. Con texturas sin comprimir para web podría pasar de 2 GB en mapas grandes. Se mide en 039c y 039d.
 - **Safari:** soporte de COOP/COEP y de WebGL 2 con threads; se ve en 039e.
 - **Distribución del arte original:** bloquea el lanzamiento público, no el trabajo técnico.
 

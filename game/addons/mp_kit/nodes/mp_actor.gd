@@ -124,6 +124,10 @@ static var _checked_scenes: Dictionary = {}
 var _sender_slot: int = -1
 ## Inside an mp_sv_* call from a client: the server time that client was seeing (0 = unknown).
 var _call_view: float = 0.0
+## Server, solo, and proxies without smoothing: the pose at the last physics tick, and how fast it moved since the one
+## before (motion_velocity).
+var _tick_pos := Vector3.INF
+var _tick_velocity := Vector3.ZERO
 
 
 ## The MpActor child of `node`, or null.
@@ -198,10 +202,12 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if is_authority():
-		if _prediction:
+	if is_authority() or not uses_net_pose():
+		if _prediction and is_authority():
 			_prediction.server_tick(delta, is_local() or not MpKit.is_networked())
-		_publish_pose()
+		_measure_tick(delta)
+		if is_authority():
+			_publish_pose()
 	elif _prediction and is_local():
 		_prediction.owner_tick(delta, net_stamp, _motion, net_position, net_rotation)
 		## It went back to a state the server teleported it in: drawn there at once.
@@ -225,6 +231,36 @@ func _process(delta: float) -> void:
 		_motion.draw(delta, net_stamp, net_position, net_rotation, net_teleports)
 	elif _smoother and not _root.is_physics_interpolated_and_enabled():
 		_smoother.draw(delta)
+
+
+## How fast what this node shows moves, for animation (a run clip, a jump or fall, footsteps): a Vector2 in 2D, a
+## Vector3 in 3D, in the node's units per second. The same on every machine, and never the network's own motion:
+##   server and solo - each physics tick's step;
+##   the owner, with `predict` - its own predicted steps (mp_move's), never a server correction or a paced tick fading
+##                     on screen (MpCorrectionSmoother);
+##   a proxy - BUFFERED, the motion between the two server states it is drawn between now; FOLLOW, how fast it
+##             chases; without smoothing, the change since the last tick.
+## Zero when it stands still, and across a teleport. Read it anywhere, `_process` included: unlike the node's pose
+## read frame to frame, it does not jump with physics ticks, corrections or late packets.
+func motion_velocity() -> Variant:
+	var velocity := _velocity()
+	if _root is Node2D:
+		return Vector2(velocity.x, velocity.y)
+	return velocity
+
+
+## How fast what this node shows moves, as one number (units per second): `motion_velocity()`'s length. For the
+## usual choice: `if net.motion_speed() > 0.1:` run, else idle.
+func motion_speed() -> float:
+	return _velocity().length()
+
+
+func _velocity() -> Vector3:
+	if is_authority() or not uses_net_pose():
+		return _tick_velocity
+	if _prediction and is_local():
+		return _prediction.step_velocity
+	return _motion.velocity() if _motion else Vector3.ZERO
 
 
 ## True when the pose travels in net_position / net_rotation (smoothing or prediction) instead of the parent's own.
@@ -310,6 +346,16 @@ func despawn() -> void:
 	_root.queue_free()
 
 
+## The tick's step of the parent (server, solo, or a proxy without smoothing): motion_velocity.
+func _measure_tick(delta: float) -> void:
+	var pos := MpProxyMotion.position_of(_root)
+	if _tick_pos == Vector3.INF or delta <= 0.0:
+		_tick_velocity = Vector3.ZERO
+	else:
+		_tick_velocity = (pos - _tick_pos) / delta
+	_tick_pos = pos
+
+
 ## After a teleport or respawn. On the server, right after moving the node: the teleport travels with the state,
 ## so every client jumps there instead of sliding (proxies when their drawn time gets there, the owner when it
 ## reconciles to it). On a client (from an mp_all_* call): jump to the server's latest pose now.
@@ -317,6 +363,8 @@ func snap() -> void:
 	if is_authority():
 		## Counted now, sent with the next published pose (the moved one).
 		_teleports += 1
+		## No step across it: motion_velocity starts again from here.
+		_tick_pos = Vector3.INF
 		if _root and _root.is_physics_interpolated_and_enabled():
 			_root.reset_physics_interpolation()
 	elif _prediction and is_local():

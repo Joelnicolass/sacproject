@@ -69,6 +69,25 @@ func sample(time: float) -> Array:
 	return [_positions[i].lerp(_positions[i + 1], t), _rotations[i].slerp(_rotations[i + 1], t)]
 
 
+## How fast the drawn pose moves at `time` (server clock), for animation: the motion between the two states around
+## it, the same while it extrapolates, and zero where `sample` holds (before the first state, past the
+## extrapolation, at a teleport).
+func velocity_at(time: float) -> Vector3:
+	var last := _stamps.size() - 1
+	if last < 1 or time <= _stamps[0]:
+		return Vector3.ZERO
+	var i := last - 1
+	if time >= _stamps[last]:
+		if time - _stamps[last] >= max_extrapolate_s:
+			return Vector3.ZERO
+	else:
+		while i > 0 and _stamps[i] > time:
+			i -= 1
+	if _crosses_teleport(i):
+		return Vector3.ZERO
+	return (_positions[i + 1] - _positions[i]) / maxf(_stamps[i + 1] - _stamps[i], 0.0001)
+
+
 ## True when the node teleported between state `i` and the next one.
 func _crosses_teleport(i: int) -> bool:
 	return _teleports[i] != _teleports[i + 1]

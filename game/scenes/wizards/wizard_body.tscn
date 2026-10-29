@@ -213,9 +213,6 @@ afflictions = NodePath("../Afflictions")
 ghost = NodePath("../GhostForm")
 moving_above_m_s = 0.1
 gesture_every = 5
-sampled_cap = 1.6
-rise_per_s = 20.0
-fall_per_s = 6.0
 
 [node name="Tilt" type="Node3D" parent="."]
 physics_interpolation_mode = 2

@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://gods/charnel/buildings/charnel_leaf_wheel.tres" id="2_type"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cab1.res" id="mesh_cab1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cab2.res" id="mesh_cab2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cab3.res" id="mesh_cab3"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(4, 4, 4)
+
+[node name="CharnelCabe" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_cab1")
+
+[node name="Plt1" type="Node3D" parent="Visuals"]
+position = Vector3(0, 0, -60)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Plt1"]
+mesh = ExtResource("mesh_cab2")
+
+[node name="Plt2" type="Node3D" parent="Visuals"]
+position = Vector3(60, 0, 0)
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Plt2"]
+mesh = ExtResource("mesh_cab2")
+
+[node name="Plt3" type="Node3D" parent="Visuals"]
+position = Vector3(0, 0, 60)
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Plt3"]
+mesh = ExtResource("mesh_cab2")
+
+[node name="Plt4" type="Node3D" parent="Visuals"]
+position = Vector3(-60, 0, 0)
+rotation = Vector3(0, 1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Plt4"]
+mesh = ExtResource("mesh_cab2")
+
+[node name="Lef1" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Lef1"]
+mesh = ExtResource("mesh_cab3")
+
+[node name="Lef2" type="Node3D" parent="Visuals"]
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Lef2"]
+mesh = ExtResource("mesh_cab3")
+
+[node name="Lef3" type="Node3D" parent="Visuals"]
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Lef3"]
+mesh = ExtResource("mesh_cab3")
+
+[node name="Lef4" type="Node3D" parent="Visuals"]
+rotation = Vector3(0, -4.712389, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Lef4"]
+mesh = ExtResource("mesh_cab3")
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0, 2, 0)
+shape = SubResource("BoxShape3D_body")

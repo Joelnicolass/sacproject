@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=40 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/_w1_d1.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/_w1_d2.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/_w1_d3.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w101.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w102.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w103.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w104.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w105.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w106.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w107.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w108.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w109.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w10a.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w10b.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w10c.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w10d.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w10e.ogg" id="s17"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w10f.ogg" id="s18"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w110.ogg" id="s19"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w111.ogg" id="s20"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w112.ogg" id="s21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w113.ogg" id="s22"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w114.ogg" id="s23"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w115.ogg" id="s24"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w116.ogg" id="s25"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w117.ogg" id="s26"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w118.ogg" id="s27"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w119.ogg" id="s28"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w11a.ogg" id="s29"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w11b.ogg" id="s30"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w11c.ogg" id="s31"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w11d.ogg" id="s32"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w11e.ogg" id="s33"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/_wspw/w11f.ogg" id="s34"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
+
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_incantation"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7"), ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11"), ExtResource("s12"), ExtResource("s13"), ExtResource("s14"), ExtResource("s15"), ExtResource("s16"), ExtResource("s17"), ExtResource("s18"), ExtResource("s19"), ExtResource("s20"), ExtResource("s21"), ExtResource("s22"), ExtResource("s23"), ExtResource("s24"), ExtResource("s25"), ExtResource("s26"), ExtResource("s27"), ExtResource("s28"), ExtResource("s29"), ExtResource("s30"), ExtResource("s31"), ExtResource("s32"), ExtResource("s33"), ExtResource("s34")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("1_set")
+damaged = SubResource("cue_damaged")
+incantation = SubResource("cue_incantation")
+fallback = ExtResource("3_fallback")

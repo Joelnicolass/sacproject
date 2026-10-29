@@ -1,0 +1,88 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/online/online_join_view.gd" id="1_join"]
+[ext_resource type="PackedScene" path="res://scenes/ui/online/online_room_row.tscn" id="2_row"]
+
+[node name="OnlineJoinView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_join")
+room_row_scene = ExtResource("2_row")
+
+[node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxForm"
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Column"]
+theme_type_variation = &"LabelTitle"
+layout_mode = 2
+text = "UI_ONLINE_JOIN_TITLE"
+horizontal_alignment = 1
+
+[node name="CodeRow" type="HBoxContainer" parent="Column"]
+theme_type_variation = &"HBoxRow"
+layout_mode = 2
+
+[node name="Code" type="LineEdit" parent="Column/CodeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "UI_ONLINE_JOIN_CODE_HINT"
+max_length = 16
+
+[node name="JoinRoom" type="Button" parent="Column/CodeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+text = "UI_ONLINE_JOIN_ROOM"
+
+[node name="ListHeader" type="HBoxContainer" parent="Column"]
+theme_type_variation = &"HBoxRow"
+layout_mode = 2
+
+[node name="ListTitle" type="Label" parent="Column/ListHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_ONLINE_JOIN_LIST"
+
+[node name="Refresh" type="Button" parent="Column/ListHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ONLINE_JOIN_REFRESH"
+
+[node name="RoomScroll" type="ScrollContainer" parent="Column"]
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="RoomRows" type="VBoxContainer" parent="Column/RoomScroll"]
+theme_type_variation = &"VBoxList"
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NoRooms" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ONLINE_JOIN_NO_ROOMS"
+horizontal_alignment = 1
+
+[node name="JoinBack" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ONLINE_JOIN_BACK"

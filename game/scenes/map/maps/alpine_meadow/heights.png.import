@@ -1,0 +1,16 @@
+[remap]
+
+importer="sacrifice.terrain_heights"
+importer_version=1
+type="Resource"
+uid="uid://bhvgyjagps0lv"
+path="res://.godot/imported/heights.png-851d926790022dcc32b9159a8052e4de.res"
+
+[deps]
+
+source_file="res://scenes/map/maps/alpine_meadow/heights.png"
+dest_files=["res://.godot/imported/heights.png-851d926790022dcc32b9159a8052e4de.res"]
+
+[params]
+
+metres_per_unit=0.1

@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/pull_thread.gd" id="1_thread"]
+
+[sub_resource type="StandardMaterial3D" id="Material_bolt"]
+transparency = 1
+blend_mode = 0
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.1, 0.3, 0.95, 1)
+
+[node name="CageThread" type="Node3D"]
+editor_description = "The thread of the Seraph's Cage pull. A cage-shaped bolt: a LightningBolt of 10 segments, 2.5 m of spread, that changes shape every 6 frames and grows from nothing to full in 0.5 s. Same code scene as the Web pull (pull_thread.gd). In MIX. Flat color: the exporter lacks the ltng texture."
+script = ExtResource("1_thread")
+width = 0.1
+fins = 3
+jitter = 2.5
+segments = 10
+reshape_s = 0.1
+ramp_s = 0.5
+
+[node name="Strand" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+top_level = true
+cast_shadow = 0
+material_override = SubResource("Material_bolt")

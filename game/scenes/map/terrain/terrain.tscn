@@ -1,0 +1,56 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://bd6sx0dvtaaoi" path="res://scenes/map/terrain/terrain.gd" id="1_terrain"]
+[ext_resource type="Script" uid="uid://cnbnjgq6ehkv7" path="res://scenes/map/terrain/terrain_mesh.gd" id="2_mesh"]
+[ext_resource type="Script" uid="uid://by7c07ec4chfh" path="res://scenes/map/terrain/terrain_collision.gd" id="3_collision"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_net.gd" id="4_net"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_status.gd" id="5_status"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/hole_walls.tscn" id="6_walls"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/ground_scars.tscn" id="7_scars"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_live.gd" id="9_live"]
+
+[sub_resource type="StandardMaterial3D" id="Ground_no_look"]
+resource_name = "SinLook"
+cull_mode = 2
+albedo_color = Color(0.45, 0.45, 0.42, 1)
+roughness = 1.0
+
+[node name="Terrain" type="Node3D" node_paths=PackedStringArray("mesh", "live") groups=["nav_source"]]
+editor_description = "A map's ground. A map instances this scene and only sets its data: `heights` (its heights.png, with void.png beside it), `ground_roles` (ground_roles.png) and `light_map` (light.png). Without a look the ground is plain grey (the `Mesh` material); the god's is set by `Look/Layers/Ground`. The mesh, the collision and the index come from the heights on load; they are not saved. Remote → Status shows rev, version, live_stamps and holes."
+script = ExtResource("1_terrain")
+mesh = NodePath("Mesh")
+live = NodePath("Live")
+
+[node name="Mesh" type="MeshInstance3D" parent="." node_paths=PackedStringArray("terrain", "missing")]
+material_override = SubResource("Ground_no_look")
+script = ExtResource("2_mesh")
+terrain = NodePath("..")
+missing = NodePath("../Missing")
+
+[node name="Collision" type="StaticBody3D" parent="." node_paths=PackedStringArray("terrain")]
+script = ExtResource("3_collision")
+terrain = NodePath("..")
+
+[node name="Live" type="Node" parent="."]
+editor_description = "The stamps being shown, gathered once per physics tick. `min_step_m`: a stamp is drawn again only when its height moved that much (or its ring travelled that much)."
+process_physics_priority = -1
+script = ExtResource("9_live")
+
+[node name="Net" type="Node" parent="." node_paths=PackedStringArray("terrain")]
+script = ExtResource("4_net")
+terrain = NodePath("..")
+
+[node name="Status" type="Node" parent="." node_paths=PackedStringArray("terrain")]
+script = ExtResource("5_status")
+terrain = NodePath("..")
+
+[node name="HoleWalls" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("6_walls")]
+terrain = NodePath("..")
+
+[node name="GroundScars" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("7_scars")]
+terrain = NodePath("..")
+
+[node name="Missing" type="Label3D" parent="."]
+visible = false
+text = "UI_MAP_MISSING_2"
+font_size = 48

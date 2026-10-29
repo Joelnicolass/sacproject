@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/rend_soul.gd" id="1_ability"]
+[ext_resource type="PackedScene" path="res://scenes/units/strikes/soul_strike.tscn" id="2_strike"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/rend_soul.tscn" id="look_shot"]
+
+[node name="RendSoul" type="Node"]
+editor_description = "The Styx's Rend Soul effect (dner). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It prepares the shoot0 clip (100 ticks, windup_clip 0), accepts a NORMAL or EMERGING soul, free or its own, not dropped, within 90 m in 3D, and on the shot throws a SoulStrike that lands on the next tick. The mana (100) and the cooldown (10 s) are charged even if the soul is gone."
+script = ExtResource("1_ability")
+windup_from_clip = true
+windup_clip = 0
+strike_scene = ExtResource("2_strike")
+look = ExtResource("look_shot")

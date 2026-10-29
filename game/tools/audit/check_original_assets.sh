@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Needs the original game installed (SAC_INSTALL): compares assets/original/ with what importing from the original gives.
+# It cannot run without the original (playing and the other tools do not need it). See tools/import/local.cfg.example.
+# Parity of assets/original/ with the installation. Regenerates every family with its importer into a temporary
+# folder and compares with the versioned files (diff -r, the .import files excluded: Godot rewrites them). Replaces the old
+# tools/audit_original_assets.gd, which compared against the old extraction.
+#   bash tools/audit/check_original_assets.sh            exit 0 = every family identical
+# The ground of each map (scenes/map/maps/<tag>/heights.png and void.png) is not an asset of assets/original/: run
+# tools/terrain/heights_from_original.gd, which writes only what changed. The icon file names are checked by
+# tools/audit/check_icon_files.gd through the AgentKit Godot queue (addons/agent_kit/determinism/harness/godot_run.sh).
+set -u
+case "${1:-}" in -h|--help) head -n 3 "$0" | tail -n 2 | cut -c3-; exit 0 ;; esac
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+# Godot: $GODOT, else $GODOT_BIN, else `godot` in the PATH, else the macOS default install.
+GODOT="${GODOT:-${GODOT_BIN:-$(command -v godot || echo /Applications/Godot.app/Contents/MacOS/Godot)}}"
+# Fails early (status 2) with the explanation when the original install is missing or invalid.
+python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import sac_formats.install' "$ROOT/tools/import" || exit 2
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+A="$ROOT/assets/original"
+fail=0
+cmp_dir() { # name, regenerated, versioned
+  if diff -rq --exclude='*.import' "$2" "$3" >"$TMP/diff.txt" 2>&1; then echo "OK    $1"; else echo "DIFF  $1"; head -5 "$TMP/diff.txt"; fail=1; fi
+}
+cd "$ROOT"
+python3 -I tools/import/import_textures.py --out="$TMP/textures" >/dev/null && cmp_dir textures "$TMP/textures" "$A/textures" || { echo "FAIL  textures"; fail=1; }
+# The static bodies need the OBJ of sacengine's saveObj, which is no installation input: they are versioned data.
+python3 -I tools/import/import_props.py --out="$TMP/props" >/dev/null && for m in $(python3 -I tools/import/import_props.py --list-static); do cp "$A/props/$m.glb" "$TMP/props/"; done && cmp_dir props "$TMP/props" "$A/props" || { echo "FAIL  props"; fail=1; }
+python3 -I tools/import/import_themes.py --out="$TMP/themes" >/dev/null && cmp_dir themes "$TMP/themes" "$A/themes" || { echo "FAIL  themes"; fail=1; }
+python3 -I tools/import/import_map.py --out="$TMP/map" >/dev/null && cmp_dir map "$TMP/map" "$A/maps/high_noon" || { echo "FAIL  map"; fail=1; }
+# The other imported maps (their ntts.json names the .scp they came from).
+for ntts in "$A"/maps/*/ntts.json; do
+  tag="$(basename "$(dirname "$ntts")")"
+  [ "$tag" = high_noon ] && continue
+  scp="$(python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["map"][:-4])' "$ntts")"
+  python3 -I tools/import/import_map.py --map="$scp" --tag="$tag" --out="$TMP/map_$tag" >/dev/null && cmp_dir "map $tag" "$TMP/map_$tag" "$A/maps/$tag" || { echo "FAIL  map $tag"; fail=1; }
+done
+python3 -I tools/import/import_ui.py --out="$TMP/ui" >/dev/null && { cmp_dir ui "$TMP/ui/ui" "$A/ui"; cmp_dir fx "$TMP/ui/fx" "$A/fx"; } || { echo "FAIL  ui/fx"; fail=1; }
+python3 -I tools/import/export_stats.py --out "$TMP/data" >/dev/null 2>&1 && cmp_dir data "$TMP/data" "$A/data" || { echo "FAIL  data"; fail=1; }
+python3 -I tools/import/import_ui.py --icon-files="$TMP/icons.tsv"
+if GODOT_RUN_NS=sacproject bash addons/agent_kit/determinism/harness/godot_run.sh "$GODOT" --headless --path "$ROOT" --script res://tools/audit/check_icon_files.gd -- --list="$TMP/icons.tsv" 2>&1 | grep -q " 0 failures"; then echo "OK    icon file names (GDScript = Python)"; else echo "DIFF  icon file names"; fail=1; fi
+[ $fail = 0 ] && echo "ASSETS PARITY PASS" || { echo "ASSETS PARITY FAIL"; exit 1; }

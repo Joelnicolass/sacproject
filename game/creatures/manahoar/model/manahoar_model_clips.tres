@@ -1,0 +1,27 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MAst.res" id="1_MAst"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MArn.res" id="2_MArn"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MAst_once.res" id="3_MAst_once"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MA00.res" id="4_MA00"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MAdi.res" id="5_MAdi"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MA2t.res" id="6_MA2t"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MAsc.res" id="7_MAsc"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MArz.res" id="8_MArz"]
+[ext_resource type="Animation" path="res://creatures/manahoar/model/manahoar_model_clips/MAi1.res" id="9_MAi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_MAst"),
+&"run": ExtResource("2_MArn"),
+&"attack": ExtResource("3_MAst_once"),
+&"attack2": ExtResource("3_MAst_once"),
+&"attack3": ExtResource("3_MAst_once"),
+&"shoot": ExtResource("4_MA00"),
+&"shoot2": ExtResource("4_MA00"),
+&"death": ExtResource("5_MAdi"),
+&"held": ExtResource("6_MA2t"),
+&"thrash": ExtResource("7_MAsc"),
+&"rise": ExtResource("8_MArz"),
+&"gesture": ExtResource("9_MAi1")
+}

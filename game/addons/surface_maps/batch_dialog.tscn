@@ -1,0 +1,82 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/surface_maps/batch_dialog.gd" id="1_batch"]
+[ext_resource type="Script" path="res://addons/surface_maps/recipe_form.gd" id="2_form"]
+
+[node name="BatchDialog" type="ConfirmationDialog"]
+title = "Generate relief"
+size = Vector2i(560, 640)
+dialog_hide_on_ok = false
+script = ExtResource("1_batch")
+
+[node name="Body" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 552.0
+offset_bottom = 591.0
+
+[node name="What" type="Label" parent="Body"]
+text = "What: folders (their .tres, no subfolders) or materials, comma separated."
+autowrap_mode = 3
+
+[node name="PathRow" type="HBoxContainer" parent="Body"]
+
+[node name="Paths" type="LineEdit" parent="Body/PathRow"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+placeholder_text = "res://scenes/bodies/materials/"
+
+[node name="Browse" type="Button" parent="Body/PathRow"]
+unique_name_in_owner = true
+tooltip_text = "Pick a folder."
+text = "Folder…"
+
+[node name="UseSelection" type="Button" parent="Body/PathRow"]
+unique_name_in_owner = true
+tooltip_text = "Uses the files and folders selected in the FileSystem dock."
+text = "Selection"
+
+[node name="Skip" type="CheckBox" parent="Body"]
+unique_name_in_owner = true
+tooltip_text = "Leaves alone the materials that already have all their maps on disk (does not generate, assign or save them)."
+button_pressed = true
+text = "Skip existing"
+
+[node name="Overwrite" type="CheckBox" parent="Body"]
+unique_name_in_owner = true
+tooltip_text = "Replaces the PNGs that already exist (hand edits are lost)."
+text = "Overwrite"
+
+[node name="RecipeTitle" type="Label" parent="Body"]
+text = "Recipe (the same as the inspector section, for this session only):"
+
+[node name="Scroll" type="ScrollContainer" parent="Body"]
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Form" type="VBoxContainer" parent="Body/Scroll"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+script = ExtResource("2_form")
+
+[node name="Progress" type="ProgressBar" parent="Body"]
+unique_name_in_owner = true
+step = 1.0
+
+[node name="StatusRow" type="HBoxContainer" parent="Body"]
+
+[node name="Status" type="Label" parent="Body/StatusRow"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+autowrap_mode = 3
+
+[node name="Stop" type="Button" parent="Body/StatusRow"]
+unique_name_in_owner = true
+visible = false
+tooltip_text = "Finishes the current material and stops; what was written is still imported and assigned."
+text = "Stop"
+
+[node name="FolderPicker" type="EditorFileDialog" parent="."]
+unique_name_in_owner = true
+title = "Pick a folder"
+file_mode = 2

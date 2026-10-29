@@ -10,7 +10,11 @@ extends RefCounted
 ##
 ## Every command returns an error code String ("" = ok). Stable codes: no_session, no_room,
 ## already_in_room, not_in_room, rooms_cap, room_full, room_not_open, bad_options, bad_meta,
-## bad_seat, seat_taken, in_match, matches_cap, spawn_failed, match_failed.
+## bad_seat, seat_taken, in_match, matches_cap, spawn_failed, match_failed, not_host, bad_bot.
+##
+## The creator of a room is its host and may fill free seats with bots (`set_seat_bot`). A bot seat is occupied, always
+## ready and has no session, no token: its ticket row is `{slot, bot: true, meta}`. The host passes to the next seated
+## session when it leaves. The seats of a room come from `seat_count_for(options)`.
 
 enum State { OPEN, COUNTDOWN, LAUNCHING, IN_MATCH, CLOSED }
 
@@ -30,8 +34,12 @@ class Room extends RefCounted:
 	var state: int = State.OPEN
 	var options: Dictionary = {}
 	var code: String = ""
-	## Seat index -> session_id ("" = free).
+	## Seat index -> session_id ("" = free, or a bot seat: see `bots`).
 	var seats: Array[String] = []
+	## Seat index -> the bot's meta (opaque Dictionary). A seat in here has no session.
+	var bots: Dictionary = {}
+	## Session that creates / leads the room; "" with nobody seated.
+	var host: String = ""
 	var match_id: String = ""
 	var match_serial: int = 0
 	var port: int = 0
@@ -49,8 +57,13 @@ var meta_validator: Callable = Callable()
 ## (options: Dictionary) -> bool. Invalid Callable = accept any.
 var options_validator: Callable = Callable()
 ## (seats: Array[Dictionary{slot, session_id, token, meta}], options: Dictionary) -> Dictionary (the ticket).
-## Invalid Callable = `{options, seats}`. `slot` is the seat index + 1.
+## Invalid Callable = `{options, seats}`. `slot` is the seat index + 1. A bot seat is `{slot, bot: true, meta}` (no token).
 var ticket_builder: Callable = Callable()
+## (options: Dictionary) -> int, the seats of a room made with these options. Invalid Callable = `config.seats_per_room`.
+## The answer is clamped to 1..`config.max_seats_per_room`; 0 or less is `bad_options`.
+var seat_count_for: Callable = Callable()
+## (meta: Dictionary) -> bool for the meta of a bot seat. Invalid Callable = accept any.
+var bot_validator: Callable = Callable()
 
 var _rooms: Dictionary = {}
 var _sessions: Dictionary = {}
@@ -116,6 +129,11 @@ func last_result_of(room_id: String) -> Dictionary:
 	return (_rooms[room_id] as Room).last_result.duplicate(true) if _rooms.has(room_id) else {}
 
 
+## Session id of the host of the room, "" if none.
+func host_of(room_id: String) -> String:
+	return (_rooms[room_id] as Room).host if _rooms.has(room_id) else ""
+
+
 func countdown_left_of(room_id: String) -> float:
 	return (_rooms[room_id] as Room).countdown_left if _rooms.has(room_id) else 0.0
 
@@ -128,13 +146,19 @@ func snapshot(room_id: String) -> Dictionary:
 	var seats: Array = []
 	for i in room.seats.size():
 		var sid := room.seats[i]
+		if room.bots.has(i):
+			seats.append({
+				"seat": i, "free": false, "bot": true, "name": "", "meta": (room.bots[i] as Dictionary).duplicate(true),
+				"ready": true, "connected": true, "host": false,
+			})
+			continue
 		if sid.is_empty():
 			seats.append({"seat": i, "free": true})
 			continue
 		var s: Dictionary = _sessions[sid]
 		seats.append({
-			"seat": i, "free": false, "session_id": sid, "name": s["name"], "meta": (s["meta"] as Dictionary).duplicate(true),
-			"ready": s["ready"], "connected": s["connected"],
+			"seat": i, "free": false, "bot": false, "session_id": sid, "name": s["name"], "meta": (s["meta"] as Dictionary).duplicate(true),
+			"ready": s["ready"], "connected": s["connected"], "host": sid == room.host,
 		})
 	return {
 		"id": room.id, "state": room.state, "options": room.options.duplicate(true), "private": not room.code.is_empty(),
@@ -201,8 +225,12 @@ func create_room(session_id: String, options: Dictionary = {}, is_private: bool 
 	var room := Room.new()
 	room.id = "r%d" % _room_serial
 	room.options = options.duplicate(true)
-	room.seats.resize(config.seats_per_room)
+	var seat_count := _seat_count(options)
+	if seat_count <= 0:
+		return "bad_options"
+	room.seats.resize(seat_count)
 	room.seats.fill("")
+	room.host = session_id
 	if is_private:
 		room.code = _new_code()
 	_rooms[room.id] = room
@@ -221,7 +249,7 @@ func join_room(session_id: String, room_id: String) -> String:
 	var room: Room = _rooms[room_id]
 	if room.state != State.OPEN:
 		return "room_not_open"
-	var free := room.seats.find("")
+	var free := _free_index(room)
 	if free < 0:
 		return "room_full"
 	_seat(room, session_id, free)
@@ -274,13 +302,52 @@ func set_slot(session_id: String, seat: int) -> String:
 		return "room_not_open"
 	if seat < 0 or seat >= room.seats.size():
 		return "bad_seat"
-	if room.seats[seat] != "" and room.seats[seat] != session_id:
+	if (room.seats[seat] != "" and room.seats[seat] != session_id) or room.bots.has(seat):
 		return "seat_taken"
 	var old := room.seats.find(session_id)
 	if old != seat:
 		room.seats[old] = ""
 		room.seats[seat] = session_id
 	(_sessions[session_id] as Dictionary)["ready"] = false
+	_cancel_countdown(room)
+	room_changed.emit(room.id)
+	return ""
+
+
+## Host only: puts a bot in a free seat (or changes the meta of the bot already there). Changing the table clears the
+## countdown but not the ready of the humans. `meta` is opaque: `bot_validator` decides (`bad_bot`).
+func set_seat_bot(session_id: String, seat: int, meta: Dictionary = {}) -> String:
+	var room := _room_for(session_id)
+	if room == null:
+		return "not_in_room" if _sessions.has(session_id) else "no_session"
+	if room.host != session_id:
+		return "not_host"
+	if room.state > State.COUNTDOWN:
+		return "room_not_open"
+	if seat < 0 or seat >= room.seats.size():
+		return "bad_seat"
+	if not room.seats[seat].is_empty():
+		return "seat_taken"
+	if bot_validator.is_valid() and not bool(bot_validator.call(meta)):
+		return "bad_bot"
+	room.bots[seat] = meta.duplicate(true)
+	_cancel_countdown(room)
+	room_changed.emit(room.id)
+	return ""
+
+
+## Host only: frees a bot seat. `bad_seat` if that seat holds no bot.
+func clear_seat_bot(session_id: String, seat: int) -> String:
+	var room := _room_for(session_id)
+	if room == null:
+		return "not_in_room" if _sessions.has(session_id) else "no_session"
+	if room.host != session_id:
+		return "not_host"
+	if room.state > State.COUNTDOWN:
+		return "room_not_open"
+	if not room.bots.has(seat):
+		return "bad_seat"
+	room.bots.erase(seat)
 	_cancel_countdown(room)
 	room_changed.emit(room.id)
 	return ""
@@ -358,6 +425,9 @@ func _launch(room: Room) -> void:
 	room.tokens.clear()
 	for i in room.seats.size():
 		var sid := room.seats[i]
+		if room.bots.has(i):
+			rows.append({"slot": i + 1, "bot": true, "meta": (room.bots[i] as Dictionary).duplicate(true)})
+			continue
 		var token := MpMatchFiles.new_token()
 		room.tokens[sid] = token
 		rows.append({"slot": i + 1, "session_id": sid, "token": token, "meta": (_sessions[sid]["meta"] as Dictionary).duplicate(true)})
@@ -389,7 +459,8 @@ func _on_match_listening(match_id: String, port: int) -> void:
 	room.port = port
 	room_changed.emit(room.id)
 	for sid in room.seats:
-		match_assigned.emit(room.id, sid, port, str(room.tokens.get(sid, "")))
+		if not sid.is_empty():
+			match_assigned.emit(room.id, sid, port, str(room.tokens.get(sid, "")))
 
 
 func _on_match_ended(match_id: String, result: Dictionary) -> void:
@@ -456,7 +527,10 @@ func _cancel_countdown(room: Room) -> void:
 
 
 func _all_ready(room: Room) -> bool:
-	for sid in room.seats:
+	for i in room.seats.size():
+		if room.bots.has(i):
+			continue
+		var sid := room.seats[i]
 		if sid.is_empty():
 			return false
 		var s: Dictionary = _sessions[sid]
@@ -473,9 +547,36 @@ func _seated_count(room: Room) -> int:
 	return n
 
 
+## First seat with neither a session nor a bot, -1 if none.
+func _free_index(room: Room) -> int:
+	for i in room.seats.size():
+		if room.seats[i].is_empty() and not room.bots.has(i):
+			return i
+	return -1
+
+
+func _seat_count(options: Dictionary) -> int:
+	if not seat_count_for.is_valid():
+		return clampi(config.seats_per_room, 1, maxi(config.max_seats_per_room, 1))
+	var wanted := int(seat_count_for.call(options))
+	return clampi(wanted, 1, maxi(config.max_seats_per_room, 1)) if wanted > 0 else 0
+
+
+## The next seated session becomes the host (lowest seat); with nobody left the bots go too.
+func _pass_host(room: Room) -> void:
+	room.host = ""
+	for sid in room.seats:
+		if not sid.is_empty():
+			room.host = sid
+			return
+	room.bots.clear()
+
+
 func _seat(room: Room, session_id: String, seat: int) -> void:
 	room.seats[seat] = session_id
 	room.empty_s = 0.0
+	if room.host.is_empty():
+		room.host = session_id
 	var s: Dictionary = _sessions[session_id]
 	s["room_id"] = room.id
 	s["ready"] = false
@@ -486,6 +587,8 @@ func _free_seat(room: Room, session_id: String) -> void:
 	var i := room.seats.find(session_id)
 	if i >= 0:
 		room.seats[i] = ""
+	if room.host == session_id:
+		_pass_host(room)
 	var s: Dictionary = _sessions.get(session_id, {})
 	if not s.is_empty():
 		s["room_id"] = ""

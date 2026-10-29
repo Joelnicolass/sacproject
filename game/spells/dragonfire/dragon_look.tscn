@@ -1,0 +1,92 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/original/props/dfir.glb" id="1_glb"]
+[ext_resource type="Shader" path="res://spells/dragonfire/dragon.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/props/dfir_M000.png" id="3_body"]
+[ext_resource type="Texture2D" path="res://assets/original/props/dfir_M001.png" id="4_wings"]
+
+[sub_resource type="ShaderMaterial" id="Mat_body"]
+shader = ExtResource("2_shader")
+shader_parameter/albedo_texture = ExtResource("3_body")
+shader_parameter/energy = 20.0
+shader_parameter/opacity = 0.5
+
+[sub_resource type="ShaderMaterial" id="Mat_wings"]
+shader = ExtResource("2_shader")
+shader_parameter/albedo_texture = ExtResource("4_wings")
+shader_parameter/energy = 20.0
+shader_parameter/opacity = 0.5
+
+[sub_resource type="Animation" id="Animation_fly"]
+resource_name = "fly"
+length = 1.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Dragon/Dragon:blend_shapes/f1")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1875, 0.375, 0.5625, 0.75, 0.9375, 1.125, 1.3125, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Dragon/Dragon:blend_shapes/f2")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1875, 0.375, 0.5625, 0.75, 0.9375, 1.125, 1.3125, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Dragon/Dragon:blend_shapes/f3")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1875, 0.375, 0.5625, 0.75, 0.9375, 1.125, 1.3125, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Dragon/Dragon:blend_shapes/f4")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1875, 0.375, 0.5625, 0.75, 0.9375, 1.125, 1.3125, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fly"]
+_data = {
+&"fly": SubResource("Animation_fly")
+}
+
+[node name="DragonLook" type="Node3D"]
+editor_description = "El dragon de Dragonfire (dfir, 5 cuadros del original como 4 blend shapes). Sin sombreado, alfa 0,5, energia 20 (dragon.gdshader). Las alas baten con la secuencia 0,1,2,3,4,3,2,1 en 1,5 s. La cabeza mira a +Z."
+
+[node name="Dragon" parent="." instance=ExtResource("1_glb")]
+
+[node name="Dragon" parent="Dragon" index="0"]
+cast_shadow = 0
+surface_material_override/0 = SubResource("Mat_wings")
+surface_material_override/1 = SubResource("Mat_body")
+
+[node name="Anim" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_fly")
+}
+autoplay = "fly"

@@ -1,15 +1,15 @@
 extends Control
 
-## RFC-034 034f: the form that creates a room: name, private or open, and the level of both wizards (the only room
-## option Sacrifice lets the creator set for now). It calls `MpLobby.client.create_room`; the screen moves to the room
-## when the server answers. Run alone (F6) it says «Sin conexión».
+## The form that creates a room: name, private or open, the mode, the map, the land and the level of
+## both wizards. It calls `MpLobby.client.create_room`; the screen moves to the room when the server
+## answers. Run alone (F6) it says «Sin conexión».
 
 signal cancelled
 
 const LEVEL_MIN := 1
 const LEVEL_MAX := 9
 ## Item 0 of the level picker: no `level` option, the rules decide.
-const LEVEL_RULES_TEXT := "Nivel: el de las reglas"
+const LEVEL_RULES_TEXT := "UI_ROOM_CREATE_LEVEL_RULES"
 
 @export var name_max_len: int = 24
 
@@ -27,10 +27,10 @@ func _ready() -> void:
 func _fill_levels() -> void:
 	var picker: OptionButton = %RoomLevel
 	picker.clear()
-	picker.add_item(LEVEL_RULES_TEXT)
+	picker.add_item(tr(LEVEL_RULES_TEXT))
 	picker.set_item_metadata(0, 0)
 	for level in range(LEVEL_MIN, LEVEL_MAX + 1):
-		picker.add_item("Nivel %d" % level)
+		picker.add_item(tr("UI_ROOM_CREATE_LEVEL") % level)
 		picker.set_item_metadata(picker.item_count - 1, level)
 	picker.select(0)
 
@@ -38,18 +38,26 @@ func _fill_levels() -> void:
 func _refresh() -> void:
 	var online := MpLobby.client.is_online()
 	%CreateConfirm.disabled = not online
-	%CreateStatus.text = "" if online else LobbyText.OFFLINE
+	%CreateStatus.text = "" if online else tr(LobbyText.OFFLINE)
 
 
 func _on_lost(_reason: String) -> void:
 	_refresh()
 
 
-## The options Dictionary of the room: empty (the rules decide) or `{level: N}`.
+## The options Dictionary of the room: the `mode` of %RoomMode, the `world` of %RoomMap, the `biome`
+## of %RoomBiome (empty = drawn) and, if chosen, the `level` (0 = the rules decide).
 func options() -> Dictionary:
 	var picker: OptionButton = %RoomLevel
-	var level := int(picker.get_item_metadata(picker.selected))
-	return {} if level <= 0 else {"level": level}
+	var chosen := MatchSetup.new()
+	chosen.level = int(picker.get_item_metadata(picker.selected))
+	chosen.mode = (%RoomMode as ModePicker).selected_mode()
+	chosen.map = (%RoomMap as MapPicker).selected_map()
+	chosen.biome = (%RoomBiome as BiomePicker).selected_god()
+	chosen.sky_hour = (%RoomHour as HourPicker).selected_hour()
+	chosen.weather = (%RoomWeather as WeatherPicker).selected_weather()
+	chosen.forest = -1 if (%RoomForest as CheckBox).button_pressed else 0
+	return MatchWire.options_of(chosen)
 
 
 func _on_create() -> void:

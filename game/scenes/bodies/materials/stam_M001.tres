@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/stam/M001.png" id="1_xql6m"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/stam/M001_normal.png" id="2_wlth5"]
+
+[resource]
+resource_name = "stam_M001"
+albedo_texture = ExtResource("1_xql6m")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_wlth5")

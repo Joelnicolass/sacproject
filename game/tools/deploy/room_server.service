@@ -1,3 +1,4 @@
+# PLANEADO PARA EL FUTURO (2026-10-27): necesita room_server_enabled = true en sacrifice_flow.tscn; ver README.md de esta carpeta.
 # RFC-034 034g (F184). Unidad de systemd del servidor de salas de Sacrifice. NO está desplegada: es para el VPS del usuario.
 # Solo corre el servidor de salas; las partidas (los dedicados) son procesos hijos que el servidor lanza y vigila por sí mismo
 #. Si el servidor muere, systemd mata a los hijos (KillMode=control-group) y el

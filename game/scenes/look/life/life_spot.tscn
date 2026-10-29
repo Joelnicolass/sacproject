@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/life/life_spot.gd" id="1_spot"]
+
+[node name="LifeSpot" type="Node3D" node_paths=PackedStringArray("on_screen", "swarm_particles")]
+editor_description = "A place with life (meadow, water, forest, rock): pick the habitat and scale the OnScreen box with its gizmo. It is only drawn while the box is on screen."
+script = ExtResource("1_spot")
+on_screen = NodePath("OnScreen")
+swarm_particles = NodePath("Swarm")
+
+[node name="OnScreen" type="VisibleOnScreenEnabler3D" parent="."]
+aabb = AABB(-20, -2, -20, 40, 10, 40)
+enable_node_path = NodePath("../Swarm")
+
+[node name="Swarm" type="GPUParticles3D" parent="."]
+emitting = false
+visible = false
+amount = 60
+local_coords = true
+visibility_aabb = AABB(-20, -2, -20, 40, 10, 40)

@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cpwx.res" id="mesh_cpwx"]
+
+[node name="CharnelCpw1Ruin" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+mesh = ExtResource("mesh_cpwx")

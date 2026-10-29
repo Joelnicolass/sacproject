@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/strikes/ray_strike.gd" id="1_ray"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/beams/gnome_flame.tres" id="fx_gnome_flame"]
+
+[node name="GnomeRay" type="Node3D"]
+process_physics_priority = -1
+editor_description = "The Gnome's ray (plfa): one ray on the tick of the shot, the ability's range, stopped by the first live body of any side (Health decides friendly fire), the ground or a structure. Beam gnome_flame: the 1.7 m muzzle flash. Damage and impact_fx (gnome_hit): the ShotLook of plfa."
+script = ExtResource("1_ray")
+bursts = 1
+first_tick = 0
+rays_per_burst = 1
+foes_only = false
+beam = ExtResource("fx_gnome_flame")
+beam_length = 1.7

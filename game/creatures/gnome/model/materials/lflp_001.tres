@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/lflp/001.png" id="1_d10dv"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/lflp/001_normal.png" id="2_r8n2i"]
+
+[resource]
+resource_name = "lflp_001"
+albedo_texture = ExtResource("1_d10dv")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_r8n2i")

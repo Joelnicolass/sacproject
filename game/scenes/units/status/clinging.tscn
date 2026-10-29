@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/status/clinging.gd" id="1_clinging"]
+[ext_resource type="PackedScene" path="res://scenes/units/status/cling_bomb.tscn" id="2_bomb"]
+[ext_resource type="PackedScene" path="res://scenes/units/status/cling_mite.tscn" id="3_mite"]
+
+[node name="Clinging" type="Node3D"]
+editor_description = "What sticks to the body and slows it down (Sticky bombs ×0.75, Bilemites ×0.8). It keeps the expiries per kind in MatchClock ticks, gives PaceFactors one factor per kind and replicates shown (x = bombs, y = mites) for the look. The parent assigns body, poisoning and pace."
+script = ExtResource("1_clinging")
+bomb_look = ExtResource("2_bomb")
+mite_look = ExtResource("3_mite")

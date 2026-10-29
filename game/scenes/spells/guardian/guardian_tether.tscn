@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/guardian/guardian_tether.gd" id="1_tether"]
+[ext_resource type="Shader" path="res://scenes/spells/guardian/guardian_tether.gdshader" id="2_shader"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Texture2D" uid="uid://jar05fr413qw" path="res://assets/original/fx/grdn.png" id="atlas_grdn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_beam"]
+shader = ExtResource("2_shader")
+
+[node name="GuardianTether" type="Node3D" node_paths=PackedStringArray("beam", "glow")]
+script = ExtResource("1_tether")
+beam = NodePath("Beam")
+glow = NodePath("Glow")
+atlas = ExtResource("atlas_grdn")
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_beam")
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+light_color = Color(1, 0.5, 0.65, 1)
+light_energy = 1
+omni_range = 6
+fade_in_s = 0.5
+fade_out_s = 0.8
+editor_description = "Light on the middle of the Guardian beam (dominant colour of the grdn.png atlas the beam is drawn with). GuardianTether moves it with the beam and puts it out when the beam withdraws."

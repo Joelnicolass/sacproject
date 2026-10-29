@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://scenes/structures/buildings/ether_fountain.tres" id="2_type"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/etfn.res" id="mesh_etfn"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(486, 162, 0)
+
+[node name="EtherEtfn" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_etfn")
+
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
+position = Vector3(-0.018005371, 0, 397.431)
+script = ExtResource("3_clear")
+radius_m = 100.0
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(-0.018005371, 133.094, 397.431)
+shape = SubResource("BoxShape3D_body")

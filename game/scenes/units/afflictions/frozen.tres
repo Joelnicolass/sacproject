@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AfflictionType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/afflictions/affliction_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+id = &"frozen"
+bit = 3
+holds = true
+immobilizes = true
+drops_fliers = true
+breaks_special_modes = true
+damage_factor = 1.0
+cc_protects = true
+cancels = Array[StringName]([&"stunned", &"using_ability", &"pulling"])
+has_look = false

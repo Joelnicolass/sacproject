@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/mite_hop.gd" id="1_hop"]
+
+[node name="MiteHop" type="Node"]
+editor_description = "The flight of a Bilemites mite (liba). On every touch of the ground it adds a hop: toward the closest creature within 15 m (it prefers the intended target) with v = 4.5·dir + 0.5·a uniform direction, or at random with v = 5·a uniform direction and vz 10 if there is nobody. On the 5th touch it stops and RangedShot frees it 30 ticks later (ShotInFlight.spent)."
+script = ExtResource("1_hop")

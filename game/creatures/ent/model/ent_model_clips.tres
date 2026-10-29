@@ -1,0 +1,35 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STst.res" id="1_STst"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STwk.res" id="2_STwk"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STa1.res" id="3_STa1"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STa2.res" id="4_STa2"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STa3.res" id="5_STa3"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/ST00.res" id="6_ST00"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STd1.res" id="7_STd1"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/ST2t.res" id="8_ST2t"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STsc.res" id="9_STsc"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STrz.res" id="10_STrz"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STfd.res" id="11_STfd"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STgu.res" id="12_STgu"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/SThf.res" id="13_SThf"]
+[ext_resource type="Animation" path="res://creatures/ent/model/ent_model_clips/STi1.res" id="14_STi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_STst"),
+&"run": ExtResource("2_STwk"),
+&"attack": ExtResource("3_STa1"),
+&"attack2": ExtResource("4_STa2"),
+&"attack3": ExtResource("5_STa3"),
+&"shoot": ExtResource("6_ST00"),
+&"shoot2": ExtResource("6_ST00"),
+&"death": ExtResource("7_STd1"),
+&"held": ExtResource("8_ST2t"),
+&"thrash": ExtResource("9_STsc"),
+&"rise": ExtResource("10_STrz"),
+&"knock": ExtResource("11_STfd"),
+&"get_up": ExtResource("12_STgu"),
+&"hit_floor": ExtResource("13_SThf"),
+&"gesture": ExtResource("14_STi1")
+}

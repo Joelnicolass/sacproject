@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/command_cue/command_cue.gd" id="1_cue"]
+[ext_resource type="Script" path="res://scenes/ui/command_cue/refusal_reason.gd" id="2_reason"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_reason"]
+font_size = 15
+font_color = Color(1, 0.86, 0.78, 1)
+outline_size = 5
+outline_color = Color(0.08, 0.02, 0.01, 0.9)
 
 [node name="CommandCue" type="Control"]
 layout_mode = 3
@@ -16,6 +23,8 @@ script = ExtResource("1_cue")
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
+offset_right = 38.0
+offset_bottom = 38.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
@@ -24,14 +33,29 @@ stretch_mode = 5
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
+offset_right = 38.0
+offset_bottom = 38.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Reason" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 260.0
+offset_bottom = 22.0
+mouse_filter = 2
+editor_description = "The words of a refusal's reason beside the pointer (Refusal.text, scenes/ui/i18n/strings.csv). Remove the node and only the icons stay."
+label_settings = SubResource("LabelSettings_reason")
+script = ExtResource("2_reason")
 
 [node name="Mirror" type="TextureRect" parent="."]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
+offset_right = 38.0
+offset_bottom = 38.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MpGame" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/mp_kit/mp_game.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+transport = "enet"
+port = 7777
+max_players = 4
+boot_scene = "res://addons/mp_kit/examples/arena_2d/boot.tscn"
+world_scene = "res://addons/mp_kit/examples/arena_2d/arena.tscn"
+lobby_scene = "res://addons/mp_kit/examples/arena_2d/lobby.tscn"
+rooms_scene = "res://addons/mp_kit/examples/arena_2d/rooms.tscn"

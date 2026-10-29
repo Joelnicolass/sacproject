@@ -1,0 +1,94 @@
+{
+  "alpine_meadow": {
+    "cells_without_role": 2626,
+    "cells_without_tile": 31,
+    "god": "persephone",
+    "loose_cells_absorbed": 28,
+    "loose_cells_before": {
+      "earth": 1,
+      "open": 0,
+      "path": 18,
+      "rock": 9
+    }
+  },
+  "high_noon": {
+    "cells_without_role": 328,
+    "cells_without_tile": 0,
+    "god": "james",
+    "loose_cells_absorbed": 21,
+    "loose_cells_before": {
+      "earth": 1,
+      "open": 0,
+      "path": 7,
+      "rock": 13
+    }
+  },
+  "peaks": {
+    "cells_without_role": 0,
+    "cells_without_tile": 0,
+    "god": "charnel",
+    "loose_cells_absorbed": 8,
+    "loose_cells_before": {
+      "earth": 3,
+      "open": 5,
+      "path": 0,
+      "rock": 0
+    }
+  },
+  "peasantville": {
+    "cells_without_role": 491,
+    "cells_without_tile": 0,
+    "god": "james",
+    "loose_cells_absorbed": 137,
+    "loose_cells_before": {
+      "earth": 19,
+      "open": 13,
+      "path": 20,
+      "rock": 85
+    }
+  },
+  "roads": {
+    "cells_without_role": 0,
+    "cells_without_tile": 0,
+    "god": "pyro",
+    "loose_cells_absorbed": 8,
+    "loose_cells_before": {
+      "earth": 3,
+      "open": 0,
+      "path": 3,
+      "rock": 2
+    }
+  },
+  "test_flat": {
+    "all": "open",
+    "god": null
+  },
+  "test_flat4": {
+    "all": "open",
+    "god": null
+  },
+  "tutorial_valley": {
+    "cells_without_role": 37275,
+    "cells_without_tile": 5,
+    "god": "persephone",
+    "loose_cells_absorbed": 30,
+    "loose_cells_before": {
+      "earth": 0,
+      "open": 4,
+      "path": 21,
+      "rock": 4
+    }
+  },
+  "winter_wonder": {
+    "cells_without_role": 200,
+    "cells_without_tile": 0,
+    "god": "stratos",
+    "loose_cells_absorbed": 53,
+    "loose_cells_before": {
+      "earth": 34,
+      "open": 1,
+      "path": 18,
+      "rock": 0
+    }
+  }
+}

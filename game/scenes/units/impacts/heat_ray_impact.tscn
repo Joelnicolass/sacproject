@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/burn_impact.gd" id="1_burn"]
+
+[node name="HeatRayImpact" type="Node"]
+editor_description = "The Tickferno's heat ray (sfba): creature or wizard → a fire of amount over duration·60 frames (direct ranged) that also drains half its max mana; building → the same fire with no drain; ground → nothing."
+script = ExtResource("1_burn")
+mana_drain_fraction = 0.5

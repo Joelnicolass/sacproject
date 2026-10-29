@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/props/forest_scatter.gd" id="1_forest"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_scatter_rules.gd" id="2_rules"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_variant.gd" id="3_variant"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/forest_tree.tscn" id="4_tree"]
+[ext_resource type="Script" path="res://scenes/map/props/terrain_ground.gd" id="5_ground"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_keep_out.gd" id="6_keep_out"]
+
+[sub_resource type="Resource" id="Resource_rules"]
+script = ExtResource("2_rules")
+random_seed = 7
+cluster_size = 320.0
+cover = 0.3
+edge = 0.16
+density = 0.85
+lone_chance = 0.01
+spacing = 10.0
+scale_range = Vector2(0.55, 1.7)
+scale_jitter = 0.18
+keep_out_shrink = 0.25
+max_count = 2000
+sink = 0.4
+
+[sub_resource type="Resource" id="Resource_tree"]
+script = ExtResource("3_variant")
+scene = ExtResource("4_tree")
+
+[sub_resource type="Resource" id="Resource_ground"]
+script = ExtResource("5_ground")
+
+[sub_resource type="Resource" id="Resource_starts"]
+script = ExtResource("6_keep_out")
+group = &"player_start"
+radius = 70.0
+
+[sub_resource type="Resource" id="Resource_founts"]
+script = ExtResource("6_keep_out")
+group = &"manafount"
+radius = 40.0
+
+[sub_resource type="Resource" id="Resource_buildings"]
+script = ExtResource("6_keep_out")
+group = &"map_building"
+radius = 18.0
+
+[node name="Forest" type="Node3D"]
+editor_description = "The forests of a map: «Scatter» plants forest_tree.tscn over the Terrain, away from the starts, the manafounts and the buildings (their groups). Bake the navmesh after a scatter."
+script = ExtResource("1_forest")
+rules = SubResource("Resource_rules")
+variants = Array[ExtResource("3_variant")]([SubResource("Resource_tree")])
+ground = SubResource("Resource_ground")
+keep_out = Array[ExtResource("6_keep_out")]([SubResource("Resource_starts"), SubResource("Resource_founts"), SubResource("Resource_buildings")])
+name_prefix = "Tree"

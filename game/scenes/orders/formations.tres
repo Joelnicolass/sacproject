@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RtsFormationCatalog" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_formation_catalog.gd" id="0"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_formation.gd" id="9"]
+[ext_resource type="Resource" path="res://scenes/orders/line.tres" id="1"]
+[ext_resource type="Resource" path="res://scenes/orders/flank_left.tres" id="2"]
+[ext_resource type="Resource" path="res://scenes/orders/flank_right.tres" id="3"]
+[ext_resource type="Resource" path="res://scenes/orders/phalanx.tres" id="4"]
+[ext_resource type="Resource" path="res://scenes/orders/semicircle.tres" id="5"]
+[ext_resource type="Resource" path="res://scenes/orders/circle.tres" id="6"]
+[ext_resource type="Resource" path="res://scenes/orders/wedge.tres" id="7"]
+[ext_resource type="Resource" path="res://scenes/orders/skirmish.tres" id="8"]
+
+[resource]
+script = ExtResource("0")
+formations = Array[ExtResource("9")]([ExtResource("1"), ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8")])

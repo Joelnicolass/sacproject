@@ -3,6 +3,11 @@ extends Node
 ## Informal MP kit autoload. ENet + slots + session RPCs. No game rules.
 ## Listen-server: host() — hosting player is slot 1 / peer 1.
 ## Dedicated: host_dedicated() — peer 1 is not a player; same project as clients (VPS / --dedicated).
+## Who may sit and when the match starts is the Gate's (MpMatchGate, `/root/MpKit/Gate`), once a flow armed it.
+
+## The kit's version (plugin.cfg says the same; a test checks it). An exported game has no plugin.cfg: this is what the
+## MpKit issuer is told.
+const VERSION := "0.18.1"
 
 signal peer_joined(peer_id: int, slot: int)
 signal peer_left(peer_id: int, slot: int)
@@ -12,9 +17,15 @@ signal client_world_ready(peer_id: int)
 signal load_world
 signal snapshot_received(data: Dictionary)
 signal session_ended(data: Dictionary)
+## Server: it told every peer the session ended (broadcast_session_ended, e.g. MpMatch.finish). Clients get session_ended.
+signal session_ended_sent(data: Dictionary)
 signal slot_assigned(slot: int)
 ## Client side: the server refused the ticket (reason is opaque, chosen by the server).
 signal admission_rejected(reason: String)
+## Client: the server sent nothing for host_silent_after_s (it beats 4 times a second): its game froze, its tab went
+## to the background in a mobile browser, or the link stalls. `host_back` when it beats again.
+signal host_silent(seconds: float)
+signal host_back
 ## Opaque Dictionary pipe. Kit does not interpret `data`. from_peer is 1 when the server pushed.
 signal custom_received(channel: StringName, data: Dictionary, from_peer: int)
 
@@ -33,27 +44,117 @@ var admission_timeout_s: float = 5.0
 const TICKET_MAX_LEN := 512
 ## Seconds between the rejection RPC and the disconnect.
 const REJECT_FLUSH_S := 0.2
+## Peers that may wait for admission at once; more are disconnected on arrival (a flood of empty connections).
+var max_pending_admission: int = 64
+## ENet's hard limit of peers per host.
+const ENET_MAX_PEERS := 4095
+## Largest Dictionary a client may send through the custom tunnel (var_to_bytes), and how often.
+var custom_max_bytes: int = 8192
+var custom_limit := MpRateLimit.new(30.0, 60.0)
 var rooms: MpRoomDirectory
 var matchmaker: MpMatchmaker
+## The door of the match (armed by MpFlow / MpMatchAgent). Armed = every peer presents itself and the gate seats it.
+var gate: MpMatchGate
 
 ## `MpTransport.ENET` (default) or `MpTransport.WS`. Read from `--transport=` at startup; glue may set it
 ## before `host()` / `join()`. Same API and RPCs with both.
 var transport: String = MpTransport.ENET
+## Client: seconds without the server's beat before host_silent.
+var host_silent_after_s: float = 1.5
+## WebSocket TLS (wss://). Server: certificate + key; client: TLSOptions.client(). Null = plain. MpNetConfig sets them.
+var tls_server: TLSOptions
+var tls_client: TLSOptions
+## This connection's RTT, jitter and loss (and, on the server, every player's). Mp.net_quality() reads it.
+var net_quality: MpNetQuality
+var _listen_refused: bool = false
 var _peer: MultiplayerPeer
 var _world_ready: Dictionary = {}
 var _broadcasting_custom: bool = false
 var _pending_ticket: String = ""
 var _awaiting_ticket: Dictionary = {}
+## Client: "host:port" of the server it joins, and the seat credential each server gave (memory only; kept across leave()).
+var _endpoint: String = ""
+## [due msec, Callable] for after_real.
+var _real_due: Array = []
+var _seat_credentials: Dictionary = {}
+## The server's beat: when it sends the next one; on a client, when the last one came (0 = none yet) and since when
+## it is silent (0 = it is not).
+var _next_beat_ms: int = 0
+var _last_beat_ms: int = 0
+var _silent_since_ms: int = 0
 
 
 func _ready() -> void:
+	## Infrastructure: the session (admission timers, rejections) keeps going while the game is paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	net_quality = MpNetQuality.new()
+	net_quality.name = "NetQuality"
+	add_child(net_quality)
 	transport = MpTransport.from_flags()
+	tls_server = MpTransport.server_tls_from_flags()
+	tls_client = MpTransport.client_tls_from_flags()
 	_ensure_hub_children()
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
+
+
+## Runs `callable` once `seconds` of REAL time passed. For network timeouts: packets arrive in real time, while game time
+## runs faster or slower with `--fixed-fps` (it stops syncing to the clock) or `Engine.time_scale`.
+func after_real(seconds: float, callable: Callable) -> void:
+	_real_due.append([Time.get_ticks_msec() + int(maxf(seconds, 0.0) * 1000.0), callable])
+
+
+func _process(_delta: float) -> void:
+	var now := Time.get_ticks_msec()
+	_beat(now)
+	if _real_due.is_empty():
+		return
+	var due: Array = []
+	var later: Array = []
+	for item in _real_due:
+		(due if now >= int(item[0]) else later).append(item)
+	_real_due = later
+	for item in due:
+		if (item[1] as Callable).is_valid():
+			(item[1] as Callable).call()
+
+
+## The server beats every BEAT_MS (unreliable, a few bytes) so a client can tell a silent host from a quiet match.
+const BEAT_MS := 250
+
+
+func _beat(now: int) -> void:
+	if not is_networked():
+		return
+	if multiplayer.is_server():
+		if now >= _next_beat_ms and not multiplayer.get_peers().is_empty():
+			_next_beat_ms = now + BEAT_MS
+			rpc_beat.rpc()
+		return
+	if _last_beat_ms > 0 and _silent_since_ms == 0 and now - _last_beat_ms > int(host_silent_after_s * 1000.0):
+		_silent_since_ms = now
+		host_silent.emit((now - _last_beat_ms) / 1000.0)
+
+
+@rpc("authority", "call_remote", "unreliable")
+func rpc_beat() -> void:
+	_last_beat_ms = Time.get_ticks_msec()
+	if _silent_since_ms != 0:
+		_silent_since_ms = 0
+		host_back.emit()
+
+
+## Client: the server is silent now (host_silent fired and no beat came since).
+func is_host_silent() -> bool:
+	return _silent_since_ms != 0
+
+
+## When the current silence started (Time.get_ticks_msec), 0 when the server beats.
+func host_silent_since_ms() -> int:
+	return _silent_since_ms
 
 
 func configure(
@@ -81,10 +182,29 @@ func is_dedicated() -> bool:
 	return is_server() and ids.dedicated
 
 
+## Server: clients can reach it now. ENet / WebSocket: as soon as it hosts; relay: once the relay accepted it.
+func is_listening() -> bool:
+	return is_server() and MpTransport.is_listening(_peer)
+
+
+## Server: the relay turned this server away (its port's room has another live host): host on another port.
+## Kept after the refused peer is dropped (Godot reports a host's lost link as server_disconnected), until the
+## next host / join.
+func listen_refused() -> bool:
+	return _listen_refused or MpTransport.is_refused(_peer)
+
+
 func is_listen_host() -> bool:
 	return is_server() and not ids.dedicated
 
 
+## True where the game rules run: solo (no network) or the server. Use it instead of
+## `not is_networked() or is_server()`.
+func is_authority() -> bool:
+	return not is_networked() or is_server()
+
+
+## The slot of the player on this machine; 0 on a dedicated server and on a client that has not got one yet.
 func local_slot() -> int:
 	if not is_networked():
 		return ids.host_slot
@@ -92,9 +212,12 @@ func local_slot() -> int:
 		if ids.dedicated:
 			return 0
 		return ids.host_slot
-	if ids.local_slot != 0:
-		return ids.local_slot
-	return ids.host_slot + 1
+	return ids.local_slot
+
+
+## True when this machine has a player with a known slot (solo, a listen host, a client once the server assigned it).
+func has_local_slot() -> bool:
+	return local_slot() > 0
 
 
 func occupied_slots() -> Array[int]:
@@ -119,8 +242,9 @@ func is_peer_world_ready(peer_id: int) -> bool:
 
 func host(dedicated: bool = false) -> Error:
 	leave()
+	_listen_refused = false
 	ids.dedicated = dedicated
-	var made := MpTransport.create_server(transport, port, _enet_max_clients())
+	var made := MpTransport.create_server(transport, port, _enet_max_clients(), tls_server)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		ids.dedicated = false
@@ -139,10 +263,13 @@ func host_dedicated() -> Error:
 	return host(true)
 
 
-## `p_port` <= 0 uses `port`. A non-empty `ticket` is presented to the server on connect.
+## `p_port` <= 0 uses `port`. On connect the client presents `ticket`, else the seat credential this endpoint gave it before
+## (a rejoin), else "".
 func join(address: String, p_port: int = -1, ticket: String = "") -> Error:
 	leave()
-	var made := MpTransport.create_client(transport, address, p_port if p_port > 0 else port)
+	_listen_refused = false
+	var target_port := p_port if p_port > 0 else port
+	var made := MpTransport.create_client(transport, address, target_port, tls_client)
 	var peer := made["peer"] as MultiplayerPeer
 	if int(made["error"]) != OK:
 		return int(made["error"]) as Error
@@ -151,11 +278,27 @@ func join(address: String, p_port: int = -1, ticket: String = "") -> Error:
 	ids.reset_offline()
 	ids.local_slot = 0
 	_world_ready.clear()
-	_pending_ticket = ticket
+	_endpoint = "%s:%d" % [address, target_port]
+	_pending_ticket = ticket if not ticket.is_empty() else str(_seat_credentials.get(_endpoint, ""))
 	return OK
 
 
+## Client: forget every seat credential (the next join to any server is a new player).
+func forget_seat_credentials() -> void:
+	_seat_credentials.clear()
+
+
+## The slots an open match offers: every client slot (a listen host's own slot is not one).
+func open_seats() -> Array[int]:
+	var out: Array[int] = []
+	for slot in range(ids.first_client_slot(), max_players + 1):
+		out.append(slot)
+	return out
+
+
 func leave() -> void:
+	_last_beat_ms = 0
+	_silent_since_ms = 0
 	if rooms:
 		rooms.reset()
 	if matchmaker:
@@ -163,10 +306,12 @@ func leave() -> void:
 	_world_ready.clear()
 	_awaiting_ticket.clear()
 	_pending_ticket = ""
+	if gate:
+		gate.reset()
 	ids.reset_offline()
-	## Keep Rooms / Matchmaker. Only free LAN beacon and late-join helper.
+	## Keep Rooms / Matchmaker / Gate. Only free the LAN beacon.
 	for child in get_children():
-		if child is MpLanBeacon or child.name == "MpBootLateJoin":
+		if child is MpLanBeacon:
 			child.queue_free()
 	if _peer == null:
 		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
@@ -181,7 +326,19 @@ func leave() -> void:
 func request_world_ready() -> void:
 	if not is_networked() or multiplayer.is_server():
 		return
+	if gate:
+		gate.hold_local_world()
 	rpc_world_ready.rpc_id(1)
+
+
+## The local world finished loading (MpFlow.world_loaded, when the world reports it). A client tells the server, and its seat
+## counts as loaded at the gate; the server itself (a listen host, a dedicated, solo) tells the gate it is in.
+func report_loaded() -> void:
+	if is_networked() and not multiplayer.is_server():
+		rpc_seat_loaded.rpc_id(1)
+		return
+	if gate:
+		gate.mark_host_loaded()
 
 
 func push_snapshot(data: Dictionary) -> void:
@@ -218,6 +375,7 @@ func broadcast_session_ended(data: Dictionary) -> void:
 		return
 	for peer_id in _broadcast_peers():
 		rpc_session_ended.rpc_id(peer_id, data)
+	session_ended_sent.emit(data)
 
 
 func is_custom_channel_allowed(channel: StringName) -> bool:
@@ -247,7 +405,23 @@ func send_custom(channel: StringName, data: Dictionary) -> void:
 ## Server → every client (and emit on the server). call_remote: clients only get the RPC.
 ## Re-entrant: glue must not `broadcast_custom` again from this emit without checking `from_peer`.
 ## A nested call is ignored so a naive `if is_server(): broadcast_custom` cannot recurse.
-func broadcast_custom(channel: StringName, data: Dictionary) -> void:
+## Server: the peers whose world is loaded (a slot and world_ready), the ones that can play a one-off effect of yours now. A peer
+## still loading would play it with no world and lose it. With your own @rpc: `for peer_id in MpKit.ready_peers(): node.fx.rpc_id(
+## peer_id, ...)`, and call the function here too if the server shows it (an rpc_id to another peer does not run it here, even
+## with call_local). What must last (marks, a score) goes in MpState / Sync / a spawned node: it reaches whoever loads later.
+func ready_peers() -> PackedInt32Array:
+	var out := PackedInt32Array()
+	if not is_server():
+		return out
+	for peer_id in multiplayer.get_peers():
+		if ids.slot_for_peer(peer_id) != 0 and is_peer_world_ready(peer_id):
+			out.append(peer_id)
+	return out
+
+
+## Server only: emits here (`from_peer` = 1) and sends to every client with a slot; `only_world_ready` sends to ready_peers()
+## only (a one-off effect a peer still loading would lose).
+func broadcast_custom(channel: StringName, data: Dictionary, only_world_ready: bool = false) -> void:
 	if not is_server():
 		return
 	if not is_custom_channel_allowed(channel):
@@ -257,7 +431,7 @@ func broadcast_custom(channel: StringName, data: Dictionary) -> void:
 	_broadcasting_custom = true
 	var payload: Dictionary = data.duplicate(true)
 	custom_received.emit(channel, payload, 1)
-	for peer_id in _broadcast_peers():
+	for peer_id in (ready_peers() if only_world_ready else _broadcast_peers()):
 		rpc_custom_from_server.rpc_id(peer_id, String(channel), payload)
 	_broadcasting_custom = false
 
@@ -281,26 +455,36 @@ func _ensure_hub_children() -> void:
 		matchmaker = MpMatchmaker.new()
 		matchmaker.name = "Matchmaker"
 		add_child(matchmaker)
+	gate = get_node_or_null("Gate") as MpMatchGate
+	if gate == null:
+		gate = MpMatchGate.new()
+		gate.name = "Gate"
+		add_child(gate)
 
 
-## Peers that may receive broadcasts. With `admission` set, only those that already have a slot.
+## Server: new peers present themselves before they get a slot (a ticket admission, or an armed gate).
+func _admitting() -> bool:
+	return admission.is_valid() or (gate != null and gate.is_armed())
+
+
+## Peers that may receive broadcasts. While admitting, only those that already have a slot.
 func _broadcast_peers() -> PackedInt32Array:
 	var out := PackedInt32Array()
 	for peer_id in multiplayer.get_peers():
-		if not admission.is_valid() or ids.slot_for_peer(peer_id) != 0:
+		if not _admitting() or ids.slot_for_peer(peer_id) != 0:
 			out.append(peer_id)
 	return out
 
 
+## ENet's own cap leaves room for the peers waiting at the door: a peer past it never connects, so it would wait for the ENet
+## timeout and never hear why. Who sits is decided in _on_peer_connected (the gate, admission, or the seat count), with a reason.
 func _enet_max_clients() -> int:
-	if ids.dedicated:
-		return maxi(1, max_players)
-	return maxi(1, max_players - 1)
+	return mini(ENET_MAX_PEERS, maxi(1, max_players) + maxi(1, max_pending_admission))
 
 
 func _connected_player_count() -> int:
 	var n := multiplayer.get_peers().size()
-	if admission.is_valid():
+	if _admitting():
 		n = ids.occupied_slots().size()
 	if not ids.dedicated:
 		n += 1
@@ -310,16 +494,19 @@ func _connected_player_count() -> int:
 func _on_peer_connected(id: int) -> void:
 	if not multiplayer.is_server():
 		return
-	if admission.is_valid():
+	if _admitting():
+		if _awaiting_ticket.size() >= max_pending_admission:
+			_cut_peer(multiplayer.multiplayer_peer, id, "too_many_pending")
+			return
 		_awaiting_ticket[id] = true
-		get_tree().create_timer(admission_timeout_s).timeout.connect(_on_admission_timeout.bind(id))
+		after_real(admission_timeout_s, _on_admission_timeout.bind(id))
 		return
 	if exceeds_max_players(_connected_player_count()):
-		multiplayer.multiplayer_peer.disconnect_peer(id)
+		_reject_peer(id, MpMatchGate.FULL)
 		return
 	var slot := ids.assign_client(id)
 	if slot == 0:
-		multiplayer.multiplayer_peer.disconnect_peer(id)
+		_reject_peer(id, MpMatchGate.FULL)
 		return
 	rpc_assign_slot.rpc_id(id, slot)
 	peer_joined.emit(id, slot)
@@ -331,8 +518,11 @@ func _on_peer_disconnected(id: int) -> void:
 	if _awaiting_ticket.erase(id):
 		return
 	_world_ready.erase(id)
+	custom_limit.forget(id)
 	var slot := ids.unbind_peer(id)
-	if slot == 0 and admission.is_valid():
+	if slot != 0 and gate.is_armed():
+		gate.mark_left(slot)
+	if slot == 0 and _admitting():
 		return
 	peer_left.emit(id, slot)
 
@@ -354,14 +544,23 @@ func _reject_peer(id: int, reason: String) -> void:
 	rpc_admission_rejected.rpc_id(id, reason)
 	## Let the reliable RPC leave before the disconnect command.
 	var closing := multiplayer.multiplayer_peer
-	get_tree().create_timer(REJECT_FLUSH_S).timeout.connect(func() -> void:
+	after_real(REJECT_FLUSH_S, func() -> void:
 		if closing != null and multiplayer.multiplayer_peer == closing and multiplayer.get_peers().has(id):
-			closing.disconnect_peer(id))
+			_cut_peer(closing, id, reason))
 
 
+## Server: disconnects `id`, saying why in the log (every path that turns a peer away goes through here). Through the relay the
+## reason also travels in the close, so the client knows it even if the admission_rejected RPC was lost.
+func _cut_peer(peer: MultiplayerPeer, id: int, reason: String) -> void:
+	push_warning("MpKit: the server turned peer %d away (%s)" % [id, reason])
+	if peer.has_method(&"set_kick_reason"):
+		peer.call(&"set_kick_reason", id, reason)
+	peer.disconnect_peer(id)
+
+
+## Always presents (a ticket, a stored credential or ""): a server that admits nobody ignores it.
 func _on_connected_to_server() -> void:
-	if not _pending_ticket.is_empty():
-		rpc_present_ticket.rpc_id(1, _pending_ticket)
+	rpc_present_ticket.rpc_id(1, _pending_ticket)
 
 
 func _on_connection_failed() -> void:
@@ -371,6 +570,11 @@ func _on_connection_failed() -> void:
 
 func _on_server_disconnected() -> void:
 	if _peer == null:
+		return
+	## A host the relay turned away (its room is taken): not a lost server. Say it through listen_refused().
+	if MpTransport.is_refused(_peer):
+		leave()
+		_listen_refused = true
 		return
 	## Dropped while still waiting for a slot: a rejection whose RPC did not arrive.
 	if not _pending_ticket.is_empty() and ids.local_slot == 0:
@@ -390,7 +594,7 @@ func rpc_assign_slot(slot: int) -> void:
 
 @rpc("any_peer", "call_remote", "reliable")
 func rpc_present_ticket(ticket: String) -> void:
-	if not multiplayer.is_server() or not admission.is_valid():
+	if not multiplayer.is_server() or not _admitting():
 		return
 	var sender := multiplayer.get_remote_sender_id()
 	if not _awaiting_ticket.has(sender):
@@ -398,9 +602,15 @@ func rpc_present_ticket(ticket: String) -> void:
 	if ticket.length() > TICKET_MAX_LEN:
 		_reject_peer(sender, "rejected")
 		return
+	if gate.is_armed():
+		_admit_at_gate(sender, ticket)
+		return
 	var slot := int(admission.call(sender, ticket))
 	if slot <= 0:
 		_reject_peer(sender, "rejected")
+		return
+	if slot < ids.first_client_slot() or slot > ids.max_players:
+		_reject_peer(sender, "slot_out_of_range")
 		return
 	if not ids.bind_client(sender, slot):
 		_reject_peer(sender, "slot_taken")
@@ -408,6 +618,38 @@ func rpc_present_ticket(ticket: String) -> void:
 	_awaiting_ticket.erase(sender)
 	rpc_assign_slot.rpc_id(sender, slot)
 	peer_joined.emit(sender, slot)
+
+
+func _admit_at_gate(sender: int, credential: String) -> void:
+	## A client back after a drop the server has not noticed yet: its credential wins over the stale connection, which leaves
+	## the way a drop does (the seat is away), so the seat comes back as a rejoin.
+	var stale := gate.displaced_by(sender, credential)
+	if stale != 0:
+		_on_peer_disconnected(stale)
+		_cut_peer(multiplayer.multiplayer_peer, stale, "replaced_by_rejoin")
+	var seat := gate.admit(sender, credential)
+	if seat.slot <= 0:
+		_reject_peer(sender, seat.reason)
+		return
+	if not ids.bind_client(sender, seat.slot):
+		push_error("MpKit: the gate seated peer %d in slot %d, outside this server's slots" % [sender, seat.slot])
+		gate.mark_left(seat.slot)
+		_reject_peer(sender, "slot_out_of_range")
+		return
+	_awaiting_ticket.erase(sender)
+	if not seat.credential.is_empty():
+		rpc_seat_credential.rpc_id(sender, seat.credential)
+	gate.tell_state(sender)
+	rpc_assign_slot.rpc_id(sender, seat.slot)
+	peer_joined.emit(sender, seat.slot)
+
+
+## Client: the server's credential for this seat; presented again on the next join to the same endpoint (a rejoin).
+@rpc("authority", "call_remote", "reliable")
+func rpc_seat_credential(credential: String) -> void:
+	if credential.is_empty() or credential.length() > TICKET_MAX_LEN or _endpoint.is_empty():
+		return
+	_seat_credentials[_endpoint] = credential
 
 
 @rpc("authority", "call_remote", "reliable")
@@ -426,7 +668,7 @@ func rpc_world_ready() -> void:
 	if not multiplayer.is_server():
 		return
 	var sender := multiplayer.get_remote_sender_id()
-	if admission.is_valid():
+	if _admitting():
 		if ids.slot_for_peer(sender) == 0:
 			return
 	else:
@@ -435,6 +677,18 @@ func rpc_world_ready() -> void:
 		return
 	_world_ready[sender] = true
 	client_world_ready.emit(sender)
+	if gate.is_armed() and gate.loaded_on_world_ready:
+		gate.mark_loaded(ids.slot_for_peer(sender))
+
+
+## A seated client's world reported itself loaded (report_loaded): its seat counts at the gate.
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_seat_loaded() -> void:
+	if not multiplayer.is_server():
+		return
+	var slot := ids.slot_for_peer(multiplayer.get_remote_sender_id())
+	if slot != 0 and gate.is_armed():
+		gate.mark_loaded(slot)
 
 
 @rpc("authority", "call_remote", "reliable")
@@ -456,6 +710,8 @@ func rpc_custom_to_server(channel: String, data: Dictionary) -> void:
 		return
 	var name := StringName(channel)
 	if not is_custom_channel_allowed(name):
+		return
+	if var_to_bytes(data).size() > custom_max_bytes or not custom_limit.allow(sender):
 		return
 	custom_received.emit(name, data.duplicate(true), sender)
 

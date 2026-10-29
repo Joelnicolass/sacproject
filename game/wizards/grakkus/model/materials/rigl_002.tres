@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/rigl/002.png" id="1_njdh2"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/rigl/002_normal.png" id="2_udf3o"]
+
+[resource]
+resource_name = "rigl_002"
+albedo_texture = ExtResource("1_njdh2")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_udf3o")

@@ -1,0 +1,82 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://gods/persephone/buildings/persephone_altar_2.tres" id="2_type"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/puac.res" id="mesh_puac"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/puap.res" id="mesh_puap"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/puar.res" id="mesh_puar"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/puav.res" id="mesh_puav"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(4, 4, 4)
+
+[node name="PersephonePua" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_puac")
+
+[node name="Pil1" type="Node3D" parent="Visuals"]
+position = Vector3(20, 0, 20)
+rotation = Vector3(0, -4.712389, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil1"]
+mesh = ExtResource("mesh_puap")
+
+[node name="Pil2" type="Node3D" parent="Visuals"]
+position = Vector3(-20, 0, 20)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil2"]
+mesh = ExtResource("mesh_puap")
+
+[node name="Pil3" type="Node3D" parent="Visuals"]
+position = Vector3(20, 0, -20)
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil3"]
+mesh = ExtResource("mesh_puap")
+
+[node name="Pil4" type="Node3D" parent="Visuals"]
+position = Vector3(-20, 0, -20)
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Pil4"]
+mesh = ExtResource("mesh_puap")
+
+[node name="Top" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Top"]
+mesh = ExtResource("mesh_puar")
+
+[node name="Vin1" type="Node3D" parent="Visuals"]
+position = Vector3(-40, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Vin1"]
+mesh = ExtResource("mesh_puav")
+
+[node name="Vin2" type="Node3D" parent="Visuals"]
+position = Vector3(40, 0, 0)
+rotation = Vector3(0, -3.1415927, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Vin2"]
+mesh = ExtResource("mesh_puav")
+
+[node name="Vin3" type="Node3D" parent="Visuals"]
+position = Vector3(0, 0, -40)
+rotation = Vector3(0, -1.5707964, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Vin3"]
+mesh = ExtResource("mesh_puav")
+
+[node name="Vin4" type="Node3D" parent="Visuals"]
+position = Vector3(0, 0, 40)
+rotation = Vector3(0, -4.712389, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Vin4"]
+mesh = ExtResource("mesh_puav")
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0, 2, 0)
+shape = SubResource("BoxShape3D_body")

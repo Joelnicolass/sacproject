@@ -20,8 +20,12 @@ var _flow_world: LineEdit
 var _flow_start: OptionButton
 
 
+var _setup_dialog: AcceptDialog
+
+
 func _enter_tree() -> void:
-	add_tool_menu_item("MpKit: Wire replication on selection", _on_wire_replication)
+	add_tool_menu_item("MpKit: Setup game...", _on_setup_game)
+	add_tool_menu_item("MpKit: Make selection a network actor", _on_wire_replication)
 	add_tool_menu_item("MpKit: New replicated feature...", _on_new_feature)
 	add_tool_menu_item("MpKit: New session flow...", _on_new_flow)
 	add_tool_menu_item("MpKit: Install Cursor/VS Code snippets", _on_install_snippets)
@@ -29,7 +33,11 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	remove_tool_menu_item("MpKit: Wire replication on selection")
+	remove_tool_menu_item("MpKit: Setup game...")
+	if _setup_dialog:
+		_setup_dialog.queue_free()
+		_setup_dialog = null
+	remove_tool_menu_item("MpKit: Make selection a network actor")
 	remove_tool_menu_item("MpKit: New replicated feature...")
 	remove_tool_menu_item("MpKit: New session flow...")
 	remove_tool_menu_item("MpKit: Install Cursor/VS Code snippets")
@@ -49,6 +57,19 @@ func _disable_plugin() -> void:
 	remove_autoload_singleton(AUTOLOAD_NAME)
 
 
+## The whole game in one dialog: boot, world, player, network .tres and (optional) online rooms. Never overwrites.
+func _on_setup_game() -> void:
+	if _setup_dialog == null:
+		_setup_dialog = (load("res://addons/mp_kit/editor/mp_setup_dialog.gd") as GDScript).new()
+		_setup_dialog.created.connect(func(boot: String) -> void:
+			EditorInterface.get_resource_filesystem().scan()
+			EditorInterface.open_scene_from_path.call_deferred(boot))
+		EditorInterface.get_base_control().add_child(_setup_dialog)
+	_setup_dialog.popup_centered()
+
+
+## Makes each selected node a network actor: an MpActor (its MpSync built and saved with the scene) and, for a
+## CharacterBody, an MpInput. Undo removes both.
 func _on_wire_replication() -> void:
 	var edited := EditorInterface.get_edited_scene_root()
 	if edited == null:
@@ -56,40 +77,27 @@ func _on_wire_replication() -> void:
 		return
 	var selected := EditorInterface.get_selection().get_selected_nodes()
 	if selected.is_empty():
-		push_warning("MpKit: select the actor node")
+		push_warning("MpKit: select the node the network shares")
 		return
 	var ur := get_undo_redo()
-	ur.create_action("MpKit: wire replication")
+	ur.create_action("MpKit: network actor")
 	for node in selected:
-		if node.get_node_or_null("MpReplicate") != null:
+		if MpActor.of(node) != null:
 			continue
-		var replicate := Node.new()
-		replicate.name = "MpReplicate"
-		replicate.set_script(load("res://addons/mp_kit/mp_replicate.gd"))
-		ur.add_do_method(node, "add_child", replicate)
-		ur.add_do_method(replicate, "set_owner", edited)
-		ur.add_undo_method(node, "remove_child", replicate)
-		ur.add_do_reference(replicate)
-		if node.get_node_or_null("MultiplayerSynchronizer") == null:
-			var sync := MultiplayerSynchronizer.new()
-			sync.name = "MultiplayerSynchronizer"
-			sync.replication_config = _default_replication(replicate)
-			ur.add_do_method(node, "add_child", sync)
-			ur.add_do_method(sync, "set_owner", edited)
-			ur.add_undo_method(node, "remove_child", sync)
-			ur.add_do_reference(sync)
+		var actor := MpActor.new()
+		actor.name = "MpActor"
+		ur.add_do_method(node, "add_child", actor, true)
+		ur.add_do_method(actor, "set_owner", edited)
+		ur.add_undo_method(node, "remove_child", actor)
+		ur.add_do_reference(actor)
+		if node is CharacterBody2D or node is CharacterBody3D:
+			var mp_input := MpInput.new()
+			mp_input.name = "MpInput"
+			ur.add_do_method(node, "add_child", mp_input, true)
+			ur.add_do_method(mp_input, "set_owner", edited)
+			ur.add_undo_method(node, "remove_child", mp_input)
+			ur.add_do_reference(mp_input)
 	ur.commit_action()
-
-
-## MpReplicate.sync_properties as spawn + always, like the README table.
-func _default_replication(replicate: Node) -> SceneReplicationConfig:
-	var cfg := SceneReplicationConfig.new()
-	for property in replicate.get("sync_properties"):
-		var path := NodePath(property)
-		cfg.add_property(path)
-		cfg.property_set_spawn(path, true)
-		cfg.property_set_replication_mode(path, SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
-	return cfg
 
 
 func _on_new_feature() -> void:

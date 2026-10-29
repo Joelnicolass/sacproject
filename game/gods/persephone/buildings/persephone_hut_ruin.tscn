@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://gods/persephone/buildings/pcx3.res" id="mesh_pcx3"]
+
+[node name="PersephoneHut1Ruin" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+mesh = ExtResource("mesh_pcx3")

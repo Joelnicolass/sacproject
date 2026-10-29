@@ -1,20 +1,20 @@
 class_name RosterCell
 extends Button
 
-## One 34×32 hole of the selection roster (sacengine renderSelectionRoster, renderer.d:4400-4466).
+## One 41×38 hole of the selection roster (canvas pixels).
 ## It shows a creature icon and, when the creature has health or mana, two 2-px bars on its right:
-## health at x = 32, mana at x = 34, both rising from y = 30. Group mode puts a digit count on the
+## health at x = 38, mana at x = 41, both rising from y = 36. Group mode puts a digit count on the
 ## icon (a share of Σhealth / Σmax for the bars). It only presents: the click goes up as `activated`
 ## with the modifiers it was pressed with, and the roster decides what that means.
 
 signal activated(cell: RosterCell, shift: bool, ctrl: bool)
 
-## sacobject.d:1155 healthColor.
+## The health bar color.
 @export_color_no_alpha var health_color := Color8(192, 0, 0)
-## sacobject.d:1156 manaColor.
+## The mana bar color.
 @export_color_no_alpha var mana_color := Color8(0, 96, 192)
-## Pixels (HUD units) a full bar is tall: 30 of the 32 of the cell.
-@export var bar_height := 30.0
+## Pixels a full bar is tall: 36 of the 38 of the cell.
+@export var bar_height := 36.0
 
 ## What the cell stands for: the creature (unit mode) or its tag (group mode).
 var unit: Node

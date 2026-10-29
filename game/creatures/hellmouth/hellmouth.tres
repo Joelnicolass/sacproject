@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_3nw7s"]
+[ext_resource type="Texture2D" uid="uid://dkuxo3breglsc" path="res://assets/original/ui/icons/nomd.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/hellmouth/hellmouth_shot.tres" id="typed_mhba"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/devour.tres" id="typed_ifna"]
+[ext_resource type="AnimationLibrary" path="res://creatures/hellmouth/model/hellmouth_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/hellmouth/hellmouth.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_3nw7s")
+tag = "nomd"
+display_name = "Hellmouth"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 5400
+drain = 0.5
+run_speed_m_s = 10.0
+fly_speed_m_s = 20.0
+melee_strength = 800
+melee_accuracy = 3.0
+melee_evasion = 3.0
+ranged_accuracy = 0.3
+aggressiveness = 1.0
+vision_m = 150.0
+direct_spell_resistance = 0.5
+splash_spell_resistance = 0.5
+direct_ranged_resistance = 0.75
+splash_ranged_resistance = 0.75
+mana = 750
+mana_cost = 1900
+souls = 5
+cooldown_s = 10.0
+casting_time_s = 3.3333
+book_level = 9
+book_slot = 89
+ranged_attack = ExtResource("typed_mhba")
+active_ability = ExtResource("typed_ifna")

@@ -1,0 +1,55 @@
+class_name DivineSight
+extends AbilityEffect
+
+## The Ranger's Divine Sight: it sends an eye. No target and no preparation. The eye is born 2 m
+## ahead of the user (along its facing), on the land (or a building top) there, with velocity speed
+## · facing, and the ability applies (AbilitySlot spends the 50 mana and starts the 25 s cooldown).
+## What the eye does is DivineSightEye's. The spell has flags 0, so the UI sends the use at once,
+## without arming a target (MatchCommand._use_ability). No sound at the cast.
+
+## The eye (divine_sight_eye.tscn), put in the shot container through the ShotSpawner (replicated
+## like a shot).
+@export var eye_scene: PackedScene
+## How far ahead of the user the eye is born (m).
+@export var spawn_ahead := 2.0
+
+
+## No target is needed or looked at: a click with a body or a spot works the same.
+func status(_target_pos: Vector3, _target: Node3D) -> String:
+	return "" if user != null and ability != null and eye_scene != null else Refusal.BAD_TARGET
+
+
+func fire(_target_pos: Vector3, _target: Node3D) -> bool:
+	if not is_multiplayer_authority() or user == null or ability == null or eye_scene == null:
+		return false
+	var spawner := user.get_tree().get_first_node_in_group(ShotSpawner.GROUP) as ShotSpawner
+	if spawner == null:
+		push_warning("DivineSight: no ShotSpawner in the world.")
+		return false
+	var ahead := user.facing_flat()
+	var at := user.global_position + spawn_ahead * ahead
+	at.y = RangedShot.land_height(user, at)
+	if at.y == -INF:
+		at.y = user.global_position.y
+	var velocity := ability.speed_m_s * ahead
+	var eye := (
+		spawner
+		. spawn_scene(
+			{
+				"scene": eye_scene.resource_path,
+				"prefix": "Eye",
+				"x": at.x,
+				"y": at.y,
+				"z": at.z,
+				"vx": velocity.x,
+				"vy": velocity.y,
+				"vz": velocity.z,
+				"slot": int(user.get("owner_slot")),
+				"tag": ability.tag,
+				"shooter": who(user),
+			}
+		)
+	)
+	if DebugLog.on(&"effects"):
+		print("eye %s of %s (tick %d)" % [eye.name if eye else "?", who(user), MatchClock.now()])
+	return eye != null

@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/arch/M000.png" id="1_jfhyp"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/arch/M000_normal.png" id="2_81su6"]
+
+[resource]
+resource_name = "arch_M000"
+albedo_texture = ExtResource("1_jfhyp")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_81su6")

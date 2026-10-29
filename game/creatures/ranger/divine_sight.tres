@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AbilityType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_px4r0"]
+[ext_resource type="Texture2D" uid="uid://ds8j642pqja1v" path="res://assets/original/ui/icons/eesd.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/divine_sight.tscn" id="effect_scene"]
+
+[resource]
+script = ExtResource("1_px4r0")
+effect = ExtResource("effect_scene")
+tag = "eesd"
+display_name = "Divine Sight"
+icon = ExtResource("icon_tex")
+mana_cost = 50
+cast_range_m = 250.0
+cooldown_s = 25.0
+casting_time_s = 18.5185
+speed_m_s = 30.0
+acceleration_m_s2 = 3.0
+effect_range_m = 75.0
+duration_s = 30.0

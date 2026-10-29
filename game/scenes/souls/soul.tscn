@@ -1,0 +1,61 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/souls/soul.gd" id="1_soul"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/spir.png" id="2_atlas"]
+[ext_resource type="Script" path="res://scenes/audio/soul_sounds.gd" id="a052_soul_sounds"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/soul.tres" id="a055_soul"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_soul"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:scaling")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:state")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:number")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:owner_slot")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:attached")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath(".:collector_slot")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath(".:dropped")
+properties/7/spawn = true
+properties/7/replication_mode = 0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_target"]
+radius = 0.75
+height = 2.8
+
+[node name="Soul" type="Node3D"]
+script = ExtResource("1_soul")
+atlas = ExtResource("2_atlas")
+
+[node name="Visual" type="Node3D" parent="."]
+physics_interpolation_mode = 2
+editor_description = "The drawing of the soul: Rise lifts it from the corpse without moving the soul."
+
+[node name="Target" type="StaticBody3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Target"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+shape = SubResource("CapsuleShape3D_target")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_soul")
+
+[node name="SoulSounds" type="Node" parent="." node_paths=PackedStringArray("soul")]
+editor_description = "The soul sounds (spir) when a wizard takes it (state turns COLLECTING, replicated). Without audio (dedicated, headless) it does nothing."
+script = ExtResource("a052_soul_sounds")
+soul = NodePath("..")
+collected_cue = ExtResource("a055_soul")

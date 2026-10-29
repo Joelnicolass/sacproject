@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/life_shield_ability.gd" id="1_shield"]
+
+[node name="LifeShieldAbility" type="Node"]
+editor_description = "The Life Shield effect of the Druid and the Shrike (hsba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It shields itself on the tick of the order, for 1200 ticks, with no windup."
+script = ExtResource("1_shield")

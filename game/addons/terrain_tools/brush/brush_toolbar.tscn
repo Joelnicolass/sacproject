@@ -1,0 +1,191 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://addons/terrain_tools/brush/brush_toolbar.gd" id="1_bar"]
+[ext_resource type="Resource" path="res://addons/terrain_tools/brush/default_brush.tres" id="2_brush"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_tools"]
+
+[node name="BrushToolbar" type="HBoxContainer"]
+editor_description = "The map brush bar (addon terrain_tools): shows above the 3D view while a Terrain (Relief and Roles groups) or a FloraLayer (Flora group) is selected. The left-click tool and the knobs of the shared brush (default_brush.tres)."
+script = ExtResource("1_bar")
+brush = ExtResource("2_brush")
+
+[node name="Title" type="Label" parent="."]
+unique_name_in_owner = true
+text = "Terrain:"
+
+[node name="Off" type="Button" parent="."]
+unique_name_in_owner = true
+tooltip_text = "No brush: a click selects as usual."
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_tools")
+text = "None"
+flat = true
+
+[node name="Relief" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="ReliefSeparator" type="VSeparator" parent="Relief"]
+
+[node name="Raise" type="Button" parent="Relief"]
+unique_name_in_owner = true
+tooltip_text = "Click and drag the mouse up to raise the land, down to lower it (Strength: metres per pixel)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Raise/Lower"
+flat = true
+
+[node name="Smooth" type="Button" parent="Relief"]
+unique_name_in_owner = true
+tooltip_text = "Drag to smooth. With Shift it flattens to the height of the point where the stroke started."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Smooth"
+flat = true
+
+[node name="Void" type="Button" parent="Relief"]
+unique_name_in_owner = true
+tooltip_text = "Paint void (no land; the height below is kept). With Shift it fills and brings back the land from before."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Hole"
+flat = true
+
+[node name="Roles" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="RolesSeparator" type="VSeparator" parent="Roles"]
+
+[node name="RoleOpen" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Paint grass on the ground (ground_roles.png, channel R). It shows with a god that has a GodGround in Look (Persephone)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Grass"
+flat = true
+
+[node name="RoleEarth" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Paint dirt on the ground (ground_roles.png, channel G)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Dirt"
+flat = true
+
+[node name="RoleRock" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Paint rock on the ground (ground_roles.png, channel B)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Rock"
+flat = true
+
+[node name="RolePath" type="Button" parent="Roles"]
+unique_name_in_owner = true
+tooltip_text = "Paint road on the ground (ground_roles.png, channel A)."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Road"
+flat = true
+
+[node name="FloraGroup" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="FloraSeparator" type="VSeparator" parent="FloraGroup"]
+
+[node name="Flora" type="Button" parent="FloraGroup"]
+unique_name_in_owner = true
+tooltip_text = "Paint where this flora layer grows (its density PNG; created if missing). With Shift it erases."
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tools")
+text = "Paint"
+flat = true
+
+[node name="KnobsSeparator" type="VSeparator" parent="."]
+
+[node name="SizeLabel" type="Label" parent="."]
+text = "Size"
+
+[node name="Size" type="SpinBox" parent="."]
+unique_name_in_owner = true
+tooltip_text = "From the centre to the edge of the brush, in metres."
+min_value = 5.0
+max_value = 1000.0
+value = 50.0
+allow_greater = true
+suffix = "m"
+
+[node name="FalloffLabel" type="Label" parent="."]
+text = "Falloff"
+
+[node name="Falloff" type="SpinBox" parent="."]
+unique_name_in_owner = true
+tooltip_text = "0 = hard edge; 1 = soft from the centre."
+max_value = 1.0
+step = 0.05
+value = 0.5
+
+[node name="Shape" type="OptionButton" parent="."]
+unique_name_in_owner = true
+tooltip_text = "The brush shape seen from above."
+selected = 0
+item_count = 3
+popup/item_0/text = "Circle"
+popup/item_0/id = 0
+popup/item_1/text = "Square"
+popup/item_1/id = 1
+popup/item_2/text = "Cross"
+popup/item_2/id = 2
+
+[node name="StrengthKnob" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="StrengthLabel" type="Label" parent="StrengthKnob"]
+text = "Strength"
+
+[node name="Strength" type="SpinBox" parent="StrengthKnob"]
+unique_name_in_owner = true
+tooltip_text = "Raise/Lower: metres the centre moves for every pixel of drag."
+min_value = 0.01
+max_value = 2.0
+step = 0.01
+value = 0.1
+allow_greater = true
+suffix = "m/px"
+
+[node name="FlowKnob" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="FlowLabel" type="Label" parent="FlowKnob"]
+text = "Flow"
+
+[node name="Flow" type="SpinBox" parent="FlowKnob"]
+unique_name_in_owner = true
+tooltip_text = "Roles and flora: how far each dab brings a pixel towards the paint (1 = all the way under the hard centre)."
+max_value = 1.0
+step = 0.05
+value = 0.5
+
+[node name="DensityKnob" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+
+[node name="DensityLabel" type="Label" parent="DensityKnob"]
+text = "Density"
+
+[node name="Density" type="SpinBox" parent="DensityKnob"]
+unique_name_in_owner = true
+tooltip_text = "Flora: the density a full dab leaves (1 = white, max_per_cell plants)."
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="Rebuild" type="Button" parent="."]
+unique_name_in_owner = true
+tooltip_text = "This ground is slow to rebuild: the strokes show through the preview and the mesh is rebuilt on save. Rebuild now (the editor waits)."
+text = "Rebuild"
+
+[node name="Status" type="Label" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.6)
+text = "measuring…"

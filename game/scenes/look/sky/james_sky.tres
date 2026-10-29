@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="SkyLook" format=3]
+
+[ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_nd78j"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/james_skyb_tileable.png" id="3_cruv4"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/sky.png" id="4_aykr2"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/james_skyt_tileable.png" id="5_8yatu"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/james/undr.png" id="7_undr"]
+[ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_75fvq"]
+
+[sub_resource type="Gradient" id="Gradient_aurora"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.561, 0.544, 0.733, 1, 0.859, 0.742, 0.617, 1, 0.855, 0.807, 0.782, 1)
+
+[sub_resource type="GradientTexture1D" id="Aurora_james"]
+gradient = SubResource("Gradient_aurora")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rhook"]
+shader = ExtResource("1_nd78j")
+shader_parameter/background_color = Color(1, 0.7059, 0.4706, 1)
+shader_parameter/energy = 1.7
+shader_parameter/top_texture = ExtResource("5_8yatu")
+shader_parameter/bottom_texture = ExtResource("3_cruv4")
+shader_parameter/mirror_repeat = false
+shader_parameter/band_repeats = 8
+shader_parameter/band_blend = 0.03
+shader_parameter/rotation_period_s = 512.0
+shader_parameter/clouds_texture = ExtResource("4_aykr2")
+shader_parameter/cloud_period_s = 64.0
+shader_parameter/sun_intensity = 4.0
+shader_parameter/halo_strength = 0.9
+shader_parameter/zenith_color = Color(0.42, 0.36, 0.78, 1)
+shader_parameter/zenith_strength = 0.0
+shader_parameter/horizon_color = Color(1.0, 0.7, 0.6, 1)
+shader_parameter/horizon_strength = 0.0
+shader_parameter/saturation = 1.0
+shader_parameter/cloud_alpha = 1.0
+shader_parameter/ambient_top_color = Color(0.3, 0.5, 0.85, 1)
+shader_parameter/ambient_horizon_color = Color(0.95, 0.85, 0.7, 1)
+shader_parameter/ambient_ground_color = Color(0.4, 0.3, 0.2, 1)
+shader_parameter/ambient_energy = 1.0
+shader_parameter/ambient_curve = 0.2
+shader_parameter/aurora_strength = 0.2
+shader_parameter/aurora_gradient = SubResource("Aurora_james")
+shader_parameter/sun_color = Color(1, 0.96, 0.85, 1)
+shader_parameter/sun_radius_deg = 2.0
+shader_parameter/halo_color = Color(1, 0.9, 0.7, 1)
+shader_parameter/halo_power = 16.0
+shader_parameter/moon_color = Color(0.75, 0.82, 1, 1)
+shader_parameter/moon_radius_deg = 3.0
+shader_parameter/moon_azimuth_deg = -40.0
+shader_parameter/moon_elevation_deg = 40.0
+
+[resource]
+script = ExtResource("6_75fvq")
+label = "Cielo de James: mediodia de desierto"
+material = SubResource("ShaderMaterial_rhook")
+under_texture = ExtResource("7_undr")
+ambient_sky_contribution = 0.45
+fog_color = Color(0.7299, 0.6995, 0.76175, 1)
+haze_tint = Color(1, 0.94, 0.82, 1)
+volumetric_density = 0.002

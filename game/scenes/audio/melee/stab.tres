@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/stb1.wav" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/stb2.wav" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/stb4.wav" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comb/stb5.wav" id="s4"]
+
+[sub_resource type="Resource" id="cue_swing"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3"), ExtResource("s4")])
+
+[resource]
+script = ExtResource("1_set")
+swing = SubResource("cue_swing")

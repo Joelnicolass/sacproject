@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="GrassType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/grass/grass_type.gd" id="1_t"]
+
+[resource]
+script = ExtResource("1_t")
+label = "Pradera"
+width_m = 0.16
+tip_width = 0.1
+far_width_scale = 4.3
+far_height_scale = 1.0
+specular = 0.4
+roughness = 0.55
+height_variation = 0.35
+lean = 0.55
+short_height_m = 0.25
+tall_height_m = 0.8
+density_near = 45.0
+density_far = 9.5
+color_mid = Color(0.14, 0.29, 0.05, 1)
+color_tip = Color(0.32, 0.45, 0.12, 1)
+ground_mix = 0.3
+normal_roundness = 0.8
+translucency = 0.5
+root_ao = 0.5
+wind_strength = 0.32
+gust_lighten = 0.35
+near_fade_m = 0.8
+slope_start_deg = 10.0
+slope_full_deg = 40.0
+slope_height_floor = 0.55
+slope_width_scale = 1.0
+hill_density = 0.9
+zone_full_far = 0.25
+fade_start = 0.25
+color_fade_start = 0.3
+color_fade_end = 0.85
+min_blade_px = 1.5

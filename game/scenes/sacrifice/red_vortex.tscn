@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/sacrifice/red_vortex.gd" id="1_vortex"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/red_vortex.tres" id="2_effect"]
+[ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="3_disc"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/portal_red.tres" id="4_look"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+
+[node name="RedVortex" type="Node3D" node_paths=PackedStringArray("disc")]
+script = ExtResource("1_vortex")
+disc = NodePath("Disc")
+effect = ExtResource("2_effect")
+
+[node name="Disc" parent="." instance=ExtResource("3_disc")]
+look = ExtResource("4_look")
+radius = Vector2(2.5, 2.5)
+open_s = 2.0
+close_s = 1.0
+free_when_closed = true
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+light_color = Color(1, 0.28, 0.1, 1)
+light_energy = 1.5
+omni_range = 8
+fade_in_s = 1
+fade_out_s = 0.6
+lit_on_ready = true
+editor_description = "Red light while the red vortex of Convert / Desecrate (and the Sac Doctor) is open (red_vortex.tres / vtx2.png drops, dominant colour). It goes out with the vortex."

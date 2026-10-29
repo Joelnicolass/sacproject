@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_impact.gd" id="1_impact"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/splash_impact.tscn" id="2_splash"]
+[ext_resource type="Script" path="res://scenes/units/impacts/burn_impact.gd" id="3_burn"]
+
+[node name="BombardImpact" type="Node"]
+editor_description = "Bombard cfba: the body hit takes the whole amount as ranged splash and the rest of the damage range the falloff (SplashImpact); also, a fire of no damage for 60 frames on the body hit and on every creature or wizard in the radius (BurnImpact, look only)."
+script = ExtResource("1_impact")
+
+[node name="SplashImpact" parent="." instance=ExtResource("2_splash")]
+
+[node name="BurnImpact" type="Node" parent="."]
+script = ExtResource("3_burn")
+amount = 1
+lifetime = 1
+radius_source = 1

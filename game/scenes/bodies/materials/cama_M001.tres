@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/cama/M001.png" id="1_5cbbr"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/cama/M001_normal.png" id="2_eot8p"]
+
+[resource]
+resource_name = "cama_M001"
+albedo_texture = ExtResource("1_5cbbr")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_eot8p")

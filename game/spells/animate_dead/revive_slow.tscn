@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/fast_revive.tscn" id="1_fast"]
+
+[node name="Revive" instance=ExtResource("1_fast")]
+editor_description = "The normal revival of Animate Dead: it lasts the whole revive time (5 s = 300 ticks), rises 2 m in the first half and turns twice. It is the fast-revival scene with other knobs."
+revive_s = 5.0
+rise_s = 2.5
+turns = 2.0

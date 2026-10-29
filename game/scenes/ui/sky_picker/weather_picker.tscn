@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/sky_picker/weather_picker.gd" id="1_picker"]
+[ext_resource type="Resource" path="res://scenes/look/weather/clear.tres" id="2_clear"]
+[ext_resource type="Resource" path="res://scenes/look/weather/rain.tres" id="3_rain"]
+[ext_resource type="Resource" path="res://scenes/look/weather/storm.tres" id="4_storm"]
+[ext_resource type="Resource" path="res://scenes/look/weather/fog.tres" id="5_fog"]
+[ext_resource type="Resource" path="res://scenes/look/weather/snow.tres" id="6_snow"]
+
+[node name="WeatherPicker" type="OptionButton"]
+script = ExtResource("1_picker")
+weathers = Array[Resource]([ExtResource("2_clear"), ExtResource("3_rain"), ExtResource("4_storm"), ExtResource("5_fog"), ExtResource("6_snow")])

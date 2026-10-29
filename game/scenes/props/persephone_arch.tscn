@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="2_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/arch.res" id="mesh_arch"]
+
+[node name="PersephoneArch" type="Node3D"]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = ExtResource("mesh_arch")
+
+[node name="VegetationClear" type="Node3D" parent="."]
+script = ExtResource("2_clear")
+radius_m = 12.0

@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="PickButton" type="Button"]
+custom_minimum_size = Vector2(148, 40)
+toggle_mode = true
+text = "UI_PICK_BUTTON_PICK_BUTTON"

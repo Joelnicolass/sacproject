@@ -1,15 +1,21 @@
 class_name LocalServerHost
 extends Node
 
-## RFC-034 034m: «Servidor local». The player's own PC runs ONE dedicated match with the same code as the VPS
-## (`MpMatchLauncher` + `MatchTicketGlue` in the dedicated), without a room server: no list, no UPnP, no fallback.
-## The ticket has two seats. The host seat's token stays here (the host joins as a normal client with it); the other
-## token is the rival's CODE, shown to the host to pass along with the address and the port. The dedicated only keeps
-## the sha256 of both (`MpMatchAgent`), so a third player without the code is rejected, and a code opens one seat.
-## The rival chooses his own wizard and god: the ticket leaves seat 2 without a pick (`open_picks`), the rival sends it when he is
-## admitted, the dedicated checks it with the rules of the game (`SacrificeFlow`) and the world does not start until it has it.
-## This node lives under `root` (it survives `change_scene`) and frees itself when the match ends or the host leaves.
-## `--match-args=--flag=1,--other` adds user args to the dedicated (tests only, same hook as the room server).
+## «Servidor local». The player's own PC runs ONE dedicated match with the same code as the VPS
+## (`MpMatchLauncher` + `MatchTicketGlue` in the dedicated), without a room server: no list, no
+## UPnP, no fallback. The ticket has two seats. The host seat's token stays here (the host joins as
+## a normal client with it); the other token is the rival's CODE, shown to the host to pass along
+## with the address and the port. The dedicated only keeps the sha256 of both (`MpMatchAgent`), so a
+## third player without the code is rejected, and a code opens one seat. The rival chooses his own
+## wizard and god: the ticket leaves seat 2 without a pick (`open_picks`), the rival sends it when
+## he is admitted, the dedicated checks it with the rules of the game (`SacrificeFlow`) and the
+## world does not start until it has it. This node lives under `root` (it survives `change_scene`)
+## and frees itself when the match ends or the host leaves. `--match-args=--flag=1,--other` adds
+## user args to the dedicated (tests only, same hook as the room server). The options carry the map
+## (`world`) and the mode (`mode`); the ticket has one seat per seat of the mode. The host is seat
+## 1; each other seat is an AI (`ai_seats` of `start`, {slot: {god, difficulty}}) or a person with a
+## code of its own (`codes`, {slot: code}). `rival_code` is the code of the lowest seat for a person
+## (the only one in a 1v1).
 
 signal server_ready(address: String, port: int, code: String)
 signal server_failed(reason: String)
@@ -21,15 +27,15 @@ const CODE_BYTES := 8
 const MATCH_ID_PREFIX := "local_"
 const LOOPBACK := "127.0.0.1"
 
-@onready var launcher: MpMatchLauncher = %Launcher
-@onready var rules: SacrificeRoomRules = %Rules
-
 ## What the host needs after `server_ready`.
 var match_id: String = ""
 var port: int = 0
-## LAN address to give to the rival (empty if this PC has none; the loopback still works for the host).
+## LAN address to give to the rival (empty if this PC has none; the loopback still works for the
+## host).
 var address: String = ""
 var rival_code: String = ""
+## Code of each seat for a person (slot -> code); the host's seat is not in it.
+var codes: Dictionary = {}
 ## The host's own credential: it joins `LOOPBACK:port` with it.
 var host_token: String = ""
 var hosting: bool = false
@@ -39,9 +45,12 @@ var _closed: bool = false
 ## True while `stop()` kills the dedicated: that is not a failure the screen should show.
 var _stopping: bool = false
 
+@onready var launcher: MpMatchLauncher = %Launcher
+@onready var rules: SacrificeRoomRules = %Rules
+
 
 func _ready() -> void:
-	## The game exported has no `--path`; the editor (and the tests) run the same project with it.
+	# The game exported has no `--path`; the editor (and the tests) run the same project with it.
 	if launcher.base_args.is_empty():
 		var args := PackedStringArray(["--headless"])
 		if OS.has_feature("editor"):
@@ -57,26 +66,52 @@ func _ready() -> void:
 	set_process(false)
 
 
-## Launches the dedicated. `host_pick` = {wizard, god}; `transport` empty = the one of the config / flag.
-## `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already hosts.
-func start(host_pick: Dictionary, transport: String = "", options: Dictionary = {}) -> Error:
+## Launches the dedicated. `host_pick` is what the host chose (MatchWire writes it into the ticket);
+## `transport` empty = the one of the config / flag; `options` the room options (`world`, `mode`…);
+## `ai_seats` {slot: {god, difficulty}} the seats an AI plays (slot 1 is the host's and never an
+## AI). `server_ready` comes when the dedicated listens. ERR_ALREADY_IN_USE if this node already
+## hosts; ERR_INVALID_PARAMETER for options or an AI seat the rules refuse (a map with fewer starts
+## than the mode, an unknown god).
+func start(
+	host_pick: WizardPick,
+	transport: String = "",
+	options: Dictionary = {},
+	ai_seats: Dictionary = {}
+) -> Error:
 	if hosting:
 		return ERR_ALREADY_IN_USE
-	## Not in the tree yet (added while its parent is busy, or never added): say so, do not break on Nil.
+	# Not in the tree yet (added while its parent is busy, or never added): say so, do not break on
+	# Nil.
 	if not is_inside_tree() or launcher == null or launcher.config == null or rules == null:
-		push_error("LocalServerHost.start: el nodo no está en el árbol (agregalo a root y esperá un frame)")
+		push_error(
+			"LocalServerHost.start: the node is not in the tree (add it to root and wait a frame)"
+		)
 		return ERR_UNCONFIGURED
 	if not transport.is_empty():
 		launcher.config.transport = MpTransport.normalize(transport)
+	if not rules.are_options_valid(options):
+		push_error("LocalServerHost.start: invalid options %s" % JSON.stringify(options))
+		return ERR_INVALID_PARAMETER
+	for slot in ai_seats.keys():
+		if int(slot) <= HOST_SLOT or not rules.is_valid_bot(ai_seats[slot]):
+			push_error("LocalServerHost.start: invalid AI seat %s" % str(slot))
+			return ERR_INVALID_PARAMETER
 	MpKit.transport = launcher.config.transport
 	host_token = _new_code()
-	rival_code = _new_code()
+	codes = {}
+	var seats: Array = [
+		{"slot": HOST_SLOT, "token": host_token, "meta": MatchWire.encode_pick(host_pick)}
+	]
+	for slot in range(RIVAL_SLOT, rules.seat_count_for(options) + 1):
+		if ai_seats.has(slot):
+			seats.append({"slot": slot, "bot": true, "meta": ai_seats[slot]})
+			continue
+		codes[slot] = _new_code()
+		seats.append({"slot": slot, "token": codes[slot], "meta": {}})
+	rival_code = str(codes[codes.keys().min()]) if not codes.is_empty() else ""
 	match_id = "%s%s" % [MATCH_ID_PREFIX, _new_code().substr(0, 8)]
-	var ticket := rules.build_ticket([
-		{"slot": HOST_SLOT, "token": host_token, "meta": host_pick},
-		{"slot": RIVAL_SLOT, "token": rival_code, "meta": {}},
-	], options)
-	ticket["open_picks"] = [RIVAL_SLOT]
+	var ticket := rules.build_ticket(seats, options)
+	ticket["open_picks"] = codes.keys()
 	var err := launcher.launch(match_id, ticket)
 	if err != OK:
 		return err
@@ -103,11 +138,14 @@ func _process(_delta: float) -> void:
 		_on_host_gone()
 
 
-## The host's link is gone. After the match the dedicated quits by itself (`result_quit_delay_s`) and that drops the host first: if
-## `result.json` is there, that is the end of the match, not a failure. Without it, the host left a match in course: kill the dedicated.
+## The host's link is gone. After the match the dedicated quits by itself (`result_quit_delay_s`)
+## and that drops the host first: if `result.json` is there, that is the end of the match, not a
+## failure. Without it, the host left a match in course: kill the dedicated.
 func _on_host_gone() -> void:
 	set_process(false)
-	var result := MpMatchFiles.read_json(MpMatchFiles.path_of(launcher.config.matches_root, match_id, MpMatchFiles.RESULT))
+	var result := MpMatchFiles.read_json(
+		MpMatchFiles.path_of(launcher.config.matches_root, match_id, MpMatchFiles.RESULT)
+	)
 	if result.is_empty():
 		stop("host_left")
 		return
@@ -122,9 +160,19 @@ func _on_listening(listening_id: String, listening_port: int) -> void:
 		return
 	port = listening_port
 	address = MpLan.get_local_ipv4()
-	## One line for the logs and the tests: the same three things the screen shows.
-	print("servidor local listo direccion=%s puerto=%d transporte=%s codigo=%s" % [
-		address, port, launcher.config.transport, rival_code])
+	# One line for the logs and the tests: the same three things the screen shows.
+	print(
+		(
+			"servidor local listo direccion=%s puerto=%d transporte=%s codigo=%s asientos=%s"
+			% [
+				address,
+				port,
+				launcher.config.transport,
+				rival_code,
+				",".join(PackedStringArray(codes.keys().map(str)))
+			]
+		)
+	)
 	server_ready.emit(address, port, rival_code)
 
 

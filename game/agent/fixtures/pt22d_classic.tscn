@@ -1,7 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="PackedScene" path="res://debug/look_gallery.tscn" id="1_g"]
-
-[node name="Pt22dClassic" instance=ExtResource("1_g")]
-classic = true
-freeze_sky = false

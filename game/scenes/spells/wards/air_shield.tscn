@@ -1,0 +1,123 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
+[ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
+[ext_resource type="Script" path="res://scenes/spells/wards/body_aura.gd" id="3_aura"]
+[ext_resource type="Resource" path="res://spells/air_shield/air_shield.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/air_sparks.tres" id="5_sparks"]
+[ext_resource type="Shader" path="res://scenes/spells/wards/air_bubble.gdshader" id="6_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/shld.png" id="7_swirl"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/air_cast.tres" id="8_cast"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/air_converge.tres" id="9_converge"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="10_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_air.tres" id="cue_ward_air"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_air_hiss.tres" id="cue_ward_air_hiss"]
+
+[sub_resource type="SphereShape3D" id="Sphere_reach"]
+radius = 5.0
+
+[sub_resource type="ShaderMaterial" id="Mat_bubble"]
+shader = ExtResource("6_shader")
+shader_parameter/swirl = ExtResource("7_swirl")
+shader_parameter/cells = Vector2(4, 2)
+
+[sub_resource type="SphereMesh" id="Mesh_bubble"]
+material = SubResource("Mat_bubble")
+radius = 0.5
+height = 1.0
+radial_segments = 25
+rings = 24
+
+[node name="AirShield" type="Node3D" node_paths=PackedStringArray("look")]
+script = ExtResource("1_ward")
+spell = ExtResource("4_spell")
+factor = 0.5
+ranged_factor = 0.5
+look_scale = Vector3(2, 1.5, 2)
+cast_type = ExtResource("8_cast")
+look = NodePath("Look")
+
+[node name="Look" type="Node3D" parent="."]
+editor_description = "La burbuja son tres capas de la misma esfera con ruido (air_bubble.gdshader). Textura: shld.png, atlas de 4x2 celdas (la burbuja del original, confirmada por el SPEL dlhs: ttex = shld)."
+visible = false
+
+[node name="Layer0" type="MeshInstance3D" parent="Look"]
+cast_shadow = 0
+mesh = SubResource("Mesh_bubble")
+instance_shader_parameters/phase = 0.000
+
+[node name="Layer1" type="MeshInstance3D" parent="Look"]
+cast_shadow = 0
+mesh = SubResource("Mesh_bubble")
+instance_shader_parameters/phase = 0.333
+
+[node name="Layer2" type="MeshInstance3D" parent="Look"]
+cast_shadow = 0
+mesh = SubResource("Mesh_bubble")
+instance_shader_parameters/phase = 0.667
+
+[node name="Sparks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("5_sparks")
+ward = NodePath("..")
+when = 0
+half_axes_m = Vector3(2.6, 2.3, 2.6)
+on_surface = false
+
+[node name="Aura" type="Node3D" parent="." node_paths=PackedStringArray("ward", "reach")]
+script = ExtResource("3_aura")
+ward = NodePath("..")
+reach = NodePath("Reach")
+affects = 1
+measure = 1
+push_force = 20.0
+
+[node name="Reach" type="CollisionShape3D" parent="Aura"]
+shape = SubResource("Sphere_reach")
+
+
+[node name="CastSparks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+editor_description = "Mientras se lanza: 2 destellos cst0 por tick nacen en la caja x4 del mago y convergen a su centro (como el original, sobre el lanzador). pull_m_s2 = 2 d / T^2 con d ~ 4 m y T = 0,53 s."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("9_converge")
+ward = NodePath("..")
+when = 3
+half_axes_m = Vector3(4.16, 6.12, 4.16)
+on_surface = false
+pull_m_s2 = 18.0
+
+[node name="SoundCast" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
+cue = ExtResource("cue_ward_air")
+ward = NodePath("..")
+when = 3
+
+[node name="SoundOn" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
+cue = ExtResource("cue_ward_air")
+ward = NodePath("..")
+
+[node name="SoundOff" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
+cue = ExtResource("cue_ward_air")
+ward = NodePath("..")
+when = 1
+
+[node name="SoundHiss" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("10_sound")]
+editor_description = "ashh.wav es el segundo sonido del SPEL dlhs (bandera 8). NO VERIFICADO cuando suena: aca al apagar, junto a ashd."
+cue = ExtResource("cue_ward_air_hiss")
+ward = NodePath("..")
+when = 1
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.5, 0.7, 1, 1)
+light_energy = 1.3
+omni_range = 7
+editor_description = "Blue light while the bubble lasts (dominant colour of shld.png, the bubble texture). Tune color, energy and range here."
+
+[connection signal="shown_changed" from="." to="Glow" method="show_lit"]

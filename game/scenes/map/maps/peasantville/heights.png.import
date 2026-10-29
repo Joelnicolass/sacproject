@@ -1,0 +1,16 @@
+[remap]
+
+importer="sacrifice.terrain_heights"
+importer_version=1
+type="Resource"
+uid="uid://d4jxqycq0xkf6"
+path="res://.godot/imported/heights.png-b518af8485eb9231f8098d6d36e9659b.res"
+
+[deps]
+
+source_file="res://scenes/map/maps/peasantville/heights.png"
+dest_files=["res://.godot/imported/heights.png-b518af8485eb9231f8098d6d36e9659b.res"]
+
+[params]
+
+metres_per_unit=0.1

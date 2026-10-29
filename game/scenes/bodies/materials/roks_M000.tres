@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/roks/M000.png" id="1_hh0ix"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/roks/M000_normal.png" id="2_t25gc"]
+
+[resource]
+resource_name = "roks_M000"
+albedo_texture = ExtResource("1_hh0ix")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_t25gc")

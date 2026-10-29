@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_emitter_3d.gd" id="1_emitter"]
+
+[node name="SoundEmitter3D" type="AudioStreamPlayer3D"]
+editor_description = "The sound of a world node: `cue` is a SoundCue (scenes/audio/cues/); with the AudioGate closed the scene loads and stays silent. Without `loop`: it plays once on entering the tree, through the SoundBus 3D pool. With `loop`: it loops on this player while `active` and within `max_distance_m` of the listener."
+bus = &"SFX"
+script = ExtResource("1_emitter")

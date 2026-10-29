@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/weapons/ranged_weapon.gd" id="1_ranged"]
+
+[node name="Ranged" type="Node"]
+editor_description = "A shot: the creature stops, turns until it aims, spends mana and fires on the shoot frames of its clip, then waits out the cooldown. Drop this scene under Weapons to give a creature a shot; the order of the Weapons children is the priority. attack_type holds the ranged attack (empty = the one of its CreatureType). The look and what it does on arrival is that ability's ShotLook (its shot_look field, a scene of scenes/units/attacks/shots/): a breath is this weapon with a ShotLook whose in_flight is a wave."
+script = ExtResource("1_ranged")

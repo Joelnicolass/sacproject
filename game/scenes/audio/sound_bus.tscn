@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_bus.gd" id="1_bus"]
+[ext_resource type="Script" path="res://scenes/audio/fx_sounds.gd" id="2_fx"]
+[ext_resource type="Script" path="res://scenes/audio/ui_click_sounds.gd" id="3_ui"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ui_click.tres" id="4_click"]
+
+[node name="SoundBus" type="Node" node_paths=PackedStringArray("fx_sounds", "ui_clicks")]
+editor_description = "The autoload that plays SoundCues: the pool of 32 3D voices and 8 2D voices, the priority, the cooldown and the limit per cue. The caps (pool_3d_size, max_loops_3d) are tuned here. FxSounds is the child that turns FxBus effects into sounds."
+script = ExtResource("1_bus")
+fx_sounds = NodePath("FxSounds")
+ui_clicks = NodePath("UiClickSounds")
+
+[node name="FxSounds" type="Node" parent="."]
+editor_description = "When FxBus plays a burst or a beam on this peer, the `sound` of its ParticleType or BeamType plays. Scene effects sound through the SoundEmitter3D they carry."
+script = ExtResource("2_fx")
+
+[node name="UiClickSounds" type="Node" parent="."]
+editor_description = "Every button that enters the tree sounds `click` when pressed. A button with the `ui_sound` metadata (a SoundCue) sounds that one; with `no_ui_sound` true, none."
+script = ExtResource("3_ui")
+click = ExtResource("4_click")

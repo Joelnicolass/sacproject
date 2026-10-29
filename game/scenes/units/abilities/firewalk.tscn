@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/firewalk.gd" id="1_firewalk"]
+
+[node name="Firewalk" type="Node"]
+editor_description = "The Warmonger's Firewalk effect (wfhg). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It prepares 150 ticks (GFs2: tick 75 at 30 fps), range 200 x 0.75, and walks with Firewalking."
+script = ExtResource("1_firewalk")
+windup_s = 2.5
+windup_from_clip = true
+range_factor = 0.75

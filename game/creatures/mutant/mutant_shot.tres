@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_6tpih"]
+[ext_resource type="Texture2D" uid="uid://bdhahqqedpfg1" path="res://assets/original/ui/icons/babt.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/mutant_shot.tscn" id="shot_look"]
+
+[resource]
+script = ExtResource("1_6tpih")
+shot_look = ExtResource("shot_look")
+tag = "babt"
+display_name = "Throw baby"
+icon = ExtResource("icon_tex")
+mana_cost = 33
+cast_range_m = 150.0
+cooldown_s = 6.6667
+casting_time_s = 4.9383
+speed_m_s = 42.0
+damage = 425
+damage_range_m = 10.0
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 425

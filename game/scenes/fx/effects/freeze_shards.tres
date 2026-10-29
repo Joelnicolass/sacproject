@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="GradientTexture1D" path="res://scenes/fx/effects/ramps/ice.tres" id="ramp_ice"]
+[ext_resource type="Texture2D" uid="uid://bmg3vdsq7rluc" path="res://assets/original/fx/shrd.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/freeze_shards.tres" id="cue_freeze_shards"]
+
+
+[resource]
+script = ExtResource("1_type")
+atlas = ExtResource("atlas_png")
+h_frames = 4
+v_frames = 4
+size = Vector2(1.0, 1.0)
+energy = 1.0
+frame_s = 0.03333
+lifetime_s = 0.52
+gravity = 15.0
+spread = 60.0
+count = 48
+speed_min = 1.0
+speed_max = 3.2
+scale_min = 0.75
+scale_max = 1.0
+emission_radius = 0.6
+additive = false
+lit = false
+color_ramp = ExtResource("ramp_ice")
+sound = ExtResource("cue_freeze_shards")

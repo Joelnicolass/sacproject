@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/status/pace_factors.gd" id="1_pace"]
+
+[node name="PaceFactors" type="Node"]
+editor_description = "The one owner of body.speed_factor. Speedup, Sticky bombs and Blight mites give it one factor per source; it writes the product only when it changes. Server only."
+script = ExtResource("1_pace")

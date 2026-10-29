@@ -1,0 +1,129 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="2_source"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="3_rules"]
+[ext_resource type="Script" path="res://scenes/map/props/altar.gd" id="4_altar"]
+[ext_resource type="Script" path="res://scenes/map/props/ritual_site.gd" id="5_site"]
+[ext_resource type="Script" path="res://scenes/map/props/altar_collapse.gd" id="6_collapse"]
+[ext_resource type="Script" path="res://scenes/spells/guardian/guard_post.gd" id="7_post"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="8_sound"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/altar_loop.tres" id="cue_altar_loop"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wrath_explosion2.tres" id="9_burst"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alba.res" id="mesh_alba"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alpi.res" id="mesh_alpi"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/alto.res" id="mesh_alto"]
+[ext_resource type="Script" path="res://scenes/map/props/ground_footprint.gd" id="10_footprint"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_footprint"]
+size = Vector3(52, 1, 52)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]
+height = 3.2
+radius = 7.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pillar"]
+height = 22.0
+radius = 4.5
+
+[node name="Altar" type="StaticBody3D" node_paths=PackedStringArray("visuals", "mana_source", "site", "collapse", "loop_sound")]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("4_altar")
+visuals = NodePath("Visuals")
+mana_source = NodePath("ManaSource")
+site = NodePath("Site")
+collapse = NodePath("Collapse")
+loop_sound = NodePath("LoopSound")
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Base" type="MeshInstance3D" parent="Visuals"]
+mesh = ExtResource("mesh_alba")
+
+[node name="Pillar1" type="Node3D" parent="Visuals"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 20, 0, 20)
+
+[node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar1"]
+mesh = ExtResource("mesh_alpi")
+
+[node name="Pillar2" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 20)
+
+[node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar2"]
+mesh = ExtResource("mesh_alpi")
+
+[node name="Pillar3" type="Node3D" parent="Visuals"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 20, 0, -20)
+
+[node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar3"]
+mesh = ExtResource("mesh_alpi")
+
+[node name="Pillar4" type="Node3D" parent="Visuals"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -20, 0, -20)
+
+[node name="Visual" type="MeshInstance3D" parent="Visuals/Pillar4"]
+mesh = ExtResource("mesh_alpi")
+
+[node name="Top" type="MeshInstance3D" parent="Visuals"]
+mesh = ExtResource("mesh_alto")
+
+[node name="BaseCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("CylinderShape3D_base")
+
+[node name="Pillar1Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 11, 20)
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Pillar2Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 11, 20)
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Pillar3Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 11, -20)
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Pillar4Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 11, -20)
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="GroundFootprint" type="CollisionShape3D" parent="."]
+editor_description = "The base that has to stay level: the box seen from above (52 x 52 m: the ring and the 4 pillars at +-20 m with their +-5.6 m mesh). Adjusted with the gizmo; it never collides."
+shape = SubResource("BoxShape3D_footprint")
+disabled = true
+script = ExtResource("10_footprint")
+
+[node name="ManaSource" type="Node3D" parent="."]
+script = ExtResource("2_source")
+kind = 1
+rules = ExtResource("3_rules")
+owner_slot = 0
+
+[node name="Site" type="Node3D" parent="." node_paths=PackedStringArray("altar")]
+script = ExtResource("5_site")
+altar = NodePath("..")
+
+[node name="Collapse" type="Node" parent="." node_paths=PackedStringArray("visuals", "ring", "burst_spot")]
+script = ExtResource("6_collapse")
+burst_fx = ExtResource("9_burst")
+visuals = NodePath("../Visuals")
+ring = NodePath("../Visuals/Base")
+burst_spot = NodePath("../BurstSpot")
+
+[node name="BurstSpot" type="Marker3D" parent="."]
+editor_description = "Where the altar's base bursts at the end of its fall (AltarCollapse.burst_fx): above the base, at the top of the rise (float_height)."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 60, 0)
+
+[node name="AttachPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+
+[node name="GuardPost" type="Node" parent="." node_paths=PackedStringArray("host", "attach_point", "altar")]
+script = ExtResource("7_post")
+host = NodePath("..")
+attach_point = NodePath("../AttachPoint")
+altar = NodePath("..")
+
+[node name="LoopSound" parent="." instance=ExtResource("8_sound")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+cue = ExtResource("cue_altar_loop")
+loop = true

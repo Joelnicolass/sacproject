@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="GameMode" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/match/game_mode.gd" id="1_mode"]
+
+[resource]
+script = ExtResource("1_mode")
+tag = &"1v1"
+display_name = "MODE_1V1"
+team_of_seat = PackedInt32Array(0, 1)

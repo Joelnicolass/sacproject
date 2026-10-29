@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/carrier_action.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="2_target"]
+[ext_resource type="PackedScene" path="res://spells/bovine_intervention/cow_ground.tscn" id="3_ground"]
+[ext_resource type="PackedScene" path="res://spells/bovine_intervention/bovine_intervention.tscn" id="q8_scene"]
+
+[sub_resource type="Resource" id="Target_aim"]
+script = ExtResource("2_target")
+who = 2
+refuse_wizards = true
+
+[node name="BovineIntervention" type="Node"]
+script = ExtResource("1_script")
+target = SubResource("Target_aim")
+carrier = ExtResource("q8_scene")
+spawn_when = 1
+spawn_at = 1
+ahead_m = 15.0
+depth_m = 4.0
+cast_scene = ExtResource("3_ground")

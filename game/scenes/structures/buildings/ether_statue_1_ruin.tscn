@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/st1x.res" id="mesh_st1x"]
+
+[node name="EtherSta1Ruin" type="Node3D"]
+
+[node name="Base" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Base"]
+mesh = ExtResource("mesh_st1x")

@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/call_lightning.gd" id="1_call"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/lightning_strike.tscn" id="2_bolt"]
+[ext_resource type="Resource" path="res://spells/lightning/lightning.tres" id="typed_spell"]
+
+[node name="CallLightning" type="Node"]
+editor_description = "The Storm Giant's Call lightning effect (gsba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). No preparation and no cooldown; it throws a LightningStrike `ntil` (750) from a point of the sky to the Giant's own center (it bounces on the first body in the way)."
+script = ExtResource("1_call")
+spell = ExtResource("typed_spell")
+bolt_scene = ExtResource("2_bolt")

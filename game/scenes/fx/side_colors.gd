@@ -2,11 +2,11 @@
 class_name SideColors
 extends RefCounted
 
-## Player colors of sacengine (sids.d:9-16) and the Manalith column color (state.d:30104-30116).
-## Static and @tool so the editor and a headless run use it without autoloads. The port has no
-## color assigned to a slot yet: slot N takes palette entry N % 8 (slot 0 = white). The sides no player takes
-## (Farmers and Taurocks of High Noon, slots 3 and 4: SideRelations.is_npc_slot) have no player color: they get
-## the gray the neutral side 31 has in sacengine (half white), so nothing mistakes them for a third player.
+## Player colors and the Manalith column color. Static and @tool so the editor and a headless run
+## use it without autoloads. The port has no color assigned to a slot yet: slot N takes palette
+## entry N % 8 (slot 0 = white). The sides no player takes (Farmers and Taurocks of High Noon, slots
+## 3 and 4: SideRelations.is_npc_slot) have no player color: they get the gray the neutral side has
+## (half white), so nothing mistakes them for a third player.
 
 const PALETTE: Array[Color] = [
 	Color(1.0, 1.0, 1.0),
@@ -18,7 +18,6 @@ const PALETTE: Array[Color] = [
 	Color(47.0 / 255.0, 0.0, 182.0 / 255.0),
 	Color(0.0, 1.0, 1.0),
 ]
-
 
 const NPC_COLOR := Color(0.5, 0.5, 0.5)
 

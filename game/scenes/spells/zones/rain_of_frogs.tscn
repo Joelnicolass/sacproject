@@ -1,0 +1,78 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="zone"]
+[ext_resource type="Resource" path="res://spells/rain_of_frogs/rain_of_frogs.tres" id="spell"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="sound"]
+[ext_resource type="Script" path="res://scenes/spells/zones/cloud_look.gd" id="look"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/cloud_sphere.gdshader" id="shader"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="light"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="dropper"]
+[ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="launcher"]
+[ext_resource type="PackedScene" path="res://scenes/spells/drops/rain_frog.tscn" id="q8_scene"]
+
+[sub_resource type="ShaderMaterial" id="Mat_cloud"]
+shader = ExtResource("shader")
+shader_parameter/layer_alpha = 0.09
+shader_parameter/tint = Color(0.03, 0.03, 0.04, 1)
+shader_parameter/rim_color = Color(0.3, 0.33, 0.42, 1)
+shader_parameter/top_color = Color(0.25, 0.28, 0.36, 1)
+shader_parameter/light_color = Color(0.34, 0.37, 0.46, 1)
+shader_parameter/mottle_color = Color(0.12, 0.13, 0.17, 1)
+shader_parameter/core_alpha = 0.45
+shader_parameter/noise_scale = 1.8
+shader_parameter/morph_s = 8.0
+
+[sub_resource type="SphereMesh" id="Mesh_layer"]
+material = SubResource("Mat_cloud")
+radius = 0.5
+height = 1.0
+radial_segments = 24
+rings = 24
+
+[sub_resource type="MultiMesh" id="Layers_mm"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("Mesh_layer")
+
+[node name="RainOfFrogs" type="Node3D"]
+editor_description = "Rain of Frogs (grfr): una nube negra de 50 m a 90 m sobre el clic que crece mientras el mago lanza y, al terminar, suelta 10 ranas por segundo durante 20 s sobre el disco de 50 m (o sobre una criatura cercana). Los numeros salen del SPEL; la escena dice cuando y como."
+script = ExtResource("zone")
+spell = ExtResource("spell")
+hold_is_spell_duration = true
+end_s = 1.1
+
+[node name="CloudAt" type="Marker3D" parent="."]
+editor_description = "Donde flota la nube sobre el suelo del clic (el original: 90 m). Las gotas nacen a esta altura."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 90.0, 0)
+
+[node name="Cloud" type="Node3D" parent="CloudAt" node_paths=PackedStringArray("zone", "layers")]
+script = ExtResource("look")
+zone = NodePath("../..")
+layers = NodePath("Layers")
+
+[node name="Layers" type="MultiMeshInstance3D" parent="CloudAt/Cloud"]
+cast_shadow = 0
+multimesh = SubResource("Layers_mm")
+
+[node name="Light" parent="CloudAt" instance=ExtResource("light")]
+light_color = Color(0.4, 0.9, 0.45, 1)
+light_energy = 0.8
+omni_range = 30.0
+priority = 3.0
+
+[node name="Dropper" type="Node" parent="." node_paths=PackedStringArray("zone")]
+script = ExtResource("dropper")
+zone = NodePath("..")
+rate_per_s = 10
+near_m = 10.0
+far_m = 25.0
+far_chance = 0.667
+
+[node name="Launcher" type="Node" parent="." node_paths=PackedStringArray("zone", "dropper", "cloud_at")]
+script = ExtResource("launcher")
+zone = NodePath("..")
+dropper = NodePath("../Dropper")
+drop = ExtResource("q8_scene")
+start = 0
+cloud_at = NodePath("../CloudAt")
+fall_s = 2.0

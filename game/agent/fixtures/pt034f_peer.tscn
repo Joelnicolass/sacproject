@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://agent/fixtures/pt034f_peer.gd" id="1_peer"]
-
-[node name="Pt034fPeerStart" type="Node"]
-script = ExtResource("1_peer")

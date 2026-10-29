@@ -1,7 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/order_marker.gd" id="1_marker"]
+[ext_resource type="Texture2D" uid="uid://c5i6052ntg8gt" path="res://assets/original/fx/aura.png" id="2_aura"]
 
 [node name="OrderMarker" type="Node3D"]
-editor_description = "F220: marca de una orden (el CommandCone de sacengine): cono con la textura aura + 8 capas blancas que giran, aditivo, 0.5 s. Local, sin RPC; una instancia reusada. Blanco = mover, rojo = atacar/avanzar, azul = escoltar/guardia."
+editor_description = "The mark of an order: a cone with the aura texture + 8 white shells that turn, additive, 0.5 s. Local, no RPC; one reused instance. White = move, red = attack/advance, blue = escort/guard."
 script = ExtResource("1_marker")
+aura = ExtResource("2_aura")

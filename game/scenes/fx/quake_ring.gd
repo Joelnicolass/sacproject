@@ -1,11 +1,13 @@
 class_name QuakeRing
-extends Node3D
+extends FxScene
 
-## F132 (RFC-030 030u-a): the look of the Jabberocky's Quake wave. sacengine bends the land (Quake.displacement,
-## state.d:5187-5225: a crest that moves out at waveRange/waveDur with a width of (0.15 + 0.65·(1 − p)²)·waveRange);
-## the port draws a ring of earth on the ground that goes out with the wave and fades. Placeholder look: MIX (alpha
-## blend), never additive. One event (FxBus.broadcast_scene, one RPC); presentation only, never headless. It frees itself.
-## Its clock is MatchClock (ticks), like the wave it shows: a paused match freezes it, a capture does not make it run ahead.
+## The look of a Quake wave: a ring of earth drawn on the ground that goes out with the wave and
+## fades. Placeholder look: MIX (alpha blend), never additive. One event (FxBus.broadcast_scene, one
+## RPC); presentation only, never headless. It frees itself. Its clock is MatchClock (ticks), like
+## the wave it shows: a paused match freezes it, a capture does not make it run ahead. Its child
+## Ground (quake_ground.tscn, on_clients_only) bends the land on a client the way the server's
+## QuakeWave does; on the server, alone or on the host it does nothing (the real one plays there).
+## It does not stun nor decide anything.
 
 ## Segments of the ring (each follows the land under it).
 @export_range(8, 128) var segments := 64
@@ -14,13 +16,13 @@ extends Node3D
 ## Height over the land (m): above the blades of grass, or the ring sinks in them.
 @export var lift := 0.8
 
-@onready var _mesh: MeshInstance3D = %Ring
-
 var _wave_range := 50.0
 var _wave_s := 0.5
 var _born := 0
 var _age := 0.0
 var _playing := false
+
+@onready var _mesh: MeshInstance3D = %Ring
 
 
 ## `params`: range (m), seconds (the wave's length), band (m, the width the wave stuns).
@@ -59,7 +61,7 @@ func _redraw() -> void:
 	var outer := radius + width * 0.5
 	var tint := color
 	tint.a *= (1.0 - progress * progress)
-	var terrain := FallCheck.terrain_of(self)
+	var shape := Terrain.of(self)
 	var center := global_position
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -67,10 +69,10 @@ func _redraw() -> void:
 	for i in segments:
 		var a0 := TAU * float(i) / float(segments)
 		var a1 := TAU * float(i + 1) / float(segments)
-		var p00 := _point(terrain, center, inner, a0)
-		var p01 := _point(terrain, center, outer, a0)
-		var p10 := _point(terrain, center, inner, a1)
-		var p11 := _point(terrain, center, outer, a1)
+		var p00 := _point(shape, center, inner, a0)
+		var p01 := _point(shape, center, outer, a0)
+		var p10 := _point(shape, center, inner, a1)
+		var p11 := _point(shape, center, outer, a1)
 		for v in [p00, p01, p10, p10, p01, p11]:
 			st.set_color(tint)
 			st.add_vertex(v)
@@ -79,11 +81,11 @@ func _redraw() -> void:
 
 
 ## A point of the ring in world space, on the land (a hole keeps the center's height).
-func _point(terrain: Node, center: Vector3, radius: float, angle: float) -> Vector3:
+func _point(shape: Terrain, center: Vector3, radius: float, angle: float) -> Vector3:
 	var p := center + Vector3(cos(angle), 0.0, sin(angle)) * radius
 	p.y = center.y
-	if terrain != null:
-		var land := float(terrain.call("ground_height", p.x, p.z))
+	if shape != null:
+		var land := shape.height_at(p.x, p.z)
 		if not is_nan(land):
 			p.y = land
 	p.y += lift

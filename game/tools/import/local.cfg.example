@@ -1,0 +1,15 @@
+# Local settings of the import tools. Copy this file to tools/import/local.cfg (git-ignored) and fill it in.
+# Only the tools that read the ORIGINAL Sacrifice install need it (see "Herramientas que necesitan el juego original" in the README).
+# Playing the port does not need it.
+#
+# Put ONE of the two (SAC_INSTALL wins if both are set):
+#   SAC_INSTALL  the folder that holds the .wad files (spells.wad, models.wad, main.wad, ...), usually named "data"
+#   SAC_ROOT     the game's root folder, the one that contains data/ and maps/
+# Typical places:
+#   Windows GOG    C:\GOG Games\Sacrifice\data
+#   Windows Steam  C:\Program Files (x86)\Steam\steamapps\common\Sacrifice\data
+#   Wine / CrossOver (macOS, Linux)   <prefix>/drive_c/GOG Games/Sacrifice/data
+SAC_INSTALL=/path/to/Sacrifice/data
+#SAC_ROOT=/path/to/Sacrifice
+# Optional: the folder with the "(N) name.scp" maps when it is not next to data/ (default: <SAC_INSTALL>/../maps)
+#SAC_MAPS=/path/to/Sacrifice/maps

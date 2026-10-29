@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MapDefinition" format=3]
+
+[ext_resource type="Script" path="res://scenes/map/map_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/map/maps/alpine_meadow/map.tscn" id="2_scene"]
+[ext_resource type="Texture2D" path="res://assets/original/maps/alpine_meadow/light.png" id="5_light"]
+
+[resource]
+script = ExtResource("1_def")
+tag = &"alpine_meadow"
+display_name = "Alpine Meadow"
+map_scene = ExtResource("2_scene")
+light = ExtResource("5_light")
+player_starts = 2

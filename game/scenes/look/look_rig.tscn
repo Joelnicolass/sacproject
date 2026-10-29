@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/lights/actor_light_budget.gd" id="11_budget"]
+[ext_resource type="Script" path="res://scenes/look/look_rig.gd" id="1_rig"]
+[ext_resource type="Script" path="res://scenes/look/quality_applier.gd" id="2_quality"]
+[ext_resource type="Script" path="res://scenes/look/light/sun_layer.gd" id="3_sun_layer"]
+[ext_resource type="PackedScene" path="res://scenes/look/light/fill_light.tscn" id="4_fill"]
+[ext_resource type="PackedScene" path="res://scenes/look/ground/terrain_layer.tscn" id="5_ground"]
+[ext_resource type="Script" path="res://scenes/look/sky/environment_layer.gd" id="6_environment_layer"]
+[ext_resource type="Environment" path="res://scenes/look/env_base.tres" id="7_env"]
+[ext_resource type="PackedScene" path="res://scenes/look/grass/grass_layer.tscn" id="8_grass"]
+[ext_resource type="PackedScene" path="res://scenes/look/fx/fx_light_layer.tscn" id="9_fx_light"]
+[ext_resource type="PackedScene" path="res://scenes/look/vegetation/flora_layer.tscn" id="10_flora"]
+[ext_resource type="Script" path="res://scenes/look/ground/terrain_deform_texture.gd" id="12_deform"]
+[ext_resource type="PackedScene" path="res://scenes/look/sky/sky_underside.tscn" id="13_underside"]
+[ext_resource type="PackedScene" path="res://scenes/look/atmosphere/atmosphere.tscn" id="14_atmosphere"]
+[ext_resource type="PackedScene" path="res://scenes/look/life/ambient_life.tscn" id="15_life"]
+[ext_resource type="Script" path="res://scenes/look/surface_relief_layer.gd" id="16_relief"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="17_prefs"]
+[ext_resource type="PackedScene" path="res://scenes/look/haze/haze_layer.tscn" id="20_haze"]
+[ext_resource type="PackedScene" path="res://scenes/look/flare/lens_flare_layer.tscn" id="21_flare"]
+[ext_resource type="Script" path="res://scenes/look/lens/camera_lens_layer.gd" id="22_lens"]
+
+[node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
+script = ExtResource("1_rig")
+layers = NodePath("Layers")
+quality = NodePath("Quality")
+sun_layer = NodePath("Layers/Sun")
+
+[node name="Layers" type="Node" parent="."]
+
+[node name="Sun" type="Node3D" parent="Layers" node_paths=PackedStringArray("sun", "fill", "atmosphere")]
+script = ExtResource("3_sun_layer")
+sun = NodePath("Sun")
+fill = NodePath("Fill")
+atmosphere = NodePath("../Atmosphere")
+
+[node name="Sun" type="DirectionalLight3D" parent="Layers/Sun"]
+unique_name_in_owner = true
+shadow_enabled = true
+
+[node name="Fill" parent="Layers/Sun" instance=ExtResource("4_fill")]
+unique_name_in_owner = true
+
+[node name="Ground" parent="Layers" instance=ExtResource("5_ground")]
+
+[node name="Environment" type="Node3D" parent="Layers" node_paths=PackedStringArray("world_environment", "atmosphere")]
+script = ExtResource("6_environment_layer")
+world_environment = NodePath("WorldEnvironment")
+atmosphere = NodePath("../Atmosphere")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Layers/Environment"]
+unique_name_in_owner = true
+environment = ExtResource("7_env")
+
+[node name="Grass" parent="Layers" instance=ExtResource("8_grass")]
+
+[node name="Haze" parent="Layers" node_paths=PackedStringArray("sun", "world_environment") instance=ExtResource("20_haze")]
+sun = NodePath("../Sun/Sun")
+world_environment = NodePath("../Environment/WorldEnvironment")
+
+[node name="LensFlare" parent="Layers" instance=ExtResource("21_flare")]
+
+[node name="CameraLens" type="Node3D" parent="Layers"]
+editor_description = "The match camera's field of view and depth of field (LookQuality, group Camera; Options > Advanced)."
+script = ExtResource("22_lens")
+
+[node name="FxLight" parent="Layers" instance=ExtResource("9_fx_light")]
+
+[node name="Flora" parent="Layers" node_paths=PackedStringArray("rig") instance=ExtResource("10_flora")]
+rig = NodePath("../..")
+
+[node name="ActorLights" type="Node3D" parent="Layers" node_paths=PackedStringArray("atmosphere")]
+atmosphere = NodePath("../Atmosphere")
+script = ExtResource("11_budget")
+state_energy_scale = 2.0
+state_range_scale = 1.4
+
+[node name="TerrainDeform" type="Node3D" parent="Layers" node_paths=PackedStringArray("rig")]
+editor_description = "Tells the ground shader how far the land moved (global texture terrain_deform_map). With nothing to move it costs nothing."
+script = ExtResource("12_deform")
+rig = NodePath("../..")
+
+[node name="Underside" parent="Layers" instance=ExtResource("13_underside")]
+
+[node name="Atmosphere" parent="Layers" instance=ExtResource("14_atmosphere")]
+
+[node name="AmbientLife" parent="Layers" node_paths=PackedStringArray("atmosphere") instance=ExtResource("15_life")]
+atmosphere = NodePath("../Atmosphere")
+
+[node name="SurfaceRelief" type="Node3D" parent="Layers"]
+editor_description = "The global switch of the normal maps (preset relief_maps and the «Relieve» option). Off, it turns them off in memory; it never saves."
+script = ExtResource("16_relief")
+prefs = ExtResource("17_prefs")
+
+[node name="Quality" type="Node" parent="."]
+script = ExtResource("2_quality")

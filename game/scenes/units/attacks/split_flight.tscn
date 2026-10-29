@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/split_flight.gd" id="1_split"]
+
+[node name="SplitFlight" type="Node"]
+editor_description = "The Boulderdash fan (emba): at max(0, aimed − 60) m from the origin the side rocks (volley_index ±1) turn ±3.5° around «up»; the middle one goes straight on."
+script = ExtResource("1_split")

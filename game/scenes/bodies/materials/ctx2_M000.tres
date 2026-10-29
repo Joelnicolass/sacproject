@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/ctx2/M000.png" id="1_ucrf2"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/ctx2/M000_normal.png" id="2_s3l6x"]
+
+[resource]
+resource_name = "ctx2_M000"
+albedo_texture = ExtResource("1_ucrf2")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_s3l6x")

@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/sage/008.png" id="1_qdf7n"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/sage/008_normal.png" id="2_se2yu"]
+
+[resource]
+resource_name = "sage_008"
+albedo_texture = ExtResource("1_qdf7n")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_se2yu")

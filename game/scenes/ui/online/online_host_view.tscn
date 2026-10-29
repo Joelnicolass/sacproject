@@ -1,0 +1,122 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/online/online_host_view.gd" id="1_host"]
+[ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="2_mode_picker"]
+[ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="3_map_picker"]
+[ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="4_biome_picker"]
+
+[ext_resource type="Script" path="res://scenes/ui/sky_picker/hour_picker.gd" id="sky_hour_picker"]
+[ext_resource type="PackedScene" path="res://scenes/ui/sky_picker/weather_picker.tscn" id="sky_weather_picker"]
+[node name="OnlineHostView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_host")
+
+[node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxForm"
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Column"]
+theme_type_variation = &"LabelTitle"
+layout_mode = 2
+text = "UI_ONLINE_HOST_TITLE"
+horizontal_alignment = 1
+
+[node name="HostForm" type="VBoxContainer" parent="Column"]
+theme_type_variation = &"VBoxForm"
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HostMode" type="OptionButton" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_mode_picker")
+
+[node name="HostMap" type="OptionButton" parent="Column/HostForm" node_paths=PackedStringArray("mode_picker")]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_map_picker")
+mode_picker = NodePath("../HostMode")
+
+[node name="HostBiome" type="OptionButton" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("4_biome_picker")
+
+[node name="HostHour" type="OptionButton" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("sky_hour_picker")
+
+[node name="HostWeather" parent="Column/HostForm" instance=ExtResource("sky_weather_picker")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HostForest" type="CheckBox" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "UI_FOREST_TIP"
+button_pressed = true
+text = "UI_FOREST"
+
+[node name="RoomName" type="LineEdit" parent="Column/HostForm"]
+unique_name_in_owner = true
+editor_description = "Empty = the room_name of sacrifice_flow.tscn."
+layout_mode = 2
+placeholder_text = "UI_ONLINE_HOST_NAME_HINT"
+max_length = 24
+
+[node name="Listed" type="CheckBox" parent="Column/HostForm"]
+unique_name_in_owner = true
+editor_description = "Checked = the room shows in everyone's list; unchecked = private, joined only with the code."
+layout_mode = 2
+button_pressed = true
+text = "UI_ONLINE_HOST_LISTED"
+
+[node name="CreateRoom" type="Button" parent="Column/HostForm"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "UI_ONLINE_HOST_CREATE"
+
+[node name="RoomInfo" type="VBoxContainer" parent="Column"]
+theme_type_variation = &"VBoxList"
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="RoomCode" type="Label" parent="Column/RoomInfo"]
+unique_name_in_owner = true
+theme_type_variation = &"LabelTitle"
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="CopyCode" type="Button" parent="Column/RoomInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ONLINE_HOST_COPY"
+
+[node name="HostHelp" type="Label" parent="Column"]
+layout_mode = 2
+text = "UI_ONLINE_HOST_HELP"
+autowrap_mode = 3
+
+[node name="HostBack" type="Button" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_ONLINE_HOST_BACK"

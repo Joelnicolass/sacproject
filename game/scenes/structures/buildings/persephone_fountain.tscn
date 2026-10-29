@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://gods/persephone/buildings/persephone_fountain.tres" id="2_type"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcfn.res" id="mesh_pcfn"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(4, 4, 4)
+
+[node name="PersephoneFont" instance=ExtResource("1_building")]
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_pcfn")
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0, 2, 0)
+shape = SubResource("BoxShape3D_body")

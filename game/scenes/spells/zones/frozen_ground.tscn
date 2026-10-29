@@ -1,0 +1,104 @@
+[gd_scene load_steps=21 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
+[ext_resource type="Resource" path="res://spells/frozen_ground/frozen_ground.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/zones/snowball_flight.gd" id="3_flight"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/snowball_trail.tres" id="4_trail"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/snowball_burst.tres" id="5_burst"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/snowball_burst2.tres" id="6_burst2"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="7_ptype"]
+[ext_resource type="Script" path="res://scenes/spells/zones/ice_patch.gd" id="8_patch"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/ice_ground.gdshader" id="9_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/icec.png" id="10_ice"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_freeze.gd" id="11_freeze"]
+[ext_resource type="Resource" path="res://spells/freeze/freeze.tres" id="12_zerf"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_shatter.gd" id="13_shatter"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/ice_shatter.tscn" id="14_shards"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="15_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/frozen_ground_cast.tres" id="cue_frozen_ground_cast"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/frozen_ground_hit.tres" id="cue_frozen_ground_hit"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/sbll.res" id="mesh_sbll"]
+
+[sub_resource type="ShaderMaterial" id="Mat_ice"]
+shader = ExtResource("9_shader")
+shader_parameter/ice = ExtResource("10_ice")
+
+[node name="FrozenGround" type="Node3D"]
+editor_description = "Frozen Ground (zorf): la bola de nieve crece junto al mago, vuela 2 s y cae; el hielo crece 0,5 s hasta 15 m y congela (con los numeros de Freeze) a cada no aliado en tierra, una vez; dura lo que dice el hechizo (30 s; el original fuerza 15) y se rompe en 6 pasos del centro hacia afuera haciendo 800 una vez a cada uno. Las duraciones salen del SPEL; solo `end_s` y `grow_s` son de la escena."
+script = ExtResource("1_zone")
+spell = ExtResource("2_spell")
+hold_is_spell_duration = true
+end_s = 0.5
+grow_s = 0.5
+
+[node name="Snowball" type="Node3D" parent="." node_paths=PackedStringArray("zone", "ball")]
+script = ExtResource("3_flight")
+zone = NodePath("..")
+ball = NodePath("Ball")
+trail = ExtResource("4_trail")
+shards = Array[ExtResource("7_ptype")]([ExtResource("5_burst"), ExtResource("6_burst2")])
+
+[node name="Ball" type="MeshInstance3D" parent="Snowball"]
+cast_shadow = 0
+mesh = ExtResource("mesh_sbll")
+
+[node name="Ice" type="MeshInstance3D" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "El hielo pegado al suelo (icec, alfa 0,2, energia 10). El radio y lo ya roto los pone IcePatch por instancia. `lift_m`: a cuanta altura flota sobre el terreno."
+material_override = SubResource("Mat_ice")
+cast_shadow = 0
+script = ExtResource("8_patch")
+zone = NodePath("..")
+
+[node name="Freeze" type="Node" parent="." node_paths=PackedStringArray("zone")]
+script = ExtResource("11_freeze")
+zone = NodePath("..")
+count = 30
+freeze_spell = ExtResource("12_zerf")
+
+[node name="Shatter" type="Node" parent="." node_paths=PackedStringArray("zone")]
+script = ExtResource("13_shatter")
+zone = NodePath("..")
+phase = 3
+first_s = 0.0833
+every_s = 0.0833
+count = 6
+shards = ExtResource("14_shards")
+
+[node name="CastSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("15_sound")]
+editor_description = "Xcnj: el conjuro de la bola (comn/cnj1 a cnj6) mientras el mago lanza."
+cue = ExtResource("cue_frozen_ground_cast")
+loop = true
+zone = NodePath("..")
+to_phase = 0
+
+[node name="HitSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("15_sound")]
+editor_description = "Xfrz: la bola cae (stra/frez, ganancia 4 en el original)."
+cue = ExtResource("cue_frozen_ground_hit")
+zone = NodePath("..")
+when = 1
+from_phase = 2
+
+[node name="IceGlow" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+light_color = Color(0.6, 0.82, 1, 1)
+light_energy = 1
+omni_range = 15
+fade_in_s = 0.5
+fade_out_s = 0.5
+from_phase = 2
+to_phase = 2
+zone = NodePath("..")
+editor_description = "Cold light over the ice while it grows and holds; it fades out while the ice breaks (dominant colour of icec.png). Range = the radius of the ice."
+
+[node name="SnowballGlow" parent="Snowball" node_paths=PackedStringArray("zone") instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+light_color = Color(0.6, 0.82, 1, 1)
+light_energy = 1.2
+omni_range = 7
+fade_in_s = 0.5
+fade_out_s = 0.3
+from_phase = 0
+to_phase = 1
+zone = NodePath("../..")
+editor_description = "Cold light that travels with the snowball while it grows and flies (the sprites of its trail, cst0.png, are blue)."

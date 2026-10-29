@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/prc1/M000.png" id="1_0q2j8"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/prc1/M000_normal.png" id="2_5j8gs"]
+
+[resource]
+resource_name = "prc1_M000"
+albedo_texture = ExtResource("1_0q2j8")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_5j8gs")

@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/peas/004.png" id="1_hwv0h"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/peas/004_normal.png" id="2_d4e2i"]
+
+[resource]
+resource_name = "peas_004"
+albedo_texture = ExtResource("1_hwv0h")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_d4e2i")

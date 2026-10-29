@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="PackedScene" path="res://spells/bombardment/bombardment_action.tscn" id="2_action"]
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_on802"]
+[ext_resource type="Texture2D" uid="uid://bdudcgctvl220" path="res://assets/original/ui/icons/rtem.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_on802")
+tag = "rtem"
+display_name = "Bombardment"
+icon = ExtResource("icon_tex")
+mana_cost = 1500
+cast_range_m = 150.0
+cooldown_s = 70.0
+casting_time_s = 3.9506
+book_level = 7
+book_slot = 72
+speed_m_s = 60.0
+damage = 400
+damage_range_m = 5.0
+effect_range_m = 50.0
+duration_s = 20.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+targets_corpses = true
+targets_structures = true
+targets_ground = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 400
+structures = PackedStringArray()
+aim_radius_m = 50.0

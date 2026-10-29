@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DeathCloudType" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/death_clouds/death_cloud_type.gd" id="1_type"]
+[ext_resource type="PackedScene" path="res://scenes/units/death_clouds/steam_cloud.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/steam_cloud.tres" id="typed_goc_"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/steam.tres" id="fx_steam"]
+
+[resource]
+script = ExtResource("1_type")
+ability = ExtResource("typed_goc_")
+scene = ExtResource("2_scene")
+fx = ExtResource("fx_steam")

@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/petrify_impact.tscn" id="2_impact"]
+
+[node name="Dpsf" type="Node"]
+script = ExtResource("1_look")
+hit_size = 0.35
+impact = ExtResource("2_impact")
+sweep = true
+fallback_color = Color(0.62, 0.66, 0.5, 1)
+fallback_radius = 0.18

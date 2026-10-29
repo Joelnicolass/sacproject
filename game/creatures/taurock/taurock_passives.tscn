@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/units/passives/damage_passive.gd" id="1_damage"]
+
+[node name="TaurockPassives" type="Node"]
+
+[node name="Hide" type="Node" parent="."]
+script = ExtResource("1_damage")
+incoming_base = 0.25
+incoming_per_health = 0.75

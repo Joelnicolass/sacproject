@@ -1,0 +1,201 @@
+[gd_scene load_steps=28 format=3]
+
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_body.gd" id="1_body"]
+[ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scenes/bodies/body_mount.gd" id="s1_mount"]
+[ext_resource type="Script" path="res://scenes/units/movement/body_collider.gd" id="s1_collider"]
+[ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="4_bar"]
+[ext_resource type="Script" path="res://scenes/sacrifice/stuck_guard.gd" id="5_guard"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="6_machine"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/dropping.gd" id="8_dropping"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/grounded.gd" id="9_grounded"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/working.gd" id="10_working"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/dying.gd" id="11_dying"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_actor.gd" id="12_actor"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="13_rules"]
+[ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="14_clip"]
+[ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="14_rig"]
+[ext_resource type="Script" path="res://scenes/bodies/idle_sway.gd" id="18_sway"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_motor.gd" id="19_motor"]
+[ext_resource type="Script" path="res://scenes/sacrifice/doctor_look.gd" id="20_look"]
+
+[ext_resource type="Script" path="res://scenes/sacrifice/carry_rope.gd" id="15_rope"]
+[ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/needle.tres" id="17_needle"]
+[ext_resource type="Resource" path="res://creatures/sac_doctor/sac_doctor.tres" id="typed_dcas"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
+[ext_resource type="Script" path="res://scenes/bodies/game_unit.gd" id="gu_game_unit"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_doctor"]
+radius = 0.4
+height = 2.5
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_doctor"]
+properties/0/path = NodePath("MpActor:net_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("MpActor:net_rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:owner_slot")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:pose")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:work")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath("Health:maximum")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath("Health:current")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath(".:carried")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath("BloodFx:wound")
+properties/8/spawn = true
+properties/8/replication_mode = 2
+properties/9/path = NodePath("MpActor:net_stamp")
+properties/9/spawn = true
+properties/9/replication_mode = 1
+properties/10/path = NodePath("MpActor:net_teleports")
+properties/10/spawn = true
+properties/10/replication_mode = 1
+properties/11/path = NodePath("MpActor:owner_slot")
+properties/11/spawn = true
+properties/11/replication_mode = 0
+
+[node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "collision", "mount", "health_bar", "states", "motor", "unit")]
+collision_layer = 2
+floor_snap_length = 0.5
+floor_max_angle = 1.4835298
+script = ExtResource("1_body")
+unit = NodePath("RtsUnit")
+type = ExtResource("typed_dcas")
+rules = ExtResource("13_rules")
+health = NodePath("Health")
+collision = NodePath("Collision")
+mount = NodePath("BodyMount")
+health_bar = NodePath("HealthBar")
+states = NodePath("States")
+motor = NodePath("Motor")
+
+[node name="Pivot" type="Node3D" parent="."]
+physics_interpolation_mode = 2
+
+[node name="Mesh" type="MeshInstance3D" parent="Pivot" node_paths=PackedStringArray("rig", "mount")]
+script = ExtResource("2_visual")
+rig = NodePath("Rig")
+mount = NodePath("../../BodyMount")
+
+[node name="Rig" parent="Pivot/Mesh" instance=ExtResource("14_rig")]
+
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
+script = ExtResource("14_clip")
+visual = NodePath("../Pivot/Mesh")
+
+[node name="IdleSway" type="Node" parent="." node_paths=PackedStringArray("clip_player", "pivot")]
+script = ExtResource("18_sway")
+clip_player = NodePath("../ClipPose")
+pivot = NodePath("../Pivot/Mesh/Rig")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+shape = SubResource("CapsuleShape3D_doctor")
+
+[node name="BodyMount" type="Node" parent="." node_paths=PackedStringArray("rig")]
+script = ExtResource("s1_mount")
+rig = NodePath("../Pivot/Mesh/Rig")
+
+[node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision")]
+script = ExtResource("s1_collider")
+mount = NodePath("../BodyMount")
+collision = NodePath("../Collision")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("3_health")
+
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Pivot/Mesh")
+
+[node name="HealthBar" parent="." instance=ExtResource("4_bar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 0)
+own_only_when_selected = false
+
+[node name="StuckGuard" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("5_guard")
+body = NodePath("..")
+
+[node name="States" type="Node" parent="." node_paths=PackedStringArray("actor")]
+script = ExtResource("6_machine")
+actor = NodePath("..")
+autostart = false
+
+[node name="Dropping" type="Node" parent="States"]
+script = ExtResource("8_dropping")
+
+[node name="Grounded" type="Node" parent="States"]
+script = ExtResource("9_grounded")
+
+[node name="Working" type="Node" parent="States"]
+script = ExtResource("10_working")
+
+[node name="Dying" type="Node" parent="States"]
+script = ExtResource("11_dying")
+
+[node name="Motor" type="Node" parent="." node_paths=PackedStringArray("body", "avoidance")]
+script = ExtResource("19_motor")
+body = NodePath("..")
+avoidance = NodePath("../Avoidance")
+
+[node name="Look" type="Node" parent="." node_paths=PackedStringArray("body", "clip_player", "visual")]
+script = ExtResource("20_look")
+body = NodePath("..")
+clip_player = NodePath("../ClipPose")
+visual = NodePath("../Pivot/Mesh")
+
+[node name="CarryRope" type="Node3D" parent="." node_paths=PackedStringArray("doctor", "rig", "tether")]
+physics_interpolation_mode = 2
+script = ExtResource("15_rope")
+doctor = NodePath("..")
+rig = NodePath("../Pivot/Mesh/Rig")
+tether = NodePath("Tether")
+spark_type = ExtResource("17_needle")
+
+[node name="Tether" parent="CarryRope" node_paths=PackedStringArray("start") instance=ExtResource("16_tether")]
+elbow = 1.0
+energy_scale = 0.6
+start = NodePath("..")
+
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("12_actor")
+sync_extra = PackedStringArray("owner_slot", "pose", "work", "Health:maximum", "Health:current", "carried", "BloodFx:wound")
+send_hz = 30
+lag_compensate = false
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+replication_interval = 0.0333333
+root_path = NodePath("../..")
+replication_config = SubResource("SceneReplicationConfig_doctor")
+
+[node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
+body = NodePath("..")
+
+[connection signal="solved" from="Avoidance" to="Motor" method="_on_avoided"]
+
+[node name="RtsUnit" type="Node" parent="."]
+script = ExtResource("gu_game_unit")
+selectable = false
+orderable = false

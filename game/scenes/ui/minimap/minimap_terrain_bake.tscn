@@ -1,8 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_terrain_bake.gd" id="1_bake"]
-[ext_resource type="PackedScene" path="res://assets/original/maps/high_noon/terrain.glb" id="2_terrain"]
-[ext_resource type="Material" path="res://assets/original/themes/james/ground_classic.tres" id="3_ground"]
+[ext_resource type="Resource" path="res://scenes/look/james.tres" id="3_look"]
 
 [sub_resource type="Environment" id="Environment_ambient"]
 background_mode = 0
@@ -12,8 +11,9 @@ ambient_light_energy = 0.7
 reflected_light_source = 1
 
 [node name="MinimapTerrainBake" type="Node" unique_id=1037000001 node_paths=PackedStringArray("viewport", "ground", "camera", "preview")]
-editor_description = "RFC-037 037a: ground seen from above, drawn once into a texture. Own 3D world with ambient light only (no debug-draw: it does not exist in release exports)."
+editor_description = "Ground seen from above, drawn once into a texture. Own 3D world with ambient light only (no debug-draw: it does not exist in release exports)."
 script = ExtResource("1_bake")
+look = ExtResource("3_look")
 viewport = NodePath("Viewport")
 ground = NodePath("Viewport/Ground")
 camera = NodePath("Viewport/Camera")
@@ -26,13 +26,11 @@ msaa_3d = 0
 size = Vector2i(1024, 1024)
 render_target_update_mode = 0
 
-[node name="Ground" parent="Viewport" unique_id=1037000003 instance=ExtResource("2_terrain")]
-material_override = ExtResource("3_ground")
+[node name="Ground" type="MeshInstance3D" parent="Viewport" unique_id=1037000003]
 
 [node name="Camera" type="Camera3D" parent="Viewport" unique_id=1037000004]
 environment = SubResource("Environment_ambient")
 projection = 1
-size = 2560.0
 far = 1000.0
 
 [node name="Preview" type="TextureRect" parent="." unique_id=1037000005]

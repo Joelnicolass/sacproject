@@ -1,11 +1,12 @@
 class_name MpMatchAgent
 extends Node
 
-## Dedicated-match side of the launcher. Reads `--match-ticket-file`, sets `MpKit.admission`
-## from the token hashes, writes state.json as a heartbeat, writes result.json when the match
-## ends, and quits when nobody is left or the room server (`--room-pid`) is gone.
-## The glue starts the dedicated host (MpKit.host_dedicated) and calls `report_result()`.
+## Dedicated-match side of the launcher. Reads `--match-ticket-file`, names the seats of the token hashes (seat_of) and arms the
+## match's start gate with them (MpKit.gate: the wait for every seat, the rejoin grace), writes state.json as a heartbeat, writes
+## result.json when the match ends, and quits when nobody is left or the room server (`--room-pid`) is gone.
+## The glue starts the dedicated host (MpKit.host_dedicated) and calls `report_result()`. Not: the grace or the wait (the gate).
 ## The agent never sees the plain token: it compares sha256(presented) with the ticket.
+## Rows of the ticket without `token_sha256` (bot seats) are ignored: they are never admitted.
 
 signal ticket_loaded(ticket: Dictionary)
 signal result_reported(data: Dictionary)
@@ -13,6 +14,10 @@ signal result_reported(data: Dictionary)
 @export var config: MpLobbyConfig
 ## Start by itself in _ready when `--match-ticket-file` is present.
 @export var auto_start: bool = true
+
+const GROUP := &"mp_match_agent"
+## Result reason when the relay refused this match's port (another live host): the launcher retries another port.
+const PORT_IN_USE := "port_in_use"
 
 var ticket: Dictionary = {}
 var match_id: String = ""
@@ -25,11 +30,17 @@ var _hb_accum: float = 0.0
 var _parent_accum: float = 0.0
 var _empty_since_ms: int = 0
 var _ever_joined: bool = false
-## slot -> {sha, meta, used: bool, peer: int, left_ms: int}
+## slot -> {sha, meta, used: bool, peer: int}
 var _seats: Dictionary = {}
 
 
+func _enter_tree() -> void:
+	add_to_group(GROUP)
+
+
 func _ready() -> void:
+	## Infrastructure: it keeps the heartbeat and the state going while the match is paused (MpMatch waits for seats).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if config == null:
 		config = MpLobbyConfig.new()
 	config = config.with_cli_overrides()
@@ -52,11 +63,15 @@ func start(ticket_path: String = "") -> bool:
 	_started_ms = MpMatchFiles.now_ms()
 	for seat in ticket["seats"]:
 		var row: Dictionary = seat
+		## A row without a token hash (a bot seat) is never admitted.
+		if str(row.get("token_sha256", "")).is_empty():
+			continue
 		_seats[int(row["slot"])] = {
 			"sha": str(row["token_sha256"]), "meta": row.get("meta", {}),
-			"used": false, "peer": 0, "left_ms": 0,
+			"used": false, "peer": 0,
 		}
-	MpKit.admission = _admit
+	## Until the gate is armed (the first frame at the latest), the same identity guards the door.
+	MpKit.admission = seat_of
 	MpKit.peer_joined.connect(_on_peer_joined)
 	MpKit.peer_left.connect(_on_peer_left)
 	set_process(true)
@@ -91,15 +106,36 @@ func report_result(data: Dictionary) -> void:
 	_write_state()
 	MpKit.broadcast_session_ended(out)
 	result_reported.emit(out)
-	var delay := config.result_quit_delay_s if out["reason"] != "room_gone" else 0.0
+	var delay := config.result_quit_delay_s if out["reason"] != "room_gone" and out["reason"] != PORT_IN_USE else 0.0
 	if delay <= 0.0:
 		get_tree().quit()
 	else:
-		get_tree().create_timer(delay).timeout.connect(func() -> void: get_tree().quit())
+		## Real time: the result must reach the room server and the players before the process goes.
+		MpKit.after_real(delay, func() -> void: get_tree().quit())
+
+
+## Arms MpKit.gate with the ticket's human seats: identity = seat_of, the grace and the load timeout of `config`. `--no-load-hold`
+## (tests whose clients never load the world) runs at once. Idempotent; MpFlow calls it right after hosting.
+func arm_gate() -> void:
+	if ticket.is_empty() or finished or not MpKit.is_server() or MpKit.gate.is_armed():
+		return
+	var gate := MpKit.gate
+	gate.rejoin_grace_s = config.rejoin_grace_s
+	gate.load_timeout_s = config.load_timeout_s
+	gate.host_present = false
+	var slots: Array[int] = []
+	for slot in _seats.keys():
+		slots.append(int(slot))
+	gate.arm(slots, 0, seat_of, not MpBoot.user_flag("no-load-hold"))
 
 
 func _process(delta: float) -> void:
 	if ticket.is_empty() or finished:
+		return
+	arm_gate()
+	## Through the relay this port's room has another live host: say so, the launcher tries another port.
+	if MpKit.listen_refused():
+		report_result({"reason": PORT_IN_USE})
 		return
 	_hb_accum += delta
 	if _hb_accum >= config.heartbeat_s:
@@ -128,20 +164,17 @@ func _check_idle() -> void:
 		report_result({"reason": "empty"})
 
 
-func _admit(peer_id: int, presented: String) -> int:
+## The seat a presented token names: the slot whose sha256 matches, 0 for none, after the match ended, or for a seat never used
+## once its ticket expired. Only identity: whether the seat is free, away or past the grace is the gate's.
+func seat_of(_peer_id: int, presented: String) -> int:
 	if finished:
 		return 0
 	var sha := MpMatchFiles.sha256(presented)
-	var now := MpMatchFiles.now_ms()
 	for slot in _seats.keys():
 		var seat: Dictionary = _seats[slot]
 		if seat["sha"] != sha:
 			continue
-		if int(seat["peer"]) != 0 and int(seat["peer"]) != peer_id:
-			return 0
-		if not bool(seat["used"]):
-			return int(slot) if now <= int(ticket.get("expires_ms", 0)) else 0
-		if now - int(seat["left_ms"]) > int(config.rejoin_grace_s * 1000.0):
+		if not bool(seat["used"]) and MpMatchFiles.now_ms() > int(ticket.get("expires_ms", 0)):
 			return 0
 		return int(slot)
 	return 0
@@ -161,7 +194,6 @@ func _on_peer_left(peer_id: int, slot: int) -> void:
 	if not _seats.has(slot) or int(_seats[slot]["peer"]) != peer_id:
 		return
 	_seats[slot]["peer"] = 0
-	_seats[slot]["left_ms"] = MpMatchFiles.now_ms()
 	_write_state()
 
 
@@ -169,7 +201,7 @@ func _write_state() -> void:
 	var slots := {}
 	for slot in _seats.keys():
 		slots[str(slot)] = int(_seats[slot]["peer"]) != 0
-	var listening := MpKit.is_server() and MpKit.multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
+	var listening := MpKit.is_listening()
 	MpMatchFiles.write_json(MpMatchFiles.path_of(_root, match_id, MpMatchFiles.STATE), {
 		"match_id": match_id, "pid": OS.get_process_id(), "listening": listening,
 		"heartbeat_ms": MpMatchFiles.now_ms(), "started_ms": _started_ms,

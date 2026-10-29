@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/fhbt/006.png" id="1_bhjq5"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/fhbt/006_normal.png" id="2_fta00"]
+
+[resource]
+resource_name = "fhbt_006_cutout"
+transparency = 2
+alpha_scissor_threshold = 0.4
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("1_bhjq5")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_fta00")

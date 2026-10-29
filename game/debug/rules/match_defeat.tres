@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="MatchRules" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/data/match_rules.gd" id="1_rules"]
-
-[resource]
-script = ExtResource("1_rules")
-starting_souls = 12
-biome_god = &"james"
-start_health = 50.0

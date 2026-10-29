@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/rockform.gd" id="1_rock"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/rock_shell.tscn" id="2_shell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rock_emerge.tres" id="fx_rock_emerge"]
+
+[node name="Rockform" type="Node"]
+editor_description = "The Earthfling's Rockform effect (dihk). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It turns to rock on the tick of the order and wears the rock_shell.tscn shell at the CENTER socket (show_rock_form, every peer; never on the dedicated server). The emerge_fx burst comes out of emerge_socket."
+script = ExtResource("1_rock")
+shell_scene = ExtResource("2_shell")
+emerge_fx = ExtResource("fx_rock_emerge")

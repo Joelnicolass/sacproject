@@ -1,0 +1,172 @@
+[gd_resource type="Resource" script_class="LookProfile" format=3]
+
+[ext_resource type="Resource" path="res://gods/stratos/stratos_glow.tres" id="1_dp2kx"]
+[ext_resource type="Script" path="res://scenes/look/look_profile.gd" id="1_p"]
+[ext_resource type="Resource" path="res://gods/stratos/stratos_light.tres" id="2_light"]
+[ext_resource type="Script" path="res://scenes/look/ground/god_ground.gd" id="20_god_ground"]
+[ext_resource type="Script" path="res://scenes/look/ground/ground_role.gd" id="21_ground_role"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/edge.png" id="22_edge"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/open.png" uid="uid://djkn0ojpdbujh" id="23_open"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/open_detail.png" uid="uid://3v1ap2aig076" id="24_open_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/earth.png" uid="uid://wqeh2suu5get" id="25_earth"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/earth_detail.png" uid="uid://bv3koavvr5av3" id="26_earth_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/rock.png" uid="uid://bdebpiegyb0v7" id="27_rock"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/rock_detail.png" uid="uid://ukaspbtn6daj" id="28_rock_detail"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/path.png" uid="uid://74gx66kwjtku" id="29_path"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/roles/path_detail.png" uid="uid://cya2insuvxk8u" id="30_path_detail"]
+[ext_resource type="Resource" path="res://gods/stratos/stratos_sky.tres" id="9_sky"]
+[ext_resource type="Resource" path="res://gods/stratos/stratos_grass.tres" id="10_grass"]
+[ext_resource type="Resource" path="res://gods/stratos/stratos_music.tres" id="gm_music"]
+[ext_resource type="Resource" path="res://gods/stratos/stratos_ambience.tres" id="gm_ambience"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/day_cycle.gd" id="58_day"]
+[ext_resource type="Resource" path="res://scenes/look/weather/plan.tres" id="58_weather"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_set.gd" id="58_life"]
+[ext_resource type="Script" path="res://scenes/look/life/ambient_swarm.gd" id="58_swarm"]
+[ext_resource type="Resource" path="res://scenes/look/life/dust.tres" id="58_dust"]
+[ext_resource type="Resource" path="res://scenes/look/life/fireflies.tres" id="58_fireflies"]
+[ext_resource type="Resource" path="res://scenes/look/life/gnats.tres" id="58_gnats"]
+[ext_resource type="Resource" path="res://scenes/look/life/pollen.tres" id="58_pollen"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/god_flora.gd" id="fl_script"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_species.gd" id="fl_species"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/stt1.res" id="flm_stt1"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/stt2.res" id="flm_stt2"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/stt3.res" id="flm_stt3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_shrub_1.tres" id="fl_stratos_shrub_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_shrub_2.tres" id="fl_stratos_shrub_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_1.tres" id="fl_stratos_groundcover_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_2.tres" id="fl_stratos_groundcover_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_3.tres" id="fl_stratos_groundcover_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_4.tres" id="fl_stratos_groundcover_4"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/stratos_groundcover_5.tres" id="fl_stratos_groundcover_5"]
+
+[sub_resource type="Resource" id="Role_open"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("23_open")
+detail = ExtResource("24_open_detail")
+
+[sub_resource type="Resource" id="Role_earth"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("25_earth")
+detail = ExtResource("26_earth_detail")
+
+[sub_resource type="Resource" id="Role_rock"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("27_rock")
+detail = ExtResource("28_rock_detail")
+
+[sub_resource type="Resource" id="Role_path"]
+script = ExtResource("21_ground_role")
+albedo = ExtResource("29_path")
+detail = ExtResource("30_path_detail")
+
+[sub_resource type="Resource" id="GodGround_stratos"]
+script = ExtResource("20_god_ground")
+ambient_share = 0.55
+open = SubResource("Role_open")
+earth = SubResource("Role_earth")
+rock = SubResource("Role_rock")
+path = SubResource("Role_path")
+edge = ExtResource("22_edge")
+
+[sub_resource type="Curve" id="Day_stratos_elevation_change_deg"]
+_limits = [-120, 60, 0.0, 24.0]
+_data = [Vector2(0, -99), 0.0, 0.0, 0, 0, Vector2(2, -93.105118), 5.5, 5.5, 0, 0, Vector2(4, -77), 9.33226, 9.33226, 0, 0, Vector2(5, -66.388038), 11.0, 11.0, 0, 0, Vector2(6, -55), 12.883562, 12.883562, 0, 0, Vector2(6.347727, -50), 14.268673, 14.268673, 0, 0, Vector2(7, -40.764953), 13.711606, 13.711606, 0, 0, Vector2(8, -27.5), 12.327913, 12.327913, 0, 0, Vector2(9, -16.109127), 10.065699, 10.065699, 0, 0, Vector2(10, -7.368603), 7.117524, 7.117524, 0, 0, Vector2(11, -1.87408), 3.684301, 3.684301, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, -1.87408), -3.684301, -3.684301, 0, 0, Vector2(14, -7.368603), -7.117524, -7.117524, 0, 0, Vector2(15, -16.109127), -10.065699, -10.065699, 0, 0, Vector2(16, -27.5), -12.327913, -12.327913, 0, 0, Vector2(17, -40.764953), -13.711606, -13.711606, 0, 0, Vector2(17.652273, -50), -14.268673, -14.268673, 0, 0, Vector2(18, -55), -12.883562, -12.883562, 0, 0, Vector2(19, -66.388038), -11.0, -11.0, 0, 0, Vector2(20, -77), -9.33226, -9.33226, 0, 0, Vector2(22, -93.105118), -5.5, -5.5, 0, 0, Vector2(24, -99), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_stratos_light_energy"]
+_limits = [0, 1.5, 0.0, 24.0]
+_data = [Vector2(0, 0.25), 0.0, 0.0, 0, 0, Vector2(2, 0.25), 0.0, 0.0, 0, 0, Vector2(4, 0.25), 0.0, 0.0, 0, 0, Vector2(5, 0.25), 0.0, 0.0, 0, 0, Vector2(6, 0.104167), -0.222699, -0.222699, 0, 0, Vector2(6.347727, 0), 0.0, 0.0, 0, 0, Vector2(7, 0.111278), 0.206732, 0.206732, 0, 0, Vector2(8, 0.354141), 0.245951, 0.245951, 0, 0, Vector2(9, 0.60318), 0.229333, 0.229333, 0, 0, Vector2(10, 0.812807), 0.174185, 0.174185, 0, 0, Vector2(11, 0.95155), 0.093597, 0.093597, 0, 0, Vector2(12, 1), 0.0, 0.0, 0, 0, Vector2(13, 0.95155), -0.093597, -0.093597, 0, 0, Vector2(14, 0.812807), -0.174185, -0.174185, 0, 0, Vector2(15, 0.60318), -0.229333, -0.229333, 0, 0, Vector2(16, 0.354141), -0.245951, -0.245951, 0, 0, Vector2(17, 0.111278), -0.206732, -0.206732, 0, 0, Vector2(17.652273, 0), 0.0, 0.0, 0, 0, Vector2(18, 0.104167), 0.222699, 0.222699, 0, 0, Vector2(19, 0.25), 0.0, 0.0, 0, 0, Vector2(20, 0.25), 0.0, 0.0, 0, 0, Vector2(22, 0.25), 0.0, 0.0, 0, 0, Vector2(24, 0.25), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_stratos_ambient_energy"]
+_limits = [0, 1.5, 0.0, 24.0]
+_data = [Vector2(0, 0.55), 0.0, 0.0, 0, 0, Vector2(2, 0.55), 0.0, 0.0, 0, 0, Vector2(4, 0.55), 0.0, 0.0, 0, 0, Vector2(5, 0.55), 0.0, 0.0, 0, 0, Vector2(6, 0.91), 0.309412, 0.309412, 0, 0, Vector2(6.347727, 1), 0.0, 0.0, 0, 0, Vector2(7, 1), 0.0, 0.0, 0, 0, Vector2(8, 1), 0.0, 0.0, 0, 0, Vector2(9, 1), 0.0, 0.0, 0, 0, Vector2(10, 1), 0.0, 0.0, 0, 0, Vector2(11, 1), 0.0, 0.0, 0, 0, Vector2(12, 1), 0.0, 0.0, 0, 0, Vector2(13, 1), 0.0, 0.0, 0, 0, Vector2(14, 1), 0.0, 0.0, 0, 0, Vector2(15, 1), 0.0, 0.0, 0, 0, Vector2(16, 1), 0.0, 0.0, 0, 0, Vector2(17, 1), 0.0, 0.0, 0, 0, Vector2(17.652273, 1), 0.0, 0.0, 0, 0, Vector2(18, 0.91), -0.309412, -0.309412, 0, 0, Vector2(19, 0.55), 0.0, 0.0, 0, 0, Vector2(20, 0.55), 0.0, 0.0, 0, 0, Vector2(22, 0.55), 0.0, 0.0, 0, 0, Vector2(24, 0.55), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_stratos_night"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 1), 0.0, 0.0, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.347727, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.652273, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 1), 0.0, 0.0, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_stratos_stars"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 0.923505), -0.229486, -0.229486, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.347727, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.652273, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 0.923505), 0.229486, 0.229486, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_stratos_moon_intensity"]
+_limits = [0, 4, 0.0, 24.0]
+_data = [Vector2(0, 2.5), 0.0, 0.0, 0, 0, Vector2(2, 2.5), 0.0, 0.0, 0, 0, Vector2(4, 2.5), 0.0, 0.0, 0, 0, Vector2(5, 2.5), 0.0, 0.0, 0, 0, Vector2(6, 0), 0.0, 0.0, 0, 0, Vector2(6.347727, 0), 0.0, 0.0, 0, 0, Vector2(7, 0), 0.0, 0.0, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0), 0.0, 0.0, 0, 0, Vector2(17.652273, 0), 0.0, 0.0, 0, 0, Vector2(18, 0), 0.0, 0.0, 0, 0, Vector2(19, 2.5), 0.0, 0.0, 0, 0, Vector2(20, 2.5), 0.0, 0.0, 0, 0, Vector2(22, 2.5), 0.0, 0.0, 0, 0, Vector2(24, 2.5), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Curve" id="Day_stratos_dusk"]
+_limits = [0, 1, 0.0, 24.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(2, 1), 0.0, 0.0, 0, 0, Vector2(4, 1), 0.0, 0.0, 0, 0, Vector2(5, 1), 0.0, 0.0, 0, 0, Vector2(6, 1), 0.0, 0.0, 0, 0, Vector2(6.347727, 0.666667), -0.951245, -0.951245, 0, 0, Vector2(7, 0.050997), -0.152991, -0.152991, 0, 0, Vector2(8, 0), 0.0, 0.0, 0, 0, Vector2(9, 0), 0.0, 0.0, 0, 0, Vector2(10, 0), 0.0, 0.0, 0, 0, Vector2(11, 0), 0.0, 0.0, 0, 0, Vector2(12, 0), 0.0, 0.0, 0, 0, Vector2(13, 0), 0.0, 0.0, 0, 0, Vector2(14, 0), 0.0, 0.0, 0, 0, Vector2(15, 0), 0.0, 0.0, 0, 0, Vector2(16, 0), 0.0, 0.0, 0, 0, Vector2(17, 0.050997), 0.152991, 0.152991, 0, 0, Vector2(17.652273, 0.666667), 0.951245, 0.951245, 0, 0, Vector2(18, 1), 0.0, 0.0, 0, 0, Vector2(19, 1), 0.0, 0.0, 0, 0, Vector2(20, 1), 0.0, 0.0, 0, 0, Vector2(22, 1), 0.0, 0.0, 0, 0, Vector2(24, 1), 0.0, 0.0, 0, 0]
+point_count = 23
+
+[sub_resource type="Resource" id="Day_stratos"]
+script = ExtResource("58_day")
+start_hour = 12
+elevation_change_deg = SubResource("Day_stratos_elevation_change_deg")
+light_energy = SubResource("Day_stratos_light_energy")
+ambient_energy = SubResource("Day_stratos_ambient_energy")
+night = SubResource("Day_stratos_night")
+stars = SubResource("Day_stratos_stars")
+moon_intensity = SubResource("Day_stratos_moon_intensity")
+dusk = SubResource("Day_stratos_dusk")
+
+[sub_resource type="Resource" id="Life_stratos"]
+script = ExtResource("58_life")
+air = Array[ExtResource("58_swarm")]([ExtResource("58_pollen"), ExtResource("58_fireflies")])
+meadow = Array[ExtResource("58_swarm")]([ExtResource("58_pollen")])
+water = Array[ExtResource("58_swarm")]([ExtResource("58_gnats")])
+woods = Array[ExtResource("58_swarm")]([ExtResource("58_fireflies")])
+rock = Array[ExtResource("58_swarm")]([ExtResource("58_dust")])
+
+[sub_resource type="Resource" id="Tree_stt1"]
+script = ExtResource("fl_species")
+tag = "tree_stt1"
+mesh = ExtResource("flm_stt1")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_stt2"]
+script = ExtResource("fl_species")
+tag = "tree_stt2"
+mesh = ExtResource("flm_stt2")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Tree_stt3"]
+script = ExtResource("fl_species")
+tag = "tree_stt3"
+mesh = ExtResource("flm_stt3")
+cast_shadow = true
+scale_range = Vector2(0.9, 1.5)
+tint_cluster_m = 30.0
+tilt_max_deg = 2.0
+
+[sub_resource type="Resource" id="Flora_stratos"]
+script = ExtResource("fl_script")
+trees = Array[Resource]([SubResource("Tree_stt1"), SubResource("Tree_stt2"), SubResource("Tree_stt3")])
+shrubs = Array[Resource]([ExtResource("fl_stratos_shrub_1"), ExtResource("fl_stratos_shrub_2")])
+cover = Array[Resource]([ExtResource("fl_stratos_groundcover_1"), ExtResource("fl_stratos_groundcover_2"), ExtResource("fl_stratos_groundcover_3"), ExtResource("fl_stratos_groundcover_4"), ExtResource("fl_stratos_groundcover_5")])
+
+[resource]
+script = ExtResource("1_p")
+display_name = "Stratos"
+god = &"stratos"
+sky = ExtResource("9_sky")
+light = ExtResource("2_light")
+glow = ExtResource("1_dp2kx")
+ground = SubResource("GodGround_stratos")
+flora = SubResource("Flora_stratos")
+grass = ExtResource("10_grass")
+music = ExtResource("gm_music")
+ambience = ExtResource("gm_ambience")
+day = SubResource("Day_stratos")
+weather = ExtResource("58_weather")
+life = SubResource("Life_stratos")

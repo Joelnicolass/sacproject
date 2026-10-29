@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/heal.tres" id="fx_heal"]
+
+[node name="Meanstalks" type="Node"]
+editor_description = "Meanstalks (rter): la zona nace al empezar el lanzamiento y sus cuatro tallos suben mientras el mago lanza (ring_count 4: raices en un anillo de 9 a 21,6 m del clic). Particula del lanzamiento: heal (el SPEL no trae tcst)."
+script = ExtResource("1_script")
+cast_fx = ExtResource("fx_heal")
+kind = "Meanstalks"
+ring_count = 4

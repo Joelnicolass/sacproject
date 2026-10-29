@@ -1,0 +1,87 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
+[ext_resource type="Resource" path="res://spells/demonic_rift/demonic_rift.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/zones/rift_edge.gd" id="3_edge"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/rift_edge.gdshader" id="4_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/rif2.png" id="5_edge"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_emitter.gd" id="6_emitter"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rift_swirl.tres" id="7_swirl"]
+[ext_resource type="Script" path="res://scenes/spells/zones/rift_spawner.gd" id="8_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="9_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_open.tres" id="cue_rift_open"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_close.tres" id="cue_rift_close"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/rift_spirit.tscn" id="q8_scene"]
+
+[sub_resource type="ShaderMaterial" id="Mat_edge"]
+shader = ExtResource("4_shader")
+shader_parameter/edge = ExtResource("5_edge")
+
+[sub_resource type="CylinderMesh" id="Mesh_wall"]
+material = SubResource("Mat_edge")
+top_radius = 2.5
+bottom_radius = 2.5
+height = 1.875
+radial_segments = 64
+rings = 1
+cap_top = false
+cap_bottom = false
+
+[node name="DemonicRift" type="Node3D"]
+editor_description = "Demonic Rift (tfir): una grieta de radio 2,5 m que sale del suelo en los pies del mago mientras lanza, suelta hasta 24 espiritus (uno cada 1/3 s) y se cierra al irse el ultimo. El borde oscurece (blend_sub, rif2); los remolinos (rif3) suben de la boca; los espiritus son RiftSpirit. Los numeros salen del SPEL: radio 2,5, alto 1,5 por 0,5 del radio."
+script = ExtResource("1_zone")
+spell = ExtResource("2_spell")
+open_ended = true
+end_s = 1.0
+
+[node name="Edge" type="Node3D" parent="." node_paths=PackedStringArray("zone", "wall")]
+script = ExtResource("3_edge")
+zone = NodePath("..")
+wall = NodePath("Wall")
+
+[node name="Wall" type="MeshInstance3D" parent="Edge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9375, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_wall")
+instance_shader_parameters/emerge = 0.0
+
+[node name="Swirls" type="CPUParticles3D" parent="." node_paths=PackedStringArray("zone")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+use_fixed_seed = true
+script = ExtResource("6_emitter")
+type = ExtResource("7_swirl")
+zone = NodePath("..")
+from_phase = 0
+to_phase = 2
+
+[node name="Spirits" type="Node" parent="." node_paths=PackedStringArray("zone", "wall")]
+script = ExtResource("8_spawner")
+spirit_scene = ExtResource("q8_scene")
+zone = NodePath("..")
+wall = NodePath("../Edge/Wall")
+
+[node name="CastSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("9_sound")]
+editor_description = "srft al abrirse la grieta (SPEL tfir)."
+cue = ExtResource("cue_rift_open")
+zone = NodePath("..")
+when = 1
+
+[node name="CloseSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("9_sound")]
+editor_description = "crft al cerrarse (SPEL tfir)."
+cue = ExtResource("cue_rift_close")
+zone = NodePath("..")
+when = 1
+from_phase = 3
+
+[node name="RiftGlow" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+light_color = Color(0.9, 0.15, 1, 1)
+light_energy = 2
+omni_range = 10
+fade_in_s = 0.6
+fade_out_s = 1
+from_phase = 0
+to_phase = 2
+zone = NodePath("..")
+editor_description = "Violet light out of the rift's mouth while it is open (the exe gives each spirit a violet light (0.9, 0, 1); rif3.png swirls are violet)."

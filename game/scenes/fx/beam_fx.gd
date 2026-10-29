@@ -1,24 +1,29 @@
 class_name BeamFx
 extends MeshInstance3D
 
-## A bolt between two points (RFC-029 029d), drawn like sacengine's Lightning (renderer.d:1873-1905):
-## `type.bolts` ribbons of 3 fins at 120°, each following its own LightningBolt, that change shape every
-## `change_s`, travel in from the start, pulse in brightness and leave from the start before dying.
-## The end can follow a node (the target's center moves while it burns, state.d:16372 `end.center`).
-## Presentation only: FxBus plays it, it moves nothing, and the shape comes from a generator of its own.
-## Frees itself at the end of its life, unless FxBus pools it (then it hides and says `finished`).
+## A lightning bolt between two points: `type.bolts` ribbons of 3 fins at 120°, each following its
+## own LightningBolt, that change shape every `change_s`, travel in from the start, pulse in
+## brightness and leave from the start before dying. The end can follow a node (the target's center
+## moves while it burns).
+## Presentation only: FxBus plays it, it moves nothing, and the shape comes from a generator of its
+## own. Frees itself at the end of its life, unless FxBus pools it (then it hides and says
+## `finished`).
 
 signal finished
+## The bolt reached its end (once per play), at that point: a ScarMark of the scene can burn the
+## ground there.
+signal struck(at: Vector3)
 
 const SHADER := preload("res://scenes/fx/beam.gdshader")
 const SHADER_MIX := preload("res://scenes/fx/beam_mix.gdshader")
 const UV_INSET := 0.5 / 64.0
 
-@export var type: BeamType
-## Owned by FxBus's pool: it waits hidden for `play` and hides again at the end instead of freeing itself.
-@export var pooled := false
-
 static var _materials: Dictionary = {}
+
+@export var type: BeamType
+## Owned by FxBus's pool: it waits hidden for `play` and hides again at the end instead of freeing
+## itself.
+@export var pooled := false
 
 var _imesh: ImmediateMesh
 var _rng := RandomNumberGenerator.new()
@@ -31,6 +36,7 @@ var _t := 0.0
 var _shape := 0
 var _flashed := false
 var _live := false
+var _tip_left := 0.0
 
 
 func _ready() -> void:
@@ -89,7 +95,15 @@ func _process(delta: float) -> void:
 	if not _flashed and _t >= type.travel_s:
 		_flashed = true
 		_flash()
+	_sparkle_tip(delta)
 	_draw()
+
+
+## Ends the bolt now, as if its life were over (the warm-up's flash). Nothing when it is not
+## playing.
+func stop() -> void:
+	if _live:
+		_stop()
 
 
 func _stop() -> void:
@@ -104,8 +118,38 @@ func _stop() -> void:
 
 
 func _flash() -> void:
+	struck.emit(_end_point())
 	if type.light != null and is_inside_tree():
 		type.light.light_up(get_tree(), self, _end_point())
+
+
+## While the tip travels, sprites stay behind it (Rainbow's glow): a few every tick, in a ball
+## around the tip.
+func _sparkle_tip(delta: float) -> void:
+	if type.tip_type == null or _t >= type.travel_s:
+		return
+	_tip_left -= delta
+	var tip := (
+		_arc_point(_from, _end_point(), type.span_at(_t).y)
+		if type.path == BeamType.Path.ARC
+		else _from.lerp(_end_point(), type.span_at(_t).y)
+	)
+	while _tip_left <= 0.0:
+		_tip_left += 1.0 / type.tip_per_s
+		var around := Vector3(
+			_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)
+		)
+		FxBus.puff(type.tip_type, tip + around.limit_length(1.0) * type.tip_spread_m)
+
+
+## The point at `t` (0 = start, 1 = end) of a vertical half circle from `a` to `b`: the ground track
+## runs along the chord with the speed of a half circle, the height is the arc over the straight mix
+## of the ends' heights.
+func _arc_point(a: Vector3, b: Vector3, t: float) -> Vector3:
+	var angle := PI * clampf(t, 0.0, 1.0)
+	var along := 0.5 * (1.0 - cos(angle))
+	var flat := Vector2(b.x - a.x, b.z - a.z).length()
+	return a.lerp(b, along) + Vector3(0.0, flat * type.arc_height * sin(angle), 0.0)
 
 
 func _draw() -> void:
@@ -116,7 +160,11 @@ func _draw() -> void:
 	if length < 0.001 or _bolts.is_empty():
 		return
 	var axis := diff / length
-	var turn := Quaternion(Vector3.BACK, axis) if axis.dot(Vector3.BACK) > -0.9999 else Quaternion(Vector3.RIGHT, PI)
+	var turn := (
+		Quaternion(Vector3.BACK, axis)
+		if axis.dot(Vector3.BACK) > -0.9999
+		else Quaternion(Vector3.RIGHT, PI)
+	)
 	var sqrt34 := sqrt(0.75)
 	var fins: Array[Vector3] = [
 		turn * (Vector3(0.0, -1.0, 0.0) * type.width_m),
@@ -127,19 +175,25 @@ func _draw() -> void:
 	var n := type.segments
 	var points := PackedVector3Array()
 	points.resize(n + 1)
-	set_instance_shader_parameter(&"cell", float(int(floor(_t / type.frame_s)) % (type.h_frames * type.v_frames)))
+	set_instance_shader_parameter(
+		&"cell", float(int(floor(_t / type.frame_s)) % (type.h_frames * type.v_frames))
+	)
 	set_instance_shader_parameter(&"energy", type.energy_at(_t))
 	_imesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for bolt in _bolts:
 		for k in n + 1:
-			var p := bolt.sample(clampf(float(k) / float(n), span.x, span.y))
+			var at := clampf(float(k) / float(n), span.x, span.y)
+			if type.path == BeamType.Path.ARC:
+				points[k] = _arc_point(start, start + diff, at)
+				continue
+			var p := bolt.sample(at)
 			points[k] = start + turn * Vector3(p.x, p.y, p.z * length)
 		_add_ribbon(points, fins, n)
 	_imesh.surface_end()
 
 
-## sacengine makeLineMesh (sacobject.d:2189-2227): per segment and fin a quad from the axis to the fin's
-## edge, pointed at both ends; u flips every segment, v = 1 on the axis (the bright row of the cell).
+## Builds the ribbon: per segment and fin a quad from the axis to the fin's edge, pointed at both
+## ends; u flips every segment, v = 1 on the axis (the bright row of the cell).
 func _add_ribbon(points: PackedVector3Array, fins: Array[Vector3], n: int) -> void:
 	for i in n:
 		for j in 3:
@@ -152,7 +206,12 @@ func _add_ribbon(points: PackedVector3Array, fins: Array[Vector3], n: int) -> vo
 					p += fins[j]
 				pos.append(p)
 				var flip := ((i & 1) == 1) != (k == 1 or k == 2)
-				uvs.append(Vector2(1.0 - UV_INSET if flip else UV_INSET, 1.0 - UV_INSET if (k == 0 or k == 1) else UV_INSET))
+				uvs.append(
+					Vector2(
+						1.0 - UV_INSET if flip else UV_INSET,
+						1.0 - UV_INSET if (k == 0 or k == 1) else UV_INSET
+					)
+				)
 			for idx in [0, 1, 2, 2, 3, 0]:
 				_imesh.surface_set_uv(uvs[idx])
 				_imesh.surface_add_vertex(pos[idx])
@@ -166,9 +225,8 @@ static func material_for(beam: BeamType) -> ShaderMaterial:
 		material = ShaderMaterial.new()
 		_materials[beam] = material
 	material.shader = SHADER_MIX if beam.blend == BeamType.Blend.MIX else SHADER
-	var texture := FxAtlas.texture(beam.atlas_tag)
-	material.set_shader_parameter("use_textures", texture != null)
-	material.set_shader_parameter("atlas", texture)
+	material.set_shader_parameter("use_textures", beam.atlas != null)
+	material.set_shader_parameter("atlas", beam.atlas)
 	material.set_shader_parameter("h_frames", beam.h_frames)
 	material.set_shader_parameter("v_frames", beam.v_frames)
 	material.set_shader_parameter("soft_distance_m", beam.soft_distance_m)

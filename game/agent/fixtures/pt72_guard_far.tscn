@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="PackedScene" path="res://debug/orders_group.tscn" id="1_base"]
-
-[node name="Pt72GuardFar" instance=ExtResource("1_base")]
-
-[node name="Group" parent="." index="3"]
-foe_gap_m = 150.0

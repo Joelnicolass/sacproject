@@ -1,10 +1,11 @@
 class_name OptionsMenu
 extends CanvasLayer
 
-## RFC-031 031c (F142): the options overlay, a TabContainer (Gráficos, and Jugabilidad since 031d) and «Cerrar».
-## It opens from the boot and from the pause menu. While open it is in `WorldInput.MODAL`, so the world input keeps
-## quiet; the dim eats the clicks. `pause_menu` (Esc) closes it before the pause menu sees the key (this layer is a
-## later node in the tree, so its `_input` runs first). process_mode ALWAYS: it works over a paused match.
+## The options overlay, a TabContainer (Gráficos, Avanzado, Arte, Jugabilidad, Sonido) and «Cerrar». It opens from
+## the boot and from the pause menu. While open it is in `WorldInput.MODAL`, so the world input
+## keeps quiet; the dim eats the clicks. `pause_menu` (Esc) closes it before the pause menu sees the
+## key (this layer is a later node in the tree, so its `_input` runs first). process_mode ALWAYS: it
+## works over a paused match.
 
 signal opened
 signal closed
@@ -16,7 +17,7 @@ func _ready() -> void:
 	for i in tabs.get_tab_count():
 		var title: Variant = tabs.get_tab_control(i).get("tab_title")
 		if title != null:
-			tabs.set_tab_title(i, str(title))
+			tabs.set_tab_title(i, tr(str(title)))
 
 
 func is_open() -> bool:

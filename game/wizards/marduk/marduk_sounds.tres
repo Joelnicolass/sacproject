@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=31 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_d_z.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a11.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a12.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_a.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_b.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_c.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_e.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_f.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_g.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_h.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_i.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_j.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_k.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_l.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_m.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_n.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_o.ogg" id="s17"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_p.ogg" id="s18"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_q.ogg" id="s19"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_r.ogg" id="s20"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_s.ogg" id="s21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_t.ogg" id="s22"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_u.ogg" id="s23"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_v.ogg" id="s24"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/mard/_m_a_r_w.ogg" id="s25"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
+
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_incantation"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7"), ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11"), ExtResource("s12"), ExtResource("s13"), ExtResource("s14"), ExtResource("s15"), ExtResource("s16"), ExtResource("s17"), ExtResource("s18"), ExtResource("s19"), ExtResource("s20"), ExtResource("s21"), ExtResource("s22"), ExtResource("s23"), ExtResource("s24"), ExtResource("s25")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("1_set")
+damaged = SubResource("cue_damaged")
+incantation = SubResource("cue_incantation")
+fallback = ExtResource("3_fallback")

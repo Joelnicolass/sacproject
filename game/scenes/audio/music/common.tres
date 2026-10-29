@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="MusicSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/music_set.gd" id="1_set"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/battle_1.mp3" id="2_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/battle_2.mp3" id="3_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/battle_3.mp3" id="4_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/battle_4.mp3" id="5_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/battle_5.mp3" id="6_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/sacrifice_1.mp3" id="7_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/sacrifice_victory.mp3" id="8_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/sacrifice_losing.mp3" id="9_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/victory_theme.mp3" id="10_m"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/music/defeat_theme.mp3" id="11_m"]
+
+[resource]
+script = ExtResource("1_set")
+battle = Array[AudioStream]([ExtResource("2_m"), ExtResource("3_m"), ExtResource("4_m"), ExtResource("5_m"), ExtResource("6_m")])
+sacrifice = Array[AudioStream]([ExtResource("7_m")])
+winning = Array[AudioStream]([ExtResource("8_m")])
+losing = Array[AudioStream]([ExtResource("9_m")])
+victory = Array[AudioStream]([ExtResource("10_m")])
+defeat = Array[AudioStream]([ExtResource("11_m")])

@@ -1,3 +1,5 @@
+[English](servidor_local.en.md) | **Español**
+
 # Servidor local
 
 Una partida 1 contra 1 que corre en tu propia PC, sin pasar por las «Salas online» ni por el VPS. Vos sos el host: el juego lanza un servidor dedicado en tu máquina (el mismo código que usa el VPS) y entrás como un jugador más. Tu rival se une con una dirección, un puerto y un código.
@@ -41,6 +43,5 @@ Si usás un túnel, la dirección que muestra la pantalla es la local: reemplaza
 
 ## Qué hay detrás (para desarrollar)
 
-- `scenes/net/local_server_host.tscn` (`LocalServerHost`): lanza el dedicado con `MpMatchLauncher` (`data/net/lobby_config_local_server.tres`, un asiento por jugador, ticket de dos asientos), genera las credenciales y avisa cuando escucha.
+- `scenes/net/local_server_host.tscn` (`LocalServerHost`): lanza el dedicado con `MpMatchLauncher` (`scenes/net/lobby_config_local_server.tres`, un asiento por cada asiento del modo elegido, humano o IA; un código por asiento humano), genera las credenciales y avisa cuando escucha.
 - El dedicado es el mismo de las salas (`MatchTicketGlue` + `MpMatchAgent`); admite solo los hashes del ticket.
-- Prueba: `bash agent/run_034m.sh` (headless, host + rival + intruso). Con `TRANSPORT=ws`, por TCP.

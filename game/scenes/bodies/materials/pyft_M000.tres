@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/pyft/M000.png" id="1_q81g1"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/pyft/M000_normal.png" id="2_ibv2n"]
+
+[resource]
+resource_name = "pyft_M000"
+albedo_texture = ExtResource("1_q81g1")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_ibv2n")

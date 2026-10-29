@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/pysh/M000.png" id="1_d6y44"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/pysh/M000_normal.png" id="2_mampj"]
+
+[resource]
+resource_name = "pysh_M000"
+albedo_texture = ExtResource("1_d6y44")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_mampj")

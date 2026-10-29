@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/ftrl/002.png" id="1_p2teg"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/ftrl/002_normal.png" id="2_tgd8e"]
+
+[resource]
+resource_name = "ftrl_002"
+albedo_texture = ExtResource("1_p2teg")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_tgd8e")

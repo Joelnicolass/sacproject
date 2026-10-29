@@ -1,0 +1,260 @@
+[gd_scene load_steps=45 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
+[ext_resource type="Resource" path="res://spells/volcano/volcano.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/map/terrain/terrain_stamp.gd" id="3_stamp"]
+[ext_resource type="Script" path="res://scenes/map/terrain/stamp_profile.gd" id="4_profile"]
+[ext_resource type="Texture2D" path="res://assets/original/terrain/volcano_shape.png" id="5_shape"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_heat.gd" id="6_heat"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/fire.tres" id="7_fire"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_burst.gd" id="8_burst"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/volcano_ash_burst.tres" id="9_ash_burst"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/volcano_ash.tres" id="10_ash"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/volcano_mark.tscn" id="11_mark"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="12_ptype"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="13_dropper"]
+[ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="14_launcher"]
+[ext_resource type="Script" path="res://scenes/spells/zones/volcano_look.gd" id="15_look"]
+[ext_resource type="Script" path="res://scenes/spells/zones/cloud_look.gd" id="30_cloud"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/cloud_sphere.gdshader" id="31_sphere"]
+[ext_resource type="ArrayMesh" path="res://scenes/spells/zones/volcano_lava_tube.res" id="16_lava_mesh"]
+[ext_resource type="ArrayMesh" path="res://scenes/spells/zones/volcano_spatter_ring.res" id="18_spatter_mesh"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/volcano_lava.gdshader" id="19_lava_shader"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/volcano_spatter.gdshader" id="21_spatter_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/sprt.png" id="22_sprt"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/sptr.png" id="24_sptr"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="25_light"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="26_sound"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_stamp_stop.gd" id="27_stop"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/erupt_burst.tres" id="cue_erupt_burst"]
+[ext_resource type="PackedScene" path="res://scenes/spells/drops/lava_ball.tscn" id="q8_scene"]
+
+[sub_resource type="Curve" id="Curve_mound_time"]
+_limits = [0.0, 1.0, 0.0, 64.4444]
+_data = [Vector2(0, 0), 0.0, 0.225002, 1, 1, Vector2(4.4444, 1), 0.225002, -0.0125, 1, 1, Vector2(64.4444, 0.25), -0.0125, 0.0, 1, 1]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_mound_flatten"]
+_limits = [0.0, 1.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 1, 1, Vector2(0.5, 1), 0.0, -1.904762, 1, 1, Vector2(1, 0.047619), -1.904762, 0.0, 1, 1]
+point_count = 3
+
+[sub_resource type="Resource" id="Profile_mound"]
+script = ExtResource("4_profile")
+timeline = SubResource("Curve_mound_time")
+heightmap = ExtResource("5_shape")
+heightmap_m = 10.0
+flatten = SubResource("Curve_mound_flatten")
+
+[sub_resource type="Curve" id="Curve_crater_radial"]
+_limits = [-1.0, 0.0, 0.0, 1.0]
+_data = [Vector2(0, -1), 0.0, 0.0, 1, 1, Vector2(0.025, -0.999375), 0.05, 0.05, 1, 1, Vector2(0.05, -0.9975), 0.1, 0.1, 1, 1, Vector2(0.075, -0.994375), 0.15, 0.15, 1, 1, Vector2(0.1, -0.99), 0.2, 0.2, 1, 1, Vector2(0.125, -0.984375), 0.25, 0.25, 1, 1, Vector2(0.15, -0.9775), 0.3, 0.3, 1, 1, Vector2(0.175, -0.969375), 0.35, 0.35, 1, 1, Vector2(0.2, -0.96), 0.4, 0.4, 1, 1, Vector2(0.225, -0.949375), 0.45, 0.45, 1, 1, Vector2(0.25, -0.9375), 0.5, 0.5, 1, 1, Vector2(0.275, -0.924375), 0.55, 0.55, 1, 1, Vector2(0.3, -0.91), 0.6, 0.6, 1, 1, Vector2(0.325, -0.894375), 0.65, 0.65, 1, 1, Vector2(0.35, -0.8775), 0.7, 0.7, 1, 1, Vector2(0.375, -0.859375), 0.75, 0.75, 1, 1, Vector2(0.4, -0.84), 0.8, 0.8, 1, 1, Vector2(0.425, -0.819375), 0.85, 0.85, 1, 1, Vector2(0.45, -0.7975), 0.9, 0.9, 1, 1, Vector2(0.475, -0.774375), 0.95, 0.95, 1, 1, Vector2(0.5, -0.75), 1.0, 1.0, 1, 1, Vector2(0.525, -0.724375), 1.05, 1.05, 1, 1, Vector2(0.55, -0.6975), 1.1, 1.1, 1, 1, Vector2(0.575, -0.669375), 1.15, 1.15, 1, 1, Vector2(0.6, -0.64), 1.2, 1.2, 1, 1, Vector2(0.625, -0.609375), 1.25, 1.25, 1, 1, Vector2(0.65, -0.5775), 1.3, 1.3, 1, 1, Vector2(0.675, -0.544375), 1.35, 1.35, 1, 1, Vector2(0.7, -0.51), 1.4, 1.4, 1, 1, Vector2(0.725, -0.474375), 1.45, 1.45, 1, 1, Vector2(0.75, -0.4375), 1.5, 1.5, 1, 1, Vector2(0.775, -0.399375), 1.55, 1.55, 1, 1, Vector2(0.8, -0.36), 1.6, 1.6, 1, 1, Vector2(0.825, -0.319375), 1.65, 1.65, 1, 1, Vector2(0.85, -0.2775), 1.7, 1.7, 1, 1, Vector2(0.875, -0.234375), 1.75, 1.75, 1, 1, Vector2(0.9, -0.19), 1.8, 1.8, 1, 1, Vector2(0.925, -0.144375), 1.85, 1.85, 1, 1, Vector2(0.95, -0.0975), 1.9, 1.9, 1, 1, Vector2(0.975, -0.049375), 1.95, 1.95, 1, 1, Vector2(1, 0), 2.0, 2.0, 1, 1]
+point_count = 41
+
+[sub_resource type="Curve" id="Curve_crater_time"]
+_limits = [0.0, 1.0, 0.0, 0.05]
+_data = [Vector2(0, 1), 0.0, 0.0, 1, 1, Vector2(0.05, 1), 0.0, 0.0, 1, 1]
+point_count = 2
+
+[sub_resource type="Resource" id="Profile_crater"]
+script = ExtResource("4_profile")
+radial = SubResource("Curve_crater_radial")
+timeline = SubResource("Curve_crater_time")
+
+[sub_resource type="CylinderShape3D" id="Reach_mound"]
+height = 51
+radius = 160
+
+[sub_resource type="CylinderShape3D" id="Reach_crater"]
+height = 10
+radius = 25
+
+[sub_resource type="ShaderMaterial" id="Mat_lava"]
+shader = ExtResource("19_lava_shader")
+shader_parameter/skin = ExtResource("22_sprt")
+
+[sub_resource type="ShaderMaterial" id="Mat_spatter"]
+shader = ExtResource("21_spatter_shader")
+shader_parameter/skin = ExtResource("24_sptr")
+
+[sub_resource type="ShaderMaterial" id="Mat_smoke"]
+shader = ExtResource("31_sphere")
+shader_parameter/layer_alpha = 0.2
+shader_parameter/tint = Color(0.012, 0.012, 0.014, 1)
+shader_parameter/rim_color = Color(0.32, 0.31, 0.3, 1)
+shader_parameter/top_color = Color(0.1, 0.1, 0.105, 1)
+shader_parameter/light_dir = Vector3(0, -1, 0)
+shader_parameter/light_color = Color(0.55, 0.16, 0.04, 1)
+shader_parameter/mottle_color = Color(0.1, 0.1, 0.11, 1)
+shader_parameter/mottle_scale = 4.0
+shader_parameter/core_alpha = 0.85
+shader_parameter/noise_scale = 1.8
+shader_parameter/morph_s = 8.0
+
+[sub_resource type="SphereMesh" id="Mesh_smoke"]
+material = SubResource("Mat_smoke")
+radius = 0.5
+height = 1.0
+radial_segments = 24
+rings = 24
+
+[sub_resource type="MultiMesh" id="Layers_smoke"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("Mesh_smoke")
+
+[node name="VolcanoZone" type="Node3D"]
+editor_description = "Volcano (clov): el monte sube mientras el mago lanza (4,44 s) y a esa hora erupciona: un crater de 25 m y 10 m de hondo, 1000 de dano en 50 m, una columna de lava de 310 m, humo y bolas de lava (una cada 32 ticks de media) durante 60 s. En ese tiempo el monte baja al 25 % y eso queda. Los TerrainStamp son el monte (la imagen volcano_shape.png, aplanado a la altura del centro) y el crater; sus Reach se mueven con el gizmo. Si el lanzamiento se corta, el suelo vuelve exacto a como estaba. La luz naranja es la de la lava (la erupcion lleva su FxLightSpec en volcano_ash_burst.tres)."
+script = ExtResource("1_zone")
+spell = ExtResource("2_spell")
+hold_is_spell_duration = true
+synced = PackedStringArray("Mound:synced_ticks", "Crater:synced_ticks")
+synced_on_change = PackedStringArray("Mound:pattern")
+end_s = 2.0
+
+[node name="Mound" type="Node3D" parent="." node_paths=PackedStringArray("reach")]
+editor_description = "El monte: la imagen volcano_shape.png (33 x 33, blanco = 51 m) por 0,2 y el aplanado hacia la altura del centro (plano hasta 80 m, se pierde hasta 160 m). Sube con el lanzamiento, baja al 25 % en 60 s y eso queda para siempre."
+script = ExtResource("3_stamp")
+profile = SubResource("Profile_mound")
+reach = NodePath("Reach")
+keep = true
+
+[node name="Reach" type="CollisionShape3D" parent="Mound"]
+shape = SubResource("Reach_mound")
+
+[node name="Crater" type="Node3D" parent="." node_paths=PackedStringArray("reach")]
+editor_description = "El crater: 25 m de radio y 10 m de hondo, en el momento de la erupcion; queda para siempre."
+script = ExtResource("3_stamp")
+profile = SubResource("Profile_crater")
+reach = NodePath("Reach")
+start_s = 4.4444
+keep = true
+
+[node name="Reach" type="CollisionShape3D" parent="Crater"]
+shape = SubResource("Reach_crater")
+
+[node name="Cut" type="Node" parent="." node_paths=PackedStringArray("zone", "stamps")]
+editor_description = "Si el lanzamiento se corta, el suelo vuelve de golpe (los sellos se retiran en el momento, sin esperar a que la zona se libere)."
+script = ExtResource("27_stop")
+zone = NodePath("..")
+stamps = [NodePath("../Mound"), NodePath("../Crater")]
+
+[node name="Burn" type="Node" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "La quemadura: 1000 de dano por segundo hasta 20 m, que cae a nada a 50 m; prende fuego y empuja 5 m/s hacia afuera, mas cuanto mas cerca."
+script = ExtResource("6_heat")
+zone = NodePath("..")
+damage_share = 1.0
+burn_s = 0.5
+burn_look = ExtResource("7_fire")
+push_m_s = 5.0
+
+[node name="Push" type="Node" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "El empuje lento: de 10 a 50 m, 1/3 m/s hacia afuera (en 3D) sobre todo lo que vive."
+script = ExtResource("6_heat")
+zone = NodePath("..")
+full_m = 10.0
+push_m_s = 0.3333
+push_flat = false
+
+[node name="Eruption" type="Node" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "La erupcion, una vez: 1000 de dano que cae a nada a 50 m, 64 pedazos de ceniza con la luz de la erupcion y la marca volc en el suelo."
+script = ExtResource("8_burst")
+zone = NodePath("..")
+puffs = Array[ExtResource("12_ptype")]([ExtResource("9_ash_burst")])
+marks = Array[PackedScene]([ExtResource("11_mark")])
+damage_radius_m = 50.0
+
+[node name="Ash" type="Node" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "Ceniza: 32 pedazos cada 1,5 s mientras dura."
+script = ExtResource("8_burst")
+zone = NodePath("..")
+first_s = 1.5
+every_s = 1.5
+count = 39
+puffs = Array[ExtResource("12_ptype")]([ExtResource("10_ash")])
+
+[node name="Dropper" type="Node" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "De cada 32 ticks, uno sale una bola de lava: va a una criatura al azar de las que hay a 200 m (con probabilidad n / (n + 4)) o a un punto de 30 a 200 m."
+script = ExtResource("13_dropper")
+zone = NodePath("..")
+rate_per_s = 1.875
+pick = 1
+ring_min_m = 30.0
+decoys = 4
+
+[node name="Launcher" type="Node" parent="." node_paths=PackedStringArray("zone", "dropper")]
+script = ExtResource("14_launcher")
+zone = NodePath("..")
+dropper = NodePath("../Dropper")
+drop = ExtResource("q8_scene")
+start = 3
+column_m = 120.0
+shoots = true
+
+[node name="CloudAt" type="Marker3D" parent="."]
+editor_description = "Donde esta el humo (a unos 470 m, encima del embudo de la columna que llega a 310 m): una camara de capturas puede mirar a medio camino entre el suelo y este punto."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 470, 0)
+
+[node name="Smoke" type="Node3D" parent="CloudAt" node_paths=PackedStringArray("zone", "layers")]
+editor_description = "El humo sobre la columna: las capas de esfera ruidosa de las nubes (cloud_sphere.gdshader), con altura (un monton de esferas de 230 m de radio sobre el embudo), de nucleo casi negro y bordes grises; solo su cara de abajo toma el naranja de la lava. VolcanoLook las muestra solo desde la erupcion."
+script = ExtResource("30_cloud")
+zone = NodePath("../..")
+layers = NodePath("Layers")
+fixed_radius_m = 230.0
+shape = Vector3(1.5, 0.5, 1.5)
+
+[node name="Layers" type="MultiMeshInstance3D" parent="CloudAt/Smoke"]
+cast_shadow = 0
+multimesh = SubResource("Layers_smoke")
+
+[node name="Look" type="Node3D" parent="." node_paths=PackedStringArray("zone", "eruption", "lava", "cloud", "spatter")]
+script = ExtResource("15_look")
+zone = NodePath("..")
+eruption = NodePath("../Crater")
+lava = NodePath("Lava")
+cloud = NodePath("../CloudAt")
+spatter = NodePath("Spatter")
+
+[node name="Lava" type="MeshInstance3D" parent="Look"]
+editor_description = "La columna de lava de 310 m (volcano_lava.gdshader): crece del suelo en el primer segundo y se encoge en el ultimo."
+cast_shadow = 0
+mesh = ExtResource("16_lava_mesh")
+material_override = SubResource("Mat_lava")
+
+[node name="Spatter" type="MeshInstance3D" parent="Look"]
+editor_description = "La salpicadura de lava en el suelo (volcano_spatter.gdshader): late cada 1,5 s hasta unos 25 m."
+cast_shadow = 0
+mesh = ExtResource("18_spatter_mesh")
+material_override = SubResource("Mat_spatter")
+
+[node name="Glow" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("25_light")]
+editor_description = "La luz naranja de la columna de lava (el original no tiene luz dinamica aqui; el color es el de la lava): sin sombras, encendida mientras erupciona."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
+light_color = Color(1, 0.42, 0.08, 1)
+light_energy = 3.0
+omni_range = 90.0
+priority = 5.0
+fade_in_s = 1.5
+fade_out_s = 1.5
+from_phase = 2
+to_phase = 2
+zone = NodePath("..")
+
+[node name="MouthGlow" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("25_light")]
+editor_description = "La luz naranja al pie de la columna, sobre el cráter."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+light_color = Color(1, 0.42, 0.08, 1)
+light_energy = 3.0
+omni_range = 35.0
+priority = 5.0
+fade_in_s = 1.0
+fade_out_s = 1.5
+from_phase = 2
+to_phase = 2
+zone = NodePath("..")
+
+[node name="EruptSound" parent="." node_paths=PackedStringArray("zone") instance=ExtResource("26_sound")]
+cue = ExtResource("cue_erupt_burst")
+when = 1
+from_phase = 2
+zone = NodePath("..")

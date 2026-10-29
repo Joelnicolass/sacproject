@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/sky/sky_underside.gd" id="1_layer"]
+[ext_resource type="Shader" path="res://scenes/look/sky/sky_underside.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_under"]
+shader = ExtResource("2_shader")
+shader_parameter/energy = 1.7
+shader_parameter/rotation_period_s = 512.0
+shader_parameter/time_override_s = -1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_under"]
+material = SubResource("ShaderMaterial_under")
+size = Vector2(10240, 10240)
+
+[node name="Underside" type="Node3D" node_paths=PackedStringArray("plane")]
+editor_description = "What is seen under the island through the void and the pits: the `under_texture` picture of the god's SkyLook on a 10240 m plane, 3071 m under the map's zero, centred on the map (1280, 1280), without light or fog, turning with the sky. Size in the PlaneMesh, depth in the node's position, turn and brightness in the material."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1280, -3071, 1280)
+script = ExtResource("1_layer")
+plane = NodePath("Plane")
+
+[node name="Plane" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+visible = false
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("PlaneMesh_under")

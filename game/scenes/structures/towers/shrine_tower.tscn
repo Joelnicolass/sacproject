@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/structures/towers/tower.tscn" id="1_tower"]
+[ext_resource type="Script" path="res://scenes/map/props/ritual_site.gd" id="2_site"]
+
+[node name="ShrineTower" instance=ExtResource("1_tower")]
+
+[node name="ManaSource" parent="." index="6"]
+rate = 8.333
+
+[node name="AttachPoint" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+
+[node name="RitualSite" type="Node3D" parent="." index="9" node_paths=PackedStringArray("building")]
+script = ExtResource("2_site")
+kind = 1
+building = NodePath("..")

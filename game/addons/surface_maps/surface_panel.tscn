@@ -1,0 +1,75 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/surface_maps/surface_panel.gd" id="1_panel"]
+[ext_resource type="Script" path="res://addons/surface_maps/recipe_form.gd" id="2_form"]
+
+[node name="SurfacePanel" type="VBoxContainer"]
+editor_description = "The «Relief from albedo» section of the inspector of a material or a ground role (addon surface_maps)."
+script = ExtResource("1_panel")
+
+[node name="Header" type="Button" parent="."]
+unique_name_in_owner = true
+toggle_mode = true
+text = "Relief from albedo"
+alignment = 0
+tooltip_text = "Guesses a normal map (and an ORM if the recipe asks for it) from the albedo texture, saves it as an editable PNG and assigns it."
+
+[node name="Body" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+
+[node name="Previews" type="HBoxContainer" parent="Body"]
+alignment = 1
+
+[node name="Albedo" type="TextureRect" parent="Body/Previews"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+tooltip_text = "The albedo (the source)."
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Normal" type="TextureRect" parent="Body/Previews"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+tooltip_text = "The normal map: the assigned one, or the preview with the recipe below."
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Form" type="VBoxContainer" parent="Body"]
+unique_name_in_owner = true
+script = ExtResource("2_form")
+
+[node name="Overwrite" type="CheckBox" parent="Body"]
+unique_name_in_owner = true
+tooltip_text = "Replaces the PNGs that already exist (hand edits are lost). Off: the existing ones are used."
+text = "Overwrite"
+
+[node name="Buttons" type="HBoxContainer" parent="Body"]
+
+[node name="Preview" type="Button" parent="Body/Buttons"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Shows the relief with the current recipe without writing anything (it also updates by itself when the recipe moves)."
+text = "Preview"
+
+[node name="Generate" type="Button" parent="Body/Buttons"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Writes the missing PNGs, imports them and assigns them to the material (one Ctrl+Z step)."
+text = "Generate"
+
+[node name="Clear" type="Button" parent="Body/Buttons"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Takes the maps off the material (one Ctrl+Z step). The PNGs stay on disk."
+text = "Remove"
+
+[node name="Status" type="Label" parent="Body"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+autowrap_mode = 3
+
+[node name="PreviewDelay" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.4
+one_shot = true

@@ -1,0 +1,16 @@
+[remap]
+
+importer="sacrifice.terrain_heights"
+importer_version=1
+type="Resource"
+uid="uid://blaojp25iyrex"
+path="res://.godot/imported/heights.png-25c3899431df58b0dff3fd2ab8cb3102.res"
+
+[deps]
+
+source_file="res://scenes/map/maps/peaks/heights.png"
+dest_files=["res://.godot/imported/heights.png-25c3899431df58b0dff3fd2ab8cb3102.res"]
+
+[params]
+
+metres_per_unit=0.1

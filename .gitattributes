@@ -12,3 +12,12 @@ game/assets/original/**/*.glb filter=lfs diff=lfs merge=lfs -text
 game/assets/original/**/*.png filter=lfs diff=lfs merge=lfs -text
 game/assets/original/**/*.res filter=lfs diff=lfs merge=lfs -text
 game/assets/original/**/*.exr filter=lfs diff=lfs merge=lfs -text
+# Modelos y texturas propios (RFC-051): igual que los del original.
+game/assets/custom/**/*.glb filter=lfs diff=lfs merge=lfs -text
+game/assets/custom/**/*.png filter=lfs diff=lfs merge=lfs -text
+# Mapas de relieve (RFC-067): normal/ORM generados o pintados, junto a sus .import.
+game/assets/surfaces/**/*.png filter=lfs diff=lfs merge=lfs -text
+# Audio del original (RFC-052 052b): efectos WAV, voces Ogg, música MP3; lo escribe tools/import/import_audio.py.
+game/assets/original/audio/**/*.wav filter=lfs diff=lfs merge=lfs -text
+game/assets/original/audio/**/*.ogg filter=lfs diff=lfs merge=lfs -text
+game/assets/original/audio/**/*.mp3 filter=lfs diff=lfs merge=lfs -text

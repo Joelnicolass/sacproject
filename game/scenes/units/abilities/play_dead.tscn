@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/timed_state_ability.gd" id="1_timed"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/dirt.tres" id="fx_dirt"]
+
+[node name="PlayDead" type="Node"]
+editor_description = "The Fallen's Play Dead effect (dedp). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). SpecialForms.set_form(PLAYING_DEAD) for the SPEL's duration (at least 6 s), counted in ticks."
+script = ExtResource("1_timed")
+min_duration_s = 6.0
+fx = ExtResource("fx_dirt")

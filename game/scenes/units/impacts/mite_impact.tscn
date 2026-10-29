@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/stick_impact.gd" id="1_stick"]
+
+[node name="MiteImpact" type="Node"]
+editor_description = "The impact of the Bilemites (mites): it sticks to the enemy creature that can be poisoned (Clinging, kind mites): speed ×0.8 per mite."
+script = ExtResource("1_stick")
+kind = &"mites"
+factor = 0.8

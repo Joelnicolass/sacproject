@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/AArc/002.png" id="1_ivntd"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/AArc/002_normal.png" id="2_2qni3"]
+
+[resource]
+resource_name = "AArc_002"
+albedo_texture = ExtResource("1_ivntd")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_2qni3")

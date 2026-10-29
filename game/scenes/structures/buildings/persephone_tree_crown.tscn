@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Resource" path="res://gods/persephone/buildings/persephone_tree_crown.tres" id="2_type"]
+[ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct7.res" id="mesh_pct7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(9.382, 14.242, 9.072)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_trunk"]
+height = 10.0
+radius = 0.5
+
+[node name="PersephoneTreeCrown" node_paths=PackedStringArray("trunk") instance=ExtResource("1_building")]
+trunk = NodePath("Trunk")
+type = ExtResource("2_type")
+
+[node name="Base" type="Node3D" parent="Visuals"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visuals/Base"]
+mesh = ExtResource("mesh_pct7")
+
+[node name="VegetationClear" type="Node3D" parent="Visuals"]
+position = Vector3(0.29400015, 0, -0.6430001)
+script = ExtResource("3_clear")
+radius_m = 7.53
+
+[node name="Collision" parent="." index="1"]
+position = Vector3(0.29400015, 3.1569998, -0.6430001)
+shape = SubResource("BoxShape3D_body")
+
+[node name="Trunk" type="CollisionShape3D" parent="."]
+position = Vector3(0.57, 3, 0.36)
+shape = SubResource("CylinderShape3D_trunk")

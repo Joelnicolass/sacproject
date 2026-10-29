@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/mht1.wav" id="c61h_mht1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/mht2.wav" id="c61h_mht2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/jams/mht3.wav" id="c61h_mht3"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("c61h_mht1"), ExtResource("c61h_mht2"), ExtResource("c61h_mht3")])
+max_voices = 6
+volume_db = 4
+priority = 60

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="AbilityType" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_x8tix"]
+[ext_resource type="Texture2D" uid="uid://c6fr45piyj457" path="res://assets/original/ui/icons/liba.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/bilemites.tscn" id="effect_scene"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/bilemites.tscn" id="shot_look"]
+
+[resource]
+script = ExtResource("1_x8tix")
+effect = ExtResource("effect_scene")
+shot_look = ExtResource("shot_look")
+tag = "liba"
+display_name = "Bilemites"
+icon = ExtResource("icon_tex")
+mana_cost = 60
+cast_range_m = 100.0
+cooldown_s = 6.0
+casting_time_s = 4.4444
+speed_m_s = 30.0
+effect_range_m = 15.0
+duration_s = 8.0
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+poison_regen_factor = 0.0

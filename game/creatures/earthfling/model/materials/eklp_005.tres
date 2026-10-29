@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/eklp/005.png" id="1_7fqpq"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/eklp/005_normal.png" id="2_ygp36"]
+
+[resource]
+resource_name = "eklp_005"
+albedo_texture = ExtResource("1_7fqpq")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_ygp36")

@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/carrier_action.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="2_target"]
+[ext_resource type="PackedScene" path="res://spells/death/death.tscn" id="q8_scene"]
+
+[sub_resource type="Resource" id="Target_aim"]
+script = ExtResource("2_target")
+who = 3
+
+[node name="Death" type="Node"]
+script = ExtResource("1_script")
+target = SubResource("Target_aim")
+carrier = ExtResource("q8_scene")
+ground_ok = true
+spawn_at = 2
+ahead_m = 10.0

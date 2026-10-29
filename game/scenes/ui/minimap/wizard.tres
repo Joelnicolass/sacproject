@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MinimapMarkerStyle" format=3 uid="uid://b762fml61t0al"]
+
+[ext_resource type="Script" uid="uid://dnqu3jv7aacv2" path="res://scenes/ui/minimap/minimap_marker_style.gd" id="1_style"]
+[ext_resource type="Texture2D" uid="uid://dsl6d31cqsdm2" path="res://assets/original/ui/hud/mmic.png" id="2_sheet"]
+
+[sub_resource type="AtlasTexture" id="arrow"]
+atlas = ExtResource("2_sheet")
+region = Rect2(0, 13, 11, 11)
+
+[sub_resource type="AtlasTexture" id="tex"]
+atlas = ExtResource("2_sheet")
+region = Rect2(25.5, 1, 10, 11)
+
+[resource]
+script = ExtResource("1_style")
+texture = SubResource("tex")
+size_px = 13.0
+arrow_texture = SubResource("arrow")
+arrow_for_all = true

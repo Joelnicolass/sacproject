@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/zone_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/fire_cast.tres" id="fx_fire_cast"]
+
+[node name="Explosion" type="Node"]
+editor_description = "Explosion (pxef): cinco puntos (el clic y cuatro al azar a <= effect_range) y estalla 3,8 s despues de empezar el lanzamiento (arm_from_start)."
+script = ExtResource("1_script")
+cast_fx = ExtResource("fx_fire_cast")
+kind = "Explosion"
+scatter = 4
+arm_s = 3.8
+arm_from_start = true

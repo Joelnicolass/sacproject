@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/debris_piece.tscn" id="1_piece"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/dirt.tres" id="2_trail"]
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="3_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/tscr.png" id="4_tscr"]
+
+[node name="EruptDebris" node_paths=PackedStringArray("landing_mark") instance=ExtResource("1_piece")]
+editor_description = "Una roca del estallido de Erupt: la misma malla de roca a escala 0,4, gravedad 30, sin rebote (cae y desaparece) y deja polvo de tierra."
+trail = ExtResource("2_trail")
+bounce = 0.0
+life_s = 4.0
+landing_mark = NodePath("Scar")
+
+[node name="Rock" parent="." index="0"]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)
+
+[node name="Scar" parent="." instance=ExtResource("3_mark")]
+editor_description = "Erupt (tpre): la marca tscr donde la roca toca el suelo."
+texture = ExtResource("4_tscr")

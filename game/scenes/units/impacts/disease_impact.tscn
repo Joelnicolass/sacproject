@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/poison_impact.tscn" id="1_poison"]
+
+[node name="DiseaseImpact" instance=ExtResource("1_poison")]
+editor_description = "The Necryl's Disease (cena): the dose is infectious (Poison.infectuous) and carries ires 1000 / freg 0 of the SPEL."
+infectious = true

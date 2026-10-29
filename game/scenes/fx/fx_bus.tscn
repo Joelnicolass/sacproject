@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/fx_bus.gd" id="1_bus"]
+[ext_resource type="Script" path="res://scenes/fx/burst_pool.gd" id="2_bursts"]
+[ext_resource type="Script" path="res://scenes/fx/beam_pool.gd" id="3_beams"]
+[ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="4_warm"]
+
+[node name="FxBus" type="Node"]
+editor_description = "The autoload of every visual effect: bursts (ParticleType), beams (BeamType) and scenes (FxScene root). The pools live in the Bursts and Beams children; `prewarm` builds them when the client loads. It never instances anything in a headless process."
+script = ExtResource("1_bus")
+
+[node name="Bursts" type="Node" parent="."]
+unique_name_in_owner = true
+editor_description = "One pool of emitters per ParticleType, prewarmed with every effect of FxWire.warm_dirs() (scenes/fx/effects/ and the fx/ folder of each creature, spell, wizard and god). `max_per_type` is the cap when the type has no pool_max."
+script = ExtResource("2_bursts")
+
+[node name="Beams" type="Node" parent="."]
+unique_name_in_owner = true
+editor_description = "One pool of beams per BeamType (its pool_max), prewarmed with scenes/fx/effects/beams."
+script = ExtResource("3_beams")
+
+[node name="WarmHook" type="Node" parent="."]
+editor_description = "The loading screen warm-up asks for one burst of every ParticleType and one beam of every BeamType for one frame, in front of the camera, without played (no sound, no shake)."
+script = ExtResource("4_warm")
+
+[connection signal="asked" from="WarmHook" to="Bursts" method="flash_all"]
+[connection signal="asked" from="WarmHook" to="Beams" method="flash_all"]

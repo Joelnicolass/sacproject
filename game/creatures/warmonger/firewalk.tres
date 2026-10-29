@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AbilityType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_28vyt"]
+[ext_resource type="Texture2D" uid="uid://c6dfs15s5vll3" path="res://assets/original/ui/icons/wfhg.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/firewalk.tscn" id="effect_scene"]
+
+[resource]
+script = ExtResource("1_28vyt")
+effect = ExtResource("effect_scene")
+tag = "wfhg"
+display_name = "Firewalk"
+icon = ExtResource("icon_tex")
+mana_cost = 250
+cast_range_m = 200.0
+cooldown_s = 10.0
+casting_time_s = 7.4074
+speed_m_s = 60.0
+damage_range_m = 10.0
+targets_ground = true

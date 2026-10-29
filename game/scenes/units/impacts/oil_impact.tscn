@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/oil_impact.gd" id="1_oil"]
+
+[node name="OilImpact" type="Node"]
+editor_description = "The impact of the Pyrodactyl's Viscous oil (kcfa). No damage: it oils (Oiled) every creature or wizard within effect_range (15 m) of the point, of any side; the oil lasts duration·60 ticks. It hits any creature but the shooter, or the ground."
+script = ExtResource("1_oil")

@@ -1,0 +1,249 @@
+**English** | [Español](HOWTO.md)
+
+# How to add and change things
+
+A short guide. All paths are from `game/`. General rule: each creature, spell, wizard and god is a folder (`creatures/`, `spells/`, `wizards/`, `gods/`) with everything only it uses; the code of each system and what is shared are in `scenes/<domain>/`. No `match tag` in code. Every folder has its `README.md`.
+
+The in-game interface and the **Project > Tools > Sacrifice** menu are in Spanish: labels are quoted as they appear, with an English gloss.
+
+## A creature
+
+For a creature that does not exist in the original, go straight to «Create your own creature from Blender». These steps are for the catalog ones.
+
+1. Each creature is a folder, `creatures/<name>/`, with everything only it uses. Create `creatures/my_beast/` and duplicate a sibling's type into it (for example `creatures/sylph/sylph.tres` → `creatures/my_beast/my_beast.tres`). The catalog finds it by the folder name. Leave the `tag` empty: the id is the file name.
+2. In the inspector: `tag`, `display_name`, `model` (the tag of the model in `assets/original/models/<model>.glb`), health, speed, resistances, the `Abilities` group and the animations.
+3. The body size goes in the scene `creatures/<name>/<name>.tscn` (`BodyFrame`: `Bounds/Capsule`, `Bounds/Footprint` and the `Sockets/` markers, `Reach` among them). If another creature already uses the model, it already exists.
+4. The model's scene is `creatures/<name>/model/<name>_model.tscn` (or `scenes/bodies/models/` when several share it). That is where you change which clip each role plays (`AnimationTree`).
+5. So that the player can summon it, put it in the god's book: `gods/<god>/<god>.tres` → `book` → `creatures` (and a line in `unlocks` with the wizard level at which it comes in).
+6. Abilities: in the `Abilities` group, drag the ability's `.tres` (in the creature's folder when only it has it, in `scenes/units/abilities/` when shared) onto `ranged_attack`, `active_ability` and `on_damage`, and the clouds or on-hit effects of `scenes/units/death_clouds/` onto `passives`; the logic of each one is a node in `scenes/units/abilities/`.
+
+## Create your own creature from Blender
+
+A new enemy or character needs nothing from the original game (neither `index.json` nor the WADs): it comes from a `.glb`.
+
+1. **Model and animate.** An armature with the skinned mesh and **one action per animation**, named by role (capitals, separators and Blender's `.001` do not matter):
+   `idle` (required), `run` (or `walk`), `attack`, `shoot`, `cast`, `hit`, `death`, `fly`, `takeoff`, `land`, `hover`, `knock`, `get_up`. A role without a clip resolves by itself (`walk`→`run`, `shoot`→`attack`, `hit` and anything missing→`idle`; without `death` the body falls with a Tween).
+   **Strike variants:** up to three attack clips, `attack`, `attack2`, `attack3` (or `attack_a`, `attack_b`, `attack_c`), each with its own mark (`attack2_at60`). The game picks at random between `attack` and `attack2` on each strike; `attack3` is the downward strike (against a much lower target). Each strike plays its own clip and hits at its own moment. With only `attack3` and no `attack2`, the second of the pair repeats `attack`.
+   The **moment of the hit** goes in the name: `attack_at45` = at 45 % of the clip, `attack_f18` = at frame 18; without a mark it is the middle (50 %). (Blender does not export markers to glTF.) Make it face **-Y** in Blender (it ends up facing +Z, like the game) with the feet at Z = 0.
+2. **Export** to `game/assets/custom/models/<tag>.glb` (File > Export > glTF 2.0, GLB format, *Animation* > **Actions** mode; the file name is the `tag`: lower case, no spaces). Open the project in the editor once (or `$G --headless --path . --import`) so that Godot imports it. Full example: `tools/blender/make_test_creature.py`.
+3. **Create the creature**: **Project > Tools > Sacrifice: Nueva criatura desde modelo…** (New creature from model…) and pick the `.glb`; or from the console:
+   ```bash
+   $G --headless --path . --script res://tools/bake/new_creature.gd -- <tag> --name="Name" --god=pyro
+   ```
+   It writes everything into `creatures/<tag>/` and **overwrites nothing that exists** (`--force` redoes it): `model/<tag>_model.tscn` (the model with its `AnimationTree` and the hit event), `<tag>.tscn` and `<tag>_look.tscn` (the body with the capsule, footprint and sockets measured from the mesh, and its look) and `<tag>.tres` (stats from `tools/bake/templates/creature.tres` plus the clip data). It also draws the **HUD icon** (book and selection): if `assets/custom/icons/<tag>.png` exists it uses it as is (it never overwrites it; it is yours, 32×32); otherwise it renders it from the model (idle pose, camera over its box, dark disc with a golden ring) and saves it there. Drawing needs a window: from the plugin one opens by itself for a moment; from the console, drop `--headless` (`--resolution 256x256`) or run `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` afterwards (`--force` redoes it). You can also assign a texture to the creature's `icon` field in the inspector (it beats everything). `--icon` redraws it in `new_creature.gd`; `--no-icon` skips it. It prints which clip it took for each role and which ones it did not use.
+4. **Tune in the inspector.** Stats, mana and soul cost, `display_name` in the creature's `.tres`; size in the body scene (drag `Sockets/Reach`: how far the strike gets). Which clip each role plays: the model's `<tag>_clips.tres` library (the `Clips` node of its scene; an `AnimationTree` state plays the animation of its role, and the length comes from the animation); the hit frame: the `hit` marker of that animation (and the `attack` call of its method track). If you touched roles or the hit, **Project > Tools > Sacrifice: Sincronizar criatura con su modelo…** (Sync creature with its model…) (or `new_creature.gd -- <tag> --sync`) reads the scene again and updates the times the rules use (hit, shot, stun, flight); your stats are not touched.
+5. **Put it in a book**: `gods/<god>/<god>.tres` → `book` → `creatures` (drag the `.tres`) and a line in `unlocks` with the wizard level.
+6. **Sounds** (optional): drop `death_1.wav`, `swing_1.wav`… in `assets/custom/sounds/creatures/<tag>/` before step 3, or afterwards with «Hornear sonidos» (Bake sounds). See «Your own sounds».
+
+## Your own sounds
+
+They need nothing from the original game. They work for any creature (including one of yours from Blender), wizard or set.
+
+1. **Drop the files** (`.ogg` or `.wav`) in `assets/custom/sounds/creatures/<name>/<event>[_n].ogg`. For example, `assets/custom/sounds/creatures/mibicho/death_1.wav` and `swing_1.wav`. Each file of the same event is a variant (`death_1`, `death_2`…), and the game picks one at random.
+2. **Event names** (the fields of `SoundSet`, `scenes/audio/sound_set.gd`):
+   - Creature: `summon` (when summoned; empty uses the one every creature shares), `swing` (strike), `shoot` (shot; a `swing` with no `shoot` also sounds when it shoots), `damaged` (takes damage), `death`, `selected` (you pick it), `ack` (acknowledges a move), `attack_ack` (acknowledges an attack), `annoyed` (you picked it many times).
+   - Wizard: `incantation` (casts), `damaged`, `death`, `ghost` (rises as a ghost).
+   - `selected`, `ack`, `attack_ack`, `annoyed` and `incantation` go to the `Voice` bus; the rest, to `SFX`. A name that is not a field is skipped, and the tool warns.
+3. **Create the set:** **Project > Tools > Sacrifice: Nueva criatura desde modelo…** (New creature from model…) writes `creatures/<name>/<name>_sounds.tres` (the files of the folder in its fields; over the melee set `melee/fist.tres`) and assigns it to the creature's `Sounds` field. It does not overwrite one that exists: `--force` redoes it and loses what you edited. With no sounds folder the set stays empty: drag the files onto its fields.
+4. **Review:** open the `.tres` in the inspector. There is one cue per event, and ▶ on a stream plays it. Volume, `cooldown_s` and `max_voices` are tuned there.
+
+More detail (FX sounds, music and ambience per god): `scenes/audio/README.md`.
+
+## A spell
+
+A spell is two things: the data and, if it has its own procedure, a scene.
+
+1. **Data.** Duplicate a `SpellType` from `spells/` as `<tag>.tres` (mana, range, cooldown, cast time, damage). Put it in the god's `book` → `spells` (or `structures` if it is a structure).
+2. **Action.** If the spell does more than the common cast, create a scene in `scenes/spells/actions/` with a script that extends `SpellAction` (for a strike on a body under the cursor, an embedded `SpellTarget` and `aim_at_body`). Fill in `tag` (the `SpellType`'s), `pick` (ground, own creature, soul, own building) and `prompt` in the inspector; the editor warns if something is missing.
+3. **Registration.** Instance the scene as a child of `Caster/Actions` in `scenes/wizards/wizard_body.tscn`. Removing the node turns the spell off («No implementado», Not implemented, in the book).
+4. Visual effects are requested by name from `FxBus` (see «An FX»).
+
+## A god
+
+1. Create `gods/<god>/` and duplicate `gods/pyro/pyro.tres` there as `<god>.tres` (`GodType`): `tag`, `display_name`, `sort_order`, its look (`<god>_look.tres`, with sky, light, grass, music and ambience) and the cast FX.
+2. `ai_profile`: an `AiProfile` from `scenes/ai/` (duplicate `profile_pyro.tres`).
+3. `book`: a `GodBook` with `creatures`, `spells`, `structures` and `unlocks`. They are references to the `.tres` files of `creatures/`, `spells/` and `gods/<god>/buildings/`: adding something to the book is dragging it into the list.
+4. The character picker and the catalog pick it up by themselves (`GameCatalog`).
+
+## A building
+
+- **Type.** `gods/<god>/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the ruin). The scene with the same name in `scenes/structures/buildings/` is the building you drag into a map (root `MapBuilding`, parts saved under `Visuals`). A new one is made by duplicating a `.tres` and its scene; «Fit to parts» (on the root) measures the box that holds the parts, which you can also drag with the handles of `Collision`.
+- **On the map.** Drag `scenes/structures/buildings/<name>.tscn` under `Buildings` in the map scene. Move and rotate it with the gizmo: the transform is the truth and the model shows in the editor; with «Editable Children» you see and move the parts of that instance. With `max_health` 0 it is indestructible.
+- **As a structure spell** (Manalith, Shrine): the `SpellType` goes in the book's `structures`, a `GodStructure` row (spell + scene) in `GodType.structures`, and a `StructureAction` with that `tag` under `Caster/Actions`; the building is a scene of `buildings/` that instances `towers/tower.tscn` (or `shrine_tower.tscn`) and is added to `StructureSpawner.scenes` in `match.tscn`.
+
+## An NPC
+
+1. Instance `scenes/map/npc_spawn.tscn` under `Npcs` of the map scene.
+2. Drag the creature (`creatures/<name>/<name>.tres`) to `creature` and set `side` (the side no player takes: the seats are sides 0..N-1). The marker's position is where it is born; the transform's rotation is where it faces; in the editor you see a ghost of the creature.
+3. `MapPopulation` turns them into units when the match starts (on the server or in single player).
+
+## An FX
+
+- **Particles.** A `ParticleType` in `scenes/fx/effects/<name>.tres` (atlas, frames, size, life, gravity, count). It is played with `FxBus.play("<name>", position)`; the name is the file's.
+- **Beam.** A `BeamType` in `scenes/fx/effects/beams/` and `FxBus.play_beam(...)`.
+- **Something with its own shape** (rings, spikes, portal): a packed scene in `scenes/fx/` with its shader, and `FxBus.play_scene(path, position, parameters)`. One effect, one scene, one shader.
+- The effect's lights: `scenes/fx/effects/lights/`.
+
+## A map
+
+A map is a folder `scenes/map/maps/<tag>/` with its `map.tscn` (root `MapRoot`), its `MapDefinition` `<tag>.tres` (scene, terrain, light and navmesh, typed) and the `nav.res`; buildings and NPCs are nodes of `map.tscn` (`Buildings`, `Npcs`); its data from the original goes in `assets/original/maps/<tag>/`. `MapCatalog` finds the folder by itself and `--map=<tag>` picks it. More in `scenes/map/README.md`.
+
+**Import one from the original** (RFC-050; the list of the 31 with seats and size: `python3 tools/import/import_map.py --list`). From `game/`. **Requires the original game installed** (`SAC_INSTALL`, see «Configure paths» below): `import_map.py` and `import_themes.py` read it; `scaffold_map.py` does not. `G` is the Godot binary and `<Name>` the `.scp`'s name without the `(N)`, for example `Peaks` or `WinterWonder` (the tag comes out by itself: `winter_wonder`).
+
+```bash
+G="${GODOT_BIN:-godot}"   # see «Configure paths» below
+python3 tools/import/import_map.py --map=<Name> --terrain-bin=/tmp/<tag>.bin   # light, ntts, widgets + the terrain bin
+python3 tools/import/scaffold_map.py --map=<Name>                              # MapDefinition, map.tscn (starts with their WizardSpot), empty nav.res
+python3 -I tools/import/bake_ground_roles.py                                     # ground_roles.png: which ground (open, earth, rock, path) lies in each cell
+$G --headless --path . --script res://tools/bake/import_terrain.gd -- --map=<tag> --bin=/tmp/<tag>.bin
+$G --headless --path . --import                  # imports heights.png, ground_roles.png and light.png
+$G --headless --path . --script res://tools/bake/terrain_glb_export.gd -- --map=<tag> --force
+$G --headless --path . --import                  # once more: terrain.glb
+$G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag>
+$G --headless --path . res://tools/bake/bake_nav.tscn -- --map=<tag> --check   # twice
+$G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # seats, objects on land, level bases, altar->fount paths (no --map: every map)
+```
+
+After importing, `map.tscn` and `<tag>.tres` are edited by hand (the scene is the truth). Careful with `--force`: it overwrites what you edited. The plants of a map that is not James's stay empty until the models of its widgets exist. `room_selectable = false` in the definition takes it out of the rooms.
+
+**A map's ground** (plan 062): `bake_ground_roles.py` reads the `.scp`'s tiles in the map's own land and writes `ground_roles.png` (R open, G earth, B rock, A path); every god dresses it with its `GodGround` (`scenes/look/<god>.tres`), on any map. A `.scp` outside the folder (the tutorial) goes as `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` leaves `Npcs` empty and `--not-playable` sets `playable = false` (no room or menu offers it; `--map=<tag>` and the debug scenes still open it). Plants: `scaffold_map.py --map=<Name> --wire-flora` writes a density PNG per species (`scenes/map/maps/<tag>/flora/`) and hangs a `FloraLayer` per species under a `Vegetation` node of the map.tscn (import the project once afterwards); paint the PNGs or add a `VegetationPatch` by hand. The Godot steps that read the definition (`import_terrain.gd`, `terrain_glb_export.gd`) need the map to load: pass `--out=` to the first and write the `.glb` once with `export_data` before `--import`, or they would write into High Noon.
+
+**Make one by hand** (example: `test_flat4`, the 4-seat test map, in `scenes/map/maps/test_flat4/`):
+
+1. Copy the folder of a similar map (`test_flat/` or `test_flat4/`) to `scenes/map/maps/<tag>/`. The terrain can be its own (`terrain.glb` from Blender) or a reference to another map's: `test_flat4` uses `test_flat`'s `terrain.res` without copying it.
+2. In `map.tscn`, one `PlayerStart` per seat under `MapProps/Starts` (`Start1`…`Start4`, with `slot` 1..N without repeats) and its altar; move each start's `WizardSpot` with the gizmo (the wizard appears there, facing where it faces); the fountains under `MapProps/Founts`. A building is dragged under `Buildings`. In `test_flat4`, seats 1 and 2 are on the same side and 3 and 4 opposite, because `2v2` puts 1+2 against 3+4.
+3. The sides come from the nodes: each `PlayerStart` is a seat (`slot`; a `team` above 0 allies the seats that share it, 0 = enemy of everyone) and each `side` of an `NpcSpawn` is a side no player takes. The teams of a mode are set by the mode.
+4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (and `light` if it has one) dragged from the inspector, and `player_starts` (= number of `PlayerStart`). `room_selectable = false` if it is only for testing (the rooms offer it with `--room-test-maps`).
+5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Bake navmesh» button of `NavRegion`) and run `tools/audit/check_map.tscn -- --map=<tag>` (seats, objects on land, level bases, paths).
+
+A map only shows up in a mode if it has one start per seat: High Noon (2) offers `1v1`; `winter_wonder` and `test_flat4` (4) also offer `2v2`, `ffa3` and `ffa4`.
+
+## A mode
+
+A mode (how many seats, which team each one is on, how you win) is a `GameMode` `.tres` in `scenes/match/modes/`. It has no code.
+
+1. Duplicate a similar one (for example `2v2.tres`) and name it `<tag>.tres`.
+2. In the inspector: `tag` (the one of `--mode=<tag>` and of the room), `display_name` (a key of `scenes/ui/i18n/strings.csv`, like `MODE_2V2`; add yours with its text), `team_of_seat` (the team of each seat, seat 1 first: `[0,1]` is 1 against 1, `[0,0,1,1]` is 2 against 2, `[0,1,2]` three against everyone; teams go from 0 without gaps) and `room_selectable`.
+3. Add it to `modes` in `scenes/match/modes/mode_catalog.tres`.
+4. If no map has starts for all the mode's seats, the screens do not offer it.
+
+To try it without the screens: `--map=test_flat4 --mode=<tag>`.
+
+## Play 2 against 2
+
+You need a 4-seat map: `winter_wonder`, or `test_flat4` for testing.
+
+- **Alone, against the AI:** in the boot screen pick the «2 contra 2» (2 against 2) mode and the map, and press «Contra la IA» (Against the AI). The AI plays your ally and both rivals (their god comes from the «Dios de la IA» (AI god) picker). In a debug build the boot screen also offers the test maps.
+- **In an online room:** A presses «Salas online» (Online rooms) → «Crear sala» (Create room), picks the «2 contra 2» mode and the map, and shares the code. The other three join with «Unirse» (Join) and the code. Online rooms are people only: to play with AI, use «Servidor local» (Local server).
+- **Room server (off, for a future VPS):** turn on `room_server_enabled` in the inspector of `scenes/core/flow/sacrifice_flow.tscn` and start it with `$G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://scenes/net/lobby_config_local.tres --room-test-maps`. With the switch on, «Salas online» (Online rooms) opens its lobby (rooms with AI seats, «Listo» (Ready) and back to the room) instead of the player-hosted rooms.
+- **Local server:** in «Servidor local» (Local server) → «Crear servidor local» (Create local server), pick mode and map and, for each seat that is not yours, a person or an AI. Each person's seat has its code: give each one theirs, with the address and the port.
+
+## Change the balance
+
+- **A creature, a spell, a wizard, a building:** open its `.tres`: `creatures/<name>/`, `spells/<name>/`, `wizards/<name>/` or `gods/<god>/buildings/`, and change the number in the inspector. There is no JSON or separate table; the game reads the file.
+- **Match rules** (duration, friendly fire, caps): `scenes/match/match_rules.tres` (`MatchRules`).
+- **AI and difficulty:** `scenes/ai/`.
+- **Graphics quality:** `scenes/look/quality_*.tres`.
+- A `.tres` is not mutated at runtime.
+
+## Relief (PBR maps) of a model
+
+Each texture of a model is a material in `scenes/bodies/materials/<owner>_<label>.tres`: a `StandardMaterial3D` shared by every model that uses that texture. Its relief is a normal map in `assets/surfaces/<owner>/<file>_normal.png` (Git LFS), assigned to the material's **Normal Map** slot. The map is optional: a material without one looks as before. Since RFC-067 every material has one, except `pct6_M000_cutout`. The stone copy (StoneLook) and the build copy (BuildReveal) keep the relief.
+
+- **To look at one or tune it,** open the material in the inspector, or the mesh's surface override in the model scene, `creatures/<name>/model/`. `normal_scale` softens the relief, and a negative value flips it. To take it off, clear the slot or press Quitar.
+- **To make one,** go to the inspector section «Relieve desde albedo», set the knobs (the preview shows the result), press Generar and save with Ctrl+S.
+- **To make many,** use Project > Tools > «Generar relieve…». From the console it is `tools/bake/bake_relief.gd -- <folder> --recipe=…`, run once, then `--import`, then the same command again.
+- **Recipes** live in `addons/surface_maps/recipes/`:
+  - `default.tres` uses NormalMap-Online's settings: strength 2.5, level 7, smoothing 0, normal map only.
+  - `foliage.tres` adds smoothing 1, for thin leaves that speckle with the default. It is used for the `<TAG>_plant*` flora and for the leafy props.
+- **The PNG is the source:** retouch it in any image editor. The recipe that made it is not kept.
+
+## PBR from Blender
+
+Your own model does not need the generator.
+
+1. Wire the maps into the **Principled BSDF**: Base Color, Normal (through a tangent-space *Normal Map* node), Roughness / Metallic, and Emission if you need it. Keep emission under the glow threshold of 1.0.
+2. Export to `assets/custom/models/<tag>.glb`. Godot turns each material into a `StandardMaterial3D` with its maps, and `new_creature.gd` does not overwrite them. Missing tangents are generated at import (`meshes/ensure_tangents=true`).
+3. If you exported only the colour, generate the relief on the extracted texture from the inspector. The map lands beside that texture.
+
+## Run the lint and the bakers
+
+Everything runs from `game/` and one Godot at a time.
+
+```bash
+G="${GODOT_BIN:-godot}"   # see «Configure paths» below
+
+# Conventions lint (grep/awk, no Godot, ~1 s; fails if a count goes above tools/lint/baseline.txt)
+bash tools/lint/conventions.sh
+```
+
+From the editor, **Project > Tools > Sacrifice** re-bakes the navmesh and bakes the missing models, and shows the output in a dialog. The minimap has a «Rebake minimap» button in the inspector of `MinimapTerrainBake`.
+
+The console bakes (without `--force` they do not overwrite hand edits):
+
+```bash
+$G --headless --path . --script res://tools/bake/bake_body_scenes.gd        # only the missing ones
+$G --headless --path . --script res://tools/bake/bake_body_scenes.gd -- --force   # redoes all (overwrites your changes)
+$G --headless --path . res://tools/bake/bake_nav.tscn                      # navmesh
+```
+
+Tests are throwaway: an AgentKit flow or harness is regenerated under `agent/` when needed and is not versioned.
+
+## Tools that need the original game
+
+Paths are relative to `game/`.
+
+| Tool | Needs the original? | What it produces |
+|---|---|---|
+| Play (F5), `godot --path game` | **No** | Nothing: the assets are already in `game/assets/original/` (LFS) |
+| Throwaway AgentKit flows and captures | **No** | PASS/FAIL and screenshots, not versioned |
+| `tools/import/export_stats.py` | **Yes** | `assets/original/data/*.json` (creature, spell, wizard, building stats) |
+| `tools/import/export_skeletal.py` | **Yes** | `assets/original/models/*.glb` + `index.json` (skeleton and animations) |
+| `tools/import/export_skeletal_reference.py` | **Yes** | Reference OBJ in the system temp folder (`--out` to change it) |
+| `tools/import/import_textures.py` | **Yes** | `assets/original/textures/*.png` |
+| `tools/import/import_props.py` | **Yes** | `assets/original/props/*.glb` (buildings and plants) |
+| `tools/import/import_themes.py` | **Yes** | `assets/original/themes/<god>/` (ground, sky, light) |
+| `tools/import/import_ui.py` | **Yes** | `assets/original/ui/` and `assets/original/fx/` (HUD, icons, cursors, particles) |
+| `tools/import/import_map.py` (includes `--list`) | **Yes** | `assets/original/maps/<tag>/` (light, entities) |
+| `tools/import/import_audio.py` | **Yes** | `assets/original/audio/` (WAV effects, Ogg voices or WAV without ffmpeg, MP3 music) + `index.json`. Already in the repo (LFS) |
+| `tools/audit/check_original_assets.sh` | **Yes** | Parity of `assets/original/` with the original (`ASSETS PARITY PASS/FAIL`) |
+| `tools/import/scaffold_map.py` | No: uses what `import_map.py` already left | `MapDefinition`, `map.tscn`, empty `nav.res` |
+| `tools/import/sample_grass_palette.py` | No: it uses `assets/original/themes/<god>/roles/` | proposed grass palette |
+| `tools/bake/*` (navmesh, catalog, `bake_body_scenes`, `new_creature`, terrain) | No: `bake_body_scenes` uses the repo's `.glb` files and `index.json`; `import_terrain.gd` reads the `.bin` written by `import_map.py` | Scenes, `.tres` and navmesh |
+| **Project > Tools > Sacrifice** menu | Only «Listar mapas del original» (List the original's maps) and «Importar audio del original» (Import the original's audio); they are marked «(requiere juego original)» (requires the original game) in the menu | Output in a dialog |
+
+These tools read the `.wad` and `.scp` files of the installed game; **the original is not in the repo** (it is the commercial game). If it is missing, they print a message in Spanish that explains which folder is needed and how to point to it, and exit with an error. All of them start their header and their `--help` with «Requiere el juego original instalado (SAC_INSTALL)» (requires the original game installed) or with «No necesita el juego original» (does not need the original game).
+
+### Import the original's audio
+
+Almost nobody needs it: the already imported audio is in the repo through Git LFS (`assets/original/audio/`: WAV effects, Ogg voices, MP3 music), with its sets baked in `scenes/audio/`. It is only re-run if the importer changes.
+
+1. It needs the original game installed. Point to the folder with the `.wad` files as in «Configure paths»: `SAC_INSTALL`, `tools/import/local.cfg` or **Editor Settings > sacrifice > original_install_path**.
+2. **Project > Tools > Sacrifice: Importar audio del original** (Import the original's audio) (or `python3 tools/import/import_audio.py`; `--check` shows what would change without writing).
+3. Voices are compressed to Ogg with ffmpeg. Without ffmpeg in the `PATH`, it warns and saves them as WAV (about four times heavier). `--codec=wav` asks for WAV on purpose.
+4. Afterwards, «Hornear sonidos» (Bake sounds) writes the missing sets. The bake no longer needs the original: it reads `assets/original/audio/index.json`.
+
+### Configure paths
+
+**The original game** (only for the tools in the table above). You need the folder that holds the `.wad` files (for example `spells.wad`, `models.wad`, `main.wad`), usually named `data`, with the `maps/` folder (the `.scp` files) next to it. It is looked up in this order, with no default path:
+
+1. The environment variable `SAC_INSTALL` (the folder with the `.wad` files) or `SAC_ROOT` (the game's root, the one with `data/` and `maps/`). `SAC_MAPS` is optional if `maps/` is somewhere else.
+2. The file `game/tools/import/local.cfg` (not versioned): copy `local.cfg.example` and fill in `SAC_INSTALL=`.
+3. From the Godot editor: **Editor > Editor Settings > sacrifice > original_install_path**. The «Sacrifice» plugin passes it as `SAC_INSTALL` to the processes it launches.
+
+Typical install locations: GOG on Windows (`C:\GOG Games\Sacrifice\data`), Steam on Windows (`...\steamapps\common\Sacrifice\data`), and on macOS or Linux the `drive_c/.../Sacrifice/data` folder inside the Wine prefix or the CrossOver bottle. The folder is checked for `spells.wad`, `models.wad` and `main.wad`.
+
+```bash
+export SAC_INSTALL="/path/to/Sacrifice/data"
+cd game && python3 tools/import/import_map.py --list
+```
+
+**Godot and Blender** (the scripts in `game/tools/`). They pick:
+
+- `GODOT_BIN`: the environment variable if set; otherwise `godot` from the `PATH`; otherwise the macOS one (`/Applications/Godot.app/Contents/MacOS/Godot`).
+- `BLENDER_BIN`: the environment variable if set; otherwise `blender` from the `PATH`; otherwise the macOS one (`/Applications/Blender.app/Contents/MacOS/Blender`).
+
+```bash
+export GODOT_BIN="/path/to/Godot_v4.7.2"   # optional if godot is in the PATH
+export BLENDER_BIN="/path/to/blender"      # only for tools/blender/ and your own creature from Blender
+```

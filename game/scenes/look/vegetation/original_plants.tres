@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="VegetationLayerConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_layer_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+id = &"original_plants"
+radius_m = 160.0
+fade_m = 12.0
+tier_starts_m = PackedFloat32Array(0, 60, 110)
+tier_fractions = PackedFloat32Array(1, 0.75, 0.5)
+placement_seed = 54

@@ -1,0 +1,26 @@
+class_name RockFormState
+extends UnitState
+
+## ROCK_FORM, the Earthfling's Rockform (AbilitySlot): still, regenerating, 5 % damage and hidden
+## from enemy AI.
+
+## Damage x0.05 in Rockform.
+const ROCK_FORM_DAMAGE := 0.05
+
+
+func present(_animate: bool) -> void:
+	_show(true)
+
+
+func exit() -> void:
+	_show(false)
+	super.exit()
+
+
+func regenerates() -> bool:
+	return true
+
+
+func _show(on: bool) -> void:
+	body.abilities.slot.show_rock_form(on)
+	body.get_node("Health").set("damage_factor", ROCK_FORM_DAMAGE if on else 1.0)

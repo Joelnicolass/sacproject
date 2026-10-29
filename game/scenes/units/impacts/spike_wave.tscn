@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/spike_wave.gd" id="1_wave"]
+[ext_resource type="PackedScene" path="res://scenes/fx/spike_field.tscn" id="2_spikes"]
+
+[node name="SpikeWave" type="Node3D"]
+process_physics_priority = -1
+editor_description = "The Rhinok's rings: on frames 14, 29, 44, 59 and 89 after the hit, ring i (from 1 + 5.75·i to +6 m, measured from the feet, seen from above) deals the whole amount of ranged splash to creatures and buildings on the land and no more than 10 m over the ground; not to the body hit nor to the allies. It ends on frame 90."
+script = ExtResource("1_wave")
+spike_scene = ExtResource("2_spikes")

@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="1_emitter"]
+[ext_resource type="Script" path="res://scenes/spells/zones/zone_sound.gd" id="2_script"]
+
+[node name="ZoneSound" instance=ExtResource("1_emitter")]
+editor_description = "Sonido de una zona: `cue` es un SoundCue de scenes/audio/cues/; `when` dice si suena en bucle entre dos fases de la zona o una vez al entrar en una. Sale de la fase replicada de la zona, en todos los peers."
+script = ExtResource("2_script")

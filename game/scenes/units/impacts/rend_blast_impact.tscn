@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/splash_impact.tscn" id="1_splash"]
+
+[node name="RendBlastImpact" instance=ExtResource("1_splash")]
+editor_description = "Rend Soul dner: a ranged splash over damage range 40. Nobody takes the whole hit: the falloff goes from 2500 at the center to 0 at 40 m, by the distance to the box, to any side by Health's rule, buildings included."
+direct_hit = false

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FeelPrefs" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/options/feel_prefs.gd" id="1_prefs"]
+
+[resource]
+script = ExtResource("1_prefs")
+default_shake_scale = 0.5
+default_damage_numbers = true
+default_hover_info = true
+default_blood = true

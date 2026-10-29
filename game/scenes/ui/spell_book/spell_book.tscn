@@ -1,0 +1,96 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/spell_book/spell_book.gd" id="1_book"]
+[ext_resource type="PackedScene" path="res://scenes/ui/spell_book/spell_slot.tscn" id="2_slot"]
+
+[node name="SpellBook" type="Control"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -96.0
+offset_right = 230.0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("1_book")
+slot_scene = ExtResource("2_slot")
+
+[node name="Frame" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Strip" type="Panel" parent="Frame"]
+theme_type_variation = &"HudBookStrip"
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 48.0
+offset_right = 190.0
+offset_bottom = 58.0
+mouse_filter = 2
+
+[node name="Cap" type="Panel" parent="Frame"]
+theme_type_variation = &"HudBookCap"
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 190.0
+offset_top = 38.0
+offset_right = 209.0
+offset_bottom = 96.0
+mouse_filter = 2
+
+[node name="Tabs" type="HBoxContainer" parent="."]
+theme_type_variation = &"HBoxFlush"
+layout_mode = 0
+offset_right = 174.0
+offset_bottom = 58.0
+mouse_filter = 2
+
+[node name="CreatureTab" type="Button" parent="Tabs"]
+theme_type_variation = &"ButtonBare"
+unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+tooltip_text = "UI_SPELL_BOOK_CREATURE_TAB_TOOLTIP"
+focus_mode = 0
+theme_override_font_sizes/font_size = 8
+icon_alignment = 1
+expand_icon = true
+
+[node name="SpellTab" type="Button" parent="Tabs"]
+theme_type_variation = &"ButtonBare"
+unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+tooltip_text = "UI_SPELL_BOOK_SPELL_TAB_TOOLTIP"
+focus_mode = 0
+theme_override_font_sizes/font_size = 8
+icon_alignment = 1
+expand_icon = true
+
+[node name="StructureTab" type="Button" parent="Tabs"]
+theme_type_variation = &"ButtonBare"
+unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 58)
+layout_mode = 2
+tooltip_text = "UI_SPELL_BOOK_STRUCTURE_TAB_TOOLTIP"
+focus_mode = 0
+theme_override_font_sizes/font_size = 8
+icon_alignment = 1
+expand_icon = true
+
+[node name="TabSelector" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 58.0
+offset_bottom = 58.0
+mouse_filter = 2
+expand_mode = 1
+
+[node name="Slots" type="HBoxContainer" parent="."]
+theme_type_variation = &"HBoxFlush"
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 58.0
+offset_bottom = 96.0
+mouse_filter = 2

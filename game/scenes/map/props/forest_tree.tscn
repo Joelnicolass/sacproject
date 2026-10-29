@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct1.res" id="1_mesh"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_trunk"]
+height = 8.0
+radius = 1.2
+
+[node name="ForestTree" type="StaticBody3D" groups=["forest_tree", "nav_obstruction", "prop_obstruction"]]
+editor_description = "A tree of a map's forest (ForestScatter places them; move, scale or delete any with the gizmo). A prop: its trunk stops bodies and cuts the navmesh (a projected obstruction, NavObstructions), the same on every land; no health, no network. The mesh is the land's (GodFlora.trees, FloraField dresses it), this one only in a map opened alone. Scale it uniformly: the trunk follows."
+collision_layer = 1
+collision_mask = 0
+
+[node name="Trunk" type="CollisionShape3D" parent="."]
+position = Vector3(0, 4, 0)
+shape = SubResource("CylinderShape3D_trunk")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_mesh")

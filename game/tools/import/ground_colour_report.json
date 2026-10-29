@@ -1,0 +1,982 @@
+{
+ "doc": "Plan 062-3a, criterion 4.1, measured 2026-10-26 before deleting the classic ground. Mean colour (before light and fog) of the role sheets assets/original/themes/<god>/roles/<role>.png weighted by each map's ground_roles.png, against (a) the classic ground it replaces (themes/<god>/atlas.png weighted by assets/original/maps/<map>/tiles.png, the ids translated to James's land) and (b) what the original paints on each map of the god's own land (its own TMAP ids on its own land's MAPTs). Cells with tile id 0 (the void filler) count on neither side. Wanted: |d saturation| <= 0.03, |d value| <= 0.03, |d hue| <= 4 deg. test_flat and test_flat4 have no tiles (all open): nothing to compare.",
+ "how": {
+  "classic": "python3 -I tools/import/measure_ground.py --roles=assets/original/themes/<god>/roles --map=scenes/map/maps/<map>/ground_roles.png --atlas=assets/original/themes/<god>/atlas.png --weights=assets/original/maps/<map>/tiles.png (the atlases are deleted in 062-3d: this file is the record)",
+  "original": "SAC_INSTALL=... python3 -I tools/import/bake_role_sheets.py --god=<god> --measure"
+ },
+ "decision": "GroundRole.tint stays white in the five gods. Against the original every own-land map passes (7 of 7 with Persephone's two). Against the classic 23 of 28 god x map pairs fail, every one by the classic's double translation (map ids -> James -> the god's groups by height band: Pyro's open showed its earth, Charnel's open its pale rim and rock, Peaks read as snow), the defect plan 062 removes; a tint that matched it would move the ground away from the original (Charnel on Peaks: classic value 0.89, original 0.58). Two fixes in the sheets came out of this measure: Charnel's open (32 tiles) keeps the tiles its maps paint most (fit_cells), and Charnel's path, which its land lacks, borrows MG02 (sheet_borrow in ground_roles_table.json).",
+ "against_original": {
+  "james/high_noon": {
+   "roles": {
+    "rgb": [
+     230.1,
+     187.2,
+     152.8
+    ],
+    "sat": 0.336,
+    "val": 0.902,
+    "hue": 26.7
+   },
+   "original": {
+    "rgb": [
+     228.1,
+     185.9,
+     151.4
+    ],
+    "sat": 0.336,
+    "val": 0.895,
+    "hue": 27.0
+   },
+   "d_sat": 0.0,
+   "d_val": 0.007,
+   "d_hue": 0.3,
+   "result": "PASS"
+  },
+  "charnel/peaks": {
+   "roles": {
+    "rgb": [
+     144.6,
+     107.3,
+     80.8
+    ],
+    "sat": 0.441,
+    "val": 0.567,
+    "hue": 25.0
+   },
+   "original": {
+    "rgb": [
+     148.2,
+     111.0,
+     84.3
+    ],
+    "sat": 0.431,
+    "val": 0.581,
+    "hue": 25.1
+   },
+   "d_sat": 0.01,
+   "d_val": 0.014,
+   "d_hue": 0.1,
+   "result": "PASS"
+  },
+  "james/peasantville": {
+   "roles": {
+    "rgb": [
+     219.8,
+     180.7,
+     146.9
+    ],
+    "sat": 0.331,
+    "val": 0.862,
+    "hue": 27.9
+   },
+   "original": {
+    "rgb": [
+     219.5,
+     180.6,
+     146.7
+    ],
+    "sat": 0.332,
+    "val": 0.861,
+    "hue": 28.0
+   },
+   "d_sat": 0.001,
+   "d_val": 0.001,
+   "d_hue": 0.1,
+   "result": "PASS"
+  },
+  "pyro/roads": {
+   "roles": {
+    "rgb": [
+     172.1,
+     115.5,
+     89.1
+    ],
+    "sat": 0.482,
+    "val": 0.675,
+    "hue": 19.1
+   },
+   "original": {
+    "rgb": [
+     170.1,
+     112.9,
+     86.6
+    ],
+    "sat": 0.491,
+    "val": 0.667,
+    "hue": 18.9
+   },
+   "d_sat": 0.009,
+   "d_val": 0.008,
+   "d_hue": 0.2,
+   "result": "PASS"
+  },
+  "stratos/winter_wonder": {
+   "roles": {
+    "rgb": [
+     223.3,
+     238.8,
+     242.2
+    ],
+    "sat": 0.078,
+    "val": 0.95,
+    "hue": 190.8
+   },
+   "original": {
+    "rgb": [
+     223.0,
+     238.5,
+     242.0
+    ],
+    "sat": 0.078,
+    "val": 0.949,
+    "hue": 191.2
+   },
+   "d_sat": 0.0,
+   "d_val": 0.001,
+   "d_hue": 0.4,
+   "result": "PASS"
+  }
+ },
+ "against_classic": {
+  "james/alpine_meadow": {
+   "roles": {
+    "rgb": [
+     232.5,
+     194.6,
+     162.6
+    ],
+    "sat": 0.301,
+    "val": 0.912,
+    "hue": 27.5
+   },
+   "atlas": {
+    "rgb": [
+     225.6,
+     182.5,
+     146.0
+    ],
+    "sat": 0.353,
+    "val": 0.885,
+    "hue": 27.5,
+    "tiles used": 50
+   },
+   "d_sat": 0.052,
+   "d_val": 0.027,
+   "d_hue": 0.0,
+   "result": "FAIL"
+  },
+  "james/high_noon": {
+   "roles": {
+    "rgb": [
+     230.1,
+     187.2,
+     152.8
+    ],
+    "sat": 0.336,
+    "val": 0.902,
+    "hue": 26.7
+   },
+   "atlas": {
+    "rgb": [
+     228.1,
+     185.9,
+     151.4
+    ],
+    "sat": 0.336,
+    "val": 0.895,
+    "hue": 27.0,
+    "tiles used": 109
+   },
+   "d_sat": 0.0,
+   "d_val": 0.007,
+   "d_hue": 0.3,
+   "result": "PASS"
+  },
+  "james/peaks": {
+   "roles": {
+    "rgb": [
+     184.5,
+     151.9,
+     110.7
+    ],
+    "sat": 0.4,
+    "val": 0.723,
+    "hue": 33.5
+   },
+   "atlas": {
+    "rgb": [
+     188.6,
+     155.1,
+     112.1
+    ],
+    "sat": 0.406,
+    "val": 0.739,
+    "hue": 33.8,
+    "tiles used": 44
+   },
+   "d_sat": 0.006,
+   "d_val": 0.016,
+   "d_hue": 0.3,
+   "result": "PASS"
+  },
+  "james/peasantville": {
+   "roles": {
+    "rgb": [
+     219.8,
+     180.7,
+     146.9
+    ],
+    "sat": 0.331,
+    "val": 0.862,
+    "hue": 27.9
+   },
+   "atlas": {
+    "rgb": [
+     219.5,
+     180.6,
+     146.7
+    ],
+    "sat": 0.332,
+    "val": 0.861,
+    "hue": 28.0,
+    "tiles used": 150
+   },
+   "d_sat": 0.001,
+   "d_val": 0.001,
+   "d_hue": 0.1,
+   "result": "PASS"
+  },
+  "james/roads": {
+   "roles": {
+    "rgb": [
+     202.9,
+     165.8,
+     128.5
+    ],
+    "sat": 0.367,
+    "val": 0.796,
+    "hue": 30.1
+   },
+   "atlas": {
+    "rgb": [
+     222.5,
+     181.7,
+     144.8
+    ],
+    "sat": 0.349,
+    "val": 0.873,
+    "hue": 28.4,
+    "tiles used": 45
+   },
+   "d_sat": 0.018,
+   "d_val": 0.077,
+   "d_hue": 1.7,
+   "result": "FAIL"
+  },
+  "james/tutorial_valley": {
+   "roles": {
+    "rgb": [
+     226.8,
+     185.4,
+     152.1
+    ],
+    "sat": 0.329,
+    "val": 0.889,
+    "hue": 26.8
+   },
+   "atlas": {
+    "rgb": [
+     196.4,
+     163.5,
+     119.6
+    ],
+    "sat": 0.391,
+    "val": 0.77,
+    "hue": 34.3,
+    "tiles used": 47
+   },
+   "d_sat": 0.062,
+   "d_val": 0.119,
+   "d_hue": 7.5,
+   "result": "FAIL"
+  },
+  "james/winter_wonder": {
+   "roles": {
+    "rgb": [
+     233.5,
+     204.2,
+     174.2
+    ],
+    "sat": 0.254,
+    "val": 0.916,
+    "hue": 30.3
+   },
+   "atlas": {
+    "rgb": [
+     232.6,
+     187.1,
+     151.0
+    ],
+    "sat": 0.351,
+    "val": 0.912,
+    "hue": 26.5,
+    "tiles used": 8
+   },
+   "d_sat": 0.097,
+   "d_val": 0.004,
+   "d_hue": 3.8,
+   "result": "FAIL"
+  },
+  "pyro/alpine_meadow": {
+   "roles": {
+    "rgb": [
+     126.9,
+     75.7,
+     60.5
+    ],
+    "sat": 0.523,
+    "val": 0.498,
+    "hue": 13.7
+   },
+   "atlas": {
+    "rgb": [
+     179.4,
+     119.1,
+     89.8
+    ],
+    "sat": 0.5,
+    "val": 0.703,
+    "hue": 19.7,
+    "tiles used": 50
+   },
+   "d_sat": 0.023,
+   "d_val": 0.205,
+   "d_hue": 6.0,
+   "result": "FAIL"
+  },
+  "pyro/high_noon": {
+   "roles": {
+    "rgb": [
+     135.3,
+     79.1,
+     61.1
+    ],
+    "sat": 0.549,
+    "val": 0.531,
+    "hue": 14.6
+   },
+   "atlas": {
+    "rgb": [
+     174.5,
+     113.9,
+     85.9
+    ],
+    "sat": 0.507,
+    "val": 0.684,
+    "hue": 18.9,
+    "tiles used": 109
+   },
+   "d_sat": 0.042,
+   "d_val": 0.153,
+   "d_hue": 4.3,
+   "result": "FAIL"
+  },
+  "pyro/peaks": {
+   "roles": {
+    "rgb": [
+     192.3,
+     134.1,
+     103.4
+    ],
+    "sat": 0.462,
+    "val": 0.754,
+    "hue": 20.7
+   },
+   "atlas": {
+    "rgb": [
+     242.5,
+     194.5,
+     146.1
+    ],
+    "sat": 0.398,
+    "val": 0.951,
+    "hue": 30.1,
+    "tiles used": 44
+   },
+   "d_sat": 0.064,
+   "d_val": 0.197,
+   "d_hue": 9.4,
+   "result": "FAIL"
+  },
+  "pyro/peasantville": {
+   "roles": {
+    "rgb": [
+     150.0,
+     96.4,
+     75.1
+    ],
+    "sat": 0.499,
+    "val": 0.588,
+    "hue": 17.1
+   },
+   "atlas": {
+    "rgb": [
+     188.0,
+     131.0,
+     99.2
+    ],
+    "sat": 0.472,
+    "val": 0.737,
+    "hue": 21.5,
+    "tiles used": 150
+   },
+   "d_sat": 0.027,
+   "d_val": 0.149,
+   "d_hue": 4.4,
+   "result": "FAIL"
+  },
+  "pyro/roads": {
+   "roles": {
+    "rgb": [
+     172.3,
+     116.0,
+     89.4
+    ],
+    "sat": 0.481,
+    "val": 0.676,
+    "hue": 19.2
+   },
+   "atlas": {
+    "rgb": [
+     183.3,
+     124.3,
+     93.7
+    ],
+    "sat": 0.489,
+    "val": 0.719,
+    "hue": 20.5,
+    "tiles used": 45
+   },
+   "d_sat": 0.008,
+   "d_val": 0.043,
+   "d_hue": 1.3,
+   "result": "FAIL"
+  },
+  "pyro/tutorial_valley": {
+   "roles": {
+    "rgb": [
+     141.5,
+     87.3,
+     67.7
+    ],
+    "sat": 0.521,
+    "val": 0.555,
+    "hue": 15.9
+   },
+   "atlas": {
+    "rgb": [
+     225.5,
+     175.0,
+     131.2
+    ],
+    "sat": 0.418,
+    "val": 0.884,
+    "hue": 27.9,
+    "tiles used": 47
+   },
+   "d_sat": 0.103,
+   "d_val": 0.329,
+   "d_hue": 12.0,
+   "result": "FAIL"
+  },
+  "pyro/winter_wonder": {
+   "roles": {
+    "rgb": [
+     113.8,
+     68.7,
+     58.3
+    ],
+    "sat": 0.488,
+    "val": 0.446,
+    "hue": 11.2
+   },
+   "atlas": {
+    "rgb": [
+     171.1,
+     110.1,
+     83.1
+    ],
+    "sat": 0.514,
+    "val": 0.671,
+    "hue": 18.4,
+    "tiles used": 8
+   },
+   "d_sat": 0.026,
+   "d_val": 0.225,
+   "d_hue": 7.2,
+   "result": "FAIL"
+  },
+  "stratos/alpine_meadow": {
+   "roles": {
+    "rgb": [
+     230.0,
+     236.9,
+     238.6
+    ],
+    "sat": 0.036,
+    "val": 0.936,
+    "hue": 192.1
+   },
+   "atlas": {
+    "rgb": [
+     234.7,
+     234.8,
+     235.2
+    ],
+    "sat": 0.002,
+    "val": 0.922,
+    "hue": 237.0,
+    "tiles used": 50
+   },
+   "d_sat": 0.034,
+   "d_val": 0.014,
+   "d_hue": 44.9,
+   "result": "FAIL"
+  },
+  "stratos/high_noon": {
+   "roles": {
+    "rgb": [
+     234.4,
+     236.4,
+     237.0
+    ],
+    "sat": 0.011,
+    "val": 0.929,
+    "hue": 193.4
+   },
+   "atlas": {
+    "rgb": [
+     234.3,
+     236.3,
+     236.9
+    ],
+    "sat": 0.011,
+    "val": 0.929,
+    "hue": 193.8,
+    "tiles used": 109
+   },
+   "d_sat": 0.0,
+   "d_val": 0.0,
+   "d_hue": 0.4,
+   "result": "PASS"
+  },
+  "stratos/peaks": {
+   "roles": {
+    "rgb": [
+     225.2,
+     225.0,
+     226.1
+    ],
+    "sat": 0.005,
+    "val": 0.887,
+    "hue": 245.7
+   },
+   "atlas": {
+    "rgb": [
+     205.9,
+     204.9,
+     211.7
+    ],
+    "sat": 0.032,
+    "val": 0.83,
+    "hue": 248.5,
+    "tiles used": 44
+   },
+   "d_sat": 0.027,
+   "d_val": 0.057,
+   "d_hue": 2.8,
+   "result": "FAIL"
+  },
+  "stratos/peasantville": {
+   "roles": {
+    "rgb": [
+     228.3,
+     232.0,
+     233.6
+    ],
+    "sat": 0.023,
+    "val": 0.916,
+    "hue": 198.9
+   },
+   "atlas": {
+    "rgb": [
+     221.6,
+     224.8,
+     227.6
+    ],
+    "sat": 0.026,
+    "val": 0.892,
+    "hue": 207.9,
+    "tiles used": 150
+   },
+   "d_sat": 0.003,
+   "d_val": 0.024,
+   "d_hue": 9.0,
+   "result": "FAIL"
+  },
+  "stratos/roads": {
+   "roles": {
+    "rgb": [
+     227.1,
+     228.2,
+     229.5
+    ],
+    "sat": 0.011,
+    "val": 0.9,
+    "hue": 213.0
+   },
+   "atlas": {
+    "rgb": [
+     231.1,
+     232.1,
+     233.4
+    ],
+    "sat": 0.01,
+    "val": 0.915,
+    "hue": 213.4,
+    "tiles used": 45
+   },
+   "d_sat": 0.001,
+   "d_val": 0.015,
+   "d_hue": 0.4,
+   "result": "PASS"
+  },
+  "stratos/tutorial_valley": {
+   "roles": {
+    "rgb": [
+     230.9,
+     234.0,
+     235.3
+    ],
+    "sat": 0.019,
+    "val": 0.923,
+    "hue": 197.6
+   },
+   "atlas": {
+    "rgb": [
+     212.9,
+     212.5,
+     217.7
+    ],
+    "sat": 0.024,
+    "val": 0.854,
+    "hue": 244.0,
+    "tiles used": 47
+   },
+   "d_sat": 0.005,
+   "d_val": 0.069,
+   "d_hue": 46.4,
+   "result": "FAIL"
+  },
+  "stratos/winter_wonder": {
+   "roles": {
+    "rgb": [
+     225.0,
+     238.6,
+     241.6
+    ],
+    "sat": 0.069,
+    "val": 0.947,
+    "hue": 190.7
+   },
+   "atlas": {
+    "rgb": [
+     237.4,
+     237.4,
+     237.3
+    ],
+    "sat": 0.0,
+    "val": 0.931,
+    "hue": 76.1,
+    "tiles used": 8
+   },
+   "d_sat": 0.069,
+   "d_val": 0.016,
+   "d_hue": 114.6,
+   "result": "FAIL"
+  },
+  "charnel/alpine_meadow": {
+   "roles": {
+    "rgb": [
+     136.5,
+     96.4,
+     75.5
+    ],
+    "sat": 0.447,
+    "val": 0.535,
+    "hue": 20.5
+   },
+   "atlas": {
+    "rgb": [
+     212.1,
+     160.0,
+     128.0
+    ],
+    "sat": 0.397,
+    "val": 0.832,
+    "hue": 22.9,
+    "tiles used": 50
+   },
+   "d_sat": 0.05,
+   "d_val": 0.297,
+   "d_hue": 2.4,
+   "result": "FAIL"
+  },
+  "charnel/high_noon": {
+   "roles": {
+    "rgb": [
+     117.0,
+     80.2,
+     61.9
+    ],
+    "sat": 0.471,
+    "val": 0.459,
+    "hue": 19.9
+   },
+   "atlas": {
+    "rgb": [
+     211.6,
+     159.2,
+     127.7
+    ],
+    "sat": 0.397,
+    "val": 0.83,
+    "hue": 22.5,
+    "tiles used": 109
+   },
+   "d_sat": 0.074,
+   "d_val": 0.371,
+   "d_hue": 2.6,
+   "result": "FAIL"
+  },
+  "charnel/peaks": {
+   "roles": {
+    "rgb": [
+     208.2,
+     167.1,
+     124.5
+    ],
+    "sat": 0.402,
+    "val": 0.816,
+    "hue": 30.5
+   },
+   "atlas": {
+    "rgb": [
+     227.6,
+     185.2,
+     138.0
+    ],
+    "sat": 0.394,
+    "val": 0.893,
+    "hue": 31.6,
+    "tiles used": 44
+   },
+   "d_sat": 0.008,
+   "d_val": 0.077,
+   "d_hue": 1.1,
+   "result": "FAIL"
+  },
+  "charnel/peasantville": {
+   "roles": {
+    "rgb": [
+     149.7,
+     109.6,
+     84.5
+    ],
+    "sat": 0.435,
+    "val": 0.587,
+    "hue": 23.0
+   },
+   "atlas": {
+    "rgb": [
+     213.1,
+     164.1,
+     128.8
+    ],
+    "sat": 0.396,
+    "val": 0.836,
+    "hue": 25.1,
+    "tiles used": 150
+   },
+   "d_sat": 0.039,
+   "d_val": 0.249,
+   "d_hue": 2.1,
+   "result": "FAIL"
+  },
+  "charnel/roads": {
+   "roles": {
+    "rgb": [
+     174.2,
+     133.9,
+     101.2
+    ],
+    "sat": 0.419,
+    "val": 0.683,
+    "hue": 26.9
+   },
+   "atlas": {
+    "rgb": [
+     213.6,
+     162.5,
+     129.0
+    ],
+    "sat": 0.396,
+    "val": 0.838,
+    "hue": 23.8,
+    "tiles used": 45
+   },
+   "d_sat": 0.023,
+   "d_val": 0.155,
+   "d_hue": 3.1,
+   "result": "FAIL"
+  },
+  "charnel/tutorial_valley": {
+   "roles": {
+    "rgb": [
+     131.5,
+     92.7,
+     72.0
+    ],
+    "sat": 0.453,
+    "val": 0.516,
+    "hue": 20.9
+   },
+   "atlas": {
+    "rgb": [
+     223.7,
+     178.9,
+     135.4
+    ],
+    "sat": 0.395,
+    "val": 0.877,
+    "hue": 29.5,
+    "tiles used": 47
+   },
+   "d_sat": 0.058,
+   "d_val": 0.361,
+   "d_hue": 8.6,
+   "result": "FAIL"
+  },
+  "charnel/winter_wonder": {
+   "roles": {
+    "rgb": [
+     167.7,
+     123.2,
+     97.1
+    ],
+    "sat": 0.421,
+    "val": 0.657,
+    "hue": 22.3
+   },
+   "atlas": {
+    "rgb": [
+     211.0,
+     158.1,
+     127.2
+    ],
+    "sat": 0.397,
+    "val": 0.827,
+    "hue": 22.1,
+    "tiles used": 8
+   },
+   "d_sat": 0.024,
+   "d_val": 0.17,
+   "d_hue": 0.2,
+   "result": "FAIL"
+  }
+ },
+ "classic_fails": [
+  "charnel/alpine_meadow",
+  "charnel/high_noon",
+  "charnel/peaks",
+  "charnel/peasantville",
+  "charnel/roads",
+  "charnel/tutorial_valley",
+  "charnel/winter_wonder",
+  "james/alpine_meadow",
+  "james/roads",
+  "james/tutorial_valley",
+  "james/winter_wonder",
+  "pyro/alpine_meadow",
+  "pyro/high_noon",
+  "pyro/peaks",
+  "pyro/peasantville",
+  "pyro/roads",
+  "pyro/tutorial_valley",
+  "pyro/winter_wonder",
+  "stratos/alpine_meadow",
+  "stratos/peaks",
+  "stratos/peasantville",
+  "stratos/tutorial_valley",
+  "stratos/winter_wonder"
+ ],
+ "fix_062_3": {
+  "doc": "2026-10-26, after the 062-3 playtest (loose pale squares on Charnel, light and dark diamonds on Pyro's plateau). Cause: a role made of groups that look different (Charnel open = MG03 pale spawn pockets V0.61 + MG04 brown V0.40; Pyro earth = MG01 V0.69 + MG02 V0.84; Stratos earth = MG03 + MG04) mixed their tiles in one 4x4 sheet, and the shader picks one cell at random per 10 m cell, so the odd tile showed as a loose square (Charnel: fit_cells gave MG03's tile 30 one cell of 16). In the original those groups lie in their own height bands and never mix cell by cell. Fix: bake_role_sheets.one_look keeps, per role, the most painted group plus the groups that pass plan 062's colour criterion against it (measure_ground.same_look); the table keeps every group's role on the map.",
+  "sheets_changed": {
+   "charnel/open": "groups [0,3,4,5] -> [4]",
+   "pyro/earth": "groups [1,2] -> [1]",
+   "stratos/earth": "groups [3,4] -> [3]"
+  },
+  "against_original": {
+   "charnel/peaks": {
+    "roles": {
+     "sat": 0.452,
+     "val": 0.556,
+     "hue": 25.3
+    },
+    "original": {
+     "sat": 0.431,
+     "val": 0.581,
+     "hue": 25.1
+    },
+    "d_sat": 0.021,
+    "d_val": 0.025,
+    "d_hue": 0.2,
+    "result": "PASS"
+   },
+   "pyro/roads": {
+    "roles": {
+     "sat": 0.503,
+     "val": 0.644,
+     "hue": 18.8
+    },
+    "original": {
+     "sat": 0.491,
+     "val": 0.667,
+     "hue": 18.9
+    },
+    "d_sat": 0.012,
+    "d_val": 0.023,
+    "d_hue": 0.1,
+    "result": "PASS"
+   },
+   "stratos/winter_wonder": {
+    "roles": {
+     "sat": 0.078,
+     "val": 0.949,
+     "hue": 190.9
+    },
+    "original": {
+     "sat": 0.078,
+     "val": 0.949,
+     "hue": 191.2
+    },
+    "d_sat": 0.0,
+    "d_val": 0.0,
+    "d_hue": 0.3,
+    "result": "PASS"
+   }
+  },
+  "brightness": "The in-match change against the pre-062-3 ground (luminance of the fixed boxes: Peaks overview -38 %, Roads overview -28 %, Pyro on High Noon plateau -46 %, Winter Wonder ground +46 %) is not the sheets: their colour before light matches the original (above). Two causes, both toward the original: the classic atlas showed other groups (double id translation: Charnel on Peaks classic V0.89 vs original 0.58, Winter Wonder grey), and the classic shader never applied the map's baked light (GroundSet.lightmap_tint 0), which the original does (sacengine dagon terrain2.d:205-206: 0.5*diffuse*(1+detail)*LMAP). NO VERIFICADO: the lit colour against the running original (it cannot run here) and the LMAP channel order (import_map.py reads bytes 0..2 as RGB, as sacengine maps.d:82 does; Roads then gets a blue light (144,180,252), BGR would give a warm one). Decided 2026-10-27 by the user: LMAP stays RGB, as sacengine reads it."
+ }
+}

@@ -1,0 +1,174 @@
+[gd_scene load_steps=28 format=3]
+
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual.gd" id="1_ritual"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_machine.gd" id="2_machine"]
+[ext_resource type="Script" path="res://addons/fsm_kit/fsm_state.gd" id="3_state"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_states/setup.gd" id="4_setup"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_states/walk.gd" id="5_walk"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_states/shoot.gd" id="6_shoot"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_states/wait.gd" id="7_wait"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_push.gd" id="8_push"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_fx.gd" id="9_fx"]
+[ext_resource type="PackedScene" path="res://scenes/sacrifice/red_vortex.tscn" id="10_vortex"]
+[ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="11_tether"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_replicate.gd" id="12_net"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="13_rules"]
+[ext_resource type="Script" path="res://scenes/audio/ritual_sounds.gd" id="a052_ritual_sounds"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/sacrifice_round.tres" id="a055_sacrifice_round"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/sacrifice_end.tres" id="a055_sacrifice_end"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/soul.tres" id="a055_soul"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_lift.gd" id="g3_lift"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_watch.gd" id="g3_watch"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_drain.gd" id="g3_drain"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_payoff.gd" id="g3_payoff"]
+[ext_resource type="Script" path="res://scenes/sacrifice/ritual_type.gd" id="g3_type"]
+[ext_resource type="Resource" path="res://scenes/sacrifice/desecrate_ritual.tres" id="g3_desecrate"]
+[ext_resource type="Resource" path="res://scenes/sacrifice/convert_ritual.tres" id="g3_convert"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/blood.tres" id="g3_blood"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ritual"]
+properties/0/path = NodePath(".:phase")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:round_index")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:outcome")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:kind")
+properties/3/spawn = true
+properties/3/replication_mode = 0
+properties/4/path = NodePath(".:caster_slot")
+properties/4/spawn = true
+properties/4/replication_mode = 0
+properties/5/path = NodePath(".:target_slot")
+properties/5/spawn = true
+properties/5/replication_mode = 0
+properties/6/path = NodePath(".:creature_path")
+properties/6/spawn = true
+properties/6/replication_mode = 0
+
+[node name="Ritual" type="Node3D" node_paths=PackedStringArray("phases", "push", "fx", "lift", "watch", "drain", "payoff")]
+script = ExtResource("1_ritual")
+rules = ExtResource("13_rules")
+types = Array[ExtResource("g3_type")]([ExtResource("g3_desecrate"), ExtResource("g3_convert")])
+phases = NodePath("Phases")
+push = NodePath("Push")
+fx = NodePath("Fx")
+lift = NodePath("Lift")
+watch = NodePath("Watch")
+drain = NodePath("Drain")
+payoff = NodePath("Payoff")
+
+[node name="Lift" type="Node" parent="." node_paths=PackedStringArray("ritual")]
+script = ExtResource("g3_lift")
+ritual = NodePath("..")
+
+[node name="Watch" type="Node" parent="." node_paths=PackedStringArray("ritual")]
+script = ExtResource("g3_watch")
+ritual = NodePath("..")
+
+[node name="Drain" type="Node" parent="." node_paths=PackedStringArray("ritual")]
+script = ExtResource("g3_drain")
+ritual = NodePath("..")
+
+[node name="Payoff" type="Node" parent="." node_paths=PackedStringArray("ritual")]
+script = ExtResource("g3_payoff")
+ritual = NodePath("..")
+
+[node name="Phases" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor")]
+script = ExtResource("2_machine")
+initial_state = NodePath("Setup")
+actor = NodePath("..")
+autostart = false
+
+[node name="Setup" type="Node" parent="Phases"]
+script = ExtResource("4_setup")
+
+[node name="Walk" type="Node" parent="Phases"]
+script = ExtResource("5_walk")
+
+[node name="Shoot" type="Node" parent="Phases"]
+script = ExtResource("6_shoot")
+
+[node name="Wait" type="Node" parent="Phases"]
+script = ExtResource("7_wait")
+
+[node name="Ended" type="Node" parent="Phases"]
+script = ExtResource("3_state")
+
+[node name="Push" type="Node" parent="." node_paths=PackedStringArray("ritual")]
+script = ExtResource("8_push")
+ritual = NodePath("..")
+
+[node name="Fx" type="Node3D" parent="." node_paths=PackedStringArray("ritual", "altar_top", "vortex_aim", "creature_aim", "wizard_aim", "altar_ropes", "drain_ropes")]
+script = ExtResource("9_fx")
+vortex_scene = ExtResource("10_vortex")
+ritual = NodePath("..")
+blood_fx = ExtResource("g3_blood")
+altar_top = NodePath("AltarTop")
+vortex_aim = NodePath("VortexAim")
+creature_aim = NodePath("CreatureAim")
+wizard_aim = NodePath("WizardAim")
+altar_ropes = [NodePath("AltarRope0"), NodePath("AltarRope1")]
+drain_ropes = [NodePath("DrainRope0"), NodePath("DrainRope1"), NodePath("DrainRope2")]
+
+[node name="AltarTop" type="Marker3D" parent="Fx"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 60, 0)
+
+[node name="Start0" type="Marker3D" parent="Fx/AltarTop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0, 0)
+
+[node name="Start1" type="Marker3D" parent="Fx/AltarTop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0, 0)
+
+[node name="VortexAim" type="Marker3D" parent="Fx"]
+
+[node name="Start0" type="Marker3D" parent="Fx/VortexAim"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 0)
+
+[node name="Start1" type="Marker3D" parent="Fx/VortexAim"]
+
+[node name="Start2" type="Marker3D" parent="Fx/VortexAim"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0)
+
+[node name="CreatureAim" type="Marker3D" parent="Fx"]
+
+[node name="WizardAim" type="Marker3D" parent="Fx"]
+
+[node name="AltarRope0" parent="Fx" node_paths=PackedStringArray("start") instance=ExtResource("11_tether")]
+elbow = 0.0
+start = NodePath("../AltarTop/Start0")
+
+[node name="AltarRope1" parent="Fx" node_paths=PackedStringArray("start") instance=ExtResource("11_tether")]
+elbow = 0.0
+start = NodePath("../AltarTop/Start1")
+
+[node name="DrainRope0" parent="Fx" node_paths=PackedStringArray("start") instance=ExtResource("11_tether")]
+elbow = 0.0
+start = NodePath("../VortexAim/Start0")
+
+[node name="DrainRope1" parent="Fx" node_paths=PackedStringArray("start") instance=ExtResource("11_tether")]
+elbow = 0.0
+start = NodePath("../VortexAim/Start1")
+
+[node name="DrainRope2" parent="Fx" node_paths=PackedStringArray("start") instance=ExtResource("11_tether")]
+elbow = 0.0
+start = NodePath("../VortexAim/Start2")
+
+[node name="Net" type="Node" parent="."]
+script = ExtResource("12_net")
+sync_properties = PackedStringArray()
+interpolate = false
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_ritual")
+
+[node name="RitualSounds" type="Node" parent="." node_paths=PackedStringArray("ritual")]
+editor_description = "Xsac on every round (phase turns SHOOT) and Xgib when it ends complete (outcome); a complete Convert adds spir. It only reads replicated state. Without audio it does nothing."
+script = ExtResource("a052_ritual_sounds")
+ritual = NodePath("..")
+round_cue = ExtResource("a055_sacrifice_round")
+finished_cue = ExtResource("a055_sacrifice_end")
+converted_cue = ExtResource("a055_soul")

@@ -1,0 +1,44 @@
+@tool
+class_name AuraImpact
+extends Node
+
+## The mark an aura leaves on a body it hurts: a burst of sprites on the victim (and the `sound`
+## that goes with that burst's ParticleType), at most once every `every_s` per victim. The server
+## (or solo) decides when; FxBus draws it on every peer. It does not hurt anyone (BodyAura) nor draw
+## the ward itself (WardEmitter).
+
+@export var aura: BodyAura
+## What is drawn on the victim (its own file, so it can travel).
+@export var type: ParticleType
+## Where on the victim it is drawn.
+@export var victim_socket := BodyFacts.Socket.CENTER
+@export_range(0.05, 5.0, 0.0001, "suffix:s") var every_s := 0.3333
+
+## Victim instance id -> MatchClock tick before which it is not marked again.
+var _next := {}
+
+
+func _ready() -> void:
+	if Engine.is_editor_hint() or aura == null or type == null:
+		return
+	aura.stung.connect(_on_stung)
+
+
+func _on_stung(victim: Node3D) -> void:
+	var id := victim.get_instance_id()
+	var now := MatchClock.now()
+	if now < int(_next.get(id, 0)):
+		return
+	if not _next.has(id):
+		victim.tree_exited.connect(func() -> void: _next.erase(id), CONNECT_ONE_SHOT)
+	_next[id] = now + roundi(every_s * MatchClock.TICKS_PER_SECOND_F)
+	FxBus.broadcast(type, BodyFacts.point(victim, victim_socket))
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
+	if aura == null:
+		warnings.append("The BodyAura is missing.")
+	if type == null:
+		warnings.append("The ParticleType is missing.")
+	return warnings

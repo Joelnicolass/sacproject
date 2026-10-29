@@ -1,0 +1,24 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://scenes/bodies/models/familiar_model_clips/FA2t.res" id="1_FA2t"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/familiar_model_clips/FA2t_once.res" id="2_FA2t_once"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/familiar_model_clips/FA2t_hold.res" id="3_FA2t_hold"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/familiar_model_clips/FAfl.res" id="4_FAfl"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/familiar_model_clips/FAho.res" id="5_FAho"]
+[ext_resource type="Animation" path="res://scenes/bodies/models/familiar_model_clips/FAi1.res" id="6_FAi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_FA2t"),
+&"run": ExtResource("1_FA2t"),
+&"attack": ExtResource("2_FA2t_once"),
+&"attack2": ExtResource("2_FA2t_once"),
+&"attack3": ExtResource("2_FA2t_once"),
+&"shoot": ExtResource("2_FA2t_once"),
+&"shoot2": ExtResource("2_FA2t_once"),
+&"death": ExtResource("3_FA2t_hold"),
+&"fly_death": ExtResource("3_FA2t_hold"),
+&"fly": ExtResource("4_FAfl"),
+&"hover": ExtResource("5_FAho"),
+&"gesture": ExtResource("6_FAi1")
+}

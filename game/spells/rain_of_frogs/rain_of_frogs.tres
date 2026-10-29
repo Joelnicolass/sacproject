@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="PackedScene" path="res://spells/rain_of_frogs/rain_of_frogs_action.tscn" id="2_action"]
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_6i3i4"]
+[ext_resource type="Texture2D" uid="uid://bfsreoonqs5or" path="res://assets/original/ui/icons/grfr.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_6i3i4")
+tag = "grfr"
+display_name = "Rain Of Frogs"
+icon = ExtResource("icon_tex")
+mana_cost = 1000
+cast_range_m = 100.0
+cooldown_s = 50.0
+casting_time_s = 2.4691
+book_level = 5
+book_slot = 56
+damage = 90
+damage_range_m = 5.0
+effect_range_m = 50.0
+duration_s = 20.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+targets_corpses = true
+targets_structures = true
+targets_ground = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 90
+structures = PackedStringArray()
+aim_radius_m = 50.0

@@ -1,0 +1,104 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://addons/rts_kit/ui/radial/rts_radial_menu.gd" id="1_menu"]
+[ext_resource type="Resource" path="res://addons/rts_kit/ui/radial/rts_default_layout.tres" id="2_layout"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/radial/rts_radial_decor.gd" id="3_decor"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/radial/rts_radial_rings.gd" id="4_rings"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/radial/rts_radial_animator.gd" id="5_animator"]
+
+[sub_resource type="Animation" id="Animation_open"]
+resource_name = "open"
+length = 0.12
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Vector2(0.7, 0.7), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_close"]
+resource_name = "close"
+length = 0.08
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.08),
+"transitions": PackedFloat32Array(2, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_radial"]
+_data = {
+&"close": SubResource("Animation_close"),
+&"open": SubResource("Animation_open")
+}
+
+[node name="RtsRadialMenu" type="Control" node_paths=PackedStringArray("decor", "rings", "animator")]
+editor_description = "The kit's optional radial menu (an RtsOrderMenu). Its RtsRadialLayout holds any number of rings, by hand or filled from the catalogs. RtsOrderButton opens it on a held right click. Look: Decor; icons: Rings; open / close: Animator."
+layout_mode = 3
+anchors_preset = 0
+offset_right = 336.0
+offset_bottom = 336.0
+mouse_filter = 2
+script = ExtResource("1_menu")
+layout = ExtResource("2_layout")
+decor = NodePath("Decor")
+rings = NodePath("Rings")
+animator = NodePath("Animator")
+
+[node name="Decor" type="Control" parent="." node_paths=PackedStringArray("center_rect")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_decor")
+center_rect = NodePath("../Center")
+
+[node name="Center" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 127.0
+offset_top = 127.0
+offset_right = 209.0
+offset_bottom = 209.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Rings" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("4_rings")
+
+[node name="Animator" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_radial")
+}
+script = ExtResource("5_animator")

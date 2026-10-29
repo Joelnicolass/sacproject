@@ -1,6 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="PackedScene" path="res://agent/fixtures/look_light_probe_empty.tscn" id="1_p"]
-
-[node name="LookSkyPyro" instance=ExtResource("1_p")]
-start_god = &"pyro"

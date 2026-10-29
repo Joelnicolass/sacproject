@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="1_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/ecrk.png" id="2_ecrk"]
+
+[node name="CrackMark" instance=ExtResource("1_mark")]
+editor_description = "Un meteorito de Bombardment que se rompe: la grieta `ecrk` (7,5 m, SPEL `tRS4`) junto a la `gscr` de rock_mark.tscn (SPEL `tRE3`), solo si revienta a menos de 5 m del suelo."
+texture = ExtResource("2_ecrk")
+max_height_m = 5.0

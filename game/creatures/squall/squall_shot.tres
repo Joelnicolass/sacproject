@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_k35cg"]
+[ext_resource type="Texture2D" uid="uid://cejwnijobpekt" path="res://assets/original/ui/icons/amba.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/squall_shot.tscn" id="shot_look"]
+
+[resource]
+script = ExtResource("1_k35cg")
+shot_look = ExtResource("shot_look")
+tag = "amba"
+display_name = "Gale Force"
+icon = ExtResource("icon_tex")
+mana_cost = 13
+cast_range_m = 150.0
+cooldown_s = 7.0
+casting_time_s = 5.1852
+speed_m_s = 60.0
+damage = 520
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 520

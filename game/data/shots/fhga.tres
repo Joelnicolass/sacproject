@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="ShotLook" load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/shot_look.gd" id="1_look"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/strikes/warmonger_gun.tscn" id="2_strike"]
-
-[resource]
-script = ExtResource("1_look")
-impact_fx = PackedStringArray("warmonger_hit")
-strike = ExtResource("2_strike")

@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="SpellType" load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://spells/fence/fence_action.tscn" id="2_action"]
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_kkw63"]
+[ext_resource type="Texture2D" uid="uid://ct28rq54j5k7c" path="res://assets/original/ui/icons/cnef.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_kkw63")
+tag = "cnef"
+display_name = "Fence"
+icon = ExtResource("icon_tex")
+mana_cost = 1400
+cast_range_m = 100.0
+cooldown_s = 60.0
+casting_time_s = 2.4691
+book_level = 7
+book_slot = 70
+damage = 625
+effect_range_m = 55.0
+duration_s = 35.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+never_allies = true
+targets_ground = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 625
+structures = PackedStringArray()

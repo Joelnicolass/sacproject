@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/wall_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/animate_dead_cast.tres" id="fx_animate_dead_cast"]
+
+[node name="WailingWall" type="Node"]
+script = ExtResource("1_script")
+cast_fx = ExtResource("fx_animate_dead_cast")
+wall_kind = "WailingWall"

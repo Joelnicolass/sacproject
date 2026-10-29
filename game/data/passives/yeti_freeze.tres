@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="OnHitPassiveType" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/data/on_hit_passive_type.gd" id="1_type"]
-
-[resource]
-script = ExtResource("1_type")
-tag = "zerf"
-affliction_path = NodePath("Afflictions/Frozen")
-skip_if_was_frozen = true

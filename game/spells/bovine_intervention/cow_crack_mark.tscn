@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="1_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/tscr.png" id="2_tscr"]
+
+[node name="CowCrackMark" instance=ExtResource("1_mark")]
+editor_description = "El impacto de la vaca de Bovine Intervention en el suelo: la grieta `tscr` (EXE `BovineInterventionStart`, clave tRE3), siempre que haya suelo."
+texture = ExtResource("2_tscr")

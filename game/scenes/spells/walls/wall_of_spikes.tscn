@@ -1,0 +1,118 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
+[ext_resource type="Resource" path="res://spells/wall_of_spikes/wall_of_spikes.tres" id="3_spell"]
+[ext_resource type="PackedScene" path="res://scenes/fx/wall_spike.tscn" id="4_spike"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_spikes.gd" id="5_spikes"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_emitter.gd" id="6_emitter"]
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="7_sprites"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wall_dirt.tres" id="8_dirt"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="9_sound"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_sound.gd" id="10_wallsound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="11_light"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_light_follow.gd" id="12_follow"]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="scar_mark"]
+[ext_resource type="Script" path="res://scenes/spells/walls/wall_scars.gd" id="scar_script"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/gscr.png" id="scar_tex"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/jspk.png" id="spike_tex"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/wall_spikes_up.tres" id="cue_wall_spikes_up"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/wall_spikes_down.tres" id="cue_wall_spikes_down"]
+[sub_resource type="StandardMaterial3D" id="Spike_skin"]
+cull_mode = 2
+albedo_texture = ExtResource("spike_tex")
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="Box_body"]
+size = Vector3(110, 5, 5)
+
+[node name="WallOfSpikes" type="Node3D" node_paths=PackedStringArray("body")]
+script = ExtResource("1_wall")
+spell = ExtResource("3_spell")
+body = NodePath("Body")
+grow_s = 4.0
+rise_s = 0.5
+vanish_s = 1.0
+
+[node name="Body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+shape = SubResource("Box_body")
+
+[node name="Touch" type="Node" parent="." node_paths=PackedStringArray("wall")]
+script = ExtResource("2_touch")
+wall = NodePath("..")
+only_while_standing = true
+core_fraction = 0.4
+cooldown_s = 6.0
+spell_damage_on_touch = true
+stun_cooldown_s = 8.0
+slow_factor = 0.5
+slow_s = 6.0
+pace_source = &"wall_spikes"
+hit_scene = ExtResource("4_spike")
+hit_params = {
+"count": 1,
+"height": 3.0,
+"inner": 0.0,
+"outer": 1.5
+}
+
+[node name="Spikes" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("wall")]
+script = ExtResource("5_spikes")
+material_override = SubResource("Spike_skin")
+wall = NodePath("..")
+
+[node name="LeftDust" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("6_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 1
+rate = 110.0
+
+[node name="Sprites" parent="LeftDust" instance=ExtResource("7_sprites")]
+physics_interpolation_mode = 2
+type = ExtResource("8_dirt")
+
+[node name="RightDust" type="Node3D" parent="." node_paths=PackedStringArray("wall", "emitter")]
+script = ExtResource("6_emitter")
+wall = NodePath("..")
+emitter = NodePath("Sprites")
+where = 2
+rate = 110.0
+
+[node name="Sprites" parent="RightDust" instance=ExtResource("7_sprites")]
+physics_interpolation_mode = 2
+type = ExtResource("8_dirt")
+
+[node name="Rise" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("9_sound")]
+script = ExtResource("10_wallsound")
+cue = ExtResource("cue_wall_spikes_up")
+wall = NodePath("..")
+when = 0
+
+[node name="Sink" parent="." node_paths=PackedStringArray("wall") instance=ExtResource("9_sound")]
+script = ExtResource("10_wallsound")
+cue = ExtResource("cue_wall_spikes_down")
+wall = NodePath("..")
+when = 1
+
+[node name="Light" parent="." instance=ExtResource("11_light")]
+physics_interpolation_mode = 2
+light_color = Color(0.75, 0.55, 0.35, 1)
+light_energy = 1.2
+omni_range = 12.0
+priority = 3.0
+
+[node name="LightFollow" type="Node" parent="." node_paths=PackedStringArray("wall", "light")]
+script = ExtResource("12_follow")
+wall = NodePath("..")
+light = NodePath("../Light")
+
+[node name="Mark" parent="." instance=ExtResource("scar_mark")]
+texture = ExtResource("scar_tex")
+
+[node name="Scars" type="Node" parent="." node_paths=PackedStringArray("wall", "mark")]
+script = ExtResource("scar_script")
+wall = NodePath("..")
+mark = NodePath("../Mark")

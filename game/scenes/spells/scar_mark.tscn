@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/scar_mark.gd" id="1_mark"]
+
+[node name="ScarMark" type="Node3D"]
+editor_description = "Una marca en el suelo: pide a GroundScars del mapa que pinte `texture` donde esta este nodo (maximo `max_height_m` sobre el suelo, 0 = siempre). Se instancia en la escena del efecto y el efecto llama mark(); como raiz de una escena de FxBus.broadcast_scene, play() la pinta y se libera."
+script = ExtResource("1_mark")

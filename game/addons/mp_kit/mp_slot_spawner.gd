@@ -3,7 +3,8 @@ extends MpSpawner
 
 ## Optional: one packed pawn per occupied slot. Genre-neutral plumbing.
 ## Dedicated never spawns slot 0. Listen host spawns local slot in _ready.
-## Joiners spawn on client_world_ready. Identity: node name Pawn_<slot>
+## Joiners spawn on client_world_ready; peers already world-ready when this spawner enters spawn in _ready.
+## Identity: node name Pawn_<slot>
 ## and `player_slot` if the actor exposes it.
 
 @export var pawn_scene: PackedScene
@@ -32,6 +33,11 @@ func _ready() -> void:
 		MpKit.peer_left.connect(_on_slot_peer_left)
 	if MpKit.is_listen_host():
 		spawn_slot(MpKit.local_slot())
+	## Peers whose world was ready before this spawner entered (a spawner in a scene loaded later, a world loaded again):
+	## client_world_ready already fired for them.
+	for peer_id in multiplayer.get_peers():
+		if MpKit.is_peer_world_ready(peer_id):
+			spawn_slot(MpKit.slot_for_peer(peer_id))
 
 
 func _exit_tree() -> void:
@@ -56,6 +62,9 @@ func spawn_slot(slot: int) -> Node:
 	pawn.name = "%s%d" % [actor_name_prefix, slot]
 	if "player_slot" in pawn:
 		pawn.player_slot = slot
+	var net := MpActor.of(pawn)
+	if net:
+		net.owner_slot = slot
 	_place(pawn, slot)
 	_root.add_child(pawn, true)
 	_pawns[slot] = pawn

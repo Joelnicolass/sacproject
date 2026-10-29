@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/local_server/local_join_view.gd" id="1_join"]
-[ext_resource type="PackedScene" path="res://scenes/ui/character_select.tscn" id="2_select"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
 
 [node name="LocalJoinView" type="Control"]
 layout_mode = 3
@@ -14,6 +14,7 @@ script = ExtResource("1_join")
 character_select_scene = ExtResource("2_select")
 
 [node name="Column" type="VBoxContainer" parent="."]
+theme_type_variation = &"VBoxForm"
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -26,12 +27,11 @@ offset_right = 240.0
 offset_bottom = 240.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="Column"]
+theme_type_variation = &"LabelTitle"
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Unirse a servidor local"
+text = "UI_LOCAL_JOIN_VIEW_TITLE"
 horizontal_alignment = 1
 
 [node name="JoinChoice" type="Label" parent="Column"]
@@ -42,17 +42,17 @@ horizontal_alignment = 1
 [node name="JoinPick" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Elegir mago y dios"
+text = "UI_LOCAL_JOIN_VIEW_JOIN_PICK"
 
 [node name="JoinAddress" type="LineEdit" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "Dirección y puerto (192.168.1.5:7710)"
+placeholder_text = "UI_LOCAL_JOIN_VIEW_JOIN_ADDRESS_HINT"
 
 [node name="JoinCode" type="LineEdit" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "Código que te dio el host"
+placeholder_text = "UI_LOCAL_JOIN_VIEW_JOIN_CODE_HINT"
 
 [node name="JoinTransport" type="OptionButton" parent="Column"]
 unique_name_in_owner = true
@@ -62,7 +62,7 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Unirse"
+text = "UI_LOCAL_JOIN_VIEW_JOIN_SERVER"
 
 [node name="JoinHelp" type="Label" parent="Column"]
 unique_name_in_owner = true
@@ -72,7 +72,7 @@ autowrap_mode = 3
 [node name="JoinBack" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Volver"
+text = "UI_LOCAL_JOIN_VIEW_JOIN_BACK"
 
 [node name="JoinStatus" type="Label" parent="Column"]
 unique_name_in_owner = true

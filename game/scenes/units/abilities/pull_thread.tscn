@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/pull_thread.gd" id="1_thread"]
+
+[sub_resource type="StandardMaterial3D" id="Material_cord"]
+transparency = 1
+blend_mode = 0
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.32, 0.2, 0.08, 1)
+
+[node name="PullThread" type="Node3D"]
+editor_description = "The thread of the Gremlin's Web pull. A straight rope from the user's shot origin to the target's center, that comes out in 20 frames and follows both bodies while the user pulls. FxBus.broadcast_scene creates it with play(user, target, seed). In MIX. Flat color: the exporter lacks the cord texture."
+script = ExtResource("1_thread")
+width = 0.1
+fins = 2
+
+[node name="Strand" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+top_level = true
+cast_shadow = 0
+material_override = SubResource("Material_cord")

@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/gret/002.png" id="1_tsvic"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/gret/002_normal.png" id="2_4rekw"]
+
+[resource]
+resource_name = "gret_002"
+albedo_texture = ExtResource("1_tsvic")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_4rekw")

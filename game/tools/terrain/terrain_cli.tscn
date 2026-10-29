@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tools/terrain/terrain_cli.gd" id="1_cli"]
+
+[node name="TerrainCli" type="Node"]
+editor_description = "A map's ground tools without the editor (the same as the Terrain inspector buttons): --to-blend, --from-blend, --flat=<m>, --flatten-bases, --validate. It runs as a scene so the autoloads exist."
+script = ExtResource("1_cli")

@@ -1,0 +1,112 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
+[ext_resource type="Script" path="res://scenes/structures/towers/cast_tower.gd" id="2_tower"]
+[ext_resource type="Script" path="res://scenes/components/health_regen.gd" id="3_regen"]
+[ext_resource type="Script" path="res://scenes/map/props/mana_source.gd" id="4_source"]
+[ext_resource type="Script" path="res://scenes/spells/guardian/guard_post.gd" id="5_post"]
+[ext_resource type="PackedScene" path="res://scenes/structures/reveal/build_reveal.tscn" id="9_reveal"]
+[ext_resource type="Script" path="res://scenes/structures/reveal/build_edge.gd" id="10_edge"]
+[ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="11_emitter"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_edge_ring.tres" id="12_ring"]
+[ext_resource type="PackedScene" uid="uid://cvo2hd4d6uxeb" path="res://scenes/look/lights/actor_light.tscn" id="13_light"]
+[ext_resource type="Script" path="res://scenes/structures/reveal/build_cues.gd" id="14_cues"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type_pt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_start.tres" id="15_start"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_done.tres" id="16_done"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_done_sparks.tres" id="17_sparks"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_cut.tres" id="18_cut"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_reach"]
+radius = 50.0
+
+[sub_resource type="Curve" id="Curve_edge_energy"]
+_data = [Vector2(0, 0.15), 0.0, 0.85, 0, 1, Vector2(1, 1), 0.85, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_tower"]
+properties/0/path = NodePath("Health:maximum")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath("Health:current")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:build_progress")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+
+[node name="Tower" instance=ExtResource("1_building") node_paths=PackedStringArray("mana_source", "guard_post")]
+script = ExtResource("2_tower")
+mana_source = NodePath("ManaSource")
+guard_post = NodePath("GuardPost")
+
+[node name="Health" parent="." index="2" node_paths=PackedStringArray("modifiers")]
+modifiers = [NodePath("../GuardPost")]
+
+[node name="Sync" parent="." index="3"]
+replication_config = SubResource("SceneReplicationConfig_tower")
+
+[node name="HealthRegen" type="Node" parent="." index="5" node_paths=PackedStringArray("health")]
+script = ExtResource("3_regen")
+health = NodePath("../Health")
+refill_s = 60.0
+
+[node name="ManaSource" type="Node3D" parent="." index="6" node_paths=PackedStringArray("reach")]
+script = ExtResource("4_source")
+kind = 2
+rate = 33.333
+reach = NodePath("Reach/Shape")
+
+[node name="Reach" type="Area3D" parent="ManaSource" index="0"]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="ManaSource/Reach" index="0"]
+shape = SubResource("SphereShape3D_reach")
+
+[node name="AttachPoint" type="Marker3D" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 0)
+
+[node name="GuardPost" type="Node" parent="." index="8" node_paths=PackedStringArray("host", "attach_point", "health")]
+script = ExtResource("5_post")
+host = NodePath("..")
+attach_point = NodePath("../AttachPoint")
+health = NodePath("../Health")
+
+[node name="BuildReveal" parent="." instance=ExtResource("9_reveal") node_paths=PackedStringArray("tower", "visuals")]
+tower = NodePath("..")
+visuals = NodePath("../Visuals")
+
+[node name="BaseSpot" type="Marker3D" parent="."]
+editor_description = "Where the start and the end of the cast are born (BuildCues): move it with the gizmo."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+
+[node name="BuildCues" type="Node" parent="." node_paths=PackedStringArray("tower", "reveal", "spot")]
+editor_description = "The start (a tower at the bottom), the end (it stands) and the cut (it goes away rising) of the cast: each a list of ParticleType (look, light, sound, shake), played on this peer only. An empty list = nothing."
+script = ExtResource("14_cues")
+tower = NodePath("..")
+reveal = NodePath("../BuildReveal")
+spot = NodePath("../BaseSpot")
+start_fx = Array[ExtResource("1_type_pt")]([ExtResource("15_start")])
+done_fx = Array[ExtResource("1_type_pt")]([ExtResource("16_done"), ExtResource("17_sparks")])
+cut_fx = Array[ExtResource("1_type_pt")]([ExtResource("18_cut")])
+
+[node name="BuildEdge" type="Node3D" parent="." node_paths=PackedStringArray("tower", "reveal", "rings", "light")]
+editor_description = "Rides the cut line while the tower rises: EdgeRings throws flat blue rings (scenes/fx/effects/build_edge_ring.tres), EdgeLight grows with build_progress along energy_curve and fades out when the tower stands."
+script = ExtResource("10_edge")
+tower = NodePath("..")
+reveal = NodePath("../BuildReveal")
+rings = NodePath("EdgeRings")
+light = NodePath("EdgeLight")
+energy_curve = SubResource("Curve_edge_energy")
+
+[node name="EdgeRings" parent="BuildEdge" instance=ExtResource("11_emitter")]
+type = ExtResource("12_ring")
+
+[node name="EdgeLight" parent="BuildEdge" instance=ExtResource("13_light")]
+light_color = Color(0.45, 0.7, 1, 1)
+light_energy = 2.0
+omni_range = 12.0
+priority = 3.0

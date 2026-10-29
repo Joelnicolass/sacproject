@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/match_wait/match_wait.gd" id="1_wait"]
+
+[node name="MatchWait" type="VBoxContainer" groups=["hud_text_allowed"]]
+process_mode = 3
+visible = false
+theme_type_variation = &"VBoxGroup"
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 120.0
+offset_right = 200.0
+offset_bottom = 220.0
+grow_horizontal = 2
+mouse_filter = 2
+editor_description = "The banner of a network match that has not started yet: «Esperando jugadores k/n» while the gate waits for the seats to load. «Empezar ya» only shows on the LAN host with at least one client loaded. It runs with the tree paused. Deleting it removes the banner; the wait goes on the same."
+script = ExtResource("1_wait")
+
+[node name="Count" type="Label" parent="." groups=["hud_text_allowed"]]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 28
+text = "UI_MATCH_WAIT_COUNT"
+horizontal_alignment = 1
+
+[node name="StartNow" type="Button" parent="." groups=["hud_text_allowed"]]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_type_variation = &"ButtonLarge"
+text = "UI_MATCH_WAIT_START_NOW"

@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="MoveOrder" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://debug/move_order.gd" id="1_order"]
-
-[resource]
-script = ExtResource("1_order")
-order_name = "move"
-spawn_sac = Vector3(1502.47, 1555.2, 16.9)
-min_plane_distance = 5.0

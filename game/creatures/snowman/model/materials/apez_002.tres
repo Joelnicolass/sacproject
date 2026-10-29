@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/apez/002.png" id="1_rnwv6"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/apez/002_normal.png" id="2_kqo2a"]
+
+[resource]
+resource_name = "apez_002"
+albedo_texture = ExtResource("1_rnwv6")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_kqo2a")

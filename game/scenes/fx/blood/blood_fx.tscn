@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/blood/blood_fx.gd" id="1_blood"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/blood/red.tres" id="2_red"]
+[ext_resource type="Resource" path="res://scenes/ui/feel_prefs.tres" id="9_prefs"]
+
+[node name="BloodFx" type="Node"]
+editor_description = "The body bleeds when its Health.current drops: a red spray from the centre and a stain on the ground at its feet. When instancing it, assign body, health and mount."
+script = ExtResource("1_blood")
+fallback = ExtResource("2_red")
+prefs = ExtResource("9_prefs")

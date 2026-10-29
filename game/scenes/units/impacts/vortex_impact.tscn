@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_impact.gd" id="1_impact"]
+[ext_resource type="Script" path="res://scenes/units/impacts/direct_impact.gd" id="2_direct"]
+[ext_resource type="Script" path="res://scenes/units/impacts/vortex_impact.gd" id="3_vortex"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/vortex.tscn" id="4_scene"]
+
+[node name="VortickImpact" type="Node"]
+editor_description = "Vortick cita: on a creature, the whole direct ranged damage (DirectImpact); always, the vortex at the position of the previous tick (VortexImpact)."
+script = ExtResource("1_impact")
+
+[node name="DirectImpact" type="Node" parent="."]
+script = ExtResource("2_direct")
+
+[node name="VortexImpact" type="Node" parent="."]
+script = ExtResource("3_vortex")
+vortex_scene = ExtResource("4_scene")

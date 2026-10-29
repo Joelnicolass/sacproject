@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/cnj1.wav" id="z_cnj1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/cnj2.wav" id="z_cnj2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/cnj3.wav" id="z_cnj3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/cnj4.wav" id="z_cnj4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/cnj5.wav" id="z_cnj5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/comn/cnj6.wav" id="z_cnj6"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("z_cnj1"), ExtResource("z_cnj2"), ExtResource("z_cnj3"), ExtResource("z_cnj4"), ExtResource("z_cnj5"), ExtResource("z_cnj6")])
+max_voices = 2

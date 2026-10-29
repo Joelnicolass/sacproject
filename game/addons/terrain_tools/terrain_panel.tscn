@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/terrain_tools/terrain_panel.gd" id="1_panel"]
+
+[node name="TerrainPanel" type="VBoxContainer"]
+editor_description = "The ground buttons in the inspector of a Terrain (addon terrain_tools). The heights are painted with the «Terrain:» bar of the 3D view."
+script = ExtResource("1_panel")
+
+[node name="Title" type="Label" parent="."]
+text = "Map ground (heights.png + void.png)"
+
+[node name="Blender" type="HBoxContainer" parent="."]
+
+[node name="OpenBlender" type="Button" parent="Blender"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Saves what is pending, builds terrain_work/terrain.blend from the map's pictures and opens Blender. Needs Blender on the PATH or the BLENDER variable."
+text = "Open in Blender"
+
+[node name="BringBlender" type="Button" parent="Blender"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Writes heights.png and void.png from terrain.blend (if it follows the rules) and imports them again. It cannot be undone."
+text = "Bring from Blender"
+
+[node name="FlatRow" type="HBoxContainer" parent="."]
+
+[node name="FlatHeight" type="SpinBox" parent="FlatRow"]
+unique_name_in_owner = true
+tooltip_text = "Height of the new flat land."
+max_value = 6553.5
+step = 0.1
+value = 50.0
+suffix = "m"
+
+[node name="Flat" type="Button" parent="FlatRow"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Replaces heights.png with flat land at that height and deletes void.png. It cannot be undone."
+text = "New flat ground"
+
+[node name="Bases" type="HBoxContainer" parent="."]
+
+[node name="LevelBases" type="Button" parent="Bases"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Levels the land under every GroundFootprint (altars, manafounts) at the median height below it. Ctrl+Z undoes it."
+text = "Flatten bases"
+
+[node name="Validate" type="Button" parent="Bases"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+tooltip_text = "Checks the open map like check_map: seats, things on land, level bases and that every altar reaches every manafount."
+text = "Validate map"

@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/fx/frez.png" id="1_ice"]
+
+[resource]
+resource_name = "IceBlock"
+transparency = 1
+cull_mode = 2
+depth_draw_mode = 2
+shading_mode = 0
+albedo_color = Color(1.6, 1.6, 1.6, 0.753)
+albedo_texture = ExtResource("1_ice")

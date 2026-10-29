@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/abilities/call_lightning.gd" id="1_call"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/lightning_strike.tscn" id="2_bolt"]
-
-[node name="CallLightning" type="Node"]
-editor_description = "F130 (RFC-030 030s-a): efecto propio del Call lightning del Storm Giant (gsba). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Sin preparación ni enfriamiento; lanza un LightningStrike `ntil` (750) desde un punto del cielo hasta el propio centro del Giant (rebota en el primer cuerpo del camino)."
-script = ExtResource("1_call")
-bolt_scene = ExtResource("2_bolt")

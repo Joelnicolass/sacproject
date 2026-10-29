@@ -3,19 +3,18 @@ cache/
 *.import
 !assets/cc0/**/*.import
 !assets/original/**/*.import
+!assets/custom/**/*.import
+!assets/surfaces/**/*.import
 
 # Capturas del juego original usadas como referencia: no se versionan.
 visual/refs/original/
 
-# Capturas lado a lado de F79: recortan la captura del original, no se versionan.
-agent/out/f79_*/f79_3_side_by_side.png
-
-# Capturas lado a lado de F80: incluyen cursores e iconos del original, no se versionan.
-agent/out/f80_*/*_side_by_side.png
-agent/out/f84/*side_by_side*.png
-
-# Capturas y salidas de pruebas: renderizan arte del original (decisión del orquestador, REVIEW-F84 N4).
-# Los archivos ya versionados en agent/out/ siguen versionados; lo nuevo no se agrega.
-agent/out/*
-!agent/out/.gdignore
+# Pruebas descartables de AgentKit (flujos, capturas, harness): se regeneran cuando hacen falta, no se versionan.
+agent/
 __pycache__/
+
+# Plan 063D S4: the Blender working folder beside each map's heights.png (terrain.blend, manifest.json; also the edit bed's).
+# The truth is heights.png + void.png.
+terrain_work/
+# Godot rebuilds it from strings.csv on every import
+scenes/ui/i18n/*.translation

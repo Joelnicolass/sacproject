@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/fx/beam_fx.tscn" id="1_beam"]
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="2_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/scar.png" id="3_scar"]
+
+[node name="BurningBeamFx" instance=ExtResource("1_beam")]
+editor_description = "A bolt that burns the ground where it hits (Lightning, Chain Lightning): when the bolt reaches its end, Scar paints the `scar` burn (8 m) if the point is within 2.5 m of the ground."
+
+[node name="Scar" parent="." instance=ExtResource("2_mark")]
+texture = ExtResource("3_scar")
+max_height_m = 2.5
+
+[connection signal="struck" from="." to="Scar" method="mark_at"]

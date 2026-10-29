@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/jhut/M000.png" id="1_omnxp"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/jhut/M000_normal.png" id="2_7ivds"]
+
+[resource]
+resource_name = "jhut_M000_cutout"
+transparency = 2
+alpha_scissor_threshold = 0.4
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("1_omnxp")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_7ivds")

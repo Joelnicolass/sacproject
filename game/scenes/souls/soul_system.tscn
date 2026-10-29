@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/souls/soul_system.gd" id="1_system"]
+[ext_resource type="Script" path="res://addons/mp_kit/mp_spawner.gd" id="2_spawner"]
+
+[node name="SoulSystem" type="Node" node_paths=PackedStringArray("souls_root", "spawner")]
+script = ExtResource("1_system")
+souls_root = NodePath("Souls")
+spawner = NodePath("SoulSpawner")
+
+[node name="Souls" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="SoulSpawner" type="MultiplayerSpawner" parent="."]
+script = ExtResource("2_spawner")
+spawn_path = NodePath("../Souls")

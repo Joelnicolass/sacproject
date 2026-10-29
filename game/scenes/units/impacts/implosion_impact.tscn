@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_impact.gd" id="1_impact"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/splash_impact.tscn" id="2_splash"]
+[ext_resource type="Script" path="res://scenes/units/impacts/implosion_impact.gd" id="3_implosion"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/implosion.tscn" id="4_scene"]
+
+[node name="FlurryImpact" type="Node"]
+editor_description = "Flurry caba: the body hit takes the whole amount with splash resistance and the rest the splash over the damage range (SplashImpact); then, the implosion (ImplosionImpact)."
+script = ExtResource("1_impact")
+
+[node name="SplashImpact" parent="." instance=ExtResource("2_splash")]
+
+[node name="ImplosionImpact" type="Node" parent="."]
+script = ExtResource("3_implosion")
+implosion_scene = ExtResource("4_scene")

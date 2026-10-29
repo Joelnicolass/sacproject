@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/hoom/002.png" id="1_vqt62"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/hoom/002_normal.png" id="2_j4ggy"]
+
+[resource]
+resource_name = "hoom_002"
+albedo_texture = ExtResource("1_vqt62")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_j4ggy")

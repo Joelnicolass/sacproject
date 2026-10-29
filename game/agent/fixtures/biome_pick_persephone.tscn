@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="PackedScene" path="res://debug/biome_pick.tscn" id="1_pick"]
-[ext_resource type="Resource" path="res://agent/fixtures/rfc022c_rules_persephone.tres" id="2_rules"]
-
-[node name="BiomePick" instance=ExtResource("1_pick")]
-
-[node name="HighNoon" parent="." index="0"]
-rules = ExtResource("2_rules")

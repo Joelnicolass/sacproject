@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/petrify_impact.gd" id="1_petrify"]
+
+[node name="PetrifyImpact" type="Node"]
+editor_description = "Basilisk dpsf: it petrifies only the body hit, with no damage. It lasts min(10, 10000/max health) s on a creature and 2.5 s on a wizard."
+script = ExtResource("1_petrify")

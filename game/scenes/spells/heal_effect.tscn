@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/heal_effect.gd" id="1_heal"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/heal.tres" id="fx_heal"]
+
+[node name="HealEffect" type="Node"]
+script = ExtResource("1_heal")
+heal_fx = ExtResource("fx_heal")

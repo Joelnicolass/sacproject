@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/pfon/M000.png" id="1_6ppkv"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/pfon/M000_normal.png" id="2_42cxk"]
+
+[resource]
+resource_name = "pfon_M000"
+albedo_texture = ExtResource("1_6ppkv")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_42cxk")

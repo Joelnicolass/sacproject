@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_8adst"]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://dhyily6hlbxeo" path="res://assets/original/ui/icons/dlhs.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_8adst")
+tag = "dlhs"
+display_name = "Air Shield"
+icon = ExtResource("icon_tex")
+mana_cost = 400
+cooldown_s = 70.0
+casting_time_s = 0.7407
+book_level = 2
+book_slot = 41
+speed_m_s = 30.0
+effect_range_m = 10.0
+duration_s = 60.0
+action = ExtResource("2_action")
+ai_use = 1
+ai_phase = 2
+ai_only_on_self = true
+structures = PackedStringArray()

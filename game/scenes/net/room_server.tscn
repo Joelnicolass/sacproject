@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/net/room_server.gd" id="1_srv"]
 [ext_resource type="Script" path="res://addons/mp_kit/lobby/mp_match_launcher.gd" id="2_launcher"]
 [ext_resource type="Script" path="res://scenes/net/sacrifice_room_rules.gd" id="3_rules"]
-[ext_resource type="Resource" path="res://data/net/lobby_config.tres" id="4_cfg"]
+[ext_resource type="Resource" path="res://scenes/net/lobby_config.tres" id="4_cfg"]
 
 [node name="RoomServer" type="Node"]
 script = ExtResource("1_srv")

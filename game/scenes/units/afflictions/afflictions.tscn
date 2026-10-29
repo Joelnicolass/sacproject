@@ -1,0 +1,294 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/units/afflictions/afflictions.gd" id="1_afflictions"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/stunned.gd" id="2_stunned"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/stunned.tres" id="3_stunned_type"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/tumbling.tres" id="4_tumbling_type"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/petrified.gd" id="5_petrified"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/petrified.tres" id="6_petrified_type"]
+[ext_resource type="Script" path="res://scenes/look/stone_look.gd" id="7_stone_look"]
+[ext_resource type="Shader" path="res://scenes/look/stone.gdshader" id="8_stone_shader"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/tumbling.gd" id="9_tumbling"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/frozen.gd" id="10_frozen"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/frozen.tres" id="11_frozen_type"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/looks/affliction_cues.gd" id="12_cues"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="13_sound"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/freeze_block.tres" id="14_cue_freeze"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/looks/body_box_look.gd" id="15_box"]
+[ext_resource type="Material" path="res://scenes/units/afflictions/looks/ice_block.tres" id="16_ice"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="17_state_light"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/oiled.gd" id="18_oiled"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/oiled.tres" id="19_oiled_type"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/vined.gd" id="20_vined"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/vined.tres" id="21_vined_type"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/vines_grab.tres" id="22_cue_grab"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/vines_release.tres" id="23_cue_release"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/looks/vine_look.gd" id="24_vine_look"]
+[ext_resource type="Material" path="res://scenes/units/afflictions/looks/vine_skin.tres" id="25_vine_skin"]
+[ext_resource type="PackedScene" path="res://assets/custom/vine/vine.glb" id="26_vine"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/spell_affliction.gd" id="27_spell_affliction"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/rings_of_fire.tres" id="28_rings_type"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rings_start.tres" id="29_cue_rings_start"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rings_end.tres" id="30_cue_rings_end"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rings_loop.tres" id="31_cue_rings_loop"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/looks/rings_look.gd" id="32_rings_look"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="33_sprite"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rings_flame.tres" id="34_flame"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/slimed.tres" id="35_slimed_type"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/slime_hit.tres" id="36_cue_slime"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/looks/affliction_emitter.gd" id="37_emitter"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/slime_splash.tres" id="38_splash"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/slime_drip.tres" id="39_drip"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ice"]
+
+[node name="Afflictions" type="Node3D" node_paths=PackedStringArray("look")]
+physics_interpolation_mode = 2
+script = ExtResource("1_afflictions")
+look = NodePath("Look")
+
+[node name="Stunned" type="Node3D" parent="."]
+script = ExtResource("2_stunned")
+type = ExtResource("3_stunned_type")
+fall_type = ExtResource("4_tumbling_type")
+
+[node name="Petrified" type="Node3D" parent="." node_paths=PackedStringArray("stunned")]
+script = ExtResource("5_petrified")
+type = ExtResource("6_petrified_type")
+stunned = NodePath("../Stunned")
+
+[node name="Look" type="Node" parent="."]
+script = ExtResource("7_stone_look")
+shader = ExtResource("8_stone_shader")
+
+[node name="Tumbling" type="Node3D" parent="." node_paths=PackedStringArray("stunned")]
+script = ExtResource("9_tumbling")
+type = ExtResource("4_tumbling_type")
+stunned = NodePath("../Stunned")
+
+[node name="Frozen" type="Node3D" parent="."]
+script = ExtResource("10_frozen")
+type = ExtResource("11_frozen_type")
+
+[node name="Cues" type="Node" parent="Frozen" node_paths=PackedStringArray("affliction", "on_start")]
+script = ExtResource("12_cues")
+affliction = NodePath("..")
+on_start = NodePath("../FreezeSound")
+
+[node name="FreezeSound" parent="Frozen" instance=ExtResource("13_sound")]
+cue = ExtResource("14_cue_freeze")
+loop = false
+play_on_ready = false
+active = false
+
+[node name="IceBlock" type="MeshInstance3D" parent="Frozen" node_paths=PackedStringArray("affliction")]
+editor_description = "The ice block (frez). Alpha 0.753 = 192/255 of the SPEL (change the alpha of albedo_color in ice_block.tres). Glow: albedo_color > 1."
+top_level = true
+visible = false
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ice")
+surface_material_override/0 = ExtResource("16_ice")
+script = ExtResource("15_box")
+affliction = NodePath("..")
+
+[node name="Glow" parent="Frozen" instance=ExtResource("17_state_light")]
+editor_description = "Cold light while the body is frozen (dominant colour of frez.png, the ice block). Tune color, energy and range here; every frozen body gets one."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.6, 0.8, 1, 1)
+light_energy = 1.2
+omni_range = 5.0
+priority = 2.0
+
+[node name="Oiled" type="Node3D" parent="."]
+script = ExtResource("18_oiled")
+type = ExtResource("19_oiled_type")
+
+[node name="Vined" type="Node3D" parent="."]
+script = ExtResource("20_vined")
+type = ExtResource("21_vined_type")
+
+[node name="Cues" type="Node" parent="Vined" node_paths=PackedStringArray("affliction", "on_start", "on_end")]
+script = ExtResource("12_cues")
+affliction = NodePath("..")
+on_start = NodePath("../GrabSound")
+on_end = NodePath("../ReleaseSound")
+
+[node name="GrabSound" parent="Vined" instance=ExtResource("13_sound")]
+cue = ExtResource("22_cue_grab")
+loop = false
+play_on_ready = false
+active = false
+
+[node name="ReleaseSound" parent="Vined" instance=ExtResource("13_sound")]
+cue = ExtResource("23_cue_release")
+loop = false
+play_on_ready = false
+active = false
+
+[node name="VineLook" type="Node3D" parent="Vined" node_paths=PackedStringArray("affliction")]
+script = ExtResource("24_vine_look")
+affliction = NodePath("..")
+material = ExtResource("25_vine_skin")
+
+[node name="Vine00" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine01" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine02" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine03" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine04" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine05" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine06" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine07" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine08" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine09" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine10" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine11" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine12" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine13" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine14" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Vine15" parent="Vined/VineLook" instance=ExtResource("26_vine")]
+
+[node name="Glow" parent="Vined" instance=ExtResource("17_state_light")]
+editor_description = "Green light while the vines hold the body (mix of the green vines_cast sparks, cst1.png, and the olive vine skin). Tune color, energy and range here."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.5, 0.9, 0.3, 1)
+light_energy = 0.9
+omni_range = 5.0
+priority = 2.0
+
+[node name="RingsOfFire" type="Node3D" parent="."]
+script = ExtResource("27_spell_affliction")
+type = ExtResource("28_rings_type")
+damage_from_spell = true
+pierce_shield = true
+
+[node name="Cues" type="Node" parent="RingsOfFire" node_paths=PackedStringArray("affliction", "on_start", "on_end", "loop")]
+script = ExtResource("12_cues")
+affliction = NodePath("..")
+on_start = NodePath("../StartSound")
+on_end = NodePath("../EndSound")
+loop = NodePath("../LoopSound")
+
+[node name="StartSound" parent="RingsOfFire" instance=ExtResource("13_sound")]
+cue = ExtResource("29_cue_rings_start")
+loop = false
+play_on_ready = false
+active = false
+
+[node name="EndSound" parent="RingsOfFire" instance=ExtResource("13_sound")]
+cue = ExtResource("30_cue_rings_end")
+loop = false
+play_on_ready = false
+active = false
+
+[node name="LoopSound" parent="RingsOfFire" instance=ExtResource("13_sound")]
+cue = ExtResource("31_cue_rings_loop")
+loop = true
+play_on_ready = false
+active = false
+
+[node name="RingsLook" type="Node3D" parent="RingsOfFire" node_paths=PackedStringArray("affliction")]
+editor_description = "Rings of 30 additive firy flames (energy 8). Variant over snow: firy_a.png with additive = false in scenes/fx/effects/rings_flame.tres."
+script = ExtResource("32_rings_look")
+affliction = NodePath("..")
+
+[node name="Ring0" type="CPUParticles3D" parent="RingsOfFire/RingsLook"]
+use_fixed_seed = true
+script = ExtResource("33_sprite")
+type = ExtResource("34_flame")
+
+[node name="Ring1" type="CPUParticles3D" parent="RingsOfFire/RingsLook"]
+use_fixed_seed = true
+script = ExtResource("33_sprite")
+type = ExtResource("34_flame")
+
+[node name="Ring2" type="CPUParticles3D" parent="RingsOfFire/RingsLook"]
+use_fixed_seed = true
+script = ExtResource("33_sprite")
+type = ExtResource("34_flame")
+
+[node name="Ring3" type="CPUParticles3D" parent="RingsOfFire/RingsLook"]
+use_fixed_seed = true
+script = ExtResource("33_sprite")
+type = ExtResource("34_flame")
+
+[node name="Ring4" type="CPUParticles3D" parent="RingsOfFire/RingsLook"]
+use_fixed_seed = true
+script = ExtResource("33_sprite")
+type = ExtResource("34_flame")
+
+[node name="Ring5" type="CPUParticles3D" parent="RingsOfFire/RingsLook"]
+use_fixed_seed = true
+script = ExtResource("33_sprite")
+type = ExtResource("34_flame")
+
+[node name="Glow" parent="RingsOfFire" instance=ExtResource("17_state_light")]
+editor_description = "Firelight while the Rings of Fire circle the body (firy.png flames, saturated so it reads on the ground). Tune color, energy and range here."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(1, 0.6, 0.22, 1)
+light_energy = 1.4
+omni_range = 6.0
+priority = 2.0
+
+[node name="Slimed" type="Node3D" parent="."]
+script = ExtResource("27_spell_affliction")
+type = ExtResource("35_slimed_type")
+duration_mode = 1
+max_stacks = 16
+pace_per_stack = 0.2
+attack_time_per_stack = 5.0
+accuracy_per_stack = 0.2
+resistance_bonus_per_stack = 0.2
+
+[node name="Cues" type="Node" parent="Slimed" node_paths=PackedStringArray("affliction", "on_start")]
+script = ExtResource("12_cues")
+affliction = NodePath("..")
+on_start = NodePath("../HitSound")
+
+[node name="HitSound" parent="Slimed" instance=ExtResource("13_sound")]
+cue = ExtResource("36_cue_slime")
+loop = false
+play_on_ready = false
+active = false
+
+[node name="Splash" type="CPUParticles3D" parent="Slimed" node_paths=PackedStringArray("affliction")]
+use_fixed_seed = true
+script = ExtResource("37_emitter")
+type = ExtResource("38_splash")
+affliction = NodePath("..")
+box_scale = 1.2
+
+[node name="Drip" type="CPUParticles3D" parent="Slimed" node_paths=PackedStringArray("affliction")]
+use_fixed_seed = true
+script = ExtResource("37_emitter")
+type = ExtResource("39_drip")
+affliction = NodePath("..")
+shape = 1
+box_scale = 0.8
+
+[node name="Glow" parent="Slimed" instance=ExtResource("17_state_light")]
+editor_description = "Sickly green light while the body is slimed (dominant colour of lthg.png, the slime skin). Tune color, energy and range here."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.8, 1, 0.35, 1)
+light_energy = 0.8
+omni_range = 5.0
+priority = 2.0
+
+[connection signal="shown_changed" from="Frozen" to="Frozen/Glow" method="show_lit"]
+[connection signal="shown_changed" from="Vined" to="Vined/Glow" method="show_lit"]
+[connection signal="shown_changed" from="RingsOfFire" to="RingsOfFire/Glow" method="show_lit"]
+[connection signal="shown_changed" from="Slimed" to="Slimed/Glow" method="show_lit"]

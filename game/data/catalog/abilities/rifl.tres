@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="AbilityType" format=3]
-
-[ext_resource type="Script" path="res://scenes/data/ability_type.gd" id="1_uvew2"]
-
-[resource]
-script = ExtResource("1_uvew2")
-tag = "rifl"
-display_name = "Phoenix Shield"
-cast_range = 100.0

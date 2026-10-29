@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/gobl/009.png" id="1_scrq4"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/gobl/009_normal.png" id="2_3o8en"]
+
+[resource]
+resource_name = "gobl_009"
+albedo_texture = ExtResource("1_scrq4")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_3o8en")

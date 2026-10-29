@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ct"]
+
+[resource]
+script = ExtResource("1_ct")
+health = 1000
+regeneration_per_s = 10.0
+run_speed_m_s = 6.0
+melee_strength = 120
+melee_accuracy = 1.0
+melee_evasion = 1.0
+aggressiveness = 1.0
+vision_m = 100.0
+mana_cost = 400
+souls = 1
+cooldown_s = 3.0
+casting_time_s = 1.0
+book_level = 1

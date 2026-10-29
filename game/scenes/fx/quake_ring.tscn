@@ -1,11 +1,29 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/fx/quake_ring.gd" id="1_ring"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="sound_emitter"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/quake_ring.tres" id="cue_quake_ring"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_ground.tscn" id="2_ground"]
 
 [node name="QuakeRing" type="Node3D"]
-editor_description = "F132 (RFC-030 030u-a): onda de tierra del Quake del Jabberocky. Un anillo que sale de los pies y se desvanece en wave_s, siguiendo el suelo; MIX, nunca aditivo. FxBus.broadcast_scene lo lanza en todos los pares. Solo presentación."
+editor_description = "The earth wave of the Jabberocky's Quake. A ring that goes out from the feet and fades over wave_s, following the ground; MIX, never additive. FxBus.broadcast_scene launches it on every peer. Presentation only."
 script = ExtResource("1_ring")
+camera_trauma = 0.5
 
 [node name="Ring" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
 cast_shadow = 0
+
+[node name="Sound" parent="." instance=ExtResource("sound_emitter")]
+cue = ExtResource("cue_quake_ring")
+
+[node name="Ground" parent="." instance=ExtResource("2_ground")]
+editor_description = "A copy of the Quake's ground so a client sees the land move (on_clients_only): on the server, alone or on the host it does not play, because QuakeWave's plays there."
+
+[node name="Rebound" parent="Ground" index="0"]
+on_clients_only = true
+
+[node name="Wave" parent="Ground" index="1"]
+on_clients_only = true
+
+[editable path="Ground"]

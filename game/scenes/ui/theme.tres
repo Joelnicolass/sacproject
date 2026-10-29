@@ -1,0 +1,174 @@
+[gd_resource type="Theme" load_steps=39 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/stats_frame.png" id="1_stats_frame"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/soul_frame.png" id="2_soul_frame"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/roster_frame.png" id="3_roster_frame"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/minimap_frame.png" id="4_minimap_frame"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/book_cap.png" id="5_book_cap"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/stat_mana_bar.png" id="6_stat_mana_bar"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/stat_health_bar.png" id="7_stat_health_bar"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/health_strip.png" id="8_health_strip"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/fram.png" id="9_fram"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/tabs.png" id="10_tabs"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/page.png" id="11_page"]
+[ext_resource type="Texture2D" path="res://assets/original/ui/hud/spi2.png" id="12_spi2"]
+[ext_resource type="FontFile" path="res://assets/original/ui/hud/fn10.fnt" id="13_fn10"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bare"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.12, 0.12, 0.13, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_stats"]
+texture = ExtResource("1_stats_frame")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_soul"]
+texture = ExtResource("2_soul_frame")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_roster"]
+texture = ExtResource("3_roster_frame")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_minimap"]
+texture = ExtResource("4_minimap_frame")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_book_cap"]
+texture = ExtResource("5_book_cap")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_book_strip"]
+texture = ExtResource("9_fram")
+region_rect = Rect2(64, 40, 16, 8)
+axis_stretch_horizontal = 1
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mana_fill"]
+texture = ExtResource("6_stat_mana_bar")
+texture_margin_top = 5.0
+texture_margin_bottom = 7.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_health_fill"]
+texture = ExtResource("7_stat_health_bar")
+texture_margin_top = 5.0
+texture_margin_bottom = 7.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_strip_fill"]
+texture = ExtResource("8_health_strip")
+texture_margin_left = 3.0
+texture_margin_right = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_strip_empty"]
+bg_color = Color(0, 0, 0, 0.55)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_page_creature"]
+atlas = ExtResource("11_page")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_page_spell"]
+atlas = ExtResource("11_page")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_page_structure"]
+atlas = ExtResource("11_page")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tab_creature"]
+atlas = ExtResource("10_tabs")
+region = Rect2(1, 0, 46, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tab_spell"]
+atlas = ExtResource("10_tabs")
+region = Rect2(49, 0, 46, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tab_structure"]
+atlas = ExtResource("10_tabs")
+region = Rect2(1, 48, 46, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tab_selector"]
+atlas = ExtResource("10_tabs")
+region = Rect2(49, 48, 46, 48)
+
+[resource]
+LabelTitle/base_type = &"Label"
+LabelTitle/font_sizes/font_size = 24
+LabelHeading/base_type = &"Label"
+LabelHeading/font_sizes/font_size = 20
+LabelOutline/base_type = &"Label"
+LabelOutline/colors/font_outline_color = Color(0, 0, 0, 1)
+LabelOutline/constants/outline_size = 4
+LabelOutlineHeavy/base_type = &"Label"
+LabelOutlineHeavy/colors/font_outline_color = Color(0, 0, 0, 1)
+LabelOutlineHeavy/constants/outline_size = 6
+ButtonLarge/base_type = &"Button"
+ButtonLarge/font_sizes/font_size = 20
+ButtonBare/base_type = &"Button"
+ButtonBare/styles/disabled = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/focus = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/hover = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/normal = SubResource("StyleBoxEmpty_bare")
+ButtonBare/styles/pressed = SubResource("StyleBoxEmpty_bare")
+VBoxMenu/base_type = &"VBoxContainer"
+VBoxMenu/constants/separation = 12
+VBoxForm/base_type = &"VBoxContainer"
+VBoxForm/constants/separation = 10
+VBoxGroup/base_type = &"VBoxContainer"
+VBoxGroup/constants/separation = 8
+VBoxList/base_type = &"VBoxContainer"
+VBoxList/constants/separation = 6
+HBoxRow/base_type = &"HBoxContainer"
+HBoxRow/constants/separation = 8
+HBoxTight/base_type = &"HBoxContainer"
+HBoxTight/constants/separation = 6
+HBoxColumns/base_type = &"HBoxContainer"
+HBoxColumns/constants/separation = 24
+HBoxFlush/base_type = &"HBoxContainer"
+HBoxFlush/constants/separation = 0
+MarginScreen/base_type = &"MarginContainer"
+MarginScreen/constants/margin_bottom = 24
+MarginScreen/constants/margin_left = 24
+MarginScreen/constants/margin_right = 24
+MarginScreen/constants/margin_top = 24
+PanelMenu/base_type = &"PanelContainer"
+PanelMenu/styles/panel = SubResource("StyleBoxFlat_menu")
+
+HudSoulFrame/base_type = &"Panel"
+HudSoulFrame/styles/panel = SubResource("StyleBoxTexture_soul")
+HudStatsFrame/base_type = &"Panel"
+HudStatsFrame/styles/panel = SubResource("StyleBoxTexture_stats")
+HudRosterFrame/base_type = &"Panel"
+HudRosterFrame/styles/panel = SubResource("StyleBoxTexture_roster")
+HudMinimapFrame/base_type = &"Panel"
+HudMinimapFrame/styles/panel = SubResource("StyleBoxTexture_minimap")
+HudBookStrip/base_type = &"Panel"
+HudBookStrip/styles/panel = SubResource("StyleBoxTexture_book_strip")
+HudBookCap/base_type = &"Panel"
+HudBookCap/styles/panel = SubResource("StyleBoxTexture_book_cap")
+HudManaBar/base_type = &"ProgressBar"
+HudManaBar/styles/background = SubResource("StyleBoxEmpty_bare")
+HudManaBar/styles/fill = SubResource("StyleBoxTexture_mana_fill")
+HudHealthBar/base_type = &"ProgressBar"
+HudHealthBar/styles/background = SubResource("StyleBoxEmpty_bare")
+HudHealthBar/styles/fill = SubResource("StyleBoxTexture_health_fill")
+HudHealthStrip/base_type = &"ProgressBar"
+HudHealthStrip/styles/background = SubResource("StyleBoxFlat_strip_empty")
+HudHealthStrip/styles/fill = SubResource("StyleBoxTexture_strip_fill")
+HudSoulCount/base_type = &"Label"
+HudSoulCount/colors/font_color = Color(1, 1, 1, 1)
+HudSoulCount/colors/font_shadow_color = Color(0, 0, 0, 1)
+HudSoulCount/constants/shadow_offset_x = 1
+HudSoulCount/constants/shadow_offset_y = 1
+HudSoulCount/font_sizes/font_size = 17
+HudSoulCount/fonts/font = ExtResource("13_fn10")
+SpellBook/icons/page_creature = SubResource("AtlasTexture_page_creature")
+SpellBook/icons/page_spell = SubResource("AtlasTexture_page_spell")
+SpellBook/icons/page_structure = SubResource("AtlasTexture_page_structure")
+SpellBook/icons/spirit = ExtResource("12_spi2")
+SpellBook/icons/tab_creature = SubResource("AtlasTexture_tab_creature")
+SpellBook/icons/tab_spell = SubResource("AtlasTexture_tab_spell")
+SpellBook/icons/tab_structure = SubResource("AtlasTexture_tab_structure")
+SpellBook/icons/tab_selector = SubResource("AtlasTexture_tab_selector")

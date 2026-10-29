@@ -1,1 +1,0 @@
-{"scene": "res://debug/doctor_bench.tscn", "wait_first": 3.0, "steps": [{"print": {"node": "Guard1", "prop": "global_position"}}, {"print": {"node": "Guard2", "prop": "global_position"}}, {"print": {"node": "Guard3", "prop": "global_position"}}, {"print": {"node": "Guard4", "prop": "global_position"}}, {"shot": "pt63_start.png"}]}

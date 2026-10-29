@@ -11,6 +11,8 @@ var api: SceneMultiplayer
 
 
 func _enter_tree() -> void:
+	## Infrastructure: the lobby link (timeouts, resume) keeps going while the game is paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	api = SceneMultiplayer.new()
 	get_tree().set_multiplayer(api, get_path())
 

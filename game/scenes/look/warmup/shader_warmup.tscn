@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/warmup/shader_warmup.gd" id="1_warmup"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_probe"]
+size = Vector2(0.5, 0.5)
+
+[node name="ShaderWarmup" type="Node"]
+process_mode = 3
+editor_description = "Behind the loading screen it draws once every mesh, material and look scene the match can show (in front of the camera, in Stage) and asks every WarmHook for its own; it finishes when the pipeline compilation counters stay still for settle_s. In a headless process it finishes at once."
+script = ExtResource("1_warmup")
+probe_mesh = SubResource("QuadMesh_probe")
+batch_size = 256

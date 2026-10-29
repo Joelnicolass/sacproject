@@ -1,156 +1,130 @@
 extends Node
 
-## Autoload FxBus. Plays ParticleType bursts by name (res://data/fx/<name>.tres) from a pool of
-## SpriteParticles per type (RFC-029 029b): a play reuses an idle emitter instead of instancing one.
+## The one door to every visual effect: a burst (ParticleType), a bolt (BeamType) or a scene
+## (PackedScene with an FxScene root). `broadcast*` is what the server calls: one RPC with the id
+## (FxWire) to each peer with its world loaded (MpKit.ready_peers), and here too; each draws it with
+## its own pools (%Bursts, %Beams). `play*` draws on this peer only. Every play says `played(kind,
+## fx, at)` first, also headless (FxSounds, CameraShake and the checks listen); a headless process
+## then returns and instances nothing.
+## What it does not do: keep the pools, turn ids into effects (FxWire), or decide who plays what.
 
-const SPRITE_PARTICLES := preload("res://scenes/fx/sprite_particles.tscn")
-const TYPES_DIR := "res://data/fx/"
+## `kind` is a KIND_* constant, `fx` the ParticleType, BeamType or PackedScene, `at` where (the
+## middle of a beam).
+signal played(kind: StringName, fx: Resource, at: Vector3)
 
-## Own generator for the particle seeds (RFC-029 029a, H1): a CPUParticles3D with a random seed
-## draws it from the global RNG, the one MatchSeed seeds for the simulation. Constant seed, so two
-## runs of the same lab draw the same sprites.
+const KIND_BURST := &"burst"
+## A puff of a trail or a repeated presentation: many per second, never a sound of its own.
+const KIND_PUFF := &"puff"
+const KIND_BEAM := &"beam"
+const KIND_SCENE := &"scene"
+
+## Own generator for the particle seeds (a random seed would draw the global RNG, the simulation's).
 @export var particle_seed: int = 9529
-## Emitters per type when its ParticleType has no `pool_max`. When all of a type are playing, the
-## oldest one starts over.
-@export_range(1, 256) var max_pooled_per_type: int = 12
-## Builds every pool of data/fx up to its cap when the game loads. Building a CPUParticles3D draws
-## from the global RNG; done here it happens before MatchSeed seeds the match, so a play never does.
-@export var prewarm := true
-
-## Own generator for the shapes of the beams (RFC-029 029d), apart from the particle seeds so a beam
-## does not change which sprites a burst draws.
+## Own generator for the shapes of the beams.
 @export var beam_seed: int = 9829
+@export var prewarm := true  ## Builds every pool when the client loads (never headless).
 
-var _types: Dictionary = {}
 var _rng := RandomNumberGenerator.new()
 var _beam_rng := RandomNumberGenerator.new()
-## beam type name -> BeamType (or null).
-var _beam_types: Dictionary = {}
-## F151: scene path -> PackedScene (or null) of broadcast_scene.
-var _scenes: Dictionary = {}
-## beam type name -> Array[BeamFx] idle / playing (oldest first).
-var _beam_idle: Dictionary = {}
-var _beam_playing: Dictionary = {}
-## type name -> Array[SpriteParticles] idle (hidden), ready for the next play.
-var _idle: Dictionary = {}
-## type name -> Array[SpriteParticles] playing, oldest first.
-var _playing: Dictionary = {}
+
+@onready var _bursts: BurstPool = %Bursts
+@onready var _beams: BeamPool = %Beams
 
 
 func _ready() -> void:
 	_rng.seed = particle_seed
 	_beam_rng.seed = beam_seed
 	if prewarm and not _is_headless():
-		_prewarm_all()
+		_bursts.prewarm_all()
+		_beams.prewarm_all()
 
 
-## Seed for the next emitter (SpriteParticles, SpriteEmitter): from this generator, never the global one.
+## Seed for the next emitter (SpriteParticles, SpriteEmitter).
 func next_particle_seed() -> int:
 	return _rng.randi()
 
 
-## `dir` is not applied: the burst goes in its type's direction (it already did before the pool).
-func play(type_name: String, at: Vector3, _dir := Vector3.UP) -> void:
-	if _is_headless():
+## A burst of `fx` at `at` on this peer. `dir` ZERO = the direction of its type.
+func play(fx: ParticleType, at: Vector3, dir := Vector3.ZERO) -> void:
+	_burst(KIND_BURST, fx, at, dir)
+
+
+## A puff of a trail: like `play`, but `played` says KIND_PUFF (a puff never sounds).
+func puff(fx: ParticleType, at: Vector3) -> void:
+	_burst(KIND_PUFF, fx, at, Vector3.ZERO)
+
+
+## `play` on every peer with a world (the server calls it; a client never does).
+func broadcast(fx: ParticleType, at: Vector3, dir := Vector3.ZERO) -> void:
+	if fx == null or _is_client():
 		return
-	var emitter := _take(type_name)
-	if emitter == null:
+	for peer_id in MpKit.ready_peers():
+		_play_everywhere.rpc_id(peer_id, FxWire.id_of(fx), at, dir)
+	play(fx, at, dir)
+
+
+## A bolt of `beam` from `from` to `to`. With `follow`, the end keeps its offset from that node
+## while it lives.
+func play_beam(beam: BeamType, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
+	if beam == null:
 		return
-	emitter.replay(at, next_particle_seed())
+	played.emit(KIND_BEAM, beam, from.lerp(to, 0.5))
+	if not _is_headless():
+		_beams.play(beam, from, to, _beam_rng.randi(), follow)
 
 
-func broadcast(type_name: String, at: Vector3, dir := Vector3.UP) -> void:
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			_play_everywhere.rpc(type_name, at, dir)
+## `follow` travels as its path (the units have the same path on every peer).
+func broadcast_beam(beam: BeamType, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
+	if beam == null or _is_client():
 		return
-	play(type_name, at, dir)
+	var path := str(follow.get_path()) if follow != null and follow.is_inside_tree() else ""
+	for peer_id in MpKit.ready_peers():
+		_play_beam_everywhere.rpc_id(peer_id, FxWire.id_of(beam), from, to, path)
+	play_beam(beam, from, to, follow)
 
 
-func particle_type(type_name: String) -> ParticleType:
-	if not _types.has(type_name):
-		var path := TYPES_DIR + type_name + ".tres"
-		_types[type_name] = load(path) as ParticleType if ResourceLoader.exists(path) else null
-	return _types[type_name]
-
-
-## Most emitters FxBus keeps for the type (its `pool_max`, else `max_pooled_per_type`).
-func pool_cap(type: ParticleType) -> int:
-	return type.pool_max if type != null and type.pool_max > 0 else max_pooled_per_type
-
-
-## An idle emitter of the type, a new one while under the cap, or the oldest playing one.
-func _take(type_name: String) -> SpriteParticles:
-	if not _playing.has(type_name) and not _open_pool(type_name):
-		return null
-	var idle: Array = _idle[type_name]
-	var playing: Array = _playing[type_name]
-	var emitter: SpriteParticles = null
-	if not idle.is_empty():
-		emitter = idle.pop_back()
-	elif playing.size() < pool_cap(particle_type(type_name)):
-		emitter = _build(type_name)
-		if emitter == null:
-			return null
-	else:
-		emitter = playing.pop_front()
-	playing.push_back(emitter)
-	return emitter
-
-
-func _open_pool(type_name: String) -> bool:
-	var type := particle_type(type_name)
-	if type == null or type.lifetime_s <= 0.0:
-		return false
-	_idle[type_name] = []
-	_playing[type_name] = []
-	return true
-
-
-func _build(type_name: String) -> SpriteParticles:
-	var emitter: SpriteParticles = SPRITE_PARTICLES.instantiate()
-	emitter.type = particle_type(type_name)
-	emitter.pooled = true
-	emitter.name = "%s_%d" % [type_name, (_playing[type_name] as Array).size() + (_idle[type_name] as Array).size()]
-	add_child(emitter)
-	if emitter.is_queued_for_deletion():
-		## No atlas in the catalog: the type never draws, so it keeps no pool.
-		_idle.erase(type_name)
-		_playing.erase(type_name)
-		_types[type_name] = null
-		return null
-	emitter.finished.connect(_release.bind(type_name, emitter))
-	return emitter
-
-
-func _release(type_name: String, emitter: SpriteParticles) -> void:
-	var playing: Array = _playing.get(type_name, [])
-	var at := playing.find(emitter)
-	if at < 0:
+## A scene whose root is an FxScene, at `at`: it goes under the current scene, answers
+## `play(params)` and frees itself. Never headless.
+func play_scene(packed: PackedScene, at: Vector3, params: Dictionary) -> void:
+	if packed == null:
 		return
-	playing.remove_at(at)
-	(_idle[type_name] as Array).push_back(emitter)
-
-
-func _prewarm_all() -> void:
-	var dir := DirAccess.open(TYPES_DIR)
-	if dir == null:
+	played.emit(KIND_SCENE, packed, at)
+	var parent := get_tree().current_scene
+	if _is_headless() or parent == null:
 		return
-	var names := PackedStringArray()
-	for file in dir.get_files():
-		var file_name := file.trim_suffix(".remap")
-		if file_name.ends_with(".tres"):
-			names.append(file_name.get_basename())
-	names.sort()
-	for type_name in names:
-		if not _open_pool(type_name):
-			continue
-		var idle: Array = _idle[type_name]
-		for i in pool_cap(particle_type(type_name)):
-			var emitter := _build(type_name)
-			if emitter == null:
-				break
-			idle.push_back(emitter)
+	var instance := packed.instantiate()
+	var node := instance as FxScene
+	if node == null:
+		instance.free()
+		push_error("FxBus: the root of %s is not an FxScene" % FxWire.label_of(packed))
+		return
+	var parent_3d := parent as Node3D
+	node.position = parent_3d.global_transform.affine_inverse() * at if parent_3d != null else at
+	parent.add_child(node)
+	node.global_position = at
+	node.play(params)
+
+
+func broadcast_scene(packed: PackedScene, at: Vector3, params: Dictionary) -> void:
+	if packed == null or _is_client():
+		return
+	for peer_id in MpKit.ready_peers():
+		_play_scene_everywhere.rpc_id(peer_id, FxWire.id_of(packed), at, params)
+	play_scene(packed, at, params)
+
+
+func _burst(kind: StringName, fx: ParticleType, at: Vector3, dir: Vector3) -> void:
+	if fx == null:
+		return
+	played.emit(kind, fx, at)
+	if not _is_headless():
+		_bursts.play(fx, at, next_particle_seed(), dir)
+
+
+## A client never broadcasts; the server (or solo) sends to the peers with a world and plays here (a
+## dedicated only says `played`).
+static func _is_client() -> bool:
+	return MpKit.is_networked() and not MpKit.is_server()
 
 
 static func _is_headless() -> bool:
@@ -158,124 +132,18 @@ static func _is_headless() -> bool:
 
 
 @rpc("authority", "call_local", "unreliable")
-func _play_everywhere(type_name: String, at: Vector3, dir: Vector3) -> void:
-	play(type_name, at, dir)
-
-
-const BEAM_TYPES_DIR := "res://data/fx/beams/"
-
-
-## A bolt of the BeamType res://data/fx/beams/<type_name>.tres from `from` to `to` (RFC-029 029d).
-## With `follow`, the end keeps its offset from that node while it lives. A type without `scene`
-## gives only its flash at `to`.
-func play_beam(type_name: String, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
-	if _is_headless():
-		return
-	var type := beam_type(type_name)
-	if type == null:
-		return
-	if type.scene == null:
-		_beam_flash(type, to)
-		return
-	var beam := _take_beam(type_name, type)
-	if beam != null:
-		beam.play(from, to, _beam_rng.randi(), follow)
-
-
-## One RPC per beam. `follow` travels as its path (the units have the same path on every peer).
-func broadcast_beam(type_name: String, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
-	var path := str(follow.get_path()) if follow != null and follow.is_inside_tree() else ""
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			_play_beam_everywhere.rpc(type_name, from, to, path)
-		return
-	play_beam(type_name, from, to, follow)
-
-
-func beam_type(type_name: String) -> BeamType:
-	if not _beam_types.has(type_name):
-		var path := BEAM_TYPES_DIR + type_name + ".tres"
-		_beam_types[type_name] = load(path) as BeamType if ResourceLoader.exists(path) else null
-	return _beam_types[type_name]
-
-
-func _take_beam(type_name: String, type: BeamType) -> BeamFx:
-	if not _beam_playing.has(type_name):
-		_beam_idle[type_name] = []
-		_beam_playing[type_name] = []
-	var idle: Array = _beam_idle[type_name]
-	var playing: Array = _beam_playing[type_name]
-	var beam: BeamFx = null
-	if not idle.is_empty():
-		beam = idle.pop_back()
-	elif playing.size() < type.pool_max:
-		beam = type.scene.instantiate() as BeamFx
-		if beam == null:
-			return null
-		beam.type = type
-		beam.pooled = true
-		beam.name = "beam_%s_%d" % [type_name, playing.size() + idle.size()]
-		add_child(beam)
-		beam.finished.connect(_release_beam.bind(type_name, beam))
-	else:
-		beam = playing.pop_front()
-	playing.push_back(beam)
-	return beam
-
-
-func _release_beam(type_name: String, beam: BeamFx) -> void:
-	var playing: Array = _beam_playing.get(type_name, [])
-	var at := playing.find(beam)
-	if at < 0:
-		return
-	playing.remove_at(at)
-	(_beam_idle[type_name] as Array).push_back(beam)
-
-
-## The flash alone (a BeamType without `scene`), from the rig's FxLightLayer like a burst's light.
-func _beam_flash(type: BeamType, at: Vector3) -> void:
-	if type.light != null:
-		type.light.light_up(get_tree(), null, at)
+func _play_everywhere(id: String, at: Vector3, dir: Vector3) -> void:
+	play(FxWire.resource(id) as ParticleType, at, dir)
 
 
 @rpc("authority", "call_local", "unreliable")
-func _play_beam_everywhere(type_name: String, from: Vector3, to: Vector3, follow_path: String) -> void:
+func _play_beam_everywhere(id: String, from: Vector3, to: Vector3, follow_path: String) -> void:
 	var follow: Node3D = null
 	if not follow_path.is_empty():
 		follow = get_tree().root.get_node_or_null(NodePath(follow_path)) as Node3D
-	play_beam(type_name, from, to, follow)
-
-
-## F151: a presentation scene played on every peer with its parameters, one RPC per event (not one per piece: the
-## Rhinok's ring of spikes is one call). `scene_path` is a PackedScene whose root has play(params: Dictionary); it goes
-## under the current scene at `at` and frees itself. Never headless.
-func broadcast_scene(scene_path: String, at: Vector3, params: Dictionary) -> void:
-	if MpKit.is_networked():
-		if MpKit.is_server():
-			_play_scene_everywhere.rpc(scene_path, at, params)
-		return
-	play_scene(scene_path, at, params)
-
-
-func play_scene(scene_path: String, at: Vector3, params: Dictionary) -> void:
-	if _is_headless() or not scene_path.begins_with("res://"):
-		return
-	if not _scenes.has(scene_path):
-		_scenes[scene_path] = load(scene_path) as PackedScene if ResourceLoader.exists(scene_path) else null
-	var packed: PackedScene = _scenes[scene_path]
-	var parent := get_tree().current_scene
-	if packed == null or parent == null:
-		return
-	var node := packed.instantiate() as Node3D
-	if node == null or not node.has_method("play"):
-		if node:
-			node.free()
-		return
-	parent.add_child(node)
-	node.global_position = at
-	node.call("play", params)
+	play_beam(FxWire.resource(id) as BeamType, from, to, follow)
 
 
 @rpc("authority", "call_local", "unreliable")
-func _play_scene_everywhere(scene_path: String, at: Vector3, params: Dictionary) -> void:
-	play_scene(scene_path, at, params)
+func _play_scene_everywhere(id: String, at: Vector3, params: Dictionary) -> void:
+	play_scene(FxWire.resource(id) as PackedScene, at, params)

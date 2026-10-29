@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_nni0f"]
+[ext_resource type="Texture2D" uid="uid://cvg33nxgcefqx" path="res://assets/original/ui/icons/sohe.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/gargoyle/gargoyle_shot.tres" id="typed_ehba"]
+[ext_resource type="AnimationLibrary" path="res://creatures/gargoyle/model/gargoyle_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/gargoyle/gargoyle.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_nni0f")
+tag = "sohe"
+display_name = "Gargoyle"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 625
+regeneration_per_s = 16.6667
+fly_speed_m_s = 11.25
+melee_strength = 75
+melee_accuracy = 1.0
+melee_evasion = 1.1
+ranged_accuracy = 0.8
+aggressiveness = 1.0
+vision_m = 150.0
+direct_spell_resistance = 1.2
+splash_spell_resistance = 1.2
+direct_ranged_resistance = 2.0
+splash_ranged_resistance = 2.0
+mana = 250
+mana_cost = 300
+souls = 1
+cooldown_s = 2.0
+casting_time_s = 0.4321
+book_level = 1
+book_slot = 36
+ranged_attack = ExtResource("typed_ehba")

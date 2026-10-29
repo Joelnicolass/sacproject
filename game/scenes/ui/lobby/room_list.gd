@@ -1,8 +1,8 @@
 extends Control
 
-## RFC-034 034f: the open rooms of the server. One button per room (pressing it joins), «Actualizar», «Crear sala»,
-## a code for the private ones. It only reads `MpLobby.client` and calls its commands; the screen decides which view
-## shows. Run alone (F6) it says «Sin conexión».
+## The open rooms of the server. One button per room (pressing it joins), «Actualizar», «Crear
+## sala», a code for the private ones. It only reads `MpLobby.client` and calls its commands; the
+## screen decides which view shows. Run alone (F6) it says «Sin conexión».
 
 signal create_requested
 signal back_requested
@@ -37,15 +37,17 @@ func _fill(rows: Array) -> void:
 		holder.remove_child(child)
 		child.queue_free()
 	if not MpLobby.client.is_online():
-		%ListStatus.text = LobbyText.OFFLINE
+		%ListStatus.text = tr(LobbyText.OFFLINE)
 		return
-	%ListStatus.text = "" if not rows.is_empty() else LobbyText.NO_ROOMS
+	%ListStatus.text = "" if not rows.is_empty() else tr(LobbyText.NO_ROOMS)
 	for row: Dictionary in rows:
 		var button := row_scene.instantiate() as Button
 		var used := int(row["seats_used"])
 		var seats := int(row["seats"])
 		var state := int(row["state"])
-		button.text = "%s · %d/%d · %s" % [str(row["name"]), used, seats, LobbyText.state_text(state)]
+		button.text = (
+			"%s · %d/%d · %s" % [str(row["name"]), used, seats, LobbyText.state_text(state)]
+		)
 		button.disabled = state != MpLobbyRooms.State.OPEN or used >= seats
 		button.pressed.connect(_on_row.bind(str(row["id"])))
 		holder.add_child(button)

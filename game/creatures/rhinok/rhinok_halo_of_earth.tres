@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AbilityType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_2jk8m"]
+[ext_resource type="Texture2D" uid="uid://rrdmyvtov8b1" path="res://assets/original/ui/icons/_h_rba.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/halo_of_earth_ability.tscn" id="effect_scene"]
+
+[resource]
+script = ExtResource("1_2jk8m")
+effect = ExtResource("effect_scene")
+tag = "HRba"
+display_name = "Halo Of Earth"
+icon = ExtResource("icon_tex")
+mana_cost = 650
+cast_range_m = 100.0
+cooldown_s = 40.0
+casting_time_s = 29.6296
+speed_m_s = 30.0
+acceleration_m_s2 = 3.0
+damage = 600
+effect_range_m = 50.0
+duration_s = 35.0
+ai_attack = true
+ai_worth = 3000

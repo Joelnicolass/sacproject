@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_n0fcr"]
+[ext_resource type="Texture2D" uid="uid://co2nm8vnn27cl" path="res://assets/original/ui/icons/nugf.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/warmonger/warmonger_shot.tres" id="typed_fhga"]
+[ext_resource type="Resource" path="res://creatures/warmonger/firewalk.tres" id="typed_wfhg"]
+[ext_resource type="Resource" path="res://creatures/warmonger/warmonger_passive.tres" id="typed_tfhg"]
+[ext_resource type="AnimationLibrary" path="res://creatures/warmonger/model/warmonger_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/warmonger/warmonger.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_n0fcr")
+tag = "nugf"
+display_name = "Warmonger"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 1200
+regeneration_per_s = 16.6667
+run_speed_m_s = 8.0
+melee_strength = 250
+melee_accuracy = 2.0
+melee_evasion = 1.0
+ranged_accuracy = 1.5
+aggressiveness = 1.0
+vision_m = 200.0
+melee_resistance = 4.0
+mana = 500
+mana_cost = 1300
+souls = 4
+cooldown_s = 8.0
+casting_time_s = 2.5926
+book_level = 7
+book_slot = 77
+ranged_attack = ExtResource("typed_fhga")
+active_ability = ExtResource("typed_wfhg")
+on_damage = ExtResource("typed_tfhg")

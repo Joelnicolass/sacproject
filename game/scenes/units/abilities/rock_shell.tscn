@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="1_rock"]
+
+[node name="RockShell" type="MeshInstance3D"]
+editor_description = "The rock shell of the Earthfling's Rockform. Rockform instances it under the body (only where meshes are drawn, never on the dedicated server), at the BodyFrame's CENTER socket, and grows and shrinks it with a Tween. Change the mesh or the material here."
+visible = false
+mesh = ExtResource("1_rock")

@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/divine_sight_eye.gd" id="1_eye"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/scri.png" id="2_scri"]
+[ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="3_vision"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_eye"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(3, 3, 3, 1)
+albedo_texture = ExtResource("2_scri")
+uv1_scale = Vector3(0.25, 0.25, 1)
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="Mesh_eye"]
+size = Vector2(2.5, 2.25)
+
+[node name="DivineSightEye" type="Node3D" node_paths=PackedStringArray("glow", "vision")]
+editor_description = "The eye of the Ranger's Divine Sight (eesd). DivineSight (AbilityEffect) creates it in the ShotSpawner (spawn_scene); only the server simulates it (it rises 45 ticks up to 4 m, flies straight at 30 m/s up to 250 m or locks onto the closest enemy creature within 250 m and chases it with acceleration 3, its Vision child sees enemy creatures within 75 m for its side, it lives 30 s) and the clients get position and scale. Look: the scri sprite (a 4x4 sheet of 16 frames, assets/original/fx/scri.png, tools/import/import_ui.py) on a 2.5 x 2.25 m quad, unshaded, energy 3 (albedo_color), transparent with alpha = scale²; the script runs the frames through uv1_offset (frames_h, frames_v, frame_s). Knobs: flying_height, rising_s, refresh_s, target_groups."
+script = ExtResource("1_eye")
+glow = NodePath("Glow")
+vision = NodePath("Vision")
+
+[node name="Glow" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Mesh_eye")
+material_override = SubResource("Mat_eye")
+
+[node name="Vision" parent="." node_paths=PackedStringArray("body") instance=ExtResource("3_vision")]
+body = NodePath("..")

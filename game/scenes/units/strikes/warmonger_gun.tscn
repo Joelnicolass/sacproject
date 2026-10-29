@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/strikes/ray_strike.gd" id="1_ray"]
+
+[node name="WarmongerGun" type="Node3D"]
+process_physics_priority = -1
+editor_description = "The Warmonger's machine gun (fhga): 16 bursts of 2 rays at T+2, T+6, …, T+62 (frame % 4 == 1 while ++frame <= 64), each ray with its own accuracy roll. It follows the shooter's shot origin and is cut if the shooter dies. Each ray stops on the first live body of any side; it only hurts the intended target or an enemy (an ally stops it and takes nothing). No beam: only the hit (ShotLook.impact_fx) is drawn where the ray ends."
+script = ExtResource("1_ray")
+bursts = 16
+first_tick = 2
+period_s = 0.0666
+rays_per_burst = 2
+reroll = true
+follow = true
+foes_only = true
+label = "ametralladora"

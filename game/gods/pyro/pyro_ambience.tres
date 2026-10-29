@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AmbienceSet" format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/ambience_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/lava.wav" id="3_bed"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/vul1.wav" id="shot_s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/vul2.wav" id="shot_s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/ambi/vul3.wav" id="shot_s3"]
+
+[sub_resource type="Resource" id="Resource_bed"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("3_bed")])
+volume_db = -10.0
+bus = &"Ambience"
+max_voices = 1
+
+[sub_resource type="Resource" id="OneShot_0"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("shot_s1"), ExtResource("shot_s2"), ExtResource("shot_s3")])
+bus = &"Ambience"
+
+[resource]
+script = ExtResource("1_set")
+bed = SubResource("Resource_bed")
+one_shots = Array[SoundCue]([SubResource("OneShot_0")])

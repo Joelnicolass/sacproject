@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/smok.png" id="atlas_png"]
+
+[resource]
+script = ExtResource("1_type")
+atlas = ExtResource("atlas_png")
+h_frames = 4
+v_frames = 4
+size = Vector2(1.5, 1.5)
+energy = 1.0
+frame_s = 0.13333
+lifetime_s = 2.117
+count = 7
+speed_min = 0.5
+speed_max = 2.0
+scale_min = 2.0
+scale_max = 2.0
+fade_s = 1.0
+alpha_max = 0.75
+additive = false
+pool_max = 6

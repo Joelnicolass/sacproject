@@ -1,15 +1,15 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/options/graphics_tab.gd" id="1_tab"]
-[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="2_prefs"]
-[ext_resource type="Resource" path="res://data/ui/hud_scale.tres" id="3_hud"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="2_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/ui_scale.tres" id="3_hud"]
 
 [node name="GraphicsTab" type="VBoxContainer"]
+theme_type_variation = &"VBoxForm"
 custom_minimum_size = Vector2(360, 0)
-theme_override_constants/separation = 10
 script = ExtResource("1_tab")
 prefs = ExtResource("2_prefs")
-hud_scale = ExtResource("3_hud")
+ui_scale = ExtResource("3_hud")
 
 [node name="QualityRow" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -17,7 +17,7 @@ layout_mode = 2
 [node name="QualityLabel" type="Label" parent="QualityRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Calidad"
+text = "UI_GRAPHICS_TAB_QUALITY_LABEL"
 
 [node name="QualityPick" type="OptionButton" parent="QualityRow"]
 unique_name_in_owner = true
@@ -27,12 +27,27 @@ size_flags_horizontal = 3
 [node name="Fullscreen" type="CheckButton" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Pantalla completa"
+text = "UI_GRAPHICS_TAB_FULLSCREEN"
 
 [node name="VSync" type="CheckButton" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-text = "VSync"
+text = "UI_GRAPHICS_TAB_VSYNC"
+
+[node name="Vegetation" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_GRAPHICS_TAB_VEGETATION"
+
+[node name="Grass" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_GRAPHICS_TAB_GRASS"
+
+[node name="Relief" type="CheckButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "UI_GRAPHICS_TAB_RELIEF"
 
 [node name="MaxFpsRow" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -40,12 +55,38 @@ layout_mode = 2
 [node name="MaxFpsLabel" type="Label" parent="MaxFpsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Límite de FPS"
+text = "UI_GRAPHICS_TAB_MAX_FPS_LABEL"
 
 [node name="MaxFpsPick" type="OptionButton" parent="MaxFpsRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ScarsRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ScarsLabel" type="Label" parent="ScarsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_GRAPHICS_TAB_SCARS_LABEL"
+
+[node name="ScarTiles" type="HSlider" parent="ScarsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 32.0
+max_value = 256.0
+step = 32.0
+value = 256.0
+
+[node name="ScarTilesValue" type="Label" parent="ScarsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "256"
+horizontal_alignment = 2
 
 [node name="HudRow" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -53,7 +94,7 @@ layout_mode = 2
 [node name="HudLabel" type="Label" parent="HudRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Tamaño del HUD"
+text = "UI_GRAPHICS_TAB_HUD_LABEL"
 
 [node name="HudSize" type="HSlider" parent="HudRow"]
 unique_name_in_owner = true
@@ -61,14 +102,14 @@ custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-min_value = 0.6
-max_value = 1.2
+min_value = 0.75
+max_value = 1.4
 step = 0.05
-value = 0.8
+value = 1.0
 
 [node name="HudValue" type="Label" parent="HudRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
-text = "80 %"
+text = "100 %"
 horizontal_alignment = 2

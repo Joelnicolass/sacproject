@@ -1,0 +1,199 @@
+class_name CaptureTask
+extends AiTask
+
+## What the side wants to take. Three kinds of record, each with a score `lerp(s1, s2, s3)` (s1 the
+## worth of the target, s2 the weight of the side's aggression, s3 = 1 - the influence of the enemy
+## groups within 140 m):
+##   - a free manafount (`free_fount`): the wizard builds a Manalith over it (his capture block).
+##     The free bodies must count the wizard (required status 2). s1 = node_value_score(f1): the
+##     more fronts the enemy has taken (f1 = 1 - own Manaliths / free founts) the more it is worth.
+##   - an enemy Manalith (or shrine): the creatures attack it. Only if the AI has territory there
+##     (territorial_score) or no Manalith of its own. The free bodies must count one that fights
+##     (required status 1). s1 = node_value_score(max(f1, f2)) * 0.99 * aggression.
+##   - an enemy altar (flags 0x200): the profanation. Skipped without territory near it (a Manalith
+##     of the AI within 1000 m, an altar within 50 m). With a Desecrate already underway against it
+##     the record is worth 0.4 (so the army keeps guarding); else s1 = aggression² * 2 * (own share
+##     of souls - 0.3), and the free bodies must count one that fights and the wizard (status 9).
+##     The wizard leads the army and, once at the altar, Desecrates it (AiWizardBrain).
+## Not ported: the record that hunts an enemy wizard and the first-pass guardian-bound creatures.
+## The claim hands every free body that fights to the best record that the army can beat
+## (AiRater.rate_with_base >= 0), until the souls they hold pass `own souls * share * 0.9 *
+## aggression`; with a Desecrate of the side underway it claims nothing, so the army stays where it
+## is.
+
+## The claim stops once the souls taken pass own souls * share * this * aggression (0.9, stored as
+## the original's float32).
+const CLAIM_SHARE := 0.8999999761581421
+const TERRITORY_NEAR_M := 10.0
+const TERRITORY_MANALITH_M := 1000.0
+const TERRITORY_OTHER_M := 50.0
+
+
+func kind() -> Kind:
+	return Kind.CAPTURE
+
+
+func replan() -> void:
+	records.clear()
+	var stance := board.stance
+	var perception := board.perception
+	var aggression := board.play.aggression
+	# Own+ally Manaliths (retail), enemy ones, free founts.
+	var a := (
+		stance.recs[AiTrack.Relation.OWN].manaliths + stance.recs[AiTrack.Relation.ALLY].manaliths
+	)
+	var b := stance.recs[AiTrack.Relation.ENEMY].manaliths
+	var e := perception.neutral_founts
+	var f1 := 0.0
+	var f2 := 0.0
+	if a != 0 and AiField.safediv(float(b + 1), float(a)) >= 1.0:
+		f1 = 1.0
+		f2 = AiField.safediv(float(b), float(e))
+	elif e == 0:
+		f1 = 1.0
+		f2 = 0.0
+	else:
+		f1 = AiField.f32(1.0 - AiField.safediv(float(a), float(e)))
+		f2 = AiField.f32(AiField.safediv(float(b), float(b + a)))
+	for relation in [AiTrack.Relation.NEUTRAL, AiTrack.Relation.ENEMY]:
+		for t: AiTrack in perception.structures(relation):
+			if not t.is_valid() or not t.capturable():
+				continue
+			var needs_fighter := false
+			var needs_wizard := false
+			var s1 := 0.0
+			var s2 := 0.0
+			if t.free_fount:
+				needs_wizard = true
+				s1 = node_value_score(f1, t)
+				s2 = AiField.f32((1.0 - aggression) * 0.8 + 0.2)
+			elif relation == AiTrack.Relation.ENEMY and t.is_tower():
+				if territorial_score(t.cur_pos, t) == 0.0 and a > 0:
+					continue
+				needs_fighter = true
+				s1 = AiField.f32(AiField.f32(node_value_score(maxf(f2, f1), t) * 0.99) * aggression)
+				s2 = AiField.f32((1.0 - aggression) * 0.9 + 0.1)
+			elif t.is_altar():
+				if territorial_score(t.cur_pos, t) == 0.0:
+					continue
+				if perception.desecration_against(t):
+					needs_fighter = true
+					s1 = 0.4
+					s2 = AiField.f32(1.0 - aggression)
+				else:
+					var share := AiField.f32(2.0 * (stance.enemy_ratio() - 0.3))
+					if share < 0.0:
+						share = 0.0
+					needs_fighter = true
+					needs_wizard = true
+					s2 = AiField.f32(maxf(1.0 - aggression, 0.4))
+					s1 = AiField.f32(aggression * aggression * share)
+			else:
+				continue
+			var record := board.new_record(t, true)
+			record.needs_fighter = needs_fighter
+			record.needs_wizard = needs_wizard
+			AiRater.combine(record.target_acc, 1.0, t.acc, 1.0)
+			var s3 := AiField.f32(
+				(
+					1.0
+					- stance.influence(
+						AiTrack.Relation.ENEMY, record.anchor, 10.0, 140.0, record.target_acc
+					)
+				)
+			)
+			var score := AiField.lerp_w(s1, s2, s3)
+			if score == 0.0:
+				continue
+			record.score = score
+			insert_sorted(record)
+	# Decay the claimed scores by position (0.5^i) and normalize by the decayed sum.
+	var factor := 1.0
+	var total := 0.0
+	for record in records:
+		record.score = AiField.f32(record.score * factor)
+		factor *= 0.5
+		total += record.score
+	normalize(AiField.f32(total))
+
+
+func claim(free: Array[AiTrack]) -> float:
+	var perception := board.perception
+	if perception.own_desecration():
+		return 0.0
+	var stance := board.stance
+	var threshold := AiField.f32(
+		(
+			AiField.f32(
+				(
+					float(stance.recs[AiTrack.Relation.OWN].souls_a)
+					* stance.enemy_ratio()
+					* CLAIM_SHARE
+				)
+			)
+			* board.play.aggression
+		)
+	)
+	var acc := AiRater.new_acc()
+	var any_fighter := false
+	var any_wizard := false
+	var count := 0
+	for t in free:
+		if t.is_guardian_bound():
+			continue
+		any_fighter = any_fighter or t.fights
+		any_wizard = any_wizard or t.is_wizard()
+		count += 1
+		AiRater.combine(acc, float(count), t.acc, 1.0)
+	var found: AiRecord
+	for record in records:
+		if (record.needs_fighter and not any_fighter) or (record.needs_wizard and not any_wizard):
+			continue
+		if not (AiRater.rate_with_base(acc, record.target_acc) < 0.0):
+			found = record
+			break
+	if found == null:
+		return 0.0
+	var total := 0.0
+	for t in free.duplicate():
+		if total > threshold:
+			break
+		if not t.is_guardian_bound() and t.fights:
+			total += board.claim_member(found, free, t)
+	return total
+
+
+## `f` pulled towards the density of the souls around (0.45), towards the shadow of
+## the enemy altars over it (0.3) and the own ones (0.5). Retail weights; the beta uses 0.4 and
+## 0.35.
+func node_value_score(f: float, t: AiTrack) -> float:
+	var r := AiField.lerp_w(f, 0.45, board.density(t.cur_pos, 10.0, 280.0))
+	r = AiField.lerp_w(
+		r, 0.3, AiField.prob_or(board.distances_to_altars(t, AiTrack.Relation.ENEMY), 10.0, 3620.0)
+	)
+	r = AiField.lerp_w(
+		r, 0.5, AiField.prob_or(board.distances_to_altars(t, AiTrack.Relation.OWN), 10.0, 3620.0)
+	)
+	return r
+
+
+## How much of the AI's own ground (its structures and its allies') lies around
+## `pos`: each one weighs 1 within 10 m, falling to 0 at 1000 m (a Manalith) or 50 m (any other),
+## added as a probability.
+func territorial_score(pos: Vector3, exclude: AiTrack) -> float:
+	var acc := 0.0
+	for relation in [AiTrack.Relation.OWN, AiTrack.Relation.ALLY]:
+		for t: AiTrack in board.perception.structures(relation):
+			if t == exclude:
+				continue
+			var reach := (
+				TERRITORY_MANALITH_M if t.site == AiTrack.Site.MANALITH else TERRITORY_OTHER_M
+			)
+			var d := AiField.f32(pos.distance_to(t.cur_pos))
+			var s := 0.0
+			if d <= TERRITORY_NEAR_M:
+				s = 1.0
+			elif d < reach:
+				s = AiField.f32(AiField.safediv(reach - d, reach - TERRITORY_NEAR_M))
+			acc = AiField.f32(s * s * (1.0 - acc) + acc)
+	return acc

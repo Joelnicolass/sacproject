@@ -1,0 +1,47 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/rift_spirit.gd" id="1_script"]
+[ext_resource type="Shader" path="res://scenes/spells/zones/rift_trail.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/rift.png" id="3_trail"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="4_sound"]
+[ext_resource type="Script" path="res://scenes/spells/zones/rift_ribbon.gd" id="5_ribbon"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_hit.tres" id="cue_rift_hit"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_spawn.tres" id="cue_rift_spawn"]
+
+[sub_resource type="ShaderMaterial" id="Mat_trail"]
+shader = ExtResource("2_shader")
+shader_parameter/trail = ExtResource("3_trail")
+
+[sub_resource type="ImmediateMesh" id="Mesh_ribbon"]
+
+[node name="RiftSpirit" type="Node3D" node_paths=PackedStringArray("hit_sound", "spawn_sound")]
+editor_description = "Un espiritu de Demonic Rift (SPEL tfir: tdtx = rift). La cinta son las ultimas 120 posiciones (una de cada 3), 0,6 m de ancho, con las tiras de rift estiradas a lo largo y aditiva. Los numeros de vuelo salen del hechizo (velocidad 18, aceleracion 1,2, 500 de dano)."
+script = ExtResource("1_script")
+hit_sound = NodePath("HitSound")
+spawn_sound = NodePath("SpawnSound")
+
+[node name="Ribbon" type="MeshInstance3D" parent="." node_paths=PackedStringArray("follows")]
+material_override = SubResource("Mat_trail")
+cast_shadow = 0
+mesh = SubResource("Mesh_ribbon")
+script = ExtResource("5_ribbon")
+follows = NodePath("..")
+
+[node name="HitSound" parent="." instance=ExtResource("4_sound")]
+cue = ExtResource("cue_rift_hit")
+play_on_ready = false
+
+[node name="SpawnSound" parent="." instance=ExtResource("4_sound")]
+cue = ExtResource("cue_rift_spawn")
+play_on_ready = false
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+light_color = Color(0.9, 0.1, 1, 1)
+light_energy = 1
+omni_range = 6
+priority = 2
+fade_in_s = 0.3
+lit_on_ready = true
+editor_description = "Violet light on each spirit (the exe: violet (0.9, 0, 1), 30 m; here a small 6 m since up to 24 fly at once and the budget keeps the nearest)."

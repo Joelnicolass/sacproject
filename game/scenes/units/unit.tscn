@@ -1,0 +1,617 @@
+[gd_scene load_steps=123 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
+[ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
+[ext_resource type="Script" path="res://scenes/units/unit_body.gd" id="1_body"]
+[ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
+[ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
+[ext_resource type="PackedScene" path="res://scenes/units/status/clinging.tscn" id="f129_cling"]
+[ext_resource type="Script" path="res://scenes/units/passives/passive_mount.gd" id="q9_passives"]
+[ext_resource type="PackedScene" path="res://scenes/units/status/devour_growth.tscn" id="f131_growth"]
+[ext_resource type="PackedScene" path="res://scenes/units/passives/life_shield.tscn" id="f126_shield"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards.gd" id="w_wards"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/healing_aura.tscn" id="w_healing_aura"]
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
+[ext_resource type="Script" path="res://scenes/units/corpse.gd" id="5_corpse"]
+[ext_resource type="Script" path="res://scenes/units/corpse_look.gd" id="f055_look"]
+[ext_resource type="Script" path="res://scenes/units/tipping_fall.gd" id="f055_tipping"]
+[ext_resource type="Script" path="res://scenes/bodies/ragdoll_driver.gd" id="f055_ragdoll"]
+[ext_resource type="PackedScene" path="res://scenes/units/unit_health_bar.tscn" id="6_bar"]
+[ext_resource type="Script" uid="uid://blslmqr4jvulb" path="res://addons/mp_kit/nodes/mp_actor.gd" id="7_actor"]
+[ext_resource type="Script" path="res://scenes/units/unit_orders.gd" id="f27_orders"]
+[ext_resource type="Script" path="res://scenes/units/captive.gd" id="f59_captive"]
+[ext_resource type="Script" path="res://scenes/units/captive_ring.gd" id="g5_ring"]
+[ext_resource type="Script" path="res://scenes/units/captive_look.gd" id="f055_captive_look"]
+[ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="f59_portal"]
+[ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="f29_mana"]
+[ext_resource type="Script" path="res://scenes/units/weapons/weapons.gd" id="f55c3_weapons"]
+[ext_resource type="PackedScene" path="res://scenes/units/weapons/ranged_weapon.tscn" id="f55c3_ranged"]
+[ext_resource type="PackedScene" path="res://scenes/units/weapons/melee_weapon.tscn" id="f55c3_melee"]
+[ext_resource type="Script" path="res://scenes/units/abilities/abilities.gd" id="f55c3_abilities"]
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_slot.gd" id="f55c3_slot"]
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_windup.gd" id="f55c3_windup"]
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_port.gd" id="f55c3_port"]
+[ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="f36_clip"]
+[ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
+[ext_resource type="Script" path="res://scenes/units/creature_fx.gd" id="f055_cfx"]
+[ext_resource type="Script" path="res://scenes/spells/guardian/guardian_bond.gd" id="f63_bond"]
+[ext_resource type="PackedScene" path="res://scenes/spells/guardian/guardian_tether.tscn" id="f63_tether"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="f63_rules"]
+[ext_resource type="Script" path="res://scenes/units/movement/warp_snap.gd" id="warp_snap"]
+[ext_resource type="Script" path="res://scenes/map/nav/path_follower.gd" id="f72_follower"]
+[ext_resource type="Script" path="res://scenes/units/targeting/target_picker.gd" id="f72_picker"]
+[ext_resource type="Script" path="res://scenes/units/targeting/target_futility.gd" id="f370_futility"]
+[ext_resource type="Script" path="res://scenes/units/targeting/target_refresh.gd" id="f370_refresh"]
+[ext_resource type="Script" path="res://scenes/units/movement/flight.gd" id="f116_flight"]
+[ext_resource type="Script" path="res://scenes/units/movement/body_collider.gd" id="f135_collider"]
+[ext_resource type="Script" path="res://scenes/bodies/body_mount.gd" id="s1_mount"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/affliction.gd" id="f152_affliction"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/using_ability.tres" id="f152_using_type"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/pulling.gd" id="f128_pulling"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/pulling.tres" id="f128_pulling_type"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/firewalking.gd" id="f152_firewalking"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/firewalking.tres" id="f152_firewalking_type"]
+[ext_resource type="Script" path="res://scenes/units/status/poisoning.gd" id="f122_poisoning"]
+[ext_resource type="Script" path="res://scenes/units/states/unit_states.gd" id="c4_states"]
+[ext_resource type="Script" path="res://scenes/units/creature_link.gd" id="c4_creature"]
+[ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
+[ext_resource type="Script" path="res://scenes/units/targeting/engagement.gd" id="c4_engagement"]
+[ext_resource type="Script" path="res://scenes/units/special_forms.gd" id="c4_forms"]
+[ext_resource type="Script" path="res://scenes/units/regeneration.gd" id="c4_regen"]
+[ext_resource type="Script" path="res://scenes/units/states/unit_state.gd" id="f221_base"]
+[ext_resource type="Script" path="res://scenes/units/states/idle_state.gd" id="f221_idle"]
+[ext_resource type="Script" path="res://scenes/units/states/move_state.gd" id="f221_move"]
+[ext_resource type="Script" path="res://scenes/units/states/chase_state.gd" id="f221_chase"]
+[ext_resource type="Script" path="res://scenes/units/states/attack_state.gd" id="f221_attack"]
+[ext_resource type="Script" path="res://scenes/units/states/dead_state.gd" id="f221_dead"]
+[ext_resource type="Script" path="res://scenes/units/states/reviving_state.gd" id="f221_reviving"]
+[ext_resource type="Script" path="res://scenes/units/states/summoning_state.gd" id="f221_summoning"]
+[ext_resource type="Script" path="res://scenes/units/states/shoot_state.gd" id="f221_shoot"]
+[ext_resource type="Script" path="res://scenes/units/states/rock_form_state.gd" id="f221_rock_form"]
+[ext_resource type="Script" path="res://scenes/units/states/cower_state.gd" id="f221_cower"]
+[ext_resource type="Script" path="res://scenes/units/unit_air.gd" id="f221_air"]
+[ext_resource type="Script" path="res://scenes/units/unit_clips.gd" id="f221_clips"]
+
+[ext_resource type="Script" path="res://scenes/audio/unit_sounds.gd" id="a052_sounds"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/spell_affliction.gd" id="f161_spell_affliction"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/looks/affliction_emitter.gd" id="l161_emit"]
+[ext_resource type="Resource" path="res://scenes/units/afflictions/blind_raged.tres" id="i8_raged_type"]
+[ext_resource type="Resource" path="res://scenes/units/targeting/rage.tres" id="i8_rage_policy"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rage_swirl.tres" id="i8_swirl"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/summon.tres" id="a055_summon"]
+[ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="q5_state_light"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/afflictions_damage.gd" id="dm_afflictions"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards_damage.gd" id="dm_wards"]
+[ext_resource type="Script" path="res://scenes/units/passives/passive_damage.gd" id="dm_passive"]
+[ext_resource type="Script" path="res://scenes/bodies/game_unit.gd" id="gu_game_unit"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_unit"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_mpsync"]
+properties/0/path = NodePath("MpActor:net_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("MpActor:net_rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:owner_slot")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:creature_tag")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:model")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:mode")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath("Weapons:swings")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath("Health:maximum")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath("Health:current")
+properties/8/spawn = true
+properties/8/replication_mode = 2
+properties/9/path = NodePath("ManaPool:maximum")
+properties/9/spawn = true
+properties/9/replication_mode = 2
+properties/10/path = NodePath("ManaPool:current")
+properties/10/spawn = true
+properties/10/replication_mode = 2
+properties/11/path = NodePath("Weapons:shots")
+properties/11/spawn = true
+properties/11/replication_mode = 2
+properties/12/path = NodePath("GuardianBond:post_path")
+properties/12/spawn = true
+properties/12/replication_mode = 2
+properties/13/path = NodePath("Flight:state")
+properties/13/spawn = true
+properties/13/replication_mode = 2
+properties/14/path = NodePath("Afflictions:shown")
+properties/14/spawn = true
+properties/14/replication_mode = 2
+properties/15/path = NodePath("Wards/LifeShield:shown")
+properties/15/spawn = true
+properties/15/replication_mode = 2
+properties/16/path = NodePath("Clinging:shown")
+properties/16/spawn = true
+properties/16/replication_mode = 2
+properties/17/path = NodePath("DevourGrowth:shown")
+properties/17/spawn = true
+properties/17/replication_mode = 2
+properties/18/path = NodePath("Corpse:dissolving")
+properties/18/spawn = true
+properties/18/replication_mode = 2
+properties/19/path = NodePath("SpecialForms:stealth")
+properties/19/spawn = true
+properties/19/replication_mode = 2
+properties/20/path = NodePath("Wards/HealingAura:shown")
+properties/20/spawn = true
+properties/20/replication_mode = 2
+properties/21/path = NodePath("DevourGrowth:inflation")
+properties/21/spawn = true
+properties/21/replication_mode = 2
+properties/22/path = NodePath("BloodFx:wound")
+properties/22/spawn = true
+properties/22/replication_mode = 2
+properties/23/path = NodePath("MpActor:net_stamp")
+properties/23/spawn = true
+properties/23/replication_mode = 1
+properties/24/path = NodePath("MpActor:net_teleports")
+properties/24/spawn = true
+properties/24/replication_mode = 1
+properties/25/path = NodePath("MpActor:owner_slot")
+properties/25/spawn = true
+properties/25/replication_mode = 0
+
+[node name="Unit" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "weapons", "abilities", "health", "creature", "locomotion", "engagement", "special_forms", "regeneration", "clips", "states", "health_bar", "unit")]
+collision_layer = 2
+floor_max_angle = 1.4835298
+script = ExtResource("1_body")
+unit = NodePath("RtsUnit")
+mount = NodePath("BodyMount")
+vision = NodePath("Vision")
+weapons = NodePath("Weapons")
+abilities = NodePath("Abilities")
+health = NodePath("Health")
+creature = NodePath("Creature")
+locomotion = NodePath("Locomotion")
+engagement = NodePath("Engagement")
+special_forms = NodePath("SpecialForms")
+regeneration = NodePath("Regeneration")
+clips = NodePath("Clips")
+states = NodePath("States")
+health_bar = NodePath("HealthBar")
+
+[node name="Tilt" type="Node3D" parent="."]
+physics_interpolation_mode = 2
+
+[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig", "mount")]
+script = ExtResource("2_visual")
+rig = NodePath("Rig")
+mount = NodePath("../../BodyMount")
+
+[node name="Rig" parent="Tilt/Mesh" instance=ExtResource("f162_rig")]
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_unit")
+
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("modifiers")]
+script = ExtResource("3_health")
+modifiers = [NodePath("../DevourGrowth"), NodePath("../Poisoning"), NodePath("AfflictionsDamage"), NodePath("WardsDamage"), NodePath("PassiveDamage")]
+
+[node name="AfflictionsDamage" type="Node" parent="Health" node_paths=PackedStringArray("afflictions", "oil")]
+script = ExtResource("dm_afflictions")
+afflictions = NodePath("../../Afflictions")
+oil = NodePath("../../Afflictions/Oiled")
+
+[node name="WardsDamage" type="Node" parent="Health" node_paths=PackedStringArray("wards")]
+script = ExtResource("dm_wards")
+wards = NodePath("../../Wards")
+
+[node name="PassiveDamage" type="Node" parent="Health"]
+script = ExtResource("dm_passive")
+
+[node name="Wards" type="Node3D" parent="."]
+physics_interpolation_mode = 2
+script = ExtResource("w_wards")
+
+[node name="LifeShield" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("f126_shield")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="HealingAura" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_healing_aura")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="ManaPool" type="Node" parent="." node_paths=PackedStringArray("poisoning")]
+script = ExtResource("f29_mana")
+poisoning = NodePath("../Poisoning")
+
+[node name="Poisoning" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("f122_poisoning")
+body = NodePath("..")
+health = NodePath("../Health")
+
+[node name="PaceFactors" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f129_pace")]
+body = NodePath("..")
+
+[node name="Clinging" parent="." node_paths=PackedStringArray("body", "poisoning", "pace") instance=ExtResource("f129_cling")]
+body = NodePath("..")
+poisoning = NodePath("../Poisoning")
+pace = NodePath("../PaceFactors")
+
+[node name="Passives" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "pace", "passive_damage", "weapons", "melee", "creature_fx")]
+script = ExtResource("q9_passives")
+body = NodePath("..")
+health = NodePath("../Health")
+passive_damage = NodePath("../Health/PassiveDamage")
+mana = NodePath("../ManaPool")
+pace = NodePath("../PaceFactors")
+weapons = NodePath("../Weapons")
+melee = NodePath("../Weapons/Melee")
+creature_fx = NodePath("../CreatureFx")
+
+[node name="DevourGrowth" parent="." node_paths=PackedStringArray("body", "health", "visual") instance=ExtResource("f131_growth")]
+body = NodePath("..")
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="Weapons" type="Node" parent="." node_paths=PackedStringArray("mana", "health", "clips")]
+script = ExtResource("f55c3_weapons")
+mana = NodePath("../ManaPool")
+health = NodePath("../Health")
+clips = NodePath("../Clips")
+
+[node name="Ranged" parent="Weapons" instance=ExtResource("f55c3_ranged")]
+
+[node name="Melee" parent="Weapons" instance=ExtResource("f55c3_melee")]
+
+[node name="Abilities" type="Node" parent="." node_paths=PackedStringArray("slot", "port", "mana")]
+script = ExtResource("f55c3_abilities")
+slot = NodePath("Ability")
+port = NodePath("Port")
+mana = NodePath("../ManaPool")
+
+[node name="Ability" type="Node" parent="Abilities" node_paths=PackedStringArray("windup")]
+script = ExtResource("f55c3_slot")
+windup = NodePath("Windup")
+
+[node name="Windup" type="Node" parent="Abilities/Ability" node_paths=PackedStringArray("slot")]
+script = ExtResource("f55c3_windup")
+slot = NodePath("..")
+
+[node name="Port" type="Node" parent="Abilities" node_paths=PackedStringArray("body", "slot")]
+script = ExtResource("f55c3_port")
+body = NodePath("../..")
+slot = NodePath("../Ability")
+
+[node name="CreatureFx" type="Node3D" parent="." node_paths=PackedStringArray("body", "rig")]
+physics_interpolation_mode = 2
+script = ExtResource("f055_cfx")
+body = NodePath("..")
+rig = NodePath("../Tilt/Mesh/Rig")
+
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
+script = ExtResource("f36_clip")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="Afflictions" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "wards") instance=ExtResource("q5_afflictions")]
+body = NodePath("..")
+health = NodePath("../Health")
+clip_pose = NodePath("../ClipPose")
+wards = NodePath("../Wards")
+
+[node name="Stunned" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
+clip_pose = NodePath("../../ClipPose")
+tilt = NodePath("../../Tilt")
+visual = NodePath("../../Tilt/Mesh")
+
+[node name="Look" parent="Afflictions" node_paths=PackedStringArray("mesh")]
+mesh = NodePath("../../Tilt/Mesh")
+
+[node name="Tumbling" parent="Afflictions" node_paths=PackedStringArray("tilt")]
+tilt = NodePath("../../Tilt")
+
+[node name="IceBlock" parent="Afflictions/Frozen" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="Pulling" type="Node3D" parent="Afflictions" index="5"]
+script = ExtResource("f128_pulling")
+type = ExtResource("f128_pulling_type")
+
+[node name="UsingAbility" type="Node3D" parent="Afflictions" index="6"]
+script = ExtResource("f152_affliction")
+type = ExtResource("f152_using_type")
+
+[node name="Firewalking" type="Node3D" parent="Afflictions" index="7" node_paths=PackedStringArray("snap", "tilt")]
+script = ExtResource("f152_firewalking")
+type = ExtResource("f152_firewalking_type")
+snap = NodePath("../../WarpSnap")
+tilt = NodePath("../../Tilt")
+
+[node name="Oiled" parent="Afflictions" node_paths=PackedStringArray("orders")]
+orders = NodePath("../../Orders")
+
+[node name="VineLook" parent="Afflictions/Vined" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="RingsLook" parent="Afflictions/RingsOfFire" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="Splash" parent="Afflictions/Slimed" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="Drip" parent="Afflictions/Slimed" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="BlindRaged" type="Node3D" parent="Afflictions"]
+editor_description = "Blind Rage (egar): 30 s without orders or shots, it fights the closest creature of any side. Each layer is one cast. The swrl particles circle its box."
+script = ExtResource("f161_spell_affliction")
+type = ExtResource("i8_raged_type")
+max_stacks = 16
+
+[node name="Swirl" type="CPUParticles3D" parent="Afflictions/BlindRaged" node_paths=PackedStringArray("affliction", "body")]
+use_fixed_seed = true
+script = ExtResource("l161_emit")
+type = ExtResource("i8_swirl")
+affliction = NodePath("..")
+body = NodePath("../../..")
+shape = 1
+box_scale = 1.5
+
+[node name="Glow" parent="Afflictions/BlindRaged" instance=ExtResource("q5_state_light")]
+editor_description = "Red light while the creature rages (Blind Rage; dominant colour of swrl.png and per2.png). Tune color, energy and range here; every raging creature gets one."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(1, 0.2, 0.12, 1)
+light_energy = 0.9
+omni_range = 5.0
+priority = 2.0
+
+[node name="Orders" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f27_orders")
+body = NodePath("..")
+
+[node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f72_follower")
+body = NodePath("..")
+
+[node name="TargetPicker" type="Node" parent="." node_paths=PackedStringArray("body", "futility")]
+script = ExtResource("f72_picker")
+body = NodePath("..")
+futility = NodePath("../TargetFutility")
+rage_policy = ExtResource("i8_rage_policy")
+
+[node name="TargetFutility" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f370_futility")
+body = NodePath("..")
+
+[node name="TargetRefresh" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f370_refresh")
+body = NodePath("..")
+
+[node name="Flight" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions")]
+script = ExtResource("f116_flight")
+body = NodePath("..")
+afflictions = NodePath("../Afflictions")
+
+[node name="BodyMount" type="Node" parent="." node_paths=PackedStringArray("rig")]
+script = ExtResource("s1_mount")
+rig = NodePath("../Tilt/Mesh/Rig")
+
+[node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision", "flight")]
+script = ExtResource("f135_collider")
+mount = NodePath("../BodyMount")
+collision = NodePath("../Collision")
+flight = NodePath("../Flight")
+
+[node name="Light" parent="." instance=ExtResource("f055_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+enabled = false
+
+[node name="Corpse" type="Node" parent="."]
+script = ExtResource("5_corpse")
+
+[node name="CorpseLook" type="Node" parent="." node_paths=PackedStringArray("body", "corpse", "visual", "ragdoll", "tipping", "light")]
+script = ExtResource("f055_look")
+body = NodePath("..")
+corpse = NodePath("../Corpse")
+visual = NodePath("../Tilt/Mesh")
+ragdoll = NodePath("../RagdollDriver")
+tipping = NodePath("../TippingFall")
+light = NodePath("../Light")
+
+[node name="Captive" type="Node" parent="." node_paths=PackedStringArray("body", "health", "orders")]
+script = ExtResource("f59_captive")
+body = NodePath("..")
+health = NodePath("../Health")
+orders = NodePath("../Orders")
+
+[node name="RagdollDriver" type="Node" parent="." node_paths=PackedStringArray("rig", "clip_pose")]
+script = ExtResource("f055_ragdoll")
+rig = NodePath("../Tilt/Mesh/Rig")
+clip_pose = NodePath("../ClipPose")
+
+[node name="TippingFall" type="Node" parent="." node_paths=PackedStringArray("mesh")]
+script = ExtResource("f055_tipping")
+mesh = NodePath("../Tilt/Mesh")
+
+[node name="CaptiveLook" type="Node" parent="." node_paths=PackedStringArray("body", "ragdoll", "tipping", "visual", "clip_pose", "light")]
+script = ExtResource("f055_captive_look")
+body = NodePath("..")
+ragdoll = NodePath("../RagdollDriver")
+tipping = NodePath("../TippingFall")
+visual = NodePath("../Tilt/Mesh")
+clip_pose = NodePath("../ClipPose")
+light = NodePath("../Light")
+
+[node name="GuardianBond" type="Node" parent="." node_paths=PackedStringArray("body", "health", "orders", "ability")]
+script = ExtResource("f63_bond")
+body = NodePath("..")
+health = NodePath("../Health")
+orders = NodePath("../Orders")
+ability = NodePath("../Abilities/Ability")
+rules = ExtResource("f63_rules")
+tether_scene = ExtResource("f63_tether")
+
+[node name="HealthBar" parent="." instance=ExtResource("6_bar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("7_actor")
+sync_extra = PackedStringArray("owner_slot", "creature_tag", "model", "mode", "Weapons:swings", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "Weapons:shots", "GuardianBond:post_path", "Flight:state", "Afflictions:shown", "Wards/LifeShield:shown", "Clinging:shown", "DevourGrowth:shown", "Corpse:dissolving", "SpecialForms:stealth", "Wards/HealingAura:shown", "DevourGrowth:inflation", "BloodFx:wound")
+send_hz = 30
+lag_compensate = false
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
+replication_interval = 0.0333333
+replication_config = SubResource("SceneReplicationConfig_mpsync")
+
+[node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
+script = ExtResource("warp_snap")
+net = NodePath("../MpActor")
+
+[node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
+body = NodePath("..")
+
+[node name="Vision" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f55c2_vision")]
+body = NodePath("..")
+
+[node name="Air" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f221_air")
+body = NodePath("..")
+
+[node name="Clips" type="Node" parent="." node_paths=PackedStringArray("body", "clip_pose")]
+script = ExtResource("f221_clips")
+body = NodePath("..")
+clip_pose = NodePath("../ClipPose")
+
+[node name="States" type="Node" parent="." node_paths=PackedStringArray("initial_state", "actor")]
+script = ExtResource("c4_states")
+initial_state = NodePath("Idle")
+actor = NodePath("..")
+autostart = false
+run_process = false
+run_physics = false
+run_unhandled_input = false
+
+[node name="Idle" type="Node" parent="States"]
+script = ExtResource("f221_idle")
+
+[node name="Move" type="Node" parent="States"]
+script = ExtResource("f221_move")
+mode = 1
+
+[node name="Chase" type="Node" parent="States"]
+script = ExtResource("f221_chase")
+mode = 2
+
+[node name="Attack" type="Node" parent="States"]
+script = ExtResource("f221_attack")
+mode = 3
+
+[node name="Dead" type="Node" parent="States"]
+script = ExtResource("f221_dead")
+mode = 4
+
+[node name="Summoning" type="Node" parent="States"]
+script = ExtResource("f221_summoning")
+mode = 5
+
+[node name="Shoot" type="Node" parent="States"]
+script = ExtResource("f221_shoot")
+mode = 6
+
+[node name="RockForm" type="Node" parent="States"]
+script = ExtResource("f221_rock_form")
+mode = 7
+
+[node name="Held" type="Node" parent="States"]
+script = ExtResource("f221_base")
+mode = 8
+
+[node name="Reviving" type="Node" parent="States"]
+script = ExtResource("f221_base")
+mode = 9
+
+[node name="Cower" type="Node" parent="States"]
+script = ExtResource("f221_cower")
+mode = 10
+
+[node name="UnitSounds" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("a052_sounds")
+body = NodePath("..")
+health = NodePath("../Health")
+summon = ExtResource("a055_summon")
+
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="CaptiveRing" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("g5_ring")
+body = NodePath("..")
+portal_scene = ExtResource("f59_portal")
+
+[node name="Creature" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana", "regeneration", "health_bar", "flight", "locomotion", "passives")]
+script = ExtResource("c4_creature")
+body = NodePath("..")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
+regeneration = NodePath("../Regeneration")
+health_bar = NodePath("../HealthBar")
+flight = NodePath("../Flight")
+locomotion = NodePath("../Locomotion")
+passives = NodePath("../Passives")
+
+[node name="Locomotion" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "avoidance", "air")]
+script = ExtResource("c4_locomotion")
+body = NodePath("..")
+afflictions = NodePath("../Afflictions")
+avoidance = NodePath("../Avoidance")
+air = NodePath("../Air")
+
+[node name="Engagement" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "orders", "picker", "warp_snap")]
+script = ExtResource("c4_engagement")
+body = NodePath("..")
+afflictions = NodePath("../Afflictions")
+orders = NodePath("../Orders")
+picker = NodePath("../TargetPicker")
+warp_snap = NodePath("../WarpSnap")
+
+[node name="SpecialForms" type="Node" parent="." node_paths=PackedStringArray("body", "orders", "visual")]
+script = ExtResource("c4_forms")
+body = NodePath("..")
+orders = NodePath("../Orders")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="Regeneration" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana")]
+script = ExtResource("c4_regen")
+body = NodePath("..")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
+
+[connection signal="solved" from="Avoidance" to="Locomotion" method="resume"]
+[connection signal="moved" from="Locomotion" to="Clips" method="update"]
+[connection signal="shown_changed" from="Afflictions/BlindRaged" to="Afflictions/BlindRaged/Glow" method="show_lit"]
+
+[editable path="Afflictions"]
+
+[node name="RtsUnit" type="Node" parent="."]
+script = ExtResource("gu_game_unit")

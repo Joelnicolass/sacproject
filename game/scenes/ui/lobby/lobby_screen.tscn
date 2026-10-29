@@ -1,13 +1,14 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/lobby/lobby_screen.gd" id="1_screen"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_connect.tscn" id="2_connect"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/room_list.tscn" id="3_list"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/room_create.tscn" id="4_create"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/room_view.tscn" id="5_room"]
-[ext_resource type="Resource" path="res://data/net/lobby_endpoint.tres" id="6_endpoint"]
+[ext_resource type="Resource" path="res://scenes/net/lobby_endpoint.tres" id="6_endpoint"]
+[ext_resource type="Script" path="res://scenes/net/online_network.gd" id="8_onlinenet"]
 
-[node name="LobbyScreen" type="Control"]
+[node name="LobbyScreen" type="Control" node_paths=PackedStringArray("online")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,6 +17,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_screen")
 endpoint = ExtResource("6_endpoint")
+online = NodePath("OnlineNetwork")
 
 [node name="LobbyConnect" parent="." instance=ExtResource("2_connect")]
 unique_name_in_owner = true
@@ -37,6 +39,7 @@ visible = false
 layout_mode = 1
 
 [node name="Notice" type="Label" parent="."]
+theme_type_variation = &"LabelOutlineHeavy"
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -52,8 +55,6 @@ offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -62,3 +63,6 @@ autowrap_mode = 3
 [node name="NoticeTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 one_shot = true
+
+[node name="OnlineNetwork" type="Node" parent="."]
+script = ExtResource("8_onlinenet")

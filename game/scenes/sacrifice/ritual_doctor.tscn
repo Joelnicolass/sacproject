@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/sacrifice/doctor.tscn" id="1_doctor"]
+
+[node name="RitualDoctor" instance=ExtResource("1_doctor")]
+
+[node name="StuckGuard" parent="." index="5"]
+process_mode = 4
+
+[node name="Tether" parent="CarryRope" index="0"]
+elbow = 0.0

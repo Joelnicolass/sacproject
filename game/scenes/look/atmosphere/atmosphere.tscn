@@ -1,0 +1,60 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/atmosphere/atmosphere.gd" id="1_atmosphere"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/time_of_day.gd" id="2_time"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/weather.gd" id="3_weather"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/precipitation_fall.gd" id="4_fall"]
+[ext_resource type="Script" path="res://scenes/look/follow_camera.gd" id="5_follow"]
+[ext_resource type="Script" path="res://scenes/look/atmosphere/storm_strikes.gd" id="6_storm"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/beams/storm_bolt.tres" id="7_bolt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/storm_flash.tres" id="8_flash"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/thunder.tres" id="9_thunder"]
+[ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="10_warm"]
+
+[node name="Atmosphere" type="Node3D"]
+editor_description = "The current hour and weather: the sun, the environment and the life read them (changed signal). Hidden = the approved light, exactly."
+script = ExtResource("1_atmosphere")
+
+[node name="TimeOfDay" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_time")
+
+[node name="Weather" type="Node3D" parent="." node_paths=PackedStringArray("precipitation", "storm")]
+unique_name_in_owner = true
+script = ExtResource("3_weather")
+precipitation = NodePath("Precipitation")
+storm = NodePath("Storm")
+
+[node name="Precipitation" type="Node3D" parent="Weather" node_paths=PackedStringArray("drops", "bed")]
+script = ExtResource("4_fall")
+drops = NodePath("Follow/Drops")
+bed = NodePath("Bed")
+
+[node name="Follow" type="Node3D" parent="Weather/Precipitation"]
+process_mode = 3
+editor_description = "Follows the camera also while the tree is paused (the start gate pauses while it loads and waits for players): what falls always surrounds what is seen."
+script = ExtResource("5_follow")
+
+[node name="Drops" type="GPUParticles3D" parent="Weather/Precipitation/Follow"]
+editor_description = "The drops (or flakes) around the camera. What falls and how much is said by the weather state (PrecipitationLook)."
+emitting = false
+amount = 4000
+lifetime = 1.6
+local_coords = false
+visibility_aabb = AABB(-40, -20, -40, 80, 60, 80)
+
+[node name="Bed" type="AudioStreamPlayer" parent="Weather/Precipitation"]
+bus = &"Ambience"
+
+[node name="Storm" type="Node" parent="Weather"]
+editor_description = "The storm's lightning: it strikes 150-600 m from the camera, at the same instant and bearing for everyone, with ≥ 4 s between flashes. Bolt, flash with light, and thunder with a delay (distance / 343). How many strike is said by the weather state (strikes_per_min)."
+script = ExtResource("6_storm")
+bolt = ExtResource("7_bolt")
+flash = ExtResource("8_flash")
+thunder = ExtResource("9_thunder")
+
+[node name="WarmHook" type="Node" parent="Weather"]
+editor_description = "The loading screen warm-up makes every rain or snow of the plan fall for an instant, without sound (Weather.warm). The lightning is warmed by the FxBus hook."
+script = ExtResource("10_warm")
+
+[connection signal="asked" from="Weather/WarmHook" to="Weather" method="warm"]

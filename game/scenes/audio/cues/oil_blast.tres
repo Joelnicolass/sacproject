@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/ign1.wav" id="24_ign1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/pyro/ign2.wav" id="25_ign2"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("24_ign1"), ExtResource("25_ign2")])
+max_voices = 3

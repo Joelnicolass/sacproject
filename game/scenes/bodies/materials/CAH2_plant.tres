@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/CAH2/plant.png" id="1_ln3hf"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/CAH2/plant_normal.png" id="2_gaby4"]
+
+[resource]
+resource_name = "CAH2_plant"
+albedo_texture = ExtResource("1_ln3hf")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_gaby4")

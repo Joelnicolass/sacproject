@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="RtsFormationCatalog" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_formation_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_formation.gd" id="2_base"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_row_formation.gd" id="3_row"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_arc_formation.gd" id="4_arc"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/formations/rts_wedge_formation.gd" id="5_wedge"]
+
+[sub_resource type="Resource" id="Resource_line"]
+script = ExtResource("3_row")
+id = &"line"
+display_name = "Line"
+row_size = 12
+guard_flank = true
+
+[sub_resource type="Resource" id="Resource_flank_left"]
+script = ExtResource("3_row")
+id = &"flank_left"
+display_name = "Left flank"
+anchor = 1
+
+[sub_resource type="Resource" id="Resource_flank_right"]
+script = ExtResource("3_row")
+id = &"flank_right"
+display_name = "Right flank"
+anchor = 2
+
+[sub_resource type="Resource" id="Resource_phalanx"]
+script = ExtResource("3_row")
+id = &"phalanx"
+display_name = "Phalanx"
+row_size = 4
+guard_behind = true
+
+[sub_resource type="Resource" id="Resource_semicircle"]
+script = ExtResource("4_arc")
+id = &"semicircle"
+display_name = "Semicircle"
+arc_deg = 180.0
+
+[sub_resource type="Resource" id="Resource_circle"]
+script = ExtResource("4_arc")
+id = &"circle"
+display_name = "Circle"
+arc_deg = 360.0
+
+[sub_resource type="Resource" id="Resource_wedge"]
+script = ExtResource("5_wedge")
+id = &"wedge"
+display_name = "Wedge"
+
+[sub_resource type="Resource" id="Resource_skirmish"]
+script = ExtResource("3_row")
+id = &"skirmish"
+display_name = "Skirmish"
+stagger = true
+
+[resource]
+script = ExtResource("1_catalog")
+formations = Array[ExtResource("2_base")]([SubResource("Resource_line"), SubResource("Resource_flank_left"), SubResource("Resource_flank_right"), SubResource("Resource_phalanx"), SubResource("Resource_semicircle"), SubResource("Resource_circle"), SubResource("Resource_wedge"), SubResource("Resource_skirmish")])
+default_id = &"line"

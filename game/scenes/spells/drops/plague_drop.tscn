@@ -1,0 +1,44 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/drops/zone_drop.gd" id="drop"]
+[ext_resource type="Script" path="res://scenes/fx/atlas_sprite.gd" id="atlas"]
+[ext_resource type="Shader" path="res://scenes/fx/atlas_sprite_mix.gdshader" id="mix"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/pois.png" id="pois"]
+[ext_resource type="Script" path="res://scenes/fx/fx_trail.gd" id="trail"]
+[ext_resource type="Script" path="res://scenes/spells/drops/drop_poison.gd" id="poison"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/plague_burst.tres" id="burst"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/plague_hit.tres" id="hit"]
+
+[sub_resource type="QuadMesh" id="Quad_Sprite"]
+size = Vector2(1.5, 1.5)
+
+[sub_resource type="ShaderMaterial" id="Mat_Sprite"]
+shader = ExtResource("mix")
+shader_parameter/atlas = ExtResource("pois")
+shader_parameter/energy = 1.0
+
+[node name="PlagueDrop" type="Node3D"]
+editor_description = "Una gota de Plague: cae de la nube (gravedad 30) hasta el suelo o la primera criatura que toca; al llegar envenena (62,5/s durante 10 s, contagioso, sin regeneracion) al tocado y a menos de 5 m, con menos fuerza."
+script = ExtResource("drop")
+gravity_m_s2 = 30.0
+contact_m = 1.5
+
+[node name="Sprite" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0, 0)
+cast_shadow = 0
+mesh = SubResource("Quad_Sprite")
+material_override = SubResource("Mat_Sprite")
+script = ExtResource("atlas")
+fps = 15.0
+
+[node name="Trail" type="Node3D" parent="."]
+script = ExtResource("trail")
+type_name = "plague_trail"
+interval_s = 0.0167
+
+[node name="Poison" type="Node" parent="." node_paths=PackedStringArray("drop")]
+script = ExtResource("poison")
+drop = NodePath("..")
+bursts = Array[ExtResource("ptype")]([ExtResource("burst")])
+hit_burst = ExtResource("hit")

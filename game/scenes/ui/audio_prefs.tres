@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="AudioPrefs" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/audio_prefs.gd" id="1_prefs"]
+
+[resource]
+script = ExtResource("1_prefs")

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/debris_piece.gd" id="1_script"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
+
+[node name="CowRock" type="Node3D" node_paths=PackedStringArray("rock")]
+editor_description = "Una roca que lanza la vaca al reventar (la malla rock del original a escala 0,4). Gravedad 30, rebota; sin estela de fuego."
+script = ExtResource("1_script")
+rock = NodePath("Rock")
+
+[node name="Rock" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)
+cast_shadow = 0
+mesh = ExtResource("mesh_rock")

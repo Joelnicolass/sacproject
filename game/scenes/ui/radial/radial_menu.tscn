@@ -1,27 +1,98 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/radial/radial_menu.gd" id="1_menu"]
-[ext_resource type="Resource" path="res://data/ui/radial/orders_layout.tres" id="2_layout"]
+[ext_resource type="Resource" path="res://scenes/ui/radial/orders_layout.tres" id="2_layout"]
+[ext_resource type="Script" path="res://scenes/audio/menu_sounds.gd" id="a052_menu_sounds"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/menu_open.tres" id="a055_open"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ui_book_click.tres" id="a055_chosen"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/menu_back.tres" id="a055_back"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_decor.gd" id="3_decor"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_rings.gd" id="4_rings"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_animator.gd" id="5_animator"]
+[ext_resource type="Script" path="res://scenes/ui/radial/radial_standalone.gd" id="6_standalone"]
 
-[node name="RadialMenu" type="Control" node_paths=PackedStringArray("center_rect", "rings")]
-editor_description = "RFC-038 038c: radial menu of two rings. It shows the entries of its RadialLayout and emits entry_chosen / cancelled; OrderRadial feeds it the pointer. preview_open shows it in the editor; F6 runs it alone."
+[sub_resource type="Animation" id="Animation_open"]
+resource_name = "open"
+length = 0.12
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(0.4, 1),
+"update": 0,
+"values": [Vector2(0.7, 0.7), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_close"]
+resource_name = "close"
+length = 0.08
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.08),
+"transitions": PackedFloat32Array(2, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_radial"]
+_data = {
+&"close": SubResource("Animation_close"),
+&"open": SubResource("Animation_open")
+}
+
+[node name="RadialMenu" type="Control" node_paths=PackedStringArray("decor", "rings", "animator")]
+editor_description = "Radial menu of two rings. It shows the entries of its RadialLayout and emits entry_chosen / cancelled; OrderRadial feeds it the pointer. preview_open shows it in the editor; F6 runs it alone. Look: Decor; icons: Rings; open / close: Animator (clips open and close)."
 layout_mode = 3
 anchors_preset = 0
-offset_right = 248.0
-offset_bottom = 248.0
+offset_right = 336.0
+offset_bottom = 336.0
 mouse_filter = 2
 script = ExtResource("1_menu")
 layout = ExtResource("2_layout")
-center_rect = NodePath("Center")
+decor = NodePath("Decor")
 rings = NodePath("Rings")
+animator = NodePath("Animator")
+
+[node name="Decor" type="Control" parent="." node_paths=PackedStringArray("center_rect")]
+editor_description = "Draws the rings, the hovered sector, the pointer line and the name in the dead zone. Colors and sizes are its Look group."
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_decor")
+center_rect = NodePath("../Center")
 
 [node name="Center" type="TextureRect" parent="."]
 texture_filter = 1
 layout_mode = 0
-offset_left = 104.0
-offset_top = 104.0
-offset_right = 144.0
-offset_bottom = 144.0
+offset_left = 127.0
+offset_top = 127.0
+offset_right = 209.0
+offset_bottom = 209.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
@@ -30,3 +101,24 @@ stretch_mode = 5
 layout_mode = 3
 anchors_preset = 0
 mouse_filter = 2
+script = ExtResource("4_rings")
+
+[node name="MenuSounds" type="Node" parent="." node_paths=PackedStringArray("menu")]
+editor_description = "What sounds when the X menu opens, an entry is chosen and it closes without a choice: three SoundCues (scenes/audio/cues/). Empty one and that moment stays silent. Without audio it does nothing."
+script = ExtResource("a052_menu_sounds")
+menu = NodePath("..")
+opened = ExtResource("a055_open")
+chosen = ExtResource("a055_chosen")
+cancelled = ExtResource("a055_back")
+
+[node name="Animator" type="AnimationPlayer" parent="."]
+editor_description = "Clip open: scales 0.7 to 1 and fades in (0.12 s). Clip close: fades out (0.08 s)."
+libraries = {
+"": SubResource("AnimationLibrary_radial")
+}
+script = ExtResource("5_animator")
+
+[node name="Standalone" type="Node" parent="." node_paths=PackedStringArray("menu")]
+editor_description = "Only with F6 on this scene: it opens it in the middle and moves it with the mouse. Inside a match it does nothing."
+script = ExtResource("6_standalone")
+menu = NodePath("..")

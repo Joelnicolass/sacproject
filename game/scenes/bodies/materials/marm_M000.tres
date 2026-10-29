@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/marm/M000.png" id="1_l31g8"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/marm/M000_normal.png" id="2_6rrjk"]
+
+[resource]
+resource_name = "marm_M000"
+albedo_texture = ExtResource("1_l31g8")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_6rrjk")

@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/abilities/halo_of_earth_ability.gd" id="1_ability"]
-[ext_resource type="PackedScene" path="res://scenes/world/units/abilities/halo_of_earth.tscn" id="2_halo"]
-
-[node name="HaloOfEarthAbility" type="Node"]
-editor_description = "F127 (RFC-030 030p-a): efecto propio del Halo of Earth del Rhinok (HRba). ActiveAbility lo instancia como \"Effect\" desde data/abilities/ability_catalog.tres. Sin preparación; instancia el coordinador HaloOfEarth en el contenedor de disparos."
-script = ExtResource("1_ability")
-halo_scene = ExtResource("2_halo")

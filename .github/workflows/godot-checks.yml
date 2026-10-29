@@ -1,0 +1,45 @@
+name: Godot checks
+
+on:
+  push:
+    branches: [main, "refactor/**"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install gdtoolkit
+        run: pip install "gdtoolkit==4.5.0"
+      - name: gdformat
+        run: gdformat --check scenes creatures spells wizards gods tools test
+      - name: gdlint
+        run: gdlint scenes creatures spells wizards gods tools test
+      - name: Project-specific checks
+        run: bash tools/lint/conventions.sh
+
+  unit-tests:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: chickensoft-games/setup-godot@v2.4.3
+        with:
+          version: 4.7.2
+          use-dotnet: false
+          include-templates: false
+      - name: Import the project
+        run: godot --headless --path "$PWD" --import
+      - name: GUT
+        run: godot --headless --path "$PWD" -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit

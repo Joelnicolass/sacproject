@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/strikes/soul_strike.gd" id="1_strike"]
-
-[node name="SoulStrike" type="Node3D"]
-process_physics_priority = -1
-editor_description = "F157 (RFC-030 030t-b). El golpe del Rend Soul del Styx (dner, updateRendShoot state.d:25867-25890): al tick siguiente vuelve a chequear el alma; si sigue, la revienta (Soul.burst disuelve el cadáver), dibuja el beam styx hasta su centro y aplica el impacto de data/shots/rend_soul.tres (salpicadura de 2500 con caída hasta damageRange 40, sin golpe directo). Si el alma ya no está, no pasa nada. Lo lanza RendSoulAbility."
-script = ExtResource("1_strike")

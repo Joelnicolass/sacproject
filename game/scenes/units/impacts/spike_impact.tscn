@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/spike_impact.gd" id="1_spike"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/spike_wave.tscn" id="2_wave"]
+
+[node name="SpikeImpact" type="Node"]
+editor_description = "Rhinok hrba: the body hit (or, when the range runs out, the intended target if alive) takes the whole amount of ranged splash; then the rings of spikes (SpikeWave) from its center or from the end point."
+script = ExtResource("1_spike")
+wave_scene = ExtResource("2_wave")

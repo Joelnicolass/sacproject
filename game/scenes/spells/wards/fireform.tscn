@@ -1,0 +1,90 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
+[ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
+[ext_resource type="Script" path="res://scenes/spells/wards/body_aura.gd" id="3_aura"]
+[ext_resource type="Resource" path="res://spells/fireform/fireform.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/fireform_fire.tres" id="5_fire"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/fire_cast.tres" id="6_cast"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/fire_hit.tres" id="7_hit"]
+[ext_resource type="Script" path="res://scenes/spells/wards/aura_impact.gd" id="8_impact"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="9_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_fire_ignite.tres" id="cue_ward_fire_ignite"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_fire_flame.tres" id="cue_ward_fire_flame"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_fire_loop.tres" id="cue_ward_fire_loop"]
+
+[sub_resource type="SphereShape3D" id="Sphere_reach"]
+radius = 5.0
+
+[node name="Fireform" type="Node3D"]
+script = ExtResource("1_ward")
+spell = ExtResource("4_spell")
+factor = 1.0
+cast_type = ExtResource("6_cast")
+
+[node name="Fire" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+editor_description = "Mezcla: fireform_fire.tres es aditivo energia 8 con firy.png (el original; SPEL ffrm: tcst = firy). Para la variante del puerto (normal), additive = false y atlas firy_a.png en ese .tres."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("5_fire")
+ward = NodePath("..")
+when = 0
+half_axes_m = Vector3(1.54, 1.78, 1.54)
+on_surface = true
+
+[node name="FireCast" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+editor_description = "Mientras se lanza: la misma llama del cuerpo, pero su cuota sube de 0 a la plena a lo largo del lanzamiento (el original: de 0 a 10 por tick)."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("5_fire")
+ward = NodePath("..")
+when = 3
+half_axes_m = Vector3(1.54, 1.78, 1.54)
+ramp = true
+
+[node name="Aura" type="Node3D" parent="." node_paths=PackedStringArray("ward", "reach")]
+script = ExtResource("3_aura")
+ward = NodePath("..")
+reach = NodePath("Reach")
+damage_per_s = 250.0
+pierce_shield = true
+
+[node name="Reach" type="CollisionShape3D" parent="Aura"]
+shape = SubResource("Sphere_reach")
+
+[node name="Impact" type="Node" parent="." node_paths=PackedStringArray("aura")]
+editor_description = "Al quemar a alguien: 3 particulas de fuego sobre la victima y el sonido ign1 (como mucho cada 1/3 s por victima)."
+script = ExtResource("8_impact")
+aura = NodePath("../Aura")
+type = ExtResource("7_hit")
+
+[node name="SoundIgnite" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
+cue = ExtResource("cue_ward_fire_ignite")
+ward = NodePath("..")
+when = 3
+
+[node name="SoundFlame" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
+editor_description = "flam.wav es el primer sonido del SPEL ffrm (bandera 2) y ign1 es el del original al prender fuego: suenan los dos al empezar el lanzamiento."
+cue = ExtResource("cue_ward_fire_flame")
+ward = NodePath("..")
+when = 3
+
+[node name="SoundLoop" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
+editor_description = "Lazo flp5 (SPEL ffrm, ganancia 4 en el original): desde el lanzamiento hasta que termina el escudo."
+cue = ExtResource("cue_ward_fire_loop")
+ward = NodePath("..")
+when = 2
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(1, 0.6, 0.22, 1)
+light_energy = 1.6
+omni_range = 8
+editor_description = "Orange firelight while the form lasts (firy.png flames, saturated so it reads on the ground). Tune color, energy and range here."
+
+[connection signal="shown_changed" from="." to="Glow" method="show_lit"]

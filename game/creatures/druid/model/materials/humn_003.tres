@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/humn/003.png" id="1_3keyq"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/humn/003_normal.png" id="2_oex02"]
+
+[resource]
+resource_name = "humn_003"
+albedo_texture = ExtResource("1_3keyq")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_oex02")

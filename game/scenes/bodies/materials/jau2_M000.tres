@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/jau2/M000.png" id="1_mac07"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/jau2/M000_normal.png" id="2_oe5ul"]
+
+[resource]
+resource_name = "jau2_M000"
+albedo_texture = ExtResource("1_mac07")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_oe5ul")

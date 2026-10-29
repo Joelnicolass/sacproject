@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_xqlgs"]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://cu58bs4o7hdys" path="res://assets/original/ui/icons/mrfe.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_xqlgs")
+tag = "mrfe"
+display_name = "Ethereal Form"
+icon = ExtResource("icon_tex")
+mana_cost = 400
+cooldown_s = 30.0
+casting_time_s = 0.9877
+book_level = 2
+book_slot = 38
+duration_s = 15.0
+action = ExtResource("2_action")
+ai_use = 1
+ai_phase = 2
+ai_only_on_self = true
+structures = PackedStringArray()

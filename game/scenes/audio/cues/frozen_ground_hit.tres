@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SoundCue" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="1_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/frez.wav" id="z_frez"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/frz2.wav" id="z_frz2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/frz3.wav" id="n161_frz3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/frz4.wav" id="z_frz4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/sfx/stra/frz5.wav" id="z_frz5"]
+
+[resource]
+script = ExtResource("1_cue")
+streams = Array[AudioStream]([ExtResource("z_frez"), ExtResource("z_frz2"), ExtResource("n161_frz3"), ExtResource("z_frz4"), ExtResource("z_frz5")])
+max_voices = 2
+volume_db = 6.0
+priority = 60

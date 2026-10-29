@@ -10,7 +10,7 @@ script = ExtResource("1_seat")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(170, 0)
 layout_mode = 2
-text = "Asiento libre"
+text = "UI_SEAT_ROW_SEAT_NAME"
 
 [node name="SeatPick" type="Label" parent="."]
 unique_name_in_owner = true
@@ -25,4 +25,16 @@ layout_mode = 2
 [node name="Sit" type="Button" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Sentarme aquí"
+text = "UI_SEAT_ROW_SIT"
+
+[node name="AddBot" type="Button" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "UI_SEAT_ADD_BOT"
+
+[node name="RemoveBot" type="Button" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "UI_SEAT_REMOVE_BOT"

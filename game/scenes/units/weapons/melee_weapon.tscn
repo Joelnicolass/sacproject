@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/weapons/melee_weapon.gd" id="1_melee"]
+
+[node name="Melee" type="Node"]
+editor_description = "A melee blow: one blow at a time, timed by the creature's attack clip. Drop this scene under Weapons to give a creature a blow; the order of the Weapons children is the priority. The boxes (start_factor, forward_factor, height_factor) and the resistance penalty are edited here. What a blow that connects adds (the Yeti's Freeze) are the MeleeOnHit nodes of the creature's <name>_passives.tscn."
+script = ExtResource("1_melee")

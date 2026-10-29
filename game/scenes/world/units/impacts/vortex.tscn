@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/units/impacts/vortex.gd" id="1_vortex"]
-
-[node name="Vortex" type="Node3D"]
-process_physics_priority = -1
-editor_description = "Vortick cita (VortexEffect, state.d:4736-4751, 23922-23960): 2 s, radio effectRange, alto 4 m; catapulta tangencial en los primeros 45 ticks y campo en espiral hasta el tick 90."
-script = ExtResource("1_vortex")

@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/alba/M000.png" id="1_1c7ol"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/alba/M000_normal.png" id="2_471vv"]
+
+[resource]
+resource_name = "alba_M000"
+albedo_texture = ExtResource("1_1c7ol")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_471vv")

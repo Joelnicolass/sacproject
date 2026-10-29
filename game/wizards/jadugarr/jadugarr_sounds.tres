@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=39 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a10.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a11.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d1.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d2.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d3.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d4.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d5.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d6.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d7.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d8.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d9.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_a.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_b.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_c.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_e.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_f.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_g.ogg" id="s17"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_h.ogg" id="s18"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_i.ogg" id="s19"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_j.ogg" id="s20"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_k.ogg" id="s21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_l.ogg" id="s22"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_m.ogg" id="s23"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_n.ogg" id="s24"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_o.ogg" id="s25"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_p.ogg" id="s26"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_q.ogg" id="s27"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_r.ogg" id="s28"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_s.ogg" id="s29"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_t.ogg" id="s30"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_v.ogg" id="s31"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_w.ogg" id="s32"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jadu/_j_a_d_x.ogg" id="s33"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
+
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_incantation"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s3"), ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7"), ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11"), ExtResource("s12"), ExtResource("s13"), ExtResource("s14"), ExtResource("s15"), ExtResource("s16"), ExtResource("s17"), ExtResource("s18"), ExtResource("s19"), ExtResource("s20"), ExtResource("s21"), ExtResource("s22"), ExtResource("s23"), ExtResource("s24"), ExtResource("s25"), ExtResource("s26"), ExtResource("s27"), ExtResource("s28"), ExtResource("s29"), ExtResource("s30"), ExtResource("s31"), ExtResource("s32"), ExtResource("s33")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("1_set")
+damaged = SubResource("cue_damaged")
+incantation = SubResource("cue_incantation")
+fallback = ExtResource("3_fallback")

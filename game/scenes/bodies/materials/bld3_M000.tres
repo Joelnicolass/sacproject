@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/bld3/M000.png" id="1_w5w6o"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/bld3/M000_normal.png" id="2_aowwg"]
+
+[resource]
+resource_name = "bld3_M000"
+albedo_texture = ExtResource("1_w5w6o")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_aowwg")

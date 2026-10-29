@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/ABRX/007.png" id="1_oxehb"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/ABRX/007_normal.png" id="2_h0ytu"]
+
+[resource]
+resource_name = "ABRX_007"
+albedo_texture = ExtResource("1_oxehb")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_h0ytu")

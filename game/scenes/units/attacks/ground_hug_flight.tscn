@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/ground_hug_flight.gd" id="1_hug"]
+[ext_resource type="PackedScene" path="res://scenes/fx/spike_field.tscn" id="2_spikes"]
+
+[node name="GroundHugFlight" type="Node"]
+editor_description = "The Rhinok's flight (hrba): on every tick the shot goes back to the ground (ground + 0.05 m) before it looks for its body with the 5 m box; visual rock_emerge spikes in a 2.5 m disc."
+script = ExtResource("1_hug")
+spike_scene = ExtResource("2_spikes")

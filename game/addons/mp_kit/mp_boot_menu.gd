@@ -10,23 +10,38 @@ signal hosted
 signal joining(ip: String)
 signal status_changed(text: String)
 
+## Show a "Private server" button: a dedicated match on this PC with an invite code (MpLocalServer).
+@export var offer_private_server: bool = false
+## The online lobby screen (MpLobbyScreen). Set = an "Online rooms" button opens it. Empty = the flow's
+## (MpGame.lobby_scene), if any.
+@export_file("*.tscn") var lobby_scene_path: String = ""
 @export var world_scene: PackedScene
 @export var world_id: StringName = &""
 @export var drive_kit: bool = true
 @export var max_players: int = 4
 @export var room_name: String = "MpKit"
 @export var advertise_lan: bool = true
+## Without a flow (drive_kit): clients that must load before a hosted match starts; 0 = every seat, or whoever loaded once
+## the gate's load timeout passed. The host may start sooner (MpStartButton). Same default as MpFlow.start_seats.
+@export var start_seats: int = 0
+## Without a flow (drive_kit): after the start a newcomer still takes a free seat. Same as MpFlow.late_join.
+@export var late_join: bool = false
 
 @export var title_text: String = "MpKit"
 @export var play_solo_text: String = "Play solo"
 @export var host_text: String = "Host LAN"
 @export var join_text: String = "Join"
+@export var online_text: String = "Online rooms"
+@export var private_text: String = "Private server"
+@export var private_ready_status: String = "Private match on %s:%d · friends join with %s:%d#%s"
+## The same through the relay: friends type only the port and a code.
+@export var private_relay_status: String = "Private match through the relay · friends join with :%d#%s"
 @export var ip_hint: String = "127.0.0.1"
 @export var rooms_header: String = "LAN rooms"
 @export var idle_status: String = "Pick a mode."
 @export var host_fail_status: String = "Could not host (port busy?)"
 @export var join_fail_status: String = "Could not join"
-@export var bad_ip_status: String = "Invalid IPv4"
+@export var bad_ip_status: String = "Invalid address (an IP or a name, optionally :port)"
 @export var joining_status: String = "Connecting to %s…"
 
 var _lan: Label
@@ -38,7 +53,12 @@ var _room_rows: Array[Dictionary] = []
 var _flow: MpFlow
 
 
+## Group of every boot menu (tools and tests find it there).
+const GROUP := &"mp_boot_menu"
+
+
 func _ready() -> void:
+	add_to_group(GROUP)
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	_build()
 	_flow = MpFlow.find_in_tree(self)
@@ -46,22 +66,21 @@ func _ready() -> void:
 		_bind_flow()
 	else:
 		_bind_local()
-	_beacon = MpLan.browse(self)
-	_beacon.rooms_changed.connect(_on_rooms)
+	## A browser can neither host nor listen for LAN rooms: those rows are hidden there.
+	if MpNetConfig.can_host():
+		_beacon = MpLan.browse(self)
+		_beacon.rooms_changed.connect(_on_rooms)
 	if MpBoot.is_dedicated_process():
 		visible = false
 
 
+## With a flow, the flow owns the session (world, room name, players, LAN): the menu only shows it. The menu's own
+## world_scene / room_name / max_players / advertise_lan are for a menu without a flow (drive_kit).
 func _bind_flow() -> void:
 	_flow.status_changed.connect(_set_status)
-	if world_scene != null:
-		_flow.world_scene = world_scene
-	if world_id != &"":
-		_flow.select_world(world_id)
-	if not room_name.is_empty():
-		_flow.room_name = room_name
-	_flow.advertise_lan = advertise_lan
-	_flow.max_players = max_players
+	## Where players find the server online, if the game says (MpNetConfig.public_host).
+	if _flow.net_config and not _flow.net_config.public_host.is_empty():
+		_ip.text = _flow.net_config.public_host
 
 
 func _bind_local() -> void:
@@ -94,7 +113,13 @@ func _build() -> void:
 	title.add_theme_font_size_override("font_size", 28)
 	box.add_child(title)
 	_add_button(box, play_solo_text, _on_play_solo)
-	_add_button(box, host_text, _on_host)
+	if MpNetConfig.can_host():
+		_add_button(box, host_text, _on_host)
+	if offer_private_server and MpNetConfig.can_host():
+		_add_button(box, private_text, _on_private)
+	var lobby := _lobby_path()
+	if not lobby.is_empty():
+		_add_button(box, online_text, func() -> void: get_tree().change_scene_to_file(lobby))
 	var join_row := HBoxContainer.new()
 	join_row.add_theme_constant_override("separation", 8)
 	box.add_child(join_row)
@@ -110,15 +135,18 @@ func _build() -> void:
 	var rooms_label := Label.new()
 	rooms_label.text = rooms_header
 	rooms_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rooms_label.visible = MpNetConfig.can_host()
 	box.add_child(rooms_label)
 	_rooms = ItemList.new()
 	_rooms.custom_minimum_size = Vector2(320, 88)
 	_rooms.item_selected.connect(_on_room_selected)
+	_rooms.visible = MpNetConfig.can_host()
 	box.add_child(_rooms)
 	_lan = Label.new()
 	_lan.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var local := MpLan.get_local_ipv4()
 	_lan.text = local if not local.is_empty() else "—"
+	_lan.visible = MpNetConfig.can_host()
 	box.add_child(_lan)
 	_status = Label.new()
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -138,7 +166,6 @@ func _add_button(box: VBoxContainer, text: String, cb: Callable) -> void:
 func _on_play_solo() -> void:
 	play_solo_pressed.emit()
 	if _flow:
-		_apply_world_to_flow()
 		_flow.play_solo()
 		return
 	if drive_kit:
@@ -149,7 +176,6 @@ func _on_play_solo() -> void:
 func _on_host() -> void:
 	hosted.emit()
 	if _flow:
-		_apply_world_to_flow()
 		_flow.host_lan()
 		return
 	if drive_kit:
@@ -159,21 +185,47 @@ func _on_host() -> void:
 			return
 		if advertise_lan:
 			MpLan.advertise(MpKit, room_name, MpKit.port)
-		if world_scene != null:
-			MpKit.broadcast_load_world()
-			_ensure_late_join()
+		## The start gate decides who sits; every seat it lets in gets the world.
+		MpKit.gate.host_present = true
+		MpKit.gate.late_join = late_join
+		MpKit.gate.arm(MpKit.open_seats(), start_seats)
+		if world_scene != null and not MpKit.peer_joined.is_connected(MpBootMenu._send_world):
+			MpKit.peer_joined.connect(MpBootMenu._send_world)
 	_go_world()
+
+
+func _on_private() -> void:
+	## By path: the menu must not load the lobby scripts unless this button is used.
+	var local_server: GDScript = load("res://addons/mp_kit/rooms/mp_local_server.gd")
+	var seats := _flow.net_config.effective_max_players() if _flow and _flow.net_config else max_players
+	## One per process: a second click gives the running one back (and its invite), it never starts another.
+	var server: Node = local_server.call(&"start_on", get_tree(), seats)
+	var show_invite := func(address: String, p_port: int, codes: Dictionary) -> void:
+		var shown := address if not address.is_empty() else "127.0.0.1"
+		var all := ", ".join(PackedStringArray(codes.values()))
+		if MpKit.transport == MpTransport.RELAY:
+			_set_status(private_relay_status % [p_port, all])
+		else:
+			_set_status(private_ready_status % [shown, p_port, shown, p_port, all])
+	if server.call(&"is_ready"):
+		show_invite.call(server.get("address"), server.get("port"), server.get("codes"))
+		return
+	if not server.server_ready.is_connected(show_invite):
+		server.server_ready.connect(show_invite)
+	server.server_failed.connect(func(reason: String) -> void: _set_status(host_fail_status + " (%s)" % reason))
 
 
 func _on_join() -> void:
 	var ip := _ip.text.strip_edges()
+	## With a flow: an IP, a domain, either with ":port", or a wss:// URL.
+	if _flow:
+		joining.emit(ip)
+		_flow.join_address(ip)
+		return
 	if not MpLan.is_valid_ipv4(ip):
 		_set_status(bad_ip_status)
 		return
 	joining.emit(ip)
-	if _flow:
-		_flow.join_lan(ip)
-		return
 	if drive_kit:
 		var err := MpKit.join(ip)
 		if err != OK:
@@ -184,6 +236,19 @@ func _on_join() -> void:
 
 func _on_join_failed() -> void:
 	_set_status(join_fail_status)
+
+
+## The rooms the LAN list shows now: [{name, address, port, players, max_players}].
+func lan_rooms() -> Array[Dictionary]:
+	return _room_rows.duplicate()
+
+
+## Join the LAN room at `index` of the list (what clicking it and Join does).
+func join_lan_room(index: int) -> void:
+	if index < 0 or index >= _room_rows.size():
+		return
+	_ip.text = "%s:%d" % [_room_rows[index].get("address", ""), int(_room_rows[index].get("port", 0))]
+	_on_join()
 
 
 func _on_rooms(found: Array) -> void:
@@ -207,16 +272,7 @@ func _on_room_selected(index: int) -> void:
 	if index < 0 or index >= _room_rows.size():
 		return
 	var row: Dictionary = _room_rows[index]
-	_ip.text = str(row.get("address", ""))
-
-
-func _apply_world_to_flow() -> void:
-	if _flow == null:
-		return
-	if world_scene != null:
-		_flow.world_scene = world_scene
-	if world_id != &"":
-		_flow.select_world(world_id)
+	_ip.text = "%s:%d" % [row.get("address", ""), int(row.get("port", 0))]
 
 
 func _go_world() -> void:
@@ -230,18 +286,15 @@ func _set_status(text: String) -> void:
 	status_changed.emit(text)
 
 
-func _ensure_late_join() -> void:
-	if MpKit.has_node("MpBootLateJoin"):
-		return
-	var bridge := LateJoin.new()
-	bridge.name = "MpBootLateJoin"
-	MpKit.add_child(bridge)
+## Static: the menu is gone once the world loads, the connection is not. Inert once the gate is closed again (leave).
+static func _send_world(peer_id: int, _slot: int) -> void:
+	if MpKit.is_server() and MpKit.gate.is_armed():
+		MpKit.load_world_to(peer_id)
 
 
-class LateJoin extends Node:
-	func _ready() -> void:
-		MpKit.peer_joined.connect(_on_peer)
-
-	func _on_peer(peer_id: int, _slot: int) -> void:
-		if MpKit.is_server():
-			MpKit.load_world_to(peer_id)
+## The lobby scene: this menu's own, or the flow's (MpGame.lobby_scene).
+func _lobby_path() -> String:
+	if not lobby_scene_path.is_empty():
+		return lobby_scene_path
+	var flow := MpFlow.find_in_tree(self) if is_inside_tree() else null
+	return flow.lobby_path if flow else ""

@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/chain/chain_hop.gd" id="1_hop"]
+[ext_resource type="Script" path="res://spells/rainbow/chain_heal.gd" id="2_heal"]
+[ext_resource type="Resource" path="res://spells/rainbow/fx/beams/rainbow_arc.tres" id="3_beam"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rainbow.tres" id="4_burst"]
+
+[node name="Rainbow" type="Node3D" node_paths=PackedStringArray("effect")]
+editor_description = "Rainbow (wobr): 6 golpes. Cada arco tarda 64 ticks; al llegar cura toda la vida maxima del aliado (HealEffect) y salta al aliado vivo de menor fraccion de vida, en un radio que se achica (6-n)/6 del alcance."
+script = ExtResource("1_hop")
+effect = NodePath("Heal")
+hits = 6
+hop_s = 1.0667
+allies = true
+order = 1
+fallback_limit_min = 1.0
+fallback_drift = 0.25
+
+[node name="Heal" type="Node" parent="."]
+script = ExtResource("2_heal")
+beam = ExtResource("3_beam")
+burst = ExtResource("4_burst")

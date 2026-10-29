@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" path="res://assets/original/fx/firy.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/wards_fire_hit.tres" id="cue_wards_fire_hit"]
+[ext_resource type="Script" path="res://scenes/fx/fx_light_spec.gd" id="fx_light_script"]
+
+[sub_resource type="Resource" id="fx_light"]
+script = ExtResource("fx_light_script")
+color = Color(1.000, 0.768, 0.537, 1)
+energy = 3.0
+range_m = 8.0
+attack_s = 0.03
+decay_s = 0.5
+decay_power = 1.5
+height_m = 0.8
+attenuation = 0.8
+
+[resource]
+script = ExtResource("1_type")
+atlas = ExtResource("atlas_png")
+h_frames = 4
+v_frames = 4
+size = Vector2(1, 1)
+energy = 8.0
+frame_s = 0.06667
+lifetime_s = 0.517
+count = 3
+additive = true
+fade_s = 1.067
+emission_radius = 0.3
+sound = ExtResource("cue_wards_fire_hit")
+light = SubResource("fx_light")

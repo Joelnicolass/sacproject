@@ -1,0 +1,56 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
+[ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
+[ext_resource type="Resource" path="res://spells/skin_of_stone/skin_of_stone.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/skin_rocks.tres" id="5_rocks"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/skin_cast.tres" id="6_cast"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/skin_ring.tres" id="7_ring"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="8_sound"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_skin_end.tres" id="cue_ward_skin_end"]
+
+[node name="SkinOfStone" type="Node3D"]
+script = ExtResource("1_ward")
+spell = ExtResource("4_spell")
+factor = 0.25
+cast_type = ExtResource("6_cast")
+stone_skin = true
+
+[node name="EndRocks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+editor_description = "Al terminar: 48 rocas rock (SPEL niks: inum = 48; tsha = rock), 2,5-3 m/s, con gravedad."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("5_rocks")
+ward = NodePath("..")
+when = 2
+half_axes_m = Vector3(0.93, 1.38, 0.93)
+on_surface = false
+
+[node name="CastRing" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
+editor_description = "Mientras se lanza: 30 particulas dirt por tick en un anillo a ras del suelo, de radio 2 (s + 0,5), que se cierra hacia los pies (SPEL niks: tcst = dirt). Cierra al 10 %: el original llega al 90 % en xy."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("2_emitter")
+type = ExtResource("7_ring")
+ward = NodePath("..")
+when = 3
+half_axes_m = Vector3(1.84, 0, 1.84)
+shrink_to = 0.1
+
+[node name="SoundEnd" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("8_sound")]
+cue = ExtResource("cue_ward_skin_end")
+ward = NodePath("..")
+when = 1
+
+[node name="Glow" parent="." instance=ExtResource("glow_state_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.95, 0.75, 0.42, 1)
+light_energy = 1
+omni_range = 6
+editor_description = "Warm earth light while the stone skin lasts (colour of the dirt/rock sprites of the ward). Tune color, energy and range here."
+
+[connection signal="shown_changed" from="." to="Glow" method="show_lit"]

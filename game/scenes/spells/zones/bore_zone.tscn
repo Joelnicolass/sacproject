@@ -1,0 +1,78 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
+[ext_resource type="Resource" path="res://spells/bore/bore.tres" id="2_spell"]
+[ext_resource type="Script" path="res://scenes/spells/zones/bore_drill.gd" id="3_drill"]
+[ext_resource type="Script" path="res://scenes/fx/sprite_emitter.gd" id="5_emitter"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/bore_dirt.tres" id="6_dirt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/soul_mole_rocks.tres" id="7_rocks"]
+[ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="8_light"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="9_sound"]
+[ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="10_mark"]
+[ext_resource type="Texture2D" path="res://assets/original/scars/bscr.png" id="11_bscr"]
+[ext_resource type="Script" path="res://scenes/spells/zones/hole_cutter.gd" id="12_cutter"]
+[ext_resource type="PackedScene" path="res://scenes/map/terrain/falling_chunk.tscn" id="13_chunk"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/bore_hole.tres" id="14_hole"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/bore_repair.tres" id="15_repair"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/quake.tres" id="cue_quake"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
+
+[node name="BoreZone" type="Node3D"]
+editor_description = "Bore (erob): desde que empieza el lanzamiento una roca (el Drill) recorre una espiral que se abre de 5 m a 50 m alrededor del clic, tirando tierra y dejando una marca bscr en cada paso. A los 10 s el Cutter recorre la misma espiral un poco mas rapido, quita el vertice del suelo bajo el (un agujero de verdad: nunca en el borde del mapa ni a menos de 11 m de un edificio), lanza lo que queda sin suelo y deja caer un pedazo. Al llegar espera 3 s y 2 ticks y repone un vertice cada 0,5 s, el ultimo primero; con el ultimo la zona termina. La velocidad y el alcance son los del hechizo (spells/bore/bore.tres)."
+script = ExtResource("1_zone")
+spell = ExtResource("2_spell")
+open_ended = true
+synced = PackedStringArray("Drill:synced_ticks")
+end_s = 0.1
+
+[node name="Drill" type="Node3D" parent="." node_paths=PackedStringArray("zone", "scar", "look", "emitters", "sound")]
+editor_description = "La roca que perfora. Camina la espiral desde que nace la zona a 0,9 de la velocidad del hechizo y desaparece al llegar al final."
+script = ExtResource("3_drill")
+zone = NodePath("..")
+scar = NodePath("Scar")
+look = NodePath("Look")
+emitters = [NodePath("Look/Dirt"), NodePath("Look/Pebbles")]
+sound = NodePath("Sound")
+
+[node name="Look" type="Node3D" parent="Drill"]
+
+[node name="Rock" type="MeshInstance3D" parent="Drill/Look"]
+cast_shadow = 0
+mesh = ExtResource("mesh_rock")
+
+[node name="Dirt" type="CPUParticles3D" parent="Drill/Look"]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("5_emitter")
+type = ExtResource("6_dirt")
+
+[node name="Pebbles" type="CPUParticles3D" parent="Drill/Look"]
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("5_emitter")
+type = ExtResource("7_rocks")
+
+[node name="Glow" parent="Drill/Look" instance=ExtResource("8_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+light_color = Color(0.85, 0.65, 0.4, 1)
+light_energy = 1.4
+omni_range = 8.0
+fade_in_s = 0.4
+lit_on_ready = true
+editor_description = "Luz de tierra (el color medio de dirt.png) que acompana a la roca; se apaga con ella."
+
+[node name="Sound" parent="Drill" instance=ExtResource("9_sound")]
+cue = ExtResource("cue_quake")
+loop = true
+
+[node name="Scar" parent="Drill" instance=ExtResource("10_mark")]
+editor_description = "Bore (erob): la marca bscr (2,5 m) en cada paso del tunel, a la altura del suelo."
+texture = ExtResource("11_bscr")
+
+[node name="Cutter" type="Node" parent="." node_paths=PackedStringArray("zone")]
+editor_description = "Abre el suelo: quita el vertice bajo la espiral (HoleRules dice cuando se puede), lanza lo que cae, deja caer un pedazo y despues lo repone."
+script = ExtResource("12_cutter")
+zone = NodePath("..")
+chunk = ExtResource("13_chunk")
+dig_burst = ExtResource("14_hole")
+restore_burst = ExtResource("15_repair")

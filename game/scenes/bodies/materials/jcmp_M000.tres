@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/jcmp/M000.png" id="1_3stqx"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/jcmp/M000_normal.png" id="2_iunia"]
+
+[resource]
+resource_name = "jcmp_M000"
+albedo_texture = ExtResource("1_3stqx")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_iunia")

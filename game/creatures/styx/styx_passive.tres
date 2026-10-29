@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_5b8cu"]
+
+[resource]
+script = ExtResource("1_5b8cu")
+tag = "tdhg"
+display_name = "tdhg"

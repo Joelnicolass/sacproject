@@ -2,31 +2,41 @@
 class_name MinimapTerrainBake
 extends Node
 
-## RFC-037 037a: draws the map's ground seen from straight above, once, into a texture. Own 3D world (no plants,
-## buildings, sky or fog), an orthographic camera over the mesh's bounding box, ambient light only. It draws nothing
-## else and knows nothing of the minimap: `Minimap` reads `texture`, `origin_xz` and `side_m`.
+## Draws the map's ground seen from straight above, once, into a texture. Own 3D world (no plants,
+## buildings, sky or fog), an orthographic camera over the mesh's bounding box, ambient light only.
+## It draws nothing else and knows nothing of the minimap: `Minimap` reads `texture`, `origin_xz`
+## and `side_m`.
 ##
-## Image axes: x = world x, y = world z (top = smallest z), a view from above with +y toward the viewer.
-## `world_to_uv` gives the texture coordinate of a world point.
-## Run alone (F6) it shows the texture. On the dedicated server (headless) it does nothing.
+## Image axes: x = world x, y = world z (top = smallest z), a view from above with +y toward the
+## viewer. `world_to_uv` gives the texture coordinate of a world point. Run alone (F6) it shows the
+## texture. On the dedicated server (headless) it does nothing.
 
 ## The texture is ready (or was drawn again).
 signal baked
 
-## Optional: a map ground whose mesh is drawn instead of the one in `ground` (the world scene points at %Terrain).
-@export var terrain: MeshInstance3D
+## Optional: the map's ground; its mesh is drawn instead of the one in `ground`, on its ground roles
+## and baked light.
+@export var terrain: Terrain
+## The god whose ground the minimap shows on every map, whatever the match's biome (James's: the
+## land reads the same in every match). Empty = the mesh keeps the material `ground` has.
+@export var look: LookProfile
 @export_group("Parts")
 @export var viewport: SubViewport
-## The mesh drawn (terrain.glb with the classic ground material: the minimap never shows a biome's PBR ground).
+## The mesh drawn: the map's terrain mesh (`terrain.mesh`) wearing `look`'s ground.
 @export var ground: MeshInstance3D
 @export var camera: Camera3D
 ## Shown only when this scene runs alone.
 @export var preview: TextureRect
 @export_group("Bake")
-## Texels per side. 1024 over a 2560 m map = 2.5 m per texel.
+## Texels per side (1024 over a 2560 m map = 2.5 m per texel).
 @export_range(256, 4096, 256) var resolution := 1024
 ## The camera sits this far over the highest point of the mesh.
 @export var camera_margin_m := 50.0
+
+## Editor button: draws the ground again and shows it in `preview`, to see what the minimap will get
+## after changing the terrain mesh or `resolution`. The game bakes by itself at every launch;
+## nothing is saved.
+@export_tool_button("Rebake minimap", "Reload") var rebake_in_editor := _rebake_in_editor
 
 ## ViewportTexture of the bake; null until `baked`.
 var texture: Texture2D
@@ -40,7 +50,7 @@ var _is_baked := false
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if viewport == null or ground == null or camera == null:
-		warnings.append("Asigná viewport, ground y camera.")
+		warnings.append("Assign viewport, ground and camera.")
 	return warnings
 
 
@@ -56,10 +66,6 @@ func _ready() -> void:
 	_bake_when_ready.call_deferred()
 
 
-func is_baked() -> bool:
-	return _is_baked
-
-
 ## Texture coordinate (0…1) of a world point.
 func world_to_uv(point: Vector3) -> Vector2:
 	if side_m <= 0.0:
@@ -67,9 +73,16 @@ func world_to_uv(point: Vector3) -> Vector2:
 	return (Vector2(point.x, point.z) - origin_xz) / side_m
 
 
-## The terrain is a sibling that readies after this node; draw one frame later so its mesh is in place.
+## The terrain is a sibling that readies after this node; draw one frame later so its mesh is in
+## place.
 func _bake_when_ready() -> void:
 	await get_tree().process_frame
+	await bake()
+
+
+func _rebake_in_editor() -> void:
+	if preview:
+		preview.visible = true
 	await bake()
 
 
@@ -77,11 +90,16 @@ func _bake_when_ready() -> void:
 func bake() -> void:
 	if viewport == null or ground == null or camera == null:
 		return
-	if terrain != null and terrain.mesh != null:
-		ground.mesh = terrain.mesh
-		ground.transform = terrain.global_transform
+	var drawn := terrain.mesh if terrain != null else null
+	if drawn != null and drawn.mesh != null:
+		ground.mesh = drawn.mesh
+		ground.transform = drawn.global_transform
+		if look != null and look.ground != null:
+			ground.material_override = GroundMaterial.build(
+				look.ground, terrain.ground_roles, terrain.light_map, null
+			)
 	if ground.mesh == null:
-		push_warning("MinimapTerrainBake: no hay malla de terreno que hornear.")
+		push_warning("MinimapTerrainBake: there is no terrain mesh to bake.")
 		return
 	var box := ground.transform * ground.mesh.get_aabb()
 	var center := box.get_center()
@@ -95,7 +113,10 @@ func bake() -> void:
 	camera.near = 0.1
 	camera.far = height - box.position.y + camera_margin_m
 	# Image right = world +x, image down = world +z, looking down.
-	camera.transform = Transform3D(Basis(Vector3.RIGHT, Vector3(0.0, 0.0, -1.0), Vector3.UP), Vector3(center.x, height, center.z))
+	camera.transform = Transform3D(
+		Basis(Vector3.RIGHT, Vector3(0.0, 0.0, -1.0), Vector3.UP),
+		Vector3(center.x, height, center.z)
+	)
 	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	texture = viewport.get_texture()
 	if preview:

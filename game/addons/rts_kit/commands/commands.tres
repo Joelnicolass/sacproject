@@ -1,0 +1,86 @@
+[gd_resource type="Resource" script_class="RtsCommandCatalog" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://addons/rts_kit/core/rts_command_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://addons/rts_kit/core/rts_command_type.gd" id="2_type"]
+
+[sub_resource type="Resource" id="Resource_move"]
+script = ExtResource("2_type")
+id = &"move"
+display_name = "Move"
+target = 1
+role = 0
+scope = 0
+uses_formation = true
+retarget_nearest = false
+to_anchor = false
+tone = Color(1, 1, 1, 1)
+ends_on_its_own = true
+
+[sub_resource type="Resource" id="Resource_attack"]
+script = ExtResource("2_type")
+id = &"attack"
+display_name = "Attack"
+target = 2
+role = 1
+scope = 0
+uses_formation = true
+retarget_nearest = true
+to_anchor = false
+tone = Color(1, 0.3, 0.25, 1)
+ends_on_its_own = true
+
+[sub_resource type="Resource" id="Resource_guard"]
+script = ExtResource("2_type")
+id = &"guard"
+display_name = "Guard"
+target = 2
+role = 2
+scope = 0
+uses_formation = true
+retarget_nearest = false
+to_anchor = false
+tone = Color(0.35, 0.6, 1, 1)
+ends_on_its_own = false
+
+[sub_resource type="Resource" id="Resource_guard_area"]
+script = ExtResource("2_type")
+id = &"guard_area"
+display_name = "Guard area"
+target = 1
+role = 0
+scope = 0
+uses_formation = true
+retarget_nearest = false
+to_anchor = false
+tone = Color(0.35, 0.6, 1, 1)
+ends_on_its_own = false
+
+[sub_resource type="Resource" id="Resource_attack_move"]
+script = ExtResource("2_type")
+id = &"attack_move"
+display_name = "Attack move"
+target = 1
+role = 0
+scope = 0
+uses_formation = true
+retarget_nearest = false
+to_anchor = false
+tone = Color(1, 0.3, 0.25, 1)
+ends_on_its_own = false
+
+[sub_resource type="Resource" id="Resource_retreat"]
+script = ExtResource("2_type")
+id = &"retreat"
+display_name = "Retreat"
+target = 0
+role = 0
+scope = 1
+uses_formation = false
+retarget_nearest = false
+to_anchor = true
+tone = Color(1, 1, 1, 1)
+ends_on_its_own = false
+
+[resource]
+script = ExtResource("1_catalog")
+commands = Array[ExtResource("2_type")]([SubResource("Resource_move"), SubResource("Resource_attack"), SubResource("Resource_guard"), SubResource("Resource_guard_area"), SubResource("Resource_attack_move"), SubResource("Resource_retreat")])

@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/impacts/stun_impact.gd" id="1_stun"]
+[ext_resource type="Script" path="res://scenes/units/impacts/direct_impact.gd" id="2_direct"]
+
+[node name="StunHitImpact" type="Node"]
+editor_description = "The Brainiac's bsba and the Shrike's absh. It stuns only the body hit (creature or wizard; target_only) and then gives it the whole amount as direct ranged damage (DirectImpact, child). A building only takes the damage; the ground, nothing."
+script = ExtResource("1_stun")
+target_only = true
+
+[node name="DirectImpact" type="Node" parent="."]
+script = ExtResource("2_direct")

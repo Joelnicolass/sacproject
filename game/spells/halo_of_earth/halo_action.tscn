@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/launch_action.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="2_target"]
+[ext_resource type="PackedScene" path="res://spells/halo_of_earth/halo_of_earth_spell.tscn" id="3_launch"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/dirt_cast.tres" id="fx_dirt_cast"]
+
+[sub_resource type="Resource" id="Target_self"]
+script = ExtResource("2_target")
+who = 0
+ground_only = false
+refuse_cc_protected = false
+
+[node name="Halo" type="Node"]
+script = ExtResource("1_script")
+pick = 4
+cast_fx = ExtResource("fx_dirt_cast")
+target = SubResource("Target_self")
+launch_scene = ExtResource("3_launch")
+one_at_a_time = true

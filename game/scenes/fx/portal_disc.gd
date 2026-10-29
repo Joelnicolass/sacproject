@@ -2,11 +2,11 @@
 class_name PortalDisc
 extends MeshInstance3D
 
-## A flat ring with a glowing center that always faces the camera: the portal around a creature carried
-## by a Sac Doctor (blue) and the red vortex the doctor falls out of (sacengine SacVortex, renderer.d:1616-1677).
-## Presentation only: it reads no simulation and the headless server draws nothing. Opens in `open_s`,
-## closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to switch it off.
-## The mesh and the material are made here from the cache (they are not stored in the scene).
+## A flat ring with a glowing center that always faces the camera: the portal around a creature
+## carried by a Sac Doctor (blue) and the red vortex the doctor falls out of.
+## Presentation only: it reads no simulation and the headless server draws nothing. Opens in
+## `open_s`, closes in `close_s` and then frees itself (`free_when_closed`). Remove the node to
+## switch it off. The mesh and the material are made here (they are not stored in the scene).
 
 ## Finished closing (openness reached 0).
 signal closed
@@ -15,14 +15,14 @@ signal closed
 	set(value):
 		look = value
 		_refresh()
-## Radii in meters (x, y) when fully open. The disc is flattened like the original (1.1 x 0.9).
+## Radii in meters (x, y) when fully open. A flattened disc reads better (1.1 x 0.9).
 @export var radius := Vector2(1.0, 1.0):
 	set(value):
 		radius = value
 		_apply()
-## Seconds from closed to open. sacengine: vortexScale += 1/60 per tick (state.d:2697): 1 s.
+## Seconds from closed to open.
 @export_range(0.05, 10.0, 0.05) var open_s := 1.0
-## Seconds from open to closed. sacengine: 1/45 per tick (state.d:2698): 0.75 s.
+## Seconds from open to closed.
 @export_range(0.05, 10.0, 0.05) var close_s := 0.75
 ## 0 = closed, 1 = open. In the editor it is what you see.
 @export_range(0.0, 1.0, 0.01) var openness := 1.0:
@@ -35,7 +35,8 @@ var _target := 1.0
 var _material: ShaderMaterial
 var _missing := false
 var _started := false
-## Own generator seeded per instance: the global RNG is the match's (MatchSeed), a window-only effect must not move it.
+## Own generator seeded per instance: the global RNG is the match's (MatchSeed), a window-only
+## effect must not move it.
 var _rng := RandomNumberGenerator.new()
 
 
@@ -55,9 +56,15 @@ func _validate_property(property: Dictionary) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if look == null:
-		warnings.append("Asigná en `look` el PortalLook (data/fx/portal_blue.tres o portal_red.tres).")
+		warnings.append("Assign in `look` the PortalLook (portal_blue.tres or portal_red.tres).")
 	elif _missing:
-		warnings.append("Falta el atlas `%s.png` o `%s.png` en assets/original/fx/ (tools/import_ui.py): se dibuja un relleno." % [look.rim_tag, look.center_tag])
+		(
+			warnings
+			. append(
+				# gdlint: ignore=max-line-length
+				"The PortalLook has no `rim` or `center` (the ring and centre textures): a fill is drawn."
+			)
+		)
 	return warnings
 
 
@@ -90,7 +97,7 @@ func _process(delta: float) -> void:
 func _refresh() -> void:
 	if not _started:
 		return
-	if not BodyCatalog.loads_meshes():
+	if not BodyLook.loads_meshes():
 		visible = false
 		return
 	if mesh == null:
@@ -102,8 +109,8 @@ func _refresh() -> void:
 	if look != null:
 		_material = ShaderMaterial.new()
 		_material.shader = preload("res://scenes/fx/portal_disc.gdshader")
-		var rim := FxAtlas.texture(look.rim_tag)
-		var center := FxAtlas.texture(look.center_tag)
+		var rim := look.rim
+		var center := look.center
 		_missing = rim == null or center == null
 		_material.set_shader_parameter("use_textures", not _missing)
 		_material.set_shader_parameter("rim_tex", rim)

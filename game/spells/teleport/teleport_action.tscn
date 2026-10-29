@@ -1,0 +1,13 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://spells/teleport/teleport_action.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://spells/teleport/teleport_rings.tscn" id="2_rings"]
+[ext_resource type="Resource" path="res://spells/teleport/fx/teleport_out.tres" id="fx_teleport_out"]
+[ext_resource type="Resource" path="res://spells/teleport/fx/teleport_in.tres" id="fx_teleport_in"]
+
+[node name="Teleport" type="Node"]
+script = ExtResource("1_script")
+pick = 3
+out_fx = ExtResource("fx_teleport_out")
+in_fx = ExtResource("fx_teleport_in")
+rings_scene = ExtResource("2_rings")

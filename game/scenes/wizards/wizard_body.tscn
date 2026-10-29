@@ -1,0 +1,459 @@
+[gd_scene load_steps=53 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="f055_light"]
+[ext_resource type="PackedScene" path="res://scenes/units/vision/vision.tscn" id="f55c2_vision"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_body.gd" id="1_body"]
+[ext_resource type="Resource" path="res://gods/james/james.tres" id="b2_god"]
+[ext_resource type="PackedScene" path="res://scenes/units/movement/body_avoidance.tscn" id="f207_avoid"]
+[ext_resource type="PackedScene" path="res://scenes/units/status/pace_factors.tscn" id="f129_pace"]
+[ext_resource type="PackedScene" path="res://scenes/units/status/clinging.tscn" id="f129_cling"]
+[ext_resource type="Resource" path="res://scenes/wizards/walk_step.tres" id="2_step"]
+[ext_resource type="Script" path="res://scenes/bodies/body_visual.gd" id="3_visual"]
+[ext_resource type="Script" path="res://scenes/bodies/body_mount.gd" id="s1_mount"]
+[ext_resource type="Script" path="res://scenes/units/movement/body_collider.gd" id="s1_collider"]
+[ext_resource type="Script" path="res://scenes/components/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scenes/components/mana_pool.gd" id="5_mana"]
+[ext_resource type="Script" path="res://scenes/components/soul_purse.gd" id="6_souls"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="7_rules"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_actor.gd" id="8_actor"]
+[ext_resource type="Script" path="res://scenes/spells/spellbook.gd" id="9_book"]
+[ext_resource type="Script" path="res://scenes/spells/caster.gd" id="10_caster"]
+[ext_resource type="Script" path="res://scenes/spells/summoner.gd" id="11_summoner"]
+[ext_resource type="Script" path="res://scenes/wizards/ghost_form.gd" id="12_ghost"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_death_look.gd" id="a055_deathlook"]
+[ext_resource type="Script" path="res://scenes/bodies/ragdoll_driver.gd" id="a055_ragdoll"]
+[ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="13_clip"]
+[ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="f162_rig"]
+[ext_resource type="Script" path="res://scenes/bodies/hand_fx.gd" id="d023_handfx"]
+[ext_resource type="Script" path="res://scenes/units/movement/warp_snap.gd" id="warp_snap"]
+[ext_resource type="Script" path="res://scenes/map/nav/path_follower.gd" id="f72_follower"]
+[ext_resource type="Script" path="res://scenes/units/status/poisoning.gd" id="f122_poisoning"]
+
+[ext_resource type="Resource" path="res://scenes/units/afflictions/oiled_wizard.tres" id="f155_oiled_type"]
+[ext_resource type="Script" path="res://scenes/audio/wizard_sounds.gd" id="a052_sounds"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/skin_of_stone.tscn" id="w_skin_of_stone"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/air_shield.tscn" id="w_air_shield"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/ethereal_form.tscn" id="w_ethereal_form"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/fireform.tscn" id="w_fireform"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/protective_swarm.tscn" id="w_protective_swarm"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards.gd" id="w_wards"]
+[ext_resource type="PackedScene" path="res://scenes/spells/wards/healing_aura.tscn" id="w_healing_aura"]
+[ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="w_ward_emitter"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/healing_aura_rise.tres" id="w_aura_rise"]
+[ext_resource type="Resource" path="res://wizards/jadugarr/jadugarr.tres" id="typed_cwa0"]
+[ext_resource type="Script" path="res://scenes/components/locomotion/locomotion.gd" id="c4_locomotion"]
+[ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_input.gd" id="p72_input"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_drive.gd" id="p72_drive"]
+[ext_resource type="Script" path="res://scenes/bodies/ground_seat.gd" id="ws_seat"]
+[ext_resource type="Script" path="res://scenes/units/regeneration.gd" id="ws_regen"]
+[ext_resource type="Script" path="res://scenes/wizards/wizard_clips.gd" id="ws_clips"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
+[ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
+[ext_resource type="PackedScene" path="res://scenes/units/afflictions/afflictions.tscn" id="q5_afflictions"]
+[ext_resource type="Script" path="res://scenes/units/afflictions/afflictions_damage.gd" id="dm_afflictions"]
+[ext_resource type="Script" path="res://scenes/spells/wards/wards_damage.gd" id="dm_wards"]
+[ext_resource type="Script" path="res://scenes/bodies/game_unit.gd" id="gu_game_unit"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wizard"]
+properties/0/path = NodePath("MpActor:net_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("MpActor:net_rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:owner_slot")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:wizard_tag")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:model")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath("Health:maximum")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath("Health:current")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath("ManaPool:maximum")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath("ManaPool:current")
+properties/8/spawn = true
+properties/8/replication_mode = 2
+properties/9/path = NodePath("SoulPurse:count")
+properties/9/spawn = true
+properties/9/replication_mode = 2
+properties/10/path = NodePath("GhostForm:under_ritual")
+properties/10/spawn = true
+properties/10/replication_mode = 2
+properties/11/path = NodePath("GhostForm:stage")
+properties/11/spawn = true
+properties/11/replication_mode = 2
+properties/12/path = NodePath(".:level")
+properties/12/spawn = true
+properties/12/replication_mode = 2
+properties/13/path = NodePath("Afflictions:shown")
+properties/13/spawn = true
+properties/13/replication_mode = 2
+properties/14/path = NodePath("Clinging:shown")
+properties/14/spawn = true
+properties/14/replication_mode = 2
+properties/15/path = NodePath("Caster:cast_fx_shown")
+properties/15/spawn = true
+properties/15/replication_mode = 2
+properties/16/path = NodePath("Wards/SkinOfStone:shown")
+properties/16/spawn = true
+properties/16/replication_mode = 2
+properties/17/path = NodePath("Wards/AirShield:shown")
+properties/17/spawn = true
+properties/17/replication_mode = 2
+properties/18/path = NodePath("Wards/EtherealForm:shown")
+properties/18/spawn = true
+properties/18/replication_mode = 2
+properties/19/path = NodePath("Wards/Fireform:shown")
+properties/19/spawn = true
+properties/19/replication_mode = 2
+properties/20/path = NodePath("Wards/ProtectiveSwarm:shown")
+properties/20/spawn = true
+properties/20/replication_mode = 2
+properties/21/path = NodePath("Wards/HealingAura:shown")
+properties/21/spawn = true
+properties/21/replication_mode = 2
+properties/22/path = NodePath("BloodFx:wound")
+properties/22/spawn = true
+properties/22/replication_mode = 2
+properties/23/path = NodePath(".:velocity")
+properties/23/spawn = true
+properties/23/replication_mode = 1
+properties/24/path = NodePath(".:speed_factor")
+properties/24/spawn = true
+properties/24/replication_mode = 2
+properties/25/path = NodePath("Drive:locked")
+properties/25/spawn = true
+properties/25/replication_mode = 2
+properties/26/path = NodePath("MpActor:net_stamp")
+properties/26/spawn = true
+properties/26/replication_mode = 1
+properties/27/path = NodePath("MpActor:net_teleports")
+properties/27/spawn = true
+properties/27/replication_mode = 1
+properties/28/path = NodePath("MpInput:acked_seq")
+properties/28/spawn = true
+properties/28/replication_mode = 1
+properties/29/path = NodePath("MpActor:owner_slot")
+properties/29/spawn = true
+properties/29/replication_mode = 0
+
+[node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "seat", "regeneration", "clips", "unit")]
+floor_max_angle = 1.4835298
+script = ExtResource("1_body")
+unit = NodePath("RtsUnit")
+mount = NodePath("BodyMount")
+vision = NodePath("Vision")
+seat = NodePath("Seat")
+regeneration = NodePath("Regeneration")
+clips = NodePath("Clips")
+step = ExtResource("2_step")
+wizard_type = ExtResource("typed_cwa0")
+model = "jnwr"
+god_type = ExtResource("b2_god")
+
+[node name="MpActor" type="Node" parent="."]
+script = ExtResource("8_actor")
+sync_extra = PackedStringArray("owner_slot", "wizard_tag", "model", "Health:maximum", "Health:current", "ManaPool:maximum", "ManaPool:current", "SoulPurse:count", "GhostForm:under_ritual", "GhostForm:stage", "level", "Afflictions:shown", "Clinging:shown", "Caster:cast_fx_shown", "Wards/SkinOfStone:shown", "Wards/AirShield:shown", "Wards/EtherealForm:shown", "Wards/Fireform:shown", "Wards/ProtectiveSwarm:shown", "Wards/HealingAura:shown", "BloodFx:wound", "velocity", "speed_factor", "Drive:locked")
+predict = true
+lag_compensate = false
+correction_snap_distance = 2.0
+
+[node name="MpSync" type="MultiplayerSynchronizer" parent="MpActor"]
+root_path = NodePath("../..")
+replication_config = SubResource("SceneReplicationConfig_wizard")
+
+[node name="MpInput" type="Node" parent="."]
+script = ExtResource("p72_input")
+actions = PackedStringArray()
+
+[node name="Drive" type="Node" parent="." node_paths=PackedStringArray("body", "locomotion", "afflictions", "caster", "ghost", "follower", "seat")]
+script = ExtResource("p72_drive")
+body = NodePath("..")
+locomotion = NodePath("../Locomotion")
+afflictions = NodePath("../Afflictions")
+caster = NodePath("../Caster")
+ghost = NodePath("../GhostForm")
+follower = NodePath("../PathFollower")
+seat = NodePath("../Seat")
+
+[node name="Seat" type="Node" parent="." node_paths=PackedStringArray("body", "mount")]
+script = ExtResource("ws_seat")
+body = NodePath("..")
+mount = NodePath("../BodyMount")
+ground_mask = 1
+attempts = 12
+
+[node name="Regeneration" type="Node" parent="." node_paths=PackedStringArray("body", "health", "mana")]
+script = ExtResource("ws_regen")
+body = NodePath("..")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
+pause_s = 0.5
+
+[node name="Clips" type="Node" parent="." node_paths=PackedStringArray("body", "clip_pose", "caster", "afflictions", "ghost")]
+script = ExtResource("ws_clips")
+body = NodePath("..")
+clip_pose = NodePath("../ClipPose")
+caster = NodePath("../Caster")
+afflictions = NodePath("../Afflictions")
+ghost = NodePath("../GhostForm")
+moving_above_m_s = 0.1
+gesture_every = 5
+sampled_cap = 1.6
+rise_per_s = 20.0
+fall_per_s = 6.0
+
+[node name="Tilt" type="Node3D" parent="."]
+physics_interpolation_mode = 2
+
+[node name="Mesh" type="MeshInstance3D" parent="Tilt" node_paths=PackedStringArray("rig", "mount")]
+script = ExtResource("3_visual")
+rig = NodePath("Rig")
+mount = NodePath("../../BodyMount")
+
+[node name="Rig" parent="Tilt/Mesh" instance=ExtResource("f162_rig")]
+
+[node name="Light" parent="." instance=ExtResource("f055_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+always_on = true
+night_energy = 0.25
+light_color = Color(1, 1, 1, 1)
+light_energy = 8.0
+light_specular = 0.0
+omni_range = 13.0
+omni_attenuation = 1.2
+priority = 4.0
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Vision" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f55c2_vision")]
+body = NodePath("..")
+
+[node name="BodyMount" type="Node" parent="." node_paths=PackedStringArray("rig")]
+script = ExtResource("s1_mount")
+rig = NodePath("../Tilt/Mesh/Rig")
+
+[node name="BodyCollider" type="Node" parent="." node_paths=PackedStringArray("mount", "collision")]
+script = ExtResource("s1_collider")
+mount = NodePath("../BodyMount")
+collision = NodePath("../Collision")
+
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("modifiers")]
+script = ExtResource("4_health")
+modifiers = [NodePath("../Poisoning"), NodePath("AfflictionsDamage"), NodePath("WardsDamage")]
+
+[node name="AfflictionsDamage" type="Node" parent="Health" node_paths=PackedStringArray("afflictions", "oil")]
+script = ExtResource("dm_afflictions")
+afflictions = NodePath("../../Afflictions")
+oil = NodePath("../../Afflictions/Oiled")
+
+[node name="WardsDamage" type="Node" parent="Health" node_paths=PackedStringArray("wards")]
+script = ExtResource("dm_wards")
+wards = NodePath("../../Wards")
+
+[node name="Wards" type="Node3D" parent="."]
+physics_interpolation_mode = 2
+script = ExtResource("w_wards")
+
+[node name="SkinOfStone" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_skin_of_stone")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="AirShield" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_air_shield")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="EtherealForm" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_ethereal_form")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="Fireform" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_fireform")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="ProtectiveSwarm" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_protective_swarm")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="HealingAura" parent="Wards" node_paths=PackedStringArray("body", "health") instance=ExtResource("w_healing_aura")]
+body = NodePath("../..")
+health = NodePath("../../Health")
+
+[node name="CastColumn" type="CPUParticles3D" parent="Wards/HealingAura" node_paths=PackedStringArray("ward")]
+editor_description = "While the wizard casts Healing Aura: six glo2 sparks per tick rise from its feet. Only the wizard has it: a carrier creature does not cast."
+use_fixed_seed = true
+local_coords = false
+script = ExtResource("w_ward_emitter")
+type = ExtResource("w_aura_rise")
+ward = NodePath("..")
+when = 3
+half_axes_m = Vector3(0.66, 0.2, 0.66)
+on_surface = false
+
+[node name="ManaPool" type="Node" parent="." node_paths=PackedStringArray("poisoning")]
+script = ExtResource("5_mana")
+poisoning = NodePath("../Poisoning")
+
+[node name="Poisoning" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("f122_poisoning")
+body = NodePath("..")
+health = NodePath("../Health")
+
+[node name="PaceFactors" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f129_pace")]
+body = NodePath("..")
+
+[node name="Clinging" parent="." node_paths=PackedStringArray("body", "poisoning", "pace") instance=ExtResource("f129_cling")]
+body = NodePath("..")
+poisoning = NodePath("../Poisoning")
+pace = NodePath("../PaceFactors")
+
+[node name="SoulPurse" type="Node" parent="."]
+script = ExtResource("6_souls")
+rules = ExtResource("7_rules")
+
+[node name="Spellbook" type="Node" parent="." node_paths=PackedStringArray("wizard")]
+script = ExtResource("9_book")
+wizard = NodePath("..")
+rules = ExtResource("7_rules")
+
+[node name="Summoner" type="Node" parent="." node_paths=PackedStringArray("wizard")]
+script = ExtResource("11_summoner")
+wizard = NodePath("..")
+
+[node name="Caster" type="Node" parent="." node_paths=PackedStringArray("spellbook", "summoner", "actions", "wizard")]
+script = ExtResource("10_caster")
+rules = ExtResource("7_rules")
+spellbook = NodePath("../Spellbook")
+summoner = NodePath("../Summoner")
+actions = NodePath("Actions")
+wizard = NodePath("..")
+
+[node name="Actions" type="Node" parent="Caster"]
+
+[node name="GhostForm" type="Node" parent="." node_paths=PackedStringArray("visual", "health", "mana", "death_look")]
+script = ExtResource("12_ghost")
+rules = ExtResource("7_rules")
+visual = NodePath("../Tilt/Mesh")
+health = NodePath("../Health")
+mana = NodePath("../ManaPool")
+death_look = NodePath("../DeathLook")
+
+[node name="DeathLook" type="Node" parent="." node_paths=PackedStringArray("body", "visual", "clip_pose", "ragdoll")]
+script = ExtResource("a055_deathlook")
+body = NodePath("..")
+visual = NodePath("../Tilt/Mesh")
+clip_pose = NodePath("../ClipPose")
+ragdoll = NodePath("RagdollDriver")
+
+[node name="RagdollDriver" type="Node" parent="DeathLook" node_paths=PackedStringArray("rig", "clip_pose")]
+script = ExtResource("a055_ragdoll")
+rig = NodePath("../../Tilt/Mesh/Rig")
+clip_pose = NodePath("../../ClipPose")
+
+[node name="ClipPose" type="Node" parent="." node_paths=PackedStringArray("visual")]
+script = ExtResource("13_clip")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="CastHands" type="Node" parent="." node_paths=PackedStringArray("caster", "rig")]
+script = ExtResource("d023_handfx")
+caster = NodePath("../Caster")
+rig = NodePath("../Tilt/Mesh/Rig")
+
+[node name="Afflictions" parent="." node_paths=PackedStringArray("body", "health", "clip_pose", "wards") instance=ExtResource("q5_afflictions")]
+body = NodePath("..")
+health = NodePath("../Health")
+clip_pose = NodePath("../ClipPose")
+wards = NodePath("../Wards")
+
+[node name="Stunned" parent="Afflictions" node_paths=PackedStringArray("clip_pose", "tilt", "visual")]
+clip_pose = NodePath("../../ClipPose")
+tilt = NodePath("../../Tilt")
+visual = NodePath("../../Tilt/Mesh")
+corpse_lays_down = false
+
+[node name="Look" parent="Afflictions" node_paths=PackedStringArray("mesh")]
+mesh = NodePath("../../Tilt/Mesh")
+
+[node name="Tumbling" parent="Afflictions" node_paths=PackedStringArray("tilt")]
+tilt = NodePath("../../Tilt")
+
+[node name="IceBlock" parent="Afflictions/Frozen" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="Oiled" parent="Afflictions"]
+type = ExtResource("f155_oiled_type")
+
+[node name="VineLook" parent="Afflictions/Vined" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="RingsLook" parent="Afflictions/RingsOfFire" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="Splash" parent="Afflictions/Slimed" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="Drip" parent="Afflictions/Slimed" node_paths=PackedStringArray("body")]
+body = NodePath("../../..")
+
+[node name="PathFollower" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("f72_follower")
+body = NodePath("..")
+
+[node name="WarpSnap" type="Node" parent="." node_paths=PackedStringArray("net")]
+script = ExtResource("warp_snap")
+net = NodePath("../MpActor")
+
+[node name="Avoidance" parent="." node_paths=PackedStringArray("body") instance=ExtResource("f207_avoid")]
+body = NodePath("..")
+moving_priority = 0.9
+idle_priority = 0.75
+
+[node name="WizardSounds" type="Node" parent="." node_paths=PackedStringArray("body", "health", "caster", "ghost")]
+script = ExtResource("a052_sounds")
+body = NodePath("..")
+health = NodePath("../Health")
+caster = NodePath("../Caster")
+ghost = NodePath("../GhostForm")
+height_m = 1.6
+
+[node name="BloodFx" parent="." node_paths=PackedStringArray("body", "health", "mount") instance=ExtResource("b060_blood")]
+body = NodePath("..")
+health = NodePath("../Health")
+mount = NodePath("../BodyMount")
+
+[node name="HitFlash" parent="." node_paths=PackedStringArray("health", "visual") instance=ExtResource("c060_flash")]
+health = NodePath("../Health")
+visual = NodePath("../Tilt/Mesh")
+
+[node name="Locomotion" type="Node" parent="." node_paths=PackedStringArray("body", "afflictions", "avoidance")]
+script = ExtResource("c4_locomotion")
+body = NodePath("..")
+afflictions = NodePath("../Afflictions")
+avoidance = NodePath("../Avoidance")
+face_velocity = false
+
+[connection signal="moved" from="Locomotion" to="." method="_on_moved"]
+[connection signal="fell" from="Locomotion" to="." method="_return_to_altar"]
+[connection signal="shown_changed" from="Wards/EtherealForm" to="GhostForm" method="set_ethereal"]
+
+[editable path="Afflictions"]
+
+[node name="RtsUnit" type="Node" parent="."]
+script = ExtResource("gu_game_unit")
+selectable = false
+orderable = false

@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/original/textures/gamm/003.png" id="1_8kp05"]
+[ext_resource type="Texture2D" path="res://assets/surfaces/gamm/003_normal.png" id="2_sqe35"]
+
+[resource]
+resource_name = "gamm_003"
+albedo_texture = ExtResource("1_8kp05")
+roughness = 0.85
+normal_enabled = true
+normal_texture = ExtResource("2_sqe35")

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_ibtsh"]
+[ext_resource type="Texture2D" uid="uid://dypbwux6v5xxk" path="res://assets/original/ui/icons/gcil.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_ibtsh")
+tag = "gcil"
+display_name = "Lightning Charge"
+icon = ExtResource("icon_tex")
+cast_range_m = 30.0
+damage = 250
+ai_worth = 250

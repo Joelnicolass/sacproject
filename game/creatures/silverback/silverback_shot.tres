@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AbilityType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_6jppg"]
+[ext_resource type="Texture2D" uid="uid://sjaa6wtixqfj" path="res://assets/original/ui/icons/rdba.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/silverback_shot.tscn" id="shot_look"]
+
+[resource]
+script = ExtResource("1_6jppg")
+shot_look = ExtResource("shot_look")
+tag = "rdba"
+display_name = "Icy Breath"
+icon = ExtResource("icon_tex")
+mana_cost = 50
+cast_range_m = 40.0
+cooldown_s = 4.0
+casting_time_s = 2.963
+speed_m_s = 36.0
+damage = 500
+effect_range_m = 5.0
+duration_s = 5.0
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_attack = true
+ai_worth = 500

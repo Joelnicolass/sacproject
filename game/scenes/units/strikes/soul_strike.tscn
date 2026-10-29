@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/strikes/soul_strike.gd" id="1_strike"]
+
+[node name="SoulStrike" type="Node3D"]
+process_physics_priority = -1
+editor_description = "The blow of the Styx's Rend Soul (dner): on the next tick it checks the soul again; if it is still there it bursts it (Soul.burst dissolves the corpse), draws the styx beam to its center and applies the impact of scenes/units/attacks/shots/rend_soul.tscn (a splash of 2500 falling off to damage range 40, no direct hit). If the soul is gone, nothing happens. RendSoul throws it."
+script = ExtResource("1_strike")

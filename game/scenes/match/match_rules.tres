@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MatchRules" format=3 uid="uid://d1e2js08kea5i"]
+
+[ext_resource type="Script" uid="uid://c3wbk3bhn03am" path="res://scenes/ai/data/ai_seat.gd" id="1_pewva"]
+[ext_resource type="Script" uid="uid://dkx21381l0b2k" path="res://scenes/match/match_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+wizard_level = 9
+wizard_level_stats = true
+friendly_fire = true

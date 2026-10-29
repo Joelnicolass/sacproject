@@ -1,0 +1,34 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCst.res" id="1_PCst"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCrn.res" id="2_PCrn"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCa1.res" id="3_PCa1"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCa2.res" id="4_PCa2"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PC00.res" id="5_PC00"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCd1.res" id="6_PCd1"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PC2t.res" id="7_PC2t"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCsc.res" id="8_PCsc"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCrz.res" id="9_PCrz"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCfd.res" id="10_PCfd"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCgu.res" id="11_PCgu"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PChf.res" id="12_PChf"]
+[ext_resource type="Animation" path="res://creatures/yeti/model/yeti_model_clips/PCi1.res" id="13_PCi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_PCst"),
+&"run": ExtResource("2_PCrn"),
+&"attack": ExtResource("3_PCa1"),
+&"attack2": ExtResource("4_PCa2"),
+&"attack3": ExtResource("4_PCa2"),
+&"shoot": ExtResource("5_PC00"),
+&"shoot2": ExtResource("5_PC00"),
+&"death": ExtResource("6_PCd1"),
+&"held": ExtResource("7_PC2t"),
+&"thrash": ExtResource("8_PCsc"),
+&"rise": ExtResource("9_PCrz"),
+&"knock": ExtResource("10_PCfd"),
+&"get_up": ExtResource("11_PCgu"),
+&"hit_floor": ExtResource("12_PChf"),
+&"gesture": ExtResource("13_PCi1")
+}

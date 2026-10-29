@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AfflictionType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/afflictions/affliction_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+id = &"oiled"
+bit = 7
+holds = false
+immobilizes = false
+drops_fliers = false
+breaks_special_modes = false
+damage_factor = 1.0
+cc_protects = false
+cancels = Array[StringName]([])
+coexists = true
+has_look = true
+look_tint = Color(0.55, 0.5, 0.45, 1)
+look_priority = 0
+look_base = 0.0
+look_gain = 0.3
+look_roughness = 0.1
+look_metallic = 0.0

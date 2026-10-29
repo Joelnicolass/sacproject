@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/divine_sight.gd" id="1_sight"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/divine_sight_eye.tscn" id="2_eye"]
+
+[node name="DivineSight" type="Node"]
+editor_description = "The Ranger's Divine Sight effect (eesd). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). No target and no preparation: it throws the eye (divine_sight_eye.tscn) 2 m ahead of the user, where it faces, at the SPEL's speed (30 m/s). AbilitySlot charges the mana (50) and the cooldown (25 s)."
+script = ExtResource("1_sight")
+eye_scene = ExtResource("2_eye")

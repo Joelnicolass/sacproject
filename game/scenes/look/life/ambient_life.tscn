@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/life/ambient_life_layer.gd" id="1_life"]
+[ext_resource type="Script" path="res://scenes/look/follow_camera.gd" id="2_follow"]
+[ext_resource type="Script" path="res://scenes/look/warmup/warm_hook.gd" id="3_warm"]
+
+[node name="AmbientLife" type="Node3D" node_paths=PackedStringArray("air_slots")]
+editor_description = "The biome's ambient life: air swarms around the camera (Air1..Air3) and in the map's LifeSpots (the spots socket, set by map.tscn). Hidden = nothing."
+script = ExtResource("1_life")
+air_slots = [NodePath("Follow/Air1"), NodePath("Follow/Air2"), NodePath("Follow/Air3")]
+
+[node name="Follow" type="Node3D" parent="."]
+process_mode = 3
+editor_description = "Follows the camera also while the tree is paused (the start gate pauses while it loads and waits for players): the air swarms always surround what is seen."
+script = ExtResource("2_follow")
+ahead_m = 15.0
+
+[node name="Air1" type="GPUParticles3D" parent="Follow"]
+emitting = false
+visible = false
+amount = 100
+local_coords = false
+visibility_aabb = AABB(-30, -10, -30, 60, 20, 60)
+
+[node name="Air2" type="GPUParticles3D" parent="Follow"]
+emitting = false
+visible = false
+amount = 100
+local_coords = false
+visibility_aabb = AABB(-30, -10, -30, 60, 20, 60)
+
+[node name="Air3" type="GPUParticles3D" parent="Follow"]
+emitting = false
+visible = false
+amount = 100
+local_coords = false
+visibility_aabb = AABB(-30, -10, -30, 60, 20, 60)
+
+[node name="WarmHook" type="Node" parent="."]
+editor_description = "Behind the loading screen every swarm of the biome flies one frame in the air slots (AmbientLifeLayer.warm)."
+script = ExtResource("3_warm")
+
+[connection signal="asked" from="WarmHook" to="." method="warm"]

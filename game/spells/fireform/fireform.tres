@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_6hie3"]
+
+[ext_resource type="PackedScene" path="res://scenes/spells/actions/ward_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://rrigyvtm85ff" path="res://assets/original/ui/icons/mrff.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_6hie3")
+tag = "mrff"
+display_name = "Fireform"
+icon = ExtResource("icon_tex")
+mana_cost = 400
+cooldown_s = 45.0
+casting_time_s = 0.9877
+book_level = 2
+book_slot = 39
+speed_m_s = 45.0
+damage = 250
+effect_range_m = 5.0
+duration_s = 40.0
+action = ExtResource("2_action")
+ai_use = 1
+ai_phase = 2
+ai_only_on_self = true
+ai_worth = 250
+structures = PackedStringArray()

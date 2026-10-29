@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="GrassPalette" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scenes/world/look/grass/grass_palette.gd" id="1_p"]
-
-[resource]
-script = ExtResource("1_p")
-color_mid = Color(0.28, 0.55, 0.08, 1)
-color_tip = Color(0.55, 0.8, 0.2, 1)
-paint_tone = 1.3

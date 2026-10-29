@@ -17,3 +17,4 @@ shadow_mul = 0.55
 fog_clear_m = 20.0
 fog_begin_mul = 0.0
 mist = 0.8
+wind_mul = 0.4

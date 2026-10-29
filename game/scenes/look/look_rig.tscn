@@ -53,7 +53,8 @@ atmosphere = NodePath("../Atmosphere")
 unique_name_in_owner = true
 environment = ExtResource("7_env")
 
-[node name="Grass" parent="Layers" instance=ExtResource("8_grass")]
+[node name="Grass" parent="Layers" node_paths=PackedStringArray("atmosphere") instance=ExtResource("8_grass")]
+atmosphere = NodePath("../Atmosphere")
 
 [node name="Haze" parent="Layers" node_paths=PackedStringArray("sun", "world_environment") instance=ExtResource("20_haze")]
 sun = NodePath("../Sun/Sun")

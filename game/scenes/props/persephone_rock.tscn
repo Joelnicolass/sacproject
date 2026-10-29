@@ -19,4 +19,5 @@ shape = SubResource("BoxShape3D_rock")
 
 [node name="VegetationClear" type="Node3D" parent="."]
 script = ExtResource("2_clear")
-radius_m = 6.0
+radius = 6.0
+soft = 3.0

@@ -19,7 +19,8 @@ mesh = ExtResource("mesh_chs2")
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(5.5594997, 0, 0.015500069)
 script = ExtResource("3_clear")
-radius_m = 28.560000000000002
+radius = 28.560000000000002
+soft = 3.0
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(5.5594997, 34.192, 0.015500069)

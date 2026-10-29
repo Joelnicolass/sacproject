@@ -1,6 +1,30 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/look/grass/grass_field.gd" id="1_field"]
+[ext_resource type="Script" path="res://scenes/look/grass/grass_layer.gd" id="1_layer"]
+[ext_resource type="Script" path="res://addons/grass_kit/field/grass_field_3d.gd" id="2_field"]
+[ext_resource type="Resource" path="res://scenes/look/grass/wind.tres" id="3_wind"]
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_clearing.gd" id="4_clearing"]
 
-[node name="Grass" type="Node3D"]
-script = ExtResource("1_field")
+[sub_resource type="Resource" id="Clearing_altar"]
+script = ExtResource("4_clearing")
+group = &"altar"
+radius = 11.0
+soft = 5.0
+
+[sub_resource type="Resource" id="Clearing_fount"]
+script = ExtResource("4_clearing")
+group = &"manafount"
+radius = 4.5
+soft = 3.0
+
+[node name="Grass" type="Node3D" node_paths=PackedStringArray("field")]
+script = ExtResource("1_layer")
+field = NodePath("Field")
+
+[node name="Field" type="Node3D" parent="."]
+script = ExtResource("2_field")
+wind = ExtResource("3_wind")
+enabled = false
+clearings = Array[ExtResource("4_clearing")]([SubResource("Clearing_altar"), SubResource("Clearing_fount")])
+trample_group = &"tramples_grass"
+trample_recover = 2.0

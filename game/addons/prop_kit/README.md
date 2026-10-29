@@ -1,196 +1,199 @@
 # PropKit
 
-Props for 2D and 3D worlds, in three independent pieces:
+Props para mundos 2D y 3D, en tres piezas independientes:
 
-1. **Scatter.** Plants props over any ground as saved, editable nodes: clusters from a noise, keep-outs around the game's own nodes, a painted mask, weighted variants.
-2. **Batch drawing (3D).** Draws thousands of them in a few draw calls.
-3. **Navmesh in zones.** Bakes the navmesh in square zones with the props as cheap projected obstructions, so a change re-bakes only the zones it touches, on worker threads.
+1. **Scatter.** Planta props sobre cualquier suelo como nodos guardados y editables: grupos según un ruido, zonas prohibidas alrededor de los nodos del juego, una máscara pintada, variantes con peso.
+2. **Dibujo en lotes (3D).** Dibuja miles de props en pocas llamadas de dibujo.
+3. **Navmesh por zonas.** Hornea el navmesh en zonas cuadradas, con los props como obstrucciones proyectadas baratas, así un cambio rehornea solo las zonas que toca, en hilos de trabajo.
 
-There is no network, no game rule and no autoload, and PropKit depends on no other kit. Each piece works without the others.
+No tiene red, ni reglas de juego, ni autoload, y PropKit no depende de ningún otro kit. Cada pieza funciona sin las otras.
 
 ```bash
 ./install.sh --addon /path/to/godot-project prop_kit
 ```
 
-Enable the **PropKit** plugin: it adds the editor tools ([In the editor](#in-the-editor)). The kit's nodes work without it too.
+Habilitá el plugin **PropKit**: agrega las herramientas del editor ([En el editor](#en-el-editor)). Los nodos del kit funcionan también sin él.
 
-Examples: `examples/forest_3d/forest_3d.tscn` (a forest, batches, a navmesh in 16 zones; click twice for a path, C chops, R gives a new forest) and `examples/grove_2d/grove_2d.tscn` (bushes around walls, a 2D navmesh; the same keys).
+Ejemplos:
 
-## The ground plane
+- `examples/forest_3d/forest_3d.tscn`: un bosque, los lotes y un navmesh de 16 zonas. Dos clics marcan un camino, C tala y R da otro bosque.
+- `examples/grove_2d/grove_2d.tscn`: arbustos alrededor de paredes y un navmesh 2D, con las mismas teclas.
 
-Every kit point is on the ground plane: **(x, z) in 3D** and **(x, y) in 2D**, in global coordinates, as a `Vector2`. Distances are the world's units: metres in 3D, pixels in 2D.
+## El plano del suelo
+
+Todos los puntos del kit están sobre el plano del suelo: **(x, z) en 3D** y **(x, y) en 2D**, en coordenadas globales, como `Vector2`. Las distancias van en las unidades del mundo: metros en 3D, píxeles en 2D.
 
 ## 1. Scatter
 
 ```
 World
-├── Ground              # anything with collision (3D, for PropRayGround)
+├── Ground              # cualquier cosa con colisión (3D, para PropRayGround)
 ├── Forest              # PropScatter3D: rules, ground, variants, keep_out, mask
-│   ├── Prop0000        # the props: saved children, move or delete them like any node
+│   ├── Prop0000        # los props: hijos guardados, se mueven o borran como cualquier nodo
 │   └── …
-└── Camps/Start         # in a group the scatter keeps out of
+└── Camps/Start         # en un grupo que el scatter respeta
 ```
 
-1. Add a **PropScatter3D** (or **PropScatter2D**).
-2. Set **rules**: a `PropScatterRules`, which you can share between maps.
-3. Set **ground** (see below). The editor draws its outline.
-4. Add **variants**: a `PropVariant` per scene, each with a weight.
-5. Press **Scatter** in the inspector. **Clear** removes the props. Ctrl+Z undoes either.
+1. Agregá un **PropScatter3D** (o **PropScatter2D**).
+2. Poné **rules**: un `PropScatterRules`, que podés compartir entre mapas.
+3. Poné **ground** (abajo). El editor dibuja su contorno.
+4. Agregá **variants**: un `PropVariant` por escena, cada uno con su peso.
+5. Apretá **Scatter** en el inspector. **Clear** los saca. Ctrl+Z deshace cualquiera de los dos.
 
-The same rules and seed always give the same props. Scattering again replaces every child of the node; a scatter that cannot run (no ground, no variant) leaves them as they are.
+Las mismas reglas y semilla dan siempre los mismos props. Volver a plantar reemplaza todos los hijos del nodo; un scatter que no puede correr (sin suelo, sin variantes) los deja como están.
 
-The props are ordinary children owned by the scene, so they are saved and you can edit them with the gizmo. From code: `scatter.scatter(scene_owner)`. From a build step or CI (a scene, so the project runs as the game does, autoloads included):
+Los props son hijos comunes, del dueño de la escena: se guardan y se editan con el gizmo. Desde código: `scatter.scatter(scene_owner)`. Desde un paso de build o CI (una escena, así el proyecto corre como en el juego, autoloads incluidos):
 
 ```bash
 godot --headless --path . res://addons/prop_kit/tools/scatter_scene.tscn -- --scene=res://maps/forest.tscn
 ```
 
-The `rules`:
+Las `rules`:
 
-| Rule | What it does |
+| Regla | Qué hace |
 |---|---|
-| `random_seed` | The noise and every roll |
-| `cluster_size`, `cover`, `edge`, `density`, `lone_chance` | Clusters: woods and clearings. `cover` 1 = an even scatter |
-| `spacing` | Room between two props of scale 1, centre to centre. It grows with their scale |
-| `scale_range`, `scale_jitter` | Small at a cluster's edge, big at its heart, plus a random part |
-| `keep_out_shrink` | Smaller props near a keep-out |
-| `random_rotation` | A random turn for each prop |
-| `max_count` | The cap. The cut falls at cluster edges first |
-| `sink`, `align_to_normal` | 3D: into the ground, and leaning with the slope |
+| `random_seed` | El ruido y cada tirada |
+| `cluster_size`, `cover`, `edge`, `density`, `lone_chance` | Los grupos: bosques y claros. `cover` 1 = un scatter parejo |
+| `spacing` | Espacio entre dos props de escala 1, centro a centro. Crece con la escala |
+| `scale_range`, `scale_jitter` | Chicos en el borde de un grupo, grandes en el corazón, más una parte al azar |
+| `keep_out_shrink` | Props más chicos cerca de una zona prohibida |
+| `random_rotation` | Un giro al azar para cada prop |
+| `max_count` | El tope. Corta primero en los bordes de los grupos |
+| `sink`, `align_to_normal` | En 3D: hundir en el suelo e inclinar con la pendiente |
 
-**Ground** (`PropGround`): where props may stand. It gives the area, the height and normal (3D), and a weight from 0 (never) to 1 (fully).
+**Ground** (`PropGround`): dónde puede ir un prop. Da el área, la altura y la normal (3D), y un peso de 0 (nunca) a 1 (del todo).
 
-- `PropFlatGround`: a rect or a polygon outline at one height. The usual ground in 2D.
-- `PropRayGround` (3D): a ray straight down against `collision_mask`, with `max_slope_deg`. It works with any collider, in the editor and in play. Keep the props' own layer out of its mask.
-- **The game's own ground**: a script that `extends PropGround` (or a kit ground) and answers from the game's terrain. It needs `@tool`, because the scatter calls it in the editor. `examples/grove_2d/grove_ground.gd` keeps bushes off the walls this way.
+- `PropFlatGround`: un rect o el contorno de un polígono, a una altura. El suelo de siempre en 2D.
+- `PropRayGround` (3D): un rayo hacia abajo contra `collision_mask`, con `max_slope_deg`. Funciona con cualquier collider, en el editor y en el juego. Dejá la capa de los props fuera de su máscara.
+- **El suelo del juego**: un script que `extends PropGround` (o un suelo del kit) y responde desde el terreno del juego. Necesita `@tool`, porque el scatter lo llama en el editor. `examples/grove_2d/grove_ground.gd` saca así los arbustos de las paredes.
 
-**Keep-outs** (`PropKeepOut`): `{group, radius, soft}`. There is no prop within `radius` of any node of that group, and fewer, smaller ones up to `radius * (1 + soft)`. The kit never knows the game's classes; the game puts its spawn points, buildings or markers in a group.
+**Zonas prohibidas** (`PropKeepOut`): `{group, radius, soft}`. No hay ningún prop a menos de `radius` de un nodo de ese grupo, y hay menos y más chicos hasta `radius * (1 + soft)`. El kit nunca conoce las clases del juego: el juego pone en un grupo sus puntos de inicio, edificios o marcadores.
 
-**Mask** (`PropMask`): a texture over an area. One channel thins props and one forbids them (above `forbid_above`).
+**Máscara** (`PropMask`): una textura sobre un área. Un canal ralea props y otro los prohíbe (por encima de `forbid_above`).
 
-- `density_strength` says how far the density channel thins: 1 takes the chance down to the channel's value, 0.6 thins by at most 60 %.
-- `density_invert` reads the channel the other way round, so white = fewer props (rock painted white).
+- `density_strength` dice cuánto ralea el canal de densidad: 1 baja la chance hasta el valor del canal, 0,6 ralea como mucho un 60 %.
+- `density_invert` lee el canal al revés, así blanco = menos props (la roca pintada de blanco).
 
-## 2. Batch drawing (3D)
+## 2. Dibujo en lotes (3D)
 
-Add a **PropBatch3D** and set **props** to the parents of the props (the PropScatter3D nodes).
+Agregá un **PropBatch3D** y poné en **props** los padres de los props (los PropScatter3D).
 
-- **Batches.** Every `MeshInstance3D` of every prop goes into a `MultiMeshInstance3D`, one per kind of part (mesh, material, shadow, layers, visibility range) and per `chunk_size` square, so the camera culls by square. The prop nodes stay for collision and the navmesh; only their parts are hidden. 1600 trees in the example are a few dozen draws.
-- **Freeing a prop** redraws only its square, on the next frame.
-- **`refresh(prop)`** after hiding a prop or moving it inside its square.
-- **`rebuild_all()`** after adding props or changing what `mesh_of` answers.
-- **`mesh_of`** (`func(prop, part) -> Mesh`) draws another look for the same prop, such as another biome's tree, without touching the scene.
-- **Where it draws nothing:** in the editor (each prop shows itself, so you can move it), on a dedicated server or headless, and for a part with per-surface override materials, which is left as it is.
+- **Los lotes.** Cada `MeshInstance3D` de cada prop va a un `MultiMeshInstance3D`, uno por tipo de parte (malla, material, sombra, capas, rango de visibilidad) y por cuadrado de `chunk_size`, así la cámara descarta por cuadrado. Los nodos de los props siguen ahí, por la colisión y el navmesh; solo se ocultan sus partes. Los 1600 árboles del ejemplo son unas pocas decenas de draws.
+- **Liberar un prop** redibuja solo su cuadrado, en el frame siguiente.
+- **`refresh(prop)`** después de ocultar un prop o moverlo dentro de su cuadrado.
+- **`rebuild_all()`** después de agregar props o de cambiar lo que responde `mesh_of`.
+- **`mesh_of`** (`func(prop, part) -> Mesh`) dibuja otro aspecto para el mismo prop, como el árbol de otro bioma, sin tocar la escena.
+- **Dónde no dibuja:** en el editor (cada prop se muestra solo, para moverlo), en un servidor dedicado o headless, y en una parte con materiales por superficie, que queda como está.
 
-In 2D there is no batch: Godot already batches sprites.
+En 2D no hay lotes: Godot ya agrupa los sprites.
 
-## 3. Navmesh in zones
+## 3. Navmesh por zonas
 
 ```
 Game
-├── World               # source_root: what is parsed (terrain, buildings) and where the props are
+├── World               # source_root: lo que se parsea (terreno, edificios) y donde están los props
 │   ├── Ground
-│   └── Forest          # props in group prop_obstruction, on a collision layer the navmesh does not parse
-└── Nav                 # PropNavZones3D (or PropNavZones2D): one NavigationRegion per zone, internal
+│   └── Forest          # props en el grupo prop_obstruction, en una capa que el navmesh no parsea
+└── Nav                 # PropNavZones3D (o PropNavZones2D): una NavigationRegion por zona, interna
 ```
 
-1. Put the props in the group **`prop_obstruction`**, in the prop's own scene. Their direct, enabled collision shapes cut the navmesh:
-   - in 3D: Cylinder, Capsule, Sphere, Box, ConvexPolygon and CollisionPolygon3D;
-   - in 2D: Circle, Rectangle, Capsule, ConvexPolygon and CollisionPolygon2D.
-2. Put the props on a **collision layer the navmesh does not parse**: take it out of the template's collision mask, and parse static colliders. Otherwise the bake pays for them twice; the inspector warns.
-3. Add a **PropNavZones3D** with a `navigation_mesh` template: agent, cells, parsed geometry and collision mask. Set `source_root` and `zone_size` (a multiple of the cell size). The editor draws the zones.
-4. Press **Bake** in the inspector. It saves the scene, bakes it the way the game will (in a separate headless Godot, with the project's autoloads) into a `.res` next to the scene, which is the node's `saved`, and reloads the scene. The inspector warns when the saved bake no longer matches the props or the settings. From CI or a build step:
+1. Poné los props en el grupo **`prop_obstruction`**, en la escena del propio prop. Sus formas de colisión directas y habilitadas cortan el navmesh:
+   - en 3D: Cylinder, Capsule, Sphere, Box, ConvexPolygon y CollisionPolygon3D;
+   - en 2D: Circle, Rectangle, Capsule, ConvexPolygon y CollisionPolygon2D.
+2. Poné los props en una **capa de colisión que el navmesh no parsea**: sacala de la máscara de colisión de la plantilla y parseá colliders estáticos. Si no, el horneado los paga dos veces; el inspector avisa.
+3. Agregá un **PropNavZones3D** con una plantilla `navigation_mesh`: agente, celdas, geometría parseada y máscara. Poné `source_root` y `zone_size` (un múltiplo del tamaño de celda). El editor dibuja las zonas.
+4. Apretá **Bake** en el inspector. Guarda la escena, la hornea como lo va a hacer el juego (en otro Godot headless, con los autoloads del proyecto) en un `.res` junto a la escena, que es el `saved` del nodo, y recarga la escena. El inspector avisa cuando el horneado guardado ya no coincide con los props o la configuración. Desde CI o un paso de build:
 
    ```bash
    godot --headless --path . res://addons/prop_kit/tools/bake_scene.tscn -- --scene=res://maps/forest.tscn [--check]
    ```
 
-   - Without `--check`, it bakes every zone of every zones node and saves the results. When a node had no `saved`, the scene file is updated from a fresh copy, so nothing its scripts did while baking is kept.
-   - With `--check`, nothing is written. It prints each bake's content hash (two runs must print the same) and exits with 1 when a bake differs from the saved one.
+   - Sin `--check`, hornea todas las zonas de cada nodo de zonas y guarda los resultados. Si un nodo no tenía `saved`, el archivo de la escena se actualiza desde una copia limpia, así no queda nada de lo que hicieron sus scripts mientras horneaba.
+   - Con `--check` no escribe nada. Imprime el hash del contenido de cada horneado (dos corridas tienen que dar el mismo) y sale con 1 si un horneado no coincide con el guardado.
 
-In the game:
+En el juego:
 
-| You want to | Write |
+| Querés | Escribí |
 |---|---|
-| Wait until paths work | `if not nav.is_ready(): await nav.updated` |
-| Free or add a prop | Nothing more: `prop.queue_free()` or `add_child(prop)`, and the zones it touches re-bake on their own (`follow_props`) |
-| Tell it a prop moved | `nav.rebake_prop(prop)` |
-| Tell it the ground or a building changed | `nav.rebake(position, radius)` |
-| Re-bake everything | `nav.rebake_all()` |
-| Know when paths see a change | `await nav.updated`, or `nav.is_updating()` |
+| Esperar a que los caminos funcionen | `if not nav.is_ready(): await nav.updated` |
+| Liberar o agregar un prop | Nada más: `prop.queue_free()` o `add_child(prop)`, y las zonas que toca se rehornean solas (`follow_props`) |
+| Avisar que un prop se movió | `nav.rebake_prop(prop)` |
+| Avisar que cambió el suelo o un edificio | `nav.rebake(position, radius)` |
+| Rehornear todo | `nav.rebake_all()` |
+| Saber cuándo los caminos ven un cambio | `await nav.updated`, o `nav.is_updating()` |
 
-| Signal or call | Means | Now you can |
+| Señal o llamada | Quiere decir | Ahora podés |
 |---|---|---|
-| `updated` | The navigation map uses the latest pieces | Ask for paths and use `index`: they see every change asked for |
-| `is_ready()` | The first pieces are in; it stays true | Ask for paths at all |
-| `is_updating()` | A change is on its way (a bake, a result waiting, the map taking it) | Wait for `updated` if you need it |
-| `stale` | The saved bake does not match the props or the settings | Nothing: every zone bakes again (`rebake_when_stale`). In the editor, press Bake |
-| `bake_ready(zones)` | Apply MANUAL: a change in play is baked | Call `apply()` at the tick you choose (`has_result()`) |
+| `updated` | El mapa de navegación usa las últimas piezas | Pedir caminos y usar `index`: ven todos los cambios pedidos |
+| `is_ready()` | Las primeras piezas están puestas; queda en true | Pedir caminos |
+| `is_updating()` | Viene un cambio (un horneado, un resultado esperando, el mapa tomándolo) | Esperar `updated` si lo necesitás |
+| `stale` | El horneado guardado no coincide con los props o la configuración | Nada: todas las zonas se vuelven a hornear (`rebake_when_stale`). En el editor, apretá Bake |
+| `bake_ready(zones)` | Aplicar en MANUAL: un cambio en el juego ya se horneó | Llamar a `apply()` en el tick que elijas (`has_result()`) |
 
-- **On start** the saved bake loads with its index, and `updated` follows. When it does not match the props or the settings (the template, the zone grid, the game's `extra_fingerprint`), the node emits `stale`, bakes every zone again and never uses the stale pieces. `rebake_when_stale` off: it uses them.
-- **Changes in play** re-bake only the zones they touch, on worker threads. Props alone need no parse: the parsed geometry is reused, and only the props near those zones are read (an index by zone, so the whole group is not walked). A change while a bake runs joins the next one.
-- **`extra_fingerprint`** (`func() -> int`): a number from the game that changes when what the navmesh is baked from changes besides the props, such as the terrain's heights. It joins the fingerprint, so the saved bake goes stale when it differs. Set it any time: when the pieces in force are the saved bake's, they are checked again then.
-- **`apply_mode` MANUAL** (Advanced, for lockstep): a change in play waits for `apply()`, so every peer swaps it in at the same tick. The kit's own bakes (the start, a stale saved bake) apply at once, so `is_ready()` never waits for the game.
-- **`stats`** (PropNavStats) for logs: `parse_ms`, `obstruct_ms`, `bake_ms`, `index_ms`, `zones_baked` / `zones_total`, `obstructions`, `polygons`, `components`.
+- **Al arrancar** carga el horneado guardado con su índice, y después llega `updated`. Si no coincide con los props o la configuración (la plantilla, la grilla de zonas, el `extra_fingerprint` del juego), el nodo emite `stale`, vuelve a hornear todas las zonas y nunca usa las piezas vencidas. Con `rebake_when_stale` apagado, las usa.
+- **Los cambios en el juego** rehornean solo las zonas que tocan, en hilos de trabajo. Si solo cambiaron props no hace falta parsear: se reusa la geometría parseada y solo se leen los props cerca de esas zonas (un índice por zona, así no recorre el grupo entero). Un cambio mientras hornea se junta con el siguiente.
+- **`extra_fingerprint`** (`func() -> int`): un número del juego que cambia cuando cambia algo de lo que se hornea el navmesh además de los props, como las alturas del terreno. Entra en el fingerprint, así el horneado guardado queda vencido cuando difiere. Se puede poner en cualquier momento: si las piezas en uso son las del horneado guardado, se vuelven a comparar ahí.
+- **`apply_mode` MANUAL** (Advanced, para lockstep): un cambio en el juego espera a `apply()`, así todos los peers lo aplican en el mismo tick. Los horneados propios del kit (el arranque, un horneado guardado vencido) se aplican solos, así `is_ready()` nunca espera al juego.
+- **`stats`** (PropNavStats) para los logs: `parse_ms`, `obstruct_ms`, `bake_ms`, `index_ms`, `zones_baked` / `zones_total`, `obstructions`, `polygons`, `components`.
 
-**How the zones meet.** Each zone bakes with its own filter (`filter_baking_aabb` / `baking_rect`) and a border (`zone_border`, 0 = from the agent radius), with the zone lines anchored at (0, 0). The pieces meet exactly on the zone lines and the navigation map joins them with no edge connections (`use_edge_connections` stays off, which keeps every swap cheap). A partial re-bake gives the same pieces as baking everything.
+**Cómo se tocan las zonas.** Cada zona se hornea con su propio filtro (`filter_baking_aabb` / `baking_rect`) y un borde (`zone_border`, 0 = según el radio del agente), con las líneas de zona ancladas en (0, 0). Las piezas se tocan justo en la línea de zona y el mapa de navegación las une sin edge connections (`use_edge_connections` queda apagado, y cada cambio sale barato). Un rehorneado parcial da las mismas piezas que hornear todo.
 
-**Height (3D).** The bake measures heights in cells from each zone's floor, so the floor and ceiling of every zone are whole cells of `cell_height` from 0. A zone re-baked after the ground went lower or higher in play (a crater, a mound) still meets the zones that did not re-bake. They come from the parsed geometry with a margin. `height_range` (floor, ceiling) gives every zone the same box instead, whatever the geometry is when a zone re-bakes; nothing outside it is baked.
+**Altura (3D).** El horneado mide las alturas en celdas desde el piso de cada zona, así que el piso y el techo de cada zona caen en celdas enteras de `cell_height` desde 0. Una zona rehorneada después de que el suelo bajó o subió en el juego (un cráter, un montículo) se sigue tocando con las zonas que no se rehornearon. Salen de la geometría parseada, con un margen. `height_range` (piso, techo) les da a todas las zonas la misma caja, sea cual sea la geometría cuando una zona se rehornea; lo que queda afuera no se hornea.
 
-**Fewer polygons** (`merge_gap`):
+**Menos polígonos** (`merge_gap`):
 
-- Props closer than the gap become one obstruction. It is a closing: each outline grows by gap / 2, the touching ones join, and they shrink back. So a passage wider than the gap stays open; set it under the agent's diameter.
-- A clearing closed all around by narrower gaps is filled, because no agent could walk in or out of it. Leave an opening wider than the gap where one must exist.
-- `obstruction_sides` (outline sides of a round shape) is the other knob.
-- `carve` cuts exactly the outline, with no agent radius around it.
+- Los props más cerca que el hueco se vuelven una sola obstrucción. Es un cierre: cada contorno crece gap / 2, los que se tocan se unen y después se achican de nuevo. Así un paso más ancho que el hueco queda abierto; ponelo por debajo del diámetro del agente.
+- Un claro cerrado por completo con huecos más angostos se rellena, porque ningún agente podría entrar ni salir. Dejá una abertura más ancha que el hueco donde tenga que haberla.
+- `obstruction_sides` (los lados del contorno de una forma redonda) es la otra perilla.
+- `carve` corta justo el contorno, sin el radio del agente alrededor.
 
-**The index** (`index`: PropNavIndex). It is built on a worker with every bake, so it is ready the moment its pieces are swapped in. It answers what the server does not:
+**El índice** (`index`: PropNavIndex). Se arma en un hilo de trabajo con cada horneado, así está listo en el momento en que se cambian sus piezas. Responde lo que el servidor no:
 
-| Query | Answer |
+| Consulta | Respuesta |
 |---|---|
-| `can_reach(a, b, max_distance)` | Can an agent walk from `a` to `b` at all. `max_distance`: points that far off the navmesh on the ground plane (a unit against a wall) count from the closest walkable point |
-| `closest_point(point, max_distance, min_area)` | The nearest walkable point among those within `max_distance` of it on the ground plane, whatever the navmesh's height above the ground. With `min_area`, only on a component at least that large: the closest land, not the roof or the walled pocket a body is in |
-| `component_at(point, max_distance)`, `component_area[c]` | The connected component at a point, and each one's area on the ground plane (m² in 3D, px² in 2D) |
-| `polygon_at(point)` | The polygon under a point |
-| `stitched(template)` | The whole navmesh as one NavigationMesh |
+| `can_reach(a, b, max_distance, min_area)` | Si un agente puede caminar de `a` hasta `b`. `max_distance`: los puntos que están así de lejos del navmesh en el plano del suelo (una unidad contra una pared) cuentan desde el punto caminable más cercano; `min_area`: las islas no cuentan |
+| `closest_point(point, max_distance, min_area)` | El punto caminable más cercano entre los que están a `max_distance` en el plano del suelo, sea cual sea la altura del navmesh sobre el suelo. Con `min_area`, solo sobre una componente al menos así de grande: la tierra más cercana y no el techo o el bolsillo entre paredes donde está un cuerpo |
+| `component_at(point, max_distance, min_area)`, `component_area[c]` | La componente conexa en un punto (con `min_area`, la tierra más cercana así de grande, no una isla al lado), y el área de cada una en el plano del suelo (m² en 3D, px² en 2D) |
+| `polygon_at(point)` | El polígono bajo un punto |
+| `stitched(template)` | Todo el navmesh como una sola NavigationMesh |
 
-In 2D, the same queries end in `_2d`. `build_index` off: no index.
+En 2D, las mismas consultas terminan en `_2d`. Con `build_index` apagado no hay índice.
 
-**2D** (`PropNavZones2D`, pixels): the walkable area is the template's outlines, or the whole zone when none are drawn; parsed colliders and the props block it. `rebake(position, radius)` takes a `Vector2`.
+**2D** (`PropNavZones2D`, píxeles): el área caminable son los contornos de la plantilla, o la zona entera si no hay ninguno; los colliders parseados y los props la bloquean. `rebake(position, radius)` recibe un `Vector2`.
 
-**When a NavigationRegion is enough.** A small level that never changes in play bakes fine with a NavigationRegion3D and its own Bake button. PropKit pays off when props change in play, when the world is big enough that a full bake is slow, or when the props should cut the navmesh from their colliders without a NavigationObstacle in each.
+**Cuándo alcanza con una NavigationRegion.** Un nivel chico que no cambia en el juego se hornea bien con una NavigationRegion3D y su propio botón Bake. PropKit vale la pena cuando los props cambian en el juego, cuando el mundo es tan grande que hornearlo entero tarda, o cuando los props tienen que cortar el navmesh desde sus colliders sin un NavigationObstacle en cada uno.
 
-## In the editor
+## En el editor
 
-- **Scatter** and **Clear** (scatter node) can be undone: Ctrl+Z puts back the props they replaced, hand edits and all.
-- **Bake** (zones node) saves the scene, bakes it the way the game will in a separate headless Godot (its autoloads and main loop run; where the scene sits in the editor plays no part), and reloads it.
-- **Project > Tools**: *PropKit: Scatter the open scene* runs every scatter of the open scene, each undoable; *PropKit: Bake the open scene* is Bake for every zones node in it.
-- **The 3D and 2D views** draw a scatter's ground outline (white) and a zones node's zones (blue).
-- **Warnings** on a zones node: the saved bake does not match the props or the settings (press Bake); no node of the props' group under `source_root`; a prop's layer parsed as geometry; a zone size off the cell size; a cell size that is not the navigation map's.
+- **Scatter** y **Clear** (nodo de scatter) se pueden deshacer: Ctrl+Z devuelve los props que reemplazaron, con las ediciones a mano.
+- **Bake** (nodo de zonas) guarda la escena, la hornea como lo va a hacer el juego en otro Godot headless (corren sus autoloads y su main loop; no importa dónde esté la escena en el editor) y la recarga.
+- **Proyecto > Herramientas**: *PropKit: Scatter the open scene* corre todos los scatters de la escena abierta, cada uno deshacible; *PropKit: Bake the open scene* es Bake para todos sus nodos de zonas.
+- **Las vistas 3D y 2D** dibujan el contorno del suelo de un scatter (blanco) y las zonas de un nodo de zonas (azul).
+- **Avisos** en un nodo de zonas: el horneado guardado no coincide con los props o la configuración (apretá Bake); ningún nodo del grupo de los props bajo `source_root`; la capa de un prop parseada como geometría; un tamaño de zona que no es múltiplo de la celda; un tamaño de celda que no es el del mapa de navegación.
 
-## Multiplayer
+## Multijugador
 
-PropKit has no network. A scatter is deterministic, so all peers that load the same scene have the same props.
+PropKit no tiene red. Un scatter es determinista, así que todos los peers que cargan la misma escena tienen los mismos props.
 
-When something blocks changes during a match (a prop chopped, a building up), every peer gets the change as game data, over its own transport (MpKit or anything else), and makes it: it frees the prop (the navmesh follows), or calls `rebake(position, radius)`. With `apply_mode` MANUAL, each one swaps the result in at the same tick (`bake_ready`, `apply()`). A lockstep game may also turn the navigation map's asynchronous iterations off (`navigation/world/map_use_async_iterations`); PropKit works either way.
+Cuando algo que bloquea cambia durante la partida (un prop talado, un edificio levantado), cada peer recibe el cambio como un dato del juego, por su propio transporte (MpKit o cualquier otro). Cada uno lo hace: libera el prop (el navmesh lo sigue) o llama a `rebake(position, radius)`. Con `apply_mode` MANUAL, cada uno aplica el resultado en el mismo tick (`bake_ready`, `apply()`). Un juego en lockstep también puede apagar las iteraciones asíncronas del mapa de navegación (`navigation/world/map_use_async_iterations`); PropKit funciona igual de las dos maneras.
 
-## Godot issues it works around
+## Problemas de Godot que esquiva
 
-- **Godot 4.7: a region's update can be lost.** With asynchronous region iterations, a navmesh set on a region while its previous iteration is still running is lost: the map keeps the old one for good. The zones node holds a new piece until the region has taken the previous one, so nothing is lost. It reproduces on its own: one region, two navmeshes set one frame apart. `test_a_saved_bake_loads_and_goes_stale` covers it.
-- **2D: vertices closer than a map cell.** Godot's 2D baker can leave two vertices less than a cell apart (sub-pixel slivers where outlines meet). The map joins edges by the cells of their ends, so it finds more than two edges on one, warns "More than 2 edges tried to occupy the same map rasterization space" and leaves them unjoined. The kit welds the vertices of a baked 2D piece that share a map cell and drops the polygons that collapse. `test_a_weld_drops_what_the_map_cannot_tell_apart` and `test_grove_2d_runs` cover it.
+- **Godot 4.7: una región puede perder una actualización.** Con las iteraciones asíncronas de regiones, una navmesh que se le pone a una región mientras su iteración anterior todavía corre se pierde: el mapa se queda con la vieja para siempre. El nodo de zonas guarda la pieza nueva hasta que la región tomó la anterior, así no se pierde nada. Se reproduce solo: una región y dos navmeshes puestas con un frame de diferencia. `test_a_saved_bake_loads_and_goes_stale` lo cubre.
+- **2D: vértices más cerca que una celda del mapa.** El horneador 2D de Godot puede dejar dos vértices a menos de una celda (astillas de menos de un píxel donde se juntan contornos). El mapa une las aristas por las celdas de sus puntas, así que encuentra más de dos aristas en una, avisa "More than 2 edges tried to occupy the same map rasterization space" y las deja sin unir. El kit suelda los vértices de cada pieza 2D horneada que caen en la misma celda del mapa y descarta los polígonos que colapsan. Lo cubren `test_a_weld_drops_what_the_map_cannot_tell_apart` y `test_grove_2d_runs`.
 
-## Measured
+## Medido
 
-On a Mac, headless, with the forest example at 1365 props, 16 zones and 11 678 polygons:
+En una Mac, headless, con el bosque del ejemplo a 1365 props, 16 zonas y 11 678 polígonos:
 
-| Bake | Obstructions (main thread) | Bake (workers) | Index (worker) |
+| Horneado | Obstrucciones (hilo principal) | Horneado (hilos de trabajo) | Índice (hilo de trabajo) |
 |---|---|---|---|
-| Every zone | 24 ms | 32 ms | 62 ms |
-| Chopping a clearing (1 zone of 16) | 3.3 ms | 10 ms | 61 ms |
+| Todas las zonas | 24 ms | 32 ms | 62 ms |
+| Talar un claro (1 zona de 16) | 3,3 ms | 10 ms | 61 ms |
 
-In a window the first bake of a scene takes longer while Godot compiles its shaders. After that, the example's 343 props bake in about 24 ms.
+En una ventana, el primer horneado de una escena tarda más mientras Godot compila sus shaders. Después, los 343 props del ejemplo se hornean en unos 24 ms.
 
-The zones bake in the kit's own worker tasks, not the server's asynchronous bake, so freeing the node or quitting the game in the middle of a bake waits for the workers instead of hanging.
+Las zonas se hornean en tareas propias del kit, no en el horneado asíncrono del servidor. Así, liberar el nodo o cerrar el juego a mitad de un horneado espera a los hilos de trabajo en vez de colgarse.
 
 ## Tests
 
@@ -198,31 +201,31 @@ The zones bake in the kit's own worker tasks, not the server's asynchronous bake
 godot --headless --path propkit_lab --script res://addons/prop_kit/tests/prop_test_runner.gd
 ```
 
-The result is `PROPKIT TESTS PASS (n)`. The tests cover:
+El resultado es `PROPKIT TESTS PASS (n)`. Los tests cubren:
 
-- **the planner**: determinism, room, keep-outs, masks (thinning part way, inverted), outlines, variants and the cap;
-- **the scatter**: saved children, ray ground, slopes, normals, 2D, saving a scene;
-- **the command-line tools**: `scatter_scene` saves the props, `bake_scene --check` gives the same hash twice, and bakes a scene whose script uses an autoload;
-- **every obstruction shape**, merging, and the fingerprint;
-- **the zone grid**;
-- **the 3D and 2D zones**: zones that meet, props that block, ready and updated, freed, added and moved props followed, partial = full, `follow_props` off, MANUAL apply of changes in play while the kit's own bakes apply at once, joined changes, saved and stale bakes (props, settings or the game's fingerprint), merging, a seam after the ground went lower, a fixed height range, `can_reach` near the navmesh, the closest point on the plane and past islands, the 2D weld, synchronous navigation iterations;
-- **the batch**;
-- **both examples, end to end.**
+- **el planner**: determinismo, espacio, zonas prohibidas, máscaras (raleo parcial, invertidas), contornos, variantes y el tope;
+- **el scatter**: hijos guardados, suelo por rayos, pendientes, normales, 2D, guardar una escena;
+- **las herramientas de línea de comandos**: `scatter_scene` guarda los props, `bake_scene --check` da el mismo hash dos veces y hornea una escena cuyo script usa un autoload;
+- **cada forma de obstrucción**, el merge y el fingerprint;
+- **la grilla de zonas**;
+- **las zonas 3D y 2D**: zonas que se tocan, props que bloquean, ready y updated, props liberados, agregados y movidos que el nodo sigue, parcial = completo, `follow_props` apagado, aplicar en MANUAL los cambios en el juego mientras los horneados propios del kit se aplican solos, cambios que se juntan, horneados guardados y vencidos (por los props, la configuración o el fingerprint del juego), merge, una costura después de que el suelo bajó, un rango de altura fijo, `can_reach` cerca del navmesh, el punto más cercano en el plano y salteando islas, la soldadura 2D, iteraciones de navegación síncronas;
+- **los lotes**;
+- **los dos ejemplos, de punta a punta.**
 
-The editor tools have their own check, a real editor doing what a person does (Scatter, Clear, undo and redo, a hand edit undo keeps, Bake and the scene it reloads, the stale warning):
+Las herramientas del editor tienen su propio chequeo, un editor real haciendo lo que hace una persona (Scatter, Clear, deshacer y rehacer, una edición a mano que deshacer conserva, Bake y la escena que recarga, el aviso de horneado vencido):
 
 ```bash
 PROPKIT_EDITOR_CHECK=1 godot --headless --editor --path propkit_lab
 ```
 
-It prints `EDITOR CHECK PASS`.
+Imprime `EDITOR CHECK PASS`.
 
-## Not in the kit
+## Lo que no está en el kit
 
-These are the game's:
+Esto es del juego:
 
-- what a prop is (health, loot, network sync);
-- the transport, and when a change in play applies (MANUAL);
-- what else changed besides the props (`rebake`), and the ground's data.
+- qué es un prop (vida, botín, sincronización en red);
+- el transporte, y cuándo se aplica un cambio en el juego (MANUAL);
+- qué más cambió además de los props (`rebake`), y los datos del suelo.
 
-Grass is a separate kit, GrassKit, planned next.
+El pasto es un kit aparte, GrassKit, planeado como el siguiente.

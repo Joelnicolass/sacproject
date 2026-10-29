@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/grass_kit/examples/grass_3d/grass_3d.gd" id="1_main"]
+[ext_resource type="Script" path="res://addons/grass_kit/examples/grass_3d/grass_hills.gd" id="2_hills"]
+[ext_resource type="Script" path="res://addons/grass_kit/field/grass_field_3d.gd" id="3_field"]
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_look.gd" id="5_look"]
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_quality.gd" id="6_quality"]
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_clearing.gd" id="7_clearing"]
+[ext_resource type="Script" path="res://addons/grass_kit/field/grass_clear_3d.gd" id="8_clear"]
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_wind.gd" id="9_wind"]
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_mesh.gd" id="10_mesh"]
+[ext_resource type="Resource" path="res://addons/grass_kit/examples/grass_3d/flower.tres" id="11_flower"]
+[ext_resource type="Resource" path="res://addons/grass_kit/examples/grass_3d/grass_3d_grass_ground.res" id="12_ground"]
+[ext_resource type="Resource" path="res://addons/grass_kit/looks/meadow.tres" id="13_meadow"]
+[ext_resource type="Resource" path="res://addons/grass_kit/looks/autumn.tres" id="14_autumn"]
+
+[sub_resource type="Resource" id="Resource_blade"]
+script = ExtResource("10_mesh")
+weight = 97.0
+
+[sub_resource type="Resource" id="Resource_flowers"]
+script = ExtResource("5_look")
+meshes = Array[ExtResource("10_mesh")]([SubResource("Resource_blade"), ExtResource("11_flower")])
+
+[sub_resource type="Resource" id="Resource_quality"]
+script = ExtResource("6_quality")
+density = 32.0
+radius = 40.0
+near_radius = 13.0
+segments = 4
+
+[sub_resource type="Resource" id="Resource_wind"]
+script = ExtResource("9_wind")
+
+[sub_resource type="Resource" id="Resource_camps"]
+script = ExtResource("7_clearing")
+group = &"camps"
+radius = 3.5
+
+[sub_resource type="Environment" id="Environment_sky"]
+background_mode = 1
+background_color = Color(0.62, 0.76, 0.9, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.7, 0.75, 0.8, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_walker"]
+albedo_color = Color(0.85, 0.3, 0.2, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_walker"]
+material = SubResource("StandardMaterial3D_walker")
+radius = 0.35
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_camp"]
+albedo_color = Color(0.55, 0.42, 0.3, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_camp"]
+material = SubResource("StandardMaterial3D_camp")
+top_radius = 0.6
+bottom_radius = 1.2
+height = 8.0
+
+[node name="Grass3D" type="Node3D" node_paths=PackedStringArray("field", "hills", "walker", "camera", "hud")]
+script = ExtResource("1_main")
+field = NodePath("Field")
+hills = NodePath("Hills")
+walker = NodePath("Walker")
+camera = NodePath("Camera")
+hud = NodePath("Hud/Info")
+autumn = ExtResource("14_autumn")
+flowers = SubResource("Resource_flowers")
+
+[node name="Hills" type="StaticBody3D" parent="."]
+script = ExtResource("2_hills")
+
+[node name="Field" type="Node3D" parent="."]
+script = ExtResource("3_field")
+ground = ExtResource("12_ground")
+look = ExtResource("13_meadow")
+quality = SubResource("Resource_quality")
+wind = SubResource("Resource_wind")
+clearings = Array[ExtResource("7_clearing")]([SubResource("Resource_camps")])
+trample_group = &"units"
+trample_recover = 1.5
+
+[node name="Walker" type="MeshInstance3D" parent="." groups=["units"]]
+mesh = SubResource("CapsuleMesh_walker")
+
+[node name="Camp0" type="MeshInstance3D" parent="." groups=["camps"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 4)
+mesh = SubResource("CylinderMesh_camp")
+
+[node name="Camp1" type="MeshInstance3D" parent="." groups=["camps"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -8)
+mesh = SubResource("CylinderMesh_camp")
+
+[node name="Clearing" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, -14)
+script = ExtResource("8_clear")
+radius = 5.0
+soft = 2.0
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.64278764, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_sky")
+
+[node name="Camera" type="Camera3D" parent="."]
+current = true
+far = 600.0
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="Info" type="Label" parent="Hud"]
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 12.0
+offset_bottom = 10.0

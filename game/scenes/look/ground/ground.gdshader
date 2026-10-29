@@ -83,7 +83,7 @@ void fragment() {
 			orm += taps[i].orm * w[i];
 		}
 		world_n = normalize(n);
-		albedo = grass_paint_textured(albedo, w, map_pos.xz, TIME, slope);
+		albedo = grass_paint_textured(albedo, w, map_pos.xz, slope);
 		albedo *= role_macro(map_pos.xz);
 	}
 	albedo = ground_scar_mix(albedo, map_pos.xz, false);

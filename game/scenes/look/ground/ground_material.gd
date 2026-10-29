@@ -97,32 +97,16 @@ static func update(mat: ShaderMaterial, ground: GodGround, preset: LookQuality) 
 	mat.set_shader_parameter("has_edge", ground.edge != null)
 
 
-## Gives the ground the average colour of the grass where the grass grows (see
+## Gives the ground GrassKit's grass colour where the grass grows, with the wind's bands (see
 ## `grass_paint.gdshaderinc`). amount 0 removes it. `roles`: the share of the paint per role (x..w =
 ## open, earth, rock, path).
 static func set_grass_paint(
-	mat: ShaderMaterial,
-	color: Color,
-	amount: float,
-	roles: Vector4,
-	reference: float,
-	wave_dir: Vector2,
-	wave_scale: float,
-	wave_speed: float,
-	wave_strength: float,
-	slope_start := 10.0,
-	slope_end := 36.0
+	mat: ShaderMaterial, amount: float, roles: Vector4, slope_deg: Vector2, waves: float
 ) -> void:
-	mat.set_shader_parameter("grass_wave_noise", GroundTextures.noise())
-	mat.set_shader_parameter("grass_paint_color", Vector3(color.r, color.g, color.b))
 	mat.set_shader_parameter("grass_paint_amount", amount)
 	mat.set_shader_parameter("grass_paint_roles", roles)
-	mat.set_shader_parameter("grass_paint_ref", reference)
-	mat.set_shader_parameter("grass_paint_slope", Vector2(slope_start, slope_end))
-	mat.set_shader_parameter("grass_wave_dir", wave_dir)
-	mat.set_shader_parameter("grass_wave_scale_m", wave_scale)
-	mat.set_shader_parameter("grass_wave_speed", wave_speed)
-	mat.set_shader_parameter("grass_wave_strength", wave_strength)
+	mat.set_shader_parameter("grass_paint_slope", slope_deg)
+	mat.set_shader_parameter("grass_paint_waves", waves)
 
 
 ## The seamless noises shared by the ground and the grass (wind, patches).

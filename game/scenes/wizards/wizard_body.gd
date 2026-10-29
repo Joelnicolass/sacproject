@@ -99,6 +99,11 @@ var move_speed: float = 0.0
 var speed_factor := 1.0
 var look_yaw := 0.0
 
+## How wide this body bends the grass (GrassKit reads it on the field's trample group): none once
+## it lies as a corpse.
+var grass_trample_radius: float:
+	get:
+		return 0.0 if is_in_group(Corpse.GROUP) else maxf(BodyBox.half_size(self), 0.25) * 1.5
 var _sent_yaw := NAN
 var _stats_ready := false
 
@@ -120,6 +125,7 @@ var _stats_ready := false
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	add_to_group(GrassLayer.TRAMPLE_GROUP)
 	_refresh_owner()
 	floor_snap_length = 0.5
 	look_yaw = rotation.y

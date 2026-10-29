@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="GrassWind" format=3]
+
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_wind.gd" id="1_wind"]
+
+[resource]
+script = ExtResource("1_wind")
+direction = Vector2(0.82, 0.57)
+strength = 0.32
+speed = 2.2
+scale = 55.0
+blend_time = 2.0

@@ -34,8 +34,8 @@ extends Resource
 ## The god's four kinds of ground (open, earth, rock, path), laid on each map's ground roles. Empty
 ## = the plain «no look» ground.
 @export var ground: GodGround
-## The stylized grass around the camera.
-@export var grass: GrassSet
+## The grass around the camera (GrassKit). Empty = no grass on this land.
+@export var grass: GrassLook
 ## The god's trees, shrubs and ground cover, drawn where the map's FloraLayers paint those roles.
 ## Empty = every layer draws its own species.
 @export var flora: GodFlora

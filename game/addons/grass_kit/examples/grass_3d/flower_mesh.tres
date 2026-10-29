@@ -1,0 +1,12 @@
+[gd_resource type="ArrayMesh" format=4]
+
+[resource]
+_surfaces = [{
+"aabb": AABB(-0.12, 0, -0.12, 0.24, 0.76, 0.24),
+"attribute_data": PackedByteArray("AAAAAAAAgD8AAIA/AACAPwAAgD9mZmY/AAAAAAAAgD8AAIA/ZmZmPwAAAABmZmY/AAAAAJqZWT8AAIA/mplZPwAAgD8AAAAAAAAAAJqZWT8AAIA/AAAAAAAAAAAAAAAAAAAAAJqZWT8AAIA/mplZPwAAgD8AAAAAAAAAAJqZWT8AAIA/AAAAAAAAAAAAAAAA"),
+"format": 34359738391,
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 18,
+"vertex_data": PackedByteArray("CtcjvAAAAAAAAAAACtcjPAAAAAAAAAAACtcjPJqZGT8AAAAACtcjvAAAAAAAAAAACtcjPJqZGT8AAAAACtcjvJqZGT8AAAAAj8L1vbgeBT8AAAAAj8L1PbgeBT8AAAAAj8L1PVyPQj8AAAAAj8L1vbgeBT8AAAAAj8L1PVyPQj8AAAAAj8L1vVyPQj8AAAAAAAAAALgeBT+PwvW9AAAAALgeBT+PwvU9AAAAAFyPQj+PwvU9AAAAALgeBT+PwvW9AAAAAFyPQj+PwvU9AAAAAFyPQj+PwvW9/3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3////9//7//f////3//v/9/////f/+//3////9//7//f////3//v/9/////f/+/")
+}]

@@ -100,6 +100,11 @@ var gibbed := false
 ## Set by the Orders child while an RTS order steers the body: no idle aggro, and a chase does not
 ## give up at sight range.
 var ordered := false
+## How wide this body bends the grass (GrassKit reads it on the field's trample group): none once
+## it lies as a corpse.
+var grass_trample_radius: float:
+	get:
+		return 0.0 if is_in_group(Corpse.GROUP) else maxf(BodyBox.half_size(self), 0.25) * 1.5
 ## Owned by Engagement; every state reads and writes it here.
 var target: Node3D:
 	get:
@@ -116,6 +121,7 @@ var target: Node3D:
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	add_to_group(GrassLayer.TRAMPLE_GROUP)
 	if unit != null:
 		unit.kind = StringName(creature_tag)
 		unit.selected_changed.connect(

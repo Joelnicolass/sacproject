@@ -8,7 +8,7 @@ extends Resource
 ## - VSync, fullscreen and the FPS cap are the window's.
 ## - «Vegetación»: off, the mesh vegetation layers (FloraField) draw nothing whatever the preset
 ##   says.
-## - «Pasto»: off, the grass (GrassField) draws nothing whatever the preset says; it takes effect at
+## - «Pasto»: off, the grass (GrassLayer) draws nothing whatever the preset says; it takes effect at
 ##   once, in a match too.
 ## - «Relieve»: off, no model draws its normal maps whatever the preset says (SurfaceReliefLayer
 ##   reads it).

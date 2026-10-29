@@ -81,19 +81,23 @@ func polygon_at(point: Vector3) -> int:
 
 
 ## The component under `point` (-1 = none). With `max_distance`, a point off the navmesh takes the
-## component of the closest walkable point that near (on the ground plane).
-func component_at(point: Vector3, max_distance := 0.0) -> int:
+## component of the closest walkable point that near (on the ground plane). With `min_area`, a
+## component smaller than that (an island: a roof, a walled pocket) does not count, and the closest
+## land that large within `max_distance` does.
+func component_at(point: Vector3, max_distance := 0.0, min_area := 0.0) -> int:
 	var polygon := polygon_at(point)
+	if polygon >= 0 and component_area[component_of[polygon]] < min_area:
+		polygon = -1
 	if polygon < 0 and max_distance > 0.0:
-		polygon = _closest_polygon(point, max_distance, 0.0)[0]
+		polygon = _closest_polygon(point, max_distance, min_area)[0]
 	return component_of[polygon] if polygon >= 0 else -1
 
 
 ## True when an agent could walk from `a` to `b`: both on the navmesh (or within `max_distance` of
-## it, on the ground plane) and connected.
-func can_reach(a: Vector3, b: Vector3, max_distance := 0.0) -> bool:
-	var ca := component_at(a, max_distance)
-	return ca >= 0 and ca == component_at(b, max_distance)
+## it, on the ground plane, on a component of at least `min_area`) and connected.
+func can_reach(a: Vector3, b: Vector3, max_distance := 0.0, min_area := 0.0) -> bool:
+	var ca := component_at(a, max_distance, min_area)
+	return ca >= 0 and ca == component_at(b, max_distance, min_area)
 
 
 ## The walkable point nearest to `point`, among those within `max_distance` of it on the ground
@@ -108,12 +112,12 @@ func polygon_at_2d(point: Vector2) -> int:
 	return polygon_at(Vector3(point.x, 0.0, point.y))
 
 
-func component_at_2d(point: Vector2, max_distance := 0.0) -> int:
-	return component_at(Vector3(point.x, 0.0, point.y), max_distance)
+func component_at_2d(point: Vector2, max_distance := 0.0, min_area := 0.0) -> int:
+	return component_at(Vector3(point.x, 0.0, point.y), max_distance, min_area)
 
 
-func can_reach_2d(a: Vector2, b: Vector2, max_distance := 0.0) -> bool:
-	return can_reach(Vector3(a.x, 0.0, a.y), Vector3(b.x, 0.0, b.y), max_distance)
+func can_reach_2d(a: Vector2, b: Vector2, max_distance := 0.0, min_area := 0.0) -> bool:
+	return can_reach(Vector3(a.x, 0.0, a.y), Vector3(b.x, 0.0, b.y), max_distance, min_area)
 
 
 func closest_point_2d(point: Vector2, max_distance := INF, min_area := 0.0) -> Vector2:

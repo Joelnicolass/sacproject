@@ -100,6 +100,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/stalks/meanstalks.tscn" id="z61_stalks"]
 [ext_resource type="PackedScene" path="res://scenes/spells/tornado/tornado.tscn" id="z61_tornado"]
 [ext_resource type="PackedScene" path="res://scenes/look/post/psx_screen.tscn" id="post_psx"]
+[ext_resource type="PackedScene" path="res://scenes/look/post/lens_screen.tscn" id="post_lens"]
 [ext_resource type="PackedScene" path="res://scenes/ui/match_wait/match_wait.tscn" id="g68_wait"]
 [ext_resource type="PackedScene" path="res://scenes/look/warmup/shader_warmup.tscn" id="w69_warmup"]
 [ext_resource type="Script" path="res://scenes/net/load_report.gd" id="w69_report"]
@@ -282,6 +283,8 @@ unique_name_in_owner = true
 
 [node name="PostFx" parent="World" instance=ExtResource("post_psx")]
 visible = false
+
+[node name="LensFx" parent="World" instance=ExtResource("post_lens")]
 
 [node name="Systems" type="Node" parent="."]
 editor_description = "Match rules and services with no body: local seat, warm-up, souls, sacrifices, result, navigation, AI and the option appliers."

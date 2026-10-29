@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://scenes/look/post/lens_screen.gdshader" id="1_lens"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lens"]
+shader = ExtResource("1_lens")
+shader_parameter/vignette_strength = 0.35
+shader_parameter/vignette_start = 0.45
+shader_parameter/vignette_color = Color(0, 0, 0, 1)
+shader_parameter/aberration_px = 2.5
+shader_parameter/aberration_falloff = 2.0
+
+[node name="LensScreen" type="CanvasLayer"]
+layer = -1
+
+[node name="BackBuffer" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
+[node name="Screen" type="ColorRect" parent="."]
+editor_description = "Vignette and chromatic aberration over the 3D view (lens_screen.gdshader). Set vignette_strength or aberration_px to 0 to turn one off; hide LensScreen to turn both off."
+material = SubResource("ShaderMaterial_lens")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

@@ -1,10 +1,12 @@
-extends SceneTree
+extends Node
 
-## Bakes the navmesh zones of a scene from the command line, for CI or a build step:
-##   godot --headless --path <project> --script res://addons/prop_kit/tools/bake_scene.gd \
+## Bakes the navmesh zones of a scene from the command line, for CI or a build step (and for
+## «Bake» in the editor, which runs it):
+##   godot --headless --path <project> res://addons/prop_kit/tools/bake_scene.tscn \
 ##     -- --scene=res://maps/forest.tscn [--check]
-## Every PropNavZones3D / PropNavZones2D of the scene bakes all its zones from scratch (its saved
-## bake is ignored), the way «Bake» does in the editor. The scene's own scripts run, as in a game.
+## A scene, not a --script: the project runs as the game does (its main loop, its autoloads), so
+## the scene's own scripts work as in the game. Every PropNavZones3D / PropNavZones2D of the scene
+## bakes all its zones from scratch (its saved bake is ignored).
 ## Without --check: each result is saved over the node's `saved` (or next to the scene as
 ## <scene>_nav.res, <scene>_<node>_nav.res for a second node). When a node gets a new `saved`, the
 ## scene file is updated from a fresh copy of it, so nothing the scripts did while baking is kept.
@@ -15,7 +17,11 @@ extends SceneTree
 const TIMEOUT_FRAMES := 6000
 
 
-func _initialize() -> void:
+func _ready() -> void:
+	_run.call_deferred()
+
+
+func _run() -> void:
 	var path := ""
 	var check := false
 	for arg in OS.get_cmdline_user_args():
@@ -25,12 +31,12 @@ func _initialize() -> void:
 			check = true
 	if path.is_empty():
 		printerr("bake_scene: pass -- --scene=res://path/to/scene.tscn [--check]")
-		quit(1)
+		get_tree().quit(1)
 		return
 	var packed := load(path) as PackedScene
 	if packed == null:
 		printerr("bake_scene: cannot load %s" % path)
-		quit(1)
+		get_tree().quit(1)
 		return
 	var scene := packed.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE)
 	var nodes: Array[Node] = []
@@ -43,9 +49,9 @@ func _initialize() -> void:
 			node.set(&"saved", null)
 	if nodes.is_empty():
 		printerr("bake_scene: no PropNavZones3D / PropNavZones2D in %s" % path)
-		quit(1)
+		get_tree().quit(1)
 		return
-	root.add_child(scene)
+	get_tree().root.add_child(scene)
 	var failed := false
 	# Node path -> the new saved bake, for the nodes that had none.
 	var new_saved: Dictionary[NodePath, PropNavBake] = {}
@@ -77,7 +83,7 @@ func _initialize() -> void:
 		print("bake_scene: %s saved %s (%s)" % [node.name, out, stats])
 	if not new_saved.is_empty() and not failed:
 		failed = not _point_scene_at(packed, path, new_saved)
-	quit(1 if failed else 0)
+	get_tree().quit(1 if failed else 0)
 
 
 ## Saves the scene at `path` with each node of `bakes` pointing at its new saved bake. Works on a
@@ -99,19 +105,11 @@ func _point_scene_at(
 	return true
 
 
-## Waits until `node` has baked and applied every zone (a MANUAL node is applied here) and nothing
-## runs any more.
+## Waits until `node` has baked every zone (the start bake applies on its own, MANUAL or not) and
+## nothing runs any more.
 func _settle(node: Node) -> bool:
-	var applied := [false]
-	var on_applied := func(_zones: PackedInt32Array) -> void: applied[0] = true
-	node.connect(&"applied", on_applied)
-	var ok := false
 	for frame in TIMEOUT_FRAMES:
-		await process_frame
-		if node.call(&"has_result"):
-			node.call(&"apply")
-		if applied[0] and node.call(&"is_done") and not node.call(&"has_result"):
-			ok = true
-			break
-	node.disconnect(&"applied", on_applied)
-	return ok
+		await get_tree().process_frame
+		if node.call(&"is_ready") and not node.call(&"is_updating"):
+			return true
+	return false

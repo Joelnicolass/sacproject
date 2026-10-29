@@ -11,7 +11,7 @@ const SNAP_M := 6.0
 
 
 static func check(
-	root: MapRoot, terrain: Terrain, definition: MapDefinition, regions: NavRegions
+	root: MapRoot, terrain: Terrain, definition: MapDefinition, nav: NavMeshBackend
 ) -> Array[String]:
 	var problems: Array[String] = []
 	var starts: Array[PlayerStart] = []
@@ -34,14 +34,14 @@ static func check(
 		seen[start.slot] = true
 		var spot := start.spawn_transform().origin
 		var on_ground := terrain.is_on_ground(spot.x, spot.z)
-		var region := regions.component_at(spot, SNAP_M) if regions.polygon_count > 0 else -1
-		var region_size := (
-			regions.component_size_at(spot, SNAP_M) if regions.polygon_count > 0 else 0
-		)
+		var land := nav.nearest_free(spot) if nav.built else Vector3(NAN, NAN, NAN)
+		var near := not is_nan(land.x) and Vector2(land.x - spot.x, land.z - spot.z).length() <= SNAP_M
+		var region := nav.zones.index.component_at(land) if near else -1
+		var region_size := nav.zones.index.component_area[region] if region >= 0 else 0.0
 		print(
 			(
 				# gdlint: ignore=max-line-length
-				"start %s slot %d: altar (%.0f, %.0f) wizard (%.0f, %.0f) ground %s, region %d of %d polygons"
+				"start %s slot %d: altar (%.0f, %.0f) wizard (%.0f, %.0f) ground %s, region %d of %.0f m²"
 				% [
 					path,
 					start.slot,

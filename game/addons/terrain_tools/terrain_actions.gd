@@ -52,7 +52,7 @@ func bring_from_blender(terrain: Terrain, force := false) -> void:
 		if run.ok():
 			_history.forget(terrain)
 			TerrainHistory.reimport(folder)
-			EditorDialogs.say("Bring from Blender", run.summary() + "\nImported again. Bake the navmesh (NavRegion) and validate the map.")
+			EditorDialogs.say("Bring from Blender", run.summary() + "\nImported again. Bake the navmesh (Nav) and validate the map.")
 		elif force:
 			EditorDialogs.say("Bring from Blender: refused", run.summary())
 		else:

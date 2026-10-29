@@ -3,13 +3,13 @@ class_name PropNavIndex
 extends RefCounted
 
 ## The walkable surface of a navmesh baked in zones, as one piece of data for the questions the
-## navigation server does not answer: which polygons connect across the zones (the connected
-## components: can an agent get from here to there at all), the polygon and component at a point,
-## the closest walkable point, and the whole navmesh stitched into one. Built from the zone pieces
-## on a worker thread (pure data: no nodes, no server), so it is ready the moment its pieces are
-## swapped in. Polygons connect where they share an edge, the way the navigation map joins the
-## pieces. Points are Vector3 in 3D; the `_2d` calls take and give the Vector2 points of a 2D
-## navmesh.
+## navigation server does not answer: can an agent get from here to there at all (which polygons
+## connect across the zones: the connected components), the polygon and component at a point, the
+## closest walkable point (skipping islands, if asked), and the whole navmesh stitched into
+## one. Built from the zone pieces on a worker thread (pure data: no nodes, no server), so it is
+## ready the moment its pieces are swapped in. Polygons connect where they share an edge, the way
+## the navigation map joins the pieces. Points are Vector3 in 3D; the `_2d` calls take and give the
+## Vector2 points of a 2D navmesh.
 
 ## Every vertex, welded across zones: (x, y, z) in 3D, (x, 0, y) in 2D.
 var vertices := PackedVector3Array()
@@ -18,6 +18,9 @@ var polygons: Array[PackedInt32Array] = []
 ## The connected component of each polygon, numbered 0, 1, 2... by their first polygon.
 var component_of := PackedInt32Array()
 var component_count := 0
+## The ground-plane area of each component (world units squared): a small one is an island, such as
+## a walkable roof or a pocket closed off by walls.
+var component_area := PackedFloat32Array()
 
 var _is_3d := true
 var _cell := 1.0
@@ -77,58 +80,44 @@ func polygon_at(point: Vector3) -> int:
 	return best
 
 
-## The component under `point` (-1 = not on the navmesh).
-func component_at(point: Vector3) -> int:
+## The component under `point` (-1 = none). With `max_distance`, a point off the navmesh takes the
+## component of the closest walkable point that near (on the ground plane).
+func component_at(point: Vector3, max_distance := 0.0) -> int:
 	var polygon := polygon_at(point)
+	if polygon < 0 and max_distance > 0.0:
+		polygon = _closest_polygon(point, max_distance, 0.0)[0]
 	return component_of[polygon] if polygon >= 0 else -1
 
 
-## True when both points are on the navmesh and an agent could walk from one to the other.
-func same_component(a: Vector3, b: Vector3) -> bool:
-	var ca := component_at(a)
-	return ca >= 0 and ca == component_at(b)
+## True when an agent could walk from `a` to `b`: both on the navmesh (or within `max_distance` of
+## it, on the ground plane) and connected.
+func can_reach(a: Vector3, b: Vector3, max_distance := 0.0) -> bool:
+	var ca := component_at(a, max_distance)
+	return ca >= 0 and ca == component_at(b, max_distance)
 
 
-## The walkable point closest to `point` within `max_distance` (Vector3.INF = none).
-func closest_point(point: Vector3, max_distance := INF) -> Vector3:
-	if polygons.is_empty():
-		return Vector3.INF
-	var flat := Vector2(point.x, point.z)
-	var center := _key(flat)
-	var best := Vector3.INF
-	var best_distance := max_distance
-	var seen: Dictionary[int, bool] = {}
-	var rings := _rings_limit(center)
-	for ring in rings + 1:
-		if (ring - 1) * _cell > best_distance:
-			break
-		for cell in _ring(center, ring):
-			for polygon in _buckets.get(cell, PackedInt32Array()):
-				if seen.has(polygon):
-					continue
-				seen[polygon] = true
-				var candidate := _closest_on(polygon, point)
-				var distance := candidate.distance_to(point)
-				if distance < best_distance:
-					best = candidate
-					best_distance = distance
-	return best
+## The walkable point nearest to `point`, among those within `max_distance` of it on the ground
+## plane (Vector3.INF = none), on a component of at least `min_area` (0 = any): the closest land,
+## not the roof a body stands on. "Within 5 m on the map" whatever the navmesh's height above the
+## ground; of the floors in reach, the nearest in 3D.
+func closest_point(point: Vector3, max_distance := INF, min_area := 0.0) -> Vector3:
+	return _closest_polygon(point, max_distance, min_area)[1]
 
 
 func polygon_at_2d(point: Vector2) -> int:
 	return polygon_at(Vector3(point.x, 0.0, point.y))
 
 
-func component_at_2d(point: Vector2) -> int:
-	return component_at(Vector3(point.x, 0.0, point.y))
+func component_at_2d(point: Vector2, max_distance := 0.0) -> int:
+	return component_at(Vector3(point.x, 0.0, point.y), max_distance)
 
 
-func same_component_2d(a: Vector2, b: Vector2) -> bool:
-	return same_component(Vector3(a.x, 0.0, a.y), Vector3(b.x, 0.0, b.y))
+func can_reach_2d(a: Vector2, b: Vector2, max_distance := 0.0) -> bool:
+	return can_reach(Vector3(a.x, 0.0, a.y), Vector3(b.x, 0.0, b.y), max_distance)
 
 
-func closest_point_2d(point: Vector2, max_distance := INF) -> Vector2:
-	var at := closest_point(Vector3(point.x, 0.0, point.y), max_distance)
+func closest_point_2d(point: Vector2, max_distance := INF, min_area := 0.0) -> Vector2:
+	var at := closest_point(Vector3(point.x, 0.0, point.y), max_distance, min_area)
 	return Vector2.INF if at == Vector3.INF else Vector2(at.x, at.z)
 
 
@@ -155,6 +144,57 @@ func stitched_2d(like: NavigationPolygon = null) -> NavigationPolygon:
 	return out
 
 
+## [polygon, point] nearest to `point` in 3D among the points within `max_flat` on the ground
+## plane, on components of at least `min_area` ([-1, Vector3.INF] = none).
+func _closest_polygon(point: Vector3, max_flat: float, min_area: float) -> Array:
+	var best_polygon := -1
+	var best := Vector3.INF
+	if polygons.is_empty():
+		return [best_polygon, best]
+	var flat := Vector2(point.x, point.z)
+	var center := _key(flat)
+	var best_distance := INF
+	var seen: Dictionary[int, bool] = {}
+	for ring in _rings_limit(center) + 1:
+		# A cell `ring` rings away is at least (ring - 1) cells away on the plane, so no farther in 3D.
+		var near := (ring - 1) * _cell
+		if near > max_flat or near > best_distance:
+			break
+		for cell in _ring(center, ring):
+			for polygon in _buckets.get(cell, PackedInt32Array()):
+				if seen.has(polygon):
+					continue
+				seen[polygon] = true
+				if component_area[component_of[polygon]] < min_area:
+					continue
+				var candidate := _closest_on(polygon, point)
+				if Vector2(candidate.x, candidate.z).distance_to(flat) > max_flat:
+					candidate = _closest_on_flat(polygon, flat)
+					if Vector2(candidate.x, candidate.z).distance_to(flat) > max_flat:
+						continue
+				var distance := candidate.distance_to(point)
+				if distance < best_distance:
+					best_polygon = polygon
+					best = candidate
+					best_distance = distance
+	return [best_polygon, best]
+
+
+## The point of `polygon` nearest to `flat` on the ground plane, at the polygon's height there.
+func _closest_on_flat(polygon: int, flat: Vector2) -> Vector3:
+	var outline := _flat(polygon)
+	var at := flat
+	if not Geometry2D.is_point_in_polygon(flat, outline):
+		var best := INF
+		for k in outline.size():
+			var next := outline[(k + 1) % outline.size()]
+			var on := Geometry2D.get_closest_point_to_segment(flat, outline[k], next)
+			if on.distance_squared_to(flat) < best:
+				best = on.distance_squared_to(flat)
+				at = on
+	return Vector3(at.x, _height_on(polygon, at), at.y)
+
+
 static func _vertices_of(piece: Resource, is_3d: bool) -> PackedVector3Array:
 	var out := PackedVector3Array()
 	if is_3d and piece is NavigationMesh:
@@ -178,7 +218,7 @@ static func _polygons_of(piece: Resource, is_3d: bool) -> Array[PackedInt32Array
 	return out
 
 
-## Components: polygons that share an edge are one.
+## Components: polygons that share an edge are one. Each one's area too.
 func _link() -> void:
 	var parent := PackedInt32Array()
 	parent.resize(polygons.size())
@@ -204,6 +244,10 @@ func _link() -> void:
 			numbers[top] = numbers.size()
 		component_of[i] = numbers[top]
 	component_count = numbers.size()
+	component_area.resize(component_count)
+	component_area.fill(0.0)
+	for i in polygons.size():
+		component_area[component_of[i]] += absf(_flat_area(i))
 
 
 ## Buckets of polygons by their bounds, for the point queries.
@@ -239,6 +283,17 @@ func _flat(polygon: int) -> PackedVector2Array:
 	for i in polygons[polygon]:
 		out.append(Vector2(vertices[i].x, vertices[i].z))
 	return out
+
+
+## Signed area of `polygon` on the ground plane (shoelace).
+func _flat_area(polygon: int) -> float:
+	var ids := polygons[polygon]
+	var twice := 0.0
+	for k in ids.size():
+		var a := vertices[ids[k]]
+		var b := vertices[ids[(k + 1) % ids.size()]]
+		twice += a.x * b.z - b.x * a.z
+	return twice * 0.5
 
 
 func _flat_rect(polygon: int) -> Rect2:

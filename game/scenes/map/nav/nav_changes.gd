@@ -3,7 +3,7 @@ extends RefCounted
 
 ## What changed on the map since the navmesh was last baked: ground that moved (a hole, a crater)
 ## and blockers that came or went (an altar, a tower, a structure, a fallen building), as rects on
-## the ground in metres. It says WHERE to bake again, never when (NavService) or how (NavRebake).
+## the ground in metres. It says WHERE to bake again, never when (NavService) or how (MapNav).
 ## Idempotent: the same change told twice is one area, and `take` empties it.
 ## Not: the bake itself, the swap, or the groups that block.
 

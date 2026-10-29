@@ -6,9 +6,8 @@
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
-[ext_resource type="Resource" path="res://scenes/map/nav_bake.tres" id="14_bake"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/peaks/nav.res" id="15_navmesh"]
-[ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
+[ext_resource type="Resource" path="res://scenes/map/maps/peaks/nav.res" id="15_navmesh"]
+[ext_resource type="PackedScene" path="res://scenes/map/nav/map_nav.tscn" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cafn.res" id="fmesh_cafn"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_spire.tscn" id="d2_charnel_spire"]
@@ -50,10 +49,10 @@
 [ext_resource type="Resource" uid="uid://blaojp25iyrex" path="res://scenes/map/maps/peaks/heights.png" id="t_heights"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/forest_tree.tscn" id="6_tree"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
-nav_region = NodePath("NavRegion")
+nav = NodePath("Nav")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
@@ -638,12 +637,8 @@ transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.
 
 [node name="Npcs" type="Node3D" parent="."]
 
-[node name="NavRegion" type="NavigationRegion3D" parent="."]
-unique_name_in_owner = true
-navigation_mesh = ExtResource("15_navmesh")
-use_edge_connections = false
-script = ExtResource("16_nav_region")
-bake_settings = ExtResource("14_bake")
+[node name="Nav" parent="." instance=ExtResource("16_nav_region")]
+saved = ExtResource("15_navmesh")
 
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true

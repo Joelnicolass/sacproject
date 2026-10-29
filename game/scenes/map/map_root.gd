@@ -3,7 +3,7 @@ class_name MapRoot
 extends Node3D
 
 ## The root of a map scene (scenes/map/maps/<tag>/map.tscn): the ground, the buildings and the
-## creature spawns, the navmesh region, the starts and founts, the sky and the look of one map, and
+## creature spawns, the navmesh zones, the starts and founts, the sky and the look of one map, and
 ## nothing of the match. The match scene (scenes/match/match.tscn) instances it and binds its own
 ## systems to these sockets. A map you make in the editor fills the sockets it has; the required
 ## ones warn.
@@ -17,7 +17,8 @@ extends Node3D
 	set(value):
 		editor_recenter = value
 		_recenter()
-@export var nav_region: NavigationRegion3D
+## The navmesh zones (MapNav, an instance of map_nav.tscn).
+@export var nav: MapNav
 ## The PlayerStart nodes, one per seat.
 @export var starts: Node3D
 ## The look rig of the map; empty in a map without one.
@@ -46,7 +47,7 @@ func _notification(what: int) -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	for pair in [["terrain", terrain], ["nav_region", nav_region], ["starts", starts]]:
+	for pair in [["terrain", terrain], ["nav", nav], ["starts", starts]]:
 		if pair[1] == null:
 			warnings.append("Assign `%s`." % pair[0])
 	return warnings

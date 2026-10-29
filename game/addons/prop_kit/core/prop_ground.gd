@@ -16,6 +16,16 @@ func begin(_scatter: Node) -> bool:
 	return true
 
 
+## The outline the editor draws (ground plane, global coordinates): the bounds by default.
+func editor_outline() -> PackedVector2Array:
+	var rect := bounds()
+	if not rect.has_area():
+		return PackedVector2Array()
+	var corner_b := Vector2(rect.end.x, rect.position.y)
+	var corner_d := Vector2(rect.position.x, rect.end.y)
+	return PackedVector2Array([rect.position, corner_b, rect.end, corner_d])
+
+
 ## The area to scatter over.
 func bounds() -> Rect2:
 	return Rect2()

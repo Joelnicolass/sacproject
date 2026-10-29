@@ -11,7 +11,7 @@ extends EditorExportPlugin
 ## (BuildingFit). Only a PrimitiveMesh (Cylinder, Sphere, ...) keeps its geometry: its parameters are the data (RiftSpawner reads
 ## the radius of a CylinderMesh) and it costs a few bytes. The map's ground is no mesh file: the server derives its triangles from
 ## the map's heights.png in memory (Terrain), builds its collision from them (TerrainCollision) and never builds its mesh.
-## The navmesh is not baked from meshes (NavBakeSettings: static colliders, i.e. shapes), so nothing under scenes/ needs more.
+## The navmesh is not baked from meshes (MapNav: static colliders, i.e. shapes), so nothing under scenes/ needs more.
 ## NOT here: textures (Godot's own dedicated mode already turns them into placeholders),
 ## and nothing runs outside an export: the game and the editor never load this class.
 ## Environment, for measuring only: SAC_DEDICATED_STRIP=0 exports the preset untouched.

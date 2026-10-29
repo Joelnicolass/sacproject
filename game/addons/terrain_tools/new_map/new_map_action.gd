@@ -4,7 +4,7 @@ extends RefCounted
 ## «New map…» in the editor: asks the tag and the name, writes the map's files from the template (NewMapFiles), imports
 ## its pictures, opens its scene, bakes its navmesh and checks it as «Validate map» does (that dialog says PASS or the
 ## problems). A step that fails says which and where in a dialog and in the Output. Not: what the files hold (NewMapFiles),
-## the checks (MapChecks through TerrainActions), the bake itself (MapNavRegion.bake_now).
+## the checks (MapChecks through TerrainActions), the bake itself (MapNav.bake_now).
 
 const NewMapFiles := preload("res://addons/terrain_tools/new_map/new_map_files.gd")
 const DialogScene := preload("res://addons/terrain_tools/new_map/new_map_dialog.tscn")
@@ -103,9 +103,9 @@ func _open_and_bake(folder: String) -> String:
 	var root := EditorInterface.get_edited_scene_root() as MapRoot
 	if root == null or root.scene_file_path != scene:
 		return "Could not open %s." % scene
-	var region := root.nav_region as MapNavRegion
-	if region == null:
-		return "%s has no NavRegion (MapNavRegion)." % scene
-	if region.bake_now() != OK:
+	var nav := root.nav
+	if nav == null:
+		return "%s has no Nav (MapNav)." % scene
+	if nav.bake_now() != OK:
 		return "Could not bake the navmesh of %s (see Output)." % scene
 	return ""

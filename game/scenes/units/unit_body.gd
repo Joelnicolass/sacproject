@@ -74,6 +74,9 @@ const GROUP := &"unit"
 @export var health_bar: UnitHealthBar
 @export_flags_3d_physics var unit_layer := 2
 @export_flags_3d_physics var ground_mask := 1
+## What the body bumps into besides the ground: the map's props (the forest trunks, layer 8). Kept
+## out of `ground_mask` so the ground rays (flying units, aims) never stand on a tree.
+@export_flags_3d_physics var prop_mask := 128
 @export
 var target_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor"])
 ## 0 = random. Fixed seeds make a duel repeatable.
@@ -123,7 +126,7 @@ func _ready() -> void:
 	_sync_unit()
 	floor_snap_length = 0.5
 	collision_layer = unit_layer
-	collision_mask = ground_mask
+	collision_mask = ground_mask | prop_mask
 	creature.adopt()
 	creature.adopt_model()
 	creature.equip()

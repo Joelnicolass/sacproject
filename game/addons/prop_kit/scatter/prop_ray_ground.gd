@@ -8,7 +8,10 @@ extends PropGround
 ## the props' own layer out of the mask, or a scatter could stand props on other props.
 
 ## The area to scatter over (x, z), in global coordinates.
-@export var area := Rect2(-50.0, -50.0, 100.0, 100.0)
+@export var area := Rect2(-50.0, -50.0, 100.0, 100.0):
+	set(value):
+		area = value
+		emit_changed()
 @export_flags_3d_physics var collision_mask := 1
 ## Steeper than this, no prop (degrees from flat).
 @export_range(0.0, 90.0, 0.5, "suffix:°") var max_slope_deg := 40.0

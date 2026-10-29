@@ -6,11 +6,24 @@ extends PropGround
 ## (a polygon on the ground plane, in global coordinates). The usual ground of a 2D scatter.
 
 ## The area to scatter over. Empty = the outline's bounds.
-@export var area := Rect2(-50.0, -50.0, 100.0, 100.0)
+@export var area := Rect2(-50.0, -50.0, 100.0, 100.0):
+	set(value):
+		area = value
+		emit_changed()
 ## Only inside this polygon, when it has three points or more.
-@export var outline := PackedVector2Array()
+@export var outline := PackedVector2Array():
+	set(value):
+		outline = value
+		emit_changed()
 ## Height of the ground (3D).
-@export var height := 0.0
+@export var height := 0.0:
+	set(value):
+		height = value
+		emit_changed()
+
+
+func editor_outline() -> PackedVector2Array:
+	return outline if outline.size() >= 3 else super()
 
 
 func bounds() -> Rect2:

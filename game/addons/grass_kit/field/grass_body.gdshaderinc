@@ -18,6 +18,7 @@
 // is tilted by the rest lean, the wind and the trampling, and an arch bends it, keeping its length.
 
 #include "res://addons/grass_kit/field/grass_wind.gdshaderinc"
+#include "res://addons/grass_kit/field/grass_color.gdshaderinc"
 
 // The ground (GrassGround), stretched over ground_area (x, z, width, depth): height (red), the
 // normal's x and z (green, blue), 1 where there is ground (alpha). One read gives it all.
@@ -311,7 +312,8 @@ void vertex() {
 			color *= mix(1.0 - root_shade, 1.0, t);
 			color *= 1.0 + gust * gust_lighten * t * grasskit_wind.z;
 			color = mix(vec3(1.0), color, palette) * tint;
-			vec3 meet = mix(ground_rgb, grass_average, far_grass);
+			// Mixed in linear as the game's ground does (grass_ground.gdshaderinc), so they meet.
+			vec3 meet = grasskit_from_linear(mix(grasskit_to_linear(ground_rgb), grass_average, far_grass));
 			v_color = mix(color, meet, smoothstep(fade_to_ground * radius, radius, d));
 			v_t = t;
 			v_gust = gust * grasskit_wind.z;

@@ -85,6 +85,7 @@ Son las teclas de Terrain3D, así que te van a resultar conocidas.
   - **Clear**: como si nunca se hubiera pintado;
   - **Import from a PNG…**;
   - **Export to a PNG…**, para editarlo en Krita o Photoshop y volver a importarlo.
+- **Bake ground colour**: renderiza el suelo del juego desde arriba como `color_texture` (más abajo).
 - **Show the painted map** y **Shortcuts**.
 
 **Asas en la vista 3D:**
@@ -127,7 +128,10 @@ Dónde crece el pasto y qué tan alto está el suelo, sobre `area`.
 - **Mapas pintados**, estirados sobre `area` (los pintan los pinceles; desde código `paint()`, `fill_map()`, `clear_map()`, `import_map()`, `export_map()`):
   - `density_texture` (rojo): blanco = pasto, negro = nada.
   - `size_texture` (rojo): 0,5 = como dice el look, negro = plano, blanco = el doble de alto.
-  - `color_texture`: el color del suelo, que va a la base de las hojas. Su alfa es cuánto cubre el `ground_color` del look. Una textura hecha en otro lado también sirve: el mapa de albedo del juego, o su suelo renderizado una vez desde arriba, **tal como se ve con el color de GrassKit bajo el pasto** (más abajo), así las raíces coinciden con lo que se ve entre ellas.
+  - `color_texture`: el color del suelo, que va a la base de las hojas. Su alfa es cuánto cubre el `ground_color` del look. Tiene que ser el suelo **tal como se ve con el color de GrassKit bajo el pasto** (más abajo), así las raíces coinciden con lo que se ve entre ellas:
+    - **GrassKit ▸ Bake ground colour**, o `await field.bake_ground_color()`, lo renderiza desde arriba. Ve las capas de render de `color_layers` (dejá los props, las unidades y los árboles fuera de ellas), sin luz ni niebla, y con las hojas del propio campo ocultas.
+    - Un juego que renderiza su propia vista pone `field.ground_bake_view = true` alrededor de ese render. Antes de que dibuje cualquier campo, llama a `GrassGlobals.write_bake_view(look, ground)`. En los dos casos el shader de suelo del juego muestra el color bajo el pasto, y el juego nunca escribe él mismo los globales de GrassKit.
+    - Cualquier otra textura también sirve, como el mapa de albedo del juego.
   - `kind_maps`: dónde crece cada tipo con un `map_name` (rojo).
 - **Mover el área.** `resize_area(rect)` mueve sus bordes dejando las alturas y los mapas donde están en el mundo. Es lo que usan Fit area y las asas.
 - **Cambios en el juego.** Hornear o escribir alturas emite `area_changed(rect)` en el acto. El campo les da límites nuevos solo a las celdas de ahí. Pintar emite `map_painted(map)`. En los dos casos, las texturas suben a la GPU una vez al final del cuadro, tengan los cambios que tengan.
@@ -208,6 +212,8 @@ Los valores son uniforms globales de shader:
 - `grasskit_density`, `grasskit_area`.
 
 El plugin agrega los que falten a Project Settings cada vez que arranca el editor y no toca ningún otro. Deshabilitarlo los deja, por si un shader del juego los lee. Sin el plugin, un campo los declara antes de que compilen sus propios shaders. Un solo campo por mundo los escribe.
+
+**En todos los renderers, un solo color.** Los colores compartidos de GrassKit son lineales. Forward+ y Mobile sombrean en lineal, mientras que Compatibility toma los colores `source_color` y ALBEDO tal como vienen. `grasskit_ground_color()` y las hojas convierten según `CURRENT_RENDERER` (`field/grass_color.gdshaderinc`), así el suelo bajo el pasto y el pasto lejano tienen el mismo color en los tres.
 
 ## La calidad (`GrassQuality`)
 
@@ -371,6 +377,15 @@ GRASSKIT_EDITOR_CHECK=1 godot --headless --editor --path grasskit_lab
 ```
 
 Imprime `EDITOR CHECK PASS`. Los shaders en sí (la hoja, la recortada, el suelo del ejemplo) y el círculo del pincel y el mapa superpuesto se chequean en una ventana, en Forward+ y Compatibility, corriendo el ejemplo y el editor.
+
+El horneado del color del suelo renderiza, así que tiene su propio chequeo en una ventana:
+
+```bash
+godot --path grasskit_lab --script res://checks/bake_color_check.gd
+godot --rendering-method gl_compatibility --path grasskit_lab --script res://checks/bake_color_check.gd
+```
+
+Chequea el tamaño de la imagen, tierra en el sendero pintado, el color bajo el pasto en la pradera, que no tenga hojas, y el mapa guardado en el suelo. Imprime `BAKE COLOR CHECK PASS`.
 
 ## Lo que no está en el kit
 

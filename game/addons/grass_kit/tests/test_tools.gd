@@ -138,6 +138,33 @@ func test_the_ground_under_the_grass() -> void:
 	_after()
 
 
+func test_a_view_of_the_ground_for_its_colour() -> void:
+	var look := GrassLook.new()
+	look.under_grass = 0.9
+	var ground := GrassGround.new()
+	ground.area = Rect2(-30, -10, 60, 40)
+	var view := GrassGlobals.bake_view(look, ground)
+	var field_value: Vector4 = view[&"grasskit_field"]
+	var far := Vector2(field_value.x, field_value.y).distance_to(ground.area.end)
+	check(field_value.w > far * 1000.0 and field_value.z > field_value.w, "the drawn grass reaches everywhere: the colour under it, never the far one (%s)" % field_value)
+	check(view[&"grasskit_under"] == look.ground_under() and (view[&"grasskit_grass"] as Vector4).w == look.far_grass, "the look's under-the-grass and grass values")
+	check((view[&"grasskit_wind"] as Vector4).z == 0.0, "no wind: no gust bands baked in")
+	check(view[&"grasskit_density"] == load(GrassGlobals.FULL_PATH) and view[&"grasskit_area"] == Vector4(-30, -10, 60, 40), "the painted density (none yet: grass everywhere) over the area")
+	ground.fill_map(GrassGround.DENSITY, Color(0.5, 0, 0))
+	check(GrassGlobals.bake_view(look, ground)[&"grasskit_density"] == ground.density_texture, "a painted one")
+	var field := GrassField3D.new()
+	field.ground = ground
+	field.look = look
+	root.add_child(field)
+	check(not field.is_processing(), "a field with no quality does not draw")
+	field.ground_bake_view = true
+	check(field.is_processing(), "with ground_bake_view it writes the view every frame anyway")
+	field.ground_bake_view = false
+	check(not field.is_processing(), "and stops after")
+	var image: Image = await field.bake_ground_color()
+	check(image == null and ground.color_texture == null, "headless nothing renders: no colour baked, nothing broken")
+
+
 func test_trampled_grass_stands_up_again() -> void:
 	var field := _field()
 	field.trample_group = &"test_walkers"

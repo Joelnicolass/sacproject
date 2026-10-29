@@ -3,11 +3,12 @@ extends Node3D
 ## GrassKit's example: hills of grass around the camera. The field reads the ground's height from
 ## the hills' collider when it starts (`bake_ground()`; in the editor, «Bake ground»). A walker in
 ## the group `units` tramples a path; the camps (group `camps`) and a GrassClear3D clear the grass
-## around them; the steep mound is too steep for grass. The wind is a GrassWind the ground reads
-## too (its pale bands). Keys: 1 2 3 the low, medium and high quality; L the next look (summer,
-## autumn: uniforms only; flowers: another kind of blade); T a storm rises or calms (blended); G
-## grass off and on; C digs a crater under the mouse and only the grass there follows. Drag with
-## the right button to turn, the wheel to zoom, WASD to move.
+## around them; the steep mound is too steep for grass. The walker and the camps are on render layer
+## 2, off the ground's `color_layers`, so «Bake ground colour» sees the hills only. The wind is a
+## GrassWind the ground reads too (its pale bands). Keys: 1 2 3 the low, medium and high quality; L
+## the next look (summer, autumn: uniforms only; flowers: another kind of blade); T a storm rises or
+## calms (blended); G grass off and on; C digs a crater under the mouse and only the grass there
+## follows. Drag with the right button to turn, the wheel to zoom, WASD to move.
 
 @export var field: GrassField3D
 @export var hills: Node3D

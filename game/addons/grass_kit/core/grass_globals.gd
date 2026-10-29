@@ -51,6 +51,37 @@ static func declare() -> void:
 		RenderingServer.global_shader_parameter_add(name, entry[0], value)
 
 
+## What a render of the game's ground from above for `GrassGround.color_texture` must see: the
+## drawn grass reaching everywhere (so `grasskit_ground_color` gives the colour under it, never the
+## far one), `look`'s grass and under-the-grass values, `ground`'s painted density, no wind.
+static func bake_view(look: GrassLook, ground: GrassGround = null) -> Dictionary:
+	var centre := ground.area.get_center() if ground != null else Vector2.ZERO
+	var out := {
+		&"grasskit_field": Vector4(centre.x, centre.y, 2e9, 1e9),
+		&"grasskit_wind": Vector4(1.0, 0.0, 0.0, 55.0),
+	}
+	if look != null:
+		var grass := look.average_color()
+		out[&"grasskit_grass"] = Vector4(grass.r, grass.g, grass.b, look.far_grass)
+		out[&"grasskit_under"] = look.ground_under()
+	if ground != null:
+		var area := ground.area
+		out[&"grasskit_area"] = Vector4(area.position.x, area.position.y, area.size.x, area.size.y)
+		var density: Texture2D = ground.density_texture
+		out[&"grasskit_density"] = density if density != null else load(FULL_PATH)
+	return out
+
+
+## Writes `bake_view()` now: for a game that renders its own view of the ground before any field
+## draws. A field that is drawing writes its own every frame; set its `ground_bake_view` instead
+## (`GrassField3D.bake_ground_color()` does it all).
+static func write_bake_view(look: GrassLook, ground: GrassGround = null) -> void:
+	declare()
+	var values := bake_view(look, ground)
+	for global: StringName in values:
+		RenderingServer.global_shader_parameter_set(global, values[global])
+
+
 ## Writes the missing ones into Project Settings, leaving every other shader global as it is (the
 ## plugin, when enabled). True if any was new.
 static func add_to_project() -> bool:

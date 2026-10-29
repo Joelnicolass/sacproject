@@ -102,6 +102,16 @@ const DEFAULT_LOOK := "res://addons/grass_kit/looks/meadow.tres"
 
 ## What the field draws now (cells and blades, all and in view).
 var stats := GrassStats.new()
+## While true, GrassKit's shader globals show the game's ground as it is under the drawn grass
+## everywhere, with no wind: what a render of the ground from above for `ground.color_texture`
+## must see (`bake_ground_color()` sets it itself; a game that renders its own view sets it around
+## that render). The field writes them every frame, active or not.
+var ground_bake_view := false:
+	set(value):
+		ground_bake_view = value
+		if value and is_inside_tree():
+			_write_bake_globals()
+		set_process(value or _active() or wind != null)
 
 ## One material per kind of blade, and per kind one MultiMesh per tier.
 var _materials: Array[ShaderMaterial] = []
@@ -246,13 +256,76 @@ func _boxes_under(node: Node, mask: int, colliders: Array[AABB], meshes: Array[A
 		_boxes_under(child, mask, colliders, meshes)
 
 
+## Renders the game's ground from straight above over `ground.area` and keeps it as
+## `ground.color_texture`, the colour the blades' roots take. It sees the render layers in
+## `ground.color_layers`, without light or fog (its colours only), as the ground shows under the
+## drawn grass (`ground_bake_view`), and the field's own blades are hidden meanwhile. One texel
+## per `ground.paint_texel_size`, at most GrassGround.MAX_MAP_SIZE a side. Takes two frames:
+## `await field.bake_ground_color()`. Returns the image, or null where nothing renders (headless,
+## a dedicated server). GrassKit ▸ Bake ground colour does it in the editor.
+func bake_ground_color() -> Image:
+	if ground == null or not is_inside_tree():
+		return null
+	if DisplayServer.get_name() == "headless" or OS.has_feature("dedicated_server"):
+		push_warning("%s: baking the ground's colour needs a window (it renders it)" % name)
+		return null
+	var area := ground.area
+	var size := ground.new_map_size()
+	var heights := ground.height_range_in(area)
+	var view := SubViewport.new()
+	view.size = size
+	view.transparent_bg = true
+	view.debug_draw = Viewport.DEBUG_DRAW_UNSHADED
+	view.msaa_3d = Viewport.MSAA_DISABLED
+	view.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	var eye := Camera3D.new()
+	eye.projection = Camera3D.PROJECTION_ORTHOGONAL
+	eye.keep_aspect = Camera3D.KEEP_HEIGHT
+	eye.size = area.size.y
+	eye.near = 0.05
+	eye.far = heights.y - heights.x + 200.0
+	eye.cull_mask = ground.color_layers
+	var plain := Environment.new()
+	plain.background_mode = Environment.BG_CLEAR_COLOR
+	plain.tonemap_mode = Environment.TONE_MAPPER_LINEAR
+	eye.environment = plain
+	view.add_child(eye)
+	add_child(view, false, Node.INTERNAL_MODE_BACK)
+	# Looking down, x to the right and z down the image, as the ground's maps lie.
+	var centre := area.get_center()
+	eye.global_transform = Transform3D(
+		Basis.looking_at(Vector3.DOWN, Vector3.FORWARD), Vector3(centre.x, heights.y + 100.0, centre.y)
+	)
+	eye.current = true
+	var shown := visible
+	visible = false
+	ground_bake_view = true
+	for i in 3:
+		await RenderingServer.frame_post_draw
+	var image := view.get_texture().get_image()
+	ground_bake_view = false
+	visible = shown
+	view.queue_free()
+	if image == null or image.is_empty():
+		return null
+	image.convert(Image.FORMAT_RGBA8)
+	ground.set_map_texture(GrassGround.COLOR, GrassMap.from(image))
+	return image
+
+
+func _write_bake_globals() -> void:
+	GrassGlobals.write_bake_view(look, ground)
+
+
 ## Reads the clearings' nodes now instead of within half a second.
 func refresh_clearings() -> void:
 	_clearings_timer = CLEARINGS_EVERY
 
 
 func _process(delta: float) -> void:
-	if wind != null:
+	if ground_bake_view:
+		_write_bake_globals()
+	elif wind != null:
 		wind.tick(delta)
 	if not _active():
 		return
@@ -264,7 +337,8 @@ func _process(delta: float) -> void:
 	var painting := Engine.is_editor_hint() and _editor_focus != Vector2.INF
 	_center = _editor_focus if painting else _focus(view)
 	_set_all(&"field_center", _center)
-	_write_meeting()
+	if not ground_bake_view:
+		_write_meeting()
 	if _ring_center == Vector2.INF or _ring_center.distance_to(_center) > _quality.ring_margin():
 		_update_ring(_center)
 	_clearings_timer += delta

@@ -1,5 +1,15 @@
 # Changelog de GrassKit
 
+## 0.2.1
+
+- **Hornear el color del suelo** (pedido de Sacrifice): `await field.bake_ground_color()`, o GrassKit ▸ **Bake ground colour** (se deshace).
+  - Renderiza el suelo del juego desde arriba como `ground.color_texture`, el color que toman las raíces de las hojas: solo las capas de render del nuevo `ground.color_layers`, sin luz ni niebla, tal como se ve el suelo bajo el pasto dibujado. Mientras tanto se ocultan las hojas del propio campo.
+  - `field.ground_bake_view` mantiene esa vista de los globales de shader de GrassKit para un juego que renderiza la suya.
+  - `GrassGlobals.write_bake_view(look, ground)` la escribe antes de que dibuje cualquier campo, así un juego nunca escribe él mismo los globales de GrassKit.
+- **Los mismos colores en Compatibility.** Compatibility toma los colores `source_color` tal como vienen, mientras que los colores compartidos de GrassKit son lineales. En Compatibility, el suelo bajo el pasto y el color de encuentro de las hojas lejanas salían más oscuros que en Forward+. `field/grass_color.gdshaderinc` los convierte según `CURRENT_RENDERER`, así `grasskit_ground_color()` y las hojas dan ahora un solo color en todos los renderers.
+- **Ejemplo:** el caminante y los campamentos están en la capa de render 2, así el horneado del color ve solo las lomas.
+- **Tests:** 52; el chequeo del editor (42) hornea desde el menú; `checks/bake_color_check.gd` renderiza el horneado en una ventana (tierra en el sendero, color del pasto en la pradera, en Forward+ y Compatibility).
+
 ## 0.2.0
 
 Herramientas para hacerlo a mano, y los arreglos que pidió la migración de Sacrifice.

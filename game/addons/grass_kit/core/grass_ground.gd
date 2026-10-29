@@ -3,13 +3,13 @@ class_name GrassGround
 extends Resource
 
 ## Where grass grows and how high the ground is under it, over `area` (x, z in world metres). The
-## height comes from the game's colliders: `bake()` casts a ray down every `texel_size` metres
-## (the field's «Bake ground» button does it in the editor) and keeps, in one texture, the exact
-## height where it hits, the ground's normal (blades stand along it) and where there is ground. A game with
-## its own height data writes it instead with `set_heights(rect, sampler)`. Grass thins and
-## shortens on steep ground (`slope_fade`). When the ground changes in play (a crater), bake or write
-## only that rect: `area_changed` tells the field which part to redo. Without a bake the ground
-## is flat at `flat_height`.
+## height comes from the game's colliders: `bake()` casts a ray down every `texel_size` metres (the
+## field's «Bake ground» button does it in the editor) and keeps, in one texture, the exact height
+## where it hits, the ground's normal (blades stand along it) and where there is ground. A game with
+## its own height data writes it instead with `set_heights(rect, sampler)`. Grass thins and shortens
+## on steep ground (`slope_fade`). When the ground changes in play (a crater), bake or write only
+## that rect: `area_changed` tells the field which part to redo. Without a bake the ground is flat
+## at `flat_height`.
 ##
 ## Painted maps, all stretched over `area`: where grass grows (`density_texture`), how tall
 ## (`size_texture`), the ground's colour (`color_texture`) and where each named kind of blade grows
@@ -73,9 +73,13 @@ const MAX_MAP_SIZE := 2048
 		emit_changed()
 ## Metres a texel of a map the brushes make (a texture made elsewhere keeps its own size).
 @export_range(0.05, 4.0, 0.05, "or_greater", "suffix:m") var paint_texel_size := 0.25
+## The render layers «Bake ground colour» sees from above: the ground's own. Keep props, units
+## and trees off them, or their colours go under the grass too.
+@export_flags_3d_render var color_layers := 1
 
 ## The baked ground, one texel per `texel_size`: height (red), the normal's x and z (green, blue),
-## and 1 where a ray found ground (alpha). One texture, so a blade reads it all at once. Null = flat.
+## and 1 where a ray found ground (alpha). One texture, so a blade reads it all at once. Null =
+## flat.
 @export_storage var data: Image
 
 var _texture: ImageTexture

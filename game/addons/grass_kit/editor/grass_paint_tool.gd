@@ -29,7 +29,7 @@ const SHORTCUTS := (
 	"Left button: paint · Ctrl (Cmd): erase · Shift: smooth · [ ]: size · - =: strength · "
 	+ "Esc: put the brush down"
 )
-enum Item { BAKE, FIT, SET_UP, FILL = 10, CLEAR, IMPORT, EXPORT, SHOW_MAP = 20, HELP }
+enum Item { BAKE, FIT, SET_UP, BAKE_COLOUR, FILL = 10, CLEAR, IMPORT, EXPORT, SHOW_MAP = 20, HELP }
 
 const OVERLAY_SHADER := preload("grass_map_overlay.gdshader")
 const CIRCLE := 64
@@ -360,6 +360,8 @@ func _on_menu(id: int) -> void:
 			_queue_overlay()
 		Item.FIT:
 			_fit_area()
+		Item.BAKE_COLOUR:
+			_bake_colour()
 		Item.SET_UP:
 			var made := field.set_up()
 			_say("Set up: %s." % (", ".join(made) if not made.is_empty() else "nothing was missing"))
@@ -400,6 +402,28 @@ func _fill_map() -> void:
 	history.add_undo_method(ground, &"put_map", map, old, before)
 	_add_rename(history)
 	history.commit_action(false)
+
+
+## «Bake ground colour»: the game's ground rendered from above as the colour map, one step of the
+## history.
+func _bake_colour() -> void:
+	var ground := field.ground
+	if ground == null or field._keep_ground_in_file().is_empty():
+		return
+	var old := ground.color_texture
+	var target := field
+	_set_tool(Tool.NONE)
+	var image: Image = await target.bake_ground_color()
+	if image == null:
+		_say("Baking the ground's colour needs the editor's window: it renders the ground.")
+		return
+	var history := EditorInterface.get_editor_undo_redo()
+	history.create_action("Bake ground colour of %s" % target.name, UndoRedo.MERGE_DISABLE, target)
+	history.add_do_method(ground, &"put_map", GrassGround.COLOR, ground.color_texture)
+	history.add_undo_method(ground, &"put_map", GrassGround.COLOR, old)
+	history.commit_action(false)
+	var size := image.get_size()
+	_say("Baked the ground's colour (%d × %d) from layers %d." % [size.x, size.y, ground.color_layers])
 
 
 ## «Fit area to the colliders»: the area grows or shrinks to the scene's colliders, keeping what is
@@ -457,11 +481,11 @@ static func _new_parts(old: Rect2, new: Rect2) -> Array[Rect2]:
 	if both.position.x > new.position.x:
 		out.append(Rect2(new.position, Vector2(both.position.x - new.position.x, new.size.y)))
 	if both.end.x < new.end.x:
-		out.append(Rect2(Vector2(both.end.x, new.position.y), Vector2(new.end.x - both.end.x, new.size.y)))
+		out.append(Rect2(both.end.x, new.position.y, new.end.x - both.end.x, new.size.y))
 	if both.position.y > new.position.y:
-		out.append(Rect2(Vector2(both.position.x, new.position.y), Vector2(both.size.x, both.position.y - new.position.y)))
+		out.append(Rect2(both.position.x, new.position.y, both.size.x, both.position.y - new.position.y))
 	if both.end.y < new.end.y:
-		out.append(Rect2(Vector2(both.position.x, both.end.y), Vector2(both.size.x, new.end.y - both.end.y)))
+		out.append(Rect2(both.position.x, both.end.y, both.size.x, new.end.y - both.end.y))
 	return out
 
 
@@ -479,7 +503,7 @@ func _open_dialog(mode: EditorFileDialog.FileMode) -> void:
 			return
 		map = _free_name(_label_of(kind, kind_index))
 	_file_dialog.file_mode = mode
-	_file_dialog.title = ("Import the %s map" if mode == EditorFileDialog.FILE_MODE_OPEN_FILE else "Export the %s map") % map
+	_file_dialog.title = ("Export the %s map" if saving else "Import the %s map") % map
 	var scene := EditorInterface.get_edited_scene_root()
 	var base := scene.scene_file_path.get_basename() if scene != null else "res://grass"
 	_file_dialog.current_path = ProjectSettings.globalize_path("%s_grass_%s.png" % [base, map])
@@ -511,7 +535,8 @@ func _on_file(path: String) -> void:
 	copy.clear_mipmaps()
 	copy.convert(Image.FORMAT_RGBA8 if map == GrassGround.COLOR else Image.FORMAT_R8)
 	_replace_map(map, ImageTexture.create_from_image(copy), "Import grass map (%s)" % map)
-	_say("Imported %s as the %s map (%d × %d)." % [path.get_file(), map, copy.get_width(), copy.get_height()])
+	var size := copy.get_size()
+	_say("Imported %s as the %s map (%d × %d)." % [path.get_file(), map, size.x, size.y])
 
 
 # --- the cursor and the map overlay -----------------------------------------------------------
@@ -576,7 +601,8 @@ func _update_overlay() -> void:
 	_overlay_material.set_shader_parameter(&"kind", clampi(int(tool) - 1, 0, 3))
 	_build_overlay_mesh(ground)
 	if not _overlay.is_valid():
-		_overlay = RenderingServer.instance_create2(_overlay_mesh.get_rid(), field.get_world_3d().scenario)
+		var scenario := field.get_world_3d().scenario
+		_overlay = RenderingServer.instance_create2(_overlay_mesh.get_rid(), scenario)
 	RenderingServer.instance_set_scenario(_overlay, field.get_world_3d().scenario)
 	RenderingServer.instance_set_visible(_overlay, true)
 
@@ -649,6 +675,7 @@ func _build() -> void:
 	popup.add_item("Bake ground", Item.BAKE)
 	popup.add_item("Fit area to the colliders", Item.FIT)
 	popup.add_item("Set up what is missing", Item.SET_UP)
+	popup.add_item("Bake ground colour", Item.BAKE_COLOUR)
 	popup.add_separator()
 	popup.add_item("Fill the map", Item.FILL)
 	popup.add_item("Clear the map", Item.CLEAR)
@@ -705,7 +732,10 @@ func _build() -> void:
 	_status.clip_text = true
 	_status.mouse_filter = Control.MOUSE_FILTER_PASS
 	_status.tooltip_text = SHORTCUTS
-	for control: Control in [_size, _strength, _falloff, _noise, _erase, _height, _colour, _kinds, _show, _status]:
+	var controls: Array[Control] = [
+		_size, _strength, _falloff, _noise, _erase, _height, _colour, _kinds, _show, _status
+	]
+	for control in controls:
 		_bottom.add_child(control)
 	_size.value_changed.connect(_on_setting.bind("size"))
 	_strength.value_changed.connect(_on_setting.bind("strength"))
@@ -718,7 +748,9 @@ func _build() -> void:
 
 	_file_dialog = EditorFileDialog.new()
 	_file_dialog.access = EditorFileDialog.ACCESS_FILESYSTEM
-	_file_dialog.filters = PackedStringArray(["*.png ; PNG", "*.exr ; EXR", "*.webp ; WebP", "*.jpg ; JPEG"])
+	_file_dialog.filters = PackedStringArray(
+		["*.png ; PNG", "*.exr ; EXR", "*.webp ; WebP", "*.jpg ; JPEG"]
+	)
 	_file_dialog.file_selected.connect(_on_file)
 	add_child(_file_dialog)
 	_update_ui()
@@ -755,7 +787,9 @@ func _on_kind_selected(index: int) -> void:
 	_update_status()
 
 
-func _slider(label: String, low: float, high: float, step: float, value: float, suffix: String) -> EditorSpinSlider:
+func _slider(
+	label: String, low: float, high: float, step: float, value: float, suffix: String
+) -> EditorSpinSlider:
 	var slider := EditorSpinSlider.new()
 	slider.label = label
 	slider.min_value = low

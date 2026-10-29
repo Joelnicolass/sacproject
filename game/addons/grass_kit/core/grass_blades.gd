@@ -8,9 +8,9 @@ extends RefCounted
 ## any of them by each blade's rank (its place in the sequence) with no pop. With several kinds of
 ## blade, each point belongs to one kind by a fixed roll on the kinds' weights, so each kind is a
 ## prefix of its own share; a kind that grows by a map has points of its own (the same sequence,
-## shifted), as many as its share, so it adds to the others where it grows. Every instance carries its rank and its mesh's segments (custom data).
-## The kit's blade spans x in [-0.5, 0.5] (its width) and y in [0, 1] (along it); the shader gives
-## it size, place, curve and colour.
+## shifted), as many as its share, so it adds to the others where it grows. Every instance carries
+## its rank and its mesh's segments (custom data). The kit's blade spans x in [-0.5, 0.5] (its
+## width) and y in [0, 1] (along it); the shader gives it size, place, curve and colour.
 
 ## R2 sequence constants (the plastic number), for points that stay even at any prefix.
 const _A1 := 0.7548776662466927
@@ -144,7 +144,8 @@ static func tier_meshes(quality: GrassQuality, kinds: Array[GrassMesh]) -> Array
 				mesh.mesh = blades[segments]
 			var data: PackedFloat32Array
 			if shared.has(index):
-				data = instance_buffer(all, quality.blades_in_tier(tier), rolled, shared[index], segments)
+				var count := quality.blades_in_tier(tier)
+				data = instance_buffer(all, count, rolled, shared[index], segments)
 			else:
 				var count := mini(ceili(quality.blades_in_tier(tier) * share), own.size())
 				data = instance_buffer(own, count, PackedInt32Array(), 0, segments)

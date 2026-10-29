@@ -85,13 +85,16 @@ trample_group = &"units"
 trample_recover = 1.5
 
 [node name="Walker" type="MeshInstance3D" parent="." groups=["units"]]
+layers = 2
 mesh = SubResource("CapsuleMesh_walker")
 
 [node name="Camp0" type="MeshInstance3D" parent="." groups=["camps"]]
+layers = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 4)
 mesh = SubResource("CylinderMesh_camp")
 
 [node name="Camp1" type="MeshInstance3D" parent="." groups=["camps"]]
+layers = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -8)
 mesh = SubResource("CylinderMesh_camp")
 

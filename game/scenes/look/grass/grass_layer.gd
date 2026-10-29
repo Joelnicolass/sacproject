@@ -198,7 +198,8 @@ func _bake_color(terrain: Terrain, ground: GrassGround) -> bool:
 	var generation := _generation
 	var probe := shown.duplicate() as ShaderMaterial
 	_paint_material(probe, paint_amount, 0.0)
-	_write_under_globals()
+	# The field writes GrassKit's ground colours only once it draws, after this bake.
+	GrassGlobals.write_bake_view(field.look, ground)
 	var view := _ground_view(terrain, probe, ground.area.size.x)
 	await RenderingServer.frame_post_draw
 	await RenderingServer.frame_post_draw
@@ -209,18 +210,6 @@ func _bake_color(terrain: Terrain, ground: GrassGround) -> bool:
 	ground.color_texture = ImageTexture.create_from_image(image)
 	_paint(terrain, field.enabled)
 	return true
-
-
-## GrassKit's ground colours as the look will set them, with no far fade, for the colour render:
-## the field writes them only once it draws, after this bake. It writes them again every frame.
-func _write_under_globals() -> void:
-	var look := field.look
-	var grass := look.average_color()
-	RenderingServer.global_shader_parameter_set(
-		&"grasskit_grass", Vector4(grass.r, grass.g, grass.b, look.far_grass)
-	)
-	RenderingServer.global_shader_parameter_set(&"grasskit_under", look.ground_under())
-	RenderingServer.global_shader_parameter_set(&"grasskit_field", Vector4(0.0, 0.0, 1e9, 1e9))
 
 
 ## One pass of grass_bake.gdshader over the map (mode 0 density, 1 size), read back.

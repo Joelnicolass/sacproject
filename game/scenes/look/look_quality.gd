@@ -101,6 +101,27 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 ## Multiplies the particles of the ambient life (pollen, fireflies...). 0 = no ambient life at all.
 @export_range(0.0, 2.0, 0.05) var life_density_scale: float = 1.0
 
+@export_group("Camera")
+## Vertical field of view of the match camera (CameraLensLayer).
+@export_range(40.0, 100.0, 1.0, "suffix:°") var field_of_view: float = 75.0
+## Depth of field: what stands well past the followed body (and with `dof_near`, right in front of
+## the lens) goes soft, so the eye lands on the fight. Off = everything sharp.
+@export var depth_of_field: bool = true
+## How soft the blurred parts get (0 = none, 1 = very).
+@export_range(0.0, 1.0, 0.01) var dof_blur_amount: float = 0.06
+## Where the far blur starts, in distances from the camera to the followed body (2 = twice as far
+## as the subject). The camera zooms, so the focus follows it.
+@export_range(1.0, 10.0, 0.1) var dof_far_start: float = 2.5
+## How deep the far blur fades in, in the same unit.
+@export_range(0.1, 20.0, 0.1) var dof_far_transition: float = 4.0
+## Blur what is close to the lens too (between the camera and half way to the subject): a
+## miniature, «tilt-shift» look.
+@export var dof_near: bool = false
+## How many samples the blur takes (all the cameras of the game).
+@export var dof_quality: RenderingServer.DOFBlurQuality = RenderingServer.DOF_BLUR_QUALITY_MEDIUM
+## The shape of a blurred light.
+@export var dof_bokeh: RenderingServer.DOFBokehShape = RenderingServer.DOF_BOKEH_HEXAGON
+
 @export_group("Relief")
 ## The normal maps of the models (SurfaceReliefLayer). Off = every material draws as if it had none;
 ## the player's «Relieve» option can only turn them off on top of this.

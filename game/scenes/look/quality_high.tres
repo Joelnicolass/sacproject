@@ -42,3 +42,4 @@ fx_max_lights = 16
 actor_max_lights = 24
 rain_density_scale = 1.5
 vegetation = Array[ExtResource("2_veg")]([SubResource("Veg_original_plants")])
+dof_quality = 3

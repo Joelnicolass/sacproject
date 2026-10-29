@@ -372,6 +372,15 @@ UI_QUALITY_SSAO_ENABLED,SSAO (oclusión ambiental),SSAO (ambient occlusion)
 UI_QUALITY_SSIL_ENABLED,SSIL (luz indirecta),SSIL (indirect light)
 UI_QUALITY_GLOW_ENABLED,Glow (bloom),Glow (bloom)
 UI_QUALITY_LENS_FLARE,Lens flare,Lens flare
+UI_QUALITY_GROUP_CAMERA,Cámara,Camera
+UI_QUALITY_FIELD_OF_VIEW,Campo de visión,Field of view
+UI_QUALITY_DEPTH_OF_FIELD,Profundidad de campo,Depth of field
+UI_QUALITY_DOF_BLUR_AMOUNT,Intensidad del desenfoque,Blur amount
+UI_QUALITY_DOF_FAR_START,Desenfoque lejano desde (× distancia al mago),Far blur from (× distance to the wizard)
+UI_QUALITY_DOF_FAR_TRANSITION,Transición del desenfoque lejano,Far blur transition
+UI_QUALITY_DOF_NEAR,Desenfoque cercano (miniatura),Near blur (miniature)
+UI_QUALITY_DOF_QUALITY,Calidad del desenfoque,Blur quality
+UI_QUALITY_DOF_BOKEH,Forma del bokeh,Bokeh shape
 UI_QUALITY_GROUND_LAYERS,Capas del suelo,Ground layers
 UI_QUALITY_GROUND_TRIPLANAR,Suelo triplanar (laderas),Triplanar ground (slopes)
 UI_QUALITY_GROUND_STOCHASTIC,Suelo sin repetición,Stochastic ground (no tiling)

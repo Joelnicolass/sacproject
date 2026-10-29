@@ -47,3 +47,4 @@ actor_max_lights = 4
 rain_density_scale = 0.35
 life_density_scale = 0.0
 vegetation = Array[ExtResource("2_veg")]([SubResource("Veg_original_plants")])
+depth_of_field = false

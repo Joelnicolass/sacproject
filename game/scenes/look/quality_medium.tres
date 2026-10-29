@@ -38,3 +38,4 @@ fx_max_lights = 8
 actor_max_lights = 12
 life_density_scale = 0.6
 vegetation = Array[ExtResource("2_veg")]([SubResource("Veg_original_plants")])
+dof_quality = 1

@@ -19,6 +19,7 @@
 [ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="17_prefs"]
 [ext_resource type="PackedScene" path="res://scenes/look/haze/haze_layer.tscn" id="20_haze"]
 [ext_resource type="PackedScene" path="res://scenes/look/flare/lens_flare_layer.tscn" id="21_flare"]
+[ext_resource type="Script" path="res://scenes/look/lens/camera_lens_layer.gd" id="22_lens"]
 
 [node name="Look" type="Node" node_paths=PackedStringArray("layers", "quality", "sun_layer")]
 script = ExtResource("1_rig")
@@ -59,6 +60,10 @@ sun = NodePath("../Sun/Sun")
 world_environment = NodePath("../Environment/WorldEnvironment")
 
 [node name="LensFlare" parent="Layers" instance=ExtResource("21_flare")]
+
+[node name="CameraLens" type="Node3D" parent="Layers"]
+editor_description = "The match camera's field of view and depth of field (LookQuality, group Camera; Options > Advanced)."
+script = ExtResource("22_lens")
 
 [node name="FxLight" parent="Layers" instance=ExtResource("9_fx_light")]
 

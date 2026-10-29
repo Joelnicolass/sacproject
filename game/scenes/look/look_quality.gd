@@ -7,8 +7,8 @@ extends Resource
 ## Defaults are the engine defaults: native resolution, no AA, no upscaler.
 ##
 ## Scale modes measured on Forward+ over Metal (4.7).
-## Temporal modes (FSR2, MetalFX temporal) are listed to measure them, not to ship them:
-## the animation swaps the whole mesh each frame and has no motion vectors, so they ghost.
+## The shipped presets all use FSR 2 (it is their AA too, so MSAA and FXAA stay off). Its catch:
+## the animation swaps the whole mesh each frame and has no motion vectors, so fast moves can ghost.
 
 @export var id: StringName = &"native"
 @export var label: String = "Nativa"

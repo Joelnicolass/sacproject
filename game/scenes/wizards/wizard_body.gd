@@ -260,7 +260,12 @@ func feet_drop() -> float:
 
 func _process(delta: float) -> void:
 	if not _should_simulate():
-		clips.present(delta)
+		if is_local() and _net.predict:
+			# The owner's clip goes by its predicted step, never by the drawn pose: that one carries
+			# the kit's fading correction and input pacing, which read as walking in place.
+			clips.update(Vector2(velocity.x, velocity.z).length())
+		else:
+			clips.present(delta)
 	if is_local():
 		_send_keys()
 
@@ -367,8 +372,8 @@ func _physics_process(delta: float) -> void:
 	regeneration.step(delta, can_cast() and not drive.moving and not _caster.is_casting())
 
 
-## Server or solo: the step ended. A client (the owner predicts, and replays) draws its pose from
-## `clips.present`.
+## Server or solo: the step ended. A client picks its clip each frame in `_process` (the owner from
+## its predicted velocity, a remote from `clips.present`).
 func _on_moved() -> void:
 	if _should_simulate():
 		clips.update(Vector2(velocity.x, velocity.z).length())

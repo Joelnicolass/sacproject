@@ -3,7 +3,8 @@ extends Node
 
 ## What a wizard shows: picks the clip each step (held, cast or cast-while-running, run, the idle
 ## gesture, idle) from its flat speed. The server (or solo) gives it the velocity of the step that
-## ended (`update`); a client samples how far the drawn body moved each frame (`present`).
+## ended (`update`), and the predicting owner its predicted velocity each frame; a remote samples how
+## far the drawn body moved each frame (`present`).
 ## Presentation only, on every peer.
 ## Not: how the wizard moves (Drive) nor when to update (the body asks).
 
@@ -52,7 +53,7 @@ func _ready() -> void:
 	_prev_ready = true
 
 
-## A client, once per frame: the speed comes from how far the drawn body moved, rising fast and
+## A remote, once per frame: the speed comes from how far the drawn body moved, rising fast and
 ## falling slowly so a late snapshot does not flicker the run.
 func present(delta: float) -> void:
 	if delta <= 0.0:

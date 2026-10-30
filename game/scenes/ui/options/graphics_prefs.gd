@@ -11,6 +11,8 @@ extends Resource
 ##   says.
 ## - «Pasto»: off, the grass (GrassLayer) draws nothing whatever the preset says; it takes effect at
 ##   once, in a match too.
+## - «Estética PS1»: on, the PS1 look (PostFx, psx_screen.tscn) covers the 3D view; off by
+##   default. It takes effect at once (GraphicsApplier).
 ## - «Relieve»: off, no model draws its normal maps whatever the preset says (SurfaceReliefLayer
 ##   reads it).
 ## - It lives in `user://settings.cfg` `[graphics]` through UserSettings.
@@ -39,6 +41,8 @@ const ARG := "--quality="
 @export var default_vegetation := true
 @export var default_grass := true
 @export var default_relief := true
+## The PS1 look over the 3D view (PostFx, psx_screen.tscn). Off by default.
+@export var default_psx := false
 ## 32 to 256 painted ground tiles.
 @export_range(32, 256) var default_scar_tiles := 256
 ## 0 = no cap.
@@ -55,6 +59,7 @@ var _fullscreen := false
 var _max_fps := 0
 var _vegetation := true
 var _grass := true
+var _psx := false
 ## Fields of the preset the player set by hand (LookQuality property → value).
 var _overrides := {}
 ## `quality()` with the overrides, made again when the preset or an override changes.
@@ -158,6 +163,18 @@ func set_grass_enabled(on: bool) -> void:
 	_commit()
 
 
+func psx_enabled() -> bool:
+	_ensure_loaded()
+	return _psx
+
+
+func set_psx_enabled(on: bool) -> void:
+	if on == psx_enabled():
+		return
+	_psx = on
+	_commit()
+
+
 func relief_enabled() -> bool:
 	_ensure_loaded()
 	return _relief
@@ -257,6 +274,7 @@ func _commit() -> void:
 					"max_fps": _max_fps,
 					"vegetation": _vegetation,
 					"grass": _grass,
+					"psx": _psx,
 					"overrides": _overrides,
 					"relief": _relief,
 					"scar_tiles": _scar_tiles,
@@ -276,6 +294,7 @@ func _ensure_loaded() -> void:
 	_max_fps = default_max_fps
 	_vegetation = default_vegetation
 	_grass = default_grass
+	_psx = default_psx
 	_relief = default_relief
 	_scar_tiles = default_scar_tiles
 	if Engine.is_editor_hint():
@@ -296,6 +315,7 @@ func _ensure_loaded() -> void:
 	_fullscreen = _read_bool("fullscreen", default_fullscreen)
 	_vegetation = _read_bool("vegetation", default_vegetation)
 	_grass = _read_bool("grass", default_grass)
+	_psx = _read_bool("psx", default_psx)
 	var stored: Variant = UserSettings.read_value(SECTION, "overrides", {})
 	_overrides = (stored as Dictionary).duplicate() if stored is Dictionary else {}
 	_relief = _read_bool("relief", default_relief)

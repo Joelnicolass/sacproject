@@ -45,17 +45,17 @@ visible = false
 [node name="Layer0" type="MeshInstance3D" parent="Look"]
 cast_shadow = 0
 mesh = SubResource("Mesh_bubble")
-instance_shader_parameters/phase = 0.000
+metadata/instance_params = {"phase": 0.000}
 
 [node name="Layer1" type="MeshInstance3D" parent="Look"]
 cast_shadow = 0
 mesh = SubResource("Mesh_bubble")
-instance_shader_parameters/phase = 0.333
+metadata/instance_params = {"phase": 0.333}
 
 [node name="Layer2" type="MeshInstance3D" parent="Look"]
 cast_shadow = 0
 mesh = SubResource("Mesh_bubble")
-instance_shader_parameters/phase = 0.667
+metadata/instance_params = {"phase": 0.667}
 
 [node name="Sparks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)

@@ -120,21 +120,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 cast_shadow = 0
 mesh = SubResource("Mesh_cloud")
 material_override = SubResource("Mat_cloud")
-instance_shader_parameters/phase_frames = 0.0
+metadata/instance_params = {"phase_frames": 0.0}
 extra_cull_margin = 20.0
 
 [node name="Layer1" type="MeshInstance3D" parent="Cloud"]
 cast_shadow = 0
 mesh = SubResource("Mesh_cloud")
 material_override = SubResource("Mat_cloud")
-instance_shader_parameters/phase_frames = 20.0
+metadata/instance_params = {"phase_frames": 20.0}
 extra_cull_margin = 20.0
 
 [node name="Layer2" type="MeshInstance3D" parent="Cloud"]
 cast_shadow = 0
 mesh = SubResource("Mesh_cloud")
 material_override = SubResource("Mat_cloud")
-instance_shader_parameters/phase_frames = 40.0
+metadata/instance_params = {"phase_frames": 40.0}
 extra_cull_margin = 20.0
 
 [node name="Glow" parent="." instance=ExtResource("15_light")]

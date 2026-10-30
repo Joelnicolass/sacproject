@@ -21,16 +21,16 @@ editor_description = "Una bola de fuego del lanzamiento de Explosion: tres capas
 transform = Transform3D(2.2, 0, 0, 0, 1.8, 0, 0, 0, 2.2, 0, 1, 0)
 cast_shadow = 0
 mesh = SubResource("Mesh_ball")
-instance_shader_parameters/phase_frames = 0.0
+metadata/instance_params = {"phase_frames": 0.0}
 
 [node name="Layer1" type="MeshInstance3D" parent="."]
 transform = Transform3D(2.2, 0, 0, 0, 1.8, 0, 0, 0, 2.2, 0, 1, 0)
 cast_shadow = 0
 mesh = SubResource("Mesh_ball")
-instance_shader_parameters/phase_frames = 20.0
+metadata/instance_params = {"phase_frames": 20.0}
 
 [node name="Layer2" type="MeshInstance3D" parent="."]
 transform = Transform3D(2.2, 0, 0, 0, 1.8, 0, 0, 0, 2.2, 0, 1, 0)
 cast_shadow = 0
 mesh = SubResource("Mesh_ball")
-instance_shader_parameters/phase_frames = 40.0
+metadata/instance_params = {"phase_frames": 40.0}

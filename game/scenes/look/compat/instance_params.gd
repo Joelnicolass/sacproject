@@ -6,8 +6,12 @@ extends RefCounted
 ## - Forward+ and Mobile: `set_instance_shader_parameter`, as before.
 ## - Compatibility (the web): the instance's own copy of the material that declares the uniform
 ##   (made once, on first write), so no instance takes a slot of WebGL's 1024.
-## `install` also moves the values a scene saved on a node (`instance_shader_parameters/*`) into
-## that copy when the node enters the tree. Inert outside Compatibility.
+## A scene saves a node's own values as metadata (`instance_params`, {name: value}), never as
+## `instance_shader_parameters/*`: Godot sends those to the renderer on load, and there every node
+## that has one takes a block of 16 slots even when the shader no longer declares it (WebGL fills
+## its buffer at about 60 nodes). `install` writes the metadata when the node enters the tree.
+
+const META := &"instance_params"
 
 const OWNER_META := &"instance_params_owner"
 
@@ -32,15 +36,15 @@ static func set_on(geom: GeometryInstance3D, param: StringName, value: Variant) 
 		mat.set_shader_parameter(param, value)
 
 
-## On Compatibility, every node that enters `tree` with saved instance values gets them on its own
-## material. Call once, from an autoload.
+## Every node that enters `tree` with `instance_params` metadata gets those values. Call once, from
+## an autoload.
 static func install(tree: SceneTree) -> void:
-	if is_compat() and not tree.node_added.is_connected(_on_node_added):
+	if not tree.node_added.is_connected(_on_node_added):
 		tree.node_added.connect(_on_node_added)
 
 
 static func _on_node_added(node: Node) -> void:
-	if node is GeometryInstance3D:
+	if node is GeometryInstance3D and node.has_meta(META):
 		_adopt.call_deferred(node)
 
 
@@ -49,12 +53,9 @@ static func _adopt(node: Variant) -> void:
 	var geom := node as GeometryInstance3D if is_instance_valid(node) else null
 	if geom == null:
 		return
-	for prop in geom.get_property_list():
-		var path: String = prop.name
-		if path.begins_with("instance_shader_parameters/"):
-			var value: Variant = geom.get(path)
-			if value != null:
-				set_on(geom, StringName(path.trim_prefix("instance_shader_parameters/")), value)
+	var values: Dictionary = geom.get_meta(META, {})
+	for param: Variant in values:
+		set_on(geom, StringName(param), values[param])
 
 
 ## The material of `geom` whose shader declares `param`, made the instance's own on first use.

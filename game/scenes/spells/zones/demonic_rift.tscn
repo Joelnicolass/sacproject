@@ -44,7 +44,7 @@ wall = NodePath("Wall")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9375, 0)
 cast_shadow = 0
 mesh = SubResource("Mesh_wall")
-instance_shader_parameters/emerge = 0.0
+metadata/instance_params = {"emerge": 0.0}
 
 [node name="Swirls" type="CPUParticles3D" parent="." node_paths=PackedStringArray("zone")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)

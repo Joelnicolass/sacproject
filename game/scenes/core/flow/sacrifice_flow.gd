@@ -56,7 +56,7 @@ var _cli_setup := MatchSetup.new()
 
 func _ready() -> void:
 	GameSettings.apply_version()
-	# The web renders on Compatibility: per-instance shader values go on each node's own material.
+	# The nodes' own shader values (InstanceParams metadata), on each renderer as it takes them.
 	InstanceParams.install(get_tree())
 	pick = default_pick.duplicate() as WizardPick
 	boot_path = "res://scenes/core/boot.tscn"

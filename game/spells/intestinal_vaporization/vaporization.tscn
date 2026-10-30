@@ -81,7 +81,7 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
-instance_shader_parameters/offset = 0.0
+metadata/instance_params = {"offset": 0.0}
 
 [node name="Gut1" type="MeshInstance3D" parent="Guts"]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
@@ -89,7 +89,7 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
-instance_shader_parameters/offset = 2.0
+metadata/instance_params = {"offset": 2.0}
 
 [node name="Gut2" type="MeshInstance3D" parent="Guts"]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
@@ -97,7 +97,7 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
-instance_shader_parameters/offset = 4.0
+metadata/instance_params = {"offset": 4.0}
 
 [node name="Gut3" type="MeshInstance3D" parent="Guts"]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
@@ -105,7 +105,7 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
-instance_shader_parameters/offset = 6.0
+metadata/instance_params = {"offset": 6.0}
 
 [node name="Gut4" type="MeshInstance3D" parent="Guts"]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
@@ -113,7 +113,7 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
-instance_shader_parameters/offset = 8.0
+metadata/instance_params = {"offset": 8.0}
 
 [node name="Gut5" type="MeshInstance3D" parent="Guts"]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
@@ -121,7 +121,7 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
-instance_shader_parameters/offset = 10.0
+metadata/instance_params = {"offset": 10.0}
 
 [node name="Gut6" type="MeshInstance3D" parent="Guts"]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
@@ -129,7 +129,7 @@ visible = false
 cast_shadow = 0
 mesh = SubResource("Mesh_quad")
 material_override = SubResource("Mat_gut")
-instance_shader_parameters/offset = 12.0
+metadata/instance_params = {"offset": 12.0}
 
 [node name="Glow" parent="." instance=ExtResource("11_light")]
 light_color = Color(1, 0.5, 0.47, 1)

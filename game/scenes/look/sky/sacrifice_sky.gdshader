@@ -124,8 +124,8 @@ group_uniforms compatibility;
 // The web (Compatibility) lifts the exposure of the whole scene (EnvironmentLayer) so models and
 // ground read like the desktop; the sky seen behind them is brought back here, the ambient it
 // lights with (the cubemap pass) is not.
-uniform float compat_gain : hint_range(0.0, 2.0, 0.01) = 0.55;
-uniform float compat_saturation : hint_range(0.0, 3.0, 0.01) = 1.0;
+uniform float compat_gain : hint_range(0.0, 2.0, 0.01) = 0.47;
+uniform float compat_saturation : hint_range(0.0, 3.0, 0.01) = 1.25;
 // Below 1 lifts the darks: the web's tone curve crushes them (the clouds' shadows went black).
 uniform float compat_curve : hint_range(0.2, 1.5, 0.01) = 0.6;
 group_uniforms;

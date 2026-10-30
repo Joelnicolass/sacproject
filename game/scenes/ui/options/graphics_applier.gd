@@ -10,7 +10,8 @@ extends Node
 ##   (`--max-fps`, `--disable-vsync`, `-f`/`--fullscreen`, `-w`/`--windowed`) wins over the
 ##   preference and is left alone.
 ## - Quality: `rig.apply_quality(preset)` in a match (the world has a rig; the boot has none), and
-##   the «Vegetación» switch: `rig.set_vegetation_enabled`; the «Pasto» one: `rig.set_grass_enabled`.
+##   the «Vegetación» switch: `rig.set_vegetation_enabled`; the «Pasto» one:
+##   `rig.set_grass_enabled`.
 ## - Inert in everything (window and preset) in the editor, in a headless process, in the dedicated
 ##   server and under AgentKit (`--agent=…` in the user args): user://settings.cfg is shared by the
 ##   player and the agents' runs, so a test never inherits the player's choice (no VSync off / no

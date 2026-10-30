@@ -260,8 +260,8 @@ func feet_drop() -> float:
 
 func _process(_delta: float) -> void:
 	if not _should_simulate():
-		# What the MpActor shows moves at this speed: the owner's own steps, a remote's states, never
-		# a correction fading on screen.
+		# What the MpActor shows moves at this speed: the owner's own steps, a remote's states,
+		# never a correction fading on screen.
 		var shown: Vector3 = _net.motion_velocity()
 		clips.update(Vector2(shown.x, shown.z).length())
 	if is_local():

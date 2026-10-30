@@ -145,12 +145,15 @@ func _wanted(terrain: Terrain) -> bool:
 ## The preset's grass knobs as GrassKit's quality; set again only when one of them changed (a new
 ## quality builds the field's meshes again).
 func _apply_quality() -> void:
-	var key := "%s|%s|%s|%s" % [
-		_preset.grass_radius_m,
-		_preset.grass_near_radius_m,
-		_preset.grass_density,
-		_preset.grass_near_segments,
-	]
+	var key := (
+		"%s|%s|%s|%s"
+		% [
+			_preset.grass_radius_m,
+			_preset.grass_near_radius_m,
+			_preset.grass_density,
+			_preset.grass_near_segments,
+		]
+	)
 	if key != _quality_key or field.quality == null:
 		_quality_key = key
 		var quality := GrassQuality.new()
@@ -301,7 +304,9 @@ func _heights_image(terrain: Terrain, ground: GrassGround) -> Image:
 	for y in size.y:
 		var z := ground.area.position.y + (y + 0.5) * cell.y
 		for x in size.x:
-			heights[y * size.x + x] = terrain.height_at(ground.area.position.x + (x + 0.5) * cell.x, z)
+			heights[y * size.x + x] = terrain.height_at(
+				ground.area.position.x + (x + 0.5) * cell.x, z
+			)
 	return Image.create_from_data(size.x, size.y, false, Image.FORMAT_RF, heights.to_byte_array())
 
 

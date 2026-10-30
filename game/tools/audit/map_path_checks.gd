@@ -5,15 +5,15 @@ extends RefCounted
 ## that is not an island, the same query with no search cap (NavMeshBackend.query_path). It passes
 ## when both are in the same walkable region (the zones' PropNavIndex) and the path ends within the
 ## agent radius plus END_SLACK_M of the walkable point nearest to the fount. The navmesh is the
-## map's saved bake, loaded by its Nav (nothing is baked here). Returns the problems, each naming the
-## two nodes. Not: the seats (MapSeatChecks), what stands on land (MapGroundChecks).
+## map's saved bake, loaded by its Nav (nothing is baked here). Returns the problems, each naming
+## the two nodes. Not: the seats (MapSeatChecks), what stands on land (MapGroundChecks).
 
 const MapGroundChecks := preload("res://tools/audit/map_ground_checks.gd")
 
-## Added to the bake's agent radius (1 m, scenes/map/nav/map_nav.tscn): a path that ends farther (flat)
-## than both from the walkable point nearest to the fount stopped short, the fount is out of reach.
-## 2 m in all: a unit stops at its target's edge, and the nearest point of a fount hole may be a
-## corner the path turns before.
+## Added to the bake's agent radius (1 m, scenes/map/nav/map_nav.tscn): a path that ends farther
+## (flat) than both from the walkable point nearest to the fount stopped short, the fount is out of
+## reach. 2 m in all: a unit stops at its target's edge, and the nearest point of a fount hole may
+## be a corner the path turns before.
 const END_SLACK_M := 1.0
 
 
@@ -42,16 +42,10 @@ static func _walk(root: MapRoot, nav: NavMeshBackend, altar: Node3D, fount: Node
 	if from_region < 0 or to_region < 0 or from_region != to_region:
 		return (
 			"%s: not in the same walkable region (%d %s, %d %s)"
-			% [
-				names,
-				from_region,
-				_size_of(nav, from_region),
-				to_region,
-				_size_of(nav, to_region)
-			]
+			% [names, from_region, _size_of(nav, from_region), to_region, _size_of(nav, to_region)]
 		)
-	# The land nearest to the fount (an island, the fount's own top, is no goal): the path goes there,
-	# as the server would otherwise aim at the island.
+	# The land nearest to the fount (an island, the fount's own top, is no goal): the path goes
+	# there, as the server would otherwise aim at the island.
 	var goal := nav.nearest_free(to)
 	if is_nan(goal.x):
 		goal = NavigationServer3D.map_get_closest_point(nav.map, to)

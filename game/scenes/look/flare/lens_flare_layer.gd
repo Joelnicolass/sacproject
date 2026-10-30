@@ -11,7 +11,6 @@ const GROUP := &"lens_flare_layer"
 
 @export var screen: MeshInstance3D
 
-
 var _material: ShaderMaterial
 ## The flare's own values, so a value the player clears goes back to them.
 var _own := {}

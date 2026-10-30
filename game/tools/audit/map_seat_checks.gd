@@ -35,7 +35,9 @@ static func check(
 		var spot := start.spawn_transform().origin
 		var on_ground := terrain.is_on_ground(spot.x, spot.z)
 		var land := nav.nearest_free(spot) if nav.built else Vector3(NAN, NAN, NAN)
-		var near := not is_nan(land.x) and Vector2(land.x - spot.x, land.z - spot.z).length() <= SNAP_M
+		var near := (
+			not is_nan(land.x) and Vector2(land.x - spot.x, land.z - spot.z).length() <= SNAP_M
+		)
 		var region := nav.zones.index.component_at(land) if near else -1
 		var region_size := nav.zones.index.component_area[region] if region >= 0 else 0.0
 		print(

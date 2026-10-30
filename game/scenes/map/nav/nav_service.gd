@@ -11,9 +11,9 @@ extends Node
 ## NavBoxBlockers over the map's MapNav, PropKit zones). What the bake does not hold (altars,
 ## structures, nav_blocker), a building that fell and the ground that moved change the map:
 ## NavChanges says where, MapNav bakes only the zones there on worker threads and the result is
-## swapped in `rebake_swap_s` after the change (apply MANUAL, a count: the same tick on every machine
-## while the bake is done by then, else the first tick it is, never blocking). A saved bake that is
-## stale (a match without its forest) is baked again by MapNav on its own before it is used.
+## swapped in `rebake_swap_s` after the change (apply MANUAL, a count: the same tick on every
+## machine while the bake is done by then, else the first tick it is, never blocking). A saved bake
+## that is stale (a match without its forest) is baked again by MapNav on its own before it is used.
 ## No navmesh: not ready, callers get the straight line.
 
 signal built(ms: float)

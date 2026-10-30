@@ -3,8 +3,8 @@ class_name TerrainGround
 extends PropGround
 
 ## The map's Terrain as the ground of a PropKit scatter (the forest): props stand on land, never
-## over a hole or off the map, and fewer of them on rock (Terrain.ground_roles, B). The scatter calls
-## it in the editor too, on the Terrain of the scatter's own map.
+## over a hole or off the map, and fewer of them on rock (Terrain.ground_roles, B). The scatter
+## calls it in the editor too, on the Terrain of the scatter's own map.
 
 ## Fewer props on rock: 1 = none on bare rock, 0 = rock is like any land.
 @export_range(0.0, 1.0, 0.05) var rock_thinning := 0.6

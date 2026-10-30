@@ -52,6 +52,9 @@ const COLOR_TEXELS := 2048
 @export var paint_slope := Vector2(10.0, 36.0)
 ## How strong the wind's pale bands are on the painted ground.
 @export_range(0.0, 1.0, 0.01) var paint_waves := 0.12
+## How much darker the ground gets under the drawn blades (the shade of the blades on it); it fades
+## out with them, so the far grass meets the ground with no edge. 0 = none.
+@export_range(0.0, 1.0, 0.01) var paint_shade := 0.35
 
 var _rig: LookRig
 var _preset: LookQuality
@@ -319,11 +322,11 @@ func _on_terrain_derived() -> void:
 func _paint(terrain: Terrain, on: bool) -> void:
 	var mat := _paintable(_mesh_material(terrain))
 	if mat:
-		_paint_material(mat, paint_amount if on else 0.0, paint_waves)
+		_paint_material(mat, paint_amount if on else 0.0, paint_waves, paint_shade)
 
 
-func _paint_material(mat: ShaderMaterial, amount: float, waves: float) -> void:
-	GroundMaterial.set_grass_paint(mat, amount, paint_by_role, paint_slope, waves)
+func _paint_material(mat: ShaderMaterial, amount: float, waves: float, shade := 0.0) -> void:
+	GroundMaterial.set_grass_paint(mat, amount, paint_by_role, paint_slope, waves, shade)
 
 
 func _mesh_material(terrain: Terrain) -> ShaderMaterial:

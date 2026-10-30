@@ -389,9 +389,8 @@ UI_QUALITY_GROUND_CLOUD_SHADOWS,Sombras de nubes,Cloud shadows
 UI_QUALITY_GRASS_ENABLED,Pasto,Grass
 UI_QUALITY_GRASS_RADIUS_M,Distancia del pasto (m),Grass distance (m)
 UI_QUALITY_GRASS_NEAR_RADIUS_M,Pasto denso cercano (m),Dense near grass (m)
-UI_QUALITY_GRASS_DENSITY_SCALE,Densidad del pasto,Grass density
+UI_QUALITY_GRASS_DENSITY,Hojas por m²,Blades per m²
 UI_QUALITY_GRASS_NEAR_SEGMENTS,Segmentos por hoja,Segments per blade
-UI_QUALITY_GRASS_CLUMPS,Mechones de pasto,Grass clumps
 UI_QUALITY_GRASS_TRAMPLE,Pasto pisado,Grass trample
 UI_QUALITY_FX_SOFT_PARTICLES,Partículas suaves,Soft particles
 UI_QUALITY_FX_FRAME_BLEND,Mezcla de cuadros de efectos,Effect frame blend

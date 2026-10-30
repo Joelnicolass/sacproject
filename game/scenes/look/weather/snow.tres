@@ -46,3 +46,4 @@ rain = 1.0
 precipitation = SubResource("Fall")
 sun_tint = Color(0.95, 0.97, 1, 1)
 shadow_mul = 0.38
+wind_mul = 1.4

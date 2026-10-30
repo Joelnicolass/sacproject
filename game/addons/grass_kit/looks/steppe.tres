@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="GrassLook" format=3]
+
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_look.gd" id="1_look"]
+
+[resource]
+script = ExtResource("1_look")
+resource_name = "steppe"
+height_range = Vector2(0.15, 0.5)
+width = 0.045
+lean = 0.5
+clump_size = 2.4
+base_color = Color(0.36, 0.33, 0.17, 1)
+tip_color = Color(0.78, 0.72, 0.45, 1)
+color_variation = 0.3
+ground_color = Color(0.42, 0.36, 0.24, 1)
+translucency = Color(0.4, 0.36, 0.15, 1)
+under_grass = 0.45

@@ -110,7 +110,8 @@ func dress_trees() -> void:
 			_forest = PropBatch3D.new()
 			_forest.chunk_size = 256.0
 			_forest.build_on_ready = false
-			_forest.mesh_of = func(prop: Node3D, _part: MeshInstance3D) -> Mesh: return _tree_mesh(prop)
+			_forest.mesh_of = func(prop: Node3D, _part: MeshInstance3D) -> Mesh:
+				return _tree_mesh(prop)
 			_forest.top_level = true
 			add_child(_forest, false, INTERNAL_MODE_BACK)
 		_forest.props.assign(get_tree().get_nodes_in_group(ForestScatter.GROUP))

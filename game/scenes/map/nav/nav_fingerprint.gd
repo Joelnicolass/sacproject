@@ -42,4 +42,3 @@ static func _describe(node: Node, path: String) -> String:
 	if ground != null:
 		parts.append(str(ground.heights.checksum()) if ground.heights != null else "no heights")
 	return "|".join(parts)
-

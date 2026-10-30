@@ -19,6 +19,9 @@ var skipped_reconciles: int = 0
 var smoother: MpCorrectionSmoother
 ## Owner: the stamp of the last server state it went back to (0 = none yet).
 var reconciled_stamp: float = 0.0
+## Owner: how fast its own frames moved it in the last tick (mp_move's steps, per second; a paced tick with no frame
+## keeps the one before): never a correction. MpActor.motion_velocity reads it.
+var step_velocity := Vector3.ZERO
 
 var _states_since_reconcile: int = 0
 ## Owner: how far the last simulated frame moved the node (a paced-down tick is drawn as if it moved this much).
@@ -97,6 +100,7 @@ func owner_tick(delta: float, stamp: float, motion: MpProxyMotion, net_pos: Vect
 			smoother.absorb(after_extra, after_extra_rot)
 	else:
 		_last_step = _predicted - start
+	step_velocity = _last_step / delta if delta > 0.0 else Vector3.ZERO
 
 
 ## Back to the server's pose after `acked_seq`, then the ticks it has not seen, up to the last one predicted (this

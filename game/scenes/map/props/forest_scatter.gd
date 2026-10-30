@@ -32,4 +32,5 @@ func take_away() -> void:
 	if get_child_count() > 0:
 		clear()
 		get_tree().call_group(FloraField.GROUP, "dress_trees")
-		print("forest: off for this match")
+		if DebugLog.on(&"forest"):
+			print("forest: off for this match")

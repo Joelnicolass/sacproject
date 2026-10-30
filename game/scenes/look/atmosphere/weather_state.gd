@@ -47,6 +47,10 @@ extends Resource
 ## What falls. Empty = nothing.
 @export var precipitation: PrecipitationLook
 
+@export_group("Wind")
+## Multiplies the biome's wind (the grass bends harder and its gusts cross the ground faster).
+@export_range(0.0, 6.0, 0.01) var wind_mul: float = 1.0
+
 @export_group("Storm")
 ## Lightning strikes a minute (0 = none) and how bright a flash is (sky and ambient, never the
 ## glow).
@@ -74,4 +78,5 @@ func to_sample() -> AtmosphereSample:
 	out.cloud_cover = cloud_cover
 	out.cloud_darken = cloud_darken
 	out.cloud_speed_mul = cloud_speed_mul
+	out.wind = wind_mul
 	return out

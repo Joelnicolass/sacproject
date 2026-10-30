@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GrassLook" format=3]
+
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_look.gd" id="1_look"]
+
+[resource]
+script = ExtResource("1_look")
+resource_name = "lush"
+height_range = Vector2(0.4, 1.1)
+width = 0.07
+clump_size = 1.2
+base_color = Color(0.06, 0.24, 0.05, 1)
+tip_color = Color(0.32, 0.56, 0.14, 1)
+ground_color = Color(0.16, 0.22, 0.08, 1)
+under_grass = 0.7

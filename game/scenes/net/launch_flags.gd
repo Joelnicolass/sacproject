@@ -3,10 +3,10 @@ extends RefCounted
 
 ## Reads the command line of this process into a LaunchPlan: the overrides of the rules
 ## (`--level`, `--souls`, `--friendly-fire`, `--drop-soul`, `--match-seed`, `--biome`,
-## `--sky-hour`, `--weather`, `--no-forest`) and the AI seats of a dedicated (`--ai-slots`, `--ai-god`). The map
-## and the mode (`--map`, `--mode`) are ActiveMatch's. It changes nothing: SacrificeFlow applies
-## the plan it returns. Every flag it takes is told in the log. A bad value is a warning and the
-## rules decide.
+## `--sky-hour`, `--weather`, `--no-forest`) and the AI seats of a dedicated (`--ai-slots`,
+## `--ai-god`). The map and the mode (`--map`, `--mode`) are ActiveMatch's. It changes nothing:
+## SacrificeFlow applies the plan it returns. Every flag it takes is told in the log. A bad value
+## is a warning and the rules decide.
 ##
 
 

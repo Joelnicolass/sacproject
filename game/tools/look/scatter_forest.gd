@@ -1,12 +1,12 @@
 extends Node
 
-## Runs the «Scatter» of a map's ForestScatter (MapProps/Forest, PropKit) headless and writes the trees into
-## the map's map.tscn as plain instance nodes, so the scene keeps every other line as it was. The
-## same as pressing the button in the editor and saving. Bake the navmesh after it.
+## Runs the «Scatter» of a map's ForestScatter (MapProps/Forest, PropKit) headless and writes the
+## trees into the map's map.tscn as plain instance nodes, so the scene keeps every other line as it
+## was. The same as pressing the button in the editor and saving. Bake the navmesh after it.
 ## "$GODOT" --headless --path game res://tools/look/scatter_forest.tscn -- --map=<tag>
 
 const FOREST_PATH := "MapProps/Forest"
-const FOREST_LINE := "[node name=\"Forest\" parent=\"MapProps\""
+const FOREST_LINE := '[node name="Forest" parent="MapProps"'
 const TREE_ID := "6_tree"
 
 
@@ -40,25 +40,25 @@ func _run() -> void:
 	var skipping := false
 	for line in text.split("\n"):
 		if line.begins_with("[node "):
-			skipping = line.contains("parent=\"%s\"" % FOREST_PATH)
+			skipping = line.contains('parent="%s"' % FOREST_PATH)
 		if not skipping:
 			cleaned.append(line)
 	text = "\n".join(cleaned)
 	var tree_path := forest.variants[0].scene.resource_path
-	if not text.contains("id=\"%s\"" % TREE_ID):
+	if not text.contains('id="%s"' % TREE_ID):
 		var first_node := text.find("\n[node ")
 		var header_end := text.rfind("[ext_resource", first_node)
 		header_end = text.find("\n", header_end) + 1
 		text = (
 			text.substr(0, header_end)
-			+ "[ext_resource type=\"PackedScene\" path=\"%s\" id=\"%s\"]\n" % [tree_path, TREE_ID]
+			+ '[ext_resource type="PackedScene" path="%s" id="%s"]\n' % [tree_path, TREE_ID]
 			+ text.substr(header_end)
 		)
 	var nodes := PackedStringArray()
 	for planted: Node3D in forest.get_children():
 		nodes.append(
 			(
-				"[node name=\"%s\" parent=\"%s\" instance=ExtResource(\"%s\")]\ntransform = %s\n"
+				'[node name="%s" parent="%s" instance=ExtResource("%s")]\ntransform = %s\n'
 				% [planted.name, FOREST_PATH, TREE_ID, var_to_str(planted.transform)]
 			)
 		)

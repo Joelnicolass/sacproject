@@ -12,7 +12,7 @@ extends Node
 signal profile_applied(profile: LookProfile)
 ## The player's «Vegetación» switch changed; the vegetation layers listen.
 signal vegetation_toggled(enabled: bool)
-## The player's «Pasto» switch changed; GrassField listens.
+## The player's «Pasto» switch changed; GrassLayer listens.
 signal grass_toggled(enabled: bool)
 
 @export_group("Editor preview")

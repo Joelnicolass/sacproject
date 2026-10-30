@@ -40,7 +40,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/rts_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg", "res://addons/terrain_tools/plugin.cfg", "res://addons/surface_maps/plugin.cfg", "res://addons/prop_kit/plugin.cfg")
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/rts_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg", "res://addons/terrain_tools/plugin.cfg", "res://addons/surface_maps/plugin.cfg", "res://addons/prop_kit/plugin.cfg", "res://addons/grass_kit/plugin.cfg")
 
 [global_group]
 
@@ -59,7 +59,6 @@ flora_field="Every flora field of the map (FloraField)."
 flora_layer="Every flora layer of the map (FloraLayer)."
 fx_light_pool="The pool of short-lived effect lights (FxLightLayer)."
 ghost_form="Every wizard ghost form (GhostForm)."
-grass_field="The map's grass field (GrassField)."
 ground_footprint="Props that flatten or mark the ground (GroundFootprint)."
 ground_scars="The map's ground scars layer (GroundScars)."
 ground_zone="Every spell zone on the ground (GroundZone)."
@@ -93,6 +92,7 @@ spell_spawner="The match's spell spawner (SpellSpawner)."
 structure="Standing buildings that can be attacked (MapBuilding)."
 structure_spawner="The match's structure spawner (StructureSpawner)."
 terrain="The map's terrain (Terrain)."
+tramples_grass="Bodies that bend the grass around them (GrassLayer, GrassKit trample_group)."
 unit="Every creature body in play (UnitBody)."
 unit_spawner="The match's creature spawner (UnitSpawner)."
 vegetation_clear="Nodes that clear vegetation around them (VegetationClear)."
@@ -500,6 +500,42 @@ renderer/rendering_method.web="gl_compatibility"
 
 [shader_globals]
 
+grasskit_wind={
+"type": "vec4",
+"value": Vector4(1, 0, 0, 55)
+}
+grasskit_wind_offset={
+"type": "vec2",
+"value": Vector2(0, 0)
+}
+grasskit_wind_time={
+"type": "float",
+"value": 0.0
+}
+grasskit_wind_noise={
+"type": "sampler2D",
+"value": "res://addons/grass_kit/core/grass_wind_noise.tres"
+}
+grasskit_field={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+grasskit_grass={
+"type": "vec4",
+"value": Vector4(0.3, 0.45, 0.12, 0)
+}
+grasskit_under={
+"type": "vec4",
+"value": Vector4(0, 0, 0.1, 0)
+}
+grasskit_density={
+"type": "sampler2D",
+"value": "res://addons/grass_kit/core/grass_full.tres"
+}
+grasskit_area={
+"type": "vec4",
+"value": Vector4(-1000000, -1000000, 2000000, 2000000)
+}
 fx_soft_particles={
 "type": "float",
 "value": 0.0

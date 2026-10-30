@@ -50,6 +50,8 @@ var moon_intensity := 0.0
 var cloud_cover := 0.0
 var cloud_darken := 0.0
 var cloud_speed_mul := 1.0
+## Multiplies the wind's strength (the grass, the ground's bands: GrassKit's shared wind).
+var wind := 1.0
 ## The weather state this sample comes from (null in the day's sample).
 var weather: WeatherState
 
@@ -86,6 +88,7 @@ static func mix(a: AtmosphereSample, b: AtmosphereSample) -> AtmosphereSample:
 	out.cloud_cover = maxf(a.cloud_cover, b.cloud_cover)
 	out.cloud_darken = maxf(a.cloud_darken, b.cloud_darken)
 	out.cloud_speed_mul = a.cloud_speed_mul * b.cloud_speed_mul
+	out.wind = a.wind * b.wind
 	out.weather = a.weather if a.weather != null else b.weather
 	return out
 
@@ -158,6 +161,7 @@ func numbers() -> PackedFloat32Array:
 			mist_color.r,
 			mist_color.g,
 			mist_color.b,
+			wind,
 		]
 	)
 
@@ -186,6 +190,7 @@ func _take(n: PackedFloat32Array) -> void:
 	fog_begin = n[26]
 	mist = n[27]
 	mist_color = Color(n[28], n[29], n[30])
+	wind = n[31]
 
 
 ## The same moment with the look left as it is (hour and weather kept): Atmosphere snaps a sample

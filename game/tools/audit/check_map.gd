@@ -6,7 +6,8 @@ extends Node
 ## MAP <tag> PASS` / `CHECK MAP <tag> FAIL` per map; exit 0 when all pass, 1 otherwise. It enters
 ## each map scene as the bake does (autoloads exist) and does not run the match.
 ## Not: fixing anything (the bases are flattened in the editor, the navmesh is baked by
-## the Nav node's «Bake»). "$GODOT" --headless --path game res://tools/audit/check_map.tscn -- --map=peaks
+## the Nav node's «Bake»).
+## "$GODOT" --headless --path game res://tools/audit/check_map.tscn -- --map=peaks
 
 const MapChecks := preload("res://tools/audit/map_checks.gd")
 

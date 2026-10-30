@@ -151,6 +151,7 @@ properties/29/spawn = true
 properties/29/replication_mode = 0
 
 [node name="Wizard" type="CharacterBody3D" node_paths=PackedStringArray("mount", "vision", "seat", "regeneration", "clips", "unit")]
+collision_mask = 129
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
 unit = NodePath("RtsUnit")
@@ -212,9 +213,6 @@ afflictions = NodePath("../Afflictions")
 ghost = NodePath("../GhostForm")
 moving_above_m_s = 0.1
 gesture_every = 5
-sampled_cap = 1.6
-rise_per_s = 20.0
-fall_per_s = 6.0
 
 [node name="Tilt" type="Node3D" parent="."]
 physics_interpolation_mode = 2

@@ -2,15 +2,13 @@ class_name CellRing
 extends RefCounted
 
 ## Which cells of a square grid exist around the camera and in which tier (level of detail), shared
-## by the vegetation layers (GrassField now; FloraField later). Moved from GrassField with the same
-## arithmetic.
+## by the flora (FloraField's planters).
 ## - A cell appears when its rect is within `radius + 1` of the eye (the fade center) and goes away
 ##   past `radius + keep_margin_m`.
 ## - Its tier goes by the rect distance to the field center: tier i starts at `tier_starts[i]`,
 ##   entered only `tier_hysteresis_m` past it, so a cell does not flip back and forth.
 ## The ring owns only keys and tiers: `update` says what changed and the layer makes, moves or frees
-## its own nodes. `field_center`, `fade_center` and `view_camera` are the centers and the camera
-## (the editor viewport's or the game's).
+## its own nodes. `view_camera` is the camera (the editor viewport's or the game's).
 
 ## Side of a cell in meters.
 var cell_m := 16.0
@@ -105,37 +103,6 @@ func rect_distance(key: Vector2i, from: Vector2) -> float:
 	var dx := maxf(maxf(low.x - from.x, from.x - (low.x + cell_m)), 0.0)
 	var dz := maxf(maxf(low.y - from.y, from.y - (low.y + cell_m)), 0.0)
 	return sqrt(dx * dx + dz * dz)
-
-
-## The ground point the camera looks at, no farther than the field can use: low cameras get a center
-## ahead of them (so the ring covers what they see), high ones look straight at it. `ground_y` is
-## the land under the camera.
-static func field_center(
-	cam_local: Vector3, forward: Vector3, near_radius: float, ground_y: float
-) -> Vector2:
-	var flat := Vector2(forward.x, forward.z)
-	var above := maxf(cam_local.y - ground_y, 0.0)
-	var reach := near_radius * 0.9 + above * 0.5
-	if forward.y < -0.02 and flat.length() > 0.001:
-		reach = minf(reach, above * flat.length() / -forward.y)
-	var here := Vector2(cam_local.x, cam_local.z)
-	return here + flat.normalized() * reach if flat.length() > 0.001 else here
-
-
-## The point the distance fade is measured from: under the camera, led toward where it looks by the
-## camera's height over the ground (never past the ground point it looks at). A game camera (a few
-## meters up) fades around itself, so turning does not move the fade; a high RTS camera fades around
-## what it looks at.
-static func fade_center(cam_local: Vector3, forward: Vector3, ground_y: float) -> Vector2:
-	var flat := Vector2(forward.x, forward.z)
-	var here := Vector2(cam_local.x, cam_local.z)
-	if flat.length() <= 0.001:
-		return here
-	var above := maxf(cam_local.y - ground_y, 0.0)
-	var reach := above
-	if forward.y < -0.02:
-		reach = minf(reach, above * flat.length() / -forward.y)
-	return here + flat.normalized() * reach
 
 
 ## The camera a layer follows: the 3D viewport's in the editor (null when `follow_editor` is off),

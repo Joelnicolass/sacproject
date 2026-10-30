@@ -19,7 +19,8 @@ mesh = ExtResource("mesh_ear2")
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(61.30999, 0, 0)
 script = ExtResource("3_clear")
-radius_m = 87.86
+radius = 87.86
+soft = 3.0
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(61.30999, 91.380005, 0)

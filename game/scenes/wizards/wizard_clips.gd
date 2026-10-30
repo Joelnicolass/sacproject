@@ -2,8 +2,9 @@ class_name WizardClips
 extends Node
 
 ## What a wizard shows: picks the clip each step (held, cast or cast-while-running, run, the idle
-## gesture, idle) from its flat speed. The server (or solo) gives it the velocity of the step that
-## ended (`update`); a client samples how far the drawn body moved each frame (`present`).
+## gesture, idle) from its flat speed (`update`): the server (or solo) gives it the velocity of the
+## step that ended; a client, each frame, the speed of what its MpActor shows
+## (`MpActor.motion_velocity`, the owner's own steps or a remote's states, never a correction).
 ## Presentation only, on every peer.
 ## Not: how the wizard moves (Drive) nor when to update (the body asks).
 
@@ -20,17 +21,6 @@ extends Node
 ## One rest loop in this many ends in the idle gesture, the same on every peer (the units do the
 ## same).
 @export_range(1, 50) var gesture_every := 5
-@export_group("Client sampling")
-## The sampled speed is capped at this many times the wizard's pace (a snap is not a sprint).
-@export_range(1.0, 5.0, 0.01, "suffix:x pace") var sampled_cap := 1.6
-## How fast the drawn speed rises toward a faster sample (fraction per second, 1 frame = all).
-@export_range(0.0, 120.0, 0.1, "suffix:/s") var rise_per_s := 20.0
-## How fast the drawn speed falls toward a slower sample (fraction per second).
-@export_range(0.0, 120.0, 0.1, "suffix:/s") var fall_per_s := 6.0
-
-var _prev_pos := Vector3.ZERO
-var _prev_ready := false
-var _sampled_speed := 0.0
 var _idle_loops := 0
 var _gesturing := false
 ## The speed the last `update` saw (a gesture that ends re-picks the pose with it).
@@ -48,28 +38,6 @@ func _ready() -> void:
 		push_error("WizardClips: assign body, clip_pose, caster, afflictions and ghost.")
 		return
 	clip_pose.clip_looped.connect(_on_clip_looped)
-	_prev_pos = body.global_position
-	_prev_ready = true
-
-
-## A client, once per frame: the speed comes from how far the drawn body moved, rising fast and
-## falling slowly so a late snapshot does not flicker the run.
-func present(delta: float) -> void:
-	if delta <= 0.0:
-		return
-	if not _prev_ready:
-		_prev_pos = body.global_position
-		_prev_ready = true
-		return
-	var from := _prev_pos
-	var to := body.global_position
-	_prev_pos = to
-	var flat_delta := Vector2(to.x - from.x, to.z - from.z).length()
-	var pace := maxf(body.move_speed * body.speed_factor * ghost.speed_factor(), 0.001)
-	var sampled := clampf(flat_delta / delta, 0.0, pace * sampled_cap)
-	var rate := rise_per_s if sampled >= _sampled_speed else fall_per_s
-	_sampled_speed = lerpf(_sampled_speed, sampled, clampf(delta * rate, 0.0, 1.0))
-	update(_sampled_speed)
 
 
 ## The clip for this flat speed (m/s). Held rules out the rest; a cast loops while the Caster casts,

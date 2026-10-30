@@ -99,6 +99,11 @@ var move_speed: float = 0.0
 var speed_factor := 1.0
 var look_yaw := 0.0
 
+## How wide this body bends the grass (GrassKit reads it on the field's trample group): none once
+## it lies as a corpse.
+var grass_trample_radius: float:
+	get:
+		return 0.0 if is_in_group(Corpse.GROUP) else maxf(BodyBox.half_size(self), 0.25) * 1.5
 var _sent_yaw := NAN
 var _stats_ready := false
 
@@ -120,6 +125,7 @@ var _stats_ready := false
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	add_to_group(GrassLayer.TRAMPLE_GROUP)
 	_refresh_owner()
 	floor_snap_length = 0.5
 	look_yaw = rotation.y
@@ -252,9 +258,12 @@ func feet_drop() -> float:
 	return mount.facts.feet.y
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not _should_simulate():
-		clips.present(delta)
+		# What the MpActor shows moves at this speed: the owner's own steps, a remote's states,
+		# never a correction fading on screen.
+		var shown: Vector3 = _net.motion_velocity()
+		clips.update(Vector2(shown.x, shown.z).length())
 	if is_local():
 		_send_keys()
 
@@ -361,8 +370,7 @@ func _physics_process(delta: float) -> void:
 	regeneration.step(delta, can_cast() and not drive.moving and not _caster.is_casting())
 
 
-## Server or solo: the step ended. A client (the owner predicts, and replays) draws its pose from
-## `clips.present`.
+## Server or solo: the step ended. A client picks its clip each frame in `_process`.
 func _on_moved() -> void:
 	if _should_simulate():
 		clips.update(Vector2(velocity.x, velocity.z).length())

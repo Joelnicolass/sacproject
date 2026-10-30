@@ -7,8 +7,8 @@ extends Resource
 ## Defaults are the engine defaults: native resolution, no AA, no upscaler.
 ##
 ## Scale modes measured on Forward+ over Metal (4.7).
-## Temporal modes (FSR2, MetalFX temporal) are listed to measure them, not to ship them:
-## the animation swaps the whole mesh each frame and has no motion vectors, so they ghost.
+## The shipped presets all use FSR 2 (it is their AA too, so MSAA and FXAA stay off). Its catch:
+## the animation swaps the whole mesh each frame and has no motion vectors, so fast moves can ghost.
 
 @export var id: StringName = &"native"
 @export var label: String = "Nativa"
@@ -66,19 +66,15 @@ var shadow_splits: DirectionalLight3D.ShadowMode = DirectionalLight3D.SHADOW_PAR
 
 @export_group("Grass")
 @export var grass_enabled: bool = true
-## Radius of the ring of grass around the point the camera looks at: where the grass has height 0 is
-## 85 % of it. The radius is what a preset saves; the far density is the type's and does not change.
+## Where the grass ends, around the body the camera follows (GrassKit's `GrassQuality.radius`).
 @export_range(10.0, 150.0, 1.0, "suffix:m") var grass_radius_m: float = 45.0
-## Inside this radius the blades are at their densest and have the most vertices.
+## Inside this radius the blades are at their densest; past it they thin out to the edge.
 @export_range(5.0, 80.0, 1.0, "suffix:m") var grass_near_radius_m: float = 15.0
-## Multiplies the NEAR density of the GrassType (detail inside the near radius); the far density
-## is the type's own and no preset lowers it (it is what keeps the ground covered).
-@export_range(0.1, 3.0, 0.05) var grass_density_scale: float = 1.0
-## Segments of a near blade: 1 = 3 vertices, 2 = 5, 3 = 7.
-@export_range(1, 3) var grass_near_segments: int = 2
-## Tufts: color and height change from clump to clump.
-@export var grass_clumps: bool = true
-## Blades flatten under the nearby units and stand up again.
+## Blades per m² near the centre: with the radius, what the grass costs.
+@export_range(4.0, 120.0, 1.0) var grass_density: float = 32.0
+## Segments of the nearest blades (1, 2, 4 or 8), halved at each tier out.
+@export_range(1, 8) var grass_near_segments: int = 2
+## Blades bend away from the nearby units and wizards.
 @export var grass_trample: bool = true
 
 @export_group("VFX and weather")

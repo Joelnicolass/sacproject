@@ -7,9 +7,10 @@ uniform vec2 cells = vec2(4.0, 4.0);
 uniform float frame_s = 0.0667;
 uniform float energy = 1.0;
 uniform vec4 tint : source_color = vec4(1.0);
-instance uniform float offset = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float offset = 0.0;
 // 0 to 1, from the node's script: the sprite fades out with it.
-instance uniform float fade = 1.0;
+PER_INSTANCE uniform float fade = 1.0;
 
 void vertex() {
 	mat4 mat_world = mat4(normalize(INV_VIEW_MATRIX[0]), normalize(INV_VIEW_MATRIX[1]), normalize(INV_VIEW_MATRIX[2]), MODEL_MATRIX[3]);

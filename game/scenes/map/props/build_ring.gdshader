@@ -4,8 +4,9 @@ shader_type spatial;
 // metres from the node's scale. Colour and width are per instance (set_instance_shader_parameter): one material for all.
 render_mode unshaded, blend_mix, depth_draw_never, depth_test_disabled, cull_disabled, shadows_disabled, fog_disabled;
 
-instance uniform vec4 ring_color : source_color = vec4(0.35, 0.95, 0.45, 0.85);
-instance uniform float width_m = 0.8;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform vec4 ring_color : source_color = vec4(0.35, 0.95, 0.45, 0.85);
+PER_INSTANCE uniform float width_m = 0.8;
 
 varying vec2 local_xz;
 

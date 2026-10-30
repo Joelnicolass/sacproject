@@ -14,7 +14,8 @@ uniform float energy = 5.0;
 uniform float layer_alpha = 0.075;
 uniform float noise_amount = 0.06;
 uniform float morph_s = 0.5;
-instance uniform float phase_frames = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float phase_frames = 0.0;
 
 varying vec3 sphere_normal;
 

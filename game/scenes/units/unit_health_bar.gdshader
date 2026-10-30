@@ -1,8 +1,9 @@
 shader_type spatial;
 render_mode unshaded, cull_disabled, depth_test_disabled, shadows_disabled, blend_mix;
 
-instance uniform float fraction : hint_range(0.0, 1.0) = 1.0;
-instance uniform vec4 fill_color : source_color = vec4(0.2, 0.85, 0.25, 1.0);
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float fraction : hint_range(0.0, 1.0) = 1.0;
+PER_INSTANCE uniform vec4 fill_color : source_color = vec4(0.2, 0.85, 0.25, 1.0);
 uniform vec4 back_color : source_color = vec4(0.05, 0.05, 0.05, 0.75);
 uniform float border = 0.12;
 

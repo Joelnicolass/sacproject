@@ -59,7 +59,7 @@ func _process(delta: float) -> void:
 	var progress := clampf(_age / life_s, 0.0, 1.0)
 	global_position = _base + Vector3.UP * rise_m * progress
 	scale = Vector3(radius_m * progress, 1.0, radius_m * progress)
-	set_instance_shader_parameter(&"progress", progress)
+	InstanceParams.set_on(self, &"progress", progress)
 	if progress >= 1.0:
 		visible = false
 		_age = -1.0

@@ -10,8 +10,9 @@ uniform float energy = 1.2;
 uniform float opacity = 0.7;
 // Soft edge of the band, in metres.
 uniform float edge_m = 0.8;
-instance uniform float radius = 0.0;
-instance uniform float inner = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float radius = 0.0;
+PER_INSTANCE uniform float inner = 0.0;
 
 varying float distance_m;
 

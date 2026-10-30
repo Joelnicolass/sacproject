@@ -3,13 +3,18 @@
 // is the 64 x 64 picture painted on that tile, straight (not premultiplied) alpha. Both are globals GroundScars fills. A scene
 // without that node leaves them at the engine's default (white or black, never B = 0.5), so the ground is the same as before.
 
+#ifndef GROUND_LEAN
 global uniform sampler2D scar_index;
 global uniform sampler2DArray scar_tiles;
+#endif
 
 const float SCAR_TILE_M = 10.0;
 
 // The mark over the ground at `map_xz` (map meters): rgb = its colour, a = how much of it covers the ground.
 vec4 ground_scar(vec2 map_xz) {
+#ifdef GROUND_LEAN
+	return vec4(0.0);
+#else
 	vec2 tile = floor(map_xz / SCAR_TILE_M);
 	ivec2 cell = ivec2(tile);
 	ivec2 grid = textureSize(scar_index, 0);
@@ -21,6 +26,7 @@ vec4 ground_scar(vec2 map_xz) {
 		return vec4(0.0);
 	}
 	return textureLod(scar_tiles, vec3(map_xz / SCAR_TILE_M - tile, floor(slot.r * 255.0 + 0.5)), 0.0);
+#endif
 }
 
 // `ground` with the mark over it. `to_linear`: the ground's albedo is linear (the PBR ground) while the mark's pixels are

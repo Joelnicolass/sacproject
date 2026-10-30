@@ -11,7 +11,8 @@ uniform float energy = 10.0;
 uniform float inner = 0.6;
 // How many mirrored repeats of the picture go round the circle.
 uniform float repeats = 16.0;
-instance uniform float progress = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float progress = 0.0;
 
 void fragment() {
 	vec2 p = UV * 2.0 - 1.0;

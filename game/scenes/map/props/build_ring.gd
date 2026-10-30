@@ -60,7 +60,7 @@ func set_radius(radius_m: float) -> void:
 func _paint() -> void:
 	if look == null:
 		return
-	set_instance_shader_parameter(
-		&"ring_color", look.blocked_color if state == State.BLOCKED else look.ok_color
+	InstanceParams.set_on(
+		self, &"ring_color", look.blocked_color if state == State.BLOCKED else look.ok_color
 	)
-	set_instance_shader_parameter(&"width_m", look.width_m)
+	InstanceParams.set_on(self, &"width_m", look.width_m)

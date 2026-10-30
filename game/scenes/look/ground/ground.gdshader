@@ -9,6 +9,13 @@ render_mode cull_disabled;
 // The albedo is used as the land paints it (no sRGB decode), the way the original's ground was calibrated (RFC-059).
 // Normal and ORM maps, three-sided projection and offset taps come in with the quality preset. `GroundMaterial` fills it.
 
+// WebGL 2 (Compatibility) leaves a material 9 texture units: the renderer keeps the top 7 of the 16
+// for shadows, sky, screen and depth. There the ground drops the normal, ORM and grain maps and the
+// scars (14 samplers -> 9).
+#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
+#define GROUND_LEAN
+#endif
+
 #include "res://scenes/look/ground/ground_roles.gdshaderinc"
 #include "res://scenes/look/ground/ground_sample.gdshaderinc"
 // The far grass paint: where the grass grows the ground takes the colour of the field (amount 0 = off).
@@ -30,6 +37,13 @@ uniform float ambient_share : hint_range(0.1, 1.0, 0.01) = 1.0;
 uniform float local_light_gain : hint_range(0.0, 4.0, 0.05) = 1.0;
 // The walls under the edge of the land wear the god's cliff texture, not the ground roles.
 #include "res://scenes/look/ground/ground_edge.gdshaderinc"
+
+#ifdef GROUND_LEAN
+// Without the ORM and normal maps and the sky's sheen on them, the web ground reads darker and
+// greener than the desktop's: matched (mean of the ground) against a Forward+ capture.
+uniform float lean_gain : hint_range(0.5, 4.0, 0.05) = 1.25;
+uniform float lean_desaturate : hint_range(0.0, 1.0, 0.01) = 0.3;
+#endif
 
 // Map coordinates of the fragment. The terrain mesh is stored in map coordinates, so the local vertex is used: the maps stay
 // put when the editor preview shifts the scene root.
@@ -87,6 +101,9 @@ void fragment() {
 		albedo *= role_macro(map_pos.xz);
 	}
 	albedo = ground_scar_mix(albedo, map_pos.xz, false);
+#ifdef GROUND_LEAN
+	albedo = mix(albedo, vec3(dot(albedo, vec3(0.2126, 0.7152, 0.0722))), lean_desaturate) * lean_gain;
+#endif
 	vec3 light = texture(lightmap, map_pos.xz / roles_map_size).rgb;
 	ALBEDO = albedo * (light_base + light * light_gain) * ambient_share;
 	ROUGHNESS = orm.g;

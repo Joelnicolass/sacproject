@@ -122,7 +122,7 @@ func _set_amount(value: float) -> void:
 	_amount = value
 	for mesh in _meshes:
 		if is_instance_valid(mesh):
-			mesh.set_instance_shader_parameter(PARAM, value)
+			InstanceParams.set_on(mesh, PARAM, value)
 
 
 func _clear() -> void:
@@ -131,7 +131,7 @@ func _clear() -> void:
 		_tween = null
 	for mesh in _meshes:
 		if is_instance_valid(mesh):
-			mesh.set_instance_shader_parameter(PARAM, 0.0)
+			InstanceParams.set_on(mesh, PARAM, 0.0)
 			mesh.material_overlay = null
 	_meshes.clear()
 	_amount = 0.0

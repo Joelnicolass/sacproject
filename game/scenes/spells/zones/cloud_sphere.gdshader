@@ -36,7 +36,8 @@ uniform float noise_amount = 0.324;
 uniform float noise_scale = 2.5;
 // Seconds that take the noise through one lump.
 uniform float morph_s = 8.0;
-instance uniform float size = 1.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float size = 1.0;
 
 varying vec3 sphere_normal;
 varying float layer_seed;

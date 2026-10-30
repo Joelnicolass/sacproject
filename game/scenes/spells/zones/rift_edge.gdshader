@@ -9,7 +9,8 @@ uniform sampler2D edge : source_color, filter_linear_mipmap, repeat_enable;
 uniform float strips = 8.0;
 uniform float strip_s = 0.0667;
 uniform float energy = 3.0;
-instance uniform float emerge = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float emerge = 0.0;
 
 void fragment() {
 	float strip = mod(floor(TIME / strip_s), strips);

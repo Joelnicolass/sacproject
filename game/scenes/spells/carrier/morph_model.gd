@@ -86,7 +86,8 @@ func _show() -> void:
 	if int(at[1]) != int(at[0]):
 		_weigh(int(at[1]), float(at[2]))
 	if _clip.reveal.x >= 0.0:
-		mesh.set_instance_shader_parameter(
+		InstanceParams.set_on(
+			mesh,
 			&"reveal",
 			lerpf(
 				_clip.reveal.x,

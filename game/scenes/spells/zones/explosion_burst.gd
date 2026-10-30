@@ -44,12 +44,17 @@ func _swell(sphere: MeshInstance3D, seconds: float, radius: float) -> void:
 	if sphere == null:
 		return
 	sphere.scale = Vector3.ONE * 0.01
-	sphere.set_instance_shader_parameter(&"fade", 1.0)  # the tween needs a start value
+	InstanceParams.set_on(sphere, &"fade", 1.0)
 	var tween := create_tween().set_parallel()
 	tween.tween_property(sphere, "scale", squash * radius * 2.0, seconds)
 	(
 		tween
-		. tween_property(sphere, "instance_shader_parameters/fade", 0.0, seconds * fade_share)
+		. tween_method(
+			func(fade: float) -> void: InstanceParams.set_on(sphere, &"fade", fade),
+			1.0,
+			0.0,
+			seconds * fade_share
+		)
 		. set_delay(seconds * (1.0 - fade_share))
 	)
 	tween.chain().tween_callback(sphere.hide)

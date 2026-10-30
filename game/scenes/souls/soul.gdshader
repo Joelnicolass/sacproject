@@ -7,7 +7,8 @@ uniform sampler2D atlas : source_color, filter_linear_mipmap, repeat_disable;
 uniform float energy = 2.0;
 uniform int h_frames = 4;
 uniform int v_frames = 4;
-instance uniform int frame = 0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform int frame = 0;
 
 void vertex() {
 	mat4 mat_world = mat4(normalize(INV_VIEW_MATRIX[0]), normalize(INV_VIEW_MATRIX[1]), normalize(INV_VIEW_MATRIX[2]), MODEL_MATRIX[3]);

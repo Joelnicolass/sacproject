@@ -11,12 +11,12 @@ extends MeshInstance3D
 @export var frame := 0:
 	set(value):
 		frame = value
-		set_instance_shader_parameter(&"frame", float(value))
+		InstanceParams.set_on(self, &"frame", float(value))
 ## How much of the sprite shows (0 = none, 1 = all).
 @export_range(0.0, 1.0, 0.01) var fade := 1.0:
 	set(value):
 		fade = value
-		set_instance_shader_parameter(&"fade", value)
+		InstanceParams.set_on(self, &"fade", value)
 ## Cells a second when it plays on its own (0 = it does not), and how many cells it cycles through.
 @export_range(0.0, 120.0, 0.5, "suffix:/s") var fps := 0.0
 @export_range(1, 64) var cells := 16

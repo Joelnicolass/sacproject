@@ -59,8 +59,8 @@ func set_owner_slot(owner_slot: int) -> void:
 		and local > 0
 		and SideRelations.stance(local, owner_slot) == SideRelations.Stance.ALLY
 	)
-	set_instance_shader_parameter(
-		"fill_color", own_color if _own else (ally_color if ally else enemy_color)
+	InstanceParams.set_on(
+		self, "fill_color", own_color if _own else (ally_color if ally else enemy_color)
 	)
 	_refresh_visible()
 
@@ -84,8 +84,8 @@ func _refresh_visible() -> void:
 
 
 func _on_changed(current: float, maximum: float) -> void:
-	set_instance_shader_parameter(
-		"fraction", clampf(current / maximum, 0.0, 1.0) if maximum > 0.0 else 0.0
+	InstanceParams.set_on(
+		self, "fraction", clampf(current / maximum, 0.0, 1.0) if maximum > 0.0 else 0.0
 	)
 	_refresh_visible()
 

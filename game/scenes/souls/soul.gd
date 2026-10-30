@@ -434,7 +434,7 @@ func _place(sprite: MeshInstance3D, at: Vector3, size: float, cell: int) -> void
 	sprite.position = at
 	sprite.scale = Vector3.ONE * maxf(size, 0.001)
 	sprite.visible = size > 0.0
-	sprite.set_instance_shader_parameter("frame", cell)
+	InstanceParams.set_on(sprite, "frame", cell)
 
 
 func _rebuild_sprites() -> void:

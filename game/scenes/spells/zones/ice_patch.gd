@@ -44,8 +44,8 @@ func _process(_delta: float) -> void:
 		broken = floori(
 			float(zone.phase_ticks) / float(maxi(zone.end_ticks(), 1)) * float(break_steps)
 		)
-	set_instance_shader_parameter(&"radius", zone.grown_m(_radius))
-	set_instance_shader_parameter(&"inner", ZoneRules.ring_radius(broken, break_steps, _radius))
+	InstanceParams.set_on(self, &"radius", zone.grown_m(_radius))
+	InstanceParams.set_on(self, &"inner", ZoneRules.ring_radius(broken, break_steps, _radius))
 
 
 ## The ring at the full radius, every vertex at the height of the land under it (the centre's height

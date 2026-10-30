@@ -35,4 +35,4 @@ func _process(delta: float) -> void:
 	visible = _size > 0.001
 	scale = Vector3(1.0, maxf(_size, 0.001), 1.0)
 	if wall != null:
-		wall.set_instance_shader_parameter(&"emerge", _size)
+		InstanceParams.set_on(wall, &"emerge", _size)

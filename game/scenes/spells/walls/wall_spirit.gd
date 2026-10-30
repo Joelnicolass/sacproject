@@ -173,7 +173,8 @@ func _draw() -> void:
 				else Quaternion(Vector3.RIGHT, PI)
 			)
 		)
-	_view.set_instance_shader_parameter(
+	InstanceParams.set_on(
+		_view,
 		&"cell",
 		float(
 			(
@@ -182,7 +183,7 @@ func _draw() -> void:
 			)
 		)
 	)
-	_view.set_instance_shader_parameter(&"energy", type.energy_max)
+	InstanceParams.set_on(_view, &"energy", type.energy_max)
 	_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in n:
 		for j in 3:

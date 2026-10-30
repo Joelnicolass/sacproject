@@ -16,7 +16,8 @@ uniform float morph_s = 0.5;
 uniform float period_s = 2.0;
 // The diameter the cloud ends at, in meters (2.4 x 2.4 x 1.9 times Death's height).
 uniform vec3 size = vec3(28.8, 28.8, 22.8);
-instance uniform float phase_frames = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float phase_frames = 0.0;
 
 varying vec3 sphere_normal;
 varying float growth;

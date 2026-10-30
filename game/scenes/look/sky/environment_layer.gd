@@ -15,6 +15,13 @@ extends LookLayer
 ## The rig's atmosphere layer. Empty = always the approved look.
 @export var atmosphere: Atmosphere
 
+@export_group("Compatibility (web)")
+## WebGL 2 lights the same scene darker and more saturated than Forward+ (no volumetric haze, no sky
+## reflections on the ground): the exposure and the saturation of every look are scaled there so
+## the web reads like the desktop. Measured on a High Noon top view (models and ground).
+@export_range(0.5, 4.0, 0.05) var compat_exposure_gain := 2.0
+@export_range(0.0, 2.0, 0.01) var compat_saturation_gain := 0.8
+
 var _profile: LookProfile
 var _preset: LookQuality
 var _base: Environment
@@ -195,6 +202,9 @@ func _write_light(look: LightLook, sample: AtmosphereSample) -> void:
 	_env.tonemap_white = look.tonemap_white
 	_env.adjustment_enabled = true
 	_env.adjustment_saturation = look.saturation
+	if InstanceParams.is_compat():
+		_env.tonemap_exposure *= compat_exposure_gain
+		_env.adjustment_saturation *= compat_saturation_gain
 	_env.ssao_enabled = _preset.ssao_enabled if _preset else true
 	_env.ssao_radius = look.ssao_radius
 	_env.ssao_intensity = look.ssao_intensity

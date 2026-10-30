@@ -15,7 +15,8 @@ global uniform sampler2D terrain_live_map;
 global uniform vec4 terrain_live_rect;
 global uniform float terrain_deform_on;
 // 0 on a piece of ground that carries its own heights and falls (FallingChunk): it must not take the shift of the map again.
-instance uniform float deform_follow = 1.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float deform_follow = 1.0;
 
 // Mirror of TerrainGrid (scenes/map/terrain/terrain_grid.gd), the one copy in the shaders: DEFORM_CELL = CELL_M, the metres
 // between two vertices; DEFORM_LAST = SIDE - 1, the last column and row of the lattice. Change both

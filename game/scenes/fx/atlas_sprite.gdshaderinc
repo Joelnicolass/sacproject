@@ -4,8 +4,9 @@ uniform sampler2D atlas : source_color, filter_linear_mipmap, repeat_disable;
 uniform vec2 cells = vec2(4.0, 4.0);
 uniform float energy = 1.0;
 // The cell shown (left to right, then down) and how much of the sprite shows (1 = all).
-instance uniform float frame = 0.0;
-instance uniform float fade = 1.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float frame = 0.0;
+PER_INSTANCE uniform float fade = 1.0;
 
 void vertex() {
 	mat4 face = mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);

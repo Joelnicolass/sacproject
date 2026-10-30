@@ -3,7 +3,8 @@ shader_type spatial;
 render_mode unshaded, blend_add, depth_draw_never, cull_back, fog_disabled;
 
 uniform vec3 tint : source_color = vec3(1.0, 0.92, 0.8);
-instance uniform float hit_flash = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float hit_flash = 0.0;
 
 void fragment() {
 	ALBEDO = tint * hit_flash;

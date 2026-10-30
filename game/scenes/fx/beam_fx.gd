@@ -175,10 +175,10 @@ func _draw() -> void:
 	var n := type.segments
 	var points := PackedVector3Array()
 	points.resize(n + 1)
-	set_instance_shader_parameter(
-		&"cell", float(int(floor(_t / type.frame_s)) % (type.h_frames * type.v_frames))
+	InstanceParams.set_on(
+		self, &"cell", float(int(floor(_t / type.frame_s)) % (type.h_frames * type.v_frames))
 	)
-	set_instance_shader_parameter(&"energy", type.energy_at(_t))
+	InstanceParams.set_on(self, &"energy", type.energy_at(_t))
 	_imesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for bolt in _bolts:
 		for k in n + 1:

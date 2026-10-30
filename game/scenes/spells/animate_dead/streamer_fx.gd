@@ -93,8 +93,8 @@ func _draw() -> void:
 			)
 		)
 	var cells := type.h_frames * type.v_frames
-	set_instance_shader_parameter(&"cell", float(int(floor(_t / type.frame_s)) % cells))
-	set_instance_shader_parameter(&"energy", type.energy_max)
+	InstanceParams.set_on(self, &"cell", float(int(floor(_t / type.frame_s)) % cells))
+	InstanceParams.set_on(self, &"energy", type.energy_max)
 	_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in n:
 		for j in 3:

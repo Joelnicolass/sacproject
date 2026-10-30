@@ -15,7 +15,8 @@ uniform float noise_amount = 0.12;
 uniform float morph_s = 0.5;
 uniform float pulse_amount = 0.05;
 uniform float pulse_hz = 2.0;
-instance uniform float phase : hint_range(0.0, 1.0) = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float phase : hint_range(0.0, 1.0) = 0.0;
 
 varying vec3 sphere_normal;
 

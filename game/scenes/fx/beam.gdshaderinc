@@ -15,8 +15,9 @@ uniform int v_frames = 4;
 uniform float soft_distance_m = 0.3;
 uniform sampler2D depth_texture : hint_depth_texture, filter_nearest, repeat_disable;
 
-instance uniform float cell = 0.0;
-instance uniform float energy = 1.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float cell = 0.0;
+PER_INSTANCE uniform float energy = 1.0;
 
 global uniform float fx_soft_particles;
 global uniform float fx_fog_density;

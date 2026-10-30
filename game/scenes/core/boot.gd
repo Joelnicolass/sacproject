@@ -41,10 +41,11 @@ func _ready() -> void:
 	# debug builds.
 	%Online.pressed.connect(_on_online)
 	# «Servidor local» is a door of its own (create on this PC / join an address), visible in every
-	# build.
+	# desktop build. A browser has no ENet: neither it nor the direct «Unirse» exist there.
 	%LocalServer.pressed.connect(_on_local_server)
-	ip.visible = OS.is_debug_build()
-	%Join.visible = OS.is_debug_build()
+	%LocalServer.visible = MpNetConfig.can_host()
+	ip.visible = OS.is_debug_build() and MpNetConfig.can_host()
+	%Join.visible = ip.visible
 	%Back.pressed.connect(_show_select)
 	%Options.pressed.connect(%OptionsMenu.open)
 	character_select.confirmed.connect(_on_confirmed)

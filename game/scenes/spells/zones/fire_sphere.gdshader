@@ -14,9 +14,10 @@ uniform float layer_alpha = 0.5;
 uniform float noise_amount = 0.06;
 uniform float morph_s = 0.5;
 uniform float turns_per_s = 0.5;
-instance uniform float phase_frames = 0.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float phase_frames = 0.0;
 // 1 = whole; the burst's spheres fade out with it.
-instance uniform float fade = 1.0;
+PER_INSTANCE uniform float fade = 1.0;
 
 varying vec3 sphere_normal;
 

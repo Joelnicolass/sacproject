@@ -6,9 +6,11 @@
 // the two offset taps is used, the code is rewritten here.
 
 uniform sampler2DArray role_albedo : filter_linear_mipmap_anisotropic, repeat_enable, hint_default_white;
+#ifndef GROUND_LEAN
 uniform sampler2DArray role_normal : filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2DArray role_orm : filter_linear_mipmap, repeat_enable, hint_default_white;
 uniform sampler2DArray role_detail : filter_linear_mipmap_anisotropic, repeat_enable, hint_default_white;
+#endif
 // x: tile_m, y: variants per side, z: grain strength, w: grain repeat
 uniform vec4 role_layout[4];
 // rgb: tint, a: roughness without an ORM map
@@ -66,6 +68,7 @@ RoleTap role_plane(int i, vec2 q, vec2 qdx, vec2 qdy, float pixels) {
 	t.albedo = textureGrad(role_albedo, vec3(uv, float(i)), dx, dy).rgb;
 	t.normal = vec3(0.5, 0.5, 1.0);
 	t.orm = vec3(1.0, role_tint[i].a, dot(t.albedo, vec3(0.3, 0.59, 0.11)));
+#ifndef GROUND_LEAN
 	if (use_maps && role_relief[i].y > 0.5) {
 		t.normal = textureGrad(role_normal, vec3(uv, float(i)), dx, dy).rgb;
 	}
@@ -79,6 +82,7 @@ RoleTap role_plane(int i, vec2 q, vec2 qdx, vec2 qdy, float pixels) {
 		float mean = textureLod(role_detail, vec3(0.5, 0.5, float(i)), 12.0).r;
 		t.albedo *= mix(1.0, (1.0 + grain) / (1.0 + mean), strength);
 	}
+#endif
 	t.albedo *= role_tint[i].rgb;
 	return t;
 }

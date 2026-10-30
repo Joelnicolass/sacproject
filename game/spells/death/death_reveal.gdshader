@@ -7,7 +7,8 @@ render_mode blend_mix, depth_draw_always, cull_back, shadows_disabled;
 uniform sampler2D skin : source_color, filter_linear_mipmap, repeat_enable;
 uniform float height_m = 12.0;
 uniform float band_m = 1.2;
-instance uniform float reveal : hint_range(0.0, 1.0) = 1.0;
+#include "res://scenes/look/compat/per_instance.gdshaderinc"
+PER_INSTANCE uniform float reveal : hint_range(0.0, 1.0) = 1.0;
 
 varying float local_height;
 

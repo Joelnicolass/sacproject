@@ -119,6 +119,16 @@ group_uniforms time;
 // -1 = the engine's TIME. 0 or more freezes the sky at that second (captures and comparisons).
 uniform float time_override_s : hint_range(-1.0, 4096.0, 0.01) = -1.0;
 
+#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
+group_uniforms compatibility;
+// The web (Compatibility) lifts the exposure of the whole scene (EnvironmentLayer) so models and
+// ground read like the desktop; the sky seen behind them is brought back here, the ambient it
+// lights with (the cubemap pass) is not.
+uniform float compat_gain : hint_range(0.0, 2.0, 0.01) = 0.55;
+uniform float compat_saturation : hint_range(0.0, 3.0, 0.01) = 1.15;
+group_uniforms;
+#endif
+
 void sky() {
 	if (AT_CUBEMAP_PASS) {
 		float up = EYEDIR.y;
@@ -184,6 +194,9 @@ void sky() {
 		if (flash_amount > 0.0) {
 			color *= 1.0 + flash_amount;
 		}
+#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
+		color = max(mix(vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), color, compat_saturation), vec3(0.0)) * compat_gain;
+#endif
 		COLOR = color;
 	}
 }

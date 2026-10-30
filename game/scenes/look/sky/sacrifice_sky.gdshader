@@ -125,7 +125,9 @@ group_uniforms compatibility;
 // ground read like the desktop; the sky seen behind them is brought back here, the ambient it
 // lights with (the cubemap pass) is not.
 uniform float compat_gain : hint_range(0.0, 2.0, 0.01) = 0.55;
-uniform float compat_saturation : hint_range(0.0, 3.0, 0.01) = 1.15;
+uniform float compat_saturation : hint_range(0.0, 3.0, 0.01) = 1.05;
+// Below 1 lifts the darks: the web's tone curve crushes them (the clouds' shadows went black).
+uniform float compat_curve : hint_range(0.2, 1.5, 0.01) = 0.6;
 group_uniforms;
 #endif
 
@@ -195,7 +197,8 @@ void sky() {
 			color *= 1.0 + flash_amount;
 		}
 #if CURRENT_RENDERER == RENDERER_COMPATIBILITY
-		color = max(mix(vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), color, compat_saturation), vec3(0.0)) * compat_gain;
+		color = max(mix(vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), color, compat_saturation), vec3(0.0));
+		color = pow(color, vec3(compat_curve)) * compat_gain;
 #endif
 		COLOR = color;
 	}

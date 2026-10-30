@@ -334,9 +334,10 @@ wizard_spawner = NodePath("../../World/WizardSpawner")
 side_scene = ExtResource("f77_side")
 
 
-[node name="GraphicsApplier" type="Node" parent="Systems" unique_id=2135902278]
+[node name="GraphicsApplier" type="Node" parent="Systems" unique_id=2135902278 node_paths=PackedStringArray("psx")]
 script = ExtResource("f142_applier")
 prefs = ExtResource("f142_prefs")
+psx = NodePath("../../World/PostFx")
 
 [node name="UiScaleApplier" type="Node" parent="Systems"]
 editor_description = "El tamaño de la interfaz del jugador (Opciones › Gráficos) sobre la ventana. Único escritor de Window.content_scale_factor junto al de boot.tscn."

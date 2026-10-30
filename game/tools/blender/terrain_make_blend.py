@@ -1,6 +1,6 @@
-"""No necesita el juego original: lee las imágenes del mapa.
+"""Does not need the original game: it reads the map's pictures.
 
-Makes <map>/terrain_work/terrain.blend from a map's images, the Blender half of the round trip (plan 063D S4):
+Makes <map>/terrain_work/terrain.blend from a map's images, the Blender half of the round trip:
 - «Terrain»: one welded plane of SIDE x SIDE vertices CELL_M apart (vertex id = row * SIDE + column, the axes of
   terrain_common), every cell cut into two triangles along the get_faces diagonal; Z = heights.png x M_PER_UNIT;
 - the vertex group «void» (weight 1 where void.png is white);
@@ -23,7 +23,7 @@ import bpy
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import terrain_common as tc  # noqa: E402
 
-README = """Terrain (plan 063D S4). Rules, or «Traer de Blender» / terrain_export_images.py refuses the file:
+README = """Terrain. Rules, or «Bring from Blender» / terrain_export_images.py refuses the file:
 - Move vertices only in Z (G Z, sculpt with Z locked, proportional editing in Z). Heights from 0 to 6553.5 m.
 - Do not add, delete, merge or reorder vertices: 256 x 256 = 65536, one per pixel of heights.png.
 - Do not move, rotate or scale the object «Terrain» (its transform must stay at the origin, unscaled).

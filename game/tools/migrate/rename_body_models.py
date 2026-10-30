@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Rename the skeletal models of scenes/bodies/models/ from their original code to the human name (055s s6).
+"""Historic, already applied: do not run again (creature_folders.py moved the models afterwards).
+
+Rename the skeletal models of scenes/bodies/models/ from their original code to the human name.
 
   python3 tools/migrate/rename_body_models.py --check     # the plan and the references to rewrite; touches nothing
   python3 tools/migrate/rename_body_models.py --apply     # moves the files and rewrites every reference
@@ -10,7 +12,7 @@
 `ModelPaths.scene_path("eorc")` still finds the scene for the bake tools; the script rewrites it from what is on disk.
 
 The human name is the name of the look scene that wears the model (`scenes/units/bodies/trogg_look.tscn` -> `trogg`), so it is the
-name of the CreatureType / WizardType. A model worn by more than one look takes the name chosen in SHARED (055i-b4: the Familiar
+name of the CreatureType / WizardType. A model worn by more than one look takes the name chosen in SHARED (the Familiar
 model is also Zyzyx's, the Peasant model is also the Ghost's). A clip library without a scene (a creature drawn with another
 model's skeleton) takes the name of the one CreatureType / WizardType whose `clips` points at it: `ban2_clips.tres` ->
 `astaroth_model_clips.tres`. Left with their code (listed in the output):
@@ -31,7 +33,7 @@ spec = importlib.util.spec_from_file_location('rename_resources', os.path.join(H
 rr = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rr)
 # History and generated data keep the names they had; so does the changelog of the features.
-rr.SKIP_PREFIX = rr.SKIP_PREFIX + ('docs/CHANGELOG', 'tools/migrate/rename_body_models.py')
+rr.SKIP_PREFIX = rr.SKIP_PREFIX + ('docs/archive/', 'tools/migrate/rename_body_models.py')
 
 GAME = rr.GAME
 MODELS = 'scenes/bodies/models'

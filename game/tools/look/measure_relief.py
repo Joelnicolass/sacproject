@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""No necesita el juego original: mide PNG (dos capturas de la misma vista fija).
+"""Does not need the original game: it measures PNGs (two captures of the same fixed view).
 
-How much relief a normal map adds (RFC-067 C1, C2, C4). Two captures of the same fixed view: `before` with the maps off and
+How much relief a normal map adds. Two captures of the same fixed view: `before` with the maps off and
 `after` with them on, plus the screen box of every model (`rects`, written by the capture harness):
 
     python3 -I tools/look/measure_relief.py --before=before.png --after=after.png --rects=rects.json

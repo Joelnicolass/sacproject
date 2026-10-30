@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/look/flare/lens_flare_layer.gd" id="1_layer"]
+[ext_resource type="Shader" path="res://scenes/look/flare/lens_flare.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" path="res://scenes/look/flare/lens_dirt.jpeg" id="3_dirt"]
+
+[sub_resource type="Gradient" id="Gradient_lens"]
+colors = PackedColorArray(1, 0.909209, 0.467832, 1, 1, 0.342403, 0.851428, 1)
+
+[sub_resource type="GradientTexture1D" id="Lens_color"]
+gradient = SubResource("Gradient_lens")
+
+[sub_resource type="FastNoiseLite" id="Noise_star"]
+noise_type = 5
+frequency = 1.0
+
+[sub_resource type="NoiseTexture2D" id="Starburst"]
+height = 1
+noise = SubResource("Noise_star")
+
+[sub_resource type="ShaderMaterial" id="Mat_flare"]
+shader = ExtResource("2_shader")
+shader_parameter/lod = 2.0
+shader_parameter/stretch_to_aspect = 0.5
+shader_parameter/ghosts = 6
+shader_parameter/ghost_dispersal = 0.28
+shader_parameter/halo_width = 0.488
+shader_parameter/distort = 15.688
+shader_parameter/bloom_scale = 2.0
+shader_parameter/bloom_bias = 1.0
+shader_parameter/streak_strength = 0.9
+shader_parameter/distortion_quality = 2
+shader_parameter/lens_color = SubResource("Lens_color")
+shader_parameter/lens_dirt = ExtResource("3_dirt")
+shader_parameter/starburst = SubResource("Starburst")
+
+[sub_resource type="QuadMesh" id="Quad_screen"]
+flip_faces = true
+size = Vector2(2, 2)
+
+[node name="LensFlare" type="Node3D" node_paths=PackedStringArray("screen")]
+editor_description = "The lens flare over the frame (SIsilicon's LensFlare Effect, MIT, as tuned in xofrats): ghosts, halo and starburst from the brightest pixels. Off in the low preset."
+script = ExtResource("1_layer")
+screen = NodePath("Screen")
+
+[node name="Screen" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Quad_screen")
+material_override = SubResource("Mat_flare")

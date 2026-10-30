@@ -1,10 +1,11 @@
 class_name HoleWalls
 extends MeshInstance3D
 
-## The pits of the holes: while some vertices of the ground are taken away it shows the walls HoleWallRules makes around them,
-## with the material the ground's mesh wears (so the cliff texture and the lighting are the ground's). It builds nothing until a
-## hole is there and again only when a hole came or went. Presentation only: a headless process draws none. It does not make
-## holes (Terrain) nor decide where the walls go (HoleWallRules).
+## The pits of the holes: while some vertices of the ground are taken away it shows the walls
+## HoleWallRules makes around them, with the material the ground's mesh wears (so the cliff texture
+## and the lighting are the ground's). It builds nothing until a hole is there and again only when a
+## hole came or went. Presentation only: a headless process draws none. It does not make holes
+## (Terrain) nor decide where the walls go (HoleWallRules).
 
 ## The map's ground: its holes, and the mesh whose material the walls wear.
 @export var terrain: Terrain
@@ -16,11 +17,17 @@ var _built_version := 0
 
 func _ready() -> void:
 	extra_cull_margin = lift_margin_m
-	set_process(not Engine.is_editor_hint() and terrain != null and DisplayServer.get_name() != "headless")
+	set_process(
+		not Engine.is_editor_hint() and terrain != null and DisplayServer.get_name() != "headless"
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
+	return (
+		PackedStringArray()
+		if terrain != null
+		else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
+	)
 
 
 func _process(_delta: float) -> void:

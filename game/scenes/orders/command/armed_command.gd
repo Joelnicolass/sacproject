@@ -1,15 +1,14 @@
 class_name ArmedCommand
 extends Node
 
-## What waits for the next left click: a spell, a structure, an ability or an order icon (`mode`, in the words
-## %Battle uses for `armed`), with the index or tag it was armed with, and the local wizard's Caster whose answers end
-## the wait. Arming and clearing live here; each kind of command reads the state and applies its own click.
-## Disarming (`mode = ""`) also clears %Battle, so the cursor icon goes away with it. An armed spell or ability stays
-## armed after a refused click, as in the original.
-## Ref: sacengine dagonBackend.d:1236-1250.
+## What waits for the next left click: a spell, a structure, an ability or an order icon (`mode`, in
+## the words %Battle uses for `armed`), with the index or tag it was armed with, and the local
+## wizard's Caster whose answers end the wait. Arming and clearing live here; each kind of command
+## reads the state and applies its own click. Disarming (`mode = ""`) also clears %Battle, so the
+## cursor icon goes away with it. An armed spell or ability stays armed after a refused click, as in
+## the original.
 
 const _WORLD := preload("res://scenes/match/match_world.gd")
-const _SELECTION := preload("res://scenes/orders/selection.gd")
 
 @export var feedback: CommandFeedback
 
@@ -27,7 +26,7 @@ var ability: AbilityType
 var caster: Caster
 
 @onready var _log: CommandLog = %Battle
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 
 
 func _ready() -> void:
@@ -50,15 +49,15 @@ func cancel() -> bool:
 	return true
 
 
-## Ctrl+R / Ctrl+A only arm while no other icon waits (mouse.status == standard). The radial menu passes `replace`: its choice
-## wins over what was armed. `kind` is "attack", "guard" or "move".
+## Ctrl+R / Ctrl+A only arm while no other icon waits (mouse.status == standard). The radial menu
+## passes `replace`: its choice wins over what was armed. `kind` is "attack", "guard" or "move".
 func arm_order(kind: String, replace := false) -> void:
 	if not mode.is_empty():
 		if not replace:
 			return
 		mode = ""
 	mode = kind
-	_log.arm(kind, _order_icon(kind), "Elegí el blanco", TargetProbe.ORDER_TARGETS)
+	_log.arm(kind, _order_icon(kind), TargetProbe.ORDER_TARGETS)
 
 
 ## The picture of an armed order on the cursor: attack, guard, move… (CueSet.aim_icons).
@@ -79,8 +78,13 @@ func _on_local_wizard(wizard: Node3D) -> void:
 
 
 func _on_feedback(text: String) -> void:
-	## The answer to the pending cast is the one that is not a refusal (by key, never by the spell's words).
-	if (mode == "spell" or mode == "structure") and not cast_pending.is_empty() and not _log.is_reason(text):
+	# The answer to the pending cast is the one that is not a refusal (by key, never by the spell's
+	# words).
+	if (
+		(mode == "spell" or mode == "structure")
+		and not cast_pending.is_empty()
+		and not _log.is_reason(text)
+	):
 		mode = ""
 		cast_pending = ""
 	_log.say(text)

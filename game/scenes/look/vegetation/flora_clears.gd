@@ -1,9 +1,11 @@
 class_name FloraClears
 extends RefCounted
 
-## When the planters of a FloraField take the map's VegetationClear circles again: on the next frame after a clear moved,
-## resized or left (`mark`), and once every POLL_S anyway; each planter gets them in its map's coordinates.
-## Not: which cells a clear makes rebuild (MeshPlanter.set_clears), the clears themselves (VegetationClear).
+## When the planters of a FloraField take the map's VegetationClear circles again: on the next frame
+## after a clear moved, resized or left (`mark`), and once every POLL_S anyway; each planter gets
+## them in its map's coordinates.
+## Not: which cells a clear makes rebuild (MeshPlanter.set_clears), the clears themselves
+## (VegetationClear).
 
 const POLL_S := 1.0
 
@@ -16,7 +18,8 @@ func mark() -> void:
 	_dirty = true
 
 
-## Counts `delta` seconds and, when marked or POLL_S passed, hands every clear of `tree` to each planter.
+## Counts `delta` seconds and, when marked or POLL_S passed, hands every clear of `tree` to each
+## planter.
 func update(delta: float, planters: Array[MeshPlanter], tree: SceneTree) -> void:
 	_left_s -= delta
 	if _left_s <= 0.0:

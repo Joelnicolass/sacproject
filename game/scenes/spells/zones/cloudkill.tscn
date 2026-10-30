@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/likc.tres" id="spell"]
+[ext_resource type="Resource" path="res://spells/cloudkill/cloudkill.tres" id="spell"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="sound"]
 [ext_resource type="Script" path="res://scenes/spells/zones/cloud_look.gd" id="look"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/cloud_sphere.gdshader" id="shader"]
@@ -11,7 +11,7 @@
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_mover.gd" id="mover"]
 [ext_resource type="Script" path="res://scenes/spells/zones/bolt_launcher.gd" id="bolts"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/lightning_strike.tscn" id="strike"]
-[ext_resource type="Resource" path="res://data/audio/cues/cloud_loop.tres" id="cue_cloud_loop"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/cloud_loop.tres" id="cue_cloud_loop"]
 
 [sub_resource type="ShaderMaterial" id="Mat_cloud"]
 shader = ExtResource("shader")

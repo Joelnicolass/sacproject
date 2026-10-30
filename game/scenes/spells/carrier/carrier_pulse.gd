@@ -2,16 +2,17 @@
 class_name CarrierPulse
 extends Node3D
 
-## What a SpellCarrier does to the bodies it passes near, once its casting time is over: every creature and wizard whose box is inside
-## `Reach` is stunned, and with `damage_foes` the foes of the wizard also take the spell's damage and a bolt, once each per trip.
-## Soul Mole stuns everybody but its wizard and hurts nobody; Soul Wind stuns and hurts only the foes, once. It does not move, does not
-## take the soul (SoulFetch) and does not draw the carrier. Server (or solo) only.
-## Ref: sacengine updateSoulMole, updateSoulWind (state.d:18030-18044, 18999-19018).
+## What a SpellCarrier does to the bodies it passes near, once its casting time is over: every
+## creature and wizard whose box is inside `Reach` is stunned, and with `damage_foes` the foes of
+## the wizard also take the spell's damage and a bolt, once each per trip. Soul Mole stuns everybody
+## but its wizard and hurts nobody; Soul Wind stuns and hurts only the foes, once. It does not move,
+## does not take the soul (SoulFetch) and does not draw the carrier. Server (or solo) only.
 
 enum Affects { ALL_BUT_WIZARD, FOES }
 
 @export var carrier: SpellCarrier
-## The sphere of the effect, in the carrier's frame; its radius is how far from the carrier a body feels it.
+## The sphere of the effect, in the carrier's frame; its radius is how far from the carrier a body
+## feels it.
 @export var reach: CollisionShape3D
 @export var affects := Affects.ALL_BUT_WIZARD
 ## The stun's own cooldown for the body.
@@ -31,9 +32,9 @@ var _hit := {}
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if carrier == null:
-		warnings.append("Falta el SpellCarrier.")
+		warnings.append("The SpellCarrier is missing.")
 	if reach == null or not reach.shape is SphereShape3D:
-		warnings.append("Falta `reach` con una forma esférica.")
+		warnings.append("`reach` with a sphere shape is missing.")
 	return warnings
 
 
@@ -43,14 +44,20 @@ func _ready() -> void:
 
 
 func radius_m() -> float:
-	return (reach.shape as SphereShape3D).radius if reach != null and reach.shape is SphereShape3D else 0.0
+	return (
+		(reach.shape as SphereShape3D).radius
+		if reach != null and reach.shape is SphereShape3D
+		else 0.0
+	)
 
 
 func _physics_process(_delta: float) -> void:
 	if carrier == null or not carrier.armed or reach == null:
 		return
 	var wizard := carrier.wizard()
-	for body in SplashDamage.bodies_within(get_tree(), carrier.global_position, radius_m(), null, groups):
+	for body in SplashDamage.bodies_within(
+		get_tree(), carrier.global_position, radius_m(), null, groups
+	):
 		if body == wizard:
 			continue
 		if affects == Affects.FOES and _is_friend(wizard, body):
@@ -75,4 +82,10 @@ func _reach(body: Node3D) -> void:
 static func _is_friend(wizard: Node3D, body: Node3D) -> bool:
 	if wizard == null:
 		return false
-	return SpellTarget.same_owner(wizard, body) or SideRelations.stance(int(wizard.get("owner_slot")), int(body.get("owner_slot"))) == SideRelations.Stance.ALLY
+	return (
+		SpellTarget.same_owner(wizard, body)
+		or (
+			SideRelations.stance(int(wizard.get("owner_slot")), int(body.get("owner_slot")))
+			== SideRelations.Stance.ALLY
+		)
+	)

@@ -1,15 +1,17 @@
 class_name GroundTextures
 extends RefCounted
 
-## The textures the ground shader reads, built at runtime and never saved: the four roles of a `GodGround` packed into one
-## `Texture2DArray` per kind of map (albedo, normal, ORM, grain), so the shader uses 4 samplers instead of 16 (the web build
-## needs it), and the seamless noise shared by the ground and the grass. Cached by the maps they are made of.
+## The textures the ground shader reads, built at runtime and never saved: the four roles of a
+## `GodGround` packed into one `Texture2DArray` per kind of map (albedo, normal, ORM, grain), so the
+## shader uses 4 samplers instead of 16 (the web build needs it), and the seamless noise shared by
+## the ground and the grass. Cached by the maps they are made of.
 ## What it does NOT do: set uniforms (GroundMaterial does) or decide the look.
 
 enum Kind { ALBEDO, NORMAL, ORM, DETAIL }
 
 const NOISE_SIZE := 256
-## What a role with no map of a kind shows: plain grey, a flat normal, no occlusion and full roughness, a mid grain.
+## What a role with no map of a kind shows: plain grey, a flat normal, no occlusion and full
+## roughness, a mid grain.
 const FALLBACK := {
 	Kind.ALBEDO: Color(0.5, 0.5, 0.5),
 	Kind.NORMAL: Color(0.5, 0.5, 1.0),
@@ -17,12 +19,14 @@ const FALLBACK := {
 	Kind.DETAIL: Color(0.5, 0.5, 0.5),
 }
 
-## [kind, map of role 0, 1, 2, 3] -> Texture2DArray. Keyed by the maps themselves: a new tint never rebuilds, a new map does.
+## [kind, map of role 0, 1, 2, 3] -> Texture2DArray. Keyed by the maps themselves: a new tint never
+## rebuilds, a new map does.
 static var _cache := {}
 static var _noise: ImageTexture
 
 
-## The array of `kind` for the four roles of `ground` (layer i = channel i of ground_roles.png). Null without a ground.
+## The array of `kind` for the four roles of `ground` (layer i = channel i of ground_roles.png).
+## Null without a ground.
 static func array_of(ground: GodGround, kind: Kind) -> Texture2DArray:
 	if ground == null:
 		return null
@@ -34,7 +38,8 @@ static func array_of(ground: GodGround, kind: Kind) -> Texture2DArray:
 	return _cache[key]
 
 
-## True when the role has its own map of `kind` (the shader skips the normal and ORM work for the others).
+## True when the role has its own map of `kind` (the shader skips the normal and ORM work for the
+## others).
 static func has_map(role: GroundRole, kind: Kind) -> bool:
 	return role != null and _texture_of(role, kind) != null
 
@@ -57,8 +62,9 @@ static func _texture_of(role: GroundRole, kind: Kind) -> Texture2D:
 	return role.detail
 
 
-## Every layer of an array takes the size of the first map found; a map of another size is scaled to it, with a warning
-## (keep the four maps of a kind the same size). A role without that map gets the fallback colour.
+## Every layer of an array takes the size of the first map found; a map of another size is scaled to
+## it, with a warning (keep the four maps of a kind the same size). A role without that map gets the
+## fallback colour.
 static func _build(textures: Array, kind: Kind) -> Texture2DArray:
 	var images: Array[Image] = []
 	var size := Vector2i.ZERO
@@ -81,7 +87,13 @@ static func _build(textures: Array, kind: Kind) -> Texture2DArray:
 			image.clear_mipmaps()
 			image.convert(Image.FORMAT_RGBA8)
 			if image.get_size() != size:
-				push_warning("GroundTextures: the %s maps of a GodGround differ in size; scaling one to %s." % [Kind.keys()[kind], size])
+				push_warning(
+					(
+						# gdlint: ignore=max-line-length
+						"GroundTextures: the %s maps of a GodGround differ in size; scaling one to %s."
+						% [Kind.keys()[kind], size]
+					)
+				)
 				image.resize(size.x, size.y, Image.INTERPOLATE_LANCZOS)
 		image.generate_mipmaps()
 		images[i] = image

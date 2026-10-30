@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
-[ext_resource type="Resource" path="res://data/buildings/persephone_tree_crown.tres" id="2_type"]
+[ext_resource type="Resource" path="res://gods/persephone/buildings/persephone_tree_crown.tres" id="2_type"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pct7.res" id="mesh_pct7"]
 
@@ -24,7 +24,8 @@ mesh = ExtResource("mesh_pct7")
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(0.29400015, 0, -0.6430001)
 script = ExtResource("3_clear")
-radius_m = 7.53
+radius = 7.53
+soft = 3.0
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(0.29400015, 3.1569998, -0.6430001)

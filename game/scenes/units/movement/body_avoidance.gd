@@ -2,18 +2,18 @@
 class_name BodyAvoidance
 extends NavigationAgent3D
 
-## Server side separation of a body: the engine's avoidance (RVO) on a NavigationAgent3D, instead of the
-## boxes and pushes of the original. The body calls steer() with the flat velocity it wants; the
-## server answers in the same physics step (after every _physics_process) through `solved`, and the body moves with that
-## velocity (move_and_slide). The radius is the body's box (BodyBox); the bodies do not collide by physics, only steer.
-## Who gives way is the priority: a body that walks is above one that stands (the settled units of a formation make way
-## for the walkers) and a wizard is above his creatures (his own army never pushes him back).
-## Deterministic: the avoidance runs in the physics step on one thread (project.godot [navigation]) and the agents
-## are stepped in the order they were registered.
-## Ref: RFC-036 036f, sacengine positionAfterCollision.
+## Server side separation of a body: the engine's avoidance (RVO) on a NavigationAgent3D, instead of
+## boxes and pushes. The body calls steer() with the flat velocity it wants; the server answers in
+## the same physics step (after every _physics_process) through `solved`, and the body moves with
+## that velocity (move_and_slide). The radius is the body's box (BodyBox); the bodies do not collide
+## by physics, only steer. Who gives way is the priority: a body that walks is above one that stands
+## (the settled units of a formation make way for the walkers) and a wizard is above his creatures
+## (his own army never pushes him back).
+## Deterministic: the avoidance runs in the physics step on one thread (project.godot [navigation])
+## and the agents are stepped in the order they were registered.
 
-## The safe velocity (flat, m/s) of this tick, or the wanted one for a fixed body (frozen, petrified, pinned: it is an
-## obstacle that is never steered).
+## The safe velocity (flat, m/s) of this tick, or the wanted one for a fixed body (frozen,
+## petrified, pinned: it is an obstacle that is never steered).
 signal solved(flat_velocity: Vector3)
 
 @export var body: CharacterBody3D
@@ -34,7 +34,7 @@ var _steered := false
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if body == null:
-		return PackedStringArray(["Asigná body (el CharacterBody3D que esquiva)."])
+		return PackedStringArray(["Assign body (the CharacterBody3D that steers away)."])
 	return PackedStringArray()
 
 
@@ -45,9 +45,9 @@ func _ready() -> void:
 	velocity_computed.connect(_on_velocity_computed)
 
 
-## Server (or solo): `wanted` is the velocity the body would walk with (x, z; y is the body's own). True when the answer
-## comes through `solved` this physics step; false when the body is not an obstacle (or this is a client): it moves with
-## `wanted` itself.
+## Server (or solo): `wanted` is the velocity the body would walk with (x, z; y is the body's own).
+## True when the answer comes through `solved` this physics step; false when the body is not an
+## obstacle (or this is a client): it moves with `wanted` itself.
 func steer(wanted: Vector3, fixed := false) -> bool:
 	if not _active():
 		return false
@@ -62,8 +62,9 @@ func steer(wanted: Vector3, fixed := false) -> bool:
 	return true
 
 
-## Server (or solo): the body moves by itself this step (a wizard predicted by its owner does not wait for `solved`) and only tells the
-## others its flat velocity, so they steer around it. No answer comes back: `solved` does not fire for it.
+## Server (or solo): the body moves by itself this step (a wizard predicted by its owner does not
+## wait for `solved`) and only tells the others its flat velocity, so they steer around it. No
+## answer comes back: `solved` does not fire for it.
 func announce(flat_velocity: Vector3, fixed := false) -> void:
 	if not _active():
 		return
@@ -73,8 +74,8 @@ func announce(flat_velocity: Vector3, fixed := false) -> void:
 	_steered = true
 
 
-## The agent's own tick (it runs after the body's): a body that did not steer (it is being seated, say) is still an
-## obstacle that stands; one that is not an obstacle leaves the avoidance.
+## The agent's own tick (it runs after the body's): a body that did not steer (it is being seated,
+## say) is still an obstacle that stands; one that is not an obstacle leaves the avoidance.
 func _physics_process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		return

@@ -2,12 +2,12 @@
 
 [ext_resource type="Script" path="res://scenes/spells/walls/spell_wall.gd" id="1_wall"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_touch.gd" id="2_touch"]
-[ext_resource type="Resource" path="res://data/catalog/spells/laws.tres" id="3_spell"]
+[ext_resource type="Resource" path="res://spells/wall_of_spikes/wall_of_spikes.tres" id="3_spell"]
 [ext_resource type="PackedScene" path="res://scenes/fx/wall_spike.tscn" id="4_spike"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_spikes.gd" id="5_spikes"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_emitter.gd" id="6_emitter"]
 [ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="7_sprites"]
-[ext_resource type="Resource" path="res://data/fx/wall_dirt.tres" id="8_dirt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wall_dirt.tres" id="8_dirt"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="9_sound"]
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_sound.gd" id="10_wallsound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="11_light"]
@@ -17,8 +17,8 @@
 [ext_resource type="Script" path="res://scenes/spells/walls/wall_scars.gd" id="scar_script"]
 [ext_resource type="Texture2D" path="res://assets/original/scars/gscr.png" id="scar_tex"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/jspk.png" id="spike_tex"]
-[ext_resource type="Resource" path="res://data/audio/cues/wall_spikes_up.tres" id="cue_wall_spikes_up"]
-[ext_resource type="Resource" path="res://data/audio/cues/wall_spikes_down.tres" id="cue_wall_spikes_down"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/wall_spikes_up.tres" id="cue_wall_spikes_up"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/wall_spikes_down.tres" id="cue_wall_spikes_down"]
 [sub_resource type="StandardMaterial3D" id="Spike_skin"]
 cull_mode = 2
 albedo_texture = ExtResource("spike_tex")

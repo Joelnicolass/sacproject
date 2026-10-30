@@ -2,10 +2,15 @@
 class_name SoundSet
 extends Resource
 
-## What a creature or a wizard sounds like: one cue per thing that happens to it (voice when you pick it, swing, hurt, death...).
-## A type template (a .tres in data/audio/creatures/ or wizards/, never written at runtime) assigned to the `sounds` of a look
-## (`scenes/units/bodies/<name>_look.tscn` or `scenes/wizards/bodies/<name>_look.tscn`). An empty field is silence for that event unless the `fallback` set has it (the melee set many creatures
-## share). It does not play anything: UnitSounds, WizardSounds and CommandVoice ask it which cue answers an event.
+## What a creature or a wizard sounds like: one cue per thing that happens to it (voice when you
+## pick it, swing, hurt, death...). A type template (a creature's <name>_sounds.tres, or a .tres in
+## wizards/<name>/, never written at runtime) assigned to the `sounds` of a look
+## (`creatures/<name>/<name>_look.tscn` or `scenes/wizards/bodies/<name>_look.tscn`). An empty field
+## is silence for that event unless the `fallback` set has it (the melee set many creatures share).
+## It does not play anything: UnitSounds, WizardSounds and CommandVoice ask it which cue answers an
+## event.
+
+const MAX_HOPS := 8
 
 @export_group("Voice")
 ## You select it.
@@ -32,10 +37,9 @@ extends Resource
 ## The wizard rises as a ghost.
 @export var ghost: SoundCue
 @export_group("")
-## Asked when this set has no cue for an event (the melee set of a creature that has no sound of its own for a swing).
+## Asked when this set has no cue for an event (the melee set of a creature that has no sound of its
+## own for a swing).
 @export var fallback: SoundSet
-
-const MAX_HOPS := 8
 
 
 ## The cue of `event` here or in the fallback chain; null when nobody has one.
@@ -76,4 +80,6 @@ func own_cue(event: StringName) -> SoundCue:
 			return incantation
 		SoundEvent.GHOST:
 			return ghost
+	# max-returns: one return per sound event in the match.
+	# gdlint: ignore=max-returns
 	return null

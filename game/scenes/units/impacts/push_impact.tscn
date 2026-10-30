@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://scenes/units/impacts/direct_impact.gd" id="4_direct"]
 
 [node name="SquallImpact" type="Node"]
-editor_description = "Squall amba (updateSquallProjectile, state.d:23996-24003): primero el empuje (PushImpact) y después el daño directo a distancia entero (DirectImpact). El suelo no hace nada."
+editor_description = "Squall amba: first the push (PushImpact) and then the whole direct ranged damage (DirectImpact). The ground does nothing."
 script = ExtResource("1_impact")
 
 [node name="PushImpact" type="Node" parent="."]

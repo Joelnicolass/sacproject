@@ -1,8 +1,9 @@
 class_name ShotClip
 extends RefCounted
 
-## The shoot animation in course: how long it lasts and the frames where a shot leaves. It is read once when the shot starts, so the
-## ticks that follow read only variables. Not: what each shot does (RangedFire).
+## The shoot animation in course: how long it lasts and the frames where a shot leaves. It is read
+## once when the shot starts, so the ticks that follow read only variables. Not: what each shot does
+## (RangedFire).
 
 ## The clip of the shot, whose `shoot` markers say the frames where a shot leaves.
 const ROLE := &"shoot"
@@ -15,7 +16,8 @@ var elapsed := 0.0
 var next_tick := 0
 
 
-## Reads the numbers of the `shoot` clip and starts counting from zero. A model without one shoots at once, as a clip of one frame.
+## Reads the numbers of the `shoot` clip and starts counting from zero. A model without one shoots
+## at once, as a clip of one frame.
 func begin(facts: ClipFacts) -> void:
 	active = true
 	elapsed = 0.0
@@ -32,7 +34,8 @@ func begin(facts: ClipFacts) -> void:
 		shots = PackedInt32Array([0])
 
 
-## Adds `scaled_delta` seconds and returns how many shots left in that time (their frames reached, in order).
+## Adds `scaled_delta` seconds and returns how many shots left in that time (their frames reached,
+## in order).
 func advance(scaled_delta: float) -> int:
 	elapsed += scaled_delta
 	var due := 0

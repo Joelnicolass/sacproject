@@ -1,13 +1,11 @@
 class_name GrudgeMemory
 extends Node
 
-## The grudges of a peasant.
-## The first hit that takes health from a full bar writes the side of the
-## attacker into the mask; a peasant flees from every side in its mask as if it were an enemy. The herd
-## shares it: every `herd_interval_s` the peasant takes the mask of each member of its own side within
-## `herd_range` that costs the same mana (all the Farmers do), so a grudge reaches the others within a
-## second. Server or solo only; the mask is not replicated (the clients only draw).
-## Ref: RFC-024 addendum 1 (024b2), sacengine grudgeMask state.d:8933-8936, absorbHerdGrudges 13634-13645.
+## The grudges of a peasant. The first hit that takes health from a full bar writes the side of the
+## attacker into the mask; a peasant flees from every side in its mask as if it were an enemy. The
+## herd shares it: every `herd_interval_s` the peasant takes the mask of each member of its own side
+## within `herd_range` that costs the same mana (all the Farmers do), so a grudge reaches the others
+## within a second. Server or solo only; the mask is not replicated (the clients only draw).
 
 signal grudge_added(slot: int)
 
@@ -17,15 +15,14 @@ const META := &"grudge_memory"
 @export var body: UnitBody
 @export var health: Health
 @export_group("Herd")
-## Range at which the herd shares grudges (absorbHerdGrudges).
-## Ref: sacengine state.d:13635.
+## Range at which the herd shares grudges.
 @export var herd_range := 80.0
-## Decision of the port: the original absorbs every tick; every 0.1 s is as fast as a person can tell.
+## How often the herd shares its grudges; every 0.1 s is as fast as a person can tell.
 @export var herd_interval_s := 0.1
 ## Group of the peasants that share the grudges.
 @export var herd_group := &"peasant"
 
-## Bit `slot` set = a grudge against that slot (the original uses the side; the port's slot is side + 1).
+## Bit `slot` set = a grudge against that slot (slot = side + 1).
 var mask := 0
 
 var _left := 0.0
@@ -49,9 +46,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null and not get_parent() is UnitBody:
-		warnings.append("Falta el cuerpo (body).")
+		warnings.append("Missing the body (body).")
 	if health == null and get_node_or_null("../Health") == null:
-		warnings.append("Falta la vida (health).")
+		warnings.append("Missing the health (health).")
 	return warnings
 
 
@@ -87,7 +84,12 @@ func absorb_herd() -> void:
 	var own_cost := body.type.mana_cost if body.type else 0
 	for node in get_tree().get_nodes_in_group(herd_group):
 		var member := node as UnitBody
-		if member == null or member == body or member.owner_slot != body.owner_slot or member.is_dead():
+		if (
+			member == null
+			or member == body
+			or member.owner_slot != body.owner_slot
+			or member.is_dead()
+		):
 			continue
 		if (member.type.mana_cost if member.type else 0) != own_cost:
 			continue

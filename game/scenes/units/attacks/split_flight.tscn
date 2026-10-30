@@ -3,5 +3,5 @@
 [ext_resource type="Script" path="res://scenes/units/attacks/split_flight.gd" id="1_split"]
 
 [node name="SplitFlight" type="Node"]
-editor_description = "Abanico del Boulderdash (emba, updateBoulderdashProjectile, state.d:24729-24755): a max(0, apuntado − 60) m del origen las piedras laterales (volley_index ±1) giran ±3,5° alrededor del «arriba»; la del medio sigue recta."
+editor_description = "The Boulderdash fan (emba): at max(0, aimed − 60) m from the origin the side rocks (volley_index ±1) turn ±3.5° around «up»; the middle one goes straight on."
 script = ExtResource("1_split")

@@ -34,12 +34,16 @@ static func apply_to(viewport: Viewport, preset: LookQuality) -> void:
 	apply_fx_globals(preset)
 
 
-## RFC-029 029a: the sprite shaders read these globals (project.godot `shader_globals`), so a
-## preset change does not rebuild the cached FxAtlas materials. Their project defaults are 0: until a
-## preset is applied the sprites draw like before 029 (hard edge, frames that jump).
+## The sprite shaders read these globals (project.godot `shader_globals`), so a preset change does
+## not rebuild the cached FxAtlas materials. Their project defaults are 0: until a preset is applied
+## the sprites draw plain (hard edge, frames that jump).
 static func apply_fx_globals(preset: LookQuality) -> void:
-	RenderingServer.global_shader_parameter_set(&"fx_soft_particles", 1.0 if preset.fx_soft_particles else 0.0)
-	RenderingServer.global_shader_parameter_set(&"fx_frame_blend", 1.0 if preset.fx_frame_blend else 0.0)
+	RenderingServer.global_shader_parameter_set(
+		&"fx_soft_particles", 1.0 if preset.fx_soft_particles else 0.0
+	)
+	RenderingServer.global_shader_parameter_set(
+		&"fx_frame_blend", 1.0 if preset.fx_frame_blend else 0.0
+	)
 
 
 ## What the viewport really holds now (an unsupported mode can fall back).

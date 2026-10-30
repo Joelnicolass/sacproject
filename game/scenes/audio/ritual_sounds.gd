@@ -2,14 +2,16 @@
 class_name RitualSounds
 extends BodySounds
 
-## Child of sacrifice/ritual.tscn. A sacrifice's sounds from what every peer already has: the replicated `Ritual.phase`
-## (phase_changed) and `outcome` (ended, emitted by its setter on every peer).
-## - `round_cue` each time the phase becomes `round_phase` (SHOOT: the doctors torture the creature, once a round);
-## - `finished_cue` (the creature bursts) when the ritual ends completed (a cancelled one lets the creature go alive);
+## Child of sacrifice/ritual.tscn. A sacrifice's sounds from what every peer already has: the
+## replicated `Ritual.phase` (phase_changed) and `outcome` (ended, emitted by its setter on every
+## peer).
+## - `round_cue` each time the phase becomes `round_phase` (SHOOT: the doctors torture the creature,
+##   once a round);
+## - `finished_cue` (the creature bursts) when the ritual ends completed (a cancelled one lets the
+##   creature go alive);
 ## - `converted_cue` as well when a Convert ends completed: its souls go to the caster.
-## The cues are assigned in ritual.tscn and sound at the ritual's center. No RPC, nothing written. With the AudioGate closed
-## it connects nothing. Remove the node to silence every ritual.
-## Ref: RFC-052 052h (F367).
+## The cues are assigned in ritual.tscn and sound at the ritual's center. No RPC, nothing written.
+## With the AudioGate closed it connects nothing. Remove the node to silence every ritual.
 
 @export var ritual: Ritual:
 	set(value):
@@ -63,4 +65,8 @@ func _on_ended(completed: bool) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if ritual != null else PackedStringArray(["Asigná en `ritual` el Ritual que suena."])
+	return (
+		PackedStringArray()
+		if ritual != null
+		else PackedStringArray(["Assign in `ritual` the Ritual that sounds."])
+	)

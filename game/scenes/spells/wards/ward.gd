@@ -2,16 +2,17 @@
 class_name Ward
 extends Node3D
 
-## One shield or temporary form of a body (Life Shield, Skin of Stone, Air Shield, Ethereal Form, Fireform, Protective
-## Swarm): while it is on, hits on the body are scaled by `factor`, it may make the body immune, and its look grows around
-## the body. It does not decide how a hit is scaled across several wards (Wards) nor what the body does to its neighbours
-## (BodyAura). The server (or solo) starts and stops it; `shown` is replicated, so every peer draws the look from it.
-## It ends by its time or when the body dies.
-## Ref: sacengine lifeShield, skinOfStone, airShield, protectiveSwarm (state.d:8962-8969, 13092-13100).
+## One shield or temporary form of a body (Life Shield, Skin of Stone, Air Shield, Ethereal Form,
+## Fireform, Protective Swarm): while it is on, hits on the body are scaled by `factor`, it may make
+## the body immune, and its look grows around the body. It does not decide how a hit is scaled
+## across several wards (Wards) nor what the body does to its neighbours (BodyAura). The server (or
+## solo) starts and stops it; `shown` is replicated, so every peer draws the look from it. It ends
+## by its time or when the body dies.
 
 ## The ward went on (true) or off (false). Every peer, from `shown`.
 signal shown_changed(on: bool)
-## The cast of this ward's spell began (true) or ended or was cut (false). Every peer, from the Caster's `cast_changed`.
+## The cast of this ward's spell began (true) or ended or was cut (false). Every peer, from the
+## Caster's `cast_changed`.
 signal casting_changed(on: bool)
 
 ## The body it protects: its box sizes the look; its name goes in the log.
@@ -25,25 +26,30 @@ signal casting_changed(on: bool)
 @export var factor := 1.0
 ## Hits of the ranged kinds are multiplied by this too (Air Shield: another x0.5).
 @export var ranged_factor := 1.0
-## The body takes no damage at all while the ward is on, not even a hit that pierces shields (Ethereal Form).
+## The body takes no damage at all while the ward is on, not even a hit that pierces shields
+## (Ethereal Form).
 @export var immune := false
 ## The body counts as shielded: Freeze, Petrify and Pull refuse it.
 @export var counts_as_shield := true
 @export_group("Casting")
-## The particle the hands throw while this spell is cast (WardAction hands it to the Caster; HandFx plays it). Every ward has its own, and
-## that is how every peer knows which spell is being cast: it is the one showing. Empty = the ward does not follow the cast.
+## The particle the hands throw while this spell is cast (WardAction hands it to the Caster; HandFx
+## plays it). Every ward has its own, and that is how every peer knows which spell is being cast: it
+## is the one showing. Empty = the ward does not follow the cast.
 @export var cast_type: ParticleType
 @export_group("Look")
 ## What is drawn. Optional: empty = no look.
 @export var look: Node3D
 ## The look grows from nothing to the body's box (and back) over this long.
 @export_range(0.0, 5.0, 0.0001, "suffix:s") var grow_s := 0.25
-## Size of the look over the body's box, per axis. Zero = the look keeps its own size and only shows or hides.
+## Size of the look over the body's box, per axis. Zero = the look keeps its own size and only shows
+## or hides.
 @export var look_scale := Vector3.ONE * 1.4
-## While on, the body is drawn as stone (Afflictions owns that look; this only says the ward wants it).
+## While on, the body is drawn as stone (Afflictions owns that look; this only says the ward wants
+## it).
 @export var stone_skin := false
 
-## Replicated by the body's MultiplayerSynchronizer ("Wards/<Name>:shown"). The server writes it; every peer draws it.
+## Replicated by the body's MultiplayerSynchronizer ("Wards/<Name>:shown"). The server writes it;
+## every peer draws it.
 @export var shown := false:
 	set(value):
 		if value == shown:
@@ -53,11 +59,12 @@ signal casting_changed(on: bool)
 			_show(shown)
 		shown_changed.emit(shown)
 
+## True while the wizard casts this ward's spell (casting_changed).
+var casting := false
+
 ## MatchClock tick at which the ward is off. -1 = no ward.
 var _until := -1
 var _tween: Tween
-## True while the wizard casts this ward's spell (casting_changed).
-var casting := false
 
 
 func _ready() -> void:
@@ -112,8 +119,8 @@ func start(ticks: int) -> bool:
 	return true
 
 
-## The server's own clock: on from the tick it started until start + ticks. Derived from the tick, so whoever asks in a tick
-## reads the same. A client trusts `shown`.
+## The server's own clock: on from the tick it started until start + ticks. Derived from the tick,
+## so whoever asks in a tick reads the same. A client trusts `shown`.
 func is_on() -> bool:
 	if not has_authority():
 		return shown
@@ -164,7 +171,9 @@ func _show(on: bool) -> void:
 		return
 	var full := (BodyNudge.box(body).size if body else Vector3(0.6, 1.8, 0.6)) * look_scale
 	if on:
-		look.position = body.to_local(BodyNudge.center(body)) if body else BodyFacts.fallback().center
+		look.position = (
+			body.to_local(BodyNudge.center(body)) if body else BodyFacts.fallback().center
+		)
 		look.scale = Vector3.ONE * 0.01
 		look.visible = true
 	_tween = look.create_tween()
@@ -185,5 +194,5 @@ func has_authority() -> bool:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if health == null:
-		warnings.append("Sin Health: el escudo no termina con la muerte.")
+		warnings.append("No Health: the shield does not end with death.")
 	return warnings

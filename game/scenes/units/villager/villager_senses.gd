@@ -1,12 +1,12 @@
 class_name VillagerSenses
 extends Node
 
-## What a villager notices: the closest shelter that is still standing, the closest body that scares it (an enemy by stance, or a side it
-## holds a grudge against), and the side that hit it last (the panic). It only answers; the Brain decides what to do with it.
-## A shelter is a building with the shelter flag or an altar, as long as its side is not an enemy of the villager's side.
-## Not: what to do about it (VillagerBrain and its states) nor who bears the grudges (GrudgeMemory). Server or solo only.
-## Ref: sacengine closestPeasantShelterInRange (state.d:28850), updateCreatureAI (state.d:13732-13760); the 50 m distances are sacengine's,
-## who marks the rule «TODO: figure out the original rule»; the manual says the villagers flee near their village and cower outside it.
+## What a villager notices: the closest shelter that is still standing, the closest body that scares
+## it (an enemy by stance, or a side it holds a grudge against), and the side that hit it last (the
+## panic). It only answers; the Brain decides what to do with it. A shelter is a building with the
+## shelter flag or an altar, as long as its side is not an enemy of the villager's side.
+## Not: what to do about it (VillagerBrain and its states) nor who bears the grudges (GrudgeMemory).
+## Server or solo only.
 
 ## A hit from another side started the panic: the Brain thinks at once.
 signal panicked
@@ -16,9 +16,9 @@ signal panicked
 ## Where the hits come from: a hit starts the panic.
 @export var health: Health
 @export_group("Distances")
-## shelterDistance: how far a shelter may be for the villager to dare to stand.
+## How far a shelter may be for the villager to dare to stand.
 @export var shelter_distance := 50.0
-## scareDistance: how close an enemy has to be to make it run.
+## How close an enemy has to be to make it run.
 @export var scare_distance := 50.0
 ## Bodies that scare it, and where to look for them.
 @export var scare_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "doctor"])
@@ -41,7 +41,7 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null:
-		warnings.append("Falta el cuerpo (body).")
+		warnings.append("Missing the body (body).")
 	return warnings
 
 
@@ -85,7 +85,7 @@ func closest_shelter() -> Node3D:
 	return best
 
 
-## closestEnemyInRange with the grudges: the closest body within `scare_distance` that is a stance enemy or of a side in the grudge mask.
+## The closest body within `scare_distance` that is a stance enemy or of a side in the grudge mask.
 func closest_scare() -> Node3D:
 	var best: Node3D = null
 	var best_d := scare_distance
@@ -95,7 +95,10 @@ func closest_scare() -> Node3D:
 				continue
 			var other := node as Node3D
 			var slot := int(other.get("owner_slot"))
-			if not SideRelations.is_enemy(body.owner_slot, slot) and not (grudge != null and grudge.has_grudge(slot)):
+			if (
+				not SideRelations.is_enemy(body.owner_slot, slot)
+				and not (grudge != null and grudge.has_grudge(slot))
+			):
 				continue
 			var d := _flat(other.global_position)
 			if d <= best_d:

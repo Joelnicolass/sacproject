@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 The particle atlases and their catalog (sacobject.d SacParticle / SacSoul): which TXTR of which WAD folder, and the
 per-type numbers (size, energy, delay, gravity, lifetime) the game reads from fx.json.
@@ -30,34 +30,34 @@ ATLASES = {
     "wrth": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "prth": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "dust": ("shawn.wad", "shwn.WAD!/jams.FLDR/text.FLDR"),
-    "jspk": ("shawn.wad", "shwn.WAD!/jams.FLDR/text.FLDR"),  # F151: the Rhinok's spikes (SacSpike, sacobject.d:2984-2988)
-    # Sac Doctor carry (RFC-020c): blue rim/rope, blue and red vortex layers, needle sparks
+    "jspk": ("shawn.wad", "shwn.WAD!/jams.FLDR/text.FLDR"),  # The Rhinok's spikes (SacSpike, sacobject.d:2984-2988)
+    # Sac Doctor carry: blue rim/rope, blue and red vortex layers, needle sparks
     # (renderer.d:222-239, sacobject.d:4030-4054, 1479-1484).
     "ltn2": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "vtx1": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "vtx2": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "vtx3": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "cst0": ("main.wad", "MAIN.WAD!/bits.FLDR"),
-    # F149: Freeze shards (sacobject.d:1485-1490, Stratos txtr).
+    # Freeze shards (sacobject.d:1485-1490, Stratos txtr).
     "shrd": ("charlie.wad", "Bloo.WAD!/Stra.FLDR/txtr.FLDR"),
-    # F124: the Gnome's hit and gun flame, the Styx's sparks, the Warmonger's hit (030m-b) (sacobject.d:1521-1525,
+    # The Gnome's hit and gun flame, the Styx's sparks, the Warmonger's hit (sacobject.d:1521-1525,
     # 1630-1641, 4268-4273; sacengine's tex_ZERO_ folder is tex here).
     "gsqb": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "gmfl": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "styx": ("charlie.wad", "Bloo.WAD!/Char.FLDR/tex.FLDR"),
     "wsqb": ("charlie.wad", "Bloo.WAD!/Pyro.FLDR/txtr.FLDR"),
-    # Guardian tether beam (RFC-021b): SacGuardianTether.loadTexture, sacobject.d:4466.
+    # Guardian tether beam: SacGuardianTether.loadTexture, sacobject.d:4466.
     "grdn": ("charlie.wad", "Bloo.WAD!/Misc.FLDR/txtr.FLDR"),
-    # Teleport rings (RFC-021c): SacBlueRing.loadTexture, sacobject.d:2147.
+    # Teleport rings: SacBlueRing.loadTexture, sacobject.d:2147.
     "brng": ("main.wad", "MAIN.WAD!/bits.FLDR"),
-    # Manafount jet and Manalith column (RFC-019c): sacobject.d:1393-1400.
+    # Manafount jet and Manalith column: sacobject.d:1393-1400.
     "elec": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "fb_g": ("main.wad", "MAIN.WAD!/bits.FLDR"),
-    # Death clouds (RFC-030g): steam (goc@), poison (cen@), rainbow (tum@), sacobject.d:1612-1716.
+    # Death clouds: steam (goc@), poison (cen@), rainbow (tum@), sacobject.d:1612-1716.
     "stem": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
     "pois": ("main.wad", "MAIN.WAD!/bits.FLDR"),
     "prbw": ("charlie.wad", "Bloo.WAD!/Pers.FLDR/tex.FLDR"),
-    # Fire on a burning body and the flame of a fire shot (RFC-030l): sacobject.d:1413-1424.
+    # Fire on a burning body and the flame of a fire shot: sacobject.d:1413-1424.
     "firy": ("main.wad", "MAIN.WAD!/bits.FLDR"),
 }
 
@@ -88,22 +88,22 @@ PARTICLES = {
     "manafount": dict(txtr="elec", n_u=4, n_v=4, width=6.0, height=6.0, energy=20.0, delay=1, gravity=True, lifetime_frames=160),
     # Manalith: 3x3 fb_g, 12x12 m, no gravity; lifetime up to 5 * numFrames(18) ticks (state.d:27793-27811).
     "manalith": dict(txtr="fb_g", n_u=3, n_v=3, width=12.0, height=12.0, energy=20.0, delay=1, gravity=False, lifetime_frames=90),
-    # Death clouds (RFC-030g): steam 2x2 energy 0.25 (lifetime 63, state.d:25226), poison 1x1 energy 1 delay 2
+    # Death clouds: steam 2x2 energy 0.25 (lifetime 63, state.d:25226), poison 1x1 energy 1 delay 2
     # (lifetime 95..127, state.d:25248), rainbow 1x1 energy 5 delay 2 gravity (lifetime 63, state.d:25689).
     "steam": dict(txtr="stem", n_u=4, n_v=4, width=2.0, height=2.0, energy=0.25, delay=1, gravity=False, lifetime_frames=63),
     "poison": dict(txtr="pois", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=2, gravity=False, lifetime_frames=127),
     "rainbow": dict(txtr="prbw", n_u=4, n_v=4, width=1.0, height=1.0, energy=5.0, delay=2, gravity=True, lifetime_frames=63),
-    # Fire (RFC-030l): firy 4x4, 1x1 m, energy 8, delay 2 (sacobject.d:1419-1424, 1793); lifetime up to numFrames
+    # Fire: firy 4x4, 1x1 m, energy 8, delay 2 (sacobject.d:1419-1424, 1793); lifetime up to numFrames
     # (spawnFireParticles, state.d:15093-15110). The original adds it (energy 8); over the snow that only reaches white, so
     # the port draws firy_a (the same glow as a straight-alpha overlay, glow_to_alpha) with blend_mix and energy 1.
     "fire": dict(txtr="firy_a", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=2, gravity=False, lifetime_frames=63),
-    # F149: the Silverback's breath (ParticleType.freeze, sacobject.d:1479-1484: cst0 1x1, energy 3; lifetime
+    # The Silverback's breath (ParticleType.freeze, sacobject.d:1479-1484: cst0 1x1, energy 3; lifetime
     # cast(int)(60·40/36) = 66, state.d:24816-24828), drawn as cst0_a with blend_mix like the fire (additive over the
     # snow only reaches white), and the thaw's shards (ParticleType.shard, 1485-1490: shrd, gravity; 31, 17605).
     "freeze": dict(txtr="cst0_a", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=1, gravity=False, lifetime_frames=66),
     "shard": dict(txtr="shrd", n_u=4, n_v=4, width=1.0, height=1.0, energy=1.0, delay=1, gravity=True, lifetime_frames=31),
-    # F124: gnomeHit (sacobject.d:1630-1635, 1788: gsqb 0.5x0.5, energy 5, delay 2, gravity; 200 of lifetime 63,
-    # animateGnomeHit state.d:11710-11722), warmongerHit (1636-1641, 1789: wsqb, delay 1, lifetime 31, animateWarmongerHit state.d:11821-11831; 030m-b) and styxSpark
+    # GnomeHit (sacobject.d:1630-1635, 1788: gsqb 0.5x0.5, energy 5, delay 2, gravity; 200 of lifetime 63,
+    # animateGnomeHit state.d:11710-11722), warmongerHit (1636-1641, 1789: wsqb, delay 1, lifetime 31, animateWarmongerHit state.d:11821-11831) and styxSpark
     # (1521-1525, 1782: styx 1x1 atlas, 1x1 m, energy 15, delay 2, no gravity; 192 of lifetime 15..95, 24137-24152).
     # The original adds them; over the snow that only reaches white, so (like the fire) the port draws gsqb_a, wsqb_a and styx_a
     # (glow_to_alpha) with blend_mix and energy 1.
@@ -118,7 +118,7 @@ GRAVITY = 15.0
 
 
 def glow_to_alpha(rgba: bytes, gain: float) -> bytes:
-    """An additive glow on black as a straight-alpha overlay (RFC-030l): the hue at full brightness, alpha = brightness · gain.
+    """An additive glow on black as a straight-alpha overlay: the hue at full brightness, alpha = brightness · gain.
     Drawn with blend_mix it keeps its color over a bright ground (snow), where adding light can only reach white."""
     out = bytearray(len(rgba))
     for i in range(0, len(rgba), 4):

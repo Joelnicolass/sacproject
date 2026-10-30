@@ -1,25 +1,24 @@
 class_name BreathOfLife
 extends Node3D
 
-## The flight of the Dragon's Breath of life. The effect is added at the shoot tick and runs from the next tick: each tick
-## velocity = 60·(target − position), capped at the spell's speed (60), position += velocity / 60. When that velocity is under
-## 0.01 the breath has arrived and the target fastRevives (FastRevive). So it takes ⌈d⌉ ticks to land and one more to notice:
-## ⌈d⌉ + 1 from the shoot tick. The target is the corpse's center, followed every tick (a soul was resolved to its corpse).
-## This node is the coordinator; the body of the breath is a RangedShot of the shot container (ShotLook breath_of_life:
-## collides off), which only draws it and replicates its position. Server (or solo) only; priority −1: it moves the shot
-## before the bodies move, like Protector and HaloOfEarth.
+## The flight of the Dragon's Breath of life. The effect is added at the shoot tick and runs from
+## the next tick: each tick velocity = 60·(target − position), capped at the spell's speed (60),
+## position += velocity / 60. When that velocity is under 0.01 the breath has arrived and the target
+## revives fast (FastRevive). So it takes ⌈d⌉ ticks to land and one more to notice: ⌈d⌉ + 1 from the
+## shoot tick. The target is the corpse's center, followed every tick (a soul was resolved to its
+## corpse). This node is the coordinator; the body of the breath is a RangedShot of the shot
+## container (ShotLook breath_of_life: collides off), which only draws it and replicates its
+## position. Server (or solo) only; priority −1: it moves the shot before the bodies move, like
+## Protector and HaloOfEarth.
 ##
-## Divergences (declared): the breath is a golden ball with the heal trail (the original's ray and particles are not ported);
-## the breath does not turn the caster's head; no sound.
-## Ref: F153 (RFC-030 030p-b); Dragon filb, sacengine breathOfLifeShoot (state.d:13238-13248), updateBreathOfLife 25943-25975, animateBreathOfLifeHead.
+## Look: the breath is a golden ball with the heal trail; it does not turn the caster's head; no
+## sound.
 
-
-
-## The breath's look (data/shots/breath_of_life.tscn). Empty = a plain ball.
+## The breath's look (scenes/units/attacks/shots/breath_of_life.tscn). Empty = a plain ball.
 @export var look: PackedScene
 ## The revival the breath starts on arrival (fast_revive.tscn).
 @export var fast_revive_scene: PackedScene
-## Arrived when the velocity of the tick is under this (updateBreathOfLife: 0.01 m/s).
+## Arrived when the velocity of the tick is under this (0.01 m/s).
 @export var arrive_speed := 0.01
 
 ## The Dragon, the SPEL and the corpse. Set by setup() before the node enters the tree.
@@ -52,8 +51,18 @@ func _ready() -> void:
 		set_physics_process(false)
 		return
 	_shot = _make_shot()
-	_say("aliento %s sale de %s hacia %s d %.4f m (tick %d)" % [
-		_who, _v(_position), AbilityEffect.who(corpse), _position.distance_to(BodyNudge.center(corpse)), _born])
+	_say(
+		(
+			"breath %s leaves %s toward %s d %.4f m (tick %d)"
+			% [
+				_who,
+				_v(_position),
+				AbilityEffect.who(corpse),
+				_position.distance_to(BodyNudge.center(corpse)),
+				_born
+			]
+		)
+	)
 
 
 func _exit_tree() -> void:
@@ -65,8 +74,13 @@ func _exit_tree() -> void:
 func _physics_process(_delta: float) -> void:
 	if _ended or ability == null or MatchClock.now() <= _born:
 		return
-	if corpse == null or not is_instance_valid(corpse) or not corpse.is_inside_tree() or not corpse.is_dead():
-		_say("aliento %s pierde el blanco (tick %d)" % [_who, MatchClock.now()])
+	if (
+		corpse == null
+		or not is_instance_valid(corpse)
+		or not corpse.is_inside_tree()
+		or not corpse.is_dead()
+	):
+		_say("breath %s loses its target (tick %d)" % [_who, MatchClock.now()])
 		_finish()
 		return
 	var velocity := MatchClock.TICKS_PER_SECOND_F * (BodyNudge.center(corpse) - _position)
@@ -79,23 +93,27 @@ func _physics_process(_delta: float) -> void:
 		_arrive()
 
 
-## updateBreathOfLife, arrival: the target fastRevives. A corpse that cannot be revived any more (its soul was taken) just
-## ends the breath.
+## Arrival: the target revives fast. A corpse that cannot be revived any more (its soul was taken)
+## just ends the breath.
 func _arrive() -> void:
-	_say("aliento %s llega a %s (tick %d)" % [_who, AbilityEffect.who(corpse), MatchClock.now()])
+	_say("breath %s reaches %s (tick %d)" % [_who, AbilityEffect.who(corpse), MatchClock.now()])
 	var fast := fast_revive_scene.instantiate() as FastRevive if fast_revive_scene != null else null
 	if fast == null:
-		push_warning("BreathOfLife: fast_revive_scene no es un FastRevive.")
+		push_warning("BreathOfLife: fast_revive_scene is not a FastRevive.")
 	elif fast.begin(corpse, BreathOfLifeAbility.soul_of(corpse)):
 		corpse.add_child(fast)
 	else:
 		fast.free()
-		_say("aliento %s no puede levantar a %s (tick %d)" % [_who, AbilityEffect.who(corpse), MatchClock.now()])
+		_say(
+			(
+				"breath %s cannot raise %s (tick %d)"
+				% [_who, AbilityEffect.who(corpse), MatchClock.now()]
+			)
+		)
 	_finish()
 
 
 ## The Dragon's shot origin (its RangedWeapon), or its feet lifted when it has none.
-## Ref: sacengine shotPosition.
 func _origin() -> Vector3:
 	return ShotAim.shot_position(user)
 
@@ -103,12 +121,21 @@ func _origin() -> Vector3:
 ## The breath's body: a RangedShot of the shot container, placed by this node every tick.
 func _make_shot() -> RangedShot:
 	if spawner == null:
-		push_warning("BreathOfLife: sin spawner de disparos; el aliento no se ve.")
+		push_warning("BreathOfLife: no shot spawner; the breath is not shown.")
 		return null
 	var data := {
-		"x": _position.x, "y": _position.y, "z": _position.z, "vx": 0.0, "vy": 0.0, "vz": 0.0,
-		"damage": 0.0, "slot": int(user.get("owner_slot")) if "owner_slot" in user else 0, "gravity": 0.0,
-		"max_distance": 1.0e9, "look": FxWire.id_of(look), "target": "",
+		"x": _position.x,
+		"y": _position.y,
+		"z": _position.z,
+		"vx": 0.0,
+		"vy": 0.0,
+		"vz": 0.0,
+		"damage": 0.0,
+		"slot": int(user.get("owner_slot")) if "owner_slot" in user else 0,
+		"gravity": 0.0,
+		"max_distance": 1.0e9,
+		"look": FxWire.id_of(look),
+		"target": "",
 		"shooter": str(user.get_path()) if user.is_inside_tree() else "",
 	}
 	return spawner.spawn_shot(data)

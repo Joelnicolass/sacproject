@@ -1,10 +1,13 @@
 class_name GroundScars
 extends Node3D
 
-## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one owner of `marks` (what was
-## painted, in order) and of the tiles drawn from it. A mark is a picture painted INTO the ground, 0.15625 m per pixel, centered, never turned, over
-## what is there; marks on a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago is cleaned (ground_scars.gdshaderinc reads it).
-## Presentation only: headless (dedicated) it holds nothing. ScarMark decides when; GroundScarsNet merges a donor's `marks` into a peer back from a drop.
+## The marks on the ground of a map (a burn under an explosion, a crack where a rock lands): the one
+## owner of `marks` (what was painted, in order) and of the tiles drawn from it. A mark is a picture
+## painted INTO the ground, 0.15625 m per pixel, centered, never turned, over what is there; marks
+## on a 10 m tile pile up and never fade; past `max_tiles` painted tiles the one painted longest ago
+## is cleaned (ground_scars.gdshaderinc reads it).
+## Presentation only: headless (dedicated) it holds nothing. ScarMark decides when; GroundScarsNet
+## merges a donor's `marks` into a peer back from a drop.
 
 const GROUP := &"ground_scars"
 const INDEX_PARAM := &"scar_index"
@@ -24,8 +27,6 @@ var _layers: Array[Image] = []
 var _index: Image
 var _index_texture: ImageTexture
 var _images: Dictionary = {}  # texture -> Image (RGBA8), read once
-## The last 40 requests to paint, accepted or refused and why (the capture harness prints them).
-static var log_lines := PackedStringArray()
 
 
 ## The marks of the map `node` is in; null when none or headless.
@@ -43,15 +44,21 @@ func _ready() -> void:
 	var count := GroundScarRules.clamp_capacity(prefs.scar_tiles() if prefs != null else max_tiles)
 	_pool = GroundScarRules.Pool.new(count)
 	for i in count:
-		_layers.append(Image.create_empty(GroundScarRules.TILE_TEXELS, GroundScarRules.TILE_TEXELS, false, Image.FORMAT_RGBA8))
-	var grid := GroundScarRules.grid_for(terrain.bounds())  # one index texel per 10 m tile of the map
+		_layers.append(
+			Image.create_empty(
+				GroundScarRules.TILE_TEXELS, GroundScarRules.TILE_TEXELS, false, Image.FORMAT_RGBA8
+			)
+		)
+	# one index texel per 10 m tile of the map
+	var grid := GroundScarRules.grid_for(terrain.bounds())
 	_index = Image.create_empty(grid.x, grid.y, false, Image.FORMAT_RGBA8)
 	tiles.create_from_images(_layers)
 	_index_texture = ImageTexture.create_from_image(_index)
 	_publish()
 
 
-## Reparenting leaves and enters the tree without a new `_ready`: the shaders get the textures again.
+## Reparenting leaves and enters the tree without a new `_ready`: the shaders get the textures
+## again.
 func _enter_tree() -> void:
 	if _pool != null:
 		_publish()
@@ -65,11 +72,11 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if terrain == null:
-		warnings.append("Asigná `terrain` (el Terrain del mapa).")
+		warnings.append("Assign `terrain` (the map's Terrain).")
 	if prefs == null:
 		warnings.append(GraphicsPrefs.socket_warning(prefs))
 	if tiles == null:
-		warnings.append("Asigná `tiles` (un Texture2DArray vacío).")
+		warnings.append("Assign `tiles` (an empty Texture2DArray).")
 	return warnings
 
 
@@ -87,41 +94,61 @@ func painted_tiles() -> int:
 	return _pool.size() if _pool != null else 0
 
 
-## Paints `texture` centered at the world point `at`. `max_height_m`: not drawn when the ground under it is that far from
-## the point (0 = always). False when nothing was painted, or while catching up when the donor already gave it (`marks`).
+## Paints `texture` centered at the world point `at`. `max_height_m`: not drawn when the ground
+## under it is that far from the point (0 = always). False when nothing was painted, or while
+## catching up when the donor already gave it (`marks`).
 func stamp(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
-	if _pool == null or texture == null or (marks.merge != null and marks.merge.own_copies(texture.resource_path, at) == 0):
+	if (
+		_pool == null
+		or texture == null
+		or (marks.merge != null and marks.merge.own_copies(texture.resource_path, at) == 0)
+	):
 		return false
 	return paint(texture, at, max_height_m)
 
 
-## `stamp` without asking `marks` first: the catch-up (GroundScarsNet, `marks.merge`) already decided how many times.
+## `stamp` without asking `marks` first: the catch-up (GroundScarsNet, `marks.merge`) already
+## decided how many times.
 func paint(texture: Texture2D, at: Vector3, max_height_m := 0.0) -> bool:
 	if _pool == null or texture == null:
 		return false
 	var local := to_local(at)
 	var ground_y := terrain.height_at(local.x, local.z)
-	var refusal := GroundScarRules.refusal(terrain.is_on_ground(local.x, local.z), ground_y, local.y, max_height_m)
+	var refusal := GroundScarRules.refusal(
+		terrain.is_on_ground(local.x, local.z), ground_y, local.y, max_height_m
+	)
 	if not refusal.is_empty():
-		note("refused (%s) %s at map %s, max height %.1f" % [refusal, texture.resource_path.get_file(), local, max_height_m])
+		note(
+			(
+				"refused (%s) %s at map %s, max height %.1f"
+				% [refusal, texture.resource_path.get_file(), local, max_height_m]
+			)
+		)
 		return false
 	var mark := _image_of(texture)
 	var origin := GroundScarRules.texel_origin(Vector2(local.x, local.z), mark.get_size())
-	var touched := GroundScarRules.tiles_touched(origin, mark.get_size(), GroundScarRules.grid_for(terrain.bounds()))
+	var touched := GroundScarRules.tiles_touched(
+		origin, mark.get_size(), GroundScarRules.grid_for(terrain.bounds())
+	)
 	for tile in touched:
 		_paint_tile(mark, origin, tile)
 	_index_texture.update(_index)
 	_publish()
-	note("painted %s at map %s, %.1f m over the ground, %d tiles" % [texture.resource_path.get_file(), local, local.y - ground_y, touched.size()])
+	note(
+		(
+			"painted %s at map %s, %.1f m over the ground, %d tiles"
+			% [texture.resource_path.get_file(), local, local.y - ground_y, touched.size()]
+		)
+	)
 	if not touched.is_empty():
 		marks.add(texture, at, max_height_m)
 	return not touched.is_empty()
 
 
+## One line on a request to paint, accepted or refused and why (`--log=scars`).
 static func note(text: String) -> void:
-	log_lines.append(text)
-	if log_lines.size() > 40:
-		log_lines.remove_at(0)
+	if DebugLog.on(&"scars"):
+		print("scars ", text)
 
 
 func _paint_tile(mark: Image, origin: Vector2i, tile: Vector2i) -> void:

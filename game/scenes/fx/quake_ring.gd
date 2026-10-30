@@ -1,13 +1,13 @@
 class_name QuakeRing
 extends FxScene
 
-## The look of a Quake wave: a ring of earth drawn on the ground that goes out with the wave and fades. Placeholder look: MIX
-## (alpha blend), never additive. One event (FxBus.broadcast_scene, one RPC); presentation only, never headless. It frees itself.
-## Its clock is MatchClock (ticks), like the wave it shows: a paused match freezes it, a capture does not make it run ahead.
-## Its child Ground (quake_ground.tscn, on_clients_only) bends the land on a client the way the server's QuakeWave does; on the
-## server, alone or on the host it does nothing (the real one plays there). It does not stun nor decide anything.
-## Ref: sacengine Quake.displacement (state.d:5187-5225: a crest that moves out at waveRange/waveDur with a width of
-## (0.15 + 0.65·(1 − p)²)·waveRange). F132 (RFC-030 030u-a), RFC-057 057a.
+## The look of a Quake wave: a ring of earth drawn on the ground that goes out with the wave and
+## fades. Placeholder look: MIX (alpha blend), never additive. One event (FxBus.broadcast_scene, one
+## RPC); presentation only, never headless. It frees itself. Its clock is MatchClock (ticks), like
+## the wave it shows: a paused match freezes it, a capture does not make it run ahead. Its child
+## Ground (quake_ground.tscn, on_clients_only) bends the land on a client the way the server's
+## QuakeWave does; on the server, alone or on the host it does nothing (the real one plays there).
+## It does not stun nor decide anything.
 
 ## Segments of the ring (each follows the land under it).
 @export_range(8, 128) var segments := 64
@@ -16,13 +16,13 @@ extends FxScene
 ## Height over the land (m): above the blades of grass, or the ring sinks in them.
 @export var lift := 0.8
 
-@onready var _mesh: MeshInstance3D = %Ring
-
 var _wave_range := 50.0
 var _wave_s := 0.5
 var _born := 0
 var _age := 0.0
 var _playing := false
+
+@onready var _mesh: MeshInstance3D = %Ring
 
 
 ## `params`: range (m), seconds (the wave's length), band (m, the width the wave stuns).

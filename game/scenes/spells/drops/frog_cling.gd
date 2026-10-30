@@ -2,10 +2,10 @@
 class_name FrogCling
 extends Node
 
-## What a frog does when it touches a creature: it sticks to it (the body's Clinging counts it and slows the body ×0.6 for each frog) and,
-## after `fuse_s`, or as soon as the body can no longer be infected, it ends where it is (DropBlast bursts it). It asks its ZoneDrop to
-## stick (attach) and to end (finish); it does not hop (FrogHop) nor hurt (DropBlast). Server (or solo) only.
-## Ref: sacengine updateRainFrog, rainFrogCollisionTarget (state.d:19399-19403, 19441-19447, 19488-19499).
+## What a frog does when it touches a creature: it sticks to it (the body's Clinging counts it and
+## slows the body ×0.6 for each frog) and, after `fuse_s`, or as soon as the body can no longer be
+## infected, it ends where it is (DropBlast bursts it). It asks its ZoneDrop to stick (attach) and
+## to end (finish); it does not hop (FrogHop) nor hurt (DropBlast). Server (or solo) only.
 
 @export var drop: ZoneDrop
 ## What each frog on a body multiplies its pace by.
@@ -42,4 +42,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["Falta la rana (ZoneDrop) que se pega."])
+	return (
+		PackedStringArray()
+		if drop != null
+		else PackedStringArray(["The frog (ZoneDrop) that clings is missing."])
+	)

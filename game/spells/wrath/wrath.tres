@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_dj3ri"]
+[ext_resource type="Texture2D" uid="uid://d0ls1knhqxham" path="res://assets/original/ui/icons/oalf.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://spells/wrath/wrath_action.tscn" id="2_action"]
+
+[resource]
+script = ExtResource("1_dj3ri")
+tag = "oalf"
+display_name = "Wrath"
+icon = ExtResource("icon_tex")
+mana_cost = 300
+cast_range_m = 100.0
+cooldown_s = 10.0
+casting_time_s = 0.7407
+book_level = 1
+book_slot = 30
+speed_m_s = 30.0
+acceleration_m_s2 = 3.0
+damage = 550
+damage_range_m = 5.0
+effect_range_m = 5.0
+duration_s = 10.0
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+never_allies = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 550
+structures = PackedStringArray()
+action = ExtResource("2_action")

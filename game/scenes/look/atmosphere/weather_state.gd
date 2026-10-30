@@ -2,9 +2,10 @@
 class_name WeatherState
 extends Resource
 
-## One kind of weather (clear, fog, rain, storm, snow), a type template: `data/look/weather/<state>.tres`, never written
-## at runtime. Its numbers bend the biome's approved look: multipliers (1 = as approved) and amounts (0 = nothing).
-## Clear is all neutral. A new weather = duplicate one of these and add a WeatherChance to the plan.
+## One kind of weather (clear, fog, rain, storm, snow), a type template:
+## `scenes/look/weather/<state>.tres`, never written at runtime. Its numbers bend the biome's
+## approved look: multipliers (1 = as approved) and amounts (0 = nothing). Clear is all neutral. A
+## new weather = duplicate one of these and add a WeatherChance to the plan.
 
 @export var display_name: String = ""
 
@@ -21,7 +22,8 @@ extends Resource
 @export var sky_tint: Color = Color.WHITE
 ## 0 = the sky's colors, 1 = grey.
 @export_range(0.0, 1.0, 0.01) var sky_grey: float = 0.0
-## Extra cloud cover over the sky's own clouds (0..1), how much darker they are, and how much faster they drift.
+## Extra cloud cover over the sky's own clouds (0..1), how much darker they are, and how much faster
+## they drift.
 @export_range(0.0, 1.0, 0.01) var cloud_cover: float = 0.0
 @export_range(0.0, 1.0, 0.01) var cloud_darken: float = 0.0
 @export_range(0.0, 8.0, 0.01) var cloud_speed_mul: float = 1.0
@@ -35,7 +37,8 @@ extends Resource
 @export var mist_color: Color = Color(0.8, 0.82, 0.85)
 ## Multiplies where the fog begins: below 1 the mist comes in over the nearer hills.
 @export_range(0.0, 2.0, 0.01) var fog_begin_mul: float = 1.0
-## The fog never starts closer than this: the far land goes into the mist, the play around the camera stays clear.
+## The fog never starts closer than this: the far land goes into the mist, the play around the
+## camera stays clear.
 @export_range(0.0, 1000.0, 1.0, "suffix:m") var fog_clear_m: float = 0.0
 
 @export_group("Precipitation")
@@ -44,8 +47,13 @@ extends Resource
 ## What falls. Empty = nothing.
 @export var precipitation: PrecipitationLook
 
-@export_group("Storm (058-3)")
-## Lightning strikes a minute (0 = none) and how bright a flash is (sky and ambient, never the glow).
+@export_group("Wind")
+## Multiplies the biome's wind (the grass bends harder and its gusts cross the ground faster).
+@export_range(0.0, 6.0, 0.01) var wind_mul: float = 1.0
+
+@export_group("Storm")
+## Lightning strikes a minute (0 = none) and how bright a flash is (sky and ambient, never the
+## glow).
 @export_range(0.0, 20.0, 0.1) var strikes_per_min: float = 0.0
 @export_range(0.0, 1.0, 0.01) var flash_strength: float = 0.0
 
@@ -70,4 +78,5 @@ func to_sample() -> AtmosphereSample:
 	out.cloud_cover = cloud_cover
 	out.cloud_darken = cloud_darken
 	out.cloud_speed_mul = cloud_speed_mul
+	out.wind = wind_mul
 	return out

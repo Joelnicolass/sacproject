@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_wave.tscn" id="1_wave"]
+
+[node name="BovineQuakeWave" instance=ExtResource("1_wave")]
+editor_description = "The wave of the Bovine Intervention cow when it bursts: the same wave as the Jabberocky's Quake, but it stuns up to 25 m from the center. No damage."
+stun_max = 25.0

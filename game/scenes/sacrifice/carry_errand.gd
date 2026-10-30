@@ -2,12 +2,12 @@
 class_name CarryErrand
 extends Node
 
-## The errand of a carrier doctor: which creature it came for and which site it takes it to. The body is the DoctorBody (it only walks and dies);
-## the errand is what makes this doctor a carrier, and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor has no errand.
-## Server only: the clients get the doctor and the creature through their synchronizers. 020e adds Convert and Pump.
-## Ref: sacengine SacDocCarry; sacengine `soul.state.among(normal, emerging)`, state.d:15681; freeSoulImpl, state.d:15617
+## The errand of a carrier doctor: which creature it came for and which site it takes it to. The
+## body is the DoctorBody (it only walks and dies); the errand is what makes this doctor a carrier,
+## and the steps (Wait, Approach, Haul, Over) are nodes of `steps`. A ritual doctor has no errand.
+## Server only: the clients get the doctor and the creature through their synchronizers.
 
-## The carrier reached the site and holds the creature there. The ritual starts from here (RFC-020d).
+## The carrier reached the site and holds the creature there. The ritual starts from here.
 signal reached_site
 ## The errand ended: HANDED_OVER = the ritual took over; FAILED = the doctor died.
 signal finished(outcome: Outcome)
@@ -47,14 +47,22 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null:
-		warnings.append("Asigná en `body` el doctor (DoctorBody) que cumple el recado.")
+		warnings.append("Assign to `body` the doctor (DoctorBody) that runs the errand.")
 	if steps == null:
-		warnings.append("Asigná en `steps` la FsmMachine con Wait, Approach, Pump, Haul y Over.")
+		warnings.append(
+			"Assign to `steps` the FsmMachine with Wait, Approach, Pump, Haul and Over."
+		)
 	return warnings
 
 
 ## Server or solo. Before the doctor drops. `converted_soul` only for Convert.
-func configure(errand_kind: Ritual.Kind, slot: int, target: UnitBody, destination: RitualSite, converted_soul: Soul = null) -> void:
+func configure(
+	errand_kind: Ritual.Kind,
+	slot: int,
+	target: UnitBody,
+	destination: RitualSite,
+	converted_soul: Soul = null
+) -> void:
 	kind = errand_kind
 	caster_slot = slot
 	creature = target
@@ -65,17 +73,24 @@ func configure(errand_kind: Ritual.Kind, slot: int, target: UnitBody, destinatio
 
 ## The creature is still the caster's, alive and free (not held by anyone).
 func creature_is_free() -> bool:
-	return _is_alive_own() and creature.is_in_group(Captive.UNIT_GROUP) and not creature.is_held()
+	return _is_alive_own() and creature.is_in_group(UnitBody.GROUP) and not creature.is_held()
 
 
-## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse is too.
+## Convert: the soul can still be converted by the doctor: it is there, in the open and its corpse
+## is too.
 func soul_is_waiting() -> bool:
 	if soul == null or not is_instance_valid(soul) or not soul.is_inside_tree():
 		return false
 	if soul.state != Soul.State.NORMAL and soul.state != Soul.State.EMERGING:
 		return false
 	var corpse := soul.corpse as UnitBody
-	return corpse != null and is_instance_valid(corpse) and corpse.is_inside_tree() and corpse.is_dead() and Captive.of(corpse) != null
+	return (
+		corpse != null
+		and is_instance_valid(corpse)
+		and corpse.is_inside_tree()
+		and corpse.is_dead()
+		and Captive.of(corpse) != null
+	)
 
 
 ## Convert: the soul goes back to being convertible by the caster.
@@ -84,7 +99,8 @@ func release_soul() -> void:
 		soul.release_for(caster_slot)
 
 
-## Derived, never stored: the errand wants the body to walk (Approach or Haul, not there, not over); StuckGuard reads it.
+## Derived, never stored: the errand wants the body to walk (Approach or Haul, not there, not over);
+## StuckGuard reads it.
 func walks() -> bool:
 	return not _done and not arrived and (steps.is_in(&"Approach") or steps.is_in(&"Haul"))
 
@@ -100,13 +116,14 @@ func site_standing() -> bool:
 
 ## Haul: stands at the site with the creature and lets the ritual start.
 func arrive() -> void:
-	if arrived: return
+	if arrived:
+		return
 	arrived = true
 	body.stop()
 	reached_site.emit()
 
 
-## RFC-020d: the ritual took the creature over. The carrier's work is done.
+## The ritual took the creature over. The carrier's work is done.
 func hand_over() -> void:
 	_finish(Outcome.HANDED_OVER)
 	steps.transition(&"Over")
@@ -114,13 +131,22 @@ func hand_over() -> void:
 
 ## Lets the creature go where it hangs, for `reason` (Captive.Release).
 func release_creature(reason := Captive.Release.LET_GO) -> void:
-	if captive != null and is_instance_valid(captive) and (captive.holder == body or captive.body.is_reviving()):
+	if (
+		captive != null
+		and is_instance_valid(captive)
+		and (captive.holder == body or captive.body.is_reviving())
+	):
 		captive.release(reason)
 
 
 func _is_alive_own() -> bool:
-	return creature != null and is_instance_valid(creature) and creature.is_inside_tree() \
-		and not creature.is_dead() and creature.owner_slot == creature_owner
+	return (
+		creature != null
+		and is_instance_valid(creature)
+		and creature.is_inside_tree()
+		and not creature.is_dead()
+		and creature.owner_slot == creature_owner
+	)
 
 
 func _on_landed() -> void:
@@ -128,8 +154,9 @@ func _on_landed() -> void:
 		steps.transition(&"Approach")
 
 
-## The doctor died, in whatever step: the soul it came for is free again (or goes, if the creature already took it) and
-## the creature it holds is dropped by one rule (DeathRules.on_carrier_lost, through Captive).
+## The doctor died, in whatever step: the soul it came for is free again (or goes, if the creature
+## already took it) and the creature it holds is dropped by one rule (DeathRules.on_carrier_lost,
+## through Captive).
 func _on_died(_from_slot: int) -> void:
 	if _done:
 		return

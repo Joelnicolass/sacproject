@@ -1,11 +1,12 @@
 class_name RefusalReason
 extends Label
 
-## The words of why a command is or would be refused, next to the pointer: «Muy lejos», «Falta maná», «Ese manantial ya tiene
-## torre»… It shows every refusal the server or the HUD says (CommandLog.said, for `flash_s` seconds) and, while an armed
-## structure would be refused at the pointer, that reason for as long as it holds (CommandLog.aim_status). The words come from
-## `Refusal.text(key)` (data/i18n/strings.csv). It decides no reason and draws no icon (CommandCue does).
-## CommandCue hands it its `command_log` and `probe` when they are not set here.
+## The words of why a command is or would be refused, next to the pointer: «Muy lejos», «Falta
+## maná», «Ese manantial ya tiene torre»… It shows every refusal the server or the HUD says
+## (CommandLog.said, for `flash_s` seconds) and, while an armed structure would be refused at the
+## pointer, that reason for as long as it holds (CommandLog.aim_status). The words come from
+## `Refusal.text(key)` (scenes/ui/i18n/strings.csv). It decides no reason and draws no icon
+## (CommandCue does). CommandCue hands it its `command_log` and `probe` when they are not set here.
 
 @export var command_log: CommandLog
 @export var probe: TargetProbe
@@ -61,7 +62,9 @@ func _process(delta: float) -> void:
 func _refresh() -> void:
 	var words := _flash_text if _flash_left > 0.0 else ""
 	if words.is_empty() and command_log != null and not command_log.armed.is_empty():
-		words = Refusal.text(command_log.aim_status) if not command_log.aim_status.is_empty() else ""
+		words = (
+			Refusal.text(command_log.aim_status) if not command_log.aim_status.is_empty() else ""
+		)
 	text = words
 	visible = not words.is_empty()
 	set_process(visible)

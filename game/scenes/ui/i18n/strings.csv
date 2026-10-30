@@ -1,0 +1,423 @@
+keys,es,en
+UI_BOOT_TITLE,Sacrifice,
+UI_BOOT_SOLO,Jugar solo,
+UI_BOOT_VS_AI,Contra la IA,
+UI_BOOT_AI_LEVEL_LABEL,Dificultad de la IA (1-9),
+UI_BOOT_ONLINE,Salas online,
+UI_BOOT_LOCAL_SERVER,Servidor local,
+UI_BOOT_IP_HINT,IP del servidor,
+UI_BOOT_JOIN,Unirse,
+UI_BOOT_BACK,Cambiar personaje,
+UI_BOOT_OPTIONS,Opciones,
+UI_MAP_MISSING,Falta el terreno de High Noon.,
+UI_MAP_MISSING_2,Falta el terreno del mapa.,
+UI_CHARACTER_SELECT_TITLE,Elegí tu mago,
+UI_CHARACTER_SELECT_GOD_TITLE,Elegí tu dios,
+UI_CHARACTER_SELECT_BOOK_TITLE,Libro inicial,
+UI_CHARACTER_SELECT_PLAY,Jugar,
+UI_PICK_BUTTON_PICK_BUTTON,Opción,
+UI_HUD_STATS,Vida 0/0 · Maná 0/0 · Almas 0,
+UI_HUD_TITLE,Mago · Dios,
+UI_HUD_GHOST_STATE,Fantasma,
+UI_MATCH_RESULT_MATCH_RESULT,Victoria,
+UI_RITUAL_NOTICE_RITUAL_NOTICE,Están profanando tu altar,
+UI_CHAT_BOX_CHAT_TITLE,Chat,
+UI_CHAT_BOX_CHAT_LINE_HINT,Escribí un mensaje,
+UI_CHAT_BOX_CHAT_SEND,Enviar,
+UI_LOBBY_CONNECT_TITLE,Salas online,
+UI_LOBBY_CONNECT_NAME_LABEL,Tu nombre,
+UI_LOBBY_CONNECT_PLAYER_NAME_HINT,Tu nombre,
+UI_LOBBY_CONNECT_IP_LABEL,Servidor (solo en debug; vacío = el del juego),
+UI_LOBBY_CONNECT_CONNECT_BUTTON,Conectar,
+UI_LOBBY_CONNECT_CONNECT_BACK,Volver al menú,
+UI_LOBBY_CONNECT_CONNECT_STATUS,Sin conexión,
+UI_LOBBY_RETURN_LOBBY_RETURN_BUTTON,Volver a salas,
+UI_ROOM_CREATE_TITLE,Crear sala,
+UI_ROOM_CREATE_ROOM_NAME_HINT,Nombre de la sala (vacío: tu nombre),
+UI_ROOM_CREATE_ROOM_PRIVATE,Sala privada (solo con código),
+UI_ROOM_CREATE_CREATE_CONFIRM,Crear,
+UI_ROOM_CREATE_CREATE_CANCEL,Cancelar,
+UI_ROOM_CREATE_CREATE_STATUS,Sin conexión,
+UI_ROOM_LIST_TITLE,Salas,
+UI_ROOM_LIST_LIST_STATUS,Sin conexión,
+UI_ROOM_LIST_REFRESH_ROOMS,Actualizar,
+UI_ROOM_LIST_CREATE_ROOM,Crear sala,
+UI_ROOM_LIST_JOIN_CODE_HINT,Código de una sala privada,
+UI_ROOM_LIST_CODE_JOIN,Unirse con código,
+UI_ROOM_LIST_LIST_BACK,Volver al menú,
+UI_ROOM_ROW_ROOM_ROW,Sala,
+UI_ROOM_VIEW_ROOM_TITLE,Sin conexión,
+UI_ROOM_VIEW_PICK_CHARACTER,Elegir mago y dios,
+UI_ROOM_VIEW_READY_BUTTON,Estoy listo,
+UI_ROOM_VIEW_LEAVE_ROOM,Salir de la sala,
+UI_ROOM_VIEW_REJOIN_MATCH,Volver a la partida,
+UI_SEAT_ROW_SEAT_NAME,Asiento libre,
+UI_SEAT_ROW_SIT,Sentarme aquí,
+UI_LOCAL_HOST_VIEW_TITLE,Crear servidor local,
+UI_LOCAL_HOST_VIEW_CREATE_SERVER,Crear,
+UI_LOCAL_HOST_VIEW_COPY_INFO,Copiar dirección y código,
+UI_LOCAL_HOST_VIEW_ENTER_MATCH,Entrar a la partida,
+UI_LOCAL_HOST_VIEW_HOST_BACK,Cerrar servidor y volver,
+UI_LOCAL_JOIN_VIEW_TITLE,Unirse a servidor local,
+UI_LOCAL_JOIN_VIEW_JOIN_PICK,Elegir mago y dios,
+UI_LOCAL_JOIN_VIEW_JOIN_ADDRESS_HINT,Dirección y puerto (192.168.1.5:7710),
+UI_LOCAL_JOIN_VIEW_JOIN_CODE_HINT,Código que te dio el host,
+UI_LOCAL_JOIN_VIEW_JOIN_SERVER,Unirse,
+UI_LOCAL_JOIN_VIEW_JOIN_BACK,Volver,
+UI_LOCAL_SERVER_SCREEN_TITLE,Servidor local,
+UI_LOCAL_SERVER_SCREEN_CREATE_LOCAL,Crear servidor local,
+UI_LOCAL_SERVER_SCREEN_JOIN_LOCAL,Unirse a servidor local,
+UI_LOCAL_SERVER_SCREEN_LOCAL_BACK,Volver al menú,
+UI_GAMEPLAY_TAB_FRIENDLY_FIRE,Fuego amigo,
+UI_GAMEPLAY_TAB_DROP_SOUL,Soltar almas con P,
+UI_GAMEPLAY_TAB_SOULS_LABEL,Almas iniciales,
+UI_GAMEPLAY_TAB_RULES_NOTE,Las reglas las decide quien creó la partida,
+UI_GRAPHICS_TAB_QUALITY_LABEL,Calidad,
+UI_GRAPHICS_TAB_FULLSCREEN,Pantalla completa,
+UI_GRAPHICS_TAB_VSYNC,VSync,
+UI_GRAPHICS_TAB_VEGETATION,Vegetación,
+UI_GRAPHICS_TAB_GRASS,Pasto,Grass
+UI_GRAPHICS_TAB_RELIEF,Relieve (mapas de normales),
+UI_GRAPHICS_TAB_SCARS_LABEL,Cantidad de marcas,
+UI_GRAPHICS_TAB_MAX_FPS_LABEL,Límite de FPS,
+UI_GRAPHICS_TAB_HUD_LABEL,Tamaño de la interfaz,
+UI_OPTIONS_MENU_TITLE,Opciones,
+UI_OPTIONS_MENU_CLOSE_OPTIONS,Cerrar,
+UI_PAUSE_MENU_PAUSE_TITLE,Pausa,
+UI_PAUSE_MENU_CONTINUE,Continuar,
+UI_PAUSE_MENU_OPTIONS,Opciones,
+UI_PAUSE_MENU_QUIT,Salir al menú,
+UI_PAUSE_MENU_QUESTION,¿Dejar la partida y volver al menú?,
+UI_PAUSE_MENU_CONFIRM_QUIT,Salir,
+UI_PAUSE_MENU_CANCEL_QUIT,Volver,
+UI_SPELL_BOOK_CREATURE_TAB_TOOLTIP,Criaturas,
+UI_SPELL_BOOK_SPELL_TAB_TOOLTIP,Hechizos,
+UI_SPELL_BOOK_STRUCTURE_TAB_TOOLTIP,Estructuras,
+UI_SPELL_SLOT_NAME,Hechizo,
+LOBBY_OFFLINE,Sin conexión,
+LOBBY_CONNECTING,Conectando con las salas…,
+LOBBY_NO_ROOMS,No hay salas abiertas. Creá una.,
+LOBBY_ENTERING_MATCH,Entrando a la partida…,
+LOBBY_RESUMING,Se perdió la conexión. Volviendo a las salas…,
+LOBBY_FREE_SEAT,Asiento libre,
+LOBBY_ERR_VERSION,Tu juego y el servidor de salas son de versiones distintas.,
+LOBBY_ERR_BAD_NAME,"Ese nombre no sirve. Usá hasta 24 letras, sin símbolos raros.",
+LOBBY_ERR_TIMEOUT,El servidor de salas no respondió a tiempo.,
+LOBBY_ERR_RATE,Escribís muy rápido. Esperá un momento.,
+LOBBY_ERR_BAD_TEXT,Ese mensaje es demasiado largo.,
+LOBBY_ERR_BAD_OPTIONS,Esas opciones de sala no son válidas.,
+LOBBY_ERR_BAD_META,Ese personaje no es válido.,
+LOBBY_ERR_NO_SESSION,Se perdió tu sesión. Volvé a conectarte.,
+LOBBY_ERR_NO_ROOM,Esa sala ya no existe.,
+LOBBY_ERR_ALREADY_IN_ROOM,Ya estás en una sala.,
+LOBBY_ERR_NOT_IN_ROOM,No estás en ninguna sala.,
+LOBBY_ERR_ROOM_FULL,La sala está llena.,
+LOBBY_ERR_ROOM_NOT_OPEN,La sala ya no acepta cambios.,
+LOBBY_ERR_BAD_SEAT,Ese asiento no existe.,
+LOBBY_ERR_SEAT_TAKEN,Ese asiento ya está ocupado.,
+LOBBY_ERR_IN_MATCH,La partida ya empezó.,
+LOBBY_ERR_ROOMS_CAP,No caben más salas en el servidor. Probá más tarde.,
+LOBBY_ERR_MATCHES_CAP,El servidor está lleno de partidas. Probá en un rato.,
+LOBBY_ERR_SPAWN_FAILED,No se pudo preparar la partida. Volvé a intentarlo.,
+LOBBY_ERR_MATCH_FAILED,La partida terminó con un error.,
+LOBBY_ERR_NOT_HOST,Solo el anfitrión de la sala puede hacer eso.,
+LOBBY_ERR_BAD_BOT,Esa IA no es válida.,
+LOBBY_LOST_CONNECT_FAILED,No se pudo conectar con las salas.,
+LOBBY_LOST_SERVER_LOST,Se perdió la conexión con las salas.,
+LOBBY_LOST_CONNECT_TIMEOUT,Las salas no respondieron a tiempo. Probá de nuevo.,
+LOBBY_LOST_CLOSED,Se cerró la conexión con las salas.,
+LOBBY_LOST_RESUME_WINDOW,No se pudo volver a las salas a tiempo. Conectate de nuevo.,
+LOBBY_STATE_OPEN,Abierta,
+LOBBY_STATE_COUNTDOWN,Por empezar,
+LOBBY_STATE_LAUNCHING,Preparando,
+LOBBY_STATE_IN_MATCH,En partida,
+LOBBY_STATE_CLOSED,Cerrada,
+LOBBY_ERR_UNKNOWN,Algo salió mal (%s).,
+LOBBY_NO_PICK,Sin elegir,
+LOBBY_PICK_FORMAT,%s · Dios: %s,
+LOBBY_RESULT_NO_WINNER,La partida se cerró sin ganador.,
+LOBBY_RESULT_WON_ABANDON,Ganaste: tu rival abandonó.,
+LOBBY_RESULT_LOST_ABANDON,Perdiste: abandonaste la partida.,
+LOBBY_RESULT_WON,Ganaste.,
+LOBBY_RESULT_LOST,Perdiste.,
+LOCAL_TITLE,Servidor local,
+LOCAL_PICK_BUTTON,Elegir mago y dios,
+LOCAL_PICK_CONFIRM,Elegir,
+LOCAL_PICK_CHOICE,Jugás con %s · Dios: %s,
+LOCAL_STARTING,Preparando el servidor…,
+LOCAL_INFO_ADDRESS,Dirección local: %s,
+LOCAL_INFO_NO_ADDRESS,Dirección local: no encontré una (usá la de tu túnel o VPN),
+LOCAL_INFO_PORT,Puerto: %d,
+LOCAL_INFO_TRANSPORT,Transporte: %s,
+LOCAL_INFO_CODE,Código del rival: %s,
+LOCAL_COPIED,Copiado al portapapeles.,
+LOCAL_HELP_HOST,"Pasale a tu rival la dirección, el puerto, el transporte y el código. En la misma red alcanza con eso; desde Internet tenés que abrir el puerto o usar un túnel (guía: docs/servidor_local.md). Si cerrás el juego, se termina la partida.",
+LOCAL_HELP_JOIN,"Pedile al host su dirección, el puerto y el código. Elegí tu mago y tu dios antes de unirte, y elegí el mismo transporte que él.",
+LOCAL_CONNECTING,Conectando con %s…,
+LOCAL_WAITING_HOST,Estás adentro. Esperando a que el host entre a la partida…,
+LOCAL_BAD_ENDPOINT,Escribí la dirección así: 192.168.1.5:7710,
+LOCAL_BAD_CODE,Falta el código que te dio el host.,
+LOCAL_FAILED_START,No se pudo crear el servidor local. ¿Otro servidor usa ese puerto?,
+LOCAL_REJECTION_FALLBACK,El servidor no te dejó entrar.,
+LOCAL_START_ERROR_FALLBACK,El servidor local falló.,
+LOCAL_REJECT_REJECTED,"El código no es válido, o ya lo usa otro jugador.",
+LOCAL_REJECT_SLOT_TAKEN,Ese asiento ya está ocupado.,
+LOCAL_REJECT_TIMEOUT,El servidor no respondió a tiempo.,
+LOCAL_REJECT_BAD_PICK,Ese mago o ese dios no es válido. Elegí de nuevo y volvé a unirte.,
+LOCAL_REJECT_DROPPED,"No se pudo entrar. Revisá la dirección, el puerto y el transporte.",
+LOCAL_REJECT_MATCH_STARTED,La partida ya empezó: solo pueden volver los que estaban.,
+LOCAL_REJECT_GRACE_OVER,Pasó el tiempo para volver a la partida.,
+LOCAL_REJECT_FULL,La partida está llena.,
+LOCAL_START_ERR_SPAWN_TIMEOUT,El servidor local no arrancó a tiempo.,
+LOCAL_START_ERR_EXITED,El servidor local se cerró solo.,
+LOCAL_START_ERR_HEARTBEAT_STALE,El servidor local dejó de responder.,
+LOCAL_START_ERR_MATCH_MAX,La partida duró más de lo permitido.,
+UI_OPTIONS_TAB_GAMEPLAY,Jugabilidad,
+UI_OPTIONS_TAB_GRAPHICS,Gráficos,
+UI_GRAPHICS_NO_CAP,Sin tope,
+UI_BOOK_TAB_CREATURES,Criaturas,
+UI_BOOK_TAB_SPELLS,Hechizos,
+UI_BOOK_TAB_STRUCTURES,Estructuras,
+UI_KEY_SPACE,Espacio,
+UI_SLOT_SPELL_TIP,%s (%s) · %d de maná · alcance %d,
+UI_SLOT_CREATURE_TIP,%s (%s) · %d de maná · %s · vida %d,
+UI_CHARACTER_SELECT_GOD_BUTTON,Dios: %s,
+UI_CHARACTER_SELECT_NO_DATA,Faltan los datos del instalador.,
+UI_CHARACTER_SELECT_WIZARD_STATS,Vida %d · Maná %d,
+UI_CHARACTER_SELECT_NO_BOOK,Sin libro: faltan los datos del instalador.,
+UI_CHARACTER_SELECT_BOOK,"Criaturas: %s
+Hechizos: %s",
+UI_LOBBY_PLAYER_PREFIX,Jugador,
+UI_ROOM_CREATE_LEVEL_RULES,Nivel: el de las reglas,
+UI_ROOM_CREATE_LEVEL,Nivel %d,
+UI_SEAT_READY,Listo,
+UI_SEAT_WAITING,Esperando,
+UI_SEAT_AWAY_SUFFIX,(sin conexión),
+UI_ROOM_VIEW_PICK_CONFIRM,Elegir,
+UI_ROOM_VIEW_PLAYERS,Jugadores: %d/%d,
+UI_ROOM_VIEW_NOT_READY,Ya no estoy listo,
+UI_ROOM_VIEW_READY,Estoy listo,
+UI_ROOM_VIEW_COUNTDOWN,La partida empieza en %d…,
+UI_ROOM_VIEW_LAUNCHING,Preparando la partida…,
+UI_ROOM_VIEW_IN_MATCH,Partida en curso,
+UI_ROOM_VIEW_CODE,Código: %s,
+UI_ROOM_VIEW_LEVEL,Nivel de los magos: %d,
+UI_PAUSE_MENU_PAUSED,Pausa,
+UI_PAUSE_MENU_ONLINE,Partida en curso,
+UI_HUD_STATS_FORMAT,Vida %d/%d · Maná %d/%d · Almas %d,
+UI_RESULT_VICTORY,Victoria,
+UI_RESULT_DEFEAT,Derrota,
+UI_RESULT_DRAW,Fin de partida,
+UI_RITUAL_PROFANING,Están profanando tu altar,
+UI_RITUAL_INTERRUPTED,Ritual interrumpido,
+UI_RITUAL_PROFANED,Altar profanado,
+UI_BOOT_CHOICE,%s · Dios: %s,
+UI_FLOW_JOINING,Conectando con %s…,
+UI_FLOW_JOIN_FAIL,No se pudo entrar a la partida,
+UI_FLOW_BAD_IP,Dirección inválida,
+UI_FLOW_SERVER_LOST,Se terminó la partida,
+UI_LOCAL_HOST_COPY_FORMAT,%s  código: %s,
+UI_MAP_PICKER_ITEM,Mapa: %s,
+UI_BIOME_RANDOM,Tierra: Aleatoria,
+UI_BIOME_ITEM,Tierra: %s,
+UI_HOUR_AUTO,Hora: Automática,
+UI_HOUR_DAY,Hora: Día,
+UI_HOUR_DUSK,Hora: Atardecer,
+UI_HOUR_NIGHT,Hora: Noche,
+UI_WEATHER_AUTO,Clima: Automático,
+UI_WEATHER_ITEM,Clima: %s,
+MODE_1V1,1 contra 1,
+MODE_2V2,2 contra 2,
+MODE_FFA3,Todos contra todos (3),
+MODE_FFA4,Todos contra todos (4),
+UI_MODE_PICKER_ITEM,Modo: %s,
+UI_AI_GOD_RANDOM,Dios de la IA: Aleatorio,
+UI_AI_GOD_ITEM,Dios de la IA: %s,
+UI_AI_DIFFICULTY_ITEM,Dificultad: %s,
+UI_AI_DIFFICULTY_EASY,Fácil,
+UI_AI_DIFFICULTY_NORMAL,Normal,
+UI_AI_DIFFICULTY_HARD,Difícil,
+UI_AI_SEAT_HUMAN,Jugador (con código),
+UI_ROOM_VIEW_MODE,Modo: %s,
+UI_ROOM_VIEW_MAP,Mapa: %s,
+UI_ROOM_VIEW_LAND,Tierra: %s,
+UI_ROOM_VIEW_TEAM,Equipo %d,
+UI_ROOM_VIEW_BOT_OPTIONS,IA nueva:,
+UI_SEAT_ADD_BOT,Agregar IA,
+UI_SEAT_REMOVE_BOT,Quitar IA,
+LOBBY_BOT_NAME,IA,
+LOBBY_BOT_RANDOM_GOD,Aleatorio,
+LOBBY_BOT_FORMAT,Dios: %s · %s,
+UI_LOCAL_SEAT_LABEL,Asiento %d · Equipo %d,
+UI_LOCAL_SEAT_AI,IA (%s),
+LOCAL_INFO_SEAT_CODE,Código del asiento %d: %s,
+LOCAL_INFO_NO_CODE,Todos los demás asientos son IA: no hay códigos para pasar.,
+UI_RESULT_TEAM,Ganó el equipo de %s,
+UI_RESULT_SLOT,Jugador %d,
+UI_RESULT_AND,y,
+LOBBY_RESULT_TEAM_WON,Ganó tu equipo.,
+LOBBY_RESULT_TEAM_LOST,Ganó el otro equipo.,
+LOBBY_RESULT_TEAM_WON_ABANDON,Ganó tu equipo: el otro equipo abandonó.,
+LOBBY_RESULT_TEAM_LOST_ABANDON,Perdió tu equipo: abandonaron la partida.,
+UI_OPTIONS_TAB_AUDIO,Sonido,
+UI_AUDIO_TAB_MASTER,General,
+UI_AUDIO_TAB_MUSIC,Música,
+UI_AUDIO_TAB_SFX,Efectos,
+UI_AUDIO_TAB_VOICE,Voces,
+UI_AUDIO_TAB_AMBIENCE,Ambiente,
+UI_AUDIO_TAB_MUTE,Silenciar,
+TARGET_INFO_OF,%s de %s,
+TARGET_INFO_VILLAGE,%s de la aldea,
+TARGET_INFO_BUILDING,Edificio,
+TARGET_INFO_ALTAR,Altar,
+TARGET_INFO_MANALITH,Manalito,
+TARGET_INFO_MANAFOUNT,Manantial,
+TARGET_INFO_CORPSE,Cadáver de %s,
+TARGET_INFO_SOUL,Alma,
+TARGET_INFO_SOUL_PAGAN,Alma pagana. Convertila.,
+UI_GAMEPLAY_TAB_SHAKE,Sacudida de cámara,
+UI_GAMEPLAY_TAB_DAMAGE_NUMBERS,Números de daño,
+UI_GAMEPLAY_TAB_HOVER_INFO,Info al pasar el puntero,
+UI_GAMEPLAY_TAB_BLOOD,Sangre,
+REFUSAL_NO_MANA,Falta maná,
+REFUSAL_COOLING,Todavía no está listo,
+REFUSAL_OUT_OF_RANGE,Muy lejos,
+REFUSAL_BAD_TARGET,Ese blanco no sirve,
+REFUSAL_NOT_IMPLEMENTED,No implementado,
+REFUSAL_OCCUPIED,Hay un edificio en el lugar,
+REFUSAL_CASTING,Ya estás lanzando,
+REFUSAL_NO_SOULS,Faltan almas,
+REFUSAL_NO_FOUNT,No hay un manantial libre cerca,
+REFUSAL_FOUNT_TAKEN,Ese manantial ya tiene torre,
+REFUSAL_FAR_FROM_BUILDING,Muy lejos del edificio,
+REFUSAL_NO_ALTAR,No hay altar,
+REFUSAL_FAR_FROM_ALTAR,Muy lejos del altar,
+REFUSAL_NO_TARGET,No hay blanco,
+REFUSAL_NO_GROUND,Ahí no hay suelo,
+REFUSAL_NO_ABILITY,Sin habilidad,
+REFUSAL_NOBODY,No hay nadie,
+REFUSAL_NO_WIZARD,Sin mago,
+REFUSAL_CREATURE_LIMIT,Llegaste al límite de criaturas,
+UI_MATCH_WAIT_COUNT,Esperando jugadores %d/%d,
+UI_MATCH_WAIT_START_NOW,Empezar ya,
+UI_LOADING_WORLD,Cargando el mundo…,
+UI_LOADING_SHADERS,Preparando los gráficos…,
+UI_ONLINE_SCREEN_TITLE,Salas online,
+UI_ONLINE_SCREEN_CREATE,Crear sala,
+UI_ONLINE_SCREEN_JOIN,Unirse a una sala,
+UI_ONLINE_SCREEN_BACK,Volver al menú,
+UI_ONLINE_HOST_TITLE,Crear sala online,
+UI_ONLINE_HOST_NAME_HINT,Nombre de la sala,
+UI_ONLINE_HOST_LISTED,Mostrar en la lista de salas,
+UI_ONLINE_HOST_CREATE,Crear,
+UI_ONLINE_HOST_COPY,Copiar código,
+UI_ONLINE_HOST_HELP,Tus amigos entran con el código o desde la lista. La partida empieza cuando están todos; si cerrás el juego se termina.,
+UI_ONLINE_HOST_BACK,Volver,
+UI_ONLINE_ROOM_CODE,Código: %s,
+UI_ONLINE_JOIN_TITLE,Unirse a una sala,
+UI_ONLINE_JOIN_CODE_HINT,Código de la sala,
+UI_ONLINE_JOIN_ROOM,Unirse,
+UI_ONLINE_JOIN_LIST,Salas abiertas,
+UI_ONLINE_JOIN_REFRESH,Actualizar,
+UI_ONLINE_JOIN_NO_ROOMS,No hay salas abiertas,
+UI_ONLINE_JOIN_BACK,Volver,
+UI_ONLINE_ROOM_ROW,%s · %d/%d,
+UI_ONLINE_BAD_OPTIONS,Ese mapa no tiene lugar para todos los jugadores de ese modo,
+UI_ONLINE_WORKING,Consultando al servidor…,
+UI_ONLINE_READY,Sala %s: tus amigos entran con este código,
+UI_ONLINE_ERROR,Error online (%s),
+UI_ONLINE_HOST_SILENT,Esperando al host…,
+UI_ONLINE_ROOM_FULL,Esa sala está llena,
+UI_ONLINE_ROOM_STARTING,Esa sala todavía está arrancando: probá de nuevo,
+UI_ONLINE_NO_SUCH_ROOM,No hay ninguna sala con ese código,
+UI_ONLINE_VERSION_MISMATCH,Esa sala usa la versión %s del juego: actualizá para entrar,
+UI_ONLINE_VERSION_TOO_OLD,Actualizá el juego (versión %s o más nueva),
+UI_ONLINE_TOO_MANY_ROOMS,Ya tenés una sala abierta: cerrala primero,
+UI_ONLINE_RATE_LIMITED,Demasiados intentos: esperá un minuto,
+UI_ONLINE_BANNED,Este jugador no puede jugar online,
+UI_ONLINE_NETWORK,No se puede llegar al servidor online,
+UI_ONLINE_NO_ISSUER,Este juego no tiene servidor online configurado,
+UI_FOREST,Bosque,Forest
+UI_FOREST_TIP,"Los árboles del mapa. Sin ellos la partida se juega en campo abierto (se elige antes de empezar: cambian la colisión y la navegación).","The map's trees. Without them the match is played in the open (chosen before it starts: they change collision and navigation)."
+UI_OPTIONS_TAB_ADVANCED,Avanzado,Advanced
+UI_ADVANCED_TAB,Avanzado,Advanced
+UI_ADVANCED_HINT,"Cada ajuste por separado, sobre la calidad elegida en Gráficos. Lo que cambies se marca en dorado; ↺ lo devuelve al preset.","Each setting on its own, over the quality chosen in Graphics. What you change shows in gold; ↺ gives it back to the preset."
+UI_ADVANCED_RESET,Volver al valor del preset,Back to the preset's value
+UI_ADVANCED_RESET_ALL,Todo como el preset,Everything as the preset
+UI_QUALITY_GROUP_RENDER_SCALE,Resolución de render,Render scale
+UI_QUALITY_GROUP_ANTI-ALIASING,Antialiasing,Anti-aliasing
+UI_QUALITY_GROUP_SUN_SHADOWS,Sombras del sol,Sun shadows
+UI_QUALITY_GROUP_FOG,Niebla,Fog
+UI_QUALITY_GROUP_SCREEN-SPACE_LIGHT,"Luz en pantalla (SSAO, SSIL)","Screen-space light (SSAO, SSIL)"
+UI_QUALITY_GROUP_GLOW,Brillo y destellos,Glow and flares
+UI_QUALITY_GROUP_GROUND,Suelo,Ground
+UI_QUALITY_GROUP_GRASS,Pasto,Grass
+UI_QUALITY_GROUP_VFX_AND_WEATHER,Efectos y clima,VFX and weather
+UI_QUALITY_GROUP_ACTOR_LIGHTS,Luces de criaturas,Actor lights
+UI_QUALITY_GROUP_AMBIENCE,Ambiente,Ambience
+UI_QUALITY_GROUP_RELIEF,Relieve,Relief
+UI_QUALITY_GROUP_VEGETATION,Vegetación,Vegetation
+UI_QUALITY_SCALING_MODE,Escalado,Scaling mode
+UI_QUALITY_SCALE,Escala de render,Render scale
+UI_QUALITY_FSR_SHARPNESS,Nitidez FSR,FSR sharpness
+UI_QUALITY_SCREEN_SPACE_AA,AA en pantalla (FXAA/SMAA),Screen-space AA
+UI_QUALITY_MSAA_3D,MSAA,MSAA
+UI_QUALITY_SHADOW_SPLITS,Cascadas de sombra,Shadow cascades
+UI_QUALITY_SHADOW_ATLAS_SIZE,Tamaño del mapa de sombras,Shadow map size
+UI_QUALITY_SHADOW_FILTER,Filtro de sombras,Shadow filter
+UI_QUALITY_SHADOW_DISTANCE_CAP,Distancia máxima de sombras (0 = sin tope),Shadow distance cap (0 = none)
+UI_QUALITY_FOG_ENABLED,Niebla,Fog
+UI_QUALITY_VOLUMETRIC_FOG_ENABLED,Niebla volumétrica,Volumetric fog
+UI_QUALITY_SSAO_ENABLED,SSAO (oclusión ambiental),SSAO (ambient occlusion)
+UI_QUALITY_SSIL_ENABLED,SSIL (luz indirecta),SSIL (indirect light)
+UI_QUALITY_GLOW_ENABLED,Glow (bloom),Glow (bloom)
+UI_QUALITY_LENS_FLARE,Lens flare,Lens flare
+UI_QUALITY_GROUP_CAMERA,Cámara,Camera
+UI_QUALITY_FIELD_OF_VIEW,Campo de visión,Field of view
+UI_QUALITY_DEPTH_OF_FIELD,Profundidad de campo,Depth of field
+UI_QUALITY_DOF_BLUR_AMOUNT,Intensidad del desenfoque,Blur amount
+UI_QUALITY_DOF_FAR_START,Desenfoque lejano desde (× distancia al mago),Far blur from (× distance to the wizard)
+UI_QUALITY_DOF_FAR_TRANSITION,Transición del desenfoque lejano,Far blur transition
+UI_QUALITY_DOF_NEAR,Desenfoque cercano (miniatura),Near blur (miniature)
+UI_QUALITY_DOF_QUALITY,Calidad del desenfoque,Blur quality
+UI_QUALITY_DOF_BOKEH,Forma del bokeh,Bokeh shape
+UI_QUALITY_GROUND_LAYERS,Capas del suelo,Ground layers
+UI_QUALITY_GROUND_TRIPLANAR,Suelo triplanar (laderas),Triplanar ground (slopes)
+UI_QUALITY_GROUND_STOCHASTIC,Suelo sin repetición,Stochastic ground (no tiling)
+UI_QUALITY_GROUND_MACRO,Variación grande del suelo,Ground macro variation
+UI_QUALITY_GROUND_CLOUD_SHADOWS,Sombras de nubes,Cloud shadows
+UI_QUALITY_GRASS_ENABLED,Pasto,Grass
+UI_QUALITY_GRASS_RADIUS_M,Distancia del pasto (m),Grass distance (m)
+UI_QUALITY_GRASS_NEAR_RADIUS_M,Pasto denso cercano (m),Dense near grass (m)
+UI_QUALITY_GRASS_DENSITY,Hojas por m²,Blades per m²
+UI_QUALITY_GRASS_NEAR_SEGMENTS,Segmentos por hoja,Segments per blade
+UI_QUALITY_GRASS_TRAMPLE,Pasto pisado,Grass trample
+UI_QUALITY_FX_SOFT_PARTICLES,Partículas suaves,Soft particles
+UI_QUALITY_FX_FRAME_BLEND,Mezcla de cuadros de efectos,Effect frame blend
+UI_QUALITY_FX_MAX_LIGHTS,Luces de hechizos (máx.),Spell lights (max)
+UI_QUALITY_ACTOR_MAX_LIGHTS,Luces de criaturas (máx.),Creature lights (max)
+UI_QUALITY_RAIN_DENSITY_SCALE,Densidad de la lluvia,Rain density
+UI_QUALITY_LIFE_DENSITY_SCALE,Densidad de vida ambiente,Ambient life density
+UI_QUALITY_RELIEF_MAPS,Mapas de relieve,Relief maps
+UI_ART_TAB,Arte,Art
+UI_ART_HINT,"Los valores del look, uno por uno, como editar el Environment. Se aplican al instante sobre el bioma; lo que cambies se marca en dorado.","The look's own values, one by one, like editing the Environment. They apply at once over the biome; what you change shows in gold."
+UI_ART_PART,Parte,Part
+UI_ART_PART_FOG,Niebla,Fog
+UI_ART_PART_VOLUMETRIC,Niebla volumétrica,Volumetric fog
+UI_ART_PART_SSAO,SSAO,SSAO
+UI_ART_PART_SSIL,SSIL,SSIL
+UI_ART_PART_GLOW,Glow,Glow
+UI_ART_PART_TONEMAP,Tonemap y exposición,Tonemap and exposure
+UI_ART_PART_ADJUST,Ajustes de color,Color adjustment
+UI_ART_PART_AMBIENT,Luz ambiente,Ambient light
+UI_ART_PART_FLARE,Lens flare,Lens flare
+UI_ART_NAME,Nombre del set,Set name
+UI_ART_SAVE,Guardar,Save
+UI_ART_EXPORT,Exportar .tres,Export .tres
+UI_ART_LOAD,Cargar,Load
+UI_ART_RESET_ALL,Todo como el look,Everything as the look
+UI_ART_SAVED,Guardado: %s,Saved: %s
+UI_ART_LOADED,Cargado: %s,Loaded: %s
+UI_ART_LOAD_FAILED,No se pudo cargar %s,Could not load %s
+UI_ART_BAD_NAME,Escribí un nombre válido,Type a valid name
+UI_ART_EXPORTED,Environment exportado en %s,Environment exported to %s

@@ -1,7 +1,6 @@
 # units/vision
-What: a body sees who stands inside its `Vision` (a cylinder, or a sphere, with an optional cone) and its side keeps in mind the foes it saw for `forget_s`; the sight of a side is the union of its bodies' Visions.
-Not: who to attack (`TargetPicker`, `Engagement`), what the AI knows (`AiPerception` asks `VisionSides`), terrain fog (the port has none).
-Talks to: `Vision.seen` / `lost` report in name order; `UnitBody`, `WizardBody` and the Divine Sight eye each own one (`vision`) and give it the range of their type (`adopt_range`); `TargetPicker` and the AI ask `VisionSides.sees(side, node)`; `VisionSides.events.learned(side, node)` announces every body a Vision takes into mind that it did not have (or had lapsed) and every strike a side sees, and the AI's `SightIntake` listens to it instead of asking every replan; `VisionSides.reveal(attacker, victim)` makes the victim's side see the attacker and fires `Vision.hurt_by` on the victim.
-Edit: `unit.tscn` / `wizard_body.tscn` → `Vision` (drag the `Shape` handle, or set `radius_m`, `fov_deg`, `spherical`, `forget_s`, `refresh_s`) · `data/catalog/creatures/<name>.tres` `vision_m` · `data/catalog/wizards/<name>.tres` `vision_m`.
----
-Everything is ordered by node name (then path), never by the order physics or groups list things, so two runs and two peers agree. `use_area` lets the physics area narrow the candidates (bodies on its collision mask) and gives the same answer as walking the groups; it is off by default. Mana founts have no body, so they are always found by walking their group.
+
+A body sees who stands in its `Vision` shape; its side remembers the foes it saw for `forget_s`, and a side's sight is
+the union of its bodies (`VisionSides`, the node `Context/Vision` of `match.tscn`; a scene played alone with F6
+gets a loose one of its own). The AI listens to `VisionSides.events().learned`.
+Everything is ordered by node name, never by physics or group order, so two runs and two peers agree.

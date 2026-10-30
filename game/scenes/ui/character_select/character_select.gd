@@ -1,13 +1,17 @@
 extends Control
 
-const _PREVIEW := preload("res://scenes/ui/character_select/wizard_preview.gd")
-
 signal confirmed
+
+const _PREVIEW := preload("res://scenes/ui/character_select/wizard_preview.gd")
 
 @export var pick_button: PackedScene
 ## The confirm button says «Jugar» in the menu; the room screen says «Elegir».
-## Ref: RFC-034 034f.
 @export var confirm_text: String = "UI_CHARACTER_SELECT_PLAY"
+
+var _wizard: WizardType
+var _god: GodType
+var _wizard_group := ButtonGroup.new()
+var _god_group := ButtonGroup.new()
 
 @onready var _wizard_grid: GridContainer = %WizardGrid
 @onready var _god_row: HBoxContainer = %GodRow
@@ -16,29 +20,39 @@ signal confirmed
 @onready var _wizard_stats: Label = %WizardStats
 @onready var _book: Label = %Book
 
-var _wizard: WizardType
-var _god: GodType
-var _wizard_group := ButtonGroup.new()
-var _god_group := ButtonGroup.new()
-
 
 func _ready() -> void:
 	var current: WizardPick = SacrificeFlow.pick
 	_wizard = current.wizard
 	_god = current.god
 	var catalog := GameCatalog.shared()
-	## The button names (`Wizard_<id>`, `God_<id>`) carry the network id, so the flows of the agent keep working.
+	# The button names (`Wizard_<id>`, `God_<id>`) carry the network id, so the flows of the agent
+	# keep working.
 	for wizard in catalog.offered_wizards():
-		_add_button(_wizard_grid, "Wizard_" + wizard.id(), wizard.display_name, _wizard_group, _on_wizard.bind(wizard))
+		_add_button(
+			_wizard_grid,
+			"Wizard_" + wizard.id(),
+			wizard.display_name,
+			_wizard_group,
+			_on_wizard.bind(wizard)
+		)
 	for god in catalog.offered_gods():
-		_add_button(_god_row, "God_" + god.id(), tr("UI_CHARACTER_SELECT_GOD_BUTTON") % god.display_name, _god_group, _on_god.bind(god))
+		_add_button(
+			_god_row,
+			"God_" + god.id(),
+			tr("UI_CHARACTER_SELECT_GOD_BUTTON") % god.display_name,
+			_god_group,
+			_on_god.bind(god)
+		)
 	%Play.text = tr(confirm_text)
 	%Play.pressed.connect(_on_play)
 	_on_wizard(_wizard)
 	_on_god(_god)
 
 
-func _add_button(parent: Control, unique: String, text: String, group: ButtonGroup, on_pressed: Callable) -> void:
+func _add_button(
+	parent: Control, unique: String, text: String, group: ButtonGroup, on_pressed: Callable
+) -> void:
 	var button := pick_button.instantiate() as BaseButton
 	button.name = unique
 	button.set("text", text)

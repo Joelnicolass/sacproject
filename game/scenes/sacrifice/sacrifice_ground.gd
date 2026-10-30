@@ -1,8 +1,9 @@
 class_name SacrificeGround
 extends RefCounted
 
-## The one place the sacrifice asks the land: whether a point has ground under it and how high the ground is there. Without a loaded
-## map (a bare test world) there is no ground data: every point counts as ground and keeps its own height.
+## The one place the sacrifice asks the land: whether a point has ground under it and how high the
+## ground is there. Without a loaded map (a bare test world) there is no ground data: every point
+## counts as ground and keeps its own height.
 ## What it does not do: hold the surface (Terrain does) or decide where anything goes.
 
 

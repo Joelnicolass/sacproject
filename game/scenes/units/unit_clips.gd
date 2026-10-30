@@ -1,9 +1,11 @@
 class_name UnitClips
 extends Node
 
-## What a UnitBody shows: picks the clip each step (playing dead, held, captive, flight, then the role of the state of its mode), the
-## pose scale, the lunge of a swing or a shot and the debug clip. Presentation only, on every peer.
-## Not: what the creature does (States) nor when to update (the body, its modes and its forms ask `update`).
+## What a UnitBody shows: picks the clip each step (playing dead, held, captive, flight, then the
+## role of the state of its mode), the pose scale, the lunge of a swing or a shot and the debug
+## clip. Presentation only, on every peer.
+## Not: what the creature does (States) nor when to update (the body, its modes and its forms ask
+## `update`).
 
 @export var body: UnitBody
 @export var clip_pose: ClipPlayback
@@ -14,18 +16,19 @@ extends Node
 @export var lunge_forward_s := 0.08
 @export var lunge_recover_s := 0.25
 
-## The clip role played in IDLE ("idle" = the CRE8 idle0): a calm peasant digs ("work"). A role the model has no clip for falls back to idle.
+## The clip role played in IDLE ("idle" = the CRE8 idle0): a calm peasant digs ("work"). A role the
+## model has no clip for falls back to idle.
 var idle_role := "idle":
 	set(value):
 		idle_role = value if not value.is_empty() else "idle"
 		_update_if_ready()
-## The clip role of a creature a Sac Doctor holds or revives (rise, held, thrash); CaptiveLook writes it on every peer. "" = none.
+## The clip role of a creature a Sac Doctor holds or revives (rise, held, thrash); CaptiveLook
+## writes it on every peer. "" = none.
 var captive_role := "":
 	set(value):
 		captive_role = value
 		_update_if_ready()
 
-var _debug_role := ""
 var _lunge_tween: Tween
 
 
@@ -45,9 +48,6 @@ func update() -> void:
 		pivot.scale = want
 	var pose := clip_pose
 	if pose == null or (body.mode == UnitBody.Mode.DEAD and body.corpse().clip_driven):
-		return
-	if not _debug_role.is_empty():
-		pose.play(_debug_role)
 		return
 	var held_role := "idle" if body.special_forms.playing_dead else body.afflictions.pose_role(pose)
 	if not held_role.is_empty():
@@ -80,9 +80,24 @@ func lunge() -> void:
 	pivot.rotation.x = 0.0
 	_lunge_tween = pivot.create_tween()
 	_lunge_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-	_lunge_tween.tween_property(pivot, "rotation:x", -deg_to_rad(lunge_back_deg), lunge_back_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	_lunge_tween.tween_property(pivot, "rotation:x", deg_to_rad(lunge_forward_deg), lunge_forward_s).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	_lunge_tween.tween_property(pivot, "rotation:x", 0.0, lunge_recover_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	(
+		_lunge_tween
+		. tween_property(pivot, "rotation:x", -deg_to_rad(lunge_back_deg), lunge_back_s)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
+	(
+		_lunge_tween
+		. tween_property(pivot, "rotation:x", deg_to_rad(lunge_forward_deg), lunge_forward_s)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_IN)
+	)
+	(
+		_lunge_tween
+		. tween_property(pivot, "rotation:x", 0.0, lunge_recover_s)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 
 ## The attack is cancelled: the lunge stops and the pivot stands up.
@@ -94,27 +109,6 @@ func cancel_lunge() -> void:
 
 func has_clip(role: String) -> bool:
 	return clip_pose != null and clip_pose.has_role(role)
-
-
-## Bench: shows `role` whatever the mode says ("" = back to the modes).
-func set_debug_role(role: String) -> void:
-	_debug_role = role
-
-
-func show_role(role: String) -> void:
-	set_debug_role(role)
-	update()
-
-
-func info() -> Dictionary:
-	var pose := clip_pose
-	return {
-		"role": pose.active_role() if pose else "",
-		"tag": pose.active_tag() if pose else "",
-		"frame": pose.active_frame() if pose else 0,
-		"fps": pose.active_framerate() if pose else 0,
-		"impact_frame": pose.impact_frame() if pose else -1,
-	}
 
 
 func _update_if_ready() -> void:

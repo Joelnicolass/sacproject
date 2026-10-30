@@ -1,11 +1,12 @@
 class_name WallScars
 extends Node
 
-## The cracks a wall leaves in the ground as its ends advance: every `every_s` of the wall's age, while the ends can still be going out,
-## it asks its ScarMark to paint at each end, somewhere across the thickness and up to `behind_m` behind the front. The Firewall leaves
-## `quk1`, the Wall of Spikes `gscr`. Presentation only, on every peer (each one sees the wall grow and paints it), never at a dedicated or
-## headless process (ScarMark); it does not touch the rules. Its dice are its own.
-## Ref: sacengine FireWallRun / SpikeWallStart leave a scar (state.d:20045, 20536: "TODO: scar").
+## The cracks a wall leaves in the ground as its ends advance: every `every_s` of the wall's age,
+## while the ends can still be going out, it asks its ScarMark to paint at each end, somewhere
+## across the thickness and up to `behind_m` behind the front. The Firewall leaves `quk1`, the Wall
+## of Spikes `gscr`. Presentation only, on every peer (each one sees the wall grow and paints it),
+## never at a dedicated or headless process (ScarMark); it does not touch the rules. Its dice are
+## its own.
 
 @export var wall: SpellWall
 ## The mark and the picture (texture, height limit) that is painted.
@@ -38,6 +39,8 @@ func _paint(end: float) -> void:
 	if absf(end) < 0.01:
 		return
 	var t := end - signf(end) * _rng.randf_range(0.0, behind_m)
-	var across := WallRules.across(wall.direction) * (0.45 * wall.thickness_m() * _rng.randf_range(-1.0, 1.0))
+	var across := (
+		WallRules.across(wall.direction) * (0.45 * wall.thickness_m() * _rng.randf_range(-1.0, 1.0))
+	)
 	var at := wall.point_at(t)
 	mark.mark_at(Vector3(at.x + across.x, at.y, at.z + across.y))

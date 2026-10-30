@@ -490,6 +490,13 @@ func hit(from: Vector2) -> void:   # en el servidor
 
 **Suave entre ticks de física**: el nodo predicho del dueño se mueve en ticks de física (60 por segundo). En una pantalla de 120 Hz o más, prendé **Project Settings › Physics › Common › Physics Interpolation**: el motor dibuja cada nodo entre sus dos últimos ticks (lo que Fusion usa por defecto para el jugador local). El kit está listo: los proxies la apagan para ellos (`MpActor` y `MpReplicate` los dibujan en cada frame) y la corrección se desvanece por tick. Lo que sigue a un nodo de red en `_process` (una cámara, una barra de vida) tiene que correr **después** de que el kit lo dibuja: `process_priority` mayor que 10000 (con physics interpolation, leé `get_global_transform_interpolated()` en 3D).
 
+**Animación (un clip de correr, pasos, polvo)**: elegila desde `net.motion_velocity()`, nunca desde cuánto se movió el nodo desde el frame anterior. Leída frame a frame, la pose dibujada mezcla cosas que no son el personaje moviéndose: una corrección o un tick ritmado que todavía se desvanece en el dueño (el kit dibuja ese desfase después del `_process` del juego y lo saca antes del tick siguiente), los ticks de física que no caen en todos los frames, y los paquetes tardíos de un proxy. `motion_velocity()` es la velocidad del movimiento mismo, en cada máquina:
+- **el servidor y solo:** el paso de cada tick;
+- **el dueño con predicción:** sus propios pasos predichos (los de `mp_move`), quieto a uno o dos ticks de soltar la tecla;
+- **un proxy:** el movimiento entre los dos estados del servidor entre los que se dibuja (BUFFERED), o qué tan rápido persigue (FOLLOW).
+
+Es un `Vector2` en 2D y un `Vector3` en 3D (un plataformero lee `.y` para sus clips de salto y caída), cero quieto y a través de un teletransporte. `net.motion_speed()` es su largo, para la elección de siempre: `if net.motion_speed() > 0.1:` correr, si no quieto. No hace falta una caída lenta, ni sincronizar nada para eso.
+
 ### 6.3 ¿Dónde estoy? `is_authority` e `is_local`
 
 | Llamada | Verdadero cuando | Para qué |
@@ -590,6 +597,8 @@ func mp_all_flash() -> void:
 |---|---|
 | `net.despawn()` | Solo servidor, y solo en nodos que hizo un spawner: lo borra en todos (ver [7.3](#73-borrar-cosas)) |
 | `net.snap()` | Después de teletransportar o respawnear, **en el servidor**, apenas movés el nodo: cada cliente salta ahí en vez de deslizarse (los demás cuando su tiempo dibujado llega, el dueño con predicción sin desvanecer). Viaja con la pose, así que no hace falta `to_all` |
+| `net.motion_velocity()` | Qué tan rápido se mueve lo que muestra el nodo, para animación, en cada máquina: los ticks del servidor, los pasos predichos del dueño (nunca una corrección que se desvanece), el movimiento de un proxy entre los estados entre los que se dibuja. Un Vector2 en 2D, un Vector3 en 3D, unidades por segundo; cero quieto o a través de un teletransporte (ver 6.2) |
+| `net.motion_speed()` | Lo mismo como un número: `if net.motion_speed() > 0.1:` correr, si no quieto |
 | `net.correction_offset()` | Con predicción, en el dueño: cuánto le falta a lo que se dibuja para llegar a la pose real mientras se desvanece una corrección (0 = nada) |
 | `net.last_correction()` | Con predicción, en el dueño: cuánto lo corrigió el servidor en el último estado (0 = la predicción acertó) |
 | `net.owner_slot` | El slot dueño (para mostrar "P1", elegir color...) |
@@ -938,6 +947,7 @@ Qué ajustar mirando:
 - Los otros jugadores tironean: pasá a `BUFFERED`, bajá `late_tolerance` o subí el tope `buffer_delay_s`.
 - Los otros se ven muy atrasados en una red buena: revisá que `adaptive_buffer` esté prendido.
 - Tu jugador responde tarde: prendé `predict`.
+- Un clip de correr sigue después de que el jugador frena, o parpadea en los otros: elegilo desde `net.motion_speed()` (o `net.motion_velocity()`), no desde la pose frame a frame (ver 6.2).
 - Tu jugador "salta" seguido: imprimí `net.last_correction()`; si es alto, revisá que `mp_move` solo dependa de las teclas, la posición y lo que está en Sync (por ejemplo `velocity`, ver [6.2](#62-mp_move-y-sus-reglas)).
 
 Qué hace el kit solo con la red (todo medido, nada fijo):

@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/impacts/implosion.tscn" id="4_scene"]
 
 [node name="FlurryImpact" type="Node"]
-editor_description = "Flurry caba (flurryProjectileImplosion, state.d:24577-24598): el tocado recibe el monto entero con resistencia de salpicadura y el resto la salpicadura en damageRange (SplashImpact); después, la implosión (ImplosionImpact)."
+editor_description = "Flurry caba: the body hit takes the whole amount with splash resistance and the rest the splash over the damage range (SplashImpact); then, the implosion (ImplosionImpact)."
 script = ExtResource("1_impact")
 
 [node name="SplashImpact" parent="." instance=ExtResource("2_splash")]

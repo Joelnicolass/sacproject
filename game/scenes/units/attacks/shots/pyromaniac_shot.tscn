@@ -1,0 +1,18 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/attacks/shot_look.gd" id="1_look"]
+[ext_resource type="PackedScene" path="res://scenes/units/impacts/rocket_impact.tscn" id="2_impact"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/steam.tres" id="fx_steam"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="pt_script"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/fire.tres" id="fx_fire"]
+
+[node name="Lffa" type="Node"]
+script = ExtResource("1_look")
+hit_size = 0.1
+trail_fx = ExtResource("fx_steam")
+trail_every = 2
+impact_fx = Array[ExtResource("pt_script")]([ExtResource("fx_fire")])
+impact = ExtResource("2_impact")
+sweep = true
+fallback_color = Color(0.6, 0.6, 0.6, 1)
+fallback_radius = 0.1

@@ -1,17 +1,19 @@
 class_name TornadoDrift
 extends Node
 
-## Where the tornado is and how big: it grows with the cast (to 0.8), then to 1 on the ground and wanders around the point it was cast at,
-## picking a random spot inside the spell's range and going there at the spell's speed and acceleration; it shrinks when the zone ends. The only
-## writer of the zone's position and of `size` (the server runs it and replicates both). It does not lift bodies (TornadoLift) or draw (TornadoLook).
-## Ref: sacengine updateTornado, tornadoWanderOffset (state.d:22756-22759, 22826-22873).
+## Where the tornado is and how big: it grows with the cast (to 0.8), then to 1 on the ground and
+## wanders around the point it was cast at, picking a random spot inside the spell's range and going
+## there at the spell's speed and acceleration; it shrinks when the zone ends. The only writer of
+## the zone's position and of `size` (the server runs it and replicates both). It does not lift
+## bodies (TornadoLift) or draw (TornadoLook).
 
 @export var zone: GroundZone
 ## Size while the wizard casts is this fraction of the cast's progress.
 @export_range(0.0, 1.0, 0.01) var cast_size := 0.8
 ## How fast the size changes, per second.
 @export_range(0.05, 5.0, 0.05, "suffix:/s") var size_rate := 0.6
-## The tornado picks another spot when it is this close to the one it was going to, m (squared in the original: 2).
+## The tornado picks another spot when it is this close to the one it was going to, m (squared in
+## the original: 2).
 @export_range(0.1, 10.0, 0.1, "suffix:m") var arrive_m := 1.41
 
 ## Replicated with the zone's position: 0 (gone) to 1 (full).
@@ -33,7 +35,9 @@ func _physics_process(_delta: float) -> void:
 	var wanted := 0.0
 	match zone.phase:
 		GroundZone.Phase.CASTING:
-			wanted = cast_size * minf(1.0, float(zone.phase_ticks) / float(maxi(zone.cast_ticks, 1)))
+			wanted = (
+				cast_size * minf(1.0, float(zone.phase_ticks) / float(maxi(zone.cast_ticks, 1)))
+			)
 		GroundZone.Phase.ARMING, GroundZone.Phase.ACTIVE:
 			wanted = 1.0 if _on_ground(zone.position) else 0.0
 			_wander()
@@ -51,7 +55,8 @@ func _height(at: Vector3) -> float:
 	return at.y if is_nan(land) else land
 
 
-## One tick: stay on the ground, take a new goal near home when this one is reached or off the land, and accelerate towards it.
+## One tick: stay on the ground, take a new goal near home when this one is reached or off the land,
+## and accelerate towards it.
 func _wander() -> void:
 	var at := zone.position
 	if _on_ground(at):

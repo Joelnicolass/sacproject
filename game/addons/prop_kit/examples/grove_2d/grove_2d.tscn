@@ -1,0 +1,147 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://addons/prop_kit/examples/grove_2d/grove_2d.gd" id="1_n66br"]
+[ext_resource type="Script" path="res://addons/prop_kit/scatter/prop_scatter_2d.gd" id="2_0f6ev"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_scatter_rules.gd" id="3_fpe4k"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_variant.gd" id="4_lbgls"]
+[ext_resource type="PackedScene" path="res://addons/prop_kit/examples/grove_2d/grove_bush.tscn" id="5_mrjht"]
+[ext_resource type="Script" path="res://addons/prop_kit/examples/grove_2d/grove_ground.gd" id="6_orqgf"]
+[ext_resource type="Script" path="res://addons/prop_kit/core/prop_keep_out.gd" id="7_rg2ut"]
+[ext_resource type="Script" path="res://addons/prop_kit/nav/prop_nav_zones_2d.gd" id="8_k3ye7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hp5vu"]
+size = Vector2(300, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mk4qb"]
+size = Vector2(24, 300)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ykxyl"]
+size = Vector2(24, 200)
+
+[sub_resource type="Gradient" id="Gradient_uwvfx"]
+offsets = PackedFloat32Array(0, 1, 0.7)
+colors = PackedColorArray(0.9, 0.3, 0.2, 1, 0.9, 0.3, 0.2, 0, 0.67499995, 0.22500001, 0.15, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tawv3"]
+gradient = SubResource("Gradient_uwvfx")
+width = 28
+height = 28
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_o78ix"]
+offsets = PackedFloat32Array(0, 1, 0.7)
+colors = PackedColorArray(0.9, 0.3, 0.2, 1, 0.9, 0.3, 0.2, 0, 0.67499995, 0.22500001, 0.15, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_b5dt3"]
+gradient = SubResource("Gradient_o78ix")
+width = 28
+height = 28
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Resource" id="Resource_khuus"]
+script = ExtResource("3_fpe4k")
+random_seed = 5
+cluster_size = 260.0
+cover = 0.45
+spacing = 34.0
+scale_range = Vector2(0.8, 1.4)
+max_count = 700
+
+[sub_resource type="Resource" id="Resource_jsv85"]
+script = ExtResource("4_lbgls")
+scene = ExtResource("5_mrjht")
+
+[sub_resource type="Resource" id="Resource_fjaj0"]
+script = ExtResource("6_orqgf")
+area = Rect2(20, 20, 1240, 680)
+outline = PackedVector2Array()
+
+[sub_resource type="Resource" id="Resource_tftso"]
+script = ExtResource("7_rg2ut")
+group = &"keep_clear"
+radius = 70.0
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_l5nvv"]
+parsed_geometry_type = 1
+parsed_collision_mask = 1
+
+[node name="Grove2D" type="Node2D" unique_id=209689482 node_paths=PackedStringArray("scatter", "zones", "hud", "path_line")]
+script = ExtResource("1_n66br")
+scatter = NodePath("World/Grove")
+zones = NodePath("Nav")
+hud = NodePath("Hud/Info")
+path_line = NodePath("PathLine")
+
+[node name="Floor" type="Polygon2D" parent="." unique_id=1384806943]
+color = Color(0.3, 0.42, 0.24, 1)
+polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720)
+
+[node name="World" type="Node2D" parent="." unique_id=205427074]
+
+[node name="Walls" type="StaticBody2D" parent="World" unique_id=12050381 groups=["grove_walls"]]
+
+[node name="Wall0" type="CollisionShape2D" parent="World/Walls" unique_id=1838133260]
+position = Vector2(400, 200)
+shape = SubResource("RectangleShape2D_hp5vu")
+
+[node name="Look0" type="Polygon2D" parent="World/Walls" unique_id=1752389097]
+color = Color(0.55, 0.52, 0.48, 1)
+polygon = PackedVector2Array(250, 188, 550, 188, 550, 212, 250, 212)
+
+[node name="Wall1" type="CollisionShape2D" parent="World/Walls" unique_id=670146802]
+position = Vector2(850, 450)
+shape = SubResource("RectangleShape2D_mk4qb")
+
+[node name="Look1" type="Polygon2D" parent="World/Walls" unique_id=442038945]
+color = Color(0.55, 0.52, 0.48, 1)
+polygon = PackedVector2Array(838, 300, 862, 300, 862, 600, 838, 600)
+
+[node name="Wall2" type="CollisionShape2D" parent="World/Walls" unique_id=2043014524]
+position = Vector2(300, 560)
+shape = SubResource("RectangleShape2D_ykxyl")
+
+[node name="Look2" type="Polygon2D" parent="World/Walls" unique_id=719385851]
+color = Color(0.55, 0.52, 0.48, 1)
+polygon = PackedVector2Array(288, 460, 312, 460, 312, 660, 288, 660)
+
+[node name="Camp0" type="Sprite2D" parent="World" unique_id=385635148 groups=["keep_clear"]]
+position = Vector2(640, 360)
+texture = SubResource("GradientTexture2D_tawv3")
+
+[node name="Camp1" type="Sprite2D" parent="World" unique_id=337038346 groups=["keep_clear"]]
+position = Vector2(110, 110)
+texture = SubResource("GradientTexture2D_b5dt3")
+
+[node name="Grove" type="Node2D" parent="World" unique_id=939681928]
+script = ExtResource("2_0f6ev")
+rules = SubResource("Resource_khuus")
+variants = Array[ExtResource("4_lbgls")]([SubResource("Resource_jsv85")])
+ground = SubResource("Resource_fjaj0")
+keep_out = Array[ExtResource("7_rg2ut")]([SubResource("Resource_tftso")])
+name_prefix = "Bush"
+
+[node name="Nav" type="Node2D" parent="." unique_id=143380778 node_paths=PackedStringArray("source_root")]
+script = ExtResource("8_k3ye7")
+navigation_polygon = SubResource("NavigationPolygon_l5nvv")
+source_root = NodePath("../World")
+zone_size = 320.0
+area = Rect2(0, 0, 1280, 720)
+merge_gap = 16.0
+
+[node name="PathLine" type="Line2D" parent="." unique_id=430292728]
+width = 3.0
+default_color = Color(1, 0.85, 0.1, 1)
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=1476937617]
+
+[node name="Info" type="Label" parent="Hud" unique_id=254600851]
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 12.0
+offset_bottom = 10.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4

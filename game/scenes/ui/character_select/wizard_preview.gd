@@ -1,7 +1,7 @@
 extends SubViewportContainer
 
-## The wizard of the character select, turning on a pivot. Each wizard is the look of his body scene (the same appearance the match
-## draws) on a BodyRig, resting on its idle clip.
+## The wizard of the character select, turning on a pivot. Each wizard is the look of his body scene
+## (the same appearance the match draws) on a BodyRig, resting on its idle clip.
 
 const _RIG := preload("res://scenes/bodies/body_rig.tscn")
 
@@ -9,10 +9,10 @@ const _RIG := preload("res://scenes/bodies/body_rig.tscn")
 @export var model_height: float = 2.0
 @export var model_rotation: Vector3 = Vector3.ZERO
 
-@onready var _pivot: Node3D = %Pivot
-
 var _shown: Dictionary = {}
 var _model: String = ""
+
+@onready var _pivot: Node3D = %Pivot
 
 
 func _process(delta: float) -> void:
@@ -35,7 +35,8 @@ func show_wizard(wizard: WizardType) -> void:
 	_shown[model] = holder
 
 
-## A holder with the BodyRig of the wizard, wearing his look, scaled to model_height. The look carries the pose the match gives it.
+## A holder with the BodyRig of the wizard, wearing his look, scaled to model_height. The look
+## carries the pose the match gives it.
 func _build(wizard: WizardType) -> Node3D:
 	var facts := BodyFacts.of(wizard.body)
 	var packed := BodyLook.of_body(wizard.body)
@@ -49,5 +50,7 @@ func _build(wizard: WizardType) -> Node3D:
 	var holder := Node3D.new()
 	holder.add_child(rig)
 	var factor := model_height / maxf(facts.height_m, 0.01)
-	holder.transform = Transform3D(Basis.from_euler(model_rotation).scaled(Vector3.ONE * factor), Vector3.ZERO)
+	holder.transform = Transform3D(
+		Basis.from_euler(model_rotation).scaled(Vector3.ONE * factor), Vector3.ZERO
+	)
 	return holder

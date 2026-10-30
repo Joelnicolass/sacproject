@@ -2,15 +2,13 @@
 class_name AltarCollapse
 extends Node
 
-## The visible destruction of an altar, the same on every peer: the pillars and the top sink
-## for 4 s, the base rises and shrinks for 4 s and bursts for 3 s. It only plays: when the altar is gone
+## The visible destruction of an altar, the same on every peer: the pillars and the top sink for 4
+## s, the base rises and shrinks for 4 s and bursts for 3 s. It only plays: when the altar is gone
 ## is decided by MatchState's clock on the server.
-## Ref: sacengine AltarDestruction disappearDuration, floatDuration, explodeDuration, state.d:5289-5291.
 
 signal finished
 
-## The original's 4 + 4 + 3 s; MatchRules.altar_collapse_s is the server's clock.
-## Ref: sacengine state.d:5289-5291.
+## 4 + 4 + 3 s; MatchRules.altar_collapse_s is the server's clock.
 @export var duration_s := 11.0
 ## Share of the duration spent sinking (4/11) and floating (4/11); the rest is the burst.
 @export_range(0.0, 1.0) var sink_fraction := 0.3636
@@ -19,7 +17,7 @@ signal finished
 @export var sink_depth := 26.0
 ## Meters the base rises while it shrinks.
 @export var float_height := 60.0
-## What is seen where the base bursts (data/fx/wrath_explosion2.tres). Empty = no burst.
+## What is seen where the base bursts (scenes/fx/effects/wrath_explosion2.tres). Empty = no burst.
 @export var burst_fx: ParticleType
 ## Where the base bursts: a Marker3D of altar.tscn at the top of the rise (move it with the gizmo).
 @export var burst_spot: Marker3D
@@ -40,11 +38,11 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if visuals == null:
-		warnings.append("Asigná en `visuals` el nodo con los modelos del altar.")
+		warnings.append("Assign in `visuals` the node with the altar's models.")
 	if ring == null:
-		warnings.append("Asigná en `ring` el modelo de la base, que sube y se achica.")
+		warnings.append("Assign in `ring` the base model, which rises and shrinks.")
 	if burst_spot == null:
-		warnings.append("Asigná en `burst_spot` el Marker3D donde estalla la base (BurstSpot).")
+		warnings.append("Assign in `burst_spot` the Marker3D where the base bursts (BurstSpot).")
 	return warnings
 
 
@@ -101,7 +99,9 @@ func _show() -> void:
 		var rest: Transform3D = _rest[node]
 		if node == ring:
 			var up := float_height * rise * rise
-			node.transform = Transform3D(rest.basis.scaled(Vector3.ONE * (1.0 - rise)), rest.origin + Vector3.UP * up)
+			node.transform = Transform3D(
+				rest.basis.scaled(Vector3.ONE * (1.0 - rise)), rest.origin + Vector3.UP * up
+			)
 			node.visible = _time < float_end
 		else:
 			node.transform = Transform3D(rest.basis, rest.origin + Vector3.DOWN * sink_depth * sink)

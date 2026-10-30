@@ -2,17 +2,19 @@
 class_name TerrainMesh
 extends MeshInstance3D
 
-## The map's ground as something to see: a mesh built in memory from the triangles of its `terrain` (again when they are
-## derived again in the editor), never saved and never built without a window (headless, the dedicated server).
-## Not: the body to stand on (TerrainCollision), heights, holes and roles (its `terrain`), where the editor shows
-## the map (MapRoot). The material swap is TerrainGroundMaterial; the look's ground comes from TerrainLayer.
+## The map's ground as something to see: a mesh built in memory from the triangles of its `terrain`
+## (again when they are derived again in the editor), never saved and never built without a window
+## (headless, the dedicated server).
+## Not: the body to stand on (TerrainCollision), heights, holes and roles (its `terrain`), where the
+## editor shows the map (MapRoot). The material swap is TerrainGroundMaterial; the look's ground
+## comes from TerrainLayer.
 
 ## The ground as numbers: the Terrain this node hangs from.
 @export var terrain: Terrain
 ## The label that says the map has no ground (shown only when the Terrain has no heights).
 @export var missing: Label3D
-## Normals averaged per lattice vertex so the slopes read as one surface; off: one flat normal per triangle. Changing it
-## swaps the normals only: collision and heights come from the triangles.
+## Normals averaged per lattice vertex so the slopes read as one surface; off: one flat normal per
+## triangle. Changing it swaps the normals only: collision and heights come from the triangles.
 @export var smooth_ground := true:
 	set(value):
 		smooth_ground = value
@@ -35,7 +37,11 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain padre)."])
+	return (
+		PackedStringArray()
+		if terrain != null
+		else PackedStringArray(["The `terrain` socket is missing (the parent Terrain)."])
+	)
 
 
 func _notification(what: int) -> void:
@@ -68,10 +74,22 @@ func _build() -> void:
 	_arrays = TerrainMeshArrays.from_data(terrain.data) if loaded and _draws() else null
 	mesh = _make_mesh() if _arrays != null else null
 	if not loaded and not Engine.is_editor_hint():
-		push_error("TerrainMesh '%s' has no ground: its `terrain` needs `heights` (the map's heights.png)." % name)
+		push_error(
+			(
+				# gdlint: ignore=max-line-length
+				"TerrainMesh '%s' has no ground: its `terrain` needs `heights` (the map's heights.png)."
+				% name
+			)
+		)
 	if missing:
 		missing.visible = not loaded
-	if DebugLog.on(&"terrain_load"): print("terrain_load: %s mesh %.0f ms (%s)" % [name, (Time.get_ticks_usec() - started) / 1000.0, "built" if mesh else "none"])
+	if DebugLog.on(&"terrain_load"):
+		print(
+			(
+				"terrain_load: %s mesh %.0f ms (%s)"
+				% [name, (Time.get_ticks_usec() - started) / 1000.0, "built" if mesh else "none"]
+			)
+		)
 
 
 ## A mesh is only worth building where something is drawn.

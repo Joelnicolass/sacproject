@@ -1,5 +1,5 @@
 ---
-description: "Revisa la implementación de un RFC contra su spec y RULES.md; guarda reviews/REVIEW-RFC-[ID].md."
+description: "Revisa la implementación de un RFC contra su spec y RULES.md; guarda docs/archive/reviews/REVIEW-RFC-[ID].md."
 argument-hint: "<id-del-rfc>"
 ---
 
@@ -83,4 +83,4 @@ Luego brindá:
 - **Issues bloqueantes**: Issues que deben corregirse antes del merge (si hay)
 - **Sugerencias de mejora**: Recomendaciones no bloqueantes para mejor calidad de código
 
-Guardá el review completo en `reviews/REVIEW-RFC-[ID].md`. Un review que existe solo en el chat deja a la siguiente sesión mirando código ya corregido sin registro de qué se chequeó, qué se encontró o qué se aceptó de forma consciente como no bloqueante -- y `/workflow-status` busca este archivo al reportar si un RFC realmente fue revisado.
+Guardá el review completo en `docs/archive/reviews/REVIEW-RFC-[ID].md`. Un review que existe solo en el chat deja a la siguiente sesión mirando código ya corregido sin registro de qué se chequeó, qué se encontró o qué se aceptó de forma consciente como no bloqueante -- y `/workflow-status` busca este archivo al reportar si un RFC realmente fue revisado.

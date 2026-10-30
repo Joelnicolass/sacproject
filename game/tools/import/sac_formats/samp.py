@@ -1,6 +1,6 @@
 """SAMP (one sound of sounds.wad / sfx_english.wad) and the PCM16 WAV the tools write from it.
 
-Layout (RFC-052 §2, measured on an install): a 32-byte header (payload size u32 at 12, bits u16 at 16, sample rate u32 at 20),
+Layout (measured on an install): a 32-byte header (payload size u32 at 12, bits u16 at 16, sample rate u32 at 20),
 then either raw PCM16 mono or a RIFF/WAVE file holding IMA ADPCM mono. The IMA ADPCM decoder follows the public IMA/DVI
 specification (step and index tables, 4-byte block header: predictor i16, step index u8, reserved u8; low nibble first).
 """

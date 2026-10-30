@@ -2,14 +2,13 @@
 class_name DesecrateAction
 extends SpellAction
 
-## Desecrate (ucas): the wizard sacrifices one of his own creatures to profane the closest enemy altar.
-## The click is the creature (OWN_UNIT). It needs a standing enemy altar within rules.desecrate_altar_range
-## of the wizard; the creature must be his own, alive and within the cast range. The red vortex opens when
-## the casting starts; when it ends, a carrier doctor drops by the creature, lifts it and takes it to the
-## altar. If the cast is interrupted there is no doctor and the creature stays free. All the rules live
-## in SacrificeSystem; this action is only the
-## contract with the Caster (RFC-021a). The ritual itself is RFC-020d.
-## Ref: sacengine castDesecrate, state.d:10198-10213
+## Desecrate (ucas): the wizard sacrifices one of his own creatures to profane the closest enemy
+## altar. The click is the creature (OWN_UNIT). It needs a standing enemy altar within
+## rules.desecrate_altar_range of the wizard; the creature must be his own, alive and within the
+## cast range. The red vortex opens when the casting starts; when it ends, a carrier doctor drops by
+## the creature, lifts it and takes it to the altar. If the cast is interrupted there is no doctor
+## and the creature stays free. All the rules live in SacrificeSystem; this action is only the
+## contract with the Caster. The ritual itself is Ritual.Kind.DESECRATE.
 
 var _system: SacrificeSystem
 var _cast: SacrificeSystem.Cast
@@ -24,7 +23,9 @@ func arm_status(wizard: WizardBody, _spell: SpellType) -> String:
 
 ## `picked` and `point` come from the client: the creature is validated here and its own position
 ## is the aim.
-func check(wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, _point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.target = wizard
 	var system := _find_system()
@@ -57,7 +58,7 @@ func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:
 	var system := _find_system()
 	if cast == null or system == null:
 		return BAD_TARGET
-	## The creature died during the cast: `target` is null and the cast keeps the freed reference.
+	# The creature died during the cast: `target` is null and the cast keeps the freed reference.
 	return system.finish_cast(cast)
 
 

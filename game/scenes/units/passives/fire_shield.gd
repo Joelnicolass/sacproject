@@ -1,74 +1,53 @@
 class_name FireShield
-extends Node
+extends UnitPassive
 
-## The Phoenix's Shield (rifl, its passiveOnDamage), called
-## every frame from updateCreatureStats. A body that can shield (canShield: not dying, dead,
-## reviving or a ghost) and holds the mana the SPEL asks (rifl: 0) takes every moving body whose box meets its own box scaled ×1.5 from
-## the center (the Phoenix itself apart). A body that is not an ally of the Phoenix's side burns: ignite(fireform.amount / 60) is
-## dealFireDamage(0, amount / 60, …, peirceShield), i.e. a direct spell hit that skips the Life Shield / Rockform / petrified
-## factors (Health.damage_typed, pierce_shield) plus three fire particles. If it burned someone it drains the mana cost
-## (ManaPool.drain; 0 for rifl) and puffs the shield particles. Buildings are not touched (movingObjectById).
-## A child of unit.tscn like MeleeOnHit; it only acts on a body whose CreatureType.on_damage is `passive`, so the other
-## creatures carry it and ignore it. Server (or solo) only. Divergences (declared): the particles are the reserve look (`fire_fx`
-## at the burned body's `fire_socket` every `fire_every_s`); the shield ticks only on a carrier (the node sleeps on the rest).
-## Ref: F163 (RFC-030 030w-f), sacengine runPhoenixPassive state.d:13899-13919, updateCreatureStats runPassive 13921-13931, canShield 218-225.
+## The Phoenix's Shield (rifl): every frame, it burns every non-allied body that touches the
+## Phoenix, costing its mana per burn. A body that can shield (not dying, dead, reviving or a ghost)
+## and holds the mana the SPEL asks (rifl: 0) takes every moving body whose box meets its own box
+## scaled ×1.5 from the center (the Phoenix itself apart). A body that is not an ally of the
+## Phoenix's side burns: fireform.amount / 60 as a direct spell hit that skips the Life Shield /
+## Rockform / petrified factors (Health.damage_typed, pierce_shield) plus three fire particles. If
+## it burned someone it drains the mana cost (ManaPool.drain; 0 for rifl) and puffs the shield
+## particles. Buildings are not touched. A node of the Phoenix's `phoenix_passives.tscn`: only a
+## creature that has it burns. Server (or solo) only. The particles are the reserve look (`fire_fx`
+## at the burned body's `fire_socket` every `fire_every_s`).
 
+const GROUPS: Array[StringName] = [UnitBody.GROUP, WizardBody.GROUP]
 
-const GROUPS: Array[StringName] = [&"unit", &"wizard"]
-
-## The Phoenix. Empty = the parent.
-@export var body: Node3D
-@export var health: Health
-@export var mana: ManaPool
-## The passive (data/catalog/abilities/rifl.tres): its numbers give the mana cost.
+## The passive (scenes/units/abilities/phoenix_fire_shield.tres): its numbers give the mana cost.
 @export var passive: AbilityType
-## The fire it ignites with (data/catalog/spells/mrff.tres, fireform): the spell's amount, per second.
+## The fire it ignites with (spells/fireform/fireform.tres, fireform): the spell's amount, per
+## second.
 @export var fire: SpellType
-## Scale of the body's box about its center (scaleBox(object.hitbox, 1.5f)).
+## Scale of the body's box about its center.
 @export var box_scale := 1.5
 @export_group("Look")
 ## The fire played on a burned body every `fire_every_s` it burns (reserve look). Empty = none.
-@export var fire_fx: ParticleType = preload("res://data/fx/fire.tres")
+@export var fire_fx: ParticleType = preload("res://scenes/fx/effects/fire.tres")
 @export_range(0.0, 2.0, 0.0001, "suffix:s") var fire_every_s := 0.0833
 ## Where on the burned body the fire comes out.
 @export var fire_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
-var _carrier := false
+## The Phoenix's health and mana (set by attach).
+var health: Health
+var mana: ManaPool
+
 var _burn_ticks := {}
 var _allies_seen := {}
 
 
+func attach(mount: PassiveMount) -> void:
+	super(mount)
+	health = mount.health
+	mana = mount.mana
+
+
 func _ready() -> void:
-	set_physics_process(false)
-	if body == null:
-		body = get_parent() as Node3D
-	if health == null and body != null:
-		health = body.get_node_or_null("Health") as Health
-	if mana == null and body != null:
-		mana = body.get_node_or_null("ManaPool") as ManaPool
-	# The type may not be set yet (children are ready before the parent): asked again when the body gets its model, and once the
-	# frame's setup is over. Only a carrier of the passive ticks.
-	if body != null and body.has_signal("model_changed"):
-		body.connect("model_changed", _refresh)
-	_refresh()
-	_refresh.call_deferred()
-
-
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-	if body == null:
-		warnings.append("Falta el cuerpo (body).")
-	return warnings
-
-
-## Turns the tick on for a carrier of the passive and off for everyone else.
-func _refresh() -> void:
-	_carrier = _carries()
-	set_physics_process(_carrier and is_multiplayer_authority())
+	set_physics_process(is_multiplayer_authority())
 
 
 func _physics_process(_delta: float) -> void:
-	if not _carrier or not _can_shield():
+	if not _can_shield():
 		return
 	var cost := _mana_cost()
 	if cost > 0.0 and (mana == null or mana.current < cost):
@@ -109,15 +88,42 @@ func _burn(target: Node3D, per_tick: float, mine: Array) -> void:
 		var box := BodyBox.box_of(target)
 		var center: Vector3 = mine[0]
 		var at := target.global_position
-		print("escudo %s quema %s %.4f vida %.4f (tick %d) maná %.3f caja (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) otro (%.3f, %.3f, %.3f) ± (%.3f, %.3f)" % [
-			body.name, target.name, taken, victim.current, MatchClock.now(), mana.current if mana != null else -1.0, center.x, center.y, center.z, mine[1], mine[2], mine[1],
-			at.x, at.y, at.z, box.x, box.y])
+		print(
+			(
+				# gdlint: ignore=max-line-length
+				"shield %s burns %s %.4f health %.4f (tick %d) mana %.3f box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f) other (%.3f, %.3f, %.3f) ± (%.3f, %.3f)"
+				% [
+					body.name,
+					target.name,
+					taken,
+					victim.current,
+					MatchClock.now(),
+					mana.current if mana != null else -1.0,
+					center.x,
+					center.y,
+					center.z,
+					mine[1],
+					mine[2],
+					mine[1],
+					at.x,
+					at.y,
+					at.z,
+					box.x,
+					box.y
+				]
+			)
+		)
 
 
 func _log_ally(target: Node3D) -> void:
 	if DebugLog.on(&"shield") and not _allies_seen.has(target.get_instance_id()):
 		_allies_seen[target.get_instance_id()] = true
-		print("escudo %s toca %s aliado, no quema (tick %d)" % [body.name, target.name, MatchClock.now()])
+		print(
+			(
+				"shield %s touches %s ally, no burn (tick %d)"
+				% [body.name, target.name, MatchClock.now()]
+			)
+		)
 
 
 ## (center, half width, half height) of the Phoenix's box, scaled about the center.
@@ -127,7 +133,8 @@ func _scaled_box() -> Array:
 	return [Vector3(at.x, at.y + box.y * 0.5, at.z), box.x * box_scale, box.y * 0.5 * box_scale]
 
 
-## Whether the target's box (feet at its position, its height up) meets the scaled one; touching is not meeting.
+## Whether the target's box (feet at its position, its height up) meets the scaled one; touching is
+## not meeting.
 func _meets(mine: Array, target: Node3D) -> bool:
 	var box := BodyBox.box_of(target)
 	var center: Vector3 = mine[0]
@@ -151,23 +158,18 @@ func _mana_cost() -> float:
 	return float(passive.mana_cost) if passive != null else 0.0
 
 
-func _carries() -> bool:
-	var type: CreatureType = body.get("type") as CreatureType if body != null and "type" in body else null
-	return type != null and type.has_passive(passive)
-
-
-## canShield: stunned, cowering, casting, rockForm, firewalk and stealth keep the shield; dying, dead, summoning,
-## reviving and taken by a Doctor do not.
-## Ref: sacengine canShield state.d:218-225.
+## Stunned, cowering, casting, Rockform, firewalk and stealth keep the shield; dying, dead,
+## summoning, reviving and taken by a Doctor do not.
 func _can_shield() -> bool:
 	if health != null and health.is_dead():
 		return false
 	return _present(body)
 
 
-## A moving body the shield can burn: movingObjectById takes any creature or wizard that is not dead (stealth and firewalk included).
+## A moving body the shield can burn: any creature or wizard that is not dead (stealth and firewalk
+## included).
 func _burnable(target: Node3D) -> bool:
-	if not Attackable.is_body(target) or target.is_in_group(&"structure"):
+	if not Attackable.is_body(target) or target.is_in_group(MapBuilding.STRUCTURE_GROUP):
 		return false
 	var life := target.get_node_or_null("Health") as Health
 	return life != null and not life.is_dead() and _present(target)
@@ -177,6 +179,10 @@ func _present(node: Node) -> bool:
 	if not "mode" in node:
 		return true
 	var mode: int = node.get("mode")
-	if mode == UnitBody.Mode.DEAD or mode == UnitBody.Mode.SUMMONING or mode == UnitBody.Mode.REVIVING:
+	if (
+		mode == UnitBody.Mode.DEAD
+		or mode == UnitBody.Mode.SUMMONING
+		or mode == UnitBody.Mode.REVIVING
+	):
 		return false
 	return not (node is UnitBody and (node as UnitBody).is_taken())

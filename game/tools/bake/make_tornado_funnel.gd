@@ -1,16 +1,18 @@
 extends SceneTree
 
-## Writes the Tornado's two meshes: funnel_rings.res (the wall: 128 rings of 64 sides, UV = (around, t along one half of the axis)) and
-## funnel_edge.res (the ragged edge: 4 vertices per ring, UV2.x = which of the four, UV.x = the left or right of a frame, UV.y = t, COLOR.a
-## 0 for the first ring). They hold topology only: TornadoLook gives the shader the seven points of the axis and their radii, and it puts
-## every vertex in place. It needs no original game. Run it once; the result is versioned and the scene only holds the files.
+## Writes the Tornado's two meshes: funnel_rings.res (the wall: 128 rings of 64 sides, UV = (around,
+## t along one half of the axis)) and funnel_edge.res (the ragged edge: 4 vertices per ring, UV2.x =
+## which of the four, UV.x = the left or right of a frame, UV.y = t, COLOR.a 0 for the first ring).
+## They hold topology only: TornadoLook gives the shader the seven points of the axis and their
+## radii, and it puts every vertex in place. It needs no original game. Run it once; the result is
+## versioned and the scene only holds the files.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_tornado_funnel.gd
-## Ref: sacengine SacTornado.ensureMeshes (sacobject.d:3638-3688).
 
 const DIR := "res://scenes/spells/tornado/"
 const RINGS := 128
 const SIDES := 64
-## The shader moves the vertices far from here: the box says where the funnel can be (500 m up, 350 m to each side).
+## The shader moves the vertices far from here: the box says where the funnel can be (500 m up, 350
+## m to each side).
 const BOUNDS := AABB(Vector3(-400.0, -50.0, -400.0), Vector3(800.0, 600.0, 800.0))
 
 
@@ -49,8 +51,18 @@ func _edge() -> ArrayMesh:
 			colors.append(Color(1, 1, 1, 0.0 if i == 0 else 1.0))
 	for i in RINGS - 3:
 		var a := 4 * i
-		indices.append_array([a, a + 1, a + 4, a + 1, a + 5, a + 4, a + 2, a + 3, a + 6, a + 3, a + 7, a + 6])
-	return _mesh({Mesh.ARRAY_VERTEX: vertices, Mesh.ARRAY_TEX_UV: uvs, Mesh.ARRAY_TEX_UV2: uv2s, Mesh.ARRAY_COLOR: colors, Mesh.ARRAY_INDEX: indices})
+		indices.append_array(
+			[a, a + 1, a + 4, a + 1, a + 5, a + 4, a + 2, a + 3, a + 6, a + 3, a + 7, a + 6]
+		)
+	return _mesh(
+		{
+			Mesh.ARRAY_VERTEX: vertices,
+			Mesh.ARRAY_TEX_UV: uvs,
+			Mesh.ARRAY_TEX_UV2: uv2s,
+			Mesh.ARRAY_COLOR: colors,
+			Mesh.ARRAY_INDEX: indices
+		}
+	)
 
 
 func _mesh(data: Dictionary) -> ArrayMesh:
@@ -67,5 +79,10 @@ func _mesh(data: Dictionary) -> ArrayMesh:
 func _save(mesh: ArrayMesh, file: String) -> bool:
 	mesh.resource_name = file.get_basename()
 	var error := ResourceSaver.save(mesh, DIR + file)
-	print("%s: %s (%d vertices)" % [file, "saved" if error == OK else "FAILED %d" % error, mesh.surface_get_array_len(0)])
+	print(
+		(
+			"%s: %s (%d vertices)"
+			% [file, "saved" if error == OK else "FAILED %d" % error, mesh.surface_get_array_len(0)]
+		)
+	)
 	return error == OK

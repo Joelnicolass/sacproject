@@ -1,10 +1,11 @@
 class_name VoiceMixer
 extends RefCounted
 
-## Decides what plays on SoundBus's players: which voice a request takes, what is dropped and why, and the loops of the
-## emitters. A cue too soon after its last play, or past its `max_voices`, is dropped; with the pool full, a play takes the
-## voice of the lowest priority unless that one is above it. Every request, played or dropped, goes to `sound_log`.
-## It starts nothing before `live` is true (the bus sets it when the AudioGate is open) and nothing after `closed`.
+## Decides what plays on SoundBus's players: which voice a request takes, what is dropped and why,
+## and the loops of the emitters. A cue too soon after its last play, or past its `max_voices`, is
+## dropped; with the pool full, a play takes the voice of the lowest priority unless that one is
+## above it. Every request, played or dropped, goes to `sound_log`. It starts nothing before `live`
+## is true (the bus sets it when the AudioGate is open) and nothing after `closed`.
 
 var playback := CuePlayback.new()
 var pool_3d := VoicePool.new()
@@ -25,12 +26,18 @@ func can_play() -> bool:
 
 
 ## A cue in the pool of the world or of the UI. False when it was dropped.
-func request(cue: SoundCue, in_3d: bool, at: Vector3, emitter: StringName, event: StringName) -> bool:
+func request(
+	cue: SoundCue, in_3d: bool, at: Vector3, emitter: StringName, event: StringName
+) -> bool:
 	if not can_play() or cue == null:
 		return false
 	var reason := playback.refusal(cue, active_voices(in_3d, cue))
 	var pool := pool_3d if in_3d else pool_2d
-	var voice: VoicePool.Voice = pool.pick(cue.priority, pool.size() - (loops.active() if in_3d else 0)) if reason.is_empty() else null
+	var voice: VoicePool.Voice = (
+		pool.pick(cue.priority, pool.size() - (loops.active() if in_3d else 0))
+		if reason.is_empty()
+		else null
+	)
 	if reason.is_empty() and voice == null:
 		reason = &"pool_full"
 	if not reason.is_empty():
@@ -48,8 +55,11 @@ func request(cue: SoundCue, in_3d: bool, at: Vector3, emitter: StringName, event
 	return true
 
 
-## A cue on a player the caller owns (a voice channel): it is stopped and reconfigured; it does not count in the 2D pool.
-func play_on(player: AudioStreamPlayer, cue: SoundCue, emitter: StringName, event: StringName) -> bool:
+## A cue on a player the caller owns (a voice channel): it is stopped and reconfigured; it does not
+## count in the 2D pool.
+func play_on(
+	player: AudioStreamPlayer, cue: SoundCue, emitter: StringName, event: StringName
+) -> bool:
 	if not can_play() or cue == null or player == null:
 		return false
 	var reason := playback.refusal(cue)
@@ -73,9 +83,12 @@ func adopt_channel(player: AudioStreamPlayer) -> void:
 		_channels.append(player)
 
 
-## Plays `cue` in a loop on `player` (a SoundEmitter3D keeps its node's position) while it holds the claim. False (and a log
-## entry) when refused: silent, `max_loops`, the cue's `max_voices`, or a full 3D budget of voices above its priority.
-func claim_loop(player: AudioStreamPlayer3D, cue: SoundCue, emitter: StringName, event: StringName) -> bool:
+## Plays `cue` in a loop on `player` (a SoundEmitter3D keeps its node's position) while it holds the
+## claim. False (and a log entry) when refused: silent, `max_loops`, the cue's `max_voices`, or a
+## full 3D budget of voices above its priority.
+func claim_loop(
+	player: AudioStreamPlayer3D, cue: SoundCue, emitter: StringName, event: StringName
+) -> bool:
 	if not can_play() or cue == null or player == null:
 		return false
 	if loops.holds(player):
@@ -107,7 +120,8 @@ func active_voices(in_3d: bool, cue: SoundCue = null) -> int:
 	return pool_3d.active(cue) + loops.active(cue) if in_3d else pool_2d.active(cue)
 
 
-## Stops every voice and lets go of every loop (an emitter in range claims its loop again on its next look).
+## Stops every voice and lets go of every loop (an emitter in range claims its loop again on its
+## next look).
 func stop_all() -> void:
 	pool_3d.stop_all()
 	pool_2d.stop_all()

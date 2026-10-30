@@ -1,11 +1,12 @@
 class_name WallLook
 extends MeshInstance3D
 
-## The body of a Firewall or a Wailing Wall: the unit strip (wall_strip.obj) drawn with the wall shader, which stretches it from the wall's
-## ends, thickness and height. Every frame it hands the shader where the ends are and how tall the wall stands now; once it lays down the
-## land height along the wall (129 samples) so the strip follows the ground. The material is the scene's own, copied per wall, so two walls
-## do not share their ends. Presentation only, on every peer; it does not hurt anybody (WallTouch).
-## Ref: sacengine makeWallMesh, Firewall.scale / height (renderer.d:2639-2671; state.d:3690-3697).
+## The body of a Firewall or a Wailing Wall: the unit strip (wall_strip.obj) drawn with the wall
+## shader, which stretches it from the wall's ends, thickness and height. Every frame it hands the
+## shader where the ends are and how tall the wall stands now; once it lays down the land height
+## along the wall (129 samples) so the strip follows the ground. The material is the scene's own,
+## copied per wall, so two walls do not share their ends. Presentation only, on every peer; it does
+## not hurt anybody (WallTouch).
 
 @export var wall: SpellWall
 ## Samples of the land (the strip has one section more than this minus one).
@@ -22,7 +23,10 @@ func _ready() -> void:
 	shader.set_shader_parameter(&"reach", reach)
 	shader.set_shader_parameter(&"thickness", wall.thickness_m())
 	shader.set_shader_parameter(&"ground", _land_along(reach))
-	custom_aabb = AABB(Vector3(-0.5 * reach, -10.0, -wall.thickness_m()), Vector3(reach, 40.0, 2.0 * wall.thickness_m()))
+	custom_aabb = AABB(
+		Vector3(-0.5 * reach, -10.0, -wall.thickness_m()),
+		Vector3(reach, 40.0, 2.0 * wall.thickness_m())
+	)
 
 
 func _process(_delta: float) -> void:
@@ -32,7 +36,8 @@ func _process(_delta: float) -> void:
 	shader.set_shader_parameter(&"top", wall.top())
 
 
-## The height of the land under each sample of the strip, over the wall's own height, as a texture of one row.
+## The height of the land under each sample of the strip, over the wall's own height, as a texture
+## of one row.
 func _land_along(reach: float) -> ImageTexture:
 	var image := Image.create(samples, 1, false, Image.FORMAT_RF)
 	for i in samples:

@@ -1,12 +1,13 @@
 class_name CastGlow
 extends FxScene
 
-## The glow that rises around a wizard while he casts Rainbow: sprites born inside his box that climb on their own. A SpriteEmitter
-## (its ParticleType says what and how many) that follows the wizard for the casting time and frees itself. A presentation that
-## LaunchAction hands to FxBus.broadcast_scene (`play`) on every peer; it does nothing to the game.
-## Ref: sacengine animateRainbowCasting (state.d:18047-18063).
+## The glow that rises around a wizard while he casts Rainbow: sprites born inside his box that
+## climb on their own. A SpriteEmitter (its ParticleType says what and how many) that follows the
+## wizard for the casting time and frees itself. A presentation that LaunchAction hands to
+## FxBus.broadcast_scene (`play`) on every peer; it does nothing to the game.
 
-## The emitter (a child with the ParticleType). Moved to the middle of the wizard's box and sized by it.
+## The emitter (a child with the ParticleType). Moved to the middle of the wizard's box and sized by
+## it.
 @export var emitter: SpriteEmitter
 
 var _wizard: Node3D

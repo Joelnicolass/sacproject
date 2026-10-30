@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ic8cq"]
+[ext_resource type="Texture2D" uid="uid://d3dgng788qv3s" path="res://assets/original/ui/icons/raeb.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/taurock/taurock_endurance.tres" id="typed_korq"]
+[ext_resource type="AnimationLibrary" path="res://creatures/taurock/model/taurock_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/taurock/taurock.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_ic8cq")
+tag = "raeb"
+display_name = "Taurock"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 1920
+regeneration_per_s = 16.6667
+run_speed_m_s = 6.0
+melee_strength = 200
+melee_accuracy = 1.5
+melee_evasion = 1.65
+aggressiveness = 1.0
+vision_m = 100.0
+melee_resistance = 0.7
+direct_ranged_resistance = 0.9
+splash_ranged_resistance = 0.9
+mana_cost = 700
+souls = 2
+cooldown_s = 4.0
+casting_time_s = 1.2963
+book_level = 3
+book_slot = 50
+on_damage = ExtResource("typed_korq")

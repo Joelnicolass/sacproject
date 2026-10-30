@@ -2,12 +2,12 @@
 class_name Wards
 extends Node3D
 
-## The one owner of «what protects this body right now»: it holds the Ward children (Life Shield, Skin of Stone, Air Shield,
-## Ethereal Form, Fireform, Protective Swarm) and answers for all of them. Health asks factor() and immune(); Afflictions and
-## Pull ask shielded(); a SpellAction asks ward_for(spell). It does not start a ward (the action does) nor draw one (the Ward).
-## It is a Node3D (not a plain Node) so the transform of the body reaches the looks of its wards.
-## `changed` fires on every peer when any ward goes on or off.
-## Ref: sacengine effects.lifeShield / skinOfStone / ... and `shielded` (stats.d:86-90).
+## The one owner of «what protects this body right now»: it holds the Ward children (Life Shield,
+## Skin of Stone, Air Shield, Ethereal Form, Fireform, Protective Swarm) and answers for all of
+## them. WardsDamage asks factor() and immune() for Health; Afflictions and Pull ask shielded(); a
+## SpellAction asks ward_for(spell). It does not start a ward (the action does) nor draw one (the
+## Ward). It is a Node3D (not a plain Node) so the transform of the body reaches the looks of its
+## wards. `changed` fires on every peer when any ward goes on or off.
 
 signal changed
 

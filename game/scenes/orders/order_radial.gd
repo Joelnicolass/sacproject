@@ -1,14 +1,15 @@
 class_name OrderRadial
 extends Node
 
-## The one owner of the `order_units` button in the world, and of the keys that open the radial menu.
-## A short tap on `view` is the order of always (`MatchCommand.right_at`). Holding the button still for `layout.hold_s`
-## (0.25 s) opens the radial menu where it was pressed; the entry the pointer is on when it is
-## released runs AT THE PRESS POINT: an order entry gives that order there, a formation entry gives the right click of that point in
-## that formation, in one submit. Releasing in the center cancels. Holding `order_menu` (Tab) the same time opens it at the pointer and releasing it runs the entry. `formation_1`..`formation_8`
-## (Alt+1..8) store a formation of the catalog on the selection without the menu.
-## The menu draws and picks; this node turns an entry into a call to MatchCommand. It knows no order rule.
-## Ref: RFC-038 038d; sacengine xmenuTime.
+## The one owner of the `order_units` button in the world, and of the keys that open the radial
+## menu. A short tap on `view` is the order of always (`MatchCommand.right_at`). Holding the button
+## still for `layout.hold_s` (0.25 s) opens the radial menu where it was pressed; the entry the
+## pointer is on when it is released runs AT THE PRESS POINT: an order entry gives that order there,
+## a formation entry gives the right click of that point in that formation, in one submit. Releasing
+## in the center cancels. Holding `order_menu` (Tab) the same time opens it at the pointer and
+## releasing it runs the entry. `formation_1`..`formation_8` (Alt+1..8) store a formation of the
+## catalog on the selection without the menu. The menu draws and picks; this node turns an entry
+## into a call to MatchCommand. It knows no order rule.
 
 enum Source { NONE, MOUSE, KEY }
 
@@ -18,7 +19,7 @@ enum Source { NONE, MOUSE, KEY }
 @export var view: Control
 @export var command: MatchCommand
 ## The formations `formation_N` picks from (the Nth of the catalog, in the menu's order).
-@export var catalog: FormationCatalog = preload("res://data/orders/formations.tres")
+@export var catalog: RtsFormationCatalog = preload("res://scenes/orders/formations.tres")
 
 var _source := Source.NONE
 var _right_down := false
@@ -30,7 +31,7 @@ var _pointer := Vector2.ZERO
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if menu == null or view == null or command == null:
-		return PackedStringArray(["Asigná menu, view y command."])
+		return PackedStringArray(["Assign menu, view and command."])
 	return PackedStringArray()
 
 
@@ -45,14 +46,15 @@ func is_open() -> bool:
 	return menu != null and menu.is_open()
 
 
-## Seen before the world and the HUD: the pointer for the menu, and the formation keys (Alt+digit must not also pick a group).
+## Seen before the world and the HUD: the pointer for the menu, and the formation keys (Alt+digit
+## must not also pick a group).
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_pointer = (event as InputEventMouseMotion).position
 		if is_open():
 			menu.point_at(_pointer)
 		return
-	if get_tree().get_first_node_in_group("walk_order") or WorldInput.blocked(self):
+	if WorldInput.blocked(self):
 		return
 	for i in catalog.formations.size() if catalog else 0:
 		if i < 8 and event.is_action_pressed("formation_%d" % (i + 1), false, true):
@@ -83,7 +85,10 @@ func _poll_key(delta: float, hold: float) -> void:
 	if down and _source == Source.NONE and not _right_down:
 		_held_s += delta
 		if _held_s >= hold:
-			_open(Source.KEY, get_viewport().get_mouse_position() if _pointer == Vector2.ZERO else _pointer)
+			_open(
+				Source.KEY,
+				get_viewport().get_mouse_position() if _pointer == Vector2.ZERO else _pointer
+			)
 	elif not down and _source == Source.KEY:
 		menu.point_at(_pointer)
 		menu.confirm()
@@ -119,7 +124,9 @@ func _on_view_event(event: InputEvent) -> void:
 func _open(source: Source, at: Vector2) -> void:
 	_source = source
 	_origin = at
-	menu.open_at(at, menu.layout.center_icons.get(command.context_kind(at)) if menu.layout else null)
+	menu.open_at(
+		at, menu.layout.center_icons.get(command.context_kind(at)) if menu.layout else null
+	)
 	menu.point_at(_pointer)
 
 

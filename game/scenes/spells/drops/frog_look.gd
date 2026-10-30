@@ -2,10 +2,10 @@
 class_name FrogLook
 extends Node
 
-## The frog's picture, on every peer, from its replicated state: the falling frame while it falls, the jump's sixteen frames (30 a second)
-## while it jumps, the sitting frame while it sits or is stuck to a body; and a croak on one jump in five. It does not move the frog nor
-## decide when it jumps (FrogHop). A dedicated server or a headless run draws nothing.
-## Ref: sacengine updateRainFrog, renderer.d:2500-2516 (animationFrame 11 falling, 0..15 jumping, 15 sitting).
+## The frog's picture, on every peer, from its replicated state: the falling frame while it falls,
+## the jump's sixteen frames (30 a second) while it jumps, the sitting frame while it sits or is
+## stuck to a body; and a croak on one jump in five. It does not move the frog nor decide when it
+## jumps (FrogHop). A dedicated server or a headless run draws nothing.
 
 @export var drop: ZoneDrop
 @export var sprite: AtlasSprite
@@ -22,7 +22,14 @@ var _jumps := 0
 
 
 func _ready() -> void:
-	set_process(not Engine.is_editor_hint() and drop != null and sprite != null and DisplayServer.get_name() != "headless")
+	set_process(
+		(
+			not Engine.is_editor_hint()
+			and drop != null
+			and sprite != null
+			and DisplayServer.get_name() != "headless"
+		)
+	)
 
 
 func _process(delta: float) -> void:
@@ -35,8 +42,16 @@ func _process(delta: float) -> void:
 				croak.play_once()
 		_last = drop.status
 	_t += delta
-	sprite.frame = sitting_frame if drop.status != ZoneDrop.Status.FLYING else (mini(int(_t * frames_per_s), 15) if _jumping else falling_frame)
+	sprite.frame = (
+		sitting_frame
+		if drop.status != ZoneDrop.Status.FLYING
+		else (mini(int(_t * frames_per_s), 15) if _jumping else falling_frame)
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null and sprite != null else PackedStringArray(["Faltan la rana (ZoneDrop) y su sprite (AtlasSprite)."])
+	return (
+		PackedStringArray()
+		if drop != null and sprite != null
+		else PackedStringArray(["The frog (ZoneDrop) and its sprite (AtlasSprite) are missing."])
+	)

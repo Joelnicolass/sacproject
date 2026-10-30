@@ -1,16 +1,15 @@
 class_name WoundedAllyPolicy
 extends TargetPolicy
 
-## The Scarab (slba, Healing web): by itself it takes the
-## creature of its own side with the lowest relative health that is not full (lowestHealthCreatureInRange:
-## a moving object, not itself, valid), first within its ranged attack's range of the center and then within its sight;
-## it never picks a foe. Under an ATTACK order it keeps the foe it was told to attack, as any creature (attack).
-## A wounded ally stays a valid target until its bar is full, then the body drops it and stops shooting.
-## Ref: F136 (RFC-030h2), sacengine updateTarget state.d:12949-12958, lowestHealthCreatureInRange 28828-28842, attack 12849-12855.
+## The Scarab (slba, Healing web): by itself it takes the creature of its own side with the lowest
+## relative health that is not full (a moving body, not itself, valid), first within its ranged
+## attack's range of the center and then within its sight; it never picks a foe. Under an ATTACK
+## order it keeps the foe it was told to attack, as any creature (attack). A wounded ally stays a
+## valid target until its bar is full, then the body drops it and stops shooting.
 
 const _HEAL := preload("res://scenes/spells/heal_effect.gd")
 
-## Groups of the bodies it may heal: wizards and creatures (movingObjects).
+## Groups of the bodies it may heal: wizards and creatures.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
 
 
@@ -29,12 +28,12 @@ func pick(body: UnitBody, center: Vector3, within: float) -> Node3D:
 	return found
 
 
-## A live, targetable body of `body`'s side (not itself) whose health is not full (canHeal).
+## A live, targetable body of `body`'s side (not itself) whose health is not full.
 func is_patient(body: UnitBody, node: Variant) -> bool:
 	if node == null or not is_instance_valid(node) or node == body or not node is Node3D:
 		return false
 	var other := node as Node3D
-	if not other.is_inside_tree() or other.is_in_group("corpse") or not "owner_slot" in other:
+	if not other.is_inside_tree() or other.is_in_group(Corpse.GROUP) or not "owner_slot" in other:
 		return false
 	if int(other.get("owner_slot")) != body.owner_slot or not _in_groups(other):
 		return false
@@ -42,12 +41,15 @@ func is_patient(body: UnitBody, node: Variant) -> bool:
 		return false
 	if other is UnitBody and (other as UnitBody).is_rock_form():
 		return false
-	if other.has_method("is_targetable") and not other.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
+	if not GameBody.targetable(other):
 		return false
+	# max-returns: one early return per reason a body is no patient.
+	# gdlint: ignore=max-returns
 	return _HEAL.can_heal(other)
 
 
-## The patient of the lowest current/maximum within `radius` of `center` (flat); ties go to the closer one.
+## The patient of the lowest current/maximum within `radius` of `center` (flat); ties go to the
+## closer one.
 func _most_wounded(body: UnitBody, center: Vector3, radius: float) -> Node3D:
 	var best: Node3D = null
 	var best_ratio := INF
@@ -59,7 +61,10 @@ func _most_wounded(body: UnitBody, center: Vector3, radius: float) -> Node3D:
 			if not is_patient(body, node):
 				continue
 			var other := node as Node3D
-			var distance := Vector2(other.global_position.x - center.x, other.global_position.z - center.z).length()
+			var distance := (
+				Vector2(other.global_position.x - center.x, other.global_position.z - center.z)
+				. length()
+			)
 			if distance > radius:
 				continue
 			var health := other.get_node("Health")

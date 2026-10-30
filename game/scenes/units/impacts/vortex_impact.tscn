@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/impacts/vortex.tscn" id="4_scene"]
 
 [node name="VortickImpact" type="Node"]
-editor_description = "Vortick cita (updateVortickProjectile, state.d:23840-23879): en una criatura, el daño directo a distancia entero (DirectImpact); siempre, el vórtice en la posición del tick anterior (VortexImpact)."
+editor_description = "Vortick cita: on a creature, the whole direct ranged damage (DirectImpact); always, the vortex at the position of the previous tick (VortexImpact)."
 script = ExtResource("1_impact")
 
 [node name="DirectImpact" type="Node" parent="."]

@@ -1,10 +1,10 @@
 @tool
 extends VBoxContainer
 
-## The «Relieve desde albedo» section of a material's (or ground role's) inspector: the recipe's knobs, the albedo beside
-## its relief (a live preview while the knobs move), «Generar» (bake, write the PNGs that are missing, import them and
-## assign them in one undo step) and «Quitar» (takes the maps off in one undo step; the PNGs stay on disk). A PNG that
-## exists is only replaced with «Sobrescribir». Not: the pixels (ReliefBaker), the files (MapWriter), the recipe's
+## The «Relief from albedo» section of a material's (or ground role's) inspector: the recipe's knobs, the albedo beside
+## its relief (a live preview while the knobs move), «Generate» (bake, write the PNGs that are missing, import them and
+## assign them in one undo step) and «Remove» (takes the maps off in one undo step; the PNGs stay on disk). A PNG that
+## exists is only replaced with «Overwrite». Not: the pixels (ReliefBaker), the files (MapWriter), the recipe's
 ## lifetime (the plugin keeps one per editor session).
 
 const ReliefJob := preload("res://addons/surface_maps/relief_job.gd")
@@ -55,15 +55,15 @@ func _refresh() -> void:
 	if _note.id == _target.get_instance_id():
 		%Status.text = _note.text
 	elif not readable:
-		%Status.text = "Sin textura de albedo en un archivo: no hay de dónde sacar el relieve."
+		%Status.text = "No albedo texture from a file: there is nothing to take the relief from."
 	else:
 		var names := PackedStringArray()
 		for path: String in MapWriter.existing(_target).values():
 			names.append(path.get_file())
 		if not names.is_empty():
-			%Status.text = "Mapas en disco: %s" % ", ".join(names)
+			%Status.text = "Maps on disk: %s" % ", ".join(names)
 		else:
-			%Status.text = "Sin mapas todavía. Generar escribe %s" % MapWriter.map_path(MapWriter.albedo_of(_target).resource_path, "normal")
+			%Status.text = "No maps yet. Generate writes %s" % MapWriter.map_path(MapWriter.albedo_of(_target).resource_path, "normal")
 
 
 ## The texture the target carries for map `key` ("normal" or "orm"); null when it has none.
@@ -81,7 +81,7 @@ func _show_preview() -> void:
 		return
 	var maps := ReliefBaker.bake(image, _recipe)
 	%Normal.texture = ImageTexture.create_from_image(maps["normal"] as Image)
-	%Status.text = "Vista previa (sin guardar). Generar la escribe y la asigna."
+	%Status.text = "Preview (not saved). Generate writes and assigns it."
 
 
 func _generate() -> void:
@@ -90,18 +90,18 @@ func _generate() -> void:
 	var paths := ReliefJob.on_disk(_target, _recipe)
 	var text := ""
 	if paths.is_empty():
-		text = "No se pudo escribir el mapa (mirá la salida del editor)."
+		text = "Could not write the map (see the editor Output)."
 	elif MapWriter.assign(_target, paths, _undo):
-		text = "Asignado: %s. %s Guardá con Ctrl+S; Ctrl+Z lo deshace." % [", ".join(PackedStringArray(paths.keys())),
-			"Escritos %d PNG." % written.size() if not written.is_empty() else "Se usaron los PNG que ya estaban (Sobrescribir los rehace)."]
+		text = "Assigned: %s. %s Save with Ctrl+S; Ctrl+Z undoes it." % [", ".join(PackedStringArray(paths.keys())),
+			"Wrote %d PNG." % written.size() if not written.is_empty() else "Used the PNGs already there (Overwrite redoes them)."]
 	else:
-		text = "Los PNG están en disco pero todavía no se importaron; probá de nuevo en un momento."
+		text = "The PNGs are on disk but not imported yet; try again in a moment."
 	_set_note(text)
 
 
 func _clear() -> void:
 	if MapWriter.clear(_target, _undo):
-		_set_note("Mapas quitados del material (los PNG quedan en disco). Ctrl+Z lo deshace.")
+		_set_note("Maps removed from the material (the PNGs stay on disk). Ctrl+Z undoes it.")
 
 
 func _set_note(text: String) -> void:

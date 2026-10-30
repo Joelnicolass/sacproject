@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="RtsRadialLayout" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://addons/rts_kit/ui/radial/rts_radial_layout.gd" id="1_layout"]
+[ext_resource type="Script" path="res://addons/rts_kit/ui/radial/rts_radial_ring.gd" id="2_ring"]
+[ext_resource type="Resource" path="res://addons/rts_kit/commands/commands.tres" id="3_commands"]
+[ext_resource type="Resource" path="res://addons/rts_kit/orders/formations/formations.tres" id="4_formations"]
+
+[sub_resource type="Resource" id="Resource_commands_ring"]
+script = ExtResource("2_ring")
+fill = 1
+width_px = 65.0
+
+[sub_resource type="Resource" id="Resource_formations_ring"]
+script = ExtResource("2_ring")
+fill = 2
+width_px = 62.0
+
+[resource]
+script = ExtResource("1_layout")
+rings = Array[ExtResource("2_ring")]([SubResource("Resource_commands_ring"), SubResource("Resource_formations_ring")])
+commands = ExtResource("3_commands")
+formations = ExtResource("4_formations")

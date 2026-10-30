@@ -2,27 +2,29 @@
 class_name ManafountBody
 extends StaticBody3D
 
-## One map manafount. Free, it feeds mana to everyone in range and shows the jet and its loop (`fountain_loop`). Taken by a tower,
-## the source stops and the jet goes; while that tower rises the fount shows nothing, and once it stands the column (tinted with
-## the occupant's side), its ManalithLight and its hum (`manalith_loop`) show, until the tower is removed. The look is derived from
-## (occupant, rising) in one place (_show), so a late joiner or a client sees the same. The dedicated process draws nothing.
-## The mesh is the first part of `building` (the land's fountain BLDG); collision and source are the same for every land.
-## Does not decide who builds (StructureAction) nor mark the start or the end of a rise (BuildCues).
+## One map manafount. Free, it feeds mana to everyone in range and shows the jet and its loop
+## (`fountain_loop`). Taken by a tower, the source stops and the jet goes; while that tower rises
+## the fount shows nothing, and once it stands the column (tinted with the occupant's side), its
+## ManalithLight and its hum (`manalith_loop`) show, until the tower is removed. The look is derived
+## from (occupant, rising) in one place (_show), so a late joiner or a client sees the same. The
+## dedicated process draws nothing. The mesh is the land's fountain (`mesh`); collision and source
+## are the same for every land. Does not decide who builds (StructureAction) nor mark the start or
+## the end of a rise (BuildCues).
 
 ## The group every manafount joins.
 const GROUP := &"manafount"
 
-## The fountain's BLDG (data/buildings/<name>.tres): drag the land's fountain here; the mesh shows in the editor.
-@export var building: BuildingType:
+## The land's fountain model (the mesh of its fountain building in scenes/structures/buildings/),
+## drawn by `visual`. The scene's default is the Persephone fountain; a map sets its land's.
+@export var mesh: Mesh:
 	set(value):
-		building = value
+		mesh = value
 		if is_node_ready():
 			_show_mesh()
 ## Where the fountain is drawn.
 @export var visual: MeshInstance3D
-## Drawn when `building` is empty or has no parts: the Persephone fountain.
-@export var fallback_mesh: Mesh
-## The ground a tower cast here clears (and the ring of the armed preview). Empty: no push, no ring, no building check.
+## The ground a tower cast here clears (and the ring of the armed preview). Empty: no push, no ring,
+## no building check.
 @export var build_area: BuildArea
 
 var _occupied_by := NodePath()
@@ -47,26 +49,20 @@ func _ready() -> void:
 	_show()
 
 
-## The mesh of this fountain: the first part of its BLDG, else `fallback_mesh`.
-func fountain_mesh() -> Mesh:
-	var base := building.base_mesh() if building != null else null
-	return base if base != null else fallback_mesh
-
-
 func _show_mesh() -> void:
 	update_configuration_warnings()
-	if visual != null:
-		var wanted := fountain_mesh()
-		if visual.mesh != wanted:
-			visual.mesh = wanted
+	if visual != null and visual.mesh != mesh:
+		visual.mesh = mesh
 
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if visual == null:
-		warnings.append("Asigná `visual` (el MeshInstance3D de la fuente).")
+		warnings.append("Assign `visual` (the fount's MeshInstance3D).")
+	if mesh == null:
+		warnings.append("Assign `mesh` (the fount model of this land).")
 	if build_area == null:
-		warnings.append("Asigná `build_area` (el BuildArea que despeja la torre al lanzarla).")
+		warnings.append("Assign `build_area` (the BuildArea the tower clears when cast).")
 	return warnings
 
 
@@ -83,7 +79,8 @@ func occupy(by: NodePath) -> bool:
 	if not is_free() and _occupied_by != by:
 		return false
 	_occupied_by = by
-	# The look changes the tick a rising tower stands. A stale listener after release is harmless: _show reads the occupant.
+	# The look changes the tick a rising tower stands. A stale listener after release is harmless:
+	# _show reads the occupant.
 	var tower := get_node_or_null(by) as CastTower
 	if tower != null and not tower.build_progress_changed.is_connected(_on_occupant_progress):
 		tower.build_progress_changed.connect(_on_occupant_progress)
@@ -102,8 +99,8 @@ func anchor() -> Vector3:
 	return global_position
 
 
-## Occupied by a tower that stands: the column, its light and its hum are on. An occupant that is not a CastTower (a structure
-## placed by hand, a probe) counts as standing.
+## Occupied by a tower that stands: the column, its light and its hum are on. An occupant that is
+## not a CastTower (a structure placed by hand, a probe) counts as standing.
 func shows_tower() -> bool:
 	if is_free():
 		return false
@@ -111,7 +108,8 @@ func shows_tower() -> bool:
 	return tower == null or not tower.is_rising()
 
 
-## The whole look from (occupant, rising): free = source, jet and its loop; taken = none of them; standing = column, light, hum.
+## The whole look from (occupant, rising): free = source, jet and its loop; taken = none of them;
+## standing = column, light, hum.
 func _show() -> void:
 	var free := is_free()
 	var standing := shows_tower()

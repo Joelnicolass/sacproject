@@ -2,16 +2,18 @@
 class_name MapSides
 extends RefCounted
 
-## Who is allied or enemy of whom on a map, read from the nodes the map already has instead of a table: every PlayerStart is
-## a seat (side = slot - 1; `team` above 0 allies the seats that share it, 0 stands alone), every other side an NpcSpawn
-## names (Farmers, Taurocks) is a side no player takes, and side 31 is the neutral owner of the houses. All sides are enemies
-## of each other except teammates; nobody is an enemy of the neutral side. SideRelations reads the rows.
+## Who is allied or enemy of whom on a map, read from the nodes the map already has instead of a
+## table: every PlayerStart is a seat (side = slot - 1; `team` above 0 allies the seats that share
+## it, 0 stands alone), every other side an NpcSpawn names (Farmers, Taurocks) is a side no player
+## takes, and side 31 is the neutral owner of the houses. All sides are enemies of each other except
+## teammates; nobody is an enemy of the neutral side. SideRelations reads the rows.
 ## Does not instance the map: it reads the stored properties of the scene (PackedScene.get_state).
 
 const NEUTRAL_SIDE := 31
 
 
-## The rows SideRelations.set_rows takes: [{id, allies, enemies, assignment}]. Empty when the scene has no PlayerStart.
+## The rows SideRelations.use reads: [{id, allies, enemies, assignment}]. Empty when the scene has
+## no PlayerStart.
 static func rows_of(scene: PackedScene) -> Array:
 	var seats: Dictionary = {}
 	var npc_sides: Dictionary = {}
@@ -43,13 +45,23 @@ static func rows_of(scene: PackedScene) -> Array:
 				allies |= 1 << other
 			else:
 				enemies |= 1 << other
-		rows.append({"id": id, "allies": allies, "enemies": enemies, "assignment": id + 1 if seats.has(id) else 0})
+		rows.append(
+			{
+				"id": id,
+				"allies": allies,
+				"enemies": enemies,
+				"assignment": id + 1 if seats.has(id) else 0
+			}
+		)
 	rows.append({"id": NEUTRAL_SIDE, "allies": 0, "enemies": 0, "assignment": 0})
 	return rows
 
 
-## The value a node of the scene stores for `property`, or `fallback` when it keeps the default of its scene.
-static func _stored(state: SceneState, node: int, property: StringName, fallback: Variant) -> Variant:
+## The value a node of the scene stores for `property`, or `fallback` when it keeps the default of
+## its scene.
+static func _stored(
+	state: SceneState, node: int, property: StringName, fallback: Variant
+) -> Variant:
 	for k in state.get_node_property_count(node):
 		if state.get_node_property_name(node, k) == property:
 			return state.get_node_property_value(node, k)

@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/original/scars/scar.png" id="3_scar"]
 
 [node name="BurningBeamFx" instance=ExtResource("1_beam")]
-editor_description = "Un rayo que quema el suelo donde pega (Lightning, Chain Lightning): al llegar al final del rayo, Scar pinta la quemadura `scar` (8 m) si el punto queda a menos de 2,5 m del suelo."
+editor_description = "A bolt that burns the ground where it hits (Lightning, Chain Lightning): when the bolt reaches its end, Scar paints the `scar` burn (8 m) if the point is within 2.5 m of the ground."
 
 [node name="Scar" parent="." instance=ExtResource("2_mark")]
 texture = ExtResource("3_scar")

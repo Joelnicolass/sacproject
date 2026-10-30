@@ -2,38 +2,46 @@ class_name MeshPlanter
 extends RefCounted
 
 ## Draws one VegetationLayerConfig of FloraField as meshes. A CellRing of 32 m cells (4 x 4 cells of
-## the FloraLayer images, at 8 m a pixel) follows the camera; each cell is built once on the CPU and holds one MultiMeshInstance3D per species
-## (an internal child of the host, never saved).
-## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives the instances; they are
-##   ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even sample of its 16 data cells; the height is
-##   Terrain.height_at, and an instance off the ground or inside a VegetationClear is dropped (the clear's edge thins
-##   them by a hash). Final transform: T·R·S (the plant's mesh stands upright already). The meshes and materials are the species',
+## the FloraLayer images, at 8 m a pixel) follows the camera; each cell is built once on the CPU and
+## holds one MultiMeshInstance3D per species (an internal child of the host, never saved).
+## - Build (`plan_cell`, a pure function): per data cell (pixel) and species, FloraPlacement gives
+##   the instances; they are ordered by rank (i + 0.5) / n so any prefix of a 32 m cell is an even
+##   sample of its 16 data cells; the height is Terrain.height_at, and an instance off the ground or
+##   inside a VegetationClear is dropped (the clear's edge thins them by a hash). Final transform:
+##   T·R·S (the plant's mesh stands upright already). The meshes and materials are the species',
 ##   shared by every cell.
-## - Threads (054e, F384): `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at once, the
-##   nearest first. A task gets copies of what it reads (the groups without meshes, the clears, a Terrain.sampler
-##   snapshot) and touches no node. The main thread only makes the MultiMeshInstance3D from the finished buffers
-##   (`multimesh.buffer`, no per-instance call), while the frame's deadline (FloraField.build_budget_ms) lasts; the rest
-##   wait for the next frame. A result is applied in any order but its bytes depend only on the cell, so the order of
-##   completion never shows. A cell that left the ring, or whose clears changed, while it was planned is dropped (and, if
-##   still wanted, planned again). `threaded = false` (the editor) plans on the main thread inside the same budget.
-## - A cell that leaves the ring is hidden and kept in an LRU cache of CACHE_SIZE cells; coming back shows it again
-##   without a rebuild. A clear that touches a shown cell keeps its old nodes until the new plan is applied.
-## - LOD: the tier of a cell (CellRing, by ground distance to the camera) sets `visible_instance_count` to the first
-##   `tier_fractions[tier]` of its instances. Each species ends at a camera distance (the radius or its visibility_end_m):
-##   a dithered distance fade on a copy of its material (one per species, shared by its cells; the mesh's own material is
-##   never touched) and `visibility_range_end` on the node, past which the whole cell is culled.
-## - The ring radius is a camera distance: on the ground it is sqrt(radius² - height²), so a high camera keeps fewer cells.
+## - Threads: `plan_cell` runs on a WorkerThreadPool task, at most `max_builds_per_frame` cells at
+##   once, the nearest first. A task gets copies of what it reads (the groups without meshes, the
+##   clears, a Terrain.sampler snapshot) and touches no node. The main thread only makes the
+##   MultiMeshInstance3D from the finished buffers (`multimesh.buffer`, no per-instance call), while
+##   the frame's deadline (FloraField.build_budget_ms) lasts; the rest wait for the next frame. A
+##   result is applied in any order but its bytes depend only on the cell, so the order of
+##   completion never shows. A cell that left the ring, or whose clears changed, while it was
+##   planned is dropped (and, if still wanted, planned again). `threaded = false` (the editor) plans
+##   on the main thread inside the same budget.
+## - A cell that leaves the ring is hidden and kept in an LRU cache of CACHE_SIZE cells; coming back
+##   shows it again without a rebuild. A clear that touches a shown cell keeps its old nodes until
+##   the new plan is applied.
+## - LOD: the tier of a cell (CellRing, by ground distance to the camera) sets
+##   `visible_instance_count` to the first `tier_fractions[tier]` of its instances. Each species
+##   ends at a camera distance (the radius or its visibility_end_m): a dithered distance fade on a
+##   copy of its material (one per species, shared by its cells; the mesh's own material is never
+##   touched) and `visibility_range_end` on the node, past which the whole cell is culled.
+## - The ring radius is a camera distance: on the ground it is sqrt(radius² - height²), so a high
+##   camera keeps fewer cells.
 ## Presentation only: FloraField never makes one in a headless or dedicated process.
-## Ref: RFC-054 054c (F382).
 
 const CELL_M := 32.0
 const MAP_CELLS := 80
-## Image pixels per side of a planter cell at the usual 8 m a pixel (32 m / 8 m); a layer's `cell_m` sets its own.
+## Image pixels per side of a planter cell at the usual 8 m a pixel (32 m / 8 m); a layer's `cell_m`
+## sets its own.
 const DATA_PER_CELL := 4
 const CACHE_SIZE := 64
-## Half the diagonal of a cell plus some height: the node's visibility range is measured to its AABB center.
+## Half the diagonal of a cell plus some height: the node's visibility range is measured to its AABB
+## center.
 const CELL_REACH_M := CELL_M * 0.7072 + 4.0
-## Floats per instance in a MultiMesh TRANSFORM_3D buffer with colors: the 3 x 4 matrix, then r, g, b, a.
+## Floats per instance in a MultiMesh TRANSFORM_3D buffer with colors: the 3 x 4 matrix, then r, g,
+## b, a.
 const XFORM_STRIDE := 16
 const SALT_CLEAR := 0x7F4A7C15
 
@@ -44,10 +52,18 @@ var flora: FloraDensity
 var shape: Terrain
 var host: Node3D
 
-## Per species drawn: {tag, tag_index, variation, cast_shadow, visibility_end_m, end_m, mesh, material, per_cell, texel_m}.
+## Per species drawn: {tag, tag_index, variation, cast_shadow, visibility_end_m, end_m, mesh,
+## material, per_cell, texel_m}.
 var groups: Array[Dictionary] = []
 ## The map's transform (the ground mesh's global transform) and its inverse.
 var map_xform := Transform3D.IDENTITY
+## Plan on WorkerThreadPool tasks (false: on the main thread, inside the frame's budget).
+var threaded := true
+## Cells applied (nodes made) so far, and plans dropped because their cell left the ring or its
+## clears changed.
+var built_cells := 0
+var dropped_plans := 0
+
 var _map_inverse := Transform3D.IDENTITY
 var _ring := CellRing.new(CELL_M, MAP_CELLS)
 ## Built cells inside the ring: Vector2i -> Array of MultiMeshInstance3D.
@@ -56,8 +72,6 @@ var _cells := {}
 var _pending: Array[Vector2i] = []
 ## Cells being planned: Vector2i -> PlanJob.
 var _jobs := {}
-## Plan on WorkerThreadPool tasks (false: on the main thread, inside the frame's budget).
-var threaded := true
 var _pending_sorted := true
 ## Cells out of the ring, hidden: Vector2i -> nodes; `_cache_order` oldest first.
 var _cache := {}
@@ -66,12 +80,10 @@ var _cache_order: Array[Vector2i] = []
 var _clears := PackedVector4Array()
 var _eye := Vector2.ZERO
 var _radius := 0.0
-## Cells applied (nodes made) so far, and plans dropped because their cell left the ring or its clears changed.
-var built_cells := 0
-var dropped_plans := 0
 
 
-## One cell planned off the main thread. Holds copies of its inputs; `run` (the task) writes only `buffers`.
+## One cell planned off the main thread. Holds copies of its inputs; `run` (the task) writes only
+## `buffers`.
 class PlanJob:
 	extends RefCounted
 	var key: Vector2i
@@ -99,13 +111,24 @@ class PlanJob:
 			task_id = -1
 
 
-## Where the map is placed in the world: the transform of the mesh that draws `land` (identity without one).
+## Where the map is placed in the world: the transform of the mesh that draws `land` (identity
+## without one).
 static func map_transform_of(land: Terrain) -> Transform3D:
 	var drawn := land.mesh
-	return Transform3D.IDENTITY if not is_instance_valid(drawn) else (drawn.global_transform if drawn.is_inside_tree() else drawn.transform)
+	return (
+		Transform3D.IDENTITY
+		if not is_instance_valid(drawn)
+		else (drawn.global_transform if drawn.is_inside_tree() else drawn.transform)
+	)
 
 
-func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDensity, land: Terrain, owner_node: Node3D) -> void:
+func _init(
+	layer: VegetationLayerConfig,
+	preset: VegetationQuality,
+	map: FloraDensity,
+	land: Terrain,
+	owner_node: Node3D
+) -> void:
 	config = layer
 	quality = preset
 	flora = map
@@ -124,12 +147,15 @@ func _init(layer: VegetationLayerConfig, preset: VegetationQuality, map: FloraDe
 	for group in groups:
 		group["end_m"] = species_end(group, config, quality)
 		group["mesh"] = FloraMaterial.mesh_for(group["mesh"] as Mesh)
-		group["material"] = FloraMaterial.for_mesh(group["mesh"], float(group["end_m"]), config.fade_m)
+		group["material"] = FloraMaterial.for_mesh(
+			group["mesh"], float(group["end_m"]), config.fade_m
+		)
 	groups = groups.filter(func(group: Dictionary) -> bool: return group["mesh"] != null)
 
 
-## The species the FloraLayers of a map draw, with the species' raw mesh and no material (headless-safe): one entry per layer.
-static func describe_groups(layer: VegetationLayerConfig, map: FloraDensity) -> Array[Dictionary]:
+## The species the FloraLayers of a map draw, with the species' raw mesh and no material
+## (headless-safe): one entry per layer.
+static func describe_groups(_layer: VegetationLayerConfig, map: FloraDensity) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if map == null:
 		return out
@@ -156,23 +182,40 @@ static func _group(index: int, map: FloraDensity) -> Dictionary:
 static func plan_groups(layer_groups: Array[Dictionary]) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for group in layer_groups:
-		out.append({"tag": group["tag"], "tag_index": group["tag_index"],
-			"variation": group["variation"], "texel_m": group["texel_m"], "per_cell": group["per_cell"]})
+		out.append(
+			{
+				"tag": group["tag"],
+				"tag_index": group["tag_index"],
+				"variation": group["variation"],
+				"texel_m": group["texel_m"],
+				"per_cell": group["per_cell"]
+			}
+		)
 	return out
 
 
 ## Camera distance where a species is gone: the layer radius, or the species' own end if nearer.
-static func species_end(group: Dictionary, layer: VegetationLayerConfig, preset: VegetationQuality) -> float:
+static func species_end(
+	group: Dictionary, layer: VegetationLayerConfig, preset: VegetationQuality
+) -> float:
 	var radius := layer.radius_m * preset.radius_scale
 	var own := float(group.get("visibility_end_m", 0.0))
 	return minf(own, radius) if own > 0.0 else radius
 
 
-## The instances of planter cell `key`, one MultiMesh buffer (XFORM_STRIDE floats each, cell-local: the cell's corner
-## at the map origin's height 0) per entry of `groups`. Pure: the same inputs give the same floats.
-## `height` is a Callable(x, z) -> float, NAN off the ground. `clears`: rows x, z, radius, edge.
-static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_groups: Array[Dictionary], density: float,
-		key: Vector2i, height: Callable, clears: PackedVector4Array) -> Array[PackedFloat32Array]:
+## The instances of planter cell `key`, one MultiMesh buffer (XFORM_STRIDE floats each, cell-local:
+## the cell's corner at the map origin's height 0) per entry of `groups`. Pure: the same inputs give
+## the same floats. `height` is a Callable(x, z) -> float, NAN off the ground. `clears`: rows x, z,
+## radius, edge.
+static func plan_cell(
+	layer: VegetationLayerConfig,
+	map: FloraDensity,
+	layer_groups: Array[Dictionary],
+	density: float,
+	key: Vector2i,
+	height: Callable,
+	clears: PackedVector4Array
+) -> Array[PackedFloat32Array]:
 	var items: Array = []
 	items.resize(layer_groups.size())
 	for g in layer_groups.size():
@@ -195,10 +238,25 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 				if n <= 0:
 					continue
 				var sub := dz * per + dx
-				var spots := FloraPlacement.cell_instances(seed, tag, tx, tz, n, texel, Vector2(0.0, 1.0))
+				var spots := FloraPlacement.cell_instances(
+					seed, tag, tx, tz, n, texel, Vector2(0.0, 1.0)
+				)
 				for i in n:
 					var at := i * FloraPlacement.STRIDE
-					(items[g] as Array).append([(float(i) + 0.5) / float(n), sub, spots[at], spots[at + 1], spots[at + 2], spots[at + 3], tag_h, tx, tz, i])
+					(items[g] as Array).append(
+						[
+							(float(i) + 0.5) / float(n),
+							sub,
+							spots[at],
+							spots[at + 1],
+							spots[at + 2],
+							spots[at + 3],
+							tag_h,
+							tx,
+							tz,
+							i
+						]
+					)
 	var out: Array[PackedFloat32Array] = []
 	var corner := Vector2(key) * CELL_M
 	for g in layer_groups.size():
@@ -212,13 +270,35 @@ static func plan_cell(layer: VegetationLayerConfig, map: FloraDensity, layer_gro
 		for item: Array in list:
 			var x: float = item[2]
 			var z: float = item[3]
-			if not clears.is_empty() and is_cleared(clears, x, z, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9])):
+			if (
+				not clears.is_empty()
+				and is_cleared(
+					clears, x, z, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9])
+				)
+			):
 				continue
 			var y: float = height.call(x, z)
 			if is_nan(y):
 				continue
-			var at := FloraVariation.instance_transform(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), float(item[4]), float(item[5]), Vector3(x - corner.x, y, z - corner.y))
-			FloraVariation.write_instance(buffer, kept, at, FloraVariation.instance_color(variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), x, z))
+			var at := FloraVariation.instance_transform(
+				variation,
+				seed,
+				int(item[6]),
+				int(item[7]),
+				int(item[8]),
+				int(item[9]),
+				float(item[4]),
+				float(item[5]),
+				Vector3(x - corner.x, y, z - corner.y)
+			)
+			FloraVariation.write_instance(
+				buffer,
+				kept,
+				at,
+				FloraVariation.instance_color(
+					variation, seed, int(item[6]), int(item[7]), int(item[8]), int(item[9]), x, z
+				)
+			)
 			kept += 1
 		buffer.resize(kept * XFORM_STRIDE)
 		out.append(buffer)
@@ -231,15 +311,21 @@ static func _by_rank(a: Array, b: Array) -> bool:
 	return a[1] < b[1]
 
 
-## Inside a clear, or in its edge where a hash of the instance thins it linearly to nothing at the rim.
-static func is_cleared(clears: PackedVector4Array, x: float, z: float, seed: int, tag_h: int, tx: int, tz: int, i: int) -> bool:
+## Inside a clear, or in its edge where a hash of the instance thins it linearly to nothing at the
+## rim.
+static func is_cleared(
+	clears: PackedVector4Array, x: float, z: float, seed: int, tag_h: int, tx: int, tz: int, i: int
+) -> bool:
 	for clear in clears:
 		var d := Vector2(x - clear.x, z - clear.y).length()
 		if d < clear.z:
 			return true
 		if clear.w > 0.0 and d < clear.z + clear.w:
 			var keep := (d - clear.z) / clear.w
-			if FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_CLEAR, tag_h, tx, tz, i)) > keep:
+			if (
+				FloraPlacement.unit(FloraPlacement.cell_hash(seed ^ SALT_CLEAR, tag_h, tx, tz, i))
+				> keep
+			):
 				return true
 	return false
 
@@ -261,14 +347,16 @@ static func write_xform(buffer: PackedFloat32Array, index: int, t: Transform3D) 
 	buffer[at + 11] = t.origin.z
 
 
-## Brings the ring to the camera (`camera_global`), applies finished plans until `deadline_us` (Time.get_ticks_usec) and
-## starts new ones. Call once per frame.
+## Brings the ring to the camera (`camera_global`), applies finished plans until `deadline_us`
+## (Time.get_ticks_usec) and starts new ones. Call once per frame.
 func update(camera_global: Vector3, deadline_us: int) -> void:
 	var cam := _map_inverse * camera_global
 	var ground := shape.height_at(cam.x, cam.z)
 	var above := maxf(cam.y - (ground if not is_nan(ground) else shape.lowest()), 0.0)
 	var radius := config.radius_m * quality.radius_scale
-	_radius = sqrt(radius * radius - above * above) if radius > above else -2.0 * _ring.keep_margin_m
+	_radius = (
+		sqrt(radius * radius - above * above) if radius > above else -2.0 * _ring.keep_margin_m
+	)
 	_eye = Vector2(cam.x, cam.z)
 	var changes := _ring.update(_radius, _eye, _eye)
 	for key: Vector2i in changes["added"]:
@@ -290,8 +378,9 @@ func update(camera_global: Vector3, deadline_us: int) -> void:
 	_start_plans(deadline_us)
 
 
-## The FloraLayers were painted: `map` has the same layers in the same order (FloraDensity.with_layer_bytes), only some
-## bytes differ. Cells planned from now on read it; which cells plan again is the caller's (`replan`).
+## The FloraLayers were painted: `map` has the same layers in the same order
+## (FloraDensity.with_layer_bytes), only some bytes differ. Cells planned from now on read it; which
+## cells plan again is the caller's (`replan`).
 func set_flora(map: FloraDensity) -> void:
 	flora = map
 
@@ -323,8 +412,9 @@ func set_clears(clears: PackedVector4Array) -> void:
 			_pending_sorted = false
 
 
-## The ground under `area` (map coordinates) moved: the cells it touches are planned again with the new heights. Shown
-## cells keep their old plants until the new plan is applied; a plan in flight for one is dropped.
+## The ground under `area` (map coordinates) moved: the cells it touches are planned again with the
+## new heights. Shown cells keep their old plants until the new plan is applied; a plan in flight
+## for one is dropped.
 func replan(area: Rect2) -> void:
 	for key: Vector2i in _cache.keys():
 		if _hits(key, area):
@@ -351,7 +441,8 @@ func _touches(key: Vector2i, touched: PackedVector4Array) -> bool:
 	return false
 
 
-## Applies the finished plans, the nearest first, while the deadline lasts (always one, so a slow frame still moves).
+## Applies the finished plans, the nearest first, while the deadline lasts (always one, so a slow
+## frame still moves).
 func _apply_finished(deadline_us: int) -> void:
 	if _jobs.is_empty():
 		return
@@ -362,7 +453,10 @@ func _apply_finished(deadline_us: int) -> void:
 	if ready.size() > 1:
 		var eye := _eye
 		var ring := _ring
-		ready.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return ring.rect_distance(a, eye) < ring.rect_distance(b, eye))
+		ready.sort_custom(
+			func(a: Vector2i, b: Vector2i) -> bool:
+				return ring.rect_distance(a, eye) < ring.rect_distance(b, eye)
+		)
 	var applied := 0
 	for key in ready:
 		var job: PlanJob = _jobs[key]
@@ -385,15 +479,18 @@ func _apply_finished(deadline_us: int) -> void:
 		built_cells += 1
 
 
-## Starts plans for the nearest pending cells, up to max_builds_per_frame in flight. Without threads the plan is made
-## here and applied right away, while the deadline lasts (always one per frame).
+## Starts plans for the nearest pending cells, up to max_builds_per_frame in flight. Without threads
+## the plan is made here and applied right away, while the deadline lasts (always one per frame).
 func _start_plans(deadline_us: int) -> void:
 	if _pending.is_empty():
 		return
 	if not _pending_sorted:
 		var eye := _eye
 		var ring := _ring
-		_pending.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return ring.rect_distance(a, eye) > ring.rect_distance(b, eye))
+		_pending.sort_custom(
+			func(a: Vector2i, b: Vector2i) -> bool:
+				return ring.rect_distance(a, eye) > ring.rect_distance(b, eye)
+		)
 		_pending_sorted = true
 	var height := shape.sampler()
 	var plain := plan_groups(groups)
@@ -418,10 +515,13 @@ func _start_plans(deadline_us: int) -> void:
 			_apply_finished(deadline_us)
 
 
-## The nodes of a planned cell: one MultiMeshInstance3D per species with instances, filled from its buffer in one copy.
+## The nodes of a planned cell: one MultiMeshInstance3D per species with instances, filled from its
+## buffer in one copy.
 func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 	var nodes := []
-	var cell_xform := map_xform * Transform3D(Basis.IDENTITY, Vector3(key.x * CELL_M, 0.0, key.y * CELL_M))
+	var cell_xform := (
+		map_xform * Transform3D(Basis.IDENTITY, Vector3(key.x * CELL_M, 0.0, key.y * CELL_M))
+	)
 	var tier := _ring.tier_of(key)
 	for g in groups.size():
 		var buffer: PackedFloat32Array = buffers[g]
@@ -439,7 +539,11 @@ func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 		node.multimesh = multimesh
 		node.material_override = group["material"]
 		var shadow := bool(group["cast_shadow"]) and quality.shadows
-		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadow else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.cast_shadow = (
+			GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+			if shadow
+			else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		)
 		node.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
 		node.visibility_range_end = float(group["end_m"]) + CELL_REACH_M
 		node.top_level = true
@@ -452,10 +556,14 @@ func _make_nodes(key: Vector2i, buffers: Array[PackedFloat32Array]) -> Array:
 
 func _apply_tier(nodes: Array, tier: int) -> void:
 	var fractions := config.tier_fractions
-	var fraction := fractions[clampi(tier, 0, fractions.size() - 1)] if not fractions.is_empty() else 1.0
+	var fraction := (
+		fractions[clampi(tier, 0, fractions.size() - 1)] if not fractions.is_empty() else 1.0
+	)
 	for node: MultiMeshInstance3D in nodes:
 		var multimesh := node.multimesh
-		multimesh.visible_instance_count = -1 if fraction >= 1.0 else ceili(multimesh.instance_count * fraction)
+		multimesh.visible_instance_count = (
+			-1 if fraction >= 1.0 else ceili(multimesh.instance_count * fraction)
+		)
 
 
 func _stash(key: Vector2i) -> void:
@@ -487,7 +595,8 @@ func _free_nodes(nodes: Array) -> void:
 			node.queue_free()
 
 
-## Frees every node (shown and cached) and forgets the ring. Waits for the plans in flight (a few ms at most).
+## Frees every node (shown and cached) and forgets the ring. Waits for the plans in flight (a few ms
+## at most).
 func clear() -> void:
 	for key in _jobs:
 		(_jobs[key] as PlanJob).finish()

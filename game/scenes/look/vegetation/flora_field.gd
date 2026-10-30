@@ -3,19 +3,23 @@ class_name FloraField
 extends LookLayer
 
 ## The mesh vegetation of a map (Look/Layers/Flora). One MeshPlanter per VegetationLayerConfig of
-## `configs` (original_plants.tres), each drawing the FloraLayer nodes of the map (the `Vegetation` node of its map.tscn;
-## a snapshot, FloraDensity) around the camera: the 3D viewport's in the editor, the game's when playing.
-## How much each layer draws comes from the quality preset (`LookQuality.vegetation_for(config.id)`; the editor uses
-## `editor_quality`); a preset without an entry for a layer, the rig's «Vegetación» switch off (GraphicsPrefs), the node
-## hidden or a map without FloraLayers draws nothing. A FloraLayer that changes calls `layers_changed` (group `GROUP`).
-## Presentation only: no collision, no RPC, no shared RNG. Every node it makes is an internal child, never saved. In a
-## dedicated or headless process the rig is freed, and this never builds anything there either.
-## A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`; FloraClears): only the cells it touches
-## are rebuilt. The map brush painting a layer calls `layer_painted`: only that area plans again, the planters stay.
-## Ref: RFC-054 054c (F382).
+## `configs` (original_plants.tres), each drawing the FloraLayer nodes of the map (the `Vegetation`
+## node of its map.tscn; a snapshot, FloraDensity) around the camera: the 3D viewport's in the
+## editor, the game's when playing. How much each layer draws comes from the quality preset
+## (`LookQuality.vegetation_for(config.id)`; the editor uses `editor_quality`); a preset without an
+## entry for a layer, the rig's «Vegetación» switch off (GraphicsPrefs), the node hidden or a map
+## without FloraLayers draws nothing. A FloraLayer that changes calls `layers_changed` (group
+## `GROUP`).
+## Presentation only: no collision, no RPC, no shared RNG. Every node it makes is an internal child,
+## never saved. In a dedicated or headless process the rig is freed, and this never builds anything
+## there either. A `VegetationClear` that moves calls `clears_changed` (group `vegetation_field`;
+## FloraClears): only the cells it touches are rebuilt. The map brush painting a layer calls
+## `layer_painted`: only that area plans again, the planters stay.
 
 ## Group of the fields: FloraLayer calls `layers_changed` on it.
 const GROUP := &"flora_field"
+## Group of the map's forest trees (forest_tree.tscn): `dress_trees` gives them the land's meshes.
+const TREE_GROUP := &"forest_tree"
 
 ## The rig this layer belongs to (look_rig.tscn sets it): the terrain, the preset and the switch.
 @export var rig: LookRig
@@ -34,12 +38,15 @@ const GROUP := &"flora_field"
 			_refresh()
 ## Editor only: the plants follow the 3D viewport camera (turn off to freeze them).
 @export var follow_editor_camera := true
-## Main-thread time per frame for every layer together (054e, F384): past it the finished cells wait for the next frame.
-## The planning itself runs on WorkerThreadPool tasks (in the editor, on the main thread inside this same budget).
+## Main-thread time per frame for every layer together: past it the finished cells wait for the next
+## frame. The planning itself runs on WorkerThreadPool tasks (in the editor, on the main thread
+## inside this same budget).
 @export_range(0.1, 8.0, 0.1, "suffix:ms") var build_budget_ms := 1.0
-## The ground moved (a spell raised it): the plants of that part are planned again at most this often.
+## The ground moved (a spell raised it): the plants of that part are planned again at most this
+## often.
 @export_range(0.05, 2.0, 0.05, "suffix:s") var replan_every_s := 0.25
-## RFC-057 057e: a stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 = only when settled.
+## A stamp still playing (the Volcano mound, 64 s) plants the cells it touches again this often; 0 =
+## only when settled.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var live_replan_s := 1.0
 
 var _planters: Array[MeshPlanter] = []
@@ -48,17 +55,24 @@ var _signature := ""
 var _clears := FloraClears.new()
 var _watching: Array[Resource] = []
 var _bound_rig: LookRig
-## What the FloraLayer nodes of the map say now (rebuilt when one changes) and how many times it was rebuilt.
+## What the FloraLayer nodes of the map say now (rebuilt when one changes) and how many times it was
+## rebuilt.
 var _density: FloraDensity
 var _density_dirty := true
+## The match's land plants (the biome's GodFlora); null = the layers' own species.
+var _land: GodFlora
 var _density_version := 0
+## The scene's own mesh of each dressed tree part.
+var _tree_meshes := {}
+var _forest: PropBatch3D
 
 
 func _ready() -> void:
 	add_to_group(VegetationClear.FIELD_GROUP)
 	add_to_group(GROUP)
 	visibility_changed.connect(_refresh)
-	# The rig can push its saved preset before this node is ready (planters already made): keep them running.
+	# The rig can push its saved preset before this node is ready (planters already made): keep them
+	# running.
 	set_process(not _planters.is_empty())
 	_watch_configs()
 	# After the map (terrain, rig sockets) is ready.
@@ -70,11 +84,64 @@ func _enter_tree() -> void:
 		_refresh.call_deferred()
 
 
-func apply_look(_profile: LookProfile, look_rig: LookRig) -> void:
-	# The plants of the original are drawn in every look (classic or a biome): the profile does not matter.
+func apply_look(profile: LookProfile, look_rig: LookRig) -> void:
+	# The map's plants are drawn in every look; the biome's GodFlora picks the species of the
+	# layers that paint a land role.
 	if rig == null:
 		rig = look_rig
+	var land: GodFlora = profile.flora if profile else null
+	if land != _land:
+		_land = land
+		_density_dirty = true
+	dress_trees()
 	_refresh()
+
+
+## The map's forest trees (ForestScatter, group `forest_tree`) take the meshes of the land's trees
+## (GodFlora.trees), each the same one on every peer (by its name). A land without trees, or no
+## land, leaves each tree its scene's mesh. Only the mesh: the trunk is the same on every land. In
+## play a PropBatch3D (PropKit) draws them in batches; in the editor each tree shows its own.
+func dress_trees() -> void:
+	if not is_inside_tree():
+		return
+	var trees := get_tree().get_nodes_in_group(TREE_GROUP)
+	if not Engine.is_editor_hint():
+		if _forest == null:
+			_forest = PropBatch3D.new()
+			_forest.chunk_size = 256.0
+			_forest.build_on_ready = false
+			_forest.mesh_of = func(prop: Node3D, _part: MeshInstance3D) -> Mesh:
+				return _tree_mesh(prop)
+			_forest.top_level = true
+			add_child(_forest, false, INTERNAL_MODE_BACK)
+		_forest.props.assign(get_tree().get_nodes_in_group(ForestScatter.GROUP))
+		_forest.rebuild_all()
+		return
+	for node in trees:
+		var part := node.get_node_or_null(^"Mesh") as MeshInstance3D
+		if part != null:
+			part.mesh = _tree_mesh(node)
+
+
+func _tree_mesh(tree: Node) -> Mesh:
+	var part := tree.get_node_or_null(^"Mesh") as MeshInstance3D
+	if part == null:
+		return null
+	if not _tree_meshes.has(part):
+		_tree_meshes[part] = part.mesh
+	var land: Array = _land.trees if _land else []
+	var picked: VegetationSpecies = (
+		land[posmod(hash(String(tree.name)), land.size())] if not land.is_empty() else null
+	)
+	return picked.mesh if picked and picked.mesh else _tree_meshes[part]
+
+
+# The editor saves each tree with its scene's mesh, never the land's.
+func _undress_trees() -> void:
+	for part: Variant in _tree_meshes:
+		if is_instance_valid(part):
+			(part as MeshInstance3D).mesh = _tree_meshes[part]
+	_tree_meshes.clear()
 
 
 func apply_quality(_preset: LookQuality) -> void:
@@ -92,8 +159,9 @@ func clears_changed() -> void:
 	_clears.mark()
 
 
-## The map brush painted `layer` over `area_m` (map x, z; FloraLayer.show_painting): a new snapshot with its bytes goes to
-## the same planters, which plan that area again under the ground's brake. A layer not drawn yet makes the full rebuild.
+## The map brush painted `layer` over `area_m` (map x, z; FloraLayer.show_painting): a new snapshot
+## with its bytes goes to the same planters, which plan that area again under the ground's brake. A
+## layer not drawn yet makes the full rebuild.
 func layer_painted(layer: FloraLayer, area_m: Rect2) -> void:
 	var id := layer.get_instance_id()
 	if _density == null or _density_dirty or not _density.layer_ids.has(id):
@@ -117,11 +185,17 @@ func preset() -> LookQuality:
 	return rig.quality_preset if rig else null
 
 
-## The layers this field draws with the current rig, preset and switch: [{config, quality}]. The process kind (headless,
-## dedicated) is not part of it: `presentationless` stops the building on top.
+## The layers this field draws with the current rig, preset and switch: [{config, quality}]. The
+## process kind (headless, dedicated) is not part of it: `presentationless` stops the building on
+## top.
 func active_layers() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	if rig == null or not is_inside_tree() or not rig.vegetation_enabled or density().entries() == 0:
+	if (
+		rig == null
+		or not is_inside_tree()
+		or not rig.vegetation_enabled
+		or density().entries() == 0
+	):
 		return out
 	var current := preset()
 	if current == null:
@@ -165,7 +239,10 @@ func _refresh() -> void:
 func _bind_rig() -> void:
 	if _bound_rig == rig:
 		return
-	if is_instance_valid(_bound_rig) and _bound_rig.vegetation_toggled.is_connected(_on_vegetation_toggled):
+	if (
+		is_instance_valid(_bound_rig)
+		and _bound_rig.vegetation_toggled.is_connected(_on_vegetation_toggled)
+	):
 		_bound_rig.vegetation_toggled.disconnect(_on_vegetation_toggled)
 	_bound_rig = rig
 	if rig and not rig.vegetation_toggled.is_connected(_on_vegetation_toggled):
@@ -183,7 +260,19 @@ func _signature_of(layers: Array[Dictionary], surface: Terrain) -> String:
 	parts.append(str(surface.get_instance_id() if surface else 0))
 	for layer in layers:
 		var q: VegetationQuality = layer["quality"]
-		parts.append("%d:%s:%s:%s:%s:%d" % [(layer["config"] as Object).get_instance_id(), q.enabled, q.radius_scale, q.density_scale, q.shadows, q.max_builds_per_frame])
+		parts.append(
+			(
+				"%d:%s:%s:%s:%s:%d"
+				% [
+					(layer["config"] as Object).get_instance_id(),
+					q.enabled,
+					q.radius_scale,
+					q.density_scale,
+					q.shadows,
+					q.max_builds_per_frame
+				]
+			)
+		)
 	return "|".join(parts)
 
 
@@ -213,12 +302,14 @@ func _watch_configs() -> void:
 	for resource in _watching:
 		if is_instance_valid(resource) and resource.changed.is_connected(_on_config_changed):
 			resource.changed.disconnect(_on_config_changed)
-	_watching.assign(configs.filter(func(config: VegetationLayerConfig) -> bool: return config != null))
+	_watching.assign(
+		configs.filter(func(config: VegetationLayerConfig) -> bool: return config != null)
+	)
 	for resource in _watching:
 		resource.changed.connect(_on_config_changed)
 
 
-## Editing a config in the inspector rebuilds the layers (RFC-054 §11.2).
+## Editing a config in the inspector rebuilds the layers.
 func _on_config_changed() -> void:
 	_watch_configs()
 	_free_planters()
@@ -227,30 +318,38 @@ func _on_config_changed() -> void:
 
 ## Instances drawn now by every layer (the visible prefix of each shown cell).
 func instance_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.instance_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.instance_count(), 0
+	)
 
 
 ## Cells built and shown by every layer.
 func cell_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.cell_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.cell_count(), 0
+	)
 
 
 ## MultiMeshInstance3D nodes shown by every layer.
 func node_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.node_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.node_count(), 0
+	)
 
 
 func pending_count() -> int:
-	return _planters.reduce(func(sum: int, planter: MeshPlanter) -> int: return sum + planter.pending_count(), 0)
+	return _planters.reduce(
+		func(sum: int, planter: MeshPlanter) -> int: return sum + planter.pending_count(), 0
+	)
 
 
-## The FloraLayer nodes of this field's map as a snapshot: the layers under the same MapRoot (or, without one, in the
-## tree), taken again after one changed.
+## The FloraLayer nodes of this field's map as a snapshot: the layers under the same MapRoot (or,
+## without one, in the tree), taken again after one changed.
 func density() -> FloraDensity:
 	if _density == null or _density_dirty:
 		_density_dirty = false
 		_density_version += 1
-		_density = FloraDensity.gather(_scope())
+		_density = FloraDensity.gather(_scope(), _land)
 	return _density
 
 
@@ -265,6 +364,15 @@ func planters() -> Array[MeshPlanter]:
 	return _planters
 
 
+func _notification(what: int) -> void:
+	if not Engine.is_editor_hint():
+		return
+	if what == NOTIFICATION_EDITOR_PRE_SAVE:
+		_undress_trees()
+	elif what == NOTIFICATION_EDITOR_POST_SAVE:
+		dress_trees()
+
+
 func _exit_tree() -> void:
 	_ground.follow(null)
 	_free_planters()
@@ -273,7 +381,7 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if rig == null:
-		warnings.append("Falta el socket Rig (el LookRig del mapa).")
+		warnings.append("The Rig socket is missing (the map's LookRig).")
 	if editor_quality == null:
-		warnings.append("Falta editor_quality: el editor no muestra las plantas.")
+		warnings.append("editor_quality is missing: the editor shows no plants.")
 	return warnings

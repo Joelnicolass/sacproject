@@ -1,10 +1,9 @@
 class_name ImplosionImpact
 extends ShotImpact
 
-## The Flurry's shot: after the damage (its SplashImpact
-## sibling) an implosion of effectRange that shrinks over the spell's duration starts where the shot burst. It goes to
-## the shot's parent, so it outlives the shot.
-## Ref: F121 (RFC-030j); Flurry caba (flurryProjectileImplosion, state.d:24577-24598).
+## The Flurry's shot: after the damage (its SplashImpact sibling) an implosion of effect range that
+## shrinks over the spell's duration starts where the shot burst. It goes to the shot's parent, so
+## it outlives the shot.
 
 @export var implosion_scene: PackedScene
 
@@ -21,5 +20,16 @@ func _affect(shot: Node3D, _target: Node3D, point: Vector3, ability: AbilityType
 	implosion.side = int(shot.get("from_slot"))
 	shot.get_parent().add_child(implosion)
 	implosion.global_position = point
-	print("implosión en (%.2f, %.2f, %.2f) %.1f m en %.2f s (cuadro %d)" % [point.x, point.y, point.z, implosion.effect_range,
-		implosion.duration_s, MatchClock.now()])
+	print(
+		(
+			"implosion at (%.2f, %.2f, %.2f) %.1f m in %.2f s (frame %d)"
+			% [
+				point.x,
+				point.y,
+				point.z,
+				implosion.effect_range,
+				implosion.duration_s,
+				MatchClock.now()
+			]
+		)
+	)

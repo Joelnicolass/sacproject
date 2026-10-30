@@ -2,17 +2,19 @@
 class_name BuildRing
 extends MeshInstance3D
 
-## The ring on the ground that shows the area a structure spell clears around a manafount: green when the tower can rise there,
-## red when the cast would be refused, hidden otherwise. The editor always shows it (green) so the area can be seen while it
-## is moved; in the game it stays hidden until a preview asks for it. Presentation only: it reads nothing of the match.
-## Does not decide the state (ArmedPreview, through BuildArea) nor the radius (BuildArea calls `set_radius`).
-## The mesh is a 2 x 2 PlaneMesh: the node's scale is the radius. Without `material_override` it takes build_ring_material.tres.
+## The ring on the ground that shows the area a structure spell clears around a manafount: green
+## when the tower can rise there, red when the cast would be refused, hidden otherwise. The editor
+## always shows it (green) so the area can be seen while it is moved; in the game it stays hidden
+## until a preview asks for it. Presentation only: it reads nothing of the match. Does not decide
+## the state (ArmedPreview, through BuildArea) nor the radius (BuildArea calls `set_radius`). The
+## mesh is a 2 x 2 PlaneMesh: the node's scale is the radius. Without `material_override` it takes
+## build_ring_material.tres.
 
 enum State { HIDDEN, OK, BLOCKED }
 
 const _MATERIAL := preload("res://scenes/map/props/build_ring_material.tres")
 
-## Colours and line width (data/ui/build_area_look.tres).
+## Colours and line width (scenes/ui/build_area_look.tres).
 @export var look: BuildAreaLook:
 	set(value):
 		if look != null and look.changed.is_connected(_paint):
@@ -31,9 +33,9 @@ var state := State.HIDDEN
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if look == null:
-		warnings.append("Asigná `look` (data/ui/build_area_look.tres).")
+		warnings.append("Assign `look` (scenes/ui/build_area_look.tres).")
 	if not mesh is PlaneMesh:
-		warnings.append("El anillo necesita un PlaneMesh de 2 x 2 m: la escala del nodo es el radio.")
+		warnings.append("The ring needs a 2 x 2 m PlaneMesh: the node's scale is the radius.")
 	return warnings
 
 
@@ -58,5 +60,7 @@ func set_radius(radius_m: float) -> void:
 func _paint() -> void:
 	if look == null:
 		return
-	set_instance_shader_parameter(&"ring_color", look.blocked_color if state == State.BLOCKED else look.ok_color)
+	set_instance_shader_parameter(
+		&"ring_color", look.blocked_color if state == State.BLOCKED else look.ok_color
+	)
 	set_instance_shader_parameter(&"width_m", look.width_m)

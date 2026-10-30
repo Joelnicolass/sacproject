@@ -3,59 +3,51 @@ class_name Tether
 extends MeshInstance3D
 
 ## Electric rope between two points that sags and lags like a damped spring.
-## Five control points: P0 at `start`, P1 along the start's `start_axis` by `elbow` meters, P4 at `end`;
-## P2 and P3 are masses on a spring. The rope is a tube of 3 planes at 120 degrees
-## with pointed ends, drawn additive from its `atlas` (ltn2) with a brightness pulse.
-## The Sac Doctor's carry uses it with the elbow; the ritual (RFC-020d) uses it with `elbow = 0`.
+## Five control points: P0 at `start`, P1 along the start's `start_axis` by `elbow` meters, P4 at
+## `end`; P2 and P3 are masses on a spring. The rope is a tube of 3 planes at 120 degrees with
+## pointed ends, drawn additive from its `atlas` (ltn2) with a brightness pulse. The Sac Doctor's
+## carry uses it with the elbow; the ritual uses it with `elbow = 0`.
 ## Presentation only: it moves nothing. Remove the node to switch it off.
 ## Mesh and material are made here and are not stored in the scene.
-## Ref: sacengine SacDocTether state.d:15556-15613, spring state.d:15577-15600; mesh makeLineMeshes sacobject.d:2189-2227, 4446-4459; render renderer.d:1678-1703, pulse renderer.d:1688.
 
 const CORNERS := 4
 const UV_INSET := 0.5 / 64.0
 
 ## Where the rope starts (the doctor's needle).
 @export var start: Node3D
-## Where it ends (the center of the creature). Without it the rope is hidden (in the editor: a preview).
+## Where it ends (the center of the creature). Without it the rope is hidden (in the editor: a
+## preview).
 @export var end: Node3D
 ## Axis of `start` along which the rope leaves first. Godot +Z = the doctor's forward.
 @export var start_axis := Vector3.BACK
 ## Meters the rope leaves along the axis before it heads for `end`.
 ## 0 = no elbow (the ritual tethers use NaN).
-## Ref: sacengine needleExpansion 1.5; state.d:15563.
 @export_range(0.0, 5.0, 0.05) var elbow := 1.5
 
 @export_group("Shape")
 ## Segments of the tube.
-## Ref: sacengine 19 (renderer.d numSegments, sacobject.d:4446).
 @export_range(4, 64) var segments := 19
 ## Distance from the axis to each of the 3 planes, meters.
-## Ref: sacengine 0.3.
 @export_range(0.01, 2.0, 0.01) var radius := 0.3
 
 @export_group("Spring")
 ## a = gain * |d|^exponent * d.
-## Ref: sacengine state.d:15580.
 @export var spring_gain := 120.0
 @export var spring_exponent := 2.0 / 7.0
 ## Fraction of the speed that remains after 1 s.
-## Ref: sacengine exp(log(0.25)/60) per tick.
 @export_range(0.0, 1.0, 0.01) var damping_per_s := 0.25
 ## Cap of the speed relative to the needle, m/s.
-## Ref: sacengine state.d:15594.
 @export var max_relative_speed := 20.0
 
 @export_group("Look")
 ## The 4x4 atlas of the rope (ltn2.png in tether.tscn). Empty = a flat `fallback_color` fill.
 @export var atlas: Texture2D
 ## Brightness pulse between 0.375 and 15.
-## Ref: sacengine 0.375 + 14.625 * (...), renderer.d:1688-1690.
 @export var energy_min := 0.375
 @export var energy_max := 15.0
-## Multiplies the whole brightness. 1 = the original's numbers.
+## Multiplies the whole brightness. 1 = the reference numbers.
 @export_range(0.0, 4.0, 0.01) var energy_scale := 1.0
 @export var pulse := true
-## Ref: 2 ticks of the original per atlas cell.
 @export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 @export var fallback_color := Color(0.4, 0.8, 1.0)
 
@@ -94,9 +86,11 @@ func _validate_property(property: Dictionary) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if start == null:
-		warnings.append("Asigná en `start` el nodo donde empieza la cuerda (la aguja del doctor).")
+		warnings.append("Assign in `start` the node where the rope starts (the doctor's needle).")
 	if atlas == null:
-		warnings.append("Asigná en `atlas` la textura de la cuerda (ltn2.png); sin ella se dibuja un relleno.")
+		warnings.append(
+			"Assign in `atlas` the rope texture (ltn2.png); without it a fill is drawn."
+		)
 	return warnings
 
 
@@ -153,7 +147,6 @@ func _targets() -> PackedVector3Array:
 	out[0] = p0
 	# The points after the first are
 	# i/intp * center + (intp - i)/intp * first.
-	## Ref: sacengine getSacDocTetherTargetLocations, state.d:15556-15567.
 	if elbow > 0.0:
 		var first := p0 + elbow * axis
 		for i in 4:
@@ -182,7 +175,6 @@ func _step(targets: PackedVector3Array, delta: float) -> void:
 
 
 ## Hermite curve through the 5 points: point and tangent at t in 0..1.
-## Ref: sacengine cintp, util.d:562.
 func _curve(t: float) -> Array[Vector3]:
 	var n := 5
 	var i := maxi(0, mini(int(floor(t * (n - 1))), n - 2))
@@ -193,8 +185,18 @@ func _curve(t: float) -> Array[Vector3]:
 	var m1 := _loc[mini(i + 2, n - 1)] - _loc[i]
 	var u2 := u * u
 	var u3 := u2 * u
-	var p := (2 * u3 - 3 * u2 + 1) * p0 + (u3 - 2 * u2 + u) * m0 + (-2 * u3 + 3 * u2) * p1 + (u3 - u2) * m1
-	var m := (6 * u2 - 6 * u) * p0 + (3 * u2 - 4 * u + 1) * m0 + (-6 * u2 + 6 * u) * p1 + (3 * u2 - 2 * u) * m1
+	var p := (
+		(2 * u3 - 3 * u2 + 1) * p0
+		+ (u3 - 2 * u2 + u) * m0
+		+ (-2 * u3 + 3 * u2) * p1
+		+ (u3 - u2) * m1
+	)
+	var m := (
+		(6 * u2 - 6 * u) * p0
+		+ (3 * u2 - 4 * u + 1) * m0
+		+ (-6 * u2 + 6 * u) * p1
+		+ (3 * u2 - 2 * u) * m1
+	)
 	return [p, m]
 
 
@@ -203,11 +205,17 @@ func _draw() -> void:
 	var centers: Array[Vector3] = []
 	var offsets: Array = []
 	var sqrt34 := sqrt(0.75)
-	var base := [Vector3(0, -1, 0) * radius, Vector3(sqrt34, 0.5, 0) * radius, Vector3(-sqrt34, 0.5, 0) * radius]
+	var base := [
+		Vector3(0, -1, 0) * radius,
+		Vector3(sqrt34, 0.5, 0) * radius,
+		Vector3(-sqrt34, 0.5, 0) * radius
+	]
 	for i in count:
 		var c := _curve(float(i) / float(count - 1))
 		centers.append(c[0])
-		var tangent: Vector3 = c[1].normalized() if c[1].length_squared() > 0.000001 else Vector3.BACK
+		var tangent: Vector3 = (
+			c[1].normalized() if c[1].length_squared() > 0.000001 else Vector3.BACK
+		)
 		var q := Quaternion(Vector3.BACK, tangent)
 		offsets.append([q * base[0], q * base[1], q * base[2]])
 	_imesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)

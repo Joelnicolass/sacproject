@@ -1,22 +1,19 @@
 class_name OrderCommand
 extends Node
 
-## Orders to the selection: a right click orders by what is under the cursor (ground = move, enemy = attack, corpse =
-## guard the spot, anything else = guard it), an armed order icon (Ctrl+R / Ctrl+A, or the radial menu's entry) takes
-## the left click the same way, retreat calls every creature back to the wizard and a formation is stored on the
-## selection. The right button itself belongs to OrderRadial.
-## Ref: RFC-038; sacengine dagonBackend.d:1215-1233, state.d:29256.
-
-const _SELECTION := preload("res://scenes/orders/selection.gd")
-const _ORDERS := preload("res://scenes/orders/orders.gd")
+## Orders to the selection: a right click orders by what is under the cursor (ground = move, enemy =
+## attack, corpse = guard the spot, anything else = guard it), an armed order icon (Ctrl+R / Ctrl+A,
+## or the radial menu's entry) takes the left click the same way, retreat calls every creature back
+## to the wizard and a formation is stored on the selection. The right button itself belongs to
+## OrderRadial.
 
 @export var armed: ArmedCommand
 @export var ray: PointerRay
 @export var feedback: CommandFeedback
 
 @onready var _log: CommandLog = %Battle
-@onready var _selection: _SELECTION = %Selection
-@onready var _orders: _ORDERS = %Orders
+@onready var _selection: RtsSelection = %Selection
+@onready var _orders: RtsOrders = %Orders
 
 
 ## The keyboard action has no cursor: it aims through the crosshair, which the third-person
@@ -42,7 +39,6 @@ func right_at(screen: Vector2, from_action := false, formation_id := &"") -> voi
 
 ## Attack or guard a body; on the ground, advance or guard the spot. A move icon (radial menu)
 ## goes to the ground point under the cursor.
-## Ref: dagonBackend.d:1215-1233.
 func icon_at(screen: Vector2) -> void:
 	icon_on(ray.body_under(screen, false), ray.ground(screen))
 
@@ -72,12 +68,12 @@ func retreat() -> void:
 	if wizard == null:
 		_log.say(Refusal.NO_WIZARD)
 		return
-	_orders.request([], "retreat", wizard.global_position, wizard, ray.camera_yaw())
+	_orders.issue(&"retreat", [], wizard.global_position, wizard, ray.camera_yaw())
 	_log.say("Retirada")
 
 
-## What a right click would order where the pointer is: `ground`, `enemy`, `own` (a creature or wizard of the local side) or
-## `corpse`. The radial menu shows the matching icon in its center.
+## What a right click would order where the pointer is: `ground`, `enemy`, `own` (a creature or
+## wizard of the local side) or `corpse`. The radial menu shows the matching icon in its center.
 func context_kind(screen: Vector2) -> StringName:
 	var body := ray.body_under(screen, false)
 	if body == null:
@@ -87,8 +83,8 @@ func context_kind(screen: Vector2) -> StringName:
 	return &"enemy" if ray.is_enemy(body) else &"own"
 
 
-## The radial menu chose an order entry: `kind` ("attack", "guard", "move") is given at the screen point the menu opened on,
-## as an armed icon clicked there (a body, else the ground spot).
+## The radial menu chose an order entry: `kind` ("attack", "guard", "move") is given at the screen
+## point the menu opened on, as an armed icon clicked there (a body, else the ground spot).
 func order_at(kind: String, screen: Vector2) -> void:
 	if not CommandFeedback.ORDER_TEXT.has(kind):
 		return
@@ -97,10 +93,10 @@ func order_at(kind: String, screen: Vector2) -> void:
 	icon_at(screen)
 
 
-## The radial menu chose a formation: the right click of that point (move, attack or guard by what is there) given in that
-## formation, in one order. Says the formation's name.
+## The radial menu chose a formation: the right click of that point (move, attack or guard by what
+## is there) given in that formation, in one order. Says the formation's name.
 func order_in_formation(id: StringName, screen: Vector2) -> void:
-	var formation: FormationType = _orders.catalog.find(id) if _orders.catalog else null
+	var formation: RtsFormation = _orders.formations.find(id) if _orders.formations else null
 	if formation == null:
 		return
 	armed.mode = ""
@@ -108,25 +104,36 @@ func order_in_formation(id: StringName, screen: Vector2) -> void:
 	_log.say(formation.display_name)
 
 
-## Alt+1..8: the formation: every selected creature keeps it and nobody moves (the next order uses the one most of
-## the group has, Orders). Says the formation's name.
+## Alt+1..8: the formation: every selected creature keeps it and nobody moves (the next order uses
+## the one most of the group has, Orders). Says the formation's name.
 func set_formation(id: StringName) -> void:
-	var formation: FormationType = _orders.catalog.find(id) if _orders.catalog else null
+	var formation: RtsFormation = _orders.formations.find(id) if _orders.formations else null
 	if formation == null:
 		return
-	var units: Array = _selection.units()
+	var units: Array = _selection.bodies()
 	if units.is_empty():
 		_log.say(Refusal.NOBODY)
 		return
-	_orders.request(units, "formation", Vector3.ZERO, null, ray.camera_yaw(), id)
+	_orders.issue(RtsOrders.FORMATION, units, Vector3.ZERO, null, ray.camera_yaw(), id)
 	_log.say(formation.display_name)
 
 
 func order(kind: String, point: Vector3, target: Node3D, formation_id := &"") -> void:
-	var units: Array = _selection.units()
+	var units: Array = _selection.bodies()
 	if units.is_empty():
 		_log.say(Refusal.NOBODY)
 		return
 	feedback.show_ping(point, CommandFeedback.ORDER_TONE.get(kind, OrderMarker.Tone.WHITE))
-	_orders.request(units, kind, point, target, ray.camera_yaw(), formation_id)
+	_orders.issue(_command_of(kind, target), units, point, target, ray.camera_yaw(), formation_id)
 	feedback.say_order(kind)
+
+
+# The RtsKit command of an order kind of the cursor: an attack on a creature retargets, on anything
+# else it does not (OrderLink.attack_command); an advance is the kit's attack_move.
+static func _command_of(kind: String, target: Node3D) -> StringName:
+	match kind:
+		"attack":
+			return OrderLink.attack_command(target)
+		"advance":
+			return &"attack_move"
+	return StringName(kind)

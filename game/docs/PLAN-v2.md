@@ -1,6 +1,6 @@
 # Plan v2: del port funcional al juego «human first, Godot priority»
 
-Fecha: 2026-10-23. La v1 del port está en `main` (`840be169`). Este plan cubre los puntos que el usuario reportó al probarla, ordenados por cómo conviene atacarlos. El análisis del código y el orden del refactor grande van en `rfcs/RFC-055-human-first-refactor.md` (en curso).
+Fecha: 2026-10-23. La v1 del port está en `main` (`840be169`). Este plan cubre los puntos que el usuario reportó al probarla, ordenados por cómo conviene atacarlos. El análisis del código y el orden del refactor grande van en `docs/archive/rfcs/RFC-055-human-first-refactor.md` (en curso).
 
 ## 1. Qué reportó el usuario y dónde cae cada cosa
 
@@ -25,7 +25,7 @@ Fecha: 2026-10-23. La v1 del port está en `main` (`840be169`). Este plan cubre 
 
 ## 2. Orden propuesto
 
-**Actualizado 2026-10-23:** el orden vigente y el registro de deprecación del 1 a 1 están en `rfcs/RFC-055-human-first-refactor.md` §13. El refactor va antes que cualquier contenido nuevo.
+**Actualizado 2026-10-23:** el orden vigente y el registro de deprecación del 1 a 1 están en `docs/archive/rfcs/RFC-055-human-first-refactor.md` §13. El refactor va antes que cualquier contenido nuevo.
 
 ### Fase 0: parches cortos, esta semana
 Sin refactor, cada uno en un commit. Son los puntos 2, 3, 4 y 5, y si molesta, el 10.

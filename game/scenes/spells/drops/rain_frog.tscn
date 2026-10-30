@@ -8,10 +8,10 @@
 [ext_resource type="Script" path="res://scenes/spells/drops/frog_cling.gd" id="cling"]
 [ext_resource type="Script" path="res://scenes/spells/drops/drop_blast.gd" id="blast"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="ptype"]
-[ext_resource type="Resource" path="res://data/fx/frog_burst.tres" id="frog_burst"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/frog_burst.tres" id="frog_burst"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="emitter"]
 [ext_resource type="Script" path="res://scenes/spells/drops/frog_look.gd" id="look"]
-[ext_resource type="Resource" path="res://data/audio/cues/frog_croak.tres" id="cue_frog_croak"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/frog_croak.tres" id="cue_frog_croak"]
 
 [sub_resource type="QuadMesh" id="Quad_Sprite"]
 size = Vector2(0.75, 0.75)

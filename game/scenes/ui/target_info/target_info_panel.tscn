@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/target_info/target_info_panel.gd" id="1_panel"]
-[ext_resource type="Resource" path="res://data/ui/feel_prefs.tres" id="3_prefs"]
-[ext_resource type="Theme" path="res://data/ui/theme.tres" id="4_theme"]
+[ext_resource type="Resource" path="res://scenes/ui/feel_prefs.tres" id="3_prefs"]
+[ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="4_theme"]
 
 [node name="TargetInfoPanel" type="Control"]
 visible = false

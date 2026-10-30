@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="GrassLook" format=3]
+
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_look.gd" id="1_look"]
+
+[resource]
+script = ExtResource("1_look")
+height_range = Vector2(0.2, 0.9)
+width = 0.055
+tip_width = 0.3
+lean = 0.75
+clump_size = 2.6
+base_color = Color(0.38, 0.26, 0.22, 1)
+tip_color = Color(0.58, 0.42, 0.35, 1)
+ground_tint = 0.4
+fade_to_ground = 0.3
+roughness = 0.55
+translucency = Color(0.26, 0.19, 0.16, 1)
+root_shade = 0.25
+roundness = 0.6
+gust_lighten = 0.35
+far_grass = 0.8
+align_to_normal = 0.8
+color_variation = 0.35
+view_thicken = 0.8
+flutter = 0.25
+under_grass = 0.9
+under_relief = 0.35

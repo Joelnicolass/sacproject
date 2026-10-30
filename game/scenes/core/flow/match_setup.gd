@@ -1,29 +1,41 @@
 class_name MatchSetup
 extends RefCounted
 
-## What the one who creates the match chose over the rules (the menu, the flags of this process or a room's ticket).
-## SacrificeFlow keeps one; the world applies it on the authority before the seed (`apply_to`). It never touches the `.tres`.
-## Precedence: menu > flag > rules (`overlaid_by`). It holds Resources, never tags: MatchWire turns the text of the network into them.
+## What the one who creates the match chose over the rules (the menu, the flags of this process or a
+## room's ticket). SacrificeFlow keeps one; the world applies it on the authority before the seed
+## (`apply_to`). It never touches the `.tres`.
+## Precedence: menu > flag > rules (`overlaid_by`). It holds Resources, never tags: MatchWire turns
+## the text of the network into them.
 
 ## Wizard level of both wizards, 1-9. 0 = the rules' wizard_level.
 var level := 0
 ## 1 on, 0 off, -1 = the rules' friendly_fire.
 var friendly_fire := -1
-## RFC-031 031d (F143): 1 on, 0 off, -1 = the rules' enable_drop_soul (P drops a soul).
+## 1 on, 0 off, -1 = the rules' enable_drop_soul (P drops a soul).
 var drop_soul := -1
-## RFC-031 031d (F143): blue souls of every wizard at the start; -1 = the rules' starting_souls.
+## Blue souls of every wizard at the start; -1 = the rules' starting_souls.
 var starting_souls := -1
-## RFC-034 034e: the seed of the match; 0 = the rules' `match_seed` (the one who simulates draws it). The room server draws it
-## and puts it in the ticket (`--match-ticket-file`); `--match-seed=N` sets it by hand. The benches pass none.
+## The seed of the match; 0 = the rules' `match_seed` (the one who simulates draws it). The room
+## server draws it and puts it in the ticket (`--match-ticket-file`); `--match-seed=N` sets it by
+## hand. Tests may pass none.
 var match_seed := 0
-## The map of the match; null = the one of `--map` or the default. It is not a rule of the round: `apply_to` and `is_empty`
-## ignore it, and SacrificeFlow hands it to ActiveMatch.
+## The map of the match; null = the one of `--map` or the default. It is not a rule of the round:
+## `apply_to` and `is_empty` ignore it, and SacrificeFlow hands it to ActiveMatch.
 var map: MapDefinition
-## The game mode of the match; null = the one of `--mode` or 1v1. Like `map`, it is not a rule of the round.
+## The game mode of the match; null = the one of `--mode` or 1v1. Like `map`, it is not a rule of
+## the round.
 var mode: GameMode
-## The land of the match (the god whose look the map wears); null = drawn from the seed. Unlike `map` it IS a rule of the round for
-## `apply_to`: the copy of the rules carries it (`biome`) and MatchBiome on the authority sends the result to the clients.
+## The land of the match (the god whose look the map wears); null = drawn from the seed. Unlike
+## `map` it IS a rule of the round for `apply_to`: the copy of the rules carries it (`biome`) and
+## MatchBiome on the authority sends the result to the clients.
 var biome: GodType
+## The hour of the match, 0..24 (MatchRules `sky_hour`); -1 = the land's own clock. A rule of the
+## round like `biome`: MatchSky carries it to the clients.
+var sky_hour := -1.0
+## The weather of the match (MatchRules `weather`); null = the land's plan.
+var weather: WeatherState
+## 1 on, 0 off, -1 = the rules' forest (the map's trees).
+var forest := -1
 
 
 func copy() -> MatchSetup:
@@ -36,14 +48,28 @@ func copy() -> MatchSetup:
 	other.map = map
 	other.mode = mode
 	other.biome = biome
+	other.sky_hour = sky_hour
+	other.weather = weather
+	other.forest = forest
 	return other
 
 
 func is_empty() -> bool:
-	return level == 0 and friendly_fire < 0 and drop_soul < 0 and starting_souls < 0 and match_seed == 0 and biome == null
+	return (
+		level == 0
+		and friendly_fire < 0
+		and drop_soul < 0
+		and starting_souls < 0
+		and match_seed == 0
+		and biome == null
+		and sky_hour < 0.0
+		and weather == null
+		and forest < 0
+	)
 
 
-## A copy of this setup where every field `over` sets wins (boot > flag: the boot's setup over the flags' one).
+## A copy of this setup where every field `over` sets wins (boot > flag: the boot's setup over the
+## flags' one).
 func overlaid_by(over: MatchSetup) -> MatchSetup:
 	var merged := copy()
 	if over == null:
@@ -64,11 +90,18 @@ func overlaid_by(over: MatchSetup) -> MatchSetup:
 		merged.mode = over.mode
 	if over.biome != null:
 		merged.biome = over.biome
+	if over.sky_hour >= 0.0:
+		merged.sky_hour = over.sky_hour
+	if over.weather != null:
+		merged.weather = over.weather
+	if over.forest >= 0:
+		merged.forest = over.forest
 	return merged
 
 
-## A copy of `rules` with the overrides of this setup. Without overrides (a bench, a run with no flags) it returns
-## `rules` itself, so nothing that reads the world's rules changes. `rules` that are not MatchRules pass through.
+## A copy of `rules` with the overrides of this setup. Without overrides (a test, a run with no
+## flags) it returns `rules` itself, so nothing that reads the world's rules changes. `rules` that
+## are not MatchRules pass through.
 func apply_to(rules: Variant) -> Variant:
 	if not rules is MatchRules or is_empty():
 		return rules
@@ -85,4 +118,10 @@ func apply_to(rules: Variant) -> Variant:
 		copy.match_seed = match_seed
 	if biome != null:
 		copy.biome = biome
+	if sky_hour >= 0.0:
+		copy.sky_hour = sky_hour
+	if weather != null:
+		copy.weather = weather
+	if forest >= 0:
+		copy.forest = forest == 1
 	return copy

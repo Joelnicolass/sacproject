@@ -1,14 +1,17 @@
 class_name TargetInfo
 extends RefCounted
 
-## What the info box says about a body (the original's mouse-over box, described, not
-## copied). `describe` is the one owner of that text and of the health the box shows; it reads the body and writes nothing.
-## - Creature (or Sac Doctor): its icon and «<name> de <wizard of its side>»; an NPC side or nobody's: «<name> de la aldea».
+## What the mouse-over info box says about a body. `describe` is the one owner of that text and of
+## the health the box shows; it reads the body and writes nothing.
+## - Creature (or Sac Doctor): its icon and «<name> de <wizard of its side>»; an NPC side or
+##   nobody's: «<name> de la aldea».
 ## - Wizard: its name.
-## - Building: `BuildingType.display_name`, else «Edificio». Altar and manafount have fixed names; the Manalith and the Shrine take theirs from their BuildingType.
-## - Corpse: «Cadáver de <name>». Soul: «Alma»; a red soul for `local_slot` (another side's): «Alma pagana. Convertila.».
-## - `fraction` = current / maximum of its Health; NaN when it has none or its maximum is 0 (indestructible): no bar.
-## Ref: RFC-053 053e (F374); sacengine renderer.d:5036-5230.
+## - Building: `BuildingType.display_name`, else «Edificio». Altar and manafount have fixed names;
+##   the Manalith and the Shrine take theirs from their BuildingType.
+## - Corpse: «Cadáver de <name>». Soul: «Alma»; a red soul for `local_slot` (another side's): «Alma
+##   pagana. Convertila.».
+## - `fraction` = current / maximum of its Health; NaN when it has none or its maximum is 0
+##   (indestructible): no bar.
 
 var title := ""
 var icon: Texture2D
@@ -22,7 +25,8 @@ func has_bar() -> bool:
 	return not is_nan(fraction)
 
 
-## What the box says about `node` seen by `local_slot`, or null when it has nothing to say (ground, a freed node).
+## What the box says about `node` seen by `local_slot`, or null when it has nothing to say (ground,
+## a freed node).
 static func describe(node: Node, local_slot: int) -> TargetInfo:
 	if node == null or not is_instance_valid(node) or not node.is_inside_tree():
 		return null
@@ -31,7 +35,7 @@ static func describe(node: Node, local_slot: int) -> TargetInfo:
 		var red := (node as Soul).color_for(local_slot) == Soul.SoulColor.RED
 		info.title = UiText.t(&"TARGET_INFO_SOUL_PAGAN" if red else &"TARGET_INFO_SOUL")
 		return info
-	if node.is_in_group("corpse") or _is_dead(node):
+	if node.is_in_group(Corpse.GROUP) or _is_dead(node):
 		info.title = UiText.t(&"TARGET_INFO_CORPSE") % _name_of(node)
 		return info
 	if node is Altar:
@@ -46,7 +50,7 @@ static func describe(node: Node, local_slot: int) -> TargetInfo:
 		info.title = type.display_name if named else UiText.t(&"TARGET_INFO_BUILDING")
 	elif node is WizardBody:
 		info.title = (node as WizardBody).display_name()
-	elif node.has_method("display_name") and "owner_slot" in node:
+	elif node is GameBody:
 		info.title = _creature_title(node)
 		info.icon = CreatureType.icon_of(node)
 	else:
@@ -68,7 +72,7 @@ static func _creature_title(node: Node) -> String:
 static func wizard_name(tree: SceneTree, slot: int) -> String:
 	if tree == null:
 		return ""
-	for wizard in tree.get_nodes_in_group("wizard"):
+	for wizard in tree.get_nodes_in_group(WizardBody.GROUP):
 		if wizard is WizardBody and (wizard as WizardBody).owner_slot == slot:
 			return (wizard as WizardBody).display_name()
 	return ""
@@ -83,11 +87,10 @@ static func _read_health(info: TargetInfo, node: Node) -> void:
 
 
 static func _name_of(node: Node) -> String:
-	if node.has_method("display_name"):
-		return str(node.call("display_name"))  # dynamic: unit, wizard and doctor bodies answer it
-	return str(node.name)
+	return GameBody.name_of(node)
 
 
-## A creature or doctor that died and is not a corpse yet (it is falling): the cursor already calls it a corpse.
+## A creature or doctor that died and is not a corpse yet (it is falling): the cursor already calls
+## it a corpse.
 static func _is_dead(node: Node) -> bool:
-	return (node is UnitBody or node is DoctorBody) and bool(node.call("is_dead"))  # dynamic: both answer it
+	return node is GameBody and (node as GameBody).is_dead()

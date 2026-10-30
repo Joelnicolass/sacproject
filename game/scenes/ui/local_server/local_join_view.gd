@@ -1,15 +1,17 @@
 extends Control
 
-## Join a friend's «Servidor local». Visible outside debug builds too (it is the only door to a direct address).
-## The rival types `address:port`, the code the host gave him and the transport. The code is the ticket of his seat.
-## Ref: RFC-034 034m.
+## Join a friend's «Servidor local». Visible outside debug builds too (it is the only door to a
+## direct address). The rival types `address:port`, the code the host gave him and the transport.
+## The code is the ticket of his seat.
 
 signal back_requested
 
-## Used when the text has no `:port`. Same number as `match_port_min` of data/net/lobby_config_local_server.tres.
+## Used when the text has no `:port`. Same number as `match_port_min` of
+## scenes/net/lobby_config_local_server.tres.
 @export var default_port: int = 7710
 
-## The character selector of the menu, shown over this view while the rival chooses (the same scene the room screens use).
+## The character selector of the menu, shown over this view while the rival chooses (the same scene
+## the room screens use).
 @export var character_select_scene: PackedScene
 
 var _joining: bool = false
@@ -35,7 +37,9 @@ func _ready() -> void:
 
 func _show_choice() -> void:
 	var chosen: WizardPick = SacrificeFlow.pick
-	%JoinChoice.text = tr(LocalServerText.PICK_CHOICE) % [chosen.wizard.display_name, chosen.god.display_name]
+	%JoinChoice.text = (
+		tr(LocalServerText.PICK_CHOICE) % [chosen.wizard.display_name, chosen.god.display_name]
+	)
 
 
 func _on_pick_pressed() -> void:
@@ -72,7 +76,10 @@ func _on_join() -> void:
 		_status.text = tr(LocalServerText.BAD_ENDPOINT)
 		return
 	_set_joining(true)
-	_status.text = tr(LocalServerText.CONNECTING) % LocalServerEndpoint.format(str(target["host"]), int(target["port"]))
+	_status.text = (
+		tr(LocalServerText.CONNECTING)
+		% LocalServerEndpoint.format(str(target["host"]), int(target["port"]))
+	)
 
 
 func _set_joining(joining: bool) -> void:

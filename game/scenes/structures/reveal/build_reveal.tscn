@@ -16,7 +16,7 @@ seamless = true
 noise = SubResource("FastNoiseLite_reveal")
 
 [node name="BuildReveal" type="Node"]
-editor_description = "La torre que sube: una línea va de la base a la punta con build_progress (0 a 1); abajo se ve entera, arriba se disuelve con el ruido y un borde que brilla. Al terminar vuelven los materiales de la torre. Solo presentación (nada en headless). Knobs en el grupo Look."
+editor_description = "The rising tower: a line goes from the base to the tip with build_progress (0 to 1); below it shows whole, above it dissolves with noise and a glowing edge. When it ends the tower's materials come back. Presentation only (nothing in headless). Knobs in the Look group."
 script = ExtResource("1_reveal")
 shader = ExtResource("2_shader")
 noise = SubResource("NoiseTexture2D_reveal")

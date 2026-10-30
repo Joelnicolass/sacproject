@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/units/impacts/stick_impact.gd" id="1_stick"]
 
 [node name="StickyBombImpact" type="Node"]
-editor_description = "F129 (RFC-030 030r-a): impacto de la Sticky bomb del Ikarus (acia). Se pega a la criatura enemiga que se puede envenenar (Clinging, tipo sticky): velocidad ×0,75 por bomba, se suelta a duración·60 + 1 ticks. Sin daño. Suelo, edificio o criatura que no se puede pegar: desaparece."
+editor_description = "The impact of the Ikarus's Sticky bomb (acia). It sticks to the enemy creature that can be poisoned (Clinging, kind sticky): speed ×0.75 per bomb, it lets go at duration·60 + 1 ticks. No damage. Ground, building or a creature that cannot be stuck to: it vanishes."
 script = ExtResource("1_stick")
 kind = &"sticky"
 factor = 0.75

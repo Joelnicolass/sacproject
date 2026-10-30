@@ -1,19 +1,19 @@
 class_name UnitHealthBar
 extends MeshInstance3D
 
-## Floating bar over a body. Green for the local slot, red for anyone else. Reads the Health component's `changed`
-## signal, so it works the same on server and clients. It is the only one that shows or hides itself: never over a
-## dead body, nor over one a Sac Doctor has taken (carried or being pumped back to life).
-## Ref: sacengine draws your own creatures' bars only while they are selected (renderer.d:3890).
+## Floating bar over a body. Green for the local slot, red for anyone else. Reads the Health
+## component's `changed` signal, so it works the same on server and clients. It is the only one that
+## shows or hides itself: never over a dead body, nor over one a Sac Doctor has taken (carried or
+## being pumped back to life).
 
 @export var own_color := Color(0.2, 0.85, 0.25)
 @export var enemy_color := Color(0.9, 0.18, 0.12)
-## RFC-049 049c: the bar of an ally of the local slot (2v2), apart from the own green and the enemy red.
+## The bar of an ally of the local slot (2v2), apart from the own green and the enemy red.
 @export var ally_color := Color(0.25, 0.6, 0.95)
 ## Meters above the top of the body.
 @export var lift := 0.45
 @export var own_only_when_selected := true
-## RFC-028b: a building's bar, shown only while StructureInspector holds it (any side) and never
+## A building's bar, shown only while StructureInspector holds it (any side) and never
 ## for a body without health (maximum ≤ 0).
 @export var only_when_selected := false
 
@@ -26,13 +26,15 @@ var _selected := false
 var _owner_slot := -1
 
 
-## The bar can get its side before it is in the tree (no seat to ask yet): it asks again when it enters.
+## The bar can get its side before it is in the tree (no seat to ask yet): it asks again when it
+## enters.
 func _ready() -> void:
 	if _owner_slot >= 0:
 		set_owner_slot(_owner_slot)
 
 
-## `body`: the creature the bar floats over, if it can be taken by a doctor (the bar hides while it is).
+## `body`: the creature the bar floats over, if it can be taken by a doctor (the bar hides while it
+## is).
 func bind(health: Health, owner_slot: int, body: UnitBody = null) -> void:
 	if _health and _health.changed.is_connected(_on_changed):
 		_health.changed.disconnect(_on_changed)
@@ -51,8 +53,15 @@ func set_owner_slot(owner_slot: int) -> void:
 	_owner_slot = owner_slot
 	var local := MpLocalSeat.slot_of(self)
 	_own = owner_slot > 0 and owner_slot == local
-	var ally := not _own and owner_slot > 0 and local > 0 and SideRelations.stance(local, owner_slot) == SideRelations.Stance.ALLY
-	set_instance_shader_parameter("fill_color", own_color if _own else (ally_color if ally else enemy_color))
+	var ally := (
+		not _own
+		and owner_slot > 0
+		and local > 0
+		and SideRelations.stance(local, owner_slot) == SideRelations.Stance.ALLY
+	)
+	set_instance_shader_parameter(
+		"fill_color", own_color if _own else (ally_color if ally else enemy_color)
+	)
 	_refresh_visible()
 
 
@@ -75,7 +84,9 @@ func _refresh_visible() -> void:
 
 
 func _on_changed(current: float, maximum: float) -> void:
-	set_instance_shader_parameter("fraction", clampf(current / maximum, 0.0, 1.0) if maximum > 0.0 else 0.0)
+	set_instance_shader_parameter(
+		"fraction", clampf(current / maximum, 0.0, 1.0) if maximum > 0.0 else 0.0
+	)
 	_refresh_visible()
 
 

@@ -1,0 +1,12 @@
+[gd_resource type="Environment" format=3]
+
+[resource]
+tonemap_mode = 4
+ssao_enabled = true
+ssao_radius = 3.5
+glow_enabled = true
+fog_enabled = true
+fog_sun_scatter = 0.4
+volumetric_fog_enabled = true
+volumetric_fog_anisotropy = 0.35
+volumetric_fog_sky_affect = 0.1

@@ -22,7 +22,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
-editor_description = "Negro, de borde a borde: tapa el mundo mientras carga y se precalienta. Se apaga con un fundido (fade_s en la raíz)."
+editor_description = "Black, edge to edge: it covers the world while it loads and warms up. It goes off with a fade (fade_s on the root)."
 
 [node name="Center" type="VBoxContainer" parent="Backdrop"]
 anchors_preset = 8

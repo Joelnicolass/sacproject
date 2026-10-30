@@ -2,10 +2,11 @@
 class_name AfflictionEmitter
 extends SpriteEmitter
 
-## The sprites of a state, in the volume of the body's box: a burst that sprays outward and up when the state starts and ends (Slime's
-## splash), or a drizzle in the upper half of the box while it lasts (Slime's drips). The ParticleType says what and how many; this only says
-## where and when. It does not decide when the state is on (Affliction). Presentation only, on every peer, from the replicated mask.
-## Ref: sacengine slime splash and animateSlime (state.d:17730-17786).
+## The sprites of a state, in the volume of the body's box: a burst that sprays outward and up when
+## the state starts and ends (Slime's splash), or a drizzle in the upper half of the box while it
+## lasts (Slime's drips). The ParticleType says what and how many; this only says where and when. It
+## does not decide when the state is on (Affliction). Presentation only, on every peer, from the
+## replicated mask.
 
 enum Shape { SPRAY, DRIZZLE }
 
@@ -56,7 +57,13 @@ func _place() -> void:
 		for i in maxi(type.count, 1):
 			var angle := float(i) * 2.399963
 			var out := Vector3(cos(angle), 0.0, sin(angle))
-			points.append(Vector3(out.x * half.x, half.y * (2.0 * fposmod(float(i) * 0.618034, 1.0) - 1.0), out.z * half.z))
+			points.append(
+				Vector3(
+					out.x * half.x,
+					half.y * (2.0 * fposmod(float(i) * 0.618034, 1.0) - 1.0),
+					out.z * half.z
+				)
+			)
 			normals.append((out * spray_out + Vector3.UP * spray_up).normalized())
 		direction = Vector3.RIGHT
 		spread = 0.0

@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="SkyLook" format=3]
+
+[ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_jt8y1"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/pyro_skyb_tileable.png" id="3_q4ew2"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/sky.png" id="4_5uv5d"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/pyro_skyt_tileable.png" id="5_s43h6"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/pyro/undr.png" id="7_undr"]
+[ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_usyho"]
+
+[sub_resource type="Gradient" id="Gradient_aurora"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.55, 0.115, 0.0, 1, 0.55, 0.179, 0.024, 1, 0.663, 0.257, 0.046, 1)
+
+[sub_resource type="GradientTexture1D" id="Aurora_pyro"]
+gradient = SubResource("Gradient_aurora")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bjbhl"]
+shader = ExtResource("1_jt8y1")
+shader_parameter/background_color = Color(0.098, 0, 0, 1)
+shader_parameter/energy = 1.7
+shader_parameter/top_texture = ExtResource("5_s43h6")
+shader_parameter/bottom_texture = ExtResource("3_q4ew2")
+shader_parameter/mirror_repeat = false
+shader_parameter/band_repeats = 8
+shader_parameter/band_blend = 0.03
+shader_parameter/rotation_period_s = 512.0
+shader_parameter/clouds_texture = ExtResource("4_5uv5d")
+shader_parameter/cloud_period_s = 64.0
+shader_parameter/sun_intensity = 4.0
+shader_parameter/halo_strength = 0.9
+shader_parameter/zenith_color = Color(0.5, 0.14, 0.08, 1)
+shader_parameter/zenith_strength = 0.0
+shader_parameter/horizon_color = Color(1.0, 0.55, 0.2, 1)
+shader_parameter/horizon_strength = 0.0
+shader_parameter/saturation = 1.0
+shader_parameter/cloud_alpha = 1.0
+shader_parameter/ambient_top_color = Color(0.2, 0.1, 0.12, 1)
+shader_parameter/ambient_horizon_color = Color(1, 0.4, 0.15, 1)
+shader_parameter/ambient_ground_color = Color(0.2, 0.08, 0.05, 1)
+shader_parameter/ambient_energy = 1.0
+shader_parameter/ambient_curve = 0.2
+shader_parameter/aurora_strength = 0.2
+shader_parameter/aurora_gradient = SubResource("Aurora_pyro")
+shader_parameter/sun_color = Color(1, 0.6, 0.3, 1)
+shader_parameter/sun_radius_deg = 3.0
+shader_parameter/halo_color = Color(1, 0.4, 0.15, 1)
+shader_parameter/halo_power = 16.0
+shader_parameter/moon_color = Color(0.75, 0.82, 1, 1)
+shader_parameter/moon_radius_deg = 3.0
+shader_parameter/moon_azimuth_deg = -40.0
+shader_parameter/moon_elevation_deg = 40.0
+
+[resource]
+script = ExtResource("6_usyho")
+label = "Cielo de Pyro: ocaso de brasas"
+material = SubResource("ShaderMaterial_bjbhl")
+under_texture = ExtResource("7_undr")
+fog_color = Color(0.58825004, 0.29805, 0.21225001, 1)
+fog_begin_m = 10.0
+fog_end_m = 1100.0
+haze_tint = Color(1, 0.8, 0.65, 1)
+volumetric_density = 0.002

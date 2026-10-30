@@ -2,14 +2,16 @@
 class_name RadialMenu
 extends Control
 
-## A radial menu (the X menu): two rings of icons around the point where it opened. It shows the entries of its
-## `layout`, says which one the pointer is on (by angle and distance, `RadialLayout.locate`) and emits `entry_chosen` or `cancelled`.
-## It knows no order and no network. Whoever opens it feeds the pointer (`point_at`) and ends it (`confirm` on release, `cancel`).
+## A radial menu (the X menu): two rings of icons around the point where it opened. It shows the
+## entries of its `layout`, says which one the pointer is on (by angle and distance,
+## `RadialLayout.locate`) and emits `entry_chosen` or `cancelled`. It knows no order and no network.
+## Whoever opens it feeds the pointer (`point_at`) and ends it (`confirm` on release, `cancel`).
 ## Everything is laid out in canvas pixels of the 1280×720 base; Godot's stretch scales it.
-## Pieces: `RadialDecor` draws the rings, sector, pointer and center; `RadialRings` holds the icons; `RadialAnimator` opens and
-## closes it. Run alone (F6) the `Standalone` child drives it with the mouse.
+## Pieces: `RadialDecor` draws the rings, sector, pointer and center; `RadialRings` holds the icons;
+## `RadialAnimator` opens and closes it. Run alone (F6) the `Standalone` child drives it with the
+## mouse.
 
-## The menu opened (open_at). RFC-052 052h: MenuSounds listens.
+## The menu opened (open_at). MenuSounds listens.
 signal opened
 ## The pointer moved onto `entry` (null: onto nothing).
 signal hovered_changed(entry: RadialEntry)
@@ -45,7 +47,7 @@ var _last_hover: RadialEntry
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if layout == null or decor == null or rings == null or animator == null:
-		warnings.append("Asigná layout, decor, rings y animator.")
+		warnings.append("Assign layout, decor, rings and animator.")
 	return warnings
 
 
@@ -55,16 +57,19 @@ func _ready() -> void:
 		_refresh_preview()
 		return
 	visible = false
-	animator.closed.connect(func() -> void:
-		if not _open:
-			visible = false)
+	animator.closed.connect(
+		func() -> void:
+			if not _open:
+				visible = false
+	)
 
 
 func is_open() -> bool:
 	return _open
 
 
-## Opens the menu centered on the screen point `screen` (pixels). `center_icon` replaces the one of the layout's center.
+## Opens the menu centered on the screen point `screen` (pixels). `center_icon` replaces the one of
+## the layout's center.
 func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 	if layout == null:
 		return
@@ -72,7 +77,11 @@ func open_at(screen: Vector2, center_icon: Texture2D = null) -> void:
 	_resize_to_layout()
 	position = screen - size * 0.5
 	var center_rect := decor.center_rect
-	center_rect.texture = center_icon if center_icon != null else (layout.center.display_icon() if layout.center else null)
+	center_rect.texture = (
+		center_icon
+		if center_icon != null
+		else (layout.center.display_icon() if layout.center else null)
+	)
 	_open = true
 	hovered = null
 	_last_hover = null
@@ -99,7 +108,8 @@ func entry_at(screen: Vector2) -> RadialEntry:
 	return layout.entry_at(screen - _origin) if layout else null
 
 
-## Ends the menu where the pointer is: `entry_chosen` with its entry, or `cancelled` over nothing. Returns the entry.
+## Ends the menu where the pointer is: `entry_chosen` with its entry, or `cancelled` over nothing.
+## Returns the entry.
 func confirm() -> RadialEntry:
 	var chosen := hovered
 	_close()

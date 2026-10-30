@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Rewrite ext_resource paths inside a binary Godot .res (format 4/5), fixing the lengths and the internal-resource offsets.
-Usage: patch_res.py FILE OLD NEW [OLD NEW ...]   (RFC-048: binary resources keep script paths that move_map.py cannot rewrite)."""
+Usage: patch_res.py FILE OLD NEW [OLD NEW ...]   (binary resources keep script paths that move_map.py cannot rewrite)."""
 import struct, sys
 
 

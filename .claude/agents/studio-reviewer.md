@@ -40,4 +40,4 @@ Al invocarte:
 
 Un pase. Veredicto por dimensión: PASS / NEEDS WORK / FAIL. Bloqueantes vs nits. Si hay bloqueantes, el orquestador puede pedir **una** corrección; vos no la implementás. No pidas iterar hasta verde.
 
-Devolvé: hallazgos con ruta, y si el RFC se puede dar por cerrado. Guardá el informe en `reviews/REVIEW-RFC-[ID].md` **solo** si el prompt te autoriza a escribir; si sos readonly y no podés, devolvé el markdown completo al orquestador para que él lo guarde.
+Devolvé: hallazgos con ruta, y si el RFC se puede dar por cerrado. Guardá el informe en `docs/archive/reviews/REVIEW-RFC-[ID].md` **solo** si el prompt te autoriza a escribir; si sos readonly y no podés, devolvé el markdown completo al orquestador para que él lo guarde.

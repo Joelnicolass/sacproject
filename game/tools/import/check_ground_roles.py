@@ -1,6 +1,6 @@
-"""No necesita el juego original ni ventana: checks the baked scenes/map/maps/<map>/ground_roles.png of the 9 maps.
+"""Needs neither the original game nor a window: checks the baked scenes/map/maps/<map>/ground_roles.png of the 9 maps.
 
-Criterion (RFC-062 plan, 5.1): in every map 0 cells whose four weights add up to less than 250/255 (a cell with no ground role),
+Criterion: in every map 0 cells whose four weights add up to less than 250/255 (a cell with no ground role),
 and 0 lone cells (a cell dominated by a role that none of its 4 neighbours has). Prints one summary line per map: the share of
 each role, those two counts, and (from tools/import/ground_roles_report.json, written by bake_ground_roles.py) what the bake
 had to resolve. Exit status 1 when a map fails.

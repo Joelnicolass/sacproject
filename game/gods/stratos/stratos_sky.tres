@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="SkyLook" format=3]
+
+[ext_resource type="Shader" path="res://scenes/look/sky/sacrifice_sky.gdshader" id="1_iidsl"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/stratos_skyb_tileable.png" id="3_l5pvr"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/sky.png" id="4_4cagt"]
+[ext_resource type="Texture2D" path="res://assets/custom/sky/stratos_skyt_tileable.png" id="5_h6e0o"]
+[ext_resource type="Texture2D" path="res://assets/original/themes/stratos/undr.png" id="7_undr"]
+[ext_resource type="Script" path="res://scenes/look/sky/sky_look.gd" id="6_xh8eg"]
+
+[sub_resource type="Gradient" id="Gradient_aurora"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.502, 0.536, 0.761, 1, 0.673, 0.746, 0.949, 1, 0.737, 0.797, 0.957, 1)
+
+[sub_resource type="GradientTexture1D" id="Aurora_stratos"]
+gradient = SubResource("Gradient_aurora")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_io23x"]
+shader = ExtResource("1_iidsl")
+shader_parameter/background_color = Color(0.902, 0.9412, 1, 1)
+shader_parameter/energy = 1.7
+shader_parameter/top_texture = ExtResource("5_h6e0o")
+shader_parameter/bottom_texture = ExtResource("3_l5pvr")
+shader_parameter/mirror_repeat = false
+shader_parameter/band_repeats = 8
+shader_parameter/band_blend = 0.03
+shader_parameter/rotation_period_s = 512.0
+shader_parameter/clouds_texture = ExtResource("4_4cagt")
+shader_parameter/cloud_period_s = 64.0
+shader_parameter/sun_intensity = 4.0
+shader_parameter/halo_strength = 0.9
+shader_parameter/zenith_color = Color(0.22, 0.42, 0.85, 1)
+shader_parameter/zenith_strength = 0.0
+shader_parameter/horizon_color = Color(1.0, 0.78, 0.55, 1)
+shader_parameter/horizon_strength = 0.0
+shader_parameter/saturation = 1.0
+shader_parameter/cloud_alpha = 1.0
+shader_parameter/ambient_top_color = Color(0.2, 0.4, 0.8, 1)
+shader_parameter/ambient_horizon_color = Color(0.75, 0.85, 1, 1)
+shader_parameter/ambient_ground_color = Color(0.4, 0.45, 0.55, 1)
+shader_parameter/ambient_energy = 1.0
+shader_parameter/ambient_curve = 0.2
+shader_parameter/aurora_strength = 0.2
+shader_parameter/aurora_gradient = SubResource("Aurora_stratos")
+shader_parameter/sun_color = Color(1, 0.96, 0.88, 1)
+shader_parameter/sun_radius_deg = 2.0
+shader_parameter/halo_color = Color(0.9, 0.95, 1, 1)
+shader_parameter/halo_power = 16.0
+shader_parameter/moon_color = Color(0.75, 0.82, 1, 1)
+shader_parameter/moon_radius_deg = 3.0
+shader_parameter/moon_azimuth_deg = -40.0
+shader_parameter/moon_elevation_deg = 40.0
+
+[resource]
+script = ExtResource("6_xh8eg")
+label = "Cielo de Stratos: altura fria"
+material = SubResource("ShaderMaterial_io23x")
+under_texture = ExtResource("7_undr")
+ambient_sky_contribution = 0.6
+fog_color = Color(0.76715004, 0.81715, 0.9412, 1)
+fog_end_m = 1500.0
+haze_tint = Color(0.9, 0.95, 1, 1)
+volumetric_density = 0.002

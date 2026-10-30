@@ -1,11 +1,14 @@
 class_name WarmStage
 extends RefCounted
 
-## What ShaderWarmup has on its stage right now: a batch of things drawn at the stage's place, as the match would draw them. A mesh,
-## a material (on the probe mesh) and a stroke material (on the stroke probes) are RenderingServer instances for one frame; a bare
-## shader gets a material made for that frame; a look scene is instanced under the stage twice, as it is and faded (a summoned,
-## stealthy or playing-dead body draws in the transparent pass), and stays `draws` frames so its particles and skeleton move first.
-## What it does not do: pick what to draw (WarmCollect), wait for frames (ShaderWarmup steps it) or keep anything once cleared.
+## What ShaderWarmup has on its stage right now: a batch of things drawn at the stage's place, as
+## the match would draw them. A mesh, a material (on the probe mesh) and a stroke material (on the
+## stroke probes) are RenderingServer instances for one frame; a bare shader gets a material made
+## for that frame; a look scene is instanced under the stage twice, as it is and faded (a summoned,
+## stealthy or playing-dead body draws in the transparent pass), and stays `draws` frames so its
+## particles and skeleton move first.
+## What it does not do: pick what to draw (WarmCollect), wait for frames (ShaderWarmup steps it) or
+## keep anything once cleared.
 
 var _stage: Node3D
 var _probe: Mesh
@@ -14,9 +17,11 @@ var _faded := 0.0
 var _rids: Array[RID] = []
 ## The materials made for the bare shaders of this frame (they live until it is drawn).
 var _made: Array[ShaderMaterial] = []
-## The look scenes on the stage, each [node, drawn frames it has left there] (a look may free itself meanwhile).
+## The look scenes on the stage, each [node, drawn frames it has left there] (a look may free itself
+## meanwhile).
 var _staged: Array[Array] = []
-## What a ribbon the code draws looks like to the GPU: an ImmediateMesh with positions and UVs, as a strip and as triangles.
+## What a ribbon the code draws looks like to the GPU: an ImmediateMesh with positions and UVs, as a
+## strip and as triangles.
 var _stroke_probes: Array[ImmediateMesh] = []
 
 

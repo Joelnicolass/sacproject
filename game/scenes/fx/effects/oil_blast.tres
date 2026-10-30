@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ParticleType" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type"]
+[ext_resource type="Texture2D" uid="uid://feu1mw5uk37b" path="res://assets/original/fx/firy_a.png" id="atlas_png"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/oil_blast.tres" id="cue_oil_blast"]
+
+[resource]
+script = ExtResource("1_type")
+atlas = ExtResource("atlas_png")
+size = Vector2(1.0, 1.0)
+energy = 1.0
+frame_s = 0.06667
+lifetime_s = 1.0
+count = 150
+speed_min = 1.5
+speed_max = 6.0
+spread = 180.0
+scale_min = 2.5
+scale_max = 6.0
+emission_radius = 2.5
+random_start_frame = true
+lifetime_randomness = 0.6
+fade_s = 0.4
+alpha_max = 1.0
+additive = false
+pool_max = 4
+sound = ExtResource("cue_oil_blast")

@@ -1,11 +1,12 @@
 class_name BoreDrill
 extends Node3D
 
-## The rock that bores: from the moment the zone is born it walks the spiral over the ground, a little behind the cutter's pace,
-## throwing earth and leaving a mark on the ground at each step; when the spiral ends it is gone. Every peer walks it from its own
-## count of ticks, and the server's count is sent so one that joins late is where the others are. Presentation only: a headless
-## process keeps its count and draws nothing. It does not open the ground (HoleCutter) and hurts nobody.
-## Ref: sacengine updateBore, animateBore (state.d:18636-18651, 18593-18616).
+## The rock that bores: from the moment the zone is born it walks the spiral over the ground, a
+## little behind the cutter's pace, throwing earth and leaving a mark on the ground at each step;
+## when the spiral ends it is gone. Every peer walks it from its own count of ticks, and the
+## server's count is sent so one that joins late is where the others are. Presentation only: a
+## headless process keeps its count and draws nothing. It does not open the ground (HoleCutter) and
+## hurts nobody.
 
 @export var zone: GroundZone
 ## How fast it goes, against the spell's `speed`.
@@ -43,7 +44,11 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) a la que acompaña."])
+	return (
+		PackedStringArray()
+		if zone != null
+		else PackedStringArray(["The zone (GroundZone) it goes with is missing."])
+	)
 
 
 func _physics_process(_delta: float) -> void:
@@ -54,7 +59,11 @@ func _physics_process(_delta: float) -> void:
 		ticks = synced_ticks
 		_spiral = null
 	if _spiral == null:
-		_spiral = BoreSpiral.new(Vector2(zone.points[0].x, zone.points[0].z), zone.spell.effect_range_m, scribe_speed * zone.spell.speed_m_s / MatchClock.TICKS_PER_SECOND_F)
+		_spiral = BoreSpiral.new(
+			Vector2(zone.points[0].x, zone.points[0].z),
+			zone.spell.effect_range_m,
+			scribe_speed * zone.spell.speed_m_s / MatchClock.TICKS_PER_SECOND_F
+		)
 		_spiral.skip(ticks - 1)
 	place = _spiral.advance()
 	if _spiral.arrived or zone.cancelled:

@@ -1,39 +1,46 @@
 class_name ModelPaths
 extends Resource
 
-## Where the files of each skeletal model of scenes/bodies/models/ are, for the bake tools and the audits: the model tag
-## (the id that travels on the wire, "eorc") -> the stem of its files ("trogg_model": trogg_model.tscn, trogg_model_clips.tres,
-## trogg_model_clips/). A tag that is not listed is its own stem (a custom model keeps the name of its .glb).
-## Not for the game: a look scene holds its model as a PackedScene and a type holds its clips as an AnimationLibrary, so nothing
-## of scenes/ looks a model up by tag. The table (model_paths.tres) is written by tools/migrate/rename_body_models.py, never by hand.
+## Where the files of each skeletal model are, for the bake tools and the audits: the model tag (the
+## id that travels on the wire, "eorc") -> the path stem of its files
+## ("res://creatures/trogg/model/trogg_model": trogg_model.tscn, trogg_model_clips.tres,
+## trogg_model_clips/). A model only one creature wears lives in that creature's folder; a shared
+## one (wizards, a model two creatures wear) in scenes/bodies/models/. A tag that is not listed is a
+## new creature's: creatures/<tag>/model/<tag>_model.
+## Not for the game: a look scene holds its model as a PackedScene and a type holds its clips as an
+## AnimationLibrary, so nothing of scenes/ looks a model up by tag. The table (model_paths.tres) is
+## regenerated from what is on disk, never by hand.
 
-const SCENE_DIR := "res://scenes/bodies/models/"
 const TABLE_PATH := "res://tools/bake/model_paths.tres"
+
+static var _shared: ModelPaths
 
 @export var stems: Dictionary[String, String] = {}
 
-static var _shared: ModelPaths
-var _tags: Dictionary[String, String] = {}
 
-
-## The scene of `model_tag` (scenes/bodies/models/<stem>.tscn).
+## The scene of `model_tag` (<stem>.tscn).
 static func scene_path(model_tag: String) -> String:
-	return SCENE_DIR + _table().stem_for(model_tag) + ".tscn"
+	return _table().stem_for(model_tag) + ".tscn"
 
 
 ## The library of clips of `model_tag` (role -> Animation).
 static func clips_path(model_tag: String) -> String:
-	return SCENE_DIR + _table().stem_for(model_tag) + "_clips.tres"
+	return _table().stem_for(model_tag) + "_clips.tres"
 
 
 ## The folder with one Animation file per clip of `model_tag`.
 static func clips_dir(model_tag: String) -> String:
-	return SCENE_DIR + _table().stem_for(model_tag) + "_clips/"
+	return _table().stem_for(model_tag) + "_clips/"
 
 
-## The model tag of a file of SCENE_DIR (`trogg_model.tscn` or `trogg_model_clips.tres` -> "eorc").
-static func tag_of_file(file: String) -> String:
-	return _table().tag_for(file.get_basename().trim_suffix("_clips"))
+## Every model scene on disk, sorted by path.
+static func all_scenes() -> PackedStringArray:
+	var paths := PackedStringArray()
+	for stem: String in _table().stems.values():
+		if ResourceLoader.exists(stem + ".tscn"):
+			paths.append(stem + ".tscn")
+	paths.sort()
+	return paths
 
 
 ## True when `model_tag` has a baked scene (a skeletal model with a playable idle clip).
@@ -47,14 +54,6 @@ static func _table() -> ModelPaths:
 	return _shared
 
 
-## The stem of the files of `tag`.
+## The path stem of the files of `tag`.
 func stem_for(tag: String) -> String:
-	return stems.get(tag, tag)
-
-
-## The tag of the model whose files start with `stem` (the inverse of `stem_for`).
-func tag_for(stem: String) -> String:
-	if _tags.is_empty() and not stems.is_empty():
-		for tag in stems:
-			_tags[stems[tag]] = tag
-	return _tags.get(stem, stem)
+	return stems.get(tag, "%s%s/model/%s_model" % [GameCatalog.CREATURES_DIR, tag, tag])

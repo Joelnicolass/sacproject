@@ -2,14 +2,15 @@ class_name GraphicsTab
 extends VBoxContainer
 
 ## Options → Gráficos. Quality (one of the GraphicsPrefs presets), fullscreen, VSync, the FPS cap,
-## the vegetation switch, the relief switch, the number of ground marks and the interface size (UiScalePrefs). Every control writes the shared preference at once; the GraphicsApplier and the
-## UiScaleApplier of the running scene listen to `changed`, so the change shows live. The controls also follow changes made elsewhere.
-## OptionButton, CheckButton and HSlider only: AgentKit drives them with select / click / range (no popups needed).
-## Ref: RFC-031 031c (F142), RFC-054 054f, RFC-067, 061k-5.
+## the vegetation switch, the relief switch, the number of ground marks and the interface size
+## (UiScalePrefs). Every control writes the shared preference at once; the GraphicsApplier and the
+## UiScaleApplier of the running scene listen to `changed`, so the change shows live. The controls
+## also follow changes made elsewhere. OptionButton, CheckButton and HSlider only: AgentKit drives
+## them with select / click / range (no popups needed).
 
 ## Tab title in the OptionsMenu.
 @export var tab_title := "UI_OPTIONS_TAB_GRAPHICS"
-## Shared instances (data/ui/graphics_prefs.tres, data/ui/ui_scale.tres).
+## Shared instances (scenes/ui/graphics_prefs.tres, scenes/ui/ui_scale.tres).
 @export var prefs: GraphicsPrefs
 @export var ui_scale: UiScalePrefs
 ## Text of the FPS cap 0.
@@ -28,6 +29,7 @@ func _ready() -> void:
 	%Fullscreen.toggled.connect(prefs.set_fullscreen)
 	%VSync.toggled.connect(prefs.set_vsync)
 	%Vegetation.toggled.connect(prefs.set_vegetation_enabled)
+	%Grass.toggled.connect(prefs.set_grass_enabled)
 	%Relief.toggled.connect(prefs.set_relief_enabled)
 	%ScarTiles.value_changed.connect(_on_scar_tiles)
 	%HudSize.value_changed.connect(_on_hud_size)
@@ -59,6 +61,7 @@ func _sync() -> void:
 	%Fullscreen.set_pressed_no_signal(prefs.fullscreen())
 	%VSync.set_pressed_no_signal(prefs.vsync())
 	%Vegetation.set_pressed_no_signal(prefs.vegetation_enabled())
+	%Grass.set_pressed_no_signal(prefs.grass_enabled())
 	%Relief.set_pressed_no_signal(prefs.relief_enabled())
 	%ScarTiles.set_value_no_signal(prefs.scar_tiles())
 	%ScarTilesValue.text = str(prefs.scar_tiles())

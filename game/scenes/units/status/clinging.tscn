@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/status/cling_mite.tscn" id="3_mite"]
 
 [node name="Clinging" type="Node3D"]
-editor_description = "F129 (RFC-030 030r-a): lo que se pega al cuerpo y lo frena (Sticky bombs ×0,75, Bilemites ×0,8). Lleva los vencimientos por tipo en ticks de MatchClock, le da a PaceFactors un factor por tipo y replica shown (x = bombas, y = ácaros) para el look. El padre asigna body, poisoning y pace."
+editor_description = "What sticks to the body and slows it down (Sticky bombs ×0.75, Bilemites ×0.8). It keeps the expiries per kind in MatchClock ticks, gives PaceFactors one factor per kind and replicates shown (x = bombs, y = mites) for the look. The parent assigns body, poisoning and pace."
 script = ExtResource("1_clinging")
 bomb_look = ExtResource("2_bomb")
 mite_look = ExtResource("3_mite")

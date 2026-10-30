@@ -11,19 +11,25 @@ config_version=5
 [application]
 
 config/name="Sacrifice"
-config/version="0.1.0"
 run/main_scene="res://scenes/core/boot.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
 [autoload]
 
+Events="*res://scenes/core/events.gd"
 MpKit="*res://addons/mp_kit/mp_kit.gd"
 MpLobby="*res://addons/mp_kit/lobby/mp_lobby.gd"
-GameData="*res://scenes/core/catalog/game_data.gd"
 SacrificeFlow="*res://scenes/core/flow/sacrifice_flow.tscn"
 AgentKit="*res://addons/agent_kit/agent_kit.gd"
 FxBus="*res://scenes/fx/fx_bus.tscn"
 SoundBus="*res://scenes/audio/sound_bus.tscn"
+
+[debug]
+
+gdscript/warnings/untyped_declaration=1
+gdscript/warnings/unsafe_property_access=1
+gdscript/warnings/unsafe_method_access=1
+gdscript/warnings/unsafe_cast=1
 
 [display]
 
@@ -34,11 +40,71 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg", "res://addons/terrain_tools/plugin.cfg", "res://addons/surface_maps/plugin.cfg")
+enabled=PackedStringArray("res://addons/mp_kit/plugin.cfg", "res://addons/agent_kit/plugin.cfg", "res://addons/fsm_kit/plugin.cfg", "res://addons/rts_kit/plugin.cfg", "res://addons/sacrifice_tools/plugin.cfg", "res://addons/terrain_tools/plugin.cfg", "res://addons/surface_maps/plugin.cfg", "res://addons/prop_kit/plugin.cfg", "res://addons/grass_kit/plugin.cfg")
+
+[global_group]
+
+actor_light_budget="The match's actor light budget (ActorLightBudget)."
+actor_lights="Every light carried by an actor (ActorLight)."
+altar="Every standing altar of a side (Altar)."
+altar_node="Every altar, standing or fallen (Altar)."
+captive="Bodies held by a Sac Doctor (Captive)."
+cast_tower="Every cast tower, manaliths and shrines (CastTower)."
+corpse="Every corpse on the field (Corpse)."
+divine_sight_eye="Every Divine Sight eye (DivineSightEye)."
+doctor="Every Sac Doctor (DoctorBody)."
+droplet_rain="The match's droplet rain pool (DropletRain)."
+feel_presentation="Nodes that play the local feel: camera shake and damage numbers."
+flora_field="Every flora field of the map (FloraField)."
+flora_layer="Every flora layer of the map (FloraLayer)."
+fx_light_pool="The pool of short-lived effect lights (FxLightLayer)."
+ghost_form="Every wizard ghost form (GhostForm)."
+ground_footprint="Props that flatten or mark the ground (GroundFootprint)."
+ground_scars="The map's ground scars layer (GroundScars)."
+ground_zone="Every spell zone on the ground (GroundZone)."
+guard_post="Every guardian post (GuardPost)."
+halo_of_earth="Every Halo of Earth in play (HaloOfEarth)."
+hud_text_allowed="HUD nodes allowed to draw plain text."
+local_wizard="The wizard of this process's player (WizardBody)."
+mana_source="Every mana source, founts and altars (ManaSource)."
+manafount="Every manafount (ManafountBody)."
+map_building="Every building placed by the map (MapBuilding)."
+match_command="The local player's command input (MatchCommand)."
+match_state="The match result and state (MatchState)."
+menu_open="Open modal menus that block the world input (WorldInput)."
+nav_service="The match's pathfinder (NavService)."
+nav_source="Nodes baked into the navigation mesh (NavFingerprint)."
+npc="Creatures the map placed for the sides no player takes (UnitSpawner)."
+peasant="Villagers that warn each other (GrudgeMemory herd)."
+rift_spirit="Every Demonic Rift spirit (RiftSpirit)."
+ritual="Every sacrifice ritual in progress (Ritual)."
+ritual_site="Every ritual site of the map (RitualSite)."
+rooted="Bodies that Teleport and Guardian cannot move (GuardianBond)."
+sacrifice_system="The match's sacrifice system (SacrificeSystem)."
+scar_marks="Every scar mark on the ground (ScarMark)."
+selection="The local player's selection (Selection)."
+shelter="Buildings that shelter peasants (MapBuilding)."
+shot_spawner="The match's creature shot spawner (ShotSpawner)."
+soul="Every soul in play (Soul)."
+soul_system="The match's soul system (SoulSystem)."
+soul_target="The clickable Target child of every soul (Soul)."
+spell_spawner="The match's spell spawner (SpellSpawner)."
+structure="Standing buildings that can be attacked (MapBuilding)."
+structure_spawner="The match's structure spawner (StructureSpawner)."
+terrain="The map's terrain (Terrain)."
+tramples_grass="Bodies that bend the grass around them (GrassLayer, GrassKit trample_group)."
+unit="Every creature body in play (UnitBody)."
+unit_spawner="The match's creature spawner (UnitSpawner)."
+vegetation_clear="Nodes that clear vegetation around them (VegetationClear)."
+vegetation_field="Vegetation fields that take clearings (VegetationClear)."
+vegetation_patch="Every vegetation patch of the map (VegetationPatch)."
+warm_hooks="Nodes that add work to the shader warm-up (WarmHook)."
+wizard="Every wizard body in play (WizardBody)."
+zone_drop="Every drop falling from a spell zone (ZoneDrop)."
 
 [gui]
 
-theme/custom="res://data/ui/theme.tres"
+theme/custom="res://scenes/ui/theme.tres"
 
 [input]
 
@@ -412,7 +478,7 @@ camera_wheel_out={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://data/i18n/strings.es.translation")
+locale/translations=PackedStringArray("res://scenes/ui/i18n/strings.es.translation")
 locale/fallback="es"
 
 [navigation]
@@ -430,6 +496,42 @@ common/physics_interpolation=true
 
 [shader_globals]
 
+grasskit_wind={
+"type": "vec4",
+"value": Vector4(1, 0, 0, 55)
+}
+grasskit_wind_offset={
+"type": "vec2",
+"value": Vector2(0, 0)
+}
+grasskit_wind_time={
+"type": "float",
+"value": 0.0
+}
+grasskit_wind_noise={
+"type": "sampler2D",
+"value": "res://addons/grass_kit/core/grass_wind_noise.tres"
+}
+grasskit_field={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+grasskit_grass={
+"type": "vec4",
+"value": Vector4(0.3, 0.45, 0.12, 0)
+}
+grasskit_under={
+"type": "vec4",
+"value": Vector4(0, 0, 0.1, 0)
+}
+grasskit_density={
+"type": "sampler2D",
+"value": "res://addons/grass_kit/core/grass_full.tres"
+}
+grasskit_area={
+"type": "vec4",
+"value": Vector4(-1000000, -1000000, 2000000, 2000000)
+}
 fx_soft_particles={
 "type": "float",
 "value": 0.0

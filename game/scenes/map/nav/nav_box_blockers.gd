@@ -1,12 +1,13 @@
 class_name NavBoxBlockers
 extends RefCounted
 
-## The box blockers of the map (the buildings). «does this straight line go through a building»
-## is not something a navmesh knows (a path hugs a corner), so the boxes are kept and a line that crosses one (grown by `clearance_m`)
-## is not clear. Without it, a creature at the foot of a tipi was sent straight through the box and pressed on its face for good.
-## Ref: RFC-035 035g; F88 round 2.
+## The box blockers of the map (the buildings). «does this straight line go through a building» is
+## not something a navmesh knows (a path hugs a corner), so the boxes are kept and a line that
+## crosses one (grown by `clearance_m`) is not clear. Without it, a creature at the foot of a tipi
+## was sent straight through the box and pressed on its face for good.
 
-## One entry per box: [center (x, z), half extents (x, z), cos(yaw), sin(yaw), reach], `reach` being the radius that holds the box and the clearance.
+## One entry per box: [center (x, z), half extents (x, z), cos(yaw), sin(yaw), reach], `reach` being
+## the radius that holds the box and the clearance.
 var boxes: Array = []
 var clearance_m := 0.5
 
@@ -21,7 +22,8 @@ func add(center: Vector2, half: Vector2, yaw: float) -> void:
 	boxes.append([center, half, cos(yaw), sin(yaw), half.length() + clearance_m])
 
 
-## Adds every box entry ([Vector2 center, Vector2 half, yaw], the blockers of NavService) of `entries`; discs are skipped.
+## Adds every box entry ([Vector2 center, Vector2 half, yaw], the blockers of NavService) of
+## `entries`; discs are skipped.
 func add_entries(entries: Array) -> void:
 	for entry in entries:
 		if entry.size() >= 3:
@@ -32,7 +34,8 @@ func is_empty() -> bool:
 	return boxes.is_empty()
 
 
-## True when the segment from `a` to `b` (flat) passes through a box grown by `clearance_m` on every side (slab test in the box's frame).
+## True when the segment from `a` to `b` (flat) passes through a box grown by `clearance_m` on every
+## side (slab test in the box's frame).
 func crosses_box(a: Vector3, b: Vector3) -> bool:
 	if boxes.is_empty():
 		return false
@@ -43,12 +46,17 @@ func crosses_box(a: Vector3, b: Vector3) -> bool:
 	for box: Array in boxes:
 		var center: Vector2 = box[0]
 		var reach: float = box[4]
-		if center.x + reach < lo_x or center.x - reach > hi_x or center.y + reach < lo_z or center.y - reach > hi_z:
+		if (
+			center.x + reach < lo_x
+			or center.x - reach > hi_x
+			or center.y + reach < lo_z
+			or center.y - reach > hi_z
+		):
 			continue
 		var half: Vector2 = box[1]
 		var cos_y: float = box[2]
 		var sin_y: float = box[3]
-		## Into the box frame (rotated by -yaw, as a box turned `yaw` about Y).
+		# Into the box frame (rotated by -yaw, as a box turned `yaw` about Y).
 		var ax := a.x - center.x
 		var az := a.z - center.y
 		var bx := b.x - center.x

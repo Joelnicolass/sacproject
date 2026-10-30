@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://spells/chain_lightning/cast_bolts.gd" id="1_script"]
+[ext_resource type="Resource" path="res://spells/chain_lightning/fx/beams/lightning_small.tres" id="2_beam"]
+
+[node name="CastBolts" type="Node3D"]
+editor_description = "Rayitos que suben alrededor del mago mientras lanza Chain Lightning. FxBus.broadcast_scene lo juega en cada peer (LaunchAction.cast_scene)."
+script = ExtResource("1_script")
+beam = ExtResource("2_beam")

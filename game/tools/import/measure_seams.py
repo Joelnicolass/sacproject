@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""No necesita el juego original: mide PNG (capturas del juego o referencias).
+"""Does not need the original game: it measures PNGs (game captures or references).
 
 Measures two things of a capture of the ground.
 

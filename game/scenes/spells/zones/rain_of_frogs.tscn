@@ -1,13 +1,14 @@
 [gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/grfr.tres" id="spell"]
+[ext_resource type="Resource" path="res://spells/rain_of_frogs/rain_of_frogs.tres" id="spell"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="sound"]
 [ext_resource type="Script" path="res://scenes/spells/zones/cloud_look.gd" id="look"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/cloud_sphere.gdshader" id="shader"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="light"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_dropper.gd" id="dropper"]
 [ext_resource type="Script" path="res://scenes/spells/zones/drop_launcher.gd" id="launcher"]
+[ext_resource type="PackedScene" path="res://scenes/spells/drops/rain_frog.tscn" id="q8_scene"]
 
 [sub_resource type="ShaderMaterial" id="Mat_cloud"]
 shader = ExtResource("shader")
@@ -71,7 +72,7 @@ far_chance = 0.667
 script = ExtResource("launcher")
 zone = NodePath("..")
 dropper = NodePath("../Dropper")
-kind = "RainFrog"
+drop = ExtResource("q8_scene")
 start = 0
 cloud_at = NodePath("../CloudAt")
 fall_s = 2.0

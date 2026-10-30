@@ -1,35 +1,31 @@
 class_name Tumbling
 extends Affliction
 
-## A body thrown through the air. The Vortick's vortex
-## and the Flurry's implosion throw it; Squall's Pushback adds to a body already thrown.
-## The throw refuses a flier in the air (it hangs, or falls with petrify) and a body that cannot be thrown (dead,
-## landing, being summoned, held by a doctor); the mode becomes stunned, so it ends a stun (the type's `cancels`).
+## A body thrown through the air. The Vortick's vortex and the Flurry's implosion throw it; Squall's
+## Pushback adds to a body already thrown. The throw refuses a flier in the air (it hangs, or falls
+## with petrify) and a body that cannot be thrown (dead, landing, being summoned, held by a doctor);
+## the mode becomes stunned, so it ends a stun (the type's `cancels`).
 ##
 ## While it lasts (the type holds the body) this state gives the body its velocity (steer): on the
-## ground and going down, vz = 0; else vz −= fallingAcceleration/60 unless an effect lifted it this tick
-## (antiGravityTime); then vxy ×0.99 and vz ×0.998 per tick. It lands when vz ≤ 0 and pos + vz/60 is under the ground,
-## or (REVIEW-F121 B1) when it rests on a building or another body (is_on_floor after move_and_slide):
-## fall damage max(0, −vz − 3)·20 with no resistance and it lies hitFloor +
-## getUp (Stunned.fall_down; the stun cooldown is not touched).
-## Deviation (declared): a hybrid flier leaves the tumble at the top of its arc (the original: it flies on) but
+## ground and going down, vz = 0; else vz −= falling acceleration/60 unless an effect lifted it this
+## tick; then vxy ×0.99 and vz ×0.998 per tick. It lands when vz ≤ 0 and pos + vz/60 is under the
+## ground, or when it rests on a building or another body (is_on_floor after move_and_slide): fall
+## damage max(0, −vz − 3)·20 with no resistance and it lies hit_floor + get_up (Stunned.fall_down;
+## the stun cooldown is not touched). A hybrid flier leaves the tumble at the top of its arc but
 ## does not take off again; it comes down with the body's own gravity.
-## Look: Tilt rolls while it flies (Tween), as Stunned does; the mesh clips tumble/falling/hitFloor are not exported.
-## WORKAROUND: Tween on Tilt rotation:z in place of the tumble mesh clip (disk, same as RFC-030i-a).
-## Ref: F121 (RFC-030j); sacengine catapult + CreatureMovement.tumbling (state.d:8579-8599), steer 14781-14797, 14175-14197, dealFallDamage 9429-9438, 14176-14181.
+## Look: Tilt rolls while it flies (Tween), as Stunned does; the mesh clips tumble/falling/hit_floor
+## are not exported.
+## WORKAROUND: Tween on Tilt rotation:z in place of the tumble mesh clip (disk, same as Stunned).
 
 ## A body within this of the ground stands on it (the capsule rests a hair above the land).
 const REST_M := 0.02
 
 ## Falling acceleration, m/s².
-## Ref: sacengine CreatureStats.fallingAcceleration (stats.d:142-144).
 @export var falling_acceleration := 9.81
 ## Horizontal and vertical damping per tick at 60 fps.
-## Ref: sacengine dampFactorXY / dampFactorZ (state.d:14783-14784).
 @export var damp_xz := 0.99
 @export var damp_y := 0.998
 ## The speed under which a fall does no damage, and the damage per m/s over it.
-## Ref: sacengine fallDamageLimit / fallDamageFactor (state.d:9430-9433).
 @export var fall_damage_limit := 3.0
 @export var fall_damage_factor := 20.0
 ## It lies here after it lands. Optional: empty = it stands up at once.
@@ -41,10 +37,8 @@ const REST_M := 0.02
 @export var roll_s := 0.3
 
 ## The velocity of the fall, m/s (port axes: y up).
-## Ref: sacengine fallingVelocity.
 var velocity := Vector3.ZERO
 ## The slot that threw it (-1 nobody).
-## Ref: sacengine tumbleAttackerSide.
 var attacker_slot := -1
 var _lifted_tick := -1
 var _from := Vector3.ZERO
@@ -58,15 +52,14 @@ func _ready() -> void:
 	set_physics_process(false)
 
 
-## Server (or solo): sets the fall velocity `v` of a body already thrown (the pull sets it each tick of its window).
-## Ref: sacengine `fallingVelocity = v`.
+## Server (or solo): sets the fall velocity `v` of a body already thrown (the pull sets it each tick
+## of its window).
 func drive(v: Vector3) -> void:
 	if is_on():
 		velocity = v
 
 
 ## Server (or solo): throws the body with `velocity`. True when it is (now or already) thrown.
-## Ref: sacengine catapult(side, velocity).
 func catapult(push: Vector3, side: int) -> bool:
 	var body := _body()
 	if body == null or BodyNudge.fixed(body):
@@ -86,27 +79,42 @@ func catapult(push: Vector3, side: int) -> bool:
 	_afflictions().mark(self, true)
 	set_physics_process(true)
 	var box := BodyNudge.box(body)
-	print("tumbo %s desde (%.2f, %.2f, %.2f) suelo %.2f v (%.3f, %.3f, %.3f) caja (%.2f, %.2f, %.2f) centro +%.2f (cuadro %d)" % [
-		_body_name(), _from.x, _from.y, _from.z, _from_ground, push.x, push.y, push.z, box.size.x * 0.5,
-		box.size.y * 0.5, box.size.z * 0.5, box.get_center().y - _from.y, MatchClock.now()])
+	print(
+		(
+			# gdlint: ignore=max-line-length
+			"tumble %s from (%.2f, %.2f, %.2f) ground %.2f v (%.3f, %.3f, %.3f) box (%.2f, %.2f, %.2f) center +%.2f (frame %d)"
+			% [
+				_body_name(),
+				_from.x,
+				_from.y,
+				_from.z,
+				_from_ground,
+				push.x,
+				push.y,
+				push.z,
+				box.size.x * 0.5,
+				box.size.y * 0.5,
+				box.size.z * 0.5,
+				box.get_center().y - _from.y,
+				MatchClock.now()
+			]
+		)
+	)
 	return true
 
 
 ## Server: adds `v` to the fall velocity of a thrown body (Pushback on a tumbling body).
-## Ref: sacengine fallingVelocity += v, state.d:24024-24026.
 func add_velocity(push: Vector3) -> void:
 	velocity += push
 
 
 ## Server: the vortex holds it up this tick.
-## Ref: sacengine antiGravityTime = frame, state.d:23955.
 func lift() -> void:
 	_lifted_tick = MatchClock.now()
 
 
 ## Server: moves a thrown body by `v` (the implosion). `clear_fall`: it was going
-## down while this moves it up, so vz = 0 (the original's own «hack»).
-## Ref: sacengine `position += v`, state.d:24663-24666.
+## down while this moves it up, so vz = 0.
 func shift(offset: Vector3, clear_fall: bool) -> void:
 	var body := _body()
 	if body:
@@ -115,9 +123,8 @@ func shift(offset: Vector3, clear_fall: bool) -> void:
 		velocity.y = 0.0
 
 
-## Can it be thrown, with the port's names: not in the air on its own, alive, not being
+## Can it be thrown, in this game's terms: not in the air on its own, alive, not being
 ## summoned, not held or revived by a doctor, not landing. Rockform and playing dead may be thrown.
-## Ref: canCatapult (state.d:250-255, 8579-8584).
 func _body_allows(body: Node3D) -> bool:
 	if BodyNudge.airborne(body):
 		return false
@@ -126,7 +133,7 @@ func _body_allows(body: Node3D) -> bool:
 		return false
 	var unit := body as UnitBody
 	if unit == null:
-		return not body.has_method("is_targetable") or bool(body.call("is_targetable"))  # dynamic: a wizard (or another body) answers it
+		return GameBody.targetable(body)
 	var flight := unit.get_node_or_null("Flight") as Flight
 	if flight and flight.state == Flight.State.LANDING:
 		return false
@@ -147,7 +154,8 @@ func steer(_velocity: Vector3, _delta: float) -> Vector3:
 	return velocity
 
 
-## Server, after the body moved this tick (a child runs after its body): the top of the arc and the landing.
+## Server, after the body moved this tick (a child runs after its body): the top of the arc and the
+## landing.
 func _physics_process(_delta: float) -> void:
 	if not is_on():
 		set_physics_process(false)
@@ -162,15 +170,25 @@ func _physics_process(_delta: float) -> void:
 	if velocity.y > 0.0:
 		return
 	if _hybrid(body):
-		print("%s deja el tumbo en el ápice %.2f m (cuadro %d)" % [_body_name(), _apex - _from_ground, MatchClock.now()])
+		print(
+			(
+				"%s leaves the tumble at the apex %.2f m (frame %d)"
+				% [_body_name(), _apex - _from_ground, MatchClock.now()]
+			)
+		)
 		_afflictions().mark(self, false)
 		return
-	if BodyNudge.on_land(body, at) and at.y + velocity.y / MatchClock.TICKS_PER_SECOND_F <= BodyNudge.ground_y(body, at) + REST_M:
-		_land(body, at, "suelo")
+	if (
+		BodyNudge.on_land(body, at)
+		and (
+			at.y + velocity.y / MatchClock.TICKS_PER_SECOND_F
+			<= BodyNudge.ground_y(body, at) + REST_M
+		)
+	):
+		_land(body, at, "ground")
 	elif body is CharacterBody3D and (body as CharacterBody3D).is_on_floor():
-		## REVIEW-F121 B1: it rests on a building or on another body (the original stops it on top),
-		## not on the land: it lands there all the same.
-		## Ref: sacengine positionAfterCollision, state.d:14446-14564.
+		# It rests on a building or on another body,
+		# not on the land: it lands there all the same.
 		_land(body, at, _floor_name(body as CharacterBody3D))
 
 
@@ -184,14 +202,32 @@ static func _floor_name(body: CharacterBody3D) -> String:
 	return "?"
 
 
-func _land(body: Node3D, at: Vector3, on: String) -> void:
+func _land(_body: Node3D, at: Vector3, on: String) -> void:
 	var damage := maxf(0.0, -velocity.y - fall_damage_limit) * fall_damage_factor
 	var flat := Vector2(at.x - _from.x, at.z - _from.z)
-	print("aterriza %s sobre %s en (%.2f, %.2f, %.2f) a %.2f m (dx %.2f, dz %.2f) tras %d ticks, ápice %.2f m, vz %.2f, caída %.1f (cuadro %d)" % [
-		_body_name(), on, at.x, at.y, at.z, flat.length(), flat.x, flat.y, _ticks, _apex - _from_ground,
-		velocity.y, damage, MatchClock.now()])
+	print(
+		(
+			# gdlint: ignore=max-line-length
+			"lands %s on %s at (%.2f, %.2f, %.2f) at %.2f m (dx %.2f, dz %.2f) after %d ticks, apex %.2f m, vz %.2f, fall %.1f (frame %d)"
+			% [
+				_body_name(),
+				on,
+				at.x,
+				at.y,
+				at.z,
+				flat.length(),
+				flat.x,
+				flat.y,
+				_ticks,
+				_apex - _from_ground,
+				velocity.y,
+				damage,
+				MatchClock.now()
+			]
+		)
+	)
 	velocity = Vector3.ZERO
-	## Stunned first, so the body stays held through the hand-over (held_changed does not blink).
+	# Stunned first, so the body stays held through the hand-over (held_changed does not blink).
 	if stunned:
 		stunned.fall_down()
 	_afflictions().mark(self, false)
@@ -214,8 +250,15 @@ func _shown(on: bool) -> void:
 	if on:
 		_tween = tilt.create_tween()
 		_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-		_tween.tween_property(tilt, "rotation:z", deg_to_rad(roll_deg), roll_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		(
+			_tween
+			. tween_property(tilt, "rotation:z", deg_to_rad(roll_deg), roll_s)
+			. set_trans(Tween.TRANS_SINE)
+			. set_ease(Tween.EASE_OUT)
+		)
 	elif stunned == null or not stunned.is_on():
 		_tween = tilt.create_tween()
 		_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-		_tween.tween_property(tilt, "rotation:z", 0.0, roll_s).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_tween.tween_property(tilt, "rotation:z", 0.0, roll_s).set_trans(Tween.TRANS_SINE).set_ease(
+			Tween.EASE_OUT
+		)

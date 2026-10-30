@@ -2,15 +2,18 @@
 class_name SacrificeSystem
 extends Node
 
-## Door of the sacrifice rituals: a SpellAction (DesecrateAction, ConvertAction) and the AI ask here and the door passes the question
-## to its children. Desecrate: a carrier doctor takes an own creature to the closest enemy altar and the ritual drains the wizard
-## there. Convert: the carrier pumps a red soul's corpse back to life and takes it to the own altar, where the ritual turns it into souls.
-## What it does not do: any logic of its own. SacrificeSpawns builds, SacrificeTargets answers, SacrificeCasts runs the cast, RitualStarter starts the ritual.
-## Ref: RFC-020 (sacrifice), RFC-055g (split).
+## Door of the sacrifice rituals: a SpellAction (DesecrateAction, ConvertAction) and the AI ask here
+## and the door passes the question to its children. Desecrate: a carrier doctor takes an own
+## creature to the closest enemy altar and the ritual drains the wizard there. Convert: the carrier
+## pumps a red soul's corpse back to life and takes it to the own altar, where the ritual turns it
+## into souls.
+## What it does not do: any logic of its own. SacrificeSpawns builds, SacrificeTargets answers,
+## SacrificeCasts runs the cast, RitualStarter starts the ritual.
 
 ## A carrier reached the ritual site holding its creature.
 signal carrier_arrived(errand: CarryErrand)
-## A Convert ritual ended: `count` souls go into the purse of the wizard of `slot`, announced right before the purse changes (`origin`: SoulSystem.origin_of).
+## A Convert ritual ended: `count` souls go into the purse of the wizard of `slot`, announced right
+## before the purse changes (`origin`: SoulSystem.origin_of).
 signal souls_converted(slot: int, count: int, origin: StringName)
 
 const GROUP := &"sacrifice_system"
@@ -20,14 +23,16 @@ const BAD_TARGET := SpellAction.BAD_TARGET
 
 
 ## What a running cast keeps between its start and its end (the action holds it).
-class Cast extends RefCounted:
+class Cast:
+	extends RefCounted
 	var kind := Ritual.Kind.DESECRATE
 	var caster_slot := 0
 	## Desecrate: the creature sacrificed. Convert: the corpse the soul sits on.
 	var creature: UnitBody
 	## Convert: the red soul, reserved for the caster.
 	var soul: Soul
-	## Where the ritual will be: the enemy altar's site (Desecrate) or the own altar or Shrine (Convert).
+	## Where the ritual will be: the enemy altar's site (Desecrate) or the own altar or Shrine
+	## (Convert).
 	var site: RitualSite
 	var vortex: RedVortex
 	var exit_point := Vector3.ZERO
@@ -45,7 +50,8 @@ class Cast extends RefCounted:
 
 ## The doctors' root, for the debug scenes.
 var doctors_root: Node3D:
-	get: return spawns.doctors_root
+	get:
+		return spawns.doctors_root
 
 
 func _ready() -> void:
@@ -60,9 +66,11 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if spawns == null or targets == null or casts == null or starter == null:
-		warnings.append("Asigná `spawns`, `targets`, `casts` y `starter` (los hijos del sistema).")
+		warnings.append(
+			"Assign `spawns`, `targets`, `casts` and `starter` (the system's children)."
+		)
 	if world == null and rules == null:
-		warnings.append("Asigná `world` (MatchWorld) o `rules` (MatchRules).")
+		warnings.append("Assign `world` (MatchWorld) or `rules` (MatchRules).")
 	return warnings
 
 
@@ -112,7 +120,8 @@ func convert_status(slot: int, picked: Node3D) -> String:
 	return targets.convert_status(slot, picked)
 
 
-## Is a Desecrate underway against the altars of `altar_slot`: a wizard casting it, a carrier on its way or a ritual running.
+## Is a Desecrate underway against the altars of `altar_slot`: a wizard casting it, a carrier on its
+## way or a ritual running.
 func desecration_against(altar_slot: int) -> bool:
 	return targets.desecration_matches(altar_slot, 0, casts.desecrations())
 
@@ -138,6 +147,7 @@ func cancel_cast(cast: Cast) -> void:
 	casts.cancel_cast(cast)
 
 
-## The casting time ended: the carrier doctor drops. Returns what to tell the owner when nothing came out, or "".
+## The casting time ended: the carrier doctor drops. Returns what to tell the owner when nothing
+## came out, or "".
 func finish_cast(cast: Cast) -> String:
 	return casts.finish_cast(cast)

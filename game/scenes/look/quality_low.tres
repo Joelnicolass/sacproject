@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="LookQuality" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/look_quality.gd" id="1_q"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_quality.gd" id="2_veg"]
+
+[sub_resource type="Resource" id="Veg_original_plants"]
+script = ExtResource("2_veg")
+layer_id = &"original_plants"
+radius_scale = 0.45
+density_scale = 0.6
+shadows = false
+max_builds_per_frame = 1
+
+[resource]
+script = ExtResource("1_q")
+id = &"low"
+label = "Baja"
+scaling_mode = 2
+scale = 0.5
+screen_space_aa = 0
+msaa_3d = 0
+shadow_splits = 1
+shadow_atlas_size = 2048
+shadow_filter = 1
+shadow_distance_cap = 120.0
+ssao_enabled = false
+ground_layers = 2
+ground_triplanar = false
+ground_stochastic = false
+ground_macro = true
+ground_cloud_shadows = false
+lens_flare = false
+ssil_enabled = false
+glow_enabled = false
+grass_enabled = true
+relief_maps = false
+grass_radius_m = 20.0
+grass_near_radius_m = 8.0
+grass_density = 14.0
+grass_near_segments = 1
+grass_trample = false
+fx_soft_particles = false
+fx_frame_blend = false
+fx_max_lights = 0
+actor_max_lights = 4
+rain_density_scale = 0.35
+life_density_scale = 0.0
+vegetation = Array[ExtResource("2_veg")]([SubResource("Veg_original_plants")])
+depth_of_field = false

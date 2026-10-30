@@ -2,11 +2,12 @@
 class_name Weather
 extends Node3D
 
-## The weather's part of the atmosphere: which weather there is at a match second (the plan and the sky's seed,
-## through AtmosphereRules, so every peer agrees) and how far a change has blended. It tells `Precipitation` what
-## falls and how much and `Storm` the weather that rules (its lightning and the sky's flash), and says when the ruling
-## weather changes and when a strike lands. It writes no light: Atmosphere mixes its sample.
-## A rules node that needs the weather derives it the same way (AtmosphereRules.state_at) without this node.
+## The weather's part of the atmosphere: which weather there is at a match second (the plan and the
+## sky's seed, through AtmosphereRules, so every peer agrees) and how far a change has blended. It
+## tells `Precipitation` what falls and how much and `Storm` the weather that rules (its lightning
+## and the sky's flash), and says when the ruling weather changes and when a strike lands. It writes
+## no light: Atmosphere mixes its sample. A rules node that needs the weather derives it the same
+## way (AtmosphereRules.state_at) without this node.
 
 ## The ruling weather changed (at the middle of a blend).
 signal weather_changed(from: WeatherState, to: WeatherState)
@@ -29,8 +30,8 @@ func _ready() -> void:
 		storm.struck.connect(func(at: Vector3) -> void: strike.emit(at))
 
 
-## Warm-up (the WarmHook child): everything that can fall in this plan falls for a moment, one after the other. The lightning's
-## bolt and flash are warmed by FxBus's own hook.
+## Warm-up (the WarmHook child): everything that can fall in this plan falls for a moment, one after
+## the other. The lightning's bolt and flash are warmed by FxBus's own hook.
 func warm(_stage: Node3D) -> void:
 	if precipitation == null or _plan == null:
 		return
@@ -44,15 +45,26 @@ func warm(_stage: Node3D) -> void:
 			await precipitation.flash(state.precipitation)
 
 
-## The weather at `t_s` with `plan` and `sky_seed`; `preview` (editor) shows that state alone, fully.
-func advance(plan: WeatherPlan, sky_seed: int, t_s: float, preview: WeatherState) -> AtmosphereSample:
+## The weather at `t_s` with `plan` and `sky_seed`; `preview` (editor) shows that state alone,
+## fully.
+func advance(
+	plan: WeatherPlan, sky_seed: int, t_s: float, preview: WeatherState
+) -> AtmosphereSample:
 	_plan = plan
-	var now: Array = [preview, preview, 1.0] if preview else AtmosphereRules.states_at(plan, sky_seed, t_s)
-	var sample := AtmosphereRules.state_sample(preview) if preview else AtmosphereRules.weather_at(plan, sky_seed, t_s)
+	var now: Array = (
+		[preview, preview, 1.0] if preview else AtmosphereRules.states_at(plan, sky_seed, t_s)
+	)
+	var sample := (
+		AtmosphereRules.state_sample(preview)
+		if preview
+		else AtmosphereRules.weather_at(plan, sky_seed, t_s)
+	)
 	_rule(sample.weather)
 	var from: WeatherState = now[0]
 	var to: WeatherState = now[1]
-	var look: PrecipitationLook = to.precipitation if to and to.precipitation else (from.precipitation if from else null)
+	var look: PrecipitationLook = (
+		to.precipitation if to and to.precipitation else (from.precipitation if from else null)
+	)
 	if precipitation:
 		precipitation.show_fall(look, sample.rain)
 	if storm:
@@ -84,4 +96,8 @@ func _rule(state: WeatherState) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if precipitation else PackedStringArray(["Falta el socket Precipitation."])
+	return (
+		PackedStringArray()
+		if precipitation
+		else PackedStringArray(["The Precipitation socket is missing."])
+	)

@@ -1,0 +1,54 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFst.res" id="1_DFst"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFfl.res" id="2_DFfl"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFa1.res" id="3_DFa1"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFa2.res" id="4_DFa2"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFa3.res" id="5_DFa3"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFs1.res" id="6_DFs1"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFs2.res" id="7_DFs2"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFd1.res" id="8_DFd1"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DF2t.res" id="9_DF2t"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFsc.res" id="10_DFsc"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFrz.res" id="11_DFrz"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFhv.res" id="12_DFhv"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFdf.res" id="13_DFdf"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFhf.res" id="14_DFhf"]
+[ext_resource type="Animation" path="res://creatures/phoenix/model/phoenix_model_clips/DFi1.res" id="15_DFi1"]
+
+[sub_resource type="Animation" id="Animation_ju03a"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[resource]
+_data = {
+&"RESET": SubResource("Animation_ju03a"),
+&"attack": ExtResource("3_DFa1"),
+&"attack2": ExtResource("4_DFa2"),
+&"attack3": ExtResource("5_DFa3"),
+&"death": ExtResource("8_DFd1"),
+&"fly": ExtResource("2_DFfl"),
+&"fly_damage": ExtResource("13_DFdf"),
+&"fly_death": ExtResource("8_DFd1"),
+&"gesture": ExtResource("15_DFi1"),
+&"held": ExtResource("9_DF2t"),
+&"hit_floor": ExtResource("14_DFhf"),
+&"hover": ExtResource("12_DFhv"),
+&"idle": ExtResource("1_DFst"),
+&"rise": ExtResource("11_DFrz"),
+&"run": ExtResource("2_DFfl"),
+&"shoot": ExtResource("6_DFs1"),
+&"shoot2": ExtResource("7_DFs2"),
+&"thrash": ExtResource("10_DFsc")
+}

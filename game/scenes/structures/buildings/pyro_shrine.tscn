@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/structures/towers/shrine_tower.tscn" id="1_building"]
-[ext_resource type="Resource" path="res://data/buildings/pyro_shrine.tres" id="2_type"]
+[ext_resource type="Resource" path="res://gods/pyro/buildings/pyro_shrine.tres" id="2_type"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pysh.res" id="mesh_pysh"]
 
@@ -19,7 +19,8 @@ mesh = ExtResource("mesh_pysh")
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(0.12650013, 0, 0.06199932)
 script = ExtResource("3_clear")
-radius_m = 18.46
+radius = 18.46
+soft = 3.0
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(0.12650013, 10.7439995, 0.06199932)

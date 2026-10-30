@@ -11,6 +11,6 @@ emission = Color(0.9, 0.4, 0.05, 1)
 emission_energy_multiplier = 2.0
 
 [node name="ClingBomb" type="MeshInstance3D"]
-editor_description = "F129 (RFC-030 030r-a): placeholder de una bomba pegada (esfera ámbar). Clinging la instancia en un lugar fijo del cuerpo."
+editor_description = "Placeholder of a stuck bomb (amber sphere). Clinging instances it at a fixed place on the body."
 mesh = SubResource("SphereMesh_bomb")
 surface_material_override/0 = SubResource("Material_bomb")

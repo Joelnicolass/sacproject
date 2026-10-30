@@ -2,7 +2,7 @@
 
 Layout (little endian): u32 0, u32 payload size, u32 width, u32 height, 256 palette entries of B,G,R,0 (1024 bytes), then
 width*height pairs (palette index u8, alpha u8) with alpha 0..8 (eighths of a mix over the ground). Size is 16 + 1024 + 2*w*h.
-Ref: rfcs/research/061S-scar-ground-marks.md section 1.
+Ref: docs/archive/rfcs/research/061S-scar-ground-marks.md section 1.
 """
 
 from . import png

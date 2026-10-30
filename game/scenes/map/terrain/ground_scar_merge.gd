@@ -1,11 +1,13 @@
 class_name GroundScarMerge
 extends RefCounted
 
-## How a peer back from a drop merges the marks a donor gives it with the ones it paints itself while it catches up: per picture
-## and place (GroundScarRecord.key_of) it counts how many it painted and the most the donor says it has, and paints only what
-## raises the larger of the two. A mark both of them paint (a rock that lands on both) shows once, whichever comes first; two
-## marks the donor really has at one place show twice.
-## What it does not do: paint (GroundScars), keep the list (GroundScarRecord) or send (GroundScarsNet). No tree, no GPU.
+## How a peer back from a drop merges the marks a donor gives it with the ones it paints itself
+## while it catches up: per picture and place (GroundScarRecord.key_of) it counts how many it
+## painted and the most the donor says it has, and paints only what raises the larger of the two. A
+## mark both of them paint (a rock that lands on both) shows once, whichever comes first; two marks
+## the donor really has at one place show twice.
+## What it does not do: paint (GroundScars), keep the list (GroundScarRecord) or send
+## (GroundScarsNet). No tree, no GPU.
 
 var _seen: Dictionary = {}  # place key -> Vector2i(painted here, the most the donor has)
 
@@ -26,7 +28,8 @@ func own_copies(path: String, at: Vector3) -> int:
 	return 1 if seen.x + 1 > seen.y else 0
 
 
-## How many times to paint the `ordinal`-th mark the donor has at that place: what it adds over what this peer already has.
+## How many times to paint the `ordinal`-th mark the donor has at that place: what it adds over what
+## this peer already has.
 func given_copies(path: String, at: Vector3, ordinal: int) -> int:
 	if not GroundScarRecord.travels(path):
 		return 0

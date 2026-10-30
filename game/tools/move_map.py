@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RFC-048: apply a path-move map to the game tree (git mv + reference rewrite + checks).
+"""Apply a path-move map to the game tree (git mv + reference rewrite + checks).
 
   python3 tools/move_map.py <csv> [--cut b] [--dry-run] [--diff] [--apply] [--check] [--lint] [--rewrite-only]
 
@@ -14,8 +14,8 @@ Comment lines start with `#`. Directives (one per line, space separated):
   @fix-root <glob> <cut>            after the cut, `dirname "$0")/..` becomes `dirname "$0")/../..` in matching files
 
 Rules: no file is renamed (only the directory changes); a folder row must not contain file rows. A row is "applied"
-when its old path is gone and its new path exists, so the script is idempotent. History folders (rfcs/, reviews/,
-changes/) and addons/ are never rewritten. See rfcs/RFC-048-folder-structure.md.
+when its old path is gone and its new path exists, so the script is idempotent. History (docs/archive/) and addons/ are never
+rewritten. See docs/archive/rfcs/RFC-048-folder-structure.md.
 """
 import argparse
 import difflib
@@ -29,7 +29,7 @@ GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO = os.path.dirname(GAME)
 TEXT_EXT = ('.gd', '.tscn', '.tres', '.gdshader', '.gdshaderinc', '.godot', '.cfg', '.json', '.txt', '.sh', '.py',
             '.md', '.service', '.import')
-SKIP_PREFIX = ('docs/AUDIT-editor-first.md', '.studio/', 'rfcs/', 'reviews/', 'changes/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
+SKIP_PREFIX = ('docs/AUDIT-editor-first.md', '.studio/', 'docs/archive/', 'addons/', 'tools/move_map/', 'tools/move_map.py')
 EXTRA_FILES = ('../README.md', '../.gitattributes', '../.gitignore')
 MAX_BYTES = 20 * 1024 * 1024
 DANGLING_BASELINE = os.path.join(GAME, 'tools', 'move_map', 'dangling_baseline.txt')
@@ -408,7 +408,7 @@ def lint(rows, dirs, tset, done, texts):
         base = set(open(LINT_BASELINE).read().split('\n'))
     hits = set()
     for p, t in texts.items():
-        if not p.startswith(('scenes/', 'data/')):
+        if not p.startswith(('scenes/', 'creatures/', 'spells/', 'wizards/', 'gods/')):
             continue
         for m in re.finditer(r'res://(agent|tools)/[^\s"\'<>]*', t):
             ls = t.rfind('\n', 0, m.start()) + 1

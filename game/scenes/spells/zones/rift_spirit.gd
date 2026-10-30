@@ -1,16 +1,15 @@
 class_name RiftSpirit
 extends SpellProjectile
 
-## A spirit of a Demonic Rift: it leaves the rift toward one creature, hits it once, spirals up around it for four seconds, flies to a point
-## in the air, comes back to the rift and sinks into it. The server (or solo) moves it and does the hit; `position`, `scale` and `status`
-## are replicated, and its RiftRibbon child draws the trail on every peer. It does not choose its target (RiftSpawner) nor open the rift.
-## Ref: sacengine updateDemonicRiftSpirit (state.d:19566-19606).
-
-const _ROCK := preload("res://scenes/spells/rock_projectile.gd")
+## A spirit of a Demonic Rift: it leaves the rift toward one creature, hits it once, spirals up
+## around it for four seconds, flies to a point in the air, comes back to the rift and sinks into
+## it. The server (or solo) moves it and does the hit; `position`, `scale` and `status` are
+## replicated, and its RiftRibbon child draws the trail on every peer. It does not choose its target
+## (RiftSpawner) nor open the rift.
 
 enum Status { TARGETING, RISING, MOVING_AWAY, MOVING_BACK, VANISHING }
 
-## Every spirit in the world is in this group (the checks and the capture harness count them).
+## Every spirit in the world is in this group (so they can be counted).
 const GROUP := &"rift_spirit"
 
 @export var hit_sound: SoundEmitter3D
@@ -112,7 +111,8 @@ func _steer() -> void:
 		_arrived()
 
 
-## Where it flies this tick: the creature (or the point it was given), the spiral around it, the point in the air or the rift.
+## Where it flies this tick: the creature (or the point it was given), the spiral around it, the
+## point in the air or the rift.
 func _aim() -> Vector3:
 	var body := get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null
 	if status == Status.TARGETING and body != null:
@@ -121,23 +121,31 @@ func _aim() -> Vector3:
 		return goal
 	var t := float(_risen) / float(maxi(MatchClock.ticks_for(rising_s), 1))
 	var angle := TAU * float(rising_turns) * t
-	return (BodyNudge.center(body) if body != null else goal) + Vector3(cos(angle), rising_m * t, sin(angle))
+	return (
+		(BodyNudge.center(body) if body != null else goal)
+		+ Vector3(cos(angle), rising_m * t, sin(angle))
+	)
 
 
 func _arrived() -> void:
 	match status:
 		Status.TARGETING:
-			var body := get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null
-			if body != null and _ROCK.is_live_body(body):
+			var body := (
+				get_node_or_null(target_path) as Node3D if not target_path.is_empty() else null
+			)
+			if body != null and ProjectileTargets.is_live_body(body):
 				SplashDamage.hurt(body, damage, from_slot, Health.DIRECT_SPELL)
 				status = Status.RISING
 			else:
 				status = Status.MOVING_AWAY
-				goal = global_position + ZoneRules.disk_point(_rng, effect_range) + Vector3(0.0, away_altitude_m, 0.0)
+				goal = (
+					global_position
+					+ ZoneRules.disk_point(_rng, effect_range)
+					+ Vector3(0.0, away_altitude_m, 0.0)
+				)
 		Status.MOVING_AWAY:
 			status = Status.MOVING_BACK
 			goal = home
 		Status.MOVING_BACK:
 			status = Status.VANISHING
 			velocity = Vector3(0.0, -speed, 0.0)
-

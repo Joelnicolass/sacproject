@@ -2,11 +2,11 @@
 class_name CarrierHold
 extends Node
 
-## What a SpellCarrier does after arriving: it waits on its target (following it) for `hold_s`, says `settled` and stays `linger_s` more before it
-## ends. Charm's spirits wait the spell's duration around the creature; Blind Rage's fist forms 82 ticks four metres over the land and comes down
-## in the last half second; Intestinal Vaporization's guts turn around the target while it swells. It does not act on the target (TargetEffect does)
-## and it does not draw. Server (or solo) only.
-## Ref: sacengine updateCharm charming, updateBlindRage formingFist, updateIntestinalVaporization vaporizing (state.d:21447-21487, 21570-21615, 21992-22013).
+## What a SpellCarrier does after arriving: it waits on its target (following it) for `hold_s`, says
+## `settled` and stays `linger_s` more before it ends. Charm's spirits wait the spell's duration
+## around the creature; Blind Rage's fist forms 82 ticks four metres over the land and comes down in
+## the last half second; Intestinal Vaporization's guts turn around the target while it swells. It
+## does not act on the target (TargetEffect does) and it does not draw. Server (or solo) only.
 
 @export var carrier: SpellCarrier
 @export_range(0.0, 120.0, 0.01, "suffix:s") var hold_s := 0.0
@@ -25,7 +25,11 @@ var _linger := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
 
 func _ready() -> void:
@@ -34,7 +38,9 @@ func _ready() -> void:
 
 ## Ticks the wait lasts for the carrier's spell.
 func wait_ticks() -> int:
-	var seconds := carrier.spell.duration_s if hold_is_spell_duration and carrier.spell != null else hold_s
+	var seconds := (
+		carrier.spell.duration_s if hold_is_spell_duration and carrier.spell != null else hold_s
+	)
 	return MatchClock.ticks_for(seconds)
 
 
@@ -69,13 +75,16 @@ func _settle() -> void:
 		carrier.stop()
 
 
-## The carrier stays on the target: at its center, or `ride_height_m` over the land under it, coming down at the end.
+## The carrier stays on the target: at its center, or `ride_height_m` over the land under it, coming
+## down at the end.
 func _follow() -> void:
 	if not is_instance_valid(_target) or not _target.is_inside_tree():
 		return
 	var at := BodyNudge.center(_target)
 	if ride_height_m > 0.0:
-		var ground := GroundRay.surface_y(carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), at.y)
+		var ground := GroundRay.surface_y(
+			carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), at.y
+		)
 		var left := float(_total - _ticks) / MatchClock.TICKS_PER_SECOND_F
 		var rise := 1.0 if drop_s <= 0.0 else clampf(left / drop_s, 0.0, 1.0)
 		at = Vector3(at.x, ground + ride_height_m * rise, at.z)

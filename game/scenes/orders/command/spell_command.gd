@@ -1,10 +1,11 @@
 class_name SpellCommand
 extends Node
 
-## The spellbook's side of the player's input: a creature key summons at once, a spell or a structure is armed (an
-## unaffordable or cooling one is not) and the next left click, on the screen or on the minimap, casts it where the
-## cursor points. What a structure's click aims at (ground, own creature, soul, own building) is the `pick` of the
-## entry's SpellAction (RFC-021). The server answers; `ArmedCommand` ends the wait when it does.
+## The spellbook's side of the player's input: a creature key summons at once, a spell or a
+## structure is armed (an unaffordable or cooling one is not) and the next left click, on the screen
+## or on the minimap, casts it where the cursor points. What a structure's click aims at (ground,
+## own creature, soul, own building) is the `pick` of the entry's SpellAction. The server answers;
+## `ArmedCommand` ends the wait when it does.
 
 const _SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 
@@ -14,8 +15,9 @@ const _SPELL_BOOK := preload("res://scenes/ui/spell_book/spell_book.gd")
 ## The wizard's book (spell_book.gd). Empty (the book was removed): the keys do nothing.
 @export var book: Control
 
-@onready var _log: CommandLog = %Battle
 var _book: _SPELL_BOOK
+
+@onready var _log: CommandLog = %Battle
 
 
 func _ready() -> void:
@@ -55,7 +57,6 @@ func summon(index: int) -> void:
 
 
 ## An unaffordable or cooling spell is not armed.
-## Ref: sacengine selectSpell.
 func arm_spell(index: int) -> void:
 	if _book != null:
 		_book.show_tab(_SPELL_BOOK.Tab.SPELL)
@@ -77,7 +78,7 @@ func arm_spell(index: int) -> void:
 	armed.mode = "spell"
 	armed.spell_index = index
 	armed.cast_pending = ""
-	_log.arm("spell", spell.icon if spell else null, "Elegí el blanco")
+	_log.arm("spell", spell.icon if spell else null)
 
 
 ## A spell that aims at the wizard himself (a ward) starts on the key: there is nothing to click.
@@ -109,14 +110,18 @@ func arm_structure(index: int) -> void:
 	armed.structure_index = index
 	armed.cast_pending = ""
 	var spell: SpellType = book.structure_at(index)
-	_log.arm("structure", spell.icon if spell else null, action.prompt, _accepts_of(action))
+	_log.arm("structure", spell.icon if spell else null, _accepts_of(action))
 
 
 func cast_at(screen: Vector2) -> void:
-	cast_on(ray.soul_under(screen) if _armed_picks_soul() else ray.body_under(screen, false), ray.ground(screen))
+	cast_on(
+		ray.soul_under(screen) if _armed_picks_soul() else ray.body_under(screen, false),
+		ray.ground(screen)
+	)
 
 
-## The armed spell aims at a soul (Soul Mole, Animate Dead, Soul Wind): the click looks for souls, not bodies.
+## The armed spell aims at a soul (Soul Mole, Animate Dead, Soul Wind): the click looks for souls,
+## not bodies.
 func _armed_picks_soul() -> bool:
 	var book := _spellbook()
 	var spell: SpellType = book.spell_at(armed.spell_index) if book else null
@@ -131,7 +136,9 @@ func cast_on(body: Node3D, ground: Variant) -> void:
 		armed.mode = ""
 		_log.say("Mago")
 		return
-	var point: Vector3 = body.global_position if body else (ground if ground != null else Vector3.ZERO)
+	var point: Vector3 = (
+		body.global_position if body else (ground if ground != null else Vector3.ZERO)
+	)
 	if body == null and ground == null:
 		_log.say(Refusal.NO_TARGET)
 		return
@@ -163,11 +170,14 @@ func structure_at(screen: Vector2) -> void:
 			_structure_on_body(spell, ray.building_under(screen))
 
 
-## The minimap only gives a ground point: a structure that aims at a creature finds one near it, the others do not apply.
+## The minimap only gives a ground point: a structure that aims at a creature finds one near it, the
+## others do not apply.
 func structure_at_point(point: Vector3) -> void:
 	var book := _spellbook()
 	var spell: SpellType = book.structure_at(armed.structure_index) if book else null
-	var action: SpellAction = armed.caster.structure_action(armed.structure_index) if spell else null
+	var action: SpellAction = (
+		armed.caster.structure_action(armed.structure_index) if spell else null
+	)
 	if action == null:
 		armed.mode = ""
 		_log.say("Mago" if spell == null else Refusal.NOT_IMPLEMENTED)
@@ -200,7 +210,8 @@ func _structure_on_body(spell: SpellType, body: Node3D) -> void:
 	armed.caster.request_cast(spell.tag, body.global_position, body)
 
 
-## The local Caster when the wizard can cast, else null (and a refusal said when there is no wizard).
+## The local Caster when the wizard can cast, else null (and a refusal said when there is no
+## wizard).
 func _caster_ready() -> Caster:
 	var caster := armed.caster
 	if caster == null or not is_instance_valid(caster):

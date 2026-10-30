@@ -1,18 +1,16 @@
 class_name SeeThroughLook
 extends RefCounted
 
-## The see-through look of ONE body (the ghost of a wizard): transparency, no shadow and the shadeless
-## material with energy that follows the fade.
-## It works on the meshes of that instance only: a BodyVisual with a BodyRig draws with the skeleton's skinned meshes,
-## a baked body with its own mesh. The materials the other bodies share (scenes/bodies/materials/) are never touched: the
+## The see-through look of ONE body (the ghost of a wizard): transparency, no shadow and the
+## shadeless material with energy that follows the fade. It works on the meshes of that instance
+## only: a BodyVisual with a BodyRig draws with the skeleton's skinned meshes, a baked body with its
+## own mesh. The materials the other bodies share (scenes/bodies/materials/) are never touched: the
 ## shadeless copy goes on each MeshInstance3D as a surface override.
-## Ref: RFC-023 023f; sacengine shadelessBoneMaterialBackend (energy 1 -> ghostEnergy).
 
 var visual: GeometryInstance3D
-## Converts a dagon shadeless energy to Godot's light scale (GhostForm.energy_scale).
+## Converts a shadeless energy to Godot's light scale (GhostForm.energy_scale).
 var energy_scale := 0.224
 ## The end of the fade.
-## Ref: sacengine ghostAlpha / ghostEnergy.
 var ghost_alpha := 0.36
 var ghost_energy := 10.0
 
@@ -29,7 +27,8 @@ func _init(target: GeometryInstance3D = null) -> void:
 	visual = target
 
 
-## Transparency of the whole body (the rig's meshes too: GeometryInstance3D.transparency does not inherit).
+## Transparency of the whole body (the rig's meshes too: GeometryInstance3D.transparency does not
+## inherit).
 func set_transparency(value: float) -> void:
 	transparency = value
 	if visual == null:
@@ -41,7 +40,11 @@ func set_transparency(value: float) -> void:
 
 
 func set_shadow(on: bool) -> void:
-	var mode := GeometryInstance3D.SHADOW_CASTING_SETTING_ON if on else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var mode := (
+		GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		if on
+		else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	)
 	for instance in meshes():
 		instance.cast_shadow = mode
 
@@ -55,8 +58,8 @@ func set_shadeless(on: bool) -> void:
 			_dress(instance)
 
 
-## Energy follows the fade: 1 at alpha 1, ghost_energy at ghost_alpha. A mesh that loaded after the stage began
-## (the rig shows its model later) is dressed here.
+## Energy follows the fade: 1 at alpha 1, ghost_energy at ghost_alpha. A mesh that loaded after the
+## stage began (the rig shows its model later) is dressed here.
 func update() -> void:
 	if not _shadeless or visual == null:
 		return
@@ -95,8 +98,8 @@ func _undress() -> void:
 	_dressed_meshes.clear()
 
 
-## The unshaded copy of what the surface shows (its override, as the skeleton's meshes carry the shared material there, or
-## the mesh's own); the previous overrides are kept to put back.
+## The unshaded copy of what the surface shows (its override, as the skeleton's meshes carry the
+## shared material there, or the mesh's own); the previous overrides are kept to put back.
 func _dress(instance: MeshInstance3D) -> void:
 	if instance.mesh == null:
 		return
@@ -109,7 +112,10 @@ func _dress(instance: MeshInstance3D) -> void:
 	for i in instance.mesh.get_surface_count():
 		var current := instance.get_surface_override_material(i)
 		originals.append(current)
-		var base := (current if current != null else instance.mesh.surface_get_material(i)) as StandardMaterial3D
+		var base := (
+			(current if current != null else instance.mesh.surface_get_material(i))
+			as StandardMaterial3D
+		)
 		var copy: StandardMaterial3D = base.duplicate() if base else StandardMaterial3D.new()
 		copy.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		instance.set_surface_override_material(i, copy)

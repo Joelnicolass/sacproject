@@ -1,11 +1,11 @@
 @tool
-class_name MatchResultBanner
+class_name MatchResult
 extends Label
 
-## The result of the match for the player of this process: «Victoria», «Derrota» or «Fin de partida».
-## Hidden while the match goes on and on the dedicated server (it has no player).
-## RFC-049 049h (F297): «Victoria» when the team of the player won (`MatchState.won`); with a team of two or more, `team_label` adds
-## «Ganó el equipo de A y B» with the wizards of the winning team.
+## The result of the match for the player of this process: «Victoria», «Derrota» or «Fin de
+## partida». Hidden while the match goes on and on the dedicated server (it has no player).
+## «Victoria» when the team of the player won (`MatchState.won`); with a team of two or more,
+## `team_label` adds «Ganó el equipo de A y B» with the wizards of the winning team.
 
 @export var match_state: MatchState
 ## Who looks at this screen: the banner tells this seat's result.
@@ -35,9 +35,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if match_state == null:
-		warnings.append("Asigná en `match_state` el MatchState.")
+		warnings.append("Assign in `match_state` the MatchState.")
 	if seat == null:
-		warnings.append("Asigná en `seat` el MpLocalSeat.")
+		warnings.append("Assign in `seat` the MpLocalSeat.")
 	return warnings
 
 
@@ -52,9 +52,15 @@ func text_for(slot: int) -> String:
 	return tr(draw_text)
 
 
-## The team line for `slot`: empty with no result, no player, or a winner alone (1v1, all against all).
+## The team line for `slot`: empty with no result, no player, or a winner alone (1v1, all against
+## all).
 func team_text_for(slot: int) -> String:
-	if match_state == null or not match_state.has_result() or slot <= 0 or match_state.winner_slots.size() < 2:
+	if (
+		match_state == null
+		or not match_state.has_result()
+		or slot <= 0
+		or match_state.winner_slots.size() < 2
+	):
 		return ""
 	var names := PackedStringArray()
 	for winner in match_state.winner_slots:

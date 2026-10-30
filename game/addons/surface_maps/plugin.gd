@@ -2,15 +2,15 @@
 extends EditorPlugin
 
 ## Wires the surface maps into the editor: the settings that say where maps go (`surface_maps/mirror_from`,
-## `surface_maps/mirror_to`), the «Relieve desde albedo» section in the inspector of a material or a ground role, and
-## Project > Tools > «Generar relieve…» for many at once. Owns the one recipe both share this session (never saved: the
+## `surface_maps/mirror_to`), the «Relief from albedo» section in the inspector of a material or a ground role, and
+## Project > Tools > «Generate relief…» for many at once. Owns the one recipe both share this session (never saved: the
 ## PNG is the source). Dev only: the export excludes `addons/surface_maps/*`, and nothing in the game refers to it.
 ## Not: the pixels (ReliefBaker), the files (MapWriter), the UI (surface_panel, batch_dialog).
 
 const Inspector := preload("res://addons/surface_maps/surface_inspector.gd")
 const BatchScene := preload("res://addons/surface_maps/batch_dialog.tscn")
 const BatchDialog := preload("res://addons/surface_maps/batch_dialog.gd")
-const BATCH_ITEM := "Generar relieve…"
+const BATCH_ITEM := "Generate relief…"
 const SETTINGS := {
 	MapWriter.SETTING_FROM: MapWriter.DEFAULT_FROM,
 	MapWriter.SETTING_TO: MapWriter.DEFAULT_TO,

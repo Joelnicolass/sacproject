@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_onlcn"]
+[ext_resource type="Texture2D" uid="uid://6go1ad4gox8t" path="res://assets/original/ui/icons/palk.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/earthfling/earthfling_shot.tres" id="typed_ekba"]
+[ext_resource type="Resource" path="res://creatures/earthfling/rock_form.tres" id="typed_dihk"]
+[ext_resource type="AnimationLibrary" path="res://creatures/earthfling/model/earthfling_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/earthfling/earthfling.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_onlcn")
+tag = "palk"
+display_name = "Earthfling"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 960
+regeneration_per_s = 16.6667
+run_speed_m_s = 9.0
+melee_strength = 90
+melee_accuracy = 0.8
+melee_evasion = 0.88
+ranged_accuracy = 0.6
+aggressiveness = 1.0
+vision_m = 175.0
+melee_resistance = 4.0
+mana = 200
+mana_cost = 300
+souls = 1
+cooldown_s = 2.0
+casting_time_s = 0.4321
+book_level = 1
+book_slot = 29
+ranged_attack = ExtResource("typed_ekba")
+active_ability = ExtResource("typed_dihk")

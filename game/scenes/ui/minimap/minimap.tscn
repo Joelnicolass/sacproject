@@ -4,8 +4,8 @@
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_ground.gd" id="2_ground"]
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_markers.gd" id="3_markers"]
 [ext_resource type="Texture2D" path="res://assets/original/ui/hud/fram.png" id="5_fram"]
-[ext_resource type="Resource" path="res://data/ui/minimap/style_set.tres" id="6_style"]
-[ext_resource type="Resource" path="res://data/ui/minimap/view.tres" id="7_view"]
+[ext_resource type="Resource" path="res://scenes/ui/minimap/style_set.tres" id="6_style"]
+[ext_resource type="Resource" path="res://scenes/ui/minimap/view.tres" id="7_view"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_disc"]
 bg_color = Color(1, 1, 1, 1)
@@ -21,7 +21,7 @@ atlas = ExtResource("5_fram")
 region = Rect2(101, 3, 21, 21)
 
 [node name="Minimap" type="Control" unique_id=1037000010 node_paths=PackedStringArray("ground", "markers", "compass")]
-editor_description = "RFC-037: circle at the bottom right. Anchored by its corner; Godot's stretch scales it. mouse_filter STOP, but only over the circle (Minimap._has_point); the wheel zooms the map, M toggles it, a click gives ground_pointed."
+editor_description = "Circle at the bottom right. Anchored by its corner; Godot's stretch scales it. mouse_filter STOP, but only over the circle (Minimap._has_point); the wheel zooms the map, M toggles it, a click gives ground_pointed."
 layout_mode = 3
 anchors_preset = 3
 anchor_left = 1.0

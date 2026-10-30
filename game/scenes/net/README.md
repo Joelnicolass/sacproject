@@ -1,7 +1,9 @@
-# scenes/net/
+# net
 
-What: glue de red de Sacrifice sobre `addons/mp_kit`: servidor de salas, host local, salas online (`OnlineNetwork`: el emisor de `data/net/online_config.tres`; `OnlineTicket`: el ticket Sacrifice de una sala que hospeda un jugador), tickets, `PickBoard` (los picks por asiento), `SeatPresence` (el relato de cada asiento), `MatchStateNet` (el estado de la partida: snapshot a los clientes, al asiento que vuelve y el fin de sesion de un dedicado a mano), `BiomeLink` (el canal «biome»: el dios de la tierra y el reloj del cielo, del servidor a cada cliente con el mundo listo, también al asiento que vuelve) y `MatchWire`.
-Not: nada generico de red (eso es el addon: quien se sienta y cuando arranca la partida es `MpMatchGate`, `Mp.gate()`); quien juega con el pick (eso es `SacrificeFlow`).
-Talks to: `MatchWire` es la unica conversion id <-> recurso del producto (pick, picks por slot, dios de un bot, mapa y modo del snapshot, opciones de una sala); `SacrificeFlow`, `PickBoard`, `SacrificeRoomRules` y `MatchTicketGlue` la llaman. `LaunchFlags` (linea de comandos) y `TicketPlan` (ticket de una sala) devuelven un `LaunchPlan` con datos y no tocan el flujo: el flujo los aplica. Lo que viaja es el mismo texto de siempre: `{wizard, model, god}`, `{map, mode}`. `SeatPresence` (hijo de `SacrificeFlow`) escucha la puerta y escribe las lineas `partida <id|lan>: …` (adentro, cargo k/n, arranca + tick, se fue / volvio con el mago, rechazado, abandono y pierde) y le pide al `DefeatRule` la derrota del que abandona; `MatchTicketGlue` escucha la misma puerta para el reporte a la sala (`result`/`abandon`/`empty`/`bad_ticket`).
-Edit: un mago, un dios, un mapa o un modo nuevo no toca nada aca (su `.tres` o su carpeta; `offered` saca un mago o un dios del lobby). Un nodo nuevo: script y escena aca, componer con hijos y `@export`. La gracia, el tiempo de carga y los asientos para arrancar: grupo «Match start» de `sacrifice_flow.tscn` (salas: `data/net/lobby_config*.tres`).
-Check: `grep "^partida "` en el log del servidor
+Sacrifice's network glue on top of `addons/mp_kit`. Nothing generic lives here (who sits and when the match starts is
+the kit's `MpMatchGate`).
+- `MatchWire` is the only id ↔ resource conversion of the game (pick, map, mode, room options).
+- `PickBoard` (picks by seat) and `SeatPresence` (the server log of each seat, defeat on abandon) are children of `SacrificeFlow`.
+- `MatchStateNet` and `BiomeLink` carry the match state and the god of the land to clients and to a seat that rejoins.
+- `LaunchFlags` (command line) and `TicketPlan` (a room's ticket) return a `LaunchPlan`; the flow applies it.
+Check: `grep "^partida "` in the server log.

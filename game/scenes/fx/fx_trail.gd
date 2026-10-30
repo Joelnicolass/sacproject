@@ -4,12 +4,11 @@ extends Node3D
 ## A projectile's trail: plays an FxBus type every `interval_s` of time where its
 ## parent flies, so it leaves as many puffs per second at 30 fps as at 120. Puffs owed in a long
 ## frame are spread along the path flown during it. Presentation only: never runs headless.
-## Ref: RFC-029 029b.
 
 ## Played once per puff.
 signal puffed(at: Vector3)
 
-## The burst each puff plays (a ParticleType from data/fx). Empty = no puffs.
+## The burst each puff plays (a ParticleType). Empty = no puffs.
 @export var fx: ParticleType
 ## Time between two puffs (as one puff every 2 render frames at 60 fps did).
 @export_range(0.005, 1.0, 0.0001, "suffix:s") var interval_s := 0.0333
@@ -17,14 +16,16 @@ signal puffed(at: Vector3)
 @export var emitting := true
 ## Puffs owed after a hitch beyond this many are dropped.
 @export_range(1, 16) var max_per_frame := 4
-## Puffs only while the host moves at least this fast, in m/s (a Halo rock trails dust while it chases, not while it orbits). 0 = always.
+## Puffs only while the host moves at least this fast, in m/s (a Halo rock trails dust while it
+## chases, not while it orbits). 0 = always.
 @export_range(0.0, 100.0, 0.5, "suffix:m/s") var min_speed_m_s := 0.0
 
 var _clock := 0.0
 var _last := Vector3.INF
 
 
-## Adds a trail of `burst` puffs to `host` (also before it enters the tree). Null in a headless process or without a burst.
+## Adds a trail of `burst` puffs to `host` (also before it enters the tree). Null in a headless
+## process or without a burst.
 static func attach(host: Node3D, burst: ParticleType, seconds: float) -> FxTrail:
 	if DisplayServer.get_name() == "headless" or burst == null:
 		return null
@@ -57,7 +58,7 @@ func _process(delta: float) -> void:
 		return
 	_clock = fmod(_clock, interval_s)
 	for i in owed:
-		## The last puff is here; earlier ones step back along this frame's path.
+		# The last puff is here; earlier ones step back along this frame's path.
 		var at := from.lerp(here, float(i + 1) / float(owed))
 		FxBus.puff(fx, at)
 		puffed.emit(at)

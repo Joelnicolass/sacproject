@@ -1,9 +1,10 @@
 class_name BiomePicker
 extends OptionButton
 
-## The picker of the land of a match: «Aleatoria» (the match draws it from its seed) or the land of one of the gods that bring a look.
-## Used by the boot (solo, «Contra la IA»), the room form and the local server form. It only lists: the metadata of each item is the
-## GodType and the choice goes out through `selected_god()` (null = drawn); whoever simulates the match applies it.
+## The picker of the land of a match: «Aleatoria» (the match draws it from its seed) or the land of
+## one of the gods that bring a look. Used by the boot (solo, «Contra la IA»), the room form and the
+## local server form. It only lists: the metadata of each item is the GodType and the choice goes
+## out through `selected_god()` (null = drawn); whoever simulates the match applies it.
 
 ## Item 0 (metadata ""): the match draws the land.
 @export var random_text := "UI_BIOME_RANDOM"

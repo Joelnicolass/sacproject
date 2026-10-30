@@ -8,14 +8,14 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/reveal/build_reveal.tscn" id="9_reveal"]
 [ext_resource type="Script" path="res://scenes/structures/reveal/build_edge.gd" id="10_edge"]
 [ext_resource type="PackedScene" path="res://scenes/fx/sprite_emitter.tscn" id="11_emitter"]
-[ext_resource type="Resource" path="res://data/fx/build_edge_ring.tres" id="12_ring"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_edge_ring.tres" id="12_ring"]
 [ext_resource type="PackedScene" uid="uid://cvo2hd4d6uxeb" path="res://scenes/look/lights/actor_light.tscn" id="13_light"]
 [ext_resource type="Script" path="res://scenes/structures/reveal/build_cues.gd" id="14_cues"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="1_type_pt"]
-[ext_resource type="Resource" path="res://data/fx/build_start.tres" id="15_start"]
-[ext_resource type="Resource" path="res://data/fx/build_done.tres" id="16_done"]
-[ext_resource type="Resource" path="res://data/fx/build_done_sparks.tres" id="17_sparks"]
-[ext_resource type="Resource" path="res://data/fx/build_cut.tres" id="18_cut"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_start.tres" id="15_start"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_done.tres" id="16_done"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_done_sparks.tres" id="17_sparks"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/build_cut.tres" id="18_cut"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_reach"]
 radius = 50.0
@@ -40,8 +40,8 @@ script = ExtResource("2_tower")
 mana_source = NodePath("ManaSource")
 guard_post = NodePath("GuardPost")
 
-[node name="Health" parent="." index="2" node_paths=PackedStringArray("deflector")]
-deflector = NodePath("../GuardPost")
+[node name="Health" parent="." index="2" node_paths=PackedStringArray("modifiers")]
+modifiers = [NodePath("../GuardPost")]
 
 [node name="Sync" parent="." index="3"]
 replication_config = SubResource("SceneReplicationConfig_tower")
@@ -56,7 +56,6 @@ script = ExtResource("4_source")
 kind = 2
 rate = 33.333
 reach = NodePath("Reach/Shape")
-audit_name = &"manalith"
 
 [node name="Reach" type="Area3D" parent="ManaSource" index="0"]
 collision_layer = 0
@@ -95,7 +94,7 @@ done_fx = Array[ExtResource("1_type_pt")]([ExtResource("16_done"), ExtResource("
 cut_fx = Array[ExtResource("1_type_pt")]([ExtResource("18_cut")])
 
 [node name="BuildEdge" type="Node3D" parent="." node_paths=PackedStringArray("tower", "reveal", "rings", "light")]
-editor_description = "Rides the cut line while the tower rises: EdgeRings throws flat blue rings (data/fx/build_edge_ring.tres), EdgeLight grows with build_progress along energy_curve and fades out when the tower stands."
+editor_description = "Rides the cut line while the tower rises: EdgeRings throws flat blue rings (scenes/fx/effects/build_edge_ring.tres), EdgeLight grows with build_progress along energy_curve and fades out when the tower stands."
 script = ExtResource("10_edge")
 tower = NodePath("..")
 reveal = NodePath("../BuildReveal")

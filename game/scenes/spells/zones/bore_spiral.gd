@@ -1,16 +1,15 @@
 class_name BoreSpiral
 extends RefCounted
 
-## The path of a Bore: a spiral that opens around the click from 5 m out to the spell's reach, `step_m` along the turn each tick
-## (the radius grows with the angle, so the turns get further apart as it goes). `advance()` gives the place for this tick and
-## moves on; `arrived` is true once the last place was given. The drill that bores and the cutter that opens the holes both walk
-## it, each at its own pace. It knows nothing of the ground.
-## Ref: sacengine boreGetPos (state.d:18578-18591).
+## The path of a Bore: a spiral that opens around the click from 5 m out to the spell's reach,
+## `step_m` along the turn each tick (the radius grows with the angle, so the turns get further
+## apart as it goes). `advance()` gives the place for this tick and moves on; `arrived` is true once
+## the last place was given. The drill that bores and the cutter that opens the holes both walk it,
+## each at its own pace. It knows nothing of the ground.
 
 ## The inner end of the spiral.
 const START_RADIUS_M := 5.0
 ## Turns per metre of radius.
-## Ref: sacengine: 0.2 pi of angle for each metre past the start
 const ANGLE_PER_M := 0.2 * PI
 
 var center := Vector2.ZERO
@@ -32,7 +31,9 @@ func advance() -> Vector2:
 	if not last > angle:
 		angle = last
 		arrived = true
-	var radius := (reach_m - START_RADIUS_M) * angle / last + START_RADIUS_M if last > 0.0 else START_RADIUS_M
+	var radius := (
+		(reach_m - START_RADIUS_M) * angle / last + START_RADIUS_M if last > 0.0 else START_RADIUS_M
+	)
 	var place := center + radius * Vector2(sin(angle), cos(angle))
 	angle += step_m / radius
 	return place

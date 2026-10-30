@@ -2,14 +2,16 @@
 class_name FloraLayer
 extends Node3D
 
-## Where one kind of plant grows on a map (child of the map's `Vegetation` node). Paint `density` with the map brush
-## (select this node, «Flora» in the 3D bar; it makes the PNG when there is none) or in any image editor (L8 PNG, white =
-## `max_per_cell` plants in the cell); 1 px = `cell_m` meters and the image starts at the map origin
-## (keep this node at 0, 0, 0). While the brush paints, the field draws the picture being painted (`show_painting`, editor
-## only, never saved) until the PNG is saved and imported again. The FloraField of the map's look draws it around the camera: FloraPlacement scatters the
-## cell's plants (same tag, cell and seed: same spots), heights from the terrain, none inside a VegetationClear.
-## For a few plants in one place use a VegetationPatch instead. Nothing here is simulation: a headless or dedicated
-## process never draws it. In the editor `show_overlay` tints the cells where it grows.
+## Where one kind of plant grows on a map (child of the map's `Vegetation` node). Paint `density`
+## with the map brush (select this node, «Flora» in the 3D bar; it makes the PNG when there is none)
+## or in any image editor (L8 PNG, white = `max_per_cell` plants in the cell); 1 px = `cell_m`
+## meters and the image starts at the map origin (keep this node at 0, 0, 0). While the brush
+## paints, the field draws the picture being painted (`show_painting`, editor only, never saved)
+## until the PNG is saved and imported again. The FloraField of the map's look draws it around the
+## camera: FloraPlacement scatters the cell's plants (same tag, cell and seed: same spots), heights
+## from the terrain, none inside a VegetationClear. For a few plants in one place use a
+## VegetationPatch instead. Nothing here is simulation: a headless or dedicated process never draws
+## it. In the editor `show_overlay` tints the cells where it grows.
 
 const GROUP := &"flora_layer"
 
@@ -17,6 +19,17 @@ const GROUP := &"flora_layer"
 	set(value):
 		_watch(species, value)
 		species = value
+		_changed()
+## The role this layer paints for the land's plants (GodFlora): the god of the match picks the
+## species. NONE = always `species`, whatever the land.
+@export var land_role := GodFlora.Role.NONE:
+	set(value):
+		land_role = value
+		_changed()
+## Which of the role's plants (wrapping over the god's list).
+@export_range(0, 15) var land_index := 0:
+	set(value):
+		land_index = value
 		_changed()
 @export var density: Texture2D:
 	set(value):
@@ -53,7 +66,18 @@ func _exit_tree() -> void:
 	get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFERRED, FloraField.GROUP, &"layers_changed")
 
 
-## The brush painted `area_m` (map x, z) of `image` (L8, the size of `density`): the field replants that area from it.
+## The species drawn on `land` (the match's GodFlora; null = no look): the land's plant for this
+## layer's role, else `species`.
+func species_on(land: GodFlora) -> VegetationSpecies:
+	if land_role != GodFlora.Role.NONE and land != null:
+		var picked := land.pick(land_role, land_index)
+		if picked != null:
+			return picked
+	return species
+
+
+## The brush painted `area_m` (map x, z) of `image` (L8, the size of `density`): the field replants
+## that area from it.
 func show_painting(image: Image, area_m: Rect2) -> void:
 	_painting = image
 	if is_inside_tree():
@@ -68,7 +92,8 @@ func stop_painting() -> void:
 	_update_overlay()
 
 
-## A copy of where it grows as an L8 picture: the brush's painting if one is on, else `density`. Null without one.
+## A copy of where it grows as an L8 picture: the brush's painting if one is on, else `density`.
+## Null without one.
 func density_image() -> Image:
 	if _painting != null:
 		return _painting.duplicate() as Image
@@ -115,7 +140,11 @@ func _update_overlay() -> void:
 		rgba[i * 4 + 3] = bytes[i] * 3 / 5
 	var decal := Decal.new()
 	decal.name = &"Overlay"
-	decal.texture_albedo = ImageTexture.create_from_image(Image.create_from_data(image.get_width(), image.get_height(), false, Image.FORMAT_RGBA8, rgba))
+	decal.texture_albedo = ImageTexture.create_from_image(
+		Image.create_from_data(
+			image.get_width(), image.get_height(), false, Image.FORMAT_RGBA8, rgba
+		)
+	)
 	var size := Vector2(image.get_size()) * cell_m
 	decal.size = Vector3(size.x, 400.0, size.y)
 	decal.position = Vector3(size.x, 0.0, size.y) * 0.5
@@ -124,10 +153,10 @@ func _update_overlay() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
-	if species == null:
-		warnings.append("Falta la especie (VegetationSpecies).")
+	if species == null and land_role == GodFlora.Role.NONE:
+		warnings.append("The species is missing (VegetationSpecies), or set a land role.")
 	if density == null:
-		warnings.append("Falta la imagen de densidad (PNG L8, 1 px = cell_m).")
+		warnings.append("The density picture is missing (PNG L8, 1 px = cell_m).")
 	if position != Vector3.ZERO:
-		warnings.append("La imagen empieza en el origen del mapa: dejá este nodo en 0, 0, 0.")
+		warnings.append("The picture starts at the map's origin: leave this node at 0, 0, 0.")
 	return warnings

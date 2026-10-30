@@ -2,13 +2,17 @@
 class_name UnitSounds
 extends BodySounds
 
-## Child of units/unit.tscn. A creature's sounds from what every peer already has (replicated state):
-## - `summon` when its mode becomes SUMMONING, or when it is born in it (a summon spawned on a client);
-## - `swing` and `shoot` on Weapons.swung / shot_started (the setters of the replicated `swings` and `shots`);
+## Child of units/unit.tscn. A creature's sounds from what every peer already has (replicated
+## state):
+## - `summon` when its mode becomes SUMMONING, or when it is born in it (a summon spawned on a
+##   client);
+## - `swing` and `shoot` on Weapons.swung / shot_started (the setters of the replicated `swings` and
+##   `shots`);
 ## - `damaged` when Health.current goes down and the body is alive (BodySounds limits it per body);
 ## - `death` when its mode becomes DEAD.
-## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of its body scene). No set: silence, except `summon`: the
-## `summon` cue below sounds for every creature that has none of its own. Remove the node to silence every creature.
+## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of its body
+## scene). No set: silence, except `summon`: the `summon` cue below sounds for every creature that
+## has none of its own. Remove the node to silence every creature.
 
 @export var body: UnitBody:
 	set(value):
@@ -30,7 +34,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint() or not _open or body == null or health == null:
 		return
 	_last_health = health.current
-	if body.weapons != null:  ## A body built in code (a bench) has no Weapons: it never swings.
+	if body.weapons != null:  # A body built in code (a test) has no Weapons: it never swings.
 		body.weapons.swung.connect(_on_swung)
 		body.weapons.shot_started.connect(_on_shot_started)
 	body.mode_changed.connect(_on_mode_changed)
@@ -76,7 +80,7 @@ func _on_health_changed(current: float, _maximum: float) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if body == null:
-		out.append("Asigná `body` (el UnitBody de esta criatura).")
+		out.append("Assign `body` (the UnitBody of this creature).")
 	if health == null:
-		out.append("Asigná `health` (su Health).")
+		out.append("Assign `health` (its Health).")
 	return out

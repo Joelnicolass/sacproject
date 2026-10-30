@@ -1,14 +1,14 @@
 class_name NavChanges
 extends RefCounted
 
-## What changed on the map since the navmesh was last baked: ground that moved (a hole, a crater) and blockers that came or
-## went (an altar, a tower, a structure, a fallen building), as rects on the ground in metres. It says WHERE to bake again,
-## never when (NavService) or how (NavRebake). Idempotent: the same change told twice is one area, and `take` empties it.
+## What changed on the map since the navmesh was last baked: ground that moved (a hole, a crater)
+## and blockers that came or went (an altar, a tower, a structure, a fallen building), as rects on
+## the ground in metres. It says WHERE to bake again, never when (NavService) or how (MapNav).
+## Idempotent: the same change told twice is one area, and `take` empties it.
 ## Not: the bake itself, the swap, or the groups that block.
-## Ref: RFC-071 Z2.
 
-## The blockers the last bake holds, by hash, so a new list can be compared with it (one entry per collision shape, see
-## NavService.blockers).
+## The blockers the last bake holds, by hash, so a new list can be compared with it (one entry per
+## collision shape, see NavService.blockers).
 var _known := {}
 var _areas: Array[Rect2] = []
 
@@ -24,8 +24,8 @@ func add_area(rect: Rect2) -> void:
 		_areas.append(rect)
 
 
-## The areas added plus the boxes of the blockers that appeared or went since the saved list; empty when nothing changed.
-## `entries` becomes the saved list and the added areas are forgotten.
+## The areas added plus the boxes of the blockers that appeared or went since the saved list; empty
+## when nothing changed. `entries` becomes the saved list and the added areas are forgotten.
 func take(entries: Array) -> Array[Rect2]:
 	var now := _by_hash(entries)
 	var out: Array[Rect2] = _areas.duplicate()

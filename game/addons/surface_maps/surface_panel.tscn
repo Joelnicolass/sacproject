@@ -4,15 +4,15 @@
 [ext_resource type="Script" path="res://addons/surface_maps/recipe_form.gd" id="2_form"]
 
 [node name="SurfacePanel" type="VBoxContainer"]
-editor_description = "La sección «Relieve desde albedo» del inspector de un material o de un rol del suelo (addon surface_maps)."
+editor_description = "The «Relief from albedo» section of the inspector of a material or a ground role (addon surface_maps)."
 script = ExtResource("1_panel")
 
 [node name="Header" type="Button" parent="."]
 unique_name_in_owner = true
 toggle_mode = true
-text = "Relieve desde albedo"
+text = "Relief from albedo"
 alignment = 0
-tooltip_text = "Adivina un normal map (y un ORM si la receta lo pide) desde la textura de albedo, lo guarda como PNG retocable y lo asigna."
+tooltip_text = "Guesses a normal map (and an ORM if the recipe asks for it) from the albedo texture, saves it as an editable PNG and assigns it."
 
 [node name="Body" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
@@ -24,14 +24,14 @@ alignment = 1
 [node name="Albedo" type="TextureRect" parent="Body/Previews"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 96)
-tooltip_text = "El albedo (la fuente)."
+tooltip_text = "The albedo (the source)."
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Normal" type="TextureRect" parent="Body/Previews"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 96)
-tooltip_text = "El normal map: el asignado, o la vista previa con la receta de abajo."
+tooltip_text = "The normal map: the assigned one, or the preview with the recipe below."
 expand_mode = 1
 stretch_mode = 5
 
@@ -41,28 +41,28 @@ script = ExtResource("2_form")
 
 [node name="Overwrite" type="CheckBox" parent="Body"]
 unique_name_in_owner = true
-tooltip_text = "Reemplaza los PNG que ya existen (se pierde lo retocado a mano). Apagado: se usan los que están."
-text = "Sobrescribir"
+tooltip_text = "Replaces the PNGs that already exist (hand edits are lost). Off: the existing ones are used."
+text = "Overwrite"
 
 [node name="Buttons" type="HBoxContainer" parent="Body"]
 
 [node name="Preview" type="Button" parent="Body/Buttons"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
-tooltip_text = "Muestra el relieve con la receta actual sin escribir nada (también se actualiza solo al mover la receta)."
-text = "Vista previa"
+tooltip_text = "Shows the relief with the current recipe without writing anything (it also updates by itself when the recipe moves)."
+text = "Preview"
 
 [node name="Generate" type="Button" parent="Body/Buttons"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
-tooltip_text = "Escribe los PNG que faltan, los importa y los asigna al material (un paso de Ctrl+Z)."
-text = "Generar"
+tooltip_text = "Writes the missing PNGs, imports them and assigns them to the material (one Ctrl+Z step)."
+text = "Generate"
 
 [node name="Clear" type="Button" parent="Body/Buttons"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
-tooltip_text = "Saca los mapas del material (un paso de Ctrl+Z). Los PNG quedan en disco."
-text = "Quitar"
+tooltip_text = "Takes the maps off the material (one Ctrl+Z step). The PNGs stay on disk."
+text = "Remove"
 
 [node name="Status" type="Label" parent="Body"]
 unique_name_in_owner = true

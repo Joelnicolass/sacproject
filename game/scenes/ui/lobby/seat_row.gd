@@ -1,11 +1,10 @@
 class_name SeatRow
 extends HBoxContainer
 
-## One seat of the room: who sits there, their wizard and god, if they are ready, and «Sentarme aquí»
-## when the seat is free. It shows what the view hands it (`show_seat`); the only thing it does is ask.
-## A bot seat shows «IA» with its god and difficulty; the host sees «Agregar IA» on a free seat and «Quitar IA»
-## on a bot seat.
-## Ref: RFC-034 034f; RFC-049 049h (F297).
+## One seat of the room: who sits there, their wizard and god, if they are ready, and «Sentarme
+## aquí» when the seat is free. It shows what the view hands it (`show_seat`); the only thing it
+## does is ask. A bot seat shows «IA» with its god and difficulty; the host sees «Agregar IA» on a
+## free seat and «Quitar IA» on a bot seat.
 
 signal sit_requested(seat: int)
 signal bot_add_requested(seat: int)
@@ -26,8 +25,9 @@ func _ready() -> void:
 	%RemoveBot.pressed.connect(func() -> void: bot_remove_requested.emit(_seat))
 
 
-## `seat`: one row of the room view from the server ({seat, free, bot, name, meta, ready, connected, you}).
-## `can_sit`: the room is open and I may move. `can_manage_bots`: I am the host and the room is open.
+## `seat`: one row of the room view from the server ({seat, free, bot, name, meta, ready, connected,
+## you}). `can_sit`: the room is open and I may move. `can_manage_bots`: I am the host and the room
+## is open.
 func show_seat(seat: Dictionary, can_sit: bool, can_manage_bots := false) -> void:
 	_seat = int(seat["seat"])
 	var is_free := bool(seat["free"])

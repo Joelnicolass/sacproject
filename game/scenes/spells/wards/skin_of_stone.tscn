@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
-[ext_resource type="Resource" path="res://data/catalog/spells/niks.tres" id="4_spell"]
-[ext_resource type="Resource" path="res://data/fx/wards/skin_rocks.tres" id="5_rocks"]
-[ext_resource type="Resource" path="res://data/fx/wards/skin_cast.tres" id="6_cast"]
-[ext_resource type="Resource" path="res://data/fx/wards/skin_ring.tres" id="7_ring"]
+[ext_resource type="Resource" path="res://spells/skin_of_stone/skin_of_stone.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/skin_rocks.tres" id="5_rocks"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/skin_cast.tres" id="6_cast"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/skin_ring.tres" id="7_ring"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="8_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
-[ext_resource type="Resource" path="res://data/audio/cues/ward_skin_end.tres" id="cue_ward_skin_end"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_skin_end.tres" id="cue_ward_skin_end"]
 
 [node name="SkinOfStone" type="Node3D"]
 script = ExtResource("1_ward")
@@ -30,7 +30,7 @@ half_axes_m = Vector3(0.93, 1.38, 0.93)
 on_surface = false
 
 [node name="CastRing" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
-editor_description = "Mientras se lanza: 30 particulas dirt por tick en un anillo a ras del suelo, de radio 2 (s + 0,5), que se cierra hacia los pies (sacengine, SPEL niks: tcst = dirt). Cierra al 10 %: el original llega al 90 % en xy."
+editor_description = "Mientras se lanza: 30 particulas dirt por tick en un anillo a ras del suelo, de radio 2 (s + 0,5), que se cierra hacia los pies (SPEL niks: tcst = dirt). Cierra al 10 %: el original llega al 90 % en xy."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 use_fixed_seed = true
 local_coords = false

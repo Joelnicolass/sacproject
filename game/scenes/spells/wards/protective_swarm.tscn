@@ -3,15 +3,15 @@
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
 [ext_resource type="Script" path="res://scenes/spells/wards/body_aura.gd" id="3_aura"]
-[ext_resource type="Resource" path="res://data/catalog/spells/rwsp.tres" id="4_spell"]
-[ext_resource type="Resource" path="res://data/fx/wards/swarm_bug.tres" id="5_bug"]
-[ext_resource type="Resource" path="res://data/fx/wards/swarm_cast.tres" id="6_cast"]
-[ext_resource type="Resource" path="res://data/fx/wards/swarm_sting.tres" id="7_sting"]
+[ext_resource type="Resource" path="res://spells/protective_swarm/protective_swarm.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/swarm_bug.tres" id="5_bug"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/swarm_cast.tres" id="6_cast"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/swarm_sting.tres" id="7_sting"]
 [ext_resource type="Script" path="res://scenes/spells/wards/aura_impact.gd" id="8_impact"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
-[ext_resource type="Resource" path="res://data/audio/cues/ward_swarm_buzz.tres" id="cue_ward_swarm_buzz"]
-[ext_resource type="Resource" path="res://data/audio/cues/ward_swarm_loop.tres" id="cue_ward_swarm_loop"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_swarm_buzz.tres" id="cue_ward_swarm_buzz"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_swarm_loop.tres" id="cue_ward_swarm_loop"]
 
 [sub_resource type="SphereShape3D" id="Sphere_reach"]
 radius = 4.0
@@ -35,7 +35,7 @@ half_axes_m = Vector3(2.04, 2.03, 2.04)
 on_surface = true
 
 [node name="BugsCast" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
-editor_description = "Mientras se lanza: los 150 bichos se reparten a lo largo del lanzamiento (sacengine los nace en las manos); aca la cuota sube de 0 a la plena sobre el torso."
+editor_description = "Mientras se lanza: los 150 bichos se reparten a lo largo del lanzamiento (el original los nace en las manos); aca la cuota sube de 0 a la plena sobre el torso."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
 use_fixed_seed = true
 local_coords = false

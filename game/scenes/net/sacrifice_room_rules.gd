@@ -1,11 +1,10 @@
 class_name SacrificeRoomRules
 extends Node
 
-## What the room server needs to know about Sacrifice. The kit's lobby is generic; this node
-## gives it the three Callables it calls: is a pick valid (`meta_validator`), are the room options valid
-## (`options_validator`) and how the ticket of a match is built (`ticket_builder`). Nothing here opens a
-## socket or starts a process.
-## Ref: RFC-034 034e.
+## What the room server needs to know about Sacrifice. The kit's lobby is generic; this node gives
+## it the three Callables it calls: is a pick valid (`meta_validator`), are the room options valid
+## (`options_validator`) and how the ticket of a match is built (`ticket_builder`). Nothing here
+## opens a socket or starts a process.
 
 const LEVEL_MIN := 1
 const LEVEL_MAX := 9
@@ -13,19 +12,33 @@ const LEVEL_MAX := 9
 const SOULS_MIN := 0
 const SOULS_MAX := 200
 const SEED_MAX := 0x7fffffff
-const OPTION_KEYS: PackedStringArray = ["world", "mode", "level", "friendly_fire", "drop_soul", "starting_souls", "biome"]
-## RFC-049 049f: version of the ticket this builds (2 = `mode` and `ai_seats`). The dedicated reads a ticket without them as a 1v1.
+const OPTION_KEYS: PackedStringArray = [
+	"world",
+	"mode",
+	"level",
+	"friendly_fire",
+	"drop_soul",
+	"starting_souls",
+	"biome",
+	"sky_hour",
+	"forest",
+	"weather"
+]
+## Version of the ticket this builds (2 = `mode` and `ai_seats`). The dedicated reads a ticket
+## without them as a 1v1.
 const TICKET_VERSION := 2
 const BOT_KEYS: PackedStringArray = ["god", "difficulty"]
 
-## RFC-049 049a: also accept the maps that exist to test the game (`room_selectable = false`). Tests only: the server of the
-## rooms starts with `--room-test-maps` to turn it on; production rooms offer only the selectable maps.
+## Also accept the maps that exist to test the game (`room_selectable = false`). Tests only: the
+## server of the rooms starts with `--room-test-maps` to turn it on; production rooms offer only the
+## selectable maps.
 @export var include_test_maps := false
 
 var _rng := RandomNumberGenerator.new()
 
 
-## The worlds a room can play: the maps of scenes/map/maps/ that rooms offer (RFC-044), plus the test maps if asked.
+## The worlds a room can play: the maps of scenes/map/maps/ that rooms offer, plus the test maps if
+## asked.
 func worlds() -> PackedStringArray:
 	var catalog := MapCatalog.shared()
 	return catalog.playable_tags() if include_test_maps else catalog.room_tags()
@@ -51,21 +64,28 @@ func is_valid_pick(meta: Dictionary) -> bool:
 	return MatchWire.decode_pick(meta, true) != null
 
 
-## RFC-049 049f: a bot seat's `meta`: a god (empty = drawn when the match starts, else one the game has). 049h: and a `difficulty`
-## (AiSeat.difficulty_ids(); empty or missing = Normal).
+## A bot seat's `meta`: a god (empty = drawn when the match starts, else one the game has) and a
+## `difficulty` (AiSeat.difficulty_ids(); empty or missing = Normal).
 func is_valid_bot(meta: Dictionary) -> bool:
 	for key in meta.keys():
 		if not BOT_KEYS.has(str(key)):
 			return false
 	var god: Variant = meta.get("god", "")
 	var difficulty: Variant = meta.get("difficulty", "")
-	if not (difficulty is String and (String(difficulty).is_empty() or AiSeat.difficulty_ids().has(String(difficulty)))):
+	if not (
+		difficulty is String
+		and (String(difficulty).is_empty() or AiSeat.difficulty_ids().has(String(difficulty)))
+	):
 		return false
-	return god is String and (String(god).is_empty() or MatchWire.decode_god(String(god), true) != null)
+	return (
+		god is String
+		and (String(god).is_empty() or MatchWire.decode_god(String(god), true) != null)
+	)
 
 
-## Options of a room: only known keys, each of its type and inside the rules' range. Empty is fine. RFC-049 049f: the map and the
-## mode (a missing one is the default) must fit: the map has a start for each seat of the mode.
+## Options of a room: only known keys, each of its type and inside the rules' range. Empty is fine.
+## The map and the mode (a missing one is the default) must fit: the map has a start for each seat
+## of the mode.
 func are_options_valid(options: Dictionary) -> bool:
 	for key in options.keys():
 		if not OPTION_KEYS.has(str(key)):
@@ -73,16 +93,18 @@ func are_options_valid(options: Dictionary) -> bool:
 	var clean := clean_options(options)
 	if clean.size() != options.size():
 		return false
-	return GameModeCatalog.map_fits_mode(StringName(str(clean.get("world", worlds()[0]))), StringName(str(clean.get("mode", ""))))
+	return GameModeCatalog.map_fits_mode(
+		StringName(str(clean.get("world", worlds()[0]))), StringName(str(clean.get("mode", "")))
+	)
 
 
-## RFC-049 049f: the seats of a room with these options: the seats of its mode (1v1 by default).
+## The seats of a room with these options: the seats of its mode (1v1 by default).
 func seat_count_for(options: Dictionary) -> int:
 	return GameModeCatalog.seats_of(StringName(str(clean_options(options).get("mode", ""))))
 
 
-## The options that are valid (`world` and `biome` as string, `level` and `starting_souls` as int, the switches as bool).
-## An invalid value is left out.
+## The options that are valid (`world` and `biome` as string, `level` and `starting_souls` as int,
+## the switches as bool). An invalid value is left out.
 func clean_options(options: Dictionary) -> Dictionary:
 	var out := {}
 	var world: Variant = options.get("world")
@@ -94,25 +116,34 @@ func clean_options(options: Dictionary) -> Dictionary:
 	var level: Variant = options.get("level")
 	if level is int and level >= LEVEL_MIN and level <= LEVEL_MAX:
 		out["level"] = level
-	for key in ["friendly_fire", "drop_soul"]:
+	for key in ["friendly_fire", "drop_soul", "forest"]:
 		var flag: Variant = options.get(key)
 		if flag is bool:
 			out[key] = flag
-	## The land of the match: a god that brings a look (absent = drawn from the seed by the server that simulates).
+	# The land of the match: a god that brings a look (absent = drawn from the seed by the server
+	# that simulates).
 	var biome: Variant = options.get("biome")
 	var land: GodType = MatchWire.decode_god(biome) if biome is String else null
 	if land != null and land.look != null:
 		out["biome"] = biome
+	# The hour (0..24) and the weather of the match (absent = the land's own).
+	var hour: Variant = options.get("sky_hour")
+	if (hour is float or hour is int) and hour >= 0.0 and hour <= 24.0:
+		out["sky_hour"] = float(hour)
+	var weather: Variant = options.get("weather")
+	if weather is String and MatchWire.decode_weather(weather) != null:
+		out["weather"] = weather
 	var souls: Variant = options.get("starting_souls")
 	if souls is int and souls >= SOULS_MIN and souls <= SOULS_MAX:
 		out["starting_souls"] = souls
 	return out
 
 
-## `seats`: [{slot, session_id, token, meta}] as MpLobbyRooms hands them, plus bot seats `{slot, bot: true, meta}`. The slot is the
-## seat index + 1, the pick is sanitized again, and the seed is drawn here: no client ever chooses it.
-## RFC-049 049f (ticket v2): `seats` keeps only the rows with a token (the humans); the bots go to `ai_seats` [{slot, god, difficulty}], and
-## the ticket names the `mode`.
+## `seats`: [{slot, session_id, token, meta}] as MpLobbyRooms hands them, plus bot seats `{slot,
+## bot: true, meta}`. The slot is the seat index + 1, the pick is sanitized again, and the seed is
+## drawn here: no client ever chooses it.
+## Ticket v2: `seats` keeps only the rows with a token (the humans); the bots go to `ai_seats`
+## [{slot, god, difficulty}], and the ticket names the `mode`.
 func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 	var rows: Array = []
 	var ai_seats: Array = []
@@ -120,12 +151,24 @@ func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 		var row: Dictionary = seat
 		if bool(row.get("bot", false)):
 			var bot_meta: Dictionary = row.get("meta", {})
-			ai_seats.append({"slot": int(row["slot"]), "god": str(bot_meta.get("god", "")), "difficulty": str(bot_meta.get("difficulty", ""))})
+			ai_seats.append(
+				{
+					"slot": int(row["slot"]),
+					"god": str(bot_meta.get("god", "")),
+					"difficulty": str(bot_meta.get("difficulty", ""))
+				}
+			)
 			continue
-		rows.append({
-			"slot": int(row["slot"]), "token": str(row["token"]),
-			"meta": MatchWire.clean_pick(row.get("meta", {})),
-		})
+		(
+			rows
+			. append(
+				{
+					"slot": int(row["slot"]),
+					"token": str(row["token"]),
+					"meta": MatchWire.clean_pick(row.get("meta", {})),
+				}
+			)
+		)
 	var clean := clean_options(options)
 	return {
 		"ticket_version": TICKET_VERSION,
@@ -136,4 +179,3 @@ func build_ticket(seats: Array, options: Dictionary) -> Dictionary:
 		"seats": rows,
 		"ai_seats": ai_seats,
 	}
-

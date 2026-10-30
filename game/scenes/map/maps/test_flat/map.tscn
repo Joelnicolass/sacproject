@@ -4,19 +4,18 @@
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
-[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="10_bake"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/test_flat/nav.res" id="11_navmesh"]
-[ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="12_nav_region"]
+[ext_resource type="Resource" path="res://scenes/map/maps/test_flat/nav.res" id="11_navmesh"]
+[ext_resource type="PackedScene" path="res://scenes/map/nav/map_nav.tscn" id="12_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="14_look"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="13_bake"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/test_flat/ground_roles.png" id="62_roles"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
 [ext_resource type="Resource" uid="uid://h1hv57px2d4x" path="res://scenes/map/maps/test_flat/heights.png" id="t_heights"]
 
-[node name="Map" type="Node3D" unique_id=1044100001 node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake")]
+[node name="Map" type="Node3D" unique_id=1044100001 node_paths=PackedStringArray("terrain", "nav", "starts", "look", "minimap_bake")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
-nav_region = NodePath("NavRegion")
+nav = NodePath("Nav")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
@@ -53,12 +52,8 @@ transform = Transform3D(-4.3711e-08, 0, -1, 0, 1, 0, 1, 0, -4.3711e-08, -30, 0, 
 [node name="FountCenter" parent="MapProps/Founts" unique_id=1044100012 instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1300, 10, 1300)
 
-[node name="NavRegion" type="NavigationRegion3D" parent="." unique_id=1044100013]
-unique_name_in_owner = true
-navigation_mesh = ExtResource("11_navmesh")
-use_edge_connections = false
-script = ExtResource("12_nav_region")
-bake_settings = ExtResource("10_bake")
+[node name="Nav" parent="." instance=ExtResource("12_nav_region")]
+saved = ExtResource("11_navmesh")
 
 [node name="MinimapBake" parent="." unique_id=1044100014 node_paths=PackedStringArray("terrain") instance=ExtResource("13_bake")]
 unique_name_in_owner = true

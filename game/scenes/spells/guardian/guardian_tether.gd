@@ -2,50 +2,44 @@
 class_name GuardianTether
 extends Node3D
 
-## The beam between a guardian and its building, drawn on every peer with a window; the
-## dedicated server never instantiates it. GuardianBond creates it when `post_path` changes and calls
-## retire() when it empties. Port of the original beam: 19 segments, a wobbly line of 5 control points that
-## reshapes every second, it grows from the creature to the
-## building in a second, pulses at 0.75-1 of its width
-## and withdraws in a second, toward the building if the creature is gone or toward the creature if the
-## building is.
-## Look: the tube of 3 planes with pointed ends that the original draws (makeLineMeshes(19, 4, 4, 1.5, 1.0,
-## pointy)), additive and shadeless with energy 5, from the
-## `grdn` atlas that tools/import/import_ui.py puts in assets/original/fx/. One
-## cell of the 4x4 per 2 ticks (16 cells). Without the atlas it falls back to a flat soft color.
-## The beam waits for the building while `post_path` is set and the building has not arrived on this peer
-## (a late client); it only withdraws when the bond ends (retire()).
+## The beam between a guardian and its building, drawn on every peer with a window; the dedicated
+## server never instantiates it. GuardianBond creates it when `post_path` changes and calls retire()
+## when it empties. Port of the original beam: 19 segments, a wobbly line of 5 control points that
+## reshapes every second, it grows from the creature to the building in a second, pulses at 0.75-1
+## of its width and withdraws in a second, toward the building if the creature is gone or toward the
+## creature if the building is.
+## Look: the tube of 3 planes with pointed ends that the original draws (19 segments, 4 sides, 4
+## points, 1.5, 1.0, pointy)), additive and shadeless with energy 5, from the `grdn` atlas that
+## tools/import/import_ui.py puts in assets/original/fx/. One cell of the 4x4 per 2 ticks (16
+## cells). Without the atlas it falls back to a flat soft color. The beam waits for the building
+## while `post_path` is set and the building has not arrived on this peer (a late client); it only
+## withdraws when the bond ends (retire()).
 ## Only presentation: nothing here reads or writes game state.
-## Ref: updateGuardianShape, state.d:15326-15340; cubic, state.d:15400-15402; renderer.d:1716; state.d:15404-15417; sacobject.d:4466-4472; renderer.d:253-261; charlie.wad, sacobject.d:4466; RFC-021b
 
 enum Phase { APPEARING, STEADY, WITHDRAWING_AT_BUILDING, WITHDRAWING_AT_CREATURE }
 
 ## Segments of the line.
-## Ref: SacGuardianTether.numSegments, sacobject.d:4462
 @export var segments := 19
 ## Edge of the box the control points wobble in; the ends move a quarter of that.
-## Ref: Guardian.locRadius, state.d:2780
 @export var jitter_radius := 0.75
 ## Distance from the axis to each of the 3 planes, meters.
-## Ref: the 1.0 passed to makeLineMeshes, sacobject.d:4472
 @export var width := 1.0
 ## The atlas of the beam (grdn.png in guardian_tether.tscn). Empty = the flat `color`.
 @export var atlas: Texture2D
 ## Brightness.
-## Ref: SacGuardianTether material energy, renderer.d:257
 @export var energy := 5.0
 ## Seconds per atlas cell.
-## Ref: 2 ticks of the original's 60 per second.
 @export_range(0.005, 0.5, 0.0001, "suffix:s") var frame_s := 0.0333
 @export var appear_s := 1.0
 @export var reshape_s := 1.0
 @export var withdraw_s := 1.0
-## Pulse period (Guardian.pulseFrames = updateFPS / 2).
+## Pulse period (half a second).
 @export var pulse_s := 0.5
 @export var color := Color(0.35, 1.0, 0.55, 1.0)
 ## Draws the ribbon. Its material is the look; a missing one warns in the inspector.
 @export var beam: MeshInstance3D
-## The light on the middle of the beam: it follows the ends while the beam is there and goes out when it withdraws. Optional.
+## The light on the middle of the beam: it follows the ends while the beam is there and goes out
+## when it withdraws. Optional.
 @export var glow: StateLight
 
 var phase := Phase.APPEARING
@@ -92,7 +86,9 @@ func _apply_look() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if beam == null:
-		warnings.append("Asigná en `beam` el MeshInstance3D que dibuja el haz (con su material).")
+		warnings.append(
+			"Assign to `beam` the MeshInstance3D that draws the beam (with its material)."
+		)
 	return warnings
 
 
@@ -110,14 +106,20 @@ func retire() -> void:
 	if phase == Phase.WITHDRAWING_AT_BUILDING or phase == Phase.WITHDRAWING_AT_CREATURE:
 		return
 	_sample()
-	phase = Phase.WITHDRAWING_AT_BUILDING if _building_known and _post() != null else Phase.WITHDRAWING_AT_CREATURE
+	phase = (
+		Phase.WITHDRAWING_AT_BUILDING
+		if _building_known and _post() != null
+		else Phase.WITHDRAWING_AT_CREATURE
+	)
 	_phase_clock = 0.0
 	if is_instance_valid(glow):
 		glow.show_lit(false)
 
 
 ## Where the two ends are at `progress` (0..1) of the current phase: creature end, building end.
-static func ends(phase_now: Phase, progress: float, creature_at: Vector3, building_at: Vector3) -> Array[Vector3]:
+static func ends(
+	phase_now: Phase, progress: float, creature_at: Vector3, building_at: Vector3
+) -> Array[Vector3]:
 	match phase_now:
 		Phase.APPEARING:
 			var eased := pow(clampf(progress, 0.0, 1.0), 3.0)
@@ -136,7 +138,8 @@ func _process(delta: float) -> void:
 	_phase_clock += delta
 	_sample()
 	if not _building_known:
-		## A late client: the building has not been replicated yet. Wait for it while the bond stands.
+		# A late client: the building has not been replicated yet. Wait for it while the bond
+		# stands.
 		if phase == Phase.WITHDRAWING_AT_CREATURE or phase == Phase.WITHDRAWING_AT_BUILDING:
 			queue_free()
 			return
@@ -145,7 +148,10 @@ func _process(delta: float) -> void:
 		return
 	if phase == Phase.APPEARING and _phase_clock >= appear_s:
 		phase = Phase.STEADY
-	if (phase == Phase.WITHDRAWING_AT_BUILDING or phase == Phase.WITHDRAWING_AT_CREATURE) and _phase_clock >= withdraw_s:
+	if (
+		(phase == Phase.WITHDRAWING_AT_BUILDING or phase == Phase.WITHDRAWING_AT_CREATURE)
+		and _phase_clock >= withdraw_s
+	):
 		queue_free()
 		return
 	var span := appear_s if phase == Phase.APPEARING else withdraw_s
@@ -154,14 +160,20 @@ func _process(delta: float) -> void:
 
 
 func _post() -> GuardPost:
-	var node := get_node_or_null(_post_path) as GuardPost if not _post_path.is_empty() and is_inside_tree() else null
+	var node := (
+		get_node_or_null(_post_path) as GuardPost
+		if not _post_path.is_empty() and is_inside_tree()
+		else null
+	)
 	return node if node != null and not node.is_queued_for_deletion() else null
 
 
 ## Remembers where the ends are while they exist: a body that is gone leaves its last place.
 func _sample() -> void:
 	if _creature != null and is_instance_valid(_creature):
-		_creature_at = DrawnPose.point(_creature, _creature.global_transform * BodyFacts.of_body(_creature).center)
+		_creature_at = DrawnPose.point(
+			_creature, _creature.global_transform * BodyFacts.of_body(_creature).center
+		)
 	var post := _post()
 	if post != null:
 		_building_at = post.attach_position()
@@ -191,10 +203,11 @@ func _draw(from: Vector3, to: Vector3) -> void:
 		var t := float(i) / float(segments)
 		var wobble := _spline(locs, t)
 		points.append(from + line * t + side_a * wobble.x + side_b * wobble.y + along * wobble.z)
-	## 3 planes at 120 degrees, pointed at both ends.
-	## Ref: makeLineMesh offsets, sacobject.d:2192
+	# 3 planes at 120 degrees, pointed at both ends.
 	var root := sqrt(0.75)
-	var offsets: Array[Vector3] = [-side_b, side_a * root + side_b * 0.5, -side_a * root + side_b * 0.5]
+	var offsets: Array[Vector3] = [
+		-side_b, side_a * root + side_b * 0.5, -side_a * root + side_b * 0.5
+	]
 	var inset := 0.5 / 64.0
 	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in segments:
@@ -207,9 +220,13 @@ func _draw(from: Vector3, to: Vector3) -> void:
 				if (k == 2 or k == 3) and bone != 0 and bone != segments:
 					p += offsets[j] * width * pulse
 				pos.append(p)
-				## makeLineMesh texcoords: u flips per segment, v is the bright centerline for k 0 and 1.
+				# Texcoords: u flips per segment, v is the bright centerline for k 0 and 1.
 				var flip := ((i & 1) == 1) != (k == 1 or k == 2)
-				uvs.append(Vector2(1.0 - inset if flip else inset, 1.0 - inset if (k == 0 or k == 1) else inset))
+				uvs.append(
+					Vector2(
+						1.0 - inset if flip else inset, 1.0 - inset if (k == 0 or k == 1) else inset
+					)
+				)
 			for idx in [0, 1, 2, 2, 3, 0]:
 				mesh.surface_set_uv(uvs[idx])
 				mesh.surface_add_vertex(pos[idx])
@@ -217,7 +234,6 @@ func _draw(from: Vector3, to: Vector3) -> void:
 
 
 ## The 5 control points, mixed between the last shape and the next.
-## Ref: state.d:15326-15340
 func _control_points() -> Array[Vector3]:
 	if _next.is_empty():
 		_next = _random_shape()
@@ -238,7 +254,11 @@ func _random_shape() -> Array[Vector3]:
 	var shape: Array[Vector3] = []
 	var half := jitter_radius * 0.5
 	for i in 5:
-		var p := Vector3(_rng.randf_range(-half, half), _rng.randf_range(-half, half), _rng.randf_range(-half, half))
+		var p := Vector3(
+			_rng.randf_range(-half, half),
+			_rng.randf_range(-half, half),
+			_rng.randf_range(-half, half)
+		)
 		if i == 0 or i == 4:
 			p *= 0.25
 		shape.append(p)
@@ -255,4 +275,12 @@ static func _spline(points: Array[Vector3], t: float) -> Vector3:
 	var p1 := points[i]
 	var p2 := points[i + 1]
 	var p3 := points[mini(i + 2, last)]
-	return 0.5 * ((2.0 * p1) + (p2 - p0) * local + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * local * local + (3.0 * p1 - p0 - 3.0 * p2 + p3) * local * local * local)
+	return (
+		0.5
+		* (
+			(2.0 * p1)
+			+ (p2 - p0) * local
+			+ (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * local * local
+			+ (3.0 * p1 - p0 - 3.0 * p2 + p3) * local * local * local
+		)
+	)

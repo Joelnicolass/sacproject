@@ -2,17 +2,19 @@
 class_name Vision
 extends Area3D
 
-## What one body sees: who stands inside its sight shape (and cone), reported in name order, and what its side keeps in mind of them.
-## It does not choose targets (TargetPicker) nor decide what the AI knows (AiPerception); the sight of a side is the union of the
-## Visions of its bodies (VisionSides). Resize it with the gizmo of its Shape or set `radius_m`; what it can see sits in `seen_groups`.
-## Ref: sacengine markVisibleNTTs (state.d:12901), isVisibleToSide (state.d:29689).
+## What one body sees: who stands inside its sight shape (and cone), reported in name order, and
+## what its side keeps in mind of them. It does not choose targets (TargetPicker) nor decide what
+## the AI knows (AiPerception); the sight of a side is the union of the Visions of its bodies
+## (VisionSides). Resize it with the gizmo of its Shape or set `radius_m`; what it can see sits in
+## `seen_groups`.
 
 ## Who came into sight / left it on the last refresh, and who hurt this body (VisionSides.reveal).
 signal seen(node: Node3D)
 signal lost(node: Node3D)
 signal hurt_by(attacker: Node3D)
 
-## A mark that never lapses (a structure or fount stands still); groups with no physics body, which the area cannot see.
+## A mark that never lapses (a structure or fount stands still); groups with no physics body, which
+## the area cannot see.
 const FOREVER := 1 << 30
 const BODILESS: Array[StringName] = [&"manafount"]
 
@@ -34,12 +36,15 @@ const BODILESS: Array[StringName] = [&"manafount"]
 @export var spherical := false
 ## Total angle of the cone in front of the body; 360 = sees all around.
 @export_range(1.0, 360.0, 1.0, "suffix:deg") var fov_deg := 360.0
-@export var seen_groups: PackedStringArray = PackedStringArray(["unit", "wizard", "structure", "doctor", "manafount"])
+@export var seen_groups: PackedStringArray = PackedStringArray(
+	["unit", "wizard", "structure", "doctor", "manafount"]
+)
 ## How long a foe stays known to the side after a Vision last saw it.
 @export_range(0.0166, 600.0, 0.0001, "suffix:s") var forget_s := 6.4
 ## How often it looks again; every body looks on its own tick of the cycle.
 @export_range(0.0166, 10.0, 0.0001, "suffix:s") var refresh_s := 0.5
-## true: the physics area narrows the candidates (only bodies on its collision mask); false: walks the groups. The same answer.
+## true: the physics area narrows the candidates (only bodies on its collision mask); false: walks
+## the groups. The same answer.
 @export var use_area := false
 ## Off while the body cannot look (dead, summoning, taken, or a client that does not simulate).
 @export var watching := true:
@@ -48,21 +53,24 @@ const BODILESS: Array[StringName] = [&"manafount"]
 		set_physics_process(value and not Engine.is_editor_hint())
 		monitoring = value and use_area
 
+var memory := VisionMemory.new()
+
 var _type_m := 0.0
 var _range_m := 0.0
 var _phase := 0
 var _period := 1
 var _sight: Array[Node3D] = []
 var _ids: Dictionary = {}
-var memory := VisionMemory.new()
 
 
 func _enter_tree() -> void:
-	VisionSides.join(self)
+	if not Engine.is_editor_hint():
+		VisionSides.join(self)
 
 
 func _exit_tree() -> void:
-	VisionSides.leave(self)
+	if not Engine.is_editor_hint():
+		VisionSides.leave(self)
 
 
 func _ready() -> void:
@@ -78,7 +86,11 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if shape != null else PackedStringArray(["Falta la forma (shape): un CollisionShape3D hijo."])
+	return (
+		PackedStringArray()
+		if shape != null
+		else PackedStringArray(["Missing the shape (shape): a CollisionShape3D child."])
+	)
 
 
 func _physics_process(_delta: float) -> void:
@@ -102,7 +114,9 @@ func side() -> int:
 
 ## Whether `point` lies inside the sight shape and cone, whoever stands there.
 func covers(point: Vector3) -> bool:
-	return VisionRules.covers(spherical, global_position, point, _range_m, body.global_basis.z, fov_deg)
+	return VisionRules.covers(
+		spherical, global_position, point, _range_m, body.global_basis.z, fov_deg
+	)
 
 
 ## Who is in sight as of the last refresh, sorted by name.
@@ -116,7 +130,8 @@ func sees(node: Node3D) -> bool:
 	return node != null and _ids.has(node.get_instance_id())
 
 
-## Looks again: tells who came in and who left (each in name order) and keeps the foes in mind for the side.
+## Looks again: tells who came in and who left (each in name order) and keeps the foes in mind for
+## the side.
 func refresh() -> void:
 	var before := _sight
 	var was := _ids
@@ -140,7 +155,9 @@ func expose_to(slot: int) -> void:
 
 func _candidates() -> Array:
 	var by_area := use_area and monitoring
-	return VisionRules.gather(get_tree(), seen_groups, get_overlapping_bodies() if by_area else [], by_area)
+	return VisionRules.gather(
+		get_tree(), seen_groups, get_overlapping_bodies() if by_area else [], by_area
+	)
 
 
 func _apply_shape() -> void:

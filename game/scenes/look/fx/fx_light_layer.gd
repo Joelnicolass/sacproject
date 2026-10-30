@@ -2,18 +2,17 @@
 class_name FxLightLayer
 extends LookLayer
 
-## Light layer of the effects: a pool of shadowless OmniLight3D that the bursts of a
-## ParticleType with a `light` (FxLightSpec) borrow through the group `fx_light_pool`. The cap is the
-## preset's `fx_max_lights` (0 = no light). With the cap full, a new light takes the place of the
-## weakest one (energy × range / distance to the camera, at its current point of the fade) or is dropped.
-## A light that loses its place while still lit (stolen, or its emitter played again elsewhere) does not
-## go out at once: its node fades out on its own for `fade_out_s` and the new light takes a spare node.
-## Fading nodes do not count for the cap; at most `max_fading` at a time (beyond that it is cut).
-## A light the quality cap takes away fades out the same way instead of going dark at once, and no
-## light falls faster than `min_decay_s`.
-## Classic mode (null profile) and a hidden layer give no light. Presentation only: the rig, and this
-## layer with it, is freed in a headless or dedicated process.
-## Ref: RFC-029 029c; RFC-053 053i (F379).
+## Light layer of the effects: a pool of shadowless OmniLight3D that the bursts of a ParticleType
+## with a `light` (FxLightSpec) borrow through the group `fx_light_pool`. The cap is the preset's
+## `fx_max_lights` (0 = no light). With the cap full, a new light takes the place of the weakest one
+## (energy × range / distance to the camera, at its current point of the fade) or is dropped. A
+## light that loses its place while still lit (stolen, or its emitter played again elsewhere) does
+## not go out at once: its node fades out on its own for `fade_out_s` and the new light takes a
+## spare node. Fading nodes do not count for the cap; at most `max_fading` at a time (beyond that it
+## is cut). A light the quality cap takes away fades out the same way instead of going dark at once,
+## and no light falls faster than `min_decay_s`. Classic mode (null profile) and a hidden layer give
+## no light. Presentation only: the rig, and this layer with it, is freed in a headless or dedicated
+## process.
 
 const GROUP := &"fx_light_pool"
 
@@ -23,13 +22,17 @@ const GROUP := &"fx_light_pool"
 @export_range(0.0, 1.0, 0.05) var specular: float = 0.35
 ## `light_volumetric_fog_energy`: 0 keeps the lights out of the volumetric fog pass (cost).
 @export_range(0.0, 4.0, 0.05) var fog_energy: float = 0.0
+## Every spell light's energy and reach times these (the look of the whole game: everything glows).
+@export_range(0.1, 6.0, 0.05) var energy_scale: float = 1.0
+@export_range(0.5, 4.0, 0.05) var range_scale: float = 1.0
 ## Closer than this to the camera counts as this distance in the priority (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_priority_distance_m: float = 4.0
 ## Most lights fading out at once after losing their place. 0 = they are cut, as before.
 @export_range(0, 16) var max_fading: int = 8
 ## Seconds a light that lost its place takes to go from its energy to 0.
 @export_range(0.02, 1.0, 0.01, "suffix:s") var fade_out_s: float = 0.3
-## Shortest fall from the peak to 0 of any light (FxLightSpec.envelope); a spec's longer decay_s is kept.
+## Shortest fall from the peak to 0 of any light (FxLightSpec.envelope); a spec's longer decay_s is
+## kept.
 @export_range(0.0, 1.0, 0.01, "suffix:s") var min_decay_s: float = 0.3
 
 var _max_lights := -1
@@ -70,12 +73,15 @@ func apply_quality(preset: LookQuality) -> void:
 	_max_lights = preset.fx_max_lights if preset else fallback_max_lights
 	while _slots.size() > _max_lights:
 		_retire(_weakest(_camera()))
-	while _free.size() + _slots.size() + _fading.size() > _max_lights + max_fading and not _free.is_empty():
+	while (
+		_free.size() + _slots.size() + _fading.size() > _max_lights + max_fading
+		and not _free.is_empty()
+	):
 		_free.pop_back().queue_free()
 
 
-## Lights `spec` at `at` for one burst of `source`. The same source again restarts its light (a pooled
-## emitter that plays somewhere else) instead of taking a second one.
+## Lights `spec` at `at` for one burst of `source`. The same source again restarts its light (a
+## pooled emitter that plays somewhere else) instead of taking a second one.
 func flash(source: Object, spec: FxLightSpec, at: Vector3) -> void:
 	if spec == null or not _enabled or _max_lights <= 0 or not is_visible_in_tree():
 		return
@@ -119,7 +125,10 @@ func shadow_count() -> int:
 
 ## "fx_luces activas <n> tope <m> sombras <s>" for the labs.
 func report() -> String:
-	return "fx_luces activas %d tope %d fundiendo %d sombras %d" % [active_count(), max_lights(), fading_count(), shadow_count()]
+	return (
+		"fx_luces activas %d tope %d fundiendo %d sombras %d"
+		% [active_count(), max_lights(), fading_count(), shadow_count()]
+	)
 
 
 func _process(delta: float) -> void:
@@ -129,7 +138,9 @@ func _process(delta: float) -> void:
 		if slot.t >= slot.spec.total_s(min_decay_s):
 			_end(slot)
 			continue
-		slot.light.light_energy = slot.spec.energy * slot.spec.envelope(slot.t, min_decay_s)
+		slot.light.light_energy = (
+			slot.spec.energy * energy_scale * slot.spec.envelope(slot.t, min_decay_s)
+		)
 	for i in range(_fading.size() - 1, -1, -1):
 		var fade: Dictionary = _fading[i]
 		fade["t"] += delta
@@ -139,7 +150,8 @@ func _process(delta: float) -> void:
 			light.visible = false
 			_free.append(light)
 			continue
-		# Ease out (quadratic): the drop is fast while bright and gentle near dark, where the eye sees it most.
+		# Ease out (quadratic): the drop is fast while bright and gentle near dark, where the eye
+		# sees it most.
 		light.light_energy = fade["from"] * pow(1.0 - fade["t"] / fade_out_s, 2.0)
 	if _slots.is_empty() and _fading.is_empty():
 		set_process(false)
@@ -153,7 +165,13 @@ func _open_slot(spec: FxLightSpec, at: Vector3) -> _Slot:
 		return slot
 	var camera := _camera()
 	var weakest := _weakest(camera)
-	if weakest == null or _priority(weakest.spec, _level(weakest), weakest.at, camera) >= _priority(spec, 1.0, at, camera):
+	if (
+		weakest == null
+		or (
+			_priority(weakest.spec, _level(weakest), weakest.at, camera)
+			>= _priority(spec, 1.0, at, camera)
+		)
+	):
 		return null
 	_slots.erase(weakest)
 	_slots.append(weakest)
@@ -162,7 +180,8 @@ func _open_slot(spec: FxLightSpec, at: Vector3) -> _Slot:
 
 
 ## The slot's lit node keeps its place and fades out on its own; the slot gets a spare node for its
-## new light. With `max_fading` reached (or the node dark) the slot keeps its node and the light is cut.
+## new light. With `max_fading` reached (or the node dark) the slot keeps its node and the light is
+## cut.
 func _hand_off(slot: _Slot) -> void:
 	if not slot.light.visible or slot.light.light_energy <= 0.0 or _fading.size() >= max_fading:
 		return
@@ -178,13 +197,14 @@ func _place(slot: _Slot) -> void:
 	var light := slot.light
 	light.global_position = slot.at + Vector3.UP * slot.spec.height_m
 	light.light_color = slot.spec.color
-	light.omni_range = slot.spec.range_m
+	light.omni_range = slot.spec.range_m * range_scale
 	light.omni_attenuation = slot.spec.attenuation
-	light.light_energy = slot.spec.energy * slot.spec.envelope(0.0, min_decay_s)
+	light.light_energy = slot.spec.energy * energy_scale * slot.spec.envelope(0.0, min_decay_s)
 	light.visible = true
 
 
-## The slot leaves the lights on now; its node, still lit, fades out on its own (or is cut beyond `max_fading`).
+## The slot leaves the lights on now; its node, still lit, fades out on its own (or is cut beyond
+## `max_fading`).
 func _retire(slot: _Slot) -> void:
 	if slot == null:
 		return

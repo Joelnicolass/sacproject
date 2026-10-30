@@ -1,12 +1,13 @@
 class_name BuildReveal
 extends Node
 
-## While a tower rises it shows only the part already built: a line climbs from its base to its top as `tower.build_progress`
-## goes from 0 to 1, the tower is whole below it and dissolves with a glowing edge above it. When the tower is done (or was
-## already done when it appeared, on a late join) the tower's own materials come back and this node stops working.
-## Presentation only: it reads the replicated progress and changes nothing of the match; a headless process (the dedicated
-## server, the suite) does nothing. The look is the knobs below; the parts are the MeshInstance3D under `visuals`.
-## Ref: state.d:15231 (the line goes from 2 m under the base to the top over the casting time), buildingSummon.d:155, 465-470.
+## While a tower rises it shows only the part already built: a line climbs from its base to its top
+## as `tower.build_progress` goes from 0 to 1, the tower is whole below it and dissolves with a
+## glowing edge above it. When the tower is done (or was already done when it appeared, on a late
+## join) the tower's own materials come back and this node stops working.
+## Presentation only: it reads the replicated progress and changes nothing of the match; a headless
+## process (the dedicated server, the suite) does nothing. The look is the knobs below; the parts
+## are the MeshInstance3D under `visuals`.
 
 @export var tower: CastTower
 ## The tower's parts (its `Visuals`): every MeshInstance3D below it dissolves.
@@ -25,7 +26,8 @@ extends Node
 ## Part of the band next to the cut that glows.
 @export_range(0.0, 1.0, 0.01) var glow_fraction := 0.2
 @export_group("")
-## Seconds a tower that is already done is watched before this node rests (its progress may arrive a moment after it).
+## Seconds a tower that is already done is watched before this node rests (its progress may arrive a
+## moment after it).
 @export var settle_s := 2.0
 
 var _materials: Array[ShaderMaterial] = []
@@ -40,17 +42,24 @@ var _done_s := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if tower == null:
-		warnings.append("Asigná `tower` (la raíz de la torre, un CastTower).")
+		warnings.append("Assign `tower` (the tower's root, a CastTower).")
 	if visuals == null:
-		warnings.append("Asigná `visuals` (el nodo Visuals de la torre).")
+		warnings.append("Assign `visuals` (the tower's Visuals node).")
 	if shader == null:
-		warnings.append("Asigná `shader` (build_reveal.gdshader).")
+		warnings.append("Assign `shader` (build_reveal.gdshader).")
 	return warnings
 
 
 func _ready() -> void:
-	set_process(not Engine.is_editor_hint() and DisplayServer.get_name() != "headless" \
-			and tower != null and visuals != null and shader != null)
+	set_process(
+		(
+			not Engine.is_editor_hint()
+			and DisplayServer.get_name() != "headless"
+			and tower != null
+			and visuals != null
+			and shader != null
+		)
+	)
 
 
 func _process(delta: float) -> void:
@@ -68,8 +77,9 @@ func _process(delta: float) -> void:
 		material.set_shader_parameter(&"line_y", line)
 
 
-## Global Y of the cut line for the current progress: `edge_width_m` under the base at 0, the top at 1 (the tower's own Y before
-## the parts were measured). BuildEdge puts the rings and the light on it.
+## Global Y of the cut line for the current progress: `edge_width_m` under the base at 0, the top at
+## 1 (the tower's own Y before the parts were measured). BuildEdge puts the rings and the light on
+## it.
 func line_y() -> float:
 	if not _dressed:
 		return tower.global_position.y if tower != null else 0.0
@@ -77,7 +87,8 @@ func line_y() -> float:
 	return _base_y - edge_width_m + (_height_m + edge_width_m) * progress
 
 
-## Every surface under `visuals` that has a StandardMaterial3D gets a reveal copy of it (other materials stay as they are).
+## Every surface under `visuals` that has a StandardMaterial3D gets a reveal copy of it (other
+## materials stay as they are).
 func _dress() -> void:
 	_dressed = true
 	var box := AABB()

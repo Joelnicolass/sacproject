@@ -2,12 +2,12 @@
 class_name MusicSet
 extends Resource
 
-## The music of one god (data/audio/music/<god>.tres) or of the menu (music/menu.tres), a type template (never written at
-## runtime). One list of tracks per MusicMood; MusicDirector plays one of them (the battle
-## track is drawn with its own generator). A mood with no track here is asked to `fallback` (the gods share
-## music/common.tres: battle, sacrifice, winning, losing, victory, defeat), and silence when nobody has one.
-## Looping is the stream's own (the .import of a looping track has `loop=true`); `victory` and `defeat` play once.
-## Ref: RFC-052 052f (F365).
+## The music of one god (scenes/audio/music/<god>.tres) or of the menu (music/menu.tres), a type
+## template (never written at runtime). One list of tracks per MusicMood; MusicDirector plays one of
+## them (the battle track is drawn with its own generator). A mood with no track here is asked to
+## `fallback` (the gods share music/common.tres: battle, sacrifice, winning, losing, victory,
+## defeat), and silence when nobody has one. Looping is the stream's own (the .import of a looping
+## track has `loop=true`); `victory` and `defeat` play once.
 
 @export var calm: Array[AudioStream] = []
 @export var battle: Array[AudioStream] = []
@@ -16,11 +16,11 @@ extends Resource
 @export var losing: Array[AudioStream] = []
 @export var victory: Array[AudioStream] = []
 @export var defeat: Array[AudioStream] = []
-## Tracks no mood plays (the original's God Realm, in menu.tres): available to a custom set or a later cut.
+## Tracks no mood plays (the God Realm theme, in menu.tres): available to a custom set.
 @export var extras: Array[AudioStream] = []
 @export_range(-60.0, 12.0, 0.1, "suffix:dB") var volume_db := -6.0
 @export var bus: StringName = &"Music"
-## Seconds of the crossfade between two tracks (the original: 0.5 s).
+## Seconds of the crossfade between two tracks.
 @export_range(0.0, 10.0, 0.05, "suffix:s") var crossfade_s := 0.5
 ## Asked for a mood this set has no track for. Never itself.
 @export var fallback: MusicSet

@@ -10,13 +10,13 @@
 [ext_resource type="Texture2D" path="res://assets/original/fx/vine.png" id="8_vine"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="9_light"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="10_sound"]
-[ext_resource type="Resource" path="res://data/fx/stalk_dirt.tres" id="11_dirt"]
-[ext_resource type="Resource" path="res://data/fx/stalk_grab.tres" id="12_grab"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/stalk_dirt.tres" id="11_dirt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/stalk_grab.tres" id="12_grab"]
 [ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="13_scar"]
 [ext_resource type="Texture2D" path="res://assets/original/scars/mean.png" id="14_mean"]
-[ext_resource type="Resource" path="res://data/audio/cues/stalk_rise.tres" id="cue_stalk_rise"]
-[ext_resource type="Resource" path="res://data/audio/cues/stalk_grab.tres" id="cue_stalk_grab"]
-[ext_resource type="Resource" path="res://data/audio/cues/stalk_fall.tres" id="cue_stalk_fall"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/stalk_rise.tres" id="cue_stalk_rise"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/stalk_grab.tres" id="cue_stalk_grab"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/stalk_fall.tres" id="cue_stalk_fall"]
 
 [sub_resource type="ShaderMaterial" id="Material_stalk"]
 resource_local_to_scene = true

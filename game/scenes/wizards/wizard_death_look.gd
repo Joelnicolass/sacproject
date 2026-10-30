@@ -1,10 +1,11 @@
 class_name WizardDeathLook
 extends Node
 
-## How a wizard's body lies after it dies: it falls as a rag doll (RagdollDriver, the physical skeleton baked into the model by
-## tools/bake/bake_ragdolls.gd) and stands again, ready for the ghost, when GhostForm asks. A model with no physical skeleton
-## (or a dedicated server, which draws nothing) just stays as it is. It only moves the model: the body, its collision and the
-## stages of GhostForm stay where the simulation put them. GhostForm decides when to fall, fade and stand.
+## How a wizard's body lies after it dies: it falls as a rag doll (RagdollDriver, the physical
+## skeleton baked into the model by tools/bake/bake_ragdolls.gd) and stands again, ready for the
+## ghost, when GhostForm asks. A model with no physical skeleton (or a dedicated server, which draws
+## nothing) just stays as it is. It only moves the model: the body, its collision and the stages of
+## GhostForm stay where the simulation put them. GhostForm decides when to fall, fade and stand.
 ## Presentation only: nothing in the simulation reads it.
 
 ## The wizard's body: the rag doll is thrown away from where it faces.
@@ -28,7 +29,9 @@ func fall() -> bool:
 	if not ragdoll.available():
 		return false
 	_lying = true
-	ragdoll.set_pose(RagdollDriver.Pose.FALL, -Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, body.rotation.y))
+	ragdoll.set_pose(
+		RagdollDriver.Pose.FALL, -Vector3(0.0, 0.0, 1.0).rotated(Vector3.UP, body.rotation.y)
+	)
 	return true
 
 
@@ -45,9 +48,10 @@ func stand() -> void:
 	clip_pose.play("idle", true)
 
 
-## The rise of a body that lies: the first half of `seconds` fades the corpse out (`set_transparency` goes from `from` to
-## 1), then the body stands where it is and the second half fades it in to `to` (the ghost). One body the whole time.
-## Returns the tween (GhostForm kills it if the stage changes).
+## The rise of a body that lies: the first half of `seconds` fades the corpse out
+## (`set_transparency` goes from `from` to 1), then the body stands where it is and the second half
+## fades it in to `to` (the ghost). One body the whole time. Returns the tween (GhostForm kills it
+## if the stage changes).
 func rise(set_transparency: Callable, from: float, to: float, seconds: float) -> Tween:
 	var tween := create_tween()
 	tween.tween_method(set_transparency, from, 1.0, seconds * 0.5)

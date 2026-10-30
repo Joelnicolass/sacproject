@@ -2,15 +2,19 @@
 class_name SoulFetch
 extends Node
 
-## At the turn of its SpellCarrier it takes the soul: the soul lets go of its corpse (which dissolves), prefers the wizard's side
-## and follows the carrier home. It does not move anything itself nor decide who collects the soul at the end (SoulSystem does).
-## Server (or solo) only.
+## At the turn of its SpellCarrier it takes the soul: the soul lets go of its corpse (which
+## dissolves), prefers the wizard's side and follows the carrier home. It does not move anything
+## itself nor decide who collects the soul at the end (SoulSystem does). Server (or solo) only.
 
 @export var carrier: SpellCarrier
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
 
 func _ready() -> void:

@@ -3,5 +3,5 @@
 [ext_resource type="Script" path="res://scenes/units/abilities/life_shield_ability.gd" id="1_shield"]
 
 [node name="LifeShieldAbility" type="Node"]
-editor_description = "F133 (RFC-030 030v-a): efecto propio del Life Shield del Druid y del Shrike (hsba). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Se escuda en el tick de la orden, 1200 ticks, sin windup."
+editor_description = "The Life Shield effect of the Druid and the Shrike (hsba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It shields itself on the tick of the order, for 1200 ticks, with no windup."
 script = ExtResource("1_shield")

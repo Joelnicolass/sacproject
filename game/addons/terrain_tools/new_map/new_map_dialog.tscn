@@ -3,10 +3,10 @@
 [ext_resource type="Script" path="res://addons/terrain_tools/new_map/new_map_dialog.gd" id="1_dialog"]
 
 [node name="NewMapDialog" type="ConfirmationDialog"]
-title = "Mapa nuevo"
+title = "New map"
 size = Vector2i(460, 220)
-ok_button_text = "Crear"
-cancel_button_text = "Cancelar"
+ok_button_text = "Create"
+cancel_button_text = "Cancel"
 script = ExtResource("1_dialog")
 
 [node name="Fields" type="VBoxContainer" parent="."]
@@ -17,21 +17,21 @@ offset_bottom = 171.0
 
 [node name="TagLabel" type="Label" parent="Fields"]
 layout_mode = 2
-text = "Tag (carpeta y --map=, en minúsculas)"
+text = "Tag (folder and --map=, lowercase)"
 
 [node name="Tag" type="LineEdit" parent="Fields"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "mi_mapa"
+placeholder_text = "my_map"
 
 [node name="NameLabel" type="Label" parent="Fields"]
 layout_mode = 2
-text = "Nombre (lo ven las salas)"
+text = "Name (the rooms show it)"
 
 [node name="DisplayName" type="LineEdit" parent="Fields"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "Mi mapa"
+placeholder_text = "My map"
 
 [node name="Reason" type="Label" parent="Fields"]
 unique_name_in_owner = true

@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/pull.gd" id="1_pull"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/pull_thread.tscn" id="2_thread"]
-[ext_resource type="Resource" path="res://data/fx/rock_dust.tres" id="fx_rock_dust"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rock_dust.tres" id="fx_rock_dust"]
 
 [node name="WebPull" type="Node"]
-editor_description = "F128 (RFC-030 030q-a): efecto propio del Web pull del Gremlin (psla). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Prepara 54 ticks (carga en el cuadro 27 de LSs1), acepta una criatura o un mago no aliado a 50 m o menos sin Life Shield, y arranca el Pulling del usuario. Sin enfriamiento (starts_cooldown, fase 2)."
+editor_description = "The Gremlin's Web pull effect (psla). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It prepares 54 ticks (load on frame 27 of LSs1), accepts a non-allied creature or wizard within 50 m without a Life Shield, and starts the user's Pulling. No cooldown (starts_cooldown)."
 script = ExtResource("1_pull")
 starts_cooldown = false
 load_frame = 27

@@ -1,27 +1,25 @@
 class_name RangedShot
 extends Node3D
 
-## A creature's ranged shot. Each frame
-## position += velocity/fps and, for ballistic shots, velocity.z −= fallingAcceleration/fps. It bursts
-## on the first body in its hit box that is the intended target or not of the shooter's side
-## (earthflingProjectileCollisionTarget), or under the ground, and deals the ability's
-## amount as direct ranged damage (earthflingProjectileExplosion). Straight shots
-## (getShotDirection) fly their ability range and vanish.
-## The server (or solo) moves it; clients get the position and play the trail locally.
-## F119: a ShotLook with an `impact` scene (ShotImpact) decides the damage where it bursts instead (splash, 030h).
-## F136: ShotLook.hits_allies turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range ends.
-## F148: a ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the Abomination's droplets
-## (ShotDropper, 030h3); F149: the Silverback's breath (GrowingWave), whose ShotLook.collides is off: it touches neither a
-## body nor the ground and flies its whole range.
-## F151: an in_flight that holds the shot's height (GroundHug, ShotInFlight.holds_height) takes the ground check away: the
-## Rhinok's shot ends on a body or at the end of its range only.
-## Ref: sacengine updateEarthflingProjectile state.d:23178-23198, earthflingProjectileCollisionTarget 23145, earthflingProjectileExplosion 23152-23154.
+## A creature's ranged shot. Each frame position += velocity/fps and, for ballistic shots,
+## velocity.z −= falling acceleration/fps. It bursts on the first body in its hit box that is the
+## intended target or not of the shooter's side , or under the ground, and deals the ability's
+## amount as direct ranged damage. Straight shots fly their ability range and vanish. The server (or
+## solo) moves it; clients get the position and play the trail locally. A ShotLook with an `impact`
+## scene (ShotImpact) decides the damage where it bursts instead (splash). ShotLook.hits_allies
+## turns the side filter around (the Scarab's web) and burst_at_range_end bursts it where its range
+## ends. A ShotLook with an `in_flight` scene (ShotInFlight) acts on every tick of the flight: the
+## Abomination's droplets (ShotDropper); the Silverback's breath (GrowingWave), whose
+## ShotLook.collides is off: it touches neither a body nor the ground and flies its whole range. An
+## in_flight that holds the shot's height (GroundHugFlight, ShotInFlight.holds_height) takes the
+## ground check away: the Rhinok's shot ends on a body or at the end of its range only.
 
 const TRAIL_FPS := 60.0
 
 var damage := 0.0
 var from_slot := 0
-## F155: the DamageMod bits its hit carries (Health.IGNITE when its ShotLook ignites). ShotImpact.mods_of reads it.
+## The DamageMod bits its hit carries (Health.IGNITE when its ShotLook ignites). ShotImpact.mods_of
+## reads it.
 var mods := 0
 var gravity := 0.0
 var max_distance := INF
@@ -29,11 +27,11 @@ var velocity := Vector3.ZERO
 var target_path := NodePath()
 var shooter_path := NodePath()
 var look: ShotLook
-## The shot's SPEL (ranges for its impact); null when GameData has no such tag.
+## The shot's SPEL (ranges for its impact); null when the catalog has no such tag.
 var ability: AbilityType
 
-## F125: the packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs (ShotSplit:
-## volley_index, aim_distance). Read only.
+## The packet it was spawned with (RangedFire.fire). Its ShotInFlight reads what the flight needs
+## (SplitFlight: volley_index, aim_distance). Read only.
 var spawn_data: Dictionary = {}
 
 var _traveled := 0.0
@@ -42,9 +40,12 @@ var _spin_rate := 0.0
 var _in_flight: ShotInFlight
 
 
-## `shot_ability`: the ability the packet's `tag` names, or null for a shot that is not one; `look_scene`: the scene its `look`
-## names (null = a plain ball). ShotSpawner turns both texts into them.
-func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: PackedScene = null) -> void:
+## `shot_ability`: the ability the packet's `tag` names, or null for a shot that is not one;
+## `look_scene`: the scene its `look` names (null = a plain ball). ShotSpawner turns both texts into
+## them.
+func setup(
+	data: Dictionary, shot_ability: AbilityType = null, look_scene: PackedScene = null
+) -> void:
 	name = str(data["name"])
 	spawn_data = data
 	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
@@ -61,11 +62,14 @@ func setup(data: Dictionary, shot_ability: AbilityType = null, look_scene: Packe
 	mods = Health.IGNITE if look.ignites else 0
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)
-	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	_spin_axis = (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 	_spin_rate = TAU * rng.randf_range(look.spin_min, look.spin_max)
 	_add_visual()
 	_attach_net()
-	## ShotLook.trail_every counts 60 fps frames; the trail now goes by time (FxTrail, RFC-029 029b).
+	# ShotLook.trail_every counts 60 fps frames; the trail goes by time (FxTrail).
 	var trail := FxTrail.attach(self, look.trail_fx, float(maxi(look.trail_every, 1)) / TRAIL_FPS)
 	if trail != null:
 		trail.min_speed_m_s = look.trail_min_speed_m_s
@@ -90,8 +94,9 @@ func _add_visual() -> void:
 	add_child(visual)
 
 
-## Server (or solo) only, like the impact: what it does in flight is simulation (ShotLook.in_flight). Added once the shot is in
-## the tree, where it knows whether it is the authority.
+## Server (or solo) only, like the impact: what it does in flight is simulation
+## (ShotLook.in_flight). Added once the shot is in the tree, where it knows whether it is the
+## authority.
 func _add_in_flight() -> void:
 	if look == null or look.in_flight == null:
 		return
@@ -101,7 +106,7 @@ func _add_in_flight() -> void:
 		add_child(_in_flight)
 	else:
 		node.free()
-		push_warning("RangedShot: el in_flight de %s no es un ShotInFlight." % name)
+		push_warning("RangedShot: the in_flight of %s is not a ShotInFlight." % name)
 
 
 func _ready() -> void:
@@ -151,7 +156,10 @@ func _physics_process(delta: float) -> void:
 		hit = _swept_target(from, global_position)
 	if hit:
 		_burst(hit)
-	elif not (_in_flight and _in_flight.holds_height()) and global_position.y < ground_height(global_position):
+	elif (
+		not (_in_flight and _in_flight.holds_height())
+		and global_position.y < ground_height(global_position)
+	):
 		_burst(null)
 	elif _traveled >= max_distance:
 		if look.burst_at_range_end:
@@ -161,7 +169,8 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
-## The live body not of this shot's side that its box touches now (a coordinator that moves the shot asks it).
+## The live body not of this shot's side that its box touches now (a coordinator that moves the shot
+## asks it).
 func touching() -> Node3D:
 	return _collision_target()
 
@@ -210,41 +219,37 @@ func _swept_target(from: Vector3, to: Vector3) -> Node3D:
 	return null
 
 
-## earthflingProjectileCollisionTarget / scarabProjectileCollisionTarget: a live body, not the shooter, that is the
+## A live body, not the shooter, that is the
 ## intended target or (ShotLook.hits_allies) of the shooter's side, else not of it.
 func _can_hit(body: Node3D, intended: Node, shooter: Node) -> bool:
-	if body == null or body == shooter or not _is_live_body(body):
+	if body == null or body == shooter or not ProjectileTargets.is_live_body(body):
 		return false
 	if look.hits_only_poisonable:
 		var poisoning := Poisoning.of(body)
 		if poisoning == null or not poisoning.can_be_poisoned():
 			return false
 	var side := int(body.get("owner_slot")) if "owner_slot" in body else 0
-	return body == intended or from_slot <= 0 or look.hits_every_side or (side == from_slot) == look.hits_allies
+	return (
+		body == intended
+		or from_slot <= 0
+		or look.hits_every_side
+		or (side == from_slot) == look.hits_allies
+	)
 
 
-static func _is_live_body(body: Node) -> bool:
-	if not Attackable.is_body(body):
-		return false
-	if body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
-		return false
-	var health := body.get_node_or_null("Health") as Health
-	return health != null and not health.is_dead()
-
-
-## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`, wizards
-## left out; -INF off the map. The ground check of the flight, and GroundHug's height (F151).
-## Ref: sacengine getHeight.
+## The top of the land or of a building (structures, altars, manafounts: layer 1) under `at`,
+## wizards left out; -INF off the map. The ground check of the flight, and GroundHugFlight's height.
 func ground_height(at: Vector3) -> float:
 	return RangedShot.land_height(self, at)
 
 
-## The same for any node in the tree (F165: the Divine Sight eye flies over it). `from` only gives the tree and the physics world.
+## The same for any node in the tree (the Divine Sight eye flies over it). `from` only gives the
+## tree and the physics world.
 static func land_height(from: Node3D, at: Vector3) -> float:
 	return GroundRay.surface_y(from, at, 1, GroundRay.wizard_rids(from.get_tree()), -INF)
 
 
-## F151: the shot flew its whole range (remainingDistance <= 0). SpikeImpact asks it before it hurts the target.
+## The shot flew its whole range. SpikeImpact asks it before it hurts the target.
 func range_spent() -> bool:
 	return _traveled >= max_distance
 

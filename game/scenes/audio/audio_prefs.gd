@@ -3,16 +3,18 @@ class_name AudioPrefs
 extends Resource
 
 ## The player's volumes, a local preference (not a match rule).
-## - One linear value 0..1 per bus of default_bus_layout.tres (Master, Music, SFX, Voice, Ambience) and «Silenciar»
-##   (mutes Master, keeps the values). 0 is silence (the bus is muted); the rest goes through linear_to_db.
+## - One linear value 0..1 per bus of default_bus_layout.tres (Master, Music, SFX, Voice, Ambience)
+##   and «Silenciar» (mutes Master, keeps the values). 0 is silence (the bus is muted); the rest
+##   goes through linear_to_db.
 ## - It lives in `user://settings.cfg` `[audio]` through UserSettings (sandboxed under AgentKit).
-## - Under AgentKit (`--agent=…`) Master starts at 0 for this run unless `--audio-on`: a playtest is silent by default.
-## - SoundBus applies it to the AudioServer at start and on every `changed`; this resource never touches the server.
-## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that
-## instance and the exported fields are never written. Changes emit `changed`.
-## Ref: RFC-052 052a (F360).
+## - Under AgentKit (`--agent=…`) Master starts at 0 for this run unless `--audio-on`: a playtest is
+##   silent by default.
+## - SoundBus applies it to the AudioServer at start and on every `changed`; this resource never
+##   touches the server.
+## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime
+## state of that instance and the exported fields are never written. Changes emit `changed`.
 
-const SHARED_PATH := "res://data/ui/audio_prefs.tres"
+const SHARED_PATH := "res://scenes/ui/audio_prefs.tres"
 const SECTION := "audio"
 const MUTED_KEY := "muted"
 const AUDIO_ON_FLAG := "--audio-on"
@@ -89,16 +91,19 @@ static func agent_starts_silent(args: PackedStringArray) -> bool:
 ## Warning text for a node whose `prefs` is not the shared instance ("" when it is).
 static func socket_warning(prefs: AudioPrefs) -> String:
 	if prefs == null:
-		return "Asigná `prefs` (%s)." % SHARED_PATH
+		return "Assign `prefs` (%s)." % SHARED_PATH
 	if prefs.resource_path != SHARED_PATH:
-		return "`prefs` no es %s: este nodo no seguirá la elección del jugador." % SHARED_PATH
+		return "`prefs` is not %s: this node will not follow the player's choice." % SHARED_PATH
 	return ""
 
 
 func _defaults() -> Dictionary:
 	return {
-		&"Master": default_master, &"Music": default_music, &"SFX": default_sfx,
-		&"Voice": default_voice, &"Ambience": default_ambience,
+		&"Master": default_master,
+		&"Music": default_music,
+		&"SFX": default_sfx,
+		&"Voice": default_voice,
+		&"Ambience": default_ambience,
 	}
 
 
@@ -124,7 +129,12 @@ func _ensure_loaded() -> void:
 		if typeof(stored) in [TYPE_INT, TYPE_FLOAT]:
 			_volumes[bus] = clampf(float(stored), 0.0, 1.0)
 		elif stored != null:
-			push_warning("AudioPrefs: [%s] %s = %s no es un número; se usa %s." % [SECTION, key_for(bus), stored, _volumes[bus]])
+			push_warning(
+				(
+					"AudioPrefs: [%s] %s = %s is not a number; using %s."
+					% [SECTION, key_for(bus), stored, _volumes[bus]]
+				)
+			)
 	var stored_muted: Variant = UserSettings.read_value(SECTION, MUTED_KEY, false)
 	_muted = stored_muted if typeof(stored_muted) == TYPE_BOOL else false
 	if agent_starts_silent(OS.get_cmdline_user_args()):

@@ -1,0 +1,40 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/look/lights/actor_light.tscn" id="3_light"]
+[ext_resource type="Script" path="res://scenes/spells/rock_projectile.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="2_sound"]
+[ext_resource type="PackedScene" path="res://scenes/spells/marks/rock_mark.tscn" id="4_mark"]
+[ext_resource type="Resource" path="res://spells/rock/sounds/rock_cast.tres" id="cue_rock_cast"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/rock.res" id="mesh_rock"]
+[ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="fx_ptype"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rock_trail.tres" id="fx_rock_trail"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rock_emerge.tres" id="fx_rock_emerge"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rock_dust.tres" id="fx_rock_dust"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rock.tres" id="fx_rock"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/dirt.tres" id="fx_dirt"]
+
+[sub_resource type="BoxShape3D" id="HitBox"]
+size = Vector3(2.0, 2.0, 2.0)
+
+[node name="RockProjectile" type="Node3D"]
+script = ExtResource("1_script")
+hit_box = SubResource("HitBox")
+trail = ExtResource("fx_rock_trail")
+emerge = Array[ExtResource("fx_ptype")]([ExtResource("fx_rock_emerge"), ExtResource("fx_rock_dust")])
+explosion = Array[ExtResource("fx_ptype")]([ExtResource("fx_rock"), ExtResource("fx_dirt")])
+ground_mark = ExtResource("4_mark")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+physics_interpolation_mode = 2
+unique_name_in_owner = true
+mesh = ExtResource("mesh_rock")
+
+[node name="CastSound" parent="." instance=ExtResource("2_sound")]
+cue = ExtResource("cue_rock_cast")
+
+[node name="Light" parent="." instance=ExtResource("3_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+light_color = Color(0.85, 0.7, 0.5, 1)
+light_energy = 0.7
+omni_range = 4.0
+priority = 2.0

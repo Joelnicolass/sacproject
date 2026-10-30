@@ -2,10 +2,13 @@
 class_name HitFlash
 extends Node
 
-## A body lights up for a blink when it loses health: `material` goes over its meshes as `material_overlay` and its `hit_flash`
-## falls from `peak` to 0 in `flash_s`; then the overlay comes off. Every peer sees it (Health.current is replicated).
-## It does not blink with «Sangre» off (FeelPrefs.blood), nor a body that is hidden or faded (stealth, playing dead, a ghost, summoning), and nothing headless.
-## What it does not do: change the body's own materials (StoneLook owns the surface overrides) or its rig's speed (no hit-stop).
+## A body lights up for a blink when it loses health: `material` goes over its meshes as
+## `material_overlay` and its `hit_flash` falls from `peak` to 0 in `flash_s`; then the overlay
+## comes off. Every peer sees it (Health.current is replicated). It does not blink with «Sangre» off
+## (FeelPrefs.blood), nor a body that is hidden or faded (stealth, playing dead, a ghost,
+## summoning), and nothing headless.
+## What it does not do: change the body's own materials (StoneLook owns the surface overrides) or
+## its rig's speed (no hit-stop).
 
 const PARAM := &"hit_flash"
 
@@ -18,12 +21,13 @@ const PARAM := &"hit_flash"
 	set(value):
 		visual = value
 		update_configuration_warnings()
-## The overlay (data/fx/blood/hit_flash.tres, an additive shader with `instance uniform float hit_flash`).
+## The overlay (scenes/fx/effects/blood/hit_flash.tres, an additive shader with `instance uniform
+## float hit_flash`).
 @export var material: ShaderMaterial:
 	set(value):
 		material = value
 		update_configuration_warnings()
-## The player's «Sangre» (data/ui/feel_prefs.tres): off, nothing shows.
+## The player's «Sangre» (scenes/ui/feel_prefs.tres): off, nothing shows.
 @export var prefs: FeelPrefs:
 	set(value):
 		prefs = value
@@ -86,7 +90,8 @@ func _flash() -> void:
 		_tween.tween_callback(_clear)
 
 
-## Warm-up (the WarmHook child): the overlay over this body for one drawn frame, so the first hit compiles nothing (not counted).
+## Warm-up (the WarmHook child): the overlay over this body for one drawn frame, so the first hit
+## compiles nothing (not counted).
 func warm(_stage: Node3D) -> void:
 	if is_active() and visual.is_visible_in_tree() and _lay():
 		await RenderingServer.frame_post_draw
@@ -139,11 +144,11 @@ func _exit_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if health == null:
-		out.append("Asigná `health` (su Health).")
+		out.append("Assign `health` (its Health).")
 	if visual == null:
-		out.append("Asigná `visual` (su BodyVisual, Tilt/Mesh).")
+		out.append("Assign `visual` (its BodyVisual, Tilt/Mesh).")
 	if material == null:
-		out.append("Asigná `material` (data/fx/blood/hit_flash.tres).")
+		out.append("Assign `material` (scenes/fx/effects/blood/hit_flash.tres).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		out.append(prefs_warning)

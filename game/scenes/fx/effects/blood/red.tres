@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BloodType" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/fx/blood/blood_type.gd" id="1_type"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/blood_hit.tres" id="2_spray"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/blood_hit_heavy.tres" id="3_heavy"]
+[ext_resource type="Texture2D" uid="uid://3ovf1vffmfub" path="res://assets/original/scars/blud.png" id="4_mark"]
+
+[resource]
+script = ExtResource("1_type")
+spray = ExtResource("2_spray")
+heavy_spray = ExtResource("3_heavy")
+mark = ExtResource("4_mark")

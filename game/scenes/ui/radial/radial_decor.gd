@@ -2,10 +2,11 @@
 class_name RadialDecor
 extends Control
 
-## What a radial menu draws behind its icons: the rings, the sector the pointer is in, a line toward the pointer
-## and, in the dead zone, the hovered name (and the shape of a formation in dots). It is the only owner of the pointer state it
-## draws (`set_hover`); the menu only feeds it. The name is drawn with `draw_string`, not a Label: the HUD text audit
-## (RFC-025c) counts Controls with text. Canvas pixels of the 1280×720 base.
+## What a radial menu draws behind its icons: the rings, the sector the pointer is in, a line toward
+## the pointer and, in the dead zone, the hovered name (and the shape of a formation in dots). It is
+## the only owner of the pointer state it draws (`set_hover`); the menu only feeds it. The name is
+## drawn with `draw_string`, not a Label: the HUD text audit counts Controls with text. Canvas
+## pixels of the 1280×720 base.
 
 @export_group("Look")
 @export var backdrop_color := Color(0.03, 0.03, 0.06, 0.5)
@@ -37,7 +38,9 @@ var _fade: Tween
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if center_rect != null else PackedStringArray(["Asigná center_rect."])
+	return (
+		PackedStringArray() if center_rect != null else PackedStringArray(["Assign center_rect."])
+	)
 
 
 func _ready() -> void:
@@ -63,8 +66,8 @@ func set_active(active: bool) -> void:
 	queue_redraw()
 
 
-## `spot`: where the pointer is (`RadialLayout.locate`); `offset`: from the menu center; `entry`: what is under it.
-## `restart`: the entry changed, so the sector fades in again.
+## `spot`: where the pointer is (`RadialLayout.locate`); `offset`: from the menu center; `entry`:
+## what is under it. `restart`: the entry changed, so the sector fades in again.
 func set_hover(spot: Vector2i, offset: Vector2, entry: RadialEntry, restart: bool) -> void:
 	_spot = spot
 	_offset = offset
@@ -127,7 +130,8 @@ func _draw_pointer(middle: Vector2) -> void:
 	draw_circle(tip, 3.0, pointer_color)
 
 
-## The hovered name (and the shape of a formation) in the dead zone; the context picture when nothing is hovered.
+## The hovered name (and the shape of a formation) in the dead zone; the context picture when
+## nothing is hovered.
 func _draw_center(middle: Vector2) -> void:
 	center_rect.visible = true
 	var dead := layout.dead_zone_px
@@ -146,5 +150,9 @@ func _draw_center(middle: Vector2) -> void:
 	var font := get_theme_default_font()
 	for i in lines.size():
 		var at := Vector2(middle.x - dead, middle.y + dead * 0.3 + i * (font_size + 1))
-		draw_string_outline(font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, 4, text_outline)
-		draw_string(font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, text_color)
+		draw_string_outline(
+			font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, 4, text_outline
+		)
+		draw_string(
+			font, at, lines[i], HORIZONTAL_ALIGNMENT_CENTER, dead * 2.0, font_size, text_color
+		)

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Import the original's static models (buildings, BLDG components, plants) to assets/original/props/ as .glb.
 
-RFC-033 (033c). One .glb per model, no textures: one primitive per OBJ material label, with a glTF material that only
+One .glb per model, no textures: one primitive per OBJ material label, with a glTF material that only
 carries the label as its name (Godot names the surface after it; the baked .res puts the shared textured material on
-top by that name). The geometry is the one the game used to build with ObjMesh.build (scenes/bodies/obj_mesh.gd):
+top by that name). The geometry is the one ObjMesh.build makes (scenes/bodies/obj_mesh.gd):
 winding checked against the file normals, plants drawn on both sides with their own normals. Written into Godot's
 clockwise winding mirrored for glTF (the importer flips it back), so the vertices that reach the game are the same.
-Also writes the hybrid bodies of RFC-023 023c (STATIC_BODIES, no clip animates them) as static props: their bind-pose
+Also writes the hybrid bodies (STATIC_BODIES, no clip animates them) as static props: their bind-pose
 OBJ (`--bodies-from=DIR`, DIR/<m>/<m>.obj) with z mirrored (the game's axes, ObjMesh.MIRROR_Z): the geometry
 the game baked these bodies from, vertex by vertex. The skeletal .glb is not the source: its bind pose differs from that OBJ
 by up to several cm. The WAD files give no such OBJ (sacengine's saveObj makes it), so they are left alone without the flag.
@@ -24,7 +24,7 @@ is built in memory as the OBJ text it has always been imported from (5 decimals)
 the result is versioned. An existing .glb.import is never touched (it carries the UID). Deterministic: a second run writes
 nothing.
 
-The mesh the game draws is not read from these .glb at run time since 055s: each prop it uses is a scenes/props/meshes/<tag>.res
+The mesh the game draws is not read from these .glb at run time: each prop it uses is a scenes/props/meshes/<tag>.res
 (materials included). To use a new prop: open the imported .glb in the editor, save its mesh as a .res in scenes/props/meshes/, give the
 surfaces the materials of scenes/bodies/materials/ and drag the .res onto the part, species or shot that uses it. This script writes
 no measures (the size of a building is the box of its scene).
@@ -46,12 +46,12 @@ from sac_formats import props as propslib  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 ARGS = {a.split("=", 1)[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 OUT = Path(ARGS.get("--out", ROOT / "assets" / "original" / "props"))
-## RFC-023 023h: where the bind-pose OBJ of the static bodies is (<dir>/<model>/<model>.obj, sacengine's saveObj). Only needed
+## Where the bind-pose OBJ of the static bodies is (<dir>/<model>/<model>.obj, sacengine's saveObj). Only needed
 ## to (re)write those 11 files; the result is versioned. Without it they are left alone.
 BODIES_FROM = Path(ARGS["--bodies-from"]) if "--bodies-from" in ARGS else None
 
-## RFC-023 023h: bodies drawn as a static bind-pose mesh because no clip of their skeleton is the one their creature rests on
-## (the hybrids of 023c, with a single clip). Everything else in models/ is drawn by a BodyRig.
+## Bodies drawn as a static bind-pose mesh because no clip of their skeleton is the one their creature rests on
+## (the hybrids, with a single clip). Everything else in models/ is drawn by a BodyRig.
 STATIC_BODIES = ("faez", "thes", "the2", "sara", "hoom", "bane", "ban2", "sirc", "surt", "gamm", "baby")
 
 ## The glTF asset.generator of every prop. Frozen at the script's path when the props were first written (it has since
@@ -269,7 +269,7 @@ def read_glb(path: Path):
 
 def static_body_surfaces(model: str):
     """ObjMesh.build(<model>.obj, {MIRROR_Z}): the bind-pose OBJ of sacengine's saveObj (x, z, -y) drawn with z mirrored.
-    The OBJ is the one the game baked these bodies from before 023h, so the geometry is the same vertex by vertex."""
+    The OBJ is the one these bodies were baked from, so the geometry is the same vertex by vertex."""
     surfaces, has_normals = parse_obj((BODIES_FROM / model / (model + ".obj")).read_text())
     mirrored = [(label, [(x, y, f32(-z)) for x, y, z in verts], uvs, [(x, y, f32(-z)) for x, y, z in normals])
                 for label, verts, uvs, normals in surfaces]

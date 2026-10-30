@@ -1,11 +1,12 @@
 class_name TerrainGrid
 extends RefCounted
 
-## Where the vertices of a map's ground lie: a square lattice of SIDE x SIDE vertices, CELL_M metres apart, from the origin
-## (x, z >= 0), and the arithmetic between a point in metres, a vertex (column, row) and its id (row * SIDE + column; a 10 m
-## cell has the id of its low corner). The one place of these numbers: the ground shader keeps one mirror
-## (look/ground/terrain_deform.gdshaderinc) that must change with it. Not: how high a vertex is, whether
-## it is land or a hole (GroundField, TerrainRules). Pure and static.
+## Where the vertices of a map's ground lie: a square lattice of SIDE x SIDE vertices, CELL_M metres
+## apart, from the origin (x, z >= 0), and the arithmetic between a point in metres, a vertex
+## (column, row) and its id (row * SIDE + column; a 10 m cell has the id of its low corner). The one
+## place of these numbers: the ground shader keeps one mirror
+## (look/ground/terrain_deform.gdshaderinc) that must change with it. Not: how high a vertex is,
+## whether it is land or a hole (GroundField, TerrainRules). Pure and static.
 
 ## Vertices per side of the lattice (and 10 m cells per side of a map's tile index).
 const SIDE := 256
@@ -39,13 +40,19 @@ static func point_of(vertex: Vector2i) -> Vector2:
 
 ## The vertex (column, row) nearest to the ground point (x, z) in metres. Not cut to the lattice.
 static func vertex_near(point: Vector2) -> Vector2i:
-	return Vector2i(floori((point.x + CELL_M * 0.5) / CELL_M), floori((point.y + CELL_M * 0.5) / CELL_M))
+	return Vector2i(
+		floori((point.x + CELL_M * 0.5) / CELL_M), floori((point.y + CELL_M * 0.5) / CELL_M)
+	)
 
 
 ## The vertices that lie within `radius_m` of the ground point `center` (x, z), cut to the lattice.
 static func vertex_rect(center: Vector2, radius_m: float) -> Rect2i:
-	var low := Vector2i(floori((center.x - radius_m) / CELL_M), floori((center.y - radius_m) / CELL_M))
-	var high := Vector2i(ceili((center.x + radius_m) / CELL_M), ceili((center.y + radius_m) / CELL_M))
+	var low := Vector2i(
+		floori((center.x - radius_m) / CELL_M), floori((center.y - radius_m) / CELL_M)
+	)
+	var high := Vector2i(
+		ceili((center.x + radius_m) / CELL_M), ceili((center.y + radius_m) / CELL_M)
+	)
 	low = low.clamp(Vector2i.ZERO, Vector2i(SIDE - 1, SIDE - 1))
 	high = high.clamp(Vector2i.ZERO, Vector2i(SIDE - 1, SIDE - 1))
 	return Rect2i(low, high - low + Vector2i.ONE)

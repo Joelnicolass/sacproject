@@ -6,13 +6,15 @@ extends Resource
 ## - `shake_scale` (0-1): how much the camera shakes (CameraShake); 0 turns it off.
 ## - `damage_numbers`: the floating numbers over the bodies that lose health (DamageNumbers).
 ## - `hover_info`: the info box beside the pointer (TargetInfoPanel).
-## - `blood`: «Sangre», the blood of the hits, its marks on the ground and the hit flash (BloodFx, SprayMarks, HitFlash).
-## - It lives in `user://settings.cfg` `[sensacion]` through UserSettings (sandboxed under AgentKit, like the others).
-## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime state of that instance and
-## the exported fields (the defaults) are never written. Changes emit `changed`.
-## Ref: RFC-053 053e/053f (F374, F375).
+## - `blood`: «Sangre», the blood of the hits, its marks on the ground and the hit flash (BloodFx,
+##   SprayMarks, HitFlash).
+## - It lives in `user://settings.cfg` `[sensacion]` through UserSettings (sandboxed under AgentKit,
+##   like the others).
+## Like GraphicsPrefs, every node must share the instance at `SHARED_PATH`; the values are runtime
+## state of that instance and the exported fields (the defaults) are never written. Changes emit
+## `changed`.
 
-const SHARED_PATH := "res://data/ui/feel_prefs.tres"
+const SHARED_PATH := "res://scenes/ui/feel_prefs.tres"
 const SECTION := "sensacion"
 
 ## When the player chose nothing.
@@ -81,20 +83,26 @@ func set_blood(on: bool, save := true) -> void:
 ## Warning text for a node whose `prefs` is not the shared instance ("" when it is).
 static func socket_warning(prefs: FeelPrefs) -> String:
 	if prefs == null:
-		return "Asigná `prefs` (%s)." % SHARED_PATH
+		return "Assign `prefs` (%s)." % SHARED_PATH
 	if prefs.resource_path != SHARED_PATH:
-		return "`prefs` no es %s: este nodo no seguirá la elección del jugador." % SHARED_PATH
+		return "`prefs` is not %s: this node will not follow the player's choice." % SHARED_PATH
 	return ""
 
 
 func _commit(save: bool) -> void:
 	if save and not Engine.is_editor_hint():
-		UserSettings.write_values(SECTION, {
-			"shake_scale": _shake_scale,
-			"damage_numbers": _damage_numbers,
-			"hover_info": _hover_info,
-			"blood": _blood,
-		})
+		(
+			UserSettings
+			. write_values(
+				SECTION,
+				{
+					"shake_scale": _shake_scale,
+					"damage_numbers": _damage_numbers,
+					"hover_info": _hover_info,
+					"blood": _blood,
+				}
+			)
+		)
 	emit_changed()
 
 

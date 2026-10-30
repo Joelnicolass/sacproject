@@ -1,0 +1,62 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRst.res" id="1_TRst"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRrn.res" id="2_TRrn"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRa1.res" id="3_TRa1"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRa2.res" id="4_TRa2"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TR00.res" id="5_TR00"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRd1.res" id="6_TRd1"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TR2t.res" id="7_TR2t"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRsc.res" id="8_TRsc"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRrz.res" id="9_TRrz"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRfd.res" id="10_TRfd"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRgu.res" id="11_TRgu"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRhf.res" id="12_TRhf"]
+[ext_resource type="Animation" path="res://creatures/troll/model/troll_model_clips/TRi1.res" id="13_TRi1"]
+
+[sub_resource type="Animation" id="Animation_4uiha"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D/HandL:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D/HandR:visible")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[resource]
+_data = {
+&"RESET": SubResource("Animation_4uiha"),
+&"attack": ExtResource("3_TRa1"),
+&"attack2": ExtResource("4_TRa2"),
+&"attack3": ExtResource("3_TRa1"),
+&"death": ExtResource("6_TRd1"),
+&"gesture": ExtResource("13_TRi1"),
+&"get_up": ExtResource("11_TRgu"),
+&"held": ExtResource("7_TR2t"),
+&"hit_floor": ExtResource("12_TRhf"),
+&"idle": ExtResource("1_TRst"),
+&"knock": ExtResource("10_TRfd"),
+&"rise": ExtResource("9_TRrz"),
+&"run": ExtResource("2_TRrn"),
+&"shoot": ExtResource("5_TR00"),
+&"shoot2": ExtResource("5_TR00"),
+&"thrash": ExtResource("8_TRsc")
+}

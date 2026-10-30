@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/scar_mark.tscn" id="5_mark"]
 [ext_resource type="Texture2D" path="res://assets/original/scars/scar.png" id="6_scar"]
 [ext_resource type="PackedScene" path="res://scenes/audio/sound_emitter_3d.tscn" id="sound_emitter"]
-[ext_resource type="Resource" path="res://data/audio/cues/explosion_burst.tres" id="cue_explosion_burst"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/explosion_burst.tres" id="cue_explosion_burst"]
 
 [sub_resource type="ShaderMaterial" id="Mat_blast"]
 shader = ExtResource("2_shader")

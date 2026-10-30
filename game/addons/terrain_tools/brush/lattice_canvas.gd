@@ -13,7 +13,7 @@ const TerrainEdits := preload("res://addons/terrain_tools/terrain_edits.gd")
 const RefreshBudget := preload("res://addons/terrain_tools/brush/refresh_budget.gd")
 const EditorPreview := preload("res://addons/terrain_tools/brush/editor_preview.gd")
 const CanvasFiles := preload("res://addons/terrain_tools/brush/canvas_files.gd")
-const LABELS := ["Terreno: subir o bajar", "Terreno: suavizar", "Terreno: aplanar", "Terreno: hueco", "Terreno: rellenar"]
+const LABELS := ["Terrain: raise or lower", "Terrain: smooth", "Terrain: flatten", "Terrain: hole", "Terrain: fill"]
 
 ## Where edits show before the mesh is built again (the painter sets it while its Terrain is selected).
 var shown: EditorPreview

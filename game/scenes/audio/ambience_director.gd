@@ -2,15 +2,17 @@
 class_name AmbienceDirector
 extends Node
 
-## The ambience of this process: the god's bed (a loop on the scene's own AudioStreamPlayer `bed`, bus of the cue:
-## Ambience) and, every so often, a one-shot in 3D at a point around the listener (SoundBus.play_3d). When, which one-shot
-## and where come from its own generator, never the global one.
-## The set: `ambience` (a fixture in the lab), or the look's `ambience` of the GodType that `biome` applies (MatchBiome.applied(god)).
-## No set (a god without one): silence. By night (the god's DayCycle at the match's sky clock, AtmosphereRules: the same hour
-## the look shows) it plays the set's `night_one_shots` instead, when it has them.
-## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated, room server, headless)
-## its player stays idle and it plays nothing. No RPC, nothing written to the simulation.
-## Ref: RFC-052 052g (F366).
+## The ambience of this process: the god's bed (a loop on the scene's own AudioStreamPlayer `bed`,
+## bus of the cue: Ambience) and, every so often, a one-shot in 3D at a point around the listener
+## (SoundBus.play_3d). When, which one-shot and where come from its own generator, never the global
+## one.
+## The set: `ambience` (a fixture in the lab), or the look's `ambience` of the GodType that `biome`
+## applies (MatchBiome.applied(god)). No set (a god without one): silence. By night (the god's
+## DayCycle at the match's sky clock, AtmosphereRules: the same hour the look shows) it plays the
+## set's `night_one_shots` instead, when it has them.
+## In the log: emitter `ambience`, event `bed` or `ambient`. With the AudioGate closed (dedicated,
+## room server, headless) its player stays idle and it plays nothing. No RPC, nothing written to the
+## simulation.
 
 const EMITTER := &"ambience"
 
@@ -61,7 +63,8 @@ func use_god(god: GodType) -> void:
 	use_ambience(god.look.ambience if god != null and god.look != null else null)
 
 
-## Starts the bed of `next_set` and schedules its first one-shot. No set: the bed stops, nothing plays.
+## Starts the bed of `next_set` and schedules its first one-shot. No set: the bed stops, nothing
+## plays.
 func use_ambience(next_set: AmbienceSet) -> void:
 	if not _open:
 		return
@@ -97,10 +100,13 @@ func has_one_shots() -> bool:
 	return not _one_shots.is_empty()
 
 
-## One of the set's one-shots now, at a point around the listener; the next is scheduled. False when nothing played.
+## One of the set's one-shots now, at a point around the listener; the next is scheduled. False when
+## nothing played.
 func play_one_shot() -> bool:
 	_schedule()
-	var shots: Array[SoundCue] = _night_shots if not _night_shots.is_empty() and is_night() else _one_shots
+	var shots: Array[SoundCue] = (
+		_night_shots if not _night_shots.is_empty() and is_night() else _one_shots
+	)
 	if shots.is_empty() or not SoundBus.can_play():
 		return false
 	var at: Vector3 = SoundBus.listener_position()
@@ -108,15 +114,20 @@ func play_one_shot() -> bool:
 		return false
 	var cue := shots[_rng.randi_range(0, shots.size() - 1)]
 	var angle := _rng.randf_range(0.0, TAU)
-	var distance := _rng.randf_range(ambience_set.distance_m.x, maxf(ambience_set.distance_m.x, ambience_set.distance_m.y))
-	var height := _rng.randf_range(ambience_set.height_m.x, maxf(ambience_set.height_m.x, ambience_set.height_m.y))
+	var distance := _rng.randf_range(
+		ambience_set.distance_m.x, maxf(ambience_set.distance_m.x, ambience_set.distance_m.y)
+	)
+	var height := _rng.randf_range(
+		ambience_set.height_m.x, maxf(ambience_set.height_m.x, ambience_set.height_m.y)
+	)
 	var offset := Vector3(cos(angle) * distance, height, sin(angle) * distance)
 	return SoundBus.play_3d(cue, at + offset, EMITTER, SoundEvent.AMBIENT)
 
 
 ## True while it is night on this land now.
 func is_night() -> bool:
-	return _day != null and AtmosphereRules.is_night(_day, MatchSky.now_s())
+	var day := MatchSky.day_of(_day)
+	return day != null and AtmosphereRules.is_night(day, MatchSky.now_s())
 
 
 ## The playable one-shots of `ambience_set` (the cues with a stream).
@@ -143,4 +154,10 @@ func _schedule() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if bed != null else PackedStringArray(["Asigná `bed` (el AudioStreamPlayer hijo): sin él no suena el fondo."])
+	return (
+		PackedStringArray()
+		if bed != null
+		else PackedStringArray(
+			["Assign `bed` (the child AudioStreamPlayer): without it the background is silent."]
+		)
+	)

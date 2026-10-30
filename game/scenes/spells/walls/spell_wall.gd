@@ -2,14 +2,17 @@
 class_name SpellWall
 extends SpellProjectile
 
-## A wall a wizard raises on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence), centred on the click and across the
-## line from the wizard to it. Both ends grow out while he casts and stop at `effect_range_m`, a building or the edge of the land; it
-## rises, stands for the spell's `duration_s` and sinks. Its children say what it does; it does not hurt, slow or draw anything itself.
-## The server (or solo) grows the ends and ends it; `age`, `left`, `right`, `vanish_at` are replicated, every peer derives `top()`.
+## A wall a wizard raises on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence),
+## centred on the click and across the line from the wizard to it. Both ends grow out while he casts
+## and stop at `effect_range_m`, a building or the edge of the land; it rises, stands for the
+## spell's `duration_s` and sinks. Its children say what it does; it does not hurt, slow or draw
+## anything itself. The server (or solo) grows the ends and ends it; `age`, `left`, `right`,
+## `vanish_at` are replicated, every peer derives `top()`.
 
 ## Its `effect_range_m` is how far each end may go, its `duration_s` how long the wall stands.
 @export var spell: SpellType
-## The wall's box: size.y is the height it rises to, size.z the thickness, size.x the whole reach (2 * effect_range_m, to show it).
+## The wall's box: size.y is the height it rises to, size.z the thickness, size.x the whole reach (2
+## * effect_range_m, to show it).
 @export var body: CollisionShape3D
 ## Time the ends take to reach `effect_range_m` when nothing stops them.
 @export_range(0.0166, 60.0, 0.0001, "suffix:s") var grow_s := 4.0
@@ -24,7 +27,8 @@ extends SpellProjectile
 ## Extra properties of children the synchronizer carries (`Node:property`).
 @export var sync_extra := PackedStringArray()
 
-## Replicated: ticks since the cast began, the ends in metres along the wall, and the tick it began to sink (-1 = not yet).
+## Replicated: ticks since the cast began, the ends in metres along the wall, and the tick it began
+## to sink (-1 = not yet).
 var age := 0
 var left := 0.0
 var right := 0.0
@@ -39,17 +43,21 @@ var from_slot := 0
 ## An end stopped growing (a building, the edge of the land, its reach).
 var left_stopped := false
 var right_stopped := false
-var _ended := false
 var grow_ticks: int:  # grow_s in ticks: what the parts compare `age` against
-	get: return MatchClock.ticks_for(grow_s)
+	get:
+		return MatchClock.ticks_for(grow_s)
+
+var _ended := false
 
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if spell == null:
-		warnings.append("Falta `spell`: el SpellType del muro (alcance y duración).")
+		warnings.append("`spell` is missing: the SpellType of the wall (reach and duration).")
 	if body == null or not body.shape is BoxShape3D:
-		warnings.append("Falta `body` con un BoxShape3D: su y es el alto y su z el espesor.")
+		warnings.append(
+			"`body` with a BoxShape3D is missing: its y is the height and its z the thickness."
+		)
 	return warnings
 
 
@@ -88,6 +96,7 @@ func height_m() -> float:
 func thickness_m() -> float:
 	return (body.shape as BoxShape3D).size.z if body != null and body.shape is BoxShape3D else 0.0
 
+
 func reach_m() -> float:
 	return spell.effect_range_m if spell != null else 0.0
 
@@ -104,7 +113,8 @@ func top() -> float:
 	return height_m() * WallRules.rise(age, rise_ticks(), vanish_at, vanish_ticks())
 
 
-## 0 to 1 over `ramp_s` once `start_s` have passed (a negative start: once the wall is at full height).
+## 0 to 1 over `ramp_s` once `start_s` have passed (a negative start: once the wall is at full
+## height).
 func ramp(start_s: float, ramp_s: float) -> float:
 	var start := rise_ticks() if start_s < 0.0 else MatchClock.ticks_for(start_s)
 	return WallRules.ramp(age, start, MatchClock.ticks_for(ramp_s))

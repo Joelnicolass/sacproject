@@ -1,4 +1,4 @@
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Per-god land from the local install: the sky and edge textures and ENVI colours (tools/import/import_themes.py writes
 assets/original/themes/ with them), and the tiles, tile groups and maps the ground tools read (bake_ground_roles.py,

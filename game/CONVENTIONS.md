@@ -1,5 +1,7 @@
 # Convenciones del código
 
+> **2026-10-28:** superseded by [`CONTRIBUTING.md`](CONTRIBUTING.md), which follows the official Godot standards. Where this file disagrees with it, `CONTRIBUTING.md` wins. Kept as reference while the code is migrated (branch `refactor/godot-standard`).
+
 Este juego se escribe como cualquier juego Godot moderno: composición primero (un nodo flaco con hijos, escenas empaquetadas, `@export`, Resources `.tres`). El Sacrifice original y `sacengine` nos dicen QUÉ hace el juego, nunca CÓMO lo programamos: no copiamos su estructura de 2000. Si un comentario necesita citar el original, la cita va al final en una línea `## Ref:`, nunca en la primera frase.
 
 Cómo se hace cumplir: `tools/lint/conventions.sh` cuenta las infracciones de hoy y falla si alguna sube (ratchet). Cada corte que baja un conteo reescribe `tools/lint/baseline.txt` con `--update-baseline`.

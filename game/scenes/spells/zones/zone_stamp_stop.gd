@@ -1,9 +1,10 @@
 class_name ZoneStampStop
 extends Node
 
-## When its zone is cut (the cast was interrupted) it tells the zone's stamps to take back, at once, the ground they were lifting, on every
-## peer (the zone replicates `cancelled`). Without it a stamp keeps playing until the zone is freed. It does not decide when a zone is cut
-## (GroundZone) nor what a stamp keeps (TerrainStamp). A zone that ends well keeps what its stamps kept.
+## When its zone is cut (the cast was interrupted) it tells the zone's stamps to take back, at once,
+## the ground they were lifting, on every peer (the zone replicates `cancelled`). Without it a stamp
+## keeps playing until the zone is freed. It does not decide when a zone is cut (GroundZone) nor
+## what a stamp keeps (TerrainStamp). A zone that ends well keeps what its stamps kept.
 
 @export var zone: GroundZone
 @export var stamps: Array[TerrainStamp] = []
@@ -22,4 +23,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if zone != null else PackedStringArray(["Falta la zona (GroundZone) que puede cortarse."])
+	return (
+		PackedStringArray()
+		if zone != null
+		else PackedStringArray(["The zone (GroundZone) that can be cut is missing."])
+	)

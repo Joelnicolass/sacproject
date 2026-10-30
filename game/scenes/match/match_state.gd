@@ -2,19 +2,22 @@
 class_name MatchState
 extends Node
 
-## The state of the match: the state of every altar, the defeated sides and the winner. Single source
-## for everyone (DefeatRule decides, the banner and the world read). The server (or solo) changes it
-## and says so (`snapshot_changed`, `finished`); MatchStateNet carries it to the clients, which apply the snapshot.
-## It knows nothing of the network.
+## The state of the match: the state of every altar, the defeated sides and the winner. Single
+## source for everyone (DefeatRule decides, the banner and the world read). The server (or solo)
+## changes it and says so (`snapshot_changed`, `finished`); MatchStateNet carries it to the clients,
+## which apply the snapshot. It knows nothing of the network.
 
 ## An altar changed state in this peer (the server's decision or an applied snapshot).
 signal altar_state_changed(altar: Altar, state: Altar.State)
 signal side_defeated(slot: int)
-## The match has a result (a winner, or nobody left).
+## The match has a result (a winner, or nobody left). The end is also told game-wide once
+## (Events.match_ended).
 signal result_changed
-## The rules of this match shown to the players changed: taken from the world (server, solo) or from a snapshot (client).
+## The rules of this match shown to the players changed: taken from the world (server, solo) or from
+## a snapshot (client).
 signal rules_changed
-## The server (or solo) changed the state: whoever carries it (MatchStateNet) sends `to_snapshot()` to the clients.
+## The server (or solo) changed the state: whoever carries it (MatchStateNet) sends `to_snapshot()`
+## to the clients.
 signal snapshot_changed
 ## The match ended in this peer and `result()` is final; emitted after the last `snapshot_changed`.
 signal finished
@@ -26,31 +29,33 @@ const FALLBACK_COLLAPSE_S := 11.0
 @export var rules: MatchRules
 ## Node whose subtree holds the altars of this match (the world).
 @export var world: Node
-## The node the wizards are spawned under (match.tscn: Wizards). On the authority every wizard that is or comes in there seats
-## its slot; empty (a bench with no wizards) = every owner of an altar counts.
+## The node the wizards are spawned under (match.tscn: Wizards). On the authority every wizard that
+## is or comes in there seats its slot; empty (a scene with no wizards) = every owner of an altar
+## counts.
 @export var wizards: Node
 
-## 0 while the match has no winner. With teams (RFC-049 049b) it is the lowest slot of the winning team, kept for the room
-## and the banner; `winner_slots` is the whole team and `won(slot)` the question to ask.
+## 0 while the match has no winner. With teams it is the lowest slot of the winning team, kept for
+## the room and the banner; `winner_slots` is the whole team and `won(slot)` the question to ask.
 var winner_slot := 0
-## RFC-049 049b (F291): every slot of the team that won (even an ally that fell before: P3), empty while there is no winner.
+## Every slot of the team that won (even an ally that fell before), empty while there is no winner.
 var winner_slots: Array[int] = []
 ## The team (SideRelations.team_of) of the winners; 0 with no winner.
 var winner_team := 0
-## The slots with a wizard seated (human or AI), derived on the authority from the children of `wizards`. Only they count for the
-## victory; the altar of an empty seat stays in the map and does not count (P4).
-## Ref: RFC-049 049b; sacengine altarSides, state.d:31493.
+## The slots with a wizard seated (human or AI), derived on the authority from the children of
+## `wizards`. Only they count for the victory; the altar of an empty seat stays in the map and does
+## not count.
 var seated_slots: Array[int] = []
 var defeated_slots: Array[int] = []
 ## True once the match has a result, with or without a winner.
 var ended := false
-## F139 (RFC-031): the friendly fire of this match, as the server took it from the world's rules (take_rules) and the
-## clients from the snapshot. Health reads it (Health._side_factor). Not `rules` of this node: a bench (ai_match) or the
-## match setup changes only the world's rules, and this node keeps the product's.
+## The friendly fire of this match, as the server took it from the world's rules (take_rules) and
+## the clients from the snapshot. Health reads it (Health._side_factor). Not `rules` of this node: a
+## test scene or the match setup changes only the world's rules, and this node keeps the product's.
 var friendly_fire := false
 var ally_damage_factor := 0.5
-## RFC-031 031d (F143): the other two rules the player sees in Options → Jugabilidad, same channel as friendly_fire.
-## The simulation reads world.rules (SoulPurse through WizardSpawner, SoulSystem); these are the copy the clients show.
+## The other two rules the player sees in Options → Jugabilidad, same channel as friendly_fire. The
+## simulation reads world.rules (SoulPurse through WizardSpawner, SoulSystem); these are the copy
+## the clients show.
 var drop_soul := true
 var starting_souls := 12
 
@@ -74,9 +79,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if world == null:
-		warnings.append("Asigná en `world` el nodo que contiene los altares.")
+		warnings.append("Assign to `world` the node that holds the altars.")
 	if rules == null:
-		warnings.append("Asigná en `rules` las MatchRules.")
+		warnings.append("Assign the MatchRules to `rules`.")
 	return warnings
 
 
@@ -113,8 +118,7 @@ func has_live_altar(slot: int) -> bool:
 
 
 ## The slots that own an altar and have a wizard seated, in order. A world
-## where nobody was ever marked (a bench with no WizardSpawner) keeps every owner of an altar, as before 049b.
-## Ref: sacengine altarSides, state.d:30494-30500, 31493-31514.
+## where nobody was ever marked (a scene with no WizardSpawner) keeps every owner of an altar.
 func sides() -> Array[int]:
 	var found: Array[int] = []
 	for altar in altars():
@@ -125,7 +129,8 @@ func sides() -> Array[int]:
 	return found
 
 
-## Authority: a wizard sat in `slot` (a wizard under `wizards`; a bench may call it). Idempotent.
+## Authority: a wizard sat in `slot` (a wizard under `wizards`; a test scene may call it).
+## Idempotent.
 func mark_seated(slot: int) -> void:
 	if slot <= 0 or seated_slots.has(slot):
 		return
@@ -134,8 +139,9 @@ func mark_seated(slot: int) -> void:
 	publish()
 
 
-## Authority: the wizards already under `wizards` (the listen host and solo spawn theirs before this node is ready) and every
-## one that comes in later seat their slot. Derived from the tree, so the order of `_ready` does not matter.
+## Authority: the wizards already under `wizards` (the listen host and solo spawn theirs before this
+## node is ready) and every one that comes in later seat their slot. Derived from the tree, so the
+## order of `_ready` does not matter.
 func _seat_wizards() -> void:
 	if wizards == null:
 		return
@@ -157,13 +163,15 @@ func has_result() -> bool:
 	return ended
 
 
-## The slot is on the winning team (with or without having fallen earlier). False while there is no result.
+## The slot is on the winning team (with or without having fallen earlier). False while there is no
+## result.
 func won(slot: int) -> bool:
 	return ended and slot > 0 and winner_slots.has(slot)
 
 
-## Server (or solo): the friendly fire of this match from the world's rules (never from `rules` of this node, RFC-031
-## §2.2). A world with no MatchRules keeps the script defaults (off). Prints the rule once per call.
+## Server (or solo): the friendly fire of this match from the world's rules (never from `rules` of
+## this node). A world with no MatchRules keeps the script defaults (off). Prints the rule once per
+## call.
 func take_rules() -> void:
 	var source: Variant = world.get("rules") if world != null and "rules" in world else null
 	var defaults := MatchRules.new()
@@ -177,16 +185,17 @@ func take_rules() -> void:
 
 
 func _print_rules() -> void:
-	print("fuego amigo: %s" % ("sí (×%.2f)" % ally_damage_factor if friendly_fire else "no"))
-	print("almas iniciales: %d · soltar almas: %s" % [starting_souls, "sí" if drop_soul else "no"])
+	print("friendly fire: %s" % ("yes (×%.2f)" % ally_damage_factor if friendly_fire else "no"))
+	print("starting souls: %d · drop souls: %s" % [starting_souls, "yes" if drop_soul else "no"])
 
 
 func collapse_seconds() -> float:
 	return rules.altar_collapse_s if rules else FALLBACK_COLLAPSE_S
 
 
-## Server: the standing altars of `slot` start to fall; `by_slot` is who brought it down (0 = nobody:
-## the wizard vanished). In collapse_seconds() they are DESTROYED. False if none was standing.
+## Server: the standing altars of `slot` start to fall; `by_slot` is who brought it down (0 =
+## nobody: the wizard vanished). In collapse_seconds() they are DESTROYED. False if none was
+## standing.
 func begin_altar_collapse(slot: int, by_slot := 0) -> bool:
 	if not is_authority():
 		return false
@@ -197,7 +206,9 @@ func begin_altar_collapse(slot: int, by_slot := 0) -> bool:
 		_collapsing[altar] = collapse_seconds()
 		altar.start_collapse(collapse_seconds())
 		started = true
-		print("altar del slot %d se derrumba (por slot %d, %.1f s)" % [slot, by_slot, collapse_seconds()])
+		print(
+			"altar of slot %d collapses (by slot %d, %.1f s)" % [slot, by_slot, collapse_seconds()]
+		)
 	if started:
 		publish()
 	return started
@@ -221,14 +232,16 @@ func end_match(winner: int) -> void:
 	winner_slot = winner
 	winner_slots.assign([winner] if winner > 0 else [])
 	winner_team = SideRelations.team_of(winner) if winner > 0 else 0
-	print("partida terminada, gana el slot %d" % winner)
+	print("match over, slot %d wins" % winner)
 	result_changed.emit()
+	Events.match_ended.emit(winner_slots.duplicate(), defeated_slots.duplicate())
 	publish()
 	_tell_kit_ended()
 
 
-## Server (or solo): the match is over and the team of `slots` (the living ones that were left, plus the allies that fell before) won.
-## `winner_slot` is the lowest of them. With one slot it is the same as end_match(slot).
+## Server (or solo): the match is over and the team of `slots` (the living ones that were left, plus
+## the allies that fell before) won. `winner_slot` is the lowest of them. With one slot it is the
+## same as end_match(slot).
 func end_match_team(slots: Array[int]) -> void:
 	if not is_authority() or ended:
 		return
@@ -241,19 +254,26 @@ func end_match_team(slots: Array[int]) -> void:
 	winner_slots.assign(team)
 	winner_slot = team[0]
 	winner_team = SideRelations.team_of(team[0])
-	print("partida terminada, gana el equipo %d: slots %s" % [winner_team, str(team)])
+	print("match over, team %d wins: slots %s" % [winner_team, str(team)])
 	result_changed.emit()
+	Events.match_ended.emit(winner_slots.duplicate(), defeated_slots.duplicate())
 	publish()
 	_tell_kit_ended()
 
 
-## The result as the room and the kit read it: who won (the whole team) and who was defeated. Empty-ish while there is none.
+## The result as the room and the kit read it: who won (the whole team) and who was defeated.
+## Empty-ish while there is none.
 func result() -> Dictionary:
 	var winners: Array = []
 	winners.assign(winner_slots)
 	var defeated: Array = []
 	defeated.assign(defeated_slots)
-	return {"winner_slot": winner_slot, "winner_slots": winners, "defeated_slots": defeated, "reason": "result"}
+	return {
+		"winner_slot": winner_slot,
+		"winner_slots": winners,
+		"defeated_slots": defeated,
+		"reason": "result"
+	}
 
 
 ## Says the match is over (MatchStateNet tells the kit when this is a dedicated started by hand).
@@ -274,7 +294,7 @@ func tick(delta: float) -> void:
 		_collapsing.erase(altar)
 		if is_instance_valid(altar):
 			altar.state = Altar.State.DESTROYED
-			print("altar del slot %d destruido" % altar.owner_slot)
+			print("altar of slot %d destroyed" % altar.owner_slot)
 	if not done.is_empty():
 		publish()
 
@@ -286,17 +306,29 @@ func to_snapshot() -> Dictionary:
 	for altar in altars():
 		var index := int(seen.get(altar.owner_slot, 0))
 		seen[altar.owner_slot] = index + 1
-		entries.append({
-			"slot": altar.owner_slot,
-			"index": index,
-			"state": int(altar.state),
-			"left": float(_collapsing.get(altar, 0.0)),
-		})
+		(
+			entries
+			. append(
+				{
+					"slot": altar.owner_slot,
+					"index": index,
+					"state": int(altar.state),
+					"left": float(_collapsing.get(altar, 0.0)),
+				}
+			)
+		)
 	return {
-		"altars": entries, "defeated": defeated_slots.duplicate(), "winner": winner_slot, "ended": ended,
-		"winners": winner_slots.duplicate(), "winner_team": winner_team, "seated": seated_slots.duplicate(),
-		"friendly_fire": friendly_fire, "ally_damage_factor": ally_damage_factor,
-		"drop_soul": drop_soul, "starting_souls": starting_souls,
+		"altars": entries,
+		"defeated": defeated_slots.duplicate(),
+		"winner": winner_slot,
+		"ended": ended,
+		"winners": winner_slots.duplicate(),
+		"winner_team": winner_team,
+		"seated": seated_slots.duplicate(),
+		"friendly_fire": friendly_fire,
+		"ally_damage_factor": ally_damage_factor,
+		"drop_soul": drop_soul,
+		"starting_souls": starting_souls,
 	}
 
 
@@ -306,8 +338,13 @@ func apply_snapshot(data: Dictionary) -> void:
 		var factor := float(data.get("ally_damage_factor", ally_damage_factor))
 		var drop := bool(data.get("drop_soul", drop_soul))
 		var souls := int(data.get("starting_souls", starting_souls))
-		if not _rules_known or fire != friendly_fire or factor != ally_damage_factor or drop != drop_soul \
-				or souls != starting_souls:
+		if (
+			not _rules_known
+			or fire != friendly_fire
+			or factor != ally_damage_factor
+			or drop != drop_soul
+			or souls != starting_souls
+		):
 			friendly_fire = fire
 			ally_damage_factor = factor
 			drop_soul = drop
@@ -341,11 +378,14 @@ func apply_snapshot(data: Dictionary) -> void:
 	for slot in data.get("winners", [now_winner] if now_winner > 0 else []):
 		now_winners.append(int(slot))
 	if now_ended != ended or now_winner != winner_slot or now_winners != winner_slots:
+		var ends_now := now_ended and not ended
 		ended = now_ended
 		winner_slot = now_winner
 		winner_slots.assign(now_winners)
 		winner_team = int(data.get("winner_team", 0))
 		result_changed.emit()
+		if ends_now:
+			Events.match_ended.emit(winner_slots.duplicate(), defeated_slots.duplicate())
 
 
 ## Server: asks the carrier to tell every client the match as it is now.
@@ -354,7 +394,7 @@ func publish() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	## No match runs in the editor.
+	# No match runs in the editor.
 	if Engine.is_editor_hint():
 		return
 	tick(delta)

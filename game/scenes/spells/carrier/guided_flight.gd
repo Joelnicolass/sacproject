@@ -1,10 +1,11 @@
 class_name GuidedFlight
 extends RefCounted
 
-## The flight of a guided SpellCarrier (Dragonfire's dragon), with the state it needs and no node of its own: it climbs a spiral around the
-## wizard while he casts, flies to its target when the casting ends (a body it follows, or a point), turning at a limited rate and never
-## under a height, and shrinks away at the end. It moves the carrier it is given; what an arrival does is the carrier's CarrierArrive.
-## Ref: sacengine updateDragonfirePosition, changeDirectionTowards (state.d:18776-18871).
+## The flight of a guided SpellCarrier (Dragonfire's dragon), with the state it needs and no node of
+## its own: it climbs a spiral around the wizard while he casts, flies to its target when the
+## casting ends (a body it follows, or a point), turning at a limited rate and never under a height,
+## and shrinks away at the end. It moves the carrier it is given; what an arrival does is the
+## carrier's CarrierArrive.
 
 var wizard: Node3D
 var target: Node3D
@@ -49,7 +50,9 @@ func finish() -> void:
 
 
 func target_body() -> Node3D:
-	return target if target != null and is_instance_valid(target) and target.is_inside_tree() else null
+	return (
+		target if target != null and is_instance_valid(target) and target.is_inside_tree() else null
+	)
 
 
 func step() -> void:
@@ -71,7 +74,13 @@ func _cast_step() -> void:
 		return
 	tick += 1
 	var p := minf(1.0, float(tick) / float(cast_ticks))
-	var at := CarrierPath.spiral(wizard, float(cast_ticks) / MatchClock.TICKS_PER_SECOND_F, _carrier.speed, _carrier.cast_height_m, p)
+	var at := CarrierPath.spiral(
+		wizard,
+		float(cast_ticks) / MatchClock.TICKS_PER_SECOND_F,
+		_carrier.speed,
+		_carrier.cast_height_m,
+		p
+	)
 	_face(at - _carrier.global_position)
 	_carrier.global_position = at
 	_carrier.scale = Vector3.ONE * maxf(p, 0.01)
@@ -85,10 +94,18 @@ func _fly_step() -> void:
 	var center := BodyNudge.center(body) if body != null else goal
 	goal = center
 	var to := center - _carrier.global_position
-	var rate := maxf(_carrier.turn_rate, 1.1 * _carrier.speed / maxf(to.length(), 0.01)) if to.length_squared() < 16.0 else _carrier.turn_rate
+	var rate := (
+		maxf(_carrier.turn_rate, 1.1 * _carrier.speed / maxf(to.length(), 0.01))
+		if to.length_squared() < 16.0
+		else _carrier.turn_rate
+	)
 	direction = CarrierPath.turned(direction, to.normalized(), rate / MatchClock.TICKS_PER_SECOND_F)
-	var next := _carrier.global_position + direction * _carrier.speed / MatchClock.TICKS_PER_SECOND_F
-	var ground := GroundRay.surface_y(_carrier, next, 1, GroundRay.wizard_rids(_carrier.get_tree()), -INF)
+	var next := (
+		_carrier.global_position + direction * _carrier.speed / MatchClock.TICKS_PER_SECOND_F
+	)
+	var ground := GroundRay.surface_y(
+		_carrier, next, 1, GroundRay.wizard_rids(_carrier.get_tree()), -INF
+	)
 	var low := is_finite(ground) and next.y < ground + _carrier.flying_height_m
 	if low:
 		next.y = ground + _carrier.flying_height_m
@@ -96,7 +113,10 @@ func _fly_step() -> void:
 	_face(direction)
 	_carrier.global_position = next
 	var flat := Vector2(center.x - next.x, center.z - next.z).length()
-	if (center - next).length() < _carrier.arrive_distance_m or (low and center.y < next.y and flat < 0.5):
+	if (
+		(center - next).length() < _carrier.arrive_distance_m
+		or (low and center.y < next.y and flat < 0.5)
+	):
 		if _carrier.on_arrive != null:
 			_carrier.on_arrive.arrive(_carrier)
 		else:

@@ -1,10 +1,11 @@
 class_name TerrainNet
 extends Node
 
-## Carries what stays on the ground from the server to the clients: each stamp its Terrain keeps and each hole by RPC, and
-## the whole ground in one MpKit snapshot to a peer that joins late. On a client it hands what arrives to the Terrain
-## (`keep`, `set_hole`, `load_snapshot`), which decides whether it is newer and applies it. It decides nothing about the
-## ground. Alone (no network) it sends nothing.
+## Carries what stays on the ground from the server to the clients: each stamp its Terrain keeps and
+## each hole by RPC, and the whole ground in one MpKit snapshot to a peer that joins late. On a
+## client it hands what arrives to the Terrain (`keep`, `set_hole`, `load_snapshot`), which decides
+## whether it is newer and applies it. It decides nothing about the ground. Alone (no network) it
+## sends nothing.
 
 ## Key of the dict in MpKit.push_snapshot.
 const SNAPSHOT_KEY := "terrain"
@@ -14,7 +15,11 @@ const SNAPSHOT_KEY := "terrain"
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
+	return (
+		PackedStringArray()
+		if terrain != null
+		else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
+	)
 
 
 func _ready() -> void:
@@ -45,7 +50,8 @@ func push_snapshot(peer_id: int) -> void:
 	MpKit.push_snapshot_to(peer_id, {SNAPSHOT_KEY: terrain.field().to_snapshot()})
 
 
-## A client got a kept stamp: `delta` row by row over `rect` (lattice vertices); `rev` is the server's count after it.
+## A client got a kept stamp: `delta` row by row over `rect` (lattice vertices); `rev` is the
+## server's count after it.
 @rpc("authority", "call_remote", "reliable")
 func rpc_commit(rev: int, key: String, rect: Rect2i, delta: PackedFloat32Array) -> void:
 	terrain.keep(rev, key, rect, delta)

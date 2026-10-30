@@ -2,17 +2,20 @@
 class_name BodySounds
 extends Node
 
-## The shared part of UnitSounds and WizardSounds, the children that turn a body's replicated state into sound events. It owns
-## how an event finds its cue and the per-body limit of `damaged`; the subclasses only wire the signals. It does not decide
-## what the body sounds like: that is the `sounds` set of its look (BodyLook, the appearance scene next to its body scene).
-## - Where a cue comes from: the body's own set (`BodyMount.sounds()`, with its `fallback` chain: the melee set), then `default_cue`
-##   (UnitSounds: the summon cue every creature shares). No cue anywhere: silence, no log entry, no warning.
-## - Everything is client presentation: it reads replicated state and signals, never writes the body, never draws from the
-##   global generator (SoundBus has its own), never adds an RPC. With the AudioGate closed (dedicated, room server, headless)
-##   it connects nothing and plays nothing.
+## The shared part of UnitSounds and WizardSounds, the children that turn a body's replicated state
+## into sound events. It owns how an event finds its cue and the per-body limit of `damaged`; the
+## subclasses only wire the signals. It does not decide what the body sounds like: that is the
+## `sounds` set of its look (BodyLook, the appearance scene next to its body scene).
+## - Where a cue comes from: the body's own set (`BodyMount.sounds()`, with its `fallback` chain:
+##   the melee set), then `default_cue` (UnitSounds: the summon cue every creature shares). No cue
+##   anywhere: silence, no log entry, no warning.
+## - Everything is client presentation: it reads replicated state and signals, never writes the
+##   body, never draws from the global generator (SoundBus has its own), never adds an RPC. With the
+##   AudioGate closed (dedicated, room server, headless) it connects nothing and plays nothing.
 ## The set is read at play time (the type may arrive after `_ready` on a client).
 
-## `damaged` plays at most once in this many seconds of game time per body (a poison tick or a swarm would chain it).
+## `damaged` plays at most once in this many seconds of game time per body (a poison tick or a swarm
+## would chain it).
 @export_range(0.0, 10.0, 0.1, "suffix:s") var damaged_every_s := 1.5
 ## Height over the body origin where the sound sits.
 @export_range(0.0, 10.0, 0.1, "suffix:m") var height_m := 1.0
@@ -27,13 +30,14 @@ func _ready() -> void:
 	_open = AudioGate.is_open()
 
 
-## The cue that answers `event` for this body now, or null (no set, no cue: silence). The lab asks it to know what to expect.
+## The cue that answers `event` for this body now, or null (no set, no cue: silence). The lab asks
+## it to know what to expect.
 func cue_for(event: StringName) -> SoundCue:
 	return resolve(own_set(), event, default_cue(event))
 
 
-## The cue `sounds` gives for `event` (its fallback chain), else `otherwise`; null when there is none or it is silent. Static so the
-## command voice and the migration check ask the same rule.
+## The cue `sounds` gives for `event` (its fallback chain), else `otherwise`; null when there is
+## none or it is silent. Static so the command voice and the migration check ask the same rule.
 static func resolve(sounds: SoundSet, event: StringName, otherwise: SoundCue = null) -> SoundCue:
 	var found: SoundCue = sounds.cue(event) if sounds != null else null
 	if found == null:
@@ -49,7 +53,9 @@ func play(event: StringName) -> bool:
 	var anchor := anchor()
 	if cue == null or anchor == null or not anchor.is_inside_tree():
 		return false
-	return SoundBus.play_3d(cue, anchor.global_position + Vector3.UP * height_m, emitter_name(), event)
+	return SoundBus.play_3d(
+		cue, anchor.global_position + Vector3.UP * height_m, emitter_name(), event
+	)
 
 
 ## `damaged`, at most once every `damaged_every_s` of game time.

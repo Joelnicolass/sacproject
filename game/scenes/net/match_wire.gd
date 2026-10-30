@@ -1,15 +1,20 @@
 class_name MatchWire
 extends RefCounted
 
-## The one place where the product turns a Resource into the text the network carries, and back: a pick, the picks by slot, a
-## god of a bot seat, the map and the mode of the match and the options of a room. Screens and gameplay hold `WizardPick` /
-## `GodType` / `MapDefinition` / `GameMode`; only this file (and the catalogs) knows that the wire says `cwa1`, `persephone`,
-## `high_noon` and `1v1`. The wire is the same text as always: a pick is {"wizard", "model", "god"}, in that order.
-## It does not talk to the network and it does not decide who may pick: SacrificeFlow and SacrificeRoomRules do.
+## The one place where the product turns a Resource into the text the network carries, and back: a
+## pick, the picks by slot, a god of a bot seat, the map and the mode of the match and the options
+## of a room. Screens and gameplay hold `WizardPick` / `GodType` / `MapDefinition` / `GameMode`;
+## only this file (and the catalogs) knows that the wire says `cwa1`, `persephone`, `high_noon` and
+## `1v1`. The wire is the same text as always: a pick is {"wizard", "model", "god"}, in that order.
+## A weather is the name of its file in WEATHER_DIR (`rain`, `storm`).
+## It does not talk to the network and it does not decide who may pick: SacrificeFlow and
+## SacrificeRoomRules do.
+
+const WEATHER_DIR := "res://scenes/look/weather/"
 
 
-## {"wizard": id, "model": model, "god": id} of a complete pick. The model is derived from the wizard (it stays on the wire
-## until the body becomes a scene of its own).
+## {"wizard": id, "model": model, "god": id} of a complete pick. The model is derived from the
+## wizard (it stays on the wire until the body becomes a scene of its own).
 static func encode_pick(pick: WizardPick) -> Dictionary:
 	return {"wizard": pick.wizard.id(), "model": pick.wizard.model_id(), "god": pick.god.id()}
 
@@ -19,8 +24,9 @@ static func encode_god(god: GodType) -> String:
 	return god.id() if god != null else ""
 
 
-## The pick a wire Dictionary names, or null when it is not one (not a Dictionary, an id the catalog does not have, or, with
-## `offered_only`, a wizard or god the lobby does not offer). The `model` of the wire is ignored: the wizard's own is the truth.
+## The pick a wire Dictionary names, or null when it is not one (not a Dictionary, an id the catalog
+## does not have, or, with `offered_only`, a wizard or god the lobby does not offer). The `model` of
+## the wire is ignored: the wizard's own is the truth.
 static func decode_pick(raw: Variant, offered_only := false) -> WizardPick:
 	if not raw is Dictionary:
 		return null
@@ -34,7 +40,8 @@ static func decode_pick(raw: Variant, offered_only := false) -> WizardPick:
 	return pick
 
 
-## The same pick checked and written again, or {} when the wire Dictionary is not a valid offered pick.
+## The same pick checked and written again, or {} when the wire Dictionary is not a valid offered
+## pick.
 static func clean_pick(raw: Variant) -> Dictionary:
 	var pick: WizardPick = decode_pick(raw, true)
 	return encode_pick(pick) if pick != null else {}
@@ -48,7 +55,8 @@ static func encode_picks(picks: Dictionary[int, WizardPick]) -> Dictionary:
 	return out
 
 
-## The picks of a `slot_picks` message; a slot whose pick this client cannot read is left out (and logged).
+## The picks of a `slot_picks` message; a slot whose pick this client cannot read is left out (and
+## logged).
 static func decode_picks(raw: Variant) -> Dictionary[int, WizardPick]:
 	var out: Dictionary[int, WizardPick] = {}
 	if not raw is Dictionary:
@@ -56,7 +64,13 @@ static func decode_picks(raw: Variant) -> Dictionary[int, WizardPick]:
 	for slot in raw.keys():
 		var pick: WizardPick = decode_pick(raw[slot])
 		if pick == null:
-			push_error("MatchWire: the pick of slot %s names a wizard or a god this client does not have." % str(slot))
+			push_error(
+				(
+					# gdlint: ignore=max-line-length
+					"MatchWire: the pick of slot %s names a wizard or a god this client does not have."
+					% str(slot)
+				)
+			)
 			continue
 		out[int(slot)] = pick
 	return out
@@ -84,37 +98,51 @@ static func decode_mode(id: String) -> GameMode:
 	return GameModeCatalog.shared().find(StringName(id)) if not id.is_empty() else null
 
 
-## {"map": id, "mode": id, "seed": n} of what this process plays: the part of the flow snapshot a joiner needs before the world
-## loads (the seed: every peer draws the same marks and debris).
-static func encode_choice() -> Dictionary:
-	return {"map": String(ActiveMatch.map_tag()), "mode": String(ActiveMatch.mode_tag()), "seed": ActiveMatch.match_seed()}
+## {"map": id, "mode": id, "seed": n} of `choice` (what this process plays): the part of the flow
+## snapshot a joiner needs before the world loads (the seed: every peer draws the same marks and
+## debris).
+static func encode_choice(choice: ActiveMatch) -> Dictionary:
+	return {
+		"map": String(choice.map_tag()),
+		"mode": String(choice.mode_tag()),
+		"seed": choice.match_seed()
+	}
 
 
-## A client takes the map, the mode and the seed the server announced. One this client does not have is an error and the other one is
-## kept (as is anything the message leaves out). By tag only: loading the map's definition here held the admission for seconds.
-static func decode_choice(data: Dictionary) -> void:
-	var chosen_mode: StringName = ActiveMatch.mode_tag()
-	var chosen_map: StringName = ActiveMatch.map_tag()
+## A client's `choice` takes the map, the mode and the seed the server announced. One this client
+## does not have is an error and the other one is kept (as is anything the message leaves out). By
+## tag only: loading the map's definition here held the admission for seconds.
+static func decode_choice(data: Dictionary, choice: ActiveMatch) -> void:
+	var chosen_mode: StringName = choice.mode_tag()
+	var chosen_map: StringName = choice.map_tag()
 	var mode_id := str(data.get("mode", ""))
 	if not mode_id.is_empty():
 		if decode_mode(mode_id) == null:
-			push_error("MatchWire: el servidor mandó el modo '%s' y este cliente no lo tiene." % mode_id)
+			push_error(
+				(
+					"MatchWire: the server sent the mode '%s' and this client does not have it."
+					% mode_id
+				)
+			)
 		else:
 			chosen_mode = StringName(mode_id)
-			print("modo de la partida %s (del servidor)" % mode_id)
+			print("match mode %s (from the server)" % mode_id)
 	var map_id := str(data.get("map", ""))
 	if not map_id.is_empty():
 		if not MapCatalog.shared().has(StringName(map_id)):
-			push_error("MatchWire: el servidor mandó el mapa '%s' y este cliente no lo tiene." % map_id)
+			push_error(
+				"MatchWire: the server sent the map '%s' and this client does not have it." % map_id
+			)
 		else:
 			chosen_map = StringName(map_id)
-			print("mapa de la partida %s (del servidor)" % map_id)
-	ActiveMatch.choose_ids(chosen_map, chosen_mode)
+			print("match map %s (from the server)" % map_id)
+	choice.choose_ids(chosen_map, chosen_mode)
 	if int(data.get("seed", 0)) > 0:
-		ActiveMatch.choose_seed(int(data["seed"]))
+		choice.choose_seed(int(data["seed"]))
 
 
-## The `options` of a room made from what a form chose: `mode`, `world`, `biome` (ids) and `level` (> 0), each only when set.
+## The `options` of a room made from what a form chose: `mode`, `world`, `biome` (ids) and `level`
+## (> 0), each only when set.
 static func options_of(setup: MatchSetup) -> Dictionary:
 	var out := {}
 	if setup.mode != null:
@@ -125,16 +153,24 @@ static func options_of(setup: MatchSetup) -> Dictionary:
 		out["biome"] = setup.biome.id()
 	if setup.level > 0:
 		out["level"] = setup.level
+	if setup.sky_hour >= 0.0:
+		out["sky_hour"] = setup.sky_hour
+	if setup.weather != null:
+		out["weather"] = encode_weather(setup.weather)
+	if setup.forest >= 0:
+		out["forest"] = setup.forest == 1
 	return out
 
 
-## The mode the options of a room name (the default one if they name none); null if it is one this client does not have.
+## The mode the options of a room name (the default one if they name none); null if it is one this
+## client does not have.
 static func mode_in(options: Dictionary) -> GameMode:
 	var id := str(options.get("mode", ""))
 	return decode_mode(id if not id.is_empty() else String(GameModeCatalog.DEFAULT_TAG))
 
 
-## The map the options of a room name (the default one if they name none); null if it is one this client does not have.
+## The map the options of a room name (the default one if they name none); null if it is one this
+## client does not have.
 static func map_in(options: Dictionary) -> MapDefinition:
 	var id := str(options.get("world", ""))
 	return decode_map(id if not id.is_empty() else String(MapCatalog.DEFAULT_TAG))
@@ -143,3 +179,20 @@ static func map_in(options: Dictionary) -> MapDefinition:
 ## The god whose land the options of a room name; null = drawn.
 static func land_in(options: Dictionary) -> GodType:
 	return decode_god(str(options.get("biome", "")))
+
+
+## The wire id of a weather (its file name); empty = none forced.
+static func encode_weather(weather: WeatherState) -> String:
+	if weather == null or not weather.resource_path.begins_with(WEATHER_DIR):
+		return ""
+	return weather.resource_path.get_file().get_basename()
+
+
+## The weather with that id, or null (empty, not a plain name, or no WeatherState there).
+static func decode_weather(id: String) -> WeatherState:
+	if id.is_empty() or not id.is_valid_ascii_identifier():
+		return null
+	var path := WEATHER_DIR + id + ".tres"
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as WeatherState

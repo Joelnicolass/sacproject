@@ -1,22 +1,10 @@
-# scenes/orders/
+# orders
 
-Ordenes del jugador: seleccion, comandos, formaciones, radial y `world_input`. El input llama a `Orders`; no simula.
+Player input and orders. The rules of a group order (who of the slot obeys, the formation, each unit's place) are the
+RtsKit's `RtsOrders` (`Input/Orders` in `match.tscn`); Sacrifice's commands (`commands.tres`: the kit's plus
+`attack_body`, an attack on a wizard or a building with no retarget) and formations (`formations.tres` and its eight
+`.tres`) are data here. `scenes/net/order_link.gd` connects them to the game: the retreat anchor, the retarget, the
+local slot and the network. Each creature carries the order out in `UnitOrders` (`scenes/units/unit_orders.gd`).
 
-Agregar uno nuevo: poner el script y la escena aca, componer con nodos hijos y `@export` (nada de herencia profunda), y los datos de tipo en `data/` como `.tres`.
-
-## `command/`
-
-`MatchCommand` (el nodo `MatchCommand` de `match.tscn`) solo coordina; cada hijo tiene una responsabilidad:
-
-| Nodo | Dueño de |
-|---|---|
-| `CommandInput` | teclas del mundo y botón izquierdo de `%View` (clic, caja de selección) |
-| `MinimapPointing` | clics sobre el minimapa (punto de suelo) |
-| `ArmedCommand` | qué hechizo, estructura, habilidad u orden espera su blanco; el Caster local |
-| `SpellCommand` / `AbilityCommand` / `OrderCommand` | aplicar el clic armado: lanzar, usar habilidad, ordenar |
-| `PointerRay` | píxel a suelo, cuerpo, alma, cadáver o edificio |
-| `GroupKeys` | las teclas de grupos 1..0 |
-| `CommandFeedback` | ping de la orden, línea en `%Battle`, criaturas invocadas a la selección |
-| `ArmedPreview` | con una estructura armada, la respuesta en vivo del clic en el puntero (`%Battle.aim_status`/`aim_site`, 15 Hz) y el anillo del manantial |
-
-Los sockets entre hijos son `@export` en `match.tscn`; los nodos únicos del mundo (`%Battle`, `%Selection`, `%Orders`...) se leen con `%`.
+`MatchCommand` (in `match.tscn`) only coordinates input: each child (`CommandInput`, `PointerRay`, `ArmedCommand`,
+`SpellCommand`, `OrderCommand`, `GroupKeys`, `MinimapPointing`, `ArmedPreview`…) owns one kind of input.

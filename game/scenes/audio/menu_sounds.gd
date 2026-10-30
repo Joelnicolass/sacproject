@@ -2,10 +2,11 @@
 class_name MenuSounds
 extends Node
 
-## What the radial X menu sounds like: a cue when it opens, one when an entry is chosen and one when it closes without choosing.
-## Each plays on SoundBus's 2D pool when the menu emits its signal (local UI, no RPC); emitter = the menu's name, events
-## `menu_open`, `click` and `menu_back`. An empty cue is silence for that moment. With the AudioGate closed it connects
-## nothing. Remove the node to silence the whole menu.
+## What the radial X menu sounds like: a cue when it opens, one when an entry is chosen and one when
+## it closes without choosing. Each plays on SoundBus's 2D pool when the menu emits its signal
+## (local UI, no RPC); emitter = the menu's name, events `menu_open`, `click` and `menu_back`. An
+## empty cue is silence for that moment. With the AudioGate closed it connects nothing. Remove the
+## node to silence the whole menu.
 
 @export var menu: RadialMenu:
 	set(value):
@@ -27,7 +28,8 @@ func _ready() -> void:
 	menu.cancelled.connect(play.bind(&"cancelled"))
 
 
-## The cue `moment` (`opened`, `chosen` or `cancelled`) plays now, or null when it is empty or silent. The lab asks it to know what to expect.
+## The cue `moment` (`opened`, `chosen` or `cancelled`) plays now, or null when it is empty or
+## silent. The lab asks it to know what to expect.
 func cue_for(moment: StringName) -> SoundCue:
 	var found: SoundCue = null
 	match moment:
@@ -63,4 +65,8 @@ func _on_entry_chosen(_entry: RadialEntry) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if menu != null else PackedStringArray(["Asigná en `menu` el menú cuyas señales suenan."])
+	return (
+		PackedStringArray()
+		if menu != null
+		else PackedStringArray(["Assign in `menu` the menu whose signals make sounds."])
+	)

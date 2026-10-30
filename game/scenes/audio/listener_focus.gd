@@ -3,14 +3,15 @@ class_name ListenerFocus
 extends AudioListener3D
 
 ## Where the player hears from. The camera flies high over the field, so attenuating from it would
-## make everything far; the listener sits on the local wizard (MatchWorld.local_wizard_changed) and turns with the camera,
-## so left and right stay the screen's. Before the wizard arrives (or without one) it sits on the camera.
-## With the AudioGate closed (dedicated, room server, headless) it does nothing. It is SoundBus.listener: the loops of the
-## SoundEmitter3D nodes measure their range from it (052d).
-## Ref: RFC-052 052c (F362).
+## make everything far; the listener sits on the local wizard (MatchWorld.local_wizard_changed) and
+## turns with the camera, so left and right stay the screen's. Before the wizard arrives (or without
+## one) it sits on the camera. With the AudioGate closed (dedicated, room server, headless) it does
+## nothing. It is SoundBus.listener: the loops of the SoundEmitter3D nodes measure their range from
+## it.
 
-## Emits `local_wizard_changed(wizard)` and answers `local_wizard()` (MatchWorld). Optional: the lab sets `target` instead.
-@export var world: Node
+## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets
+## `target` instead.
+@export var world: MatchWorld
 @export var camera: Camera3D:
 	set(value):
 		camera = value
@@ -26,10 +27,9 @@ func _ready() -> void:
 		set_process(false)
 		return
 	if world != null:
-		if world.has_signal("local_wizard_changed"):
-			world.connect("local_wizard_changed", _on_local_wizard_changed)
-		if target == null and world is MatchWorld:
-			target = (world as MatchWorld).local_wizard()
+		world.local_wizard_changed.connect(_on_local_wizard_changed)
+		if target == null:
+			target = world.local_wizard()
 	make_current()
 	SoundBus.listener = self
 	_follow()
@@ -58,4 +58,8 @@ func _follow() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if camera != null else PackedStringArray(["Asigná `camera`: el oyente gira con ella."])
+	return (
+		PackedStringArray()
+		if camera != null
+		else PackedStringArray(["Assign `camera`: the listener turns with it."])
+	)

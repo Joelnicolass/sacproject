@@ -2,23 +2,25 @@
 class_name CarryRope
 extends Node3D
 
-## What joins a Sac Doctor to the creature it carries: a rope (`tether`) from the tip of the needle to the center of the creature's
-## ring, and sparks at the tip. The needle is a node of the doctor's model (BodyModel.tool_socket, `Needle/Tip` in
-## sac_doctor_model.tscn): move it there with the gizmo. Without one the rope starts at this node's own origin and a warning says so once.
-## Local presentation on every peer, drawn from replicated state only: `doctor.carried` (the creature's
-## path) and the creature's own ring (CaptiveRing.ring(), which exists while it is held). It changes no
-## simulation. The dedicated server draws nothing. Remove the node from doctor.tscn to switch it off.
-## Ref: sacengine SacDocTether + needle sparks, state.d:15556-15613; the tip is bone 16 of `sacd` (sacobject.d:360-366).
+## What joins a Sac Doctor to the creature it carries: a rope (`tether`) from the tip of the needle
+## to the center of the creature's ring, and sparks at the tip. The needle is a node of the doctor's
+## model (BodyModel.tool_socket, `Needle/Tip` in sac_doctor_model.tscn): move it there with the
+## gizmo. Without one the rope starts at this node's own origin and a warning says so once. Local
+## presentation on every peer, drawn from replicated state only: `doctor.carried` (the creature's
+## path) and the creature's own ring (CaptiveRing.ring(), which exists while it is held). It changes
+## no simulation. The dedicated server draws nothing. Remove the node from doctor.tscn to switch it
+## off.
 
 @export var doctor: DoctorBody
 ## The rig that wears the doctor's model: it hands out the needle tip (BodyRig.tool_socket).
 @export var rig: BodyRig
 @export var tether: Tether
 @export_group("Needle sparks")
-## Sparks at the needle tip (data/fx/needle.tres), drawn by FxBus from its pool (the type's `pool_max`). Empty = none.
-## Ref: sacengine 2 per tick (120/s).
+## Sparks at the needle tip (scenes/fx/effects/needle.tres), drawn by FxBus from its pool (the
+## type's `pool_max`). Empty = none.
 @export var spark_type: ParticleType
-## Seconds between bursts of `spark_count`. 120/s in the original; bursts of 4 every 1/30 s are about as many.
+## Seconds between bursts of `spark_count`. Bursts of 4 every 1/30 s give about 120 sparks per
+## second.
 @export_range(0.01, 1.0, 0.0001, "suffix:s") var spark_period_s := 0.0333
 
 var _spark_left := 0.0
@@ -35,11 +37,13 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if doctor == null:
-		warnings.append("Asigná en `doctor` el DoctorBody que lleva a la criatura.")
+		warnings.append("Assign to `doctor` the DoctorBody that carries the creature.")
 	if rig == null:
-		warnings.append("Asigná en `rig` el BodyRig del doctor: de su modelo sale la punta de la aguja.")
+		warnings.append(
+			"Assign to `rig` the doctor's BodyRig: the needle tip comes from its model."
+		)
 	if tether == null:
-		warnings.append("Asigná en `tether` la cuerda (scenes/fx/tether.tscn).")
+		warnings.append("Assign to `tether` the rope (scenes/fx/tether.tscn).")
 	return warnings
 
 
@@ -75,7 +79,13 @@ func _needle() -> Node3D:
 	var socket: Node3D = rig.tool_socket() if rig != null else null
 	if socket == null and not _warned:
 		_warned = true
-		push_warning("CarryRope: the model of %s has no tool_socket (BodyModel.tool_socket): the rope starts at the doctor's origin." % doctor.name)
+		push_warning(
+			(
+				# gdlint: ignore=max-line-length
+				"CarryRope: the model of %s has no tool_socket (BodyModel.tool_socket): the rope starts at the doctor's origin."
+				% doctor.name
+			)
+		)
 	return socket if socket != null else self
 
 
@@ -86,5 +96,8 @@ func _spark(delta: float, needle: Node3D) -> void:
 	if _spark_left > 0.0:
 		return
 	_spark_left = spark_period_s
-	## A pooled burst on this peer only (every peer draws its own from `doctor.carried`); the sparks stay where they were born.
-	FxBus.play(spark_type, needle.global_position, (needle.global_basis * tether.start_axis).normalized())
+	# A pooled burst on this peer only (every peer draws its own from `doctor.carried`); the sparks
+	# stay where they were born.
+	FxBus.play(
+		spark_type, needle.global_position, (needle.global_basis * tether.start_axis).normalized()
+	)

@@ -2,12 +2,15 @@
 class_name BodyEffect
 extends Resource
 
-## What a spell does to ONE body when its SpellCarrier gets there: the base does nothing. A TargetEffect child of the carrier embeds one of its
-## subclasses (AfflictEffect, GibEffect, KillEffect, SideChangeEffect) and calls it for the target, or for each body in its reach. A new thing a
-## carrier can do is a new subclass and a scene, never a branch on the spell. Server (or solo) only.
+## What a spell does to ONE body when its SpellCarrier gets there: the base does nothing. A
+## TargetEffect child of the carrier embeds one of its subclasses (AfflictEffect, GibEffect,
+## KillEffect, SideChangeEffect) and calls it for the target, or for each body in its reach. A new
+## thing a carrier can do is a new subclass and a scene, never a branch on the spell. Server (or
+## solo) only.
 
 
-## True when the body was affected. `carrier` gives the spell (`spell`), the side that cast it (`from_slot`) and the wizard (`wizard()`).
+## True when the body was affected. `carrier` gives the spell (`spell`), the side that cast it
+## (`from_slot`) and the wizard (`wizard()`).
 func apply(_carrier: SpellCarrier, _body: Node3D) -> bool:
 	return false
 

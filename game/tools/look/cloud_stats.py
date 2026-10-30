@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measures whether a storm cloud of a match_shots capture (`--views=cloud`) reads as a volume and not as a flat black oval (RFC-061h).
+"""Measures whether a storm cloud of a match_shots capture (`--views=cloud`) reads as a volume and not as a flat black oval.
 
   python3 tools/look/cloud_stats.py shot.png [--box=x0,y0,x1,y1] [--dark=35] [--erode=8] [--min-std=5]
 

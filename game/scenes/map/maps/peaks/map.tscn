@@ -2,14 +2,14 @@
 
 [ext_resource type="Script" path="res://scenes/map/map_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="3_props"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/forest.tscn" id="6_forest"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="4_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="5_fount"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="8_look"]
-[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="14_bake"]
-[ext_resource type="NavigationMesh" path="res://scenes/map/maps/peaks/nav.res" id="15_navmesh"]
-[ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="16_nav_region"]
+[ext_resource type="Resource" path="res://scenes/map/maps/peaks/nav.res" id="15_navmesh"]
+[ext_resource type="PackedScene" path="res://scenes/map/nav/map_nav.tscn" id="16_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="17_minimap"]
-[ext_resource type="Resource" path="res://data/buildings/charnel_fountain.tres" id="fbldg_cafn"]
+[ext_resource type="ArrayMesh" path="res://scenes/props/meshes/cafn.res" id="fmesh_cafn"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_spire.tscn" id="d2_charnel_spire"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_canopy.tscn" id="d2_charnel_canopy"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_tendril.tscn" id="d2_charnel_tendril"]
@@ -21,37 +21,38 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_2.tscn" id="d2_charnel_grave_2"]
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_grave_3.tscn" id="d2_charnel_grave_3"]
 [ext_resource type="Script" path="res://scenes/look/vegetation/flora_layer.gd" id="flora_layer_script"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_1.tres" id="sp_charnel_groundcover_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_1.tres" id="sp_charnel_groundcover_1"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_1.png" id="fd_charnel_groundcover_1"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_2.tres" id="sp_charnel_groundcover_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_2.tres" id="sp_charnel_groundcover_2"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_2.png" id="fd_charnel_groundcover_2"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_fern_1.tres" id="sp_charnel_fern_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_fern_1.tres" id="sp_charnel_fern_1"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_fern_1.png" id="fd_charnel_fern_1"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_fern_2.tres" id="sp_charnel_fern_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_fern_2.tres" id="sp_charnel_fern_2"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_fern_2.png" id="fd_charnel_fern_2"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_fern_3.tres" id="sp_charnel_fern_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_fern_3.tres" id="sp_charnel_fern_3"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_fern_3.png" id="fd_charnel_fern_3"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_reed_1.tres" id="sp_charnel_reed_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_reed_1.tres" id="sp_charnel_reed_1"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_reed_1.png" id="fd_charnel_reed_1"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_reed_2.tres" id="sp_charnel_reed_2"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_reed_2.tres" id="sp_charnel_reed_2"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_reed_2.png" id="fd_charnel_reed_2"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_reed_3.tres" id="sp_charnel_reed_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_reed_3.tres" id="sp_charnel_reed_3"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_reed_3.png" id="fd_charnel_reed_3"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_3.tres" id="sp_charnel_groundcover_3"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_3.tres" id="sp_charnel_groundcover_3"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_3.png" id="fd_charnel_groundcover_3"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_shrub_1.tres" id="sp_charnel_shrub_1"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_shrub_1.tres" id="sp_charnel_shrub_1"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_shrub_1.png" id="fd_charnel_shrub_1"]
-[ext_resource type="Resource" path="res://data/vegetation/species/charnel_groundcover_4.tres" id="sp_charnel_groundcover_4"]
+[ext_resource type="Resource" path="res://scenes/look/vegetation/species/charnel_groundcover_4.tres" id="sp_charnel_groundcover_4"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/flora/charnel_groundcover_4.png" id="fd_charnel_groundcover_4"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/peaks/ground_roles.png" id="62_roles"]
 [ext_resource type="Texture2D" path="res://assets/original/maps/peaks/light.png" id="62_light"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="t_terrain"]
 [ext_resource type="Resource" uid="uid://blaojp25iyrex" path="res://scenes/map/maps/peaks/heights.png" id="t_heights"]
+[ext_resource type="PackedScene" path="res://scenes/map/props/forest_tree.tscn" id="6_tree"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
-nav_region = NodePath("NavRegion")
+nav = NodePath("Nav")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
@@ -72,6 +73,431 @@ light_map = ExtResource("62_light")
 [node name="MapProps" type="Node3D" parent="."]
 script = ExtResource("3_props")
 
+[node name="Forest" parent="MapProps" instance=ExtResource("6_forest")]
+
+[node name="Tree0000" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.55101186, 0, 0.14395036, 0, 0.56950486, 0, -0.14395036, 0, -0.55101186, 1187.4496, 10.93769, 1301.6945)
+
+[node name="Tree0001" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.6216209, 0, -0.33582917, 0, 0.7065365, 0, 0.33582917, 0, 0.6216209, 1176.7678, 15.567999, 1296.2532)
+
+[node name="Tree0002" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.55499005, 0, -0.35860822, 0, 0.6607676, 0, 0.35860822, 0, -0.55499005, 1187.4822, 9.885344, 1289.5038)
+
+[node name="Tree0003" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.36609182, 0, -0.32483017, 0, 0.48942605, 0, 0.32483017, 0, -0.36609182, 1184.226, 14.209907, 1309.6288)
+
+[node name="Tree0004" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.2884896, 0, 0.59292233, 0, 0.65938085, 0, -0.59292233, 0, -0.2884896, 1174.719, 18.861233, 1304.9822)
+
+[node name="Tree0005" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.49508786, 0, -0.5323791, 0, 0.7270072, 0, 0.5323791, 0, 0.49508786, 1177.4412, 12.293347, 1287.2389)
+
+[node name="Tree0006" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.056341298, 0, -0.52504367, 0, 0.52805793, 0, 0.52504367, 0, -0.056341298, 1193.7932, 8.844307, 1284.4282)
+
+[node name="Tree0007" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5661372, 0, 0.26796058, 0, 0.62634987, 0, -0.26796058, 0, 0.5661372, 1184.8347, 10.6736355, 1282.9368)
+
+[node name="Tree0008" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.49427855, 0, -0.25161508, 0, 0.5546363, 0, 0.25161508, 0, 0.49427855, 1167.5875, 18.091352, 1287.9982)
+
+[node name="Tree0009" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.3176877, 0, 0.41154936, 0, 0.5199022, 0, -0.41154936, 0, -0.3176877, 1162.4429, 23.98464, 1298.0883)
+
+[node name="Tree0010" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5463534, 0, 0.241599, 0, 0.59738773, 0, -0.241599, 0, 0.5463534, 1176.1465, 20.345194, 1315.3574)
+
+[node name="Tree0011" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5557361, 0, -0.15491803, 0, 0.5769248, 0, 0.15491803, 0, -0.5557361, 1173.8905, 13.006794, 1281.5671)
+
+[node name="Tree0012" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.4540404, 0, -0.0972581, 0, 0.4643402, 0, 0.0972581, 0, 0.4540404, 1201.3773, 8.714612, 1279.8007)
+
+[node name="Tree0013" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.6133131, 0, 0.18031709, 0, 0.63927084, 0, -0.18031709, 0, -0.6133131, 1161.2751, 20.071098, 1285.3503)
+
+[node name="Tree0014" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5839859, 0, 0.12868117, 0, 0.5979953, 0, -0.12868117, 0, 0.5839859, 1156.6519, 26.831535, 1298.4939)
+
+[node name="Tree0015" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.35789546, 0, -0.3217691, 0, 0.48127386, 0, 0.3217691, 0, -0.35789546, 1168.5002, 14.306711, 1279.3038)
+
+[node name="Tree0016" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.43599617, 0, -0.29989484, 0, 0.5291782, 0, 0.29989484, 0, 0.43599617, 1169.2086, 25.756811, 1319.6263)
+
+[node name="Tree0017" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.41847235, 0, 0.28485367, 0, 0.506222, 0, -0.28485367, 0, 0.41847235, 1175.8326, 21.960323, 1323.1721)
+
+[node name="Tree0018" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.49696693, 0, 0.077308886, 0, 0.5029441, 0, -0.077308886, 0, 0.49696693, 1205.2906, 9.211045, 1276.1763)
+
+[node name="Tree0019" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.06367399, 0, -0.46840262, 0, 0.4727107, 0, 0.46840262, 0, 0.06367399, 1152.6024, 24.150341, 1287.1637)
+
+[node name="Tree0020" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.13205835, 0, -0.44039685, 0, 0.45977038, 0, 0.44039685, 0, -0.13205835, 1241.8843, 21.878426, 1365.1299)
+
+[node name="Tree0021" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.39334685, 0, -0.4011966, 0, 0.5618545, 0, 0.4011966, 0, 0.39334685, 1219.1306, 21.675776, 1366.8915)
+
+[node name="Tree0022" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.10805913, 0, 0.54016984, 0, 0.55087227, 0, -0.54016984, 0, 0.10805913, 1188.3462, 11.65246, 1271.631)
+
+[node name="Tree0023" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.64307284, 0, -0.06293862, 0, 0.64614546, 0, 0.06293862, 0, -0.64307284, 1149.5798, 27.781174, 1293.3156)
+
+[node name="Tree0024" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.57191896, 0, -0.27571502, 0, 0.6349095, 0, 0.27571502, 0, 0.57191896, 1163.1309, 29.225863, 1320.3314)
+
+[node name="Tree0025" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5293361, 0, -0.18623415, 0, 0.56114155, 0, 0.18623415, 0, -0.5293361, 1154.4178, 20.520756, 1279.745)
+
+[node name="Tree0026" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.28017795, 0, -0.46002868, 0, 0.5386335, 0, 0.46002868, 0, 0.28017795, 1181.3021, 12.166671, 1270.8041)
+
+[node name="Tree0027" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.20482105, 0, -0.41523865, 0, 0.46300626, 0, 0.41523865, 0, -0.20482105, 1213.124, 20.872984, 1367.0417)
+
+[node name="Tree0028" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.42310816, 0, 0.17921472, 0, 0.45949802, 0, -0.17921472, 0, -0.42310816, 1198.723, 11.460847, 1270.0739)
+
+[node name="Tree0029" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.40738234, 0, -0.1760588, 0, 0.44379845, 0, 0.1760588, 0, 0.40738234, 1235.0142, 27.857857, 1405.0377)
+
+[node name="Tree0030" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.20370395, 0, 0.46958265, 0, 0.51186246, 0, -0.46958265, 0, 0.20370395, 1162.3497, 14.905323, 1272.4583)
+
+[node name="Tree0031" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.41178557, 0, -0.051547844, 0, 0.41499943, 0, 0.051547844, 0, 0.41178557, 1208.7715, 21.684074, 1372.197)
+
+[node name="Tree0032" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.1983864, 0, 0.38721442, 0, 0.4350772, 0, -0.38721442, 0, 0.1983864, 1251.7866, 20.541746, 1363.4531)
+
+[node name="Tree0033" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.16600294, 0, 0.5941805, 0, 0.61693394, 0, -0.5941805, 0, 0.16600294, 1215.6272, 12.086168, 1266.581)
+
+[node name="Tree0034" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.23807137, 0, 0.40760761, 0, 0.4720402, 0, -0.40760761, 0, 0.23807137, 1237.527, 25.397322, 1410.927)
+
+[node name="Tree0035" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.29258513, 0, 0.35455933, 0, 0.4596938, 0, -0.35455933, 0, -0.29258513, 1164.1735, 14.261849, 1267.3953)
+
+[node name="Tree0036" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.40660098, 0, -0.20173514, 0, 0.4538958, 0, 0.20173514, 0, 0.40660098, 1229.0032, 24.626438, 1411.0713)
+
+[node name="Tree0037" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.32546034, 0, 0.36542577, 0, 0.48934695, 0, -0.36542577, 0, -0.32546034, 1153.7468, 17.57673, 1271.2056)
+
+[node name="Tree0038" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.48223722, 0, 0.29874006, 0, 0.5672727, 0, -0.29874006, 0, -0.48223722, 1235.371, 10.932194, 1269.2732)
+
+[node name="Tree0039" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5902413, 0, 0.19806655, 0, 0.62258744, 0, -0.19806655, 0, 0.5902413, 1184.4435, 12.813101, 1264.7361)
+
+[node name="Tree0040" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.3959523, 0, 0.33500162, 0, 0.51865625, 0, -0.33500162, 0, 0.3959523, 1228.894, 12.439615, 1265.3319)
+
+[node name="Tree0041" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.43484277, 0, -0.1310419, 0, 0.45415878, 0, 0.1310419, 0, 0.43484277, 1200.887, 17.823517, 1362.2731)
+
+[node name="Tree0042" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.24545094, 0, 0.4528399, 0, 0.51508266, 0, -0.4528399, 0, -0.24545094, 1270.3151, 22.34225, 1397.9092)
+
+[node name="Tree0043" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.42711967, 0, -0.06972315, 0, 0.43277308, 0, 0.06972315, 0, 0.42711967, 1201.3722, 21.091763, 1377.7795)
+
+[node name="Tree0044" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.35355538, 0, -0.5357066, 0, 0.641859, 0, 0.5357066, 0, 0.35355538, 1147.3236, 19.788116, 1272.9385)
+
+[node name="Tree0045" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.24068832, 0, -0.4036941, 0, 0.46999976, 0, 0.4036941, 0, -0.24068832, 1223.3925, 13.610088, 1262.9271)
+
+[node name="Tree0046" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.29930937, 0, 0.43686908, 0, 0.5295665, 0, -0.43686908, 0, -0.29930937, 1210.4097, 14.011132, 1262.353)
+
+[node name="Tree0047" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.10729647, 0, -0.47399744, 0, 0.48598984, 0, 0.47399744, 0, 0.10729647, 1230.4441, 22.120905, 1415.6782)
+
+[node name="Tree0048" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.06801993, 0, -0.5815045, 0, 0.58546925, 0, 0.5815045, 0, -0.06801993, 1220.6923, 20.384699, 1414.8688)
+
+[node name="Tree0049" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.08945004, 0, -0.48142886, 0, 0.4896683, 0, 0.48142886, 0, 0.08945004, 1269.8954, 20.640434, 1404.0605)
+
+[node name="Tree0050" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5330323, 0, 0.2223014, 0, 0.5775304, 0, -0.2223014, 0, -0.5330323, 1197.5647, 18.705719, 1366.7181)
+
+[node name="Tree0051" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.0048191426, 0, -0.45903504, 0, 0.4590603, 0, 0.45903504, 0, -0.0048191426, 1258.848, 21.42685, 1411.5038)
+
+[node name="Tree0052" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.29251838, 0, 0.51821786, 0, 0.5950771, 0, -0.51821786, 0, 0.29251838, 1275.9044, 20.601454, 1396.7822)
+
+[node name="Tree0053" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.24754061, 0, -0.48169813, 0, 0.5415805, 0, 0.48169813, 0, 0.24754061, 1174.3442, 23.472519, 1341.3013)
+
+[node name="Tree0054" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.051994786, 0, 0.39624873, 0, 0.39964548, 0, -0.39624873, 0, 0.051994786, 1202.9088, 19.41033, 1402.7947)
+
+[node name="Tree0055" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5694761, 0, 0.12127363, 0, 0.58224595, 0, -0.12127363, 0, 0.5694761, 1206.1168, 18.369013, 1408.9381)
+
+[node name="Tree0056" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.1421429, 0, 0.5507076, 0, 0.56875604, 0, -0.5507076, 0, -0.1421429, 1195.7019, 14.372243, 1259.9363)
+
+[node name="Tree0057" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.48852837, 0, -0.16089222, 0, 0.51434064, 0, 0.16089222, 0, -0.48852837, 1253.3206, 14.519589, 1257.1367)
+
+[node name="Tree0058" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.4355307, 0, -0.45339197, 0, 0.6286901, 0, 0.45339197, 0, -0.4355307, 1163.9353, 13.851758, 1261.2018)
+
+[node name="Tree0059" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.46439996, 0, 0.42208916, 0, 0.627556, 0, -0.42208916, 0, -0.46439996, 1225.3309, 16.074757, 1256.9207)
+
+[node name="Tree0060" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.48119313, 0, 0.31679296, 0, 0.5761116, 0, -0.31679296, 0, 0.48119313, 1279.9021, 20.20144, 1392.4922)
+
+[node name="Tree0061" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.15601361, 0, 0.5008913, 0, 0.52462596, 0, -0.5008913, 0, 0.15601361, 1100.6658, 10.449302, 1212.7114)
+
+[node name="Tree0062" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.25318974, 0, -0.39316314, 0, 0.4676348, 0, 0.39316314, 0, 0.25318974, 1082.0941, 19.90607, 1385.9031)
+
+[node name="Tree0063" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.25282824, 0, 0.37468615, 0, 0.45200866, 0, -0.37468615, 0, -0.25282824, 1199.027, 16.345074, 1407.7744)
+
+[node name="Tree0064" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.46271008, 0, -0.08166428, 0, 0.46986133, 0, 0.08166428, 0, -0.46271008, 1252.3477, 16.231447, 1247.8492)
+
+[node name="Tree0065" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.56844765, 0, -0.22155891, 0, 0.61009926, 0, 0.22155891, 0, -0.56844765, 1178.0813, 13.653744, 1258.3029)
+
+[node name="Tree0066" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.120555356, 0, -0.44474116, 0, 0.46079093, 0, 0.44474116, 0, -0.120555356, 1187.471, 17.637617, 1359.6129)
+
+[node name="Tree0067" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.32195178, 0, 0.39732674, 0, 0.5113917, 0, -0.39732674, 0, -0.32195178, 1195.0199, 18.122345, 1397.1104)
+
+[node name="Tree0068" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.585203, 0, -0.085463166, 0, 0.5914106, 0, 0.085463166, 0, 0.585203, 1264.0144, 14.301407, 1256.5205)
+
+[node name="Tree0069" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.4585741, 0, 0.37454757, 0, 0.59209466, 0, -0.37454757, 0, -0.4585741, 1133.694, 31.046968, 1292.9216)
+
+[node name="Tree0070" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.41255483, 0, 0.28172562, 0, 0.4995706, 0, -0.28172562, 0, -0.41255483, 1168.9402, 13.571757, 1257.5426)
+
+[node name="Tree0071" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.47846472, 0, 0.029980013, 0, 0.47940305, 0, -0.029980013, 0, 0.47846472, 1187.199, 18.056063, 1364.7521)
+
+[node name="Tree0072" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.26520583, 0, -0.36778128, 0, 0.4534283, 0, 0.36778128, 0, 0.26520583, 1158.5558, 30.952215, 1341.4304)
+
+[node name="Tree0073" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.12933256, 0, -0.4419472, 0, 0.4604826, 0, 0.4419472, 0, 0.12933256, 1190.7482, 17.824505, 1390.8093)
+
+[node name="Tree0074" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5421827, 0, 0.08883729, 0, 0.54941255, 0, -0.08883729, 0, 0.5421827, 1224.728, 19.122671, 1249.8016)
+
+[node name="Tree0075" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.20984928, 0, 0.5100147, 0, 0.55149955, 0, -0.5100147, 0, -0.20984928, 1263.6965, 11.571925, 1277.8928)
+
+[node name="Tree0076" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.43347257, 0, -0.46373397, 0, 0.6347816, 0, 0.46373397, 0, -0.43347257, 1134.5343, 21.756834, 1273.3959)
+
+[node name="Tree0077" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.36255682, 0, -0.3153025, 0, 0.48048213, 0, 0.3153025, 0, 0.36255682, 1240.633, 16.615831, 1425.1405)
+
+[node name="Tree0078" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.36902285, 0, -0.41955143, 0, 0.55874974, 0, 0.41955143, 0, -0.36902285, 1202.3943, 17.061792, 1253.1727)
+
+[node name="Tree0079" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.3596772, 0, -0.3449745, 0, 0.4983724, 0, 0.3449745, 0, -0.3596772, 1210.6682, 11.198023, 1426.6848)
+
+[node name="Tree0080" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5113111, 0, -0.29888678, 0, 0.59226036, 0, 0.29888678, 0, -0.5113111, 1286.3202, 19.043531, 1383.3632)
+
+[node name="Tree0081" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.39942977, 0, 0.3759758, 0, 0.5485453, 0, -0.3759758, 0, -0.39942977, 1261.2041, 10.146092, 1284.9431)
+
+[node name="Tree0082" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.23726451, 0, 0.3606319, 0, 0.43168256, 0, -0.3606319, 0, 0.23726451, 1089.6813, 21.522934, 1377.5115)
+
+[node name="Tree0083" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.3961546, 0, -0.3527485, 0, 0.5304432, 0, 0.3527485, 0, -0.3961546, 1174.8644, 13.892194, 1253.0065)
+
+[node name="Tree0084" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.41593802, 0, -0.31737995, 0, 0.5231964, 0, 0.31737995, 0, 0.41593802, 1186.0299, 15.584314, 1397.0156)
+
+[node name="Tree0085" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.3709639, 0, -0.39649764, 0, 0.5429775, 0, 0.39649764, 0, -0.3709639, 1295.506, 12.691859, 1406.6615)
+
+[node name="Tree0086" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.11351835, 0, 0.5405026, 0, 0.55229473, 0, -0.5405026, 0, 0.11351835, 1192.3024, 16.17053, 1251.7141)
+
+[node name="Tree0087" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.42191294, 0, 0.34628594, 0, 0.5458246, 0, -0.34628594, 0, -0.42191294, 1274.8118, 12.227865, 1420.0151)
+
+[node name="Tree0088" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.46309257, 0, -0.3240314, 0, 0.56520003, 0, 0.3240314, 0, 0.46309257, 1271.605, 13.705851, 1273.0735)
+
+[node name="Tree0089" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.54817516, 0, 0.016045922, 0, 0.54840994, 0, -0.016045922, 0, -0.54817516, 1269.5121, 12.629481, 1278.6575)
+
+[node name="Tree0090" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.3851067, 0, -0.2693303, 0, 0.46994254, 0, 0.2693303, 0, 0.3851067, 1183.2888, 8.142029, 1422.9963)
+
+[node name="Tree0091" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5327278, 0, -0.27323955, 0, 0.59871423, 0, 0.27323955, 0, -0.5327278, 1181.5688, 9.4015875, 1417.7532)
+
+[node name="Tree0092" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.55866295, 0, -0.31957084, 0, 0.6436069, 0, 0.31957084, 0, 0.55866295, 1311.1139, 11.952782, 1403.1061)
+
+[node name="Tree0093" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.50039583, 0, 0.31092614, 0, 0.58912736, 0, -0.31092614, 0, 0.50039583, 1138.0995, 14.273985, 1254.6377)
+
+[node name="Tree0094" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.23354326, 0, -0.39308947, 0, 0.45723274, 0, 0.39308947, 0, -0.23354326, 1287.5476, 18.825, 1376.4558)
+
+[node name="Tree0095" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.43505532, 0, 0.44902736, 0, 0.6252189, 0, -0.44902736, 0, 0.43505532, 1270.0825, 12.201184, 1228.2297)
+
+[node name="Tree0096" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.2982724, 0, 0.4324892, 0, 0.5253697, 0, -0.4324892, 0, -0.2982724, 1198.7379, 4.8021107, 1439.4757)
+
+[node name="Tree0097" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.42870995, 0, 0.32889783, 0, 0.5403388, 0, -0.32889783, 0, 0.42870995, 1183.1427, 5.6767774, 1437.04)
+
+[node name="Tree0098" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.063707896, 0, -0.59596705, 0, 0.5993625, 0, 0.59596705, 0, -0.063707896, 1322.9839, 11.2871895, 1403.2388)
+
+[node name="Tree0099" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.44697294, 0, 0.33160746, 0, 0.5565504, 0, -0.33160746, 0, -0.44697294, 1170.1624, 20.00698, 1365.5564)
+
+[node name="Tree0100" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.39178863, 0, 0.2700524, 0, 0.47584307, 0, -0.2700524, 0, 0.39178863, 1308.0288, 14.955556, 1388.8556)
+
+[node name="Tree0101" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.46377704, 0, -0.2530593, 0, 0.5283258, 0, 0.2530593, 0, 0.46377704, 1257.5286, 10.2459755, 1207.0704)
+
+[node name="Tree0102" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.10208733, 0, -0.5353947, 0, 0.54504067, 0, 0.5353947, 0, -0.10208733, 1188.6055, 5.0169187, 1452.5151)
+
+[node name="Tree0103" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.4708322, 0, -0.1193917, 0, 0.4857338, 0, 0.1193917, 0, 0.4708322, 1200.5656, 3.5769992, 1473.9377)
+
+[node name="Tree0104" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.36215207, 0, 0.5344622, 0, 0.6456036, 0, -0.5344622, 0, -0.36215207, 1244.1847, 8.666688, 1191.0847)
+
+[node name="Tree0105" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.53631496, 0, -0.17986655, 0, 0.5656728, 0, 0.17986655, 0, -0.53631496, 1322.7766, 12.750606, 1394.8193)
+
+[node name="Tree0106" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.04569599, 0, -0.56742036, 0, 0.5692574, 0, 0.56742036, 0, -0.04569599, 1144.5226, 12.439981, 1245.8574)
+
+[node name="Tree0107" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.14385422, 0, -0.5797983, 0, 0.59737766, 0, 0.5797983, 0, -0.14385422, 1234.4553, 9.262802, 1184.7413)
+
+[node name="Tree0108" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.089286186, 0, 0.5615443, 0, 0.5685983, 0, -0.5615443, 0, 0.089286186, 1243.2095, 7.6070147, 1182.6255)
+
+[node name="Tree0109" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.032235287, 0, -0.4511657, 0, 0.45231584, 0, 0.4511657, 0, -0.032235287, 1163.6995, 12.961673, 1245.9784)
+
+[node name="Tree0110" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.3799264, 0, -0.36800987, 0, 0.52893794, 0, 0.36800987, 0, -0.3799264, 1227.1752, 7.0268536, 1440.2472)
+
+[node name="Tree0111" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.19082457, 0, -0.3971683, 0, 0.44063213, 0, 0.3971683, 0, -0.19082457, 1095.736, 23.581295, 1366.4698)
+
+[node name="Tree0112" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.6318757, 0, 0.028531482, 0, 0.63251954, 0, -0.028531482, 0, 0.6318757, 1108.9702, 17.184505, 1379.2388)
+
+[node name="Tree0113" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.617985, 0, -0.12798616, 0, 0.631099, 0, 0.12798616, 0, 0.617985, 1158.8438, 24.144875, 1361.3306)
+
+[node name="Tree0114" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.2860946, 0, 0.53725773, 0, 0.6086838, 0, -0.53725773, 0, 0.2860946, 1220.4641, 4.8724504, 1445.0707)
+
+[node name="Tree0115" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.6219434, 0, 0.04009856, 0, 0.6232347, 0, -0.04009856, 0, -0.6219434, 1234.403, 7.2812157, 1440.8469)
+
+[node name="Tree0116" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5681683, 0, 0.24730083, 0, 0.6196555, 0, -0.24730083, 0, 0.5681683, 1210.816, 2.840138, 1451.4258)
+
+[node name="Tree0117" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.50220585, 0, 0.14218618, 0, 0.521946, 0, -0.14218618, 0, 0.50220585, 1223.1588, 10.108053, 1182.8739)
+
+[node name="Tree0118" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.40609115, 0, 0.39652464, 0, 0.5675754, 0, -0.39652464, 0, 0.40609115, 1107.7333, 7.476978, 1234.566)
+
+[node name="Tree0119" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.62305754, 0, 0.000177461, 0, 0.6230576, 0, -0.000177461, 0, -0.62305754, 1125.9985, 13.369244, 1253.0665)
+
+[node name="Tree0120" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.052126117, 0, 0.5475997, 0, 0.55007505, 0, -0.5475997, 0, -0.052126117, 1170.4476, 11.265254, 1405.2908)
+
+[node name="Tree0121" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.2056155, 0, 0.47087735, 0, 0.5138124, 0, -0.47087735, 0, -0.2056155, 1330.3237, 12.680024, 1391.7427)
+
+[node name="Tree0122" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.1191949, 0, -0.63770175, 0, 0.64874566, 0, 0.63770175, 0, -0.1191949, 1283.6199, 11.508642, 1234.2443)
+
+[node name="Tree0123" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5410867, 0, -0.16333263, 0, 0.56520116, 0, 0.16333263, 0, -0.5410867, 1317.5938, 14.95964, 1384.7924)
+
+[node name="Tree0124" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.4265247, 0, 0.3827881, 0, 0.57310563, 0, -0.3827881, 0, -0.4265247, 1111.5828, 8.610256, 1415.3627)
+
+[node name="Tree0125" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.07267773, 0, 0.54457325, 0, 0.5494015, 0, -0.54457325, 0, 0.07267773, 1232.7185, 3.8367643, 1457.6917)
+
+[node name="Tree0126" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.45869082, 0, -0.08652139, 0, 0.46677965, 0, 0.08652139, 0, -0.45869082, 1115.7034, 8.039439, 1410.4271)
+
+[node name="Tree0127" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.34980896, 0, -0.41945618, 0, 0.54617745, 0, 0.41945618, 0, 0.34980896, 1210.2134, 19.807493, 1209.58)
+
+[node name="Tree0128" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.10341365, 0, 0.50920284, 0, 0.5195978, 0, -0.50920284, 0, -0.10341365, 1258.9973, 6.9063706, 1168.842)
+
+[node name="Tree0129" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.087161414, 0, -0.58998454, 0, 0.59638816, 0, 0.58998454, 0, -0.087161414, 1301.8645, 4.455282, 1443.7974)
+
+[node name="Tree0130" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5108477, 0, 0.077712566, 0, 0.5167249, 0, -0.077712566, 0, -0.5108477, 1120.229, 17.798721, 1264.9037)
+
+[node name="Tree0131" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.52900285, 0, -0.2927217, 0, 0.6045908, 0, 0.2927217, 0, 0.52900285, 1304.641, 4.3077683, 1459.9867)
+
+[node name="Tree0132" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.603082, 0, 0.09297662, 0, 0.61020696, 0, -0.09297662, 0, 0.603082, 1157.1523, 17.597895, 1377.7275)
+
+[node name="Tree0133" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.49206895, 0, 0.3581191, 0, 0.6085895, 0, -0.3581191, 0, -0.49206895, 1124.5127, 7.0293303, 1406.1549)
+
+[node name="Tree0134" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.045951802, 0, 0.47671613, 0, 0.47892573, 0, -0.47671613, 0, -0.045951802, 1145.0289, 19.567514, 1374.2654)
+
+[node name="Tree0135" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.5506461, 0, -0.031927723, 0, 0.55157095, 0, 0.031927723, 0, -0.5506461, 1132.043, 7.406744, 1399.7932)
+
+[node name="Tree0136" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.51874095, 0, -0.27405524, 0, 0.5866843, 0, 0.27405524, 0, -0.51874095, 1172.2229, 6.5237613, 1188.9368)
+
+[node name="Tree0137" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.31594744, 0, -0.46114087, 0, 0.55899346, 0, 0.46114087, 0, -0.31594744, 1334.7104, 20.875277, 1365.4084)
+
+[node name="Tree0138" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.22486396, 0, -0.5442253, 0, 0.58885056, 0, 0.5442253, 0, 0.22486396, 1298.7947, 23.43273, 1287.566)
+
+[node name="Tree0139" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(-0.4969467, 0, -0.13720159, 0, 0.5155388, 0, 0.13720159, 0, -0.4969467, 1164.2881, 6.6220937, 1161.4417)
+
+[node name="Tree0140" parent="MapProps/Forest" instance=ExtResource("6_tree")]
+transform = Transform3D(0.30035052, 0, -0.49885285, 0, 0.58229256, 0, 0.49885285, 0, 0.30035052, 1298.2305, 14.323859, 1191.4902)
+
 [node name="Starts" type="Node3D" parent="MapProps"]
 
 [node name="Start1" parent="MapProps/Starts" instance=ExtResource("4_start")]
@@ -91,23 +517,23 @@ transform = Transform3D(-4.3711e-08, 0, 1, 0, 1, 0, -1, 0, -4.3711e-08, 30, 0, 0
 
 [node name="Fount01" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1230, 2, 1320)
-building = ExtResource("fbldg_cafn")
+mesh = ExtResource("fmesh_cafn")
 
 [node name="Fount02" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1220, 14.1, 1130)
-building = ExtResource("fbldg_cafn")
+mesh = ExtResource("fmesh_cafn")
 
 [node name="Fount03" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1370, 28.8, 1310)
-building = ExtResource("fbldg_cafn")
+mesh = ExtResource("fmesh_cafn")
 
 [node name="Fount04" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1090, 31.3, 1320)
-building = ExtResource("fbldg_cafn")
+mesh = ExtResource("fmesh_cafn")
 
 [node name="Fount05" parent="MapProps/Founts" instance=ExtResource("5_fount")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1260, 10.1, 1500)
-building = ExtResource("fbldg_cafn")
+mesh = ExtResource("fmesh_cafn")
 
 [node name="Props" type="Node3D" parent="."]
 
@@ -211,12 +637,8 @@ transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.
 
 [node name="Npcs" type="Node3D" parent="."]
 
-[node name="NavRegion" type="NavigationRegion3D" parent="."]
-unique_name_in_owner = true
-navigation_mesh = ExtResource("15_navmesh")
-use_edge_connections = false
-script = ExtResource("16_nav_region")
-bake_settings = ExtResource("14_bake")
+[node name="Nav" parent="." instance=ExtResource("16_nav_region")]
+saved = ExtResource("15_navmesh")
 
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("17_minimap")]
 unique_name_in_owner = true
@@ -227,65 +649,88 @@ terrain = NodePath("../Terrain")
 [node name="CharnelGroundcover1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_groundcover_1")
+land_role = 3
+land_index = 0
 density = ExtResource("fd_charnel_groundcover_1")
 max_per_cell = 9
 
 [node name="CharnelGroundcover2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_groundcover_2")
+land_role = 3
+land_index = 1
 density = ExtResource("fd_charnel_groundcover_2")
 max_per_cell = 8
 
 [node name="CharnelFern1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_fern_1")
+land_role = 2
+land_index = 0
 density = ExtResource("fd_charnel_fern_1")
 max_per_cell = 10
 
 [node name="CharnelFern2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_fern_2")
+land_role = 2
+land_index = 1
 density = ExtResource("fd_charnel_fern_2")
 max_per_cell = 12
 
 [node name="CharnelFern3" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_fern_3")
+land_role = 2
+land_index = 2
 density = ExtResource("fd_charnel_fern_3")
 max_per_cell = 12
 
 [node name="CharnelReed1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_reed_1")
+land_role = 3
+land_index = 2
 density = ExtResource("fd_charnel_reed_1")
 max_per_cell = 17
 
 [node name="CharnelReed2" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_reed_2")
+land_role = 3
+land_index = 3
 density = ExtResource("fd_charnel_reed_2")
 max_per_cell = 15
 
 [node name="CharnelReed3" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_reed_3")
+land_role = 3
+land_index = 4
 density = ExtResource("fd_charnel_reed_3")
 max_per_cell = 13
 
 [node name="CharnelGroundcover3" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_groundcover_3")
+land_role = 3
+land_index = 5
 density = ExtResource("fd_charnel_groundcover_3")
 max_per_cell = 6
 
 [node name="CharnelShrub1" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_shrub_1")
+land_role = 2
+land_index = 3
 density = ExtResource("fd_charnel_shrub_1")
 max_per_cell = 4
 
 [node name="CharnelGroundcover4" type="Node3D" parent="Vegetation"]
 script = ExtResource("flora_layer_script")
 species = ExtResource("sp_charnel_groundcover_4")
+land_role = 3
+land_index = 6
 density = ExtResource("fd_charnel_groundcover_4")
 max_per_cell = 7
+

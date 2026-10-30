@@ -1,11 +1,14 @@
 class_name BodyCollider
 extends Node
 
-## The only writer of the physics capsule of a creature, a wizard and a doctor. The capsule is derived data, a pure function of
-## the body scene it wears (BodyMount) and of whether Flight has it in the air: the ground capsule of the scene, or its flying one.
-## It refits whenever either input changes, in any order (spawn, replication, a late join), and does nothing when nothing changed.
-## A child of unit.tscn, wizard_body.tscn and doctor.tscn; the bodies and Flight never touch the shape.
-## What it does not do: choose the body scene (BodyMount) or measure anything (the capsule is saved in the scene, ready to drag).
+## The only writer of the physics capsule of a creature, a wizard and a doctor. The capsule is
+## derived data, a pure function of the body scene it wears (BodyMount) and of whether Flight has it
+## in the air: the ground capsule of the scene, or its flying one. It refits whenever either input
+## changes, in any order (spawn, replication, a late join), and does nothing when nothing changed. A
+## child of unit.tscn, wizard_body.tscn and doctor.tscn; the bodies and Flight never touch the
+## shape.
+## What it does not do: choose the body scene (BodyMount) or measure anything (the capsule is saved
+## in the scene, ready to drag).
 
 ## Which body is worn; its facts hold the capsule sizes.
 @export var mount: BodyMount
@@ -26,9 +29,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if mount == null:
-		warnings.append("Falta el cuerpo vestido (mount).")
+		warnings.append("Missing the worn body (mount).")
 	if collision == null:
-		warnings.append("Falta la cápsula (collision).")
+		warnings.append("Missing the capsule (collision).")
 	return warnings
 
 
@@ -42,11 +45,16 @@ func refit() -> void:
 	if flight != null and flight.is_airborne():
 		height = facts.flying_capsule_height_m
 	var capsule := collision.shape as CapsuleShape3D
-	if capsule != null and is_equal_approx(capsule.height, height) and is_equal_approx(capsule.radius, radius) \
-			and is_equal_approx(collision.position.y, height * 0.5):
+	if (
+		capsule != null
+		and is_equal_approx(capsule.height, height)
+		and is_equal_approx(capsule.radius, radius)
+		and is_equal_approx(collision.position.y, height * 0.5)
+	):
 		return
-	# A capsule saved in a scene (it has a resource path) is shared by every instance: copied once, then owned. A new one is sized
-	# before it is assigned, so the physics server gets one shape update, not three.
+	# A capsule saved in a scene (it has a resource path) is shared by every instance: copied once,
+	# then owned. A new one is sized before it is assigned, so the physics server gets one shape
+	# update, not three.
 	var fresh := capsule == null or not capsule.resource_path.is_empty()
 	if fresh:
 		capsule = CapsuleShape3D.new()

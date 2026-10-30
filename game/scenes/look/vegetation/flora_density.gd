@@ -1,14 +1,16 @@
 class_name FloraDensity
 extends RefCounted
 
-## A snapshot of the FloraLayer nodes of a map, as MeshPlanter reads it: per layer its species tag, its density image
-## (L8 bytes, 1 px = `cell_m`) and `max_per_cell`. Plain arrays of values, so WorkerThreadPool tasks can read it while the
-## main thread does not touch it (a layer that changes makes a new snapshot). Count of a pixel: round(value x max / 255),
-## exact for the images the migration wrote (value = round(count x 255 / max), max <= 255).
+## A snapshot of the FloraLayer nodes of a map, as MeshPlanter reads it: per layer its species tag,
+## its density image (L8 bytes, 1 px = `cell_m`) and `max_per_cell`. Plain arrays of values, so
+## WorkerThreadPool tasks can read it while the main thread does not touch it (a layer that changes
+## makes a new snapshot). Count of a pixel: round(value x max / 255), exact for the images the
+## migration wrote (value = round(count x 255 / max), max <= 255).
 ## Presentation data: the simulation never reads it.
 
 var tags := PackedStringArray()
-## The FloraLayer (get_instance_id) of each entry, so a painted layer swaps only its own bytes (`with_layer_bytes`).
+## The FloraLayer (get_instance_id) of each entry, so a painted layer swaps only its own bytes
+## (`with_layer_bytes`).
 var layer_ids := PackedInt64Array()
 var species: Array[VegetationSpecies] = []
 var _cell_m := PackedFloat32Array()
@@ -18,18 +20,19 @@ var _height := PackedInt32Array()
 var _bytes: Array[PackedByteArray] = []
 
 
-## One entry per layer that has a species and an image (in the order given).
-static func from_layers(layers: Array) -> FloraDensity:
+## One entry per layer that has a species on `land` and an image (in the order given).
+static func from_layers(layers: Array, land: GodFlora = null) -> FloraDensity:
 	var snapshot := FloraDensity.new()
 	for layer: FloraLayer in layers:
-		if layer.species == null or layer.density == null:
+		var drawn := layer.species_on(land)
+		if drawn == null or layer.density == null:
 			continue
 		var image := layer.density_image()
 		if image == null:
 			continue
 		snapshot.layer_ids.append(layer.get_instance_id())
-		snapshot.tags.append(layer.species.density_tag())
-		snapshot.species.append(layer.species)
+		snapshot.tags.append(drawn.density_tag())
+		snapshot.species.append(drawn)
 		snapshot._cell_m.append(layer.cell_m)
 		snapshot._max.append(layer.max_per_cell)
 		snapshot._width.append(image.get_width())
@@ -38,17 +41,23 @@ static func from_layers(layers: Array) -> FloraDensity:
 	return snapshot
 
 
-## The FloraLayer nodes in the tree under `scope` (not the ones leaving it) as a snapshot.
-static func gather(scope: Node) -> FloraDensity:
+## The FloraLayer nodes in the tree under `scope` (not the ones leaving it) as a snapshot, with the
+## plants of `land`.
+static func gather(scope: Node, land: GodFlora = null) -> FloraDensity:
 	var layers := []
 	for node in scope.get_tree().get_nodes_in_group(FloraLayer.GROUP):
-		if node.is_inside_tree() and not node.is_queued_for_deletion() and scope.is_ancestor_of(node):
+		if (
+			node.is_inside_tree()
+			and not node.is_queued_for_deletion()
+			and scope.is_ancestor_of(node)
+		):
 			layers.append(node)
-	return from_layers(layers)
+	return from_layers(layers, land)
 
 
-## A new snapshot like this one with the bytes of the layer `layer_id` replaced (same size: the brush only repaints), so
-## the planters' tasks that still read this one see it unchanged. The same snapshot back when that layer is not here.
+## A new snapshot like this one with the bytes of the layer `layer_id` replaced (same size: the
+## brush only repaints), so the planters' tasks that still read this one see it unchanged. The same
+## snapshot back when that layer is not here.
 func with_layer_bytes(layer_id: int, bytes: PackedByteArray) -> FloraDensity:
 	var index := layer_ids.find(layer_id)
 	if index < 0 or bytes.size() != _width[index] * _height[index]:
@@ -76,7 +85,14 @@ func cell_m(index: int) -> float:
 
 ## Plants of entry `index` in the cell (tx, tz); 0 outside the image.
 func count_at(index: int, tx: int, tz: int) -> int:
-	if index < 0 or index >= _bytes.size() or tx < 0 or tz < 0 or tx >= _width[index] or tz >= _height[index]:
+	if (
+		index < 0
+		or index >= _bytes.size()
+		or tx < 0
+		or tz < 0
+		or tx >= _width[index]
+		or tz >= _height[index]
+	):
 		return 0
 	return roundi(_bytes[index][tz * _width[index] + tx] * _max[index] / 255.0)
 

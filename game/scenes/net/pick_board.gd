@@ -1,9 +1,11 @@
 class_name PickBoard
 extends Node
 
-## The picks of the match by MpKit slot. The server stores what each client sends (checked by MatchWire) and publishes the table;
-## a client keeps the one it receives. It does not choose the local pick (SacrificeFlow) and does not decide who may pick (the room
-## rules do). In the dedicated of a room, the ticket brings the picks, so the clients' own are ignored and not erased when they leave.
+## The picks of the match by MpKit slot. The server stores what each client sends (checked by
+## MatchWire) and publishes the table; a client keeps the one it receives. It does not choose the
+## local pick (SacrificeFlow) and does not decide who may pick (the room rules do). In the dedicated
+## of a room, the ticket brings the picks, so the clients' own are ignored and not erased when they
+## leave.
 
 signal changed
 ## Every seat the ticket left open has sent its pick: the world can start.
@@ -63,7 +65,7 @@ func _store(data: Dictionary, from_peer: int) -> void:
 	if not MpKit.is_server():
 		return
 	var slot := MpKit.slot_for_peer(from_peer)
-	## The ticket closed the picks: the client that just got its slot only needs to hear them.
+	# The ticket closed the picks: the client that just got its slot only needs to hear them.
 	if ticket_glue != null:
 		if ticket_glue.is_pick_open(slot):
 			_accept_open(from_peer, slot, data)
@@ -78,8 +80,9 @@ func _store(data: Dictionary, from_peer: int) -> void:
 	_publish()
 
 
-## The pick of a seat the ticket left open, checked by the same rules as a room's. An invalid one is rejected (the player is told
-## `bad_pick` and may come back with the same credential and choose again). With every pick in, the world starts.
+## The pick of a seat the ticket left open, checked by the same rules as a room's. An invalid one is
+## rejected (the player is told `bad_pick` and may come back with the same credential and choose
+## again). With every pick in, the world starts.
 func _accept_open(from_peer: int, slot: int, data: Dictionary) -> void:
 	var chosen: WizardPick = MatchWire.decode_pick(data, true)
 	if chosen == null:
@@ -88,7 +91,12 @@ func _accept_open(from_peer: int, slot: int, data: Dictionary) -> void:
 		return
 	picks[slot] = chosen
 	ticket_glue.close_pick(slot)
-	print("partida %s: slot %d pick %s %s (elegido al entrar)" % [ticket_glue.agent.match_id, slot, chosen.wizard.model_id(), chosen.god.id()])
+	print(
+		(
+			"partida %s: slot %d pick %s %s (elegido al entrar)"
+			% [ticket_glue.agent.match_id, slot, chosen.wizard.model_id(), chosen.god.id()]
+		)
+	)
 	_publish()
 	if not ticket_glue.picks_pending():
 		complete.emit()

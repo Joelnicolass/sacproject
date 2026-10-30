@@ -1,10 +1,9 @@
 class_name IdleTask
 extends AiTask
 
-## The creatures nobody claimed: one record with no target and score 0; every creature
-## nobody else claimed goes in it. When a wizard is among them it leads the record and the rest follow it:
-## the army stays with the wizard.
-## Ref: shiny.d:2231-2237 `replanIdle`, 2300-2310 `claimIdle`; recordUpdate, shiny.d:3408-3427
+## The creatures nobody claimed: one record with no target and score 0; every creature nobody else
+## claimed goes in it. When a wizard is among them it leads the record and the rest follow it: the
+## army stays with the wizard.
 
 
 func kind() -> Kind:

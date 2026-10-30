@@ -11,7 +11,7 @@ extends EditorExportPlugin
 ## (BuildingFit). Only a PrimitiveMesh (Cylinder, Sphere, ...) keeps its geometry: its parameters are the data (RiftSpawner reads
 ## the radius of a CylinderMesh) and it costs a few bytes. The map's ground is no mesh file: the server derives its triangles from
 ## the map's heights.png in memory (Terrain), builds its collision from them (TerrainCollision) and never builds its mesh.
-## The navmesh is not baked from meshes (NavBakeSettings: static colliders, i.e. shapes), so nothing under scenes/ needs more.
+## The navmesh is not baked from meshes (MapNav: static colliders, i.e. shapes), so nothing under scenes/ needs more.
 ## NOT here: textures (Godot's own dedicated mode already turns them into placeholders),
 ## and nothing runs outside an export: the game and the editor never load this class.
 ## Environment, for measuring only: SAC_DEDICATED_STRIP=0 exports the preset untouched.
@@ -80,13 +80,13 @@ func _begin_customize_resources(_platform: EditorExportPlatform, _features: Pack
 	_animations = 0
 	_tracks = 0
 	_meshes = 0
-	## The preset's "Dedicated Server" mode is not among `features` (Godot passes the platform's and the custom ones): ask the preset.
+	# The preset's "Dedicated Server" mode is not among `features` (Godot passes the platform's and the custom ones): ask the preset.
 	var preset := get_export_preset()
 	return preset != null and preset.is_dedicated_server() and OS.get_environment(ENV_OFF) != "0"
 
 
 func _end_customize_resources() -> void:
-	## A second export may serve the customized files from Godot's cache: then these are 0 and the pack is still stripped.
+	# A second export may serve the customized files from Godot's cache: then these are 0 and the pack is still stripped.
 	print("DedicatedStrip audio=%d animations=%d tracks_removed=%d meshes=%d" % [_audio, _animations, _tracks, _meshes])
 
 

@@ -2,12 +2,13 @@
 class_name StructureBreak
 extends Node
 
-## When its building falls, every part of it bursts where it stands: the scene `scene` (an FxScene: fire spheres, rocks, sound)
-## and each burst of `bursts`, at BuildingFit.part_center of each holder under the building's `Visuals`. It runs on every peer
-## from the replicated fall (`MapBuilding.destroyed`), local FxBus.play_scene / play: nothing goes on the wire, and a headless
-## process only emits `played` and `broke`. A building that was already down when this peer joined does not burst (`arm_after_s`).
-## Does not decide the fall (MapBuilding), show the ruin (BuildingRuin) nor hurt anyone. Take the node out: it falls with no FX.
-## Ref: sacengine updateBuildingDestruction and destructionAnimation (state.d:15157-15181, 27650-27660).
+## When its building falls, every part of it bursts where it stands: the scene `scene` (an FxScene:
+## fire spheres, rocks, sound) and each burst of `bursts`, at BuildingFit.part_center of each holder
+## under the building's `Visuals`. It runs on every peer from the replicated fall
+## (`MapBuilding.destroyed`), local FxBus.play_scene / play: nothing goes on the wire, and a
+## headless process only emits `played` and `broke`. A building that was already down when this peer
+## joined does not burst (`arm_after_s`). Does not decide the fall (MapBuilding), show the ruin
+## (BuildingRuin) nor hurt anyone. Take the node out: it falls with no FX.
 
 ## A part burst at `at` (world), once per part with a mesh, on every peer.
 signal broke(at: Vector3)
@@ -22,9 +23,11 @@ signal broke(at: Vector3)
 	set(value):
 		scene = value
 		update_configuration_warnings()
-## Sprite bursts played beside `scene` at each part (explosion_blast, explosion_blast2). Empty: only the scene.
+## Sprite bursts played beside `scene` at each part (explosion_blast, explosion_blast2). Empty: only
+## the scene.
 @export var bursts: Array[ParticleType] = []
-## Seconds after this peer loaded the building before a fall bursts: a late join sees the ruin, not an old explosion.
+## Seconds after this peer loaded the building before a fall bursts: a late join sees the ruin, not
+## an old explosion.
 @export_range(0.0, 10.0, 0.1, "suffix:s") var arm_after_s := 2.0
 
 var _born_tick := 0
@@ -33,9 +36,9 @@ var _born_tick := 0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if building == null:
-		warnings.append("Asigná `building` (la raíz MapBuilding).")
+		warnings.append("Assign `building` (the MapBuilding root).")
 	if scene == null:
-		warnings.append("Asigná `scene` (scenes/structures/breaking/building_break.tscn).")
+		warnings.append("Assign `scene` (scenes/structures/breaking/building_break.tscn).")
 	return warnings
 
 

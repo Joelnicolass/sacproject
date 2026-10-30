@@ -17,4 +17,4 @@ __pycache__/
 # The truth is heights.png + void.png.
 terrain_work/
 # Godot rebuilds it from strings.csv on every import
-data/i18n/*.translation
+scenes/ui/i18n/*.translation

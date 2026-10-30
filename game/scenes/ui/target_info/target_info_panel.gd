@@ -2,16 +2,30 @@
 class_name TargetInfoPanel
 extends Control
 
-## The original's info box (described, not copied). Local presentation: no RPC, no sim.
-## - Hover: `delay_s` after TargetProbe names a new body, the box shows beside the pointer what TargetInfo says about it, and
-##   follows the pointer while it stays on that body. It mirrors to the left of the pointer near the right edge and is clamped
-##   inside the viewport. Another body, or none, hides it at once (on the probe's next sample, 30 a second).
-## - Pinned: with nothing hovered and a building inspected by click (StructureInspector), the box shows that building, fixed at
-##   `pinned_margin_px` from the bottom-left corner, until the inspection ends.
+## The mouse-over info box. Local presentation: no RPC, no sim.
+## - Hover: `delay_s` after TargetProbe names a new body, the box shows beside the pointer what
+##   TargetInfo says about it, and follows the pointer while it stays on that body. It mirrors to
+##   the left of the pointer near the right edge and is clamped inside the viewport. Another body,
+##   or none, hides it at once (on the probe's next sample, 30 a second).
+## - Pinned: with nothing hovered and a building inspected by click (StructureInspector), the box
+##   shows that building, fixed at `pinned_margin_px` from the bottom-left corner, until the
+##   inspection ends.
 ## - The bar and the text follow Health.changed of the body shown, not every frame.
-## - Size: 264×84 canvas pixels, set in the .tscn with the title font; Godot's stretch scales it. The children are laid out by anchors.
+## - Size: 264×84 canvas pixels, set in the .tscn with the title font; Godot's stretch scales it.
+##   The children are laid out by anchors.
 ## - FeelPrefs.hover_info off turns the hover box off; the pinned one still shows (it was clicked).
-## Ref: RFC-053 053e (F374); renderer.d:66, 5036-5230.
+
+@export var probe: TargetProbe
+## Optional: the clicked building stays in the box (empty: no pinned box).
+@export var inspector: StructureInspector
+@export var prefs: FeelPrefs
+## Seconds the pointer stays on a body before the box shows.
+@export var delay_s := 0.5
+## Canvas pixels between the pointer and the box.
+@export var cursor_gap_px := 19.0
+## Where the pinned box sits: canvas pixels from the left and from the bottom edge (above the spell
+## book).
+@export var pinned_margin_px := Vector2(10.0, 144.0)
 
 ## Read-only views for flows and checks (AgentKit reads properties).
 var shown_title: String:
@@ -27,18 +41,6 @@ var pinned: bool:
 	get:
 		return visible and _pinned
 
-@export var probe: TargetProbe
-## Optional: the clicked building stays in the box (empty: no pinned box).
-@export var inspector: StructureInspector
-@export var prefs: FeelPrefs
-## Seconds the pointer stays on a body before the box shows.
-## Ref: renderer.d:66.
-@export var delay_s := 0.5
-## Canvas pixels between the pointer and the box.
-@export var cursor_gap_px := 19.0
-## Where the pinned box sits: canvas pixels from the left and from the bottom edge (above the spell book).
-@export var pinned_margin_px := Vector2(10.0, 144.0)
-
 ## The body hovered and waiting for the delay, the one shown, and how long it has waited.
 var _pending: Node
 var _shown: Node
@@ -52,7 +54,7 @@ var _title_left := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if probe == null:
-		warnings.append("Asigná `probe` (el TargetProbe que dice qué hay bajo el puntero).")
+		warnings.append("Assign `probe` (the TargetProbe that says what is under the pointer).")
 	var prefs_warning := FeelPrefs.socket_warning(prefs)
 	if not prefs_warning.is_empty():
 		warnings.append(prefs_warning)
@@ -85,11 +87,14 @@ func _process(delta: float) -> void:
 	elif _pending == null and _shown == null:
 		_try_pin()
 	if visible and not _pinned:
-		position = place(probe.pointer if probe else Vector2.ZERO, size, get_viewport_rect().size, cursor_gap_px)
+		position = place(
+			probe.pointer if probe else Vector2.ZERO, size, get_viewport_rect().size, cursor_gap_px
+		)
 
 
-## Top-left corner of a box of `box` pixels beside `pointer` inside a `view`-sized screen: `gap` to the right and below the
-## pointer; to the left when it would leave the right edge, above when it would leave the bottom; then clamped inside.
+## Top-left corner of a box of `box` pixels beside `pointer` inside a `view`-sized screen: `gap` to
+## the right and below the pointer; to the left when it would leave the right edge, above when it
+## would leave the bottom; then clamped inside.
 static func place(pointer: Vector2, box: Vector2, view: Vector2, gap: float) -> Vector2:
 	var at := pointer + Vector2(gap, gap)
 	if at.x + box.x > view.x:
@@ -123,7 +128,11 @@ func _on_inspected_changed(_body: Node3D) -> void:
 
 
 func _try_pin() -> void:
-	if inspector == null or inspector.inspected == null or not is_instance_valid(inspector.inspected):
+	if (
+		inspector == null
+		or inspector.inspected == null
+		or not is_instance_valid(inspector.inspected)
+	):
 		return
 	_show(inspector.inspected, true)
 
@@ -155,8 +164,12 @@ func _hide() -> void:
 
 
 func _unbind() -> void:
-	if _info != null and _info.health != null and is_instance_valid(_info.health) \
-			and _info.health.changed.is_connected(_on_health_changed):
+	if (
+		_info != null
+		and _info.health != null
+		and is_instance_valid(_info.health)
+		and _info.health.changed.is_connected(_on_health_changed)
+	):
 		_info.health.changed.disconnect(_on_health_changed)
 
 

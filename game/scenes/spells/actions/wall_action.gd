@@ -2,13 +2,14 @@
 class_name WallAction
 extends SpellAction
 
-## A spell that raises a wall on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence): the click names a point of the land
-## within range; the wall is born there when the cast starts, perpendicular to the line from the wizard to the point, grows while he casts and
-## starts to act when the casting time ends; if he is interrupted it sinks at once. One scene per spell: the kind of wall and the cast
-## particle change, not the script. It does not grow the wall nor hurt anybody (SpellWall and WallTouch do).
-## Ref: sacengine castFirewall, castWailingWall, castVinewall, castWallOfSpikes, castFence (state.d:11118-11211).
+## A spell that raises a wall on the ground (Firewall, Wall of Spikes, Wailing Wall, Vinewall,
+## Fence): the click names a point of the land within range; the wall is born there when the cast
+## starts, perpendicular to the line from the wizard to the point, grows while he casts and starts
+## to act when the casting time ends; if he is interrupted it sinks at once. One scene per spell:
+## the kind of wall and the cast particle change, not the script. It does not grow the wall nor hurt
+## anybody (SpellWall and WallTouch do).
 
-## Key of the wall scene in SpellSpawner.
+## The kind of the wall scene in SpellSpawner.zones (match.tscn).
 @export var wall_kind := ""
 
 ## The wall of the cast in progress (server only).
@@ -18,12 +19,14 @@ var _wall: SpellWall
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	if wall_kind.is_empty():
-		warnings.append("Escribí en `wall_kind` la clave del muro en SpellSpawner.")
+		warnings.append("Set `wall_kind` to the wall's key in SpellSpawner.")
 	return warnings
 
 
 ## Funds first, then the range, then the land under the click (the order of the whole book).
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, _picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():
@@ -41,12 +44,24 @@ func started(wizard: WizardBody, _spell: SpellType, aim: Aim, _frames: int) -> v
 	if spawner == null:
 		return
 	var run := WallRules.direction_for(wizard.global_position, aim.point, wizard.facing_flat())
-	_wall = spawner.spawn_projectile(wall_kind, {
-		"x": aim.point.x, "y": aim.point.y, "z": aim.point.z,
-		"dir_x": run.x, "dir_z": run.y,
-		"caster": str(wizard.get_path()),
-		"slot": wizard.owner_slot,
-	}) as SpellWall
+	_wall = (
+		(
+			spawner
+			. spawn_zone(
+				wall_kind,
+				{
+					"x": aim.point.x,
+					"y": aim.point.y,
+					"z": aim.point.z,
+					"dir_x": run.x,
+					"dir_z": run.y,
+					"caster": str(wizard.get_path()),
+					"slot": wizard.owner_slot,
+				}
+			)
+		)
+		as SpellWall
+	)
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:

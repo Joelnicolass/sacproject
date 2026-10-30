@@ -43,5 +43,5 @@ Si usás un túnel, la dirección que muestra la pantalla es la local: reemplaza
 
 ## Qué hay detrás (para desarrollar)
 
-- `scenes/net/local_server_host.tscn` (`LocalServerHost`): lanza el dedicado con `MpMatchLauncher` (`data/net/lobby_config_local_server.tres`, un asiento por cada asiento del modo elegido, humano o IA; un código por asiento humano), genera las credenciales y avisa cuando escucha.
+- `scenes/net/local_server_host.tscn` (`LocalServerHost`): lanza el dedicado con `MpMatchLauncher` (`scenes/net/lobby_config_local_server.tres`, un asiento por cada asiento del modo elegido, humano o IA; un código por asiento humano), genera las credenciales y avisa cuando escucha.
 - El dedicado es el mismo de las salas (`MatchTicketGlue` + `MpMatchAgent`); admite solo los hashes del ticket.

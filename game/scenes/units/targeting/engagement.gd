@@ -1,10 +1,11 @@
 class_name Engagement
 extends Node
 
-## Whom a creature is committed to: its `target`, and the commands that begin or end a commitment (engage a foe, walk somewhere, stand
-## still, cower, follow a leader). It asks the TargetPicker who is worth fighting and keeps the Vision of the body on only while it can look.
-## Not: how to hit (Weapons), what each mode does (States) nor the orders of the player (UnitOrders).
-## Ref: sacengine updateTarget (state.d:12924), isValidAttackTarget (state.d:12442), isValidEnemyAttackTarget, startCowering (state.d:13760), teleport (state.d:10260-10269), RFC-021c.
+## Whom a creature is committed to: its `target`, and the commands that begin or end a commitment
+## (engage a foe, walk somewhere, stand still, cower, follow a leader). It asks the TargetPicker who
+## is worth fighting and keeps the Vision of the body on only while it can look.
+## Not: how to hit (Weapons), what each mode does (States) nor the orders of the player
+## (UnitOrders).
 
 const _ORDERS := preload("res://scenes/units/unit_orders.gd")
 
@@ -47,7 +48,8 @@ func walk(goal: Vector3) -> void:
 		body.mode = UnitBody.Mode.MOVE
 
 
-## An order-level walk: by the waypoints of the PathFollower child, or straight when the body has none or goes by air.
+## An order-level walk: by the waypoints of the PathFollower child, or straight when the body has
+## none or goes by air.
 func walk_to(point: Vector3) -> void:
 	if not _free():
 		return
@@ -77,10 +79,15 @@ func follow(leader: Node3D) -> void:
 	orders.give(_ORDERS.Command.RETREAT, leader, leader.global_position, Vector2.ZERO, 0.0)
 
 
-## Teleport: the body is at `point` (a spot on the land) in one step, at the height it had over the ground if it flies, with no goal,
-## target or velocity; it keeps its order only if it is guard or retreat.
+## Teleport: the body is at `point` (a spot on the land) in one step, at the height it had over the
+## ground if it flies, with no goal, target or velocity; it keeps its order only if it is guard or
+## retreat.
 func warp(point: Vector3) -> void:
-	var above := maxf(0.0, body.global_position.y - body.air.ground_height(body.global_position)) if body.is_flying() else 0.0
+	var above := (
+		maxf(0.0, body.global_position.y - body.air.ground_height(body.global_position))
+		if body.is_flying()
+		else 0.0
+	)
 	body.global_position = Vector3(point.x, point.y + above, point.z)
 	body.velocity = Vector3.ZERO
 	halt()
@@ -97,14 +104,20 @@ func drop() -> void:
 
 
 func cancel_attacks() -> void:
-	if body.mode == UnitBody.Mode.ROCK_FORM and body.simulates() and afflictions.breaks_special_modes():
-		body.mode = UnitBody.Mode.IDLE  ## Petrified ends Rockform (state.d:11631-11640); Afflictions.held_changed calls here.
+	if (
+		body.mode == UnitBody.Mode.ROCK_FORM
+		and body.simulates()
+		and afflictions.breaks_special_modes()
+	):
+		# Petrified ends Rockform; Afflictions.held_changed calls here.
+		body.mode = UnitBody.Mode.IDLE
 	body.weapons.cancel_all()
 	body.clips.cancel_lunge()
 
 
-## The visible foe of the best score above `threshold` around `center` (patrol 0.25; patrolAround min(100, d)*0.01; advance 0.25 with ref
-## 150), or the closest foe within sight without a picker. Null for a pacifist (aggressiveness 0).
+## The visible foe of the best score above `threshold` around `center` (idle 0.25; guard min(100,
+## d)*0.01; advance 0.25 with ref 150), or the closest foe within sight without a picker. Null for a
+## pacifist (aggressiveness 0).
 func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within := INF) -> Node3D:
 	var type := body.type
 	if type == null or (type.aggressiveness <= 0 and not afflictions.raging()):
@@ -114,23 +127,33 @@ func closest_foe(center: Vector3, threshold := 0.25, ref_range := 100.0, within 
 	return TargetRules.closest_in_sight(body, center)
 
 
-## Whether it may keep `node` as its target, by its TargetPolicy; without one, the target of an explicit ATTACK order is any body not of
-## the own side and anything else a stance enemy.
+## Whether it may keep `node` as its target, by its TargetPolicy; without one, the target of an
+## explicit ATTACK order is any body not of the own side and anything else a stance enemy.
 func accepts_target(node: Variant) -> bool:
 	var explicit := is_attack_order_on(node)
-	return picker.accepts(node, explicit) if is_instance_valid(picker) else TargetRules.is_valid_foe_of(body.owner_slot, node, body, not explicit)
+	return (
+		picker.accepts(node, explicit)
+		if is_instance_valid(picker)
+		else TargetRules.is_valid_foe_of(body.owner_slot, node, body, not explicit)
+	)
 
 
-## A foe by the rules of orders (Orders retarget); by stance, except the target of an explicit ATTACK order.
+## A foe by the rules of orders (Orders retarget); by stance, except the target of an explicit
+## ATTACK order.
 func is_foe(node: Variant) -> bool:
 	return TargetRules.is_valid_foe_of(body.owner_slot, node, body, not is_attack_order_on(node))
 
 
-## `node` is the target of its explicit ATTACK order (a click, the AI's port): the one body it fights without asking the stance.
+## `node` is the target of its explicit ATTACK order (a click, the AI's port): the one body it
+## fights without asking the stance.
 func is_attack_order_on(node: Variant) -> bool:
 	if not body.ordered or node == null or not is_instance_valid(node):
 		return false
-	if not is_instance_valid(orders) or orders.command != _ORDERS.Command.ATTACK or not is_instance_valid(orders.target):
+	if (
+		not is_instance_valid(orders)
+		or orders.command != _ORDERS.Command.ATTACK
+		or not is_instance_valid(orders.target)
+	):
 		return false
 	return orders.target == node
 
@@ -142,9 +165,14 @@ func is_futile(node: Variant) -> bool:
 
 ## Not dead, not being summoned and not held by a Sac Doctor: it takes commands.
 func _free() -> bool:
-	return body.mode != UnitBody.Mode.DEAD and body.mode != UnitBody.Mode.SUMMONING and not body.is_taken()
+	return (
+		body.mode != UnitBody.Mode.DEAD
+		and body.mode != UnitBody.Mode.SUMMONING
+		and not body.is_taken()
+	)
 
 
-## A body looks only while it simulates and is alive, summoned and free: not as a corpse, a summon in the making or a held creature.
+## A body looks only while it simulates and is alive, summoned and free: not as a corpse, a summon
+## in the making or a held creature.
 func _sync_vision() -> void:
 	body.vision.watching = body.simulates() and _free()

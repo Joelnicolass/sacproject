@@ -176,7 +176,7 @@ script = ExtResource("3_line")
 cue = SubResource("Cue_far_from_altar")
 
 [node name="AdvisorVoice" type="Node" node_paths=PackedStringArray("channel")]
-editor_description = "El consejero: un canal con cola y prioridad (Channel, bus Voice). Los rechazos llegan por command_log (CommandLog.said) y salen de refusal_lines; los avisos del juego, por el hijo AdvisorWatch. Cada AdvisorLine trae su sonido, su prioridad y su silencio. Sin audio (dedicado, headless) no dice nada."
+editor_description = "The advisor: one channel with a queue and priority (Channel, Voice bus). Refusals come through command_log (CommandLog.said) and come out of refusal_lines; the game's warnings come through the AdvisorWatch child. Each AdvisorLine brings its sound, its priority and its silence. Without audio (dedicated, headless) it says nothing."
 script = ExtResource("1_voice")
 channel = NodePath("Channel")
 refusal_lines = Dictionary[StringName, ExtResource("3_line")]({
@@ -196,7 +196,7 @@ refusal_lines = Dictionary[StringName, ExtResource("3_line")]({
 bus = &"Voice"
 
 [node name="AdvisorWatch" type="Node" parent="." node_paths=PackedStringArray("advisor")]
-editor_description = "Los avisos del juego (el mago local recibe daño, un edificio o una criatura propia caen, el altar se profana): lee estado replicado y le pide una línea al consejero. Sacá el nodo y solo hablan los rechazos."
+editor_description = "The game's warnings (the local wizard is hurt, one of your buildings or creatures falls, the altar is desecrated): it reads replicated state and asks the advisor for a line. Remove the node and only the refusals speak."
 script = ExtResource("2_watch")
 advisor = NodePath("..")
 wizard_attacked = SubResource("Line_wizard_attacked")

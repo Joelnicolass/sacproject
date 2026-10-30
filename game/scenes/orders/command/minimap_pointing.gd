@@ -1,10 +1,10 @@
 class_name MinimapPointing
 extends Node
 
-## The minimap is another surface to point at. It only gives a ground point (no ray): `order_units` orders the selection
-## there (or drops an armed icon), `select` with an icon armed aims it there (a body near the point, else the spot).
-## `select` with nothing armed does nothing: the camera stays on the wizard and there is no box here.
-## Ref: RFC-037 037c (P2).
+## The minimap is another surface to point at. It only gives a ground point (no ray): `order_units`
+## orders the selection there (or drops an armed icon), `select` with an icon armed aims it there (a
+## body near the point, else the spot). `select` with nothing armed does nothing: the camera stays
+## on the wizard and there is no box here.
 
 ## The minimap that gives the points. Empty (the minimap was removed): this does nothing.
 @export var minimap: Minimap

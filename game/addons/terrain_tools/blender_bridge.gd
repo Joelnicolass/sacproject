@@ -12,7 +12,7 @@ const EXPORT_SCRIPT := "res://tools/blender/terrain_export_images.py"
 const WORK_DIR := "terrain_work"
 const BLEND_FILE := "terrain.blend"
 const MAC_APP := "/Applications/Blender.app/Contents/MacOS/Blender"
-const HOW_TO := "No encontré Blender. Instalalo (4.x) y ponelo en el PATH, o definí la variable de entorno BLENDER con la ruta del ejecutable (por ejemplo BLENDER=/Applications/Blender.app/Contents/MacOS/Blender) y abrí Godot de nuevo."
+const HOW_TO := "Blender was not found. Install it (4.x) and put it on the PATH, or set the BLENDER environment variable to the executable's path (for example BLENDER=/Applications/Blender.app/Contents/MacOS/Blender) and open Godot again."
 
 
 ## What one Blender run did: its exit code and what it printed.

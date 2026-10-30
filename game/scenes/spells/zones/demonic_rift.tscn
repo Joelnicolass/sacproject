@@ -1,17 +1,18 @@
 [gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/tfir.tres" id="2_spell"]
+[ext_resource type="Resource" path="res://spells/demonic_rift/demonic_rift.tres" id="2_spell"]
 [ext_resource type="Script" path="res://scenes/spells/zones/rift_edge.gd" id="3_edge"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/rift_edge.gdshader" id="4_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/rif2.png" id="5_edge"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_emitter.gd" id="6_emitter"]
-[ext_resource type="Resource" path="res://data/fx/rift_swirl.tres" id="7_swirl"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/rift_swirl.tres" id="7_swirl"]
 [ext_resource type="Script" path="res://scenes/spells/zones/rift_spawner.gd" id="8_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
-[ext_resource type="Resource" path="res://data/audio/cues/rift_open.tres" id="cue_rift_open"]
-[ext_resource type="Resource" path="res://data/audio/cues/rift_close.tres" id="cue_rift_close"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_open.tres" id="cue_rift_open"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/rift_close.tres" id="cue_rift_close"]
+[ext_resource type="PackedScene" path="res://scenes/spells/zones/rift_spirit.tscn" id="q8_scene"]
 
 [sub_resource type="ShaderMaterial" id="Mat_edge"]
 shader = ExtResource("4_shader")
@@ -56,6 +57,7 @@ to_phase = 2
 
 [node name="Spirits" type="Node" parent="." node_paths=PackedStringArray("zone", "wall")]
 script = ExtResource("8_spawner")
+spirit_scene = ExtResource("q8_scene")
 zone = NodePath("..")
 wall = NodePath("../Edge/Wall")
 

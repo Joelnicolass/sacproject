@@ -1,0 +1,17 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://spells/speedup/speedup_action.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/spells/speedup_effect.tscn" id="2_effect"]
+[ext_resource type="Script" path="res://scenes/spells/spell_target.gd" id="9_target"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/speedup.tres" id="fx_speedup"]
+
+[sub_resource type="Resource" id="Target_own"]
+script = ExtResource("9_target")
+who = 4
+alive_only = false
+
+[node name="Speedup" type="Node"]
+script = ExtResource("1_script")
+effect_scene = ExtResource("2_effect")
+target = SubResource("Target_own")
+start_fx = ExtResource("fx_speedup")

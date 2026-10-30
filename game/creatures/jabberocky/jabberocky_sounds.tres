@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=32 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b2.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b3.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b4.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_c.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_d.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_e.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_f.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_g.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_h.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_q.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_p.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b5.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b6.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b7.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b8.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b9.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_a.ogg" id="s17"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_k.ogg" id="s18"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_l.ogg" id="s19"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_m.ogg" id="s20"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_n.ogg" id="s21"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/jabb/_j_a_b_o.ogg" id="s22"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
+
+[sub_resource type="Resource" id="cue_selected"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_ack"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s4"), ExtResource("s5"), ExtResource("s6"), ExtResource("s7")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_attack_ack"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_annoyed"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s12"), ExtResource("s13"), ExtResource("s14"), ExtResource("s15"), ExtResource("s16"), ExtResource("s17")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s18"), ExtResource("s19"), ExtResource("s20")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_death"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s21"), ExtResource("s22")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("1_set")
+selected = SubResource("cue_selected")
+ack = SubResource("cue_ack")
+attack_ack = SubResource("cue_attack_ack")
+annoyed = SubResource("cue_annoyed")
+damaged = SubResource("cue_damaged")
+death = SubResource("cue_death")
+fallback = ExtResource("3_fallback")

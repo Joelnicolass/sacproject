@@ -4,3 +4,6 @@
 
 [node name="FxLight" type="Node3D"]
 script = ExtResource("1_layer")
+fog_energy = 1.5
+energy_scale = 1.5
+range_scale = 1.6

@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="LookQuality" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/look/look_quality.gd" id="1_q"]
+[ext_resource type="Script" path="res://scenes/look/vegetation/vegetation_quality.gd" id="2_veg"]
+
+[sub_resource type="Resource" id="Veg_original_plants"]
+script = ExtResource("2_veg")
+layer_id = &"original_plants"
+radius_scale = 1.0
+density_scale = 1.0
+shadows = false
+max_builds_per_frame = 2
+
+[resource]
+script = ExtResource("1_q")
+id = &"high"
+label = "Alta"
+scaling_mode = 2
+scale = 0.77
+screen_space_aa = 0
+msaa_3d = 0
+shadow_splits = 2
+shadow_atlas_size = 4096
+shadow_filter = 3
+shadow_distance_cap = 0.0
+ssao_enabled = true
+ground_layers = 4
+ground_triplanar = true
+ground_stochastic = true
+ground_macro = true
+ssil_enabled = true
+grass_enabled = true
+grass_radius_m = 48.0
+grass_near_radius_m = 14.0
+grass_density = 34.0
+grass_near_segments = 4
+grass_trample = true
+fx_soft_particles = true
+fx_frame_blend = true
+fx_max_lights = 16
+actor_max_lights = 24
+rain_density_scale = 1.5
+vegetation = Array[ExtResource("2_veg")]([SubResource("Veg_original_plants")])
+dof_quality = 3

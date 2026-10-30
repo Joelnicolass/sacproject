@@ -4,6 +4,6 @@
 [ext_resource type="Texture2D" path="res://assets/original/scars/oils.png" id="2_oils"]
 
 [node name="OilMark" instance=ExtResource("1_mark")]
-editor_description = "Viscous Oil (kcfa): la mancha de aceite `oils` (10 m) donde revienta la bola, solo si cae a menos de 10 m del suelo. La toca ShotLook.ground_mark en data/shots/kcfa.tscn."
+editor_description = "Viscous Oil (kcfa): la mancha de aceite `oils` (10 m) donde revienta la bola, solo si cae a menos de 10 m del suelo. La toca ShotLook.ground_mark en scenes/units/attacks/shots/viscous_oil.tscn."
 texture = ExtResource("2_oils")
 max_height_m = 10.0

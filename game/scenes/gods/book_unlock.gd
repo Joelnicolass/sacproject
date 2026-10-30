@@ -3,7 +3,7 @@ class_name BookUnlock
 extends Resource
 
 ## One line of a god's book: a creature or a spell and the wizard level at which it enters the book
-## (computeDefaultSpells). Level 0 is there from the start.
+##. Level 0 is there from the start.
 
 @export_custom(PROPERTY_HINT_RESOURCE_TYPE, "CreatureType,SpellType") var type: Resource
 @export_range(0, 9) var level: int = 0

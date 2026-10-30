@@ -2,10 +2,10 @@
 class_name DropDent
 extends Node
 
-## When its drop ends (a meteorite hits the ground) it leaves the dent of its `manual` TerrainStamp under the drop for good
-## (`leave_now`): the server works the numbers out and keeps them, and every client applies the same bytes. It does not fly
-## the drop (ZoneDrop) nor shape the dent (the stamp's StampProfile and Reach cylinder). Server (or solo) only.
-## Ref: sacengine bombardmentDent, dentDisplacement (state.d:4077-4083, 7303-7315).
+## When its drop ends (a meteorite hits the ground) it leaves the dent of its `manual` TerrainStamp
+## under the drop for good (`leave_now`): the server works the numbers out and keeps them, and every
+## client applies the same bytes. It does not fly the drop (ZoneDrop) nor shape the dent (the
+## stamp's StampProfile and Reach cylinder). Server (or solo) only.
 
 @export var drop: ZoneDrop
 @export var stamp: TerrainStamp
@@ -21,4 +21,13 @@ func _leave_dent(_body: Node3D, _at: Vector3) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null and stamp != null else PackedStringArray(["Faltan la gota (ZoneDrop) y el sello (TerrainStamp con manual) de la abolladura."])
+	return (
+		PackedStringArray()
+		if drop != null and stamp != null
+		else PackedStringArray(
+			[
+				# gdlint: ignore=max-line-length
+				"The drop (ZoneDrop) and the stamp of the dent (TerrainStamp with manual) are missing."
+			]
+		)
+	)

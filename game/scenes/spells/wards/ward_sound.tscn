@@ -4,5 +4,5 @@
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_sound.gd" id="2_script"]
 
 [node name="WardSound" instance=ExtResource("1_emitter")]
-editor_description = "Sonido de un escudo: `cue` es un SoundCue de data/audio/cues/; `when` dice si suena al prender, al apagar o en bucle mientras dure. Sale del `shown` replicado del Ward, en todos los peers."
+editor_description = "Sonido de un escudo: `cue` es un SoundCue de scenes/audio/cues/; `when` dice si suena al prender, al apagar o en bucle mientras dure. Sale del `shown` replicado del Ward, en todos los peers."
 script = ExtResource("2_script")

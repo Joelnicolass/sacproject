@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/breath_of_life.gd" id="1_breath"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/fast_revive.tscn" id="2_revive"]
-[ext_resource type="PackedScene" path="res://data/shots/breath_of_life.tscn" id="look_shot"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/breath_of_life.tscn" id="look_shot"]
 
 [node name="BreathOfLife" type="Node3D"]
 process_physics_priority = -1
-editor_description = "F153 (RFC-030 030p-b): vuelo del aliento del Dragon (filb). BreathOfLifeAbility lo agrega al contenedor de disparos, solo en el servidor. Mueve un RangedShot (look breath_of_life) con v = 60 x (blanco - posicion), tope 60, hacia el centro del cadaver; al llegar levanta al cuerpo con FastRevive. Se libera al llegar."
+editor_description = "The flight of the Dragon's breath (filb). BreathOfLifeAbility adds it to the shot container, on the server only. It moves a RangedShot (look breath_of_life) with v = 60 x (target - position), capped at 60, toward the corpse's center; on arrival it raises the body with FastRevive. It frees itself on arrival."
 script = ExtResource("1_breath")
 fast_revive_scene = ExtResource("2_revive")
 look = ExtResource("look_shot")

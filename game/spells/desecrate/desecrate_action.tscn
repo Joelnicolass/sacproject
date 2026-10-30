@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/desecrate_action.gd" id="1_script"]
+
+[node name="Desecrate" type="Node"]
+script = ExtResource("1_script")
+pick = 1

@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityType" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/abilities/ability_type.gd" id="1_gtg8s"]
+[ext_resource type="Texture2D" uid="uid://b34pkrb1nkyp4" path="res://assets/original/ui/icons/kcfa.png" id="icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/units/abilities/viscous_oil.tscn" id="effect_scene"]
+[ext_resource type="PackedScene" path="res://scenes/units/attacks/shots/viscous_oil.tscn" id="shot_look"]
+
+[resource]
+script = ExtResource("1_gtg8s")
+effect = ExtResource("effect_scene")
+shot_look = ExtResource("shot_look")
+tag = "kcfa"
+display_name = "Viscous Oil"
+icon = ExtResource("icon_tex")
+mana_cost = 60
+cast_range_m = 100.0
+cooldown_s = 6.0
+casting_time_s = 4.4444
+speed_m_s = 30.0
+damage = 500
+damage_range_m = 5.0
+effect_range_m = 15.0
+duration_s = 15.0
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_worth = 500

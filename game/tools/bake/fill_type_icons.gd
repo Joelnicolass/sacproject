@@ -1,9 +1,10 @@
 extends SceneTree
 
-## Gives every creature, spell and ability in data/catalog/ its `icon`: the picture the book, the roster, the info box and the
-## armed cursor show. It reads the versioned PNGs and needs no original game; without `assets/original/ui/icons/` it says so and writes nothing.
-## A creature of your own uses `assets/custom/icons/<tag>.png` (tools/bake/creature_icon.gd draws it); the rest, the PNG of the original.
-## A type that already has an icon is kept (it may be yours): `--force` replaces it.
+## Gives every creature, spell and ability of the catalog its `icon`: the picture the book, the
+## roster, the info box and the armed cursor show. It reads the versioned PNGs and needs no original
+## game; without `assets/original/ui/icons/` it says so and writes nothing. A creature of your own
+## uses `assets/custom/icons/<tag>.png` (tools/bake/creature_icon.gd draws it); the rest, the PNG of
+## the original. A type that already has an icon is kept (it may be yours): `--force` replaces it.
 ##
 ##   Godot --headless --path . --script res://tools/bake/fill_type_icons.gd [-- --force]
 ##
@@ -12,23 +13,25 @@ extends SceneTree
 const ICONS_DIR := "res://assets/original/ui/icons/"
 const CUSTOM_DIR := "res://assets/custom/icons/"
 const FAMILIES := ["creatures", "spells", "abilities"]
-const CATALOG := "res://data/catalog/"
 
 
 func _init() -> void:
 	var force := OS.get_cmdline_user_args().has("--force")
 	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(ICONS_DIR)):
-		print("FILL_TYPE_ICONS: %s is missing (the icons come with the project; run tools/import/import_ui.py if you have the original). Nothing written." % ICONS_DIR)
+		print(
+			(
+				# gdlint: ignore=max-line-length
+				"FILL_TYPE_ICONS: %s is missing (the icons come with the project; run tools/import/import_ui.py if you have the original). Nothing written."
+				% ICONS_DIR
+			)
+		)
 		quit(1)
 		return
 	var filled := 0
 	var kept := 0
 	var without := PackedStringArray()
 	for family: String in FAMILIES:
-		for file in DirAccess.get_files_at(CATALOG + family):
-			if not file.ends_with(".tres"):
-				continue
-			var path := CATALOG + family + "/" + file
+		for path in GameCatalog.paths_of(family):
 			var type := ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_REPLACE)
 			var current: Variant = type.get("icon")
 			if current != null and not force:
@@ -36,14 +39,16 @@ func _init() -> void:
 				continue
 			var texture := _icon_for(family, str(type.get("tag")))
 			if texture == null:
-				without.append("%s/%s" % [family, file])
+				without.append(path)
 				continue
 			type.set("icon", texture)
 			if ResourceSaver.save(type, path) == OK:
 				filled += 1
 			else:
 				push_error("fill_type_icons: cannot save %s" % path)
-	print("FILL_TYPE_ICONS: %d filled, %d kept, %d without a picture" % [filled, kept, without.size()])
+	print(
+		"FILL_TYPE_ICONS: %d filled, %d kept, %d without a picture" % [filled, kept, without.size()]
+	)
 	for entry in without:
 		print("  no icon: ", entry)
 	quit(0)

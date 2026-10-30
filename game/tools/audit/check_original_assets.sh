@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Requiere el juego original instalado (SAC_INSTALL): compara assets/original/ con lo que salga de importar desde el original.
-# Sin el original no se puede correr (jugar y el resto de las herramientas no lo necesitan). Ver tools/import/local.cfg.example.
-# RFC-033 033h: parity of assets/original/ with the installation. Regenerates every family with its importer into a temporary
+# Needs the original game installed (SAC_INSTALL): compares assets/original/ with what importing from the original gives.
+# It cannot run without the original (playing and the other tools do not need it). See tools/import/local.cfg.example.
+# Parity of assets/original/ with the installation. Regenerates every family with its importer into a temporary
 # folder and compares with the versioned files (diff -r, the .import files excluded: Godot rewrites them). Replaces the old
 # tools/audit_original_assets.gd, which compared against the old extraction.
 #   bash tools/audit/check_original_assets.sh            exit 0 = every family identical
@@ -13,7 +13,7 @@ case "${1:-}" in -h|--help) head -n 3 "$0" | tail -n 2 | cut -c3-; exit 0 ;; esa
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 # Godot: $GODOT, else $GODOT_BIN, else `godot` in the PATH, else the macOS default install.
 GODOT="${GODOT:-${GODOT_BIN:-$(command -v godot || echo /Applications/Godot.app/Contents/MacOS/Godot)}}"
-# Fails early (status 2) with the explanation in Spanish when the original install is missing or invalid.
+# Fails early (status 2) with the explanation when the original install is missing or invalid.
 python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import sac_formats.install' "$ROOT/tools/import" || exit 2
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -24,11 +24,11 @@ cmp_dir() { # name, regenerated, versioned
 }
 cd "$ROOT"
 python3 -I tools/import/import_textures.py --out="$TMP/textures" >/dev/null && cmp_dir textures "$TMP/textures" "$A/textures" || { echo "FAIL  textures"; fail=1; }
-# The static bodies need the OBJ of sacengine's saveObj, which is no installation input: they are versioned data (023h).
+# The static bodies need the OBJ of sacengine's saveObj, which is no installation input: they are versioned data.
 python3 -I tools/import/import_props.py --out="$TMP/props" >/dev/null && for m in $(python3 -I tools/import/import_props.py --list-static); do cp "$A/props/$m.glb" "$TMP/props/"; done && cmp_dir props "$TMP/props" "$A/props" || { echo "FAIL  props"; fail=1; }
 python3 -I tools/import/import_themes.py --out="$TMP/themes" >/dev/null && cmp_dir themes "$TMP/themes" "$A/themes" || { echo "FAIL  themes"; fail=1; }
 python3 -I tools/import/import_map.py --out="$TMP/map" >/dev/null && cmp_dir map "$TMP/map" "$A/maps/high_noon" || { echo "FAIL  map"; fail=1; }
-# RFC-050: the other imported maps (their ntts.json names the .scp they came from).
+# The other imported maps (their ntts.json names the .scp they came from).
 for ntts in "$A"/maps/*/ntts.json; do
   tag="$(basename "$(dirname "$ntts")")"
   [ "$tag" = high_noon ] && continue

@@ -1,23 +1,28 @@
 class_name FxWire
 extends RefCounted
 
-## The one place where text and effects meet, for the wire only: the network id of an effect is the path of its resource, and this
-## turns it back into the resource on the receiving peer (loaded once, then cached). Gameplay never names an effect with text: it holds
-## the ParticleType, BeamType or PackedScene in an `@export`.
-## What it does not do: play anything (FxBus), pool anything (BurstPool, BeamPool), or decide who may see an effect.
+## The one place where text and effects meet, for the wire only: the network id of an effect is the
+## path of its resource, and this turns it back into the resource on the receiving peer (loaded
+## once, then cached). Gameplay never names an effect with text: it holds the ParticleType, BeamType
+## or PackedScene in an `@export`.
+## What it does not do: play anything (FxBus), pool anything (BurstPool, BeamPool), or decide who
+## may see an effect.
 
-## Where the pools and the gallery find every type to warm up (folders, not names).
-const PARTICLES_DIR := "res://data/fx/"
-const BEAMS_DIR := "res://data/fx/beams/"
+## The effects several things share. An effect only one entity uses is in that entity's fx/
+## folder (spells/fireball/fx/); `warm_dirs()` lists both.
+const SHARED_DIR := "res://scenes/fx/effects/"
 
-## id (resource path) -> loaded effect, or null when the path is not an effect. Never cleared: the effects are few and small.
+## id (resource path) -> loaded effect, or null when the path is not an effect. Never cleared: the
+## effects are few and small.
 static var _by_id: Dictionary[String, Resource] = {}
 static var _warned: Dictionary[String, bool] = {}
-## How many ids did not turn into an effect since the process started (the net probe reads it; 0 is healthy).
+## How many ids did not turn into an effect since the process started (the net probe reads it; 0 is
+## healthy).
 static var unresolved := 0
 
 
-## The id an effect travels as: its resource path. "" (and an error) for an effect saved inside another resource.
+## The id an effect travels as: its resource path. "" (and an error) for an effect saved inside
+## another resource.
 static func id_of(fx: Resource) -> String:
 	if fx == null:
 		return ""
@@ -28,7 +33,8 @@ static func id_of(fx: Resource) -> String:
 	return path
 
 
-## The effect with this id: a ParticleType, a BeamType or a PackedScene under res://. Null for anything else.
+## The effect with this id: a ParticleType, a BeamType or a PackedScene under res://. Null for
+## anything else.
 static func resource(id: String) -> Resource:
 	if not id.begins_with("res://"):
 		return null
@@ -47,10 +53,34 @@ static func resource(id: String) -> Resource:
 static func label_of(fx: Resource) -> String:
 	if fx == null:
 		return ""
-	return fx.resource_path.get_file().get_basename() if not fx.resource_path.is_empty() else "embedded"
+	return (
+		fx.resource_path.get_file().get_basename()
+		if not fx.resource_path.is_empty()
+		else "embedded"
+	)
 
 
-## Every resource file under `dir` and its folders (the pools warm up from this).
+## Where the pools and the gallery find every effect to warm up (folders, not names): the shared
+## library and the fx/ folder of every creature, spell, wizard and god.
+static func warm_dirs() -> PackedStringArray:
+	var dirs := PackedStringArray([SHARED_DIR])
+	for kind in GameCatalog.ENTITY_KINDS:
+		var root := "res://%s/" % kind
+		for entry in ResourceLoader.list_directory(root):
+			if entry.ends_with("/") and "fx/" in ResourceLoader.list_directory(root + entry):
+				dirs.append(root + entry + "fx/")
+	return dirs
+
+
+## Every resource file of `warm_dirs()`.
+static func all_effects() -> Array[Resource]:
+	var found: Array[Resource] = []
+	for dir in warm_dirs():
+		found.append_array(all_in(dir))
+	return found
+
+
+## Every resource file under `dir` and its folders.
 static func all_in(dir: String) -> Array[Resource]:
 	var found: Array[Resource] = []
 	for file: String in DirAccess.get_files_at(dir):

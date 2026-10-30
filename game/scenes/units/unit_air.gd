@@ -1,9 +1,11 @@
 class_name UnitAir
 extends Node
 
-## The vertical half of a creature's step: seats the body on the ground when it spawns, gives it gravity or the lift of a flier
-## (holds the height of one that must fly, takes off and lands a hybrid), finds the ground under it and decides when a walk goes by air.
-## Not: the horizontal walk (Locomotion) nor when to step (the body calls it from its physics step); it holds no mode and no order.
+## The vertical half of a creature's step: seats the body on the ground when it spawns, gives it
+## gravity or the lift of a flier (holds the height of one that must fly, takes off and lands a
+## hybrid), finds the ground under it and decides when a walk goes by air.
+## Not: the horizontal walk (Locomotion) nor when to step (the body calls it from its physics step);
+## it holds no mode and no order.
 
 @export var body: UnitBody
 ## Height over the ground (m) a creature that must fly keeps.
@@ -16,7 +18,8 @@ extends Node
 var seat_left := 0
 
 
-## Puts the body on the ground under it; true while it is still seating (the step does nothing else).
+## Puts the body on the ground under it; true while it is still seating (the step does nothing
+## else).
 func seat() -> bool:
 	if seat_left <= 0:
 		return false
@@ -30,8 +33,8 @@ func seat() -> bool:
 	return true
 
 
-## Gravity, or the lift of a flier, for this step (Locomotion.begin). `walking`: the body is in MOVE. True when the body flew as
-## the step began.
+## Gravity, or the lift of a flier, for this step (Locomotion.begin). `walking`: the body is in
+## MOVE. True when the body flew as the step began.
 func step_vertical(delta: float, walking: bool) -> bool:
 	var must_fly := body.type != null and body.type.is_flying()
 	var airborne := body.is_flying()
@@ -40,7 +43,9 @@ func step_vertical(delta: float, walking: bool) -> bool:
 	if must_fly and not (flight != null and flight.is_dropped()):
 		hold_height(delta)
 	elif flight != null and (must_fly or flight.is_capable()):
-		var above := body.global_position.y - ground_height(body.global_position) if airborne else 0.0
+		var above := (
+			body.global_position.y - ground_height(body.global_position) if airborne else 0.0
+		)
 		var lift := flight.advance(delta, walking, above, body.is_on_floor())
 		if airborne:
 			body.velocity.y = lift
@@ -84,8 +89,8 @@ func hold_still() -> void:
 		body.velocity.z = 0.0
 
 
-## A hybrid in the air keeps its flying pace: the avoidance turns its heading but does not add to it.
-## Ref: sacengine speedInAir (state.d:14742-14751), F116.
+## A hybrid in the air keeps its flying pace: the avoidance turns its heading but does not add to
+## it.
 func cap_pace() -> void:
 	if body.flight == null or not body.flight.is_airborne():
 		return
@@ -97,16 +102,16 @@ func cap_pace() -> void:
 		body.velocity.z = flat.y
 
 
-## F116: the Flight child takes the walk to `point` by air. A flier goes
+## The Flight child takes the walk to `point` by air. A flier goes
 ## straight: its waypoints are dropped.
-## Ref: sacengine moveTowards state.d:12335-12339.
 func flies_to(point: Vector3) -> bool:
 	if not body.simulates():
 		return false
 	var type := body.type
 	var flight := body.flight
 	var follower := body.path_follower
-	## A creature that must fly has no Flight child (it is never on the ground): it always goes straight, no path on the navmesh or the grid.
+	# A creature that must fly has no Flight child (it is never on the ground): it always goes
+	# straight, no path on the navmesh or the grid.
 	if type != null and type.is_flying():
 		if is_instance_valid(follower):
 			follower.cancel()
@@ -121,8 +126,8 @@ func flies_to(point: Vector3) -> bool:
 	return true
 
 
-## A hybrid that stands on the ground takes the walk by air when the whole leg is worth flying; the goal becomes the
-## end of its waypoints.
+## A hybrid that stands on the ground takes the walk by air when the whole leg is worth flying; the
+## goal becomes the end of its waypoints.
 func reroute() -> void:
 	var flight := body.flight
 	if flight == null or flight.state != Flight.State.GROUND or not flight.is_capable():

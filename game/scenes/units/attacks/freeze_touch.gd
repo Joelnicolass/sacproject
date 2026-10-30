@@ -1,13 +1,12 @@
 class_name FreezeTouch
 extends WaveTouch
 
-## The freeze of the Silverback's breath. The
-## shot's target tries to freeze right after the blow (tryFreezeWithCooldown); any other body that was not frozen when
-## the wave touched it tries at the end of the update (toFreeze). A building has no Frozen. The freeze is the body's own
-## Afflictions/Frozen with the SPEL `zerf`.
-## Ref: F149 (RFC-030 030k-b), sacengine updateSilverbackProjectile state.d:24758-24831.
+## The freeze of the Silverback's breath. The shot's target tries to freeze right after the blow;
+## any other body that was not frozen when the wave touched it tries at the end of the update. A
+## building has no Frozen. The freeze is the body's own Afflictions/Frozen with the SPEL `zerf`.
 
-## The spell of the freeze a touched body may take (data/catalog/spells/zerf.tres: 20 s, 150 of spell damage when it thaws).
+## The spell of the freeze a touched body may take (spells/freeze/freeze.tres: 20 s, 150 of
+## spell damage when it thaws).
 @export var freeze: SpellType
 ## The Frozen state under each body.
 @export var frozen_path := NodePath("Afflictions/Frozen")
@@ -15,9 +14,12 @@ extends WaveTouch
 var _to_freeze: Array[Frozen] = []
 
 
-## The body's Frozen when it can be frozen now (not a building, not frozen yet), read before the damage.
+## The body's Frozen when it can be frozen now (not a building, not frozen yet), read before the
+## damage.
 func before_hit(body: Node3D, _direct: bool, _shot: RangedShot, wave: GrowingWave) -> Variant:
-	var frozen: Frozen = null if wave.is_building(body) else body.get_node_or_null(frozen_path) as Frozen
+	var frozen: Frozen = (
+		null if wave.is_building(body) else body.get_node_or_null(frozen_path) as Frozen
+	)
 	return frozen if frozen != null and not frozen.is_on() else null
 
 

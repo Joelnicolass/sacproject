@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="SpellType" load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://spells/firewall/firewall_action.tscn" id="2_action"]
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_ubft4"]
+[ext_resource type="Texture2D" uid="uid://bf5uxawhlnci5" path="res://assets/original/ui/icons/lwrf.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_ubft4")
+tag = "lwrf"
+display_name = "Firewall"
+icon = ExtResource("icon_tex")
+mana_cost = 1200
+cast_range_m = 100.0
+cooldown_s = 50.0
+casting_time_s = 2.963
+book_level = 6
+book_slot = 63
+damage = 625
+effect_range_m = 55.0
+duration_s = 30.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+never_allies = true
+targets_ground = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 625
+structures = PackedStringArray()

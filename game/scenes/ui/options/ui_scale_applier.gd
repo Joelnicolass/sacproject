@@ -2,13 +2,15 @@
 class_name UiScaleApplier
 extends Node
 
-## Puts the player's interface size on the window, at start and live on every change; the one writer of Window.content_scale_factor.
-## It does nothing else: the stretch (canvas_items + expand, 1280×720 base) scales every widget, so no widget reads the size.
-## Inert in the editor, in a headless process and in the dedicated server (no window to scale). Under AgentKit the preference is
-## the in-memory sandbox (UserSettings), so a run starts at the project's scale unless `--ui-scale=` says otherwise.
-## A scene that can open the options (the boot, the match) holds one; the window keeps the factor when the scene is swapped.
+## Puts the player's interface size on the window, at start and live on every change; the one writer
+## of Window.content_scale_factor.
+## It does nothing else: the stretch (canvas_items + expand, 1280×720 base) scales every widget, so
+## no widget reads the size. Inert in the editor, in a headless process and in the dedicated server
+## (no window to scale). Under AgentKit the preference is the in-memory sandbox (UserSettings), so a
+## run starts at the project's scale unless `--ui-scale=` says otherwise. A scene that can open the
+## options (the boot, the match) holds one; the window keeps the factor when the scene is swapped.
 
-## The shared preference (data/ui/ui_scale.tres).
+## The shared preference (scenes/ui/ui_scale.tres).
 @export var prefs: UiScalePrefs
 
 
@@ -29,8 +31,16 @@ func apply() -> void:
 
 
 func _inert() -> bool:
-	return Engine.is_editor_hint() or DisplayServer.get_name() == "headless" or MpBoot.is_dedicated_process()
+	return (
+		Engine.is_editor_hint()
+		or DisplayServer.get_name() == "headless"
+		or MpBoot.is_dedicated_process()
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if prefs != null else PackedStringArray(["Asigná `prefs` (%s)." % UiScalePrefs.SHARED_PATH])
+	return (
+		PackedStringArray()
+		if prefs != null
+		else PackedStringArray(["Assign `prefs` (%s)." % UiScalePrefs.SHARED_PATH])
+	)

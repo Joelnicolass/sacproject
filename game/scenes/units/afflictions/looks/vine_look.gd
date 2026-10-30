@@ -1,11 +1,12 @@
 class_name VineLook
 extends Node3D
 
-## The vines that hold a body: sixteen skinned tubes (the scene's `vine.glb` instances) rooted at its feet, tip in the upper half of its box.
-## Each follows a spline through four control points; the two middle ones are damped springs that are pushed again when they rest, so the
-## vines never stop twisting. They grow when the state goes on and shrink when it ends. It does not decide when the state is on
-## (Affliction) nor hold the body (Vined). Presentation only, on every peer, from the replicated mask; its shapes use a stream of their own.
-## Ref: sacengine GraspingVines (state.d:17825-17876, renderer.d:2232-2259).
+## The vines that hold a body: sixteen skinned tubes (the scene's `vine.glb` instances) rooted at
+## its feet, tip in the upper half of its box. Each follows a spline through four control points;
+## the two middle ones are damped springs that are pushed again when they rest, so the vines never
+## stop twisting. They grow when the state goes on and shrink when it ends. It does not decide when
+## the state is on (Affliction) nor hold the body (Vined). Presentation only, on every peer, from
+## the replicated mask; its shapes use a stream of their own.
 
 ## The state that shows it, and the body whose box it fills.
 @export var affliction: Affliction
@@ -14,7 +15,8 @@ extends Node3D
 @export var material: Material
 @export_range(0.0166, 5.0, 0.0001, "suffix:s") var grow_s := 1.0
 @export_group("Springs")
-## Acceleration of a control point toward its place is this over the vine's scale; the speed halves every `half_life_s` and stops at `max_speed`.
+## Acceleration of a control point toward its place is this over the vine's scale; the speed halves
+## every `half_life_s` and stops at `max_speed`.
 @export var spring := 90.0
 @export var half_life_s := 1.0
 @export var max_speed := 20.0
@@ -73,11 +75,30 @@ func _throw() -> void:
 	var feet := body.to_local(Vector3(box.get_center().x, box.position.y, box.get_center().z))
 	_vines.clear()
 	for skeleton in _skeletons:
-		var tip := feet + Vector3(_rng.randf_range(-half.x, half.x), _rng.randf_range(half.y, box.size.y), _rng.randf_range(-half.z, half.z))
-		var root := Vector3(tip.x + _rng.randf_range(-1.0, 1.0) * 0.7, feet.y - 0.1 * scale_m, tip.z + _rng.randf_range(-1.0, 1.0) * 0.7)
+		var tip := (
+			feet
+			+ Vector3(
+				_rng.randf_range(-half.x, half.x),
+				_rng.randf_range(half.y, box.size.y),
+				_rng.randf_range(-half.z, half.z)
+			)
+		)
+		var root := Vector3(
+			tip.x + _rng.randf_range(-1.0, 1.0) * 0.7,
+			feet.y - 0.1 * scale_m,
+			tip.z + _rng.randf_range(-1.0, 1.0) * 0.7
+		)
 		skeleton.position = root
 		skeleton.scale = Vector3.ONE * scale_m
-		_vines.append({"root": root, "tip": tip, "scale": scale_m, "p": [root.lerp(tip, 0.33), root.lerp(tip, 0.66)], "v": [Vector3.ZERO, Vector3.ZERO]})
+		_vines.append(
+			{
+				"root": root,
+				"tip": tip,
+				"scale": scale_m,
+				"p": [root.lerp(tip, 0.33), root.lerp(tip, 0.66)],
+				"v": [Vector3.ZERO, Vector3.ZERO]
+			}
+		)
 
 
 ## One step of the springs of a vine, then its bones along the spline.
@@ -93,26 +114,53 @@ func _move(index: int, delta: float) -> void:
 		var speed: Vector3 = speeds[k] + (home - points[k] as Vector3) * (spring / scale_m) * delta
 		speed *= pow(0.5, delta / half_life_s)
 		if speed.length() < rest_speed:
-			speed += Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)).normalized() * push
+			speed += (
+				(
+					Vector3(
+						_rng.randf_range(-1.0, 1.0),
+						_rng.randf_range(-1.0, 1.0),
+						_rng.randf_range(-1.0, 1.0)
+					)
+					. normalized()
+				)
+				* push
+			)
 		speeds[k] = speed.limit_length(max_speed)
 		points[k] = points[k] + speeds[k] * delta
 	_pose(_skeletons[index], root, root, points[0], points[1], root.lerp(tip, _length), scale_m)
 
 
-## The bones on the cubic spline root -> two springs -> tip (the tip at `_length` of the way); each bone looks along the curve.
-func _pose(skeleton: Skeleton3D, root: Vector3, p0: Vector3, p1: Vector3, p2: Vector3, tip: Vector3, scale_m: float) -> void:
+## The bones on the cubic spline root -> two springs -> tip (the tip at `_length` of the way); each
+## bone looks along the curve.
+func _pose(
+	skeleton: Skeleton3D,
+	root: Vector3,
+	p0: Vector3,
+	p1: Vector3,
+	p2: Vector3,
+	tip: Vector3,
+	scale_m: float
+) -> void:
 	var count := skeleton.get_bone_count()
 	var side := Vector3.RIGHT
 	for bone in count:
 		var t := float(bone) / float(count - 1)
 		var u := 1.0 - t
-		var at := p0 * (u * u * u) + p1 * (3.0 * u * u * t) + p2 * (3.0 * u * t * t) + tip * (t * t * t)
-		var along := (p1 - p0) * (3.0 * u * u) + (p2 - p1) * (6.0 * u * t) + (tip - p2) * (3.0 * t * t)
+		var at := (
+			p0 * (u * u * u) + p1 * (3.0 * u * u * t) + p2 * (3.0 * u * t * t) + tip * (t * t * t)
+		)
+		var along := (
+			(p1 - p0) * (3.0 * u * u) + (p2 - p1) * (6.0 * u * t) + (tip - p2) * (3.0 * t * t)
+		)
 		if along.length_squared() < 0.000001:
 			along = Vector3.UP
 		var up := along.normalized()
 		side = (side - up * side.dot(up))
-		side = side.normalized() if side.length_squared() > 0.000001 else up.cross(Vector3.FORWARD).normalized()
+		side = (
+			side.normalized()
+			if side.length_squared() > 0.000001
+			else up.cross(Vector3.FORWARD).normalized()
+		)
 		var basis := Basis(side, up, side.cross(up))
 		skeleton.set_bone_global_pose(bone, Transform3D(basis, (at - root) / scale_m))
 
@@ -120,5 +168,5 @@ func _pose(skeleton: Skeleton3D, root: Vector3, p0: Vector3, p1: Vector3, p2: Ve
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if affliction == null or body == null:
-		warnings.append("Faltan affliction y body.")
+		warnings.append("Missing affliction and body.")
 	return warnings

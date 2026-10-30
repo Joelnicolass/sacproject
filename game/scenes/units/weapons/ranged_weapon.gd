@@ -1,30 +1,33 @@
 class_name RangedWeapon
 extends Weapon
 
-## A shot: the creature stops, turns until it faces the aim, spends mana and fires on the shoot ticks of its clip, then waits out
-## the cooldown. What flies is the AbilityType in `attack_type` (or the creature's own); how it looks and what it does on arrival
-## is that ability's ShotLook (ShotSpawner.default_look: data/shots/<tag>.tscn): a breath is this weapon with a ShotLook whose in_flight is a wave.
+## A shot: the creature stops, turns until it faces the aim, spends mana and fires on the shoot
+## ticks of its clip, then waits out the cooldown. What flies is the AbilityType in `attack_type`
+## (or the creature's own); how it looks and what it does on arrival is that ability's `shot_look`
+## (a ShotLook scene of scenes/units/attacks/shots/): a breath is this weapon with a ShotLook whose
+## in_flight is a wave.
 ## Not: the flight (RangedShot) nor who to shoot (the chase state).
-## Ref: sacengine `attack`, `shoot`, `aim`, `shootOnTick` (state.d:12511-12855). Server (or solo) only.
+## Server (or solo) only.
 
 ## The ranged attack this weapon fires. Empty = the creature's own (CreatureType.ranged_attack).
 @export var attack_type: AbilityType
-## It shoots unless the foe is in melee contact: its box within this many metres of ours (rangedMeleeAttackDistance).
+## It shoots unless the foe is in melee contact: its box within this many metres of ours.
 @export var melee_distance := 0.5
-## It stops to shoot at max(range_factor·range, range − range_margin) from the body to the target's box.
+## It stops to shoot at max(range_factor·range, range − range_margin) from the body to the target's
+## box.
 @export var range_factor := 0.8
 @export var range_margin := 30.0
 ## It shoots once it faces the aim within what it turns in this long.
 @export_range(0.0, 1.0, 0.0001, "suffix:s") var facing_s := 0.0666
-## The shot leaves from the body's front at this fraction of its height (the baked bodies have no hand bones).
+## The shot leaves from the body's front at this fraction of its height (the baked bodies have no
+## hand bones).
 @export var shot_height := 0.7
-## The line to the target is checked this far under both ends (hasClearShot).
+## The line to the target is checked this far under both ends.
 @export var clear_shot_drop := 0.2
 @export_flags_3d_physics var ground_mask := 1
 
-const FPS := 60.0
-
-## The ability it fires and the look of that shot (a child of this node, made again when the ability changes).
+## The ability it fires and the look of that shot (a child of this node, made again when the ability
+## changes).
 var attack: AbilityType
 var look: ShotLook
 var type: CreatureType
@@ -43,8 +46,15 @@ func setup(unit: UnitBody, creature: CreatureType, stream: RandomNumberGenerator
 	attack = attack_type if attack_type != null else (creature.ranged_attack if creature else null)
 	if attack and attack.speed_m_s <= 0.0:
 		attack = null
+	if attack and attack.shot_look == null:
+		push_error(
+			(
+				"RangedWeapon: the ranged attack %s has no shot_look; it flies as a plain ball."
+				% attack.resource_path
+			)
+		)
 	if attack and unit.simulates():
-		look = ShotLook.fit(self, look, ShotSpawner.default_look(attack))
+		look = ShotLook.fit(self, look, attack.shot_look)
 	elif look != null:
 		look.queue_free()
 		look = null
@@ -105,9 +115,10 @@ func start(foe: Node3D) -> void:
 func advance(delta: float) -> bool:
 	if not _clip.active:
 		return false
-	## Each layer of Slime makes the shot take 5x as long (hasShootTick).
-	## Ref: sacengine state.d:1405-1408.
-	for _shot in _clip.advance(delta / Afflictions.stat_factor_of(body, Afflictions.Stat.ATTACK_TIME)):
+	# Each layer of Slime makes the shot take 5x as long.
+	for _shot in _clip.advance(
+		delta / Afflictions.stat_factor_of(body, Afflictions.Stat.ATTACK_TIME)
+	):
 		RangedFire.tick(self, _clip.shots.size())
 	if _clip.ended():
 		_clip.active = false
@@ -115,7 +126,8 @@ func advance(delta: float) -> bool:
 	return true
 
 
-## Where a shot leaves: the body's front at shot_height of its height. Public for a strike that follows its shooter.
+## Where a shot leaves: the body's front at shot_height of its height. Public for a strike that
+## follows its shooter.
 func shot_origin() -> Vector3:
 	return ShotAim.origin(body, shot_height)
 

@@ -2,21 +2,26 @@
 class_name SwarmOrbit
 extends Node3D
 
-## A few things (its children) that circle what their SpellCarrier is about: Charm's three spirits (the wizard while he casts, the creature while it is being
-## charmed), Intestinal Vaporization's seven guts (the creature that swells). Each member wanders: every so often it picks a point of a disc around
-## the center and a push, and glides there on a smooth curve. While the carrier flies they fly with it, a little apart. Presentation only: every
-## peer moves its own from the replicated phase and positions, and a headless process moves none. It hurts nobody and picks no target.
-## Ref: sacengine updateTargetedCharmSpirit, updateFlyingCharmSpirit, updateIntestinalVaporizationEffect (state.d:21863-21913, 21492-21516).
+## A few things (its children) that circle what their SpellCarrier is about: Charm's three spirits
+## (the wizard while he casts, the creature while it is being charmed), Intestinal Vaporization's
+## seven guts (the creature that swells). Each member wanders: every so often it picks a point of a
+## disc around the center and a push, and glides there on a smooth curve. While the carrier flies
+## they fly with it, a little apart. Presentation only: every peer moves its own from the replicated
+## phase and positions, and a headless process moves none. It hurts nobody and picks no target.
 
 @export var carrier: SpellCarrier
-## The phases in which they circle the carrier (the target); in CASTING they circle the wizard, in the others they stay by the carrier.
-@export var circle_in: Array[SpellCarrier.Phase] = [SpellCarrier.Phase.HOLDING, SpellCarrier.Phase.LINGERING]
+## The phases in which they circle the carrier (the target); in CASTING they circle the wizard, in
+## the others they stay by the carrier.
+@export var circle_in: Array[SpellCarrier.Phase] = [
+	SpellCarrier.Phase.HOLDING, SpellCarrier.Phase.LINGERING
+]
 ## In CASTING they circle the wizard (Charm's spirits); off: they are not seen then.
 @export var circles_wizard := true
 ## While the carrier flies they fly with it (Charm's spirits); off: they are not seen then.
 @export var flies_along := true
 @export_group("Disc")
-## The radius of the disc is `radius_base_m` + `radius_per_size` times the half diagonal of the box of what they circle.
+## The radius of the disc is `radius_base_m` + `radius_per_size` times the half diagonal of the box
+## of what they circle.
 @export_range(0.0, 10.0, 0.05, "suffix:m") var radius_base_m := 1.0
 @export_range(0.0, 10.0, 0.05) var radius_per_size := 1.1
 ## The push of each leg, as a multiple of the radius.
@@ -30,7 +35,8 @@ extends Node3D
 ## While the carrier flies, the members are spread round it at this distance.
 @export_range(0.0, 3.0, 0.05, "suffix:m") var flight_spread_m := 0.2
 
-## The things that circle: its children (the node itself moves, its own children draw: a ribbon, a sprite).
+## The things that circle: its children (the node itself moves, its own children draw: a ribbon, a
+## sprite).
 var members: Array[Node3D] = []
 var _from: Array[Vector3] = []
 var _to: Array[Vector3] = []
@@ -46,7 +52,11 @@ func _init() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
 
 func _ready() -> void:
@@ -88,7 +98,9 @@ func _process(delta: float) -> void:
 	if phase == SpellCarrier.Phase.FLYING or phase == SpellCarrier.Phase.SHRINKING:
 		for i in members.size():
 			var angle := TAU * float(i) / float(members.size())
-			members[i].global_position = DrawnPose.origin(carrier) + Vector3(sin(angle), 0.0, cos(angle)) * flight_spread_m
+			members[i].global_position = (
+				DrawnPose.origin(carrier) + Vector3(sin(angle), 0.0, cos(angle)) * flight_spread_m
+			)
 		return
 	var radius := radius_base_m + radius_per_size * _size(focus)
 	for i in members.size():
@@ -98,28 +110,60 @@ func _process(delta: float) -> void:
 func _wander(i: int, center: Vector3, radius: float, delta: float) -> void:
 	if _progress[i] >= 1.0:
 		_progress[i] -= 1.0
-		_from[i] = _to[i] if _from[i] != Vector3.ZERO or _to[i] != Vector3.ZERO else members[i].global_position - center
+		_from[i] = (
+			_to[i]
+			if _from[i] != Vector3.ZERO or _to[i] != Vector3.ZERO
+			else members[i].global_position - center
+		)
 		_push_from[i] = _push_to[i]
 		var disc := Vector2.from_angle(_rng.randf_range(-PI, PI)) * radius * sqrt(_rng.randf())
 		_to[i] = Vector3(disc.x, _rng.randf_range(-0.5, 0.5) * radius, disc.y)
-		_push_to[i] = Vector3(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)).normalized() * push * radius
+		_push_to[i] = (
+			(
+				Vector3(
+					_rng.randf_range(-1.0, 1.0),
+					_rng.randf_range(-1.0, 1.0),
+					_rng.randf_range(-1.0, 1.0)
+				)
+				. normalized()
+			)
+			* push
+			* radius
+		)
 	_progress[i] += legs_per_s * delta
-	var at := CarrierPath.hermite(_from[i], _push_from[i], _to[i], _push_to[i], clampf(_progress[i], 0.0, 1.0)) + center
+	var at := (
+		CarrierPath.hermite(
+			_from[i], _push_from[i], _to[i], _push_to[i], clampf(_progress[i], 0.0, 1.0)
+		)
+		+ center
+	)
 	var ground := GroundRay.surface_y(self, at, 1, GroundRay.wizard_rids(get_tree()), -INF)
 	if is_finite(ground):
 		at.y = maxf(at.y, ground + min_height_m)
 	members[i].global_position = at
 
 
-## What they circle in this phase: the wizard while he casts, the target in `circle_in`, the carrier while it flies; null when they are not seen.
+## What they circle in this phase: the wizard while he casts, the target in `circle_in`, the carrier
+## while it flies; null when they are not seen.
 func _focus(phase: SpellCarrier.Phase) -> Node3D:
 	if phase == SpellCarrier.Phase.CASTING or phase == SpellCarrier.Phase.WAITING:
 		return carrier.wizard() if circles_wizard else null
-	if phase == SpellCarrier.Phase.LINGERING and linger_visible_s > 0.0 and _phase_age > linger_visible_s:
+	if (
+		phase == SpellCarrier.Phase.LINGERING
+		and linger_visible_s > 0.0
+		and _phase_age > linger_visible_s
+	):
 		return null
 	if circle_in.has(phase):
 		return carrier.target_body() if carrier.target_body() != null else carrier
-	return carrier if flies_along and (phase == SpellCarrier.Phase.FLYING or phase == SpellCarrier.Phase.SHRINKING) else null
+	return (
+		carrier
+		if (
+			flies_along
+			and (phase == SpellCarrier.Phase.FLYING or phase == SpellCarrier.Phase.SHRINKING)
+		)
+		else null
+	)
 
 
 static func _size(body: Node3D) -> float:

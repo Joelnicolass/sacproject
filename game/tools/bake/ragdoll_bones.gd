@@ -1,24 +1,29 @@
 class_name RagdollBones
 extends RefCounted
 
-## Builds the bodies of a model's physical skeleton: one `PhysicalBone3D` (a capsule along the bone, a cone joint to the nearest
-## body above) per bone that is long enough. Does NOT pick the hang bone, save, or check anything (RagdollBaker and RagdollCheck do).
-## A bone gets a body when its segment (the distance to its children) is at least MIN_BONE_RATIO of the model's size; a shorter one
-## rides on its parent, unless a body hangs below it (then it is a short "link" that keeps the bodies together). The model is drawn
-## mirrored on z, which a physics body cannot be: each body carries the mirror in its `body_offset`. Layer 16, mask 1: bones only
-## meet the terrain, never units or spells.
+## Builds the bodies of a model's physical skeleton: one `PhysicalBone3D` (a capsule along the bone,
+## a cone joint to the nearest body above) per bone that is long enough. Does NOT pick the hang
+## bone, save, or check anything (RagdollBaker and RagdollCheck do). A bone gets a body when its
+## segment (the distance to its children) is at least MIN_BONE_RATIO of the model's size; a shorter
+## one rides on its parent, unless a body hangs below it (then it is a short "link" that keeps the
+## bodies together). The model is drawn mirrored on z, which a physics body cannot be: each body
+## carries the mirror in its `body_offset`. Layer 16, mask 1: bones only meet the terrain, never
+## units or spells.
 
 const BONE_LAYER := 16
 const BONE_MASK := 1
 const MIN_BONE_RATIO := 0.06
-const LEAF_RATIO := 0.35 ## a bone with no children gets this part of its own length
-const RADIUS_PER_LENGTH := 0.22 ## capsule radius, as a part of the segment (never fatter than half of it)
+const LEAF_RATIO := 0.35  ## a bone with no children gets this part of its own length
+## capsule radius, as a part of the segment (never fatter than half of it)
+const RADIUS_PER_LENGTH := 0.22
 const RADIUS_MIN_RATIO := 0.04
 const DENSITY := 800.0
 const FRICTION := 0.8
-const LIMB_DEG := Vector2(55.0, 35.0) ## cone limits in degrees (swing, twist); a hub bone (hips, chest) is stiffer
+## cone limits in degrees (swing, twist); a hub bone (hips, chest) is stiffer
+const LIMB_DEG := Vector2(55.0, 35.0)
 const HUB_DEG := Vector2(28.0, 18.0)
-## A capsule is never shorter than two radii plus this (Godot clamps it otherwise and the baked number lies).
+## A capsule is never shorter than two radii plus this (Godot clamps it otherwise and the baked
+## number lies).
 const CAPSULE_SLACK_M := 0.01
 const EPSILON := 0.001
 
@@ -38,7 +43,9 @@ static func add_bodies(skeleton: Skeleton3D, simulator: PhysicalBoneSimulator3D,
 			continue
 		var length: float = segment["length"]
 		var dir: Vector3 = offset.basis * (segment["dir"] as Vector3)
-		var radius := clampf(maxf(length * RADIUS_PER_LENGTH, size * RADIUS_MIN_RATIO), 0.01, length * 0.5)
+		var radius := clampf(
+			maxf(length * RADIUS_PER_LENGTH, size * RADIUS_MIN_RATIO), 0.01, length * 0.5
+		)
 		var body := PhysicalBone3D.new()
 		body.name = "Bone_" + skeleton.get_bone_name(bone)
 		simulator.add_child(body)
@@ -62,9 +69,12 @@ static func add_bodies(skeleton: Skeleton3D, simulator: PhysicalBoneSimulator3D,
 	return count
 
 
-## The capsule of a bone: its axis along `dir` (in the body's frame), from the bone's head to `length` ahead.
-## The shape is sized first and assigned after, so the numbers that get saved are the ones set here.
-static func _add_capsule(body: PhysicalBone3D, root: Node, dir: Vector3, length: float, radius: float) -> void:
+## The capsule of a bone: its axis along `dir` (in the body's frame), from the bone's head to
+## `length` ahead. The shape is sized first and assigned after, so the numbers that get saved are
+## the ones set here.
+static func _add_capsule(
+	body: PhysicalBone3D, root: Node, dir: Vector3, length: float, radius: float
+) -> void:
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = radius
 	capsule.height = maxf(length, radius * 2.0 + CAPSULE_SLACK_M)
@@ -76,7 +86,8 @@ static func _add_capsule(body: PhysicalBone3D, root: Node, dir: Vector3, length:
 	shape.owner = root
 
 
-## The bones that have a body of their own or one below them (all their ancestors): the links of the physical skeleton.
+## The bones that have a body of their own or one below them (all their ancestors): the links of the
+## physical skeleton.
 static func _bones_over_bodies(skeleton: Skeleton3D, min_length: float) -> Dictionary:
 	var over := {}
 	for bone in skeleton.get_bone_count():
@@ -89,8 +100,9 @@ static func _bones_over_bodies(skeleton: Skeleton3D, min_length: float) -> Dicti
 	return over
 
 
-## Where a bone points and how long it is, in the bone's own frame: {dir, length, hub}. Empty when it gets no body.
-## `link`: a bone that is too short still gets the shortest segment (it holds bodies below it together).
+## Where a bone points and how long it is, in the bone's own frame: {dir, length, hub}. Empty when
+## it gets no body. `link`: a bone that is too short still gets the shortest segment (it holds
+## bodies below it together).
 static func _segment(skeleton: Skeleton3D, bone: int, min_length: float, link: bool) -> Dictionary:
 	var kids: Array[Vector3] = []
 	for other in skeleton.get_bone_count():
@@ -139,7 +151,8 @@ static func _model_size(skeleton: Skeleton3D) -> float:
 	return maxf(box.get_longest_axis_size(), 0.1)
 
 
-## The part of the transform of everything above the skeleton in the model scene (the mirror lives in there).
+## The part of the transform of everything above the skeleton in the model scene (the mirror lives
+## in there).
 static func _world_basis(skeleton: Skeleton3D) -> Basis:
 	var basis := Basis.IDENTITY
 	var node: Node = skeleton

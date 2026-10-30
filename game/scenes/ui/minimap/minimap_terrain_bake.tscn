@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/minimap/minimap_terrain_bake.gd" id="1_bake"]
-[ext_resource type="Resource" path="res://data/look/james.tres" id="3_look"]
+[ext_resource type="Resource" path="res://scenes/look/james.tres" id="3_look"]
 
 [sub_resource type="Environment" id="Environment_ambient"]
 background_mode = 0
@@ -11,7 +11,7 @@ ambient_light_energy = 0.7
 reflected_light_source = 1
 
 [node name="MinimapTerrainBake" type="Node" unique_id=1037000001 node_paths=PackedStringArray("viewport", "ground", "camera", "preview")]
-editor_description = "RFC-037 037a: ground seen from above, drawn once into a texture. Own 3D world with ambient light only (no debug-draw: it does not exist in release exports)."
+editor_description = "Ground seen from above, drawn once into a texture. Own 3D world with ambient light only (no debug-draw: it does not exist in release exports)."
 script = ExtResource("1_bake")
 look = ExtResource("3_look")
 viewport = NodePath("Viewport")

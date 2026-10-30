@@ -1,14 +1,13 @@
 class_name CowerState
 extends UnitState
 
-## COWER: a peasant far from any shelter crouches and waits, regenerating.
-## When the cower clip ends, 1 time in TALK_COWER_EVERY the peasant talks while cowering; the pick is
-## (hash(name) + loops) % 5, the same on every peer and every run.
-## Ref: RFC-024 addendum 1, sacengine cower state.d:8164-8171.
+## COWER: a peasant far from any shelter crouches and waits, regenerating. When the cower clip ends,
+## 1 time in TALK_COWER_EVERY the peasant talks while cowering; the pick is (hash(name) + loops) %
+## 5, the same on every peer and every run.
 
 const TALK_COWER_EVERY := 5
-## The pose of a cowering creature with no cower clip in the cache: the model crouches (presentation only, on every peer).
-## With the clip (RFC-028c) the clip plays instead.
+## The pose of a cowering creature with no cower clip in the cache: the model crouches (presentation
+## only, on every peer). With the clip the clip plays instead.
 const COWER_SCALE := Vector3(1.08, 0.6, 1.08)
 
 var _role := "cower"
@@ -36,6 +35,9 @@ func on_clip_looped(role: String) -> bool:
 	if role != "cower" and role != "talk_cower":
 		return false
 	_loops += 1
-	var talk := posmod(hash(String(body.name)) + _loops, TALK_COWER_EVERY) == 0 and body.has_clip("talk_cower")
+	var talk := (
+		posmod(hash(String(body.name)) + _loops, TALK_COWER_EVERY) == 0
+		and body.has_clip("talk_cower")
+	)
 	_role = "talk_cower" if talk else "cower"
 	return true

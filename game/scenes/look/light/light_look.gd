@@ -3,7 +3,8 @@ class_name LightLook
 extends Resource
 
 ## Light of one biome: sun, shadows, fill, ambient, exposure and SSAO. One `.tres` per god
-## (`data/look/light/<god>_light.tres`); a night is another `.tres`. Nothing here is score or copy.
+## (`scenes/look/light/<god>_light.tres`); a night is another `.tres`. Nothing here is score or
+## copy.
 ## SunLayer reads the sun, shadow and fill parts; EnvironmentLayer reads the ambient, exposure and
 ## screen-space parts. Fog belongs to the SkyLook.
 
@@ -20,7 +21,7 @@ extends Resource
 @export_range(0.0, 3.0, 0.05) var sun_angular_distance: float = 0.7
 ## How much the sun lights the volumetric fog (1 = like any light). It only scales the
 ## in-scatter; the milky veil comes from `volumetric_density` (see Fog below).
-@export_range(0.0, 4.0, 0.05) var sun_fog_energy: float = 0.3
+@export_range(0.0, 4.0, 0.05) var sun_fog_energy: float = 0.4
 
 @export_group("Shadows")
 ## 1 = black shadow, lower lets the ambient and fill through.
@@ -49,12 +50,13 @@ extends Resource
 @export_range(0.0, 3.0, 0.01) var ambient_energy: float = 0.7
 
 @export_group("Exposure")
-## The tonemapper of this biome. The default (AgX) is the one `env_base.tres` has; a biome whose ground must keep its
-## saturation (Persephone's green) picks another. Only EnvironmentLayer writes it.
+## The tonemapper of this biome. The default (AgX) is the one `env_base.tres` has; a biome whose
+## ground must keep its saturation (Persephone's green) picks another. Only EnvironmentLayer writes
+## it.
 @export var tonemap_mode: Environment.ToneMapper = Environment.TONE_MAPPER_AGX
 @export_range(0.1, 4.0, 0.01) var tonemap_exposure: float = 1.0
 @export_range(0.5, 16.0, 0.1) var tonemap_white: float = 6.0
-## 1.15 at most (RFC-022).
+## 1.15 at most.
 @export_range(0.0, 1.5, 0.01) var saturation: float = 1.05
 
 @export_group("SSAO")
@@ -80,7 +82,8 @@ func fill_direction() -> Vector3:
 	return direction_of(sun_azimuth_deg + fill_azimuth_offset_deg, fill_elevation_deg)
 
 
-## Unit vector from the ground toward a body at this compass azimuth (0 = +Z) and elevation, in degrees.
+## Unit vector from the ground toward a body at this compass azimuth (0 = +Z) and elevation, in
+## degrees.
 static func direction_of(azimuth_deg: float, elevation_deg: float) -> Vector3:
 	var az := deg_to_rad(azimuth_deg)
 	var el := deg_to_rad(elevation_deg)

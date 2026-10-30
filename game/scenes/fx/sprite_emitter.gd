@@ -6,7 +6,8 @@ extends CPUParticles3D
 ## Presentation only: it never draws in a headless (dedicated) process. Runs in the editor
 ## (@tool, no autoloads); editing the type's numbers rebuilds it live.
 
-## Relative change of the emission rate below which `set_rate` leaves the particle pool alone (resizing it drops the live sprites).
+## Relative change of the emission rate below which `set_rate` leaves the particle pool alone
+## (resizing it drops the live sprites).
 const RATE_STEP := 0.15
 
 @export var type: ParticleType:
@@ -19,7 +20,7 @@ const RATE_STEP := 0.15
 		if is_node_ready():
 			_apply()
 		update_configuration_warnings()
-## Multiplies the sprite color (the original tints Manalith smoke with the side color).
+## Multiplies the sprite color (a Manalith tints its smoke with the side color).
 @export var tint := Color.WHITE:
 	set(value):
 		tint = value
@@ -43,7 +44,7 @@ func _ready() -> void:
 	set_active(start_active)
 
 
-## RFC-053 053h (F377): a set_active() that came while out of the tree (a Manalith released in its _exit_tree after the
+## A set_active() that came while out of the tree (a Manalith released in its _exit_tree after the
 ## fount already left) is applied here.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_ENTER_TREE:
@@ -51,11 +52,14 @@ func _notification(what: int) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray(["Falta el ParticleType."]) if type == null else PackedStringArray()
+	return (
+		PackedStringArray(["The ParticleType is missing."]) if type == null else PackedStringArray()
+	)
 
 
-## The only switch outside code should use: a dedicated process stays off. Out of the tree it only stores the state
-## (turning CPUParticles3D on reads the global transform); entering the tree applies it.
+## The only switch outside code should use: a dedicated process stays off. Out of the tree it only
+## stores the state (turning CPUParticles3D on reads the global transform); entering the tree
+## applies it.
 func set_active(active: bool) -> void:
 	_active = active
 	if is_inside_tree():
@@ -66,8 +70,9 @@ func _apply_active() -> void:
 	emitting = _active and _rate != 0.0 and not _is_headless()
 
 
-## Emits `per_s` particles per second instead of the type's `rate_per_s` (a rate the game decides, like the Manahoar's, which
-## follows the mana it gives). 0 stops; a negative value goes back to the type's. Only continuous types (rate_per_s > 0).
+## Emits `per_s` particles per second instead of the type's `rate_per_s` (a rate the game decides,
+## like the Manahoar's, which follows the mana it gives). 0 stops; a negative value goes back to the
+## type's. Only continuous types (rate_per_s > 0).
 func set_rate(per_s: float) -> void:
 	_rate = per_s if per_s < 0.0 else maxf(per_s, 0.0)
 	_apply_active()
@@ -84,16 +89,16 @@ func is_active() -> bool:
 
 
 ## `energy_scale` > 1 brightens dark tints.
-## Ref: sacengine manaEnergy.
 func set_tint(base: Color, energy_scale := 1.0) -> void:
 	tint = Color(base.r * energy_scale, base.g * energy_scale, base.b * energy_scale, base.a)
 
 
 ## The scene has `use_fixed_seed`: the seed comes from FxBus's own generator, so emitting never
-## draws from the global RNG the simulation uses (RFC-029 029a, H1). In the editor there is no FxBus.
+## draws from the global RNG the simulation uses. In the editor there is no FxBus.
 func _take_seed() -> void:
 	var bus := get_node_or_null(^"/root/FxBus")
-	if bus != null and bus.has_method(&"next_particle_seed"):  # dynamic: FxBus is an autoload without a class_name, absent in the editor
+	# dynamic: FxBus is an autoload without a class_name, absent in the editor
+	if bus != null and bus.has_method(&"next_particle_seed"):
 		seed = bus.next_particle_seed()
 
 
@@ -110,7 +115,10 @@ func _apply() -> void:
 		emitting = false
 		if not _warned:
 			_warned = true
-			push_warning("SpriteEmitter: ParticleType has no atlas texture (assign `atlas`; sheets come from tools/import/import_ui.py).")
+			push_warning(
+				# gdlint: ignore=max-line-length
+				"SpriteEmitter: ParticleType has no atlas texture (assign `atlas`; sheets come from tools/import/import_ui.py)."
+			)
 		return
 	local_coords = false
 	one_shot = type.rate_per_s <= 0.0

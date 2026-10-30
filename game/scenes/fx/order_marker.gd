@@ -1,11 +1,11 @@
 class_name OrderMarker
 extends Node3D
 
-## The mark an order leaves on the ground: a narrow 8-sided cone, apex on the ordered point, drawn with the `aura` texture plus 8 white
-## shells that turn against each other. It lasts 0.5 s: alpha 1 - t, width grows to 3x and height to 1.25x. White for a
-## move or retreat, blue for guard, red for attack and advance. Client-local presentation: no RPC, never in headless.
-## One instance is reused (`play` restarts it), so no node is created or freed per order.
-## Ref: sacengine CommandCone, sacobject.d:4483-4505, renderer.d:3690-3730, state.d:29261-29264; F220.
+## The mark an order leaves on the ground: a narrow 8-sided cone, apex on the ordered point, drawn
+## with the `aura` texture plus 8 white shells that turn against each other. It lasts 0.5 s: alpha 1
+## - t, width grows to 3x and height to 1.25x. White for a move or retreat, blue for guard, red for
+## attack and advance. Client-local presentation: no RPC, never in headless. One instance is reused
+## (`play` restarts it), so no node is created or freed per order.
 
 enum Tone { WHITE, RED, BLUE }
 
@@ -19,13 +19,13 @@ const CONE_RADIUS := 0.7
 static var _cone_mesh: ArrayMesh
 
 ## Seconds the mark lasts.
-## Ref: sacengine 0.5.
 @export_range(0.05, 3.0, 0.05, "suffix:s") var lifetime_s := 0.5
-## Overall size multiplier (1 = the original's 10 m by 0.7 m cone).
+## Overall size multiplier (1 = a 10 m by 0.7 m cone).
 @export_range(0.1, 4.0, 0.05) var size_scale := 1.0
-## Extra tint multiplied over the tone's color (white = the original's colors).
+## Extra tint multiplied over the tone's color (white = the tone's own color).
 @export var color := Color.WHITE
-## The texture of the cone (aura.png in order_marker.tscn). Empty = the cone reads plain white, like the shells.
+## The texture of the cone (aura.png in order_marker.tscn). Empty = the cone reads plain white, like
+## the shells.
 @export var aura: Texture2D
 ## Meters over the ground, so the apex does not z-fight the land.
 @export var lift := 0.1
@@ -40,7 +40,8 @@ var _tone := Tone.WHITE
 
 
 ## This moves by itself every frame, so physics interpolation must leave it alone.
-func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 func _ready() -> void:
@@ -100,7 +101,6 @@ func _instance(mesh: Mesh, material: Material) -> MeshInstance3D:
 
 
 ## Cone with the apex at the origin and the ring `CONE_HEIGHT` up (y is up).
-## Ref: sacengine builds it along z.
 static func _mesh() -> ArrayMesh:
 	if _cone_mesh != null:
 		return _cone_mesh

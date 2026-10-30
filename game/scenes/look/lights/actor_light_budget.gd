@@ -2,13 +2,13 @@
 class_name ActorLightBudget
 extends LookLayer
 
-## Actor-lights layer of the rig: a map can hold hundreds of `ActorLight`s (every unit, wizard and spell) but only
-## `LookQuality.actor_max_lights` of them are on. Every `refresh_s` it ranks the lights by
-## `priority / max(distance to the camera, min_distance_m)` and turns the best ones on. A light that is on keeps its place
-## unless another beats it by `hysteresis` (no flicker between two almost equal lights). Lights past their own fade
-## distance and lights whose owner is gone (`lit` false) never take a place.
-## Classic mode (null profile), a hidden layer and a cap of 0 leave every light off. Presentation only: freed with the rig
-## in a headless or dedicated process.
+## Actor-lights layer of the rig: a map can hold hundreds of `ActorLight`s (every unit, wizard and
+## spell) but only `LookQuality.actor_max_lights` of them are on. Every `refresh_s` it ranks the
+## lights by `priority / max(distance to the camera, min_distance_m)` and turns the best ones on. A
+## light that is on keeps its place unless another beats it by `hysteresis` (no flicker between two
+## almost equal lights). Lights past their own fade distance and lights whose owner is gone (`lit`
+## false) never take a place. Classic mode (null profile), a hidden layer and a cap of 0 leave every
+## light off. Presentation only: freed with the rig in a headless or dedicated process.
 
 const GROUP := &"actor_light_budget"
 
@@ -20,7 +20,13 @@ const GROUP := &"actor_light_budget"
 ## Closer than this to the camera counts as this distance in the score (no division by ~0).
 @export_range(0.5, 50.0, 0.5, "suffix:m") var min_distance_m: float = 4.0
 
-## The atmosphere whose `night` dims the lights (0 = day, 1 = full night); empty = they keep their energy.
+## The glows of spells, zones and states (StateLight) times these: the look of the whole game, where
+## everything glows. The units' and wizards' own lights are not scaled.
+@export_range(0.1, 6.0, 0.05) var state_energy_scale: float = 1.0
+@export_range(0.5, 4.0, 0.05) var state_range_scale: float = 1.0
+
+## The atmosphere whose `night` dims the lights (0 = day, 1 = full night); empty = they keep their
+## energy.
 @export var atmosphere: Atmosphere
 
 var _max_lights := -1
@@ -39,6 +45,8 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(GROUP)
+	for light in get_tree().get_nodes_in_group(ActorLight.GROUP):
+		scale_light(light as ActorLight)
 	if _max_lights < 0:
 		_max_lights = fallback_max_lights
 	visibility_changed.connect(rank)
@@ -69,6 +77,13 @@ func night() -> float:
 	return _night
 
 
+## Gives `light` the look's scale for its kind (ActorLight calls it when it is ready; the lights
+## already in the tree get it in _ready).
+func scale_light(light: ActorLight) -> void:
+	if light.is_glow():
+		light.set_look_scale(state_energy_scale, state_range_scale)
+
+
 func _on_atmosphere(sample: AtmosphereSample) -> void:
 	_night = sample.night
 	rank()
@@ -92,13 +107,19 @@ func rank() -> void:
 		if light.always_on:
 			light.set_budget_on(true)
 			continue
-		var distance := light.global_position.distance_to(camera.global_position) if camera else min_distance_m
+		var distance := (
+			light.global_position.distance_to(camera.global_position) if camera else min_distance_m
+		)
 		if cap <= 0 or not light.is_lit() or distance > _reach(light):
 			light.set_budget_on(false)
 			continue
 		var entry := _Entry.new()
 		entry.light = light
-		entry.score = light.priority / maxf(distance, min_distance_m) * (hysteresis if light.is_budget_on() else 1.0)
+		entry.score = (
+			light.priority
+			/ maxf(distance, min_distance_m)
+			* (hysteresis if light.is_budget_on() else 1.0)
+		)
 		entries.append(entry)
 	entries.sort_custom(func(a: _Entry, b: _Entry) -> bool: return a.score > b.score)
 	for i in entries.size():
@@ -107,4 +128,8 @@ func rank() -> void:
 
 ## Past this distance the light has faded out by itself: it is not worth a place.
 func _reach(light: ActorLight) -> float:
-	return light.distance_fade_begin + light.distance_fade_length if light.distance_fade_enabled else INF
+	return (
+		light.distance_fade_begin + light.distance_fade_length
+		if light.distance_fade_enabled
+		else INF
+	)

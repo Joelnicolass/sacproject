@@ -2,26 +2,30 @@
 class_name Weapons
 extends Node
 
-## The weapons a creature carries: its children. The order of the children is the priority (the first weapon that wants the foe is the
-## one used), and a weapon whose `enabled` is off or that has nothing to fire is skipped. It hands each weapon the creature, its type
-## and the stream of random numbers of its body, and tells the creature when one struck or fired.
+## The weapons a creature carries: its children. The order of the children is the priority (the
+## first weapon that wants the foe is the one used), and a weapon whose `enabled` is off or that has
+## nothing to fire is skipped. It hands each weapon the creature, its type and the stream of random
+## numbers of its body, and tells the creature when one struck or fired.
 ## Not: choosing who to attack (the chase state) nor how a weapon works (each Weapon).
 ## Edit: drop a melee_weapon.tscn or ranged_weapon.tscn as a child; delete one to take it away.
 
 signal struck(target: Node3D, amount: float, hit_chance: float, roll: float)
 signal fired(target: Node3D, damage: float, mana_before: float, mana_after: float)
-## Presentation, on every peer, from the setters of `swings` and `shots` after what they did: a listener (UnitSounds) never changes the sim.
+## Presentation, on every peer, from the setters of `swings` and `shots` after what they did: a
+## listener (UnitSounds) never changes the sim.
 signal swung
 signal shot_started
 
 ## What a ranged weapon spends on each shot.
 @export var mana: ManaPool
-## The creature's health and its damage passive: the Firefist's passive scales a blow by the health it has left.
+## The creature's health and its damage passive: the Firefist's passive scales a blow by the health
+## it has left.
 @export var health: Health
 @export var passive: DamagePassive
 ## The lunge of the body that each swing or shot makes.
 @export var clips: UnitClips
-## Bumped on every swing (by a melee weapon) and every shot start (shoot0, by a ranged one), so the clients play the lunge and the sound too.
+## Bumped on every swing (by a melee weapon) and every shot start (shoot0, by a ranged one), so the
+## clients play the lunge and the sound too.
 @export var swings := 0:
 	set(value):
 		swings = value
@@ -35,7 +39,8 @@ signal shot_started
 			clips.lunge()
 			shot_started.emit()
 
-## The first armed melee and ranged weapon (a ranged weapon with no attack still answers, for the origin of a shot). Null = none.
+## The first armed melee and ranged weapon (a ranged weapon with no attack still answers, for the
+## origin of a shot). Null = none.
 var melee: MeleeWeapon
 var ranged: RangedWeapon
 
@@ -54,9 +59,9 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if get_child_count() == 0:
-		warnings.append("Suelta un melee_weapon.tscn o un ranged_weapon.tscn como hijo.")
+		warnings.append("Drop a melee_weapon.tscn or a ranged_weapon.tscn as a child.")
 	if mana == null:
-		warnings.append("Asigná en `mana` el ManaPool de la unidad (el arma a distancia lo gasta).")
+		warnings.append("Assign to `mana` the unit's ManaPool (the ranged weapon spends it).")
 	return warnings
 
 
@@ -65,7 +70,8 @@ func ordered() -> Array[Weapon]:
 	return _armed
 
 
-## Hands every weapon the creature and works out which ones are in use. Safe to repeat (the body changed model).
+## Hands every weapon the creature and works out which ones are in use. Safe to repeat (the body
+## changed model).
 func setup(unit: UnitBody, creature: CreatureType, rng: RandomNumberGenerator) -> void:
 	_armed.clear()
 	melee = null

@@ -3,7 +3,6 @@ extends FsmState
 
 ## One phase of a ritual: Setup, Walk, Shoot, Wait. Server only: the Phases machine does not
 ## run on clients, they get `phase` replicated. Off and Ended are plain FsmStates.
-## Ref: RFC-020
 
 var ritual: Ritual:
 	get:

@@ -1,10 +1,12 @@
 class_name RagdollDriver
 extends Node
 
-## Lets a body fall, or hang, like a rag doll with the physical skeleton of its model (BodyModel.ragdoll). FALL throws the body a
-## little away and after `settle_s` freezes the pose and stops the physics, so a field of corpses costs nothing. HANG leaves the hang
-## bone out of the physics (it rides the frozen skeleton) and lets the rest dangle on wide cones (055a-5j). Bones only meet the terrain
-## (layer 16, mask 1). It moves the model only (the simulation never reads it; a server mounts no model, so it never binds) and does not decide when.
+## Lets a body fall, or hang, like a rag doll with the physical skeleton of its model
+## (BodyModel.ragdoll). FALL throws the body a little away and after `settle_s` freezes the pose and
+## stops the physics, so a field of corpses costs nothing. HANG leaves the hang bone out of the
+## physics (it rides the frozen skeleton) and lets the rest dangle on wide cones. Bones only meet
+## the terrain (layer 16, mask 1). It moves the model only (the simulation never reads it; a server
+## mounts no model, so it never binds) and does not decide when.
 
 ## The ragdoll started to fall.
 signal started
@@ -15,7 +17,8 @@ signal bound(available: bool)
 
 enum Pose { OFF, FALL, HANG }
 
-## The rig that mounts the model: when set, the driver binds the model by itself as soon as it is mounted.
+## The rig that mounts the model: when set, the driver binds the model by itself as soon as it is
+## mounted.
 @export var rig: BodyRig
 ## The clips of the body: held still while the pose is not OFF.
 @export var clip_pose: ClipPlayback
@@ -84,10 +87,15 @@ func is_running() -> bool:
 	return is_physics_processing()
 
 
-## Asks for a pose (the one it has: nothing; one the model cannot do: ignored). FALL from OFF throws the body along `push` (zero:
-## it collapses); from HANG it lets go. OFF stands the model up in its rest pose for the clips to take over.
+## Asks for a pose (the one it has: nothing; one the model cannot do: ignored). FALL from OFF throws
+## the body along `push` (zero: it collapses); from HANG it lets go. OFF stands the model up in its
+## rest pose for the clips to take over.
 func set_pose(next: Pose, push := Vector3.ZERO) -> void:
-	if next == _pose or (next != Pose.OFF and not available()) or (next == Pose.HANG and not can_hang()):
+	if (
+		next == _pose
+		or (next != Pose.OFF and not available())
+		or (next == Pose.HANG and not can_hang())
+	):
 		return
 	var from := _pose
 	_pose = next
@@ -119,7 +127,8 @@ func _physics_process(delta: float) -> void:
 		_settle()
 
 
-## Holds the clips and turns the simulator on: every bone (FALL) or all but the hang bone (HANG), then rebuilds the joints.
+## Holds the clips and turns the simulator on: every bone (FALL) or all but the hang bone (HANG),
+## then rebuilds the joints.
 func _begin(next: Pose) -> void:
 	if clip_pose != null:
 		clip_pose.frozen = true

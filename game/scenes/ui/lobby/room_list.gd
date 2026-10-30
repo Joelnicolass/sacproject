@@ -1,9 +1,8 @@
 extends Control
 
-## The open rooms of the server. One button per room (pressing it joins), «Actualizar», «Crear sala»,
-## a code for the private ones. It only reads `MpLobby.client` and calls its commands; the screen decides which view
-## shows. Run alone (F6) it says «Sin conexión».
-## Ref: RFC-034 034f.
+## The open rooms of the server. One button per room (pressing it joins), «Actualizar», «Crear
+## sala», a code for the private ones. It only reads `MpLobby.client` and calls its commands; the
+## screen decides which view shows. Run alone (F6) it says «Sin conexión».
 
 signal create_requested
 signal back_requested
@@ -46,7 +45,9 @@ func _fill(rows: Array) -> void:
 		var used := int(row["seats_used"])
 		var seats := int(row["seats"])
 		var state := int(row["state"])
-		button.text = "%s · %d/%d · %s" % [str(row["name"]), used, seats, LobbyText.state_text(state)]
+		button.text = (
+			"%s · %d/%d · %s" % [str(row["name"]), used, seats, LobbyText.state_text(state)]
+		)
 		button.disabled = state != MpLobbyRooms.State.OPEN or used >= seats
 		button.pressed.connect(_on_row.bind(str(row["id"])))
 		holder.add_child(button)

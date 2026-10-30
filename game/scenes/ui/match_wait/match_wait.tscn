@@ -15,7 +15,7 @@ offset_right = 200.0
 offset_bottom = 220.0
 grow_horizontal = 2
 mouse_filter = 2
-editor_description = "Cartel de la partida en red que todavía no arrancó: «Esperando jugadores k/n» mientras la puerta espera que carguen los asientos. «Empezar ya» se ve solo en el host LAN con al menos un cliente cargado. Corre con el árbol pausado. Borrarlo quita el cartel; la espera sigue igual."
+editor_description = "The banner of a network match that has not started yet: «Esperando jugadores k/n» while the gate waits for the seats to load. «Empezar ya» only shows on the LAN host with at least one client loaded. It runs with the tree paused. Deleting it removes the banner; the wait goes on the same."
 script = ExtResource("1_wait")
 
 [node name="Count" type="Label" parent="." groups=["hud_text_allowed"]]

@@ -1,36 +1,28 @@
+class_name RockProjectile
 extends SpellProjectile
 
 ## James' Rock. While the wizard casts it rises
-## out of the ground ahead of him (rockCastingPosition, buried 1 m). Then it flies at its
+## out of the ground ahead of him (buried 1 m). Then it flies at its
 ## target, homing on the target's center: each frame the velocity gains `acceleration` toward
 ## it, capped at `speed`, floating up to 7 m over the ground. It bursts on the first body it
 ## touches (enemies first), on the ground, or at the target, and deals its damage to the body
 ## it hit as direct spell damage.
 ## The server (or solo) moves it; clients get the position and play the trail locally.
-## Ref: sacengine state.d:10541-10561, 16707-16855; rockExplosion, state.d:16784
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 
-## Warm-up time = updateFPS / 4.
-## Ref: sacengine rockWarmupTime
+## Warm-up time = a quarter of a second.
 const WARMUP_FRAMES := 15
 const FLOAT_HEIGHT := 7.0
-const FPS := 60.0
-## Hit box of ±1 m.
-## Ref: sacengine rockSize 2
-const HALF_SIZE := 1.0
 const ARRIVE_DISTANCE := 0.25
 ## Depth the rock starts buried.
-## Ref: sacengine rockBuryDepth
 const BURY_DEPTH := 1.0
 ## 1.5 m past the front of the caster's hit box.
-## Ref: sacengine rockCastingPosition
 const CAST_AHEAD := 1.5
 ## Spins 2π·[0.2, 0.8] rad/s around a random axis.
-## Ref: sacengine makeRock
 const SPIN_MIN := 0.2
 const SPIN_MAX := 0.8
-## Trail puffs (animateRock) on every peer, by time (FxTrail): one per 2/60 s.
+## Trail puffs on every peer, by time (FxTrail): one per 2/60 s.
 const TRAIL_INTERVAL_S := 2.0 / 60.0
 
 ## Puffed behind it while it flies (FxTrail, one per TRAIL_INTERVAL_S). Empty = no trail.
@@ -39,8 +31,10 @@ const TRAIL_INTERVAL_S := 2.0 / 60.0
 @export var emerge: Array[ParticleType] = []
 ## Bursts where it breaks, on every peer.
 @export var explosion: Array[ParticleType] = []
-## 061k-5: the crack it leaves where it bursts (spells/marks/rock_mark.tscn), played on every peer.
+## The crack it leaves where it bursts (spells/marks/rock_mark.tscn), played on every peer.
 @export var ground_mark: PackedScene
+## The box that touches the bodies it bursts on (±1 m), centered on the rock.
+@export var hit_box: Shape3D
 
 var speed := 0.0
 var acceleration := 0.0
@@ -58,25 +52,33 @@ var _cast_frame := 0
 var _spin_axis := Vector3.UP
 var _spin_rate := 0.0
 var _trail: FxTrail
+var _query: PhysicsShapeQueryParameters3D
 
 ## The rock, drawn at scale 1 (the mesh of the `Mesh` node, scenes/props/meshes/rock.res).
 @onready var _mesh: MeshInstance3D = %Mesh
 
 
 func setup(data: Dictionary) -> void:
-	name = str(data["name"])
-	position = Vector3(float(data["x"]), float(data["y"]), float(data["z"]))
-	target_point = Vector3(float(data["tx"]), float(data["ty"]), float(data["tz"]))
-	target_path = NodePath(str(data.get("target", "")))
-	caster_path = NodePath(str(data.get("caster", "")))
-	speed = float(data["speed"])
-	acceleration = float(data["acceleration"])
-	damage = float(data.get("damage", 0.0))
-	from_slot = int(data.get("slot", 0))
-	cast_frames = int(data.get("cast_frames", 0))
+	var launch := ProjectileLaunch.from_dict(data)
+	name = launch.name
+	position = launch.from
+	target_point = launch.aim
+	target_path = launch.target
+	caster_path = launch.caster
+	speed = launch.speed_m_s
+	acceleration = launch.acceleration_m_s2
+	damage = launch.damage
+	from_slot = launch.slot
+	cast_frames = launch.cast_ticks
+	if hit_box == null:
+		push_error("%s: `hit_box` is empty, it hits no body." % scene_file_path)
+	_query = ProjectileTargets.query_for(hit_box)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(name)
-	_spin_axis = Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	_spin_axis = (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 	_spin_rate = TAU * rng.randf_range(SPIN_MIN, SPIN_MAX)
 	_attach_net()
 	_trail = FxTrail.attach(self, trail, TRAIL_INTERVAL_S)
@@ -115,7 +117,6 @@ func _physics_process(_delta: float) -> void:
 
 
 ## Glued ahead of the caster, rising out of the ground.
-## Ref: sacengine updateRockCasting
 func _cast_step() -> void:
 	var caster := _caster()
 	if caster:
@@ -133,17 +134,17 @@ func _cast_step() -> void:
 
 
 ## Ahead of the caster, past the front of its hit box.
-## Ref: sacengine rockCastingPosition
 static func cast_position(caster: Node3D) -> Vector3:
 	var ahead := Vector3(0.0, 0.0, 1.0)
-	if caster.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
-		ahead = caster.call("facing_flat")
+	if caster is GameBody:
+		ahead = (caster as GameBody).facing_flat()
 	var front := _reach_mm(BodyFacts.of_body(caster).reach_m)
 	return caster.global_position + ahead * (front + CAST_AHEAD)
 
 
-## The reach as the millimetre double the rules have always read: the body scene keeps it in 32 bits and every body measure has at
-## most three decimals, so dividing the rounded millimetres gives the same double (the cast position stays bit for bit).
+## The reach as the millimetre double the rules have always read: the body scene keeps it in 32 bits
+## and every body measure has at most three decimals, so dividing the rounded millimetres gives the
+## same double (the cast position stays bit for bit).
 static func _reach_mm(reach_m: float) -> float:
 	return roundi(reach_m * 1000.0) / 1000.0
 
@@ -152,14 +153,14 @@ func _fly_step() -> void:
 	var target_center := _target_center()
 	var distance := target_center - global_position
 	velocity = _cap(velocity + distance.normalized() * acceleration, distance)
-	var next := global_position + velocity / FPS
+	var next := global_position + velocity / MatchClock.TICKS_PER_SECOND_F
 	var ground := _ground_height(global_position)
 	var flat := Vector2(distance.x, distance.z).length()
 	var floating := FLOAT_HEIGHT if _frame < WARMUP_FRAMES else minf(FLOAT_HEIGHT, 0.75 * flat)
 	if next.y < ground + floating:
 		var lifted := velocity
-		lifted.y += (ground + floating - next.y) * FPS
-		next = global_position + _cap(lifted, distance) / FPS
+		lifted.y += (ground + floating - next.y) * MatchClock.TICKS_PER_SECOND_F
+		next = global_position + _cap(lifted, distance) / MatchClock.TICKS_PER_SECOND_F
 	global_position = next
 	_frame += 1
 	if _frame < WARMUP_FRAMES:
@@ -176,8 +177,8 @@ func _fly_step() -> void:
 func _cap(v: Vector3, distance: Vector3) -> Vector3:
 	if v.length() > speed:
 		v = v.normalized() * speed
-	if v.length() > FPS * distance.length():
-		v = v.normalized() * distance.length() * FPS
+	if v.length() > MatchClock.TICKS_PER_SECOND_F * distance.length():
+		v = v.normalized() * distance.length() * MatchClock.TICKS_PER_SECOND_F
 	return v
 
 
@@ -193,13 +194,8 @@ func _target_center() -> Vector3:
 	var target := _target()
 	if target == null:
 		return target_point
-	target_point = body_center(target)
+	target_point = ProjectileTargets.body_center(target)
 	return target_point
-
-
-static func body_center(body: Node3D) -> Vector3:
-	var col := body.get_node_or_null("Collision") as Node3D
-	return col.global_position if col else body.global_position
 
 
 func _ground_height(at: Vector3) -> float:
@@ -208,64 +204,18 @@ func _ground_height(at: Vector3) -> float:
 
 ## Every living body in
 ## the ±1 m box except the caster; enemies first, then neutrals, then allies; closest wins.
-## Ref: sacengine rockCollisionTarget / collisionTarget (state.d:16431, 16777)
 func _collision_target() -> Node3D:
-	var shape := BoxShape3D.new()
-	shape.size = Vector3.ONE * HALF_SIZE * 2.0
-	return pick_body(self, shape, global_position, _caster(), from_slot, false)
+	return ProjectileTargets.pick_body(self, _query, global_position, _caster(), from_slot, false)
 
 
-## Shared by the spell projectiles. `skip_own_side` drops bodies of `slot` (wrathCollisionTarget).
-static func pick_body(from: Node3D, shape: Shape3D, at: Vector3, skip: Node, slot: int, skip_own_side: bool) -> Node3D:
-	var query := PhysicsShapeQueryParameters3D.new()
-	query.shape = shape
-	query.transform = Transform3D(Basis(), at)
-	query.collision_mask = 3
-	var best: Node3D = null
-	var best_key := Vector2(INF, INF)
-	for hit in from.get_world_3d().direct_space_state.intersect_shape(query, 16):
-		var body := hit.get("collider") as Node3D
-		if body == null or body == skip or not is_live_body(body):
-			continue
-		var other := int(body.get("owner_slot")) if "owner_slot" in body else 0
-		if skip_own_side and other == slot:
-			continue
-		var rank := 2.0 if other == slot else (1.0 if other <= 0 or slot <= 0 else 0.0)
-		var key := Vector2(rank, at.distance_squared_to(body_center(body)))
-		if key < best_key:
-			best_key = key
-			best = body
-	return best
-
-
-static func is_live_body(body: Node) -> bool:
-	if not Attackable.is_body(body):
-		return false
-	if body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: unit, wizard, structure and doctor bodies answer it
-		return false
-	var health := body.get_node_or_null("Health") as Health
-	return health != null and not health.is_dead()
-
-
-## dealSpellDamage(target, …, DamageMod.none) = direct spell damage.
-## Ref: sacengine rockExplosion
+## Direct spell damage with no DamageMod.
 func _burst(target: Node3D) -> void:
-	if target and is_instance_valid(target) and is_live_body(target):
+	if target and is_instance_valid(target) and ProjectileTargets.is_live_body(target):
 		var health := target.get_node("Health") as Health
 		var taken := health.damage_typed(damage, _HEALTH.DIRECT_SPELL, from_slot)
-		report(target, taken, _HEALTH.DIRECT_SPELL)
+		ProjectileTargets.report(target, taken, _HEALTH.DIRECT_SPELL)
 	for type in explosion:
 		FxBus.broadcast(type, global_position)
 	ScarMark.broadcast(ground_mark, global_position)
 	set_physics_process(false)
 	queue_free()
-
-
-static func report(target: Node3D, taken: float, kind: StringName) -> void:
-	var health := target.get_node("Health") as Health
-	## F155: the bench tells apart bodies of the same kind.
-	var who := str(target.call("display_name")) if target.has_method("display_name") and not DebugLog.on(&"oil") else str(target.name)  # dynamic: unit, wizard and doctor bodies name themselves
-	var line := "dano %s %d vida %d" % [who, roundi(taken), roundi(health.current)]
-	if taken <= 0.0 and health.resistance(kind) <= 0.0:
-		line += " (inmune)"
-	print(line)

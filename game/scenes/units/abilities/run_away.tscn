@@ -3,6 +3,6 @@
 [ext_resource type="Script" path="res://scenes/units/abilities/run_away.gd" id="1_run"]
 
 [node name="RunAway" type="Node"]
-editor_description = "F133 (RFC-030 030v-a): efecto propio de Run Away (!nur) del Flame Minion, el Silverback y el Frostwolf. AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Un Speedup de la duración del SPEL (mínimo 1 s), sin windup."
+editor_description = "The Run Away effect (!nur) of the Flame Minion, the Silverback and the Frostwolf. AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). A Speedup for the SPEL's duration (at least 1 s), with no windup."
 script = ExtResource("1_run")
 min_duration_s = 1.0

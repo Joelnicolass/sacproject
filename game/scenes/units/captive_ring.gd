@@ -2,11 +2,11 @@
 class_name CaptiveRing
 extends Node
 
-## The ring drawn around a creature while a Sac Doctor holds it (UnitBody.mode HELD), centred on the body's `Center`
-## (`mount.facts.center`). Local presentation on every peer, drawn from replicated state only: the server never creates it,
-## and neither does the dedicated server (no meshes). It changes no simulation. Remove the node and the creature is held without a ring.
-## The radii are 0.65 * (1.1, 0.9) * the diagonal of the creature's box.
-## Ref: sacengine renderer.d:1638-1677.
+## The ring drawn around a creature while a Sac Doctor holds it (UnitBody.mode HELD), centred on the
+## body's `Center` (`mount.facts.center`). Local presentation on every peer, drawn from replicated
+## state only: the server never creates it, and neither does the dedicated server (no meshes). It
+## changes no simulation. Remove the node and the creature is held without a ring. The radii are
+## 0.65 * (1.1, 0.9) * the diagonal of the creature's box.
 
 ## The creature that wears the ring.
 @export var body: UnitBody
@@ -33,13 +33,14 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if body == null:
-		warnings.append("Asigná en `body` la unidad (UnitBody) que lleva el anillo.")
+		warnings.append("Assign to `body` the unit (UnitBody) that wears the ring.")
 	if portal_scene == null:
-		warnings.append("Asigná en `portal_scene` el disco (scenes/fx/portal_disc.tscn).")
+		warnings.append("Assign to `portal_scene` the disc (scenes/fx/portal_disc.tscn).")
 	return warnings
 
 
-## The ring while the creature is held (and closing), or null outside HELD and on the dedicated server.
+## The ring while the creature is held (and closing), or null outside HELD and on the dedicated
+## server.
 func ring() -> Node3D:
 	if _portal == null or not is_instance_valid(_portal) or _portal.is_closing():
 		return null
@@ -60,7 +61,7 @@ func _on_held_changed(held: bool) -> void:
 		_portal.openness = 0.0
 		body.add_child(_portal)
 	var facts := BodyFacts.of_body(body)
-	## Diagonal of the box (width x width x height): the original size of the hitbox (estimated).
+	# Diagonal of the box (width x width x height): the size of the hitbox (estimated).
 	var diagonal := Vector3(2.0 * facts.radius_m, 2.0 * facts.radius_m, facts.height_m).length()
 	_portal.position = facts.center
 	_portal.radius = portal_scale * diagonal

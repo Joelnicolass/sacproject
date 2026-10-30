@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="GraphicsPrefs" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/options/graphics_prefs.gd" id="1_prefs"]
+[ext_resource type="Script" path="res://scenes/look/look_quality.gd" id="2_quality"]
+[ext_resource type="Resource" path="res://scenes/look/quality_low.tres" id="3_low"]
+[ext_resource type="Resource" path="res://scenes/look/quality_medium.tres" id="4_medium"]
+[ext_resource type="Resource" path="res://scenes/look/quality_high.tres" id="5_high"]
+
+[resource]
+script = ExtResource("1_prefs")
+presets = Array[ExtResource("2_quality")]([ExtResource("3_low"), ExtResource("4_medium"), ExtResource("5_high")])
+default_quality = &"medium"

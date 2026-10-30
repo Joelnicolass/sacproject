@@ -1,13 +1,13 @@
 class_name LifeShieldAbility
 extends AbilityEffect
 
-## The Druid's and the Shrike's Life Shield, moved from AbilitySlot's branches without a change.
-## It is refused (nothing spent) while the body already has a shield; else the body's
-## LifeShield starts for the spell's duration (1200 ticks). Not the Ent's Protector, which also shields its allies.
-## Ref: F133 (RFC-030 030v-a); hsba, sacengine lifeShield (state.d:13092-13100); Protector HSba.
+## The Druid's and the Shrike's Life Shield, moved from AbilitySlot's branches without a change. It
+## is refused (nothing spent) while the body already has a shield; else the body's LifeShield starts
+## for the spell's duration (1200 ticks). Not the Ent's Protector, which also shields its allies.
 
-## The burst every peer sees when the shield starts, and the socket of the body it leaves from (empty = none).
-@export var fx: ParticleType = preload("res://data/fx/heal.tres")
+## The burst every peer sees when the shield starts, and the socket of the body it leaves from
+## (empty = none).
+@export var fx: ParticleType = preload("res://scenes/fx/effects/heal.tres")
 @export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 

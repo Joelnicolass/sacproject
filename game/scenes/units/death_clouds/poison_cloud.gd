@@ -1,15 +1,14 @@
 extends DeathCloud
 
 ## Poison Cloud (cen@, Necryl). Every creature (any side) whose hit box
-## is within effectRange of the center gets one poison dose: poison(obj, ability) = amount / duration /
-## poisonNerfFactor per second for duration·60 frames, with the SPEL's `ires` / `freg` / `iacc`, as
-## splash spell and not infectious. The dose goes through the body's Poisoning (F122, RFC-030k-a).
+## is within the effect range of the center gets one poison dose: amount / duration /
+## the nerf factor per second for duration·60 frames, with the SPEL's `ires` / `freg` / `iacc`, as
+## splash spell and not infectious. The dose goes through the body's Poisoning.
 ## Not here: `iacc` (no data carries it).
-## Ref: sacengine updatePoisonCloud state.d:25235-25254, 25241, 11610-11614.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 
-## The poison nerf factor (poisonNerfFactor).
+## The poison nerf factor.
 @export var nerf_factor := 1.3
 
 
@@ -21,5 +20,19 @@ func _affect(center: Vector3) -> void:
 	var ires := ability.poison_resistance_debuff
 	var freg := ability.poison_regen_factor
 	for body in bodies_within(center, ability.effect_range_m):
-		Poisoning.dose_body(body, per_second, frames, _HEALTH.SPLASH_SPELL, from_slot, false, ires, freg)
-		print("  veneno a %s %.2f/s %d cuadros ires %d freg %.2f (vida %d)" % [who(body), per_second, frames, ires, freg, roundi(float(body.get_node("Health").get("current")))])
+		Poisoning.dose_body(
+			body, per_second, frames, _HEALTH.SPLASH_SPELL, from_slot, false, ires, freg
+		)
+		print(
+			(
+				"  poison on %s %.2f/s %d frames ires %d freg %.2f (health %d)"
+				% [
+					GameBody.name_of(body),
+					per_second,
+					frames,
+					ires,
+					freg,
+					roundi(float(body.get_node("Health").get("current")))
+				]
+			)
+		)

@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://scenes/units/impacts/direct_impact.gd" id="2_direct"]
 
 [node name="StunHitImpact" type="Node"]
-editor_description = "F161 (030w-b): el Brainiac bsba y el Shrike absh (updateBrainiacProjectile 22886-22936, updateShrikeProjectile 22952-22989). Aturde solo al cuerpo golpeado (criatura o mago; target_only) y despues le da el monto entero como daño directo a distancia (DirectImpact, hijo): el orden de sacengine es stunWithCooldown y despues goto dealRangedDamage. Un edificio solo recibe el daño; el suelo, nada."
+editor_description = "The Brainiac's bsba and the Shrike's absh. It stuns only the body hit (creature or wizard; target_only) and then gives it the whole amount as direct ranged damage (DirectImpact, child). A building only takes the damage; the ground, nothing."
 script = ExtResource("1_stun")
 target_only = true
 

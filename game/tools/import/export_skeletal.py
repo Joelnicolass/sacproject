@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
-Skeletal models (RFC-023a): saxs*.wad -> one glTF binary per model (versioned asset, WADs stay out of git).
+Skeletal models: saxs*.wad -> one glTF binary per model (versioned asset, WADs stay out of git).
 
 For each model writes, into the output folder (`--out`, default assets/original/models (versioned assets)):
     <m>.glb            Skeleton3D + one skinned mesh (one primitive per material: body parts that share a texture are merged, <= 4 influences)
@@ -976,7 +976,7 @@ def export_model(tag: str, out: Path, model_paths: dict, anim_index: dict, exact
     if len(model.bone_pos) > MAX_BONES:
         raise SystemExit("too many bones")
     out.mkdir(parents=True, exist_ok=True)
-    # Default (user decision 2026-10-17): one averaged bind per vertex, the model's own bones only. Its error is the
+    # Default: one averaged bind per vertex, the model's own bones only. Its error is the
     # bind discrepancy; a model above MAX_ERROR_MM gets helper joints only for the vertices over that threshold.
     global BIND_THRESHOLD
     saved_threshold = BIND_THRESHOLD

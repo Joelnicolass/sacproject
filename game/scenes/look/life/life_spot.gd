@@ -2,9 +2,10 @@
 class_name LifeSpot
 extends Node3D
 
-## A place on the map where ambient life gathers (a meadow, a pond, a wood, rocks): drag `life_spot.tscn` under the
-## map's `LifeSpots`, pick its habitat and scale the box of `OnScreen` with its gizmo. AmbientLifeLayer hands it the
-## swarm of its habitat; it shows it inside its box, and only while the box is on screen. It never picks the swarm.
+## A place on the map where ambient life gathers (a meadow, a pond, a wood, rocks): drag
+## `life_spot.tscn` under the map's `LifeSpots`, pick its habitat and scale the box of `OnScreen`
+## with its gizmo. AmbientLifeLayer hands it the swarm of its habitat; it shows it inside its box,
+## and only while the box is on screen. It never picks the swarm.
 
 @export var habitat: AmbientLifeSet.Habitat = AmbientLifeSet.Habitat.MEADOW
 ## The box (its gizmo) and the on-screen test.
@@ -29,7 +30,8 @@ func show_swarm(swarm: AmbientSwarm, density: float) -> void:
 	if swarm_particles == null:
 		return
 	var count := maxi(1, roundi(swarm.amount * density)) if swarm else swarm_particles.amount
-	# Set up stopped, then restarted: a running emitter given another material or amount kept no uniform set.
+	# Set up stopped, then restarted: a running emitter given another material or amount kept no
+	# uniform set.
 	if swarm != _swarm or count != swarm_particles.amount:
 		swarm_particles.emitting = false
 		if swarm != _swarm and swarm:
@@ -61,7 +63,8 @@ func _update() -> void:
 		swarm_particles.emitting = _wanted and _seen
 
 
-## The swarm's motion with its emission box fitted to this spot's box (a copy: the shared `.tres` is never written).
+## The swarm's motion with its emission box fitted to this spot's box (a copy: the shared `.tres` is
+## never written).
 func _fitted(motion: ParticleProcessMaterial) -> ParticleProcessMaterial:
 	if motion == null or on_screen == null:
 		return motion
@@ -73,4 +76,8 @@ func _fitted(motion: ParticleProcessMaterial) -> ParticleProcessMaterial:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if on_screen and swarm_particles else PackedStringArray(["Faltan los sockets On Screen / Swarm Particles."])
+	return (
+		PackedStringArray()
+		if on_screen and swarm_particles
+		else PackedStringArray(["The On Screen / Swarm Particles sockets are missing."])
+	)

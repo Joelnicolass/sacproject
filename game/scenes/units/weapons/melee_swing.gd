@@ -1,11 +1,13 @@
 class_name MeleeSwing
 extends RefCounted
 
-## The swing in course: how long it lasts, the frames where its blows land and the share of the damage each carries. It is read
-## once when the swing starts, so the ticks that follow read only variables. Not: whether a blow hits (MeleeWeapon).
-## Ref: sacengine startMeleeAttacking (state.d:8725); an animation without attack events hits on its last frame (sacobject.d:420).
+## The swing in course: how long it lasts, the frames where its blows land and the share of the
+## damage each carries. It is read once when the swing starts, so the ticks that follow read only
+## variables. Not: whether a blow hits (MeleeWeapon). An animation without attack events hits on its
+## last frame.
 
-## Used when the model has no attack clip: the humanoid swing, 24 frames at 30 fps with the blow on frame 15.
+## Used when the model has no attack clip: the humanoid swing, 24 frames at 30 fps with the blow on
+## frame 15.
 const FALLBACK_FRAMES := 24
 const FALLBACK_RATE := 30.0
 const FALLBACK_BLOWS: PackedInt32Array = [15]
@@ -21,11 +23,21 @@ var elapsed := 0.0
 var next_tick := 0
 
 
-## The swing the target calls for: the downward one when it lies below, else a random one of the other two the model has; -1 when
-## the model has none (the fallback swing plays). The only draw is the pick between the two.
-static func pick(facts: ClipFacts, body: Node3D, target: Node3D, height: float, downward_threshold: float, rng: RandomNumberGenerator) -> int:
+## The swing the target calls for: the downward one when it lies below, else a random one of the
+## other two the model has; -1 when the model has none (the fallback swing plays). The only draw is
+## the pick between the two.
+static func pick(
+	facts: ClipFacts,
+	body: Node3D,
+	target: Node3D,
+	height: float,
+	downward_threshold: float,
+	rng: RandomNumberGenerator
+) -> int:
 	var own_mid := body.global_position.y + height * 0.5
-	var foe_mid := target.global_position.y + float(MeleeRules.profile_of(target).get("height", 1.8)) * 0.5
+	var foe_mid := (
+		target.global_position.y + float(MeleeRules.profile_of(target).get("height", 1.8)) * 0.5
+	)
 	if foe_mid + downward_threshold < own_mid and facts.frames(MeleeRules.SWING_ROLES[2]) > 0:
 		return 2
 	var choices: Array[int] = []

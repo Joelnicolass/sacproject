@@ -1,15 +1,19 @@
 class_name SpellCarrier
 extends SpellProjectile
 
-## Something a spell sends on a trip (one piece for all of them; `motion` says which). SOUL_TRIP: the Soul Mole's rock and the Soul Wind's funnel
-## walk to a soul and back (SoulTrip). GUIDED: the dragon, Charm's spirits, Blind Rage's fist and the vaporizing shot fly to the target (GuidedFlight).
-## FALL: the cow arcs onto it (CarrierFall). HUNT: Death walks to the closest creature again and again (CarrierHunt). On arriving it says `arrived`;
-## a CarrierHold makes it wait and then say `settled`. The other children listen and act (TargetEffect, SoulFetch, a pulse, the look). The server (or
-## solo) moves it and replicates it; a client only draws. It does not know what it carries nor who is near.
-## Ref: sacengine SoulMole, SoulWind, Dragonfire, Charm, BlindRage, IntestinalVaporization, BovineIntervention, Death (state.d:17938-22300).
+## Something a spell sends on a trip (one piece for all of them; `motion` says which). SOUL_TRIP:
+## the Soul Mole's rock and the Soul Wind's funnel walk to a soul and back (SoulTrip). GUIDED: the
+## dragon, Charm's spirits, Blind Rage's fist and the vaporizing shot fly to the target
+## (GuidedFlight).
+## FALL: the cow arcs onto it (CarrierFall). HUNT: Death walks to the closest creature again and
+## again (CarrierHunt). On arriving it says `arrived`; a CarrierHold makes it wait and then say
+## `settled`. The other children listen and act (TargetEffect, SoulFetch, a pulse, the look). The
+## server (or solo) moves it and replicates it; a client only draws. It does not know what it
+## carries nor who is near.
 
-## Server only: SOUL_TRIP stands on the soul (`reached`); the trip is over (`ended`, the node frees itself); it reached its target (`arrived`, null: a
-## point; for HUNT each blow); the wait there is over or there was none (`settled`); FALL went through the land (`landed`).
+## Server only: SOUL_TRIP stands on the soul (`reached`); the trip is over (`ended`, the node frees
+## itself); it reached its target (`arrived`, null: a point; for HUNT each blow); the wait there is
+## over or there was none (`settled`); FALL went through the land (`landed`).
 signal reached(soul: Soul)
 signal ended
 signal arrived(target: Node3D)
@@ -22,7 +26,8 @@ enum Motion { SOUL_TRIP, GUIDED, FALL, HUNT }
 enum Phase { WAITING, CASTING, FLYING, SHRINKING, HOLDING, LINGERING, STRIKING, LEAVING }
 
 @export var motion := Motion.SOUL_TRIP
-## SOUL_TRIP: time of the trip (half each way), how far it bends to the side (a part of the distance to the soul).
+## SOUL_TRIP: time of the trip (half each way), how far it bends to the side (a part of the distance
+## to the soul).
 @export_range(0.0666, 60.0, 0.0001, "suffix:s") var roundtrip_s := 9.0
 @export_range(0.0, 2.0, 0.05) var bend := 0.75
 @export_flags_3d_physics var ground_mask := 1
@@ -84,8 +89,11 @@ func target_body() -> Node3D:
 	return get_node_or_null(soul_path) as Node3D if not soul_path.is_empty() else null
 
 
-## Server or solo. The cast started: a guided carrier follows `caster` for `cast_ticks` ticks; a hunter appears; a falling one waits for `arm`.
-func begin(caster: Node3D, spell_cast: SpellType, target: Node3D, point: Vector3, cast_ticks: int) -> void:
+## Server or solo. The cast started: a guided carrier follows `caster` for `cast_ticks` ticks; a
+## hunter appears; a falling one waits for `arm`.
+func begin(
+	caster: Node3D, spell_cast: SpellType, target: Node3D, point: Vector3, cast_ticks: int
+) -> void:
 	spell = spell_cast
 	if motion == Motion.GUIDED:
 		flight.begin(caster, target, point, cast_ticks)
@@ -96,7 +104,8 @@ func begin(caster: Node3D, spell_cast: SpellType, target: Node3D, point: Vector3
 		on_arrive.begin(self, caster, spell_cast, target)
 
 
-## Server or solo. The casting time is over: a guided carrier is let go toward `target`, the cow falls, the hunter hunts.
+## Server or solo. The casting time is over: a guided carrier is let go toward `target`, the cow
+## falls, the hunter hunts.
 func arm(target: Node3D = null) -> void:
 	armed = true
 	if motion == Motion.GUIDED:
@@ -120,7 +129,8 @@ func arrive_at(target: Node3D) -> void:
 		stop()
 
 
-## Server or solo. The spell was cancelled or the trip is over: nothing moves any more and the node goes.
+## Server or solo. The spell was cancelled or the trip is over: nothing moves any more and the node
+## goes.
 func stop() -> void:
 	if _ended:
 		return

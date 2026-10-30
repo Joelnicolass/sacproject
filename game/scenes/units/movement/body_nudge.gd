@@ -1,19 +1,20 @@
 class_name BodyNudge
 extends RefCounted
 
-## What the effects that move a creature or a wizard from outside share (Squall's Pushback, the Flurry's
-## implosion, Tumbling). A body on the ground slides on the land (a step that
-## leaves the land is not taken, and the height is the ground's); one in the air takes the step as it is. The server
-## (or solo) calls it; the clients get the position. Without terrain data (a bare debug scene) the land is everywhere
-## and the ground is where the body stands.
-## Ref: F121 (RFC-030j), sacengine push state.d:8604-8612.
+## What the effects that move a creature or a wizard from outside share (Squall's Pushback, the
+## Flurry's implosion, Tumbling). A body on the ground slides on the land (a step that leaves the
+## land is not taken, and the height is the ground's); one in the air takes the step as it is. The
+## server (or solo) calls it; the clients get the position. Without terrain data (a bare debug
+## scene) the land is everywhere and the ground is where the body stands.
 
 
-## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in a line to `edge` at `radius`, 0 from
-## `radius` out; under `inner` it keeps growing (1.5 times `speed` at the middle with inner 5 and radius 15). The ritual and a tower
-## being cast push with it.
-## Ref: sacengine pushAll, state.d:8614-8628.
-static func push_speed(distance: float, inner: float, radius: float, speed: float, edge := 0.0) -> float:
+## How hard an area pushes a body `distance` m from its middle (m/s): `speed` at `inner`, falling in
+## a line to `edge` at `radius`, 0 from `radius` out; under `inner` it keeps growing (1.5 times
+## `speed` at the middle with inner 5 and radius 15). The ritual and a tower being cast push with
+## it.
+static func push_speed(
+	distance: float, inner: float, radius: float, speed: float, edge := 0.0
+) -> float:
 	if distance >= radius or radius <= inner:
 		return 0.0
 	return lerpf(speed, edge, (maxf(distance, 0.0) - inner) / (radius - inner))
@@ -37,8 +38,9 @@ static func slide(body: Node3D, offset: Vector3) -> bool:
 	return true
 
 
-## The one place that puts a body somewhere else in one go (the server, or solo) without a WarpSnap: it writes the pose and tells
-## physics interpolation not to slide the picture from the old place to the new one.
+## The one place that puts a body somewhere else in one go (the server, or solo) without a WarpSnap:
+## it writes the pose and tells physics interpolation not to slide the picture from the old place to
+## the new one.
 static func place(body: Node3D, to: Vector3) -> void:
 	body.global_position = to
 	body.reset_physics_interpolation()
@@ -46,7 +48,6 @@ static func place(body: Node3D, to: Vector3) -> void:
 
 ## A petrified, frozen or vined body (push and catapult do nothing). The one answer
 ## to «can this body be moved from outside?», asked of its Afflictions.
-## Ref: sacengine effects.fixed state.d:8588-8590.
 static func fixed(body: Node) -> bool:
 	var afflictions := body.get_node_or_null("Afflictions") as Afflictions
 	return afflictions != null and afflictions.fixed()
@@ -71,9 +72,9 @@ static func ground_y(body: Node3D, at: Vector3) -> float:
 	return body.global_position.y if is_nan(height) else height
 
 
-## The height a body on the ground stands at near `at`: the land's, or (REVIEW-F121) the body's own when it rests on a
-## building or another body above the land (getHeight counts building tops). Off its edge, move_and_slide and
-## gravity take it down.
+## The height a body on the ground stands at near `at`: the land's, or the body's own when it rests
+## on a building or another body above the land (building tops count). Off its edge, move_and_slide
+## and gravity take it down.
 static func floor_y(body: Node3D, at: Vector3) -> float:
 	var land := ground_y(body, at)
 	var character := body as CharacterBody3D
@@ -105,7 +106,9 @@ static func box(body: Node3D) -> AABB:
 
 ## Every live creature and wizard whose box meets `area`, in group order (wizards first, as
 ## SplashDamage walks them), so the result does not depend on the scene tree.
-static func bodies_in(tree: SceneTree, area: AABB, groups: Array[StringName] = [&"wizard", &"unit"]) -> Array[Node3D]:
+static func bodies_in(
+	tree: SceneTree, area: AABB, groups: Array[StringName] = [&"wizard", &"unit"]
+) -> Array[Node3D]:
 	var found: Array[Node3D] = []
 	var seen := {}
 	for group in groups:
@@ -119,13 +122,17 @@ static func bodies_in(tree: SceneTree, area: AABB, groups: Array[StringName] = [
 	return found
 
 
-## Alive and on the field (a corpse, a ghost or a body being summoned is not moved): each effect asks the rest.
+## Alive and on the field (a corpse, a ghost or a body being summoned is not moved): each effect
+## asks the rest.
 static func _alive(body: Node3D) -> bool:
 	if not Attackable.is_body(body):
 		return false
-	if body is UnitBody and ((body as UnitBody).mode == UnitBody.Mode.SUMMONING or (body as UnitBody).is_taken()):
+	if (
+		body is UnitBody
+		and ((body as UnitBody).mode == UnitBody.Mode.SUMMONING or (body as UnitBody).is_taken())
+	):
 		return false
-	if not body is UnitBody and body.has_method("is_targetable") and not body.call("is_targetable"):  # dynamic: wizard, structure and doctor bodies answer it
+	if not body is UnitBody and not GameBody.targetable(body):
 		return false
 	var health := body.get_node_or_null("Health") as Health
 	return health != null and not health.is_dead()

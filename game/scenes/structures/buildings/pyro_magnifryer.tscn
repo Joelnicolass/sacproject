@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
-[ext_resource type="Resource" path="res://data/buildings/pyro_magnifryer.tres" id="2_type"]
+[ext_resource type="Resource" path="res://gods/pyro/buildings/pyro_magnifryer.tres" id="2_type"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/mpil.res" id="mesh_mpil"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/mbra.res" id="mesh_mbra"]
@@ -33,7 +33,8 @@ mesh = ExtResource("mesh_mgun")
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(4.342001, 0, 4.5290003)
 script = ExtResource("3_clear")
-radius_m = 30.1
+radius = 30.1
+soft = 3.0
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(4.342001, 38.1745, 4.5290003)

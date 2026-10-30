@@ -1,16 +1,16 @@
 class_name RunAway
 extends AbilityEffect
 
-## Run Away (the Flame Minion's, the Silverback's, the Frostwolf's), moved from AbilitySlot's branches without a
-## change. The body takes a Speedup (SpeedupEffect, duration ≥ 1 s), stops and drops its orders. Refused while it already has one.
-## Ref: F133 (RFC-030 030v-a); !nur.
+## Run Away (the Flame Minion's, the Silverback's, the Frostwolf's), moved from AbilitySlot's
+## branches without a change. The body takes a Speedup (SpeedupEffect, duration ≥ 1 s), stops and
+## drops its orders. Refused while it already has one.
 
 const _SPEEDUP_SCENE := preload("res://scenes/spells/speedup_effect.tscn")
 
 ## The shortest Speedup, in seconds (the SPEL's duration when it is longer).
 @export var min_duration_s := 1.0
 ## The burst every peer sees when it runs, and the socket of the body it leaves from (empty = none).
-@export var fx: ParticleType = preload("res://data/fx/speedup.tres")
+@export var fx: ParticleType = preload("res://scenes/fx/effects/speedup.tres")
 @export var fx_socket: BodyFacts.Socket = BodyFacts.Socket.CENTER
 
 

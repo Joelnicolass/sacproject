@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://spells/bovine_intervention/rock_burst.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://spells/bovine_intervention/cow_rock.tscn" id="2_rock"]
+
+[node name="RockBurst" type="Node3D"]
+editor_description = "Las 16 rocas que lanza la vaca al reventar (EruptDebris): 20 m/s mas o menos 7,5, hacia los lados y arriba. Lo toca FxBus.broadcast_scene en todos los pares."
+script = ExtResource("1_script")
+piece = ExtResource("2_rock")

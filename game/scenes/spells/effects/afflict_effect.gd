@@ -2,8 +2,9 @@
 class_name AfflictEffect
 extends BodyEffect
 
-## Lays a state on the body with the carrier's spell: the body's Afflictions child of `affliction` takes it for the spell's duration (Blind Rage's
-## fury). It does not say how long it lasts nor what it does (the state does), and it refuses a body that has no such state.
+## Lays a state on the body with the carrier's spell: the body's Afflictions child of `affliction`
+## takes it for the spell's duration (Blind Rage's fury). It does not say how long it lasts nor what
+## it does (the state does), and it refuses a body that has no such state.
 
 @export var affliction: AfflictionType
 

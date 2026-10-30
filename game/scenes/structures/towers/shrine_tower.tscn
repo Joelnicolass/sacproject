@@ -7,7 +7,6 @@
 
 [node name="ManaSource" parent="." index="6"]
 rate = 8.333
-audit_name = &"shrine"
 
 [node name="AttachPoint" parent="." index="7"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)

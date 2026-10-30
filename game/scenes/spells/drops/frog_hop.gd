@@ -2,10 +2,11 @@
 class_name FrogHop
 extends Node
 
-## How a frog of Rain of Frogs moves once it is down: it sits half a second, jumps toward the closest creature in range (or anywhere, if
-## none), and sits again, up to seven jumps; in the middle of the seventh it bursts. It asks its ZoneDrop to fly (launch) and to end
-## (finish); it never moves it. It does not stick to anybody (FrogCling) nor draw (FrogLook). Server (or solo) only.
-## Ref: sacengine updateRainFrog (state.d:19428-19487).
+## How a frog of Rain of Frogs moves once it is down: it sits half a second, jumps toward the
+## closest creature in range (or anywhere, if none), and sits again, up to seven jumps; in the
+## middle of the seventh it bursts. It asks its ZoneDrop to fly (launch) and to end (finish); it
+## never moves it. It does not stick to anybody (FrogCling) nor draw (FrogLook). Server (or solo)
+## only.
 
 @export var drop: ZoneDrop
 @export_range(0.0, 5.0, 0.05, "suffix:s") var sit_s := 0.5
@@ -60,7 +61,9 @@ func _jump() -> void:
 	if foe != null:
 		var line := BodyNudge.center(foe) - drop.global_position
 		speed = toward_speed * line.normalized() + wobble * _direction()
-		speed.y = minf(speed.y + 0.5 * drop.gravity_m_s2 * line.length() / maxf(speed.length(), 0.001), up_cap)
+		speed.y = minf(
+			speed.y + 0.5 * drop.gravity_m_s2 * line.length() / maxf(speed.length(), 0.001), up_cap
+		)
 	else:
 		speed = aimless_speed * _direction()
 		speed.y = aimless_up
@@ -70,7 +73,9 @@ func _jump() -> void:
 func _closest() -> Node3D:
 	var best: Node3D
 	var best_d := INF
-	for body in SplashDamage.bodies_within(get_tree(), drop.global_position, drop.effect_range, null, groups):
+	for body in SplashDamage.bodies_within(
+		get_tree(), drop.global_position, drop.effect_range, null, groups
+	):
 		var d := drop.global_position.distance_squared_to(BodyNudge.center(body))
 		if d < best_d:
 			best = body
@@ -83,4 +88,8 @@ func _direction() -> Vector3:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if drop != null else PackedStringArray(["Falta la rana (ZoneDrop) que salta."])
+	return (
+		PackedStringArray()
+		if drop != null
+		else PackedStringArray(["The frog (ZoneDrop) that hops is missing."])
+	)

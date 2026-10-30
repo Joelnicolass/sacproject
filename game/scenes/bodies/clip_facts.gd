@@ -1,11 +1,11 @@
 class_name ClipFacts
 extends RefCounted
 
-## What the rules need to know about a model's clips: how long each role lasts, in frames and seconds, and the frame where its
-## blow lands (`hit`) or its shot leaves (`shoot`). Read once from the model's AnimationLibrary and kept; nothing here plays or
-## draws a clip, and nothing asks the library again per frame.
-## The library is the single source: the body draws it and the rules read these numbers (the dedicated server loads the library
-## without the meshes).
+## What the rules need to know about a model's clips: how long each role lasts, in frames and
+## seconds, and the frame where its blow lands (`hit`) or its shot leaves (`shoot`). Read once from
+## the model's AnimationLibrary and kept; nothing here plays or draws a clip, and nothing asks the
+## library again per frame. The library is the single source: the body draws it and the rules read
+## these numbers (the dedicated server loads the library without the meshes).
 
 const DEFAULT_FPS := 30
 const HIT := "hit"
@@ -23,7 +23,8 @@ var _hits: Dictionary[StringName, PackedInt32Array] = {}
 var _shots: Dictionary[StringName, PackedInt32Array] = {}
 
 
-## The facts of `library` (built once and shared). An empty one for null. A dictionary lookup, never a load: safe per tick.
+## The facts of `library` (built once and shared). An empty one for null. A dictionary lookup, never
+## a load: safe per tick.
 static func of(library: AnimationLibrary) -> ClipFacts:
 	if library == null:
 		if _none == null:
@@ -54,7 +55,8 @@ func seconds(role: StringName) -> float:
 	return _seconds.get(role, 0.0)
 
 
-## The frames (at the clip's rate) where each blow of the clip lands, in order. Empty: the clip has no `hit` marker.
+## The frames (at the clip's rate) where each blow of the clip lands, in order. Empty: the clip has
+## no `hit` marker.
 func hits(role: StringName) -> PackedInt32Array:
 	return _hits.get(role, PackedInt32Array())
 
@@ -64,9 +66,9 @@ func shots(role: StringName) -> PackedInt32Array:
 	return _shots.get(role, PackedInt32Array())
 
 
-## Seconds the frames of the clip last on the rules' clock, frames / 30 whatever the clip's own rate; 0 without
-## the role. Not `seconds`: that is the Animation's length, which a 32-bit float stores a little off.
-## Ref: sacengine animFPS.
+## Seconds the frames of the clip last on the rules' clock, frames / 30 whatever the clip's own
+## rate; 0 without the role. Not `seconds`: that is the Animation's length, which a 32-bit float
+## stores a little off.
 func seconds_at_30(role: StringName) -> float:
 	return float(frames(role)) / float(DEFAULT_FPS)
 

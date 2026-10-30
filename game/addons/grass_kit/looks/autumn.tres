@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GrassLook" format=3]
+
+[ext_resource type="Script" path="res://addons/grass_kit/core/grass_look.gd" id="1_look"]
+
+[resource]
+script = ExtResource("1_look")
+resource_name = "autumn"
+base_color = Color(0.34, 0.24, 0.08, 1)
+tip_color = Color(0.8, 0.62, 0.24, 1)
+ground_color = Color(0.3, 0.26, 0.13, 1)

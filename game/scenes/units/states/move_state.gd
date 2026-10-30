@@ -1,7 +1,8 @@
 class_name MoveState
 extends UnitState
 
-## MOVE: straight toward the goal of begin_walk at the pace of the body; arrives within one step of it.
+## MOVE: straight toward the goal of begin_walk at the pace of the body; arrives within one step of
+## it.
 
 
 func physics_update(delta: float) -> void:

@@ -1,12 +1,15 @@
 extends Node
 
-## The one door to every visual effect: a burst (ParticleType), a bolt (BeamType) or a scene (PackedScene with an FxScene root).
-## `broadcast*` is what the server calls: one RPC with the id (FxWire) to each peer with its world loaded (MpKit.ready_peers), and here
-## too; each draws it with its own pools (%Bursts, %Beams). `play*` draws on this peer only. Every play says `played(kind, fx, at)`
-## first, also headless (FxSounds, CameraShake and the checks listen); a headless process then returns and instances nothing.
+## The one door to every visual effect: a burst (ParticleType), a bolt (BeamType) or a scene
+## (PackedScene with an FxScene root). `broadcast*` is what the server calls: one RPC with the id
+## (FxWire) to each peer with its world loaded (MpKit.ready_peers), and here too; each draws it with
+## its own pools (%Bursts, %Beams). `play*` draws on this peer only. Every play says `played(kind,
+## fx, at)` first, also headless (FxSounds, CameraShake and the checks listen); a headless process
+## then returns and instances nothing.
 ## What it does not do: keep the pools, turn ids into effects (FxWire), or decide who plays what.
 
-## `kind` is a KIND_* constant, `fx` the ParticleType, BeamType or PackedScene, `at` where (the middle of a beam).
+## `kind` is a KIND_* constant, `fx` the ParticleType, BeamType or PackedScene, `at` where (the
+## middle of a beam).
 signal played(kind: StringName, fx: Resource, at: Vector3)
 
 const KIND_BURST := &"burst"
@@ -60,7 +63,8 @@ func broadcast(fx: ParticleType, at: Vector3, dir := Vector3.ZERO) -> void:
 	play(fx, at, dir)
 
 
-## A bolt of `beam` from `from` to `to`. With `follow`, the end keeps its offset from that node while it lives.
+## A bolt of `beam` from `from` to `to`. With `follow`, the end keeps its offset from that node
+## while it lives.
 func play_beam(beam: BeamType, from: Vector3, to: Vector3, follow: Node3D = null) -> void:
 	if beam == null:
 		return
@@ -79,7 +83,8 @@ func broadcast_beam(beam: BeamType, from: Vector3, to: Vector3, follow: Node3D =
 	play_beam(beam, from, to, follow)
 
 
-## A scene whose root is an FxScene, at `at`: it goes under the current scene, answers `play(params)` and frees itself. Never headless.
+## A scene whose root is an FxScene, at `at`: it goes under the current scene, answers
+## `play(params)` and frees itself. Never headless.
 func play_scene(packed: PackedScene, at: Vector3, params: Dictionary) -> void:
 	if packed == null:
 		return
@@ -116,7 +121,8 @@ func _burst(kind: StringName, fx: ParticleType, at: Vector3, dir: Vector3) -> vo
 		_bursts.play(fx, at, next_particle_seed(), dir)
 
 
-## A client never broadcasts; the server (or solo) sends to the peers with a world and plays here (a dedicated only says `played`).
+## A client never broadcasts; the server (or solo) sends to the peers with a world and plays here (a
+## dedicated only says `played`).
 static func _is_client() -> bool:
 	return MpKit.is_networked() and not MpKit.is_server()
 

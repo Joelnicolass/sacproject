@@ -1,11 +1,18 @@
 class_name BodyFacts
 extends RefCounted
 
-## The size and sockets of a body that the rules need (how tall, how wide, how far its blow reaches, where its hand and center are),
-## read once from its BodyFrame scene and kept. A creature or wizard asks its BodyMount for them; nothing loads a scene or searches
-## a node per frame. The measures (height, radius, reach, flying height) are decoded to the mm (SceneStateReader.mm): the scene keeps 32 bits and the
-## rules read them as doubles, which today come from text with at most 3 decimals. Capsules and sockets stay 32-bit (a shape, a Vector3).
-## What it does not do: move a body, size a physics shape (BodyCollider) or choose which scene a body wears (BodyMount).
+## The size and sockets of a body that the rules need (how tall, how wide, how far its blow reaches,
+## where its hand and center are), read once from its BodyFrame scene and kept. A creature or wizard
+## asks its BodyMount for them; nothing loads a scene or searches a node per frame. The measures
+## (height, radius, reach, flying height) are decoded to the mm (SceneStateReader.mm): the scene
+## keeps 32 bits and the rules read them as doubles, which today come from text with at most 3
+## decimals. Capsules and sockets stay 32-bit (a shape, a Vector3).
+## What it does not do: move a body, size a physics shape (BodyCollider) or choose which scene a
+## body wears (BodyMount).
+
+## Where an effect leaves a body: its feet, its middle, the top of its head or the muzzle (where its
+## hand or mouth throws from).
+enum Socket { FEET, CENTER, TOP, MUZZLE }
 
 ## Fraction of the height where a thrown ball leaves the hand when the scene has no `muzzle` marker.
 const _HAND_FRACTION := 0.65
@@ -35,15 +42,19 @@ var top := Vector3(0.0, 1.8, 0.0)
 var feet := Vector3.ZERO
 ## True when the facts come from a scene (false for the unknown-model default).
 var from_scene := false
+## The passives the creature always has (the scene instanced at the frame's `passives`), or null for
+## none. PassiveMount builds it on every peer.
+var passives: PackedScene
 
 
 func _init() -> void:
 	muzzle = _hand(height_m, reach_m)
 
 
-## The facts of the body scene `scene` (built once and shared). The unknown-model default for null or an incomplete frame.
-## A dictionary lookup after the first call, never a load: safe per tick. Read from the scene's SceneState, never instantiated:
-## a BodyFrame instance creates physics objects (its Bounds Area3D) even outside the tree, and that alone moves the simulation.
+## The facts of the body scene `scene` (built once and shared). The unknown-model default for null
+## or an incomplete frame. A dictionary lookup after the first call, never a load: safe per tick.
+## Read from the scene's SceneState, never instantiated: a BodyFrame instance creates physics
+## objects (its Bounds Area3D) even outside the tree, and that alone moves the simulation.
 static func of(scene: PackedScene) -> BodyFacts:
 	if scene == null:
 		return fallback()
@@ -53,8 +64,9 @@ static func of(scene: PackedScene) -> BodyFacts:
 	return _cache[scene]
 
 
-## The facts of the body scene `body` wears (a UnitBody, WizardBody or DoctorBody has a `mount`). Anything else (a building, a
-## structure a blow aims at, a body that wears nothing yet) reads the unknown-model default: 1.8 m tall, 0.35 m wide and of reach.
+## The facts of the body scene `body` wears (a UnitBody, WizardBody or DoctorBody has a `mount`).
+## Anything else (a building, a structure a blow aims at, a body that wears nothing yet) reads the
+## unknown-model default: 1.8 m tall, 0.35 m wide and of reach.
 static func of_body(body: Object) -> BodyFacts:
 	var found: Variant = body.get("mount") if body != null and "mount" in body else null
 	var mount := found as BodyMount
@@ -70,10 +82,6 @@ static func fallback() -> BodyFacts:
 	return _fallback
 
 
-## Where an effect leaves a body: its feet, its middle, the top of its head or the muzzle (where its hand or mouth throws from).
-enum Socket { FEET, CENTER, TOP, MUZZLE }
-
-
 ## The local position of `socket` (the origin of the body is at its feet).
 func local(socket: Socket) -> Vector3:
 	match socket:
@@ -86,8 +94,8 @@ func local(socket: Socket) -> Vector3:
 	return center
 
 
-## Where `socket` of `body` is in the world. A body that wears nothing gives the unknown-model default (1.8 m tall). Effects leave from here,
-## never from a height typed in code.
+## Where `socket` of `body` is in the world. A body that wears nothing gives the unknown-model
+## default (1.8 m tall). Effects leave from here, never from a height typed in code.
 static func point(body: Node3D, socket: Socket) -> Vector3:
 	return body.global_transform * of_body(body).local(socket)
 
@@ -97,8 +105,8 @@ func half_size_m() -> float:
 	return maxf(radius_m, reach_m)
 
 
-## Fills these facts from the saved BodyFrame `state` (its node paths, shapes and marker positions). False when a node the
-## rules need is missing (the same as BodyFrame.is_complete()).
+## Fills these facts from the saved BodyFrame `state` (its node paths, shapes and marker positions).
+## False when a node the rules need is missing (the same as BodyFrame.is_complete()).
 func _read(state: SceneState) -> bool:
 	var nodes := SceneStateReader.nodes_of(state)
 	var root: Dictionary = nodes.get(".", {})
@@ -110,7 +118,12 @@ func _read(state: SceneState) -> bool:
 	for mark: String in marks:
 		if not root.has(mark) or not nodes.has(String(root[mark])):
 			return false
-	if footprint == null or ground == null or (air_path != null and air == null) or str(root.get("model_id", "")).is_empty():
+	if (
+		footprint == null
+		or ground == null
+		or (air_path != null and air == null)
+		or str(root.get("model_id", "")).is_empty()
+	):
 		return false
 	from_scene = true
 	model_id = str(root["model_id"])
@@ -127,7 +140,12 @@ func _read(state: SceneState) -> bool:
 	center = SceneStateReader.marker(nodes, root, "center")
 	top = SceneStateReader.marker(nodes, root, "top")
 	feet = SceneStateReader.marker(nodes, root, "feet")
-	muzzle = SceneStateReader.marker(nodes, root, "muzzle") if root.has("muzzle") else _hand(height_m, reach_m)
+	muzzle = (
+		SceneStateReader.marker(nodes, root, "muzzle")
+		if root.has("muzzle")
+		else _hand(height_m, reach_m)
+	)
+	passives = SceneStateReader.instance(state, root, "passives")
 	return true
 
 

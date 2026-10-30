@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="SoundSet" load_steps=28 format=3]
+
+[ext_resource type="Script" path="res://scenes/audio/sound_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scenes/audio/sound_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tic1.ogg" id="s1"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tic2.ogg" id="s2"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tic3.ogg" id="s3"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_ti_c1.ogg" id="s4"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_ti_c2.ogg" id="s5"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_ti_a1.ogg" id="s6"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_ti_a2.ogg" id="s7"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tia1.ogg" id="s8"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tia2.ogg" id="s9"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tia3.ogg" id="s10"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tia4.ogg" id="s11"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_ti_a3.ogg" id="s12"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_ti_a4.ogg" id="s13"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tid1.ogg" id="s14"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tid2.ogg" id="s15"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_tid3.ogg" id="s16"]
+[ext_resource type="AudioStream" path="res://assets/original/audio/voice/tick/_ti_d1.ogg" id="s17"]
+[ext_resource type="Resource" path="res://scenes/audio/melee/fist.tres" id="3_fallback"]
+
+[sub_resource type="Resource" id="cue_selected"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s1"), ExtResource("s2"), ExtResource("s3")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_ack"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s4"), ExtResource("s5")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_attack_ack"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s6"), ExtResource("s7")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_annoyed"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s8"), ExtResource("s9"), ExtResource("s10"), ExtResource("s11")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_swing"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s12"), ExtResource("s13")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_damaged"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s14"), ExtResource("s15"), ExtResource("s16")])
+bus = &"Voice"
+
+[sub_resource type="Resource" id="cue_death"]
+script = ExtResource("2_cue")
+streams = Array[AudioStream]([ExtResource("s17")])
+bus = &"Voice"
+
+[resource]
+script = ExtResource("1_set")
+selected = SubResource("cue_selected")
+ack = SubResource("cue_ack")
+attack_ack = SubResource("cue_attack_ack")
+annoyed = SubResource("cue_annoyed")
+swing = SubResource("cue_swing")
+shoot = SubResource("cue_swing")
+damaged = SubResource("cue_damaged")
+death = SubResource("cue_death")
+fallback = ExtResource("3_fallback")

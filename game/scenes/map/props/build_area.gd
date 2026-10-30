@@ -2,17 +2,20 @@
 class_name BuildArea
 extends CollisionShape3D
 
-## The ground a tower cast on this manafount clears: a cylinder you size with the gizmo (only its radius counts). While the cast
-## lasts, every live creature, wizard and doctor inside is pushed out along the ground, `push_mps` at `core_m` from the middle and
-## less and less out to the edge; a building inside it refuses the cast (TowerRules.has_room). The shape is always off: it never
-## collides, never feeds the navmesh and never blocks a path. It also tells its Ring what the armed preview says.
-## Not: who may cast (StructureAction), how hard the push is at a distance (BodyNudge.push_speed), drawing the ring (BuildRing).
-## Ref: sacengine pushAll(position, 5, 15, 5) every frame of a structure cast, state.d:15259.
+## The ground a tower cast on this manafount clears: a cylinder you size with the gizmo (only its
+## radius counts). While the cast lasts, every live creature, wizard and doctor inside is pushed out
+## along the ground, `push_mps` at `core_m` from the middle and less and less out to the edge; a
+## building inside it refuses the cast (TowerRules.has_room). The shape is always off: it never
+## collides, never feeds the navmesh and never blocks a path. It also tells its Ring what the armed
+## preview says.
+## Not: who may cast (StructureAction), how hard the push is at a distance (BodyNudge.push_speed),
+## drawing the ring (BuildRing).
 
 ## Who a cast pushes, in this order (the result does not depend on the scene tree).
 const PUSHED: Array[StringName] = [&"wizard", &"unit", &"doctor"]
 
-## Metres from the middle where the push is `push_mps`; nearer it is stronger, farther weaker, 0 at the radius.
+## Metres from the middle where the push is `push_mps`; nearer it is stronger, farther weaker, 0 at
+## the radius.
 @export_range(0.0, 30.0, 0.5, "suffix:m") var core_m := 5.0
 ## Push at `core_m` (m/s).
 @export_range(0.0, 30.0, 0.5, "suffix:m/s") var push_mps := 5.0
@@ -29,9 +32,11 @@ func _enter_tree() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if not shape is CylinderShape3D:
-		warnings.append("BuildArea necesita un CylinderShape3D: su radio es la zona que despeja la torre.")
+		warnings.append(
+			"BuildArea needs a CylinderShape3D: its radius is the area the tower clears."
+		)
 	if core_m >= radius_m():
-		warnings.append("`core_m` tiene que ser menor que el radio del cilindro.")
+		warnings.append("`core_m` has to be smaller than the cylinder's radius.")
 	return warnings
 
 
@@ -49,8 +54,9 @@ func center() -> Vector3:
 	return global_position if is_inside_tree() else position
 
 
-## Server or solo, one physics tick: pushes every live body inside the radius out from the middle (BodyNudge.push: on the land, a
-## petrified or frozen one stays). `caster` is skipped when push_caster is off. Returns how many moved.
+## Server or solo, one physics tick: pushes every live body inside the radius out from the middle
+## (BodyNudge.push: on the land, a petrified or frozen one stays). `caster` is skipped when
+## push_caster is off. Returns how many moved.
 func push_bodies(caster: Node3D = null) -> int:
 	var radius := radius_m()
 	var middle := center()
@@ -69,7 +75,8 @@ func push_bodies(caster: Node3D = null) -> int:
 	return moved
 
 
-## The armed preview's answer for this fount: hidden, the cast would start, or refused. Calls go down to the ring.
+## The armed preview's answer for this fount: hidden, the cast would start, or refused. Calls go
+## down to the ring.
 func show_preview(state: BuildRing.State) -> void:
 	if ring != null:
 		ring.set_radius(radius_m())

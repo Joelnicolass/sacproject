@@ -1,8 +1,9 @@
 class_name ScreenGate
 extends RefCounted
 
-## Does this process draw? The one rule every presentation piece asks (camera shake, damage numbers): closed in any
-## headless process and in the dedicated server, so the simulation and the servers never build screen-only nodes.
+## Does this process draw? The one rule every presentation piece asks (camera shake, damage
+## numbers): closed in any headless process and in the dedicated server, so the simulation and the
+## servers never build screen-only nodes.
 ## Not: who looks at the screen (MpLocalSeat) nor whether sound plays (AudioGate).
 
 

@@ -1,12 +1,12 @@
 extends SceneTree
 
-## Writes the Soul Wind's funnel mesh (scenes/spells/carrier/soul_wind_funnel.res): a twisted whirlwind 3 m tall, narrow at the foot
-## and wide at the top, 32 sides by 32 rings, its texture coordinates repeated twice around and twice up. It needs no original game:
-## the shape is a formula. Run it once; the result is versioned and the scene only holds the file.
+## Writes the Soul Wind's funnel mesh (spells/soul_wind/soul_wind_funnel.res): a twisted
+## whirlwind 3 m tall, narrow at the foot and wide at the top, 32 sides by 32 rings, its texture
+## coordinates repeated twice around and twice up. It needs no original game: the shape is a
+## formula. Run it once; the result is versioned and the scene only holds the file.
 ##   "$GODOT" --headless --path game --script res://tools/bake/make_soul_wind_funnel.gd
-## Ref: sacengine SacSoulWind.createMeshes (sacobject.d:2711-2750).
 
-const OUT := "res://scenes/spells/carrier/soul_wind_funnel.res"
+const OUT := "res://spells/soul_wind/soul_wind_funnel.res"
 const SIDES := 32
 const RINGS := 32
 const HEIGHT_M := 3.0
@@ -43,5 +43,10 @@ func _initialize() -> void:
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	mesh.resource_name = "soul_wind_funnel"
 	var error := ResourceSaver.save(mesh, OUT)
-	print("soul_wind_funnel: %s (%d vertices) -> %s" % ["saved" if error == OK else "FAILED %d" % error, vertices.size(), OUT])
+	print(
+		(
+			"soul_wind_funnel: %s (%d vertices) -> %s"
+			% ["saved" if error == OK else "FAILED %d" % error, vertices.size(), OUT]
+		)
+	)
 	quit(0 if error == OK else 1)

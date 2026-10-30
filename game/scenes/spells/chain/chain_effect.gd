@@ -1,8 +1,9 @@
 class_name ChainEffect
 extends Node
 
-## What one jump of a chain does (Chain Lightning's bolt, Rainbow's arc and its cure). ChainHop calls `hop` when a jump leaves and
-## `land` when it arrives; the base does nothing. It keeps no state of the chain (ChainHop owns who was hit). Server (or solo) only.
+## What one jump of a chain does (Chain Lightning's bolt, Rainbow's arc and its cure). ChainHop
+## calls `hop` when a jump leaves and `land` when it arrives; the base does nothing. It keeps no
+## state of the chain (ChainHop owns who was hit). Server (or solo) only.
 
 
 ## A jump leaves `from` toward `body` (null = a point on the land: `point`).

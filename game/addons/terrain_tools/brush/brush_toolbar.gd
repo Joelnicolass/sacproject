@@ -3,8 +3,8 @@ extends HBoxContainer
 
 ## The map brush's bar in the 3D editor's menu, shown while a Terrain or a FloraLayer is selected: which tool the left
 ## mouse button uses, in three groups (Relieve: raise and lower, smooth, void; Roles: grass, earth, rock, path; Flora:
-## paint), and the knobs of the shared `brush` (a TerrainBrush .tres; another preset is another .tres): «Fuerza» only for
-## raise and lower, «Flujo» for the pictures, «Densidad» for flora. Plus «Rearmar» while a stroke waits as a draft.
+## paint), and the knobs of the shared `brush` (a TerrainBrush .tres; another preset is another .tres): «Strength» only for
+## raise and lower, «Flow» for the pictures, «Density» for flora. Plus «Rebuild» while a stroke waits as a draft.
 ## Labels in Spanish. Not: painting (BrushPainter), what a tool paints on (BrushTargets).
 
 signal rebuild_pressed
@@ -73,7 +73,7 @@ func reset() -> void:
 ## Shows the groups for what is selected; a tool of a hidden group goes back to none.
 func show_for(kind: Kind) -> void:
 	var terrain := kind == Kind.TERRAIN
-	_title.text = "Terreno:" if terrain else "Flora:"
+	_title.text = "Terrain:" if terrain else "Flora:"
 	_relief.visible = terrain
 	_roles.visible = terrain
 	_flora.visible = not terrain
@@ -81,7 +81,7 @@ func show_for(kind: Kind) -> void:
 		reset()
 
 
-## Shows «Rearmar» while a stroke waits as a draft.
+## Shows «Rebuild» while a stroke waits as a draft.
 func show_draft(waiting: bool) -> void:
 	_rebuild.visible = waiting
 
@@ -91,7 +91,7 @@ func show_cost(ms: float, light: bool) -> void:
 	if ms < 0.0:
 		_status.text = "midiendo…"
 	else:
-		_status.text = "rearmar %.0f ms · %s" % [ms, "al soltar" if light else "al guardar"]
+		_status.text = "rebuild %.0f ms · %s" % [ms, "on release" if light else "on save"]
 
 
 func _show_knobs() -> void:

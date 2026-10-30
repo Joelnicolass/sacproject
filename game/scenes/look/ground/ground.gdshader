@@ -17,10 +17,17 @@ render_mode cull_disabled;
 #include "res://scenes/look/ground/terrain_deform.gdshaderinc"
 // The marks on the ground (burns, cracks), over the ground and under the light.
 #include "res://scenes/look/ground/ground_scars.gdshaderinc"
+// Drifting cloud shadows over the land (strength 0 = off).
+#include "res://scenes/look/ground/ground_clouds.gdshaderinc"
 
 uniform sampler2D lightmap : filter_linear, repeat_disable, hint_default_white;
 uniform float light_base : hint_range(0.0, 2.0, 0.01) = 0.3;
 uniform float light_gain : hint_range(0.0, 4.0, 0.01) = 0.55;
+// ALBEDO is scaled by this so the ambient lights less; light() divides it back out for the sun and
+// the local lights, so only the ambient part darkens.
+uniform float ambient_share : hint_range(0.1, 1.0, 0.01) = 1.0;
+// The local lights (spells, creatures) on the ground: above 1 they stand out.
+uniform float local_light_gain : hint_range(0.0, 4.0, 0.05) = 1.0;
 // The walls under the edge of the land wear the god's cliff texture, not the ground roles.
 #include "res://scenes/look/ground/ground_edge.gdshaderinc"
 
@@ -76,12 +83,12 @@ void fragment() {
 			orm += taps[i].orm * w[i];
 		}
 		world_n = normalize(n);
-		albedo = grass_paint_textured(albedo, w, map_pos.xz, TIME, slope);
+		albedo = grass_paint_textured(albedo, w, map_pos.xz, slope);
 		albedo *= role_macro(map_pos.xz);
 	}
 	albedo = ground_scar_mix(albedo, map_pos.xz, false);
 	vec3 light = texture(lightmap, map_pos.xz / roles_map_size).rgb;
-	ALBEDO = albedo * (light_base + light * light_gain);
+	ALBEDO = albedo * (light_base + light * light_gain) * ambient_share;
 	ROUGHNESS = orm.g;
 	if (use_maps && !wall) {
 		// `g` came from the NORMAL Godot already flipped on a back face, so the rebuilt one needs no flip.
@@ -89,4 +96,18 @@ void fragment() {
 		AO = orm.r;
 		AO_LIGHT_AFFECT = 0.6;
 	}
+}
+
+// Lambert diffuse for every light (from the albedo before `ambient_share`); the sun's is dimmed by the clouds over the point, found along its
+// ray (Simulating Cloud Shadows Analytically, godotshaders.com, MIT). The spells' and the creatures'
+// lights are never dimmed. The ground is rough: no specular, as before.
+void light() {
+	float light_amount = clamp(dot(NORMAL, LIGHT), 0.0, 1.0) * ATTENUATION;
+	if (!LIGHT_IS_DIRECTIONAL) {
+		light_amount *= local_light_gain;
+	} else if (cloud_shadow_strength > 0.0) {
+		vec3 to_sun = normalize(mat3(INV_VIEW_MATRIX) * LIGHT);
+		light_amount *= cloud_shadow_along(map_pos, to_sun, TIME);
+	}
+	DIFFUSE_LIGHT += light_amount * LIGHT_COLOR * ALBEDO / (PI * ambient_share);
 }

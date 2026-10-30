@@ -1,11 +1,20 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/passives/lightning_charge.gd" id="1_charge"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/lightning_strike.tscn" id="2_bolt"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/gcil.tres" id="typed_passive"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/lightning_charge.tres" id="typed_passive"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_charge"]
+properties/0/path = NodePath("Passives/LightningCharge:shown")
+properties/0/spawn = true
+properties/0/replication_mode = 2
 
 [node name="LightningCharge" type="Node"]
-editor_description = "F130 (RFC-030 030s-a): la carga de rayo (gcil) del Storm Giant, dueña de cuántos cuadros lleva el cuerpo, de la rampa de las descargas y de lo que multiplica (paso ×1,5 por PaceFactors, golpe y precisión ×1,5 por melee_factor). absorb() carga f·daño y deja el 25 %; cada tick cargado puede descargar un LightningStrike gcil (250) a un cuerpo a ≤ 30 m o al suelo, y gasta 125 cuadros. shown se replica para las chispas. El padre asigna body y pace."
+editor_description = "The Storm Giant's lightning charge: how many frames the body holds, the ramp of its discharges and what it multiplies (pace ×1.5 through PaceFactors, blow and accuracy ×1.5 through melee_factor). absorb() charges f·damage and leaves 25 %; each charged tick may discharge a LightningStrike at a body within 30 m or at the ground. Drop it in a creature's <name>_passives.tscn, keep its name, and point that scene's DamagePassive.charge at it. Sync replicates `shown` (the sparks); its root is the creature."
 script = ExtResource("1_charge")
 passive = ExtResource("typed_passive")
 bolt_scene = ExtResource("2_bolt")
+
+[node name="Sync" type="MultiplayerSynchronizer" parent="."]
+root_path = NodePath("../../..")
+replication_config = SubResource("SceneReplicationConfig_charge")

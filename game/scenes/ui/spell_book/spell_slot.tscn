@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/spell_book/spell_slot.gd" id="1_slot"]
-[ext_resource type="Resource" path="res://data/audio/cues/ui_book_click.tres" id="2_click"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ui_book_click.tres" id="2_click"]
 
 [sub_resource type="Gradient" id="Gradient_solid"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)

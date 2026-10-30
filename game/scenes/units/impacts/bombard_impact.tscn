@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scenes/units/impacts/burn_impact.gd" id="3_burn"]
 
 [node name="BombardImpact" type="Node"]
-editor_description = "Bombard cfba (bombardProjectileExplosion, state.d:24518-24528): el tocado recibe el amount entero como salpicadura a distancia y el resto de damageRange la caída (SplashImpact); además, un fuego sin daño de 60 cuadros sobre el tocado y sobre cada criatura o mago del radio (BurnImpact, solo el look)."
+editor_description = "Bombard cfba: the body hit takes the whole amount as ranged splash and the rest of the damage range the falloff (SplashImpact); also, a fire of no damage for 60 frames on the body hit and on every creature or wizard in the radius (BurnImpact, look only)."
 script = ExtResource("1_impact")
 
 [node name="SplashImpact" parent="." instance=ExtResource("2_splash")]

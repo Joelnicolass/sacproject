@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
 [node name="OnlineRoomRow" type="Button"]
-editor_description = "Una sala pública de la lista (nombre · jugadores/máximo). La vista de unirse le pone el texto y la conecta; el look se cambia acá."
+editor_description = "A public room of the list (name · players/max). The join view sets its text and connects it; the look is changed here."
 custom_minimum_size = Vector2(0, 40)
 text_overrun_behavior = 3

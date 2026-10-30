@@ -1,9 +1,9 @@
 class_name StalkRoster
 extends Node
 
-## The bodies the stalks of one Meanstalks have already caught: no body is caught twice by the same cast, whichever stalk reaches it.
-## Server only. It does not choose a prey nor hold anybody (Stalk and StalkGrip do).
-## Ref: sacengine Meanstalks.targets, hasTarget, addTarget (state.d:4435-4441).
+## The bodies the stalks of one Meanstalks have already caught: no body is caught twice by the same
+## cast, whichever stalk reaches it. Server only. It does not choose a prey nor hold anybody (Stalk
+## and StalkGrip do).
 
 var _caught: Array[Node3D] = []
 

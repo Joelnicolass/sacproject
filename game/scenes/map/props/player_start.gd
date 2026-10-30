@@ -2,13 +2,14 @@
 class_name PlayerStart
 extends Node3D
 
-## Where one player starts: the altar of that slot and, in `WizardSpot`, the spot where its wizard appears (move and turn the
-## marker with the gizmo: the wizard stands where it stands, looking where it looks). The name over it (Preview) only lives in
-## the editor. `team` says who this seat is allied with: seats with the same
-## team above 0 are allies, 0 is alone (MapSides reads it with `slot`).
+## Where one player starts: the altar of that slot and, in `WizardSpot`, the spot where its wizard
+## appears (move and turn the marker with the gizmo: the wizard stands where it stands, looking
+## where it looks). The name over it (Preview) only lives in the editor. `team` says who this seat
+## is allied with: seats with the same team above 0 are allies, 0 is alone (MapSides reads it with
+## `slot`).
 
 const SCENE_PATH := "res://scenes/map/props/player_start.tscn"
-const LABEL_TEXT := "Jugador %d"
+const LABEL_TEXT := "Player %d"
 
 ## Player slot of this start (1 = first player).
 @export_range(1, 8) var slot := 1:
@@ -50,12 +51,21 @@ func _notification(what: int) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if get_node_or_null("%WizardSpot") == null:
-		warnings.append("Falta el hijo WizardSpot: ahí aparece el mago.")
+		warnings.append("The WizardSpot child is missing: the wizard appears there.")
 	if get_node_or_null("%Altar") == null:
-		warnings.append("Falta el hijo Altar.")
+		warnings.append("The Altar child is missing.")
 	for other in _other_starts():
 		if other.slot == slot:
-			warnings.append("El slot %d ya lo usa otro inicio (%s). Cada inicio necesita un número distinto." % [slot, other.name])
+			(
+				warnings
+				. append(
+					(
+						# gdlint: ignore=max-line-length
+						"Slot %d is already used by another start (%s). Every start needs a different number."
+						% [slot, other.name]
+					)
+				)
+			)
 	return warnings
 
 

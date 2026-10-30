@@ -1,20 +1,11 @@
 # spells
-What: casting a spell: `Spellbook` (what the wizard knows, cooldowns), `Caster` (checks, mana, timing), one `SpellAction` per spell.
-Not: the wizard body (`scenes/wizards/`), the spell data (`data/catalog/spells/<tag>.tres`, a `SpellType`), what the AI wants to cast (`scenes/ai/`).
-Talks to: HUD/input call `Caster.request_cast/request_summon/request_structure`; the host runs `submit_*`; `Caster.feedback` goes up to the HUD; `Caster.cast_changed(casting, fx)` (from the replicated `cast_fx_shown`, an FxWire id) drives HandFx, WizardSounds, Ward and the pose. Hands' particle: `SpellAction.cast_fx`, else `GodType.cast_fx`.
-Talks to: `Caster` calls down to a `SpellAction` (`check`, `begin`, `finish`), which spawns projectiles/effects through `SpellSpawner` and hits units via `Health`.
-Net: projectiles and spell effects keep `MpReplicate` on purpose, not `MpActor`: they live a short time and a BUFFERED `MpActor` would draw them ~0.1 s in the past, a delay felt at the impact (plan 072 migrated only units, wizards and doctors).
-Edit: `data/catalog/spells/<tag>.tres` (cost, range, cooldown, `action` scene) · `actions/<name>_action.tscn` (the behaviour) · projectile/effect scenes in this folder.
-Control on one foe (Freeze, Grasping Vines, Rings of Fire, Slime): `AfflictAction` (one script, a scene per spell) asks its `SpellTarget` (embedded Resource: who, ground only, refuses ccProtected) and lays the state on the foe's `Afflictions`; `SlimeBall` is the ball that falls while Slime is cast.
-Zones on the ground (Explosion, Frozen Ground, Demonic Rift, Erupt): `ZoneAction` (one script, a scene per spell) spawns a `GroundZone` through `SpellSpawner` when the cast starts, releases it when it ends and cancels it when it is cut; see `zones/README.md`.
-Zones on the ground (Explosion, Frozen Ground, Demonic Rift): `ZoneAction` (one script, a scene per spell) spawns a `GroundZone` through `SpellSpawner` when the cast starts, releases it when it ends and cancels it when it is cut; see `zones/README.md`.
-Clouds (Rain of Frogs, Rain of Fire, Plague, Cloudkill, Bombardment): the same `ZoneAction`; the zone is a storm cloud with a `ZoneDropper` and a `DropLauncher` (or a `BoltLauncher` for Cloudkill's bolts, with a `ZoneMover` that chases the target), and what falls is a `ZoneDrop` in `drops/`.
-Healing Aura (`ruah`) is a `WardAction` with a `target` (the creature that carries it): the ward lives in every body (`wards/healing_aura.tscn`).
-Wards (shields and temporary forms): see `wards/README.md`. Spells that fetch souls (Soul Mole, Soul Wind): `carrier/README.md`; Animate Dead's effect: `animate_dead/README.md`.
-Jumping spells (Chain Lightning, Rainbow): `chain/README.md`. Dragonfire's dragon is a guided `SpellCarrier` (`carrier/README.md`). Halo of Earth is `units/abilities/halo_of_earth.gd` (the same node as the Rhinok's).
-Level-8 spells on one target (Charm, Blind Rage, Intestinal Vaporization, Bovine Intervention, Death): `CarrierAction` (spawn when/where knobs) + a `SpellCarrier` with a motion (guided, fall, hunt) and a `TargetEffect` (`effects/README.md`); see `carrier/README.md`.
-Jumping spells (Chain Lightning, Rainbow): `chain/README.md`. Dragonfire's dragon is a guided `SpellCarrier` (`carrier/README.md`). Halo of Earth is `units/abilities/halo_of_earth.gd` (the same node as the Rhinok's). The five walls (Firewall, Wall of Spikes, Wailing Wall, Vinewall, Fence): `walls/README.md`.
-Marks on the ground: a `ScarMark` (scar_mark.gd; texture + `max_height_m`, picked in the inspector) in the effect's scene asks the map's `GroundScars` to paint a burn or crack where it is; Explosion (`zones/explosion_burst.tscn`), Lightning and Chain Lightning (`fx/burning_beam_fx.tscn`, the `lightning` beam types), Rock, Halo of Earth rocks and Viscous Oil (`ShotLook.ground_mark`, `marks/*.tscn`) have one.
-Spells aimed at one body (Heal, Speedup, Lightning, Rock, Wrath, Fireball, Swarm, `AfflictAction`): each `extends SpellAction`, embeds a `SpellTarget` in its scene and answers `check` with `aim_at_body`; `LaunchPoint` says where the ball leaves.
-Light: every spell lights the ground with its own colour (see `look/lights/README.md`): a lasting effect carries a `StateLight` in its scene, a burst an `FxLightSpec` on its `ParticleType`.
-Meanstalks and Tornado (061j): two more `GroundZone` scenes, with their own parts. Meanstalks (`stalks/README.md`): four `Stalk` hunters that catch, lift and throw; Tornado (`tornado/README.md`): a funnel that wanders and lifts.
+
+Casting. `Spellbook` (what the wizard knows, cooldowns) and `Caster` (mana, target, range, timing) are children of the
+wizard; each spell is a `SpellAction` scene in `actions/`, named by `SpellType.action` (`spells/<name>/<name>.tres`).
+- A client calls `Caster.request_*`, which becomes a `submit_*` RPC; the server (or solo) casts.
+- The action spawns what the spell needs through `SpellSpawner`. A projectile is dragged into the action's `projectile`
+  (a `PackedScene`); a zone or wall scene is listed in the spawner's `zones` in `match.tscn` (a zone points at its
+  `SpellType`, so the action cannot point back at it without a load cycle).
+- Projectiles and spell effects use `MpReplicate`, not a buffered `MpActor`: they live briefly and a buffered pose would
+  draw the impact late.
+- Subfolders hold the families: `zones/`, `drops/`, `walls/`, `wards/`, `carrier/`, `chain/`, `effects/`, `stalks/`, `tornado/`.

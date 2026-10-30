@@ -2,12 +2,11 @@
 class_name DefeatRule
 extends Node
 
-## The server's rule for losing. A side is defeated when its last altar is destroyed. A wizard that vanishes (GhostForm GONE:
-## it died with no altar in play, or under ritual) takes its side down: its altars fall and its
-## creatures die (lose(side) = destroyAltars + killAll; run when the
-## disappearance ends). When one side is left, it wins.
-## Other ways to win or lose are other children of Match; taking this one out turns it off.
-## Ref: sacengine updateAltarDestruction -> defeat(side) state.d:26062; lose(side) state.d:13404-13407, 8298-8304, run at state.d:25998; getNewVictories state.d:30470-30490.
+## The server's rule for losing. A side is defeated when its last altar is destroyed. A wizard that
+## vanishes (GhostForm GONE: it died with no altar in play, or under ritual) takes its side down:
+## its altars fall and its creatures die (lose(side) = destroy the altars + kill all; run when the
+## disappearance ends). When one side is left, it wins. Other ways to win or lose are other children
+## of Match; taking this one out turns it off.
 
 @export var match_state: MatchState
 
@@ -19,7 +18,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	if match_state == null:
-		push_error("DefeatRule: falta match_state.")
+		push_error("DefeatRule: match_state is missing.")
 		return
 	set_physics_process(match_state.is_authority())
 	if not match_state.is_authority():
@@ -33,7 +32,7 @@ func _ready() -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if match_state == null:
-		warnings.append("Asigná en `match_state` el MatchState.")
+		warnings.append("Assign the MatchState to `match_state`.")
 	return warnings
 
 
@@ -63,7 +62,7 @@ func defeat(slot: int) -> void:
 
 ## Every living creature of that side in this world dies.
 func kill_creatures(slot: int) -> void:
-	for node in get_tree().get_nodes_in_group("unit"):
+	for node in get_tree().get_nodes_in_group(UnitBody.GROUP):
 		var unit := node as UnitBody
 		if unit == null or unit.owner_slot != slot or unit.is_dead():
 			continue
@@ -77,7 +76,7 @@ func kill_creatures(slot: int) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	## No match runs in the editor, and the MpKit autoload does not exist there.
+	# No match runs in the editor, and the MpKit autoload does not exist there.
 	if Engine.is_editor_hint():
 		return
 	tick(delta)
@@ -100,7 +99,8 @@ func _on_stage_changed(stage: GhostForm.Stage, ghost: GhostForm) -> void:
 	_vanishing.append({"slot": ghost.owner_slot(), "left": ghost.vanish_seconds()})
 
 
-## lose(side): its altars fall and its creatures die; with no altar left there is nothing to wait for.
+## lose(side): its altars fall and its creatures die; with no altar left there is nothing to wait
+## for.
 func _lose(slot: int) -> void:
 	kill_creatures(slot)
 	match_state.begin_altar_collapse(slot, 0)
@@ -113,10 +113,9 @@ func _on_altar_state_changed(altar: Altar, state: Altar.State) -> void:
 		defeat(altar.owner_slot)
 
 
-## One team left among the seated sides that own an altar wins (no
-## enemy side alive in altarSides); none left, a match with no winner. The winners are the whole team, also the ally that
-## fell earlier (P3). With every slot its own team (1v1) this is the old «one side left wins».
-## Ref: RFC-049 049b; sacengine getNewVictories, state.d:30483-30492.
+## One team left among the seated sides that own an altar wins (no enemy side alive among the altar
+## sides); none left, a match with no winner. The winners are the whole team, also the ally that
+## fell earlier. With every slot its own team (1v1) this is «one side left wins».
 func _decide_winner() -> void:
 	if match_state.has_result():
 		return

@@ -1,6 +1,6 @@
 """SSET (a sound set of sounds.wad): which SAMPs answer each sound type of an emitter.
 
-Layout (RFC-052 §2): a 4-character name, u32 entry count, then per entry a 4-character type, u32 n and n SAMP names
+Layout: a 4-character name, u32 entry count, then per entry a 4-character type, u32 n and n SAMP names
 (the variants). Like every 4-character tag of the WADs the characters are stored reversed; they are returned as people
 read them (the WAD file names): type "Xdie", sample "zdi1".
 """

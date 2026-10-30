@@ -1,16 +1,18 @@
 class_name Corpse
 extends Node
 
-## The dead body as the game sees it: it keeps falling until it rests on the floor, and only then counts as a corpse
-## that stays on the map until its soul is taken, it is desecrated or it is converted back to life. It counts the fall
-## in physics ticks and tells whoever listens (the soul, the look). It never animates anything and never fades the body.
-## Ref: sacengine dying -> dead, when the soul appears (state.d:14026).
+## The dead body as the game sees it: it keeps falling until it rests on the floor, and only then
+## counts as a corpse that stays on the map until its soul is taken, it is desecrated or it is
+## converted back to life. It counts the fall in physics ticks and tells whoever listens (the soul,
+## the look). It never animates anything and never fades the body.
 
-## The body died and started to lie down (`instant`: it joined late and already lies). CorpseLook listens.
+## The body died and started to lie down (`instant`: it joined late and already lies). CorpseLook
+## listens.
 signal laid_down(instant: bool)
 ## The body rests on the floor: this is when the soul appears.
 signal settled
-## The corpse started or stopped dissolving (its soul was taken). Every peer hears it, because `dissolving` is replicated.
+## The corpse started or stopped dissolving (its soul was taken). Every peer hears it, because
+## `dissolving` is replicated.
 signal dissolving_changed(on: bool)
 
 ## Every body that lies dead on the map.
@@ -24,17 +26,9 @@ const GROUP := &"corpse"
 @export_range(1.0, 60.0, 0.5, "suffix:s") var max_fall_s := 10.0
 ## The corpse is removed this long after its soul is taken.
 @export var dissolve_s := 2.5
-## How far the body leans back when a death clip lays it down (degrees): where the soul sits. See lying_pose().
+## How far the body leans back when a death clip lays it down (degrees): where the soul sits. See
+## lying_pose().
 @export_range(0.0, 90.0) var fall_deg := 90.0
-
-## The body is a corpse now (it fell, or is falling).
-var laid := false
-## The fall is over: the body rests on the floor.
-var is_settled := false
-## The clip that lays the body down ("" = none: baked meshes, no dying clip). Set by whoever lays the body down.
-var death_role := ""
-## true: a clip (the skeleton's death) lays the body down and the pivot stays upright. Only the soul's place changes.
-var clip_driven := false
 ## Server writes it, the clients get it (unit.tscn replicates it).
 @export var dissolving := false:
 	set(value):
@@ -42,6 +36,17 @@ var clip_driven := false
 			return
 		dissolving = value
 		dissolving_changed.emit(dissolving)
+
+## The body is a corpse now (it fell, or is falling).
+var laid := false
+## The fall is over: the body rests on the floor.
+var is_settled := false
+## The clip that lays the body down ("" = none: baked meshes, no dying clip). Set by whoever lays
+## the body down.
+var death_role := ""
+## true: a clip (the skeleton's death) lays the body down and the pivot stays upright. Only the
+## soul's place changes.
+var clip_driven := false
 
 var _body: UnitBody
 var _ticks := 0
@@ -55,10 +60,13 @@ func _ready() -> void:
 func lying_pose(body_radius: float) -> Transform3D:
 	if not clip_driven:
 		return Transform3D.IDENTITY
-	return Transform3D(Basis.from_euler(Vector3(-deg_to_rad(fall_deg), 0.0, 0.0)), Vector3(0.0, body_radius, 0.0))
+	return Transform3D(
+		Basis.from_euler(Vector3(-deg_to_rad(fall_deg), 0.0, 0.0)), Vector3(0.0, body_radius, 0.0)
+	)
 
 
-## Every peer. The body is dead: it leaves the creatures and starts to fall. `instant`: it joined late, it already lies.
+## Every peer. The body is dead: it leaves the creatures and starts to fall. `instant`: it joined
+## late, it already lies.
 func lay_down(body: UnitBody, role := "", instant := false) -> void:
 	if laid:
 		return
@@ -67,7 +75,7 @@ func lay_down(body: UnitBody, role := "", instant := false) -> void:
 	clip_driven = not role.is_empty()
 	_body = body
 	_ticks = 0
-	body.remove_from_group("unit")
+	body.remove_from_group(UnitBody.GROUP)
 	body.add_to_group(GROUP)
 	body.collision_layer = corpse_layer
 	body.velocity = Vector3.ZERO
@@ -78,8 +86,8 @@ func lay_down(body: UnitBody, role := "", instant := false) -> void:
 	set_physics_process(true)
 
 
-## Every peer. Undoes lay_down(): the body is a creature again (group, layer). The one that took it (Captive) decides
-## what it is while a doctor holds it.
+## Every peer. Undoes lay_down(): the body is a creature again (group, layer). The one that took it
+## (Captive) decides what it is while a doctor holds it.
 func stand_up(body: UnitBody) -> void:
 	if not laid:
 		return
@@ -90,7 +98,7 @@ func stand_up(body: UnitBody) -> void:
 	dissolving = false
 	set_physics_process(false)
 	body.remove_from_group(GROUP)
-	body.add_to_group("unit")
+	body.add_to_group(UnitBody.GROUP)
 	body.collision_layer = body.unit_layer
 
 
@@ -99,16 +107,22 @@ func dissolve(body: Node) -> void:
 	if dissolving or not is_multiplayer_authority():
 		return
 	dissolving = true
-	get_tree().create_timer(dissolve_s, false, true).timeout.connect(func() -> void:
-		if is_instance_valid(body):
-			body.queue_free())
+	get_tree().create_timer(dissolve_s, false, true).timeout.connect(
+		func() -> void:
+			if is_instance_valid(body):
+				body.queue_free()
+	)
 
 
-## Runs after its body's own physics step (a child follows its parent), so `is_on_floor()` is this tick's.
+## Runs after its body's own physics step (a child follows its parent), so `is_on_floor()` is this
+## tick's.
 func _physics_process(_delta: float) -> void:
 	_ticks += 1
 	var landed := not _body.simulates() or _body.is_on_floor()
-	if (landed and _ticks >= MatchClock.ticks_for(fall_s)) or _ticks >= MatchClock.ticks_for(max_fall_s):
+	if (
+		(landed and _ticks >= MatchClock.ticks_for(fall_s))
+		or _ticks >= MatchClock.ticks_for(max_fall_s)
+	):
 		_settle()
 
 

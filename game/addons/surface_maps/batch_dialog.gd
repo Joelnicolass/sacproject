@@ -1,12 +1,12 @@
 @tool
 extends ConfirmationDialog
 
-## Project > Tools > «Generar relieve…»: the relief of many materials at once. Takes the .tres of the folders (not their
-## subfolders) and the files written in «Qué», or the files and folders selected in the FileSystem dock; bakes the maps
+## Project > Tools > «Generate relief…»: the relief of many materials at once. Takes the .tres of the folders (not their
+## subfolders) and the files written in «What», or the files and folders selected in the FileSystem dock; bakes the maps
 ## that are missing with the session's recipe, imports them in one go, assigns them and saves each material.
-## «Saltear existentes» leaves a material whose maps are all on disk untouched; a PNG is only replaced with «Sobrescribir».
-## «Detener» stops after the current material (what was written is still imported and assigned). No undo: the materials
-## are saved to disk, so git or «Quitar» take it back. Not: the pixels (ReliefBaker), the files (MapWriter), one material
+## «Skip existing» leaves a material whose maps are all on disk untouched; a PNG is only replaced with «Overwrite».
+## «Stop» stops after the current material (what was written is still imported and assigned). No undo: the materials
+## are saved to disk, so git or «Remove» take it back. Not: the pixels (ReliefBaker), the files (MapWriter), one material
 ## at a time (the inspector section).
 
 const ReliefJob := preload("res://addons/surface_maps/relief_job.gd")
@@ -43,7 +43,7 @@ func _run() -> void:
 		return
 	var targets := _targets()
 	if targets.is_empty():
-		%Status.text = "No hay materiales con un albedo en archivo en lo elegido."
+		%Status.text = "None of the picked materials has an albedo from a file."
 		return
 	_set_running(true)
 	%Progress.max_value = targets.size()
@@ -56,14 +56,14 @@ func _run() -> void:
 			break
 		var target := targets[i]
 		%Progress.value = i
-		%Status.text = "Generando %d/%d: %s" % [i + 1, targets.size(), target.resource_path.get_file()]
+		%Status.text = "Generating %d/%d: %s" % [i + 1, targets.size(), target.resource_path.get_file()]
 		await get_tree().process_frame
 		if %Skip.button_pressed and ReliefJob.complete(target, recipe):
 			skipped += 1
 			continue
 		written.append_array(ReliefJob.write_maps(target, recipe, overwrite))
 		touched.append(target)
-	%Status.text = "Importando %d mapas…" % written.size()
+	%Status.text = "Importing %d maps…" % written.size()
 	await get_tree().process_frame
 	MapWriter.import_in_editor(written)
 	var saved := 0
@@ -75,8 +75,8 @@ func _run() -> void:
 			else:
 				unsaved += 1
 	%Progress.value = targets.size()
-	%Status.text = "%d PNG escritos · %d materiales asignados y guardados · %d salteados%s%s." % [written.size(), saved, skipped,
-		" · %d sin guardar (viven dentro de una escena: guardala)" % unsaved if unsaved > 0 else "", " · detenido" if _stopping else ""]
+	%Status.text = "%d PNG written · %d materials assigned and saved · %d skipped%s%s." % [written.size(), saved, skipped,
+		" · %d not saved (they live inside a scene: save it)" % unsaved if unsaved > 0 else "", " · stopped" if _stopping else ""]
 	_set_running(false)
 
 
@@ -87,7 +87,7 @@ func _set_running(on: bool) -> void:
 	%Stop.visible = on
 
 
-## Every material of the paths in «Qué» that has an albedo picture to read.
+## Every material of the paths in «What» that has an albedo picture to read.
 func _targets() -> Array[Resource]:
 	var out: Array[Resource] = []
 	for entry in %Paths.text.split(",", false):

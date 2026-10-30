@@ -1,13 +1,13 @@
 class_name BuildEdge
 extends Node3D
 
-## The rising edge of a tower being cast: this node rides the cut line of `reveal` (in the middle of its glowing band), its
-## `rings` child throws flat blue rings while the tower rises and its `light` child grows with `build_progress` along
-## `energy_curve`. The rings stop a little before the end (`rings_until_progress`); when the tower stands the light fades out
-## in `fade_out_s`. A tower that was already standing when it appeared (late join, placed by hand) shows neither.
-## Does not mark the start, the end or the cut (BuildCues), nor tint by side, nor change the match. A headless process does
-## nothing (the light frees itself there).
-## Ref: state.d:15237-15244 (BlueRing: rings in the band of the cut, none in the last 0.5 s).
+## The rising edge of a tower being cast: this node rides the cut line of `reveal` (in the middle of
+## its glowing band), its `rings` child throws flat blue rings while the tower rises and its `light`
+## child grows with `build_progress` along `energy_curve`. The rings stop a little before the end
+## (`rings_until_progress`); when the tower stands the light fades out in `fade_out_s`. A tower that
+## was already standing when it appeared (late join, placed by hand) shows neither. Does not mark
+## the start, the end or the cut (BuildCues), nor tint by side, nor change the match. A headless
+## process does nothing (the light frees itself there).
 
 @export var tower: CastTower
 @export var reveal: BuildReveal
@@ -21,7 +21,8 @@ extends Node3D
 @export_range(0.0, 1.0, 0.001) var rings_until_progress := 0.955
 ## Seconds the light takes to go out when the tower stands.
 @export_range(0.0, 5.0, 0.05, "suffix:s") var fade_out_s := 1.0
-## Seconds a tower seen standing from the start is watched (its progress may arrive a moment later) before this node rests.
+## Seconds a tower seen standing from the start is watched (its progress may arrive a moment later)
+## before this node rests.
 @export var settle_s := 2.0
 
 var _seen_rising := false
@@ -31,23 +32,30 @@ var _standing_s := 0.0
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if tower == null:
-		warnings.append("Asigná `tower` (la raíz de la torre, un CastTower).")
+		warnings.append("Assign `tower` (the tower's root, a CastTower).")
 	if reveal == null:
-		warnings.append("Asigná `reveal` (el BuildReveal de la torre: da la altura de la línea).")
+		warnings.append("Assign `reveal` (the tower's BuildReveal: it gives the line's height).")
 	if rings == null:
-		warnings.append("Asigná `rings` (el SpriteEmitter EdgeRings con data/fx/build_edge_ring.tres).")
+		warnings.append("Assign `rings` (the EdgeRings SpriteEmitter with build_edge_ring.tres).")
 	if light == null:
-		warnings.append("Asigná `light` (el ActorLight EdgeLight).")
+		warnings.append("Assign `light` (the EdgeLight ActorLight).")
 	return warnings
 
 
 ## This moves by itself every frame, so physics interpolation must leave it alone.
-func _init() -> void: physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+func _init() -> void:
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 
 func _ready() -> void:
-	var on := not Engine.is_editor_hint() and not LookRig.is_presentationless() \
-			and tower != null and reveal != null and rings != null and light != null
+	var on := (
+		not Engine.is_editor_hint()
+		and not LookRig.is_presentationless()
+		and tower != null
+		and reveal != null
+		and rings != null
+		and light != null
+	)
 	set_process(on)
 	if on:
 		_show_rising(false)
@@ -71,7 +79,8 @@ func _process(delta: float) -> void:
 		set_process(false)
 
 
-## Rising: rings inside their window and the light at curve(progress). Standing: no rings, the light out (over `fade_s`).
+## Rising: rings inside their window and the light at curve(progress). Standing: no rings, the light
+## out (over `fade_s`).
 func _show_rising(rising: bool, progress := 1.0, fade_s := 0.0) -> void:
 	var rings_on := rising and progress >= rings_from_progress and progress < rings_until_progress
 	if rings.is_active() != rings_on:

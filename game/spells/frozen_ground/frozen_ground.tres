@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_kh5xf"]
+[ext_resource type="PackedScene" path="res://spells/frozen_ground/frozen_ground_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://74nig8224q7w" path="res://assets/original/ui/icons/zorf.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_kh5xf")
+tag = "zorf"
+display_name = "Frozen Ground"
+icon = ExtResource("icon_tex")
+mana_cost = 1200
+cast_range_m = 100.0
+cooldown_s = 30.0
+casting_time_s = 1.4815
+book_level = 6
+book_slot = 65
+damage = 800
+damage_range_m = 15.0
+effect_range_m = 15.0
+duration_s = 30.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+targets_structures = true
+targets_ground = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 800
+structures = PackedStringArray()
+aim_radius_m = 15.0

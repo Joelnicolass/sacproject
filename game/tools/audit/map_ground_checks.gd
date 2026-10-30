@@ -1,13 +1,14 @@
 extends RefCounted
 
-## What a map puts on its ground: every PlayerStart, Altar, Manafount and MapBuilding stands on land (not over a void), and
-## every GroundFootprint (the base of an altar or a fount) lies level, within MAX_SPREAD_M and with no void under it. Returns
-## the problems, each naming the node by its path from the map root. Not: the seats (MapSeatChecks), the paths
-## (MapPathChecks), flattening a base (the editor's «Aplanar bases»).
+## What a map puts on its ground: every PlayerStart, Altar, Manafount and MapBuilding stands on land
+## (not over a void), and every GroundFootprint (the base of an altar or a fount) lies level, within
+## MAX_SPREAD_M and with no void under it. Returns the problems, each naming the node by its path
+## from the map root. Not: the seats (MapSeatChecks), the paths (MapPathChecks), flattening a base
+## (the editor's «Flatten bases»).
 
-## The most the heights under a base may differ (decision 9 of plan 063D, NO VERIFICADO against the original, which only
-## says that the altar's four pillars stand level). Tune it here.
-const MAX_SPREAD_M := 8.0  ## the original maps lie up to 7 m off level under their bases (peaks); 1 m of margin
+## The most the heights under a base may differ. Tune it here.
+## the shipped maps lie up to 7 m off level under their bases (peaks); 1 m of margin
+const MAX_SPREAD_M := 8.0
 
 
 static func check(root: MapRoot, terrain: Terrain) -> Array[String]:
@@ -28,7 +29,9 @@ static func _on_land(root: MapRoot, terrain: Terrain) -> Array[String]:
 	for placed in standing:
 		var at := placed.global_position
 		if is_nan(terrain.height_at(at.x, at.z)):
-			problems.append("%s stands over a void at (%.0f, %.0f)" % [root.get_path_to(placed), at.x, at.z])
+			problems.append(
+				"%s stands over a void at (%.0f, %.0f)" % [root.get_path_to(placed), at.x, at.z]
+			)
 	return problems
 
 
@@ -43,15 +46,23 @@ static func _level_bases(root: MapRoot, terrain: Terrain) -> Array[String]:
 		var rect := FootprintRules.vertices_under(footprint.area())
 		var spread := FootprintRules.spread_m(source.heights_m, rect)
 		var voids := _voids_in(source, rect)
-		print("footprint %s: spread %.2f m over %dx%d vertices, %d void" % [path, spread, rect.size.x, rect.size.y, voids])
+		print(
+			(
+				"footprint %s: spread %.2f m over %dx%d vertices, %d void"
+				% [path, spread, rect.size.x, rect.size.y, voids]
+			)
+		)
 		if spread > MAX_SPREAD_M:
-			problems.append("%s is not level: spread %.2f m (max %.2f m)" % [path, spread, MAX_SPREAD_M])
+			problems.append(
+				"%s is not level: spread %.2f m (max %.2f m)" % [path, spread, MAX_SPREAD_M]
+			)
 		if voids > 0:
 			problems.append("%s has %d void vertices under it" % [path, voids])
 	return problems
 
 
-## The nodes of `group` inside this map (the checker holds one map at a time, but it does not count on it).
+## The nodes of `group` inside this map (the checker holds one map at a time, but it does not count
+## on it).
 static func nodes_in_map(root: Node, group: StringName) -> Array[Node3D]:
 	var out: Array[Node3D] = []
 	for node in root.get_tree().get_nodes_in_group(group):

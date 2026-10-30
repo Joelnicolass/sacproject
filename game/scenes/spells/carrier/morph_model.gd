@@ -2,14 +2,16 @@
 class_name MorphModel
 extends Node3D
 
-## Plays the animations of a model whose frames are blend shapes (the cow, Death, Blind Rage's fist: tools/import/import_morph_models.py): each
-## MorphClip names the poses to go through and how long each lasts, and the weights of the shapes blend one into the next. It follows its
-## SpellCarrier: `phase_clips` says which clip each phase plays (a finished clip goes on to its `next`). It moves nothing and hurts nobody;
-## every peer plays its own from the replicated phase, and a headless process plays none.
-## Ref: sacengine SacCow.getFrame, SacDeath.getFrame, SacBlindRage.getFrame (sacobject.d:3143-3307): the order of the poses and their pace.
+## Plays the animations of a model whose frames are blend shapes (the cow, Death, Blind Rage's fist:
+## tools/import/import_morph_models.py): each MorphClip names the poses to go through and how long
+## each lasts, and the weights of the shapes blend one into the next. It follows its
+## SpellCarrier: `phase_clips` says which clip each phase plays (a finished clip goes on to its
+## `next`). It moves nothing and hurts nobody; every peer plays its own from the replicated phase,
+## and a headless process plays none.
 
 @export var carrier: SpellCarrier
-## The mesh that has the blend shapes (the glb's own MeshInstance3D); empty: the first one found below this node.
+## The mesh that has the blend shapes (the glb's own MeshInstance3D); empty: the first one found
+## below this node.
 @export var mesh: MeshInstance3D
 @export var clips: Array[MorphClip] = []
 ## The clip each SpellCarrier.Phase plays (the key is the phase as an integer).
@@ -23,7 +25,11 @@ var _set := PackedInt32Array()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if not clips.is_empty() else PackedStringArray(["Faltan los clips."])
+	return (
+		PackedStringArray()
+		if not clips.is_empty()
+		else PackedStringArray(["The clips are missing."])
+	)
 
 
 func _ready() -> void:
@@ -80,7 +86,14 @@ func _show() -> void:
 	if int(at[1]) != int(at[0]):
 		_weigh(int(at[1]), float(at[2]))
 	if _clip.reveal.x >= 0.0:
-		mesh.set_instance_shader_parameter(&"reveal", lerpf(_clip.reveal.x, _clip.reveal.y, clampf(_seconds / maxf(_clip.duration_s(), 0.001), 0.0, 1.0)))
+		mesh.set_instance_shader_parameter(
+			&"reveal",
+			lerpf(
+				_clip.reveal.x,
+				_clip.reveal.y,
+				clampf(_seconds / maxf(_clip.duration_s(), 0.001), 0.0, 1.0)
+			)
+		)
 
 
 ## Pose 0 is the mesh itself; pose n is the blend shape n - 1.

@@ -4,5 +4,5 @@
 
 [node name="Implosion" type="Node3D"]
 process_physics_priority = -1
-editor_description = "Flurry caba (FlurryImplosion, state.d:4868-4876, 24619-24672): encoge de effectRange a 0 en duration y atrae a todo cuerpo móvil hacia el centro."
+editor_description = "Flurry caba: it shrinks from the effect range to 0 over duration and draws every moving body toward the center."
 script = ExtResource("1_implosion")

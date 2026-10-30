@@ -3,14 +3,16 @@ class_name WizardSounds
 extends BodySounds
 
 ## Child of wizards/wizard_body.tscn. A wizard's sounds from replicated state:
-## - the chant: `incantation` when a cast starts (Caster.cast_changed goes to casting, from its replicated `cast_fx_shown`), and
-##   again `chant_gap_s` after the longest clip of the cue ends, while the cast lasts. Once the cast ends or is cut nothing new
-##   starts; the clip that is playing is never cut. Every cast chants, spells and summons alike;
+## - the chant: `incantation` when a cast starts (Caster.cast_changed goes to casting, from its
+##   replicated `cast_fx_shown`), and again `chant_gap_s` after the longest clip of the cue ends,
+##   while the cast lasts. Once the cast ends or is cut nothing new starts; the clip that is playing
+##   is never cut. Every cast chants, spells and summons alike;
 ## - `damaged` when Health.current goes down while alive (BodySounds limits it);
-## - `death` when GhostForm.stage becomes DYING, `ghost` when it rises (RISING, or GHOST straight from another stage).
-## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of his body scene). No set: silence.
-## Does not decide when a cast starts or ends (Caster) nor pick the clip (SoundBus draws one of the cue's streams).
-## Ref: the chant repeats 0.1 s after a clip ends until the cast is over (state.d:14263-14270), never stopped (state.d:15207).
+## - `death` when GhostForm.stage becomes DYING, `ghost` when it rises (RISING, or GHOST straight
+##   from another stage).
+## Its set is the `sounds` of the look the body wears (BodyMount.look, the appearance of his body
+## scene). No set: silence. Does not decide when a cast starts or ends (Caster) nor pick the clip
+## (SoundBus draws one of the cue's streams).
 
 @export var body: WizardBody:
 	set(value):
@@ -41,7 +43,14 @@ var _last_stage := GhostForm.Stage.ALIVE
 func _ready() -> void:
 	super._ready()
 	set_physics_process(false)
-	if Engine.is_editor_hint() or not _open or body == null or health == null or caster == null or ghost == null:
+	if (
+		Engine.is_editor_hint()
+		or not _open
+		or body == null
+		or health == null
+		or caster == null
+		or ghost == null
+	):
 		return
 	_last_health = health.current
 	_was_casting = caster.is_casting()
@@ -67,7 +76,8 @@ func _on_cast_changed(casting: bool, _fx: ParticleType) -> void:
 	set_physics_process(casting and _next_chant_s > 0.0)
 
 
-## While the cast lasts, the next clip of the chant when the previous one is over (game time: follows --fixed-fps).
+## While the cast lasts, the next clip of the chant when the previous one is over (game time:
+## follows --fixed-fps).
 func _physics_process(_delta: float) -> void:
 	if Engine.is_editor_hint() or caster == null or not caster.is_casting():
 		set_physics_process(false)
@@ -99,7 +109,10 @@ func _on_stage_changed(stage: GhostForm.Stage) -> void:
 	_last_stage = stage
 	if stage == GhostForm.Stage.DYING:
 		play(SoundEvent.DEATH)
-	elif stage == GhostForm.Stage.RISING or (stage == GhostForm.Stage.GHOST and was != GhostForm.Stage.RISING):
+	elif (
+		stage == GhostForm.Stage.RISING
+		or (stage == GhostForm.Stage.GHOST and was != GhostForm.Stage.RISING)
+	):
 		play(SoundEvent.GHOST)
 
 
@@ -107,5 +120,5 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	for pair in [[body, "body"], [health, "health"], [caster, "caster"], [ghost, "ghost"]]:
 		if pair[0] == null:
-			out.append("Asigná `%s`." % pair[1])
+			out.append("Assign `%s`." % pair[1])
 	return out

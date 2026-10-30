@@ -2,19 +2,23 @@
 class_name AdvisorVoice
 extends Node
 
-## The advisor: one voice channel (the scene's `channel` player, bus of the cue: Voice) with a queue and priorities
-## (VoiceQueue): a lower line never cuts a higher one, the same priority waits its turn, a higher one cuts.
-## - `say(line)` is the one entry: an AdvisorLine (cue, priority, quiet_s). A line with no stream says nothing, no log entry.
-## - Refusals: CommandLog.said(text, cue) carries the Refusal key the command or the server gave (`no_mana`);
-##   `refusal_lines` turns it into the line that answers it. Any other message (an order's name, «Mago») says nothing.
-## - The game's warnings (the local wizard attacked, a building hit, the altar desecrated...) come from the AdvisorWatch child.
+## The advisor: one voice channel (the scene's `channel` player, bus of the cue: Voice) with a queue
+## and priorities (VoiceQueue): a lower line never cuts a higher one, the same priority waits its
+## turn, a higher one cuts.
+## - `say(line)` is the one entry: an AdvisorLine (cue, priority, quiet_s). A line with no stream
+##   says nothing, no log entry.
+## - Refusals: CommandLog.said(text, cue) carries the Refusal key the command or the server gave
+##   (`no_mana`); `refusal_lines` turns it into the line that answers it. Any other message (an
+##   order's name, «Mago») says nothing.
+## - The game's warnings (the local wizard attacked, a building hit, the altar desecrated...) come
+##   from the AdvisorWatch child.
 ## - `quiet_s` of a line: it is said when its event comes after that many game seconds without it.
-## Only for the player of this process: the sources are local (CommandLog) or filtered by MpKit.local_slot(). With the
-## AudioGate closed (dedicated, room server, headless) it says nothing. No RPC, nothing written to the simulation, no global
-## generator (SoundBus draws the variant).
-## Ref: RFC-052 052e (F364).
+## Only for the player of this process: the sources are local (CommandLog) or filtered by
+## MpKit.local_slot(). With the AudioGate closed (dedicated, room server, headless) it says nothing.
+## No RPC, nothing written to the simulation, no global generator (SoundBus draws the variant).
 
-## The log's event; the log's emitter is the name of the line (`low_mana advice`), as an FX sounds as its name.
+## The log's event; the log's emitter is the name of the line (`low_mana advice`), as an FX sounds
+## as its name.
 const EVENT := SoundEvent.ADVICE
 
 ## Emits `said(text, cue)` (CommandLog, %Battle in the match).
@@ -54,8 +58,8 @@ func _process(_delta: float) -> void:
 		_speak(_lines[next.key] as AdvisorLine)
 
 
-## Says `line` now, after the line speaking or never, by its priority and quiet time. True when it reached the channel
-## (speaking or waiting).
+## Says `line` now, after the line speaking or never, by its priority and quiet time. True when it
+## reached the channel (speaking or waiting).
 func say(line: AdvisorLine) -> bool:
 	if not _open or line == null:
 		return false
@@ -118,12 +122,14 @@ func _on_said(text: String, _cue: StringName) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if command_log == null:
-		out.append("Asigná `command_log` (%Battle): sin él los rechazos no hablan.")
+		out.append("Assign `command_log` (%Battle): without it the refusals say nothing.")
 	if channel == null:
-		out.append("Asigná `channel` (el AudioStreamPlayer hijo): sin él el consejero no habla.")
+		out.append(
+			"Assign `channel` (the child AudioStreamPlayer): without it the advisor says nothing."
+		)
 	var refusal_script: GDScript = Refusal
 	var known: Array = refusal_script.get_script_constant_map().values()
 	for key: StringName in refusal_lines:
 		if not known.has(key):
-			out.append("`refusal_lines` tiene la clave «%s» y no existe en Refusal." % key)
+			out.append("`refusal_lines` has the key «%s», which does not exist in Refusal." % key)
 	return out

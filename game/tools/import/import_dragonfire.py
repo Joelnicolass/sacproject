@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 Imports Dragonfire's dragon (`dfir`, models.wad) to assets/original/props/dfir.glb with its 5 animation frames as blend shapes.
 
-RFC-061e. The MRMM of `dfir` holds 97 vertices and 5 frames of vertex positions (the wing beats); import_props.py only reads the first
+The MRMM of `dfir` holds 97 vertices and 5 frames of vertex positions (the wing beats); import_props.py only reads the first
 one. This script reads all five, writes the two textures (M000 the body, M001 the wings: 128x128 with alpha) next to the model as
 props/dfir_M000.png and props/dfir_M001.png, and asks Blender (CLI, no UI) to build the mesh with 4 shape keys (frames 1..4 over frame
 0) and export it as glTF morph targets. Nothing is modelled: the dragon is the original's. The mesh has two materials named after the
-texture labels (M000, M001); the scene that uses it (scenes/spells/carrier/dragon_look.tscn) puts its own unshaded alpha material on
+texture labels (M000, M001); the scene that uses it (spells/dragonfire/dragon_look.tscn) puts its own unshaded alpha material on
 each and drives the weights with an AnimationPlayer.
 
   python3 tools/import/import_dragonfire.py            # write

@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://scenes/units/abilities/quake.gd" id="1_ability"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_wave.tscn" id="2_wave"]
 
-[node name="QuakeAbility" type="Node"]
-editor_description = "F132 (RFC-030 030u-a): efecto propio del Quake (kauq) del Jabberocky. AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Prepara el clip shoot0 (192 ticks, windup_clip 0), cobra el maná (300) al empezar (pays_upfront) y, al disparo, crea un QuakeWave en los pies del usuario; el enfriamiento (10 s) se pone ahí si era 0. Sin blanco."
+[node name="Quake" type="Node"]
+editor_description = "The Jabberocky's Quake effect (kauq). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It prepares the shoot0 clip (192 ticks, windup_clip 0), charges the mana (300) at the start (pays_upfront) and, on the shot, creates a QuakeWave at the user's feet; the cooldown (10 s) is set then if it was 0. No target."
 script = ExtResource("1_ability")
 windup_from_clip = true
 windup_clip = 0

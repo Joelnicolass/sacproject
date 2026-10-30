@@ -1,8 +1,9 @@
 class_name SoulPurse
 extends Node
 
-## Blue souls carried by a wizard. Starts at MatchRules.starting_souls on the server (or solo). `rules` is the world's
-## (WizardSpawner injects it), so the match setup (boot, --souls) reaches it; the scene default is only for F6.
+## Blue souls carried by a wizard. Starts at MatchRules.starting_souls on the server (or solo).
+## `rules` is the world's (WizardSpawner injects it), so the match setup (boot, --souls) reaches it;
+## the scene default is only for F6.
 
 signal changed(count: int)
 
@@ -32,6 +33,5 @@ func take(amount: int = 1) -> bool:
 
 
 ## Summons pay here: the souls go when the cast ends.
-## Ref: sacengine updateCreatureCasting.
 func spend(amount: int = 1) -> bool:
 	return take(amount)

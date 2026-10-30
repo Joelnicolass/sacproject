@@ -1,9 +1,14 @@
 class_name RagdollPose
 extends RefCounted
 
-## The math of a rag doll that has no tree of its own: keeping the pose the bones ended in when the physics stops, the brake that
-## keeps a falling body near where it fell, and the push that makes a hanging anchor follow its skeleton. It only touches the
-## nodes it is given and never decides when anything happens (RagdollDriver does).
+## The math of a rag doll that has no tree of its own: keeping the pose the bones ended in when the
+## physics stops, the brake that keeps a falling body near where it fell, and the push that makes a
+## hanging anchor follow its skeleton. It only touches the nodes it is given and never decides when
+## anything happens (RagdollDriver does).
+
+## Cone limits wide enough that a hanging chain never pushes against them (tight cones blow up under
+## gravity).
+const HANG_SPAN_DEG := 180.0
 
 
 ## The physical bones of `simulator`, in order (empty without one).
@@ -16,15 +21,20 @@ static func bones_of(simulator: PhysicalBoneSimulator3D) -> Array[PhysicalBone3D
 	return found
 
 
-## The pose of every bone, in the skeleton's space, as the physical bones carry it now (bone id -> Transform3D).
+## The pose of every bone, in the skeleton's space, as the physical bones carry it now (bone id ->
+## Transform3D).
 static func capture(skeleton: Skeleton3D, bones: Array[PhysicalBone3D]) -> Dictionary:
 	var poses := {}
 	for bone in bones:
-		poses[bone.get_bone_id()] = skeleton.global_transform.affine_inverse() * (bone.global_transform * bone.body_offset.affine_inverse())
+		poses[bone.get_bone_id()] = (
+			skeleton.global_transform.affine_inverse()
+			* (bone.global_transform * bone.body_offset.affine_inverse())
+		)
 	return poses
 
 
-## Writes the poses of `capture` into the skeleton, the bones nearest the root first so a child never undoes its parent.
+## Writes the poses of `capture` into the skeleton, the bones nearest the root first so a child
+## never undoes its parent.
 static func apply(skeleton: Skeleton3D, poses: Dictionary) -> void:
 	var ids := poses.keys()
 	ids.sort_custom(func(a: int, b: int) -> bool: return _depth(skeleton, a) < _depth(skeleton, b))
@@ -41,7 +51,8 @@ static func damp(bones: Array[PhysicalBone3D], value: float) -> void:
 		bone.angular_damp = value
 
 
-## Throws every bone along `direction` (its length is ignored; zero: no throw) at `speed` meters per second.
+## Throws every bone along `direction` (its length is ignored; zero: no throw) at `speed` meters per
+## second.
 static func push(bones: Array[PhysicalBone3D], direction: Vector3, speed: float) -> void:
 	if direction.length_squared() <= 0.0001:
 		return
@@ -49,7 +60,8 @@ static func push(bones: Array[PhysicalBone3D], direction: Vector3, speed: float)
 		bone.linear_velocity = direction.normalized() * speed
 
 
-## The hips may not go farther than `max_drift_m` along the ground from `start`: whatever speed takes the bones out is taken away.
+## The hips may not go farther than `max_drift_m` along the ground from `start`: whatever speed
+## takes the bones out is taken away.
 static func brake(bones: Array[PhysicalBone3D], start: Vector3, max_drift_m: float) -> void:
 	var away := bones[0].global_position - start
 	away.y = 0.0
@@ -62,15 +74,18 @@ static func brake(bones: Array[PhysicalBone3D], start: Vector3, max_drift_m: flo
 			bone.linear_velocity -= out * outward
 
 
-## Cone limits wide enough that a hanging chain never pushes against them (055a-5j spike: tight cones blow up under gravity).
-const HANG_SPAN_DEG := 180.0
-
-
-## Starts the simulation: every bone (a fall: the joints stay as built), or every bone but `anchor`, which stays on the skeleton (a
-## hang). A hang rebuilds every cone joint, parents first, on HANG_SPAN_DEG cones: Godot builds a joint when its bone enters the tree,
-## with every body static, and the joints hanging from the root come out loose (plan 055a-5 s17). Rebuilding them for a fall sends
-## bones flying (gallery fall, 055a-5j), so a fall keeps them. `spans` (spans_of) are put back before the cones open.
-static func start(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, spans: Dictionary, anchor: PhysicalBone3D) -> void:
+## Starts the simulation: every bone (a fall: the joints stay as built), or every bone but `anchor`,
+## which stays on the skeleton (a hang). A hang rebuilds every cone joint, parents first, on
+## HANG_SPAN_DEG cones: Godot builds a joint when its bone enters the tree, with every body static,
+## and the joints hanging from the root come out loose. Rebuilding them for a fall sends bones
+## flying (a gallery fall), so a fall keeps them. `spans` (spans_of) are put back before the cones
+## open.
+static func start(
+	simulator: PhysicalBoneSimulator3D,
+	skeleton: Skeleton3D,
+	spans: Dictionary,
+	anchor: PhysicalBone3D
+) -> void:
 	var names: Array[StringName] = []
 	for bone in bones_of(simulator):
 		if bone != anchor:
@@ -82,8 +97,10 @@ static func start(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, span
 	for bone in bones_of(simulator):
 		if bone.joint_type == PhysicalBone3D.JOINT_TYPE_CONE:
 			cones.append(bone)
-	cones.sort_custom(func(a: PhysicalBone3D, b: PhysicalBone3D) -> bool:
-		return _depth(skeleton, a.get_bone_id()) < _depth(skeleton, b.get_bone_id()))
+	cones.sort_custom(
+		func(a: PhysicalBone3D, b: PhysicalBone3D) -> bool:
+			return _depth(skeleton, a.get_bone_id()) < _depth(skeleton, b.get_bone_id())
+	)
 	for bone in cones:
 		var limits: Dictionary = spans.get(bone, {})
 		bone.joint_type = PhysicalBone3D.JOINT_TYPE_NONE
@@ -94,7 +111,8 @@ static func start(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, span
 		bone.set("joint_constraints/twist_span", HANG_SPAN_DEG)
 
 
-## The cone limits each bone was baked with (bone -> {swing_span, twist_span, bias, softness, relaxation}).
+## The cone limits each bone was baked with (bone -> {swing_span, twist_span, bias, softness,
+## relaxation}).
 static func spans_of(bones: Array[PhysicalBone3D]) -> Dictionary:
 	var out := {}
 	for bone in bones:

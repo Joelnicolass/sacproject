@@ -1,18 +1,18 @@
-class_name RendSoulAbility
+class_name RendSoul
 extends AbilityEffect
 
-## The Styx's Rend Soul: it tears a soul apart. The body prepares its
-## attack clip (windup_clip 0: 100 ticks) and at the shoot tick the effect is added
-## only if the soul can be rent: a soul that is NORMAL or EMERGING, free or of the user's side, not dropped. The mana
-## and the cooldown are paid at the shoot tick whether or not the soul is still there (AbilitySlot does it).
-## This effect only judges the soul and throws the SoulStrike; what happens the tick after is the strike's.
+## The Styx's Rend Soul: it tears a soul apart. The body prepares its attack clip (windup_clip 0:
+## 100 ticks) and at the shoot tick the effect is added only if the soul can be rent: a soul that is
+## NORMAL or EMERGING, free or of the user's side, not dropped. The mana and the cooldown are paid
+## at the shoot tick whether or not the soul is still there (AbilitySlot does it). This effect only
+## judges the soul and throws the SoulStrike; what happens the tick after is the strike's.
 ## Range: the spell's cast_range (90) in 3D, to the soul's center.
-## Divergence (declared): the body does not walk closer or turn; out of range is refused.
-## Ref: F157 (RFC-030 030t-b); Styx dner, sacengine useAbility → shoot0 (state.d:13463-13561), rendShoot 12750, 13226-13230, canRend 13219-13225.
+## Limits: the body does not walk closer or turn; out of range is refused.
 
 ## The strike (strikes/soul_strike.tscn), a child of the user's RangedWeapon.
 @export var strike_scene: PackedScene
-## The shot's look (data/shots/rend_soul.tscn: the blast at the soul and its sparks). Empty = a plain look with no blast.
+## The shot's look (scenes/units/attacks/shots/rend_soul.tscn: the blast at the soul and its
+## sparks). Empty = a plain look with no blast.
 @export var look: PackedScene
 
 
@@ -27,46 +27,65 @@ func status(_target_pos: Vector3, target: Node3D) -> String:
 	return ""
 
 
-## canRend: the one answer for the order and for the strike that checks again.
+## The one answer for the order and for the strike that checks again.
 static func can_rend(soul: Soul, slot: int) -> bool:
-	return soul != null and is_instance_valid(soul) and soul.is_inside_tree() and not soul.is_queued_for_deletion() \
-			and (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING) \
-			and soul.is_free_or_own(slot) and not soul.dropped
+	return (
+		soul != null
+		and is_instance_valid(soul)
+		and soul.is_inside_tree()
+		and not soul.is_queued_for_deletion()
+		and (soul.state == Soul.State.NORMAL or soul.state == Soul.State.EMERGING)
+		and soul.is_free_or_own(slot)
+		and not soul.dropped
+	)
 
 
-## rendShoot. False = the soul is gone by the shoot tick: nothing flies; the mana is spent all the same.
+## Shoots at the soul. False = the soul is gone by the shoot tick: nothing flies; the mana is spent
+## all the same.
 func fire(target_pos: Vector3, target: Node3D) -> bool:
 	if not is_multiplayer_authority() or user == null or strike_scene == null:
 		return false
 	if not status(target_pos, target).is_empty():
 		if DebugLog.on(&"effects"):
-			print("reventar %s sin blanco válido (tick %d)" % [who(user), MatchClock.now()])
+			print("rend %s without a valid target (tick %d)" % [who(user), MatchClock.now()])
 		return false
 	var soul := _soul_of(target)
 	var parent := user.weapons.ranged
 	if parent == null:
-		push_warning("RendSoulAbility: %s no tiene RangedWeapon." % who(user))
+		push_warning("RendSoul: %s has no RangedWeapon." % who(user))
 		return false
 	var node := strike_scene.instantiate()
 	var strike := node as SoulStrike
 	if strike == null:
 		node.free()
-		push_warning("RendSoulAbility: la escena no es un SoulStrike.")
+		push_warning("RendSoul: the scene is not a SoulStrike.")
 		return false
 	strike.soul = soul
 	parent.add_child(strike)
 	var origin := ShotAim.shot_position(user)
 	var center := SoulStrike.center_of_soul(soul)
-	strike.launch({
-		"tag": ability.tag,
-		"x": origin.x, "y": origin.y, "z": origin.z,
-		"aim_x": center.x, "aim_y": center.y, "aim_z": center.z,
-		"damage": float(ability.damage),
-		"slot": _slot(),
-		"max_distance": ability.cast_range_m,
-		"target": "",
-		"shooter": str(user.get_path()),
-	}, ShotLook.make(look), ability, parent)
+	(
+		strike
+		. launch(
+			{
+				"tag": ability.tag,
+				"x": origin.x,
+				"y": origin.y,
+				"z": origin.z,
+				"aim_x": center.x,
+				"aim_y": center.y,
+				"aim_z": center.z,
+				"damage": float(ability.damage),
+				"slot": _slot(),
+				"max_distance": ability.cast_range_m,
+				"target": "",
+				"shooter": str(user.get_path()),
+			},
+			ShotLook.make(look),
+			ability,
+			parent
+		)
+	)
 	return true
 
 

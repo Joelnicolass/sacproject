@@ -2,10 +2,11 @@
 class_name AmbientLifeLayer
 extends LookLayer
 
-## The ambient life layer of the rig: the god's swarms in the air around the camera (a fixed pool, `air_slots`) and,
-## in each of the map's LifeSpots, the swarm of its habitat, both by the hour and the weather of the atmosphere's
-## sample. It places no spot (they are nodes of the map). Hidden, without a look or at density 0 (low quality) nothing
-## shows. Presentation only: freed with the rig in a headless or dedicated process.
+## The ambient life layer of the rig: the god's swarms in the air around the camera (a fixed pool,
+## `air_slots`) and, in each of the map's LifeSpots, the swarm of its habitat, both by the hour and
+## the weather of the atmosphere's sample. It places no spot (they are nodes of the map). Hidden,
+## without a look or at density 0 (low quality) nothing shows. Presentation only: freed with the rig
+## in a headless or dedicated process.
 
 ## The rig's atmosphere layer.
 @export var atmosphere: Atmosphere
@@ -43,7 +44,8 @@ func _process(delta: float) -> void:
 	_since_log += delta
 	if _since_log >= 10.0:
 		_since_log = 0.0
-		if DebugLog.on(&"life"): print("vida spots activos %d/%d" % [_active_spots(), _spot_nodes().size()])
+		if DebugLog.on(&"life"):
+			print("vida spots activos %d/%d" % [_active_spots(), _spot_nodes().size()])
 
 
 func _on_atmosphere_changed(sample: AtmosphereSample) -> void:
@@ -51,7 +53,8 @@ func _on_atmosphere_changed(sample: AtmosphereSample) -> void:
 		_refresh()
 
 
-## Which swarm each air slot and each spot shows now, recomputed from (look, density, visible, sample). Idempotent.
+## Which swarm each air slot and each spot shows now, recomputed from (look, density, visible,
+## sample). Idempotent.
 func _refresh() -> void:
 	var sample := atmosphere.current() if atmosphere else AtmosphereSample.neutral()
 	_shown = _choice(sample)
@@ -74,9 +77,9 @@ func _choice(sample: AtmosphereSample) -> Array[AmbientSwarm]:
 	return out
 
 
-## Warm-up (the WarmHook child): every swarm of the look (the air's and the habitats') flies for a drawn frame in the air slots, in
-## front of the camera (their FollowCamera always processes, so they fly while the start gate pauses the tree); then they show
-## what they should.
+## Warm-up (the WarmHook child): every swarm of the look (the air's and the habitats') flies for a
+## drawn frame in the air slots, in front of the camera (their FollowCamera always processes, so
+## they fly while the start gate pauses the tree); then they show what they should.
 func warm(_stage: Node3D) -> void:
 	if _set == null or air_slots.is_empty() or _density <= 0.0 or not is_visible_in_tree():
 		return
@@ -92,8 +95,9 @@ func warm(_stage: Node3D) -> void:
 	_refresh()
 
 
-## A slot is set up stopped and only then started: changing the material or the amount of an emitter that already runs
-## left its particles without a uniform set (`Parameter "uniform_set" is null` every frame until the next restart).
+## A slot is set up stopped and only then started: changing the material or the amount of an emitter
+## that already runs left its particles without a uniform set (`Parameter "uniform_set" is null`
+## every frame until the next restart).
 func _show_air(slot: GPUParticles3D, swarm: AmbientSwarm) -> void:
 	if slot == null:
 		return
@@ -102,8 +106,12 @@ func _show_air(slot: GPUParticles3D, swarm: AmbientSwarm) -> void:
 		slot.emitting = false
 		return
 	var count := maxi(1, roundi(swarm.amount * _density))
-	if slot.process_material != swarm.process_material or slot.draw_pass_1 != swarm.mesh \
-			or slot.lifetime != swarm.lifetime_s or slot.amount != count:
+	if (
+		slot.process_material != swarm.process_material
+		or slot.draw_pass_1 != swarm.mesh
+		or slot.lifetime != swarm.lifetime_s
+		or slot.amount != count
+	):
 		slot.emitting = false
 		slot.process_material = swarm.process_material
 		slot.draw_pass_1 = swarm.mesh
@@ -133,8 +141,16 @@ func _active_spots() -> int:
 func _get_configuration_warnings() -> PackedStringArray:
 	var found := PackedStringArray()
 	if atmosphere == null:
-		found.append("Falta el socket Atmosphere.")
+		found.append("The Atmosphere socket is missing.")
 	if _set and _set.air.size() > air_slots.size():
-		found.append("El bioma tiene %d enjambres de aire y el pool solo %d (Air1..Air%d): sobran." % [
-				_set.air.size(), air_slots.size(), air_slots.size()])
+		(
+			found
+			. append(
+				(
+					# gdlint: ignore=max-line-length
+					"The biome has %d air swarms and the pool only %d (Air1..Air%d): the rest are left out."
+					% [_set.air.size(), air_slots.size(), air_slots.size()]
+				)
+			)
+		)
 	return found

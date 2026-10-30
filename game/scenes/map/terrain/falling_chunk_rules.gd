@@ -1,17 +1,17 @@
 class_name FallingChunkRules
 extends RefCounted
 
-## The shape of the piece of ground that drops when a vertex is taken away: the land triangles that touched the vertex (heights
-## with the shift the ground had), plus a skirt of cliff hanging from the edges that border the
-## rest of the land. Pure and static (the arrays of a mesh): FallingChunk draws and drops it. It does not remove the vertex.
-## Ref: sacengine makeFallingLandChunkMesh (sacmap.d:388-480).
+## The shape of the piece of ground that drops when a vertex is taken away: the land triangles that
+## touched the vertex (heights with the shift the ground had), plus a skirt of cliff hanging from
+## the edges that border the rest of the land. Pure and static (the arrays of a mesh): FallingChunk
+## draws and drops it. It does not remove the vertex.
 
 ## How far the skirt hangs.
-## Ref: sacengine mapDepth.
 const SKIRT_M := 50.0
 
 
-## The arrays (positions, normals, COLOR, UV, indices) of the piece around lattice vertex `id`; [] when the vertex touches no land.
+## The arrays (positions, normals, COLOR, UV, indices) of the piece around lattice vertex `id`; []
+## when the vertex touches no land.
 static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, id: int) -> Array:
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
@@ -24,7 +24,12 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, id: in
 	var vertex := TerrainGrid.vertex_of(id)
 	for cell_row in [vertex.y - 1, vertex.y]:
 		for cell_column in [vertex.x - 1, vertex.x]:
-			if cell_row < 0 or cell_column < 0 or cell_row >= TerrainGrid.SIDE or cell_column >= TerrainGrid.SIDE:
+			if (
+				cell_row < 0
+				or cell_column < 0
+				or cell_row >= TerrainGrid.SIDE
+				or cell_column >= TerrainGrid.SIDE
+			):
 				continue
 			var cell := TerrainGrid.id_of(Vector2i(cell_column, cell_row))
 			for k in 2:
@@ -47,7 +52,11 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, id: in
 					var from := index.corners[triangle * 3 + corner]
 					var to := index.corners[triangle * 3 + (corner + 1) % 3]
 					var key := Vector2i(mini(from, to), maxi(from, to))
-					sides[key] = [corners[corner], corners[(corner + 1) % 3], int((sides[key] as Array)[2]) + 1 if sides.has(key) else 1]
+					sides[key] = [
+						corners[corner],
+						corners[(corner + 1) % 3],
+						int((sides[key] as Array)[2]) + 1 if sides.has(key) else 1
+					]
 	if vertices.is_empty():
 		return []
 	_skirt(sides, middle / float(count), vertices, normals, colors, uvs, indices)
@@ -55,19 +64,36 @@ static func arrays(index: TerrainRules.Index, texels: PackedFloat32Array, id: in
 
 
 static func _touches(index: TerrainRules.Index, triangle: int, id: int) -> bool:
-	return index.corners[triangle * 3] == id or index.corners[triangle * 3 + 1] == id or index.corners[triangle * 3 + 2] == id
+	return (
+		index.corners[triangle * 3] == id
+		or index.corners[triangle * 3 + 1] == id
+		or index.corners[triangle * 3 + 2] == id
+	)
 
 
-## A hanging wall under every side only one triangle of the piece has (the rest of the land is on its other side).
-static func _skirt(sides: Dictionary, middle: Vector3, vertices: PackedVector3Array, normals: PackedVector3Array, colors: PackedColorArray,
-		uvs: PackedVector2Array, indices: PackedInt32Array) -> void:
+## A hanging wall under every side only one triangle of the piece has (the rest of the land is on
+## its other side).
+static func _skirt(
+	sides: Dictionary,
+	middle: Vector3,
+	vertices: PackedVector3Array,
+	normals: PackedVector3Array,
+	colors: PackedColorArray,
+	uvs: PackedVector2Array,
+	indices: PackedInt32Array
+) -> void:
 	var down := Vector3(0.0, -SKIRT_M, 0.0)
 	var hanging: Array = []
 	var ends := PackedVector2Array()
 	for key: Vector2i in sides:
 		if int((sides[key] as Array)[2]) == 1:
 			hanging.append(sides[key])
-			ends.append_array([Vector2(sides[key][0].x, sides[key][0].z), Vector2(sides[key][1].x, sides[key][1].z)])
+			ends.append_array(
+				[
+					Vector2(sides[key][0].x, sides[key][0].z),
+					Vector2(sides[key][1].x, sides[key][1].z)
+				]
+			)
 	var metres := WallUvRules.rim_metres(ends)
 	for w in hanging.size():
 		var side: Array = hanging[w]
@@ -82,5 +108,12 @@ static func _skirt(sides: Dictionary, middle: Vector3, vertices: PackedVector3Ar
 		for k in 4:
 			normals.append(normal)
 			colors.append(Color(0.0, 0.0, 0.0, 0.0))
-		uvs.append_array([Vector2(metres[w * 2], 0.0), Vector2(metres[w * 2 + 1], 0.0), Vector2(metres[w * 2 + 1], 1.0), Vector2(metres[w * 2], 1.0)])
+		uvs.append_array(
+			[
+				Vector2(metres[w * 2], 0.0),
+				Vector2(metres[w * 2 + 1], 0.0),
+				Vector2(metres[w * 2 + 1], 1.0),
+				Vector2(metres[w * 2], 1.0)
+			]
+		)
 		indices.append_array([first, first + 2, first + 1, first + 2, first, first + 3])

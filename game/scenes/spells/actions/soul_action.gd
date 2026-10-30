@@ -2,21 +2,31 @@
 class_name SoulAction
 extends SpellAction
 
-## A spell that sends something walking to a soul and back (Soul Mole, Soul Wind). The click names a soul the wizard may fetch: blue for
-## his side, not dropped with P, still waiting. The thing is born at his feet when the cast starts and already walks while he casts;
-## when the casting time ends it starts to act (stun, hurt), and if the wizard is interrupted it vanishes. One scene per spell: the
-## kind of carrier and the numbers change, not the script. It does not walk the route (SpellCarrier) nor take the soul (SoulFetch).
-## Ref: sacengine castSoulMole, castSoulWind (state.d:10814-10826, 10941-10954).
+## A spell that sends something walking to a soul and back (Soul Mole, Soul Wind). The click names a
+## soul the wizard may fetch: blue for his side, not dropped with P, still waiting. The thing is
+## born at his feet when the cast starts and already walks while he casts; when the casting time
+## ends it starts to act (stun, hurt), and if the wizard is interrupted it vanishes. One scene per
+## spell: the kind of carrier and the numbers change, not the script. It does not walk the route
+## (SpellCarrier) nor take the soul (SoulFetch).
 
-## Key of the carrier scene in SpellSpawner.
-@export var carrier_kind := ""
+## The carrier scene that walks to the soul (its root is a SpellCarrier).
+@export var carrier: PackedScene
 
 ## The carrier of the cast in progress (server only).
 var _carrier: SpellCarrier
 
 
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := super()
+	if carrier == null:
+		warnings.append("`carrier` is empty: drag the carrier scene.")
+	return warnings
+
+
 ## Funds first, then a soul the wizard can fetch, then the range (the order of the whole book).
-func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String) -> Aim:
+func check(
+	wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D, funds: String
+) -> Aim:
 	var aim := Aim.new()
 	aim.point = point
 	if not funds.is_empty():
@@ -35,17 +45,20 @@ func check(wizard: WizardBody, spell: SpellType, point: Vector3, picked: Node3D,
 
 ## The carrier is born now: in the original it walks during the casting time too.
 func started(wizard: WizardBody, spell: SpellType, aim: Aim, _frames: int) -> void:
+	if carrier == null:
+		push_error("SoulAction %s: `carrier` is empty, nothing walks to the soul." % name)
+		return
 	var spawner := projectile_spawner()
 	if spawner == null:
 		return
-	var at := wizard.global_position
-	_carrier = spawner.spawn_projectile(carrier_kind, {
-		"x": at.x, "y": at.y, "z": at.z,
-		"caster": str(wizard.get_path()),
-		"target": str(aim.target.get_path()),
-		"slot": int(wizard.get("owner_slot")),
-		"damage": float(spell.damage),
-	}) as SpellCarrier
+	# Only where it starts, who sends it, the soul and the damage: the walk sets its own pace.
+	var launch := ProjectileLaunch.new()
+	launch.from = wizard.global_position
+	launch.caster = wizard.get_path()
+	launch.target = aim.target.get_path()
+	launch.slot = wizard.owner_slot
+	launch.damage = float(spell.damage)
+	_carrier = spawner.spawn_launch(carrier, launch) as SpellCarrier
 
 
 func finish(_wizard: WizardBody, _spell: SpellType, _target: Node3D) -> String:

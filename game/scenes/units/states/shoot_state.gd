@@ -2,7 +2,6 @@ class_name ShootState
 extends UnitState
 
 ## SHOOT: stands, keeps facing the aim and fires on the shoot tick.
-## Ref: sacengine shooting.
 
 
 func physics_update(delta: float) -> void:

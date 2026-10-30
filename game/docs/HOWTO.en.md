@@ -2,7 +2,7 @@
 
 # How to add and change things
 
-A short guide. All paths are from `game/`. General rule: content is `.tres` files in `data/` (one file per type, edited in the inspector) and behavior is scenes and nodes in `scenes/<domain>/`. No `match tag` in code. Every folder has its `README.md`.
+A short guide. All paths are from `game/`. General rule: each creature, spell, wizard and god is a folder (`creatures/`, `spells/`, `wizards/`, `gods/`) with everything only it uses; the code of each system and what is shared are in `scenes/<domain>/`. No `match tag` in code. Every folder has its `README.md`.
 
 The in-game interface and the **Project > Tools > Sacrifice** menu are in Spanish: labels are quoted as they appear, with an English gloss.
 
@@ -10,12 +10,12 @@ The in-game interface and the **Project > Tools > Sacrifice** menu are in Spanis
 
 For a creature that does not exist in the original, go straight to «Create your own creature from Blender». These steps are for the catalog ones.
 
-1. Duplicate a sibling in `data/catalog/creatures/` (for example `sylph.tres`) and name it after your creature (`my_beast.tres`). Leave the `tag` empty: the id is the file name.
+1. Each creature is a folder, `creatures/<name>/`, with everything only it uses. Create `creatures/my_beast/` and duplicate a sibling's type into it (for example `creatures/sylph/sylph.tres` → `creatures/my_beast/my_beast.tres`). The catalog finds it by the folder name. Leave the `tag` empty: the id is the file name.
 2. In the inspector: `tag`, `display_name`, `model` (the tag of the model in `assets/original/models/<model>.glb`), health, speed, resistances, the `Abilities` group and the animations.
-3. The body size goes in the scene `scenes/units/bodies/<tag>.tscn` (`BodyFrame`: `Bounds/Capsule`, `Bounds/Footprint` and the `Sockets/` markers, `Reach` among them). If another creature already uses the model, it already exists.
-4. The model's scene is `scenes/bodies/models/<model>.tscn`. If it is missing, bake it: **Project > Tools > Sacrifice: Hornear modelos que faltan** (Bake missing models) (or `tools/bake/bake_body_scenes.gd`). It only writes the missing ones; what you already edited is not overwritten. That is where you change which clip each role plays (`AnimationTree`).
-5. So that the player can summon it, put it in the god's book: `data/gods/<god>.tres` → `book` → `creatures` (and a line in `unlocks` with the wizard level at which it comes in).
-6. Abilities: in the `Abilities` group, drag the `.tres` of `data/catalog/abilities/` onto `ranged_attack`, `active_ability` and `on_damage`, and the clouds or on-hit effects of `data/death_clouds/` and `data/passives/` onto `passives`; the logic of each one is a node in `scenes/units/abilities/`.
+3. The body size goes in the scene `creatures/<name>/<name>.tscn` (`BodyFrame`: `Bounds/Capsule`, `Bounds/Footprint` and the `Sockets/` markers, `Reach` among them). If another creature already uses the model, it already exists.
+4. The model's scene is `creatures/<name>/model/<name>_model.tscn` (or `scenes/bodies/models/` when several share it). That is where you change which clip each role plays (`AnimationTree`).
+5. So that the player can summon it, put it in the god's book: `gods/<god>/<god>.tres` → `book` → `creatures` (and a line in `unlocks` with the wizard level at which it comes in).
+6. Abilities: in the `Abilities` group, drag the ability's `.tres` (in the creature's folder when only it has it, in `scenes/units/abilities/` when shared) onto `ranged_attack`, `active_ability` and `on_damage`, and the clouds or on-hit effects of `scenes/units/death_clouds/` onto `passives`; the logic of each one is a node in `scenes/units/abilities/`.
 
 ## Create your own creature from Blender
 
@@ -30,9 +30,9 @@ A new enemy or character needs nothing from the original game (neither `index.js
    ```bash
    $G --headless --path . --script res://tools/bake/new_creature.gd -- <tag> --name="Name" --god=pyro
    ```
-   It writes three files and **overwrites none that exist** (`--force` redoes all three): `scenes/bodies/models/<tag>.tscn` (the model with its `AnimationTree` and the hit event), `scenes/units/bodies/<tag>.tscn` and `<tag>_look.tscn` (the body with the capsule, footprint and sockets measured from the mesh, and its look) and `data/catalog/creatures/<tag>.tres` (stats from `data/templates/creature.tres` plus the clip data). It also draws the **HUD icon** (book and selection): if `assets/custom/icons/<tag>.png` exists it uses it as is (it never overwrites it; it is yours, 32×32); otherwise it renders it from the model (idle pose, camera over its box, dark disc with a golden ring) and saves it there. Drawing needs a window: from the plugin one opens by itself for a moment; from the console, drop `--headless` (`--resolution 256x256`) or run `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` afterwards (`--force` redoes it). You can also assign a texture to the creature's `icon` field in the inspector (it beats everything). `--icon` redraws it in `new_creature.gd`; `--no-icon` skips it. It prints which clip it took for each role and which ones it did not use.
+   It writes everything into `creatures/<tag>/` and **overwrites nothing that exists** (`--force` redoes it): `model/<tag>_model.tscn` (the model with its `AnimationTree` and the hit event), `<tag>.tscn` and `<tag>_look.tscn` (the body with the capsule, footprint and sockets measured from the mesh, and its look) and `<tag>.tres` (stats from `tools/bake/templates/creature.tres` plus the clip data). It also draws the **HUD icon** (book and selection): if `assets/custom/icons/<tag>.png` exists it uses it as is (it never overwrites it; it is yours, 32×32); otherwise it renders it from the model (idle pose, camera over its box, dark disc with a golden ring) and saves it there. Drawing needs a window: from the plugin one opens by itself for a moment; from the console, drop `--headless` (`--resolution 256x256`) or run `$G --path . --script res://tools/bake/creature_icon.gd -- <tag>` afterwards (`--force` redoes it). You can also assign a texture to the creature's `icon` field in the inspector (it beats everything). `--icon` redraws it in `new_creature.gd`; `--no-icon` skips it. It prints which clip it took for each role and which ones it did not use.
 4. **Tune in the inspector.** Stats, mana and soul cost, `display_name` in the creature's `.tres`; size in the body scene (drag `Sockets/Reach`: how far the strike gets). Which clip each role plays: the model's `<tag>_clips.tres` library (the `Clips` node of its scene; an `AnimationTree` state plays the animation of its role, and the length comes from the animation); the hit frame: the `hit` marker of that animation (and the `attack` call of its method track). If you touched roles or the hit, **Project > Tools > Sacrifice: Sincronizar criatura con su modelo…** (Sync creature with its model…) (or `new_creature.gd -- <tag> --sync`) reads the scene again and updates the times the rules use (hit, shot, stun, flight); your stats are not touched.
-5. **Put it in a book**: `data/gods/<god>.tres` → `book` → `creatures` (drag the `.tres`) and a line in `unlocks` with the wizard level.
+5. **Put it in a book**: `gods/<god>/<god>.tres` → `book` → `creatures` (drag the `.tres`) and a line in `unlocks` with the wizard level.
 6. **Sounds** (optional): drop `death_1.wav`, `swing_1.wav`… in `assets/custom/sounds/creatures/<tag>/` before step 3, or afterwards with «Hornear sonidos» (Bake sounds). See «Your own sounds».
 
 ## Your own sounds
@@ -44,45 +44,45 @@ They need nothing from the original game. They work for any creature (including 
    - Creature: `summon` (when summoned; empty uses the one every creature shares), `swing` (strike), `shoot` (shot; a `swing` with no `shoot` also sounds when it shoots), `damaged` (takes damage), `death`, `selected` (you pick it), `ack` (acknowledges a move), `attack_ack` (acknowledges an attack), `annoyed` (you picked it many times).
    - Wizard: `incantation` (casts), `damaged`, `death`, `ghost` (rises as a ghost).
    - `selected`, `ack`, `attack_ack`, `annoyed` and `incantation` go to the `Voice` bus; the rest, to `SFX`. A name that is not a field is skipped, and the tool warns.
-3. **Create the set:** **Project > Tools > Sacrifice: Nueva criatura desde modelo…** (New creature from model…) writes `data/audio/creatures/<name>.tres` (the files of the folder in its fields; over the melee set `melee/fist.tres`) and assigns it to the creature's `Sounds` field. It does not overwrite one that exists: `--force` redoes it and loses what you edited. With no sounds folder the set stays empty: drag the files onto its fields.
+3. **Create the set:** **Project > Tools > Sacrifice: Nueva criatura desde modelo…** (New creature from model…) writes `creatures/<name>/<name>_sounds.tres` (the files of the folder in its fields; over the melee set `melee/fist.tres`) and assigns it to the creature's `Sounds` field. It does not overwrite one that exists: `--force` redoes it and loses what you edited. With no sounds folder the set stays empty: drag the files onto its fields.
 4. **Review:** open the `.tres` in the inspector. There is one cue per event, and ▶ on a stream plays it. Volume, `cooldown_s` and `max_voices` are tuned there.
 
-More detail (FX sounds, music and ambience per god): `data/audio/README.md`.
+More detail (FX sounds, music and ambience per god): `scenes/audio/README.md`.
 
 ## A spell
 
 A spell is two things: the data and, if it has its own procedure, a scene.
 
-1. **Data.** Duplicate a `SpellType` from `data/catalog/spells/` as `<tag>.tres` (mana, range, cooldown, cast time, damage). Put it in the god's `book` → `spells` (or `structures` if it is a structure).
+1. **Data.** Duplicate a `SpellType` from `spells/` as `<tag>.tres` (mana, range, cooldown, cast time, damage). Put it in the god's `book` → `spells` (or `structures` if it is a structure).
 2. **Action.** If the spell does more than the common cast, create a scene in `scenes/spells/actions/` with a script that extends `SpellAction` (for a strike on a body under the cursor, an embedded `SpellTarget` and `aim_at_body`). Fill in `tag` (the `SpellType`'s), `pick` (ground, own creature, soul, own building) and `prompt` in the inspector; the editor warns if something is missing.
 3. **Registration.** Instance the scene as a child of `Caster/Actions` in `scenes/wizards/wizard_body.tscn`. Removing the node turns the spell off («No implementado», Not implemented, in the book).
 4. Visual effects are requested by name from `FxBus` (see «An FX»).
 
 ## A god
 
-1. Duplicate `data/gods/pyro.tres` as `<god>.tres` (`GodType`): `tag`, `display_name`, `sort_order`, and the theme (`data/themes`), look (`data/look`) and cast FX (`data/fx`) `.tres` files.
-2. `ai_profile`: an `AiProfile` from `data/ai/` (duplicate `profile_pyro.tres`).
-3. `book`: a `GodBook` with `creatures`, `spells`, `structures` and `unlocks`. They are references to the `.tres` files in `data/catalog/`: adding something to the book is dragging it into the list.
-4. The character picker and the catalog pick it up by themselves (`GameData`).
+1. Create `gods/<god>/` and duplicate `gods/pyro/pyro.tres` there as `<god>.tres` (`GodType`): `tag`, `display_name`, `sort_order`, its look (`<god>_look.tres`, with sky, light, grass, music and ambience) and the cast FX.
+2. `ai_profile`: an `AiProfile` from `scenes/ai/` (duplicate `profile_pyro.tres`).
+3. `book`: a `GodBook` with `creatures`, `spells`, `structures` and `unlocks`. They are references to the `.tres` files of `creatures/`, `spells/` and `gods/<god>/buildings/`: adding something to the book is dragging it into the list.
+4. The character picker and the catalog pick it up by themselves (`GameCatalog`).
 
 ## A building
 
-- **Type.** `data/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the ruin). The scene with the same name in `scenes/structures/buildings/` is the building you drag into a map (root `MapBuilding`, parts saved under `Visuals`). A new one is made by duplicating a `.tres` and its scene; «Ajustar a las partes» (on the root) measures the box that holds the parts, which you can also drag with the handles of `Collision`.
+- **Type.** `gods/<god>/buildings/<name>.tres` (`BuildingType`: name, max health, whether it gives shelter, and the ruin). The scene with the same name in `scenes/structures/buildings/` is the building you drag into a map (root `MapBuilding`, parts saved under `Visuals`). A new one is made by duplicating a `.tres` and its scene; «Fit to parts» (on the root) measures the box that holds the parts, which you can also drag with the handles of `Collision`.
 - **On the map.** Drag `scenes/structures/buildings/<name>.tscn` under `Buildings` in the map scene. Move and rotate it with the gizmo: the transform is the truth and the model shows in the editor; with «Editable Children» you see and move the parts of that instance. With `max_health` 0 it is indestructible.
 - **As a structure spell** (Manalith, Shrine): the `SpellType` goes in the book's `structures`, a `GodStructure` row (spell + scene) in `GodType.structures`, and a `StructureAction` with that `tag` under `Caster/Actions`; the building is a scene of `buildings/` that instances `towers/tower.tscn` (or `shrine_tower.tscn`) and is added to `StructureSpawner.scenes` in `match.tscn`.
 
 ## An NPC
 
 1. Instance `scenes/map/npc_spawn.tscn` under `Npcs` of the map scene.
-2. Drag the creature (`data/catalog/creatures/<tag>.tres`) to `creature` and set `side` (the side no player takes: the seats are sides 0..N-1). The marker's position is where it is born; the transform's rotation is where it faces; in the editor you see a ghost of the creature.
+2. Drag the creature (`creatures/<name>/<name>.tres`) to `creature` and set `side` (the side no player takes: the seats are sides 0..N-1). The marker's position is where it is born; the transform's rotation is where it faces; in the editor you see a ghost of the creature.
 3. `MapPopulation` turns them into units when the match starts (on the server or in single player).
 
 ## An FX
 
-- **Particles.** A `ParticleType` in `data/fx/<name>.tres` (atlas, frames, size, life, gravity, count). It is played with `FxBus.play("<name>", position)`; the name is the file's.
-- **Beam.** A `BeamType` in `data/fx/beams/` and `FxBus.play_beam(...)`.
+- **Particles.** A `ParticleType` in `scenes/fx/effects/<name>.tres` (atlas, frames, size, life, gravity, count). It is played with `FxBus.play("<name>", position)`; the name is the file's.
+- **Beam.** A `BeamType` in `scenes/fx/effects/beams/` and `FxBus.play_beam(...)`.
 - **Something with its own shape** (rings, spikes, portal): a packed scene in `scenes/fx/` with its shader, and `FxBus.play_scene(path, position, parameters)`. One effect, one scene, one shader.
-- The effect's lights: `data/fx/lights/`.
+- The effect's lights: `scenes/fx/effects/lights/`.
 
 ## A map
 
@@ -106,7 +106,7 @@ $G --headless --path . res://tools/audit/check_map.tscn -- --map=<tag>  # seats,
 
 After importing, `map.tscn` and `<tag>.tres` are edited by hand (the scene is the truth). Careful with `--force`: it overwrites what you edited. The plants of a map that is not James's stay empty until the models of its widgets exist. `room_selectable = false` in the definition takes it out of the rooms.
 
-**A map's ground** (plan 062): `bake_ground_roles.py` reads the `.scp`'s tiles in the map's own land and writes `ground_roles.png` (R open, G earth, B rock, A path); every god dresses it with its `GodGround` (`data/look/<god>.tres`), on any map. A `.scp` outside the folder (the tutorial) goes as `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` leaves `Npcs` empty and `--not-playable` sets `playable = false` (no room or menu offers it; `--map=<tag>` and the debug scenes still open it). Plants: `scaffold_map.py --map=<Name> --wire-flora` writes a density PNG per species (`scenes/map/maps/<tag>/flora/`) and hangs a `FloraLayer` per species under a `Vegetation` node of the map.tscn (import the project once afterwards); paint the PNGs or add a `VegetationPatch` by hand. The Godot steps that read the definition (`import_terrain.gd`, `terrain_glb_export.gd`) need the map to load: pass `--out=` to the first and write the `.glb` once with `export_data` before `--import`, or they would write into High Noon.
+**A map's ground** (plan 062): `bake_ground_roles.py` reads the `.scp`'s tiles in the map's own land and writes `ground_roles.png` (R open, G earth, B rock, A path); every god dresses it with its `GodGround` (`scenes/look/<god>.tres`), on any map. A `.scp` outside the folder (the tutorial) goes as `--scp="Tutorial/(tu02).scp" --tag=tutorial_valley`; `--no-npcs` leaves `Npcs` empty and `--not-playable` sets `playable = false` (no room or menu offers it; `--map=<tag>` and the debug scenes still open it). Plants: `scaffold_map.py --map=<Name> --wire-flora` writes a density PNG per species (`scenes/map/maps/<tag>/flora/`) and hangs a `FloraLayer` per species under a `Vegetation` node of the map.tscn (import the project once afterwards); paint the PNGs or add a `VegetationPatch` by hand. The Godot steps that read the definition (`import_terrain.gd`, `terrain_glb_export.gd`) need the map to load: pass `--out=` to the first and write the `.glb` once with `export_data` before `--import`, or they would write into High Noon.
 
 **Make one by hand** (example: `test_flat4`, the 4-seat test map, in `scenes/map/maps/test_flat4/`):
 
@@ -114,17 +114,17 @@ After importing, `map.tscn` and `<tag>.tres` are edited by hand (the scene is th
 2. In `map.tscn`, one `PlayerStart` per seat under `MapProps/Starts` (`Start1`…`Start4`, with `slot` 1..N without repeats) and its altar; move each start's `WizardSpot` with the gizmo (the wizard appears there, facing where it faces); the fountains under `MapProps/Founts`. A building is dragged under `Buildings`. In `test_flat4`, seats 1 and 2 are on the same side and 3 and 4 opposite, because `2v2` puts 1+2 against 3+4.
 3. The sides come from the nodes: each `PlayerStart` is a seat (`slot`; a `team` above 0 allies the seats that share it, 0 = enemy of everyone) and each `side` of an `NpcSpawn` is a side no player takes. The teams of a mode are set by the mode.
 4. `<tag>.tres` (`MapDefinition`): `tag`, `display_name`, `map_scene`, `terrain`, `nav` (and `light` if it has one) dragged from the inspector, and `player_starts` (= number of `PlayerStart`). `room_selectable = false` if it is only for testing (the rooms offer it with `--room-test-maps`).
-5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Hornear navmesh» button of `NavRegion`) and run `tools/audit/check_map.tscn -- --map=<tag>` (seats, objects on land, level bases, paths).
+5. There is no list to edit (`MapCatalog` scans the folder). Bake the navmesh («Bake navmesh» button of `NavRegion`) and run `tools/audit/check_map.tscn -- --map=<tag>` (seats, objects on land, level bases, paths).
 
 A map only shows up in a mode if it has one start per seat: High Noon (2) offers `1v1`; `winter_wonder` and `test_flat4` (4) also offer `2v2`, `ffa3` and `ffa4`.
 
 ## A mode
 
-A mode (how many seats, which team each one is on, how you win) is a `GameMode` `.tres` in `data/modes/`. It has no code.
+A mode (how many seats, which team each one is on, how you win) is a `GameMode` `.tres` in `scenes/match/modes/`. It has no code.
 
 1. Duplicate a similar one (for example `2v2.tres`) and name it `<tag>.tres`.
-2. In the inspector: `tag` (the one of `--mode=<tag>` and of the room), `display_name` (a key of `data/i18n/strings.csv`, like `MODE_2V2`; add yours with its text), `team_of_seat` (the team of each seat, seat 1 first: `[0,1]` is 1 against 1, `[0,0,1,1]` is 2 against 2, `[0,1,2]` three against everyone; teams go from 0 without gaps) and `room_selectable`.
-3. Add it to `modes` in `data/modes/mode_catalog.tres`.
+2. In the inspector: `tag` (the one of `--mode=<tag>` and of the room), `display_name` (a key of `scenes/ui/i18n/strings.csv`, like `MODE_2V2`; add yours with its text), `team_of_seat` (the team of each seat, seat 1 first: `[0,1]` is 1 against 1, `[0,0,1,1]` is 2 against 2, `[0,1,2]` three against everyone; teams go from 0 without gaps) and `room_selectable`.
+3. Add it to `modes` in `scenes/match/modes/mode_catalog.tres`.
 4. If no map has starts for all the mode's seats, the screens do not offer it.
 
 To try it without the screens: `--map=test_flat4 --mode=<tag>`.
@@ -135,22 +135,22 @@ You need a 4-seat map: `winter_wonder`, or `test_flat4` for testing.
 
 - **Alone, against the AI:** in the boot screen pick the «2 contra 2» (2 against 2) mode and the map, and press «Contra la IA» (Against the AI). The AI plays your ally and both rivals (their god comes from the «Dios de la IA» (AI god) picker). In a debug build the boot screen also offers the test maps.
 - **In an online room:** A presses «Salas online» (Online rooms) → «Crear sala» (Create room), picks the «2 contra 2» mode and the map, and shares the code. The other three join with «Unirse» (Join) and the code. Online rooms are people only: to play with AI, use «Servidor local» (Local server).
-- **Room server (off, for a future VPS):** turn on `room_server_enabled` in the inspector of `scenes/core/flow/sacrifice_flow.tscn` and start it with `$G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://data/net/lobby_config_local.tres --room-test-maps`. With the switch on, «Salas online» (Online rooms) opens its lobby (rooms with AI seats, «Listo» (Ready) and back to the room) instead of the player-hosted rooms.
+- **Room server (off, for a future VPS):** turn on `room_server_enabled` in the inspector of `scenes/core/flow/sacrifice_flow.tscn` and start it with `$G --headless --path . res://scenes/net/room_server.tscn -- --room-server --lobby-config=res://scenes/net/lobby_config_local.tres --room-test-maps`. With the switch on, «Salas online» (Online rooms) opens its lobby (rooms with AI seats, «Listo» (Ready) and back to the room) instead of the player-hosted rooms.
 - **Local server:** in «Servidor local» (Local server) → «Crear servidor local» (Create local server), pick mode and map and, for each seat that is not yours, a person or an AI. Each person's seat has its code: give each one theirs, with the address and the port.
 
 ## Change the balance
 
-- **A creature, a spell, a wizard, a building:** open its `.tres` in `data/catalog/<type>/` and change the number in the inspector. There is no JSON or separate table; the game reads the file.
-- **Match rules** (duration, friendly fire, caps): `data/match_rules.tres` (`MatchRules`).
-- **AI and difficulty:** `data/ai/`.
-- **Graphics quality:** `data/look/quality_*.tres`.
+- **A creature, a spell, a wizard, a building:** open its `.tres`: `creatures/<name>/`, `spells/<name>/`, `wizards/<name>/` or `gods/<god>/buildings/`, and change the number in the inspector. There is no JSON or separate table; the game reads the file.
+- **Match rules** (duration, friendly fire, caps): `scenes/match/match_rules.tres` (`MatchRules`).
+- **AI and difficulty:** `scenes/ai/`.
+- **Graphics quality:** `scenes/look/quality_*.tres`.
 - A `.tres` is not mutated at runtime.
 
 ## Relief (PBR maps) of a model
 
 Each texture of a model is a material in `scenes/bodies/materials/<owner>_<label>.tres`: a `StandardMaterial3D` shared by every model that uses that texture. Its relief is a normal map in `assets/surfaces/<owner>/<file>_normal.png` (Git LFS), assigned to the material's **Normal Map** slot. The map is optional: a material without one looks as before. Since RFC-067 every material has one, except `pct6_M000_cutout`. The stone copy (StoneLook) and the build copy (BuildReveal) keep the relief.
 
-- **To look at one or tune it,** open the material in the inspector, or the mesh's surface override in `scenes/bodies/models/<model>.tscn`. `normal_scale` softens the relief, and a negative value flips it. To take it off, clear the slot or press Quitar.
+- **To look at one or tune it,** open the material in the inspector, or the mesh's surface override in the model scene, `creatures/<name>/model/`. `normal_scale` softens the relief, and a negative value flips it. To take it off, clear the slot or press Quitar.
 - **To make one,** go to the inspector section «Relieve desde albedo», set the knobs (the preview shows the result), press Generar and save with Ctrl+S.
 - **To make many,** use Project > Tools > «Generar relieve…». From the console it is `tools/bake/bake_relief.gd -- <folder> --recipe=…`, run once, then `--import`, then the same command again.
 - **Recipes** live in `addons/surface_maps/recipes/`:
@@ -177,7 +177,7 @@ G="${GODOT_BIN:-godot}"   # see «Configure paths» below
 bash tools/lint/conventions.sh
 ```
 
-From the editor, **Project > Tools > Sacrifice** re-bakes the navmesh and bakes the missing models, and shows the output in a dialog. The minimap has a «Re-hornear minimapa» (Re-bake minimap) button in the inspector of `MinimapTerrainBake`.
+From the editor, **Project > Tools > Sacrifice** re-bakes the navmesh and bakes the missing models, and shows the output in a dialog. The minimap has a «Rebake minimap» button in the inspector of `MinimapTerrainBake`.
 
 The console bakes (without `--force` they do not overwrite hand edits):
 
@@ -216,7 +216,7 @@ These tools read the `.wad` and `.scp` files of the installed game; **the origin
 
 ### Import the original's audio
 
-Almost nobody needs it: the already imported audio is in the repo through Git LFS (`assets/original/audio/`: WAV effects, Ogg voices, MP3 music), with its sets baked in `data/audio/`. It is only re-run if the importer changes.
+Almost nobody needs it: the already imported audio is in the repo through Git LFS (`assets/original/audio/`: WAV effects, Ogg voices, MP3 music), with its sets baked in `scenes/audio/`. It is only re-run if the importer changes.
 
 1. It needs the original game installed. Point to the folder with the `.wad` files as in «Configure paths»: `SAC_INSTALL`, `tools/import/local.cfg` or **Editor Settings > sacrifice > original_install_path**.
 2. **Project > Tools > Sacrifice: Importar audio del original** (Import the original's audio) (or `python3 tools/import/import_audio.py`; `--check` shows what would change without writing).

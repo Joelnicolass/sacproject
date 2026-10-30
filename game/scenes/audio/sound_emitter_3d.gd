@@ -2,17 +2,21 @@
 class_name SoundEmitter3D
 extends AudioStreamPlayer3D
 
-## A sound that belongs to a node of the world: a spell projectile when it is born, a building's loop, a ward's hum.
-## - Its `cue` is a SoundCue dropped in the inspector (data/audio/cues/fireball_cast.tres, or one made right there); no
-##   texts, no tables, no lookups.
-## - One-shot (`loop` off): with `play_on_ready` it plays once when it enters the tree, through SoundBus's 3D pool at its
-##   position (cooldown, max_voices, priority, the 32-voice cap). It does not follow the node.
-## - Loop: it plays on this player (it follows the node) while `active` and within the cue's `max_distance_m` of the
-##   listener, looking every `check_s`. SoundBus counts the loop in the 3D budget (`claim_loop`). Gapless when the stream
-##   loops (the WAV import loop mode); a stream that does not loop is started again when it ends.
-## - No cue or a silent cue: silence. A dedicated server, the room server and a headless bench (AudioGate closed) load the
-##   scene and its cue file, and play nothing. Presentation only: it reads nothing of the simulation.
-## Ref: the original's one-shots do not follow their node either.
+## A sound that belongs to a node of the world: a spell projectile when it is born, a building's
+## loop, a ward's hum.
+## - Its `cue` is a SoundCue dropped in the inspector (spells/fireball/sounds/fireball_cast.tres, or
+## one
+##   made right there); no texts, no tables, no lookups.
+## - One-shot (`loop` off): with `play_on_ready` it plays once when it enters the tree, through
+##   SoundBus's 3D pool at its position (cooldown, max_voices, priority, the 32-voice cap). It does
+##   not follow the node.
+## - Loop: it plays on this player (it follows the node) while `active` and within the cue's
+##   `max_distance_m` of the listener, looking every `check_s`. SoundBus counts the loop in the 3D
+##   budget (`claim_loop`). Gapless when the stream loops (the WAV import loop mode); a stream that
+##   does not loop is started again when it ends.
+## - No cue or a silent cue: silence. A dedicated server, the room server and a headless run
+##   (AudioGate closed) load the scene and its cue file, and play nothing. Presentation only: it
+##   reads nothing of the simulation.
 
 ## What this emitter sounds like. Empty = silence (the scene tree shows a warning).
 @export var cue: SoundCue:
@@ -20,9 +24,11 @@ extends AudioStreamPlayer3D
 		cue = value
 		update_configuration_warnings()
 @export var loop := false
-## One-shot: play once on entering the tree. Loop: claim it on entering the tree (in range and `active`).
+## One-shot: play once on entering the tree. Loop: claim it on entering the tree (in range and
+## `active`).
 @export var play_on_ready := true
-## A loop sounds only while active (a manafount's jet or its Manalith; an altar standing). See set_active().
+## A loop sounds only while active (a manafount's jet or its Manalith; an altar standing). See
+## set_active().
 @export var active := true
 ## Real seconds between two looks at the range of a loop.
 @export_range(0.05, 5.0, 0.05, "suffix:s") var check_s := 0.5
@@ -66,7 +72,11 @@ func _exit_tree() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if cue != null else PackedStringArray(["Asigná `cue`: el SoundCue que suena (data/audio/cues/)."])
+	return (
+		PackedStringArray()
+		if cue != null
+		else PackedStringArray(["Assign `cue`: the SoundCue that plays (scenes/audio/cues/)."])
+	)
 
 
 ## Turns a loop on or off (a one-shot only remembers it for its next play_once).
@@ -107,7 +117,8 @@ func _in_range(found: SoundCue) -> bool:
 	return ear == Vector3.INF or global_position.distance_to(ear) <= found.max_distance_m
 
 
-## A stream that does not loop by itself starts again (a small gap; the original's loops are imported looping).
+## A stream that does not loop by itself starts again (a small gap; the imported loops already
+## loop).
 func _on_finished() -> void:
 	if loop and SoundBus.holds_loop(self):
 		play()

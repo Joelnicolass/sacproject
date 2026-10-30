@@ -1,38 +1,50 @@
 extends MpFlow
 
-## How a Sacrifice match starts, ends and comes back (solo, «Contra la IA», LAN, a room's dedicated, a «Servidor local»). It holds
-## the local pick and the AI seats; PickBoard the picks by slot, ActiveMatch the map and the mode. It does not decide who may pick.
+## How a Sacrifice match starts, ends and comes back (solo, «Contra la IA», LAN, a room's dedicated,
+## a «Servidor local»). It holds the local pick and the AI seats; PickBoard the picks by slot,
+## `active_match` the map and the mode. It does not decide who may pick.
 
 signal slot_picks_changed
 
-## The room-server screens (where a match from a room comes back to), the «Servidor local» screen and the menu's «Salas online»
-## (rooms the players host through the issuer).
+## The room-server screens (where a match from a room comes back to), the «Servidor local» screen
+## and the menu's «Salas online» (rooms the players host through the issuer).
 const LOBBY_SCENE := "res://scenes/ui/lobby/lobby_screen.tscn"
 const LOCAL_SERVER_SCENE := "res://scenes/ui/local_server/local_server_screen.tscn"
 const ONLINE_SCENE := "res://scenes/ui/online/online_screen.tscn"
 
-## The pick the menu starts with (Jadugarr, James). Change it in the inspector of `sacrifice_flow.tscn`.
+## The pick the menu starts with (Jadugarr, James). Change it in the inspector of
+## `sacrifice_flow.tscn`.
 @export var default_pick: WizardPick
-## The seat of «Contra la IA»: slot 2, the god drawn, Normal. Drag another AiSeat to change the rival.
+## The seat of «Contra la IA»: slot 2, the god drawn, Normal. Drag another AiSeat to change the
+## rival.
 @export var vs_ai_seat: AiSeat
 ## The picks by slot (a child of this scene).
 @export var board: PickBoard
-## The story of each seat in the server's log, and the defeat of a seat that abandoned (a child of this scene).
+## The story of each seat in the server's log, and the defeat of a seat that abandoned (a child of
+## this scene).
 @export var presence: SeatPresence
-## The black screen while a match loads (a child of this scene). Empty = no screen; the load is the same.
+## The black screen while a match loads (a child of this scene). Empty = no screen; the load is the
+## same.
 @export var loading_screen: LoadingScreen
-## The room server of a VPS (RFC-034: `--room-server`, scenes/ui/lobby/, data/net/lobby_*.tres), kept for a future deploy (tools/deploy/).
-## Off: «Salas online» opens the rooms the players host and `--room-server` refuses to start. On: «Salas online» opens the
-## room-server lobby and the binary can run as the room server.
+## The room server of a VPS (`--room-server`, scenes/ui/lobby/, scenes/net/lobby_*.tres), kept for a
+## future deploy (tools/deploy/).
+## Off: «Salas online» opens the rooms the players host and `--room-server` refuses to start. On:
+## «Salas online» opens the room-server lobby and the binary can run as the room server.
 @export var room_server_enabled := false
 
 ## Local choice. Never null after `_ready`.
 var pick: WizardPick
-## True while the match in course came from a room: leaving it lands in the room screens, not the menu.
+## True while the match in course came from a room: leaving it lands in the room screens, not the
+## menu.
 var from_lobby := false
-## The AI seats of the match this process simulates (AiRoster reads them): «Contra la IA», or a dedicated with bots. Empty = humans only.
+## The AI seats of the match this process simulates (AiRoster reads them): «Contra la IA», or a
+## dedicated with bots. Empty = humans only.
 var solo_ai_seats: Array[AiSeat] = []
-## What the next match overrides of its rules (level, souls, friendly fire, seed, land, map, mode): the menu's choice over the flags.
+## The map, the mode and the seed of the next (or the running) match: chosen right before the world
+## loads, read by the world and the screens, forgotten when the match ends.
+var active_match := ActiveMatch.new()
+## What the next match overrides of its rules (level, souls, friendly fire, seed, land, map, mode):
+## the menu's choice over the flags.
 var setup := MatchSetup.new()
 ## The picks by MpKit slot, replicated to clients (they live in `board`).
 var slot_picks: Dictionary[int, WizardPick]:
@@ -43,9 +55,11 @@ var _cli_setup := MatchSetup.new()
 
 
 func _ready() -> void:
+	GameSettings.apply_version()
 	pick = default_pick.duplicate() as WizardPick
 	boot_path = "res://scenes/core/boot.tscn"
-	## `--world=res://<scene>.tscn` on the dedicated and its clients plays another world scene online.
+	# `--world=res://<scene>.tscn` on the dedicated and its clients plays another world scene
+	# online.
 	world_path = MpBoot.user_value("world", "res://scenes/match/match.tscn")
 	joining_status = tr("UI_FLOW_JOINING")
 	join_fail_status = tr("UI_FLOW_JOIN_FAIL")
@@ -54,13 +68,14 @@ func _ready() -> void:
 	_translate_online_texts()
 	advertise_lan = false
 	start_when = StartWhen.DEDICATED_FIRST_CLIENT
-	## Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1 and the AI keeps slot 2.
-	var plan := LaunchFlags.read(vs_ai_seat, ActiveMatch.seats())
+	# Before super._ready(): MpKit.configure takes max_players there, so the one human gets slot 1
+	# and the AI keeps slot 2.
+	var plan := LaunchFlags.read(vs_ai_seat, active_match.seats())
 	max_players = plan.max_players
 	solo_ai_seats = plan.ai_seats
 	_cli_setup = plan.setup
 	setup = _cli_setup.copy()
-	## The room server never loads a world by itself.
+	# The room server never loads a world by itself.
 	if MpBoot.role() == "room-server":
 		start_when = StartWhen.MANUAL
 	if not _arm_ticket_glue():
@@ -82,26 +97,29 @@ func set_pick(chosen: WizardPick) -> void:
 	print("pick %s %s" % [pick.wizard.model_id(), pick.god.id()])
 
 
-## The pick of `slot`: the one the server published, or the local one for the local slot; null if none.
+## The pick of `slot`: the one the server published, or the local one for the local slot; null if
+## none.
 func pick_for(slot: int) -> WizardPick:
 	if slot_picks.has(slot):
 		return slot_picks[slot]
 	return pick if slot == MpKit.local_slot() else null
 
 
-## Solo. `chosen` is what the menu chose: every field it sets wins over the flags of this process; null keeps the flags.
+## Solo. `chosen` is what the menu chose: every field it sets wins over the flags of this process;
+## null keeps the flags.
 func play_solo(chosen: MatchSetup = null) -> void:
 	solo_ai_seats = []
 	setup = _cli_setup.overlaid_by(chosen)
 	_play_alone()
 
 
-## «Contra la IA»: solo, with the AI in every seat but the player's. `god` null = drawn when the match starts.
+## «Contra la IA»: solo, with the AI in every seat but the player's. `god` null = drawn when the
+## match starts.
 func play_vs_ai(god: GodType = null, chosen: MatchSetup = null) -> void:
 	setup = _cli_setup.overlaid_by(chosen)
-	## Decided now (idempotent) to know how many seats the mode has.
+	# Decided now (idempotent) to know how many seats the mode has.
 	_apply_match_choice()
-	solo_ai_seats = vs_ai_seat.for_seats(ActiveMatch.seats(), god)
+	solo_ai_seats = vs_ai_seat.for_seats(active_match.seats(), god)
 	_play_alone()
 
 
@@ -126,27 +144,28 @@ func return_to_boot() -> void:
 	super.return_to_boot()
 
 
-## The place where a match gets its map, its mode and its seed: right before the world loads, in the process that simulates. A
-## client does not choose: the dedicated tells it (snapshot). Online the seed is drawn here once per match (`setup` keeps it until
-## the next reset), so the snapshot carries the same one to every peer.
+## The place where a match gets its map, its mode and its seed: right before the world loads, in the
+## process that simulates. A client does not choose: the dedicated tells it (snapshot). Online the
+## seed is drawn here once per match (`setup` keeps it until the next reset), so the snapshot
+## carries the same one to every peer.
 func _apply_match_choice() -> void:
 	if MpKit.is_networked() and not MpKit.is_server():
 		return
-	ActiveMatch.choose(setup.map, setup.mode)
+	active_match.choose(setup.map, setup.mode)
 	if MpKit.is_networked() and setup.match_seed <= 0:
 		setup.match_seed = MatchSeed.draw()
-	ActiveMatch.choose_seed(setup.match_seed)
+	active_match.choose_seed(setup.match_seed)
 
 
 ## The map and the mode reach the clients before the order to load the world.
 func snapshot_for_joiner() -> Dictionary:
-	return super.snapshot_for_joiner().merged(MatchWire.encode_choice(), true)
+	return super.snapshot_for_joiner().merged(MatchWire.encode_choice(active_match), true)
 
 
 func _on_flow_snapshot(data: Dictionary) -> void:
 	super._on_flow_snapshot(data)
 	if not MpKit.is_networked() or not MpKit.is_server():
-		MatchWire.decode_choice(data)
+		MatchWire.decode_choice(data, active_match)
 
 
 func _begin_match() -> void:
@@ -158,12 +177,14 @@ func _before_world_load() -> void:
 	_apply_match_choice()
 
 
-## Read on the loading thread beside the world: what the match will spawn (the gods and wizards of its seats).
+## Read on the loading thread beside the world: what the match will spawn (the gods and wizards of
+## its seats).
 func _extra_world_loads() -> PackedStringArray:
-	return ActiveMatch.load_paths()
+	return active_match.load_paths()
 
 
-## Joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the token.
+## Joins the match process the room server assigned (`MpLobbyClient.match_ready`). The ticket is the
+## token.
 func join_from_lobby(host: String, p_port: int, token: String) -> Error:
 	_forget_local_match()
 	var err := join_endpoint(host, p_port, token)
@@ -171,8 +192,9 @@ func join_from_lobby(host: String, p_port: int, token: String) -> Error:
 	return err
 
 
-## Opens an online room this player hosts with the Sacrifice ticket (OnlineTicket: map, mode, options, the host's pick, the other
-## seats open). null when the rules refuse `options` or there is no issuer (the status says why).
+## Opens an online room this player hosts with the Sacrifice ticket (OnlineTicket: map, mode,
+## options, the host's pick, the other seats open). null when the rules refuse `options` or there is
+## no issuer (the status says why).
 func host_online_room(options: Dictionary, room: String, listed: bool) -> MpOnline:
 	var ticket := OnlineTicket.build(pick, options)
 	if ticket.is_empty():
@@ -182,13 +204,15 @@ func host_online_room(options: Dictionary, room: String, listed: bool) -> MpOnli
 	return host_online(OnlineTicket.players_of(ticket), room, listed, ticket)
 
 
-## Joins an online room by its code: nothing of a local match stays (picks, AI seats, the room mark).
+## Joins an online room by its code: nothing of a local match stays (picks, AI seats, the room
+## mark).
 func join_online(code: String) -> Error:
 	_forget_local_match()
 	return await super.join_online(code)
 
 
-## Joins a «Servidor local» (the host's own dedicated; the code is the seat's credential). It is not a room: out goes to the menu.
+## Joins a «Servidor local» (the host's own dedicated; the code is the seat's credential). It is not
+## a room: out goes to the menu.
 func join_local_server(host: String, p_port: int, code: String) -> Error:
 	_forget_local_match()
 	return join_endpoint(host, p_port, code)
@@ -206,15 +230,17 @@ func _forget_local_match() -> void:
 	solo_ai_seats = []
 
 
-## What a client turned away by the door of the match reads in the status line (the «Servidor local» texts).
+## What a client turned away by the door of the match reads in the status line (the «Servidor local»
+## texts).
 func rejection_text(reason: String) -> String:
 	return LocalServerText.rejection_text(reason)
 
 
-## The way out of a match (pause menu, end, lost server): the room screens if it came from a room, else the menu.
+## The way out of a match (pause menu, end, lost server): the room screens if it came from a room,
+## else the menu.
 func _go_boot() -> void:
-	ActiveMatch.forget()
-	print("flujo: salida de la partida, desde sala: %s" % from_lobby)
+	active_match.forget()
+	print("flow: left the match, from a room: %s" % from_lobby)
 	if from_lobby:
 		from_lobby = false
 		get_tree().change_scene_to_file(LOBBY_SCENE)
@@ -222,8 +248,9 @@ func _go_boot() -> void:
 	super._go_boot()
 
 
-## The online texts of the kit (`online_texts` and the statuses of the «Online (issuer)» group in sacrifice_flow.tscn) are keys of
-## data/i18n/strings.csv: translated once, like the other statuses.
+## The online texts of the kit (`online_texts` and the statuses of the «Online (issuer)» group in
+## sacrifice_flow.tscn) are keys of scenes/ui/i18n/strings.csv: translated once, like the other
+## statuses.
 func _translate_online_texts() -> void:
 	online_working_status = tr(online_working_status)
 	online_ready_status = tr(online_ready_status)
@@ -235,7 +262,8 @@ func _translate_online_texts() -> void:
 	online_texts = texts
 
 
-## The dedicated of a room-server match takes its picks, options and seed from the ticket. False = unplayable ticket (it quits).
+## The dedicated of a room-server match takes its picks, options and seed from the ticket. False =
+## unplayable ticket (it quits).
 func _arm_ticket_glue() -> bool:
 	var glue := MatchTicketGlue.attach(self)
 	if glue == null:
@@ -251,7 +279,7 @@ func _arm_ticket_glue() -> bool:
 		solo_ai_seats = plan.ai_seats
 	slot_picks.merge(plan.picks)
 	setup = _cli_setup.overlaid_by(plan.setup)
-	## The world waits for the open picks: the first admission does not start it (see PickBoard).
+	# The world waits for the open picks: the first admission does not start it (see PickBoard).
 	if plan.wait_for_picks:
 		start_when = StartWhen.MANUAL
 	return true

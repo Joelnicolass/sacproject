@@ -1,10 +1,9 @@
 class_name IdleState
 extends UnitState
 
-## IDLE (idle + patrol): regenerates. The scan for an enemy with no order is
-## TargetRefresh's (F370), which also runs while the body fights. The rest loop ends in the idle gesture 1 time in GESTURE_EVERY (the original's 1/5),
-## picked as (hash(name) + loops) % 5: the same on every peer, no randi().
-## Ref: RFC-023, F370, sacengine patrol state.d:13029, state.d:7957-7992.
+## IDLE (idle + patrol): regenerates. The scan for an enemy with no order is TargetRefresh's, which
+## also runs while the body fights. The rest loop ends in the idle gesture 1 time in GESTURE_EVERY
+## (1/5), picked as (hash(name) + loops) % 5: the same on every peer, no randi().
 
 const GESTURE_EVERY := 5
 
@@ -35,5 +34,9 @@ func on_clip_looped(role: String) -> bool:
 	if role != "idle" and role != "gesture":
 		return false
 	_loops += 1
-	_gesturing = role == "idle" and posmod(hash(String(body.name)) + _loops, GESTURE_EVERY) == 0 and body.has_clip("gesture")
+	_gesturing = (
+		role == "idle"
+		and posmod(hash(String(body.name)) + _loops, GESTURE_EVERY) == 0
+		and body.has_clip("gesture")
+	)
 	return true

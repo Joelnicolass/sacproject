@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/units/impacts/lob_splash_impact.tscn" id="3_splash"]
 
 [node name="FlummoxImpact" type="Node"]
-editor_description = "Flummox crba (flummoxProjectileExplosion, state.d:24059-24067): primero aturde a todo cuerpo a ≤ effectRange (StunImpact, enfriamiento 480) y después la salpicadura sin golpe entero (LobSplashImpact). El orden de los hijos es el de sacengine: el callback aturde antes del daño."
+editor_description = "Flummox crba: first it stuns every body within the effect range (StunImpact, cooldown 480) and then the splash with no full hit (LobSplashImpact). The order of the children matters: the stun comes before the damage."
 script = ExtResource("1_impact")
 
 [node name="StunImpact" type="Node" parent="."]

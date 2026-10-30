@@ -1,19 +1,21 @@
 class_name Flight
 extends Node
 
-## Take off, fly and land of a hybrid flier (canFly && !mustFly: Blight, Gremlin, Ikarus,
-## Pyrodactyl, Seraph, Dragon, Hellmouth, Silverback, Phoenix). A child of unit.tscn; take it away and every hybrid walks.
-## A creature that must fly (CreatureType.is_flying) or has no fly clip never leaves GROUND here.
+## Take off, fly and land of a hybrid flier (can fly and need not: Blight, Gremlin, Ikarus,
+## Pyrodactyl, Seraph, Dragon, Hellmouth, Silverback, Phoenix). A child of unit.tscn; take it away
+## and every hybrid walks. A creature that must fly (CreatureType.is_flying) or has no fly clip
+## never leaves GROUND here.
 ##
-## GROUND   walks. On a walk it takes off when flying gets there first: takeoffTime + d/fly < d/ground
+## GROUND   walks. On a walk it takes off when flying gets there first: takeoffTime + d/fly <
+## d/ground
 ## TAKEOFF  the takeoff clip on the spot, takeoff frames / 30 s.
-## FLYING   straight to the goal at the flying speed, climbing to `flying_height` at takeoffSpeed = flying speed
+## FLYING   straight to the goal at the flying speed, climbing to `flying_height` at takeoffSpeed =
+## flying speed
 ##          Not walking any more: it comes down at landingSpeed = ½ flying speed.
 ## LANDING  touched the ground: the land clip on the spot, then GROUND.
-## Deviation: the original only lands with `land` (a debug key there); stopped fliers hover down to height 0 and
-## stay "flying". Here a flier that stops lands (RFC-030 030e).
-## The server (or solo) runs it; `state` is replicated and the body picks its clip and speed from it on every peer.
-## Ref: F116 (RFC-030e), sacengine canFly && !mustFly, takeoff state.d:12335-12339, startFlying 8692-8704, sacobject.d:125-128, state.d:14141-14150, 14756-14763, 8113-8126, 14155-14160, land 8706-8716.
+## A flier that stops lands.
+## The server (or solo) runs it; `state` is replicated and the body picks its clip and speed from it
+## on every peer.
 
 signal state_changed(state: State)
 
@@ -21,19 +23,15 @@ enum State { GROUND, TAKEOFF, FLYING, LANDING }
 
 ## The body it lifts (the parent unit).
 @export var body: UnitBody
-## The height a flier climbs to (flyingHeight).
-## Ref: sacengine CreatureStats.flyingHeight stats.d:154.
+## The height a flier climbs to.
 @export var flying_height := 4.5
-## A flier above its height while it flies on (downwardHoverSpeed).
-## Ref: sacengine stats.d:148.
+## A flier above its height while it flies on.
 @export var downward_hover_speed := 3.0
 ## landingSpeed = 0.5 · flying speed.
-## Ref: sacengine stats.d:145-147.
 @export_range(0.0, 1.0) var landing_speed_factor := 0.5
-## F120: while a state holds the body (stunned, petrified) its movement does not change (the original keeps
-## creatureState.movement): no takeoff, no landing, and a flier keeps its height.
+## While a state holds the body (stunned, petrified) its movement does not change: no takeoff, no
+## landing, and a flier keeps its height.
 ## Optional: empty = nothing holds it.
-## Ref: sacengine state.d:8138-8150, 14170-14212.
 @export var afflictions: Afflictions
 ## Height over the ground at which a flier coming down has touched it.
 @export var touch_m := 0.05
@@ -56,7 +54,7 @@ func _ready() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if body == null and not get_parent() is UnitBody:
-		return PackedStringArray(["Falta el cuerpo (body)."])
+		return PackedStringArray(["Missing the body (body)."])
 	return PackedStringArray()
 
 
@@ -75,24 +73,27 @@ func holds_still() -> bool:
 	return state == State.TAKEOFF or state == State.LANDING
 
 
-## Server: a walk of `distance` meters to its goal. True when it goes by air (it already flies or takes off now): the
-## body then goes straight, with no waypoints (the path of a flier is reset).
-## Ref: sacengine state.d:12298.
+## Server: a walk of `distance` meters to its goal. True when it goes by air (it already flies or
+## takes off now): the body then goes straight, with no waypoints (the path of a flier is reset).
 func goes_by_air(distance: float) -> bool:
 	if state == State.FLYING or state == State.TAKEOFF:
 		return true
 	if state != State.GROUND or _held() or not is_capable() or distance <= 0.0:
 		return false
 	var type := body.type
-	if type.clip_facts().seconds_at_30(&"takeoff") + distance / type.fly_speed_m_s >= distance / type.run_speed_m_s:
+	if (
+		type.clip_facts().seconds_at_30(&"takeoff") + distance / type.fly_speed_m_s
+		>= distance / type.run_speed_m_s
+	):
 		return false
 	_take_off()
 	return true
 
 
-## Server, once per physics tick before the body moves. `walking`: the body is on its way to a goal. `above`: its height
-## over the ground under its center, `on_floor`: its capsule rests on something (a slope holds it above `above`); both only
-## read while FLYING. Returns the vertical speed of a flier; 0 on the ground.
+## Server, once per physics tick before the body moves. `walking`: the body is on its way to a goal.
+## `above`: its height over the ground under its center, `on_floor`: its capsule rests on something
+## (a slope holds it above `above`); both only read while FLYING. Returns the vertical speed of a
+## flier; 0 on the ground.
 func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float:
 	if is_dropped():
 		return _fall(delta, above, on_floor)
@@ -113,12 +114,11 @@ func advance(delta: float, walking: bool, above: float, on_floor: bool) -> float
 	return 0.0
 
 
-## F137: a state that drops fliers (AfflictionType.drops_fliers: petrified) lets gravity take this flier down while it
-## lasts, a hybrid or one that must fly alike; its state waits. The body
-## then asks advance() for its vertical speed, even one that must fly.
-## Ref: sacengine petrify startTumbling state.d:11636.
+## A state that drops fliers (AfflictionType.drops_fliers: petrified) lets gravity take this flier
+## down while it lasts, a hybrid or one that must fly alike; its state waits. The body then asks
+## advance() for its vertical speed, even one that must fly.
 func is_dropped() -> bool:
-	## A dead flier falls too: its corpse (and the soul that leaves it) belongs on the ground.
+	# A dead flier falls too: its corpse (and the soul that leaves it) belongs on the ground.
 	if body != null and body.is_dead():
 		return true
 	return afflictions != null and afflictions.drops_fliers()

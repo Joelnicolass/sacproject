@@ -1,0 +1,35 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCst.res" id="1_PCst"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCrn.res" id="2_PCrn"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCa1.res" id="3_PCa1"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCa2.res" id="4_PCa2"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PC00.res" id="5_PC00"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCes.res" id="6_PCes"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCd1.res" id="7_PCd1"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PC2t.res" id="8_PC2t"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCsc.res" id="9_PCsc"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCrz.res" id="10_PCrz"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCfd.res" id="11_PCfd"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCgu.res" id="12_PCgu"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PChf.res" id="13_PChf"]
+[ext_resource type="Animation" path="res://creatures/netherfiend/model/netherfiend_model_clips/PCi1.res" id="14_PCi1"]
+
+[resource]
+_data = {
+&"idle": ExtResource("1_PCst"),
+&"run": ExtResource("2_PCrn"),
+&"attack": ExtResource("3_PCa1"),
+&"attack2": ExtResource("4_PCa2"),
+&"attack3": ExtResource("4_PCa2"),
+&"shoot": ExtResource("5_PC00"),
+&"shoot2": ExtResource("6_PCes"),
+&"death": ExtResource("7_PCd1"),
+&"held": ExtResource("8_PC2t"),
+&"thrash": ExtResource("9_PCsc"),
+&"rise": ExtResource("10_PCrz"),
+&"knock": ExtResource("11_PCfd"),
+&"get_up": ExtResource("12_PCgu"),
+&"hit_floor": ExtResource("13_PChf"),
+&"gesture": ExtResource("14_PCi1")
+}

@@ -1,32 +1,32 @@
 class_name GrowingWave
 extends ShotInFlight
 
-## A creature's wave that grows while it flies. The Silverback's
-## Icy Breath (rdba), the Spitfire's fire wave (fhba) and the Gargoyle's wave (ehba) are the
-## same walk; only what a touched body takes besides the damage changes, and that is a WaveTouch child.
-## The wave flies straight through everything (ShotLook.collides off: no body, no ground) for its range and grows:
-## on its update number n (frame = n − 1) its radius is final_radius · frame / (60 · range / speed). Every update it
-## walks the bodies whose hit box is within that radius (dealDamageAt with the callback of the shooter) and each body is
-## taken once in the whole flight (damagedTargets):
-##   the shot's target: the whole amount as direct ranged damage (dealRangedDamage) with the shot's mods;
+## A creature's wave that grows while it flies. The Silverback's Icy Breath (rdba), the Spitfire's
+## fire wave (fhba) and the Gargoyle's wave (ehba) are the same walk; only what a touched body takes
+## besides the damage changes, and that is a WaveTouch child. The wave flies straight through
+## everything (ShotLook.collides off: no body, no ground) for its range and grows: on its update
+## number n (frame = n − 1) its radius is final_radius · frame / (60 · range / speed). Every update
+## it walks the bodies whose hit box is within that radius (a splash with the callback of the
+## shooter) and each body is taken once in the whole flight:
+##   the shot's target: the whole amount as direct ranged damage with the shot's mods;
 ##   a body of the shooter's side: nothing;
 ##   any other body: amount · (1 − d / radius) as splash ranged damage with the shot's mods.
-## Each WaveTouch child adds its effect: before_hit and after_hit around the damage of every body that takes it, and
-## settled() at the end of the update (FreezeTouch: Silverback, IgniteTouch: Spitfire; the Gargoyle's wave has none).
-## The wave's mist is presentation: ShotLook.trail_fx on every peer.
-## Deviation (declared): on its first update the radius is 0 and the port's walk (SplashDamage.bodies_within) takes
-## nobody; the original takes a body whose box holds the point.
-## Ref: F149 (RFC-030 030k-b), F162 (030w-c), sacengine updateSilverbackProjectile state.d:24758-24831, updateSpitfireProjectile 23025-23069, updateGargoyleProjectile 23079-23113.
+## Each WaveTouch child adds its effect: before_hit and after_hit around the damage of every body
+## that takes it, and settled() at the end of the update (FreezeTouch: Silverback, IgniteTouch:
+## Spitfire; the Gargoyle's wave has none). The wave's mist is presentation: ShotLook.trail_fx on
+## every peer. On its first update the radius is 0 and the walk (SplashDamage.bodies_within) takes
+## nobody.
 
 const _HEALTH := preload("res://scenes/components/health.gd")
 const _SPLASH := preload("res://scenes/spells/splash_damage.gd")
 
-## The radius at the end of the range (m) (final*ProjectileSize). Silverback and Spitfire 7,5, Gargoyle 6.
+## The radius at the end of the range (m) (final*ProjectileSize). Silverback and Spitfire 7,5,
+## Gargoyle 6.
 @export var final_radius := 7.5
 ## A body in one of these groups takes the damage only (TargetType.building).
 @export var building_groups: Array[StringName] = [&"structure"]
 
-## The bodies already taken (damagedTargets): each one once in the whole flight.
+## The bodies already taken: each one once in the whole flight.
 var _touched := {}
 var _touches: Array[WaveTouch] = []
 
@@ -37,7 +37,8 @@ func _ready() -> void:
 			_touches.append(child)
 
 
-## One update: the radius of this frame, the walk (damage and the touches around it), then settled().
+## One update: the radius of this frame, the walk (damage and the touches around it), then
+## settled().
 func _fly(shot: RangedShot, at: Vector3) -> void:
 	var amount := shot.damage
 	var from_slot := shot.from_slot
@@ -59,18 +60,25 @@ func _fly(shot: RangedShot, at: Vector3) -> void:
 			_after(body, true, direct_states, shot)
 			continue
 		if from_slot > 0 and _side(body) == from_slot:
-			_log_touch(shot, body, at, distance, radius, "mismo bando")
+			_log_touch(shot, body, at, distance, radius, "same side")
 			continue
-		_log_touch(shot, body, at, distance, radius, "salpicadura")
+		_log_touch(shot, body, at, distance, radius, "splash")
 		var splash_states := _before(body, false, shot)
-		_SPLASH.hurt(body, amount * maxf(0.0, 1.0 - distance / radius), from_slot, _HEALTH.SPLASH_RANGED, shot.mods, shooter)
+		_SPLASH.hurt(
+			body,
+			amount * maxf(0.0, 1.0 - distance / radius),
+			from_slot,
+			_HEALTH.SPLASH_RANGED,
+			shot.mods,
+			shooter
+		)
 		_after(body, false, splash_states, shot)
 	for touch in _touches:
 		touch.settled(shot)
 
 
-## The radius on `frame` (0 on the first update): final_radius · frame / (60 · range / speed), from the shot's SPEL;
-## without one, from the shot's own range and speed.
+## The radius on `frame` (0 on the first update): final_radius · frame / (60 · range / speed), from
+## the shot's SPEL; without one, from the shot's own range and speed.
 func radius_at(frame: int, shot: RangedShot) -> float:
 	var ability := shot.ability
 	var reach := ability.cast_range_m if ability else shot.max_distance
@@ -92,7 +100,8 @@ func is_building(body: Node) -> bool:
 	return false
 
 
-## The states the touches read before the damage (WaveTouch.before_hit), in the order of the children.
+## The states the touches read before the damage (WaveTouch.before_hit), in the order of the
+## children.
 func _before(body: Node3D, direct: bool, shot: RangedShot) -> Array:
 	var states := []
 	for touch in _touches:
@@ -113,23 +122,58 @@ func _log_start(shot: RangedShot, at: Vector3) -> void:
 	var velocity := shot.velocity
 	var direction := velocity.normalized()
 	var target := _intended(shot)
-	print("onda %s tick 1 en (%.3f, %.3f, %.3f) dir (%.5f, %.5f, %.5f) paso %.4f radio final %.2f en %.4f ticks a %s (cuadro %d)" % [
-		shot.name, at.x, at.y, at.z, direction.x, direction.y, direction.z, velocity.length() / MatchClock.TICKS_PER_SECOND_F, final_radius,
-		final_radius / maxf(radius_at(1, shot), 0.000001), str(target.name) if target else "nadie", MatchClock.now()])
+	print(
+		(
+			# gdlint: ignore=max-line-length
+			"wave %s tick 1 at (%.3f, %.3f, %.3f) dir (%.5f, %.5f, %.5f) step %.4f final radius %.2f in %.4f ticks at %s (frame %d)"
+			% [
+				shot.name,
+				at.x,
+				at.y,
+				at.z,
+				direction.x,
+				direction.y,
+				direction.z,
+				velocity.length() / MatchClock.TICKS_PER_SECOND_F,
+				final_radius,
+				final_radius / maxf(radius_at(1, shot), 0.000001),
+				str(target.name) if target else "nobody",
+				MatchClock.now()
+			]
+		)
+	)
 
 
-func _log_touch(shot: RangedShot, body: Node3D, at: Vector3, distance: float, radius: float, what: String) -> void:
+func _log_touch(
+	shot: RangedShot, body: Node3D, at: Vector3, distance: float, radius: float, what: String
+) -> void:
 	if not DebugLog.on(&"touches"):
 		return
-	print("onda %s toca %s tick %d en (%.3f, %.3f, %.3f) a %.3f m radio %.3f %s: %s" % [shot.name, str(body.name),
-		ticks, at.x, at.y, at.z, distance, radius, _box_text(body), what])
+	print(
+		(
+			"wave %s touches %s tick %d at (%.3f, %.3f, %.3f) at %.3f m radius %.3f %s: %s"
+			% [
+				shot.name,
+				str(body.name),
+				ticks,
+				at.x,
+				at.y,
+				at.z,
+				distance,
+				radius,
+				_box_text(body),
+				what
+			]
+		)
+	)
 
 
-## The hit box SplashDamage measures against, for the log (a capsule, cylinder or box under Collision, axis-aligned).
+## The hit box SplashDamage measures against, for the log (a capsule, cylinder or box under
+## Collision, axis-aligned).
 static func _box_text(body: Node3D) -> String:
 	var col := body.get_node_or_null("Collision") as CollisionShape3D
 	if body is MapBuilding or col == null or col.shape == null or col.shape is BoxShape3D:
-		return "caja ?"
+		return "box ?"
 	var half := Vector3(0.3, 0.9, 0.3)
 	if col.shape is CapsuleShape3D:
 		var capsule := col.shape as CapsuleShape3D
@@ -138,9 +182,12 @@ static func _box_text(body: Node3D) -> String:
 		var cylinder := col.shape as CylinderShape3D
 		half = Vector3(cylinder.radius, cylinder.height * 0.5, cylinder.radius)
 	var center := col.global_position
-	return "caja (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f)" % [center.x, center.y, center.z, half.x, half.y, half.z]
+	return (
+		"box (%.3f, %.3f, %.3f) ± (%.3f, %.3f, %.3f)"
+		% [center.x, center.y, center.z, half.x, half.y, half.z]
+	)
 
 
 func _exit_tree() -> void:
 	if ticks > 0 and DebugLog.on(&"touches"):
-		print("onda %s %d actualizaciones, %d tocados" % [get_parent().name, ticks, _touched.size()])
+		print("wave %s %d updates, %d touched" % [get_parent().name, ticks, _touched.size()])

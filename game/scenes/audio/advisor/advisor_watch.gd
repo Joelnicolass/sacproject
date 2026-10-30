@@ -2,36 +2,34 @@
 class_name AdvisorWatch
 extends Node
 
-## The game's warnings for the advisor (child of AdvisorVoice). It reads what every peer already has
-## (replicated Health of the bodies, the Ritual nodes) and asks `advisor.say(line)`; the line carries its priority and quiet
-## time and the advisor decides the queue. Only the side of the seat that looks at this screen (0 on a dedicated: nothing).
-## Remove the node and only the refusals speak.
-## - The local wizard (MatchWorld.local_wizard_changed, or `wizard` set by hand): its health goes down -> `wizard_attacked`;
-##   below `low_health_ratio` of its bar -> `wizard_low_health`.
-## - Own creatures (group «unit»): health down -> `creatures_attacked`; health to 0 -> `creature_died`.
-## - Own buildings (group «structure»: Manaliths, map buildings): health down -> `building_attacked`; to 0 -> `building_destroyed`.
-## - Rituals (group «ritual»): a Desecrate running on this side's altar -> `desecrated` (once per ritual); one this side cast
-##   ends completed -> `sacrifice_complete`.
-## Bodies and rituals are looked up every `scan_every_s` (a client gets them from spawners at any time); the owner is checked
-## when the event comes (a converted creature changes side). Reads only: no RPC, nothing written to the simulation.
-## Ref: RFC-052 052e (F364).
+## The game's warnings for the advisor (child of AdvisorVoice). It hears what every peer already
+## tells game-wide (Events.body_hurt, ritual_started, ritual_ended) and asks `advisor.say(line)`;
+## the line carries its priority and quiet time and the advisor decides the queue. Only the side of
+## the seat that looks at this screen (0 on a dedicated: nothing). Remove the node and only the
+## refusals speak.
+## - The local wizard (MatchWorld.local_wizard_changed, or `wizard` set by hand) hurt ->
+##   `wizard_attacked`; below `low_health_ratio` of its bar -> `wizard_low_health`.
+## - Own creatures (UnitBody) hurt -> `creatures_attacked`; health to 0 -> `creature_died`.
+## - Own buildings (group «structure»: Manaliths, map buildings) hurt -> `building_attacked`; to 0
+##   -> `building_destroyed`.
+## - Rituals: a Desecrate that starts on this side's altar -> `desecrated`; one this side cast ends
+##   completed -> `sacrifice_complete`.
+## The owner is checked when the event comes (a converted creature changes side). Reads only: no
+## RPC, nothing written to the simulation.
 
 @export var advisor: AdvisorVoice:
 	set(value):
 		advisor = value
 		update_configuration_warnings()
-## Emits `local_wizard_changed(wizard)` and answers `local_wizard()` (MatchWorld). Optional: the lab sets `wizard`.
-@export var world: Node
+## The match: its `local_wizard_changed` moves this to the local wizard. Optional: the lab sets
+## `wizard`.
+@export var world: MatchWorld
 @export var wizard: Node3D
 ## Who looks at this screen: only this seat's side is warned.
 @export var seat: MpLocalSeat:
 	set(value):
 		seat = value
 		update_configuration_warnings()
-@export_range(0.05, 5.0, 0.05, "suffix:s") var scan_every_s := 0.25
-## The groups the creatures and the buildings to watch belong to.
-@export var unit_group: StringName = &"unit"
-@export var structure_group: StringName = &"structure"
 @export_range(0.0, 1.0, 0.01) var low_health_ratio := 0.25
 
 @export_group("Lines")
@@ -44,16 +42,7 @@ extends Node
 @export var desecrated: AdvisorLine
 @export var sacrifice_complete: AdvisorLine
 
-enum Kind { WIZARD, CREATURE, BUILDING }
-
 var _open := false
-var _scan_left := 0.0
-## Health instance id -> its last `current` (a drop is a hit).
-var _last: Dictionary = {}
-## Ritual instance id -> true while seen running (each start and each end is told once).
-var _rituals: Dictionary = {}
-var _desecrations: Dictionary = {}
-var _wizard_health: Health
 
 
 func _ready() -> void:
@@ -61,96 +50,48 @@ func _ready() -> void:
 		return
 	_open = AudioGate.is_open() and advisor != null
 	if not _open:
-		set_process(false)
 		return
 	if world != null:
-		if world.has_signal("local_wizard_changed"):
-			world.connect("local_wizard_changed", bind_wizard)
-		if wizard == null and world is MatchWorld:
-			wizard = (world as MatchWorld).local_wizard()
-	if wizard != null:
-		bind_wizard(wizard)
+		world.local_wizard_changed.connect(bind_wizard)
+		if wizard == null:
+			wizard = world.local_wizard()
+	Events.body_hurt.connect(_on_body_hurt)
+	Events.ritual_started.connect(_on_ritual_started)
+	Events.ritual_ended.connect(_on_ritual_ended)
 
 
-func _process(delta: float) -> void:
-	_scan_left -= delta
-	if _scan_left > 0.0:
-		return
-	_scan_left = scan_every_s
-	scan()
-
-
-## The local wizard whose health it watches (MatchWorld.local_wizard_changed; the lab calls it).
+## The local wizard whose hits it tells (MatchWorld.local_wizard_changed; the lab calls it).
 func bind_wizard(node: Node3D) -> void:
-	if _wizard_health != null and is_instance_valid(_wizard_health) and _wizard_health.changed.is_connected(_on_health):
-		_wizard_health.changed.disconnect(_on_health)
 	wizard = node
-	_wizard_health = Health.of(node)
-	if _wizard_health != null:
-		_last[_wizard_health.get_instance_id()] = _wizard_health.current
-		_wizard_health.changed.connect(_on_health.bind(_wizard_health, node, Kind.WIZARD))
 
 
-## Connects the bodies and rituals that appeared since the last look (the lab calls it to not wait).
-func scan() -> void:
-	if not _open:
+func _on_body_hurt(body: Node3D, _lost: float, current: float, maximum: float) -> void:
+	if body == null:
 		return
-	for node in get_tree().get_nodes_in_group(unit_group):
-		_watch(node as Node3D, Kind.CREATURE)
-	for node in get_tree().get_nodes_in_group(structure_group):
-		_watch(node as Node3D, Kind.BUILDING)
-	_scan_rituals()
-
-
-func _watch(body: Node3D, kind: Kind) -> void:
-	var health := Health.of(body)
-	if health == null or _last.has(health.get_instance_id()):
+	if body == wizard:
+		if current <= 0.0:
+			return
+		advisor.say(wizard_attacked)
+		if maximum > 0.0 and current / maximum < low_health_ratio:
+			advisor.say(wizard_low_health)
+	elif not _is_ours(body):
 		return
-	var id := health.get_instance_id()
-	_last[id] = health.current
-	health.changed.connect(_on_health.bind(health, body, kind))
-	health.tree_exiting.connect(func() -> void: _last.erase(id), CONNECT_ONE_SHOT)
+	elif body is UnitBody:
+		advisor.say(creature_died if current <= 0.0 else creatures_attacked)
+	elif body.is_in_group(MapBuilding.STRUCTURE_GROUP):
+		advisor.say(building_destroyed if current <= 0.0 else building_attacked)
 
 
-func _on_health(current: float, maximum: float, health: Health, body: Node3D, kind: Kind) -> void:
-	var id := health.get_instance_id()
-	var before := float(_last.get(id, current))
-	_last[id] = current
-	## The wizard was bound as the local one; the others are checked now (a converted creature changes side).
-	if current >= before or not is_instance_valid(body) or (kind != Kind.WIZARD and not _is_ours(body)):
-		return
-	match kind:
-		Kind.WIZARD:
-			if current <= 0.0:
-				return
-			advisor.say(wizard_attacked)
-			if maximum > 0.0 and current / maximum < low_health_ratio:
-				advisor.say(wizard_low_health)
-		Kind.CREATURE:
-			advisor.say(creature_died if current <= 0.0 else creatures_attacked)
-		Kind.BUILDING:
-			advisor.say(building_destroyed if current <= 0.0 else building_attacked)
-
-
-func _scan_rituals() -> void:
+func _on_ritual_started(ritual: Ritual) -> void:
 	var slot := _slot()
-	if slot <= 0:
-		return
-	for node in get_tree().get_nodes_in_group(Ritual.GROUP):
-		var ritual := node as Ritual
-		if ritual == null:
-			continue
-		var id := ritual.get_instance_id()
-		if ritual.outcome == Ritual.Outcome.RUNNING:
-			_rituals[id] = true
-			if ritual.kind == Ritual.Kind.DESECRATE and ritual.target_slot == slot and ritual.phase != Ritual.Phase.OFF \
-					and not _desecrations.has(id):
-				_desecrations[id] = true
-				advisor.say(desecrated)
-		elif _rituals.get(id, false):
-			_rituals[id] = false
-			if ritual.outcome == Ritual.Outcome.COMPLETED and ritual.caster_slot == slot:
-				advisor.say(sacrifice_complete)
+	if slot > 0 and ritual.kind == Ritual.Kind.DESECRATE and ritual.target_slot == slot:
+		advisor.say(desecrated)
+
+
+func _on_ritual_ended(ritual: Ritual, completed: bool) -> void:
+	var slot := _slot()
+	if slot > 0 and completed and ritual.caster_slot == slot:
+		advisor.say(sacrifice_complete)
 
 
 func _is_ours(body: Node) -> bool:
@@ -164,7 +105,7 @@ func _slot() -> int:
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
 	if advisor == null:
-		out.append("Asigná `advisor` (el AdvisorVoice padre).")
+		out.append("Assign `advisor` (the parent AdvisorVoice).")
 	if seat == null:
-		out.append("Asigná `seat` (el MpLocalSeat): sin él no avisa.")
+		out.append("Assign `seat` (the MpLocalSeat): without it there are no warnings.")
 	return out

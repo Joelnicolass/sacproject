@@ -2,12 +2,14 @@
 class_name TerrainDeformTexture
 extends LookLayer
 
-## Hands the ground shader how far the land has moved, two floats per 10 m vertex (how high, and 1 where a vertex was taken
-## away), in two textures: the whole map (`terrain_deform_map`, 256x256), sent again only when what stays or the holes
-## change, and a small one (`terrain_live_map`) over the rect `terrain_live_rect` where stamps are playing, sent every frame
-## they move. Inside that rect the shader reads the small one. The mesh of the map is never rebuilt: the shader moves its
-## vertices. The first change also turns `terrain_deform_on` on, so a match that never deforms the ground pays nothing. It
-## does not decide how the ground moves (Terrain). Presentation only: the rig is freed in a dedicated or headless process.
+## Hands the ground shader how far the land has moved, two floats per 10 m vertex (how high, and 1
+## where a vertex was taken away), in two textures: the whole map (`terrain_deform_map`, 256x256),
+## sent again only when what stays or the holes change, and a small one (`terrain_live_map`) over
+## the rect `terrain_live_rect` where stamps are playing, sent every frame they move. Inside that
+## rect the shader reads the small one. The mesh of the map is never rebuilt: the shader moves its
+## vertices. The first change also turns `terrain_deform_on` on, so a match that never deforms the
+## ground pays nothing. It does not decide how the ground moves (Terrain). Presentation only: the
+## rig is freed in a dedicated or headless process.
 
 const MAP := &"terrain_deform_map"
 const LIVE_MAP := &"terrain_live_map"
@@ -26,15 +28,19 @@ var _shape: Terrain
 var _map_image: Image
 var _map: ImageTexture
 var _live_image: Image
-var _strip := Image.create_empty(1, 1, false, Image.FORMAT_RGF)  ## the whole rows the live rect spans
+## the whole rows the live rect spans
+var _strip := Image.create_empty(1, 1, false, Image.FORMAT_RGF)
 var _live: ImageTexture
-## The vertices the small texture covers: every stamp that played since none was playing. Empty = none plays.
+## The vertices the small texture covers: every stamp that played since none was playing. Empty =
+## none plays.
 var _live_rect := Rect2i()
-## (rev, holes version) of the field at the last change seen: a change that moves it is one of what stays.
+## (rev, holes version) of the field at the last change seen: a change that moves it is one of what
+## stays.
 var _settled := Vector2i(-1, -1)
 var _map_dirty := false
 var _live_dirty := false
-## The map was sent while a stamp was playing, so it holds that shift: it goes again when the last stamp is over.
+## The map was sent while a stamp was playing, so it holds that shift: it goes again when the last
+## stamp is over.
 var _map_has_live := false
 var _shown_rect := Rect2i()
 var _on := false
@@ -45,7 +51,11 @@ func _ready() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if rig != null else PackedStringArray(["Falta el socket Rig (el LookRig del mapa)."])
+	return (
+		PackedStringArray()
+		if rig != null
+		else PackedStringArray(["The Rig socket is missing (the map's LookRig)."])
+	)
 
 
 func _process(_delta: float) -> void:
@@ -85,7 +95,10 @@ func _on_changed(area: Rect2) -> void:
 		_settled = settled
 		_map_dirty = true
 	elif field.live_count() > 0:
-		var rect := Rect2i(Vector2i((area.position / field.cell_m).round()), Vector2i((area.size / field.cell_m).round()))
+		var rect := Rect2i(
+			Vector2i((area.position / field.cell_m).round()),
+			Vector2i((area.size / field.cell_m).round())
+		)
 		_live_rect = _live_rect.merge(rect) if _live_rect.has_area() else rect
 		_live_dirty = true
 
@@ -111,18 +124,23 @@ func _upload() -> void:
 		RenderingServer.global_shader_parameter_set(ON, 1.0)
 
 
-## Copies `_live_rect` out of the field into the small texture (or empties the rect when no stamp plays). The whole rows it
-## spans go over in one slice and the rect is cut out natively: a slice per row costs three times as much in GDScript.
+## Copies `_live_rect` out of the field into the small texture (or empties the rect when no stamp
+## plays). The whole rows it spans go over in one slice and the rect is cut out natively: a slice
+## per row costs three times as much in GDScript.
 func _upload_live(field: GroundField) -> void:
 	var rect := _live_rect
 	if rect.has_area():
 		var first := rect.position.y * field.size.x * 2
-		var rows := field.texels.slice(first, first + rect.size.y * field.size.x * 2).to_byte_array()
+		var rows := (
+			field.texels.slice(first, first + rect.size.y * field.size.x * 2).to_byte_array()
+		)
 		_strip.set_data(field.size.x, rect.size.y, false, Image.FORMAT_RGF, rows)
 		var resized := _live_image.get_size() != rect.size
 		if resized:
 			_live_image = Image.create_empty(rect.size.x, rect.size.y, false, Image.FORMAT_RGF)
-		_live_image.blit_rect(_strip, Rect2i(rect.position.x, 0, rect.size.x, rect.size.y), Vector2i.ZERO)
+		_live_image.blit_rect(
+			_strip, Rect2i(rect.position.x, 0, rect.size.x, rect.size.y), Vector2i.ZERO
+		)
 		if resized:
 			_live.set_image(_live_image)
 		else:
@@ -130,7 +148,9 @@ func _upload_live(field: GroundField) -> void:
 		uploaded_bytes += rect.get_area() * BYTES_PER_VERTEX
 	if rect != _shown_rect:
 		_shown_rect = rect
-		RenderingServer.global_shader_parameter_set(LIVE_RECT, Vector4(rect.position.x, rect.position.y, rect.size.x, rect.size.y))
+		RenderingServer.global_shader_parameter_set(
+			LIVE_RECT, Vector4(rect.position.x, rect.position.y, rect.size.x, rect.size.y)
+		)
 
 
 static func _settled_of(field: GroundField) -> Vector2i:

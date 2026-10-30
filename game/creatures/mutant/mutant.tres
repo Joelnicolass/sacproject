@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_ebs7r"]
+[ext_resource type="Texture2D" uid="uid://b8u5o0o4fk0p5" path="res://assets/original/ui/icons/cbab.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/mutant/mutant_shot.tres" id="typed_babt"]
+[ext_resource type="AnimationLibrary" path="res://creatures/mutant/model/mutant_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/mutant/mutant.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_ebs7r")
+tag = "cbab"
+display_name = "Mutant"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 1900
+regeneration_per_s = 29.1667
+run_speed_m_s = 6.0
+melee_strength = 100
+melee_accuracy = 2.0
+melee_evasion = 2.0
+ranged_accuracy = 1.5
+aggressiveness = 1.0
+vision_m = 150.0
+melee_resistance = 4.0
+splash_ranged_resistance = 1.35
+mana = 500
+mana_cost = 1100
+souls = 3
+cooldown_s = 7.0
+casting_time_s = 2.2222
+book_level = 6
+book_slot = 69
+ranged_attack = ExtResource("typed_babt")

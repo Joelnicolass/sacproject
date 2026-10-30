@@ -1,18 +1,18 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/map/terrain/ground_scars.gd" id="1_scars"]
-[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="2_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="2_prefs"]
 [ext_resource type="Script" path="res://scenes/map/terrain/ground_scars_net.gd" id="3_net"]
 
 [sub_resource type="Texture2DArray" id="Tiles_scars"]
 
 [node name="GroundScars" type="Node3D"]
-editor_description = "Las marcas en el suelo del mapa (quemaduras, grietas, crateres): unico dueno de las baldosas pintadas. Hijo de Terrain; `terrain` es el Terrain del mapa. Cantidad maxima de baldosas: la opcion «Cantidad de marcas» (prefs)."
+editor_description = "The marks on the map's ground (burns, cracks, craters): the one owner of the painted tiles. A child of Terrain; `terrain` is the map's Terrain. The most tiles: the «Cantidad de marcas» option (prefs)."
 script = ExtResource("1_scars")
 prefs = ExtResource("2_prefs")
 tiles = SubResource("Tiles_scars")
 
 [node name="Net" type="Node" parent="." node_paths=PackedStringArray("scars")]
-editor_description = "Pone al dia las marcas del suelo de un jugador que vuelve tras una caida: el servidor le manda la lista de lo pintado (la suya si dibuja, o la de un jugador ya conectado). Nada viaja por marca."
+editor_description = "Brings up to date the ground marks of a player who comes back after a drop: the server sends the list of what was painted (its own if it draws, or that of a player already connected). Nothing travels per mark."
 script = ExtResource("3_net")
 scars = NodePath("..")

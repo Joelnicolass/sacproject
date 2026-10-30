@@ -2,11 +2,12 @@
 class_name VegetationPatch
 extends Node3D
 
-## A cluster of one species in one place: drop it on the map, set the species, radius and count (`radius_m` is a circle in
-## the editor). It plants its own MultiMesh (internal, never saved): spots from the hash of (seed, tag, i), heights from the
-## terrain, none inside a VegetationClear, the density and «Vegetación» switch of the map's FloraField (found by its group);
-## again when it moves, is edited, a clear moves, the preset changes or the ground under it settles. Presentation only (never
-## headless or dedicated). For a whole map's worth of plants paint a FloraLayer instead.
+## A cluster of one species in one place: drop it on the map, set the species, radius and count
+## (`radius_m` is a circle in the editor). It plants its own MultiMesh (internal, never saved):
+## spots from the hash of (seed, tag, i), heights from the terrain, none inside a VegetationClear,
+## the density and «Vegetación» switch of the map's FloraField (found by its group); again when it
+## moves, is edited, a clear moves, the preset changes or the ground under it settles. Presentation
+## only (never headless or dedicated). For a whole map's worth of plants paint a FloraLayer instead.
 
 const GROUP := &"vegetation_patch"
 
@@ -68,7 +69,8 @@ func field_changed() -> void:
 	_queue()
 
 
-## FloraGroundWatch calls this when the ground under its circle settled: it plants again at the new heights.
+## FloraGroundWatch calls this when the ground under its circle settled: it plants again at the new
+## heights.
 func ground_moved() -> void:
 	_signature = ""
 	_queue()
@@ -100,7 +102,25 @@ func _plant() -> void:
 		_bound_rig = rig
 		rig.vegetation_toggled.connect(_on_toggled)
 	var clears := VegetationClear.world_rows(get_tree())
-	var signature := "%s|%s|%s|%s|%s|%s|%s|%s" % [[species.tag, species.mesh, species.variation(), species.visibility_end_m, species.cast_shadow], radius_m, count, seed, quality.density_scale, global_transform, clears, quality.shadows]
+	var signature := (
+		"%s|%s|%s|%s|%s|%s|%s|%s"
+		% [
+			[
+				species.tag,
+				species.mesh,
+				species.variation(),
+				species.visibility_end_m,
+				species.cast_shadow
+			],
+			radius_m,
+			count,
+			seed,
+			quality.density_scale,
+			global_transform,
+			clears,
+			quality.shadows
+		]
+	)
 	if signature == _signature and _multimesh:
 		return
 	_clear_multimesh()
@@ -108,7 +128,21 @@ func _plant() -> void:
 		get_tree().create_timer(0.5).timeout.connect(_queue)
 		return
 	var mesh := FloraMaterial.mesh_for(species.mesh)
-	var buffer := PatchPlanner.plan(species, seed, count, radius_m, global_transform, surface, MeshPlanter.map_transform_of(surface), quality.density_scale, clears) if mesh else PackedFloat32Array()
+	var buffer := (
+		PatchPlanner.plan(
+			species,
+			seed,
+			count,
+			radius_m,
+			global_transform,
+			surface,
+			MeshPlanter.map_transform_of(surface),
+			quality.density_scale,
+			clears
+		)
+		if mesh
+		else PackedFloat32Array()
+	)
 	if buffer.is_empty():
 		return
 	_signature = signature
@@ -116,7 +150,9 @@ func _plant() -> void:
 	var end_m := config.radius_m * quality.radius_scale
 	end_m = minf(species.visibility_end_m, end_m) if species.visibility_end_m > 0.0 else end_m
 	var shadows := species.cast_shadow and quality.shadows
-	_multimesh = PatchPlanner.instance(mesh, buffer, FloraMaterial.for_mesh(mesh, end_m, config.fade_m), shadows, end_m + radius_m)
+	_multimesh = PatchPlanner.instance(
+		mesh, buffer, FloraMaterial.for_mesh(mesh, end_m, config.fade_m), shadows, end_m + radius_m
+	)
 	add_child(_multimesh, false, Node.INTERNAL_MODE_BACK)
 	_multimesh.global_transform = Transform3D.IDENTITY
 
@@ -147,4 +183,8 @@ func _show_circle() -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if species != null else PackedStringArray(["Falta la especie (VegetationSpecies)."])
+	return (
+		PackedStringArray()
+		if species != null
+		else PackedStringArray(["The species is missing (VegetationSpecies)."])
+	)

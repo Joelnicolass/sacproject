@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
-[ext_resource type="Resource" path="res://data/buildings/persephone_leaf_wheel.tres" id="2_type"]
+[ext_resource type="Resource" path="res://gods/persephone/buildings/persephone_leaf_wheel.tres" id="2_type"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcb1.res" id="mesh_pcb1"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcb2.res" id="mesh_pcb2"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/pcb3.res" id="mesh_pcb3"]

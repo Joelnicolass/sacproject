@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AfflictionType" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/units/afflictions/affliction_type.gd" id="1_type"]
+
+[resource]
+script = ExtResource("1_type")
+id = &"vined"
+bit = 8
+holds = false
+immobilizes = false
+drops_fliers = false
+breaks_special_modes = false
+damage_factor = 1.0
+pins = true
+blocks_regeneration = true
+cc_protects = true
+cancels = Array[StringName]([])
+coexists = true
+has_look = false

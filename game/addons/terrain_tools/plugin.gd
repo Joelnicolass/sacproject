@@ -17,7 +17,7 @@ const Toolbar := preload("res://addons/terrain_tools/brush/brush_toolbar.gd")
 const BrushPainter := preload("res://addons/terrain_tools/brush/brush_painter.gd")
 const EditorDialogs := preload("res://addons/terrain_tools/editor_dialogs.gd")
 const NewMapAction := preload("res://addons/terrain_tools/new_map/new_map_action.gd")
-const NEW_MAP_ITEM := "Mapa nuevo…"
+const NEW_MAP_ITEM := "New map…"
 
 var _importer: EditorImportPlugin
 var _history: TerrainHistory
@@ -78,16 +78,16 @@ func _forward_3d_gui_input(camera: Camera3D, event: InputEvent) -> int:
 	return AFTER_GUI_INPUT_STOP if _painter.input(camera, event) else AFTER_GUI_INPUT_PASS
 
 
-## Ctrl+S: every picture the brushes or «Aplanar bases» changed is written (heights.png and void.png, ...).
+## Ctrl+S: every picture the brushes or «Flatten bases» changed is written (heights.png and void.png, ...).
 func _save_external_data() -> void:
 	var errors := _history.save()
 	if not errors.is_empty():
-		EditorDialogs.say("Terreno: no se pudo guardar", errors)
+		EditorDialogs.say("Terrain: could not save", errors)
 
 
 ## Closing the editor with heights not yet written asks first.
 func _get_unsaved_status(for_scene: String) -> String:
-	return "Hay cambios del mapa sin guardar (alturas, roles o flora)." if for_scene.is_empty() and _history.has_unsaved() else ""
+	return "The map has unsaved changes (heights, roles or flora)." if for_scene.is_empty() and _history.has_unsaved() else ""
 
 
 ## A void.png came in or changed: the heights.png beside it imports again, unless it already did in the same batch.
@@ -104,7 +104,7 @@ func _on_resources_reimported(resources: PackedStringArray) -> void:
 		EditorInterface.get_resource_filesystem().reimport_files.call_deferred(stale)
 
 
-## Project → Tools → «Mapa nuevo…»: a map folder made from scenes/map/maps/_template/ (NewMapAction).
+## Project → Tools → «New map…»: a map folder made from scenes/map/maps/_template/ (NewMapAction).
 func _add_new_map_item() -> void:
 	_new_map = NewMapAction.new(TerrainActions.new(_history))
 	add_tool_menu_item(NEW_MAP_ITEM, _new_map.open)

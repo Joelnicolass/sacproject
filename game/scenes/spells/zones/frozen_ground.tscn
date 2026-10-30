@@ -1,23 +1,23 @@
 [gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/zorf.tres" id="2_spell"]
+[ext_resource type="Resource" path="res://spells/frozen_ground/frozen_ground.tres" id="2_spell"]
 [ext_resource type="Script" path="res://scenes/spells/zones/snowball_flight.gd" id="3_flight"]
-[ext_resource type="Resource" path="res://data/fx/snowball_trail.tres" id="4_trail"]
-[ext_resource type="Resource" path="res://data/fx/snowball_burst.tres" id="5_burst"]
-[ext_resource type="Resource" path="res://data/fx/snowball_burst2.tres" id="6_burst2"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/snowball_trail.tres" id="4_trail"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/snowball_burst.tres" id="5_burst"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/snowball_burst2.tres" id="6_burst2"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="7_ptype"]
 [ext_resource type="Script" path="res://scenes/spells/zones/ice_patch.gd" id="8_patch"]
 [ext_resource type="Shader" path="res://scenes/spells/zones/ice_ground.gdshader" id="9_shader"]
 [ext_resource type="Texture2D" path="res://assets/original/fx/icec.png" id="10_ice"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_freeze.gd" id="11_freeze"]
-[ext_resource type="Resource" path="res://data/catalog/spells/zerf.tres" id="12_zerf"]
+[ext_resource type="Resource" path="res://spells/freeze/freeze.tres" id="12_zerf"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_shatter.gd" id="13_shatter"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/ice_shatter.tscn" id="14_shards"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/zone_sound.tscn" id="15_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
-[ext_resource type="Resource" path="res://data/audio/cues/frozen_ground_cast.tres" id="cue_frozen_ground_cast"]
-[ext_resource type="Resource" path="res://data/audio/cues/frozen_ground_hit.tres" id="cue_frozen_ground_hit"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/frozen_ground_cast.tres" id="cue_frozen_ground_cast"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/frozen_ground_hit.tres" id="cue_frozen_ground_hit"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/sbll.res" id="mesh_sbll"]
 
 [sub_resource type="ShaderMaterial" id="Mat_ice"]
@@ -25,7 +25,7 @@ shader = ExtResource("9_shader")
 shader_parameter/ice = ExtResource("10_ice")
 
 [node name="FrozenGround" type="Node3D"]
-editor_description = "Frozen Ground (zorf): la bola de nieve crece junto al mago, vuela 2 s y cae; el hielo crece 0,5 s hasta 15 m y congela (con los numeros de Freeze) a cada no aliado en tierra, una vez; dura lo que dice el hechizo (30 s; sacengine fuerza 15) y se rompe en 6 pasos del centro hacia afuera haciendo 800 una vez a cada uno. Las duraciones salen del SPEL; solo `end_s` y `grow_s` son de la escena."
+editor_description = "Frozen Ground (zorf): la bola de nieve crece junto al mago, vuela 2 s y cae; el hielo crece 0,5 s hasta 15 m y congela (con los numeros de Freeze) a cada no aliado en tierra, una vez; dura lo que dice el hechizo (30 s; el original fuerza 15) y se rompe en 6 pasos del centro hacia afuera haciendo 800 una vez a cada uno. Las duraciones salen del SPEL; solo `end_s` y `grow_s` son de la escena."
 script = ExtResource("1_zone")
 spell = ExtResource("2_spell")
 hold_is_spell_duration = true

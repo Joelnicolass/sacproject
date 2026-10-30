@@ -1,11 +1,12 @@
 class_name ChaseState
 extends UnitState
 
-## CHASE: toward the attack target; starts the swing or the shot of the first weapon that can when in range. Without an order it gives up
-## beyond the sight range.
-## F376 (RFC-053 053g): a chase that does not move (turning in place, held by the avoidance, under a flier it cannot reach)
-## shows the rest clip instead of `run` on the spot once its flat speed stays under `still_speed` for `still_after_s`. Only the
-## clip: measured on every peer from the body's real displacement, the simulation never reads it.
+## CHASE: toward the attack target; starts the swing or the shot of the first weapon that can when
+## in range. Without an order it gives up beyond the sight range. A chase that does not move
+## (turning in place, held by the avoidance, under a flier it cannot reach) shows the rest clip
+## instead of `run` on the spot once its flat speed stays under `still_speed` for `still_after_s`.
+## Only the clip: measured on every peer from the body's real displacement, the simulation never
+## reads it.
 
 ## Below this flat speed (m/s) the chase is standing.
 @export var still_speed := 0.1
@@ -25,12 +26,16 @@ func enter() -> void:
 
 func physics_update(delta: float) -> void:
 	var foe := body.target
-	if not body.engagement.accepts_target(foe) or (not body.ordered and body.locomotion.flat_distance(foe) > body.vision.range_m()):
+	if (
+		not body.engagement.accepts_target(foe)
+		or (not body.ordered and body.locomotion.flat_distance(foe) > body.vision.range_m())
+	):
 		body.target = null
 		transition(&"Idle")
 		return
-	## The first weapon (in priority order) that wants this foe: it asks to walk on, to hold and turn, or it starts. A weapon that wants
-	## the foe but is out of range keeps the body walking: a weaker weapon does not take over.
+	# The first weapon (in priority order) that wants this foe: it asks to walk on, to hold and
+	# turn, or it starts. A weapon that wants the foe but is out of range keeps the body walking: a
+	# weaker weapon does not take over.
 	for weapon: Weapon in body.weapons.ordered():
 		if not weapon.wants(foe):
 			continue
@@ -63,7 +68,8 @@ func clip_role() -> String:
 	return "idle" if _still_ticks > MatchClock.ticks_for(still_after_s) else "run"
 
 
-## Once per physics frame: how long the body has stood (its flat displacement since the last frame under still_speed).
+## Once per physics frame: how long the body has stood (its flat displacement since the last frame
+## under still_speed).
 func _watch_pace() -> void:
 	var frame := Engine.get_physics_frames()
 	if frame == _seen_frame:
@@ -71,7 +77,11 @@ func _watch_pace() -> void:
 	var at := body.global_position
 	if _seen_frame >= 0:
 		var frames := maxi(1, frame - _seen_frame)
-		var speed := Vector2(at.x - _last_position.x, at.z - _last_position.z).length() * MatchClock.TICKS_PER_SECOND_F / frames
+		var speed := (
+			Vector2(at.x - _last_position.x, at.z - _last_position.z).length()
+			* MatchClock.TICKS_PER_SECOND_F
+			/ frames
+		)
 		_still_ticks = _still_ticks + frames if speed < still_speed else 0
 	_seen_frame = frame
 	_last_position = at

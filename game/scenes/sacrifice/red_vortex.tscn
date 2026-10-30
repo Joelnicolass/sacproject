@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/sacrifice/red_vortex.gd" id="1_vortex"]
-[ext_resource type="Resource" path="res://data/fx/red_vortex.tres" id="2_effect"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/red_vortex.tres" id="2_effect"]
 [ext_resource type="PackedScene" path="res://scenes/fx/portal_disc.tscn" id="3_disc"]
-[ext_resource type="Resource" path="res://data/fx/portal_red.tres" id="4_look"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/portal_red.tres" id="4_look"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
 
 [node name="RedVortex" type="Node3D" node_paths=PackedStringArray("disc")]

@@ -1,21 +1,23 @@
-[gd_scene load_steps=17 format=3 uid="uid://bootsacrifice01"]
+[gd_scene load_steps=19 format=3 uid="uid://bootsacrifice01"]
 
 [ext_resource type="Script" path="res://scenes/core/boot.gd" id="1_boot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_select/character_select.tscn" id="2_select"]
-[ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="3_rules"]
 [ext_resource type="PackedScene" path="res://scenes/ui/options/options_menu.tscn" id="4_options"]
 [ext_resource type="Script" path="res://scenes/ui/options/graphics_applier.gd" id="5_applier"]
-[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="6_prefs"]
-[ext_resource type="Resource" path="res://data/ui/gameplay_prefs.tres" id="7_gameplay"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="6_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/gameplay_prefs.tres" id="7_gameplay"]
 [ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="8_map_picker"]
 [ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="9_mode_picker"]
 [ext_resource type="Script" path="res://scenes/ui/ai_picker/ai_god_picker.gd" id="10_god_picker"]
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="11_music"]
 [ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="12_biome_picker"]
 [ext_resource type="Script" path="res://scenes/ui/options/ui_scale_applier.gd" id="13_ui_applier"]
-[ext_resource type="Resource" path="res://data/ui/ui_scale.tres" id="14_ui_scale"]
-[ext_resource type="Resource" path="res://data/audio/music/menu.tres" id="a055_menu_music"]
+[ext_resource type="Resource" path="res://scenes/ui/ui_scale.tres" id="14_ui_scale"]
+[ext_resource type="Resource" path="res://scenes/audio/music/menu.tres" id="a055_menu_music"]
 
+[ext_resource type="Script" path="res://scenes/ui/sky_picker/hour_picker.gd" id="sky_hour_picker"]
+[ext_resource type="PackedScene" path="res://scenes/ui/sky_picker/weather_picker.tscn" id="sky_weather_picker"]
 [node name="Boot" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -94,6 +96,22 @@ unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("12_biome_picker")
 
+[node name="Hour" type="OptionButton" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("sky_hour_picker")
+
+[node name="Weather" parent="Column" instance=ExtResource("sky_weather_picker")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Forest" type="CheckBox" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "UI_FOREST_TIP"
+button_pressed = true
+text = "UI_FOREST"
+
 [node name="Solo" type="Button" parent="Column"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -152,6 +170,6 @@ script = ExtResource("13_ui_applier")
 prefs = ExtResource("14_ui_scale")
 
 [node name="MusicDirector" parent="." instance=ExtResource("11_music")]
-editor_description = "RFC-052 052f: la música del menú (data/audio/music/menu.tres), siempre en calma. Sin audio no crea nada."
+editor_description = "La música del menú (scenes/audio/music/menu.tres), siempre en calma. Sin audio no crea nada."
 music = ExtResource("a055_menu_music")
 menu = true

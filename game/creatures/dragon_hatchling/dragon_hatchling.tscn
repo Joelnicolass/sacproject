@@ -1,0 +1,48 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/bodies/body_frame.gd" id="1_frame"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_ground"]
+radius = 0.66195
+height = 1.471
+
+[sub_resource type="CylinderShape3D" id="Cylinder_footprint"]
+height = 1.471
+radius = 0.854
+
+[node name="DragonHatchling" type="Node3D" node_paths=PackedStringArray("capsule", "footprint", "reach", "center", "top", "look")]
+script = ExtResource("1_frame")
+model_id = "baby"
+capsule = NodePath("Bounds/Capsule")
+footprint = NodePath("Bounds/Footprint")
+reach = NodePath("Sockets/Reach")
+center = NodePath("Sockets/Center")
+top = NodePath("Sockets/Top")
+look = NodePath("Look")
+
+[node name="Bounds" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="Capsule" type="CollisionShape3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.7355, 0.0)
+shape = SubResource("Capsule_ground")
+
+[node name="Footprint" type="CollisionShape3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.7355, 0.0)
+shape = SubResource("Cylinder_footprint")
+
+[node name="Sockets" type="Node3D" parent="."]
+
+[node name="Reach" type="Marker3D" parent="Sockets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 1.403)
+
+[node name="Center" type="Marker3D" parent="Sockets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.7355, 0.0)
+
+[node name="Top" type="Marker3D" parent="Sockets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.471, 0.0)
+
+[node name="Look" parent="." instance_placeholder="res://creatures/dragon_hatchling/dragon_hatchling_look.tscn"]

@@ -1,11 +1,15 @@
 class_name HandFx
 extends Node
 
-## The casting particle of a wizard, played at its hands while it casts. The hand points come from the BodyRig: the sockets of the
-## model (HandL, HandR: BoneAttachment3D nodes placed in the editor) that the clip shows. A body with none gets the burst at its Center.
-## The Caster says which particle shows (`cast_changed`, from its replicated `cast_fx_shown`); this node only draws it, on every peer. It is
-## presentation: nothing here reads or writes the simulation, and a dedicated server (no meshes) plays nothing.
-## Ref: RFC-023 (023d), sacengine animateCasting (state.d:16165-16195).
+## The casting particle of a wizard, played at its hands while it casts. The hand points come from
+## the BodyRig: the sockets of the model (HandL, HandR: BoneAttachment3D nodes placed in the editor)
+## that the clip shows. A body with none gets the burst at its Center. The Caster says which
+## particle shows (`cast_changed`, from its replicated `cast_fx_shown`); this node only draws it, on
+## every peer. It is presentation: nothing here reads or writes the simulation, and a dedicated
+## server (no meshes) plays nothing.
+
+## Seconds the pose may take to arrive before the burst goes to the fallback point.
+const POSE_WAIT_S := 0.3
 
 ## Emits `cast_changed(casting, fx)`; `cast_fx()` is the particle showing now.
 @export var caster: Caster
@@ -13,10 +17,10 @@ extends Node
 @export var rig: BodyRig
 ## Seconds between two bursts while the cast lasts (the first one is at once).
 @export_range(0.05, 2.0, 0.05) var interval_s := 0.5
-## Seconds the pose may take to arrive before the burst goes to the fallback point.
-const POSE_WAIT_S := 0.3
 
 var _type: ParticleType
+## The god's cast light, for a cast with no particle (GodType.cast_light).
+var _light: FxLightSpec
 var _left := 0.0
 var _waited := 0.0
 
@@ -30,7 +34,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _type == null:
+	if _type == null and _light == null:
 		return
 	_left -= delta
 	if _left > 0.0:
@@ -41,15 +45,17 @@ func _process(delta: float) -> void:
 		_waited = 0.0
 
 
-func _on_cast_changed(_casting: bool, fx: ParticleType) -> void:
+func _on_cast_changed(casting: bool, fx: ParticleType) -> void:
 	_type = fx
+	_light = _god_light() if casting and fx == null else null
 	_left = 0.0
 	_waited = 0.0
-	set_process(fx != null)
+	set_process(fx != null or _light != null)
 
 
-## true when something played. A skeletal wizard whose spellcast pose has not arrived yet (the body is still blending in from
-## the rest pose, which has no hands) waits for it instead of playing at the center.
+## true when something played. A skeletal wizard whose spellcast pose has not arrived yet (the body
+## is still blending in from the rest pose, which has no hands) waits for it instead of playing at
+## the center.
 func _burst() -> bool:
 	var points := rig.hand_points() if rig != null else PackedVector3Array()
 	if points.is_empty():
@@ -60,5 +66,13 @@ func _burst() -> bool:
 			return false
 		points.append(BodyFacts.point(body, BodyFacts.Socket.CENTER))
 	for point in points:
-		FxBus.puff(_type, point)
+		if _type != null:
+			FxBus.puff(_type, point)
+		else:
+			_light.light_up(get_tree(), self, point)
 	return true
+
+
+func _god_light() -> FxLightSpec:
+	var wizard := caster.wizard if caster != null else null
+	return wizard.god_type.cast_light if wizard != null and wizard.god_type != null else null

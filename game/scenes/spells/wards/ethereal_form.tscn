@@ -2,15 +2,15 @@
 
 [ext_resource type="Script" path="res://scenes/spells/wards/ward.gd" id="1_ward"]
 [ext_resource type="Script" path="res://scenes/spells/wards/ward_emitter.gd" id="2_emitter"]
-[ext_resource type="Resource" path="res://data/catalog/spells/mrfe.tres" id="4_spell"]
-[ext_resource type="Resource" path="res://data/fx/wards/ethereal_ghost.tres" id="5_ghost"]
-[ext_resource type="Resource" path="res://data/fx/wards/ethereal_spark.tres" id="6_spark"]
-[ext_resource type="Resource" path="res://data/fx/wards/ethereal_spark_cst0.tres" id="7_spark_cst0"]
-[ext_resource type="Resource" path="res://data/fx/wards/ethereal_hand.tres" id="8_cast"]
+[ext_resource type="Resource" path="res://spells/ethereal_form/ethereal_form.tres" id="4_spell"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/ethereal_ghost.tres" id="5_ghost"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/ethereal_spark.tres" id="6_spark"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/ethereal_cast_spark.tres" id="7_cast_spark"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/wards/ethereal_hand.tres" id="8_cast"]
 [ext_resource type="PackedScene" path="res://scenes/spells/wards/ward_sound.tscn" id="9_sound"]
 [ext_resource type="PackedScene" path="res://scenes/look/lights/state_light.tscn" id="glow_state_light"]
-[ext_resource type="Resource" path="res://data/audio/cues/ward_ethereal_start.tres" id="cue_ward_ethereal_start"]
-[ext_resource type="Resource" path="res://data/audio/cues/ward_ethereal_zap.tres" id="cue_ward_ethereal_zap"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_ethereal_start.tres" id="cue_ward_ethereal_start"]
+[ext_resource type="Resource" path="res://scenes/audio/cues/ward_ethereal_zap.tres" id="cue_ward_ethereal_zap"]
 
 [node name="EtherealForm" type="Node3D"]
 script = ExtResource("1_ward")
@@ -32,7 +32,7 @@ on_surface = false
 linger_s = 0.5
 
 [node name="Sparks" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
-editor_description = "Chispas al prender: sprk, el valor por defecto de la rutina comun de chispas del exe (EtherealFormRun la llama; el SPEL efrm no trae tSPK). NO VERIFICADO que sea la rafaga de entrada: la alternativa es SparksCst0 (cst0, lo de sacengine); prender una y apagar la otra con `enabled`."
+editor_description = "Chispas al prender: sprk, el valor por defecto de la rutina comun de chispas del exe (EtherealFormRun la llama; el SPEL efrm no trae tSPK). NO VERIFICADO que sea la rafaga de entrada: la alternativa es SparksCst0 (cst0); prender una y apagar la otra con `enabled`."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
 use_fixed_seed = true
 local_coords = false
@@ -44,12 +44,12 @@ half_axes_m = Vector3(0.93, 1.38, 0.93)
 on_surface = false
 
 [node name="SparksCst0" type="CPUParticles3D" parent="." node_paths=PackedStringArray("ward")]
-editor_description = "Alternativa de sacengine a Sparks (etherealFormSpark: cst0). Apagada por defecto: enabled = true aca y false en Sparks para compararlas."
+editor_description = "Alternativa a Sparks (cst0). Apagada por defecto: enabled = true aca y false en Sparks para compararlas."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0)
 use_fixed_seed = true
 local_coords = false
 script = ExtResource("2_emitter")
-type = ExtResource("7_spark_cst0")
+type = ExtResource("7_cast_spark")
 ward = NodePath("..")
 when = 1
 enabled = false
@@ -61,7 +61,7 @@ cue = ExtResource("cue_ward_ethereal_start")
 ward = NodePath("..")
 
 [node name="SoundZap" parent="." node_paths=PackedStringArray("ward") instance=ExtResource("9_sound")]
-editor_description = "El sonido tipo rayo (ltn1-6, ganancia 2) que sacengine suena al prender. El SPEL efrm no lo lista (solo winv): NO VERIFICADO."
+editor_description = "El sonido tipo rayo (ltn1-6, ganancia 2) que el original suena al prender. El SPEL efrm no lo lista (solo winv): NO VERIFICADO."
 cue = ExtResource("cue_ward_ethereal_zap")
 ward = NodePath("..")
 

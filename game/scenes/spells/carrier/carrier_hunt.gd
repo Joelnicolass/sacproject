@@ -2,12 +2,13 @@
 class_name CarrierHunt
 extends Node
 
-## The hunt of Death for its SpellCarrier. While the wizard casts it only stands there (the look rises out of the land); when the casting ends it
-## looks for the closest creature of any side that is not a wizard, turns to it, walks to it, strikes (`arrived` at the blow, TargetEffect does the
-## killing) and goes on to the next, until it has struck `SpellType.max_targets` of them or the spell's duration is over; then it leaves. Each tick it
-## looks again, so it changes its mind if something comes closer. It does not kill (TargetEffect) and it does not draw (the look follows `phase`:
-## CASTING, FLYING = walking, STRIKING, LEAVING). Server (or solo) only.
-## Ref: sacengine updateDeath, Death (state.d:4262-4298, 22153-22274).
+## The hunt of Death for its SpellCarrier. While the wizard casts it only stands there (the look
+## rises out of the land); when the casting ends it looks for the closest creature of any side that
+## is not a wizard, turns to it, walks to it, strikes (`arrived` at the blow, TargetEffect does the
+## killing) and goes on to the next, until it has struck `SpellType.max_targets` of them or the
+## spell's duration is over; then it leaves. Each tick it looks again, so it changes its mind if
+## something comes closer. It does not kill (TargetEffect) and it does not draw (the look follows
+## `phase`: CASTING, FLYING = walking, STRIKING, LEAVING). Server (or solo) only.
 
 @export var carrier: SpellCarrier
 @export var groups: Array[StringName] = [&"unit"]
@@ -15,7 +16,8 @@ extends Node
 @export_range(1.0, 30.0, 0.5, "suffix:m") var height_m := 12.0
 @export_range(0.1, 12.0, 0.1, "suffix:rad/s") var turn_rate := PI
 @export_group("Reach")
-## It stops walking nearer than the prey's size plus `move_radius_m`, strikes within `attack_radius_m`, and the blow lands within `hit_radius_m`.
+## It stops walking nearer than the prey's size plus `move_radius_m`, strikes within
+## `attack_radius_m`, and the blow lands within `hit_radius_m`.
 @export_range(0.0, 10.0, 0.1, "suffix:m") var move_radius_m := 2.0
 @export_range(0.0, 10.0, 0.1, "suffix:m") var attack_radius_m := 4.0
 @export_range(0.0, 20.0, 0.1, "suffix:m") var hit_radius_m := 6.0
@@ -35,11 +37,21 @@ var _lifetime := 0
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if carrier != null else PackedStringArray(["Falta el SpellCarrier."])
+	return (
+		PackedStringArray()
+		if carrier != null
+		else PackedStringArray(["The SpellCarrier is missing."])
+	)
 
-## Server or solo. The cast started: it appears where it is and looks where the wizard looks, for `cast_ticks`.
+
+## Server or solo. The cast started: it appears where it is and looks where the wizard looks, for
+## `cast_ticks`.
 func begin(wizard: Node3D, cast_ticks: int) -> void:
-	_lifetime = MatchClock.ticks_for(carrier.spell.duration_s) + cast_ticks if carrier.spell != null else cast_ticks
+	_lifetime = (
+		MatchClock.ticks_for(carrier.spell.duration_s) + cast_ticks
+		if carrier.spell != null
+		else cast_ticks
+	)
 	carrier.phase = SpellCarrier.Phase.CASTING
 	carrier.rotation.y = wizard.rotation.y
 
@@ -72,7 +84,9 @@ func _hunt() -> void:
 		var size := prey.global_transform.basis.get_scale().length()
 		var angle := wrapf(atan2(to.x, to.z) - carrier.rotation.y, -PI, PI)
 		if not still:
-			carrier.rotation.y += signf(angle) * minf(absf(angle), turn_rate / MatchClock.TICKS_PER_SECOND_F)
+			carrier.rotation.y += (
+				signf(angle) * minf(absf(angle), turn_rate / MatchClock.TICKS_PER_SECOND_F)
+			)
 			_pausing = _pausing and absf(angle) >= TAU / 16.0
 		ready = to.length() < size + attack_radius_m
 		able = to.length() < size + hit_radius_m
@@ -130,7 +144,9 @@ func _over() -> bool:
 ## It walks over the land, never under it.
 func _walk(step: Vector3) -> void:
 	var at := carrier.global_position + step
-	var ground := GroundRay.surface_y(carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), NAN)
+	var ground := GroundRay.surface_y(
+		carrier, at, carrier.ground_mask, GroundRay.wizard_rids(get_tree()), NAN
+	)
 	carrier.global_position = at if is_nan(ground) else Vector3(at.x, maxf(at.y, ground), at.z)
 
 
@@ -141,7 +157,10 @@ func _closest() -> Node3D:
 	var best_d := INF
 	for group in groups:
 		for node in get_tree().get_nodes_in_group(group):
-			if not TargetRules.is_valid_foe_of(-1, node, null, false) or node.is_in_group(&"wizard"):
+			if (
+				not TargetRules.is_valid_foe_of(-1, node, null, false)
+				or node.is_in_group(WizardBody.GROUP)
+			):
 				continue
 			var d := from.distance_squared_to(BodyNudge.center(node as Node3D))
 			if d < best_d:

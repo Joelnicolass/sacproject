@@ -1,4 +1,4 @@
-"""High Noon's NTTS (creatures, structures, widgets) and SIDS (sides), RFC-024 addendum 1, cut 024b2.
+"""High Noon's NTTS (creatures, structures, widgets) and SIDS (sides).
 
 NTTS layout and sides follow sacengine `ntts.d` and `sids.d`:
   Structure (48 bytes) type=2: x y z facing(deg) tag[4] flags side unknown id base

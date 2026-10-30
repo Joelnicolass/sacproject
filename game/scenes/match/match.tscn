@@ -16,7 +16,7 @@
 [ext_resource type="Script" path="res://scenes/orders/command/minimap_pointing.gd" id="ef25_minimap_pointing"]
 [ext_resource type="Script" path="res://scenes/orders/command/armed_preview.gd" id="f388_armed_preview"]
 [ext_resource type="Script" uid="uid://nxbcgsgrjk48" path="res://scenes/camera/world_camera.gd" id="11_camera"]
-[ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://data/match_rules.tres" id="12_rules"]
+[ext_resource type="Resource" uid="uid://d1e2js08kea5i" path="res://scenes/match/match_rules.tres" id="12_rules"]
 [ext_resource type="Script" uid="uid://daosef86scnum" path="res://scenes/match/match_biome.gd" id="13_biome"]
 [ext_resource type="Script" path="res://scenes/net/biome_link.gd" id="b3_biome_link"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud/hud.tscn" id="14_hud"]
@@ -35,8 +35,11 @@
 [ext_resource type="PackedScene" path="res://scenes/structures/buildings/charnel_shrine.tscn" id="tw_casp"]
 [ext_resource type="PackedScene" path="res://scenes/units/unit.tscn" id="f25_unit"]
 [ext_resource type="Script" uid="uid://c3o4n6xmxkjph" path="res://scenes/units/unit_spawner.gd" id="f25_unit_spawner"]
-[ext_resource type="Script" uid="uid://dqkkafcm1xuke" path="res://scenes/orders/orders.gd" id="f27_orders"]
-[ext_resource type="Script" uid="uid://0e71ph1e726s" path="res://scenes/orders/selection.gd" id="f27_selection"]
+[ext_resource type="Script" path="res://addons/rts_kit/orders/rts_orders.gd" id="f27_orders"]
+[ext_resource type="Resource" path="res://scenes/orders/commands.tres" id="f27_commands"]
+[ext_resource type="Resource" path="res://scenes/orders/formations.tres" id="f27_formations"]
+[ext_resource type="Script" path="res://scenes/net/order_link.gd" id="f27_link"]
+[ext_resource type="Script" path="res://addons/rts_kit/selection/rts_selection.gd" id="f27_selection"]
 [ext_resource type="Script" uid="uid://dx4uvidfw53j2" path="res://scenes/units/attacks/shot_spawner.gd" id="f29_shots"]
 [ext_resource type="PackedScene" path="res://scenes/souls/soul_system.tscn" id="f30_souls"]
 [ext_resource type="PackedScene" path="res://scenes/match/match_state.tscn" id="f57_match"]
@@ -50,16 +53,16 @@
 [ext_resource type="PackedScene" path="res://scenes/ai/ai_side.tscn" id="f77_side"]
 [ext_resource type="PackedScene" path="res://scenes/ui/selection_roster/selection_roster.tscn" id="f79_roster"]
 [ext_resource type="PackedScene" path="res://scenes/ui/command_cue/command_cue.tscn" id="f80_cue"]
-[ext_resource type="Resource" path="res://data/ui/command_cues.tres" id="f80_cues"]
+[ext_resource type="Resource" path="res://scenes/ui/command_cues.tres" id="f80_cues"]
 [ext_resource type="Script" uid="uid://jpjghk5y24xa" path="res://scenes/orders/command_log.gd" id="f80_log"]
 [ext_resource type="Script" uid="uid://cotfg8ie2hi8r" path="res://scenes/ui/command_cue/target_probe.gd" id="f80_probe"]
 [ext_resource type="Script" uid="uid://d13o5g6y8tngx" path="res://scenes/ui/command_cue/cursor_skin.gd" id="f80_skin"]
 [ext_resource type="Script" uid="uid://3p0kv5ypwrnt" path="res://scenes/structures/structure_inspector.gd" id="f93_inspector"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu/pause_menu.tscn" id="f141_pause"]
 [ext_resource type="Script" uid="uid://c8tyaqoovx84y" path="res://scenes/ui/options/graphics_applier.gd" id="f142_applier"]
-[ext_resource type="Resource" path="res://data/ui/graphics_prefs.tres" id="f142_prefs"]
+[ext_resource type="Resource" path="res://scenes/ui/graphics_prefs.tres" id="f142_prefs"]
 [ext_resource type="Script" path="res://scenes/ui/options/ui_scale_applier.gd" id="h1_ui_applier"]
-[ext_resource type="Resource" path="res://data/ui/ui_scale.tres" id="h1_ui_scale"]
+[ext_resource type="Resource" path="res://scenes/ui/ui_scale.tres" id="h1_ui_scale"]
 [ext_resource type="PackedScene" path="res://scenes/units/attacks/droplet_rain.tscn" id="f148_rain"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_return.tscn" id="f183_return"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap.tscn" id="f213_minimap"]
@@ -69,7 +72,7 @@
 [ext_resource type="Script" path="res://scenes/audio/listener_focus.gd" id="a052_listener"]
 [ext_resource type="Script" path="res://scenes/audio/command_voice.gd" id="a052_command_voice"]
 [ext_resource type="PackedScene" path="res://scenes/audio/advisor/advisor.tscn" id="a055_advisor"]
-[ext_resource type="Resource" path="res://data/audio/music/common.tres" id="a055_common_music"]
+[ext_resource type="Resource" path="res://scenes/audio/music/common.tres" id="a055_common_music"]
 [ext_resource type="Script" path="res://scenes/audio/combat_gauge.gd" id="a052_gauge"]
 [ext_resource type="PackedScene" path="res://scenes/audio/music_director.tscn" id="a052_music"]
 [ext_resource type="PackedScene" path="res://scenes/audio/ambience_director.tscn" id="a052_ambience"]
@@ -97,66 +100,94 @@
 [ext_resource type="PackedScene" path="res://scenes/spells/stalks/meanstalks.tscn" id="z61_stalks"]
 [ext_resource type="PackedScene" path="res://scenes/spells/tornado/tornado.tscn" id="z61_tornado"]
 [ext_resource type="PackedScene" path="res://scenes/look/post/psx_screen.tscn" id="post_psx"]
+[ext_resource type="PackedScene" path="res://scenes/look/post/lens_screen.tscn" id="post_lens"]
 [ext_resource type="PackedScene" path="res://scenes/ui/match_wait/match_wait.tscn" id="g68_wait"]
 [ext_resource type="PackedScene" path="res://scenes/look/warmup/shader_warmup.tscn" id="w69_warmup"]
 [ext_resource type="Script" path="res://scenes/net/load_report.gd" id="w69_report"]
+[ext_resource type="Script" uid="uid://c2n2wauwc4p7w" path="res://scenes/match/match_clock.gd" id="q12_clock"]
+[ext_resource type="Script" uid="uid://bvekv0tj0x8rf" path="res://scenes/match/match_seed.gd" id="q12_seed"]
+[ext_resource type="Script" uid="uid://c14fmfa8dkqog" path="res://scenes/match/match_sky.gd" id="q12_sky"]
+[ext_resource type="Resource" path="res://scenes/look/atmosphere/default_day.tres" id="q13_default_day"]
+[ext_resource type="Script" uid="uid://bju6gwfi4b7v1" path="res://scenes/map/side_relations.gd" id="q12_sides"]
+[ext_resource type="Script" uid="uid://bq1r40x83hhlr" path="res://scenes/units/vision/vision_sides.gd" id="q13_vision"]
+[ext_resource type="Script" path="res://scenes/orders/command/spell_aim.gd" id="aim_script"]
+[ext_resource type="Texture2D" path="res://assets/custom/ui/aim_area.png" id="aim_area_tex"]
+[ext_resource type="Texture2D" path="res://assets/custom/ui/aim_range.png" id="aim_range_tex"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_clear"]
 bg_color = Color(1, 1, 1, 0)
 
 
-[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap")]
+[node name="Match" type="Node3D" unique_id=741096982 node_paths=PackedStringArray("minimap", "camera", "selection", "nav", "wizard_spawner", "population", "graphics_applier", "match_state", "map_parent", "clock", "match_seed", "sides")]
 script = ExtResource("1_world")
 rules = ExtResource("12_rules")
+clock = NodePath("Context/Clock")
+match_seed = NodePath("Context/Seed")
+sides = NodePath("Context/Sides")
+camera = NodePath("World/Camera")
+selection = NodePath("Input/Selection")
+nav = NodePath("Systems/Nav")
+wizard_spawner = NodePath("World/WizardSpawner")
+population = NodePath("World/Population")
+graphics_applier = NodePath("Systems/GraphicsApplier")
+match_state = NodePath("Systems/MatchState")
 minimap = NodePath("Hud/Minimap")
+map_parent = NodePath("World")
 
 
-[node name="LocalSeat" type="Node" parent="."]
-editor_description = "070 N6: quién mira esta pantalla. Un solo dueño: Selection, PointerRay, CommandFeedback, DamageNumbers, MatchResult, PauseMenu, MusicDirector y AdvisorWatch lo tienen por @export seat. Solo, preview_slot > 0 muestra la partida como ese asiento."
-script = ExtResource("n6_seat")
+[node name="Context" type="Node" parent="."]
+editor_description = "The state of this match that everybody reads (MatchClock.now(), MatchSeed.rng(), MatchSky, SideRelations.stance(), VisionSides.sees()). First child: it starts before the map and the bodies and leaves after them. Freed with the match, so nothing carries over to the next one."
 
-[node name="Camera" type="Camera3D" parent="." unique_id=1948599183 node_paths=PackedStringArray("edge_area", "wheel_blockers", "shake")]
+[node name="Clock" type="Node" parent="Context"]
+script = ExtResource("q12_clock")
+
+[node name="Seed" type="Node" parent="Context"]
+script = ExtResource("q12_seed")
+
+[node name="Sky" type="Node" parent="Context"]
+script = ExtResource("q12_sky")
+default_day = ExtResource("q13_default_day")
+
+[node name="Sides" type="Node" parent="Context"]
+script = ExtResource("q12_sides")
+
+[node name="Vision" type="Node" parent="Context"]
+script = ExtResource("q13_vision")
+
+[node name="World" type="Node3D" parent="."]
+editor_description = "What is in the 3D world: camera, map (MatchWorld adds it as the first child), bodies, spells, shots, structures and their spawners, the biome and the screen look."
+
+[node name="Camera" type="Camera3D" parent="World" unique_id=1948599183 node_paths=PackedStringArray("edge_area", "wheel_blockers", "shake")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.7, 0.7, 0, -0.7, 0.7, 0, 18, 18)
 far = 20000.0
 script = ExtResource("11_camera")
 process_priority = 15000
-edge_area = NodePath("../Hud/View")
-wheel_blockers = [NodePath("../Hud/Minimap")]
+edge_area = NodePath("../../Hud/View")
+wheel_blockers = [NodePath("../../Hud/Minimap")]
 shake = NodePath("CameraShake")
 
 
-[node name="CameraShake" parent="Camera" instance=ExtResource("f375_shake")]
+[node name="CameraShake" parent="World/Camera" instance=ExtResource("f375_shake")]
 
-[node name="WarmupStage" type="Marker3D" parent="Camera"]
+[node name="WarmupStage" type="Marker3D" parent="World/Camera"]
 process_mode = 3
 editor_description = "069: donde el precalentado dibuja cada malla y efecto una vez, frente a la cámara y tapado por la pantalla de carga. Siempre procesa: la puerta pausa el árbol mientras carga y una partícula quieta no se dibuja."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
 
-[node name="Warmup" parent="." node_paths=PackedStringArray("world", "biome", "stage") instance=ExtResource("w69_warmup")]
-world = NodePath("..")
-biome = NodePath("../MatchBiome")
-stage = NodePath("../Camera/WarmupStage")
-
-[node name="LoadReport" type="Node" parent="."]
-process_mode = 3
-editor_description = "069: le cuenta al flujo cuánto cargó este mundo (el avance del precalentado) y cuándo terminó: el «cargué» de este asiento para la puerta."
-script = ExtResource("w69_report")
-
-
-[node name="DamageNumbers" parent="." node_paths=PackedStringArray("camera", "seat") instance=ExtResource("f375_numbers")]
+[node name="DamageNumbers" parent="World" node_paths=PackedStringArray("camera", "seat") instance=ExtResource("f375_numbers")]
 camera = NodePath("../Camera")
-seat = NodePath("../LocalSeat")
+seat = NodePath("../../Systems/LocalSeat")
 
-[node name="SprayMarks" parent="." instance=ExtResource("b060_spray_marks")]
+[node name="SprayMarks" parent="World" instance=ExtResource("b060_spray_marks")]
 
 
-[node name="Wizards" type="Node3D" parent="." unique_id=322085300]
+[node name="Wizards" type="Node3D" parent="World" unique_id=322085300]
 unique_name_in_owner = true
 
 
-[node name="WizardSpawner" type="MultiplayerSpawner" parent="." unique_id=506358298]
+[node name="WizardSpawner" type="MultiplayerSpawner" parent="World" unique_id=506358298]
 spawn_path = NodePath("../Wizards")
 script = ExtResource("4_spawner")
 pawn_scene = ExtResource("5_wizard")
@@ -164,21 +195,23 @@ actor_name_prefix = "Wizard"
 despawn_on_leave = false
 
 
-[node name="MatchBiome" type="Node" parent="." unique_id=1771451217 node_paths=PackedStringArray("world")]
+[node name="MatchBiome" type="Node" parent="World" unique_id=1771451217 node_paths=PackedStringArray("world", "sky")]
 script = ExtResource("13_biome")
-world = NodePath("..")
+world = NodePath("../..")
+sky = NodePath("../../Context/Sky")
 
-[node name="BiomeLink" type="Node" parent="." node_paths=PackedStringArray("biome")]
-editor_description = "055i-b3: el canal de red «biome». El servidor manda el dios de la tierra y el reloj del cielo a cada cliente con el mundo listo; el cliente se los da a MatchBiome. Va debajo de MatchBiome (que sortea primero)."
+[node name="BiomeLink" type="Node" parent="World" node_paths=PackedStringArray("biome", "sky")]
+editor_description = "El canal de red «biome». El servidor manda el dios de la tierra y el reloj del cielo a cada cliente con el mundo listo; el cliente se los da a MatchBiome. Va debajo de MatchBiome (que sortea primero)."
 script = ExtResource("b3_biome_link")
 biome = NodePath("../MatchBiome")
+sky = NodePath("../../Context/Sky")
 
 
-[node name="Units" type="Node3D" parent="." unique_id=1921753883]
+[node name="Units" type="Node3D" parent="World" unique_id=1921753883]
 unique_name_in_owner = true
 
 
-[node name="UnitSpawner" type="MultiplayerSpawner" parent="." unique_id=928255093]
+[node name="UnitSpawner" type="MultiplayerSpawner" parent="World" unique_id=928255093]
 spawn_path = NodePath("../Units")
 script = ExtResource("f25_unit_spawner")
 unit_scene = ExtResource("f25_unit")
@@ -186,28 +219,28 @@ villager_scene = ExtResource("f73_villager")
 rules = ExtResource("12_rules")
 
 
-[node name="Population" type="Node3D" parent="." unique_id=820745689 node_paths=PackedStringArray("unit_spawner")]
+[node name="Population" type="Node3D" parent="World" unique_id=820745689 node_paths=PackedStringArray("unit_spawner")]
 unique_name_in_owner = true
 script = ExtResource("f73_population")
 spawn_creatures = true
 unit_spawner = NodePath("../UnitSpawner")
 
 
-[node name="Spells" type="Node3D" parent="." unique_id=99761749]
+[node name="Spells" type="Node3D" parent="World" unique_id=99761749]
 unique_name_in_owner = true
 
 
-[node name="Structures" type="Node3D" parent="." unique_id=771314657]
+[node name="Structures" type="Node3D" parent="World" unique_id=771314657]
 unique_name_in_owner = true
 
 
-[node name="StructureSpawner" type="MultiplayerSpawner" parent="." unique_id=687306311]
+[node name="StructureSpawner" type="MultiplayerSpawner" parent="World" unique_id=687306311]
 spawn_path = NodePath("../Structures")
 script = ExtResource("17_structure_spawner")
 scenes = Array[PackedScene]([ExtResource("tw_mana"), ExtResource("tw_pyma"), ExtResource("tw_jman"), ExtResource("tw_stam"), ExtResource("tw_cama"), ExtResource("tw_pcsh"), ExtResource("tw_pasp"), ExtResource("tw_jsac"), ExtResource("tw_stsp"), ExtResource("tw_casp")])
 
 
-[node name="SpellSpawner" type="MultiplayerSpawner" parent="." unique_id=1184984889]
+[node name="SpellSpawner" type="MultiplayerSpawner" parent="World" unique_id=1184984889]
 spawn_path = NodePath("../Spells")
 script = ExtResource("16_spawner")
 zones = Dictionary[String, PackedScene]({
@@ -232,52 +265,114 @@ zones = Dictionary[String, PackedScene]({
 })
 
 
-[node name="DropletRain" parent="." unique_id=1480148148 instance=ExtResource("f148_rain")]
+[node name="DropletRain" parent="World" unique_id=1480148148 instance=ExtResource("f148_rain")]
 
 
-[node name="Shots" type="Node3D" parent="." unique_id=529699962]
+[node name="Shots" type="Node3D" parent="World" unique_id=529699962]
 unique_name_in_owner = true
 
 
-[node name="ShotSpawner" type="MultiplayerSpawner" parent="." unique_id=2135793793]
+[node name="ShotSpawner" type="MultiplayerSpawner" parent="World" unique_id=2135793793]
 spawn_path = NodePath("../Shots")
 script = ExtResource("f29_shots")
 
 
-[node name="SoulSystem" parent="." unique_id=277566274 node_paths=PackedStringArray("world") instance=ExtResource("f30_souls")]
-world = NodePath("..")
-
-
-[node name="SacrificeSystem" parent="." unique_id=956844796 node_paths=PackedStringArray("world") instance=ExtResource("f59_sacrifice")]
+[node name="Ping" parent="World" unique_id=1292527434 instance=ExtResource("f220_marker")]
 unique_name_in_owner = true
-world = NodePath("..")
 
 
-[node name="Match" parent="." unique_id=1957000101 node_paths=PackedStringArray("world", "wizards") instance=ExtResource("f57_match")]
+[node name="PostFx" parent="World" instance=ExtResource("post_psx")]
+visible = false
+
+[node name="LensFx" parent="World" instance=ExtResource("post_lens")]
+
+[node name="Systems" type="Node" parent="."]
+editor_description = "Match rules and services with no body: local seat, warm-up, souls, sacrifices, result, navigation, AI and the option appliers."
+
+[node name="LocalSeat" type="Node" parent="Systems"]
+editor_description = "070 N6: quién mira esta pantalla. Un solo dueño: OrderLink (lo pasa a la selección), PointerRay, CommandFeedback, DamageNumbers, MatchResult, PauseMenu, MusicDirector y AdvisorWatch lo tienen por @export seat. Solo, preview_slot > 0 muestra la partida como ese asiento."
+script = ExtResource("n6_seat")
+
+[node name="Warmup" parent="Systems" node_paths=PackedStringArray("world", "biome", "stage") instance=ExtResource("w69_warmup")]
+world = NodePath("../..")
+biome = NodePath("../../World/MatchBiome")
+stage = NodePath("../../World/Camera/WarmupStage")
+
+[node name="LoadReport" type="Node" parent="Systems"]
+process_mode = 3
+editor_description = "069: le cuenta al flujo cuánto cargó este mundo (el avance del precalentado) y cuándo terminó: el «cargué» de este asiento para la puerta."
+script = ExtResource("w69_report")
+
+
+[node name="SoulSystem" parent="Systems" unique_id=277566274 node_paths=PackedStringArray("world") instance=ExtResource("f30_souls")]
+world = NodePath("../..")
+
+
+[node name="SacrificeSystem" parent="Systems" unique_id=956844796 node_paths=PackedStringArray("world") instance=ExtResource("f59_sacrifice")]
 unique_name_in_owner = true
-world = NodePath("..")
-wizards = NodePath("../Wizards")
+world = NodePath("../..")
 
 
-[node name="Nav" type="Node" parent="." unique_id=1324434439 node_paths=PackedStringArray("structures")]
+[node name="MatchState" parent="Systems" unique_id=1957000101 node_paths=PackedStringArray("world", "wizards") instance=ExtResource("f57_match")]
+unique_name_in_owner = true
+world = NodePath("../..")
+wizards = NodePath("../../World/Wizards")
+
+
+[node name="Nav" type="Node" parent="Systems" unique_id=1324434439 node_paths=PackedStringArray("structures")]
 unique_name_in_owner = true
 script = ExtResource("f72_nav")
-structures = NodePath("../Structures")
+structures = NodePath("../../World/Structures")
 
 
-[node name="Selection" type="Node" parent="." unique_id=1294781756 node_paths=PackedStringArray("box", "seat")]
+[node name="AiRoster" type="Node" parent="Systems" unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]
+unique_name_in_owner = true
+editor_description = "Arma los asientos IA (MatchRules.ai_seats o SacrificeFlow.solo_ai_seats) solo en solo o en el servidor. Sin asientos no hace nada."
+script = ExtResource("f77_roster")
+world = NodePath("../..")
+wizard_spawner = NodePath("../../World/WizardSpawner")
+side_scene = ExtResource("f77_side")
+
+
+[node name="GraphicsApplier" type="Node" parent="Systems" unique_id=2135902278]
+script = ExtResource("f142_applier")
+prefs = ExtResource("f142_prefs")
+
+[node name="UiScaleApplier" type="Node" parent="Systems"]
+editor_description = "El tamaño de la interfaz del jugador (Opciones › Gráficos) sobre la ventana. Único escritor de Window.content_scale_factor junto al de boot.tscn."
+script = ExtResource("h1_ui_applier")
+prefs = ExtResource("h1_ui_scale")
+
+
+[node name="Input" type="Node" parent="."]
+editor_description = "What turns the local player's clicks and keys into orders: selection, orders, commands, radial menu and inspector."
+
+[node name="Selection" type="Node" parent="Input" unique_id=1294781756 node_paths=PackedStringArray("box")]
+editor_description = "The RtsKit selection of the local player: click, Shift, Ctrl or double click by kind (a guardian's kind is its post), box, groups 1–0. Summoned creatures join group 0 (new_units_group 9). OrderLink sets local_slot from the LocalSeat."
 unique_name_in_owner = true
 script = ExtResource("f27_selection")
-box = NodePath("../Hud/SelectionBox")
-seat = NodePath("../LocalSeat")
+box = NodePath("../../Hud/SelectionBox")
+occluder_mask = 1
+new_units_group = 9
 
 
-[node name="Orders" type="Node" parent="." unique_id=1688586003]
+[node name="Orders" type="Node" parent="Input" unique_id=1688586003]
+editor_description = "The RtsKit orders: who of the slot obeys, the formation and each unit's place. Sacrifice's commands (attack_body: an attack on a wizard or a building, no retarget) and formations are data here."
 unique_name_in_owner = true
 script = ExtResource("f27_orders")
+commands = ExtResource("f27_commands")
+formations = ExtResource("f27_formations")
+
+[node name="OrderLink" type="Node" parent="Input" node_paths=PackedStringArray("orders", "units_root", "selection", "seat")]
+editor_description = "Sacrifice's side of the orders: the local slot, the retreat anchor (the wizard), the retarget to the nearest enemy creature and the network (a client sends its orders on MpKit's custom channel rts_order; the server applies them with the sender's slot)."
+script = ExtResource("f27_link")
+orders = NodePath("../Orders")
+units_root = NodePath("../../World/Units")
+selection = NodePath("../Selection")
+seat = NodePath("../../Systems/LocalSeat")
 
 
-[node name="MatchCommand" type="Node" parent="." unique_id=391205645 node_paths=PackedStringArray("ray", "armed", "orders", "abilities")]
+[node name="MatchCommand" type="Node" parent="Input" unique_id=391205645 node_paths=PackedStringArray("ray", "armed", "orders", "abilities")]
 script = ExtResource("7_match")
 ray = NodePath("PointerRay")
 armed = NodePath("ArmedCommand")
@@ -285,46 +380,46 @@ orders = NodePath("OrderCommand")
 abilities = NodePath("AbilityCommand")
 
 
-[node name="PointerRay" type="Node" parent="MatchCommand" unique_id=1625250101 node_paths=PackedStringArray("minimap", "seat")]
+[node name="PointerRay" type="Node" parent="Input/MatchCommand" unique_id=1625250101 node_paths=PackedStringArray("minimap", "seat")]
 script = ExtResource("ef25_pointer_ray")
-minimap = NodePath("../../Hud/Minimap")
-seat = NodePath("../../LocalSeat")
+minimap = NodePath("../../../Hud/Minimap")
+seat = NodePath("../../../Systems/LocalSeat")
 
 
-[node name="CommandFeedback" type="Node" parent="MatchCommand" unique_id=1625258020 node_paths=PackedStringArray("seat")]
+[node name="CommandFeedback" type="Node" parent="Input/MatchCommand" unique_id=1625258020 node_paths=PackedStringArray("seat")]
 script = ExtResource("ef25_command_feedback")
-seat = NodePath("../../LocalSeat")
+seat = NodePath("../../../Systems/LocalSeat")
 
 
-[node name="ArmedCommand" type="Node" parent="MatchCommand" unique_id=1625265939 node_paths=PackedStringArray("feedback")]
+[node name="ArmedCommand" type="Node" parent="Input/MatchCommand" unique_id=1625265939 node_paths=PackedStringArray("feedback")]
 script = ExtResource("ef25_armed_command")
 feedback = NodePath("../CommandFeedback")
 
-[node name="SpellCommand" type="Node" parent="MatchCommand" unique_id=1625273858 node_paths=PackedStringArray("armed", "ray", "feedback", "book")]
+[node name="SpellCommand" type="Node" parent="Input/MatchCommand" unique_id=1625273858 node_paths=PackedStringArray("armed", "ray", "feedback", "book")]
 script = ExtResource("ef25_spell_command")
-book = NodePath("../../Hud/SpellBook")
+book = NodePath("../../../Hud/SpellBook")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
 feedback = NodePath("../CommandFeedback")
 
-[node name="AbilityCommand" type="Node" parent="MatchCommand" unique_id=1625281777 node_paths=PackedStringArray("armed", "ray", "feedback", "roster")]
+[node name="AbilityCommand" type="Node" parent="Input/MatchCommand" unique_id=1625281777 node_paths=PackedStringArray("armed", "ray", "feedback", "roster")]
 script = ExtResource("ef25_ability_command")
-roster = NodePath("../../Hud/SelectionRoster")
+roster = NodePath("../../../Hud/SelectionRoster")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
 feedback = NodePath("../CommandFeedback")
 
-[node name="OrderCommand" type="Node" parent="MatchCommand" unique_id=1625289696 node_paths=PackedStringArray("armed", "ray", "feedback")]
+[node name="OrderCommand" type="Node" parent="Input/MatchCommand" unique_id=1625289696 node_paths=PackedStringArray("armed", "ray", "feedback")]
 script = ExtResource("ef25_order_command")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
 feedback = NodePath("../CommandFeedback")
 
-[node name="GroupKeys" type="Node" parent="MatchCommand" unique_id=1625297615]
+[node name="GroupKeys" type="Node" parent="Input/MatchCommand" unique_id=1625297615]
 script = ExtResource("ef25_group_keys")
 
 
-[node name="CommandInput" type="Node" parent="MatchCommand" unique_id=1625305534 node_paths=PackedStringArray("armed", "ray", "spells", "abilities", "orders", "group_keys")]
+[node name="CommandInput" type="Node" parent="Input/MatchCommand" unique_id=1625305534 node_paths=PackedStringArray("armed", "ray", "spells", "abilities", "orders", "group_keys")]
 script = ExtResource("ef25_command_input")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
@@ -333,55 +428,67 @@ abilities = NodePath("../AbilityCommand")
 orders = NodePath("../OrderCommand")
 group_keys = NodePath("../GroupKeys")
 
-[node name="MinimapPointing" type="Node" parent="MatchCommand" unique_id=1625313453 node_paths=PackedStringArray("minimap", "armed", "ray", "spells", "abilities", "orders")]
+[node name="MinimapPointing" type="Node" parent="Input/MatchCommand" unique_id=1625313453 node_paths=PackedStringArray("minimap", "armed", "ray", "spells", "abilities", "orders")]
 script = ExtResource("ef25_minimap_pointing")
-minimap = NodePath("../../Hud/Minimap")
+minimap = NodePath("../../../Hud/Minimap")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
 spells = NodePath("../SpellCommand")
 abilities = NodePath("../AbilityCommand")
 orders = NodePath("../OrderCommand")
 
-[node name="ArmedPreview" type="Node" parent="MatchCommand" node_paths=PackedStringArray("armed", "ray", "probe")]
-editor_description = "F388: con una estructura armada, 15 veces por segundo pregunta al Caster local qué respondería un clic en el puntero (aim_for) y lo deja en %Battle (aim_status, aim_site); prende el anillo del manantial en verde o rojo. Local, sin RPC. Sacalo y queda solo el parpadeo después del clic."
+[node name="SpellAim" type="Node3D" parent="Input/MatchCommand" node_paths=PackedStringArray("armed", "ray", "area", "range_ring")]
+editor_description = "With a spell armed, the ring of its area at the pointer (SpellType.aim_radius: the damage radius unless aim_radius_m says otherwise; no area = a small mark), blue within reach and red out of it, and the ring of its cast range around the wizard. Decals on the land; local only, it decides nothing."
+script = ExtResource("aim_script")
+armed = NodePath("../ArmedCommand")
+ray = NodePath("../PointerRay")
+area = NodePath("Area")
+range_ring = NodePath("Range")
+
+[node name="Area" type="Decal" parent="Input/MatchCommand/SpellAim"]
+visible = false
+size = Vector3(10, 60, 10)
+texture_albedo = ExtResource("aim_area_tex")
+texture_emission = ExtResource("aim_area_tex")
+emission_energy = 1.5
+upper_fade = 0.05
+lower_fade = 0.05
+normal_fade = 0.5
+
+[node name="Range" type="Decal" parent="Input/MatchCommand/SpellAim"]
+visible = false
+size = Vector3(200, 60, 200)
+texture_albedo = ExtResource("aim_range_tex")
+texture_emission = ExtResource("aim_range_tex")
+emission_energy = 0.8
+upper_fade = 0.05
+lower_fade = 0.05
+normal_fade = 0.5
+
+[node name="ArmedPreview" type="Node" parent="Input/MatchCommand" node_paths=PackedStringArray("armed", "ray", "probe")]
+editor_description = "Con una estructura armada, 15 veces por segundo pregunta al Caster local qué respondería un clic en el puntero (aim_for) y lo deja en %Battle (aim_status, aim_site); prende el anillo del manantial en verde o rojo. Local, sin RPC. Sacalo y queda solo el parpadeo después del clic."
 script = ExtResource("f388_armed_preview")
 armed = NodePath("../ArmedCommand")
 ray = NodePath("../PointerRay")
-probe = NodePath("../../Hud/TargetProbe")
+probe = NodePath("../../../Hud/TargetProbe")
 
 
 
 
-[node name="OrderRadial" type="Node" parent="." unique_id=901968895 node_paths=PackedStringArray("menu", "view", "command")]
+[node name="OrderRadial" type="Node" parent="Input" unique_id=901968895 node_paths=PackedStringArray("menu", "view", "command")]
 unique_name_in_owner = true
-editor_description = "RFC-038: dueño del botón derecho (toque = orden, mantener 0,25 s = menú radial), de Tab mantenido y de Alt+1..8 (formaciones). Va después de MatchCommand: ve Alt+N antes que él."
+editor_description = "Dueño del botón derecho (toque = orden, mantener 0,25 s = menú radial), de Tab mantenido y de Alt+1..8 (formaciones). Va después de MatchCommand: ve Alt+N antes que él."
 script = ExtResource("f218_order_radial")
-menu = NodePath("../Hud/RadialMenu")
-view = NodePath("../Hud/View")
+menu = NodePath("../../Hud/RadialMenu")
+view = NodePath("../../Hud/View")
 command = NodePath("../MatchCommand")
 
 
-[node name="Inspector" type="Node" parent="." unique_id=459803602]
+[node name="Inspector" type="Node" parent="Input" unique_id=459803602]
 unique_name_in_owner = true
-editor_description = "RFC-028b: la casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
+editor_description = "La casa, el cactus o el Manalith clicado muestra su barra de vida; local, sin RPC."
 script = ExtResource("f93_inspector")
 
-
-[node name="Ping" parent="." unique_id=1292527434 instance=ExtResource("f220_marker")]
-unique_name_in_owner = true
-
-
-[node name="AiRoster" type="Node" parent="." unique_id=2118618212 node_paths=PackedStringArray("world", "wizard_spawner")]
-unique_name_in_owner = true
-editor_description = "RFC-024 024f: arma los asientos IA (MatchRules.ai_seats o SacrificeFlow.solo_ai_seats) solo en solo o en el servidor. Sin asientos no hace nada."
-script = ExtResource("f77_roster")
-world = NodePath("..")
-wizard_spawner = NodePath("../WizardSpawner")
-side_scene = ExtResource("f77_side")
-
-
-[node name="PostFx" parent="." instance=ExtResource("post_psx")]
-visible = false
 
 [node name="Hud" type="CanvasLayer" parent="." unique_id=1419423165]
 
@@ -402,7 +509,7 @@ flat = true
 
 [node name="SelectionRoster" parent="Hud" unique_id=1154554107 node_paths=PackedStringArray("selection") instance=ExtResource("f79_roster")]
 unique_name_in_owner = true
-selection = NodePath("../../Selection")
+selection = NodePath("../../Input/Selection")
 
 
 [node name="SelectionBox" type="ReferenceRect" parent="Hud" unique_id=2145779674]
@@ -425,8 +532,8 @@ cues = ExtResource("f80_cues")
 
 [node name="Minimap" parent="Hud" unique_id=1037000021 node_paths=PackedStringArray("camera", "structures_root") instance=ExtResource("f213_minimap")]
 unique_name_in_owner = true
-camera = NodePath("../../Camera")
-structures_root = NodePath("../../Structures")
+camera = NodePath("../../World/Camera")
+structures_root = NodePath("../../World/Structures")
 
 
 [node name="RadialMenu" parent="Hud" unique_id=834462750 instance=ExtResource("f218_radial")]
@@ -442,13 +549,13 @@ unique_name_in_owner = true
 
 [node name="MatchResult" parent="Hud" unique_id=1957000102 node_paths=PackedStringArray("match_state", "seat") instance=ExtResource("f57_result")]
 unique_name_in_owner = true
-match_state = NodePath("../../Match")
-seat = NodePath("../../LocalSeat")
+match_state = NodePath("../../Systems/MatchState")
+seat = NodePath("../../Systems/LocalSeat")
 
 
 [node name="LobbyReturn" parent="Hud" unique_id=803648076 node_paths=PackedStringArray("match_state") instance=ExtResource("f183_return")]
 unique_name_in_owner = true
-match_state = NodePath("../../Match")
+match_state = NodePath("../../Systems/MatchState")
 
 
 [node name="MatchWait" parent="Hud" instance=ExtResource("g68_wait")]
@@ -463,7 +570,7 @@ unique_name_in_owner = true
 script = ExtResource("f80_probe")
 world_view = NodePath("../View")
 hud_controls = [NodePath("../SpellBook"), NodePath("../SelectionRoster"), NodePath("../Minimap"), NodePath("../RadialMenu")]
-camera = NodePath("../../Camera")
+camera = NodePath("../../World/Camera")
 
 
 [node name="CursorSkin" type="Node" parent="Hud" unique_id=1957000105 node_paths=PackedStringArray("command_log", "probe")]
@@ -487,69 +594,61 @@ skin = NodePath("../CursorSkin")
 unique_name_in_owner = true
 editor_description = "El marco de esquinas sobre la unidad, el edificio o el alma bajo el puntero, con el color de su bando. Local, sin RPC."
 probe = NodePath("../TargetProbe")
-armed = NodePath("../../MatchCommand/ArmedCommand")
+armed = NodePath("../../Input/MatchCommand/ArmedCommand")
 selection_box = NodePath("../SelectionBox")
 
 
 [node name="TargetInfoPanel" parent="Hud" node_paths=PackedStringArray("probe", "inspector") instance=ExtResource("f374_info")]
 unique_name_in_owner = true
-editor_description = "RFC-053 053e: la caja del original junto al puntero (0,5 s sobre un cuerpo); el edificio clicado queda fijo. Local, sin RPC."
+editor_description = "La caja del original junto al puntero (0,5 s sobre un cuerpo); el edificio clicado queda fijo. Local, sin RPC."
 probe = NodePath("../TargetProbe")
-inspector = NodePath("../../Inspector")
+inspector = NodePath("../../Input/Inspector")
 
 
-[node name="PauseMenu" parent="." unique_id=29936649 node_paths=PackedStringArray("seat") instance=ExtResource("f141_pause")]
+[node name="PauseMenu" parent="Hud" unique_id=29936649 node_paths=PackedStringArray("seat") instance=ExtResource("f141_pause")]
 unique_name_in_owner = true
-seat = NodePath("../LocalSeat")
+seat = NodePath("../../Systems/LocalSeat")
 
 
-[node name="GraphicsApplier" type="Node" parent="." unique_id=2135902278]
-script = ExtResource("f142_applier")
-prefs = ExtResource("f142_prefs")
+[node name="Audio" type="Node" parent="."]
+editor_description = "What the local player hears: listener, voices, advisor, combat gauge, music and ambience."
 
-[node name="UiScaleApplier" type="Node" parent="."]
-editor_description = "055h-1: el tamaño de la interfaz del jugador (Opciones › Gráficos) sobre la ventana. Único escritor de Window.content_scale_factor junto al de boot.tscn."
-script = ExtResource("h1_ui_applier")
-prefs = ExtResource("h1_ui_scale")
-
-
-[node name="ListenerFocus" type="AudioListener3D" parent="." node_paths=PackedStringArray("world", "camera")]
+[node name="ListenerFocus" type="AudioListener3D" parent="Audio" node_paths=PackedStringArray("world", "camera")]
 script = ExtResource("a052_listener")
-world = NodePath("..")
-camera = NodePath("../Camera")
+world = NodePath("../..")
+camera = NodePath("../../World/Camera")
 
-[node name="CommandVoice" type="Node" parent="." node_paths=PackedStringArray("selection", "orders", "channel")]
-editor_description = "RFC-052 052e: las criaturas contestan al jugador local (elegir: selected/annoyed; ordenar: ack/attack_ack), un canal propio en el bus Voice. Sin audio (dedicado, headless) no hace nada."
+[node name="CommandVoice" type="Node" parent="Audio" node_paths=PackedStringArray("selection", "orders", "channel")]
+editor_description = "Las criaturas contestan al jugador local (elegir: selected/annoyed; ordenar: ack/attack_ack), un canal propio en el bus Voice. Sin audio (dedicado, headless) no hace nada."
 script = ExtResource("a052_command_voice")
-selection = NodePath("../Selection")
-orders = NodePath("../Orders")
+selection = NodePath("../../Input/Selection")
+orders = NodePath("../../Input/Orders")
 channel = NodePath("Channel")
 
-[node name="Channel" type="AudioStreamPlayer" parent="CommandVoice"]
+[node name="Channel" type="AudioStreamPlayer" parent="Audio/CommandVoice"]
 bus = &"Voice"
 
-[node name="AdvisorVoice" parent="." node_paths=PackedStringArray("command_log") instance=ExtResource("a055_advisor")]
-command_log = NodePath("../Hud/Battle")
+[node name="AdvisorVoice" parent="Audio" node_paths=PackedStringArray("command_log") instance=ExtResource("a055_advisor")]
+command_log = NodePath("../../Hud/Battle")
 
-[node name="AdvisorWatch" parent="AdvisorVoice" index="1" node_paths=PackedStringArray("world", "seat")]
-world = NodePath("../..")
-seat = NodePath("../../LocalSeat")
+[node name="AdvisorWatch" parent="Audio/AdvisorVoice" index="1" node_paths=PackedStringArray("world", "seat")]
+world = NodePath("../../..")
+seat = NodePath("../../../Systems/LocalSeat")
 
-[node name="CombatGauge" type="Node" parent="." node_paths=PackedStringArray("world")]
-editor_description = "RFC-052 052f: la intensidad del combate cerca del oyente (criaturas en ATTACK/SHOOT a menos de radius_m) con histéresis, más el daño al mago local en los últimos wizard_damage_s. Solo lee estado replicado."
+[node name="CombatGauge" type="Node" parent="Audio" node_paths=PackedStringArray("world")]
+editor_description = "La intensidad del combate cerca del oyente (criaturas en ATTACK/SHOOT a menos de radius_m) con histéresis, más el daño al mago local en los últimos wizard_damage_s. Solo lee estado replicado."
 script = ExtResource("a052_gauge")
-world = NodePath("..")
+world = NodePath("../..")
 
-[node name="MusicDirector" parent="." node_paths=PackedStringArray("biome", "gauge", "match_state", "camera", "seat") instance=ExtResource("a052_music")]
-seat = NodePath("../LocalSeat")
-biome = NodePath("../MatchBiome")
+[node name="MusicDirector" parent="Audio" node_paths=PackedStringArray("biome", "gauge", "camera", "seat") instance=ExtResource("a052_music")]
+seat = NodePath("../../Systems/LocalSeat")
+biome = NodePath("../../World/MatchBiome")
 gauge = NodePath("../CombatGauge")
-match_state = NodePath("../Match")
-camera = NodePath("../Camera")
+camera = NodePath("../../World/Camera")
 default_music = ExtResource("a055_common_music")
 
-[node name="AmbienceDirector" parent="." node_paths=PackedStringArray("biome") instance=ExtResource("a052_ambience")]
-biome = NodePath("../MatchBiome")
+[node name="AmbienceDirector" parent="Audio" node_paths=PackedStringArray("biome") instance=ExtResource("a052_ambience")]
+biome = NodePath("../../World/MatchBiome")
 
 [connection signal="local_wizard_changed" from="." to="Hud/WizardHud" method="bind"]
 [connection signal="local_wizard_changed" from="." to="Hud/SpellBook" method="bind"]
@@ -557,5 +656,5 @@ biome = NodePath("../MatchBiome")
 [connection signal="local_wizard_changed" from="." to="Hud/Minimap" method="bind"]
 [connection signal="local_wizard_changed" from="." to="Hud/RitualNotice" method="bind"]
 [connection signal="local_wizard_changed" from="." to="Hud/TargetProbe" method="bind"]
-[connection signal="progressed" from="Warmup" to="LoadReport" method="report_progress"]
-[connection signal="finished" from="Warmup" to="LoadReport" method="report_loaded"]
+[connection signal="progressed" from="Systems/Warmup" to="Systems/LoadReport" method="report_progress"]
+[connection signal="finished" from="Systems/Warmup" to="Systems/LoadReport" method="report_loaded"]

@@ -1,10 +1,12 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/online/online_host_view.gd" id="1_host"]
 [ext_resource type="Script" path="res://scenes/ui/mode_picker/mode_picker.gd" id="2_mode_picker"]
 [ext_resource type="Script" path="res://scenes/ui/map_picker/map_picker.gd" id="3_map_picker"]
 [ext_resource type="Script" path="res://scenes/ui/biome_picker/biome_picker.gd" id="4_biome_picker"]
 
+[ext_resource type="Script" path="res://scenes/ui/sky_picker/hour_picker.gd" id="sky_hour_picker"]
+[ext_resource type="PackedScene" path="res://scenes/ui/sky_picker/weather_picker.tscn" id="sky_weather_picker"]
 [node name="OnlineHostView" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -56,16 +58,32 @@ unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("4_biome_picker")
 
+[node name="HostHour" type="OptionButton" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("sky_hour_picker")
+
+[node name="HostWeather" parent="Column/HostForm" instance=ExtResource("sky_weather_picker")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HostForest" type="CheckBox" parent="Column/HostForm"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "UI_FOREST_TIP"
+button_pressed = true
+text = "UI_FOREST"
+
 [node name="RoomName" type="LineEdit" parent="Column/HostForm"]
 unique_name_in_owner = true
-editor_description = "Vacío = el room_name de sacrifice_flow.tscn."
+editor_description = "Empty = the room_name of sacrifice_flow.tscn."
 layout_mode = 2
 placeholder_text = "UI_ONLINE_HOST_NAME_HINT"
 max_length = 24
 
 [node name="Listed" type="CheckBox" parent="Column/HostForm"]
 unique_name_in_owner = true
-editor_description = "Marcado = la sala aparece en la lista de todos; desmarcado = privada, se entra solo con el código."
+editor_description = "Checked = the room shows in everyone's list; unchecked = private, joined only with the code."
 layout_mode = 2
 button_pressed = true
 text = "UI_ONLINE_HOST_LISTED"

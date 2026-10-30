@@ -2,10 +2,12 @@
 class_name StalkLook
 extends MeshInstance3D
 
-## What a stalk looks and sounds like on every peer: the tube laid on the curve from the root to the tip (the shader does the rings; this
-## hands it the eight control points each tick), the dirt that flies where it is born, the burst and sound at a catch and the sound of the
-## fall (its light is a StateLight of the scene that follows the zone). Presentation only; it reads the stalk's replicated `tip`, `growth` and `mode` and
-## writes nothing of the game. A dedicated server or a headless run draws nothing.
+## What a stalk looks and sounds like on every peer: the tube laid on the curve from the root to the
+## tip (the shader does the rings; this hands it the eight control points each tick), the dirt that
+## flies where it is born, the burst and sound at a catch and the sound of the fall (its light is a
+## StateLight of the scene that follows the zone). Presentation only; it reads the stalk's
+## replicated `tip`, `growth` and `mode` and writes nothing of the game. A dedicated server or a
+## headless run draws nothing.
 
 @export var stalk: Stalk
 ## Dirt that flies off the root when the stalk is born.
@@ -60,4 +62,8 @@ func _on_mode(mode: int) -> void:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if stalk != null else PackedStringArray(["Falta el tallo (Stalk) que dibuja."])
+	return (
+		PackedStringArray()
+		if stalk != null
+		else PackedStringArray(["The stalk (Stalk) it draws is missing."])
+	)

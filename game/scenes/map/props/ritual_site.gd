@@ -2,18 +2,18 @@
 class_name RitualSite
 extends Node3D
 
-## "A ritual can be held here": whose it is, where its center is, and whether another ritual
-## already uses it. The altar has one and so has every Shrine. Only the server calls occupy() and release().
-
-enum Kind { ALTAR, SHRINE }
-
-## Every site in play: where Convert looks for the closest one of a side.
-const GROUP := &"ritual_site"
+## "A ritual can be held here": whose it is, where its center is, and whether another ritual already
+## uses it. The altar has one and so has every Shrine. Only the server calls occupy() and release().
 
 ## A ritual took the site.
 signal occupied(by: Node)
 ## The site is free again.
 signal released
+
+enum Kind { ALTAR, SHRINE }
+
+## Every site in play: where Convert looks for the closest one of a side.
+const GROUP := &"ritual_site"
 
 @export var kind := Kind.ALTAR
 ## The altar this site belongs to (an altar's site). Leave empty on a Shrine.
@@ -27,7 +27,7 @@ var occupant: Node
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
 	if altar == null and building == null:
-		warnings.append("Asigná en `altar` o en `building` a quién pertenece este sitio.")
+		warnings.append("Assign in `altar` or in `building` who owns this site.")
 	return warnings
 
 
@@ -50,7 +50,12 @@ func center() -> Vector3:
 func is_standing() -> bool:
 	if altar != null:
 		return altar.is_standing()
-	return building != null and is_instance_valid(building) and not building.is_destroyed() and not building.is_queued_for_deletion()
+	return (
+		building != null
+		and is_instance_valid(building)
+		and not building.is_destroyed()
+		and not building.is_queued_for_deletion()
+	)
 
 
 func is_free() -> bool:

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AiDifficultyList" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/ai/data/ai_difficulty_list.gd" id="1_list"]
+[ext_resource type="Script" path="res://scenes/ai/data/ai_difficulty.gd" id="2_difficulty"]
+[ext_resource type="Resource" path="res://scenes/ai/difficulty_easy.tres" id="3_easy"]
+[ext_resource type="Resource" path="res://scenes/ai/difficulty_normal.tres" id="4_normal"]
+[ext_resource type="Resource" path="res://scenes/ai/difficulty_hard.tres" id="5_hard"]
+
+[resource]
+script = ExtResource("1_list")
+difficulties = Array[ExtResource("2_difficulty")]([ExtResource("3_easy"), ExtResource("4_normal"), ExtResource("5_hard")])

@@ -1,10 +1,10 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/units/abilities/protector.gd" id="1_protector"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/hsba.tres" id="typed_life_shield"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/life_shield.tres" id="typed_life_shield"]
 
 [node name="Protector" type="Node"]
 process_physics_priority = -1
-editor_description = "F126 (RFC-030 030o-a): efecto propio del Protector del Ent (HSba). AbilitySlot lo instancia como \"Effect\" desde el campo effect de su AbilityType (data/catalog/abilities/). Se escuda en el tick de la orden y escuda a los aliados a 30 m en el tick siguiente."
+editor_description = "The Ent's Protector effect (HSba). AbilitySlot instances it as \"Effect\" from the effect field of its AbilityType (scenes/units/abilities/). It shields itself on the tick of the order and shields the allies within 30 m on the next tick."
 script = ExtResource("1_protector")
 life_shield = ExtResource("typed_life_shield")

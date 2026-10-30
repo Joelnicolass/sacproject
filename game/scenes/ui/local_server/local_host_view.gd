@@ -1,10 +1,12 @@
 extends Control
 
-## Creates a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he chooses
-## the transport (the rival chooses his own wizard and god when he joins). «Crear» launches the dedicated on this PC (`LocalServerHost`); when it listens the
-## view shows the address, the port, the transport and the rival's code. «Entrar a la partida» joins it as a normal client.
-## RFC-049 049h (F297): the host also chooses the mode and the map (the map picker lists the maps that fit the mode) and, for each
-## seat but his, a person or an AI (one `seat_row_scene` per seat, rebuilt when the mode changes); each seat for a person gets a code.
+## Creates a «Servidor local». The host's pick comes from the menu (`SacrificeFlow.pick`); here he
+## chooses the transport (the rival chooses his own wizard and god when he joins). «Crear» launches
+## the dedicated on this PC (`LocalServerHost`); when it listens the view shows the address, the
+## port, the transport and the rival's code. «Entrar a la partida» joins it as a normal client. The
+## host also chooses the mode and the map (the map picker lists the maps that fit the mode) and, for
+## each seat but his, a person or an AI (one `seat_row_scene` per seat, rebuilt when the mode
+## changes); each seat for a person gets a code.
 
 signal back_requested
 
@@ -42,17 +44,20 @@ func _on_create() -> void:
 	if _server != null:
 		return
 	_server = host_scene.instantiate() as LocalServerHost
-	## Under root: `change_scene` frees this screen, not the server.
+	# Under root: `change_scene` frees this screen, not the server.
 	get_tree().root.add_child(_server)
 	_server.server_ready.connect(_on_server_ready)
 	_server.server_failed.connect(_on_server_failed)
 	_server.server_closed.connect(_on_server_closed)
 	var kind: String = str(_transport.get_item_metadata(_transport.selected))
-	## The mode, the map and the land go in the ticket like a room's options.
+	# The mode, the map and the land go in the ticket like a room's options.
 	var chosen := MatchSetup.new()
 	chosen.mode = (%HostMode as ModePicker).selected_mode()
 	chosen.map = (%HostMap as MapPicker).selected_map()
 	chosen.biome = (%HostBiome as BiomePicker).selected_god()
+	chosen.sky_hour = (%HostHour as HourPicker).selected_hour()
+	chosen.weather = (%HostWeather as WeatherPicker).selected_weather()
+	chosen.forest = -1 if (%HostForest as CheckBox).button_pressed else 0
 	var err := _server.start(SacrificeFlow.pick, kind, MatchWire.options_of(chosen), ai_seats())
 	if err != OK:
 		_server.queue_free()
@@ -66,9 +71,15 @@ func _on_create() -> void:
 func _on_server_ready(address: String, port: int, code: String) -> void:
 	%HostAddress.text = LocalServerText.address_text(address)
 	%HostPort.text = tr(LocalServerText.INFO_PORT) % port
-	%HostTransportInfo.text = tr(LocalServerText.INFO_TRANSPORT) % LocalServerText.transport_name(MpKit.transport)
-	## RFC-049 049h: one code per seat for a person (`code` is the first one).
-	%HostCode.text = LocalServerText.codes_text(_server.codes) if _server != null else tr(LocalServerText.INFO_CODE) % code
+	%HostTransportInfo.text = (
+		tr(LocalServerText.INFO_TRANSPORT) % LocalServerText.transport_name(MpKit.transport)
+	)
+	# One code per seat for a person (`code` is the first one).
+	%HostCode.text = (
+		LocalServerText.codes_text(_server.codes)
+		if _server != null
+		else tr(LocalServerText.INFO_CODE) % code
+	)
 	_info.visible = true
 	_status.text = ""
 
@@ -115,7 +126,9 @@ func _on_server_closed(_result: Dictionary) -> void:
 func _on_enter() -> void:
 	if _server == null or not _server.hosting:
 		return
-	var err: Error = SacrificeFlow.join_local_server(LocalServerHost.LOOPBACK, _server.port, _server.host_token)
+	var err: Error = SacrificeFlow.join_local_server(
+		LocalServerHost.LOOPBACK, _server.port, _server.host_token
+	)
 	if err != OK:
 		_status.text = tr(LocalServerText.FAILED_START)
 
@@ -123,7 +136,13 @@ func _on_enter() -> void:
 func _on_copy() -> void:
 	if _server == null:
 		return
-	var text := tr("UI_LOCAL_HOST_COPY_FORMAT") % [LocalServerEndpoint.format(_server.address, _server.port), LocalServerText.codes_text(_server.codes)]
+	var text := (
+		tr("UI_LOCAL_HOST_COPY_FORMAT")
+		% [
+			LocalServerEndpoint.format(_server.address, _server.port),
+			LocalServerText.codes_text(_server.codes)
+		]
+	)
 	DisplayServer.clipboard_set(text)
 	_status.text = tr(LocalServerText.COPIED)
 

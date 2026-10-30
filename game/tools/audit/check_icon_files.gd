@@ -1,7 +1,8 @@
 extends SceneTree
 
-## Compares OriginalAssets.icon_file (GDScript) with tools/import/import_ui.py icon_file (Python) on every icon tag, and checks that the
-## file exists in assets/original/ui/icons/ for the tags that have art.
+## Compares OriginalAssets.icon_file (GDScript) with tools/import/import_ui.py icon_file (Python) on
+## every icon tag, and checks that the file exists in assets/original/ui/icons/ for the tags that
+## have art.
 ##   python3 tools/import/import_ui.py --icon-files=F
 ##   "$GODOT" --headless --path game --script res://tools/audit/check_icon_files.gd -- --list=F
 ## Exits 1 on any difference.

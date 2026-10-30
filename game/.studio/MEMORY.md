@@ -349,7 +349,7 @@ F9 compara un dump y, en Godot, salta al mago a la posición final. Eso no es ca
 ### feature/f43-world-hygiene
 
 **What**: `terrain.gd` ya no deja la malla ni el material del terreno en escenas guardadas; `high_noon.tscn` bajó de 5,2 MB a 9,5 KB.
-**Why**: B1 de `reviews/AUDIT-2026-10-12.md`. RULES prohíbe commitear texturas y modelos originales y un `@tool` los embebía al guardar.
+**Why**: B1 de `docs/archive/reviews/AUDIT-2026-10-12.md`. RULES prohíbe commitear texturas y modelos originales y un `@tool` los embebía al guardar.
 **Where**: `scenes/world/terrain.gd` (`_validate_property`), `scenes/world/high_noon.tscn`, `scenes/world/high_noon.gd`, `RULES.md`
 **Learned**: Para un recurso que genera un `@tool`, quitarle `PROPERTY_USAGE_STORAGE` es más simple que limpiar en PRE_SAVE. El guardado del editor se prueba sin UI con `Godot --headless --editor -s script.gd` (instanciar con `GEN_EDIT_STATE_MAIN`, `pack`, `ResourceSaver.save`) y conviene correr el script viejo como control. Godot está en `/Applications/Godot.app`. `%Creature`, `wizard.gd` y `tick_order.gd` no son código muerto.
 **Next**: Fase 1 de la auditoría (RFC-017, red que cierra la partida): plan del tech lead pendiente del OK del usuario.
@@ -398,7 +398,7 @@ F9 compara un dump y, en Godot, salta al mago a la posición final. Eso no es ca
 
 **What**: Cerrados con review y playtest F59 (Desecrate hasta el portador frente al altar, con aro, cuerda y vórtice) y F52 (suelo suavizado y lightmap en coordenadas de mapa, con `light_base` / `light_gain` en el inspector). Planificado RFC-022 (mejora gráfica por capas) y RFC-021 (Guardian y Teleport; 021a hecho).
 **Why**: Pedidos del usuario: botones de la pestaña Estructuras sin implementar; terreno facetado; «god rays, cielo más llamativo, iluminación más actual sin perder la esencia».
-**Where**: `scenes/world/sacrifice/`, `scenes/world/units/captive.gd`, `scenes/fx/{portal_disc,tether,fx_atlas}.*`, `scenes/world/terrain.gd`, `sacrifice_ground.gdshader`, `rfcs/RFC-022-graphics-upgrade.md`, `.studio/RESEARCH-sacdoc-vfx.md`
+**Where**: `scenes/world/sacrifice/`, `scenes/world/units/captive.gd`, `scenes/fx/{portal_disc,tether,fx_atlas}.*`, `scenes/world/terrain.gd`, `sacrifice_ground.gdshader`, `docs/archive/rfcs/RFC-022-graphics-upgrade.md`, `.studio/RESEARCH-sacdoc-vfx.md`
 **Learned**: Entendí mal un reporte del usuario («la criatura volando») y lo traté como bug de físicas: era el comportamiento correcto sin su efecto visual; ante un reporte ambiguo, preguntar qué se vio antes de mandar a corregir. Para lo visible, exigir al developer capturas con ventana y mirarlas antes de pasar a review. La energía 10–15 de sacengine quema a blanco en Godot. `VERTEX` en `fragment()` está en espacio de vista. Un `free()` sobre un nodo ya liberado aborta Godot y le muestra diálogos de crash al usuario: en pruebas usar `is_instance_valid`. No más de dos subagentes a la vez: la sesión chocó cuatro veces con el límite de uso. Decisiones de RFC-022: intensidad media, haces de autor + volumétrica en alto, AgX, gradiente de color por dios; faltan referencias visuales del usuario.
 **Next**: 020d (ritual de 4 doctores, drenaje sin tope de rondas, victoria por profanación; cancelar con tiradores o hechizos, no cuerpo a cuerpo), 020e, 021b, 021c, 019c, RFC-022, 018c–e. Pendientes: clips `thrash` para la criatura tomada; voladoras con vista lateral; Brainiac como en el original; `unit.tscn` embebe texturas al guardar desde el editor; subir `command_slot` al kit; separar `doctor_melee` de la suite rápida.
 
@@ -406,7 +406,7 @@ F9 compara un dump y, en Godot, salta al mago a la posición final. Eso no es ca
 
 **What**: Cerrado F60 (ritual de profanación: victoria de punta a punta en red y cancelación por Druids y Rangers). Replanificado RFC-022 v2 como remaster por capas y escrito `VISUAL.md` con las cuatro referencias de `visual/refs/`.
 **Why**: RFC-020d. El usuario pidió una estética mucho más ambiciosa (bloom, volumétrica, PBR, normales, AO, shaders propios).
-**Where**: `debug/{desecrate_ritual,ritual_push,ritual_cancel}.tscn`, `rfcs/RFC-022-graphics-upgrade.md` (sección 17 con decisiones), `VISUAL.md`.
+**Where**: `debug/{desecrate_ritual,ritual_push,ritual_cancel}.tscn`, `docs/archive/rfcs/RFC-022-graphics-upgrade.md` (sección 17 con decisiones), `VISUAL.md`.
 **Learned**: Las escenas de cancelación en solo necesitan un mago blanco fijo: sin él el ritual completa en la primera ronda y no prueba nada. Mover un `PlayerStart` puede dejar el punto de aparición sobre un pilar del altar y `_seat()` asienta al mago encima. Decisiones de RFC-022: Persephone como bioma de prueba, Charnel noche, Stratos altura, cielo como capas sobre el cilindro original, texturas 2K–4K con Git LFS (no instalado aún), rocas `.glb` CC0, 60 fps con presets.
 **Next**: 020e (Convert), 021b, 021c, 019c, RFC-022 (022a…), 018c–e. Antes de 022c: instalar git-lfs con OK del usuario.
 - 2026-10-14: cerrado F61 (Convert fiel, RFC-020e) con review y playtest en solo y en red. RFC-020 completo. El alma pasó de `Area3D` a `StaticBody3D` (capa 4) porque el raycast del puntero no ve áreas. Recurrente en capturas: doctores y bombeo ilegibles bajo la sombra de la losa → RFC-022 (luz de relleno). Siguiente: 021b (Guardian).

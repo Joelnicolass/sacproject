@@ -1,11 +1,11 @@
 class_name TerrainMeshArrays
 extends RefCounted
 
-## The vertex arrays of the map's visible ground, built from its triangles (MapTerrainData): positions, one set of flat
-## normals (as the triangles come), one set of smooth normals (summed per lattice vertex, so slopes read as one
-## surface), COLOR (white on the land, alpha 0 on a wall: the ground shader's cliff texture), the place of the cliff texture
-## on the walls in UV (WallUvRules), and the indices. What it does NOT do: hold a mesh node or answer heights.
-## Ref: sacmap.d generateNormals, appendEdgeWall.
+## The vertex arrays of the map's visible ground, built from its triangles (MapTerrainData):
+## positions, one set of flat normals (as the triangles come), one set of smooth normals (summed per
+## lattice vertex, so slopes read as one surface), COLOR (white on the land, alpha 0 on a wall: the
+## ground shader's cliff texture), the place of the cliff texture on the walls in UV (WallUvRules),
+## and the indices. What it does NOT do: hold a mesh node or answer heights.
 
 ## The arrays of a Mesh without the normals; `with_normals` completes them.
 var arrays := []
@@ -35,15 +35,17 @@ static func from_data(data: MapTerrainData) -> TerrainMeshArrays:
 	return built
 
 
-## A copy of the arrays with the normals of `smooth` or the flat ones, ready for `ArrayMesh.add_surface_from_arrays`.
+## A copy of the arrays with the normals of `smooth` or the flat ones, ready for
+## `ArrayMesh.add_surface_from_arrays`.
 func with_normals(smooth: bool) -> Array:
 	var result := arrays.duplicate()
 	result[Mesh.ARRAY_NORMAL] = smooth_normals if smooth else flat_normals
 	return result
 
 
-## Each land vertex gets the sum of the unnormalized cross products of the land triangles that share its lattice vertex
-## (bigger faces weigh more), normalized. The walls keep their flat normal, so the cliff edge stays sharp.
+## Each land vertex gets the sum of the unnormalized cross products of the land triangles that share
+## its lattice vertex (bigger faces weigh more), normalized. The walls keep their flat normal, so
+## the cliff edge stays sharp.
 static func _smooth_normals(data: MapTerrainData) -> PackedVector3Array:
 	var sums := PackedVector3Array()
 	sums.resize(TerrainGrid.COUNT)
@@ -51,7 +53,9 @@ static func _smooth_normals(data: MapTerrainData) -> PackedVector3Array:
 	var lattice := data.lattice
 	var land_vertices := data.land_triangles * 3
 	for first in range(0, land_vertices, 3):
-		var cross := (vertices[first + 1] - vertices[first]).cross(vertices[first + 2] - vertices[first])
+		var cross := (vertices[first + 1] - vertices[first]).cross(
+			vertices[first + 2] - vertices[first]
+		)
 		if cross.y < 0.0:
 			cross = -cross
 		for k in 3:
@@ -64,9 +68,12 @@ static func _smooth_normals(data: MapTerrainData) -> PackedVector3Array:
 	return result
 
 
-## UV of every vertex: on a wall, x = metres along the rim and y = 0 at the rim, 1 at the foot; (0, 0) on the land.
-## A wall is two triangles over the same two rim points (x, z); its top vertex at a point is the higher of the two there.
-static func _wall_uvs(vertices: PackedVector3Array, indices: PackedInt32Array, walls: PackedInt32Array) -> PackedVector2Array:
+## UV of every vertex: on a wall, x = metres along the rim and y = 0 at the rim, 1 at the foot; (0,
+## 0) on the land. A wall is two triangles over the same two rim points (x, z); its top vertex at a
+## point is the higher of the two there.
+static func _wall_uvs(
+	vertices: PackedVector3Array, indices: PackedInt32Array, walls: PackedInt32Array
+) -> PackedVector2Array:
 	var uvs := PackedVector2Array()
 	uvs.resize(vertices.size())
 	var segment_at := {}
@@ -77,7 +84,10 @@ static func _wall_uvs(vertices: PackedVector3Array, indices: PackedInt32Array, w
 		var points: Array[Vector2] = []
 		for k in 3:
 			var at := Vector2(vertices[indices[triangle + k]].x, vertices[indices[triangle + k]].z)
-			if points.is_empty() or not (points[0].is_equal_approx(at) or points[-1].is_equal_approx(at)):
+			if (
+				points.is_empty()
+				or not (points[0].is_equal_approx(at) or points[-1].is_equal_approx(at))
+			):
 				points.append(at)
 		var key := [WallUvRules.point_key(points[0]), WallUvRules.point_key(points[-1])]
 		key.sort()
@@ -100,4 +110,6 @@ static func _wall_uvs(vertices: PackedVector3Array, indices: PackedInt32Array, w
 
 
 static func _end_of(ends: PackedVector2Array, segment: int, at: Vector3) -> int:
-	return segment * 2 if ends[segment * 2].is_equal_approx(Vector2(at.x, at.z)) else segment * 2 + 1
+	return (
+		segment * 2 if ends[segment * 2].is_equal_approx(Vector2(at.x, at.z)) else segment * 2 + 1
+	)

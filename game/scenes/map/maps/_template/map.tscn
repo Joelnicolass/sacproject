@@ -4,21 +4,20 @@
 [ext_resource type="Script" path="res://scenes/map/props/map_props.gd" id="2_props"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/player_start.tscn" id="3_start"]
 [ext_resource type="PackedScene" path="res://scenes/map/props/manafount.tscn" id="4_fount"]
-[ext_resource type="Resource" path="res://data/nav/nav_bake.tres" id="5_bake"]
-[ext_resource type="Script" path="res://scenes/map/nav/map_nav_region.gd" id="6_nav_region"]
+[ext_resource type="PackedScene" path="res://scenes/map/nav/map_nav.tscn" id="6_nav_region"]
 [ext_resource type="PackedScene" path="res://scenes/look/look_rig.tscn" id="7_look"]
-[ext_resource type="Resource" path="res://data/gods/persephone.tres" id="8_god"]
-[ext_resource type="Resource" path="res://data/look/quality_medium.tres" id="9_quality"]
+[ext_resource type="Resource" path="res://gods/persephone/persephone.tres" id="8_god"]
+[ext_resource type="Resource" path="res://scenes/look/quality_medium.tres" id="9_quality"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap/minimap_terrain_bake.tscn" id="10_minimap"]
 [ext_resource type="PackedScene" path="res://scenes/map/terrain/terrain.tscn" id="11_terrain"]
 [ext_resource type="Resource" uid="uid://be0blyxacvs30" path="res://scenes/map/maps/_template/heights.png" id="12_heights"]
 [ext_resource type="Texture2D" uid="uid://dwl0emcocdn1l" path="res://scenes/map/maps/_template/ground_roles.png" id="13_roles"]
 [ext_resource type="Texture2D" path="res://scenes/map/maps/_template/light.png" id="14_light"]
 
-[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav_region", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
+[node name="Map" type="Node3D" node_paths=PackedStringArray("terrain", "nav", "starts", "look", "minimap_bake", "buildings", "npcs", "props")]
 script = ExtResource("1_root")
 terrain = NodePath("Terrain")
-nav_region = NodePath("NavRegion")
+nav = NodePath("Nav")
 starts = NodePath("MapProps/Starts")
 look = NodePath("Look")
 minimap_bake = NodePath("MinimapBake")
@@ -73,13 +72,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1600, 10, 1300)
 spots = NodePath("../../../LifeSpots")
 
 [node name="LifeSpots" type="Node3D" parent="."]
-editor_description = "Lugares con vida ambiental (RFC-058). Arrastrá life_spot.tscn acá, elegí el hábitat y escalá la caja."
+editor_description = "Places with ambient life. Drag life_spot.tscn here, pick the habitat and scale the box."
 
-[node name="NavRegion" type="NavigationRegion3D" parent="."]
-unique_name_in_owner = true
-use_edge_connections = false
-script = ExtResource("6_nav_region")
-bake_settings = ExtResource("5_bake")
+[node name="Nav" parent="." instance=ExtResource("6_nav_region")]
 
 [node name="MinimapBake" parent="." node_paths=PackedStringArray("terrain") instance=ExtResource("10_minimap")]
 unique_name_in_owner = true

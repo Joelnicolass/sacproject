@@ -2,15 +2,15 @@
 
 [ext_resource type="Script" path="res://scenes/units/abilities/quake_wave.gd" id="1_wave"]
 [ext_resource type="PackedScene" path="res://scenes/fx/quake_ring.tscn" id="2_ring"]
-[ext_resource type="Resource" path="res://data/fx/dirt.tres" id="fx_dirt"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/dirt.tres" id="fx_dirt"]
 [ext_resource type="PackedScene" path="res://scenes/units/abilities/quake_ground.tscn" id="3_ground"]
 
 [node name="QuakeWave" type="Node3D"]
 process_physics_priority = -1
-editor_description = "F132 (RFC-030 030u-a): coordinador del Quake del Jabberocky (kauq; Quake, state.d:5187-5225). QuakeAbility lo agrega al contenedor de disparos, solo en el servidor, a los pies del usuario. Descarta el tick en que nace; del cuadro 1 al 5 la onda (1,667·f m) aturde 480 a todo cuerpo móvil de cualquier bando con la caja a ≤ onda + 0,1, a más de 0,5 m en planta y a menos de 2,5 m de la onda. Sin daño. Se libera en el cuadro 31. Knobs: wave_range, wave_s, stun_min, stun_max, band, cooldown_s, life_s, groups."
+editor_description = "The coordinator of the Jabberocky's Quake (kauq). Quake adds it to the shot container, on the server only, at the user's feet. It discards the tick it is born on; from frame 1 to 5 the wave (1.667·f m) stuns for 480 every moving body of any side whose box is within wave + 0.1, farther than 0.5 m flat and within 2.5 m of the wave. No damage. It frees itself on frame 31. Knobs: wave_range, wave_s, stun_min, stun_max, band, cooldown_s, life_s, groups."
 script = ExtResource("1_wave")
 ring_scene = ExtResource("2_ring")
 dust_fx = ExtResource("fx_dirt")
 
 [node name="Ground" parent="." instance=ExtResource("3_ground")]
-editor_description = "La tierra que se hunde y la onda (dos TerrainStamp). La juega el servidor (o solo); los cuerpos la siguen. En un cliente la ve con la copia de QuakeRing."
+editor_description = "The sinking land and the wave (two TerrainStamps). The server (or solo) plays it; the bodies follow it. A client sees it through the copy in QuakeRing."

@@ -54,10 +54,10 @@ height = 3
 radius = 58
 
 [node name="QuakeGround" type="Node3D"]
-editor_description = "El suelo de un Quake (el del Jabberocky y el de la vaca de Bovine Intervention): durante 0,5 s la tierra se hunde hasta 4 m en 50 m a la redonda (cae en 0,15 s y vuelve) y una onda de hasta 3 m sale del centro y llega a 50 m al final, cada vez mas baja y mas angosta. Al terminar el suelo es el de antes. El radio y el pico de cada sello son su cilindro Reach (gizmo); las curvas se editan en su StampProfile. Sin script: QuakeWave lo juega en el servidor y QuakeRing tiene una copia para los clientes (on_clients_only)."
+editor_description = "The ground of a Quake (the Jabberocky's and the Bovine Intervention cow's): for 0.5 s the land sinks up to 4 m within 50 m (it drops in 0.15 s and comes back) and a wave of up to 3 m leaves the center and reaches 50 m at the end, lower and narrower all the time. At the end the ground is as it was. The radius and the peak of each stamp are its Reach cylinder (gizmo); the curves are edited in its StampProfile. No script: QuakeWave plays it on the server and QuakeRing holds a copy for the clients (on_clients_only)."
 
 [node name="Rebound" type="Node3D" parent="." node_paths=PackedStringArray("reach")]
-editor_description = "El hundimiento: -(1 + cos(pi d / 50)) / 2 por sin(pi p), con p de 0 a 0,5 en los primeros 0,15 s y de 0,5 a 1 hasta los 0,5 s. Pico 4 m = 2 x 2 m."
+editor_description = "The sinking: -(1 + cos(pi d / 50)) / 2 times sin(pi p), with p from 0 to 0.5 in the first 0.15 s and from 0.5 to 1 until 0.5 s. Peak 4 m = 2 x 2 m."
 script = ExtResource("1_stamp")
 profile = SubResource("Profile_rebound")
 reach = NodePath("Reach")
@@ -66,7 +66,7 @@ reach = NodePath("Reach")
 shape = SubResource("Reach_rebound")
 
 [node name="Wave" type="Node3D" parent="." node_paths=PackedStringArray("reach")]
-editor_description = "La onda: un anillo a 100 t m del centro, de (0,15 + 0,65 (1 - p)^2) x 50 m de ancho, alto (1 + cos(pi x)) / 2 por (1 - p^2) y por min(1, t / 0,05), con p = t / 0,5. Pico 3 m = 2 x 1,5 m; el radio (58 m) cubre el anillo en su punto mas lejano (50 + 7,5 m)."
+editor_description = "The wave: a ring at 100 t m from the center, (0.15 + 0.65 (1 - p)^2) x 50 m wide, (1 + cos(pi x)) / 2 times (1 - p^2) times min(1, t / 0.05) high, with p = t / 0.5. Peak 3 m = 2 x 1.5 m; the radius (58 m) covers the ring at its farthest (50 + 7.5 m)."
 script = ExtResource("1_stamp")
 profile = SubResource("Profile_wave")
 reach = NodePath("Reach")

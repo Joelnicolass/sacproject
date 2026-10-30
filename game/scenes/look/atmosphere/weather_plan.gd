@@ -2,10 +2,11 @@
 class_name WeatherPlan
 extends Resource
 
-## How the weather goes over a match: the match is cut into segments of `segment_s`, the first is `first` and each
-## next one draws a state from `chances` with the sky's seed (AtmosphereRules), so every peer gets the same; at the
-## start of a segment the previous weather blends into the new one over `blend_s`. The five gods share one plan
-## (`data/look/weather/plan.tres`): the same states with the same weights.
+## How the weather goes over a match: the match is cut into segments of `segment_s`, the first is
+## `first` and each next one draws a state from `chances` with the sky's seed (AtmosphereRules), so
+## every peer gets the same; at the start of a segment the previous weather blends into the new one
+## over `blend_s`. The five gods share one plan (`scenes/look/weather/plan.tres`): the same states
+## with the same weights.
 
 ## The weather the match starts with (Clear keeps the approved look).
 @export var first: WeatherState

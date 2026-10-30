@@ -1,7 +1,7 @@
 extends FsmState
 
-## On the ground: walks to the goal of `body.motor` when it has one, else stands. Regenerates all the time.
-## Server only.
+## On the ground: walks to the goal of `body.motor` when it has one, else stands. Regenerates all
+## the time. Server only.
 
 var body: DoctorBody:
 	get:
@@ -17,7 +17,9 @@ func physics_update(delta: float) -> void:
 	if not body.is_walking():
 		motor.advance_on_ground(Vector3.ZERO, delta)
 		return
-	var flat := Vector3(motor.goal.x - body.global_position.x, 0.0, motor.goal.z - body.global_position.z)
+	var flat := Vector3(
+		motor.goal.x - body.global_position.x, 0.0, motor.goal.z - body.global_position.z
+	)
 	var pace := body.pace()
 	if pace <= 0.0 or flat.length() <= maxf(motor.arrive_distance_m, pace * delta):
 		var reached := motor.goal

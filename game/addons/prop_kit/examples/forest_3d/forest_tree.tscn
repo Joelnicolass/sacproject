@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_54k05"]
+height = 4.0
+radius = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xdetl"]
+albedo_color = Color(0.42, 0.28, 0.16, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_4abvc"]
+material = SubResource("StandardMaterial3D_xdetl")
+top_radius = 0.25
+bottom_radius = 0.38
+height = 4.0
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ldtkw"]
+albedo_color = Color(0.16, 0.42, 0.2, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_r754f"]
+material = SubResource("StandardMaterial3D_ldtkw")
+top_radius = 0.0
+bottom_radius = 1.8
+height = 4.5
+radial_segments = 10
+
+[node name="ForestTree" type="StaticBody3D" unique_id=1469208375 groups=["prop_obstruction"]]
+editor_description = "A prop: its trunk stops bodies and cuts the navmesh (group prop_obstruction)."
+collision_layer = 2
+collision_mask = 0
+
+[node name="Trunk" type="CollisionShape3D" parent="." unique_id=2022648891]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("CylinderShape3D_54k05")
+
+[node name="Wood" type="MeshInstance3D" parent="." unique_id=227341026]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("CylinderMesh_4abvc")
+
+[node name="Crown" type="MeshInstance3D" parent="." unique_id=87717813]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, 0)
+mesh = SubResource("CylinderMesh_r754f")

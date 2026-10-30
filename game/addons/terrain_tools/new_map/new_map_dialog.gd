@@ -1,7 +1,7 @@
 @tool
 extends ConfirmationDialog
 
-## The «Mapa nuevo» dialog: a tag and a name, and below them, live, why the map cannot be made yet (Aceptar stays off
+## The «New map» dialog: a tag and a name, and below them, live, why the map cannot be made yet (Create stays off
 ## until it can). Frees itself once closed. Not: making the map (NewMapAction listens to `chosen`).
 
 signal chosen(tag: StringName, display_name: String)

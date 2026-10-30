@@ -1,4 +1,4 @@
-"""Requiere el juego original instalado (SAC_INSTALL). Ver tools/import/local.cfg.example.
+"""Needs the original game installed (SAC_INSTALL). See tools/import/local.cfg.example.
 
 WARNING: re-baking OVERWRITES the ground roles painted by hand in the editor (the roles brush of addons/terrain_tools):
 once a map's ground_roles.png was painted, run it with --check first and leave that map alone.

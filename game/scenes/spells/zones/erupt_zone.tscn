@@ -1,15 +1,15 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/spells/zones/ground_zone.gd" id="1_zone"]
-[ext_resource type="Resource" path="res://data/catalog/spells/tpre.tres" id="2_spell"]
+[ext_resource type="Resource" path="res://spells/erupt/erupt.tres" id="2_spell"]
 [ext_resource type="Script" path="res://scenes/map/terrain/terrain_stamp.gd" id="3_stamp"]
 [ext_resource type="Script" path="res://scenes/map/terrain/stamp_profile.gd" id="4_profile"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_erupt.gd" id="5_erupt"]
 [ext_resource type="PackedScene" path="res://scenes/spells/zones/erupt_burst.tscn" id="6_burst"]
-[ext_resource type="Resource" path="res://data/fx/erupt_rocks.tres" id="7_rocks"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/erupt_rocks.tres" id="7_rocks"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_stun_ring.gd" id="8_ring"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_dust.gd" id="9_dust"]
-[ext_resource type="Resource" path="res://data/fx/erupt_dust.tres" id="10_dust"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/erupt_dust.tres" id="10_dust"]
 [ext_resource type="Script" path="res://scenes/fx/particle_type.gd" id="11_ptype"]
 [ext_resource type="Script" path="res://scenes/spells/zones/zone_stamp_stop.gd" id="12_stop"]
 

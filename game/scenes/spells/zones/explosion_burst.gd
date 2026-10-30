@@ -1,15 +1,16 @@
 class_name ExplosionBurst
 extends FxScene
 
-## The look of one blast, played on every peer by FxBus.broadcast_scene at each point of an Explosion: two spheres of fire that swell (a big one
-## and a small one), and the rocks it throws. The sprites of the blast (xplo, exp2, ash, smoke) are bursts the zone plays beside it; the sound
-## is the one of this scene's file name in the sound table. Presentation only; it frees itself. It does not hurt anyone (ZoneBlast).
-## Ref: sacengine explosionAnimation and animateDebris (state.d:27625-27642).
+## The look of one blast, played on every peer by FxBus.broadcast_scene at each point of an
+## Explosion: two spheres of fire that swell (a big one and a small one), and the rocks it throws.
+## The sprites of the blast (xplo, exp2, ash, smoke) are bursts the zone plays beside it; the sound
+## is the one of this scene's file name in the sound table. Presentation only; it frees itself. It
+## does not hurt anyone (ZoneBlast).
 
 ## The spheres, scaled from nothing: each is a unit-diameter sphere.
 @export var big: MeshInstance3D
 @export var small: MeshInstance3D
-## The burn it leaves on the ground (061k-5), painted when the blast starts.
+## The burn it leaves on the ground, painted when the blast starts.
 @export var scar: ScarMark
 ## The rock that flies off, and how many.
 @export var piece: PackedScene
@@ -46,7 +47,11 @@ func _swell(sphere: MeshInstance3D, seconds: float, radius: float) -> void:
 	sphere.set_instance_shader_parameter(&"fade", 1.0)  # the tween needs a start value
 	var tween := create_tween().set_parallel()
 	tween.tween_property(sphere, "scale", squash * radius * 2.0, seconds)
-	tween.tween_property(sphere, "instance_shader_parameters/fade", 0.0, seconds * fade_share).set_delay(seconds * (1.0 - fade_share))
+	(
+		tween
+		. tween_property(sphere, "instance_shader_parameters/fade", 0.0, seconds * fade_share)
+		. set_delay(seconds * (1.0 - fade_share))
+	)
 	tween.chain().tween_callback(sphere.hide)
 
 
@@ -59,12 +64,23 @@ func _throw() -> void:
 		var direction := Vector3(cos(angle), rng.randf_range(0.5, 2.0), sin(angle)).normalized()
 		var rock := piece.instantiate() as DebrisPiece
 		add_child(rock)
-		rock.launch(direction * (throw_speed + rng.randf_range(-throw_jitter, throw_jitter)), _axis(rng), TAU * rng.randf_range(spin_turns.x, spin_turns.y))
+		rock.launch(
+			direction * (throw_speed + rng.randf_range(-throw_jitter, throw_jitter)),
+			_axis(rng),
+			TAU * rng.randf_range(spin_turns.x, spin_turns.y)
+		)
 
 
 func _axis(rng: RandomNumberGenerator) -> Vector3:
-	return Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0)).normalized()
+	return (
+		Vector3(rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0))
+		. normalized()
+	)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if big != null and small != null else PackedStringArray(["Faltan las dos esferas (big y small)."])
+	return (
+		PackedStringArray()
+		if big != null and small != null
+		else PackedStringArray(["The two spheres (big and small) are missing."])
+	)

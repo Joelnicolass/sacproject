@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/actions/soul_action.gd" id="1_script"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/dirt_cast.tres" id="fx_dirt_cast"]
+[ext_resource type="PackedScene" path="res://spells/soul_mole/soul_mole.tscn" id="q8_scene"]
+
+[node name="SoulMole" type="Node"]
+script = ExtResource("1_script")
+pick = 2
+cast_fx = ExtResource("fx_dirt_cast")
+carrier = ExtResource("q8_scene")

@@ -47,3 +47,17 @@ func test_never_slides_across_a_teleport() -> void:
 	ahead.push(1.0, Vector3(0, 0, 0), Quaternion.IDENTITY, 3)
 	ahead.push(2.0, Vector3(500, 0, 0), Quaternion.IDENTITY, 4)
 	check((ahead.sample(2.05)[0] as Vector3).is_equal_approx(Vector3(500, 0, 0)), "past a teleport as the newest state: no speed made of the jump")
+
+
+func test_velocity_for_animation() -> void:
+	var b := _buffer()
+	check(b.velocity_at(1.5).is_equal_approx(Vector3(10, 0, 0)), "between two states, their motion")
+	check(b.velocity_at(0.5) == Vector3.ZERO, "before the first state it holds: still")
+	check(b.velocity_at(2.05).is_equal_approx(Vector3(10, 0, 0)), "while it extrapolates, the same motion")
+	check(b.velocity_at(10.0) == Vector3.ZERO, "past the extrapolation it waits: still")
+	b.push(3.0, Vector3(10, 0, 0), Quaternion.IDENTITY)
+	check(b.velocity_at(2.5) == Vector3.ZERO, "two states at the same place: still, at once")
+	var t := MpInterpolator.new()
+	t.push(1.0, Vector3(0, 0, 0), Quaternion.IDENTITY, 0)
+	t.push(2.0, Vector3(500, 0, 0), Quaternion.IDENTITY, 1)
+	check(t.velocity_at(1.5) == Vector3.ZERO, "never across a teleport")

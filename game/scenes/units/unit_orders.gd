@@ -1,55 +1,81 @@
+@tool
 extends Node
 
-## The creature's current order and its AI (updateCreatureAI).
+## The creature's current order and its AI.
 ## Runs where the body is simulated (server or solo) and drives UnitBody with
 ## begin_walk / engage / halt.
 ##
-## MOVE walks to the spot and ignores enemies until it arrives (moveTo), then the order ends.
+## MOVE walks to the spot and ignores enemies until it arrives, then the order ends.
 ## ATTACK chases its target at any range; when the target is gone the unit fights what it
 ## sees (patrol) or walks to where the target stood, then the order ends.
 ## GUARD follows a friendly body, GUARD_AREA holds a spot and RETREAT stays near the wizard:
 ## all three fight foes in sight of their anchor while within guard_range of it
-## (patrolAround) and never end on their own. ADVANCE fights foes in sight of
+## and never end on their own. ADVANCE fights foes in sight of
 ## its destination on the way and keeps that spot.
-## Ref: sacengine creatureAI.order, updateCreatureAI state.d:13684, patrolAround 13003, advance 13725.
 
 enum Command { NONE, MOVE, ATTACK, GUARD, GUARD_AREA, ADVANCE, RETREAT }
 
+## The RtsKit command each order of the kit (RtsUnit.order_started) is carried out as.
+const KIT_COMMANDS: Dictionary[StringName, Command] = {
+	&"move": Command.MOVE,
+	&"attack": Command.ATTACK,
+	&"attack_body": Command.ATTACK,
+	&"guard": Command.GUARD,
+	&"guard_area": Command.GUARD_AREA,
+	&"attack_move": Command.ADVANCE,
+	&"retreat": Command.RETREAT,
+}
+
 ## How far (m) a guard stays from its anchor.
-## Ref: sacobject.d:103 guardDistance.
 @export var guard_range := 50.0
 ## How far (m) a retreating body stays from the wizard, added to the wizard's radius.
-## Ref: sacengine retreatDistance state.d:13608.
 @export var retreat_distance := 10.0
-## moveTo stops inside this distance (0.5 m).
-## Ref: sacengine moveTo state.d:12386.
+## MOVE stops inside this distance (0.5 m).
 @export var arrive_distance := 0.5
 @export var think_interval_s := 0.25
-## The same order again (same command and target, GUARD / GUARD_AREA / ADVANCE): the unit takes the new point and thinks at its
-## next physics tick (once), not at once and again on the next tick. The AI repeats the order of a follower each time its leader
-## moves (orderIfChanged): each repeat cost two target searches, one inside the AI's tick. Off = every order thinks at once.
-## Ref: shiny.d orderIfChanged.
+## The same order again (same command and target, GUARD / GUARD_AREA / ADVANCE): the unit takes the
+## new point and thinks at its next physics tick (once), not at once and again on the next tick. The
+## AI repeats the order of a follower each time its leader moves: each repeat cost two target
+## searches, one inside the AI's tick. Off = every order thinks at once.
 @export var defer_repeat_think := true
+## The creature that owns this node (set in unit.tscn).
+@export var body: UnitBody
 
 var command: Command = Command.NONE
 var target: Node3D
 ## Where the order points (ground spot, or where the target stood).
 var point := Vector3.ZERO
-## Formation slot (right, forward) in meters, turned by `facing` (getTargetPosition).
-## Ref: sacengine getTargetPosition state.d:391.
+## Formation slot (right, forward) in meters, turned by `facing`.
 var offset := Vector2.ZERO
 var facing := 0.0
-## The formation this creature keeps (RFC-038); the group's next order uses the one most of its creatures have. Server only,
-## not replicated.
-var formation_id: StringName = &"line"
 
 var _think_left := 0.0
 
-@onready var _body: UnitBody = get_parent()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	if body == null:
+		return PackedStringArray(["Assign `body`: the UnitBody that owns this node."])
+	return PackedStringArray()
 
 
-func give(order_command: Command, order_target: Node3D, order_point: Vector3, order_offset: Vector2, order_facing: float) -> void:
-	if _body.afflictions.raging():
+func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+	if body == null:
+		push_error("%s: `body` is empty." % get_path())
+		return
+	if body.unit != null:
+		body.unit.order_started.connect(_on_kit_order)
+
+
+func give(
+	order_command: Command,
+	order_target: Node3D,
+	order_point: Vector3,
+	order_offset: Vector2,
+	order_facing: float
+) -> void:
+	if body.afflictions.raging():
 		return
 	if _is_repeat(order_command, order_target):
 		point = order_point
@@ -63,14 +89,14 @@ func give(order_command: Command, order_target: Node3D, order_point: Vector3, or
 	offset = order_offset
 	facing = order_facing
 	_think_left = 0.0
-	_body.ordered = command != Command.NONE
+	body.ordered = command != Command.NONE
 	match command:
 		Command.MOVE:
-			_body.walk_to(anchor())
+			body.walk_to(anchor())
 		Command.ATTACK:
-			_body.engage(target)
+			body.engage(target)
 		Command.NONE:
-			_body.halt()
+			body.halt()
 		_:
 			_think()
 
@@ -85,12 +111,13 @@ func _is_repeat(order_command: Command, order_target: Node3D) -> bool:
 func clear() -> void:
 	command = Command.NONE
 	target = null
-	_body.ordered = false
+	body.ordered = false
+	if body.unit != null and body.unit.current_order() != null:
+		body.unit.complete()
 
 
 ## Teleport: the creature loses its orders unless it is
 ## on guard or retreating. The body already stopped (warp_to), so a kept order thinks again at once.
-## Ref: sacengine teleport state.d:10260-10261.
 func warped() -> void:
 	if command == Command.GUARD or command == Command.RETREAT:
 		_think_left = 0.0
@@ -113,22 +140,22 @@ func anchor() -> Vector3:
 func _physics_process(delta: float) -> void:
 	if command == Command.NONE:
 		return
-	if _body.is_dead():
+	if body.is_dead():
 		clear()
 		return
-	if _body.afflictions.raging():
+	if body.afflictions.raging():
 		clear()
-		_body.halt()
+		body.halt()
 		return
 	match command:
 		Command.MOVE:
-			if _body.mode != UnitBody.Mode.MOVE:
+			if body.mode != UnitBody.Mode.MOVE:
 				clear()
 			return
 		Command.ATTACK:
-			if _body.engagement.is_foe(target):
-				if _body.target != target:
-					_body.engage(target)
+			if body.engagement.is_foe(target):
+				if body.target != target:
+					body.engage(target)
 				return
 	_think_left -= delta
 	if _think_left > 0.0:
@@ -154,7 +181,7 @@ func _think() -> void:
 		Command.RETREAT:
 			if not _guardable(target):
 				clear()
-				_body.halt()
+				body.halt()
 				return
 			_hold(target.global_position, guard_range, _radius_of(target) + retreat_distance)
 
@@ -163,57 +190,55 @@ func _think() -> void:
 ## spot and drop the order (`goto case CommandType.move`).
 func _lost_target() -> void:
 	target = null
-	var foe: Node3D = _body.engagement.closest_foe(_body.global_position)
+	var foe: Node3D = body.engagement.closest_foe(body.global_position)
 	if foe:
 		_engage(foe)
 		return
 	var spot := anchor()
-	if _flat(_body.global_position, spot) <= arrive_distance:
+	if _flat(body.global_position, spot) <= arrive_distance:
 		clear()
-		_body.halt()
+		body.halt()
 		return
 	_walk(spot)
 
 
-## patrolAround, then moveTo / moveWithinRange: defend `center` while within `leash` of it. F370: the picker is asked again
-## every think (patrolAround calls updateTarget each turn); the current target weighs x1.3 there, so it is
-## kept unless something better (or nothing: a futile target) comes up. Before, a target in sight was held blindly.
-## Ref: sacengine patrolAround state.d:13007.
+## Defend `center` while within `leash` of it. The picker is asked again
+## every think; the current target weighs x1.3 there, so it is
+## kept unless something better (or nothing: a futile target) comes up.
 func _hold(center: Vector3, leash: float, stop_within: float) -> void:
-	if _flat(_body.global_position, center) <= leash:
+	if _flat(body.global_position, center) <= leash:
 		var foe: Node3D = _acquire(center, leash)
 		if foe:
 			_engage(foe)
 			return
-	if _flat(_body.global_position, center) <= stop_within:
-		if _body.mode != UnitBody.Mode.IDLE:
-			_body.halt()
+	if _flat(body.global_position, center) <= stop_within:
+		if body.mode != UnitBody.Mode.IDLE:
+			body.halt()
 		return
 	_walk(center)
 
 
-## updateTarget as patrolAround calls it (threshold min(100, distance to the anchor)*0.01) or,
-## for ADVANCE (no leash), as advance does (reference 150, threshold 0.25). With a leash the
-## foe must also be within the body's sight range of the anchor (a deviation: at the anchor the threshold
+## The target search of a guard (threshold min(100, distance to the anchor)*0.01) or,
+## for ADVANCE (no leash), of an advance (reference 150, threshold 0.25). With a leash the
+## foe must also be within the body's sight range of the anchor (at the anchor the threshold
 ## is ~0 and any foe the side has seen would be taken, then dropped as the threshold rises: jitter).
-## Ref: sacengine patrolAround state.d:13007, advance 13039.
 func _acquire(center: Vector3, leash: float) -> Node3D:
 	if is_inf(leash):
-		return _body.engagement.closest_foe(center, 0.25, 150.0)
-	var threshold := minf(100.0, _flat(_body.global_position, center)) * 0.01
-	var sight := _body.vision.range_m()
-	return _body.engagement.closest_foe(center, threshold, 100.0, sight)
+		return body.engagement.closest_foe(center, 0.25, 150.0)
+	var threshold := minf(100.0, _flat(body.global_position, center)) * 0.01
+	var sight := body.vision.range_m()
+	return body.engagement.closest_foe(center, threshold, 100.0, sight)
 
 
 func _engage(foe: Node3D) -> void:
-	var mode: int = _body.mode
-	if _body.target == foe and (mode == UnitBody.Mode.CHASE or mode == UnitBody.Mode.ATTACK):
+	var mode: int = body.mode
+	if body.target == foe and (mode == UnitBody.Mode.CHASE or mode == UnitBody.Mode.ATTACK):
 		return
-	_body.engage(foe)
+	body.engage(foe)
 
 
 func _walk(spot: Vector3) -> void:
-	_body.walk_to(spot)
+	body.walk_to(spot)
 
 
 ## `node` is a Variant: an order's target may be freed while the order stands, and a freed object
@@ -222,7 +247,7 @@ func _alive(node: Variant) -> bool:
 	var live := _live(node)
 	if live == null:
 		return false
-	if live.has_method("is_dead") and live.call("is_dead"):  # dynamic: any body (unit, structure, doctor) answers is_dead
+	if live is GameBody and (live as GameBody).is_dead():
 		return false
 	var health := live.get_node_or_null("Health") as Health
 	return health == null or not health.is_dead()
@@ -230,7 +255,6 @@ func _alive(node: Variant) -> bool:
 
 ## A dying
 ## wizard is dropped, a ghost (health 0 while it rises) is still guarded.
-## Ref: sacengine isValidGuardTarget state.d:145-151, guard 13016, retreat 13687.
 func _guardable(node: Variant) -> bool:
 	var live := _live(node)
 	if live == null:
@@ -253,11 +277,20 @@ static func _flat(a: Vector3, b: Vector3) -> float:
 
 
 static func _yaw_of(node: Node3D) -> float:
-	if node.has_method("facing_flat"):  # dynamic: unit, wizard and doctor bodies all face
-		var ahead: Vector3 = node.call("facing_flat")
+	if node is GameBody:
+		var ahead := (node as GameBody).facing_flat()
 		return atan2(ahead.x, ahead.z)
 	return node.rotation.y
 
 
 static func _radius_of(node: Node3D) -> float:
 	return BodyFacts.of_body(node).radius_m
+
+
+# An order of the RtsKit (the player's or the AI's, through RtsOrders): the unit's place and turn of
+# the formation, carried out as before.
+func _on_kit_order(order: RtsUnitOrder, _replaced: RtsUnitOrder) -> void:
+	if not KIT_COMMANDS.has(order.command):
+		return
+	var target_node := order.target as Node3D if order.has_target() else null
+	give(KIT_COMMANDS[order.command], target_node, order.point, order.slot, order.facing)

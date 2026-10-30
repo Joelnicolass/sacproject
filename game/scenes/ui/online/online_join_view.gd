@@ -1,8 +1,10 @@
 extends Control
 
-## Joins an online room: by the code a friend passed (typed as he likes: lower case and dashes are fine), or by a row of the list
-## of public rooms of this game and version (refreshed each time the view shows). The pick is the menu's (`SacrificeFlow.pick`):
-## the host's match takes it on admission. Not: the seat or the relay (MpFlow.join_online), the texts of a refusal (the status line).
+## Joins an online room: by the code a friend passed (typed as he likes: lower case and dashes are
+## fine), or by a row of the list of public rooms of this game and version (refreshed each time the
+## view shows). The pick is the menu's (`SacrificeFlow.pick`): the host's match takes it on
+## admission. Not: the seat or the relay (MpFlow.join_online), the texts of a refusal (the status
+## line).
 
 signal back_requested
 
@@ -29,7 +31,7 @@ func _ready() -> void:
 func refresh() -> void:
 	%Refresh.disabled = true
 	var rooms: Array = await SacrificeFlow.online_rooms()
-	## The answer may come after this screen was left.
+	# The answer may come after this screen was left.
 	if not is_inside_tree():
 		return
 	%Refresh.disabled = false
@@ -38,7 +40,14 @@ func refresh() -> void:
 		child.queue_free()
 	for room: Dictionary in rooms:
 		var row := room_row_scene.instantiate() as Button
-		row.text = tr("UI_ONLINE_ROOM_ROW") % [str(room.get("name", "")), int(room.get("players", 0)), int(room.get("max_players", 0))]
+		row.text = (
+			tr("UI_ONLINE_ROOM_ROW")
+			% [
+				str(room.get("name", "")),
+				int(room.get("players", 0)),
+				int(room.get("max_players", 0))
+			]
+		)
 		row.pressed.connect(_join.bind(str(room.get("code", ""))))
 		_rows.add_child(row)
 	%NoRooms.visible = rooms.is_empty()

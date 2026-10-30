@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SpellType" format=3]
+
+[ext_resource type="Script" path="res://scenes/spells/spell_type.gd" id="1_p0kkg"]
+[ext_resource type="PackedScene" path="res://spells/erupt/erupt_action.tscn" id="2_action"]
+[ext_resource type="Texture2D" uid="uid://c3ft6akpn3i56" path="res://assets/original/ui/icons/tpre.png" id="icon_tex"]
+
+[resource]
+script = ExtResource("1_p0kkg")
+tag = "tpre"
+display_name = "Erupt"
+icon = ExtResource("icon_tex")
+mana_cost = 800
+cast_range_m = 125.0
+cooldown_s = 30.0
+casting_time_s = 1.1111
+book_level = 4
+book_slot = 52
+speed_m_s = 30.0
+damage = 600
+damage_range_m = 15.0
+effect_range_m = 75.0
+action = ExtResource("2_action")
+targets_wizards = true
+targets_creatures = true
+targets_corpses = true
+targets_structures = true
+targets_ground = true
+ai_use = 4
+ai_phase = 1
+ai_worth = 600
+structures = PackedStringArray()

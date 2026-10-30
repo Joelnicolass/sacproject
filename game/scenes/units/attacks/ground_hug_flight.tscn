@@ -4,6 +4,6 @@
 [ext_resource type="PackedScene" path="res://scenes/fx/spike_field.tscn" id="2_spikes"]
 
 [node name="GroundHugFlight" type="Node"]
-editor_description = "Vuelo del Rhinok (hrba, updateRhinokProjectile fase moving, state.d:24963-24974): en cada tick el disparo vuelve al suelo (suelo + 0,05 m) antes de buscar su cuerpo con la caja de 5 m; púas visuales rock_emerge en un disco de 2,5 m."
+editor_description = "The Rhinok's flight (hrba): on every tick the shot goes back to the ground (ground + 0.05 m) before it looks for its body with the 5 m box; visual rock_emerge spikes in a 2.5 m disc."
 script = ExtResource("1_hug")
 spike_scene = ExtResource("2_spikes")

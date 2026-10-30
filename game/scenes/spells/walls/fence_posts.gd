@@ -2,12 +2,12 @@
 class_name FencePosts
 extends Node3D
 
-## The posts of a Fence: two are born every 32 ticks while its ends grow (the first at tick 16), one at each end, up to twelve. Each
-## floats between `low_m` and `high_m` over the land with a swing of `swing_s`, grows in half a second and shrinks away when the wall sinks.
-## The server decides when a post is born; `posts` (metres along the wall and the tick of birth, sorted by metre) is replicated, and every
-## peer derives a post's height and size from it and the wall's age. It draws each as a violet bubble with a ring of sparks over it. It does
-## not hurt anybody (FenceZap).
-## Ref: sacengine updateFence, makeFencePost, updateFencePost (state.d:20712-20752, 20755-20806; renderer.d:632-646).
+## The posts of a Fence: two are born every 32 ticks while its ends grow (the first at tick 16), one
+## at each end, up to twelve. Each floats between `low_m` and `high_m` over the land with a swing of
+## `swing_s`, grows in half a second and shrinks away when the wall sinks. The server decides when a
+## post is born; `posts` (metres along the wall and the tick of birth, sorted by metre) is
+## replicated, and every peer derives a post's height and size from it and the wall's age. It draws
+## each as a violet bubble with a ring of sparks over it. It does not hurt anybody (FenceZap).
 
 ## A post was born (server only): `at` is its place. FenceZap throws its first bolts.
 signal post_born(at: Vector3)
@@ -32,7 +32,7 @@ var posts := PackedVector2Array()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if wall != null else PackedStringArray(["Falta el SpellWall."])
+	return PackedStringArray() if wall != null else PackedStringArray(["The SpellWall is missing."])
 
 
 func _ready() -> void:
@@ -48,7 +48,11 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	var birth_tick := MatchClock.ticks_for(birth_s)
-	if wall.vanish_at >= 0 or wall.age < birth_tick or (wall.age - birth_tick) % maxi(1, MatchClock.ticks_for(period_s)) != 0:
+	if (
+		wall.vanish_at >= 0
+		or wall.age < birth_tick
+		or (wall.age - birth_tick) % maxi(1, MatchClock.ticks_for(period_s)) != 0
+	):
 		return
 	for side in [-1.0, 1.0]:
 		if posts.size() >= max_posts or (wall.left_stopped if side < 0.0 else wall.right_stopped):
@@ -70,12 +74,20 @@ func scale_of(post: Vector2) -> float:
 	var grown := clampf(float(live - int(post.y)) / float(MatchClock.ticks_for(grow_s)), 0.0, 1.0)
 	if wall.vanish_at < 0:
 		return grown
-	return maxf(0.0, grown - float(wall.age - wall.vanish_at) / float(MatchClock.ticks_for(shrink_s)))
+	return maxf(
+		0.0, grown - float(wall.age - wall.vanish_at) / float(MatchClock.ticks_for(shrink_s))
+	)
 
 
 ## Where the post floats now.
 func position_of(post: Vector2) -> Vector3:
-	var swing := 0.5 * (1.0 - cos(TAU * float(wall.age - int(post.y)) / (swing_s * MatchClock.TICKS_PER_SECOND_F)))
+	var swing := (
+		0.5
+		* (
+			1.0
+			- cos(TAU * float(wall.age - int(post.y)) / (swing_s * MatchClock.TICKS_PER_SECOND_F))
+		)
+	)
 	var at := wall.point_at(post.x)
 	at.y += swing * low_m + (1.0 - swing) * high_m
 	return at

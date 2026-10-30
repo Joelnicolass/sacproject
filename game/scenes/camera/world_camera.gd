@@ -1,22 +1,26 @@
+class_name WorldCamera
 extends Camera3D
 
-## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the keys, the screen edges and
-## free look, and zooms with the wheel (except over `wheel_blockers`). Controls are InputMap actions: `camera_orbit` (middle
-## button, or `camera_orbit_modifier` Ctrl + `select`) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are the keys.
-## Ref: sacengine dagonBackend.d positionCamera / cameraControl. Units 1:1 sac → m.
+## Third-person camera that follows a body: it places itself behind it from the zoom, turns with the
+## keys, the screen edges and free look, and zooms with the wheel (except over `wheel_blockers`).
+## Controls are InputMap actions: `camera_orbit` (middle button, or `camera_orbit_modifier` Ctrl +
+## `select`) looks around, `camera_wheel_in` / `camera_wheel_out` zoom, and `turn_*` / `zoom_*` are
+## the keys.
 
 @export var follow: Node3D
-## Only this ground counts for the ray under the camera (props on layer 1 are skipped). The live land (Terrain.height_at,
-## playing stamps included) always counts too, so a Volcano that rises before its collision is remade never buries the view.
+## Only this ground counts for the ray under the camera (props on layer 1 are skipped). The live
+## land (Terrain.height_at, playing stamps included) always counts too, so a Volcano that rises
+## before its collision is remade never buries the view.
 @export var ground: Node3D
 ## The eye never goes lower than this over the live land under it.
 @export var ground_clearance_m := 0.5
 ## Edges only scroll while the pointer hovers this control (the HUD bar is excluded).
 @export var edge_area: Control
-## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms itself). A control with a
-## `covers(screen)` method (Minimap: its circle) decides by that; any other counts by its rectangle.
+## The wheel does not zoom the world while the pointer is over one of these (the minimap zooms
+## itself). A control with a `covers(screen)` method (Minimap: its circle) decides by that; any
+## other counts by its rectangle.
 @export var wheel_blockers: Array[Control] = []
-## RFC-053 053f: the shake this camera adds on top of its placement (a CameraShake child). Empty: no shake.
+## The shake this camera adds on top of its placement (a CameraShake child). Empty: no shake.
 @export var shake: CameraShake
 
 @export_group("Edges")
@@ -50,8 +54,8 @@ extends Camera3D
 @export_group("Free look")
 ## Degrees per pixel. Negative = the original "grab the world" feel.
 @export var look_deg_per_px := -0.25
-## Absolute limits of view_pitch_deg. Basis.looking_at degenerates at ±90°, so the view stops short of vertical.
-## Ref: sacengine only wraps the pitch at ±180° (dagonBackend.d:425).
+## Absolute limits of view_pitch_deg. Basis.looking_at degenerates at ±90°, so the view stops short
+## of vertical.
 @export var look_down_max_deg := 85.0
 @export var look_up_max_deg := 80.0
 @export var drag_px := 3.0
@@ -64,9 +68,9 @@ var yaw := 0.0
 var zoom := 0.125
 var target_zoom := 0.125
 ## Free-look pitch on top of the follow angle. Negative looks up.
-## Ref: sacengine camera.pitch over pitchOffset.
 var free_pitch_deg := 0.0
-## Resulting view pitch below the horizon, in [-look_up_max_deg, look_down_max_deg]. Negative looks up.
+## Resulting view pitch below the horizon, in [-look_up_max_deg, look_down_max_deg]. Negative looks
+## up.
 var view_pitch_deg := 0.0
 var _dragged := false
 var _drag_travel := 0.0
@@ -115,7 +119,11 @@ func _input(event: InputEvent) -> void:
 		var button := event as InputEventMouseButton
 		var wheel_in := button.is_action_pressed(&"camera_wheel_in")
 		var wheel_out := button.is_action_pressed(&"camera_wheel_out")
-		if button.is_action_pressed(&"select") or button.is_action_pressed(&"order_units") or button.is_action_pressed(&"camera_orbit"):
+		if (
+			button.is_action_pressed(&"select")
+			or button.is_action_pressed(&"order_units")
+			or button.is_action_pressed(&"camera_orbit")
+		):
 			_dragged = false
 			_drag_travel = 0.0
 		elif (wheel_in or wheel_out) and _wheel_blocked(button.position):
@@ -144,7 +152,9 @@ func _wheel_blocked(screen: Vector2) -> bool:
 		if blocker is Minimap:
 			if (blocker as Minimap).covers(screen):
 				return true
-		elif Rect2(Vector2.ZERO, blocker.size).has_point(blocker.get_global_transform().affine_inverse() * screen):
+		elif Rect2(Vector2.ZERO, blocker.size).has_point(
+			blocker.get_global_transform().affine_inverse() * screen
+		):
 			return true
 	return false
 
@@ -155,8 +165,12 @@ func _wheel_factor(button: InputEventMouseButton) -> float:
 
 ## True while the orbit gesture is held (`camera_orbit`, or `camera_orbit_modifier` + `select`).
 func _free_look() -> bool:
-	return Input.is_action_pressed(&"camera_orbit") \
-			or (Input.is_action_pressed(&"camera_orbit_modifier") and Input.is_action_pressed(&"select"))
+	return (
+		Input.is_action_pressed(&"camera_orbit")
+		or (
+			Input.is_action_pressed(&"camera_orbit_modifier") and Input.is_action_pressed(&"select")
+		)
+	)
 
 
 func _process(delta: float) -> void:
@@ -203,7 +217,8 @@ func _edge_pointer() -> Variant:
 		return null
 	if edge_area and get_viewport().gui_get_hovered_control() != edge_area:
 		return null
-	# The pointer the GUI hover saw, not the OS cursor, which can sit over a window the game never got events for.
+	# The pointer the GUI hover saw, not the OS cursor, which can sit over a window the game never
+	# got events for.
 	return _pointer
 
 
@@ -231,14 +246,20 @@ func _place() -> void:
 		focus_factor = focus_min_factor + (1.0 - focus_min_factor) * zoom / focus_full_zoom
 	var distance := base_distance * (distance_zoom_base + distance_zoom_scale * zoom)
 	var height := floating * (height_zoom_base + height_zoom_scale * zoom)
-	# The drawn place of the body (DrawnPose), not the tick it simulates in: the camera runs from _process, after the kit.
+	# The drawn place of the body (DrawnPose), not the tick it simulates in: the camera runs from
+	# _process, after the kit.
 	var origin := DrawnPose.origin(follow)
 	var ahead := Vector3(sin(yaw), 0.0, cos(yaw))
 	var spot := origin - ahead * distance
 	spot.y = origin.y - _ground_y(origin, origin.y) + _ground_y(spot, origin.y) + height
-	var offset := atan2(spot.y - (origin.y + focus * focus_factor), Vector2(origin.x - spot.x, origin.z - spot.z).length())
+	var offset := atan2(
+		spot.y - (origin.y + focus * focus_factor),
+		Vector2(origin.x - spot.x, origin.z - spot.z).length()
+	)
 	var offset_deg := rad_to_deg(offset)
-	free_pitch_deg = clampf(free_pitch_deg, -look_up_max_deg - offset_deg, look_down_max_deg - offset_deg)
+	free_pitch_deg = clampf(
+		free_pitch_deg, -look_up_max_deg - offset_deg, look_down_max_deg - offset_deg
+	)
 	view_pitch_deg = clampf(offset_deg + free_pitch_deg, -look_up_max_deg, look_down_max_deg)
 	var down := deg_to_rad(view_pitch_deg)
 	var view := ahead * cos(down) + Vector3.DOWN * sin(down)

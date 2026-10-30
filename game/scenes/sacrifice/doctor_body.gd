@@ -1,32 +1,34 @@
+# gdlint: disable=max-public-methods
+# max-public-methods: the Sac Doctor's commands (walk, carry, work, pose) are its public API (23
+# methods); split it by responsibility later, not by count.
 @tool
 class_name DoctorBody
-extends CharacterBody3D
+extends GameBody
 
-## A Sac Doctor: falls out of a vortex, walks to a point, stands working and dies. Not a UnitBody: no orders, attack, corpse or soul;
-## creatures, shots and spells can still attack it (group «doctor»). It keeps the pose, the work and the health and offers the verbs;
-## it does not walk (its `motor`, DoctorMotor) or draw (DoctorLook listens to `pose_changed`); `errand` is what a carrier came for.
-## The server (or solo) runs the States machine; clients get the pose (drawn smoothly by its MpActor, BUFFERED), `pose`, `work`, `carried` and Health from the MpActor's MpSync (doctor.tscn) and only present them.
-## Ref: sacengine CRE8 `dcas`, model `sacd`.
+## A Sac Doctor: falls out of a vortex, walks to a point, stands working and dies. Not a UnitBody:
+## no orders, attack, corpse or soul; creatures, shots and spells can still attack it (group
+## «doctor»). It keeps the pose, the work and the health and offers the verbs; it does not walk (its
+## `motor`, DoctorMotor) or draw (DoctorLook listens to `pose_changed`); `errand` is what a carrier
+## came for. The server (or solo) runs the States machine; clients get the pose (drawn smoothly by
+## its MpActor, BUFFERED), `pose`, `work`, `carried` and Health from the MpActor's MpSync
+## (doctor.tscn) and only present them.
 
-## Server only: the drop is over (the bounce included) / walk_to reached its goal / it died (no corpse, no soul) / the StuckGuard gave up.
+## Server only: the drop is over (the bounce included) / walk_to reached its goal / it died (no
+## corpse, no soul) / the StuckGuard gave up.
 signal landed
 signal arrived(goal: Vector3)
 signal died(from_slot: int)
 signal stuck
-## The pose or the work changed (on every peer, and once when it is ready): whoever draws the doctor shows the clip.
+## The pose or the work changed (on every peer, and once when it is ready): whoever draws the doctor
+## shows the clip.
 signal pose_changed(pose: Pose, work: Work)
-
-const GROUP := &"doctor"
 
 enum Pose { IDLE, FALLING, WALKING, WORKING, DYING, LANDING }
 enum Work { PUMP, LIFT, TORTURE }
 
+const GROUP := &"doctor"
+
 @export var type: CreatureType
-@export var owner_slot := 0:
-	set(value):
-		owner_slot = value
-		if is_node_ready() and health_bar:
-			(health_bar as UnitHealthBar).set_owner_slot(owner_slot)
 @export var pose: Pose = Pose.IDLE:
 	set(value):
 		pose = value
@@ -52,6 +54,7 @@ var speed_factor := 1.0
 var move_speed: float:
 	get:
 		return type.run_speed_m_s if type else 0.0
+
 var _killer_slot := 0
 
 
@@ -70,9 +73,20 @@ func _ready() -> void:
 	if type:
 		health.setup(float(type.health))
 	if drop_on_ready:
-		drop_to(Vector3(global_position.x, GroundRay.surface_y(self, global_position, 1, [get_rid()], global_position.y), global_position.z))
+		drop_to(
+			Vector3(
+				global_position.x,
+				GroundRay.surface_y(self, global_position, 1, [get_rid()], global_position.y),
+				global_position.z
+			)
+		)
 	else:
 		stand()
+
+
+func _owner_slot_changed() -> void:
+	if is_node_ready() and health_bar:
+		(health_bar as UnitHealthBar).set_owner_slot(owner_slot)
 
 
 func stand() -> void:
@@ -87,12 +101,18 @@ func drop_to(point: Vector3) -> void:
 	_go(&"Dropping", point)
 
 
-## Walks to `point` with collision; `begin_walk` is one straight leg (what the PathFollower hands out).
-func walk_to(point: Vector3) -> void: motor.walk_to(point)
+## Walks to `point` with collision; `begin_walk` is one straight leg (what the PathFollower hands
+## out).
+func walk_to(point: Vector3) -> void:
+	motor.walk_to(point)
 
-func begin_walk(point: Vector3) -> void: motor.begin_walk(point)
 
-func turn_toward(direction: Vector3, delta: float) -> void: motor.turn_toward(direction, delta)
+func begin_walk(point: Vector3) -> void:
+	motor.begin_walk(point)
+
+
+func turn_toward(direction: Vector3, delta: float) -> void:
+	motor.turn_toward(direction, delta)
 
 
 ## Stops walking and stands.
@@ -129,35 +149,56 @@ func give_up() -> void:
 
 
 ## The server or a solo game moves and rules it; a client only shows it.
-func simulates() -> bool: return is_multiplayer_authority()
-
-func is_walking() -> bool: return motor.is_walking()
-
-func is_dead() -> bool: return pose == Pose.DYING or (health != null and health.is_dead())
-
-func is_alive() -> bool: return not is_dead()
-
-func is_dropping() -> bool: return pose == Pose.FALLING or pose == Pose.LANDING
-
-## Not a target while it falls or dies (the bounce makes it invulnerable). Health.damage and every target search ask this.
-func is_targetable() -> bool: return not is_dropping() and pose != Pose.DYING
-
-func is_obstacle() -> bool: return pose != Pose.DYING
-
-func display_name() -> String: return type.display_name if type else name
-
-func pace() -> float: return (type.run_speed_m_s if type else 0.0) * speed_factor
+func simulates() -> bool:
+	return is_multiplayer_authority()
 
 
-func landing_s() -> float: return motor.landing_s()
+func is_walking() -> bool:
+	return motor.is_walking()
 
-func facing_flat() -> Vector3: return motor.facing_flat()
+
+func is_dead() -> bool:
+	return pose == Pose.DYING or (health != null and health.is_dead())
+
+
+func is_alive() -> bool:
+	return not is_dead()
+
+
+func is_dropping() -> bool:
+	return pose == Pose.FALLING or pose == Pose.LANDING
+
+
+## Not a target while it falls or dies (the bounce makes it invulnerable). Health.damage and every
+## target search ask this.
+func is_targetable() -> bool:
+	return not is_dropping() and pose != Pose.DYING
+
+
+func is_obstacle() -> bool:
+	return pose != Pose.DYING
+
+
+func display_name() -> String:
+	return type.display_name if type else name
+
+
+func pace() -> float:
+	return (type.run_speed_m_s if type else 0.0) * speed_factor
+
+
+func landing_s() -> float:
+	return motor.landing_s()
 
 
 ## Defense and size for MeleeRules.profile_of: evasion and resistance of the CRE8, size of `sacd`.
 func melee_profile() -> Dictionary:
-	return {"evasion": float(type.melee_evasion_milli()) if type else 0.0, "resistance": type.melee_resistance if type else 1.0,
-		"reach": mount.facts.reach_m, "height": mount.facts.height_m}
+	return {
+		"evasion": float(type.melee_evasion_milli()) if type else 0.0,
+		"resistance": type.melee_resistance if type else 1.0,
+		"reach": mount.facts.reach_m,
+		"height": mount.facts.height_m
+	}
 
 
 func regenerate(delta: float) -> void:
@@ -165,7 +206,8 @@ func regenerate(delta: float) -> void:
 		health.heal(type.regeneration_per_s * delta)
 
 
-func announce_death() -> void: died.emit(_killer_slot)
+func announce_death() -> void:
+	died.emit(_killer_slot)
 
 
 func _die(from_slot: int) -> void:
@@ -174,7 +216,8 @@ func _die(from_slot: int) -> void:
 	_go(&"Dying")
 
 
-## The one way into `states` (autostart is off, so a client never runs it): the first call starts it in `state_name`, the rest transition.
+## The one way into `states` (autostart is off, so a client never runs it): the first call starts it
+## in `state_name`, the rest transition.
 func _go(state_name: StringName, payload: Variant = null) -> void:
 	if states.is_started():
 		states.transition(state_name, payload)
@@ -194,7 +237,9 @@ func _announce_pose() -> void:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var out := PackedStringArray()
-	for socket in ["type", "rules", "health", "collision", "mount", "health_bar", "states", "motor"]:
+	for socket in [
+		"type", "rules", "health", "collision", "mount", "health_bar", "states", "motor"
+	]:
 		if get(socket) == null:
-			out.append("Asigná `%s` (ver doctor.tscn)." % socket)
+			out.append("Assign `%s` (see doctor.tscn)." % socket)
 	return out

@@ -46,6 +46,8 @@ var _shown_pos := Vector3.ZERO
 var _shown_rot := Quaternion.IDENTITY
 ## FOLLOW: the teleport count it already jumped to.
 var _followed_teleports: int = 0
+## FOLLOW: how fast the drawn pose moved last frame.
+var _follow_velocity := Vector3.ZERO
 
 
 func _init(node: Node, buffered: bool) -> void:
@@ -85,11 +87,24 @@ func draw(delta: float, stamp: float, net_pos: Vector3, net_rot: Quaternion, tel
 		_followed_teleports = teleports
 		_shown_pos = net_pos
 		_shown_rot = net_rot
+		_follow_velocity = Vector3.ZERO
 	else:
 		var alpha := 1.0 - exp(-follow_speed * delta)
+		var before := _shown_pos
 		_shown_pos = _shown_pos.lerp(net_pos, alpha)
 		_shown_rot = _shown_rot.slerp(net_rot, alpha)
+		_follow_velocity = (_shown_pos - before) / delta if delta > 0.0 else Vector3.ZERO
 	write(_shown_pos, _shown_rot)
+
+
+## How fast the drawn pose moves, for animation (MpActor.motion_velocity): BUFFERED, the motion between the two
+## server states it is drawn between now; FOLLOW, how fast it chased last frame. Zero before any state.
+func velocity() -> Vector3:
+	if _last_stamp <= 0.0:
+		return Vector3.ZERO
+	if _buffered:
+		return _buffer.velocity_at(MpNetClock.server_time() - current_delay())
+	return _follow_velocity
 
 
 ## The delay used this frame (BUFFERED). Not adaptive: `delay_s`.
@@ -118,6 +133,7 @@ func target_delay() -> float:
 
 ## Put the node at this pose now (and forget the history: a teleport or a respawn).
 func snap(net_pos: Vector3, net_rot: Quaternion) -> void:
+	_follow_velocity = Vector3.ZERO
 	_buffer.clear()
 	_last_stamp = 0.0
 	_states = 0

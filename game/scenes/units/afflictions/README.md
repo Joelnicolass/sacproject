@@ -1,5 +1,6 @@
 # units/afflictions
-What: the states of a body that change what it can do (stunned, petrified, frozen, vined, rings of fire, slimed...). `Afflictions` owns the questions the body asks and the replicated mask; each `Affliction` child is one state, a `SpellAffliction` is one a spell lays in layers.
-Not: who may be targeted (`SpellTarget`), the cast (`AfflictAction`), the speed (`PaceFactors` owns it; Slime only gives its factor), the health (`Health` asks `resistance_bonus()`).
-Talks to: spells call `Affliction.lay(spell, slot)`; `Health`, `MeleeWeapon`, `RangedWeapon`, `UnitBody` ask `Afflictions` (`stat_factor`, `resistance_bonus`, `blocks_regeneration`); every peer draws from `Affliction.shown_changed` (the looks in `looks/`: `BodyBoxLook`, `VineLook`, `RingsLook`, `AfflictionEmitter`, `AfflictionCues` for sound) and `StoneLook` swaps the skin texture (Slime).
-Edit: `data/afflictions/<state>.tres` (bit, flags, skin texture, `glow`: the scene of the light the state gives off, in `glows/`; `Afflictions` adds it under the state and it fades with `shown_changed`) · the state node in `unit.tscn` / `wizard_body.tscn` (durations, layers, per-layer knobs) · each look is a child of its state.
+
+States that change what a body can do (stunned, frozen, vined, petrified, slimed…). `Afflictions` owns the questions and
+the replicated mask; each `Affliction` child is one state, laid with `Affliction.lay(spell, slot)`.
+`afflictions.tscn` is instanced in both `unit.tscn` and `wizard_body.tscn` with editable children: the wizard's
+differences and the creature-only states are set on those instances.

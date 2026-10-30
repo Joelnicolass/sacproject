@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="DamagePassiveType" load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://scenes/units/passives/damage_passive_type.gd" id="1_type"]
-[ext_resource type="Resource" path="res://data/catalog/abilities/ahtf.tres" id="typed_ahtf"]
-
-[resource]
-script = ExtResource("1_type")
-ability = ExtResource("typed_ahtf")
-outgoing_melee_per_missing = 1.5

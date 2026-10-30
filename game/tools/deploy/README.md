@@ -33,7 +33,7 @@ Notas del preset:
 - Es el modo **«Dedicated Server» de Godot** (`dedicated_server=true`, desde `3626fb2e`): mallas y texturas salen como placeholders. Encima, el plugin `DedicatedStrip` (`addons/sacrifice_tools/dedicated_strip.gd`, 055s s4) vacia al exportar todo `AudioStream` (mismo tipo, sin muestras) y las pistas de las animaciones de `scenes/bodies/models/*_clips/` (queda largo, paso, bucle y marcadores, que es lo que leen las reglas). Desde la version 2 tambien reemplaza cada archivo de malla (`scenes/props/meshes`, `scenes/bodies/meshes`, los tubos de hechizos) por un `PlaceholderMesh` con el mismo `aabb` (lo unico que leen las reglas, `BuildingFit`); el conteo sale en la linea `DedicatedStrip ... meshes=N`. **No se tocan**: lo que esta bajo `scenes/map/` y `assets/original/maps/` (el terreno compara `surface_get_array_len` y metas con sus datos y arma el trimesh del suelo con `create_trimesh_shape`; los trozos que caen y las paredes de los huecos se cortan de sus arrays) y los `PrimitiveMesh` (`RiftSpawner` lee el radio de un `CylinderMesh`). El navmesh no sale de mallas (colisiones estaticas), asi que no hay otra exclusion. Hace falta exportar desde el editor o con `--export-pack`/`--export-release` de un Godot que cargue el proyecto con el plugin **Sacrifice** habilitado (ya lo esta en `project.godot`). El mundo completo (terreno, colisiones, navegacion) sigue en el pack: la partida lo necesita.
 - Una partida lanzada por el servidor de salas es este mismo binario, asi que **tambien el servidor de salas lleva la etiqueta `dedicated_server`**: `MpBoot.is_dedicated_process()` da `true` en los dos, y `MpFlow` abre ademas el puerto de partida (7777 por defecto) cuando el proceso es `--room-server`. **NO VERIFICADO en Linux** (en la Mac el binario del editor no trae la etiqueta). Si el servidor de salas lo abre, o se pasa `--mp-port=` distinto, o se separa en dos exports; hay que mirarlo con `ss -lunp` en el VPS.
 - **Costo medido** (Mac, `--main-pack <pck> --headless -- --dedicated --no-flow`): segundos hasta `dedicated listo puerto` y RSS 5 s despues, y de que se compone la memoria. Antes del strip: 4,2 s y 416 MB (`3626fb2e`); objetivo del 055s: <= 3,0 s y <= 380 MB. Los numeros medidos se anotan en `rfcs/plans/055s-body-scenes-plan.md`.
-- Excluye `agent/` (si se regeneró), `visual/`, `reviews/`, `rfcs/`, `docs/`, `changes/` y `tools/`: nada de eso lo usa el juego.
+- Excluye `agent/` (si se regeneró), `visual/`, `docs/` (con el archivo histórico) y `tools/`: nada de eso lo usa el juego.
 - La medición exportó el `.pck` del preset, lo arrancó con el Godot de la Mac y jugó una partida contra él, pero **el ejecutable Linux x86_64 con las plantillas no se probó**: es lo primero a verificar en el VPS. Si falla por un recurso excluido, sacalo de `exclude_filter`.
 
 ## 2. Instalar en el VPS
@@ -60,12 +60,12 @@ journalctl -u sacrifice-rooms -f      # debe decir: «salas listo puerto 7700»
 | Puerto | Protocolo | Para qué |
 |---|---|---|
 | **7700** | **UDP** (ENet, por defecto) o **TCP** (con `--transport=ws`) | el lobby: lista de salas, chat, asientos |
-| **7800-7831** | el mismo protocolo | una partida por puerto (`data/net/lobby_config.tres`: 4 partidas a la vez) |
+| **7800-7831** | el mismo protocolo | una partida por puerto (`scenes/net/lobby_config.tres`: 4 partidas a la vez) |
 
 - Abrí los dos en el firewall del VPS **y** en el panel de Vultr (Firewall Group). El rango de partidas se puede achicar con `--match-port-max` / `--max-matches`.
 - ufw: `sudo ufw allow 7700/udp && sudo ufw allow 7800:7831/udp` (con `ws`, cambiá `udp` por `tcp`).
 - El cliente entra a la partida por **la misma IP** que usó para el lobby, salvo que fijes `public_host` en `MpLobbyConfig` (`--public-host=`).
-- El servidor del lobby que usan los jugadores sale de `data/net/lobby_endpoint.tres` (hoy `127.0.0.1:7700`): **antes de exportar el cliente**, poné ahí la IP o el dominio del VPS, o abrí el juego con `--lobby=IP:7700` para probar.
+- El servidor del lobby que usan los jugadores sale de `scenes/net/lobby_endpoint.tres` (hoy `127.0.0.1:7700`): **antes de exportar el cliente**, poné ahí la IP o el dominio del VPS, o abrí el juego con `--lobby=IP:7700` para probar.
 - `wss://` (TLS) no está: para navegador hace falta un proxy inverso que termine TLS. No es parte de este corte.
 
 ## 4. Reconexión (lo que se probó en local)

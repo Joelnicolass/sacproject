@@ -70,7 +70,7 @@ static func write_import(path: String) -> String:
 		return ""
 	var file := FileAccess.open(import_path, FileAccess.WRITE)
 	if file == null:
-		return "No se pudo escribir %s (%s)." % [import_path, error_string(FileAccess.get_open_error())]
+		return "Could not write %s (%s)." % [import_path, error_string(FileAccess.get_open_error())]
 	file.store_string(IMPORT % path)
 	file.close()
 	return ""
@@ -80,7 +80,7 @@ static func write_import(path: String) -> String:
 static func save_png(image: Image, path: String) -> String:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
 	var error := image.save_png(path)
-	return "" if error == OK else "No se pudo escribir %s (%s)." % [path, error_string(error)]
+	return "" if error == OK else "Could not write %s (%s)." % [path, error_string(error)]
 
 
 ## Tells the editor every file of `paths` changed (gone ones too) and imports again the ones that exist, in that order.

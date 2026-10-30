@@ -4,9 +4,9 @@ extends Resource
 ## The light a ParticleType burst gives off: an OmniLight3D without shadow that rises
 ## over `attack_s` and dies over `decay_s`. A template shared by every type that points to it: never
 ## edited at runtime. The rig's FxLightLayer owns the lights; without that layer nothing lights up.
-## Ref: RFC-029 029c.
 
-## Usually the brightness-weighted mean of the type's atlas, so the light keeps the sprite's palette.
+## Usually the brightness-weighted mean of the type's atlas, so the light keeps the sprite's
+## palette.
 @export var color: Color = Color.WHITE
 ## Peak `light_energy` of the OmniLight3D.
 @export_range(0.0, 32.0, 0.05) var energy: float = 2.0
@@ -23,21 +23,21 @@ extends Resource
 ## `omni_attenuation` (1 = the engine's default falloff).
 @export_range(0.1, 4.0, 0.05) var attenuation: float = 1.0
 
-
 ## Group of the rig's FxLightLayer. No node in it (headless, dedicated, layer removed) = no light.
-const POOL_GROUP := &"fx_light_pool"
 
 
-## Asks the rig's FxLightLayer for this light at `at`, keyed by `source` (the same source again restarts
-## its light). The one way effects borrow a light (SpriteParticles, BeamFx, FxBus).
+## Asks the rig's FxLightLayer for this light at `at`, keyed by `source` (the same source again
+## restarts its light). The one way effects borrow a light (SpriteParticles, BeamFx, FxBus).
 func light_up(tree: SceneTree, source: Object, at: Vector3) -> void:
-	var pool := tree.get_first_node_in_group(POOL_GROUP) as FxLightLayer if tree != null else null
+	var pool := (
+		tree.get_first_node_in_group(FxLightLayer.GROUP) as FxLightLayer if tree != null else null
+	)
 	if pool != null:
 		pool.flash(source, self, at)
 
 
-## `min_decay_s` (RFC-053 053i): the fall never takes less than this (FxLightLayer.min_decay_s), so a short spark does not read
-## as a light switched off.
+## `min_decay_s`: the fall never takes less than this (FxLightLayer.min_decay_s), so a short spark
+## does not read as a light switched off.
 func total_s(min_decay_s := 0.0) -> float:
 	return attack_s + maxf(decay_s, min_decay_s)
 

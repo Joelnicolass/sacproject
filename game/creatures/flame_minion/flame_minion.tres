@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="CreatureType" format=3]
+
+[ext_resource type="Script" path="res://scenes/units/creature_type.gd" id="1_5iwmj"]
+[ext_resource type="Texture2D" uid="uid://r7hdquidis3h" path="res://assets/original/ui/icons/fplk.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://creatures/flame_minion/flame_minion_shot.tres" id="typed_fkba"]
+[ext_resource type="Resource" path="res://scenes/units/abilities/run_away.tres" id="typed__nur"]
+[ext_resource type="AnimationLibrary" path="res://creatures/flame_minion/model/flame_minion_model_clips.tres" id="clips_lib"]
+[ext_resource type="PackedScene" path="res://creatures/flame_minion/flame_minion.tscn" id="body_scene"]
+
+[resource]
+script = ExtResource("1_5iwmj")
+tag = "fplk"
+display_name = "Flame Minion"
+icon = ExtResource("icon_tex")
+body = ExtResource("body_scene")
+clips = ExtResource("clips_lib")
+health = 640
+regeneration_per_s = 16.6667
+run_speed_m_s = 12.0
+melee_strength = 112
+melee_accuracy = 0.8
+melee_evasion = 0.4
+ranged_accuracy = 0.6
+aggressiveness = 1.0
+vision_m = 175.0
+melee_resistance = 4.0
+mana = 200
+mana_cost = 300
+souls = 1
+cooldown_s = 2.0
+casting_time_s = 0.3704
+book_level = 1
+book_slot = 28
+ranged_attack = ExtResource("typed_fkba")
+active_ability = ExtResource("typed__nur")

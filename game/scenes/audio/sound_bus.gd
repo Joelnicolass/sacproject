@@ -1,10 +1,11 @@
 extends Node
 
-## The one place that plays SoundCues: it owns the players (32 in the world, 8 for the UI and the voices) and hands every
-## request to its VoiceMixer, which decides what plays and what is dropped. It decides how, never when: the Sounds/Voice/
-## Director nodes ask. Every request, played or dropped, goes to `sound_log`, which is what the cases and the lab check.
-## With the AudioGate closed (dedicated, room server, headless without --audio-probe) it builds nothing and every play is false.
-## Ref: RFC-052 052a-052h (F360-F367).
+## The one place that plays SoundCues: it owns the players (32 in the world, 8 for the UI and the
+## voices) and hands every request to its VoiceMixer, which decides what plays and what is dropped.
+## It decides how, never when: the Sounds/Voice/ Director nodes ask. Every request, played or
+## dropped, goes to `sound_log`, which is what the cases and the lab check. With the AudioGate
+## closed (dedicated, room server, headless without --audio-probe) it builds nothing and every play
+## is false.
 
 @export_range(1, 128) var pool_3d_size := 32
 @export_range(1, 64) var pool_2d_size := 8
@@ -48,7 +49,9 @@ func _ready() -> void:
 		_mixer.pool_2d.add(player)
 	prefs = load(AudioPrefs.SHARED_PATH) as AudioPrefs
 	if prefs == null:
-		push_warning("SoundBus: falta %s; los buses quedan como están." % AudioPrefs.SHARED_PATH)
+		push_warning(
+			"SoundBus: %s is missing; the buses stay as they are." % AudioPrefs.SHARED_PATH
+		)
 		return
 	prefs.changed.connect(apply_prefs)
 	apply_prefs()
@@ -75,7 +78,9 @@ func listener_position() -> Vector3:
 
 
 ## A cue in the world at `at`. False when it was dropped (gate closed, silent, cooldown, limits).
-func play_3d(cue: SoundCue, at: Vector3, emitter: StringName = &"", event: StringName = &"") -> bool:
+func play_3d(
+	cue: SoundCue, at: Vector3, emitter: StringName = &"", event: StringName = &""
+) -> bool:
 	return _mixer.request(cue, true, at, emitter, event)
 
 
@@ -84,8 +89,11 @@ func play_2d(cue: SoundCue, emitter: StringName = &"", event: StringName = &"") 
 	return _mixer.request(cue, false, Vector3.ZERO, emitter, event)
 
 
-## A cue on a player the caller owns (CommandVoice, AdvisorVoice): it says one line at a time and decides what cuts what.
-func play_on(player: AudioStreamPlayer, cue: SoundCue, emitter: StringName = &"", event: StringName = &"") -> bool:
+## A cue on a player the caller owns (CommandVoice, AdvisorVoice): it says one line at a time and
+## decides what cuts what.
+func play_on(
+	player: AudioStreamPlayer, cue: SoundCue, emitter: StringName = &"", event: StringName = &""
+) -> bool:
 	return _mixer.play_on(player, cue, emitter, event)
 
 
@@ -95,7 +103,8 @@ func log_played(emitter: StringName, event: StringName, stream: AudioStream) -> 
 		sound_log.add(emitter, event, stream, true)
 
 
-## A request a voice channel turned down before it reached a player (queue full, a repeated line): a log entry only.
+## A request a voice channel turned down before it reached a player (queue full, a repeated line): a
+## log entry only.
 func log_dropped(emitter: StringName, event: StringName, reason: StringName) -> void:
 	if _mixer.live:
 		_mixer.drop(emitter, event, reason)
@@ -105,8 +114,14 @@ func adopt_channel(player: AudioStreamPlayer) -> void:
 	_mixer.adopt_channel(player)
 
 
-## Plays `cue` in a loop on a SoundEmitter3D's own player while it holds the claim; false (and a log entry) when refused.
-func claim_loop(player: AudioStreamPlayer3D, cue: SoundCue, emitter: StringName = &"", event: StringName = SoundEvent.LOOP) -> bool:
+## Plays `cue` in a loop on a SoundEmitter3D's own player while it holds the claim; false (and a log
+## entry) when refused.
+func claim_loop(
+	player: AudioStreamPlayer3D,
+	cue: SoundCue,
+	emitter: StringName = &"",
+	event: StringName = SoundEvent.LOOP
+) -> bool:
 	return _mixer.claim_loop(player, cue, emitter, event)
 
 
@@ -135,7 +150,8 @@ func stop_all() -> void:
 	_mixer.stop_all()
 
 
-## stop_all() and nothing plays or claims after it: a run about to quit (a loop claimed then would leak at exit).
+## stop_all() and nothing plays or claims after it: a run about to quit (a loop claimed then would
+## leak at exit).
 func shutdown() -> void:
 	_mixer.stop_all()
 	_mixer.closed = true

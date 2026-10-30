@@ -1,12 +1,11 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/lobby/lobby_screen.gd" id="1_screen"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/lobby_connect.tscn" id="2_connect"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/room_list.tscn" id="3_list"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/room_create.tscn" id="4_create"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lobby/room_view.tscn" id="5_room"]
-[ext_resource type="Resource" path="res://data/net/lobby_endpoint.tres" id="6_endpoint"]
-[ext_resource type="Resource" path="res://data/net/online_config.tres" id="7_online"]
+[ext_resource type="Resource" path="res://scenes/net/lobby_endpoint.tres" id="6_endpoint"]
 [ext_resource type="Script" path="res://scenes/net/online_network.gd" id="8_onlinenet"]
 
 [node name="LobbyScreen" type="Control" node_paths=PackedStringArray("online")]
@@ -67,4 +66,3 @@ one_shot = true
 
 [node name="OnlineNetwork" type="Node" parent="."]
 script = ExtResource("8_onlinenet")
-config = ExtResource("7_online")

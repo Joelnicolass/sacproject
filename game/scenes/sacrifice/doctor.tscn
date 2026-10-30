@@ -14,7 +14,7 @@
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/working.gd" id="10_working"]
 [ext_resource type="Script" path="res://scenes/sacrifice/doctor_states/dying.gd" id="11_dying"]
 [ext_resource type="Script" path="res://addons/mp_kit/nodes/mp_actor.gd" id="12_actor"]
-[ext_resource type="Resource" path="res://data/match_rules.tres" id="13_rules"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="13_rules"]
 [ext_resource type="Script" path="res://scenes/bodies/body_animator.gd" id="14_clip"]
 [ext_resource type="PackedScene" path="res://scenes/bodies/body_rig.tscn" id="14_rig"]
 [ext_resource type="Script" path="res://scenes/bodies/idle_sway.gd" id="18_sway"]
@@ -23,10 +23,11 @@
 
 [ext_resource type="Script" path="res://scenes/sacrifice/carry_rope.gd" id="15_rope"]
 [ext_resource type="PackedScene" path="res://scenes/fx/tether.tscn" id="16_tether"]
-[ext_resource type="Resource" path="res://data/fx/needle.tres" id="17_needle"]
-[ext_resource type="Resource" path="res://data/catalog/creatures/sac_doctor.tres" id="typed_dcas"]
+[ext_resource type="Resource" path="res://scenes/fx/effects/needle.tres" id="17_needle"]
+[ext_resource type="Resource" path="res://creatures/sac_doctor/sac_doctor.tres" id="typed_dcas"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/blood_fx.tscn" id="b060_blood"]
 [ext_resource type="PackedScene" path="res://scenes/fx/blood/hit_flash.tscn" id="c060_flash"]
+[ext_resource type="Script" path="res://scenes/bodies/game_unit.gd" id="gu_game_unit"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_doctor"]
 radius = 0.4
@@ -70,11 +71,13 @@ properties/11/path = NodePath("MpActor:owner_slot")
 properties/11/spawn = true
 properties/11/replication_mode = 0
 
-[node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "collision", "mount", "health_bar", "states", "motor")]
+[node name="Doctor" type="CharacterBody3D" node_paths=PackedStringArray("health", "collision", "mount", "health_bar", "states", "motor", "unit")]
 collision_layer = 2
+collision_mask = 129
 floor_snap_length = 0.5
 floor_max_angle = 1.4835298
 script = ExtResource("1_body")
+unit = NodePath("RtsUnit")
 type = ExtResource("typed_dcas")
 rules = ExtResource("13_rules")
 health = NodePath("Health")
@@ -192,3 +195,8 @@ replication_config = SubResource("SceneReplicationConfig_doctor")
 body = NodePath("..")
 
 [connection signal="solved" from="Avoidance" to="Motor" method="_on_avoided"]
+
+[node name="RtsUnit" type="Node" parent="."]
+script = ExtResource("gu_game_unit")
+selectable = false
+orderable = false

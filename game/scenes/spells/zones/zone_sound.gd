@@ -2,9 +2,11 @@
 class_name ZoneSound
 extends SoundEmitter3D
 
-## The sound of a zone, on every peer, from its phase: a loop from the phase `from_phase` to the phase `to_phase` (the balls of Explosion burn
-## from the cast to the blast), or one shot when the zone enters `from_phase`. It names a key of the sound table (SoundEmitter3D) and plays it
-## at this node; it does not decide when a zone changes phase (GroundZone). A dedicated server or a headless run plays nothing.
+## The sound of a zone, on every peer, from its phase: a loop from the phase `from_phase` to the
+## phase `to_phase` (the balls of Explosion burn from the cast to the blast), or one shot when the
+## zone enters `from_phase`. It names a key of the sound table (SoundEmitter3D) and plays it at this
+## node; it does not decide when a zone changes phase (GroundZone). A dedicated server or a headless
+## run plays nothing.
 
 enum When { WHILE_PHASES, WHEN_ENTERS }
 

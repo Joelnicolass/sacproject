@@ -1,11 +1,13 @@
 class_name TerrainCollision
 extends StaticBody3D
 
-## The ground to stand on: the map's triangles (land and cliff walls, Terrain.data) in chunks of `chunk_cells` x `chunk_cells`
-## cells, one shape each on this one body. A chunk keeps its triangles as loaded and the lattice vertex under each corner:
-## remaking it adds how far those vertices moved (no triangle with a taken away corner), and is skipped when none moved.
-## Under playing stamps (Terrain.changed) a share of the touched chunks is remade each tick, each within `refresh_s`; when
-## the ground settles (Terrain.settled) all at once. So GroundRay finds what Terrain.height_at answers. It moves no ground.
+## The ground to stand on: the map's triangles (land and cliff walls, Terrain.data) in chunks of
+## `chunk_cells` x `chunk_cells` cells, one shape each on this one body. A chunk keeps its triangles
+## as loaded and the lattice vertex under each corner: remaking it adds how far those vertices moved
+## (no triangle with a taken away corner), and is skipped when none moved. Under playing stamps
+## (Terrain.changed) a share of the touched chunks is remade each tick, each within `refresh_s`;
+## when the ground settles (Terrain.settled) all at once. So GroundRay finds what Terrain.height_at
+## answers. It moves no ground.
 
 ## An empty shape every chunk copies, so no shape is built in code.
 const CHUNK_SHAPE := preload("res://scenes/map/terrain/terrain_chunk.tres")
@@ -16,7 +18,8 @@ const CHUNK_SHAPE := preload("res://scenes/map/terrain/terrain_chunk.tres")
 @export_range(0.0166, 0.5, 0.0001, "suffix:s") var refresh_s := 0.1
 
 
-## One chunk: its triangles as loaded, the lattice vertex under each corner, the vertices it uses and their last shift.
+## One chunk: its triangles as loaded, the lattice vertex under each corner, the vertices it uses
+## and their last shift.
 class Chunk:
 	var base := PackedVector3Array()
 	var lattice := PackedInt32Array()
@@ -30,7 +33,11 @@ var _dirty := {}  ## Vector2i -> true, in the order they were marked (the oldest
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	return PackedStringArray() if terrain != null else PackedStringArray(["Falta el socket `terrain` (el Terrain del mapa)."])
+	return (
+		PackedStringArray()
+		if terrain != null
+		else PackedStringArray(["The `terrain` socket is missing (the map's Terrain)."])
+	)
 
 
 func _ready() -> void:
@@ -61,7 +68,8 @@ func flush() -> void:
 	_dirty.clear()
 
 
-## Files each triangle of `data` (corners in index order, so a wall keeps its face) under the chunk of its lowest cell.
+## Files each triangle of `data` (corners in index order, so a wall keeps its face) under the chunk
+## of its lowest cell.
 func _split_in_chunks(data: MapTerrainData) -> void:
 	var vertices := data.vertices
 	var indices := data.indices
@@ -70,13 +78,22 @@ func _split_in_chunks(data: MapTerrainData) -> void:
 		var a := indices[first]
 		var b := indices[first + 1]
 		var c := indices[first + 2]
-		var column := mini(lattice[a] % TerrainGrid.SIDE, mini(lattice[b] % TerrainGrid.SIDE, lattice[c] % TerrainGrid.SIDE))
-		var row := mini(lattice[a] / TerrainGrid.SIDE, mini(lattice[b] / TerrainGrid.SIDE, lattice[c] / TerrainGrid.SIDE))
+		var column := mini(
+			lattice[a] % TerrainGrid.SIDE,
+			mini(lattice[b] % TerrainGrid.SIDE, lattice[c] % TerrainGrid.SIDE)
+		)
+		var row := mini(
+			lattice[a] / TerrainGrid.SIDE,
+			mini(lattice[b] / TerrainGrid.SIDE, lattice[c] / TerrainGrid.SIDE)
+		)
 		var key := Vector2i(column / chunk_cells, row / chunk_cells)
 		var chunk: Chunk = _chunks.get(key)
 		if chunk == null:
 			chunk = Chunk.new()
-			chunk.vertices = Rect2i(key * chunk_cells, Vector2i.ONE * (chunk_cells + 1)).intersection(Rect2i(0, 0, TerrainGrid.SIDE, TerrainGrid.SIDE))
+			chunk.vertices = (
+				Rect2i(key * chunk_cells, Vector2i.ONE * (chunk_cells + 1))
+				. intersection(Rect2i(0, 0, TerrainGrid.SIDE, TerrainGrid.SIDE))
+			)
 			chunk.shape = CHUNK_SHAPE.duplicate() as ConcavePolygonShape3D
 			shape_owner_add_shape(create_shape_owner(self), chunk.shape)
 			_chunks[key] = chunk
@@ -88,7 +105,8 @@ func _split_in_chunks(data: MapTerrainData) -> void:
 		chunk.lattice.append(lattice[c])
 
 
-## Makes the chunk's shape where the ground is now, unless none of its vertices moved since the last time.
+## Makes the chunk's shape where the ground is now, unless none of its vertices moved since the last
+## time.
 func _remake(chunk: Chunk) -> void:
 	var texels := terrain.field().texels
 	var shown := PackedFloat32Array()
@@ -100,10 +118,13 @@ func _remake(chunk: Chunk) -> void:
 	chunk.shown = shown
 	var still := PackedFloat32Array()
 	still.resize(shown.size())
-	chunk.shape.set_faces(chunk.base if shown == still else _faces_of(chunk, texels, _has_hole(shown)))
+	chunk.shape.set_faces(
+		chunk.base if shown == still else _faces_of(chunk, texels, _has_hole(shown))
+	)
 
 
-## The chunk's triangles with each corner raised by its vertex's shift; with `holed`, none that has a taken away corner.
+## The chunk's triangles with each corner raised by its vertex's shift; with `holed`, none that has
+## a taken away corner.
 static func _faces_of(chunk: Chunk, texels: PackedFloat32Array, holed: bool) -> PackedVector3Array:
 	var lattice := chunk.lattice
 	var faces := chunk.base.duplicate()
@@ -115,7 +136,11 @@ static func _faces_of(chunk: Chunk, texels: PackedFloat32Array, holed: bool) -> 
 		return faces
 	faces.clear()
 	for first in range(0, lattice.size(), 3):
-		if texels[lattice[first] * 2 + 1] > 0.5 or texels[lattice[first + 1] * 2 + 1] > 0.5 or texels[lattice[first + 2] * 2 + 1] > 0.5:
+		if (
+			texels[lattice[first] * 2 + 1] > 0.5
+			or texels[lattice[first + 1] * 2 + 1] > 0.5
+			or texels[lattice[first + 2] * 2 + 1] > 0.5
+		):
 			continue
 		for i in range(first, first + 3):
 			faces.append(chunk.base[i] + Vector3(0.0, texels[lattice[i] * 2], 0.0))
@@ -140,7 +165,8 @@ func _on_terrain_changed(area: Rect2) -> void:
 				_dirty[Vector2i(x, z)] = true
 
 
-## A share of the waiting chunks, the oldest first, so each waits at most `refresh_s` and no tick remakes them all.
+## A share of the waiting chunks, the oldest first, so each waits at most `refresh_s` and no tick
+## remakes them all.
 func _physics_process(_delta: float) -> void:
 	if _dirty.is_empty():
 		return

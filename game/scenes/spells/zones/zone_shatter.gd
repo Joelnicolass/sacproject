@@ -1,11 +1,12 @@
 class_name ZoneShatter
 extends ZonePulse
 
-## What an ice zone does when it breaks: in `count` steps, from the centre outwards, every body on the ground inside the broken part takes the
-## spell's damage once. It does not freeze (ZoneFreeze) nor draw the ice (the zone's look); the shards of each step come from `shards`.
-## Ref: sacengine updateFrozenGround (state.d:19863-19896).
+## What an ice zone does when it breaks: in `count` steps, from the centre outwards, every body on
+## the ground inside the broken part takes the spell's damage once. It does not freeze (ZoneFreeze)
+## nor draw the ice (the zone's look); the shards of each step come from `shards`.
 
-## One scene per step with the shards that fly off the broken ring: its root answers play({inner, outer}).
+## One scene per step with the shards that fly off the broken ring: its root answers play({inner,
+## outer}).
 @export var shards: PackedScene
 
 var _hit := {}
@@ -20,7 +21,11 @@ func _fire(step: int) -> void:
 		FxBus.broadcast_scene(shards, center, {"inner": inner, "outer": outer})
 	for body in bodies_near(center, outer + CANDIDATE_MARGIN_M):
 		var id := body.get_instance_id()
-		if BodyNudge.airborne(body) or _hit.has(id) or ZoneRules.flat_gap(BodyNudge.box(body), center) > outer:
+		if (
+			BodyNudge.airborne(body)
+			or _hit.has(id)
+			or ZoneRules.flat_gap(BodyNudge.box(body), center) > outer
+		):
 			continue
 		_hit[id] = true
 		SplashDamage.hurt(body, float(zone.spell.damage), zone.from_slot, Health.SPLASH_SPELL)

@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://scenes/match/match_state.gd" id="1_state"]
 [ext_resource type="Script" path="res://scenes/match/defeat_rule.gd" id="2_rule"]
-[ext_resource type="Resource" path="res://data/match_rules.tres" id="3_rules"]
+[ext_resource type="Resource" path="res://scenes/match/match_rules.tres" id="3_rules"]
 [ext_resource type="Script" path="res://scenes/net/match_state_net.gd" id="4_net"]
 
-[node name="Match" type="Node"]
+[node name="MatchState" type="Node"]
 script = ExtResource("1_state")
 rules = ExtResource("3_rules")
 

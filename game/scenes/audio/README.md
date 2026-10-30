@@ -1,10 +1,19 @@
-# scenes/audio/
+# audio
 
-**Qué es.** Todo lo que suena. Es del cliente: ninguna RPC, nada escribe en la simulación y nada usa el generador global (`randf()`, `AudioStreamRandomizer`). Cada sonido es un `SoundCue` (`data/audio/cues/*.tres`) o un `SoundSet` de un cuerpo (`CreatureType.sounds`, `WizardType.sounds`), asignado en el inspector: nada se busca por texto.
+Everything that sounds. Client only: no RPC, nothing here writes the simulation, and nothing uses the global random generator
+(`randf()`, `AudioStreamRandomizer`).
+Entry point: the `SoundBus` autoload (`sound_bus.tscn`, owner of the players and the pool limits). The `*Sounds`,
+`*Voice` and `*Director` nodes turn replicated state or local signals into `SoundBus.play_2d` / `play_3d` / `play_on`.
+A sound is a `SoundCue` `.tres` dragged onto a field. Where they live:
 
-**Quién habla con quién.** `AudioGate` (¿este proceso tiene audio? cerrado en `--dedicated`, `--room-server` y headless salvo `--audio-probe`) → `SoundBus` (autoload escena `sound_bus.tscn`: dueño de los players; pide a `VoiceMixer` qué suena, a `VoicePool` qué voz toma y a `CuePlayback` cuándo, qué variante y qué tono; `BusLevels` pone `AudioPrefs` en los buses). Los nodos que deciden *cuándo* lo llaman: `UnitSounds`/`WizardSounds` (sobre `BodySounds`) pasan estado replicado a eventos; `FxSounds` y `UiClickSounds` (hijos de `sound_bus.tscn`) tocan los FX y los clics; `SoundEmitter3D` suena una vez o en bucle (`claim_loop`); `RitualSounds`, `SoulSounds`, `MenuSounds`; `CommandVoice` y `AdvisorVoice` (con `AdvisorWatch` y `AdvisorLine`) hablan por un canal propio (`play_on`); `CombatGauge` + `MusicMood` + `MusicDirector` eligen la música; `AmbienceDirector` el ambiente; `ListenerFocus` es `SoundBus.listener`.
+| What | Where |
+|---|---|
+| A creature's or a wizard's sounds (`SoundSet`, one field per event) | `<name>_sounds.tres` in its folder, set on its look's `Sounds` |
+| The cues only one spell uses | `spells/<name>/sounds/` |
+| A god's music and ambience (`MusicSet`, `AmbienceSet`) | `gods/<name>/<name>_music.tres`, `<name>_ambience.tres`, set on its look |
+| Shared cues (UI, souls, sacrifice, summon, fountains) | `cues/` here |
+| Shared melee sets, the `fallback` of a creature's set | `melee/` (`fist`, `saw`, `stab`) |
+| Common and menu music | `music/` |
 
-**Cómo agregar uno.** Un sonido nuevo es un `.tres` en `data/audio/` arrastrado al campo (`ParticleType.sound`, `SoundEmitter3D.cue`, un campo del `SoundSet`…). Un nodo nuevo (`*Sounds`/`*Voice`/`*Director`) pasa estado replicado o señales locales a un `SoundEvent` y llama a `SoundBus.play_2d`/`play_3d`/`play_on`. Los topes (`pool_3d_size`, `max_loops_3d`) se tocan en `sound_bus.tscn`; el log de lo pedido (tocado o descartado) es `SoundBus.sound_log`.
-
-**Sonidos propios.** «Nueva criatura desde modelo…» crea el `SoundSet` de la criatura (`data/audio/creatures/<nombre>.tres`, sobre `melee/fist.tres`) y lo asigna a su `sounds`; con `assets/custom/sounds/creatures/<nombre>/<evento>[_n].{ogg,wav}` lo llena (ver `data/audio/README.md`). Los archivos del audio del original viven en el repo (LFS), como los modelos: un clon sin ellos no corre mudo.
-
+An empty field sounds like the set's `fallback`. Custom sounds: `docs/HOWTO.en.md`. The original's sound codes:
+`docs/original-mapping/audio.md`.

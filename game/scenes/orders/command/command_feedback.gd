@@ -1,10 +1,9 @@
 class_name CommandFeedback
 extends Node
 
-## What the player's commands answer with: the ping a cast or an order leaves at its point (a cone, local only), the
-## line on %Battle (CommandLog: the cue flashes `ncst` for a refusal) and the creatures that join the selection when
-## they are summoned. It decides no order and no cast.
-## Ref: RFC-025c; sacengine command cone, state.d:29261-29264.
+## What the player's commands answer with: the ping a cast or an order leaves at its point (a cone,
+## local only), the line on %Battle (CommandLog: the cue flashes `ncst` for a refusal) and the
+## creatures that join the selection when they are summoned. It decides no order and no cast.
 
 ## The cone's color by order.
 const ORDER_TONE := {
@@ -22,19 +21,20 @@ const ORDER_TEXT := {
 	"retreat": "Retirada",
 }
 
-const _SELECTION := preload("res://scenes/orders/selection.gd")
-
 ## Who looks at this screen: only this seat's new creatures join the selection.
 @export var seat: MpLocalSeat
 
 @onready var _log: CommandLog = %Battle
 @onready var _ping: OrderMarker = %Ping
-@onready var _selection: _SELECTION = %Selection
+@onready var _selection: RtsSelection = %Selection
 
 
 func _ready() -> void:
 	if seat == null:
-		push_warning("CommandFeedback: assign `seat` (the MpLocalSeat); summoned creatures will not join the selection")
+		push_warning(
+			# gdlint: ignore=max-line-length
+			"CommandFeedback: assign `seat` (the MpLocalSeat); summoned creatures will not join the selection"
+		)
 	_log.say("Mago")
 	%Units.child_entered_tree.connect(_on_unit_entered)
 	_selection.changed.connect(on_selection_changed)
@@ -55,7 +55,7 @@ func say_order(kind: String) -> void:
 ## What the selection is, as the line on %Battle: a creature's name, «N unidades» or «Mago».
 func on_selection_changed(units: Array) -> void:
 	if units.size() == 1:
-		_log.say((units[0] as UnitBody).display_name())
+		_log.say(((units[0] as RtsUnit).body as UnitBody).display_name())
 	elif units.size() > 1:
 		_log.say("%d unidades" % units.size())
 	else:
@@ -64,7 +64,7 @@ func on_selection_changed(units: Array) -> void:
 
 ## «Sin almas» (the drop answer) is a refusal like the others: said on %Battle, it flashes `ncst`.
 func _connect_soul_messages() -> void:
-	var souls := get_tree().get_first_node_in_group("soul_system") as SoulSystem
+	var souls := get_tree().get_first_node_in_group(SoulSystem.GROUP) as SoulSystem
 	if souls:
 		souls.message.connect(_log.say)
 
@@ -75,7 +75,6 @@ func _on_unit_entered(unit: Node) -> void:
 
 
 ## The owner's new creature joins the selection.
-## Ref: sacengine newCreatureAddToSelection.
 func _on_unit_summoned(unit: Node) -> void:
 	if seat != null and is_instance_valid(unit) and seat.is_mine((unit as UnitBody).owner_slot):
-		_selection.add_summoned(unit as UnitBody)
+		_selection.add_new((unit as UnitBody).unit)

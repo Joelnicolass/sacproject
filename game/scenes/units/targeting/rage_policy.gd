@@ -1,10 +1,10 @@
 class_name RagePolicy
 extends TargetPolicy
 
-## Blind Rage: while it lasts a creature fights the closest creature of any side, its own included (not itself), and keeps whatever it
-## is fighting if it is still such a creature. It does not pick for a body that is not enraged (TargetPicker asks it only then) and it
-## does not stop the orders (UnitOrders ignores them).
-## Ref: sacengine updateTarget with isBlindlyRaging (state.d:12946-12948), closestCreatureInRangeExcept.
+## Blind Rage: while it lasts a creature fights the closest creature of any side, its own included
+## (not itself), and keeps whatever it is fighting if it is still such a creature. It does not pick
+## for a body that is not enraged (TargetPicker asks it only then) and it does not stop the orders
+## (UnitOrders ignores them).
 
 ## Groups of the bodies it may fight: creatures and wizards.
 @export var groups: Array[StringName] = [&"wizard", &"unit"]
@@ -23,7 +23,10 @@ func pick(body: UnitBody, center: Vector3, within: float) -> Node3D:
 			if not TargetRules.is_valid_foe_of(-1, node, body, false):
 				continue
 			var other := node as Node3D
-			var d := Vector2(other.global_position.x - center.x, other.global_position.z - center.z).length()
+			var d := (
+				Vector2(other.global_position.x - center.x, other.global_position.z - center.z)
+				. length()
+			)
 			if d <= best_d:
 				best_d = d
 				best = other

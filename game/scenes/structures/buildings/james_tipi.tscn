@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/map/map_building.tscn" id="1_building"]
-[ext_resource type="Resource" path="res://data/buildings/james_tipi.tres" id="2_type"]
+[ext_resource type="Resource" path="res://gods/james/buildings/james_tipi.tres" id="2_type"]
 [ext_resource type="Script" path="res://scenes/look/grass/vegetation_clear.gd" id="3_clear"]
 [ext_resource type="ArrayMesh" path="res://scenes/props/meshes/jwg1.res" id="mesh_jwg1"]
 
@@ -19,7 +19,8 @@ mesh = ExtResource("mesh_jwg1")
 [node name="VegetationClear" type="Node3D" parent="Visuals"]
 position = Vector3(0, 0, 0.92400074)
 script = ExtResource("3_clear")
-radius_m = 14.65
+radius = 14.65
+soft = 3.0
 
 [node name="Collision" parent="." index="1"]
 position = Vector3(0, 11.2655, 0.92400074)

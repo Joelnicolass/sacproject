@@ -42,7 +42,7 @@ uniform float local_light_gain : hint_range(0.0, 4.0, 0.05) = 1.0;
 // Without the ORM and normal maps and the sky's sheen on them, the web ground reads darker and
 // greener than the desktop's: matched (mean of the ground) against a Forward+ capture.
 uniform float lean_gain : hint_range(0.5, 4.0, 0.05) = 1.25;
-uniform float lean_desaturate : hint_range(0.0, 1.0, 0.01) = 0.45;
+uniform float lean_desaturate : hint_range(0.0, 1.0, 0.01) = 0.6;
 #endif
 
 // Map coordinates of the fragment. The terrain mesh is stored in map coordinates, so the local vertex is used: the maps stay

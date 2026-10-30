@@ -21,6 +21,9 @@ extends LookLayer
 ## the web reads like the desktop. Measured on a High Noon top view (models and ground).
 @export_range(0.5, 4.0, 0.05) var compat_exposure_gain := 2.0
 @export_range(0.0, 2.0, 0.01) var compat_saturation_gain := 0.8
+## Below 1 lifts the darks toward grey: WebGL's tone curve crushes them into dark, saturated stone
+## (no haze over it as on the desktop). No region may end up more saturated than on the desktop.
+@export_range(0.5, 1.5, 0.01) var compat_contrast := 0.8
 
 var _profile: LookProfile
 var _preset: LookQuality
@@ -205,6 +208,7 @@ func _write_light(look: LightLook, sample: AtmosphereSample) -> void:
 	if InstanceParams.is_compat():
 		_env.tonemap_exposure *= compat_exposure_gain
 		_env.adjustment_saturation *= compat_saturation_gain
+		_env.adjustment_contrast = compat_contrast
 	_env.ssao_enabled = _preset.ssao_enabled if _preset else true
 	_env.ssao_radius = look.ssao_radius
 	_env.ssao_intensity = look.ssao_intensity

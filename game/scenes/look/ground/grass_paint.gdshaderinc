@@ -14,6 +14,9 @@ uniform vec4 grass_paint_roles = vec4(1.0, 0.3, 0.0, 0.3);
 uniform vec2 grass_paint_slope = vec2(10.0, 36.0);
 // How strong the wind's pale bands are on the painted ground.
 uniform float grass_paint_waves = 0.0;
+// How much darker the ground gets under the drawn blades (their shade on it); it fades out with the
+// blades, so the far grass meets the ground with no edge.
+uniform float grass_paint_shade = 0.0;
 
 // `w` = the role weights after the height blend (sum 1).
 float grass_paint_k(vec4 w, float slope_deg) {
@@ -27,5 +30,7 @@ vec3 grass_paint_textured(vec3 alb, vec4 w, vec2 xz, float slope_deg) {
 	if (k <= 0.0) {
 		return alb;
 	}
-	return grasskit_ground_color(alb, xz, k) * (1.0 + grasskit_ground_bands(xz, grass_paint_waves * k));
+	float near = 1.0 - smoothstep(grasskit_field.w, grasskit_field.z, distance(xz, grasskit_field.xy));
+	float shade = 1.0 - grass_paint_shade * k * near;
+	return grasskit_ground_color(alb, xz, k) * shade * (1.0 + grasskit_ground_bands(xz, grass_paint_waves * k));
 }
